@@ -1,0 +1,6 @@
+node_modules
+.sonarlint
+dist
+*.log
+*.sublime-workspace
+*.DS_Store
