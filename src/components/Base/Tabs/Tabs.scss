@@ -1,0 +1,54 @@
+.tabs{
+    display: flex;
+    flex:1;
+    flex-direction: column;
+    color: #4A4A4A;
+}
+
+.panel{
+    background: transparent;
+}
+
+.tabHeader{
+    display: flex;
+    button{
+        display: inline-flex;
+        font-weight: 600;
+        padding: 18px 20px 20px 20px;
+        font-size: 14px;
+        color: #7F7F7F;
+        text-align: left;
+        flex:1;
+        border: 1px solid transparent;
+        border-top: 2px solid transparent;
+        border-bottom: 0px;
+        cursor: pointer;
+        i, img{
+            margin-right: 10px;
+        }
+    }
+    .TabActive{
+        background: #fff;
+        border: 1px solid #DEDEDE;
+        border-top: 2px solid #FDAE14;
+        border-bottom: 0px;
+        position: relative;
+        z-index:1;
+    }
+}
+
+.tabContent{
+    color: #4A4A4A;
+    position: relative;
+    top: -1px;
+    background: #FFFFFF;
+    box-shadow: 0 -3px 4px 0 rgba(239, 239, 239, 0.5);
+    border: 1px solid #DEDEDE;
+    padding: 20px;
+    > div{
+        display: none;
+    }
+    .TabContent{
+        display: block;
+    }
+}

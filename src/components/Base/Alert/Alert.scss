@@ -1,0 +1,28 @@
+.Alert{
+	border-radius: 4px;
+	background-color: #FAFAFA;
+	border-color: #DEDEDE;
+	display: flex;
+	margin-bottom: 15px;
+}
+
+.warning{
+	background: #FEF5EA;
+	padding: 10px;
+	color: #AF9F74;
+	border-color: #AF9F74;
+}
+
+.alignCenter{
+	text-align: center;
+}
+
+.icon{
+	margin:0px 5px;
+	font-size: 14px;
+}
+
+.close{
+	padding: 5px;
+	color: inherit;
+}

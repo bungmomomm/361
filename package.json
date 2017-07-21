@@ -15,7 +15,7 @@
     "build-start": "yarn run build && yarn start",
     "build": "better-npm-run build",
     "eslint": "eslint -c .eslintrc.json \"./src/**/*.js\"",
-    "lint": "yarn run eslint && yarn run stylelint"
+    "lint": "yarn run eslint"
   },
   "repository": {
     "type": "git",

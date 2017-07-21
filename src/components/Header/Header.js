@@ -1,5 +1,5 @@
-import Checkout from './Checkout/CheckoutHeader';
+import CheckoutHeader from './Checkout/CheckoutHeader';
 
 export default {
-	Checkout
+	CheckoutHeader
 };

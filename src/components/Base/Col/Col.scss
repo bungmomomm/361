@@ -1,13 +1,15 @@
 .col{
     display: flex;
     flex:1;    
+    flex-direction: column;
+    padding:0px 10px;
 }
 
 @for $i from 1 through 12 {
     &.col-#{$i} {
         display: block;
         flex:none;
-        padding:0px 15px;
+        padding:0px 10px;
         min-height: 1px;
         width: 100% / 12 * $i;
         flex-direction: column;

@@ -1,0 +1,15 @@
+/** ---Font-face declaration--- **/
+@include font-face-woff2('HelveticaNeueLTStd-Bd', '../assets/fonts/');
+@include font-face-woff2('HelveticaNeueLTStd-Hv', '../assets/fonts/');
+@include font-face-woff2('HelveticaNeueLTStd-Md', '../assets/fonts/');
+@include font-face-woff2('HelveticaNeueLTStd-Roman', '../assets/fonts/');
+@include font-face-woff2('FontAwesome', '../assets/fonts/');
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	@include map-to-style(map-deep-get($typography, font-family, bold));
+}
