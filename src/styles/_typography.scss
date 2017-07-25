@@ -13,3 +13,7 @@ h5,
 h6 {
 	@include map-to-style(map-deep-get($typography, font-family, bold));
 }
+
+strong{
+	@include map-to-style(map-deep-get($typography, font-family, bold));
+}

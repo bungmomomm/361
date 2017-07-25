@@ -7,6 +7,8 @@ import Alert from './Alert/Alert';
 import Box from './Box/Box';
 import Select from './Select/Select';
 import Input from './Input/Input';
+import Button from './Button/Button';
+import Checkbox from './Checkbox/Checkbox';
 
 export default {
 	Container,
@@ -17,5 +19,7 @@ export default {
 	Alert,
 	Box,
 	Select,
-	Input
+	Input,
+	Button,
+	Checkbox
 };

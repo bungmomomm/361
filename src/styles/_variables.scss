@@ -36,3 +36,32 @@ $typography: (
 		)
 	)
 );
+
+$color: (
+	green: (
+		base: #64BE64,
+		hover: darken(#64BE64, 10%)
+	),
+	red: (
+		base: #C40000,
+		hover: darken(#C40000, 10%)
+	),
+	yellow: (
+		base: #fead14,
+		hover: darken(#fead14, 10%)
+	),
+	orange: (
+		base: #F57E24,
+		hover: darken(#F57E24, 10%)
+	),
+	brown: (
+		light: (
+			base: #FEF5EA,
+			hover: darken(#FEF5EA, 10%)
+		),
+		darker: (
+			base: #AF9F74,
+			hover: darken(#AF9F74, 10%)
+		)
+	)
+)

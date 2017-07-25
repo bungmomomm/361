@@ -7,13 +7,15 @@ export default class Input extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-
-		console.log(this.props);
 	}
 
 	render() {
 		const inputClass = cx({
-			input: true
+			input: true,
+			error: !!this.props.error,
+			success: !!this.props.success,
+			warning: !!this.props.warning,
+			msg: !!this.props.msg,
 		});
 		return (
 			<div className={styles.inputWrapper}>
@@ -24,6 +26,9 @@ export default class Input extends Component {
 					placeholder={this.props.placeholder}
 					{...this.props}
 				/>
+				{
+					this.props.msg ? <div className={styles.msg}>{this.props.msg}</div> : null
+				}
 			</div>
 		);
 	}

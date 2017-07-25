@@ -1,0 +1,43 @@
+.box{
+    position: relative;
+    background: #fff;
+    border:1px solid #DEDEDE;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    flex:1;
+    margin-bottom: 10px;
+    &:last-child{
+        margin-bottom: 0;
+    }
+}
+
+.header{
+    display: flex;
+    background: #FAFAFA;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    justify-content: space-between;
+    padding: 8px 20px;
+    align-items: center;
+    border-bottom:1px solid #DEDEDE;
+}
+
+.name{
+    color: #7F7F7F;
+    flex:1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.location{
+    color: #4A4A4A;
+    font-size: 11px;
+    flex:1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    i{
+        margin-right: 5px;
+    }
+}

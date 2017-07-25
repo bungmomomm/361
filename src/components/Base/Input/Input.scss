@@ -1,3 +1,17 @@
+@import 'mixins';
+@import 'variables';
+
+@mixin inputStyle($inputColor){
+	border-color: map-deep-get($color, $inputColor, base);
+	color: map-deep-get($color, $inputColor, base);
+	&:focus{
+		border-color: map-deep-get($color, $inputColor, base);
+	}
+	+ .msg{
+		color: map-deep-get($color, $inputColor, base);
+	}
+}
+
 .inputWrapper{
 	position: relative;
 	margin-bottom: 15px;
@@ -19,7 +33,24 @@
 	width: 100%;
 	justify-content: space-between;
 	&:focus{
-		border: 1px solid rgba(0,0,0,0.5);
 		outline: 0px;
+		border: 1px solid rgba(0,0,0,0.5);
 	}
+}
+
+.msg{
+	margin-top: 5px;
+	display: block;
+}
+
+.error{
+	@include inputStyle(red);
+}
+
+.success{
+	@include inputStyle(green);
+}
+
+.warning{
+	@include inputStyle(yellow);
 }

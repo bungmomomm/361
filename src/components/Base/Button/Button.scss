@@ -1,0 +1,115 @@
+@import 'mixins';
+@import 'variables';
+
+
+@mixin buttonStyle($buttonColor){
+	background-color: map-deep-get($color, $buttonColor, base);
+	&:hover{
+		background-color: map-deep-get($color, $buttonColor, hover);
+	}
+	&.outline{
+		border-color: map-deep-get($color, $buttonColor, base);
+		color: map-deep-get($color, $buttonColor, base);
+		background-color: transparent;
+		&:hover{
+			border-color: map-deep-get($color, $buttonColor, hover);
+			color: map-deep-get($color, $buttonColor, hover);
+			background-color: transparent;
+		}
+	}
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(359deg);
+	}
+}
+
+.button{
+	vertical-align: middle;
+	display: inline-flex;
+	align-items: center;
+	border-radius: 3px;
+	box-shadow: none;
+	position: relative;
+	vertical-align: top;
+	justify-content: center;
+	text-align: center;
+    white-space: nowrap;
+	transition: all 0.2s ease;
+	font-size: 14px;
+	line-height: 1;
+	height: 35px;
+	padding: 0px 20px;
+	i{
+		margin-right: 5px;
+	}
+}
+
+[disabled]{
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.primary{
+	color: #fff;
+	@include buttonStyle(red);
+}
+
+.success{
+	color: #fff;
+	@include buttonStyle(green);
+}
+
+.warning{
+	color: #fff;
+	@include buttonStyle(yellow);
+}	
+
+.loading{
+	pointer-events: none;
+	color: transparent;
+	opacity: 0.8;
+	&:after {
+		animation: spin 500ms infinite linear;
+		border: 2px solid #fff;
+		border-radius: 290486px;
+		border-right-color: transparent;
+		border-top-color: transparent;
+		content: "";
+		display: block;
+		height: 1em;
+		position: relative;
+		width: 1em;
+		position: absolute;
+		left: calc(50% - (14px / 2));
+		top: calc(50% - (14px / 2));
+		position: absolute;
+	}
+}
+
+
+.block{
+	display: flex;
+	width: 100%;
+}
+
+.orange{
+	color: #F57E24;
+}
+
+.clean{
+	padding: 0px;
+	font-size: 12px;
+	height: auto;
+}
+
+.lightGrey{
+	color: #C5C5C5;
+	&:hover{
+		color: #4A4A4A;
+	}
+}

@@ -27,15 +27,15 @@ body{
     line-height: 1.4;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    overflow-y: scroll;
     text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
     @include font(normal);
 }
 
 button{
     background: transparent;
-    border: 0px;
-    padding: 0px;
-    line-height: 1.4;
+    border: 1px solid transparent;
     cursor: pointer;
     outline: 0px;
 }

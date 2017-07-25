@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import styles from './Select.scss';
 import Icon from '@/components/Icon';
 import Input from '../Input';
+import HotKey from 'react-shortcut';
 
 export default class Select extends Component {
 	constructor(props) {
@@ -10,6 +11,7 @@ export default class Select extends Component {
 		this.state = {
 			options: this.props.options,
 			selectedLabel: this.props.selectedLabel ? this.props.selectedLabel : 'Please Select...',
+			elevatorState: 0,
 			showOption: false,
 			selected: {
 				value: '',
@@ -47,7 +49,33 @@ export default class Select extends Component {
 		this.handleToggleOptions();
 	}
 
+	checkSelected(key) {
+		return key === this.state.elevatorState ? styles.highlight : null;
+	}
+
 	render() {
+		const elevator = (key, events) => {
+			switch (key[0]) {
+			case 'arrowdown':
+				if (this.state.elevatorState > this.state.elevatorState.length) {
+					this.setState({
+						elevatorState: this.state.elevatorState + 1
+					});
+				}
+				break;
+
+			case 'arrowup':
+				if (this.state.elevatorState > 0) {
+					this.setState({
+						elevatorState: this.state.elevatorState - 1
+					});
+				}
+				break;
+				
+			default:
+				break;
+			}
+		};
 		return (
 			<div className={styles.Select}>
 				<button 
@@ -70,12 +98,22 @@ export default class Select extends Component {
 								/>
 							</div>
 							<div className={styles.overflow}>
+								<HotKey
+									keys={['arrowdown']}
+									simultaneous
+									onKeysCoincide={elevator}
+								/>
+								<HotKey
+									keys={['arrowup']}
+									simultaneous
+									onKeysCoincide={elevator}
+								/>
 								{
 									this.state.options.map((option, i) => (
 										<button 
-											className={option.value === this.state.selected.value ? 'selected' : null} 
+											className={option.value === this.state.selected.value ? styles.selected : null} 
 											onClick={() => this.handleSelectOption(option)} 
-											type='button' 
+											type='button'
 											key={i}
 										>
 											{option.label}

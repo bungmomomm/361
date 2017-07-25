@@ -6,7 +6,9 @@ const cx = classNames.bind(styles);
 
 export default (props) => {
 	const rowClass = cx({
-		row: true
+		row: true,
+		gapless: !!props.gapless,
+		centered: !!props.centered
 	});
 	return (
 		<div className={rowClass}>

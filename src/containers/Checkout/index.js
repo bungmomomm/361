@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import Helmet from 'react-helmet';
-import { CheckoutHeader } from '@/components/Header';
 import styles from './Checkout.scss';
-import { Select, Alert, Container, Row, Col, Card, Tabs, Box } from '@/components/Base';
+import { CheckoutHeader } from '@/components/Header';
+import Icon from '@/components/Icon';
+import { Select, Alert, Container, Row, Col, Card, Tabs, Box, Button, Checkbox } from '@/components/Base';
+import { StoreBox } from '@/components/Store';
+import { CheckoutProduct, CheckoutResult } from '@/components/Product';
 
 export default class Checkout extends Component {
 	constructor(props) {
@@ -17,9 +20,9 @@ export default class Checkout extends Component {
 				<CheckoutHeader />
 				<Container>
 					<Row>
-						<Col>
+						<Col grid={4}>
 							<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
-							<Tabs tabActive={0}>
+							<Tabs tabActive={0} stretch>
 								<Tabs.Panel title='Kirim ke Alamat' icon='warning'>
 									<div>
 										<Alert alignCenter close warning>
@@ -69,6 +72,20 @@ export default class Checkout extends Component {
 												}
 											]}
 											/>
+											<Row gapless>
+												<Col grid={4}><strong>Rumah Bangka</strong></Col>
+												<Col row text='right'><Icon name='map-marker' /> &nbsp; Lokasi Sudah Ditandai</Col>
+											</Row>
+											<p>
+											Aufar Syahdan <br />
+											The Residence B10 - 9 <br />
+											Jl. Bangka II, Mampang Prapatan, Jakarta Selatan, DKI Jakarta 12720 <br />
+											P: 08568052187
+											</p> 
+											<Button clean type='button' font='orange' icon='pencil' text='Ubah Alamat ini' />
+										</Box>
+										<Box>
+											<Checkbox text='Kirim sebagai Dropshipper' />
 										</Box>
 									</div>
 								</Tabs.Panel>
@@ -77,13 +94,24 @@ export default class Checkout extends Component {
 								</Tabs.Panel>
 							</Tabs>
 						</Col>
-						<Col>
+						<Col grid={4}>
 							<div className={styles.title}>2. Rincian Pesanan & Pengiriman</div>
-							<Card>
-								<div>Checkout</div>
+							<Card stretch>
+								<div className={styles.overflow}>
+									<StoreBox name='Wakawaka Sport banget dahh' location='DKI Jakarta'>
+										<CheckoutProduct />
+										<CheckoutResult />
+									</StoreBox>
+
+									<StoreBox name='Wakawaka Sport banget dahh' location='DKI Jakarta'>
+										<CheckoutProduct />
+										<CheckoutProduct />
+										<CheckoutResult />
+									</StoreBox>
+								</div>
 							</Card>
 						</Col>
-						<Col>
+						<Col grid={4}>
 							<div className={styles.title}>3. Pembayaran</div>
 							<Card>
 								<div>Checkout</div>

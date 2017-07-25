@@ -1,8 +1,9 @@
 .col{
-    display: flex;
-    flex:1;    
-    flex-direction: column;
     padding:0px 10px;
+    flex-basis: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+    padding: 15px
 }
 
 @for $i from 1 through 12 {
@@ -12,6 +13,5 @@
         padding:0px 10px;
         min-height: 1px;
         width: 100% / 12 * $i;
-        flex-direction: column;
     }
 }

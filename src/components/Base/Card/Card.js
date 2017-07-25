@@ -6,7 +6,7 @@ const cx = classNames.bind(styles);
 
 export default (props) => {
 	const cardClass = cx({
-		card: true,
+		card: true
 	});
 	return (
 		<div className={cardClass}>

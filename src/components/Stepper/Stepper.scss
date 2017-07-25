@@ -1,0 +1,39 @@
+.Stepper{
+    position: relative;
+    border: 1px solid #DEDEDE;
+    display: flex;
+    border-radius: 4px;
+    input{
+        height: 28px;
+        width: 50px;
+        text-align: center;
+        margin-right: -15px;
+        margin-left: -1px;
+        outline: 0px;
+        border: 0px;
+    }
+    button{
+        height: 30px;
+        background: #EBEBEB;
+        border: 1px solid #DEDEDE;
+        width: 24px;
+        font-size: 10px;
+        margin: -1px;
+        border-radius: 4px;
+        top: 0px;
+        &:disabled{
+            background: #FAFAFA;
+            cursor: not-allowed;
+        }
+    }
+    .minus{
+        left: 0px;
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 0px;
+    }
+    .plus{
+        right: 0px;
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+    }
+}

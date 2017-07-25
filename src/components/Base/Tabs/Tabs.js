@@ -11,7 +11,6 @@ export default class Tabs extends Component {
 		this.state = {
 			tabActive: this.props.tabActive ? this.props.tabActive : 0
 		};
-		console.log('fa');
 	}
 
 	componentWillReceiveProps(newProps) {
