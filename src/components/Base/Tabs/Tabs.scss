@@ -9,6 +9,14 @@
     background: transparent;
 }
 
+.stretch{
+    display: flex;
+    flex-direction: column;
+    .tabContent{
+        align-items: stretch;
+    }
+}
+
 .tabHeader{
     display: flex;
     button{
@@ -23,8 +31,10 @@
         border-top: 2px solid transparent;
         border-bottom: 0px;
         cursor: pointer;
+        align-items: center;
         i, img{
             margin-right: 10px;
+            flex: none;
         }
     }
     .TabActive{

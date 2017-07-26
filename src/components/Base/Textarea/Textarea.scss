@@ -1,0 +1,75 @@
+@import 'mixins';
+@import 'variables';
+
+@mixin inputStyle($inputColor){
+	border-color: map-deep-get($color, $inputColor, base);
+	color: map-deep-get($color, $inputColor, base);
+	&:focus{
+		border-color: map-deep-get($color, $inputColor, base);
+	}
+	+ .msg{
+		color: map-deep-get($color, $inputColor, base);
+	}
+}
+
+.TextareaWrapper{
+	position: relative;
+}
+
+.horizontal{
+	display: flex;
+	align-items: center;
+	label{
+		margin-bottom: 0px;
+		width: 40%;
+		display: block;
+	}
+}
+
+.Textarea{
+	background: #fff;
+	background: #FFFFFF;
+	border: 1px solid #C5C5C5;
+	border-radius: 4px;
+	font-size: 12px;
+	color: #4A4A4A;
+	min-height: 60px;
+	resize: vertical;
+	padding: 10px 15px;
+	display: block;
+	width: 100%;
+	justify-content: space-between;
+	&:focus{
+		outline: 0px;
+		border: 1px solid rgba(0,0,0,0.5);
+	}
+}
+
+.msg{
+	margin-top: 5px;
+	display: block;
+}
+
+.error{
+	@include inputStyle(red);
+}
+
+.success{
+	@include inputStyle(green);
+}
+
+.warning{
+	@include inputStyle(yellow);
+}
+
+.small{
+	height: 27px;
+}
+
+.medium{
+	height: 35px;
+}
+
+.large{
+	height: 45px;
+}

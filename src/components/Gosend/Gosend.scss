@@ -1,0 +1,28 @@
+@import 'mixins';
+@import 'variables';
+
+
+.header{
+	display: flex;
+}
+
+.desc{
+	font-size: 10px;
+	padding-left: 7px;
+	color: color(orange);
+}
+
+.googleMap{
+	height: 220px;
+	width: 100%;
+	margin: 15px 0px;
+}
+
+.mapLocationName{
+	background: #FFFFFF;
+	padding: 5px 10px;
+	border: 1px solid #DEDEDE;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	margin-bottom: 15px;
+}

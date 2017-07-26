@@ -1,9 +1,13 @@
+@import 'mixins';
+@import 'variables';
+
 .Alert{
 	border-radius: 4px;
 	background-color: #FAFAFA;
 	border-color: #DEDEDE;
 	display: flex;
 	margin-bottom: 15px;
+	justify-content: space-between;
 }
 
 .warning{
@@ -11,6 +15,13 @@
 	padding: 10px;
 	color: #AF9F74;
 	border-color: #AF9F74;
+}
+
+.error{
+	background: #F2DEDF;
+	padding: 10px;
+	color: #BE5959;
+	border-color: #DFA4A4;
 }
 
 .alignCenter{
@@ -23,6 +34,6 @@
 }
 
 .close{
-	padding: 5px;
+	padding: 0px 5px;
 	color: inherit;
 }

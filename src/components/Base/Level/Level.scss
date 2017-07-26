@@ -1,0 +1,35 @@
+.Level{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	line-height: 1;
+}
+
+.left{
+	flex:1;
+	justify-content: flex-start;
+	margin-bottom: 10px;
+}
+
+.right{
+	flex:1;
+	justify-content: flex-end;
+	margin-bottom: 10px;
+}
+
+.item{
+	flex:1;
+	align-items: center;
+	display: flex;
+	flex-basis: auto;
+	flex-shrink: 0;
+	justify-content: center;
+	margin-bottom: 10px;
+}
+
+.noMargin{
+	margin: 0px;
+	.Level{
+		margin: 0px;
+	}
+}

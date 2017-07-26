@@ -7,8 +7,12 @@ import Alert from './Alert/Alert';
 import Box from './Box/Box';
 import Select from './Select/Select';
 import Input from './Input/Input';
+import InputGroup from './InputGroup/InputGroup';
 import Button from './Button/Button';
 import Checkbox from './Checkbox/Checkbox';
+import Level from './Level/Level';
+import Modal from './Modal/Modal';
+import Textarea from './Textarea/Textarea';
 
 export default {
 	Container,
@@ -20,6 +24,10 @@ export default {
 	Box,
 	Select,
 	Input,
+	InputGroup,
 	Button,
-	Checkbox
+	Checkbox,
+	Level,
+	Modal,
+	Textarea
 };

@@ -16,6 +16,8 @@ export default class Alert extends Component {
 			success: !!this.props.success,
 			warning: !!this.props.warning,
 			danger: !!this.props.danger,
+			dark: !!this.props.dark,
+			grey: !!this.props.grey,
 			small: !!this.props.small,
 			medium: !!this.props.medium,
 			large: !!this.props.large,
@@ -23,16 +25,21 @@ export default class Alert extends Component {
 			loading: !!this.props.loading,
 			block: !!this.props.block,
 			clean: !!this.props.clean,
-			[`${this.props.font}`]: !!this.props.font
+			iconRight: !!this.props.iconRight,
+			[`${this.props.font}`]: !!this.props.font,
+			[`${this.props.size}`]: !!this.props.size,
 		});
 
 		return (
 			<button className={classButton} disabled={this.props.disabled}>
 				{
-					this.props.icon ? <Icon name={this.props.icon} /> : null
+					(this.props.icon && !this.props.iconRight) ? <Icon name={this.props.icon} /> : null
 				}
 				{
 					this.props.text ? this.props.text : this.props.children
+				}
+				{
+					this.props.iconRight ? <Icon name={this.props.icon} /> : null
 				}
 			</button>
 		);

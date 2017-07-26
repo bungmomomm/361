@@ -1,0 +1,17 @@
+.sprites { 
+	background: url('../../assets/images/sprites.png') no-repeat top left; 
+	width: 15px; height: 13px;
+	display: inline-block;
+    vertical-align: middle;
+} 
+
+.sprites__gosend { background-position: 0 0; width: 53px; height: 9px; } 
+.sprites__gosend2x { background-position: -53px 0; width: 106px; height: 18px; } 
+.sprites__o2o-off { background-position: -159px 0; height: 14px; } 
+.sprites__o2o-off2x { background-position: -174px 0; width: 30px; height: 28px; } 
+.sprites__truck-on { background-position: -204px 0; width: 23px; } 
+.sprites__truck-on2x { background-position: -227px 0; width: 46px; height: 26px; } 
+.sprites__truck-off { background-position: -273px 0; width: 23px; } 
+.sprites__truck-off2x { background-position: -296px 0; width: 46px; height: 26px; } 
+.sprites__o2o-on { background-position: -342px 0; height: 14px; } 
+.sprites__o2o-on2x { background-position: -357px 0; width: 30px; height: 28px; } 

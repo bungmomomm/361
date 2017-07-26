@@ -7,7 +7,7 @@ export default class Stepper extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			value: 1
+			value: this.props.value ? this.props.value : 1
 		};
 	}
 
@@ -39,6 +39,10 @@ export default class Stepper extends Component {
 				>
 					<Icon name='plus' />
 				</button>
+				{ 
+					this.state.value === this.props.maxValue ? 
+						<div className={styles.stockLeft}>Stok hanya {this.props.maxValue}</div> : null
+				}
 			</div>
 		);
 	}

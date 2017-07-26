@@ -1,7 +1,22 @@
+@import 'mixins';
+@import 'variables';
+
+
 .card{
     color: #4A4A4A;
     background: #FFFFFF;
     box-shadow: 0 -3px 4px 0 rgba(239,239,239,0.50);
     border: 1px solid #DEDEDE;
     padding: 20px;
+    position: relative;
+}
+
+.radius{
+    border-radius: 4px;
+}
+
+.Title{
+    color: #4A4A4A;
+    margin-bottom: 10px;
+    @include font(medium);
 }

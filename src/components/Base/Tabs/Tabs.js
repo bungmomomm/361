@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import styles from './Tabs.scss';
 import classNames from 'classnames/bind';
-import Icon from '@/components/Icon';
 const cx = classNames.bind(styles);
+
+import Icon from '@/components/Icon';
+import Sprites from '@/components/Sprites';
 
 export default class Tabs extends Component {
 	constructor(props) {
@@ -37,7 +39,8 @@ export default class Tabs extends Component {
 
 	render() {
 		const classTabPanel = cx({
-			panel: true
+			panel: true,
+			stretch: !!this.props.stretch
 		});
 
 		const $Items = this.props.children.map(($panel) => {
@@ -51,7 +54,10 @@ export default class Tabs extends Component {
 			return $menu.push({
 				title: $panel.props.title,
 				icon: $panel.props.icon,
+				iconActive: $panel.props.iconActive,
 				children: $panel.props.children,
+				sprites: $panel.props.sprites,
+				spritesActive: $panel.props.spritesActive
 			});
 		});
 
@@ -68,7 +74,21 @@ export default class Tabs extends Component {
 									type='button'
 								>
 									{
-										tabTitle.icon ? <Icon name={tabTitle.icon} /> : null
+										tabTitle.icon ? <Icon 
+											name={
+												(this.state.tabActive === i && tabTitle.iconActive) ? 
+												tabTitle.iconActive : tabTitle.icon
+											}
+										/> : null
+									}
+									{
+										tabTitle.sprites ? 
+											<Sprites 
+												name={
+													(this.state.tabActive === i && tabTitle.spritesActive) ? 
+													tabTitle.spritesActive : tabTitle.sprites
+												}
+											/> : null
 									}
 									{tabTitle.title}
 								</button>

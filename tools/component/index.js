@@ -8,7 +8,6 @@ const componentsDir = './src/components';
 const createComponent = () => {
 	
 	return new Promise((resolve) => {
-
 		inquirer.prompt(
 			[
 				{
@@ -31,7 +30,6 @@ const createComponent = () => {
 				}
 			]
 		).then((res) => {
-			
 			const type = res.type;
 			const name = res.name;
 			const componentDirectory = `${componentsDir}/${name}/`;

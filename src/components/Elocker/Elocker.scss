@@ -1,0 +1,33 @@
+.eLockerList{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    background-color: #FAFAFA;
+    border: 1px solid #DEDEDE;
+    border-radius: 3px;
+    padding: 5px;
+    max-height: 344px;
+    overflow: auto;
+    margin-bottom: 15px;
+    > div{
+        width: 31.8%;
+        flex:0 1 auto;
+        display: block;
+        margin:5px;
+    }
+}
+
+.header{
+	display: flex;
+	margin-bottom: 15px;
+}
+
+.provinsiWrapper{
+	width: 300px;
+	display: block;
+}
+
+.kotaFilterWrapper{
+	flex:1;
+	padding-left: 20px;
+}

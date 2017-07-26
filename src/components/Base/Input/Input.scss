@@ -14,10 +14,7 @@
 
 .inputWrapper{
 	position: relative;
-	margin-bottom: 15px;
-	&:last-child{
-		margin-bottom: 0
-	}
+	width: 100%;
 }
 
 .input{
@@ -28,7 +25,7 @@
 	font-size: 12px;
 	color: #4A4A4A;
 	height: 35px;
-	padding: 0px 20px;
+	padding: 0px 15px;
 	display: flex;
 	width: 100%;
 	justify-content: space-between;
@@ -53,4 +50,26 @@
 
 .warning{
 	@include inputStyle(yellow);
+}
+
+.small{
+	height: 27px;
+}
+
+.medium{
+	height: 35px;
+}
+
+.large{
+	height: 45px;
+}
+
+.horizontal{
+	display: flex;
+	align-items: center;
+	label{
+		margin-bottom: 0px;
+		width: 40%;
+		display: block;
+	}
 }

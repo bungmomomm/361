@@ -1,0 +1,36 @@
+.InputGroup{
+	display: flex;
+	justify-content: flex-start;
+	width: 100%;
+	flex-direction: column;
+	&:not(:last-child) {
+		margin-bottom: 15px;
+	}
+}
+
+.addons{
+	flex-direction: row;
+	> *:not(:last-child) {
+		margin-right: -1px;
+	}
+	button, input, select, > div{
+		border-radius: 0px;
+	}
+	> *:first-child{
+		border-bottom-left-radius: 3px;
+    	border-top-left-radius: 3px;
+		button, input, select, > div{
+			border-bottom-left-radius: 3px;
+    		border-top-left-radius: 3px;
+		}
+	}
+
+	> *:last-child{
+		border-bottom-right-radius: 3px;
+    	border-top-right-radius: 3px;
+		button, input, select, > div{
+			border-bottom-right-radius: 3px;
+    		border-top-right-radius: 3px;
+		}
+	}
+}

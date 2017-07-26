@@ -63,5 +63,13 @@ $color: (
 			base: #AF9F74,
 			hover: darken(#AF9F74, 10%)
 		)
+	),
+	black: (
+		base: #4A4A4A,
+		hover: darken(#4A4A4A, 10%)
+	),
+	grey: (
+		base: #F5F5F5,
+		hover: darken(#F5F5F5, 10%)
 	)
 )

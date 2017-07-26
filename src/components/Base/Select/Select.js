@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
 import styles from './Select.scss';
+import classNames from 'classnames/bind';
+const cx = classNames.bind(styles);
+
 import Icon from '@/components/Icon';
 import Input from '../Input';
-import HotKey from 'react-shortcut';
+import newId from '@/utils/newId.js';
+
 
 export default class Select extends Component {
 	constructor(props) {
@@ -11,18 +15,22 @@ export default class Select extends Component {
 		this.state = {
 			options: this.props.options,
 			selectedLabel: this.props.selectedLabel ? this.props.selectedLabel : 'Please Select...',
-			elevatorState: 0,
 			showOption: false,
 			selected: {
 				value: '',
 				label: ''
 			}
 		};
-		this.handleFilter = this.handleFilter.bind(this);
-		this.handleToggleOptions = this.handleToggleOptions.bind(this);
+		this.getFilter = this.getFilter.bind(this);
+		this.setOptions = this.setOptions.bind(this);
+		this.handleBlur = this.handleBlur.bind(this);
 	}
 
-	handleFilter(event) {
+// ----------------------------------------
+// Getters
+// ----------------------------------------
+
+	getFilter(event) {
 		const filterValue = event.target.value.toUpperCase();
 		const filterData = this.props.options.map((option) => {
 			const filterLabel = option.label.toUpperCase();
@@ -30,100 +38,117 @@ export default class Select extends Component {
 		}).filter((option) => {
 			return option;
 		});
+		this.setFilterOption(filterData);
+	}
+
+	getSelected(key) {
+		return key === this.state.elevatorState ? styles.highlight : null;
+	}
+
+// ----------------------------------------
+// Setters
+// ----------------------------------------
+
+	setFilterOption(filterData) {
 		this.setState({
 			options: filterData
 		});
 	}
 
-	handleToggleOptions() {
+	setOptions() {
 		this.setState({
+			options: this.props.options,
 			showOption: !this.state.showOption
 		});
 	}
 
-	handleSelectOption(selected) {
+	setSelectOption(selected) {
+		this.setOptions();
 		this.setState({
 			selected,
 			selectedLabel: selected.label
 		});
-		this.handleToggleOptions();
 	}
 
-	checkSelected(key) {
-		return key === this.state.elevatorState ? styles.highlight : null;
+// ----------------------------------------
+// Component Event Handlers
+// ----------------------------------------
+
+	handleBlur(e) {
+		setTimeout(() => {
+			this.setState({
+				showOption: false
+			});
+		}, 150);
 	}
 
 	render() {
-		const elevator = (key, events) => {
-			switch (key[0]) {
-			case 'arrowdown':
-				if (this.state.elevatorState > this.state.elevatorState.length) {
-					this.setState({
-						elevatorState: this.state.elevatorState + 1
-					});
-				}
-				break;
+		const idFor = newId();
 
-			case 'arrowup':
-				if (this.state.elevatorState > 0) {
-					this.setState({
-						elevatorState: this.state.elevatorState - 1
-					});
-				}
-				break;
-				
-			default:
-				break;
-			}
-		};
+		const SelectWrapper = cx({
+			Select: true,
+			horizontal: !!this.props.horizontal,
+			required: !!this.props.required
+		});
+
 		return (
-			<div className={styles.Select}>
-				<button 
-					type='button' 
-					onClick={this.handleToggleOptions} 
-					className={styles.previewLabel}
-				>
-					{this.state.selectedLabel}
-					<Icon name={this.state.showOption ? 'sort-asc' : 'sort-desc'} />
-				</button>
-				{
-					this.state.showOption ? (
-						<div className={styles.listData}>
-							<div className={styles.quickFilter}>
+			<div className={SelectWrapper} onBlur={this.handleBlur}>
+				{ this.props.label ? <label htmlFor={idFor}>{this.props.label}{this.props.required ? ' *' : null}</label> : null } 
+				<div className={styles.selectedContainer}>
+					<button 
+						type='button' 
+						id={idFor}
+						onClick={this.setOptions} 
+						className={styles.previewLabel}
+					>	
+						<div className={styles.text}>
+							{this.state.selectedLabel}
+							{
+								this.state.selected.imagePath ? <img src={this.state.selected.imagePath} alt='logo' /> : null
+							}
+						</div>
+						<Icon name={this.state.showOption ? 'sort-asc' : 'sort-desc'} />
+					</button>
+					<div className={this.state.showOption ? `${styles.listData} ${styles.shown}` : styles.listData}>
+						{
+							this.props.filter ? <div className={styles.quickFilter}>
 								<Input 
 									type='text' 
 									name='quickfilter' 
-									onChange={this.handleFilter} 
-									placeholder='quick filter' 
+									onChange={this.getFilter} 
+									placeholder='Quick Search' 
 								/>
-							</div>
-							<div className={styles.overflow}>
-								<HotKey
-									keys={['arrowdown']}
-									simultaneous
-									onKeysCoincide={elevator}
-								/>
-								<HotKey
-									keys={['arrowup']}
-									simultaneous
-									onKeysCoincide={elevator}
-								/>
-								{
-									this.state.options.map((option, i) => (
-										<button 
-											className={option.value === this.state.selected.value ? styles.selected : null} 
-											onClick={() => this.handleSelectOption(option)} 
-											type='button'
-											key={i}
-										>
+							</div> : null
+						}
+						
+						<div className={styles.overflow}>
+							{
+								this.state.options.map((option, i) => (
+									<button 
+										className={option.value === this.state.selected.value ? styles.selected : null} 
+										onClick={() => this.setSelectOption(option)} 
+										disabled={!!option.disabled}
+										type='button'
+										key={i}
+									>
+										<div className={styles.text}>
 											{option.label}
-										</button>
-									))
-								}
-							</div>
+											{
+												option.imagePath ? <img src={option.imagePath} alt='logo' /> : null
+											}
+										</div>
+										{
+											option.info ? <div className={styles.info}>{option.info}</div> : null
+										}
+										{
+											option.message ? <div className={styles.message}>{option.message}</div> : null
+										}
+									</button>
+								))
+							}
 						</div>
-					) : null
-				}
+					</div>
+				</div>
 			</div>
 		);
 	}

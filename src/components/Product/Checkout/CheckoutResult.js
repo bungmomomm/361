@@ -1,10 +1,18 @@
 import React from 'react';
 import styles from './CheckoutResult.scss';
 
+import Sprites from '@/components/Sprites';
+
 export default (props) => {
 	return (
 		<div className={styles.footer}>
-			<div className={styles.deliveryInfo}>Pengiriman akan dilakukan 5-8 hari kerja</div>
+			{
+				props.gosend ? 
+					<div className={styles.deliveryInfo}>Pengiriman: &nbsp; <Sprites name='gosend' /></div>
+					:
+					<div className={styles.deliveryInfo}>Pengiriman akan dilakukan 5-8 hari kerja</div>
+			}
+			
 			<div className={styles.price}>
 				<div className={styles.priceList}>
 					<div className={styles.label}>Biaya Pengiriman</div>
