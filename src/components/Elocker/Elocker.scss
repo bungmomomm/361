@@ -1,11 +1,15 @@
+@import 'mixins';
+@import 'variables';
+
 .eLockerList{
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
     background-color: #FAFAFA;
-    border: 1px solid #DEDEDE;
-    border-radius: 3px;
+    border: 1px solid border(color);
+    border-radius: border(radius);
     padding: 5px;
+    min-height: 344px;
     max-height: 344px;
     overflow: auto;
     margin-bottom: 15px;
@@ -14,6 +18,7 @@
         flex:0 1 auto;
         display: block;
         margin:5px;
+        height: rem(145px);
     }
 }
 

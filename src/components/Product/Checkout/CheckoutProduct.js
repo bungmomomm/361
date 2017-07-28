@@ -28,7 +28,7 @@ export default (props) => {
 			</div>
 			<div className={styles.body}>
 				<div className={styles.bodyLeft}>
-					<Button clean icon='trash-o' font='lightGrey' text='Hapus' />
+					<Button clean size='small' icon='trash-o' font='lightGrey' text='Hapus' />
 				</div>
 				<div className={styles.bodyRight}>
 					<div><strong>Keterangan:</strong></div>

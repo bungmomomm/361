@@ -1,3 +1,6 @@
+@import 'mixins';
+@import 'variables';
+
 .col{
     padding:0px 10px;
     flex-basis: 0;
@@ -10,10 +13,11 @@
 
 @for $i from 1 through 12 {
     &.col-#{$i} {
-        display: block;
-        flex:none;
         padding:0px 10px;
         min-height: 1px;
         width: 100% / 12 * $i;
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
     }
 }

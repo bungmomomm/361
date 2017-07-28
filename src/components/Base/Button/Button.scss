@@ -30,24 +30,22 @@
 
 .button{
 	vertical-align: middle;
-	display: inline-flex;
 	align-items: center;
-	border-radius: 3px;
+	border-radius: border(radius);
 	box-shadow: none;
-	position: relative;
-	vertical-align: top;
 	justify-content: center;
 	text-align: center;
     white-space: nowrap;
 	transition: all 0.2s ease;
-	font-size: 12px;
+	font-size: rem(12px);
 	line-height: 1;
-	height: 35px;
-	padding: 0px 10px;
+	height: rem(35px);
+	padding: 0rem rem(10px);
+	color: #fff;
 	@include font(medium);
 	i{
-		margin-right: 5px;
-		margin-top: -2px;
+		margin-right: rem(5px);
+		margin-top: rem(-2px);
 	}
 }
 
@@ -57,29 +55,25 @@
 }
 
 .primary{
-	color: #fff;
 	@include buttonStyle(red);
 }
 
 .success{
-	color: #fff;
 	@include buttonStyle(green);
 }
 
 .warning{
-	color: #fff;
 	@include buttonStyle(yellow);
 }	
 
 .dark{
-	color: #fff;
 	@include buttonStyle(black);
 }
 
 .grey{
-	color: #7F7F7F;
-	@include buttonStyle(grey);
-	border-color: #DEDEDE;
+	color: color(grey);
+	@include buttonStyle(gainsboro);
+	border-color: border(color);
 }
 
 .loading{
@@ -87,17 +81,15 @@
 	color: transparent;
 	opacity: 0.8;
 	&:after {
+		content: "";
 		animation: spin 500ms infinite linear;
 		border: 2px solid #fff;
-		border-radius: 290486px;
+		border-radius: 50%;
 		border-right-color: transparent;
 		border-top-color: transparent;
-		content: "";
 		display: block;
-		height: 1em;
-		position: relative;
-		width: 1em;
-		position: absolute;
+		height: rem(12px);
+		width: rem(12px);
 		left: calc(50% - (14px / 2));
 		top: calc(50% - (14px / 2));
 		position: absolute;
@@ -106,49 +98,50 @@
 
 
 .block{
-	display: flex;
+	display: block;
 	width: 100%;
 }
 
 .orange{
-	color: #F57E24;
+	color: color(orange);
 }
 
 .clean{
 	padding: 0px;
-	font-size: 12px;
+	font-size: rem(12px);
 	height: auto;
+	@include font(normal);
 }
 
 .lightGrey{
-	color: #C5C5C5;
+	color: color(lightgray);
 	&:hover{
-		color: #4A4A4A;
+		color: color(black);
 	}
 }
 
 .small{
-	height: 27px;
-	font-size: 10px;
+	height: rem(27px);
+	font-size: rem(10px);
 	i{
-		font-size: 12px;
+		font-size: rem(12px);
 	}
 }
 
 .medium{
-	height: 35px;
+	height: rem(35px);
 }
 
 .large{
-	height: 37px;
-	font-size: 15px;
+	height: rem(37px);
+	font-size: rem(15px);
 	i{
-		font-size: 18px;
+		font-size: rem(18px);
 	}
 }
 
 .iconRight{
 	i{
-		margin-left: 5px;
+		margin-left: rem(5px);
 	}
 }

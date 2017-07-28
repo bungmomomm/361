@@ -5,7 +5,7 @@ import Routes from '@/router';
 
 export default (props) => {
 	return (
-		<div>
+		<main>
 			<Helmet
 				meta={[
 					{
@@ -24,10 +24,8 @@ export default (props) => {
 						content: 'Lorem ipsum'
 					}
 				]}
-			/>
-			<main>		
-				<Routes />
-			</main>
-		</div>
+			/>		
+			<Routes />
+		</main>
 	);
 };

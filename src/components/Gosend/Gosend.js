@@ -1,18 +1,19 @@
 import React from 'react';
 import styles from './Gosend.scss';
 import classNames from 'classnames/bind';
-import { Button, Alert } from '@/components/Base';
+import { Input, Button, Alert } from '@/components/Base';
 import Icon from '@/components/Icon';
 import GoogleMap from 'google-map-react';
 
 const cx = classNames.bind(styles);
 
-const AnyReactComponent = ({ text }) => <div>{text}</div>;
-
 export default (props) => {
 	const gosendClass = cx({
 		Gosend: true
 	});
+
+	const Marker = ({ text }) => <div>{text}</div>;
+
 	return (
 		<div className={gosendClass}>
 			<div className={styles.header}>
@@ -23,17 +24,19 @@ export default (props) => {
 			</div>
 			<div><small><em>(Optional)</em></small></div>
 			<div className={styles.googleMap}>
+				<Input placeholder='Search Address' />
 				<GoogleMap
 					bootstrapURLKeys={{ key: 'AIzaSyDi3S2lVNeA-V8N0QXFqtLLY4rTo2ay-OQ' }}
 					defaultCenter={
 						{ lat: 59.95, lng: 30.33 }
 					}
 					options={{
-						scrollwheel: false
+						scrollwheel: false,
+						draggable: true
 					}}
 					defaultZoom={11}
 				>
-					<AnyReactComponent
+					<Marker
 						lat={59.955413}
 						lng={30.337844}
 						text={'Kreyser Avrora'}

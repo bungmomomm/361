@@ -44,7 +44,7 @@ export default class Modal extends Component {
 							<Icon name='times' />
 						</button>
 					</div>
-					<div className={styles.overlay} />
+					<div onClick={this.handleClose} aria-pressed='false' tabIndex='0' role='button' className={styles.overlay} />
 				</div>
 			) : null
 		);

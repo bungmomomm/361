@@ -1,47 +1,3 @@
-export const ElockerList = [
-	{
-		id: 1,
-		name: 'E-Locker Apartemen Mediterania Garden',
-		location: 'Alamat: Apartemen Mediterannia Garden Residences 1 Tower Azalea (Dekat Alfamart) Jl. Tanjung Duren Raya,  Grogol Pertamburan , Jakarta Barat 11470 Telp:',
-		city: 'jakarta barat'
-	}, {
-		id: 2,
-		name: 'E-Locker Apartemen Mediterania Garden',
-		location: 'Alamat: Apartemen Mediterannia Garden Residences 1 Tower Azalea (Dekat Alfamart) Jl. Tanjung Duren Raya,  Grogol Pertamburan , Jakarta Barat 11470 Telp:',
-		city: 'jakarta barat'
-	}, {
-		id: 3,
-		name: 'E-Locker Apartemen Mediterania Garden',
-		location: 'Alamat: Apartemen Mediterannia Garden Residences 1 Tower Azalea (Dekat Alfamart) Jl. Tanjung Duren Raya,  Grogol Pertamburan , Jakarta Barat 11470 Telp:',
-		city: 'jakarta barat'
-	}, {
-		id: 4,
-		name: 'E-Locker Apartemen Mediterania Garden',
-		location: 'Alamat: Apartemen Mediterannia Garden Residences 1 Tower Azalea (Dekat Alfamart) Jl. Tanjung Duren Raya,  Grogol Pertamburan , Jakarta Barat 11470 Telp:',
-		city: 'jakarta barat'
-	}, {
-		id: 5,
-		name: 'E-Locker Apartemen Mediterania Garden',
-		location: 'Alamat: Apartemen Mediterannia Garden Residences 1 Tower Azalea (Dekat Alfamart) Jl. Tanjung Duren Raya,  Grogol Pertamburan , Jakarta Barat 11470 Telp:',
-		city: 'jakarta barat'
-	}, {
-		id: 6,
-		name: 'E-Locker Apartemen Mediterania Garden',
-		location: 'Alamat: Apartemen Mediterannia Garden Residences 1 Tower Azalea (Dekat Alfamart) Jl. Tanjung Duren Raya,  Grogol Pertamburan , Jakarta Barat 11470 Telp:',
-		city: 'jakarta barat'
-	}, {
-		id: 7,
-		name: 'E-Locker Apartemen Mediterania Garden',
-		location: 'Alamat: Apartemen Mediterannia Garden Residences 1 Tower Azalea (Dekat Alfamart) Jl. Tanjung Duren Raya,  Grogol Pertamburan , Jakarta Barat 11470 Telp:',
-		city: 'jakarta barat'
-	}, {
-		id: 8,
-		name: 'E-Locker Apartemen Mediterania Garden',
-		location: 'Alamat: Apartemen Mediterannia Garden Residences 1 Tower Azalea (Dekat Alfamart) Jl. Tanjung Duren Raya,  Grogol Pertamburan , Jakarta Barat 11470 Telp:',
-		city: 'jakarta barat'
-	}
-];
-
 export const CheckoutList = [
 	{
 		store: {
@@ -111,6 +67,59 @@ export const Address = [
 	}
 ];
 
+export const ElockerList = [
+	{
+		value: 1,
+		selected: true,
+		label: 'E-Locker Apartemen Mediterania Garden',
+		info: 'Alamat: Apartemen Mediterannia Garden Residences 1 Tower Azalea (Dekat Alfamart) Jl. Tanjung Duren Raya,  Grogol Pertamburan , Jakarta Barat 11470 Telp:',
+		city: 'petamburan',
+		province: 'jakarta'
+	}, {
+		value: 2,
+		label: 'E-Locker Apartemen Mediterania Garden',
+		info: 'Alamat: Apartemen Mediterannia Garden Residences 1 Tower Azalea (Dekat Alfamart) Jl. Tanjung Duren Raya,  Grogol Pertamburan , Jakarta Barat 11470 Telp:',
+		city: 'Grogol',
+		province: 'jakarta'
+	}, {
+		value: 3,
+		label: 'E-Locker Apartemen Mediterania Garden',
+		info: 'Alamat: Apartemen Mediterannia Garden Residences 1 Tower Azalea (Dekat Alfamart) Jl. Tanjung Duren Raya,  Grogol Pertamburan , Jakarta Barat 11470 Telp:',
+		city: 'Grogol',
+		province: 'jakarta'
+	}, {
+		value: 4,
+		label: 'E-Locker Apartemen Mediterania Garden',
+		info: 'Alamat: Apartemen Mediterannia Garden Residences 1 Tower Azalea (Dekat Alfamart) Jl. Tanjung Duren Raya,  Grogol Pertamburan , Jakarta Barat 11470 Telp:',
+		city: 'tanjung duren',
+		province: 'jakarta'
+	}, {
+		value: 5,
+		label: 'E-Locker Apartemen Mediterania Garden',
+		info: 'Alamat: Apartemen Mediterannia Garden Residences 1 Tower Azalea (Dekat Alfamart) Jl. Tanjung Duren Raya,  Grogol Pertamburan , Jakarta Barat 11470 Telp:',
+		city: 'Grogol',
+		province: 'jakarta'
+	}, {
+		value: 6,
+		label: 'E-Locker Apartemen Mediterania Garden',
+		info: 'Alamat: Apartemen Mediterannia Garden Residences 1 Tower Azalea (Dekat Alfamart) Jl. Tanjung Duren Raya,  Grogol Pertamburan , Jakarta Barat 11470 Telp:',
+		city: 'Grogol',
+		province: 'jakarta'
+	}, {
+		value: 7,
+		label: 'E-Locker Apartemen Mediterania Garden',
+		info: 'Alamat: Apartemen Mediterannia Garden Residences 1 Tower Azalea (Dekat Alfamart) Jl. Tanjung Duren Raya,  Grogol Pertamburan , Jakarta Barat 11470 Telp:',
+		city: 'Grogol',
+		province: 'jakarta'
+	}, {
+		value: 8,
+		label: 'E-Locker Apartemen Mediterania Garden',
+		info: 'Alamat: Apartemen Mediterannia Garden Residences 1 Tower Azalea (Dekat Alfamart) Jl. Tanjung Duren Raya,  Grogol Pertamburan , Jakarta Barat 11470 Telp:',
+		city: 'Grogol',
+		province: 'jakarta'
+	}
+];
+
 export const CreditCard = [
 	{
 		value: 1,
@@ -175,7 +184,7 @@ export const Provinsi = [
 		value: '5'
 	}, {
 		label: 'DKI Jakarta', 
-		value: '6'
+		value: 'jakarta'
 	}, {
 		label: 'Gorontalo', 
 		value: '7'

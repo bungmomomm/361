@@ -1,10 +1,13 @@
+@import 'mixins';
+@import 'variables';
+
 .checkboxWrapper{
 	position: relative;
 	cursor: pointer;
 	display: flex;
     align-items: center;
 	line-height: 1;
-	margin-bottom: 15px;
+	margin-bottom: rem(15px);
 	&:last-child{
 		margin-bottom: 0;
 	}
@@ -18,8 +21,8 @@
 }
 
 .Checkbox:checked + .checkboxInput{
-	background-color: #4a4a4a;
-	border-color: #4a4a4a;
+	background-color: color(black);
+	border-color: color(black);
 	&:after{
 		content: "";
 		position: absolute;
@@ -35,12 +38,12 @@
 }
 
 .checkboxInput{
-	width: 13px;
-    height: 13px;
+	width: rem(13px);
+    height: rem(13px);
     display: inline-block;
     vertical-align: middle;
-	margin-right: 10px;
-    border-radius: 3px;
+	margin-right: rem(10px);
+    border-radius: border(radius);
     border: 1px solid #c5c5c5;
     position: relative;
     background-color: #fff;

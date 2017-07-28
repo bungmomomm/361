@@ -1,3 +1,15 @@
+// <html> and <body> font sizes
+$html-font-size: 62.5%;
+$body-font-size: 12px;
+$em-base: 16;
+
+// Multiplier for REM Mixin
+// It needs to stay the same size as <html> font size, but in pixels
+$base-font-size: 10px !default;
+
+// Whether to output fallback values in px when outputting rems.
+$rem-with-px-fallback: false !default;
+
 $typography: (
 	font-family: (
 		normal: (
@@ -68,8 +80,27 @@ $color: (
 		base: #4A4A4A,
 		hover: darken(#4A4A4A, 10%)
 	),
-	grey: (
+	gainsboro: (
 		base: #F5F5F5,
 		hover: darken(#F5F5F5, 10%)
+	),
+	lightgray: (
+		base: #C5C5C5,
+		hover: darken(#C5C5C5, 10%)
+	),
+	grey: (
+		base: #7F7F7F,
+		hover: darken(#7F7F7F, 10%)
 	)
-)
+);
+
+$border: (
+	radius: (
+		base: 4px,
+		small: 3px
+	),
+	color: (
+		base: #DEDEDE,
+		hover: #C5C5C5
+	)
+);

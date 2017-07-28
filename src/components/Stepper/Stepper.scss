@@ -3,9 +3,9 @@
 
 .Stepper{
     position: relative;
-    border: 1px solid #DEDEDE;
+    border: 1px solid border(color);
     display: flex;
-    border-radius: 4px;
+    border-radius: border(radius);
     input{
         height: 28px;
         width: 50px;
@@ -18,15 +18,18 @@
     button{
         height: 30px;
         background: #EBEBEB;
-        border: 1px solid #DEDEDE;
+        border: 1px solid border(color);
         width: 24px;
         font-size: 10px;
         margin: -1px;
-        border-radius: 4px;
+        border-radius: border(radius);
         top: 0px;
+        position: relative;
+        z-index: 1;
         &:disabled{
             background: #FAFAFA;
             cursor: not-allowed;
+            opacity: 1;
         }
     }
     .minus{
@@ -44,6 +47,7 @@
 .stockLeft{
     position: absolute;
     bottom: -19px;
+    right: 0px;
     text-align: right;
     width: 100%;
     font-size: 10px;

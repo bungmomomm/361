@@ -12,7 +12,7 @@ import Gosend from '@/components/Gosend';
 import Elocker from '@/components/Elocker';
 
 // Dummy Data
-import { Provinsi, CheckoutList, Address, PaymentOptions, CreditCard } from '@/data';
+import { Provinsi, CheckoutList, Address, PaymentOptions, CreditCard, ElockerList } from '@/data';
 
 export default class Checkout extends Component {
 	constructor(props) {
@@ -31,7 +31,7 @@ export default class Checkout extends Component {
 
 	render() {
 		return (
-			<div>
+			<div className='page'>
 				<Helmet title='Checkout' />
 				<CheckoutHeader />
 				<div className={styles.checkout}>
@@ -61,19 +61,46 @@ export default class Checkout extends Component {
 												</p> 
 												<Button clean type='button' font='orange' icon='pencil' text='Ubah Alamat ini' />
 											</Box>
-											<Box>
+											<Box accordion>
 												<Checkbox text='Kirim sebagai Dropshipper' />
+												<Box.Accordion>
+													<InputGroup>
+														<Input type='text' placeholder='Nama Dropshipper' />
+													</InputGroup>
+													<InputGroup>
+														<Input type='number' placeholder='No Handphone' />
+													</InputGroup>
+												</Box.Accordion>
 											</Box>
 											<Button onClick={() => this.handleModalAddress} text='Masukan Alamat Pengiriman' dark block size='large' iconRight icon='angle-right' />
 										</div>
 									</Tabs.Panel>
 									<Tabs.Panel title='Ambil Di Toko/E-locker (O2O)' sprites='o2o-off' spritesActive='o2o-on'>
-										<h2>asdasdasd</h2>
+										<div>
+											<Alert alignCenter warning>
+												Maksimum 2 kg perorder untuk Ambil di Toko. Pesanan diatas 2 kg akan langsung dikirimkan ke Alamat Anda.
+											</Alert>
+											<Box>
+												<InputGroup>
+													<Select filter selectedLabel='-- Pilih Alamat E-Locker' options={ElockerList} />
+												</InputGroup>
+												<Level>
+													<Level.Left><strong>E-Locker Family Mart Kelapa Gading &nbsp; <Icon name='map-marker' /></strong></Level.Left>
+												</Level>
+												<p>
+													Family Mart Kelapa Gading Lt.2 <br />
+													Jl. Boulevard Barat Blok XC No.7 <br />
+													Kelapa Gading, Jakarta Utara 12420 <br />
+													Telp:
+												</p>
+											</Box>
+											<p className='font-red'>Satu atau lebih produk dalam keranjang belanja anda tidak menyediakan layanan Ambil di Toko / Elocker (O2O)</p>
+										</div>
 									</Tabs.Panel>
 								</Tabs>
 							</Col>
 							<Col grid={4}>
-								<div className={styles.title}>2. Rincian Pesanan & Pengiriman</div>
+								<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>(5 items)</span></div>
 								<Card stretch>
 									<div className={styles.overflow}>
 										{
@@ -94,7 +121,7 @@ export default class Checkout extends Component {
 							<Col grid={4}>
 								<div className={styles.title}>3. Pembayaran</div>
 								<Card>
-									<div>
+									<div className={styles.overflow}>
 										<Level>
 											<Level.Left>Subtotal</Level.Left>
 											<Level.Right>Rp 22.500.000</Level.Right>
@@ -104,18 +131,28 @@ export default class Checkout extends Component {
 											<Level.Right>Rp 15.000</Level.Right>
 										</Level>
 										<Level>
-											<Level.Left>Discount Biaya Pengiriman</Level.Left>
-											<Level.Right>-Rp 30.000</Level.Right>
+											<Level.Left>
+												<div className='font-green'>Discount Biaya Pengiriman</div>
+											</Level.Left>
+											<Level.Right>
+												<div className='font-green'>-Rp 30.000</div>
+											</Level.Right>
 										</Level>
 										<Level>
 											<Level.Left>Kode Voucher</Level.Left>
 											<Level.Right>
-												<form onSubmit={() => console.log('submit')}>
-													<InputGroup addons>
-														<Input size='small' />
-														<Button size='small' success text='CEK' />
-													</InputGroup>
-												</form>
+												<InputGroup addons>
+													<Input size='small' />
+													<Button size='small' success text='CEK' />
+												</InputGroup>
+											</Level.Right>
+										</Level>
+										<Level>
+											<Level.Left>Kode Voucher</Level.Left>
+											<Level.Right>
+												<InputGroup>
+													<Input size='small' error message='kode voucher salah' />
+												</InputGroup>
 											</Level.Right>
 										</Level>
 										<div className={styles.CheckoutTitle}>
@@ -126,7 +163,7 @@ export default class Checkout extends Component {
 												</Level.Right>
 											</Level>
 										</div>
-										<form>
+										<form className={styles.hasCheckoutAction}>
 											<p>Pilih Metode Pembayaran</p>
 											<InputGroup>
 												<Select selectedLabel='-- Pilih Metode Lain' options={PaymentOptions} />
@@ -147,7 +184,7 @@ export default class Checkout extends Component {
 						</Row>
 					</Container>
 				</div>
-				<Modal>
+				<Modal shown>
 					<Modal.Header>
 						<div>Buat Alamat Baru</div>
 					</Modal.Header>
@@ -226,12 +263,20 @@ export default class Checkout extends Component {
 							<Alert warning>
 								<small>
 									<em>
-									Harap tidak mengisi alamat pickup point O2O tanpa melalui pilihan menu Ambil di Toko
-									(O2O). Kami tidak bertanggung jawab bila terjadi kehirlangan
+										Harap tidak mengisi alamat pickup point O2O tanpa melalui pilihan menu Ambil di Toko
+										(O2O). Kami tidak bertanggung jawab bila terjadi kehirlangan
 									</em>
 								</small>
 							</Alert>
 							<Gosend />
+							<Box row>
+								<Icon name='map-marker' />
+								<div>Jalan Bangka II No.20, Pela Mampang, 
+								Mampang Prapatan, Kota Jakarta Selatan, 
+								DKI jakarta 12720</div>
+								<button className='font-small font-orange'>Ganti Lokasi</button>
+							</Box>
+							<p className='font-small font-orange'>Lokasi peta harus sesuai dengan alamat pengiriman. Lokasi diperlukan jika ingin menggunakan jasa pengiriman GO-SEND.</p>
 						</div>
 					</Modal.Body>
 					<Modal.Footer>
@@ -246,13 +291,20 @@ export default class Checkout extends Component {
 					</Modal.Footer>
 				</Modal>
 
-				<Modal large shown>
+				<Modal large >
 					<Modal.Header>
 						Pilih Lokasi E-Locker (O2O)
 					</Modal.Header>
 					<Modal.Body>
 						<Elocker />
 					</Modal.Body>
+					<Modal.Footer>
+						<Level>
+							<Level.Right>
+								<Button text='Pilih E-Locker (O2O)' dark />
+							</Level.Right>
+						</Level>
+					</Modal.Footer>
 				</Modal>
 			</div>
 		);

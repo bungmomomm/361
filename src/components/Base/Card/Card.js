@@ -12,7 +12,8 @@ export default class Card extends Component {
 	render() {
 		const cardClass = cx({
 			card: true,
-			radius: !!this.props.radius
+			radius: !!this.props.radius,
+			selected: !!this.props.selected
 		});
 		return (
 			<div className={cardClass}>

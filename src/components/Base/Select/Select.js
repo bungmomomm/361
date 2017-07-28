@@ -68,6 +68,9 @@ export default class Select extends Component {
 			selected,
 			selectedLabel: selected.label
 		});
+		if (this.props.onChange) {
+			this.props.onChange(selected);
+		}
 	}
 
 // ----------------------------------------

@@ -1,3 +1,5 @@
+@import 'mixins';
+@import 'variables';
 
 .footer{
     .price{
@@ -11,7 +13,7 @@
 .deliveryInfo{
     font-family: HelveticaNeueLTStd-Md;
     font-size: 11px;
-    color: #4A4A4A;
+    color: color(black);
     letter-spacing: 0;
     padding: 10px 20px;
     border-top: 1px solid #DEDEDE;
@@ -23,7 +25,7 @@
     justify-content: space-between;
     font-family: HelveticaNeueLTStd-Roman;
     font-size: 11px;
-    color: #4A4A4A;
+    color: color(black);
     letter-spacing: 0;
     line-height: 14px;
     margin-bottom: 5px;
@@ -39,7 +41,7 @@
     margin-bottom: 5px;
     font-family: HelveticaNeueLTStd-Bd;
     font-size: 12px;
-    color: #4A4A4A;
+    color: color(black);
     letter-spacing: 0;
     &:last-child{
         margin-bottom: 0px;

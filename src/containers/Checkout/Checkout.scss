@@ -3,17 +3,25 @@
 
 .checkout{
     position: relative;
-    margin-top: 60px;
+    padding-top: 60px;
+    padding-bottom: 20px;   
+    height: 100%;
 }
 
 .title{
-    font-family: HelveticaNeueLTStd-Bd;
+    @include font(bold);
     font-size: 12px;
     color: #4A4A4A;
     margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    span{
+        @include font(normal);
+    }
 }
 
 .overflow{
+    display: block;
     overflow-y:auto;
     margin-right: -15px;
     padding-right: 15px;
@@ -27,6 +35,10 @@
     bottom: 0px;
     left: 0px;
     background: #fff;
+}
+
+.hasCheckoutAction{
+    padding-bottom: rem(90px);
 }
 
 .CheckoutTitle{

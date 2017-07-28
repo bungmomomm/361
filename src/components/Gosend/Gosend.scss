@@ -13,16 +13,25 @@
 }
 
 .googleMap{
-	height: 220px;
+	height: 300px;
 	width: 100%;
-	margin: 15px 0px;
+	margin-top: 15px;
+	display: flex;
+	flex-direction: column;
 }
 
 .mapLocationName{
 	background: #FFFFFF;
 	padding: 5px 10px;
 	border: 1px solid #DEDEDE;
-	border-bottom-left-radius: 3px;
-	border-bottom-right-radius: 3px;
+	border-bottom-left-radius: border(radius);
+	border-bottom-right-radius: border(radius);
 	margin-bottom: 15px;
+}
+
+.marker{
+	background: red;
+	display: block;
+	position: relative;
+	z-index: 10;
 }
