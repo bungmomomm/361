@@ -41,61 +41,57 @@ export default class Checkout extends Component {
 								<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
 								<Tabs tabActive={0} stretch>
 									<Tabs.Panel title='Kirim ke Alamat' sprites='truck-off' spritesActive='truck-on'>
-										<div>
-											<Alert alignCenter close warning>
-												Gratis ongkos kirim hingga Rp 15,000 untuk minimal pembelian sebesar Rp 100,000
-											</Alert>
-											<Box>
+										<Alert alignCenter close warning>
+											Gratis ongkos kirim hingga Rp 15,000 untuk minimal pembelian sebesar Rp 100,000
+										</Alert>
+										<Box>
+											<InputGroup>
+												<Select filter selectedLabel='-- Pilih Alamat Lainnya' options={Address} />
+											</InputGroup>
+											<Level>
+												<Level.Left><strong>Rumah Bangka</strong></Level.Left>
+												<Level.Right><Icon name='map-marker' /> &nbsp; Lokasi Sudah Ditandai</Level.Right>
+											</Level>
+											<p>
+												Aufar Syahdan <br />
+												The Residence B10 - 9 <br />
+												Jl. Bangka II, Mampang Prapatan, Jakarta Selatan, DKI Jakarta 12720 <br />
+												P: 08568052187
+											</p> 
+											<Button clean type='button' font='orange' icon='pencil' text='Ubah Alamat ini' />
+										</Box>
+										<Box accordion>
+											<Checkbox text='Kirim sebagai Dropshipper' />
+											<Box.Accordion>
 												<InputGroup>
-													<Select filter selectedLabel='-- Pilih Alamat Lainnya' options={Address} />
+													<Input type='text' placeholder='Nama Dropshipper' />
 												</InputGroup>
-												<Level>
-													<Level.Left><strong>Rumah Bangka</strong></Level.Left>
-													<Level.Right><Icon name='map-marker' /> &nbsp; Lokasi Sudah Ditandai</Level.Right>
-												</Level>
-												<p>
-													Aufar Syahdan <br />
-													The Residence B10 - 9 <br />
-													Jl. Bangka II, Mampang Prapatan, Jakarta Selatan, DKI Jakarta 12720 <br />
-													P: 08568052187
-												</p> 
-												<Button clean type='button' font='orange' icon='pencil' text='Ubah Alamat ini' />
-											</Box>
-											<Box accordion>
-												<Checkbox text='Kirim sebagai Dropshipper' />
-												<Box.Accordion>
-													<InputGroup>
-														<Input type='text' placeholder='Nama Dropshipper' />
-													</InputGroup>
-													<InputGroup>
-														<Input type='number' placeholder='No Handphone' />
-													</InputGroup>
-												</Box.Accordion>
-											</Box>
-											<Button onClick={() => this.handleModalAddress} text='Masukan Alamat Pengiriman' dark block size='large' iconRight icon='angle-right' />
-										</div>
+												<InputGroup>
+													<Input type='number' placeholder='No Handphone' />
+												</InputGroup>
+											</Box.Accordion>
+										</Box>
+										<Button onClick={() => this.handleModalAddress} text='Masukan Alamat Pengiriman' dark block size='large' iconRight icon='angle-right' />
 									</Tabs.Panel>
 									<Tabs.Panel title='Ambil Di Toko/E-locker (O2O)' sprites='o2o-off' spritesActive='o2o-on'>
-										<div>
-											<Alert alignCenter warning>
-												Maksimum 2 kg perorder untuk Ambil di Toko. Pesanan diatas 2 kg akan langsung dikirimkan ke Alamat Anda.
-											</Alert>
-											<Box>
-												<InputGroup>
-													<Select filter selectedLabel='-- Pilih Alamat E-Locker' options={ElockerList} />
-												</InputGroup>
-												<Level>
-													<Level.Left><strong>E-Locker Family Mart Kelapa Gading &nbsp; <Icon name='map-marker' /></strong></Level.Left>
-												</Level>
-												<p>
-													Family Mart Kelapa Gading Lt.2 <br />
-													Jl. Boulevard Barat Blok XC No.7 <br />
-													Kelapa Gading, Jakarta Utara 12420 <br />
-													Telp:
-												</p>
-											</Box>
-											<p className='font-red'>Satu atau lebih produk dalam keranjang belanja anda tidak menyediakan layanan Ambil di Toko / Elocker (O2O)</p>
-										</div>
+										<Alert alignCenter warning>
+											Maksimum 2 kg perorder untuk Ambil di Toko. Pesanan diatas 2 kg akan langsung dikirimkan ke Alamat Anda.
+										</Alert>
+										<Box>
+											<InputGroup>
+												<Select filter selectedLabel='-- Pilih Alamat E-Locker' options={ElockerList} />
+											</InputGroup>
+											<Level>
+												<Level.Left><strong>E-Locker Family Mart Kelapa Gading &nbsp; <Icon name='map-marker' /></strong></Level.Left>
+											</Level>
+											<p>
+												Family Mart Kelapa Gading Lt.2 <br />
+												Jl. Boulevard Barat Blok XC No.7 <br />
+												Kelapa Gading, Jakarta Utara 12420 <br />
+												Telp:
+											</p>
+										</Box>
+										<p className='font-red'>Satu atau lebih produk dalam keranjang belanja anda tidak menyediakan layanan Ambil di Toko / Elocker (O2O)</p>
 									</Tabs.Panel>
 								</Tabs>
 							</Col>
@@ -184,7 +180,7 @@ export default class Checkout extends Component {
 						</Row>
 					</Container>
 				</div>
-				<Modal shown>
+				<Modal>
 					<Modal.Header>
 						<div>Buat Alamat Baru</div>
 					</Modal.Header>

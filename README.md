@@ -1,4 +1,4 @@
-# Isomorphic React Redux Front End Matahariall Compoenents
+# Isomorphic React Redux Front End MatahariMall Components
 
 * Webpack v3
 * HMR (also for reducers) in development mode
@@ -46,6 +46,12 @@ Run build server and client ( SSR and Styled Components Active )
 
 ```
 npm run build
+```
+
+Run build Static ( CSS Modules and PWA )
+
+```
+npm run build-static
 ```
 
 ### Start 

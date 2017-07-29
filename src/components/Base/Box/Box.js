@@ -15,9 +15,11 @@ export default class Box extends Component {
 	}
 
 	handleToggle() {
-		this.setState({
-			accordion: true
-		});
+		if (this.props.accordion) {
+			this.setState({
+				accordion: !this.state.accordion
+			});
+		}
 	}
 	
 	render() {
@@ -27,12 +29,13 @@ export default class Box extends Component {
 			accordion: !!this.props.accordion
 		});
 		return (
-			<div role='button' tabIndex='-1' className={boxClass} onClick={() => this.handleToggle()}>
+			<div role='button' className={boxClass}>
 				{
-					this.props.accordion ? this.props.children[0] : this.props.children
-				}
-				{
-					this.props.accordion ? <Accordion>{this.props.children[1].props.children}</Accordion> : null
+					this.props.accordion ? [
+						this.props.children[0],
+						<Accordion shown={this.state.accordion} >{this.props.children[1].props.children}</Accordion>]
+					: 
+					this.props.children
 				}
 			</div>
 		);

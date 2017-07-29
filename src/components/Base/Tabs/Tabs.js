@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import styles from './Tabs.scss';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
+import Panel from './TabPanel';
 
 import Icon from '@/components/Icon';
 import Sprites from '@/components/Sprites';
@@ -99,16 +100,7 @@ export default class Tabs extends Component {
 				<div className={styles.tabContent}>
 					{
 						$menu.map((tabContent, i) => {
-							return (
-								<div 
-									key={i}
-									className={this.state.tabActive === i ? styles.TabContent : null} 
-								>
-									{
-										tabContent.children
-									}
-								</div>
-							);
+							return this.state.tabActive === i ? <div className={styles.TabOverflow}>{tabContent.children}</div> : null;
 						})
 					}
 				</div>
@@ -116,12 +108,5 @@ export default class Tabs extends Component {
 		);
 	}
 };
-
-class Panel extends Tabs {
-	render() {
-		return this.props;
-	}
-};
-
 
 Tabs.Panel = Panel;

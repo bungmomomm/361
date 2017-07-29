@@ -23,7 +23,7 @@ export default class Select extends Component {
 		};
 		this.getFilter = this.getFilter.bind(this);
 		this.setOptions = this.setOptions.bind(this);
-		this.handleBlur = this.handleBlur.bind(this);
+		this.hideDropdown = this.hideDropdown.bind(this);
 	}
 
 // ----------------------------------------
@@ -77,12 +77,10 @@ export default class Select extends Component {
 // Component Event Handlers
 // ----------------------------------------
 
-	handleBlur(e) {
-		setTimeout(() => {
-			this.setState({
-				showOption: false
-			});
-		}, 150);
+	hideDropdown() {
+		this.setState({
+			showOption: false
+		});
 	}
 
 	render() {
@@ -91,15 +89,17 @@ export default class Select extends Component {
 		const SelectWrapper = cx({
 			Select: true,
 			horizontal: !!this.props.horizontal,
-			required: !!this.props.required
+			required: !!this.props.required,
+			shown: this.state.showOption
 		});
 
 		return (
-			<div className={SelectWrapper} onBlur={this.handleBlur}>
+			<div className={SelectWrapper}>
+				<div className={styles.overlay} role='button' tabIndex={0} onClick={this.hideDropdown} />
 				{ this.props.label ? <label htmlFor={idFor}>{this.props.label}{this.props.required ? ' *' : null}</label> : null } 
 				<div className={styles.selectedContainer}>
 					<button 
-						type='button' 
+						type='button'
 						id={idFor}
 						onClick={this.setOptions} 
 						className={styles.previewLabel}

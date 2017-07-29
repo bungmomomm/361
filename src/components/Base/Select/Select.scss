@@ -118,3 +118,23 @@
 .highlight{
 	background: red;
 }
+
+.overlay{
+	position: fixed;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	top: 0px;
+	z-index: -1;
+	display: none;
+}
+
+.shown{
+	.overlay{
+		display: block;
+		z-index: 11;
+	}	
+	.selectedContainer{
+		z-index: 12;
+	}
+}

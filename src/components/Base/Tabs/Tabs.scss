@@ -36,6 +36,7 @@
         border-bottom: 0px;
         cursor: pointer;
         align-items: center;
+        position: relative;
         i, img{
             margin-right: 10px;
             flex: none;
@@ -59,10 +60,16 @@
     box-shadow: 0 -3px 4px 0 rgba(239, 239, 239, 0.5);
     border: 1px solid #DEDEDE;
     padding: 20px;
-    > div{
-        display: none;
-    }
+    display: flex;
+    min-height: 400px;
     .TabContent{
         display: block;
     }
+}
+
+.TabOverflow{
+    display: block;
+    overflow-y:auto;
+    margin-right: -15px;
+    padding-right: 15px;
 }
