@@ -13,6 +13,7 @@ import Checkbox from './Checkbox/Checkbox';
 import Level from './Level/Level';
 import Modal from './Modal/Modal';
 import Textarea from './Textarea/Textarea';
+import Tooltip from './Tooltip/Tooltip';
 
 export default {
 	Container,
@@ -29,5 +30,6 @@ export default {
 	Checkbox,
 	Level,
 	Modal,
-	Textarea
+	Textarea,
+	Tooltip
 };

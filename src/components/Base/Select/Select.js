@@ -90,7 +90,8 @@ export default class Select extends Component {
 			Select: true,
 			horizontal: !!this.props.horizontal,
 			required: !!this.props.required,
-			shown: this.state.showOption
+			shown: this.state.showOption,
+			top: !!this.props.top,
 		});
 
 		return (
@@ -128,11 +129,11 @@ export default class Select extends Component {
 							{
 								this.state.options.map((option, i) => (
 									<button 
+										key={i}
 										className={option.value === this.state.selected.value ? styles.selected : null} 
 										onClick={() => this.setSelectOption(option)} 
 										disabled={!!option.disabled}
 										type='button'
-										key={i}
 									>
 										<div className={styles.text}>
 											{option.label}

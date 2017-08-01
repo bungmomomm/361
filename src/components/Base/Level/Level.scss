@@ -18,13 +18,25 @@
 }
 
 .item{
-	flex:1;
 	align-items: center;
 	display: flex;
 	flex-basis: auto;
-	flex-shrink: 0;
 	justify-content: center;
 	margin-bottom: 10px;
+	flex-grow: 1;
+}
+
+.padded{
+	.item {
+		padding-left: 5px;
+		padding-right: 5px;
+		&:first-child{
+			padding-left: 0;
+		}
+		&:last-child{
+			padding-right: 0;
+		}
+	}
 }
 
 .noMargin{

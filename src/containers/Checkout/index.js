@@ -5,14 +5,15 @@ import styles from './Checkout.scss';
 // component load
 import { CheckoutHeader } from '@/components/Header';
 import Icon from '@/components/Icon';
-import { Textarea, Modal, Level, Input, InputGroup, Select, Alert, Container, Row, Col, Card, Tabs, Box, Button, Checkbox } from '@/components/Base';
+import Sprites from '@/components/Sprites';
+import { Tooltip, Textarea, Modal, Level, Input, InputGroup, Select, Alert, Container, Row, Col, Card, Tabs, Box, Button, Checkbox } from '@/components/Base';
 import { StoreBox } from '@/components/Store';
 import { CheckoutProduct, CheckoutResult } from '@/components/Product';
 import Gosend from '@/components/Gosend';
 import Elocker from '@/components/Elocker';
 
 // Dummy Data
-import { Provinsi, CheckoutList, Address, PaymentOptions, CreditCard, ElockerList } from '@/data';
+import { Bank, Bulan, Tahun, Provinsi, CheckoutList, Address, PaymentOptions, CreditCard, ElockerList } from '@/data';
 
 export default class Checkout extends Component {
 	constructor(props) {
@@ -167,8 +168,40 @@ export default class Checkout extends Component {
 											<InputGroup>
 												<Select selectedLabel='-- Tambah Baru' options={CreditCard} />
 											</InputGroup>
+											<InputGroup>
+												<Select selectedLabel='-- Pilih Bank' options={Bank} />
+												<Tooltip right>
+													<p>Info Pembayaran COD</p>
+													<ul>
+														<li>Lakukan pembayaran disaat barang sampai</li>
+														<li>Maksimal total belanja Rp 2.000.000</li>
+													</ul>
+												</Tooltip>
+											</InputGroup>
 											<p>SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke :</p>
-											<Input value='082113982173' />
+											<InputGroup>
+												<Input value='082113982173' />
+											</InputGroup>
+											<InputGroup>
+												<Input placeholder='Masukkan Nomor Kartu' creditCard />
+											</InputGroup>
+											<label htmlFor='masa-berlaku'>Masa Berlaku</label>
+											<Level padded>
+												<Level.Item>
+													<Select top selectedLabel='-- Bulan' options={Bulan} />
+												</Level.Item>
+												<Level.Item>
+													<Select top selectedLabel='-- Tahun' options={Tahun} />
+												</Level.Item>
+												<Level.Item>
+													<Input placeholder='cvv' />
+												</Level.Item>
+												<Level.Item>
+													<Sprites name='cvv' />
+												</Level.Item>
+											</Level>
+											<Checkbox text='Simpan untuk transaksi berikutnya' />
+											<p>SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke :</p>
 											<div className={styles.checkOutAction}>
 												<Checkbox text='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />
 												<Button size='large' iconRight icon='angle-right' block primary text='Bayar Sekarang' />

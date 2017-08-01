@@ -1,17 +1,34 @@
 .sprites { 
-	background: url('../../assets/images/sprites.png') no-repeat top left; 
-	width: 15px; height: 13px;
+	background-image: url('../../assets/images/sprites.png'); 
+	background-position: top left;
+	background-repeat: no-repeat;
+	width: 15px; 
+	height: 14px;
 	display: inline-block;
-    vertical-align: middle;
+	vertical-align: middle;
 } 
 
-.sprites__gosend { background-position: 0 0; width: 53px; height: 9px; } 
-.sprites__gosend2x { background-position: -53px 0; width: 106px; height: 18px; } 
-.sprites__o2o-off { background-position: -159px 0; height: 14px; } 
-.sprites__o2o-off2x { background-position: -174px 0; width: 30px; height: 28px; } 
-.sprites__truck-on { background-position: -204px 0; width: 23px; } 
-.sprites__truck-on2x { background-position: -227px 0; width: 46px; height: 26px; } 
-.sprites__truck-off { background-position: -273px 0; width: 23px; } 
-.sprites__truck-off2x { background-position: -296px 0; width: 46px; height: 26px; } 
-.sprites__o2o-on { background-position: -342px 0; height: 14px; } 
-.sprites__o2o-on2x { background-position: -357px 0; width: 30px; height: 28px; } 
+@media
+only screen and (-webkit-min-device-pixel-ratio: 2),
+only screen and (   min--moz-device-pixel-ratio: 2),
+only screen and (     -o-min-device-pixel-ratio: 2/1),
+only screen and (        min-device-pixel-ratio: 2),
+only screen and (                min-resolution: 192dpi),
+only screen and (                min-resolution: 2dppx) { 
+	.sprites { 
+		background-image: url('../../assets/images/sprites@2x.png'); 
+		background-size:237px;
+	}
+}
+
+.sprites__cvv { background-position: 0 0; width: 35px; height: 23px; } 
+.sprites__payment-option { background-position: -35px 0; width: 73px; } 
+.sprites__gosend { background-position: -108px 0; width: 53px; height: 9px; } 
+.sprites__o2o-off { background-position: -161px 0; } 
+.sprites__truck-on { background-position: -176px 0; width: 23px; height: 13px; } 
+.sprites__truck-off { background-position: -199px 0; width: 23px; height: 13px; } 
+.sprites__o2o-on { background-position: -222px 0; }
+
+.sprites__visa { background-position: -35px 0; width: 25px; }
+.sprites__jcb { background-position: -90px 0; width: 18px; }
+.sprites__master-card { background-position: -63px 0; width: 25px; }

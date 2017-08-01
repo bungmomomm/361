@@ -48,6 +48,19 @@
 	}
 }
 
+.sprites{
+	position: absolute;
+	right: 10px;
+	top: 0px;
+	height: 100%;
+	display: flex;
+    align-items: center;
+}
+
+.payment-option{
+	padding-right: 90px;
+}
+
 .success{
 	@include inputStyle(green);
 }

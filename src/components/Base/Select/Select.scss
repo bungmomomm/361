@@ -3,7 +3,7 @@
 
 .Select{
 	position: relative;
-	width: 100%;
+	min-width: 90px;
 	i{
 		position: absolute;
 		right: 15px;
@@ -26,7 +26,6 @@
 
 .selectedContainer{
 	position: relative;
-	width: 100%;
 }
 
 .horizontal{
@@ -45,10 +44,11 @@
 	font-family: HelveticaNeueLTStd-Roman;
 	height: 35px;
 	display: flex;
+	min-width: 100px;
 	width: 100%;
 	align-items: center;
 	color: color(black);
-	padding: 0px 15px;
+	padding: 0px 35px 0px 15px;
 	border-radius: border(radius);
 }
 
@@ -68,6 +68,21 @@
 	display: none;
 	&.shown{
 		display: block;
+	}
+}
+
+.top{
+	.listData{
+		top: auto;
+		bottom: 100%;
+		border-bottom-left-radius: 0px;
+		border-bottom-right-radius: 0px;
+		border-top-left-radius: border(radius);
+		border-top-right-radius: border(radius);
+		border-top: 1px solid #C5C5C5;
+		border-bottom: 0px;
+		margin-top: 0px;
+		margin-bottom: -3px;
 	}
 }
 

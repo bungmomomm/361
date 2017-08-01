@@ -1,3 +1,94 @@
+export const Bulan = [
+	{
+		value: 1,
+		label: '01',
+	}, {
+		value: 2,
+		label: '02',
+	}, {
+		value: 3,
+		label: '03',
+	}, {
+		value: 4,
+		label: '04',
+	}, {
+		value: 5,
+		label: '05',
+	}, {
+		value: 6,
+		label: '06',
+	}, {
+		value: 7,
+		label: '07',
+	}, {
+		value: 8,
+		label: '08',
+	}, {
+		value: 9,
+		label: '09',
+	}, {
+		value: 10,
+		label: '10',
+	}, {
+		value: 11,
+		label: '11',
+	}, {
+		value: 12,
+		label: '12',
+	}
+];
+
+
+export const Tahun = [
+	{
+		value: 2002,
+		label: '2002',
+	}, {
+		value: 2003,
+		label: '2003',
+	}, {
+		value: 2004,
+		label: '2004',
+	}, {
+		value: 2005,
+		label: '2005',
+	}, {
+		value: 2006,
+		label: '2006',
+	}, {
+		value: 2007,
+		label: '2007',
+	}, {
+		value: 2008,
+		label: '2009',
+	}, {
+		value: 2009,
+		label: '2009',
+	}, {
+		value: 2010,
+		label: '2010',
+	}
+];
+
+export const Bank = [
+	{
+		value: 'bca',
+		label: 'BCA',
+	}, {
+		value: 'cimb-niaga',
+		label: 'CIMB NIAGA',
+	}, {
+		value: 'anz',
+		label: 'ANZ',
+	}, {
+		value: 'maybank',
+		label: 'MAYBANK',
+	}, {
+		value: 'mandiri',
+		label: 'MANDIRI',
+	}
+];
+
 export const CheckoutList = [
 	{
 		store: {

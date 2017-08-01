@@ -100,7 +100,7 @@ export default class Tabs extends Component {
 				<div className={styles.tabContent}>
 					{
 						$menu.map((tabContent, i) => {
-							return this.state.tabActive === i ? <div className={styles.TabOverflow}>{tabContent.children}</div> : null;
+							return this.state.tabActive === i ? <div key={i} className={styles.TabOverflow}>{tabContent.children}</div> : null;
 						})
 					}
 				</div>

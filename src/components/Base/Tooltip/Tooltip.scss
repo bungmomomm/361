@@ -1,0 +1,78 @@
+@import 'mixins';
+@import 'variables';
+
+.TooltipWrapper{
+	position: relative;
+	float: right;
+	&.right{
+		.infoButton{
+			left: auto;
+			right: 0px;
+		}
+	}
+}
+
+.infoButton{
+	cursor: pointer;
+	position: absolute;
+	left: 0px;
+	padding: 5px;
+	&:hover{
+		+ .content{
+			display: block;
+		}
+	}
+}
+
+.content{
+	background: color(black);
+	border-radius: border(radius);
+	color: #fff;
+	padding: 15px;
+	font-size: 11px;
+	position: absolute;
+	max-width: 100%;
+	z-index: 1;
+	right: 25px;
+	top: 0px;
+	transform: translateY(-50%);
+	display: none;
+	&:hover{
+		display: block;
+	}
+	&:after{
+		content: '';
+		width: 0;
+		height: 0;
+		border-style: solid;
+		border-width: 3.5px 0 3.5px 7px;
+		border-color: transparent transparent transparent color(black);
+		position: absolute;
+		right: -7px;
+		top: 50%;
+		margin-top: 7px;
+	}
+	&:before{
+		content: '';
+		position: absolute;
+		right: -18px;
+		width: 20px;
+		top: 0%;
+		height: 100%;
+	}
+}
+
+.PosLeft{
+	.content{
+		right: auto;
+		left: 25px;		
+		&:after{
+			content: '';
+			right:auto;
+			left: -7px;
+			margin-top: 7px;
+			border-width: 3.5px 7px 3.5px 0;
+			border-color: transparent color(black) transparent transparent;
+		}
+	}
+}
