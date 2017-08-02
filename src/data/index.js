@@ -215,11 +215,79 @@ export const CreditCard = [
 	{
 		value: 1,
 		label: '1111 2222 33** 4444',
-		imagePath: 'https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png'
+		sprites: 'visa'
 	}, {
 		value: 2,
 		label: '0000 1111 22** 3333',
-		imagePath: 'http://www.globalbrandsmagazine.com/wp-content/uploads/2015/01/MasterCard_Logo.svg_-675x280.png'
+		sprites: 'master-card'
+	}
+];
+
+export const InternetBanking = [
+	{
+		value: 1,
+		label: 'Klik BCA',
+		sprites: 'klikbca'
+	}, {
+		value: 2,
+		label: 'CIMB Clicks',
+		sprites: 'cimb-clicks'
+	}, {
+		value: 3,
+		label: 'BRI e-pay',
+		sprites: 'bri-epay'
+	}, {
+		value: 4,
+		label: 'BCA klikpay',
+		sprites: 'bca-klikpay'
+	}
+];
+
+export const GeraiTunai = [
+	{
+		value: 1,
+		label: 'POS Indonesia',
+		sprites: 'pos-indonesia'
+	}, {
+		value: 2,
+		label: 'Indomaret',
+		sprites: 'indomaret'
+	}, {
+		value: 3,
+		label: 'Alfamart',
+		sprites: 'alfamart'
+	}, {
+		value: 4,
+		label: 'Ceritamart',
+		sprites: 'ceritamart'
+	}, {
+		value: 5,
+		label: 'Alfamidi',
+		sprites: 'alfamidi'
+	}, {
+		value: 6,
+		label: 'Lawson',
+		sprites: 'lawson'
+	}, {
+		value: 7,
+		label: 'Dan+Dan',
+		sprites: 'dandan'
+	}
+];
+
+export const UangElektronik = [
+	{
+		value: 1,
+		label: 'Nobu E-Wallet',
+		sprites: 'nobu-ewallet'
+	}, {
+		value: 2,
+		label: 'Mandiri E-Cash',
+		sprites: 'mandiri-ecash'
+	}, {
+		value: 3,
+		label: 'OVO',
+		sprites: 'ovo'
 	}
 ];
 

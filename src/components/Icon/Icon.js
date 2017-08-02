@@ -5,7 +5,8 @@ const cx = classNames.bind(styles);
 
 export default (props) => {
 	const classIcon = cx({
-		icon: true
+		icon: true,
+		[`custom_${props.custom}`]: !!props.custom,
 	});
 	return (
 		<i className={`${classIcon} ${props.name ? `icon-${props.name}` : '' `${props.className}` ? `${props.className}` : ''}`} />

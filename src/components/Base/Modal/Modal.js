@@ -33,7 +33,8 @@ export default class Modal extends Component {
 
 		const ModalWrapperClass = cx({
 			wrapper: true,
-			large: !!this.props.large
+			large: !!this.props.large,
+			small: !!this.props.small
 		});
 		return (
 			this.state.displayModal ? (

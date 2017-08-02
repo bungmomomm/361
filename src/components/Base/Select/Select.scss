@@ -4,18 +4,14 @@
 .Select{
 	position: relative;
 	min-width: 90px;
-	i{
-		position: absolute;
-		right: 15px;
-	}
 	:global{
 		.icon-sort-asc{
 			font-size: 14px;
-			top: 10px;
 		}
 		.icon-sort-desc{
 			font-size: 14px;
-			top: 5px;
+			top: -3px;
+    		position: relative;
 		}
 	}
 }
@@ -26,6 +22,7 @@
 
 .selectedContainer{
 	position: relative;
+	width: 100%;
 }
 
 .horizontal{
@@ -48,8 +45,12 @@
 	width: 100%;
 	align-items: center;
 	color: color(black);
-	padding: 0px 35px 0px 15px;
+	padding: 0px 15px 0px 15px;
 	border-radius: border(radius);
+	img{
+		height: 14px;
+		width: auto;
+	}
 }
 
 .listData{
@@ -87,16 +88,12 @@
 }
 
 .text{
+	width: 100%;
 	display: flex;
-	img{
-		height: 14px;
-		width: auto;
-		position: absolute;
-		right: 15px;
-		top: 10px;
-		z-index: 1;
-		background: #fff;
-	}
+	justify-content: space-between;
+	align-items: center;
+	line-height: 1;
+	padding-right: 8px;
 }
 
 .overflow{
@@ -104,24 +101,27 @@
 	overflow-y: auto;
 	margin-top: 10px;
 	> button{
-		display: flex;
 		padding: 10px;
-		flex-direction: column;
-		text-align: left;
 		width: 100%;
 		color: color(black);
 		position: relative;
 		@include font(medium);
 		padding: 10px 15px;
+		img{
+			height: 14px;
+			width: auto;
+		}
 		.info{
 			@include font(normal);
 			color: #7F7F7F;
 			font-size: 10px;
+			text-align: left;
 			margin: 5px 0px;
 		}
 		.message{
 			@include font(normal);
 			color: color(red);
+			text-align: left;
 			font-size: 10px;
 		}
 		&:hover, &.selected{

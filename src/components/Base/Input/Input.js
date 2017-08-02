@@ -7,7 +7,7 @@ const cx = classNames.bind(styles);
 import Icon from '@/components/Icon';
 import Sprites from '@/components/Sprites';
 import creditCardType from 'credit-card-type';
-import MaskedInput from 'react-text-mask';
+import MaskedInput from 'react-maskedinput';
 import luhnCC from 'luhn-cc';
 
 export default class Input extends Component {
@@ -28,11 +28,13 @@ export default class Input extends Component {
 
 	onChange(event) {
 		if (this.props.creditCard) {
-			if (event.target.value.length > 0 && event.target.value.length < 3) {
-				this.creditCardValidation(event.target.value.replace(/\s/g, ''));
-			}
-			if (event.target.value.length < 1) {
+			const trimCC = event.target.value.replace(/_| /g, '');
+			if (trimCC.length < 1) {
 				this.setSprites();
+			} else if (trimCC.length < 3) {
+				this.creditCardValidation(trimCC);
+			} else if (trimCC.length > 12) {
+				this.luhnCCValidation(trimCC);
 			}
 		}
 	}
@@ -44,6 +46,7 @@ export default class Input extends Component {
 	}
 
 	luhnCCValidation(cc) {
+		console.log(cc);
 		this.setState({
 			ccValid: luhnCC.isValid(cc)
 		});
@@ -53,7 +56,6 @@ export default class Input extends Component {
 	creditCardValidation(ccNumber) {
 		const validCard = creditCardType(ccNumber);
 		if (validCard[0]) {
-			this.luhnCCValidation(ccNumber);
 			if (validCard[0].type === 'jcb' || validCard[0].type === 'visa' || validCard[0].type === 'master-card') {
 				this.setSprites(validCard[0].type);
 			}
@@ -71,11 +73,10 @@ export default class Input extends Component {
 			input: true,
 			error: !!this.props.error,
 			[`${this.props.size}`]: !!this.props.size,
-			success: !!this.props.success,
+			success: (!!this.props.success || this.state.ccValid),
 			warning: !!this.props.warning,
 			message: !!this.props.message,
 			required: !!this.props.required,
-			creditCard: !!this.props.creditCard,
 			[`Input__${this.props.sprites}`]: !!this.props.sprites
 		});
 		const idFor = newId();
@@ -85,15 +86,7 @@ export default class Input extends Component {
 				{ this.props.label ? <label htmlFor={idFor}>{this.props.label}{this.props.required ? ' *' : null}</label> : null } 
 				{
 					this.props.creditCard ? 
-						<MaskedInput
-							mask={[/\d/, /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /[0-9-*]/, /[0-9-*]/, ' ', /\d/, /\d/, /\d/, /\d/]}
-							className={inputClass}
-							placeholder={this.props.placeholder}
-							guide={false}
-							id={idFor}
-							type={this.props.type}
-							onChange={this.onChange}
-						/> 
+						<MaskedInput className={inputClass} placeholder={this.props.placeholder} mask='1111 1111 1111 1111' name='card' size='20' onChange={this.onChange} />
 						: 
 						<input 
 							id={idFor}

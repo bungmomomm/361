@@ -3,7 +3,7 @@
 	background-position: top left;
 	background-repeat: no-repeat;
 	width: 15px; 
-	height: 14px;
+	height: 15px;
 	display: inline-block;
 	vertical-align: middle;
 } 
@@ -17,7 +17,7 @@ only screen and (                min-resolution: 192dpi),
 only screen and (                min-resolution: 2dppx) { 
 	.sprites { 
 		background-image: url('../../assets/images/sprites@2x.png'); 
-		background-size:237px;
+		background-size:839px;
 	}
 }
 
@@ -29,6 +29,24 @@ only screen and (                min-resolution: 2dppx) {
 .sprites__truck-off { background-position: -199px 0; width: 23px; height: 13px; } 
 .sprites__o2o-on { background-position: -222px 0; }
 
-.sprites__visa { background-position: -35px 0; width: 25px; }
+.sprites__bca-klikpay { background-position: -237px 0; width: 53px; height: 10px; } 
+.sprites__bri-epay { background-position: -290px 0; width: 48px;height:10px; } 
+.sprites__cimb-clicks { background-position: -338px 0; width: 50px; height: 8px; } 
+.sprites__klikbca { background-position: -388px 0; width: 23px; height: 20px; } 
+
+.sprites__sprites { background-position: 0 0; width: 411px; height: 23px; } 
+.sprites__uob { background-position: -411px 0; width: 50px; } 
+.sprites__ovo { background-position: -461px 0; width: 30px; height: 11px; } 
+.sprites__mandiri-ecash { background-position: -491px 0; width: 50px; height: 25px; } 
+.sprites__nobu-ewallet { background-position: -541px 0; width: 28px; height: 27px; } 
+.sprites__dandan { background-position: -569px 0; width: 40px; height: 19px; } 
+.sprites__lawson { background-position: -609px 0; width: 40px; height: 7px; } 
+.sprites__alfamidi { background-position: -649px 0; width: 40px; height: 12px; } 
+.sprites__ceritamart { background-position: -689px 0; width: 38px; height: 12px; } 
+.sprites__alfamart { background-position: -727px 0; width: 40px; } 
+.sprites__indomaret { background-position: -767px 0; width: 40px; } 
+.sprites__pos-indonesia { background-position: -807px 0; width: 32px; height: 22px; } 
+
+.sprites__visa { background-position: -35px 0; width: 25px; height: 13px; }
 .sprites__jcb { background-position: -90px 0; width: 18px; }
 .sprites__master-card { background-position: -63px 0; width: 25px; }

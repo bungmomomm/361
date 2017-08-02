@@ -16,7 +16,7 @@
 	cursor: pointer;
 	position: absolute;
 	left: 0px;
-	padding: 5px;
+	margin-top: 5px;
 	&:hover{
 		+ .content{
 			display: block;

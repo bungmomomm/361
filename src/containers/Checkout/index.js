@@ -13,7 +13,7 @@ import Gosend from '@/components/Gosend';
 import Elocker from '@/components/Elocker';
 
 // Dummy Data
-import { Bank, Bulan, Tahun, Provinsi, CheckoutList, Address, PaymentOptions, CreditCard, ElockerList } from '@/data';
+import { UangElektronik, GeraiTunai, InternetBanking, Bank, Bulan, Tahun, Provinsi, CheckoutList, Address, PaymentOptions, CreditCard, ElockerList } from '@/data';
 
 export default class Checkout extends Component {
 	constructor(props) {
@@ -169,13 +169,25 @@ export default class Checkout extends Component {
 												<Select selectedLabel='-- Tambah Baru' options={CreditCard} />
 											</InputGroup>
 											<InputGroup>
+												<Select selectedLabel='-- Pilih Bank Lainnya' options={InternetBanking} />
+											</InputGroup>
+											<InputGroup>
+												<Select selectedLabel='-- Pilih Opsi Lainnya' options={GeraiTunai} />
+											</InputGroup>
+											<InputGroup>
+												<Select selectedLabel='-- Pilih Opsi Lainnya' options={UangElektronik} />
+											</InputGroup>
+											<InputGroup>
 												<Select selectedLabel='-- Pilih Bank' options={Bank} />
 												<Tooltip right>
-													<p>Info Pembayaran COD</p>
-													<ul>
-														<li>Lakukan pembayaran disaat barang sampai</li>
-														<li>Maksimal total belanja Rp 2.000.000</li>
-													</ul>
+													<p>Info pembayaran BCA KlikPay</p>
+													<ol>
+														<li>Setelah klik tombol &quot;Bayar Sekarang&quot; di bawah, Anda akan diarahkan ke halaman BCA KlikPay.</li>
+														<li>Masukkan alamat email dan password BCA KlikPay Anda, lalu cek informasi transaksi (nama merchant, waktu transaksi, dan jumlah uang yang harus dibayarkan)</li>
+														<li>Tekan tombol &quot;Kirim OTP&quot; untuk menerima kode OTP (One Time Password) via SMS, jadi pastikan handphone Anda aktif.</li>
+														<li>Masukkan kode OTP ke kolom yang tersedia, kemudian klik tombol &quot;Bayar&quot;.</li>
+														<li>Setelah pembayaran berhasil dilakukan, klik tombol &quot;Kembali ke situs merchant&quot; untuk melihat status pembayaran dan pembelian anda.</li>
+													</ol>
 												</Tooltip>
 											</InputGroup>
 											<p>SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke :</p>
@@ -213,7 +225,7 @@ export default class Checkout extends Component {
 						</Row>
 					</Container>
 				</div>
-				<Modal>
+				<Modal shown>
 					<Modal.Header>
 						<div>Buat Alamat Baru</div>
 					</Modal.Header>
@@ -297,7 +309,15 @@ export default class Checkout extends Component {
 									</em>
 								</small>
 							</Alert>
-							<Gosend />
+							<Gosend mapConfig={{
+								zoom: 15,
+								polygon: [
+									{ lat: -6.164118, lng: 106.821247 },
+									{ lat: -6.178390, lng: 106.816634 },
+									{ lat: -6.172345, lng: 106.843462 }
+								]
+							}} 
+							/>
 							<Box row>
 								<Icon name='map-marker' />
 								<div>Jalan Bangka II No.20, Pela Mampang, 
@@ -334,6 +354,35 @@ export default class Checkout extends Component {
 							</Level.Right>
 						</Level>
 					</Modal.Footer>
+				</Modal>
+
+				<Modal small>
+					<Modal.Header>
+						<Icon name='times' custom='error' />
+					</Modal.Header>
+					<Modal.Body>
+						<p>
+							<strong>
+							Pembayaran Anda tidak <br />
+							berhasil coba lagi atau gunakan <br />
+							metode pembayaran lainnya <br />
+							</strong>
+						</p>
+					</Modal.Body>
+				</Modal>
+
+				<Modal small>
+					<Modal.Header>
+						<Icon name='check' custom='success' />
+					</Modal.Header>
+					<Modal.Body>
+						<p>
+							<strong>
+							Selamat Pembayaran <br />
+							Anda telah berhasil
+							</strong>
+						</p>
+					</Modal.Body>
 				</Modal>
 			</div>
 		);

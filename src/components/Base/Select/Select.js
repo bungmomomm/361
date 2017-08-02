@@ -4,6 +4,7 @@ import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
 
 import Icon from '@/components/Icon';
+import Sprites from '@/components/Sprites';
 import Input from '../Input';
 import newId from '@/utils/newId.js';
 
@@ -110,6 +111,9 @@ export default class Select extends Component {
 							{
 								this.state.selected.imagePath ? <img src={this.state.selected.imagePath} alt='logo' /> : null
 							}
+							{
+								this.state.selected.sprites ? <Sprites name={this.state.selected.sprites} /> : null
+							}
 						</div>
 						<Icon name={this.state.showOption ? 'sort-asc' : 'sort-desc'} />
 					</button>
@@ -139,6 +143,9 @@ export default class Select extends Component {
 											{option.label}
 											{
 												option.imagePath ? <img src={option.imagePath} alt='logo' /> : null
+											}
+											{
+												option.sprites ? <Sprites name={option.sprites} /> : null
 											}
 										</div>
 										{
