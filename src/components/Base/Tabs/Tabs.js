@@ -51,7 +51,7 @@ export default class Tabs extends Component {
 		});
 
 		const $menu = [];
-		$Items.map(($panel, index) => {
+		$Items.map(($panel) => {
 			return $menu.push({
 				title: $panel.props.title,
 				icon: $panel.props.icon,

@@ -20,11 +20,6 @@ const test = [
 		header: 'jpg',
 		type: 'image',
 		src: 'webpack.jpg'
-	},
-	{
-		header: 'mp4',
-		type: 'media',
-		src: 'SampleVideo_360x240_1mb.mp4'
 	}
 ];
 

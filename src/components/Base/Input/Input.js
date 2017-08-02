@@ -27,6 +27,9 @@ export default class Input extends Component {
 	}
 
 	onChange(event) {
+		if (this.props.onChange) {
+			this.props.onChange(event);
+		}
 		if (this.props.creditCard) {
 			const trimCC = event.target.value.replace(/_| /g, '');
 			if (trimCC.length < 1) {
@@ -46,7 +49,6 @@ export default class Input extends Component {
 	}
 
 	luhnCCValidation(cc) {
-		console.log(cc);
 		this.setState({
 			ccValid: luhnCC.isValid(cc)
 		});
@@ -75,7 +77,6 @@ export default class Input extends Component {
 			[`${this.props.size}`]: !!this.props.size,
 			success: (!!this.props.success || this.state.ccValid),
 			warning: !!this.props.warning,
-			message: !!this.props.message,
 			required: !!this.props.required,
 			[`Input__${this.props.sprites}`]: !!this.props.sprites
 		});
@@ -96,6 +97,8 @@ export default class Input extends Component {
 							placeholder={this.props.placeholder}
 							defaultValue={this.props.value}
 							onClick={this.props.onClick}
+							onKeyPress={this.props.onKeyPress}
+							ref={this.props.ref}
 							onChange={this.onChange}
 						/>
 					}

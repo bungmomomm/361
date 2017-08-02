@@ -4,6 +4,7 @@
 
 .header{
 	display: flex;
+	margin-bottom: 10px;
 }
 
 .desc{
@@ -13,21 +14,38 @@
 }
 
 .googleMap{
-	height: 250px;
+	height: 340px;
 	position: relative;
 	width: 100%;
 	margin-top: 15px;
 	display: flex;
 	flex-direction: column;
+	.mapInput{
+		position: absolute;
+		z-index: 1;
+		padding: 10px;
+		width: 100%;
+		border: border(color);
+	}
+}
+
+.googleMapArea{
+	position: relative !important;
 }
 
 .mapLocationName{
 	background: #FFFFFF;
 	padding: 5px 10px;
-	border: 1px solid #DEDEDE;
+	border: 1px solid border(color);
 	border-bottom-left-radius: border(radius);
 	border-bottom-right-radius: border(radius);
 	margin-bottom: 15px;
+	display: table;
+	width: 100%;
+	span{
+		display: table-cell;
+		padding-left: 10px;
+	}
 }
 
 .marker{

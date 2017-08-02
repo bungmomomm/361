@@ -23,6 +23,7 @@ SSR for CSS modules use `css-loader/locals`, no extra wrapper function for compo
 * [Static](#static)
 * [Component](#component)
 * [After deploy](#after-deploy)
+* [External Modules Reference] (#external-modules-reference)
 
 ## Installation
 ```javascript
@@ -98,6 +99,12 @@ npm run build
 npm start
 ```
 
-## Contributing
+## External Modules Reference
+Input validation [ree-validate](https://github.com/moeen-basra/ree-validate)
+Google Map React Component [google-maps-react](https://github.com/fullstackreact/google-maps-react)
+JavaScript library to validate credit card numbers using luhn algorithm [luhn-cc](https://www.npmjs.com/package/luhn-cc)
+Masked input React component for Credit Card [maskedinput](https://github.com/insin/react-maskedinput)
+A library for determining credit card type [credit-card-type](https://github.com/braintree/credit-card-type)
 
+## Contributing
 [https://github.com/vinensiuswibowo](https://github.com/vinensiuswibowo)

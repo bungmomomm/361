@@ -83,10 +83,18 @@
 
 .horizontal{
 	display: flex;
+	flex-flow: row wrap;
 	align-items: center;
 	label{
 		margin-bottom: 0px;
-		width: 40%;
+		width: 30%;
 		display: block;
 	}
+	input{
+		flex: 1;
+	}
+	.message{
+		flex: 0 0 100%;
+	}
+
 }

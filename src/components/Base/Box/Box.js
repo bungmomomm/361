@@ -31,9 +31,11 @@ export default class Box extends Component {
 		return (
 			<div role='button' className={boxClass}>
 				{
-					this.props.accordion ? [
-						this.props.children[0],
-						<Accordion shown={this.state.accordion} >{this.props.children[1].props.children}</Accordion>]
+					this.props.accordion ? (
+						<div>
+							{ this.props.children[0] }
+							<Accordion shown={this.state.accordion} >{this.props.children[1].props.children}</Accordion>
+						</div>)
 					: 
 					this.props.children
 				}

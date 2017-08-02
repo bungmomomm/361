@@ -22,7 +22,6 @@ export default class Textarea extends Component {
 			[`${this.props.size}`]: !!this.props.size,
 			success: !!this.props.success,
 			warning: !!this.props.warning,
-			msg: !!this.props.msg,
 			required: !!this.props.required
 		});
 
@@ -41,7 +40,7 @@ export default class Textarea extends Component {
 					onChange={this.props.onChange}
 				/>
 				{
-					this.props.msg ? <div className={styles.msg}>{this.props.msg}</div> : null
+					this.props.message ? <div className={styles.message}>{this.props.message}</div> : null
 				}
 			</div>
 		);

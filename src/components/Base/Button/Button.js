@@ -31,7 +31,7 @@ export default class Alert extends Component {
 		});
 
 		return (
-			<button className={classButton} onClick={this.props.onClick} disabled={this.props.disabled}>
+			<button type={this.props.type} className={classButton} onClick={this.props.onClick} disabled={this.props.disabled}>
 				{
 					(this.props.icon && !this.props.iconRight) ? <Icon name={this.props.icon} /> : null
 				}

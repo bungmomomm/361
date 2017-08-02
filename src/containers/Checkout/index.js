@@ -6,14 +6,16 @@ import styles from './Checkout.scss';
 import { CheckoutHeader } from '@/components/Header';
 import Icon from '@/components/Icon';
 import Sprites from '@/components/Sprites';
-import { Tooltip, Textarea, Modal, Level, Input, InputGroup, Select, Alert, Container, Row, Col, Card, Tabs, Box, Button, Checkbox } from '@/components/Base';
+import { Tooltip, Modal, Level, Input, InputGroup, Select, Alert, Container, Row, Col, Card, Tabs, Box, Button, Checkbox } from '@/components/Base';
 import { StoreBox } from '@/components/Store';
 import { CheckoutProduct, CheckoutResult } from '@/components/Product';
-import Gosend from '@/components/Gosend';
 import Elocker from '@/components/Elocker';
 
+// Checkout Component
+import ModalNewAddress from './components/Modal/NewAddress';
+
 // Dummy Data
-import { UangElektronik, GeraiTunai, InternetBanking, Bank, Bulan, Tahun, Provinsi, CheckoutList, Address, PaymentOptions, CreditCard, ElockerList } from '@/data';
+import { UangElektronik, GeraiTunai, InternetBanking, Bank, Bulan, Tahun, CheckoutList, Address, PaymentOptions, CreditCard, ElockerList } from '@/data';
 
 export default class Checkout extends Component {
 	constructor(props) {
@@ -108,7 +110,7 @@ export default class Checkout extends Component {
 															<CheckoutProduct key={index} data={product} />
 														))
 													}
-													<CheckoutResult gosend={storeData.store.gosend} />
+													<CheckoutResult key={i} gosend={storeData.store.gosend} />
 												</StoreBox>
 											))
 										}
@@ -225,120 +227,7 @@ export default class Checkout extends Component {
 						</Row>
 					</Container>
 				</div>
-				<Modal shown>
-					<Modal.Header>
-						<div>Buat Alamat Baru</div>
-					</Modal.Header>
-					<Modal.Body>
-						<div className={styles.overflow}>
-							<form>
-								<InputGroup>
-									<Input 
-										label='Simpan Sebagai' 
-										horizontal
-										placeholder='Contoh: rumah, kantor, rumah pacar'
-										name='name'
-										type='text'
-									/>
-								</InputGroup>
-								<InputGroup>
-									<Input 
-										label='Nama Penerima'
-										horizontal
-										required
-										placeholder='Masukan nama lengkap penerima'
-										name='penerima'
-										type='text'
-									/>
-								</InputGroup>
-								<InputGroup>
-									<Input 
-										label='No Handphone'
-										horizontal
-										required
-										placeholder='Contoh : 08123456789'
-										name='no-hp'
-										type='text'
-									/>
-								</InputGroup>
-								<InputGroup>
-									<Select 
-										horizontal
-										label='Kota, Provinsi'
-										filter
-										required
-										selectedLabel='-- Silahkan Pilih' 
-										options={Provinsi} 
-									/>
-								</InputGroup>
-								<InputGroup>
-									<Select 
-										horizontal
-										label='Kecamatan'
-										filter
-										required
-										selectedLabel='-- Silahkan Pilih' 
-										options={Provinsi} 
-									/>
-								</InputGroup>
-								<InputGroup>
-									<Input 
-										label='Kode Pos'
-										horizontal
-										required
-										placeholder='Contoh : 12345'
-										name='kodepos'
-										type='text'
-									/>
-								</InputGroup>
-								<InputGroup>
-									<Textarea 
-										horizontal
-										label='Alamat'
-										required
-										placeholder='Masukkan Alamat Lengkap'
-										name='address'
-									/>
-								</InputGroup>
-							</form>
-							<Alert warning>
-								<small>
-									<em>
-										Harap tidak mengisi alamat pickup point O2O tanpa melalui pilihan menu Ambil di Toko
-										(O2O). Kami tidak bertanggung jawab bila terjadi kehirlangan
-									</em>
-								</small>
-							</Alert>
-							<Gosend mapConfig={{
-								zoom: 15,
-								polygon: [
-									{ lat: -6.164118, lng: 106.821247 },
-									{ lat: -6.178390, lng: 106.816634 },
-									{ lat: -6.172345, lng: 106.843462 }
-								]
-							}} 
-							/>
-							<Box row>
-								<Icon name='map-marker' />
-								<div>Jalan Bangka II No.20, Pela Mampang, 
-								Mampang Prapatan, Kota Jakarta Selatan, 
-								DKI jakarta 12720</div>
-								<button className='font-small font-orange'>Ganti Lokasi</button>
-							</Box>
-							<p className='font-small font-orange'>Lokasi peta harus sesuai dengan alamat pengiriman. Lokasi diperlukan jika ingin menggunakan jasa pengiriman GO-SEND.</p>
-						</div>
-					</Modal.Body>
-					<Modal.Footer>
-						<Level>
-							<Level.Left>
-								<em>* wajib diisi</em>
-							</Level.Left>
-							<Level.Right>
-								<Button text='Simpan Alamat' dark block />
-							</Level.Right>
-						</Level>
-					</Modal.Footer>
-				</Modal>
+				<ModalNewAddress />
 
 				<Modal large >
 					<Modal.Header>

@@ -16,13 +16,27 @@
 	position: relative;
 }
 
+.error{
+	@include inputStyle(red);
+	+ .message{
+		color: color(red);
+	}
+}
+
 .horizontal{
 	display: flex;
+	flex-flow: row wrap;
 	align-items: center;
 	label{
 		margin-bottom: 0px;
-		width: 40%;
+		width: 30%;
 		display: block;
+	}
+	.Textarea{
+		flex: 1;
+	}
+	.message{
+		flex: 0 0 100%;
 	}
 }
 
@@ -45,9 +59,11 @@
 	}
 }
 
-.msg{
+.message{
 	margin-top: 5px;
-	display: block;
+    display: block;
+    font-size: 10px;
+    text-align: right;
 }
 
 .error{

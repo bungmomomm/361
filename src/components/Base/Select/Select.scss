@@ -27,11 +27,18 @@
 
 .horizontal{
 	display: flex;
+	flex-flow: row wrap;
 	align-items: center;
 	label{
 		margin-bottom: 0px;
-		width: 40%;
+		width: 30%;
 		display: block;
+	}
+	.selectedContainer{
+		flex: 1;
+	}
+	.message{
+		flex: 0 0 100%;
 	}
 }
 
@@ -64,7 +71,7 @@
 	left: 0px;
 	width: 100%;
 	border-top: 0px;
-	margin-top: -2px;
+	margin-top: -3px;
 	z-index: 1;
 	display: none;
 	&.shown{
@@ -96,6 +103,23 @@
 	padding-right: 8px;
 }
 
+.error{
+	.previewLabel, .listData{
+		border-color: color(red);
+	}
+	.message{
+		color: color(red);
+	}
+}
+
+.message{
+	margin-top: 5px;
+	display: block;
+	font-size: 10px;
+	text-align: right;
+}
+
+
 .overflow{
 	max-height: 320px;
 	overflow-y: auto;
@@ -118,7 +142,7 @@
 			text-align: left;
 			margin: 5px 0px;
 		}
-		.message{
+		.optionMessage{
 			@include font(normal);
 			color: color(red);
 			text-align: left;
@@ -128,10 +152,6 @@
 			background-color: #f5f5f5;
 		}
 	}
-}
-
-.highlight{
-	background: red;
 }
 
 .overlay{

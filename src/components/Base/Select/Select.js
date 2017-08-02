@@ -70,7 +70,12 @@ export default class Select extends Component {
 			selectedLabel: selected.label
 		});
 		if (this.props.onChange) {
-			this.props.onChange(selected);
+			const withName = {
+				name: this.props.name,
+				label: selected.label,
+				value: selected.value
+			};
+			this.props.onChange(withName);
 		}
 	}
 
@@ -89,6 +94,7 @@ export default class Select extends Component {
 
 		const SelectWrapper = cx({
 			Select: true,
+			error: !!this.props.error,
 			horizontal: !!this.props.horizontal,
 			required: !!this.props.required,
 			shown: this.state.showOption,
@@ -152,7 +158,7 @@ export default class Select extends Component {
 											option.info ? <div className={styles.info}>{option.info}</div> : null
 										}
 										{
-											option.message ? <div className={styles.message}>{option.message}</div> : null
+											option.message ? <div className={styles.optionMessage}>{option.message}</div> : null
 										}
 									</button>
 								))
@@ -160,6 +166,9 @@ export default class Select extends Component {
 						</div>
 					</div>
 				</div>
+				{
+					this.props.message ? <div className={styles.message}>{this.props.message}</div> : null
+				}
 			</div>
 		);
 	}
