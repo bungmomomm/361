@@ -4,6 +4,8 @@ import Figure from '@/components/Figure';
 import { Button } from '@/components/Base';
 import Stepper from '@/components/Stepper';
 
+import { currency } from '@/utils';
+
 export default (props) => {
 	return (
 		<div className={styles.list}>
@@ -19,7 +21,7 @@ export default (props) => {
 				<div className={styles.bodyRight}>
 					<div className={styles.title}>{props.data.name}</div>
 					<div className={styles.option}>
-						<div className={styles.price}>{props.data.price}</div>
+						<div className={styles.price}>{currency(props.data.price)}</div>
 						<div className={styles.qty}>
 							<Stepper value={props.data.qty} maxValue={props.data.maxQty} />
 						</div>

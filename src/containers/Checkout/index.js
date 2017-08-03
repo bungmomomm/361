@@ -16,6 +16,9 @@ import ElockerModalbox from './components/Modal/ElockerModalbox';
 import PaymentSuccessModalbox from './components/Modal/PaymentSuccessModalbox';
 import PaymentErrorModalbox from './components/Modal/PaymentErrorModalbox';
 
+// import utils
+import { currency } from '@/utils';
+
 // Dummy Data
 import { UangElektronik, GeraiTunai, InternetBanking, Bank, Bulan, Tahun, CheckoutList, Address, PaymentOptions, CreditCard, ElockerList } from '@/data';
 
@@ -116,18 +119,18 @@ export default class Checkout extends Component {
 									<div className={styles.overflow}>
 										<Level>
 											<Level.Left>Subtotal</Level.Left>
-											<Level.Right>Rp 22.500.000</Level.Right>
+											<Level.Right>{currency(22500000)}</Level.Right>
 										</Level>
 										<Level>
 											<Level.Left>Total Biaya Pengiriman</Level.Left>
-											<Level.Right>Rp 15.000</Level.Right>
+											<Level.Right>{currency(15000)}</Level.Right>
 										</Level>
 										<Level>
 											<Level.Left>
 												<div className='font-green'>Discount Biaya Pengiriman</div>
 											</Level.Left>
 											<Level.Right>
-												<div className='font-green'>-Rp 30.000</div>
+												<div className='font-green'>{currency(-300000)}</div>
 											</Level.Right>
 										</Level>
 										<Level>
@@ -151,7 +154,7 @@ export default class Checkout extends Component {
 											<Level noMargin>
 												<Level.Left>Total Pembayaran</Level.Left>
 												<Level.Right>
-													<span className={styles.price}>Rp 22.503.000</span>
+													<span className={styles.price}>{currency(22503000)}</span>
 												</Level.Right>
 											</Level>
 										</div>
