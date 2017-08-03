@@ -9,7 +9,7 @@ import { Textarea, Modal, Level, Input, InputGroup, Select, Alert, Box, Button }
 // Dummy Data
 import { Provinsi } from '@/data';
 
-export default class ModalNewAddress extends Component {
+export default class NewAddressModalbox extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -85,7 +85,7 @@ export default class ModalNewAddress extends Component {
 	render() {
 		const { errors } = this.state;
 		return (
-			<Modal shown>
+			<Modal>
 				<Modal.Header>
 					<div>Buat Alamat Baru</div>
 				</Modal.Header>

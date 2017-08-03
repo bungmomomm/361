@@ -15,14 +15,18 @@ export default class Modal extends Component {
 	}
 	
 	componentWillMount() {
-		document.body.style.overflow = 'hidden';
+		this.bodyOverflow();
 	}
 
 	handleClose() {
 		this.setState({
 			displayModal: false
 		});
-		document.body.style.overflow = 'auto';
+		this.bodyOverflow();
+	}
+
+	bodyOverflow() {
+		document.body.style.overflow = this.state.displayModal ? 'hidden' : 'auto';
 	}
 	
 

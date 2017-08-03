@@ -1,53 +1,51 @@
 <%
-
     var params = typeof(locals) !== 'undefined' ? locals : {};
-
     params = Object.assign({
-
         helmet                  : {},
         state                   : null,
         markup                  : '',
         manifest                : '',
         manifestFileContents    : ''
-
     }, params);
-
 %>
 
 <!DOCTYPE html>
 <html <% if (params.helmet.htmlAttributes) { %><%= params.helmet.htmlAttributes.toString() %><% } %>>
-    
     <head>
-        
+        <!-- we're looking for more people to join at MatahariMall.com. Interested? https://www.mataharimall.com/static/4/karir -->
+        <meta name="google-site-verification" content="bVdL10GtDccBSiuntKghg8GHQ85nozeqhdYrCB4tPHg" />
         <% if (params.helmet.title) { %><%= params.helmet.title.toString() %><% } %>
         <% if (params.helmet.meta) { %><%= params.helmet.meta.toString() %><% } %>
-
         <% if (params.manifest['main.css']) { %>
-        
             <link rel="stylesheet" href="<%= params.manifest['main.css'] %>" />
-        
         <% } %>
-    
+        <!-- Load Jquery for GTM, and Partners who using JQuery -->
+        <script src="https://assets.mataharimall.co/desktop/js/min/jquery.min.js"></script>
+        <script src="https://assets.mataharimall.co/js/emarsyscore.js"></script>
+        <!-- END Load Jquery -->
+
+        <!-- Google Tag Manager -->
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-53C6QJ');</script>
+        <!-- End Google Tag Manager -->
     </head>
-    
     <body <% if (params.helmet.htmlAttributes) { %><%= params.helmet.bodyAttributes.toString() %><% } %>>
-        
+        <!-- Google Tag Manager (noscript) -->
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-53C6QJ"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        <!-- End Google Tag Manager (noscript) -->
         <div id="root"><%= params.markup %></div>
-
         <% if (params.state) { %>
-
             <script>window.__REDUX_STATE__ = <%= JSON.stringify(params.state) %></script>
-
         <% } %>
-
         <% if (params.manifestFileContents) { %>
-        
             <script><%= params.manifestFileContents %></script>
             <script src="<%= params.manifest['vendors.js'] %>"></script>
             <script src="<%= params.manifest['main.js'] %>"></script>
-        
         <% } %>
-    
-    </body>
 
+    </body>
 </html>

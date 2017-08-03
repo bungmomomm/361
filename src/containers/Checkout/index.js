@@ -6,13 +6,15 @@ import styles from './Checkout.scss';
 import { CheckoutHeader } from '@/components/Header';
 import Icon from '@/components/Icon';
 import Sprites from '@/components/Sprites';
-import { Tooltip, Modal, Level, Input, InputGroup, Select, Alert, Container, Row, Col, Card, Tabs, Box, Button, Checkbox } from '@/components/Base';
+import { Tooltip, Level, Input, InputGroup, Select, Alert, Container, Row, Col, Card, Tabs, Box, Button, Checkbox } from '@/components/Base';
 import { StoreBox } from '@/components/Store';
 import { CheckoutProduct, CheckoutResult } from '@/components/Product';
-import Elocker from '@/components/Elocker';
 
 // Checkout Component
-import ModalNewAddress from './components/Modal/NewAddress';
+import NewAddressModalbox from './components/Modal/NewAddressModalbox';
+import ElockerModalbox from './components/Modal/ElockerModalbox';
+import PaymentSuccessModalbox from './components/Modal/PaymentSuccessModalbox';
+import PaymentErrorModalbox from './components/Modal/PaymentErrorModalbox';
 
 // Dummy Data
 import { UangElektronik, GeraiTunai, InternetBanking, Bank, Bulan, Tahun, CheckoutList, Address, PaymentOptions, CreditCard, ElockerList } from '@/data';
@@ -21,15 +23,6 @@ export default class Checkout extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.state = {
-			modalAddressShow: false
-		};
-	}
-
-	handleModalAddress() {
-		this.setState({
-			modalAddressShow: !this.state.modalAddressShow
-		});
 	}
 
 	render() {
@@ -74,7 +67,7 @@ export default class Checkout extends Component {
 												</InputGroup>
 											</Box.Accordion>
 										</Box>
-										<Button onClick={() => this.handleModalAddress} text='Masukan Alamat Pengiriman' dark block size='large' iconRight icon='angle-right' />
+										<Button text='Masukan Alamat Pengiriman' dark block size='large' iconRight icon='angle-right' />
 									</Tabs.Panel>
 									<Tabs.Panel title='Ambil Di Toko/E-locker (O2O)' sprites='o2o-off' spritesActive='o2o-on'>
 										<Alert alignCenter warning>
@@ -227,52 +220,10 @@ export default class Checkout extends Component {
 						</Row>
 					</Container>
 				</div>
-				<ModalNewAddress />
-
-				<Modal large >
-					<Modal.Header>
-						Pilih Lokasi E-Locker (O2O)
-					</Modal.Header>
-					<Modal.Body>
-						<Elocker />
-					</Modal.Body>
-					<Modal.Footer>
-						<Level>
-							<Level.Right>
-								<Button text='Pilih E-Locker (O2O)' dark />
-							</Level.Right>
-						</Level>
-					</Modal.Footer>
-				</Modal>
-
-				<Modal small>
-					<Modal.Header>
-						<Icon name='times' custom='error' />
-					</Modal.Header>
-					<Modal.Body>
-						<p>
-							<strong>
-							Pembayaran Anda tidak <br />
-							berhasil coba lagi atau gunakan <br />
-							metode pembayaran lainnya <br />
-							</strong>
-						</p>
-					</Modal.Body>
-				</Modal>
-
-				<Modal small>
-					<Modal.Header>
-						<Icon name='check' custom='success' />
-					</Modal.Header>
-					<Modal.Body>
-						<p>
-							<strong>
-							Selamat Pembayaran <br />
-							Anda telah berhasil
-							</strong>
-						</p>
-					</Modal.Body>
-				</Modal>
+				<NewAddressModalbox />
+				<ElockerModalbox />
+				<PaymentSuccessModalbox />
+				<PaymentErrorModalbox />
 			</div>
 		);
 	}

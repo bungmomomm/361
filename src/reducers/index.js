@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
-import { reducer as images } from '@/state/Images/';
+import { reducer as tracking } from '@/state/Tracking/';
 
 export default combineReducers({
-	images
+	tracking
 });
