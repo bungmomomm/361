@@ -34,21 +34,23 @@ export default class Alert extends Component {
 			this.state.show ? (
 				<div className={classAlert}>
 					{
-						icon ? <Icon className={styles.icon} /> : null
+						!icon ? null : <Icon className={styles.icon} />
 					}
 					{children}
 					{
-						close ? (
+						!close ? null : (
 							<button 
 								type='button'
-								onClick={() => this.setState({ 
-									show: false
-								})}
 								className={styles.close}
+								onClick={
+									() => this.setState({ 
+										show: false
+									})
+								}
 							>
 								<Icon name='times' />
 							</button>
-						) : null
+						) 
 					}
 				</div>
 			) : null
