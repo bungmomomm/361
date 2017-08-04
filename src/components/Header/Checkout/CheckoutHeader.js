@@ -3,7 +3,7 @@ import styles from './CheckoutHeader.scss';
 import Image from '@/components/Image';
 import { Container } from '@/components/Base';
 
-export default (props) => {
+const CheckoutHeader = (props) => {
 	return (
 		<div className={styles.header}>
 			<Container flex> 
@@ -19,3 +19,5 @@ export default (props) => {
 		</div>
 	);
 };
+
+export default CheckoutHeader;

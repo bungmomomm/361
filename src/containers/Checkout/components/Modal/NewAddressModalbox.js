@@ -76,7 +76,6 @@ export default class NewAddressModalbox extends Component {
 				Object.keys(formData).forEach((key) => {
 					this.setErrors(key, this.state.formData[key]);
 				});
-				// this.fieldOverflow.scrollTop = 0;
 			}
 		});
 	}

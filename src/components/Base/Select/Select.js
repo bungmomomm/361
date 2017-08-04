@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { injectProps } from '@/decorators';
 import styles from './Select.scss';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
@@ -8,14 +10,13 @@ import Sprites from '@/components/Sprites';
 import Input from '../Input';
 import newId from '@/utils/newId.js';
 
-
 export default class Select extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
 			options: this.props.options,
-			selectedLabel: this.props.selectedLabel ? this.props.selectedLabel : 'Please Select...',
+			selectedLabel: this.props.selectedLabel || 'Please Select...',
 			showOption: false,
 			selected: {
 				value: '',
@@ -89,22 +90,43 @@ export default class Select extends Component {
 		});
 	}
 
-	render() {
+	@injectProps
+	render({
+		error,
+		horizontal,
+		top,
+		label,
+		required,
+		filter,
+		message
+	}) {
 		const idFor = newId();
 
 		const SelectWrapper = cx({
 			Select: true,
-			error: !!this.props.error,
-			horizontal: !!this.props.horizontal,
-			required: !!this.props.required,
+			error: !!error,
+			horizontal: !!horizontal,
+			required: !!required,
 			shown: this.state.showOption,
-			top: !!this.props.top,
+			top: !!top,
 		});
 
 		return (
 			<div className={SelectWrapper}>
-				<div className={styles.overlay} role='button' tabIndex={0} onClick={this.hideDropdown} />
-				{ this.props.label ? <label htmlFor={idFor}>{this.props.label}{this.props.required ? ' *' : null}</label> : null } 
+				<div 
+					role='button' 
+					tabIndex={0} 
+					onClick={this.hideDropdown} 
+					className={styles.overlay}
+				/>
+				{ 
+					!label ? null : (
+						<label htmlFor={idFor}>
+							{label}
+							{required ? ' *' : ''}
+						</label>
+					)
+				} 
 				<div className={styles.selectedContainer}>
 					<button 
 						type='button'
@@ -113,26 +135,28 @@ export default class Select extends Component {
 						className={styles.previewLabel}
 					>	
 						<div className={styles.text}>
-							{this.state.selectedLabel}
 							{
-								this.state.selected.imagePath ? <img src={this.state.selected.imagePath} alt='logo' /> : null
-							}
-							{
-								this.state.selected.sprites ? <Sprites name={this.state.selected.sprites} /> : null
+								this.state.selectedLabel
+							} {
+								!this.state.selected.imagePath ? null : <img src={this.state.selected.imagePath} alt='logo' /> 
+							} {
+								!this.state.selected.sprites ? null : <Sprites name={this.state.selected.sprites} />
 							}
 						</div>
 						<Icon name={this.state.showOption ? 'sort-asc' : 'sort-desc'} />
 					</button>
 					<div className={this.state.showOption ? `${styles.listData} ${styles.shown}` : styles.listData}>
 						{
-							this.props.filter ? <div className={styles.quickFilter}>
-								<Input 
-									type='text' 
-									name='quickfilter' 
-									onChange={this.getFilter} 
-									placeholder='Quick Search' 
-								/>
-							</div> : null
+							!filter ? null : (
+								<div className={styles.quickFilter}>
+									<Input 
+										type='text' 
+										name='quickfilter' 
+										onChange={this.getFilter} 
+										placeholder='Quick Search' 
+									/>
+								</div>
+							)
 						}
 						
 						<div className={styles.overflow}>
@@ -140,25 +164,26 @@ export default class Select extends Component {
 								this.state.options.map((option, i) => (
 									<button 
 										key={i}
-										className={option.value === this.state.selected.value ? styles.selected : null} 
+										className={
+											option.value !== this.state.selected.value ? null : styles.selected
+										} 
 										onClick={() => this.setSelectOption(option)} 
 										disabled={!!option.disabled}
 										type='button'
 									>
 										<div className={styles.text}>
-											{option.label}
 											{
-												option.imagePath ? <img src={option.imagePath} alt='logo' /> : null
-											}
-											{
-												option.sprites ? <Sprites name={option.sprites} /> : null
+												option.label
+											} {
+												!option.imagePath ? null : <img src={option.imagePath} alt='logo' />
+											} {
+												!option.sprites ? null : <Sprites name={option.sprites} />
 											}
 										</div>
 										{
-											option.info ? <div className={styles.info}>{option.info}</div> : null
-										}
-										{
-											option.message ? <div className={styles.optionMessage}>{option.message}</div> : null
+											!option.info ? null : <div className={styles.info}>{option.info}</div>
+										} {
+											!option.message ? null : <div className={styles.optionMessage}>{option.message}</div>
 										}
 									</button>
 								))
@@ -167,9 +192,27 @@ export default class Select extends Component {
 					</div>
 				</div>
 				{
-					this.props.message ? <div className={styles.message}>{this.props.message}</div> : null
+					!message ? null : (
+						<div className={styles.message}>
+							{message}
+						</div>
+					)
 				}
 			</div>
 		);
 	}
+};
+
+Select.propTypes = {
+	selectedLabel: PropTypes.string,
+	options: PropTypes.array,
+	name: PropTypes.string,
+	onChange: PropTypes.func,
+	error: PropTypes.bool,
+	horizontal: PropTypes.bool,
+	required: PropTypes.bool,
+	top: PropTypes.bool,
+	label: PropTypes.string,
+	filter: PropTypes.bool,
+	message: PropTypes.string
 };

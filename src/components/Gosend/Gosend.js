@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import styles from './Gosend.scss';
 import classNames from 'classnames/bind';
 import { Input, Button, Alert } from '@/components/Base';
@@ -148,6 +149,13 @@ class Gosend extends Component {
 	}
 };
 
+
+Gosend.propTypes = {
+	center: PropTypes.object,
+	google: PropTypes.object
+};
+
 export default GoogleApiWrapper({
 	apiKey: ('AIzaSyDi3S2lVNeA-V8N0QXFqtLLY4rTo2ay-OQ')
 })(Gosend);
+

@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { injectProps } from '@/decorators';
 import classNames from 'classnames/bind';
 import styles from './Card.scss';
 
@@ -9,28 +11,35 @@ export default class Card extends Component {
 		super(props);
 		this.props = props;
 	}
-	render() {
+
+	@injectProps
+	render({
+		radius,
+		selected,
+		children
+	}) {
 		const cardClass = cx({
 			card: true,
-			radius: !!this.props.radius,
-			selected: !!this.props.selected
+			radius: !!radius,
+			selected: !!selected
 		});
 		return (
 			<div className={cardClass}>
-				{this.props.children}
+				{children}
 			</div>
 		);
 	}
 };
 
 class Title extends Card {
-	render() {
+	@injectProps
+	render({ children }) {
 		const TitleClass = cx({
 			Title: true
 		});
 		return (
 			<div className={TitleClass}>
-				{this.props.children}
+				{children}
 			</div>
 		);
 	}
@@ -38,3 +47,9 @@ class Title extends Card {
 
 
 Card.Title = Title;
+
+Card.propTypes = {
+	radius: PropTypes.bool,
+	selected: PropTypes.bool,
+	children: PropTypes.node
+};

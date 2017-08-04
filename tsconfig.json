@@ -1,0 +1,7 @@
+// Stop warning experimentalDecorators in VSCode
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "allowJs": true
+    }
+}

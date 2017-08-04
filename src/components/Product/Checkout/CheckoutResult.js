@@ -1,9 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styles from './CheckoutResult.scss';
 
 import Sprites from '@/components/Sprites';
 
-export default (props) => {
+const CheckoutResult = (props) => {
 	return (
 		<div className={styles.footer}>
 			{
@@ -25,4 +26,10 @@ export default (props) => {
 			</div>
 		</div>
 	);
+};
+
+export default CheckoutResult;
+
+CheckoutResult.propTypes = {
+	gosend: PropTypes.object
 };

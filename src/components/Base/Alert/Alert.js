@@ -1,36 +1,44 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import styles from './Alert.scss';
 import Icon from '@/components/Icon';
+import { injectProps } from '@/decorators';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
 
 export default class Alert extends Component {
 	constructor(props) {
 		super(props);
-		this.props = props;
 		this.state = {
 			show: true
 		};
 	}
-	render() {
+	@injectProps
+	render({
+		warning,
+		success,
+		error,
+		alignCenter,
+		icon,
+		children,
+		close
+	}) {
 		const classAlert = cx({
 			Alert: true,
-			warning: !!this.props.warning,
-			success: !!this.props.success,
-			error: !!this.props.error,
-			alignCenter: !!this.props.alignCenter
+			warning: !!warning,
+			success: !!success,
+			error: !!error,
+			alignCenter: !!alignCenter
 		});
 		return (
 			this.state.show ? (
 				<div className={classAlert}>
 					{
-						this.props.icon ? (
-							<Icon className={styles.icon} />
-						) : null
+						icon ? <Icon className={styles.icon} /> : null
 					}
-					{this.props.children}
+					{children}
 					{
-						this.props.close ? (
+						close ? (
 							<button 
 								type='button'
 								onClick={() => this.setState({ 
@@ -46,4 +54,13 @@ export default class Alert extends Component {
 			) : null
 		);
 	}
+};
+
+Alert.propTypes = {
+	warning: PropTypes.bool,
+	success: PropTypes.bool,
+	error: PropTypes.bool,
+	alignCenter: PropTypes.bool,
+	children: PropTypes.node,
+	close: PropTypes.bool,
 };

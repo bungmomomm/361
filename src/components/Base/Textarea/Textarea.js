@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { injectProps } from '@/decorators';
 import styles from './Textarea.scss';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
@@ -10,39 +12,83 @@ export default class Textarea extends Component {
 		this.props = props;
 	}
 
-	render() {
+	@injectProps
+	render({
+		horizontal,
+		error,
+		size,
+		success,
+		warning,
+		required,
+		label,
+		type,
+		name,
+		placeholder,
+		value,
+		onClick,
+		onChange,
+		message
+	}) {
 		const TextareaWrapper = cx({
 			TextareaWrapper: true,
-			horizontal: !!this.props.horizontal
+			horizontal: !!horizontal
 		});
 
 		const TextareaClass = cx({
 			Textarea: true,
-			error: !!this.props.error,
-			[`${this.props.size}`]: !!this.props.size,
-			success: !!this.props.success,
-			warning: !!this.props.warning,
-			required: !!this.props.required
+			error: !!error,
+			[`${size}`]: !!size,
+			success: !!success,
+			warning: !!warning,
+			required: !!required
 		});
 
 		const idFor = newId();
 		return (
 			<div className={TextareaWrapper}>
-				{ this.props.label ? <label htmlFor={idFor}>{this.props.label}{this.props.required ? ' *' : null}</label> : null } 
+				{ 
+					!label ? null : (
+						<label htmlFor={idFor}>
+							{label}
+							{required ? ' *' : null}
+						</label>
+					)
+				} 
 				<textarea 
 					id={idFor}
 					className={TextareaClass} 
-					type={this.props.type} 
-					name={this.props.name}
-					placeholder={this.props.placeholder}
-					defaultValue={this.props.value}
-					onClick={this.props.onClick}
-					onChange={this.props.onChange}
+					type={type} 
+					name={name}
+					placeholder={placeholder}
+					defaultValue={value}
+					onClick={onClick}
+					onChange={onChange}
 				/>
 				{
-					this.props.message ? <div className={styles.message}>{this.props.message}</div> : null
+					!message ? null : (
+						<div className={styles.message}>
+							{message}
+						</div>
+					)
 				}
 			</div>
 		);
 	}
+};
+
+Textarea.propTypes = {
+	horizontal: PropTypes.bool,
+	error: PropTypes.bool,
+	size: PropTypes.string,
+	success: PropTypes.bool,
+	warning: PropTypes.bool,
+	label: PropTypes.string,
+	required: PropTypes.bool,
+	type: PropTypes.string,
+	name: PropTypes.string,
+	placeholder: PropTypes.string,
+	value: PropTypes.string,
+	onClick: PropTypes.func,
+	onChange: PropTypes.func,
+	message: PropTypes.string
 };

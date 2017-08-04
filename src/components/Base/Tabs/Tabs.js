@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import styles from './Tabs.scss';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
@@ -12,12 +13,12 @@ export default class Tabs extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			tabActive: this.props.tabActive ? this.props.tabActive : 0
+			tabActive: this.props.tabActive || 0
 		};
 	}
 
 	componentWillReceiveProps(newProps) {
-		if (newProps.tabActive && newProps.tabActive !== this.props.tabActive) {
+		if (newProps.tabActive !== this.props.tabActive) {
 			this.setState({
 				tabActive: newProps.tabActive
 			});
@@ -52,13 +53,14 @@ export default class Tabs extends Component {
 
 		const $menu = [];
 		$Items.map(($panel) => {
+			const $panelProps = $panel.props;
 			return $menu.push({
-				title: $panel.props.title,
-				icon: $panel.props.icon,
-				iconActive: $panel.props.iconActive,
-				children: $panel.props.children,
-				sprites: $panel.props.sprites,
-				spritesActive: $panel.props.spritesActive
+				title: $panelProps.title,
+				icon: $panelProps.icon,
+				iconActive: $panelProps.iconActive,
+				children: $panelProps.children,
+				sprites: $panelProps.sprites,
+				spritesActive: $panelProps.spritesActive
 			});
 		});
 
@@ -100,13 +102,24 @@ export default class Tabs extends Component {
 				<div className={styles.tabContent}>
 					{
 						$menu.map((tabContent, i) => {
-							return this.state.tabActive === i ? <div key={i} className={styles.TabOverflow}>{tabContent.children}</div> : null;
+							return this.state.tabActive !== i ? null : (
+								<div key={i} className={styles.TabOverflow}>
+									{tabContent.children}
+								</div>
+							);
 						})
 					}
 				</div>
 			</div>
 		);
 	}
+};
+Tabs.propTypes = {
+	tabActive: PropTypes.number,
+	onBeforeChange: PropTypes.func,
+	onAfterChange: PropTypes.func,
+	stretch: PropTypes.bool,
+	children: PropTypes.node
 };
 
 Tabs.Panel = Panel;

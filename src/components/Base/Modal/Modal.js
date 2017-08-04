@@ -1,7 +1,14 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { injectProps } from '@/decorators';
 import styles from './Modal.scss';
 import classNames from 'classnames/bind';
 import Icon from '@/components/Icon';
+
+import Header from './ModalHeader';
+import Body from './ModalBody';
+import Footer from './ModalFooter';
+
 const cx = classNames.bind(styles);
 
 export default class Modal extends Component {
@@ -9,92 +16,73 @@ export default class Modal extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			displayModal: this.props.shown ? this.props.shown : false
+			displayModal: this.props.shown || false
 		};
 		this.handleClose = this.handleClose.bind(this);
 	}
 	
 	componentWillMount() {
-		this.bodyOverflow();
+		this.toggleBodyOverflow();
 	}
 
 	handleClose() {
 		this.setState({
 			displayModal: false
 		});
-		this.bodyOverflow();
+		this.toggleBodyOverflow();
 	}
 
-	bodyOverflow() {
+	toggleBodyOverflow() {
 		document.body.style.overflow = this.state.displayModal ? 'hidden' : 'auto';
 	}
 	
-
-	render() {
+	@injectProps
+	render({
+		large,
+		small,
+		children
+	}) {
 		const ModalClass = cx({
 			Modal: true
 		});
 
 		const ModalWrapperClass = cx({
 			wrapper: true,
-			large: !!this.props.large,
-			small: !!this.props.small
+			large: !!large,
+			small: !!small
 		});
 		return (
-			this.state.displayModal ? (
+			!this.state.displayModal ? null : (
 				<div className={ModalClass}>
 					<div className={ModalWrapperClass}>
-						{this.props.children}
-						<button onClick={this.handleClose} className={styles.close}>
+						{children}
+						<button 
+							onClick={this.handleClose} 
+							className={styles.close}
+						>
 							<Icon name='times' />
 						</button>
 					</div>
-					<div onClick={this.handleClose} aria-pressed='false' tabIndex='0' role='button' className={styles.overlay} />
+					<div 
+						onClick={this.handleClose} 
+						aria-pressed='false' 
+						tabIndex='0' 
+						role='button' 
+						className={styles.overlay} 
+					/>
 				</div>
-			) : null
+			)
 		);
 	}
 };
-
-class Header extends Modal {
-	render() {
-		const ItemClass = cx({
-			Header: true
-		});
-		return (
-			<div className={ItemClass}>
-				{this.props.children}
-			</div>
-		);
-	}
-};
-class Body extends Modal {
-	render() {
-		const BodyClass = cx({
-			body: true
-		});
-		return (
-			<div className={BodyClass}>
-				{this.props.children}
-			</div>
-		);
-	}
-};
-
-class Footer extends Modal {
-	render() {
-		const FooterClass = cx({
-			Footer: true
-		});
-		return (
-			<div className={FooterClass}>
-				{this.props.children}
-			</div>
-		);
-	}
-};
-
 
 Modal.Header = Header;
 Modal.Body = Body;
 Modal.Footer = Footer;
+
+Modal.propTypes = {
+	shown: PropTypes.bool,
+	large: PropTypes.bool,
+	small: PropTypes.bool,
+	children: PropTypes.node
+};

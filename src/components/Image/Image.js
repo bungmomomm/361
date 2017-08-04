@@ -8,7 +8,7 @@ export default class Image extends Component {
 	}
 
 	get image() {
-		return require(`../../assets/images/${this.props.src}`);
+		return require(`@/assets/images/${this.props.src}`);
 	}
 
 	render() {

@@ -1,22 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
-import styles from './Tabs.scss';
+import styles from './Modal.scss';
 const cx = classNames.bind(styles);
 
-const Panel = (props) => {
-	const panelClass = cx({
-		panel: true
+const Footer = (props) => {
+	const FooterClass = cx({
+		Footer: true
 	});
 	return (
-		<div className={panelClass}>
+		<div className={FooterClass}>
 			{props.children}
 		</div>
 	);
 };
 
-export default Panel;
+export default Footer;
 
-Panel.propTypes = {
+Footer.propTypes = {
 	children: PropTypes.node
 };

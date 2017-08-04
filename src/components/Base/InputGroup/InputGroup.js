@@ -1,9 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styles from './InputGroup.scss';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
 
-export default (props) => {
+const InputGroup = (props) => {
 	const inputGroupClass = cx({
 		InputGroup: true,
 		addons: !!props.addons,
@@ -13,4 +14,11 @@ export default (props) => {
 			{props.children}
 		</div>
 	);
+};
+
+export default InputGroup;
+
+InputGroup.propTypes = {
+	addons: PropTypes.bool,
+	children: PropTypes.node
 };

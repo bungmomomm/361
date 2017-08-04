@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { injectProps } from '@/decorators';
+
 import styles from './Input.scss';
 import classNames from 'classnames/bind';
 import newId from '@/utils/newId.js';
@@ -22,24 +25,23 @@ export default class Input extends Component {
 
 	componentWillMount() {
 		if (this.props.creditCard) {
-			this.setSprites(this.props.ccType ? this.props.ccType : '');
+			this.setSprites(this.props.ccType || '');
 		}
 	}
 
 	onChange(event) {
-		if (this.props.onChange) {
-			this.props.onChange(event);
-		}
 		if (this.props.creditCard) {
 			const trimCC = event.target.value.replace(/_| /g, '');
-			if (trimCC.length < 1) {
+			const trimCCLength = trimCC.length;
+			if (trimCCLength < 1) {
 				this.setSprites();
-			} else if (trimCC.length < 3) {
+			} else if (trimCCLength < 3) {
 				this.creditCardValidation(trimCC);
-			} else if (trimCC.length > 12) {
+			} else if (trimCCLength > 12) {
 				this.luhnCCValidation(trimCC);
 			}
 		}
+		return this.props.onChange ? this.props.onChange(event) : null;
 	}
 
 	setSprites(name) {
@@ -58,61 +60,129 @@ export default class Input extends Component {
 	creditCardValidation(ccNumber) {
 		const validCard = creditCardType(ccNumber);
 		if (validCard[0]) {
-			if (validCard[0].type === 'jcb' || validCard[0].type === 'visa' || validCard[0].type === 'master-card') {
-				this.setSprites(validCard[0].type);
+			const type = validCard[0].type;
+			if (type === 'jcb' || type === 'visa' || type === 'master-card') {
+				this.setSprites(type);
 			}
 		}
 	}
 
-	
-	render() {
+	@injectProps
+	render({
+		horizontal,
+		error,
+		size,
+		success,
+		warning,
+		label,
+		required,
+		creditCard,
+		type,
+		name,
+		placeholder,
+		value,
+		onClick,
+		onKeyPress,
+		ref,
+		sprites,
+		icon,
+		message
+	}) {
 		const inputWrapper = cx({
 			inputWrapper: true,
-			horizontal: !!this.props.horizontal
+			horizontal: !!horizontal
 		});
 
 		const inputClass = cx({
 			input: true,
-			error: !!this.props.error,
-			[`${this.props.size}`]: !!this.props.size,
-			success: (!!this.props.success || this.state.ccValid),
-			warning: !!this.props.warning,
-			required: !!this.props.required,
-			[`Input__${this.props.sprites}`]: !!this.props.sprites
+			error: !!error,
+			[`${size}`]: !!size,
+			success: !!success || this.state.ccValid,
+			warning: !!warning,
+			required: !!required,
+			[`Input__${sprites}`]: !!sprites
 		});
 		const idFor = newId();
 		
 		return (
 			<div className={inputWrapper}>
-				{ this.props.label ? <label htmlFor={idFor}>{this.props.label}{this.props.required ? ' *' : null}</label> : null } 
+				{ 
+					!label ? null : (
+						<label htmlFor={idFor}>
+							{label}
+							{ 
+								!required ? null : ' *' 
+							}
+						</label> 
+					)
+				} 
 				{
-					this.props.creditCard ? 
-						<MaskedInput className={inputClass} placeholder={this.props.placeholder} mask='1111 1111 1111 1111' name='card' size='20' onChange={this.onChange} />
+					creditCard ? 
+						<MaskedInput 
+							className={inputClass} 
+							placeholder={placeholder} 
+							mask='1111 1111 1111 1111' 
+							name='card' 
+							size={20} 
+							onChange={this.onChange} 
+						/>
 						: 
 						<input 
 							id={idFor}
 							className={inputClass} 
-							type={this.props.type}
-							name={this.props.name}
-							placeholder={this.props.placeholder}
-							defaultValue={this.props.value}
-							onClick={this.props.onClick}
-							onKeyPress={this.props.onKeyPress}
-							ref={this.props.ref}
+							type={type}
+							name={name}
+							placeholder={placeholder}
+							defaultValue={value}
+							onClick={onClick}
+							onKeyPress={onKeyPress}
+							ref={ref}
 							onChange={this.onChange}
 						/>
-					}
-				
+				} 
 				{
-					(this.props.sprites || this.state.sprites) ? <span className={styles.sprites}><Sprites name={this.state.sprites ? this.state.sprites : this.props.sprites} /></span> : null
-				}
+					!sprites || !this.state.sprites ? null : (
+						<span className={styles.sprites}>
+							<Sprites name={this.state.sprites || sprites} />
+						</span>
+					)
+				} 
 				{
-					this.props.icon ? <span className={styles.icon}><Icon name={this.props.icon} /></span> : null
-				}
+					!icon ? null : (
+						<span className={styles.icon}>
+							<Icon name={icon} />
+						</span>
+					)
+				} 
 				{
-					this.props.message ? <div className={styles.message}>{this.props.message}</div> : null
+					!message ? null : (
+						<div className={styles.message}>{message}</div>
+					)
 				}
 			</div>
 		);
 	}
+};
+
+Input.propTypes = {
+	ccType: PropTypes.string,
+	onChange: PropTypes.func,
+	horizontal: PropTypes.bool,
+	error: PropTypes.bool,
+	size: PropTypes.string,
+	success: PropTypes.bool,
+	warning: PropTypes.bool,
+	label: PropTypes.string,
+	required: PropTypes.bool,
+	creditCard: PropTypes.bool,
+	type: PropTypes.string,
+	name: PropTypes.string,
+	placeholder: PropTypes.string,
+	value: PropTypes.string,
+	onClick: PropTypes.func,
+	onKeyPress: PropTypes.func,
+	ref: PropTypes.func,
+	sprites: PropTypes.string,
+	icon: PropTypes.string,
+	message: PropTypes.string
 };

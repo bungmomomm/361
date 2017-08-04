@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import styles from './Level.scss';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
@@ -65,3 +66,9 @@ class Right extends Level {
 Level.Item = Item;
 Level.Left = Left;
 Level.Right = Right;
+
+Level.propTypes = {
+	noMargin: PropTypes.bool,
+	padded: PropTypes.bool,
+	children: PropTypes.node
+};

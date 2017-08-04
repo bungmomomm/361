@@ -1,8 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Icon from '@/components/Icon';
 import styles from './StoreBox.scss';
 
-export default (props) => {
+const StoreBox = (props) => {
 	return (
 		<div className={styles.box} >
 			<div className={styles.header}>
@@ -12,4 +13,12 @@ export default (props) => {
 			{props.children}
 		</div>
 	);
+};
+
+export default StoreBox;
+
+StoreBox.propTypes = {
+	name: PropTypes.string,
+	location: PropTypes.string,
+	children: PropTypes.node
 };

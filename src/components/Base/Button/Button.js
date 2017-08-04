@@ -1,47 +1,104 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { injectProps } from '@/decorators';
 import styles from './Button.scss';
 import Icon from '@/components/Icon';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
 
-export default class Alert extends Component {
+export default class Button extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 	}
-	render() {
+
+	@injectProps
+	render({
+		primary,
+		success,
+		warning,
+		danger,
+		dark,
+		grey,
+		small,
+		medium,
+		large,
+		outline,
+		loading,
+		block,
+		clean,
+		font,
+		size,
+		type,
+		onClick,
+		disabled,
+		text,
+		children,
+		iconRight,
+		icon
+	}) {
 		const classButton = cx({
 			button: true,
-			primary: !!this.props.primary,
-			success: !!this.props.success,
-			warning: !!this.props.warning,
-			danger: !!this.props.danger,
-			dark: !!this.props.dark,
-			grey: !!this.props.grey,
-			small: !!this.props.small,
-			medium: !!this.props.medium,
-			large: !!this.props.large,
-			outline: !!this.props.outline,
-			loading: !!this.props.loading,
-			block: !!this.props.block,
-			clean: !!this.props.clean,
-			iconRight: !!this.props.iconRight,
-			[`${this.props.font}`]: !!this.props.font,
-			[`${this.props.size}`]: !!this.props.size,
+			primary: !!primary,
+			success: !!success,
+			warning: !!warning,
+			danger: !!danger,
+			dark: !!dark,
+			grey: !!grey,
+			small: !!small,
+			medium: !!medium,
+			large: !!large,
+			outline: !!outline,
+			loading: !!loading,
+			block: !!block,
+			clean: !!clean,
+			iconRight: !!iconRight,
+			[`${font}`]: !!font,
+			[`${size}`]: !!size,
 		});
 
 		return (
-			<button type={this.props.type} className={classButton} onClick={this.props.onClick} disabled={this.props.disabled}>
+			<button 
+				type={type} 
+				className={classButton} 
+				onClick={onClick} 
+				disabled={disabled}
+			>
 				{
-					(this.props.icon && !this.props.iconRight) ? <Icon name={this.props.icon} /> : null
+					icon && !iconRight ? <Icon name={icon} /> : null
 				}
 				{
-					this.props.text ? this.props.text : this.props.children
+					text || children
 				}
 				{
-					this.props.iconRight ? <Icon name={this.props.icon} /> : null
+					iconRight ? <Icon name={icon} /> : null
 				}
 			</button>
 		);
 	}
+};
+
+Button.propTypes = {
+	primary: PropTypes.bool,
+	success: PropTypes.bool,
+	warning: PropTypes.bool,
+	danger: PropTypes.bool,
+	dark: PropTypes.bool,
+	grey: PropTypes.bool,
+	small: PropTypes.bool,
+	medium: PropTypes.bool,
+	large: PropTypes.bool,
+	outline: PropTypes.bool,
+	loading: PropTypes.bool,
+	block: PropTypes.bool,
+	clean: PropTypes.bool,
+	font: PropTypes.string,
+	size: PropTypes.string,
+	type: PropTypes.string,
+	onClick: PropTypes.func,
+	disabled: PropTypes.bool,
+	iconRight: PropTypes.bool,
+	text: PropTypes.string,
+	children: PropTypes.node,
+	icon: PropTypes.string
 };

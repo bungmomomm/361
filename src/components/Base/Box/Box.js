@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { injectProps } from '@/decorators';
 import classNames from 'classnames/bind';
 import styles from './Box.scss';
 import Accordion from './BoxAccordion';
@@ -13,31 +15,30 @@ export default class Box extends Component {
 			accordion: false
 		};
 	}
-
-	handleToggle() {
-		if (this.props.accordion) {
-			this.setState({
-				accordion: !this.state.accordion
-			});
-		}
-	}
 	
-	render() {
+	@injectProps
+	render({
+		row,
+		accordion,
+		children
+	}) {
 		const boxClass = cx({
 			box: true,
-			row: !!this.props.row,
-			accordion: !!this.props.accordion
+			row: !!row,
+			accordion: !!accordion
 		});
 		return (
 			<div role='button' className={boxClass}>
 				{
-					this.props.accordion ? (
+					accordion ? (
 						<div>
-							{ this.props.children[0] }
-							<Accordion shown={this.state.accordion} >{this.props.children[1].props.children}</Accordion>
+							{ children[0] }
+							<Accordion shown={this.state.accordion} >
+								{children[1].props.children}
+							</Accordion>
 						</div>)
 					: 
-					this.props.children
+					children
 				}
 			</div>
 		);
@@ -45,3 +46,9 @@ export default class Box extends Component {
 };
 
 Box.Accordion = Accordion;
+
+Box.propTypes = {
+	accordion: PropTypes.bool,
+	row: PropTypes.bool,
+	children: PropTypes.node
+};

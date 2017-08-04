@@ -6,7 +6,21 @@ import styles from './Checkout.scss';
 import { CheckoutHeader } from '@/components/Header';
 import Icon from '@/components/Icon';
 import Sprites from '@/components/Sprites';
-import { Tooltip, Level, Input, InputGroup, Select, Alert, Container, Row, Col, Card, Tabs, Box, Button, Checkbox } from '@/components/Base';
+import { 
+	Tooltip, 
+	Level, 
+	Input, 
+	InputGroup, 
+	Select, 
+	Alert, 
+	Container, 
+	Row, 
+	Col, 
+	Card, 
+	Tabs, 
+	Box, 
+	Button, 
+	Checkbox } from '@/components/Base';
 import { StoreBox } from '@/components/Store';
 import { CheckoutProduct, CheckoutResult } from '@/components/Product';
 
@@ -15,17 +29,35 @@ import NewAddressModalbox from './components/Modal/NewAddressModalbox';
 import ElockerModalbox from './components/Modal/ElockerModalbox';
 import PaymentSuccessModalbox from './components/Modal/PaymentSuccessModalbox';
 import PaymentErrorModalbox from './components/Modal/PaymentErrorModalbox';
+import Dropshipper from './components/Dropshipper';
+
 
 // import utils
 import { currency } from '@/utils';
 
 // Dummy Data
-import { UangElektronik, GeraiTunai, InternetBanking, Bank, Bulan, Tahun, CheckoutList, Address, PaymentOptions, CreditCard, ElockerList } from '@/data';
+import { 
+	UangElektronik, 
+	GeraiTunai, 
+	InternetBanking, 
+	Bank, 
+	Bulan, 
+	Tahun, 
+	CheckoutList, 
+	Address, 
+	PaymentOptions, 
+	CreditCard, 
+	ElockerList } from '@/data';
 
 export default class Checkout extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.state = {
+			enableAlamatPengiriman: true,
+			enablePesananPengiriman: false,
+			enablePembayaran: false
+		};
 	}
 
 	render() {
@@ -36,7 +68,7 @@ export default class Checkout extends Component {
 				<div className={styles.checkout}>
 					<Container>
 						<Row>
-							<Col grid={4}>
+							<Col grid={4} className={this.state.enableAlamatPengiriman ? '' : styles.disabled}>
 								<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
 								<Tabs tabActive={0} stretch>
 									<Tabs.Panel title='Kirim ke Alamat' sprites='truck-off' spritesActive='truck-on'>
@@ -59,17 +91,7 @@ export default class Checkout extends Component {
 											</p> 
 											<Button clean type='button' font='orange' icon='pencil' text='Ubah Alamat ini' />
 										</Box>
-										<Box accordion>
-											<Checkbox text='Kirim sebagai Dropshipper' />
-											<Box.Accordion>
-												<InputGroup>
-													<Input type='text' placeholder='Nama Dropshipper' />
-												</InputGroup>
-												<InputGroup>
-													<Input type='number' placeholder='No Handphone' />
-												</InputGroup>
-											</Box.Accordion>
-										</Box>
+										<Dropshipper />
 										<Button text='Masukan Alamat Pengiriman' dark block size='large' iconRight icon='angle-right' />
 									</Tabs.Panel>
 									<Tabs.Panel title='Ambil Di Toko/E-locker (O2O)' sprites='o2o-off' spritesActive='o2o-on'>
@@ -94,7 +116,7 @@ export default class Checkout extends Component {
 									</Tabs.Panel>
 								</Tabs>
 							</Col>
-							<Col grid={4}>
+							<Col grid={4} className={this.state.enablePesananPengiriman ? '' : styles.disabled}>
 								<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>(5 items)</span></div>
 								<Card stretch>
 									<div className={styles.overflow}>
@@ -113,7 +135,7 @@ export default class Checkout extends Component {
 									</div>
 								</Card>
 							</Col>
-							<Col grid={4}>
+							<Col grid={4} className={this.state.enablePembayaran ? '' : styles.disabled}>
 								<div className={styles.title}>3. Pembayaran</div>
 								<Card>
 									<div className={styles.overflow}>

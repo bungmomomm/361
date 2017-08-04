@@ -1,7 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styles from './Figure.scss';
 
-export default (props) => {
+const Figure = (props) => {
 	return (
 		<div
 			className={styles.image}
@@ -27,4 +28,13 @@ export default (props) => {
 			</figure>
 		</div>
 	);
+};
+
+export default Figure;
+
+Figure.propTypes = {
+	src: PropTypes.string,
+	alt: PropTypes.string,
+	width: PropTypes.number,
+	height: PropTypes.number
 };

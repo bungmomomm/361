@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import styles from './Stepper.scss';
 import Icon from '@/components/Icon';
 
@@ -46,4 +47,10 @@ export default class Stepper extends Component {
 			</div>
 		);
 	}
+};
+
+Stepper.propTypes = {
+	value: PropTypes.number,
+	onChange: PropTypes.func,
+	maxValue: PropTypes.number
 };

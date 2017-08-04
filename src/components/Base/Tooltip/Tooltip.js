@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import styles from './Tooltip.scss';
 import classNames from 'classnames/bind';
 import Icon from '@/components/Icon';
 const cx = classNames.bind(styles);
-// import newId from '@/utils/newId.js';
 
 export default class Tooltip extends Component {
 	constructor(props) {
@@ -46,4 +46,9 @@ export default class Tooltip extends Component {
 			</div>
 		);
 	}
+};
+
+Tooltip.propTypes = {
+	right: PropTypes.bool,
+	children: PropTypes.node
 };

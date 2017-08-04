@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styles from './CheckoutProduct.scss';
 import Figure from '@/components/Figure';
 import { Button } from '@/components/Base';
@@ -6,7 +7,7 @@ import Stepper from '@/components/Stepper';
 
 import { currency } from '@/utils';
 
-export default (props) => {
+const CheckoutProduct = (props) => {
 	return (
 		<div className={styles.list}>
 			<div className={styles.body}>
@@ -43,4 +44,10 @@ export default (props) => {
 			</div>
 		</div>
 	);
+};
+
+export default CheckoutProduct;
+
+CheckoutProduct.propTypes = {
+	data: PropTypes.object.isRequired
 };

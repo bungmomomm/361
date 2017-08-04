@@ -1,22 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
-import styles from './Tabs.scss';
+import styles from './Modal.scss';
 const cx = classNames.bind(styles);
 
-const Panel = (props) => {
-	const panelClass = cx({
-		panel: true
+const Body = (props) => {
+	const BodyClass = cx({
+		body: true
 	});
 	return (
-		<div className={panelClass}>
+		<div className={BodyClass}>
 			{props.children}
 		</div>
 	);
 };
 
-export default Panel;
+export default Body;
 
-Panel.propTypes = {
+Body.propTypes = {
 	children: PropTypes.node
 };
