@@ -31,6 +31,10 @@ export default class Checkout extends Component {
 		};
 	}
 
+	componentWillMount() {
+		console.log(process.env.SERVER);
+	} 
+
 	render() {
 		const {
 			enableAlamatPengiriman,
