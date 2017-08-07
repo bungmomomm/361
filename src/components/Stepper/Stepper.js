@@ -8,7 +8,7 @@ export default class Stepper extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			value: this.props.value ? this.props.value : 1
+			value: this.props.value || 1
 		};
 	}
 

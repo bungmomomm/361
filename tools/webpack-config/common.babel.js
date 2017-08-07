@@ -1,5 +1,6 @@
 import webpack from 'webpack';
 import path from 'path';
+import Dotenv from 'dotenv-webpack';
 import { mozjpeg, pngquant, svgo } from '../loaders/images';
 import files from '../loaders/files';
 
@@ -96,7 +97,13 @@ const config = {
 
 	},
 
-	plugins: []
+	plugins: [
+		new Dotenv({
+			path: './.env',
+			safe: true,
+			systemvars: true
+		})
+	]
 };
 
 if (

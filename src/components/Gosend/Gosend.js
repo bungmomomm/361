@@ -147,7 +147,7 @@ class Gosend extends Component {
 								<Icon name='map-marker' /> 
 								<span>{this.state.formattedAddress}</span>
 							</div>
-							<Alert alignCenter close error>
+							<Alert align='center' color='red' close>
 								<em>Lokasi tidak sesuai dengan alamat pengiriman</em>
 							</Alert>
 						</div>

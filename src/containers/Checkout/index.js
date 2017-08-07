@@ -25,8 +25,8 @@ export default class Checkout extends Component {
 		this.props = props;
 		this.state = {
 			enableAlamatPengiriman: true,
-			enablePesananPengiriman: true,
-			enablePembayaran: true,
+			enablePesananPengiriman: false,
+			enablePembayaran: false,
 			loading: false
 		};
 	}

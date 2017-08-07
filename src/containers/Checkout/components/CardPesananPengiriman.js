@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 import styles from '../Checkout.scss';
-import { StoreBox } from '@/components/Store';
-import { CheckoutProduct, CheckoutResult } from '@/components/Product';
 
 // component load
 import { Card } from '@/components/Base';
+import StoreBox from './Store/StoreBox';
+import CheckoutResult from './Store/CheckoutResult';
+import CheckoutProduct from './Product/CheckoutProduct';
 
 // Dummy Data
-import { 
-	CheckoutList
-} from '@/data';
+import { CheckoutList } from '@/data';
 
 export default class CardPesananPengiriman extends Component {
 	constructor(props) {
