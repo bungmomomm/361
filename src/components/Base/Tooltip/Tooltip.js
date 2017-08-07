@@ -10,7 +10,7 @@ export default class Tooltip extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			PositionLeft: true
+			position: 'right'
 		};
 	}
 
@@ -18,11 +18,11 @@ export default class Tooltip extends Component {
 		const elem = event.target;
 		const rect = elem.getBoundingClientRect();
 		this.setState({
-			PositionLeft: true
+			position: 'right'
 		});
 		if (rect.left > rect.right) {
 			this.setState({
-				PositionLeft: false
+				position: 'left'
 			});
 		}
 	}
@@ -30,8 +30,8 @@ export default class Tooltip extends Component {
 	render() {
 		const TooltipWrapper = cx({
 			TooltipWrapper: true,
-			right: !!this.props.right,
-			PosLeft: !!this.state.PositionLeft
+			[`${this.props.position}`]: !!this.props.position,
+			[`align_${this.props.align}`]: !!this.props.align
 		});
 		return (
 			<div className={TooltipWrapper} ref={this.position}>
@@ -49,6 +49,6 @@ export default class Tooltip extends Component {
 };
 
 Tooltip.propTypes = {
-	right: PropTypes.bool,
-	children: PropTypes.node
+	position: PropTypes.oneOf(['left', 'right']),
+	align: PropTypes.oneOf(['left', 'right'])
 };

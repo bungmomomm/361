@@ -13,23 +13,23 @@ export default class Alert extends Component {
 			show: true
 		};
 	}
+	
 	@injectProps
+
 	render({
-		warning,
-		success,
-		error,
-		alignCenter,
 		icon,
 		children,
-		close
+		close,
+		color,
+		align
 	}) {
+
 		const classAlert = cx({
 			Alert: true,
-			warning: !!warning,
-			success: !!success,
-			error: !!error,
-			alignCenter: !!alignCenter
+			[`${color}`]: !!color,
+			[`${align}`]: !!align
 		});
+
 		return (
 			this.state.show ? (
 				<div className={classAlert}>
@@ -59,10 +59,7 @@ export default class Alert extends Component {
 };
 
 Alert.propTypes = {
-	warning: PropTypes.bool,
-	success: PropTypes.bool,
-	error: PropTypes.bool,
-	alignCenter: PropTypes.bool,
-	children: PropTypes.node,
-	close: PropTypes.bool,
+	color: PropTypes.oneOf(['red', 'yellow', 'orange', 'green', 'grey', 'dark']),
+	align: PropTypes.oneOf(['left', 'center', 'right']),
+	close: PropTypes.bool
 };

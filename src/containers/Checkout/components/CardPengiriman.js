@@ -27,7 +27,7 @@ export default class CardPengiriman extends Component {
 		return (
 			<Tabs tabActive={0} stretch>
 				<Tabs.Panel title='Kirim ke Alamat' sprites='truck-off' spritesActive='truck-on'>
-					<Alert alignCenter close warning>
+					<Alert align='center' color='yellow' close>
 						Gratis ongkos kirim hingga Rp 15,000 untuk minimal pembelian sebesar Rp 100,000
 					</Alert>
 					<Box>
@@ -50,7 +50,7 @@ export default class CardPengiriman extends Component {
 					<Button content='Masukan Alamat Pengiriman' color='dark' block size='large' iconPosition='right' icon='angle-right' />
 				</Tabs.Panel>
 				<Tabs.Panel title='Ambil Di Toko/E-locker (O2O)' sprites='o2o-off' spritesActive='o2o-on'>
-					<Alert alignCenter warning>
+					<Alert align='center' color='yellow'>
 						Maksimum 2 kg perorder untuk Ambil di Toko. Pesanan diatas 2 kg akan langsung dikirimkan ke Alamat Anda.
 					</Alert>
 					<Box>

@@ -10,23 +10,37 @@
 	justify-content: space-between;
 }
 
-.warning{
+// COLOR
+
+.yellow{
 	background: #FEF5EA;
 	padding: rem(10px);
 	color: #AF9F74;
 	border-color: #AF9F74;
 }
 
-.error{
+.red{
 	background: #F2DEDF;
 	padding: rem(10px);
 	color: #BE5959;
 	border-color: #DFA4A4;
 }
 
-.alignCenter{
+// END of COLOR
+
+
+// ALIGN
+.left{
 	text-align: center;
 }
+.center{
+	text-align: center;
+}
+.right{
+	text-align: center;
+}
+
+// END OF ALIGN
 
 .icon{
 	margin:0px rem(5px);

@@ -179,7 +179,7 @@ export default class NewAddressModalbox extends Component {
 								message={errors.has('address') ? 'Address field is required.' : ''}
 							/>
 						</InputGroup>
-						<Alert warning>
+						<Alert color='yellow'>
 							<small>
 								<em>
 									Harap tidak mengisi alamat pickup point O2O tanpa melalui pilihan menu Ambil di Toko

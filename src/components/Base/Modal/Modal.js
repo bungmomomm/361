@@ -83,6 +83,5 @@ Modal.Footer = Footer;
 Modal.propTypes = {
 	shown: PropTypes.bool,
 	large: PropTypes.bool,
-	small: PropTypes.bool,
-	children: PropTypes.node
+	small: PropTypes.bool
 };

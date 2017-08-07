@@ -14,7 +14,7 @@
 
 .infoButton{
 	cursor: pointer;
-	position: absolute;
+	display: inline-block;
 	left: 0px;
 	margin-top: 5px;
 	&:hover{
@@ -62,7 +62,7 @@
 	}
 }
 
-.PosLeft{
+.right{
 	.content{
 		right: auto;
 		left: 25px;		
@@ -75,4 +75,27 @@
 			border-color: transparent color(black) transparent transparent;
 		}
 	}
+}
+
+.left{
+	.content{
+		right: 25px;
+		left: auto;		
+		&:after{
+			content: '';
+			right:auto;
+			right: -7px;
+			margin-top: 7px;
+			border-width: 3.5px 0 3.5px 7px;
+			border-color: transparent transparent transparent color(black);
+		}
+	}
+}
+
+.align_left{
+	text-align: left;
+}
+
+.align_right{
+	text-align: right;
 }

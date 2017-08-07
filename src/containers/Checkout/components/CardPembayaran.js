@@ -106,7 +106,7 @@ export default class CardPembayaran extends Component {
 						</InputGroup>
 						<InputGroup>
 							<Select selectedLabel='-- Pilih Bank' options={Bank} />
-							<Tooltip right>
+							<Tooltip position='left' align='right'>
 								<p>Info pembayaran BCA KlikPay</p>
 								<ol>
 									<li>Setelah klik tombol &quot;Bayar Sekarang&quot; di bawah, Anda akan diarahkan ke halaman BCA KlikPay.</li>

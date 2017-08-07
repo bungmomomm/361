@@ -59,15 +59,11 @@ if (process.env.NODE_ENV === 'development') {
 	config.devtool = 'eval';
 
 	config.module.rules.push(
-
 		{
-
 			test: /\.scss$/,
 			exclude: /node_modules/,
 			use: ['style-loader'].concat(stylesLoaders)
-			
 		}
-
 	);
 	
 		
