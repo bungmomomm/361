@@ -5,6 +5,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import { Provider } from 'react-redux';
 import thunkMiddleware from 'redux-thunk';
 import reducers from '@/reducers';
+import { CookiesProvider } from 'react-cookie';
 
 const Router = require('react-router-dom')[process.env.STATIC ? 'HashRouter' : 'BrowserRouter'];
 
@@ -37,9 +38,11 @@ const renderComponent = () => {
 	return (
 
 		<Provider store={store}>
-			<Router>
-				<App />
-			</Router>
+			<CookiesProvider>
+				<Router>
+					<App />
+				</Router>
+			</CookiesProvider>	
 		</Provider>
 
 	);
