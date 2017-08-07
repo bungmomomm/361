@@ -6,7 +6,7 @@ import Icon from '@/components/Icon';
 
 export default (props) => {
 	return (
-		<Modal small>
+		<Modal small shown={props.shown}>
 			<Modal.Header>
 				<Icon name='times' custom='error' />
 			</Modal.Header>

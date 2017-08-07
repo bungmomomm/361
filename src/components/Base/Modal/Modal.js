@@ -33,7 +33,7 @@ export default class Modal extends Component {
 	}
 
 	toggleBodyOverflow() {
-		document.body.style.overflow = this.state.displayModal ? 'hidden' : 'auto';
+		document.body.style.overflow = this.state.displayModal ? 'auto' : 'hidden';
 	}
 	
 	@injectProps

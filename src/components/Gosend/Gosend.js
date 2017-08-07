@@ -95,7 +95,15 @@ class Gosend extends Component {
 		return (
 			<div className={gosendClass}>
 				<div className={styles.header}>
-					<Button type='button' onClick={this.showGoogleMap} text='Tunjukan Dalam Peta' size='small' grey icon='map-marker' />
+					<Button 
+						type='button' 
+						onClick={this.showGoogleMap} 
+						content='Tunjukan Dalam Peta' 
+						size='small' 
+						color='grey' 
+						icon='map-marker' 
+						iconPosition='left' 
+					/>
 					<div className={styles.desc}>
 						Lokasi peta harus sesuai dengan alamat pengiriman. Lokasi diperlukan jika ingin menggunakan jasa pengiriman GO-SEND.
 					</div>
@@ -136,7 +144,8 @@ class Gosend extends Component {
 								)
 							}
 							<div className={styles.mapLocationName}>
-								<Icon name='map-marker' /> <span>{this.state.formattedAddress}</span>
+								<Icon name='map-marker' /> 
+								<span>{this.state.formattedAddress}</span>
 							</div>
 							<Alert alignCenter close error>
 								<em>Lokasi tidak sesuai dengan alamat pengiriman</em>

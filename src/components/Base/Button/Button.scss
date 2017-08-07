@@ -49,20 +49,16 @@
 	}
 }
 
-[disabled]{
-	opacity: 0.5;
-	cursor: not-allowed;
-}
-
-.primary{
+// VARIANT
+.red{
 	@include buttonStyle(red);
 }
 
-.success{
+.green{
 	@include buttonStyle(green);
 }
 
-.warning{
+.yellow{
 	@include buttonStyle(yellow);
 }	
 
@@ -70,10 +66,71 @@
 	@include buttonStyle(black);
 }
 
+.orange{
+	@include buttonStyle(orange);
+}
+
 .grey{
 	color: color(grey);
 	@include buttonStyle(gainsboro);
 	border-color: border(color);
+}
+// END OF VARIANT
+
+// SIZE
+.small{
+	height: rem(27px);
+	font-size: rem(10px);
+	i{
+		font-size: rem(12px);
+	}
+}
+
+.medium{
+	height: rem(35px);
+}
+
+.large{
+	height: rem(37px);
+	font-size: rem(15px);
+	i{
+		font-size: rem(18px);
+	}
+}
+// END OF SIZE
+
+
+// ICON POSITION
+.iconPosition_right{
+	i{
+		margin-left: rem(5px);
+	}
+}
+
+.iconPosition_left{
+	i{
+		margin-right: rem(5px);
+	}
+}
+
+// END ICON POSITION
+
+// Boolean
+.block{
+	display: block;
+	width: 100%;
+}
+
+.clean{
+	padding: 0px;
+	font-size: rem(12px);
+	height: auto;
+	@include font(normal);
+}
+
+[disabled]{
+	opacity: 0.5;
+	cursor: not-allowed;
 }
 
 .loading{
@@ -96,52 +153,4 @@
 	}
 }
 
-
-.block{
-	display: block;
-	width: 100%;
-}
-
-.orange{
-	color: color(orange);
-}
-
-.clean{
-	padding: 0px;
-	font-size: rem(12px);
-	height: auto;
-	@include font(normal);
-}
-
-.lightGrey{
-	color: color(lightgray);
-	&:hover{
-		color: color(black);
-	}
-}
-
-.small{
-	height: rem(27px);
-	font-size: rem(10px);
-	i{
-		font-size: rem(12px);
-	}
-}
-
-.medium{
-	height: rem(35px);
-}
-
-.large{
-	height: rem(37px);
-	font-size: rem(15px);
-	i{
-		font-size: rem(18px);
-	}
-}
-
-.iconRight{
-	i{
-		margin-left: rem(5px);
-	}
-}
+// end of Boolean

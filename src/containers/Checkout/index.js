@@ -4,6 +4,7 @@ import styles from './Checkout.scss';
 
 // component load
 import { CheckoutHeader } from '@/components/Header';
+import Loading from '@/components/Loading';
 import { Container, Row, Col } from '@/components/Base';
 	
 // Checkout Component
@@ -24,8 +25,9 @@ export default class Checkout extends Component {
 		this.props = props;
 		this.state = {
 			enableAlamatPengiriman: true,
-			enablePesananPengiriman: false,
-			enablePembayaran: false
+			enablePesananPengiriman: true,
+			enablePembayaran: true,
+			loading: false
 		};
 	}
 
@@ -37,32 +39,34 @@ export default class Checkout extends Component {
 		} = this.state;
 
 		return (
-			<div className='page'>
-				<Helmet title='Checkout' />
-				<CheckoutHeader />
-				<div className={styles.checkout}>
-					<Container>
-						<Row>
-							<Col grid={4} className={enableAlamatPengiriman ? '' : styles.disabled}>
-								<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
-								<CardPengiriman />
-							</Col>
-							<Col grid={4} className={enablePesananPengiriman ? '' : styles.disabled}>
-								<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>(5 items)</span></div>
-								<CardPesananPengiriman />
-							</Col>
-							<Col grid={4} className={enablePembayaran ? '' : styles.disabled}>
-								<div className={styles.title}>3. Pembayaran</div>
-								<CardPembayaran />
-							</Col>
-						</Row>
-					</Container>
+			this.state.loading ? <Loading /> : (
+				<div className='page'>
+					<Helmet title='Checkout' />
+					<CheckoutHeader />
+					<div className={styles.checkout}>
+						<Container>
+							<Row>
+								<Col grid={4} className={enableAlamatPengiriman ? '' : styles.disabled}>
+									<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
+									<CardPengiriman />
+								</Col>
+								<Col grid={4} className={enablePesananPengiriman ? '' : styles.disabled}>
+									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>(5 items)</span></div>
+									<CardPesananPengiriman />
+								</Col>
+								<Col grid={4} className={enablePembayaran ? '' : styles.disabled}>
+									<div className={styles.title}>3. Pembayaran</div>
+									<CardPembayaran />
+								</Col>
+							</Row>
+						</Container>
+					</div>
+					<NewAddressModalbox shown />
+					<ElockerModalbox />
+					<PaymentSuccessModalbox />
+					<PaymentErrorModalbox />
 				</div>
-				<NewAddressModalbox />
-				<ElockerModalbox />
-				<PaymentSuccessModalbox />
-				<PaymentErrorModalbox />
-			</div>
+			)
 		);
 	}
 };

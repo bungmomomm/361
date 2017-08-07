@@ -23,6 +23,7 @@
 
 .tabHeader{
     display: flex;
+    flex:none;
     button{
         display: inline-flex;
         font-weight: 600;
@@ -44,8 +45,8 @@
     }
     .TabActive{
         background: #fff;
-        border: 1px solid #DEDEDE;
-        border-top: 2px solid #FDAE14;
+        border: 1px solid border(color);
+        border-top: 2px solid color(yellow);
         border-bottom: 0px;
         position: relative;
         z-index:1;

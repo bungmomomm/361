@@ -34,20 +34,6 @@
 	}
 }
 
-.message{
-	margin-top: 5px;
-	display: block;
-	font-size: 10px;
-	text-align: right;
-}
-
-.error{
-	@include inputStyle(red);
-	+ .message{
-		color: color(red);
-	}
-}
-
 .sprites{
 	position: absolute;
 	right: 10px;
@@ -61,14 +47,18 @@
 	padding-right: 90px;
 }
 
-.success{
+// VARIANT
+.green{
 	@include inputStyle(green);
 }
 
-.warning{
+.yellow{
 	@include inputStyle(yellow);
 }
 
+// END VARIANT
+
+// SIZE
 .small{
 	height: 27px;
 }
@@ -79,6 +69,17 @@
 
 .large{
 	height: 45px;
+}
+// END SIZE
+
+
+// Boolean
+
+.message{
+	margin-top: 5px;
+	display: block;
+	font-size: 10px;
+	text-align: right;
 }
 
 .horizontal{
@@ -97,4 +98,11 @@
 		flex: 0 0 100%;
 	}
 
+}
+
+.error{
+	@include inputStyle(red);
+	+ .message{
+		color: color(red);
+	}
 }

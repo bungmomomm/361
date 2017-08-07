@@ -6,7 +6,7 @@ import Elocker from '@/components/Elocker';
 
 export default (props) => {
 	return (
-		<Modal large >
+		<Modal large shown={props.shown}>
 			<Modal.Header>
 				Pilih Lokasi E-Locker (O2O)
 			</Modal.Header>
@@ -16,7 +16,7 @@ export default (props) => {
 			<Modal.Footer>
 				<Level>
 					<Level.Right>
-						<Button text='Pilih E-Locker (O2O)' dark />
+						<Button content='Pilih E-Locker (O2O)' color='dark' />
 					</Level.Right>
 				</Level>
 			</Modal.Footer>

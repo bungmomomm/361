@@ -34,6 +34,12 @@ export default class CardPembayaran extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.handleSubmit = this.handleSubmit.bind(this);
+	}
+
+	handleSubmit(event) {
+		event.preventDefault();
+		console.log(this.props);
 	}
 	
 	render() {
@@ -60,8 +66,8 @@ export default class CardPembayaran extends Component {
 						<Level.Left>Kode Voucher</Level.Left>
 						<Level.Right>
 							<InputGroup addons>
-								<Input size='small' />
-								<Button size='small' success text='CEK' />
+								<Input size='small' color='green' />
+								<Button size='small' color='green' content='CEK' />
 							</InputGroup>
 						</Level.Right>
 					</Level>
@@ -77,11 +83,11 @@ export default class CardPembayaran extends Component {
 						<Level noMargin>
 							<Level.Left>Total Pembayaran</Level.Left>
 							<Level.Right>
-								<span className={styles.price}>{currency(22503000)}</span>
+								<div className={`${styles.price} text-right`}>{currency(22503000)}</div>
 							</Level.Right>
 						</Level>
 					</div>
-					<form className={styles.hasCheckoutAction}>
+					<div className={styles.hasCheckoutAction}>
 						<p>Pilih Metode Pembayaran</p>
 						<InputGroup>
 							<Select selectedLabel='-- Pilih Metode Lain' options={PaymentOptions} />
@@ -113,7 +119,7 @@ export default class CardPembayaran extends Component {
 						</InputGroup>
 						<p>SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke :</p>
 						<InputGroup>
-							<Input value='082113982173' />
+							<Input type='text' value='082113982173' />
 						</InputGroup>
 						<InputGroup>
 							<Input placeholder='Masukkan Nomor Kartu' creditCard />
@@ -127,7 +133,7 @@ export default class CardPembayaran extends Component {
 								<Select top selectedLabel='-- Tahun' options={Tahun} />
 							</Level.Item>
 							<Level.Item>
-								<Input placeholder='cvv' />
+								<Input type='number' placeholder='cvv' />
 							</Level.Item>
 							<Level.Item>
 								<Sprites name='cvv' />
@@ -137,9 +143,9 @@ export default class CardPembayaran extends Component {
 						<p>SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke :</p>
 						<div className={styles.checkOutAction}>
 							<Checkbox text='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />
-							<Button size='large' iconRight icon='angle-right' block primary text='Bayar Sekarang' />
+							<Button block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' />
 						</div>
-					</form>
+					</div>
 				</div>
 			</Card>
 		);

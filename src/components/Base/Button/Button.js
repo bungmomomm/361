@@ -14,47 +14,30 @@ export default class Button extends Component {
 
 	@injectProps
 	render({
-		primary,
-		success,
-		warning,
-		danger,
-		dark,
-		grey,
-		small,
-		medium,
-		large,
+		className,
+		block,
+		color,
 		outline,
 		loading,
-		block,
-		clean,
-		font,
 		size,
 		type,
 		onClick,
 		disabled,
-		text,
+		iconPosition,
+		content,
 		children,
-		iconRight,
-		icon
+		icon,
+		tabIndex
 	}) {
 		const classButton = cx({
+			[`${className}`]: !!className,
 			button: true,
-			primary: !!primary,
-			success: !!success,
-			warning: !!warning,
-			danger: !!danger,
-			dark: !!dark,
-			grey: !!grey,
-			small: !!small,
-			medium: !!medium,
-			large: !!large,
+			[`${color}`]: !!color,
 			outline: !!outline,
-			loading: !!loading,
 			block: !!block,
-			clean: !!clean,
-			iconRight: !!iconRight,
-			[`${font}`]: !!font,
+			loading: !!loading,
 			[`${size}`]: !!size,
+			[`Button__iconPosition_${iconPosition}`]: !!iconPosition
 		});
 
 		return (
@@ -63,15 +46,16 @@ export default class Button extends Component {
 				className={classButton} 
 				onClick={onClick} 
 				disabled={disabled}
+				tabIndex={tabIndex}
 			>
 				{
-					icon && !iconRight ? <Icon name={icon} /> : null
+					icon && iconPosition === 'left' ? <Icon name={icon} /> : null
 				}
 				{
-					text || children
+					content || children
 				}
 				{
-					iconRight ? <Icon name={icon} /> : null
+					icon && iconPosition === 'right' ? <Icon name={icon} /> : null
 				}
 			</button>
 		);
@@ -79,26 +63,18 @@ export default class Button extends Component {
 };
 
 Button.propTypes = {
-	primary: PropTypes.bool,
-	success: PropTypes.bool,
-	warning: PropTypes.bool,
-	danger: PropTypes.bool,
-	dark: PropTypes.bool,
-	grey: PropTypes.bool,
-	small: PropTypes.bool,
-	medium: PropTypes.bool,
-	large: PropTypes.bool,
+	color: PropTypes.oneOf(['red', 'yellow', 'orange', 'green', 'grey', 'dark']),
 	outline: PropTypes.bool,
 	loading: PropTypes.bool,
 	block: PropTypes.bool,
-	clean: PropTypes.bool,
-	font: PropTypes.string,
-	size: PropTypes.string,
+	size: PropTypes.oneOf(['small', 'medium', 'large']),
 	type: PropTypes.string,
 	onClick: PropTypes.func,
 	disabled: PropTypes.bool,
-	iconRight: PropTypes.bool,
-	text: PropTypes.string,
-	children: PropTypes.node,
+	circular: PropTypes.bool,
+	className: PropTypes.string,
+	attached: PropTypes.oneOf(['left', 'center', 'right']),
+	iconPosition: PropTypes.oneOf(['left', 'right']),
+	content: PropTypes.string,
 	icon: PropTypes.string
 };

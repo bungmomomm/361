@@ -44,10 +44,10 @@ export default class CardPengiriman extends Component {
 							Jl. Bangka II, Mampang Prapatan, Jakarta Selatan, DKI Jakarta 12720 <br />
 							P: 08568052187
 						</p> 
-						<Button clean type='button' font='orange' icon='pencil' text='Ubah Alamat ini' />
+						<Button clean type='button' icon='pencil' content='Ubah Alamat ini' />
 					</Box>
 					<Dropshipper />
-					<Button text='Masukan Alamat Pengiriman' dark block size='large' iconRight icon='angle-right' />
+					<Button content='Masukan Alamat Pengiriman' color='dark' block size='large' iconPosition='right' icon='angle-right' />
 				</Tabs.Panel>
 				<Tabs.Panel title='Ambil Di Toko/E-locker (O2O)' sprites='o2o-off' spritesActive='o2o-on'>
 					<Alert alignCenter warning>

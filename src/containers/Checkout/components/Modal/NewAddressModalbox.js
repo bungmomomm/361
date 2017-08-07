@@ -46,7 +46,6 @@ export default class NewAddressModalbox extends Component {
 		this.setErrors(name, value);
 	}
 
-
 	onChangeSelect(e) {
 		this.setErrors(e.name, e.value);
 	}
@@ -84,7 +83,7 @@ export default class NewAddressModalbox extends Component {
 	render() {
 		const { errors } = this.state;
 		return (
-			<Modal>
+			<Modal shown={this.props.shown}>
 				<Modal.Header>
 					<div>Buat Alamat Baru</div>
 				</Modal.Header>
@@ -211,7 +210,7 @@ export default class NewAddressModalbox extends Component {
 							<em>* wajib diisi</em>
 						</Level.Left>
 						<Level.Right>
-							<Button onClick={this.validateAndSubmit} text='Simpan Alamat' dark block />
+							<Button block type='button' onClick={this.validateAndSubmit} content='Simpan Alamat' color='dark' />
 						</Level.Right>
 					</Level>
 				</Modal.Footer>

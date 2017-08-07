@@ -72,21 +72,19 @@ export default class Input extends Component {
 		horizontal,
 		error,
 		size,
-		success,
-		warning,
 		label,
-		required,
 		creditCard,
 		type,
 		name,
 		placeholder,
 		value,
 		onClick,
+		readOnly,
 		onKeyPress,
-		ref,
 		sprites,
 		icon,
-		message
+		message,
+		color
 	}) {
 		const inputWrapper = cx({
 			inputWrapper: true,
@@ -97,11 +95,10 @@ export default class Input extends Component {
 			input: true,
 			error: !!error,
 			[`${size}`]: !!size,
-			success: !!success || this.state.ccValid,
-			warning: !!warning,
-			required: !!required,
-			[`Input__${sprites}`]: !!sprites
+			[`${color}`]: !!color,
+			[`${sprites}`]: !!sprites
 		});
+		
 		const idFor = newId();
 		
 		return (
@@ -110,9 +107,6 @@ export default class Input extends Component {
 					!label ? null : (
 						<label htmlFor={idFor}>
 							{label}
-							{ 
-								!required ? null : ' *' 
-							}
 						</label> 
 					)
 				} 
@@ -132,11 +126,11 @@ export default class Input extends Component {
 							className={inputClass} 
 							type={type}
 							name={name}
+							readOnly={readOnly}
 							placeholder={placeholder}
 							defaultValue={value}
 							onClick={onClick}
 							onKeyPress={onKeyPress}
-							ref={ref}
 							onChange={this.onChange}
 						/>
 				} 
@@ -169,19 +163,15 @@ Input.propTypes = {
 	onChange: PropTypes.func,
 	horizontal: PropTypes.bool,
 	error: PropTypes.bool,
-	size: PropTypes.string,
-	success: PropTypes.bool,
-	warning: PropTypes.bool,
+	size: PropTypes.oneOf(['small', 'medium', 'large']),
+	color: PropTypes.oneOf(['green', 'yellow']),
 	label: PropTypes.string,
-	required: PropTypes.bool,
 	creditCard: PropTypes.bool,
-	type: PropTypes.string,
+	type: PropTypes.oneOf(['text', 'password', 'date', 'email', 'hidden', 'password', 'number', 'search']),
 	name: PropTypes.string,
 	placeholder: PropTypes.string,
-	value: PropTypes.string,
 	onClick: PropTypes.func,
 	onKeyPress: PropTypes.func,
-	ref: PropTypes.func,
 	sprites: PropTypes.string,
 	icon: PropTypes.string,
 	message: PropTypes.string

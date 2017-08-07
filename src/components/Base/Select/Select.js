@@ -57,7 +57,7 @@ export default class Select extends Component {
 		});
 	}
 
-	setOptions() {
+	setOptions(event) {
 		this.setState({
 			options: this.props.options,
 			showOption: !this.state.showOption
@@ -164,12 +164,12 @@ export default class Select extends Component {
 								this.state.options.map((option, i) => (
 									<button 
 										key={i}
+										type='button'
 										className={
 											option.value !== this.state.selected.value ? null : styles.selected
 										} 
 										onClick={() => this.setSelectOption(option)} 
 										disabled={!!option.disabled}
-										type='button'
 									>
 										<div className={styles.text}>
 											{
