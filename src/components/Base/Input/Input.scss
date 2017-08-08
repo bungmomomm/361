@@ -56,6 +56,14 @@
 	@include inputStyle(yellow);
 }
 
+.red{
+	@include inputStyle(red);
+	+ .message{
+		color: color(red);
+	}
+}
+
+
 // END VARIANT
 
 // SIZE
@@ -98,11 +106,4 @@
 		flex: 0 0 100%;
 	}
 
-}
-
-.error{
-	@include inputStyle(red);
-	+ .message{
-		color: color(red);
-	}
 }

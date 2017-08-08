@@ -29,7 +29,7 @@ class Checkout extends Component {
 		this.state = {
 			enableAlamatPengiriman: true,
 			enablePesananPengiriman: false,
-			enablePembayaran: false,
+			enablePembayaran: true,
 			cookie: {
 				name: this.props.cookies.get('name') || 'Ben'
 			},

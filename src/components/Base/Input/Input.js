@@ -33,6 +33,7 @@ export default class Input extends Component {
 		if (this.props.creditCard) {
 			const trimCC = event.target.value.replace(/_| /g, '');
 			const trimCCLength = trimCC.length;
+			this.setValidInput(null);
 			if (trimCCLength < 1) {
 				this.setSprites();
 			} else if (trimCCLength < 3) {
@@ -50,12 +51,15 @@ export default class Input extends Component {
 		});
 	}
 
-	luhnCCValidation(cc) {
+	setValidInput(value) {
 		this.setState({
-			ccValid: luhnCC.isValid(cc)
+			ccValid: value
 		});
 	}
 
+	luhnCCValidation(cc) {
+		return luhnCC.isValid(cc) ? this.setValidInput('green') : this.setValidInput('red');
+	}
 
 	creditCardValidation(ccNumber) {
 		const validCard = creditCardType(ccNumber);
@@ -96,6 +100,7 @@ export default class Input extends Component {
 			error: !!error,
 			[`${size}`]: !!size,
 			[`${color}`]: !!color,
+			[`Input__${this.state.ccValid}`]: !!this.state.ccValid,
 			[`${sprites}`]: !!sprites
 		});
 		
@@ -112,7 +117,7 @@ export default class Input extends Component {
 				} 
 				{
 					creditCard ? 
-						<MaskedInput 
+						<MaskedInput
 							className={inputClass} 
 							placeholder={placeholder} 
 							mask='1111 1111 1111 1111' 

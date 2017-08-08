@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styles from '../Checkout.scss';
 import Sprites from '@/components/Sprites';
+import { Validator } from 'ree-validate';
 
 // component load
 import { 
@@ -14,7 +15,6 @@ import {
 	Checkbox 
 } from '@/components/Base';
 
-// Dummy Data
 // Dummy Data
 import { 
 	UangElektronik, 
@@ -35,10 +35,37 @@ export default class CardPembayaran extends Component {
 		super(props);
 		this.props = props;
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.validator = new Validator({
+			name: 'required',
+			penerima: 'required',
+			no_hp: 'required',
+			provinsi: 'required',
+			kecamatan: 'required',
+			kodepos: 'required',
+			address: 'required'
+		});
+		this.state = {
+			formData: {
+				name: '',
+				penerima: '',
+				no_hp: '',
+				provinsi: '',
+				kecamatan: '',
+				kodepos: '',
+				address: ''
+			},
+			errors: this.validator.errorBag,
+		};
+
+		this.submitPayment = this.submitPayment.bind(this);
 	}
 
 	handleSubmit(event) {
 		event.preventDefault();
+		console.log(this.state);
+	}
+
+	submitPayment() {
 		console.log(this.state);
 	}
 	
@@ -122,7 +149,7 @@ export default class CardPembayaran extends Component {
 							<Input type='text' value='082113982173' />
 						</InputGroup>
 						<InputGroup>
-							<Input placeholder='Masukkan Nomor Kartu' creditCard />
+							<Input placeholder='Masukkan Nomor Kartu' sprites='payment-option' creditCard />
 						</InputGroup>
 						<label htmlFor='masa-berlaku'>Masa Berlaku</label>
 						<Level padded>
@@ -143,7 +170,7 @@ export default class CardPembayaran extends Component {
 						<p>SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke :</p>
 						<div className={styles.checkOutAction}>
 							<Checkbox text='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />
-							<Button block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' />
+							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' />
 						</div>
 					</div>
 				</div>
