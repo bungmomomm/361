@@ -32,6 +32,7 @@ const createComponent = () => {
 		).then((res) => {
 			const type = res.type;
 			const name = res.name;
+			console.log(name);
 			const componentDirectory = `${componentsDir}/${name}/`;
 
 			fs.mkdirSync(`${componentDirectory}`);

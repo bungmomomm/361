@@ -5,4 +5,5 @@ function injectProps(target, name, descriptor) {
 	};
 	return descriptor;
 }
+
 export default injectProps;

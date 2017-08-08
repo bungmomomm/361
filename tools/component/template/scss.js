@@ -1,6 +1,8 @@
 export default (params) => `
+@import 'mixins';
+@import 'variables';
 
-.${params.name} {
+.test {
 	background:transparent;
 }
 

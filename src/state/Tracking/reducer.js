@@ -20,7 +20,7 @@ export default (state = initialState, action) => {
 	case TRACKING_REQUEST: {
 		return {
 			...state,
-			tracking: action.payload.data,
+			tracking: action.payload,
 			message: 'send request'
 		};
 	}

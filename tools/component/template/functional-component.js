@@ -1,19 +1,18 @@
 export default (params) => `
 
 import React, { Component } from 'react';
-import styles from './${params.name}.scss';
+import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
+
+import { injectProps } from '@/decorators';
+import styles from './${params.name}.scss';
 const cx = classNames.bind(styles);
 
-export default class ${params.name} extends Component {
+class ${params.name} extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 	}
-
-// ----------------------------------------
-// Component Event Handlers
-// ----------------------------------------
 
 // ----------------------------------------
 // Getters
@@ -24,21 +23,14 @@ export default class ${params.name} extends Component {
 // ----------------------------------------
 
 // ----------------------------------------
-// Behavior
-// ----------------------------------------
-
-// ----------------------------------------
-// Compute
-// ----------------------------------------
-
-// ----------------------------------------
-// Refs
+// Event Handlers
 // ----------------------------------------
 
 // ----------------------------------------
 // Render
 // ----------------------------------------
 
+	@injectProps
 	render() {
 		const class${params.name} = cx({
 			${params.name}: true
@@ -49,6 +41,10 @@ export default class ${params.name} extends Component {
 			</div>
 		);
 	}
+};
+
+${params.name}.propTypes = {
+	test: PropTypes.bool
 };
 
 `.trim();
