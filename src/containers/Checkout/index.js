@@ -18,8 +18,11 @@ import CardPesananPengiriman from './components/CardPesananPengiriman';
 import CardPembayaran from './components/CardPembayaran';
 import CardPengiriman from './components/CardPengiriman';
 
+import { instanceOf } from 'prop-types';
+import { withCookies, Cookies } from 'react-cookie';
 
-export default class Checkout extends Component {
+
+class Checkout extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -30,6 +33,15 @@ export default class Checkout extends Component {
 			loading: false
 		};
 	}
+
+	componentWillMount() {
+		const { cookies } = this.props;
+		this.state = {
+			name: cookies.get('name') || 'Ben'
+		};
+		console.log(this.state.name);
+		console.log(process.env.SERVER);
+	} 
 
 	render() {
 		const {
@@ -70,3 +82,8 @@ export default class Checkout extends Component {
 		);
 	}
 };
+
+Checkout.propTypes = {
+	cookies: instanceOf(Cookies).isRequired
+};
+export default withCookies(Checkout);

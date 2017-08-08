@@ -5,6 +5,7 @@ import WebpackAssetsManifest from 'webpack-assets-manifest';
 import path from 'path';
 import commonConfig from './common.babel';
 import stylesLoaders from '../loaders/styles';
+import Dotenv from 'dotenv-webpack';
 
 const config = Object.assign(commonConfig, {
 	
@@ -43,6 +44,12 @@ const config = Object.assign(commonConfig, {
 
 		new webpack.LoaderOptionsPlugin({
 			debug: true
+		}),
+
+		new Dotenv({
+			path: './.env', 
+			safe: true,
+			systemvars : true
 		})
 
 	]
