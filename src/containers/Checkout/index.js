@@ -30,17 +30,46 @@ class Checkout extends Component {
 			enableAlamatPengiriman: true,
 			enablePesananPengiriman: false,
 			enablePembayaran: false,
+			cookie: {
+				name: this.props.cookies.get('name') || 'Ben'
+			},
 			loading: false
 		};
 	}
 
 	componentWillMount() {
-		const { cookies } = this.props;
-		this.state = {
-			name: cookies.get('name') || 'Ben'
-		};
-		console.log(this.state.name);
-		console.log(process.env.SERVER);
+		window.dataLayer.push({
+			event: 'checkout',
+			userID: '10c53c28efe87fe0c27262ba36f11d5d',
+			emailaddress: '8b5fb124f94a8f1185af1794a9524703',
+			ecommerce: {  
+				checkout: {  
+					actionField: {  
+						step: 1,
+						option: 'Login Email'
+					},
+					products: [
+						{  
+							id: '839783',
+							name: 'Samsung B109E Keystone 3 - Hitam',
+							price: '270000',
+							brand: 'Samsung',
+							category: 'Handphone & Tablet Handphone Handphone Basic',
+							variant: '',
+							quantity: '1'
+						}, {
+							id: '4630647',
+							name: 'Hydrowhey 3.5Lbs - Hero - Khusus O2O',
+							price: '2300000',
+							brand: 'Optimum Nutrition',
+							category: 'Kesehatan & Kecantikan Kesehatan Suplemen Kesehatan dan Pelangsing Nutrisi Olahraga',
+							variant: '',
+							quantity: '1'
+						}
+					]
+				}
+			}
+		});
 	} 
 
 	render() {
@@ -49,7 +78,7 @@ class Checkout extends Component {
 			enablePesananPengiriman,
 			enablePembayaran
 		} = this.state;
-
+		
 		return (
 			this.state.loading ? <Loading /> : (
 				<div className='page'>
@@ -86,4 +115,5 @@ class Checkout extends Component {
 Checkout.propTypes = {
 	cookies: instanceOf(Cookies).isRequired
 };
+
 export default withCookies(Checkout);

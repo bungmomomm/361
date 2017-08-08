@@ -39,7 +39,7 @@ export default class CardPembayaran extends Component {
 
 	handleSubmit(event) {
 		event.preventDefault();
-		console.log(this.props);
+		console.log(this.state);
 	}
 	
 	render() {
