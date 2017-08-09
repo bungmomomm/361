@@ -13,6 +13,7 @@ import NewAddressModalbox from './components/Modal/NewAddressModalbox';
 import ElockerModalbox from './components/Modal/ElockerModalbox';
 import PaymentSuccessModalbox from './components/Modal/PaymentSuccessModalbox';
 import PaymentErrorModalbox from './components/Modal/PaymentErrorModalbox';
+import VerifikasiNoHandponeModalbox from './components/Modal/VerifikasiNoHandponeModalbox';
 
 // Section Component
 import CardPesananPengiriman from './components/CardPesananPengiriman';
@@ -130,6 +131,7 @@ class Checkout extends Component {
 					<ElockerModalbox />
 					<PaymentSuccessModalbox />
 					<PaymentErrorModalbox />
+					<VerifikasiNoHandponeModalbox shown />
 				</div>
 			)
 		);

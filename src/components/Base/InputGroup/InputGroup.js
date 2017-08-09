@@ -20,6 +20,5 @@ const InputGroup = (props) => {
 export default InputGroup;
 
 InputGroup.propTypes = {
-	addons: PropTypes.bool,
-	children: PropTypes.node
+	addons: PropTypes.bool
 };
