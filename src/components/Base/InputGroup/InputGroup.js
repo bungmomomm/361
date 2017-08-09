@@ -8,6 +8,7 @@ const InputGroup = (props) => {
 	const inputGroupClass = cx({
 		InputGroup: true,
 		addons: !!props.addons,
+		addonsAttached: !!props.addonsAttached,
 	});
 	return (
 		<div className={inputGroupClass}>

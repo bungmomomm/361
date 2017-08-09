@@ -120,8 +120,9 @@ export default class CardPembayaran extends Component {
 					<Level>
 						<Level.Left>Kode Voucher</Level.Left>
 						<Level.Right>
-							<InputGroup>
+							<InputGroup addons addonsAttached>
 								<Input size='small' color='red' message='kode voucher salah' />
+								<Button type='button' className='font-red' size='small' icon='times' iconPosition='right' />
 							</InputGroup>
 						</Level.Right>
 					</Level>

@@ -36,3 +36,16 @@
 		}
 	}
 }
+
+.addonsAttached{
+	position: relative;
+	input{
+		border-bottom-right-radius: border(radius);
+    	border-top-right-radius: border(radius);
+	}
+	button{
+		position: absolute;
+		right: 5px;
+		top: 1px;
+	}
+}
