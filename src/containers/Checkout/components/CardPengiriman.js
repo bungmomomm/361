@@ -36,7 +36,7 @@ export default class CardPengiriman extends Component {
 						</InputGroup>
 						<Level>
 							<Level.Left><strong>Rumah Bangka</strong></Level.Left>
-							<Level.Right><Icon name='map-marker' /> &nbsp; Lokasi Sudah Ditandai</Level.Right>
+							<Level.Right className='text-right'><Icon name='map-marker' /> &nbsp; Lokasi Sudah Ditandai</Level.Right>
 						</Level>
 						<p>
 							Aufar Syahdan <br />

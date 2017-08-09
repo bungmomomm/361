@@ -21,7 +21,7 @@ import CardPengiriman from './components/CardPengiriman';
 
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
-import { request } from '@utils';
+import { request } from '@/utils';
 
 class Checkout extends Component {
 	constructor(props) {
