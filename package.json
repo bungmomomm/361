@@ -60,6 +60,7 @@
     }
   },
   "dependencies": {
+    "axios": "^0.16.2",
     "classnames": "^2.2.5",
     "compression": "^1.7.0",
     "credit-card-type": "^5.0.3",
@@ -67,6 +68,8 @@
     "express": "4.15.3",
     "google-maps-react": "^1.1.0",
     "html-minifier": "3.5.2",
+    "jwt-decode": "^2.2.0",
+    "kong-hmac": "^0.2.0",
     "luhn-cc": "0.0.6",
     "normalize.css": "^7.0.0",
     "prop-types": "15.5.10",
