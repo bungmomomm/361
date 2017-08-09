@@ -1,15 +1,22 @@
 import * as constants from './constants';
 import axios from 'axios';
 
-const couponAdd = (coupon) => ({
+const couponAdd = (thecoupon) => ({
 	type: constants.CP_ADD_COUPON,
 	payload: {
-		coupon
+		coupon: thecoupon
 	}
 });
 
 const couponAdded = (cart) => ({
 	type: constants.CP_ADDED_COUPON,
+	payload: {
+		cart
+	}
+});
+
+const couponInvalid = (cart) => ({
+	type: constants.CP_INVALID_COUPON,
 	payload: {
 		cart
 	}
@@ -29,27 +36,47 @@ const couponDeleted = (cart) => ({
 	}
 });
 
+const couponReset = () => ({
+	type: constants.CP_RESET_COUPON
+});
+
 const addCoupon = coupon => dispatch => {
+	console.log(coupon);
 	dispatch(couponAdd(coupon));
 	console.log('start');
 	return axios.post('/add2cart', { coupon }).then((response) => {
 		// mimic request api
-		setTimeout(() => {
-			console.log('end');
-			dispatch(couponAdded(response.data));
-		}, 10000);
+		const rand = 0; // Math.floor((Math.random() * 2));
+		if (rand === 1) {
+			setTimeout(() => {
+				console.log('end');
+				dispatch(couponAdded(response.data));
+			}, 2000);
+		} else {
+			setTimeout(() => {
+				console.log('end not valid');
+				dispatch(couponInvalid(response.data));
+			}, 2000);
+		}
 	});
 };
 
 const removeCoupon = () => dispatch => {
 	dispatch(couponDelete());
 	return axios.post('/add2cart', { }).then((response) => {
-		dispatch(couponDeleted(response.data));
+		setTimeout(() => {
+			dispatch(couponDeleted(response.data));
+		}, 2000);
 	});
+};
+
+const resetCoupon = () => dispatch => {
+	dispatch(couponReset());
 };
 
 
 export default {
 	addCoupon,
-	removeCoupon
+	removeCoupon,
+	resetCoupon
 };

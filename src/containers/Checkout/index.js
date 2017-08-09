@@ -23,14 +23,13 @@ import CardPengiriman from './components/CardPengiriman';
 import { PropTypes, instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { request } from '@/utils';
-import { addCoupon } from '@/state/Coupon/actions';
+import { addCoupon, removeCoupon, resetCoupon } from '@/state/Coupon/actions';
 
 class Checkout extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
-			...this.props.state,
 			enableAlamatPengiriman: true,
 			enablePesananPengiriman: true,
 			enablePembayaran: true,
@@ -41,6 +40,8 @@ class Checkout extends Component {
 			refreshToken: this.props.cookies.get('user.rf.token')
 		};
 		this.onAddCoupon = this.onAddCoupon.bind(this);
+		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
+		this.onResetCoupon = this.onResetCoupon.bind(this);
 	}
 
 	componentWillMount() {
@@ -93,8 +94,19 @@ class Checkout extends Component {
 	}
 
 	onAddCoupon(coupon) {
+		console.log('coupon', coupon);
 		const { dispatch } = this.props;
 		dispatch(addCoupon(coupon));
+	}
+
+	onRemoveCoupon(event) {
+		const { dispatch } = this.props;
+		dispatch(removeCoupon());
+	}
+
+	onResetCoupon(event) {
+		const { dispatch } = this.props;
+		dispatch(resetCoupon());
 	}
 
 	render() {
@@ -103,6 +115,10 @@ class Checkout extends Component {
 			enablePesananPengiriman,
 			enablePembayaran
 		} = this.state;
+
+		const {
+			coupon
+		} = this.props;
 		
 		return (
 			this.props.loading ? <Loading /> : (
@@ -122,7 +138,7 @@ class Checkout extends Component {
 								</Col>
 								<Col grid={4} className={enablePembayaran ? '' : styles.disabled}>
 									<div className={styles.title}>3. Pembayaran</div>
-									<CardPembayaran onAddCoupon={this.onAddCoupon} />
+									<CardPembayaran onAddCoupon={this.onAddCoupon} loadingButtonCoupon={coupon.loading} coupon={coupon.coupon} validCoupon={coupon.validCoupon} onRemoveCoupon={this.onRemoveCoupon} onResetCoupon={this.onResetCoupon} />
 								</Col>
 							</Row>
 						</Container>
@@ -131,7 +147,7 @@ class Checkout extends Component {
 					<ElockerModalbox />
 					<PaymentSuccessModalbox />
 					<PaymentErrorModalbox />
-					<VerifikasiNoHandponeModalbox shown />
+					<VerifikasiNoHandponeModalbox />
 				</div>
 			)
 		);
@@ -145,7 +161,7 @@ Checkout.propTypes = {
 
 const mapStateToProps = (state) => {
 	return {
-		...state.coupon
+		...state
 	};
 };
 
