@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, compose, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { Provider } from 'react-redux';
 import thunkMiddleware from 'redux-thunk';
@@ -17,9 +17,13 @@ const Router = require('react-router-dom')[process.env.STATIC ? 'HashRouter' : '
 // eslint-disable-next-line
 const initialState = window.__REDUX_STATE__;
 
-const store = createStore(reducers, initialState, composeWithDevTools(
-	applyMiddleware(thunkMiddleware)
-));
+const store = process.env.NODE_ENV === 'development' ? 
+	createStore(reducers, initialState, composeWithDevTools(
+		applyMiddleware(thunkMiddleware)
+	)) : 
+	createStore(reducers, initialState, compose(
+		applyMiddleware(thunkMiddleware)
+	)); 
 
 /**
  * Require main styles
