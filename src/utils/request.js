@@ -39,7 +39,7 @@ const request = (props) => {
 	
 	switch (props.method) {
 	case 'GET': {
-		axios.get(url, headers)
+		axios.get(url, {}, headers)
 				.then((response) => {
 					return response;
 				})
@@ -50,7 +50,7 @@ const request = (props) => {
 	}
 	default: 
 		
-		axios.post(url, { headers: {
+		axios.post(url, {}, { headers: {
 			Authorization: `Bearer ${props.token}`
 		} })
 				.then((response) => {
