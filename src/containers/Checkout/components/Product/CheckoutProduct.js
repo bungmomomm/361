@@ -31,7 +31,7 @@ const CheckoutProduct = (props) => {
 			</div>
 			<div className={styles.body}>
 				<div className={styles.bodyLeft}>
-					<Button clean size='small' icon='trash-o' content='Hapus' />
+					<Button clean size='small' icon='trash-o' iconPosition='left' content='Hapus' />
 				</div>
 				<div className={styles.bodyRight}>
 					<div><strong>Keterangan:</strong></div>

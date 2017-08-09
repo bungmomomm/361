@@ -28,7 +28,7 @@ class Checkout extends Component {
 		this.props = props;
 		this.state = {
 			enableAlamatPengiriman: true,
-			enablePesananPengiriman: false,
+			enablePesananPengiriman: true,
 			enablePembayaran: true,
 			cookie: {
 				name: this.props.cookies.get('name') || 'Ben'
@@ -102,8 +102,8 @@ class Checkout extends Component {
 							</Row>
 						</Container>
 					</div>
-					<NewAddressModalbox shown />
-					<ElockerModalbox />
+					<NewAddressModalbox />
+					<ElockerModalbox shown />
 					<PaymentSuccessModalbox />
 					<PaymentErrorModalbox />
 				</div>

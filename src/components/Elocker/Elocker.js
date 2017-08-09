@@ -58,6 +58,15 @@ export default class Elocker extends Component {
 	}
 
 
+	handleChooseElocker(i) {
+		const TempElocker = this.state.ElockerList;
+		for (let key = 0; key < TempElocker.length; key++) {
+			TempElocker[key].selected = i === key || false;
+		}
+
+		this.setFilterProvince(TempElocker);
+	}
+
 	render() {
 		return (
 			<div className={styles.eLocker}>
@@ -72,7 +81,7 @@ export default class Elocker extends Component {
 				<div className={styles.eLockerList}>
 					{
 						this.state.ElockerList.map((elocker, index) => (
-							<Card key={index} selected={!!elocker.selected} radius>
+							<Card onClick={() => this.handleChooseElocker(index)} key={index} selected={!!elocker.selected} radius>
 								<Card.Title>{elocker.label}</Card.Title>
 								<p>{elocker.info}</p>
 							</Card>

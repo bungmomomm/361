@@ -24,7 +24,7 @@ export default class Card extends Component {
 			selected: !!selected
 		});
 		return (
-			<div className={cardClass}>
+			<div className={cardClass} onClick={this.props.onClick} role='button' tabIndex={0}>
 				{children}
 			</div>
 		);
@@ -38,7 +38,7 @@ class Title extends Card {
 			Title: true
 		});
 		return (
-			<div className={TitleClass}>
+			<div className={TitleClass} >
 				{children}
 			</div>
 		);
@@ -51,5 +51,5 @@ Card.Title = Title;
 Card.propTypes = {
 	radius: PropTypes.bool,
 	selected: PropTypes.bool,
-	children: PropTypes.node
+	onClick: PropTypes.func
 };

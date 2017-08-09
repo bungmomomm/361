@@ -30,14 +30,14 @@ export default class Button extends Component {
 		tabIndex
 	}) {
 		const classButton = cx({
-			[`${className}`]: !!className,
 			button: true,
 			[`${color}`]: !!color,
 			outline: !!outline,
 			block: !!block,
 			loading: !!loading,
 			[`${size}`]: !!size,
-			[`Button__iconPosition_${iconPosition}`]: !!iconPosition
+			[`Button__iconPosition_${iconPosition}`]: !!iconPosition,
+			[`${className}`]: !!className
 		});
 
 		return (
@@ -49,13 +49,13 @@ export default class Button extends Component {
 				tabIndex={tabIndex}
 			>
 				{
-					icon && iconPosition === 'left' ? <Icon name={icon} /> : null
+					iconPosition === 'left' ? <Icon name={icon} /> : null
 				}
 				{
 					content || children
 				}
 				{
-					icon && iconPosition === 'right' ? <Icon name={icon} /> : null
+					iconPosition === 'right' ? <Icon name={icon} /> : null
 				}
 			</button>
 		);

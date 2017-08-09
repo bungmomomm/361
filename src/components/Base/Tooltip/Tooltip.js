@@ -12,25 +12,22 @@ export default class Tooltip extends Component {
 		this.state = {
 			position: 'right'
 		};
+		this.showTooltip = this.showTooltip.bind(this);
 	}
 
 	showTooltip(event) {
 		const elem = event.target;
 		const rect = elem.getBoundingClientRect();
 		this.setState({
-			position: 'right'
+			position: rect.left > rect.right ? 'left' : 'right'
 		});
-		if (rect.left > rect.right) {
-			this.setState({
-				position: 'left'
-			});
-		}
 	}
 
 	render() {
 		const TooltipWrapper = cx({
 			TooltipWrapper: true,
-			[`${this.props.position}`]: !!this.props.position,
+			[`${this.state.position}`]: !!this.state.position,
+			[`${this.props.color}`]: !!this.props.color,
 			[`align_${this.props.align}`]: !!this.props.align
 		});
 		return (
@@ -40,15 +37,21 @@ export default class Tooltip extends Component {
 					onMouseEnter={this.showTooltip} 
 					onMouseLeave={this.removeTooltip} 
 				>
+					<span className={styles.content}>
+						{
+							this.props.content || null
+						}
+					</span>
 					<Icon name='info-circle' />
 				</div>
-				<div className={styles.content}>{this.props.children}</div>
+				<div className={styles.area}>{this.props.children}</div>
 			</div>
 		);
 	}
 };
 
 Tooltip.propTypes = {
-	position: PropTypes.oneOf(['left', 'right']),
-	align: PropTypes.oneOf(['left', 'right'])
+	align: PropTypes.oneOf(['left', 'right']),
+	color: PropTypes.oneOf(['white', 'black']),
+	content: PropTypes.string
 };

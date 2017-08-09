@@ -12,7 +12,8 @@ import {
 	Select, 
 	Card, 
 	Button, 
-	Checkbox 
+	Checkbox,
+	Radio 
 } from '@/components/Base';
 
 // Dummy Data
@@ -55,9 +56,24 @@ export default class CardPembayaran extends Component {
 				address: ''
 			},
 			errors: this.validator.errorBag,
+			voucherCode: null
 		};
 
 		this.submitPayment = this.submitPayment.bind(this);
+		this.handleCekVoucher = this.handleCekVoucher.bind(this);
+		this.onChange = this.onChange.bind(this);
+	}
+	onChange(event) {
+		this.setState({
+			[event.name]: event.target.value
+		});
+	}
+
+	handleCekVoucher(event) {
+		event.preventDefault();
+		this.setState({
+			loadingButtonVoucher: true
+		});
 	}
 
 	handleSubmit(event) {
@@ -68,6 +84,7 @@ export default class CardPembayaran extends Component {
 	submitPayment() {
 		console.log(this.state);
 	}
+
 	
 	render() {
 		return (
@@ -92,17 +109,19 @@ export default class CardPembayaran extends Component {
 					<Level>
 						<Level.Left>Kode Voucher</Level.Left>
 						<Level.Right>
-							<InputGroup addons>
-								<Input size='small' color='green' />
-								<Button size='small' color='green' content='CEK' />
-							</InputGroup>
+							<form onSubmit={this.handleCekVoucher}>
+								<InputGroup addons>
+									<Input size='small' name='voucherCode' onChange={this.onChange} color='green' />
+									<Button type='submit' size='small' loading={this.state.loadingButtonVoucher} color='green' content='CEK' />
+								</InputGroup>
+							</form>
 						</Level.Right>
 					</Level>
 					<Level>
 						<Level.Left>Kode Voucher</Level.Left>
 						<Level.Right>
 							<InputGroup>
-								<Input size='small' error message='kode voucher salah' />
+								<Input size='small' color='red' message='kode voucher salah' />
 							</InputGroup>
 						</Level.Right>
 					</Level>
@@ -118,6 +137,18 @@ export default class CardPembayaran extends Component {
 						<p>Pilih Metode Pembayaran</p>
 						<InputGroup>
 							<Select selectedLabel='-- Pilih Metode Lain' options={PaymentOptions} />
+							<Tooltip align='right' content='Info' color='white'>
+								<p><Sprites name='uob' /></p>
+								<p>Gunakan Kartu Kredit UOB Indonesia dan dapatkan Diskon Tambahan Rp100.000* dengan minimum transaksi Rp2.500.000</p>
+								<p>*kuota terbatas</p>
+								<hr />
+								<p>Syarat dan Ketentuan Cicilan 0% Regular:</p>
+								<ol>
+									<li>Cicilan tenor 3 bulan dengan minimum transaksi Rp 990.000 </li>
+									<li>Cicilan tenor 6 bulan dengan minimum transaksi Rp1.500.000 </li>
+									<li>Cicilan tenor 12 bulan dengan minimum transaksi Rp2.000.000</li>
+								</ol>
+							</Tooltip>
 						</InputGroup>
 						<InputGroup>
 							<Select selectedLabel='-- Tambah Baru' options={CreditCard} />
@@ -132,8 +163,15 @@ export default class CardPembayaran extends Component {
 							<Select selectedLabel='-- Pilih Opsi Lainnya' options={UangElektronik} />
 						</InputGroup>
 						<InputGroup>
+							<Radio name='cc' variant='list' creditCard value='1' content='4111 &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4444' />
+							<Radio name='cc' variant='list' creditCard value='2' content='2222 &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4444' />
+						</InputGroup>
+						<InputGroup>
+							<Button clean icon='plus-circle' iconPosition='left' content='Tambah Kartu' />
+						</InputGroup>
+						<InputGroup>
 							<Select selectedLabel='-- Pilih Bank' options={Bank} />
-							<Tooltip position='left' align='right'>
+							<Tooltip align='right' content='Info'>
 								<p>Info pembayaran BCA KlikPay</p>
 								<ol>
 									<li>Setelah klik tombol &quot;Bayar Sekarang&quot; di bawah, Anda akan diarahkan ke halaman BCA KlikPay.</li>

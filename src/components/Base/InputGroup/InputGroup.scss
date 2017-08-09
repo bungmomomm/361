@@ -2,10 +2,6 @@
 @import 'variables';
 
 .InputGroup{
-	display: flex;
-	justify-content: flex-start;
-	width: 100%;
-	flex-direction: column;
 	&:not(:last-child) {
 		margin-bottom: 15px;
 	}
@@ -13,6 +9,9 @@
 
 .addons{
 	flex-direction: row;
+	display: flex;
+	justify-content: flex-start;
+	width: 100%;
 	> *:not(:last-child) {
 		margin-right: -1px;
 	}

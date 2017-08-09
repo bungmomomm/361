@@ -5,6 +5,13 @@
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
+@mixin colorStyle($buttonColor){
+	color:$buttonColor;
+	&:hover{
+		color: lighten($buttonColor, 20%);
+	}
+}
+
 html,
 body {
 	margin: 0;
@@ -32,6 +39,13 @@ ul, ol{
 	li{
 		margin-bottom: 5px;
 	}
+}
+
+hr{
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #EBEBEB;
+    padding: 0;
 }
 
 body{
@@ -76,7 +90,7 @@ label{
     display: block;
 }
 
-:global{
+:global body{
 	#root, 
 	#root > main,
 	.page{
@@ -84,15 +98,15 @@ label{
 	}
 
 	.font-red{
-		color:color(red);
+		@include colorStyle(color(red));
 	}
 
 	.font-green{
-		color:color(green);
+		@include colorStyle(color(green));
 	}
 
 	.font-orange{
-		color:color(orange);
+		@include colorStyle(color(orange));
 	}
 	.font-small{
 		font-size: 10px;

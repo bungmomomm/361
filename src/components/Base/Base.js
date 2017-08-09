@@ -14,6 +14,7 @@ import Level from './Level/Level';
 import Modal from './Modal/Modal';
 import Textarea from './Textarea/Textarea';
 import Tooltip from './Tooltip/Tooltip';
+import Radio from './Radio/Radio';
 
 export default {
 	Container,
@@ -31,5 +32,6 @@ export default {
 	Level,
 	Modal,
 	Textarea,
-	Tooltip
+	Tooltip,
+	Radio
 };
