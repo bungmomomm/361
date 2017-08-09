@@ -20,10 +20,7 @@ import CardPengiriman from './components/CardPengiriman';
 
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
-// import jwtDecode from 'jwt-decode';
-// import request from 'request';
-// import generateRequestHeaders from 'kong-hmac';
-import axios from 'axios';
+import { request } from '@utils';
 
 class Checkout extends Component {
 	constructor(props) {
@@ -43,6 +40,15 @@ class Checkout extends Component {
 	}
 
 	componentWillMount() {
+
+		const k = {
+			token: this.state.token,
+			path: 'me/carts/1',
+			method: 'POST'
+		};
+
+		const x = request(k);
+		console.log(x);
 
 		window.dataLayer.push({
 			event: 'checkout',
@@ -75,35 +81,7 @@ class Checkout extends Component {
 					]
 				}
 			}
-		});
-		// const decoded = jwtDecode(this.state.token);
-		/* const userName = 'mmall';
-		const secret = '123';
-		// const url = 'http://10.200.44.177:28318/auth/login?email=diana.hanly@mataharimall.com&pass=1234567&client_id=Android_v2&client_secret=fd1ce5392d2c631b7891de37c3d2c52d&client_version=2.1.0';
-		const url = 'http://api.mataharimall.co/v2/auth/login?email=diana.hanly@mataharimall.com&pass=1234567&client_id=Android_v2&client_secret=fd1ce5392d2c631b7891de37c3d2c52d&client_version=2.1.0';
-		const method = 'GET';
-		const httpVersion = 'HTTP/1.0'; // default "HTTP/1.1"
-		const token = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJtYXRhaGFyaW1hbGwuY29tIiwidWlkIjoiMjAxNTAyNSIsIm1haWwiOiJkaWFuYS5oYW5seUBtYXRhaGFyaW1hbGwuY29tIiwicGhvbmUiOiIwODA4IiwibmFtZSI6IkRpYW5hIiwiZ2VuZGVyIjoiZmVtYWxlIiwiYmlydGhkYXkiOiIxOTkzLTAyLTEwIiwiZXhwaXJlZF90aW1lIjoiMjAxNy0wOS0wNyAxMzo0MDo0NiIsInJlZnJlc2hfdG9rZW4iOiI5Y2E3NjBjYjM1YjBlODE3OGQ3ZWE1MDZlYmRmNWEyMiIsImNsaWVudF9pZCI6IkFuZHJvaWRfdjIiLCJjbGllbnRfc2VjcmV0IjoiZmQxY2U1MzkyZDJjNjMxYjc4OTFkZTM3YzNkMmM1MmQiLCJ1c2VyX2xvZ2luX2RldmljZV9pZCI6IjQzMjQzMjQzMjQzMjQyNCIsImludGVybmFsX3Rva2VuX3ZlcnNpb24iOiIwLjEiLCJjbGllbnRfdmVyc2lvbiI6IjIuMS4wIn0.snwnynjy5lfw9LSdDPBv8GFaHFLCgI63nuV7LQkI0Rs';
-		const host = 'api.mataharimall.co';
-    */
-		/* const params = {
-			host,
-			token,
-			userName,
-			secret,
-			url,
-			method, 
-			httpVersion
-		}; */
-		// const headers = generateRequestHeaders(params);
-		// console.log(headers);
-		const url = 'http://api.mataharimall.co/v2/auth/login?email=diana.hanly@mataharimall.com&pass=1234567&client_id=Android_v2&client_secret=fd1ce5392d2c631b7891de37c3d2c52d&client_version=2.1.0';
-
-		axios.post(url).then((response) => {
-			console.log(response);
-		}).catch((error) => {
-			console.log(error);
-		});		
+		});	
 	} 
 
 	render() {
