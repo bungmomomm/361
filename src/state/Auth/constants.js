@@ -1,0 +1,10 @@
+const AUTH = 'AUTH';
+const AUTH_GET_TOKEN = 'AUTH_GET_TOKEN';
+const AUTH_REFRESH_TOKEN = 'AUTH_REFRESH_TOKEN';
+
+
+export default {
+	AUTH,
+	AUTH_GET_TOKEN,
+	AUTH_REFRESH_TOKEN
+};

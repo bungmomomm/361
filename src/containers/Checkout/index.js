@@ -36,7 +36,7 @@ class Checkout extends Component {
 			cookie: {
 				name: this.props.cookies.get('name') || 'Ben'
 			},
-			loading: false
+			loading: false,
 			token: this.props.cookies.get('user.token'),
 			refreshToken: this.props.cookies.get('user.rf.token')
 		};
@@ -51,7 +51,7 @@ class Checkout extends Component {
 			ecommerce: {  
 				checkout: {  
 					actionField: {  
-						step: 1,
+						step: 1, 
 						option: 'Login Email'
 					},
 					products: [

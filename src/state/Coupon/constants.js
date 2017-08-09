@@ -1,0 +1,8 @@
+const CP_ADD_COUPON = 'CP_ADD_COUPON';
+const CP_DELETE_COUPON = 'CP_DELETE_COUPON';
+
+
+export default {
+	CP_DELETE_COUPON,
+	CP_ADD_COUPON
+};
