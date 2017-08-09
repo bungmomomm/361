@@ -59,6 +59,7 @@
 
 .Header{
 	@include font(medium);
+	line-height: 1.2;
 	font-size: 14px;
 	color: color(black);
 	padding: 20px 0px;
@@ -102,6 +103,6 @@
 }
 
 .small{
-	max-width: 335px;
+	max-width: 373px;
 	text-align: center;
 }

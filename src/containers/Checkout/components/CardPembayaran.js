@@ -92,18 +92,22 @@ export default class CardPembayaran extends Component {
 				<div className={styles.overflow}>
 					<Level>
 						<Level.Left>Subtotal</Level.Left>
-						<Level.Right>{currency(22500000)}</Level.Right>
+						<Level.Right className='text-right'>{currency(22500000)}</Level.Right>
+					</Level>
+					<Level>
+						<Level.Left>Voucher : <strong>MMSTYLE</strong> <Button icon='times-circle' iconPosition='right' /></Level.Left>
+						<Level.Right className='text-right'>{currency(-30000)}</Level.Right>
 					</Level>
 					<Level>
 						<Level.Left>Total Biaya Pengiriman</Level.Left>
-						<Level.Right>{currency(15000)}</Level.Right>
+						<Level.Right className='text-right'>{currency(15000)}</Level.Right>
 					</Level>
 					<Level>
 						<Level.Left>
 							<div className='font-green'>Discount Biaya Pengiriman</div>
 						</Level.Left>
 						<Level.Right>
-							<div className='font-green'>{currency(-300000)}</div>
+							<div className='font-green text-right'>{currency(-300000)}</div>
 						</Level.Right>
 					</Level>
 					<Level>

@@ -14,7 +14,8 @@ export default class Level extends Component {
 		const levelClass = cx({
 			Level: true,
 			noMargin: !!this.props.noMargin,
-			padded: !!this.props.padded
+			padded: !!this.props.padded,
+			[`${this.props.className}`]: !!this.props.className
 		});
 		return (
 			<div className={levelClass}>
@@ -27,7 +28,8 @@ export default class Level extends Component {
 class Item extends Level {
 	render() {
 		const ItemClass = cx({
-			item: true
+			item: true,
+			[`${this.props.className}`]: !!this.props.className
 		});
 		return (
 			<div className={ItemClass}>
@@ -39,7 +41,8 @@ class Item extends Level {
 class Left extends Level {
 	render() {
 		const ItemClass = cx({
-			left: true
+			left: true,
+			[`${this.props.className}`]: !!this.props.className
 		});
 		return (
 			<div className={ItemClass}>
@@ -52,7 +55,8 @@ class Left extends Level {
 class Right extends Level {
 	render() {
 		const ItemClass = cx({
-			right: true
+			right: true,
+			[`${this.props.className}`]: !!this.props.className
 		});
 		return (
 			<div className={ItemClass}>

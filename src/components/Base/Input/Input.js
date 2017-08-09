@@ -169,7 +169,7 @@ Input.propTypes = {
 	horizontal: PropTypes.bool,
 	error: PropTypes.bool,
 	size: PropTypes.oneOf(['small', 'medium', 'large']),
-	color: PropTypes.oneOf(['green', 'yellow']),
+	color: PropTypes.oneOf(['green', 'red', 'yellow']),
 	label: PropTypes.string,
 	creditCard: PropTypes.bool,
 	type: PropTypes.oneOf(['text', 'password', 'date', 'email', 'hidden', 'password', 'number', 'search']),
