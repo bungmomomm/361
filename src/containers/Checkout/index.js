@@ -20,17 +20,15 @@ import CardPesananPengiriman from './components/CardPesananPengiriman';
 import CardPembayaran from './components/CardPembayaran';
 import CardPengiriman from './components/CardPengiriman';
 
-import { PropTypes, instanceOf } from 'prop-types';
+import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
-import { request } from '@/utils';
-import { addCoupon } from '@/state/Coupon/actions';
+import { addCoupon, removeCoupon, resetCoupon } from '@/state/Coupon/actions';
 
 class Checkout extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
-			...this.props.state,
 			enableAlamatPengiriman: true,
 			enablePesananPengiriman: true,
 			enablePembayaran: true,
@@ -41,18 +39,11 @@ class Checkout extends Component {
 			refreshToken: this.props.cookies.get('user.rf.token')
 		};
 		this.onAddCoupon = this.onAddCoupon.bind(this);
+		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
+		this.onResetCoupon = this.onResetCoupon.bind(this);
 	}
 
 	componentWillMount() {
-		const k = {
-			token: this.state.token,
-			path: 'me/carts/1',
-			method: 'POST'
-		};
-
-		const x = request(k);
-		console.log(x);
-
 		window.dataLayer.push({
 			event: 'checkout',
 			userID: '10c53c28efe87fe0c27262ba36f11d5d',
@@ -94,7 +85,19 @@ class Checkout extends Component {
 
 	onAddCoupon(coupon) {
 		const { dispatch } = this.props;
-		dispatch(addCoupon(coupon));
+		if (coupon) {
+			dispatch(addCoupon(coupon));
+		}
+	}
+
+	onRemoveCoupon(event) {
+		const { dispatch } = this.props;
+		dispatch(removeCoupon());
+	}
+
+	onResetCoupon(event) {
+		const { dispatch } = this.props;
+		dispatch(resetCoupon());
 	}
 
 	render() {
@@ -103,26 +106,42 @@ class Checkout extends Component {
 			enablePesananPengiriman,
 			enablePembayaran
 		} = this.state;
+
+		const {
+			coupon,
+			cart,
+			addresses,
+			payments,
+			user
+		} = this.props;
 		
 		return (
 			this.props.loading ? <Loading /> : (
 				<div className='page'>
 					<Helmet title='Checkout' />
-					<CheckoutHeader />
+					<CheckoutHeader user={user} />
 					<div className={styles.checkout}>
 						<Container>
 							<Row>
 								<Col grid={4} className={enableAlamatPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
-									<CardPengiriman />
+									<CardPengiriman addresses={addresses} />
 								</Col>
 								<Col grid={4} className={enablePesananPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>(5 items)</span></div>
-									<CardPesananPengiriman />
+									<CardPesananPengiriman cart={cart} />
 								</Col>
 								<Col grid={4} className={enablePembayaran ? '' : styles.disabled}>
 									<div className={styles.title}>3. Pembayaran</div>
-									<CardPembayaran onAddCoupon={this.onAddCoupon} />
+									<CardPembayaran
+										loadingButtonCoupon={coupon.loading}
+										coupon={coupon.coupon}
+										validCoupon={coupon.validCoupon}
+										onAddCoupon={this.onAddCoupon}
+										onRemoveCoupon={this.onRemoveCoupon}
+										onResetCoupon={this.onResetCoupon}
+										payments={payments}
+									/>
 								</Col>
 							</Row>
 						</Container>
@@ -131,7 +150,7 @@ class Checkout extends Component {
 					<ElockerModalbox />
 					<PaymentSuccessModalbox />
 					<PaymentErrorModalbox />
-					<VerifikasiNoHandponeModalbox shown />
+					<VerifikasiNoHandponeModalbox />
 				</div>
 			)
 		);
@@ -139,13 +158,12 @@ class Checkout extends Component {
 };
 
 Checkout.propTypes = {
-	cookies: instanceOf(Cookies).isRequired,
-	dispatch: PropTypes.func.isRequired
+	cookies: instanceOf(Cookies).isRequired
 };
 
 const mapStateToProps = (state) => {
 	return {
-		...state.coupon
+		...state
 	};
 };
 

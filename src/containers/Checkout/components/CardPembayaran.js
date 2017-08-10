@@ -56,7 +56,9 @@ export default class CardPembayaran extends Component {
 				address: ''
 			},
 			errors: this.validator.errorBag,
-			voucherCode: null
+			voucherCode: null,
+			validVoucher: false,
+			reset: null
 		};
 
 		this.submitPayment = this.submitPayment.bind(this);
@@ -67,13 +69,14 @@ export default class CardPembayaran extends Component {
 	}
 	onChange(event) {
 		this.setState({
-			[event.name]: event.target.value
+			[event.target.name]: event.target.value
 		});
 	}
 
 	onAddCoupon(event) {
-		this.props.onAddCoupon('test');
+		this.props.onAddCoupon(this.state.voucherCode);
 	}
+
 
 	handleCekVoucher(event) {
 		event.preventDefault();
@@ -94,6 +97,22 @@ export default class CardPembayaran extends Component {
 
 	
 	render() {
+		let voucherBox = '';
+		if (this.props.coupon === '' || this.props.validCoupon === null) { 
+			voucherBox = (
+				<InputGroup addons>
+					<Input size='small' name='voucherCode' onChange={this.onChange} color='green' value={this.props.coupon} />
+					<Button type='submit' size='small' onClick={this.onAddCoupon} loading={this.props.loadingButtonCoupon} color='green' content='CEK' />
+				</InputGroup>
+			);
+		} else if (!this.props.validCoupon && this.props.coupon !== '') {
+			voucherBox = (
+				<InputGroup addons addonsAttached>
+					<Input size='small' color='yellow' message='kode voucher salah' />
+					<Button type='button' className='font-red' size='small' icon='times' iconPosition='right' onClick={this.props.onResetCoupon} />
+				</InputGroup>
+			);			
+		}
 		return (
 			<Card>
 				<div className={styles.overflow}>
@@ -101,10 +120,14 @@ export default class CardPembayaran extends Component {
 						<Level.Left>Subtotal</Level.Left>
 						<Level.Right className='text-right'>{currency(22500000)}</Level.Right>
 					</Level>
-					<Level>
-						<Level.Left>Voucher : <strong>MMSTYLE</strong> <Button icon='times-circle' iconPosition='right' /></Level.Left>
-						<Level.Right className='text-right'>{currency(-30000)}</Level.Right>
-					</Level>
+					{
+						!this.props.validCoupon ? null : (
+							<Level>
+								<Level.Left>Voucher : <strong>{this.props.loadingButtonCoupon ? 'loading...' : this.props.coupon }</strong> <Button icon='times-circle' iconPosition='right' onClick={this.props.onRemoveCoupon} /></Level.Left>
+								<Level.Right className='text-right'>{currency(-30000)}</Level.Right>
+							</Level>
+						)
+					}
 					<Level>
 						<Level.Left>Total Biaya Pengiriman</Level.Left>
 						<Level.Right className='text-right'>{currency(15000)}</Level.Right>
@@ -120,21 +143,7 @@ export default class CardPembayaran extends Component {
 					<Level>
 						<Level.Left>Kode Voucher</Level.Left>
 						<Level.Right>
-							<form onSubmit={this.handleCekVoucher}>
-								<InputGroup addons>
-									<Input size='small' name='voucherCode' onChange={this.onChange} color='green' />
-									<Button type='submit' size='small' onClick={this.onAddCoupon} loading={this.state.loadingButtonVoucher} color='green' content='CEK' />
-								</InputGroup>
-							</form>
-						</Level.Right>
-					</Level>
-					<Level>
-						<Level.Left>Kode Voucher</Level.Left>
-						<Level.Right>
-							<InputGroup addons addonsAttached>
-								<Input size='small' color='yellow' message='kode voucher salah' />
-								<Button type='button' className='font-red' size='small' icon='times' iconPosition='right' />
-							</InputGroup>
+							{voucherBox}
 						</Level.Right>
 					</Level>
 					<div className={styles.CheckoutTitle}>
