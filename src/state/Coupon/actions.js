@@ -40,24 +40,23 @@ const couponReset = () => ({
 	type: constants.CP_RESET_COUPON
 });
 
+const couponRequestFailed = () => ({
+	type: constants.CP_FAILED_COUPON
+});
+
 const addCoupon = coupon => dispatch => {
-	console.log(coupon);
 	dispatch(couponAdd(coupon));
-	console.log('start');
 	return axios.post('/add2cart', { coupon }).then((response) => {
 		// mimic request api
-		const rand = 0; // Math.floor((Math.random() * 2));
-		if (rand === 1) {
-			setTimeout(() => {
-				console.log('end');
+		setTimeout(() => {
+			const rand = Math.ceil(Math.random() * 1);
+			if (rand === 1) {
 				dispatch(couponAdded(response.data));
-			}, 2000);
-		} else {
-			setTimeout(() => {
-				console.log('end not valid');
+			} else {
 				dispatch(couponInvalid(response.data));
-			}, 2000);
-		}
+			}
+			dispatch(couponRequestFailed());
+		}, 2000);
 	});
 };
 
@@ -66,6 +65,7 @@ const removeCoupon = () => dispatch => {
 	return axios.post('/add2cart', { }).then((response) => {
 		setTimeout(() => {
 			dispatch(couponDeleted(response.data));
+			dispatch(couponRequestFailed());
 		}, 2000);
 	});
 };

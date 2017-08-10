@@ -4,7 +4,8 @@ import {
 	CP_DELETE_COUPON,
 	CP_DELETED_COUPON,
 	CP_INVALID_COUPON,
-	CP_RESET_COUPON
+	CP_RESET_COUPON,
+	CP_FAILED_COUPON
 } from './constants';
 
 const initialState = {
@@ -15,7 +16,6 @@ const initialState = {
 };
 
 export default (state = initialState, action) => {
-	console.log(action);
 	if (typeof action === 'undefined') {
 		return state;
 	}
@@ -69,6 +69,12 @@ export default (state = initialState, action) => {
 		return {
 			...state,
 			validCoupon: null
+		};
+	}
+	case CP_FAILED_COUPON: {
+		return {
+			...state,
+			loading: false
 		};
 	}
 	default: 
