@@ -62,11 +62,17 @@ export default class CardPembayaran extends Component {
 		this.submitPayment = this.submitPayment.bind(this);
 		this.handleCekVoucher = this.handleCekVoucher.bind(this);
 		this.onChange = this.onChange.bind(this);
+		this.onAddCoupon = this.onAddCoupon.bind(this);
+		console.log(this.props);
 	}
 	onChange(event) {
 		this.setState({
 			[event.name]: event.target.value
 		});
+	}
+
+	onAddCoupon(event) {
+		this.props.onAddCoupon('test');
 	}
 
 	handleCekVoucher(event) {
@@ -80,6 +86,7 @@ export default class CardPembayaran extends Component {
 		event.preventDefault();
 		console.log(this.state);
 	}
+
 
 	submitPayment() {
 		console.log(this.state);
@@ -116,7 +123,7 @@ export default class CardPembayaran extends Component {
 							<form onSubmit={this.handleCekVoucher}>
 								<InputGroup addons>
 									<Input size='small' name='voucherCode' onChange={this.onChange} color='green' />
-									<Button type='submit' size='small' loading={this.state.loadingButtonVoucher} color='green' content='CEK' />
+									<Button type='submit' size='small' onClick={this.onAddCoupon} loading={this.state.loadingButtonVoucher} color='green' content='CEK' />
 								</InputGroup>
 							</form>
 						</Level.Right>
@@ -125,7 +132,7 @@ export default class CardPembayaran extends Component {
 						<Level.Left>Kode Voucher</Level.Left>
 						<Level.Right>
 							<InputGroup addons addonsAttached>
-								<Input size='small' color='red' message='kode voucher salah' />
+								<Input size='small' color='yellow' message='kode voucher salah' />
 								<Button type='button' className='font-red' size='small' icon='times' iconPosition='right' />
 							</InputGroup>
 						</Level.Right>

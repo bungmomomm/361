@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 import styles from './Checkout.scss';
 
@@ -19,29 +20,30 @@ import CardPesananPengiriman from './components/CardPesananPengiriman';
 import CardPembayaran from './components/CardPembayaran';
 import CardPengiriman from './components/CardPengiriman';
 
-import { instanceOf } from 'prop-types';
+import { PropTypes, instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { request } from '@/utils';
+import { addCoupon } from '@/state/Coupon/actions';
 
 class Checkout extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
+			...this.props.state,
 			enableAlamatPengiriman: true,
 			enablePesananPengiriman: true,
 			enablePembayaran: true,
 			cookie: {
 				name: this.props.cookies.get('name') || 'Ben'
 			},
-			loading: false,
 			token: this.props.cookies.get('user.token'),
 			refreshToken: this.props.cookies.get('user.rf.token')
 		};
+		this.onAddCoupon = this.onAddCoupon.bind(this);
 	}
 
 	componentWillMount() {
-
 		const k = {
 			token: this.state.token,
 			path: 'me/carts/1',
@@ -82,8 +84,18 @@ class Checkout extends Component {
 					]
 				}
 			}
-		});	
+		});
 	} 
+
+	componentDidMount() {
+		// const { dispatch } = this.props;
+		// dispatch(addCoupon('test'));
+	}
+
+	onAddCoupon(coupon) {
+		const { dispatch } = this.props;
+		dispatch(addCoupon(coupon));
+	}
 
 	render() {
 		const {
@@ -93,7 +105,7 @@ class Checkout extends Component {
 		} = this.state;
 		
 		return (
-			this.state.loading ? <Loading /> : (
+			this.props.loading ? <Loading /> : (
 				<div className='page'>
 					<Helmet title='Checkout' />
 					<CheckoutHeader />
@@ -110,7 +122,7 @@ class Checkout extends Component {
 								</Col>
 								<Col grid={4} className={enablePembayaran ? '' : styles.disabled}>
 									<div className={styles.title}>3. Pembayaran</div>
-									<CardPembayaran />
+									<CardPembayaran onAddCoupon={this.onAddCoupon} />
 								</Col>
 							</Row>
 						</Container>
@@ -127,7 +139,14 @@ class Checkout extends Component {
 };
 
 Checkout.propTypes = {
-	cookies: instanceOf(Cookies).isRequired
+	cookies: instanceOf(Cookies).isRequired,
+	dispatch: PropTypes.func.isRequired
 };
 
-export default withCookies(Checkout);
+const mapStateToProps = (state) => {
+	return {
+		...state.coupon
+	};
+};
+
+export default withCookies(connect(mapStateToProps)(Checkout));
