@@ -3,9 +3,16 @@ import PropTypes from 'prop-types';
 import Icon from '@/components/Icon';
 import styles from './StoreBox.scss';
 
+import classNames from 'classnames/bind';
+const cx = classNames.bind(styles);
+
 const StoreBox = (props) => {
+	const BoxWrapper = cx({
+		box: true,
+		[`${props.color}`]: !!props.color
+	});
 	return (
-		<div className={styles.box} >
+		<div className={BoxWrapper} >
 			<div className={styles.header}>
 				<div className={styles.name}>{props.name}</div>
 				<div className={styles.location}><Icon name='map-marker' /> {props.location}</div>
