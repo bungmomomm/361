@@ -21,13 +21,14 @@ const kongRequestHeader = (props) => {
 		userName: process.env.KONG_USERNAME,
 		secret: process.env.KONG_SECRET_KEY,
 		url: buildRequestURL(props),
-		method: 'GET', 
+		method: props.method, 
 		httpVersion: 'HTTP/1.0'
 	}; 
 	return generateRequestHeaders(params);
 };
 
 const request = (props) => {
+	
 	const url = buildRequestURL(props);
 	
 	let headers = {
@@ -36,29 +37,12 @@ const request = (props) => {
 	if (isKongActive()) {
 		headers = kongRequestHeader(props);
 	}
-	
 	switch (props.method) {
 	case 'GET': {
-		axios.get(url, {}, headers)
-				.then((response) => {
-					return response;
-				})
-				.catch((error) => {
-					return error;
-				});
-		break;
+		return axios.get(url, { headers });
 	}
 	default: 
-		
-		axios.post(url, {}, { headers: {
-			Authorization: `Bearer ${props.token}`
-		} })
-				.then((response) => {
-					return response;
-				})
-				.catch((error) => {
-					return error;
-				});
+		return axios.post(url, {}, { headers });
 	}
 };
 

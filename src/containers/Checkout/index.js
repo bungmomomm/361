@@ -23,6 +23,8 @@ import CardPengiriman from './components/CardPengiriman';
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { addCoupon, removeCoupon, resetCoupon } from '@/state/Coupon/actions';
+import { getAddresses } from '@/state/Adresses/actions';
+
 
 class Checkout extends Component {
 	constructor(props) {
@@ -32,11 +34,9 @@ class Checkout extends Component {
 			enableAlamatPengiriman: true,
 			enablePesananPengiriman: true,
 			enablePembayaran: true,
-			cookie: {
-				name: this.props.cookies.get('name') || 'Ben'
-			},
 			token: this.props.cookies.get('user.token'),
-			refreshToken: this.props.cookies.get('user.rf.token')
+			refreshToken: this.props.cookies.get('user.rf.token'),
+			addresses: []
 		};
 		this.onAddCoupon = this.onAddCoupon.bind(this);
 		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
@@ -44,6 +44,9 @@ class Checkout extends Component {
 	}
 
 	componentWillMount() {
+		const { dispatch } = this.props;
+		const a = dispatch(getAddresses(this.state.token));
+		console.log(a);
 		window.dataLayer.push({
 			event: 'checkout',
 			userID: '10c53c28efe87fe0c27262ba36f11d5d',
@@ -104,13 +107,15 @@ class Checkout extends Component {
 		const {
 			enableAlamatPengiriman,
 			enablePesananPengiriman,
-			enablePembayaran
+			enablePembayaran,
+			addresses
 		} = this.state;
+		console.log(this.props);
 
 		const {
 			coupon,
 			cart,
-			addresses,
+			// addresses,
 			payments,
 			user
 		} = this.props;
