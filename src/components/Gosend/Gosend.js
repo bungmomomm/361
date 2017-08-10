@@ -55,14 +55,14 @@ class Gosend extends Component {
 		});
 	}
 
+	get markerIcon() {
+		return require(`../../assets/images/${this.state.icon}`);
+	}
+
 	showGoogleMap() {
 		this.setState({
 			displayMap: true
 		});
-	}
-
-	get markerIcon() {
-		return require(`../../assets/images/${this.state.icon}`);
 	}
 
 	renderAutocomplete(event) {

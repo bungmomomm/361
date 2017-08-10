@@ -16,12 +16,14 @@ export default class Card extends Component {
 	render({
 		radius,
 		selected,
-		children
+		children,
+		loading
 	}) {
 		const cardClass = cx({
 			card: true,
 			radius: !!radius,
-			selected: !!selected
+			selected: !!selected,
+			loading: !!loading
 		});
 		return (
 			<div className={cardClass} onClick={this.props.onClick} role='button' tabIndex={0}>
@@ -51,5 +53,6 @@ Card.Title = Title;
 Card.propTypes = {
 	radius: PropTypes.bool,
 	selected: PropTypes.bool,
+	loading: PropTypes.bool,
 	onClick: PropTypes.func
 };
