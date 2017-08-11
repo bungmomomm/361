@@ -4,7 +4,7 @@ import { injectProps } from '@/decorators';
 import styles from './Textarea.scss';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
-import newId from '@/utils/newId.js';
+import { newId, renderIf } from '@/utils';
 
 export default class Textarea extends Component {
 	constructor(props) {
@@ -47,7 +47,7 @@ export default class Textarea extends Component {
 		return (
 			<div className={TextareaWrapper}>
 				{ 
-					!label ? null : (
+					renderIf(label)(
 						<label htmlFor={idFor}>
 							{label}
 							{required ? ' *' : null}
@@ -65,7 +65,7 @@ export default class Textarea extends Component {
 					onChange={onChange}
 				/>
 				{
-					!message ? null : (
+					renderIf(message)(
 						<div className={styles.message}>
 							{message}
 						</div>

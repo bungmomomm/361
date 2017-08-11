@@ -5,6 +5,7 @@ import classNames from 'classnames/bind';
 import { Input, Button, Alert } from '@/components/Base';
 import Icon from '@/components/Icon';
 import { Map, Marker, GoogleApiWrapper } from 'google-maps-react';
+import { renderIf } from '@/utils';
 
 const cx = classNames.bind(styles);
 
@@ -110,7 +111,7 @@ class Gosend extends Component {
 				</div>
 				<div><small><em>(Optional)</em></small></div>
 				{
-					this.state.displayMap ? (
+					renderIf(this.state.displayMap)(
 						<div className={styles.googleMap}>
 							<div className={styles.mapInput}>
 								<Input 
@@ -119,7 +120,7 @@ class Gosend extends Component {
 								/>
 							</div>
 							{
-								!this.props.google ? null : (
+								renderIf(this.props.google)(
 									<Map 
 										google={this.props.google} 
 										zoom={14}
@@ -151,7 +152,7 @@ class Gosend extends Component {
 								<em>Lokasi tidak sesuai dengan alamat pengiriman</em>
 							</Alert>
 						</div>
-					) : null
+					)
 				}
 			</div>
 		);

@@ -7,6 +7,7 @@ import Panel from './TabPanel';
 
 import Icon from '@/components/Icon';
 import Sprites from '@/components/Sprites';
+import { renderIf } from '@/utils';
 
 export default class Tabs extends Component {
 	constructor(props) {
@@ -77,21 +78,24 @@ export default class Tabs extends Component {
 									type='button'
 								>
 									{
-										tabTitle.icon ? <Icon 
-											name={
-												(this.state.tabActive === i && tabTitle.iconActive) ? 
-												tabTitle.iconActive : tabTitle.icon
-											}
-										/> : null
+										renderIf(tabTitle.icon)(
+											<Icon 
+												name={
+													(this.state.tabActive === i && tabTitle.iconActive) ? 
+													tabTitle.iconActive : tabTitle.icon
+												}
+											/>
+										)
 									}
 									{
-										tabTitle.sprites ? 
+										renderIf(tabTitle.sprites)(
 											<Sprites 
 												name={
 													(this.state.tabActive === i && tabTitle.spritesActive) ? 
 													tabTitle.spritesActive : tabTitle.sprites
 												}
-											/> : null
+											/>
+										)
 									}
 									{tabTitle.title}
 								</button>

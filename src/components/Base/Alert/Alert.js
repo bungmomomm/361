@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styles from './Alert.scss';
 import Icon from '@/components/Icon';
+import { renderIf } from '@/utils';
 import { injectProps } from '@/decorators';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
+
 
 export default class Alert extends Component {
 	constructor(props) {
@@ -31,14 +33,16 @@ export default class Alert extends Component {
 		});
 
 		return (
-			this.state.show ? (
+			renderIf(this.state.show)(
 				<div className={classAlert}>
 					{
-						!icon ? null : <Icon className={styles.icon} />
+						renderIf(icon)(
+							<Icon className={styles.icon} />
+						)
 					}
 					{children}
 					{
-						!close ? null : (
+						renderIf(close)(
 							<button 
 								type='button'
 								className={styles.close}
@@ -53,7 +57,7 @@ export default class Alert extends Component {
 						) 
 					}
 				</div>
-			) : null
+			)
 		);
 	}
 };

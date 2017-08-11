@@ -29,9 +29,7 @@ export default class Checkbox extends Component {
 		text
 	}) {
 		const idFor = newId();
-		const { 
-			checked 
-		} = this.state;
+		const { checked } = this.state;
 		return (
 			<label className={styles.checkboxWrapper} htmlFor={idFor}>
 				<input 
