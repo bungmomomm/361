@@ -19,8 +19,7 @@ export default (state = initialState, action) => {
 
 	case ADDR_GET_ADDRESS: {
 		return {
-			...state, 
-			data: action.payload.data,
+			data: action.payload.addresses,
 		};
 
 	}
