@@ -1,7 +1,8 @@
 import { 
-	PROCESS_GET_CART,
-	PROCESS_GET_ADDRESS,
-	PROCESS_GET_O2O 
+	CRT_GET_CART,
+	CRT_UPDATE_QTY,
+	CRT_DELETE_CART,
+	CRT_GO_SEND_ELIGIBLE 
 } from './constants';
 
 const initialState = {
@@ -16,7 +17,7 @@ export default (state = initialState, action) => {
 	
 	switch (action.type) {
 
-	case PROCESS_GET_ADDRESS: {
+	case CRT_GET_CART: {
 		return {
 			...state, 
 			data: action.payload.data,
@@ -24,14 +25,21 @@ export default (state = initialState, action) => {
 
 	}
 
-	case PROCESS_GET_CART: {
+	case CRT_UPDATE_QTY: {
 		return {
 			...state, 
 			data: action.payload.data,
 		};
 	}
 
-	case PROCESS_GET_O2O: {
+	case CRT_DELETE_CART: {
+		return {
+			...state, 
+			data: action.payload.data,
+		};
+	}
+	
+	case CRT_GO_SEND_ELIGIBLE: {
 		return {
 			...state, 
 			data: action.payload.data,

@@ -42,7 +42,10 @@ const request = (props, body = {}) => {
 		return axios.get(url, { headers });
 	}
 	default: 
-		return axios.post(url, body, { headers });
+		if (!props.body) {
+			throw new Error('post should send the data');
+		}
+		return axios.post(url, props.body, { headers });
 	}
 };
 

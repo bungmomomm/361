@@ -24,6 +24,7 @@ import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { addCoupon, removeCoupon, resetCoupon } from '@/state/Coupon/actions';
 import { getAddresses } from '@/state/Adresses/actions';
+import { getCart } from '@/state/Cart/actions';
 
 
 class Checkout extends Component {
@@ -44,11 +45,13 @@ class Checkout extends Component {
 		this.onAddCoupon = this.onAddCoupon.bind(this);
 		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
 		this.onResetCoupon = this.onResetCoupon.bind(this);
+		this.onChoisedAddress = this.onChoisedAddress.bind(this);
 	}
 
 	componentWillMount() {
 		const { dispatch } = this.props;
 		dispatch(getAddresses(this.state.token));
+		
 		window.dataLayer.push({
 			event: 'checkout',
 			userID: '10c53c28efe87fe0c27262ba36f11d5d',
@@ -86,6 +89,8 @@ class Checkout extends Component {
 	componentDidMount() {
 		// const { dispatch } = this.props;
 		// dispatch(addCoupon('test'));
+		// const { dispatch } = this.props;
+		// dispatch(getAddresses(this.state.token));
 	}
 
 	onAddCoupon(coupon) {
@@ -103,6 +108,11 @@ class Checkout extends Component {
 	onResetCoupon(event) {
 		const { dispatch } = this.props;
 		dispatch(resetCoupon());
+	}
+
+	onChoisedAddress(address) {
+		const { dispatch } = this.props;
+		dispatch(getCart(this.state.token, address));
 	}
 
 	render() {
@@ -130,7 +140,7 @@ class Checkout extends Component {
 							<Row>
 								<Col grid={4} className={enableAlamatPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
-									<CardPengiriman addresses={addresses} />
+									{ !addresses ? null : <CardPengiriman addresses={addresses} onChoisedAddress={this.onChoisedAddress} /> }
 								</Col>
 								<Col grid={4} className={enablePesananPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>(5 items)</span></div>
