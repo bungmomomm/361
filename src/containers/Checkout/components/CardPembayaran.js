@@ -60,7 +60,7 @@ export default class CardPembayaran extends Component {
 			validVoucher: false,
 			reset: null
 		};
-
+		console.log(this.props.payments);
 		this.submitPayment = this.submitPayment.bind(this);
 		this.handleCekVoucher = this.handleCekVoucher.bind(this);
 		this.onChange = this.onChange.bind(this);
@@ -96,60 +96,67 @@ export default class CardPembayaran extends Component {
 
 	
 	render() {
+		const { coupon, subTotal, total, deliveryCostDiscount, deliveryCost } = this.props.payments;
 		let voucherBox = '';
 		if (this.props.coupon === '' || this.props.validCoupon === null) { 
 			voucherBox = (
-				<InputGroup addons>
-					<Input size='small' name='voucherCode' onChange={this.onChange} onKeyPress={this.onChange} color='green' value={this.props.coupon} />
-					<Button type='submit' size='small' onClick={this.onAddCoupon} loading={this.props.loadingButtonCoupon} color='green' content='CEK' />
-				</InputGroup>
+				<Level>
+					<Level.Left>Kode Voucher</Level.Left>
+					<Level.Right>
+						<InputGroup addons>
+							<Input size='small' name='voucherCode' onChange={this.onChange} onKeyPress={this.onChange} color='green' value={this.props.coupon} />
+							<Button type='submit' size='small' onClick={this.onAddCoupon} loading={this.props.loadingButtonCoupon} color='green' content='CEK' />
+						</InputGroup>
+					</Level.Right>
+				</Level>
 			);
 		} else if (!this.props.validCoupon && this.props.coupon !== '') {
 			voucherBox = (
-				<InputGroup addons addonsAttached>
-					<Input size='small' name='voucherCode' color='yellow' message='kode voucher salah' onChange={this.onChange} onKeyPress={this.onChange} value={this.props.coupon} />
-					<Button type='button' className='font-red' size='small' icon='times' iconPosition='right' onClick={this.props.onResetCoupon} />
-				</InputGroup>
+				<Level>
+					<Level.Left>Kode Voucher</Level.Left>
+					<Level.Right>
+						<InputGroup addons addonsAttached>
+							<Input size='small' name='voucherCode' color='yellow' message='kode voucher salah' onChange={this.onChange} onKeyPress={this.onChange} value={this.props.coupon} />
+							<Button type='button' className='font-red' size='small' icon='times' iconPosition='right' onClick={this.props.onResetCoupon} />
+						</InputGroup>
+					</Level.Right>
+				</Level>
 			);			
 		}
+
 		return (
 			<Card>
 				<div className={styles.overflow}>
 					<Level>
 						<Level.Left>Subtotal</Level.Left>
-						<Level.Right className='text-right'>{currency(22500000)}</Level.Right>
+						<Level.Right className='text-right'>{currency(subTotal)}</Level.Right>
 					</Level>
 					{
 						!this.props.validCoupon ? null : (
 							<Level>
 								<Level.Left>Voucher : <strong>{this.props.loadingButtonCoupon ? 'loading...' : this.props.coupon }</strong> <Button icon='times-circle' iconPosition='right' onClick={this.props.onRemoveCoupon} /></Level.Left>
-								<Level.Right className='text-right'>{currency(-30000)}</Level.Right>
+								<Level.Right className='text-right'>{currency(-coupon)}</Level.Right>
 							</Level>
 						)
 					}
 					<Level>
 						<Level.Left>Total Biaya Pengiriman</Level.Left>
-						<Level.Right className='text-right'>{currency(15000)}</Level.Right>
+						<Level.Right className='text-right'>{currency(deliveryCost)}</Level.Right>
 					</Level>
 					<Level>
 						<Level.Left>
 							<div className='font-green'>Discount Biaya Pengiriman</div>
 						</Level.Left>
 						<Level.Right>
-							<div className='font-green text-right'>{currency(-300000)}</div>
+							<div className='font-green text-right'>{currency(-deliveryCostDiscount)}</div>
 						</Level.Right>
 					</Level>
-					<Level>
-						<Level.Left>Kode Voucher</Level.Left>
-						<Level.Right>
-							{voucherBox}
-						</Level.Right>
-					</Level>
+					{voucherBox}
 					<div className={styles.CheckoutTitle}>
 						<Level noMargin>
 							<Level.Left>Total Pembayaran</Level.Left>
 							<Level.Right>
-								<div className={`${styles.price} text-right`}>{currency(22503000)}</div>
+								<div className={`${styles.price} text-right`}>{currency(total)}</div>
 							</Level.Right>
 						</Level>
 					</div>

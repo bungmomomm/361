@@ -175,11 +175,14 @@ Checkout.propTypes = {
 	cookies: instanceOf(Cookies).isRequired
 };
 
+
 const mapStateToProps = (state) => {
 	return {
+		orderId: 1,
 		coupon: state.coupon,
 		addresses: state.addresses.data,
-		cart: state.cart.cart
+		cart: state.cart.cart,
+		payments: state.payments
 	};
 };
 
