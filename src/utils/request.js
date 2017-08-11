@@ -27,7 +27,7 @@ const kongRequestHeader = (props) => {
 	return generateRequestHeaders(params);
 };
 
-const request = (props) => {
+const request = (props, body = {}) => {
 	
 	const url = buildRequestURL(props);
 	
@@ -42,7 +42,7 @@ const request = (props) => {
 		return axios.get(url, { headers });
 	}
 	default: 
-		return axios.post(url, {}, { headers });
+		return axios.post(url, body, { headers });
 	}
 };
 

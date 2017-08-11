@@ -65,7 +65,6 @@ export default class CardPembayaran extends Component {
 		this.handleCekVoucher = this.handleCekVoucher.bind(this);
 		this.onChange = this.onChange.bind(this);
 		this.onAddCoupon = this.onAddCoupon.bind(this);
-		console.log(this.props);
 	}
 	onChange(event) {
 		this.setState({
@@ -101,14 +100,14 @@ export default class CardPembayaran extends Component {
 		if (this.props.coupon === '' || this.props.validCoupon === null) { 
 			voucherBox = (
 				<InputGroup addons>
-					<Input size='small' name='voucherCode' onChange={this.onChange} color='green' value={this.props.coupon} />
+					<Input size='small' name='voucherCode' onChange={this.onChange} onKeyPress={this.onChange} color='green' value={this.props.coupon} />
 					<Button type='submit' size='small' onClick={this.onAddCoupon} loading={this.props.loadingButtonCoupon} color='green' content='CEK' />
 				</InputGroup>
 			);
 		} else if (!this.props.validCoupon && this.props.coupon !== '') {
 			voucherBox = (
 				<InputGroup addons addonsAttached>
-					<Input size='small' color='yellow' message='kode voucher salah' />
+					<Input size='small' name='voucherCode' color='yellow' message='kode voucher salah' onChange={this.onChange} onKeyPress={this.onChange} value={this.props.coupon} />
 					<Button type='button' className='font-red' size='small' icon='times' iconPosition='right' onClick={this.props.onResetCoupon} />
 				</InputGroup>
 			);			
