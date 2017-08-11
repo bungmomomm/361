@@ -55,9 +55,11 @@ const addCoupon = (token, orderId, coupon) => dispatch => {
 		token,
 		path: 'orders/:order_id/coupon'.replace(':order_id', orderId),
 		method: 'POST',
-		data: {
-			type: 'coupon',
-			id: coupon
+		body: {
+			data: {
+				type: 'coupon',
+				id: coupon
+			}
 		}
 	}).then((response) => {
 		const paymentInfo = camelcaseKeys(response.data.data.attributes.total_price, { deep: true });
@@ -74,9 +76,11 @@ const removeCoupon = (token, orderId) => dispatch => {
 		token,
 		path: 'orders/:order_id/coupon'.replace(':order_id', orderId),
 		method: 'POST',
-		data: {
-			type: 'coupon',
-			id: ''
+		body: {
+			data: {
+				type: 'coupon',
+				id: ''
+			}
 		}
 	}).then((response) => {
 		const paymentInfo = camelcaseKeys(response.data.data.attributes.total_price, { deep: true });
