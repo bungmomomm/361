@@ -29,7 +29,10 @@ import { getAddresses } from '@/state/Adresses/actions';
 class Checkout extends Component {
 	constructor(props) {
 		super(props);
-		this.props = props;
+		this.props = {
+			...props,
+			orderId: 1
+		};
 		this.state = {
 			enableAlamatPengiriman: true,
 			enablePesananPengiriman: true,
@@ -86,15 +89,15 @@ class Checkout extends Component {
 	}
 
 	onAddCoupon(coupon) {
-		const { dispatch } = this.props;
+		const { dispatch, orderId } = this.props;
 		if (coupon) {
-			dispatch(addCoupon(coupon));
+			dispatch(addCoupon(this.state.token, orderId, coupon));
 		}
 	}
 
 	onRemoveCoupon(event) {
-		const { dispatch } = this.props;
-		dispatch(removeCoupon());
+		const { dispatch, orderId } = this.props;
+		dispatch(removeCoupon(this.state.token, orderId));
 	}
 
 	onResetCoupon(event) {
@@ -163,9 +166,15 @@ Checkout.propTypes = {
 	cookies: instanceOf(Cookies).isRequired
 };
 
+const getCartFromState = (state) => {
+	console.log('ass', state);
+	// const mergestate = 
+};
+
 const mapStateToProps = (state) => {
+	getCartFromState(state);
 	return {
-		...state,
+		coupon: state.coupon,
 		addresses: state.addresses.data
 	};
 };
