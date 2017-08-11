@@ -54,8 +54,7 @@ const addCoupon = (token, orderId, coupon) => dispatch => {
 	return request({
 		token,
 		path: 'orders/:order_id/coupon'.replace(':order_id', orderId),
-		method: 'POST'
-	}, {
+		method: 'POST',
 		data: {
 			type: 'coupon',
 			id: coupon
@@ -74,8 +73,7 @@ const removeCoupon = (token, orderId) => dispatch => {
 	return request({
 		token,
 		path: 'orders/:order_id/coupon'.replace(':order_id', orderId),
-		method: 'POST'
-	}, {
+		method: 'POST',
 		data: {
 			type: 'coupon',
 			id: ''

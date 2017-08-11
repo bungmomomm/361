@@ -27,7 +27,7 @@ const kongRequestHeader = (props) => {
 	return generateRequestHeaders(params);
 };
 
-const request = (props, body = {}) => {
+const request = (props) => {
 	
 	const url = buildRequestURL(props);
 	
