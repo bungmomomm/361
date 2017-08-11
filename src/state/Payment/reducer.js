@@ -1,8 +1,4 @@
-import { 
-	PROCESS_GET_CART,
-	PROCESS_GET_ADDRESS,
-	PROCESS_GET_O2O 
-} from './constants';
+import * as constants from './constants';
 
 const initialState = {
 	tracking: []
@@ -16,7 +12,7 @@ export default (state = initialState, action) => {
 	
 	switch (action.type) {
 
-	case PROCESS_GET_ADDRESS: {
+	case constants.PROCESS_GET_ADDRESS: {
 		return {
 			...state, 
 			data: action.payload.data,
@@ -24,17 +20,23 @@ export default (state = initialState, action) => {
 
 	}
 
-	case PROCESS_GET_CART: {
+	case constants.PROCESS_GET_CART: {
 		return {
 			...state, 
 			data: action.payload.data,
 		};
 	}
 
-	case PROCESS_GET_O2O: {
+	case constants.PROCESS_GET_O2O: {
 		return {
 			...state, 
 			data: action.payload.data,
+		};
+	}
+	case constants.PAY_UPDATED: {
+		return {
+			...state,
+			...action.payload
 		};
 	}
 	default: 

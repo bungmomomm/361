@@ -30,10 +30,7 @@ import { getCart } from '@/state/Cart/actions';
 class Checkout extends Component {
 	constructor(props) {
 		super(props);
-		this.props = {
-			...props,
-			orderId: 1
-		};
+		this.props = props;
 		this.state = {
 			enableAlamatPengiriman: true,
 			enablePesananPengiriman: true,
@@ -176,16 +173,17 @@ Checkout.propTypes = {
 	cookies: instanceOf(Cookies).isRequired
 };
 
-const getCartFromState = (state) => {
-	console.log('ass', state);
+// const getCartFromState = (state) => {
 	// const mergestate = 
-};
+// };
 
 const mapStateToProps = (state) => {
-	getCartFromState(state);
+	// getCartFromState(state);
 	return {
+		orderId: 1,
 		coupon: state.coupon,
-		addresses: state.addresses.data
+		addresses: state.addresses.data,
+		payments: state.payments
 	};
 };
 

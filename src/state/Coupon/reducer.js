@@ -57,7 +57,6 @@ export default (state = initialState, action) => {
 			...state,
 			validCoupon: null,
 			coupon: '',
-			cart: action.payload.cart,
 			loading: false
 		};
 	}
