@@ -30,17 +30,16 @@ import { getCart } from '@/state/Cart/actions';
 class Checkout extends Component {
 	constructor(props) {
 		super(props);
-		this.props = {
-			...props,
-			orderId: 1
-		};
+		this.props = props;
 		this.state = {
 			enableAlamatPengiriman: true,
 			enablePesananPengiriman: true,
 			enablePembayaran: true,
 			token: this.props.cookies.get('user.token'),
 			refreshToken: this.props.cookies.get('user.rf.token'),
-			addresses: {}
+			addresses: {}, 
+			soNumber: null,
+			cart: {}
 		};
 		this.onAddCoupon = this.onAddCoupon.bind(this);
 		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
@@ -144,7 +143,7 @@ class Checkout extends Component {
 								</Col>
 								<Col grid={4} className={enablePesananPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>(5 items)</span></div>
-									<CardPesananPengiriman cart={cart} />
+									{ !cart ? null : <CardPesananPengiriman cart={cart} /> }
 								</Col>
 								<Col grid={4} className={enablePembayaran ? '' : styles.disabled}>
 									<div className={styles.title}>3. Pembayaran</div>
@@ -176,16 +175,11 @@ Checkout.propTypes = {
 	cookies: instanceOf(Cookies).isRequired
 };
 
-const getCartFromState = (state) => {
-	console.log('ass', state);
-	// const mergestate = 
-};
-
 const mapStateToProps = (state) => {
-	getCartFromState(state);
 	return {
 		coupon: state.coupon,
-		addresses: state.addresses.data
+		addresses: state.addresses.data,
+		cart: state.cart.cart
 	};
 };
 

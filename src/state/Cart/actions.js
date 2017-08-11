@@ -1,13 +1,19 @@
 import { request } from '@/utils';
 import { 
-    CRT_GET_CART,
+	CRT_GET_CART,
+	CRT_PLACE_ORDER
     // CRT_UPDATE_QTY,
     // CRT_DELETE_CART,
     // CRT_GO_SEND_ELIGIBLE
 } from './constants';
 
-const cartRequest = (token, address) => ({
-	type: CRT_GET_CART,
+import { 
+	setPayloadPlaceOrder, 
+	setCartModel 
+} from './models';
+
+const placeOrderRequest = (token, address) => ({
+	type: CRT_PLACE_ORDER,
 	status: 0,
 	payload: {
 		token,
@@ -15,50 +21,24 @@ const cartRequest = (token, address) => ({
 	}
 });
 
-// const cartReceived = (cart) => ({
-// 	type: CRT_GET_CART,
-// 	status: 1,
-// 	payload: {
-// 		cart
-// 	}
-// });
+const placeOrderReceived = (soNumber) => ({
+	type: CRT_PLACE_ORDER, 
+	status: 1, 
+	payload: {
+		soNumber
+	}
+});
 
-const setPayloadPlaceOrder = (address) => {
-	return {
-		attributes: {
-			delivery_method: address.type,
-			latitude: address.attributes.latitude,
-			longitude: address.attributes.longitude
-		},
-		relationships: {
-			address: {
-				data: [
-					{
-						id: address.id,
-						type: address.type
-					},
-					{
-						attributes: {
-							address: address.attributes.address,
-							address_label: address.attributes.address_label,
-							city: address.attributes.city,
-							district: address.attributes.district,
-							fullname: address.attributes.fullname,
-							phone: address.attributes.phone,
-							province: address.attributes.province,
-							zipcode: address.attributes.zipcode
-						},
-						type: 'billing'
-					}
-				]
-			}
-		},
-		type: 'order'
-	};
-};
+const cartReceived = (cart) => ({
+	type: CRT_GET_CART,
+	status: 1,
+	payload: {
+		cart
+	}
+});
 
 const getCart = (token, address) => dispatch => {
-	dispatch(cartRequest(token, address));
+	dispatch(placeOrderRequest(token, address));
 	const data = setPayloadPlaceOrder(address);
 	
 	const req = {
@@ -69,15 +49,25 @@ const getCart = (token, address) => dispatch => {
 			data
 		}
 	};
-	request(req);
-	// .then((response) => {
-	// 	console.log(response);
-		
-	// 	dispatch(cartReceived(response));
-	// })
-	// .catch((error) => {
-	// 	console.log(error);
-	// });
+	request(req)
+	.then((response) => {
+		const dataResponse = response.data;
+		dispatch(placeOrderReceived(dataResponse.data.id));
+		request({
+			token, 
+			path: `orders/${dataResponse.data.id}?get_cart=1`,
+			method: 'GET'
+		})
+		.then((res) => {
+			dispatch(cartReceived(setCartModel(res.data)));
+		})
+		.catch((error) => {
+			console.log(error);
+		});
+	})
+	.catch((error) => {
+		console.log(error);
+	});
 };
 
 export default {
