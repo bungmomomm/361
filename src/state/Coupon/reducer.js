@@ -10,8 +10,6 @@ import {
 
 const initialState = {
 	loading: false,
-	coupon: '',
-	cart: {},
 	validCoupon: null
 };
 
@@ -34,7 +32,6 @@ export default (state = initialState, action) => {
 		return {
 			...state,
 			validCoupon: true,
-			cart: action.payload.cart,
 			loading: false
 		};
 	}
@@ -42,8 +39,8 @@ export default (state = initialState, action) => {
 	case CP_INVALID_COUPON: {
 		return {
 			...state,
+			message: action.payload.message,
 			validCoupon: false,
-			cart: action.payload.cart,
 			loading: false
 		};
 	}

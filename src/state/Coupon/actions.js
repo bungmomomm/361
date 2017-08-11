@@ -1,5 +1,5 @@
 import * as constants from './constants';
-import axios from 'axios';
+import { request } from '@/utils';
 
 const couponAdd = (thecoupon) => ({
 	type: constants.CP_ADD_COUPON,
@@ -15,10 +15,10 @@ const couponAdded = (cart) => ({
 	}
 });
 
-const couponInvalid = (cart) => ({
+const couponInvalid = (message) => ({
 	type: constants.CP_INVALID_COUPON,
 	payload: {
-		cart
+		message
 	}
 });
 
@@ -44,29 +44,43 @@ const couponRequestFailed = () => ({
 	type: constants.CP_FAILED_COUPON
 });
 
-const addCoupon = coupon => dispatch => {
+const addCoupon = (token, orderId, coupon) => dispatch => {
 	dispatch(couponAdd(coupon));
-	return axios.post('/add2cart', { coupon }).then((response) => {
-		// mimic request api
-		setTimeout(() => {
-			const rand = Math.ceil(Math.random() * 1);
-			if (rand === 1) {
-				dispatch(couponAdded(response.data));
-			} else {
-				dispatch(couponInvalid(response.data));
-			}
-			dispatch(couponRequestFailed());
-		}, 2000);
+	if (coupon === 'a') {
+		// dispatch(couponInvalid({}));
+		dispatch(couponRequestFailed());
+	}
+	return request({
+		token,
+		path: 'orders/:order_id/coupon'.replace(':order_id', orderId),
+		method: 'POST'
+	}, {
+		data: {
+			type: 'coupon',
+			id: coupon
+		}
+	}).then((response) => {
+		dispatch(couponAdded(response.data));
+	}).catch((error) => {
+		dispatch(couponInvalid(error.errorMessage));
 	});
 };
 
-const removeCoupon = () => dispatch => {
+const removeCoupon = (token, orderId) => dispatch => {
 	dispatch(couponDelete());
-	return axios.post('/add2cart', { }).then((response) => {
-		setTimeout(() => {
-			dispatch(couponDeleted(response.data));
-			dispatch(couponRequestFailed());
-		}, 2000);
+	return request({
+		token,
+		path: 'orders/:order_id/coupon'.replace(':order_id', orderId),
+		method: 'POST'
+	}, {
+		data: {
+			type: 'coupon',
+			id: ''
+		}
+	}).then((response) => {
+		dispatch(couponDeleted({}));
+	}).catch((error) => {
+		dispatch(couponRequestFailed());
 	});
 };
 
