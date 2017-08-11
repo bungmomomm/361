@@ -14,13 +14,13 @@ const addressesRequest = (token) => ({
 	}
 });
 
-// const addressesReceived = (addresses) => ({
-// 	type: ADDR_GET_ADDRESS,
-// 	status: 1,
-// 	payload: {
-// 		addresses
-// 	}
-// });
+const addressesReceived = (addresses) => ({
+	type: ADDR_GET_ADDRESS,
+	status: 1,
+	payload: {
+		addresses
+	}
+});
 
 // const addressSave = (address) => ({
 // 	type: ADDR_SAVE_ADDRESS,
@@ -55,17 +55,14 @@ const getAddresses = (token) => dispatch => {
 			return value;
 		}).filter(e => e.type === 'shipping');
 		const address = [];
-		let i = 1;
 		shipping.forEach((value, index) => {
-			const addr = [];
-			addr.value = value.id;
-			addr.label = value.attributes.address_label;
-			addr.info = value.attributes.address;
-			address[i] = addr; 
-			i++;
+			address.push({
+				value: value.id,
+				label: value.attributes.address_label,
+				info: value.attributes.address
+			});
 		});
-		return address;
-
+		dispatch(addressesReceived(address));
 	})
 	.catch((error) => {
 		console.log(error);

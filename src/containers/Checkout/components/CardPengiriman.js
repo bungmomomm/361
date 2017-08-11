@@ -15,7 +15,7 @@ import {
 import Dropshipper from './Dropshipper';
 
 // Dummy Data
-import { Address, ElockerList } from '@/data';
+import { ElockerList } from '@/data';
 
 export default class CardPengiriman extends Component {
 	constructor(props) {
@@ -32,7 +32,9 @@ export default class CardPengiriman extends Component {
 					</Alert>
 					<Box>
 						<InputGroup>
-							<Select filter selectedLabel='-- Pilih Alamat Lainnya' options={Address} />
+							{
+								!this.props.addresses ? null : <Select filter selectedLabel='-- Pilih Alamat Lainnya' options={this.props.addresses} />
+							}
 						</InputGroup>
 						<Level>
 							<Level.Left><strong>Rumah Bangka</strong></Level.Left>
