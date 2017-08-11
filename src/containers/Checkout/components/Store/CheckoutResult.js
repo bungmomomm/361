@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styles from './CheckoutResult.scss';
+import { Checkbox } from '@/components/Base';
 
 import Sprites from '@/components/Sprites';
 
@@ -9,7 +10,7 @@ const CheckoutResult = (props) => {
 		<div className={styles.footer}>
 			{
 				props.gosend ? 
-					<div className={styles.deliveryInfo}>Pengiriman: &nbsp; <Sprites name='gosend' /></div>
+					<div className={styles.deliveryInfo}><Checkbox name='gojek' text='Pengiriman:' /> &nbsp; <Sprites name='gosend' /></div>
 					:
 					<div className={styles.deliveryInfo}>Pengiriman akan dilakukan 5-8 hari kerja</div>
 			}

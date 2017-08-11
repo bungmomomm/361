@@ -91,6 +91,28 @@ label{
 }
 
 :global body{
+	::-webkit-scrollbar {
+		width:8px;
+	}
+
+	::-webkit-scrollbar-track {
+		border-radius:5px;
+		background:rgba(0,0,0,0);
+	}
+
+	::-webkit-scrollbar-thumb {
+		border-radius:5px;
+		background:rgba(0,0,0,0.2);
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		background:rgba(0,0,0,0.4);
+	}
+
+	::-webkit-scrollbar-thumb:window-inactive {
+		background:rgba(0,0,0,0.05);
+	}
+	
 	#root, 
 	#root > main,
 	.page{

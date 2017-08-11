@@ -210,6 +210,9 @@ export default class CardPembayaran extends Component {
 						<InputGroup>
 							<Input placeholder='Masukkan Nomor Kartu' sprites='payment-option' creditCard />
 						</InputGroup>
+						<InputGroup>
+							<Input label='Masukkan OVO ID' type='number' placeholder='OVO ID' />
+						</InputGroup>
 						<label htmlFor='masa-berlaku'>Masa Berlaku</label>
 						<Level padded>
 							<Level.Item>
@@ -225,8 +228,6 @@ export default class CardPembayaran extends Component {
 								<Sprites name='cvv' />
 							</Level.Item>
 						</Level>
-						<Checkbox text='Simpan untuk transaksi berikutnya' />
-						<p>SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke :</p>
 						<div className={styles.checkOutAction}>
 							<Checkbox text='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />
 							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' />

@@ -13,8 +13,8 @@ export default (props) => {
 			<Modal.Body>
 				<p>
 					<strong>
-					Selamat Pembayaran <br />
-					Anda telah berhasil
+					No Handphone anda <br />
+					Berhasil di Verifikasi
 					</strong>
 				</p>
 			</Modal.Body>

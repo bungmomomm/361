@@ -1,7 +1,7 @@
 import React from 'react';
 
 // component load
-import { Modal, Level, Button } from '@/components/Base';
+import { Modal } from '@/components/Base';
 import Elocker from '@/components/Elocker';
 
 export default (props) => {
@@ -13,13 +13,6 @@ export default (props) => {
 			<Modal.Body>
 				<Elocker />
 			</Modal.Body>
-			<Modal.Footer>
-				<Level>
-					<Level.Right>
-						<Button content='Pilih E-Locker (O2O)' color='dark' />
-					</Level.Right>
-				</Level>
-			</Modal.Footer>
 		</Modal>
 	);
 };
