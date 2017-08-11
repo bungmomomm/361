@@ -4,6 +4,7 @@ import { injectProps } from '@/decorators';
 import styles from './Modal.scss';
 import classNames from 'classnames/bind';
 import Icon from '@/components/Icon';
+import { renderIf } from '@/utils';
 
 import Header from './ModalHeader';
 import Body from './ModalBody';
@@ -52,7 +53,7 @@ export default class Modal extends Component {
 			small: !!small
 		});
 		return (
-			!this.state.displayModal ? null : (
+			renderIf(this.state.displayModal)(
 				<div className={ModalClass}>
 					<div className={ModalWrapperClass}>
 						{children}

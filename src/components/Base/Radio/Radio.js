@@ -4,7 +4,7 @@ import creditCardType from 'credit-card-type';
 
 import Sprites from '@/components/Sprites';
 import { injectProps } from '@/decorators';
-import newId from '@/utils/newId.js';
+import { newId, renderIf } from '@/utils';
 
 import styles from './Radio.scss';
 import classNames from 'classnames/bind';
@@ -94,9 +94,13 @@ export default class Radio extends Component {
 				<span className={styles.radioText}>
 					{content}
 				</span>
-				{ variant === 'list' ? <div className={styles.blockList} /> : null }
+				{ 
+					renderIf(variant === 'list')(
+						<div className={styles.blockList} />
+					)
+				}
 				{
-					!this.state.sprites ? null : (
+					renderIf(this.state.sprites)(
 						<span className={styles.sprites}>
 							<Sprites name={this.state.sprites} />
 						</span>

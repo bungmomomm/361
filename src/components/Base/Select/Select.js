@@ -8,7 +8,7 @@ const cx = classNames.bind(styles);
 import Icon from '@/components/Icon';
 import Sprites from '@/components/Sprites';
 import Input from '../Input';
-import newId from '@/utils/newId.js';
+import { newId, renderIf } from '@/utils';
 
 export default class Select extends Component {
 	constructor(props) {
@@ -120,7 +120,7 @@ export default class Select extends Component {
 					className={styles.overlay}
 				/>
 				{ 
-					!label ? null : (
+					renderIf(label)(
 						<label htmlFor={idFor}>
 							{label}
 							{required ? ' *' : ''}
@@ -138,16 +138,20 @@ export default class Select extends Component {
 							{
 								this.state.selectedLabel
 							} {
-								!this.state.selected.imagePath ? null : <img src={this.state.selected.imagePath} alt='logo' /> 
+								renderIf(this.state.selected.imagePath)(
+									<img src={this.state.selected.imagePath} alt='logo' />
+								)
 							} {
-								!this.state.selected.sprites ? null : <Sprites name={this.state.selected.sprites} />
+								renderIf(this.state.selected.sprites)(
+									<Sprites name={this.state.selected.sprites} />
+								)
 							}
 						</div>
 						<Icon name={this.state.showOption ? 'sort-asc' : 'sort-desc'} />
 					</button>
 					<div className={this.state.showOption ? `${styles.listData} ${styles.shown}` : styles.listData}>
 						{
-							!filter ? null : (
+							renderIf(filter)(
 								<div className={styles.quickFilter}>
 									<Input 
 										type='text' 
@@ -175,15 +179,23 @@ export default class Select extends Component {
 											{
 												option.label
 											} {
-												!option.imagePath ? null : <img src={option.imagePath} alt='logo' />
+												renderIf(option.imagePath)(
+													<img src={option.imagePath} alt='logo' />
+												)
 											} {
-												!option.sprites ? null : <Sprites name={option.sprites} />
+												renderIf(option.sprites)(
+													<Sprites name={option.sprites} />
+												)
 											}
 										</div>
 										{
-											!option.info ? null : <div className={styles.info}>{option.info}</div>
+											renderIf(option.info)(
+												<div className={styles.info}>{option.info}</div>
+											)
 										} {
-											!option.message ? null : <div className={styles.optionMessage}>{option.message}</div>
+											renderIf(option.message)(
+												<div className={styles.optionMessage}>{option.message}</div>
+											)
 										}
 									</button>
 								))
@@ -192,7 +204,7 @@ export default class Select extends Component {
 					</div>
 				</div>
 				{
-					!message ? null : (
+					renderIf(message)(
 						<div className={styles.message}>
 							{message}
 						</div>

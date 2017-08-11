@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { injectProps } from '@/decorators';
 import styles from './Button.scss';
 import Icon from '@/components/Icon';
+import { renderIf } from '@/utils';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
 
@@ -49,13 +50,17 @@ export default class Button extends Component {
 				tabIndex={tabIndex}
 			>
 				{
-					iconPosition === 'left' ? <Icon name={icon} /> : null
+					renderIf(iconPosition === 'left')(
+						<Icon name={icon} />
+					)
 				}
 				{
 					content || children
 				}
 				{
-					iconPosition === 'right' ? <Icon name={icon} /> : null
+					renderIf(iconPosition === 'right')(
+						<Icon name={icon} />
+					)
 				}
 			</button>
 		);

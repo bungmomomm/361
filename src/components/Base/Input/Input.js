@@ -4,7 +4,7 @@ import { injectProps } from '@/decorators';
 
 import styles from './Input.scss';
 import classNames from 'classnames/bind';
-import newId from '@/utils/newId.js';
+import { newId, renderIf } from '@/utils';
 const cx = classNames.bind(styles);
 
 import Icon from '@/components/Icon';
@@ -109,7 +109,7 @@ export default class Input extends Component {
 		return (
 			<div className={inputWrapper}>
 				{ 
-					!label ? null : (
+					renderIf(label)(
 						<label htmlFor={idFor}>
 							{label}
 						</label> 
@@ -140,21 +140,21 @@ export default class Input extends Component {
 						/>
 				} 
 				{
-					!sprites || !this.state.sprites ? null : (
+					renderIf(sprites || this.state.sprites)(
 						<span className={styles.sprites}>
 							<Sprites name={this.state.sprites || sprites} />
 						</span>
 					)
 				} 
 				{
-					!icon ? null : (
+					renderIf(icon)(
 						<span className={styles.icon}>
 							<Icon name={icon} />
 						</span>
 					)
 				} 
 				{
-					!message ? null : (
+					renderIf(message)(
 						<div className={styles.message}>{message}</div>
 					)
 				}
