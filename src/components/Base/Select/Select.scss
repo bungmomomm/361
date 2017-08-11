@@ -47,16 +47,23 @@
 	border: 1px solid border(color, hover);
 	font-family: HelveticaNeueLTStd-Roman;
 	height: 35px;
-	display: flex;
 	min-width: 100px;
 	width: 100%;
+	display: flex;
+	justify-content: space-between;
 	align-items: center;
 	color: color(black);
 	padding: 0px 15px 0px 15px;
+	flex-wrap: wrap;
 	border-radius: border(radius);
 	img{
 		height: 14px;
 		width: auto;
+	}
+	i{
+		height: 14px;
+		width: auto;
+		display: inline-block;
 	}
 }
 
@@ -100,6 +107,7 @@
 	justify-content: space-between;
 	align-items: center;
 	line-height: 1;
+	flex:1;
 	padding-right: 8px;
 }
 
