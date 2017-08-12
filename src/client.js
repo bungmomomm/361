@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { createStore, compose, applyMiddleware } from 'redux';
+import { apiMiddleware } from 'redux-api-middleware';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { Provider } from 'react-redux';
 import thunkMiddleware from 'redux-thunk';
@@ -19,10 +20,10 @@ const initialState = window.__REDUX_STATE__;
 
 const store = process.env.NODE_ENV === 'development' ? 
 	createStore(reducers, initialState, composeWithDevTools(
-		applyMiddleware(thunkMiddleware)
+		applyMiddleware(thunkMiddleware, apiMiddleware)
 	)) : 
 	createStore(reducers, initialState, compose(
-		applyMiddleware(thunkMiddleware)
+		applyMiddleware(thunkMiddleware, apiMiddleware)
 	)); 
 
 /**

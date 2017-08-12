@@ -89,14 +89,14 @@ class Checkout extends Component {
 	}
 
 	onAddCoupon(coupon) {
-		const { dispatch , orderId } = this.props;
+		const { dispatch, orderId } = this.props;
 		if (coupon) {
 			dispatch(addCoupon(this.state.token, orderId, coupon));
 		}
 	}
 
 	onRemoveCoupon(event) {
-		const { dispatch } = this.props;
+		const { dispatch, orderId } = this.props;
 		dispatch(removeCoupon(this.state.token, orderId));
 	}
 
