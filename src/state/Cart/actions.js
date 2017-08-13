@@ -29,6 +29,14 @@ const placeOrderReceived = (soNumber) => ({
 	}
 });
 
+const gettingCart = (token) => ({
+	type: CRT_GET_CART,
+	status: 1,
+	payload: {
+		token
+	}
+});
+
 const cartReceived = (cart) => ({
 	type: CRT_GET_CART,
 	status: 1,
@@ -37,7 +45,25 @@ const cartReceived = (cart) => ({
 	}
 });
 
-const getCart = (token, address) => dispatch => {
+const getCart = token => dispatch => {
+	dispatch(gettingCart(token));
+
+	const req = {
+		token, 
+		method: 'GET',
+		path: 'me/carts/1'
+	};
+
+	request(req)
+	.then((response) => {
+		dispatch(cartReceived(setCartModel(response.data)));
+	})
+	.catch((error) => {
+		console.log(error);
+	});
+};
+
+const getPlaceOrderCart = (token, address) => dispatch => {
 	dispatch(placeOrderRequest(token, address));
 	const data = setPayloadPlaceOrder(address);
 	
@@ -71,5 +97,6 @@ const getCart = (token, address) => dispatch => {
 };
 
 export default {
-	getCart,
+	getPlaceOrderCart,
+	getCart
 };

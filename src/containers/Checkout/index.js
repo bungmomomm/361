@@ -24,7 +24,7 @@ import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { addCoupon, removeCoupon, resetCoupon } from '@/state/Coupon/actions';
 import { getAddresses } from '@/state/Adresses/actions';
-import { getCart } from '@/state/Cart/actions';
+import { getPlaceOrderCart, getCart } from '@/state/Cart/actions';
 
 
 class Checkout extends Component {
@@ -50,6 +50,7 @@ class Checkout extends Component {
 	componentWillMount() {
 		const { dispatch } = this.props;
 		dispatch(getAddresses(this.state.token));
+		dispatch(getCart(this.state.token));
 		
 		window.dataLayer.push({
 			event: 'checkout',
@@ -111,7 +112,7 @@ class Checkout extends Component {
 
 	onChoisedAddress(address) {
 		const { dispatch } = this.props;
-		dispatch(getCart(this.state.token, address));
+		dispatch(getPlaceOrderCart(this.state.token, address));
 	}
 
 	render() {
@@ -177,6 +178,7 @@ Checkout.propTypes = {
 
 
 const mapStateToProps = (state) => {
+	console.log(state);
 	return {
 		orderId: 1,
 		coupon: state.coupon,

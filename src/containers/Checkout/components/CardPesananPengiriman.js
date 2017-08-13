@@ -22,13 +22,13 @@ export default class CardPesananPengiriman extends Component {
 				<div className={styles.overflow}>
 					{
 						this.props.cart.map((storeData, i) => (
-							<StoreBox color='red' key={i} name={storeData.store.name} location={storeData.store.location}>
+							<StoreBox color='' key={i} name={storeData.store.name} location={storeData.store.location}>
 								{
 									storeData.store.products.map((product, index) => (
 										<CheckoutProduct key={index} data={product} />
 									))
 								}
-								<CheckoutResult key={i} gosend={storeData.store.gosend} />
+								<CheckoutResult key={i} shipping={storeData.store.shipping} price={storeData.store.price} />
 							</StoreBox>
 						))
 					}
