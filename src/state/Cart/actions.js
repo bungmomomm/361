@@ -107,7 +107,7 @@ const getPlaceOrderCart = (token, address) => dispatch => {
 	});
 };
 
-const deleteCart = (token, productId) => dispatch => {
+const deleteCart = (token, productId, cart) => dispatch => {
 	dispatch(deleteRequest(productId));
 
 	const req = {
@@ -116,14 +116,31 @@ const deleteCart = (token, productId) => dispatch => {
 		token
 	};
 	console.log(req);
-
-	request(req)
-	.then((response) => {
-		console.log(response);
-	})
-	.catch((error) => {
-		console.log(error);
-	});
+	if (cart.length > 0) {
+		cart.forEach((element) => {
+			const prodIndex = element.store.products.findIndex(e => e.id === productId);
+			
+			if (prodIndex !== -1) {
+				element.store.products.splice(prodIndex, 1);
+			}
+			
+		}, this);
+		
+		const storeWithEmptyProduct = cart.findIndex(e => e.store.products.length < 1);
+		if (storeWithEmptyProduct !== -1) {
+			cart.splice(storeWithEmptyProduct, 1);
+		}
+		
+		
+		dispatch(cartReceived(cart));
+	}
+	// request(req)
+	// .then((response) => {
+		
+	// })
+	// .catch((error) => {
+	// 	console.log(error);
+	// });
 
 };
 

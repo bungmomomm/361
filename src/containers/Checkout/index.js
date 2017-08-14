@@ -97,6 +97,10 @@ class Checkout extends Component {
 		// dispatch(getAddresses(this.state.token));
 	}
 
+	componentWillReceiveProps(nextProps) {
+		console.log(nextProps);
+	}
+
 	onAddCoupon(coupon) {
 		const { dispatch, orderId } = this.props;
 		if (coupon) {
@@ -123,12 +127,11 @@ class Checkout extends Component {
 		this.setState({
 			enableNewAddress: true
 		});
-		console.log(address);
 	}
 
 	onDeleteCart(cart) {
 		const { dispatch } = this.props;
-		dispatch(deleteCart(this.state.token, cart.data.id));
+		dispatch(deleteCart(this.state.token, cart.data.id, this.props.cart));
 	}
 
 	render() {
