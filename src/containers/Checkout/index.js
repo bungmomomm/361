@@ -7,6 +7,7 @@ import styles from './Checkout.scss';
 import { CheckoutHeader } from '@/components/Header';
 import Loading from '@/components/Loading';
 import { Container, Row, Col } from '@/components/Base';
+import { renderIf } from '@/utils';
 	
 // Checkout Component
 import NewAddressModalbox from './components/Modal/NewAddressModalbox';
@@ -117,8 +118,8 @@ class Checkout extends Component {
 
 	render() {
 		const {
-			// enableAlamatPengiriman,
-			// enablePesananPengiriman,
+			enableAlamatPengiriman,
+			enablePesananPengiriman,
 			enablePembayaran,
 		} = this.state;
 
@@ -138,13 +139,21 @@ class Checkout extends Component {
 					<div className={styles.checkout}>
 						<Container>
 							<Row>
-								<Col grid={4} className={!addresses ? '' : styles.disabled}>
+								<Col grid={4} className={!enableAlamatPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
-									<CardPengiriman addresses={addresses} onChoisedAddress={this.onChoisedAddress} />
+									{
+										renderIf(addresses)(
+											<CardPengiriman addresses={addresses} onChoisedAddress={this.onChoisedAddress} />
+										)
+									}
 								</Col>
-								<Col grid={4} className={!cart ? '' : styles.disabled}>
+								<Col grid={4} className={!enablePesananPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>(5 items)</span></div>
-									<CardPesananPengiriman cart={cart} />
+									{
+										renderIf(cart)(
+											<CardPesananPengiriman cart={cart} />
+										)
+									}
 								</Col>
 								<Col grid={4} className={enablePembayaran ? '' : styles.disabled}>
 									<div className={styles.title}>3. Pembayaran</div>
