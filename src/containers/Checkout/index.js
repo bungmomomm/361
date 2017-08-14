@@ -139,7 +139,7 @@ class Checkout extends Component {
 					<div className={styles.checkout}>
 						<Container>
 							<Row>
-								<Col grid={4} className={!enableAlamatPengiriman ? '' : styles.disabled}>
+								<Col grid={4} className={enableAlamatPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
 									{
 										renderIf(addresses)(
@@ -147,7 +147,7 @@ class Checkout extends Component {
 										)
 									}
 								</Col>
-								<Col grid={4} className={!enablePesananPengiriman ? '' : styles.disabled}>
+								<Col grid={4} className={enablePesananPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>(5 items)</span></div>
 									{
 										renderIf(cart)(
@@ -170,7 +170,7 @@ class Checkout extends Component {
 							</Row>
 						</Container>
 					</div>
-					<NewAddressModalbox />
+					<NewAddressModalbox shown />
 					<ElockerModalbox />
 					<PaymentSuccessModalbox />
 					<PaymentErrorModalbox />
