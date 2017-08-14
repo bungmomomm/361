@@ -1,3 +1,4 @@
+import camelcaseKeys from 'camelcase-keys';
 
 const setPayloadPlaceOrder = (address) => {
 	return {
@@ -89,7 +90,45 @@ const setCartModel = (jsoApiResponse) => {
 	});
 };
 
+const getCartPaymentData = (response) => {
+	let defaultData = {
+		count: 0,
+		coupon: 0,
+		couponId: null,
+		currency: 'IDR',
+		deliveryCost: 0,
+		deliveryCostDiscount: 0,
+		finalDeliveryCost: 0,
+		subTotal: 0,
+		total: 0
+	};
+	switch (response.data.type) {
+	case 'order':
+		defaultData = {
+			...defaultData,
+			...camelcaseKeys(response.data.attributes.total_price, { deep: true })
+		};
+		break;
+	case 'cart':
+		defaultData = {
+			...defaultData,
+			subTotal: response.data.attributes.total_pricing.effective_price,
+			total: response.data.attributes.total_pricing.effective_price
+		};
+		break;
+	default:
+		defaultData = {
+			...defaultData,
+			...camelcaseKeys(response.data.attributes.total_price, { deep: true })
+		};
+		break;
+	}
+
+	return defaultData;
+};
+
 export default{
 	setPayloadPlaceOrder,
-	setCartModel
+	setCartModel,
+	getCartPaymentData
 };

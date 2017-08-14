@@ -1,4 +1,5 @@
 import { request } from '@/utils';
+import { paymentInfoUpdated } from '@/state/Payment/actions';
 import { 
 	CRT_GET_CART,
 	CRT_PLACE_ORDER
@@ -9,7 +10,8 @@ import {
 
 import { 
 	setPayloadPlaceOrder, 
-	setCartModel 
+	setCartModel,
+	getCartPaymentData 
 } from './models';
 
 const placeOrderRequest = (token, address) => ({
@@ -56,6 +58,7 @@ const getCart = token => dispatch => {
 
 	request(req)
 	.then((response) => {
+		dispatch(paymentInfoUpdated(getCartPaymentData(response.data)));
 		dispatch(cartReceived(setCartModel(response.data)));
 	})
 	.catch((error) => {
@@ -85,6 +88,7 @@ const getPlaceOrderCart = (token, address) => dispatch => {
 			method: 'GET'
 		})
 		.then((res) => {
+			dispatch(paymentInfoUpdated(getCartPaymentData(res.data)));
 			dispatch(cartReceived(setCartModel(res.data)));
 		})
 		.catch((error) => {
