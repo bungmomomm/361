@@ -1,9 +1,9 @@
 import { request } from '@/utils';
 import { 
 	CRT_GET_CART,
-	CRT_PLACE_ORDER
+	CRT_PLACE_ORDER,
     // CRT_UPDATE_QTY,
-    // CRT_DELETE_CART,
+    CRT_DELETE_CART,
     // CRT_GO_SEND_ELIGIBLE
 } from './constants';
 
@@ -12,6 +12,13 @@ import {
 	setCartModel 
 } from './models';
 
+const deleteRequest = (productId) => ({
+	type: CRT_DELETE_CART,
+	status: 0,
+	payload: {
+		productId
+	}
+});
 const placeOrderRequest = (token, address) => ({
 	type: CRT_PLACE_ORDER,
 	status: 0,
@@ -96,7 +103,28 @@ const getPlaceOrderCart = (token, address) => dispatch => {
 	});
 };
 
+const deleteCart = (token, productId) => dispatch => {
+	dispatch(deleteRequest(productId));
+
+	const req = {
+		method: 'DELETE',
+		path: `me/carts/${productId}`,
+		token
+	};
+	console.log(req);
+
+	request(req)
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		console.log(error);
+	});
+
+};
+
 export default {
 	getPlaceOrderCart,
-	getCart
+	getCart,
+	deleteCart
 };

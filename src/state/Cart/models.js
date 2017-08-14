@@ -34,6 +34,7 @@ const setPayloadPlaceOrder = (address) => {
 };
 
 const setCartModel = (jsoApiResponse) => {
+	console.log(jsoApiResponse);
 	return jsoApiResponse.included.filter(e => e.type === 'store_items').map((value, index) => {
 		const attr = value.attributes;
 		const products = value.relationships.items.data.map((x, y) => {
@@ -54,8 +55,8 @@ const setCartModel = (jsoApiResponse) => {
 				qty: parseInt(a.attributes.quantity, 10),
 				maxQty: parseInt(prods.attributes.max_quantity, 10),
 				image: prods.attributes.thumbnail_url,
+				id: parseInt(prodRel.id, 10),
 				attribute: [
-					'packing yang rapih tolong hati hati karena ini barang mewah',
 					'color: white'
 				],
 			};

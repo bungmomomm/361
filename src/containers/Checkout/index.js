@@ -25,7 +25,7 @@ import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { addCoupon, removeCoupon, resetCoupon } from '@/state/Coupon/actions';
 import { getAddresses } from '@/state/Adresses/actions';
-import { getPlaceOrderCart, getCart } from '@/state/Cart/actions';
+import { getPlaceOrderCart, getCart, deleteCart } from '@/state/Cart/actions';
 
 
 class Checkout extends Component {
@@ -36,6 +36,7 @@ class Checkout extends Component {
 			enableAlamatPengiriman: true,
 			enablePesananPengiriman: true,
 			enablePembayaran: true,
+			enableNewAddress: false,
 			token: this.props.cookies.get('user.token'),
 			refreshToken: this.props.cookies.get('user.rf.token'),
 			addresses: {}, 
@@ -46,6 +47,8 @@ class Checkout extends Component {
 		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
 		this.onResetCoupon = this.onResetCoupon.bind(this);
 		this.onChoisedAddress = this.onChoisedAddress.bind(this);
+		this.onChangeAddress = this.onChangeAddress.bind(this);
+		this.onDeleteCart = this.onDeleteCart.bind(this);
 	}
 
 	componentWillMount() {
@@ -116,6 +119,18 @@ class Checkout extends Component {
 		dispatch(getPlaceOrderCart(this.state.token, address));
 	}
 
+	onChangeAddress(address) {
+		this.setState({
+			enableNewAddress: true
+		});
+		console.log(address);
+	}
+
+	onDeleteCart(cart) {
+		const { dispatch } = this.props;
+		dispatch(deleteCart(this.state.token, cart.data.id));
+	}
+
 	render() {
 		const {
 			enableAlamatPengiriman,
@@ -143,7 +158,7 @@ class Checkout extends Component {
 									<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
 									{
 										renderIf(addresses)(
-											<CardPengiriman addresses={addresses} onChoisedAddress={this.onChoisedAddress} />
+											<CardPengiriman addresses={addresses} onChoisedAddress={this.onChoisedAddress} onChangeAddress={this.onChangeAddress} />
 										)
 									}
 								</Col>
@@ -151,7 +166,7 @@ class Checkout extends Component {
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>(5 items)</span></div>
 									{
 										renderIf(cart)(
-											<CardPesananPengiriman cart={cart} />
+											<CardPesananPengiriman cart={cart} onDeleteCart={this.onDeleteCart} />
 										)
 									}
 								</Col>
@@ -170,7 +185,7 @@ class Checkout extends Component {
 							</Row>
 						</Container>
 					</div>
-					<NewAddressModalbox shown />
+					<NewAddressModalbox shown={this.state.enableNewAddress} />
 					<ElockerModalbox />
 					<PaymentSuccessModalbox />
 					<PaymentErrorModalbox />
@@ -187,7 +202,6 @@ Checkout.propTypes = {
 
 
 const mapStateToProps = (state) => {
-	console.log(state);
 	return {
 		orderId: 1,
 		coupon: state.coupon,
