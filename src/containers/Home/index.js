@@ -22,7 +22,7 @@ class Home extends Component {
 	render() {
 		return (
 			<div>
-				{this.props.api.ip}
+				test
 			</div>
 		);
 

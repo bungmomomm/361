@@ -11,7 +11,9 @@ const CheckoutResult = (props) => {
 		<div className={styles.footer}>
 			{
 				props.shipping.gosend.gosendActivated && props.shipping.gosend.gosendSupported ? 
-					<div className={styles.deliveryInfo}><Checkbox name='gojek' text='Pengiriman:' /> &nbsp; <Sprites name='gosend' /></div>
+					<div className={styles.deliveryInfo}>
+						<Checkbox name='gojek' text='Pengiriman:' /> &nbsp; <Sprites name='gosend' />
+					</div>
 					:
 					<div className={styles.deliveryInfo}>{props.shipping.note}</div>
 			}
