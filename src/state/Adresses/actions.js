@@ -51,17 +51,10 @@ const getAddresses = (token) => dispatch => {
 	};
 	request(req)
 	.then((response) => {
-		const shipping = response.data.data.map((value, index) => {
+		const address = response.data.data.map((value, index) => {
 			return value;
 		}).filter(e => e.type === 'shipping');
-		const address = [];
-		shipping.forEach((value, index) => {
-			address.push({
-				value: value.id,
-				label: value.attributes.address_label,
-				info: value.attributes.address
-			});
-		});
+		
 		dispatch(addressesReceived(address));
 	})
 	.catch((error) => {

@@ -7,6 +7,7 @@ import Stepper from '@/components/Stepper';
 
 import { currency } from '@/utils';
 
+
 const CheckoutProduct = (props) => {
 	return (
 		<div className={styles.list}>

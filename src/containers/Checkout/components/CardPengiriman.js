@@ -21,6 +21,37 @@ export default class CardPengiriman extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
+
+		this.state = {
+			shipping: [], 
+			selectedAddress: null
+		};
+		this.onChoisedAddress = this.onChoisedAddress.bind(this);
+	}
+
+	componentWillMount() {
+		const shipping = this.props.addresses;
+		const address = [];
+		if (typeof shipping !== 'undefined') {
+			shipping.forEach((value, index) => {
+				address.push({
+					value: value.id,
+					label: !value.attributes.address_label ? value.attributes.fullname : value.attributes.address_label,
+					info: `${value.attributes.address}, ${value.attributes.district}, ${value.attributes.city}, ${value.attributes.province}`
+				});
+			});
+			this.setState({
+				shipping: address
+			});
+		}
+	}
+
+	onChoisedAddress(dataChoised) {
+		const selectedAddress = this.props.addresses.find(e => e.id === dataChoised.value);
+		this.setState({
+			selectedAddress
+		});
+		this.props.onChoisedAddress(selectedAddress);
 	}
 	
 	render() {
@@ -32,21 +63,30 @@ export default class CardPengiriman extends Component {
 					</Alert>
 					<Box>
 						<InputGroup>
-							{
-								!this.props.addresses ? null : <Select filter selectedLabel='-- Pilih Alamat Lainnya' options={this.props.addresses} />
-							}
+							<Select 
+								name='alamat'
+								filter 
+								selectedLabel='-- Pilih Alamat Lainnya' 
+								options={this.state.shipping} 
+								onChange={this.onChoisedAddress} 
+							/>
 						</InputGroup>
-						<Level>
-							<Level.Left><strong>Rumah Bangka</strong></Level.Left>
-							<Level.Right className='text-right'><Icon name='map-marker' /> &nbsp; Lokasi Sudah Ditandai</Level.Right>
-						</Level>
-						<p>
-							Aufar Syahdan <br />
-							The Residence B10 - 9 <br />
-							Jl. Bangka II, Mampang Prapatan, Jakarta Selatan, DKI Jakarta 12720 <br />
-							P: 08568052187
-						</p> 
-						<Button type='button' icon='pencil' iconPosition='left' className='font-orange' content='Ubah Alamat ini' />
+						{
+							!this.state.selectedAddress ? null : 
+							<div>
+								<Level>
+									<Level.Left><strong>{this.state.selectedAddress.attributes.address_label}</strong></Level.Left>
+									<Level.Right className='text-right'><Icon name='map-marker' /> &nbsp; Lokasi Sudah Ditandai</Level.Right>
+								</Level>
+								<p>
+									{this.state.selectedAddress.attributes.fullname} <br />
+									{this.state.selectedAddress.attributes.address} <br />
+									{this.state.selectedAddress.attributes.district}, {this.state.selectedAddress.attributes.city}, {this.state.selectedAddress.attributes.province}, {this.state.selectedAddress.attributes.zipcode} <br />
+									P: {this.state.selectedAddress.attributes.phone}
+								</p> 
+								<Button type='button' icon='pencil' iconPosition='left' className='font-orange' content='Ubah Alamat ini' />
+							</div>
+						}
 					</Box>
 					<Dropshipper />
 					<Button content='Masukan Alamat Pengiriman' color='dark' block size='large' iconPosition='right' icon='angle-right' />

@@ -1,6 +1,7 @@
 import * as constants from './constants';
 import { request } from '@/utils';
-
+import { paymentInfoUpdated } from '@/state/Payment/actions';
+import camelcaseKeys from 'camelcase-keys';
 const couponAdd = (thecoupon) => ({
 	type: constants.CP_ADD_COUPON,
 	payload: {
@@ -8,10 +9,10 @@ const couponAdd = (thecoupon) => ({
 	}
 });
 
-const couponAdded = (cart) => ({
+const couponAdded = (data) => ({
 	type: constants.CP_ADDED_COUPON,
 	payload: {
-		cart
+		...data
 	}
 });
 
@@ -29,10 +30,10 @@ const couponDelete = (coupon) => ({
 	}
 });
 
-const couponDeleted = (cart) => ({
+const couponDeleted = (data) => ({
 	type: constants.CP_DELETED_COUPON,
 	payload: {
-		cart
+		...data
 	}
 });
 
@@ -53,14 +54,17 @@ const addCoupon = (token, orderId, coupon) => dispatch => {
 	return request({
 		token,
 		path: 'orders/:order_id/coupon'.replace(':order_id', orderId),
-		method: 'POST'
-	}, {
-		data: {
-			type: 'coupon',
-			id: coupon
+		method: 'POST',
+		body: {
+			data: {
+				type: 'coupon',
+				id: coupon
+			}
 		}
 	}).then((response) => {
-		dispatch(couponAdded(response.data));
+		const paymentInfo = camelcaseKeys(response.data.data.attributes.total_price, { deep: true });
+		dispatch(paymentInfoUpdated(paymentInfo));
+		dispatch(couponAdded(response.data.data.attributes.totalPrice));
 	}).catch((error) => {
 		dispatch(couponInvalid(error.errorMessage));
 	});
@@ -71,14 +75,17 @@ const removeCoupon = (token, orderId) => dispatch => {
 	return request({
 		token,
 		path: 'orders/:order_id/coupon'.replace(':order_id', orderId),
-		method: 'POST'
-	}, {
-		data: {
-			type: 'coupon',
-			id: ''
+		method: 'POST',
+		body: {
+			data: {
+				type: 'coupon',
+				id: ''
+			}
 		}
 	}).then((response) => {
-		dispatch(couponDeleted({}));
+		const paymentInfo = camelcaseKeys(response.data.data.attributes.total_price, { deep: true });
+		dispatch(paymentInfoUpdated(paymentInfo));
+		dispatch(couponDeleted(response.data.data.attributes.totalPrice));
 	}).catch((error) => {
 		dispatch(couponRequestFailed());
 	});
