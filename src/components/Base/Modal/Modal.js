@@ -26,15 +26,25 @@ export default class Modal extends Component {
 		this.toggleBodyOverflow();
 	}
 
-	handleClose() {
+	componentWillReceiveProps(nextProps) {
 		this.setState({
-			displayModal: false
+			displayModal: nextProps.shown
 		});
 		this.toggleBodyOverflow();
 	}
 
+	handleClose() {
+		this.setState({
+			displayModal: false
+		});
+		if (this.props.onClose) {
+			this.props.onClose(true);
+		}
+		this.toggleBodyOverflow();
+	}
+
 	toggleBodyOverflow() {
-		document.body.style.overflow = this.state.displayModal ? 'auto' : 'hidden';
+		document.body.style.overflow = this.state.displayModal ? '' : 'hidden';
 	}
 	
 	@injectProps
