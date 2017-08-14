@@ -8,7 +8,12 @@
 @mixin colorStyle($buttonColor){
 	color:$buttonColor;
 	&:hover{
-		color: lighten($buttonColor, 20%);
+		color: darken($buttonColor, 20%);
+	}
+	&:not(a){
+		&:hover{
+			color: $buttonColor;
+		}
 	}
 }
 
