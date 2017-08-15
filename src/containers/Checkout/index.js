@@ -7,7 +7,8 @@ import styles from './Checkout.scss';
 import { CheckoutHeader } from '@/components/Header';
 import Loading from '@/components/Loading';
 import { Container, Row, Col } from '@/components/Base';
-	
+import { renderIf } from '@/utils';
+
 // Checkout Component
 import NewAddressModalbox from './components/Modal/NewAddressModalbox';
 import ElockerModalbox from './components/Modal/ElockerModalbox';
@@ -24,7 +25,7 @@ import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { addCoupon, removeCoupon, resetCoupon } from '@/state/Coupon/actions';
 import { getAddresses, getO2OList } from '@/state/Adresses/actions';
-import { getPlaceOrderCart, getCart } from '@/state/Cart/actions';
+import { getPlaceOrderCart, getCart, deleteCart } from '@/state/Cart/actions';
 
 
 class Checkout extends Component {
@@ -35,18 +36,21 @@ class Checkout extends Component {
 			enableAlamatPengiriman: true,
 			enablePesananPengiriman: true,
 			enablePembayaran: true,
+			enableNewAddress: false,
 			token: this.props.cookies.get('user.token'),
 			refreshToken: this.props.cookies.get('user.rf.token'),
 			addresses: {},
 			soNumber: null,
-			cart: {}, 
-			stores: {}, 
+			cart: {},
+			stores: {},
 			showModalO2o: false,
 		};
 		this.onAddCoupon = this.onAddCoupon.bind(this);
 		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
 		this.onResetCoupon = this.onResetCoupon.bind(this);
 		this.onChoisedAddress = this.onChoisedAddress.bind(this);
+		this.onChangeAddress = this.onChangeAddress.bind(this);
+		this.onDeleteCart = this.onDeleteCart.bind(this);
 		this.onGetListO2o = this.onGetListO2o.bind(this);
 	}
 
@@ -96,6 +100,10 @@ class Checkout extends Component {
 		// dispatch(getAddresses(this.state.token));
 	}
 
+	componentWillReceiveProps(nextProps) {
+		console.log(nextProps);
+	}
+
 	onAddCoupon(coupon) {
 		const { dispatch, orderId } = this.props;
 		if (coupon) {
@@ -116,6 +124,17 @@ class Checkout extends Component {
 	onChoisedAddress(address) {
 		const { dispatch } = this.props;
 		dispatch(getPlaceOrderCart(this.state.token, address));
+	}
+
+	onChangeAddress(address) {
+		this.setState({
+			enableNewAddress: true
+		});
+	}
+
+	onDeleteCart(cart) {
+		const { dispatch } = this.props;
+		dispatch(deleteCart(this.state.token, cart.data.id, this.props.cart));
 	}
 
 	onGetListO2o() {
@@ -141,7 +160,7 @@ class Checkout extends Component {
 			addresses,
             stores,
 		} = this.props;
-
+		
 		return (
 			this.props.loading ? <Loading /> : (
 				<div className='page'>
@@ -152,11 +171,19 @@ class Checkout extends Component {
 							<Row>
 								<Col grid={4} className={enableAlamatPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
-									{ !addresses ? null : <CardPengiriman addresses={addresses} onChoisedAddress={this.onChoisedAddress} onGetListO2o={this.onGetListO2o} stores={stores} /> }
+									{
+										renderIf(addresses)(
+											<CardPengiriman addresses={addresses} onChoisedAddress={this.onChoisedAddress} onChangeAddress={this.onChangeAddress} onGetListO2o={this.onGetListO2o} stores={stores} />
+										)
+									}
 								</Col>
 								<Col grid={4} className={enablePesananPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>(5 items)</span></div>
-									{ !cart ? null : <CardPesananPengiriman cart={cart} /> }
+									{
+										renderIf(cart)(
+											<CardPesananPengiriman cart={cart} onDeleteCart={this.onDeleteCart} />
+										)
+									}
 								</Col>
 								<Col grid={4} className={enablePembayaran ? '' : styles.disabled}>
 									<div className={styles.title}>3. Pembayaran</div>
@@ -173,7 +200,7 @@ class Checkout extends Component {
 							</Row>
 						</Container>
 					</div>
-					<NewAddressModalbox />
+					<NewAddressModalbox shown={this.state.enableNewAddress} />
 					<ElockerModalbox shown={this.state.showModalO2o} stores={!stores ? null : stores} />
 					<PaymentSuccessModalbox />
 					<PaymentErrorModalbox />
@@ -190,7 +217,6 @@ Checkout.propTypes = {
 
 
 const mapStateToProps = (state) => {
-	console.log(state);
 	return {
 		orderId: 1,
 		coupon: state.coupon,

@@ -1,3 +1,4 @@
+import camelcaseKeys from 'camelcase-keys';
 
 const setPayloadPlaceOrder = (address) => {
 	return {
@@ -34,6 +35,7 @@ const setPayloadPlaceOrder = (address) => {
 };
 
 const setCartModel = (jsoApiResponse) => {
+	console.log(jsoApiResponse);
 	return jsoApiResponse.included.filter(e => e.type === 'store_items').map((value, index) => {
 		const attr = value.attributes;
 		const products = value.relationships.items.data.map((x, y) => {
@@ -54,8 +56,8 @@ const setCartModel = (jsoApiResponse) => {
 				qty: parseInt(a.attributes.quantity, 10),
 				maxQty: parseInt(prods.attributes.max_quantity, 10),
 				image: prods.attributes.thumbnail_url,
+				id: parseInt(prodRel.id, 10),
 				attribute: [
-					'packing yang rapih tolong hati hati karena ini barang mewah',
 					'color: white'
 				],
 			};
@@ -89,7 +91,45 @@ const setCartModel = (jsoApiResponse) => {
 	});
 };
 
+const getCartPaymentData = (response) => {
+	let defaultData = {
+		count: 0,
+		coupon: 0,
+		couponId: null,
+		currency: 'IDR',
+		deliveryCost: 0,
+		deliveryCostDiscount: 0,
+		finalDeliveryCost: 0,
+		subTotal: 0,
+		total: 0
+	};
+	switch (response.data.type) {
+	case 'order':
+		defaultData = {
+			...defaultData,
+			...camelcaseKeys(response.data.attributes.total_price, { deep: true })
+		};
+		break;
+	case 'cart':
+		defaultData = {
+			...defaultData,
+			subTotal: response.data.attributes.total_pricing.effective_price,
+			total: response.data.attributes.total_pricing.effective_price
+		};
+		break;
+	default:
+		defaultData = {
+			...defaultData,
+			...camelcaseKeys(response.data.attributes.total_price, { deep: true })
+		};
+		break;
+	}
+
+	return defaultData;
+};
+
 export default{
 	setPayloadPlaceOrder,
-	setCartModel
+	setCartModel,
+	getCartPaymentData
 };

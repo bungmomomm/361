@@ -38,6 +38,7 @@ export default class NewAddressModalbox extends Component {
 		this.onChange = this.onChange.bind(this);
 		this.onChangeSelect = this.onChangeSelect.bind(this);
 		this.validateAndSubmit = this.validateAndSubmit.bind(this);
+		console.log(props);
 	}
 
 	onChange(e) {
@@ -124,7 +125,7 @@ export default class NewAddressModalbox extends Component {
 								name='no_hp'
 								error={errors.has('no_hp')}
 								message={errors.has('name') ? 'No Hp field is required.' : ''}
-								type='text'
+								type='number'
 							/>
 						</InputGroup>
 						<InputGroup>
@@ -161,7 +162,7 @@ export default class NewAddressModalbox extends Component {
 								required
 								placeholder='Contoh : 12345'
 								name='kodepos'
-								type='text'
+								type='number'
 								onChange={this.onChange}
 								error={errors.has('kodepos')}
 								message={errors.has('kodepos') ? 'Kode Pos field is required.' : ''}

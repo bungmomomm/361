@@ -1,7 +1,7 @@
 import * as constants from './constants';
 import { request } from '@/utils';
 import { paymentInfoUpdated } from '@/state/Payment/actions';
-import camelcaseKeys from 'camelcase-keys';
+import { getCartPaymentData } from '@/state/Cart/models';
 const couponAdd = (thecoupon) => ({
 	type: constants.CP_ADD_COUPON,
 	payload: {
@@ -62,9 +62,8 @@ const addCoupon = (token, orderId, coupon) => dispatch => {
 			}
 		}
 	}).then((response) => {
-		const paymentInfo = camelcaseKeys(response.data.data.attributes.total_price, { deep: true });
-		dispatch(paymentInfoUpdated(paymentInfo));
-		dispatch(couponAdded(response.data.data.attributes.totalPrice));
+		dispatch(paymentInfoUpdated(getCartPaymentData(response.data)));
+		dispatch(couponAdded({}));
 	}).catch((error) => {
 		dispatch(couponInvalid(error.errorMessage));
 	});
@@ -83,9 +82,8 @@ const removeCoupon = (token, orderId) => dispatch => {
 			}
 		}
 	}).then((response) => {
-		const paymentInfo = camelcaseKeys(response.data.data.attributes.total_price, { deep: true });
-		dispatch(paymentInfoUpdated(paymentInfo));
-		dispatch(couponDeleted(response.data.data.attributes.totalPrice));
+		dispatch(paymentInfoUpdated(getCartPaymentData(response.data)));
+		dispatch(couponDeleted({}));
 	}).catch((error) => {
 		dispatch(couponRequestFailed());
 	});

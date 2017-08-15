@@ -24,12 +24,13 @@ export default class CardPengiriman extends Component {
 
 		this.state = {
 			elockerTab: false,
-			shipping: [], 
-			o2o: [], 
+			shipping: [],
+			o2o: [],
 			selectedAddress: null,
 			selectedLocker: null
 		};
 		this.onChoisedAddress = this.onChoisedAddress.bind(this);
+		this.onChangeAddress = this.onChangeAddress.bind(this);
 		this.onGetListO2o = this.onGetListO2o.bind(this);
 		this.onChosenLocker = this.onChosenLocker.bind(this);
 	}
@@ -59,6 +60,10 @@ export default class CardPengiriman extends Component {
 		this.props.onChoisedAddress(selectedAddress);
 	}
 
+	onChangeAddress() {
+		this.props.onChangeAddress(this.state.selectedAddress);
+	}
+
 	onChosenLocker(dataChosen) {
 		const selectedLocker = this.props.stores.find(e => e.value === dataChosen.value);
 		this.setState({
@@ -73,7 +78,7 @@ export default class CardPengiriman extends Component {
 		});
 		this.props.onGetListO2o();
 	}
-	
+
 	render() {
 		return (
 			<Tabs tabActive={0} stretch onBeforeChange={this.onGetListO2o} >
@@ -93,7 +98,7 @@ export default class CardPengiriman extends Component {
 						</InputGroup>
 						{
 							!this.state.selectedAddress ? null : 
-							<div>	
+							<div>
 								<Level>
 									<Level.Left><strong>{this.state.selectedAddress.attributes.address_label}</strong></Level.Left>
 									<Level.Right className='text-right'><Icon name='map-marker' /> &nbsp; Lokasi Sudah Ditandai</Level.Right>
@@ -104,7 +109,7 @@ export default class CardPengiriman extends Component {
 									{this.state.selectedAddress.attributes.district}, {this.state.selectedAddress.attributes.city}, {this.state.selectedAddress.attributes.province}, {this.state.selectedAddress.attributes.zipcode} <br />
 									P: {this.state.selectedAddress.attributes.phone}
 								</p> 
-								<Button type='button' icon='pencil' iconPosition='left' className='font-orange' content='Ubah Alamat ini' />
+								<Button type='button' icon='pencil' iconPosition='left' className='font-orange' content='Ubah Alamat ini' onClick={this.onChangeAddress} />
 							</div>
 						}
 					</Box>
@@ -117,15 +122,15 @@ export default class CardPengiriman extends Component {
 					</Alert>
 					<Box>
 						<InputGroup>
-							<Select 
-								filter 
-								selectedLabel='-- Pilih Alamat E-Locker' 
+							<Select
+								filter
+								selectedLabel='-- Pilih Alamat E-Locker'
 								options={(typeof this.props.stores !== 'undefined') ? this.props.stores : []}
 								onChange={this.onChosenLocker}
 							/>
 						</InputGroup>
 						{
-							!this.state.selectedLocker ? null : 
+							!this.state.selectedLocker ? null :
 							<div>
 								<Level>
 									<Level.Left><strong>{this.state.selectedLocker.label} &nbsp; <Icon name='map-marker' /></strong></Level.Left>

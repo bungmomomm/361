@@ -31,7 +31,7 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 					<Modal.Body>
 						<form>
 							<InputGroup>
-								<Input placeholder='No Handphone anda (contoh: 08219823982189)' />
+								<Input number placeholder='No Handphone anda (contoh: 08219823982189)' />
 							</InputGroup>
 							<InputGroup>
 								<Recaptcha

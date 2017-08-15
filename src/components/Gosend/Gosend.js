@@ -4,7 +4,7 @@ import styles from './Gosend.scss';
 import classNames from 'classnames/bind';
 import { Input, Button, Alert } from '@/components/Base';
 import Icon from '@/components/Icon';
-import { Map, Marker, GoogleApiWrapper } from 'google-maps-react';
+import { Map, Marker, Polygon, GoogleApiWrapper } from 'google-maps-react';
 import { renderIf } from '@/utils';
 
 const cx = classNames.bind(styles);
@@ -18,12 +18,20 @@ class Gosend extends Component {
 			center: this.props.center,
 			formattedAddress: '',
 			icon: 'gosend-marker.png',
-			autocomplete: false
+			autocomplete: false,
+			markerInPolygon: false,
+			polygonArea: [
+				{ lat: -6.159403, lng: 106.817739 },
+				{ lat: -6.187126, lng: 106.812802 },
+				{ lat: -6.163686, lng: 106.840183 }
+			]
 		};
 		this.showGoogleMap = this.showGoogleMap.bind(this);
 		this.onMarkerDragged = this.onMarkerDragged.bind(this);
+		this.onMouseoverPolygon = this.onMouseoverPolygon.bind(this);
 		this.renderAutocomplete = this.renderAutocomplete.bind(this);
 		this.autocomplete = '';
+		this.insidePolygon = '';
 	}
 
 	componentDidUpdate(prevProps) {
@@ -38,15 +46,29 @@ class Gosend extends Component {
 	}
 
 	onMarkerDragged(props, marker, e) {
-		this.setCenter({
-			lat: e.latLng.lat(), 
-			lng: e.latLng.lng()
+		this.setState({
+			markerInPolygon: true
 		});
+	}
+	
+	onMouseoverPolygon(props, polygon, e) {
+		if (this.state.markerInPolygon) {
+			this.setCenter({
+				lat: e.latLng.lat(),
+				lng: e.latLng.lng()
+			});
+		}
+	}
+
+	onMapClicked(props) {
+		console.log(props);
+		console.log(this);
 	}
 
 	setCenter(location) {
 		this.setState({
-			center: location
+			center: location,
+			markerInPolygon: false
 		});
 	}
 
@@ -130,6 +152,15 @@ class Gosend extends Component {
 										center={this.state.center}
 										centerAroundCurrentLocation={false}
 									>
+										<Polygon
+											paths={this.state.polygonArea}
+											strokeColor='#0000FF'
+											strokeOpacity={0.8}
+											strokeWeight={2}
+											fillColor='#0000FF'
+											onMouseover={this.onMouseoverPolygon}
+											fillOpacity={0.35} 
+										/>
 										<Marker
 											title={'The marker`s title will appear as a tooltip.'}
 											name={'Current location'} 
