@@ -30,11 +30,7 @@ export default class Select extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		this.setState({
-			options: nextProps.options,
-			selected: {
-				value: '',
-				label: ''
-			}
+			options: nextProps.options
 		});
 	}
 
