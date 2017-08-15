@@ -23,7 +23,7 @@ import CardPengiriman from './components/CardPengiriman';
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { addCoupon, removeCoupon, resetCoupon } from '@/state/Coupon/actions';
-import { getAddresses } from '@/state/Adresses/actions';
+import { getAddresses, getO2OList } from '@/state/Adresses/actions';
 import { getPlaceOrderCart, getCart } from '@/state/Cart/actions';
 
 
@@ -37,21 +37,24 @@ class Checkout extends Component {
 			enablePembayaran: true,
 			token: this.props.cookies.get('user.token'),
 			refreshToken: this.props.cookies.get('user.rf.token'),
-			addresses: {}, 
+			addresses: {},
 			soNumber: null,
-			cart: {}
+			cart: {}, 
+			stores: {}, 
+			showModalO2o: false,
 		};
 		this.onAddCoupon = this.onAddCoupon.bind(this);
 		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
 		this.onResetCoupon = this.onResetCoupon.bind(this);
 		this.onChoisedAddress = this.onChoisedAddress.bind(this);
+		this.onGetListO2o = this.onGetListO2o.bind(this);
 	}
 
 	componentWillMount() {
 		const { dispatch } = this.props;
 		dispatch(getAddresses(this.state.token));
 		dispatch(getCart(this.state.token));
-		
+
 		window.dataLayer.push({
 			event: 'checkout',
 			userID: '10c53c28efe87fe0c27262ba36f11d5d',
@@ -115,6 +118,14 @@ class Checkout extends Component {
 		dispatch(getPlaceOrderCart(this.state.token, address));
 	}
 
+	onGetListO2o() {
+		const { dispatch } = this.props;
+		this.setState({
+			showModalO2o: true
+		});
+		dispatch(getO2OList(this.state.token));
+	}
+
 	render() {
 		const {
 			enableAlamatPengiriman,
@@ -127,9 +138,10 @@ class Checkout extends Component {
 			cart,
 			payments,
 			user,
-			addresses
+			addresses,
+            stores,
 		} = this.props;
-		
+
 		return (
 			this.props.loading ? <Loading /> : (
 				<div className='page'>
@@ -140,7 +152,7 @@ class Checkout extends Component {
 							<Row>
 								<Col grid={4} className={enableAlamatPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
-									{ !addresses ? null : <CardPengiriman addresses={addresses} onChoisedAddress={this.onChoisedAddress} /> }
+									{ !addresses ? null : <CardPengiriman addresses={addresses} onChoisedAddress={this.onChoisedAddress} onGetListO2o={this.onGetListO2o} stores={stores} /> }
 								</Col>
 								<Col grid={4} className={enablePesananPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>(5 items)</span></div>
@@ -162,7 +174,7 @@ class Checkout extends Component {
 						</Container>
 					</div>
 					<NewAddressModalbox />
-					<ElockerModalbox />
+					<ElockerModalbox shown={this.state.showModalO2o} stores={!stores ? null : stores} />
 					<PaymentSuccessModalbox />
 					<PaymentErrorModalbox />
 					<VerifikasiNoHandponeModalbox />
@@ -184,7 +196,8 @@ const mapStateToProps = (state) => {
 		coupon: state.coupon,
 		addresses: state.addresses.data,
 		cart: state.cart.cart,
-		payments: state.payments
+		payments: state.payments,
+		stores: state.addresses.o2o,
 	};
 };
 

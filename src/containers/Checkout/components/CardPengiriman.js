@@ -15,7 +15,7 @@ import {
 import Dropshipper from './Dropshipper';
 
 // Dummy Data
-import { ElockerList } from '@/data';
+// import { ElockerList } from '@/data';
 
 export default class CardPengiriman extends Component {
 	constructor(props) {
@@ -23,10 +23,15 @@ export default class CardPengiriman extends Component {
 		this.props = props;
 
 		this.state = {
+			elockerTab: false,
 			shipping: [], 
-			selectedAddress: null
+			o2o: [], 
+			selectedAddress: null,
+			selectedLocker: null
 		};
 		this.onChoisedAddress = this.onChoisedAddress.bind(this);
+		this.onGetListO2o = this.onGetListO2o.bind(this);
+		this.onChosenLocker = this.onChosenLocker.bind(this);
 	}
 
 	componentWillMount() {
@@ -53,10 +58,25 @@ export default class CardPengiriman extends Component {
 		});
 		this.props.onChoisedAddress(selectedAddress);
 	}
+
+	onChosenLocker(dataChosen) {
+		const selectedLocker = this.props.stores.find(e => e.value === dataChosen.value);
+		this.setState({
+			selectedLocker
+		});
+	}
+
+	onGetListO2o(event) {
+		console.log(event);
+		this.setState({
+			elockerTab: true
+		});
+		this.props.onGetListO2o();
+	}
 	
 	render() {
 		return (
-			<Tabs tabActive={0} stretch>
+			<Tabs tabActive={0} stretch onBeforeChange={this.onGetListO2o} >
 				<Tabs.Panel title='Kirim ke Alamat' sprites='truck-off' spritesActive='truck-on'>
 					<Alert align='center' color='yellow' close>
 						Gratis ongkos kirim hingga Rp 15,000 untuk minimal pembelian sebesar Rp 100,000
@@ -73,7 +93,7 @@ export default class CardPengiriman extends Component {
 						</InputGroup>
 						{
 							!this.state.selectedAddress ? null : 
-							<div>
+							<div>	
 								<Level>
 									<Level.Left><strong>{this.state.selectedAddress.attributes.address_label}</strong></Level.Left>
 									<Level.Right className='text-right'><Icon name='map-marker' /> &nbsp; Lokasi Sudah Ditandai</Level.Right>
@@ -91,24 +111,33 @@ export default class CardPengiriman extends Component {
 					<Dropshipper />
 					<Button content='Masukan Alamat Pengiriman' color='dark' block size='large' iconPosition='right' icon='angle-right' />
 				</Tabs.Panel>
-				<Tabs.Panel title='Ambil Di Toko/E-locker (O2O)' sprites='o2o-off' spritesActive='o2o-on'>
+				<Tabs.Panel title='Ambil Di Toko/E-locker (O2O)' sprites='o2o-off' spritesActive='o2o-on' >
 					<Alert align='center' color='yellow'>
 						Maksimum 2 kg perorder untuk Ambil di Toko. Pesanan diatas 2 kg akan langsung dikirimkan ke Alamat Anda.
 					</Alert>
 					<Box>
 						<InputGroup>
-							<Select filter selectedLabel='-- Pilih Alamat E-Locker' options={ElockerList} />
+							<Select 
+								filter 
+								selectedLabel='-- Pilih Alamat E-Locker' 
+								options={(typeof this.props.stores !== 'undefined') ? this.props.stores : []}
+								onChange={this.onChosenLocker}
+							/>
 						</InputGroup>
-						<Level>
-							<Level.Left><strong>E-Locker Family Mart Kelapa Gading &nbsp; <Icon name='map-marker' /></strong></Level.Left>
-						</Level>
-						<p>
-							Family Mart Kelapa Gading Lt.2 <br />
-							Jl. Boulevard Barat Blok XC No.7 <br />
-							Kelapa Gading, Jakarta Utara 12420 <br />
-							Telp:
-						</p>
+						{
+							!this.state.selectedLocker ? null : 
+							<div>
+								<Level>
+									<Level.Left><strong>{this.state.selectedLocker.label} &nbsp; <Icon name='map-marker' /></strong></Level.Left>
+								</Level>
+								<p>
+									{this.state.selectedLocker.info} <br />
+									Telp: {this.state.selectedLocker.phone}
+								</p>
+							</div>
+						}
 					</Box>
+					<Button content='Pilih Lokasi Toko / E-locker' color='dark' block size='large' iconPosition='right' icon='angle-right' />
 					<p className='font-red'>Satu atau lebih produk dalam keranjang belanja anda tidak menyediakan layanan Ambil di Toko / Elocker (O2O)</p>
 				</Tabs.Panel>
 			</Tabs>

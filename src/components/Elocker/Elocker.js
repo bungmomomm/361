@@ -5,7 +5,7 @@ import styles from './Elocker.scss';
 import { Input, Select, Card } from '@/components/Base';
 
 // Dummy Data
-import { Provinsi, ElockerList } from '@/data';
+import { Provinsi } from '@/data';
 
 export default class Elocker extends Component {
 	constructor(props) {
@@ -13,9 +13,9 @@ export default class Elocker extends Component {
 		this.props = props;
 		this.getSelectedProvince = this.getSelectedProvince.bind(this);
 		this.getFilterCity = this.getFilterCity.bind(this);
-		this.provinceFilterResult = ElockerList;
+		this.provinceFilterResult = this.props.stores;
 		this.state = {
-			ElockerList
+			ElockerList: this.props.stores
 		};
 	}
 
@@ -24,7 +24,7 @@ export default class Elocker extends Component {
 // ----------------------------------------
 
 	getSelectedProvince(event) {
-		const filterData = this.computeFilter(event.value, ElockerList, 'province');
+		const filterData = this.computeFilter(event.value, this.state.ElockerList, 'province');
 		this.provinceFilterResult = filterData;
 	}
 
@@ -80,6 +80,7 @@ export default class Elocker extends Component {
 				</div>
 				<div className={styles.eLockerList}>
 					{
+						!this.state.ElockerList ? null :
 						this.state.ElockerList.map((elocker, index) => (
 							<Card onClick={() => this.handleChooseElocker(index)} key={index} selected={!!elocker.selected} radius>
 								<Card.Title>{elocker.label}</Card.Title>
