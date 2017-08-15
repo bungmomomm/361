@@ -28,14 +28,16 @@ export default class Select extends Component {
 		this.hideDropdown = this.hideDropdown.bind(this);
 	}
 
-	componentWillReceiveProps(nextProps) {
-		this.setState({
-			options: nextProps.options,
-			selected: {
-				value: '',
-				label: ''
-			}
-		});
+	componentWillReceiveProps(prevProps, nextProps) {
+		if (prevProps.options !== nextProps.options) {
+			this.setState({
+				options: nextProps.options,
+				selected: {
+					value: '',
+					label: ''
+				}
+			});
+		}
 	}
 
 // ----------------------------------------
