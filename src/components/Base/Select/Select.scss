@@ -82,6 +82,9 @@
 	&.shown{
 		display: block;
 	}
+	> button{
+		padding: 15px;
+	}
 }
 
 .top{

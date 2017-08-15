@@ -80,6 +80,16 @@ export default class CardPengiriman extends Component {
 	}
 
 	render() {
+		const addMoreButton = (
+			<Button
+				onClick={() => console.log('add elocker')}
+				content='Ganti Toko E-Locker Lainnya'
+				className='font-orange'
+				icon='pencil'
+				iconPosition='left'
+			/>
+		);
+
 		return (
 			<Tabs tabActive={0} stretch onBeforeChange={this.onGetListO2o} >
 				<Tabs.Panel title='Kirim ke Alamat' sprites='truck-off' spritesActive='truck-on'>
@@ -125,8 +135,9 @@ export default class CardPengiriman extends Component {
 							<Select
 								filter
 								selectedLabel='-- Pilih Alamat E-Locker'
-								options={(typeof this.props.stores !== 'undefined') ? this.props.stores : []}
-								onChange={this.onChosenLocker}
+                                options={(typeof this.props.stores !== 'undefined') ? this.props.stores : []}
+                                onChange={this.onChosenLocker}
+								addButton={addMoreButton}
 							/>
 						</InputGroup>
 						{
