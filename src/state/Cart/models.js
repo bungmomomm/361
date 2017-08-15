@@ -35,7 +35,6 @@ const setPayloadPlaceOrder = (address) => {
 };
 
 const setCartModel = (jsoApiResponse) => {
-	console.log(jsoApiResponse);
 	return jsoApiResponse.included.filter(e => e.type === 'store_items').map((value, index) => {
 		const attr = value.attributes;
 		const products = value.relationships.items.data.map((x, y) => {

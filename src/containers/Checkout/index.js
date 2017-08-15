@@ -26,6 +26,7 @@ import { withCookies, Cookies } from 'react-cookie';
 import { addCoupon, removeCoupon, resetCoupon } from '@/state/Coupon/actions';
 import { getAddresses } from '@/state/Adresses/actions';
 import { getPlaceOrderCart, getCart, deleteCart } from '@/state/Cart/actions';
+import { getAvailablePaymentMethod, changePaymentMethod, changePaymentOption, openNewCreditCard, selectCreditCard } from '@/state/Payment/actions';
 
 
 class Checkout extends Component {
@@ -49,13 +50,18 @@ class Checkout extends Component {
 		this.onChoisedAddress = this.onChoisedAddress.bind(this);
 		this.onChangeAddress = this.onChangeAddress.bind(this);
 		this.onDeleteCart = this.onDeleteCart.bind(this);
+		this.onPaymentMethodChange = this.onPaymentMethodChange.bind(this);
+		this.onPaymentOptionChange = this.onPaymentOptionChange.bind(this);
+		this.onNewCreditCard = this.onNewCreditCard.bind(this);
+		this.onSelectCard = this.onSelectCard.bind(this);
 	}
 
 	componentWillMount() {
 		const { dispatch } = this.props;
 		dispatch(getAddresses(this.state.token));
 		dispatch(getCart(this.state.token));
-		
+		dispatch(getAvailablePaymentMethod(this.state.token));
+
 		window.dataLayer.push({
 			event: 'checkout',
 			userID: '10c53c28efe87fe0c27262ba36f11d5d',
@@ -98,7 +104,7 @@ class Checkout extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		console.log(nextProps);
+		// console.log(nextProps);
 	}
 
 	onAddCoupon(coupon) {
@@ -132,6 +138,22 @@ class Checkout extends Component {
 	onDeleteCart(cart) {
 		const { dispatch } = this.props;
 		dispatch(deleteCart(this.state.token, cart.data.id, this.props.cart));
+	}
+	
+	onPaymentMethodChange(event) {
+		this.props.dispatch(changePaymentMethod(event.value, this.props.payments.paymentMethods));
+	}
+
+	onPaymentOptionChange(event, paymentMethod) {
+		this.props.dispatch(changePaymentOption(event.value, paymentMethod, this.props.payments.paymentMethods));
+	}
+
+	onNewCreditCard(event) {
+		this.props.dispatch(openNewCreditCard());
+	}
+
+	onSelectCard(event) {
+		this.props.dispatch(selectCreditCard(event));
 	}
 
 	render() {
@@ -183,6 +205,10 @@ class Checkout extends Component {
 										onRemoveCoupon={this.onRemoveCoupon}
 										onResetCoupon={this.onResetCoupon}
 										payments={payments}
+										onPaymentMethodChange={this.onPaymentMethodChange}
+										onPaymentOptionChange={this.onPaymentOptionChange}
+										onNewCreditCard={this.onNewCreditCard}
+										onSelectCard={this.onSelectCard}
 									/>
 								</Col>
 							</Row>
