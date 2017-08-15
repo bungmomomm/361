@@ -61,11 +61,9 @@ const config = {
 				test: /\.(ttf|eot|woff|woff2|svg)$/,
 				include: path.resolve(__dirname, '..', '..', 'src', 'assets', 'fonts'),
 				loaders: [
-					
 					files({
 						outputPath: 'assets/fonts/'
 					})
-				
 				]
 			},
 			{
