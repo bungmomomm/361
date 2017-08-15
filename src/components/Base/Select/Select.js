@@ -28,6 +28,12 @@ export default class Select extends Component {
 		this.hideDropdown = this.hideDropdown.bind(this);
 	}
 
+	componentWillReceiveProps(nextProps) {
+		this.setState({
+			options: nextProps.options
+		});
+	}
+
 // ----------------------------------------
 // Getters
 // ----------------------------------------
