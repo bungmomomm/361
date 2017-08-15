@@ -108,7 +108,8 @@ export default class Select extends Component {
 		label,
 		required,
 		filter,
-		message
+		message,
+		addButton
 	}) {
 		const idFor = newId();
 
@@ -216,6 +217,11 @@ export default class Select extends Component {
 								)
 							}
 						</div>
+						{
+							renderIf(addButton)(
+								addButton
+							)
+						}
 					</div>
 				</div>
 				{

@@ -60,6 +60,16 @@ export default class CardPengiriman extends Component {
 	}
 	
 	render() {
+		const addMoreButton = (
+			<Button 
+				onClick={() => console.log('add elocker')} 
+				content='Ganti Toko E-Locker Lainnya' 
+				className='font-orange' 
+				icon='pencil' 
+				iconPosition='left' 
+			/>
+		);
+
 		return (
 			<Tabs tabActive={0} stretch>
 				<Tabs.Panel title='Kirim ke Alamat' sprites='truck-off' spritesActive='truck-on'>
@@ -102,7 +112,12 @@ export default class CardPengiriman extends Component {
 					</Alert>
 					<Box>
 						<InputGroup>
-							<Select filter selectedLabel='-- Pilih Alamat E-Locker' options={ElockerList} />
+							<Select 
+								filter 
+								selectedLabel='-- Pilih Alamat E-Locker' 
+								options={ElockerList} 
+								addButton={addMoreButton}
+							/>
 						</InputGroup>
 						<Level>
 							<Level.Left><strong>E-Locker Family Mart Kelapa Gading &nbsp; <Icon name='map-marker' /></strong></Level.Left>
