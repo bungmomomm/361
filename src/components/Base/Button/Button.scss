@@ -74,8 +74,8 @@
 }
 
 .grey{
-	color: color(grey);
 	@include buttonStyle(gainsboro);
+	color: color(black);
 	border-color: border(color);
 }
 // END OF VARIANT

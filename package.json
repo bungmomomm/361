@@ -132,6 +132,7 @@
     "rimraf": "2.6.1",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.18.2",
+    "uglify-js": "^2.8.29",
     "webpack": "^3.5.2",
     "webpack-assets-manifest": "^0.7.0",
     "webpack-dev-middleware": "^1.12.0",
