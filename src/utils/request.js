@@ -41,6 +41,9 @@ const request = (props) => {
 	case 'GET': {
 		return axios.get(url, { headers });
 	}
+	case 'DELETE': {
+		return axios.delete(url, { headers });
+	}
 	default: 
 		if (!props.body) {
 			throw new Error('post should send the data');

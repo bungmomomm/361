@@ -27,6 +27,7 @@ export default class CardPengiriman extends Component {
 			selectedAddress: null
 		};
 		this.onChoisedAddress = this.onChoisedAddress.bind(this);
+		this.onChangeAddress = this.onChangeAddress.bind(this);
 	}
 
 	componentWillMount() {
@@ -52,6 +53,10 @@ export default class CardPengiriman extends Component {
 			selectedAddress
 		});
 		this.props.onChoisedAddress(selectedAddress);
+	}
+
+	onChangeAddress() {
+		this.props.onChangeAddress(this.state.selectedAddress);
 	}
 	
 	render() {
@@ -84,7 +89,7 @@ export default class CardPengiriman extends Component {
 									{this.state.selectedAddress.attributes.district}, {this.state.selectedAddress.attributes.city}, {this.state.selectedAddress.attributes.province}, {this.state.selectedAddress.attributes.zipcode} <br />
 									P: {this.state.selectedAddress.attributes.phone}
 								</p> 
-								<Button type='button' icon='pencil' iconPosition='left' className='font-orange' content='Ubah Alamat ini' />
+								<Button type='button' icon='pencil' iconPosition='left' className='font-orange' content='Ubah Alamat ini' onClick={this.onChangeAddress} />
 							</div>
 						}
 					</Box>

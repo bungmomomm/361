@@ -38,6 +38,7 @@ export default class NewAddressModalbox extends Component {
 		this.onChange = this.onChange.bind(this);
 		this.onChangeSelect = this.onChangeSelect.bind(this);
 		this.validateAndSubmit = this.validateAndSubmit.bind(this);
+		console.log(props);
 	}
 
 	onChange(e) {

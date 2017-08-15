@@ -4,7 +4,7 @@ import { actions } from '@/state/Api';
 
 class Home extends Component {
 	static getDog(match, dispatch) {
-		return dispatch(new actions.apiGet('https://api.ipify.org/?format=json'));
+		return dispatch(new actions.apiGet('/?format=json'));
 	}
 
 	constructor(props) {

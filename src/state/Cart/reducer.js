@@ -40,7 +40,7 @@ export default (state = initialState, action) => {
 	case CRT_DELETE_CART: {
 		return {
 			...state, 
-			data: action.payload.data,
+			productId: action.payload.productId,
 		};
 	}
 	default: 

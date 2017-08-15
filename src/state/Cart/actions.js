@@ -1,17 +1,26 @@
 import { request } from '@/utils';
+import { paymentInfoUpdated } from '@/state/Payment/actions';
 import { 
 	CRT_GET_CART,
-	CRT_PLACE_ORDER
+	CRT_PLACE_ORDER,
     // CRT_UPDATE_QTY,
-    // CRT_DELETE_CART,
+    CRT_DELETE_CART,
     // CRT_GO_SEND_ELIGIBLE
 } from './constants';
 
 import { 
 	setPayloadPlaceOrder, 
-	setCartModel 
+	setCartModel,
+	getCartPaymentData 
 } from './models';
 
+const deleteRequest = (productId) => ({
+	type: CRT_DELETE_CART,
+	status: 0,
+	payload: {
+		productId
+	}
+});
 const placeOrderRequest = (token, address) => ({
 	type: CRT_PLACE_ORDER,
 	status: 0,
@@ -56,6 +65,7 @@ const getCart = token => dispatch => {
 
 	request(req)
 	.then((response) => {
+		dispatch(paymentInfoUpdated(getCartPaymentData(response.data)));
 		dispatch(cartReceived(setCartModel(response.data)));
 	})
 	.catch((error) => {
@@ -85,6 +95,7 @@ const getPlaceOrderCart = (token, address) => dispatch => {
 			method: 'GET'
 		})
 		.then((res) => {
+			dispatch(paymentInfoUpdated(getCartPaymentData(res.data)));
 			dispatch(cartReceived(setCartModel(res.data)));
 		})
 		.catch((error) => {
@@ -96,7 +107,45 @@ const getPlaceOrderCart = (token, address) => dispatch => {
 	});
 };
 
+const deleteCart = (token, productId, cart) => dispatch => {
+	dispatch(deleteRequest(productId));
+
+	const req = {
+		method: 'DELETE',
+		path: `me/carts/${productId}`,
+		token
+	};
+	console.log(req);
+	if (cart.length > 0) {
+		cart.forEach((element) => {
+			const prodIndex = element.store.products.findIndex(e => e.id === productId);
+			
+			if (prodIndex !== -1) {
+				element.store.products.splice(prodIndex, 1);
+			}
+			
+		}, this);
+		
+		const storeWithEmptyProduct = cart.findIndex(e => e.store.products.length < 1);
+		if (storeWithEmptyProduct !== -1) {
+			cart.splice(storeWithEmptyProduct, 1);
+		}
+		
+		
+		dispatch(cartReceived(cart));
+	}
+	// request(req)
+	// .then((response) => {
+		
+	// })
+	// .catch((error) => {
+	// 	console.log(error);
+	// });
+
+};
+
 export default {
 	getPlaceOrderCart,
-	getCart
+	getCart,
+	deleteCart
 };
