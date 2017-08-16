@@ -8,7 +8,7 @@ import { CheckoutHeader } from '@/components/Header';
 import Loading from '@/components/Loading';
 import { Container, Row, Col } from '@/components/Base';
 import { renderIf } from '@/utils';
-	
+
 // Checkout Component
 import NewAddressModalbox from './components/Modal/NewAddressModalbox';
 import ElockerModalbox from './components/Modal/ElockerModalbox';
@@ -24,7 +24,7 @@ import CardPengiriman from './components/CardPengiriman';
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { addCoupon, removeCoupon, resetCoupon } from '@/state/Coupon/actions';
-import { getAddresses } from '@/state/Adresses/actions';
+import { getAddresses, getO2OList } from '@/state/Adresses/actions';
 import { getPlaceOrderCart, getCart, deleteCart } from '@/state/Cart/actions';
 import { getAvailablePaymentMethod, changePaymentMethod, changePaymentOption, openNewCreditCard, selectCreditCard } from '@/state/Payment/actions';
 
@@ -40,9 +40,14 @@ class Checkout extends Component {
 			enableNewAddress: false,
 			token: this.props.cookies.get('user.token'),
 			refreshToken: this.props.cookies.get('user.rf.token'),
-			addresses: {}, 
+			addresses: {},
 			soNumber: null,
-			cart: []
+			cart: [],
+			listo2o: {},
+			latesto2o: {},
+			selectedLocker: null,
+			showModalO2o: false,
+			selectO2oFromModal: false,
 		};
 		this.onAddCoupon = this.onAddCoupon.bind(this);
 		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
@@ -54,6 +59,10 @@ class Checkout extends Component {
 		this.onPaymentOptionChange = this.onPaymentOptionChange.bind(this);
 		this.onNewCreditCard = this.onNewCreditCard.bind(this);
 		this.onSelectCard = this.onSelectCard.bind(this);
+		this.onGetListO2o = this.onGetListO2o.bind(this);
+		this.onSetListO2o = this.onSetListO2o.bind(this);
+		this.onOpenModalO2o = this.onOpenModalO2o.bind(this);
+		this.onSelectedLocker = this.onSelectedLocker.bind(this);
 	}
 
 	componentWillMount() {
@@ -146,7 +155,7 @@ class Checkout extends Component {
 		});
 
 	}
-	
+
 	onPaymentMethodChange(event) {
 		this.props.dispatch(changePaymentMethod(event.value, this.props.payments.paymentMethods));
 	}
@@ -163,6 +172,29 @@ class Checkout extends Component {
 		this.props.dispatch(selectCreditCard(event));
 	}
 
+	onGetListO2o(provinceId) {
+		const { dispatch } = this.props;
+		dispatch(getO2OList(this.state.token, provinceId));
+	}
+
+	onSetListO2o(list) {
+		this.listo2o = list;
+	}
+
+	onOpenModalO2o() {
+		this.setState({
+			showModalO2o: true
+		});
+	}
+
+	onSelectedLocker(selectedLocker, isSelectFromModal = false) {
+		this.setState({
+			selectedLocker,
+			showModalO2o: false,
+			selectO2oFromModal: true,
+		});
+	}
+
 	render() {
 		const {
 			enableAlamatPengiriman,
@@ -175,7 +207,9 @@ class Checkout extends Component {
 			cart,
 			payments,
 			user,
-			addresses
+			addresses,
+            listo2o,
+			latesto2o,
 		} = this.props;
 		
 		return (
@@ -190,7 +224,7 @@ class Checkout extends Component {
 									<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
 									{
 										renderIf(addresses)(
-											<CardPengiriman addresses={addresses} onChoisedAddress={this.onChoisedAddress} onChangeAddress={this.onChangeAddress} />
+											<CardPengiriman addresses={addresses} onChoisedAddress={this.onChoisedAddress} onChangeAddress={this.onChangeAddress} onGetListO2o={this.onGetListO2o} listo2o={listo2o} onOpenModalO2o={this.onOpenModalO2o} latesto2o={latesto2o} selectedLocker={this.state.selectedLocker ? this.state.selectedLocker : (latesto2o ? latesto2o[0] : null)} onSelectedLocker={this.onSelectedLocker} selectO2oFromModal={this.state.selectO2oFromModal} />
 										)
 									}
 								</Col>
@@ -222,7 +256,7 @@ class Checkout extends Component {
 						</Container>
 					</div>
 					<NewAddressModalbox shown={this.state.enableNewAddress} />
-					<ElockerModalbox />
+					<ElockerModalbox shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
 					<PaymentSuccessModalbox />
 					<PaymentErrorModalbox />
 					<VerifikasiNoHandponeModalbox />
@@ -243,7 +277,9 @@ const mapStateToProps = (state) => {
 		coupon: state.coupon,
 		addresses: state.addresses.data,
 		cart: state.cart.cart,
-		payments: state.payments
+		payments: state.payments,
+		listo2o: state.addresses.o2o,
+		latesto2o: state.addresses.latesto2o,
 	};
 };
 

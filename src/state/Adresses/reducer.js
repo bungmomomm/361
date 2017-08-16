@@ -20,6 +20,7 @@ export default (state = initialState, action) => {
 	case ADDR_GET_ADDRESS: {
 		return {
 			data: action.payload.addresses,
+			latesto2o: action.payload.latesto2o,
 		};
 
 	}
@@ -40,7 +41,7 @@ export default (state = initialState, action) => {
 	case ADDR_O2O_LIST: {
 		return {
 			...state, 
-			data: action.payload.data,
+			o2o: action.payload.o2o,
 		};
 	}
 	default: 
