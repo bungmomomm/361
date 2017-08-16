@@ -28,6 +28,14 @@ export default class Radio extends Component {
 		}
 	}
 
+	componentWillReceiveProps(nextProps) {
+		if (this.state.checked !== nextProps.checked) {
+			this.setState({
+				checked: nextProps.checked || false
+			});
+		}
+	}
+
 // ----------------------------------------
 // Getters
 // ----------------------------------------
@@ -44,7 +52,11 @@ export default class Radio extends Component {
 		this.setState({
 			checked: ContentState
 		});
-		return this.props.onChange ? this.props.onChange(ContentState) : null;
+		return this.props.onChange ? this.props.onChange({
+			object: this,
+			checked: ContentState,
+			value: this.props.value
+		}) : null;
 	}
 
 	creditCardValidation(ccNumber) {

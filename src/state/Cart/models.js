@@ -1,4 +1,4 @@
-import camelcaseKeys from 'camelcase-keys';
+import humps from 'lodash-humps';
 
 const setPayloadPlaceOrder = (address) => {
 	return {
@@ -35,7 +35,6 @@ const setPayloadPlaceOrder = (address) => {
 };
 
 const setCartModel = (jsoApiResponse) => {
-	console.log(jsoApiResponse);
 	return jsoApiResponse.included.filter(e => e.type === 'store_items').map((value, index) => {
 		const attr = value.attributes;
 		const products = value.relationships.items.data.map((x, y) => {
@@ -107,7 +106,7 @@ const getCartPaymentData = (response) => {
 	case 'order':
 		defaultData = {
 			...defaultData,
-			...camelcaseKeys(response.data.attributes.total_price, { deep: true })
+			...humps(response.data.attributes.total_price)
 		};
 		break;
 	case 'cart':
@@ -118,10 +117,6 @@ const getCartPaymentData = (response) => {
 		};
 		break;
 	default:
-		defaultData = {
-			...defaultData,
-			...camelcaseKeys(response.data.attributes.total_price, { deep: true })
-		};
 		break;
 	}
 

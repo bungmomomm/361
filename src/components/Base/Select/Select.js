@@ -18,10 +18,7 @@ export default class Select extends Component {
 			options: [],
 			selectedLabel: this.props.selectedLabel || 'Please Select...',
 			showOption: false,
-			selected: {
-				value: '',
-				label: ''
-			}
+			selected: this.props.selected || {}
 		};
 		this.getFilter = this.getFilter.bind(this);
 		this.setOptions = this.setOptions.bind(this);
@@ -29,13 +26,16 @@ export default class Select extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		this.setState({
-			options: nextProps.options,
-			selected: {
-				value: '',
-				label: ''
-			}
-		});
+		if (this.props.selected !== nextProps.selected) {
+			this.setState({
+				selected: nextProps.selected
+			});
+		}
+		if (this.props.options !== nextProps.options) {
+			this.setState({
+				options: nextProps.options
+			});
+		}
 	}
 
 // ----------------------------------------
@@ -108,6 +108,7 @@ export default class Select extends Component {
 		label,
 		required,
 		filter,
+		selected,
 		message,
 		addButton
 	}) {
@@ -245,6 +246,7 @@ Select.propTypes = {
 	horizontal: PropTypes.bool,
 	required: PropTypes.bool,
 	top: PropTypes.bool,
+	selected: PropTypes.Object,
 	label: PropTypes.string,
 	filter: PropTypes.bool,
 	message: PropTypes.string

@@ -2,9 +2,12 @@ import React, { Component } from 'react';
 import styles from '../Checkout.scss';
 import Sprites from '@/components/Sprites';
 import { Validator } from 'ree-validate';
+import { paymentType } from '@/state/Payment/constants';
 
 // component load
 import { 
+	Col,
+	Row,
 	Tooltip, 
 	Level, 
 	Input, 
@@ -18,18 +21,16 @@ import {
 
 // Dummy Data
 import { 
-	UangElektronik, 
-	GeraiTunai, 
-	InternetBanking, 
-	Bank, 
+// 	UangElektronik, 
+// 	GeraiTunai, 
+// 	InternetBanking, 
+// 	Bank, 
 	Bulan, 
-	Tahun,
-	PaymentOptions, 
-	CreditCard
+	Tahun
 } from '@/data';
 
 // import utils
-import { currency } from '@/utils';
+import { currency, renderIf } from '@/utils';
 
 export default class CardPembayaran extends Component {
 	constructor(props) {
@@ -55,16 +56,21 @@ export default class CardPembayaran extends Component {
 				kodepos: '',
 				address: ''
 			},
+			selectedPaymentMethod: null,
+			creditCard: [],
 			errors: this.validator.errorBag,
 			voucherCode: null,
 			validVoucher: false,
 			reset: null
 		};
-		console.log(this.props.payments);
 		this.submitPayment = this.submitPayment.bind(this);
 		this.handleCekVoucher = this.handleCekVoucher.bind(this);
 		this.onChange = this.onChange.bind(this);
 		this.onAddCoupon = this.onAddCoupon.bind(this);
+		this.onPaymentMethodChange = this.onPaymentMethodChange.bind(this);
+		this.onPaymentOptionChange = this.onPaymentOptionChange.bind(this);
+		this.onNewCreditCard = this.onNewCreditCard.bind(this);
+		this.onSelectCard = this.onSelectCard.bind(this);
 	}
 	onChange(event) {
 		this.setState({
@@ -76,6 +82,24 @@ export default class CardPembayaran extends Component {
 		this.props.onAddCoupon(this.state.voucherCode);
 	}
 
+	onPaymentMethodChange(event) {
+		this.setState({
+			paymentMethodChanged: true
+		});
+		this.props.onPaymentMethodChange(event);
+	}
+
+	onPaymentOptionChange(event) {
+		this.props.onPaymentOptionChange(event, this.props.payments.selectedPayment);
+	}
+
+	onNewCreditCard(event) {
+		this.props.onNewCreditCard(event);
+	}
+
+	onSelectCard(event) {
+		this.props.onSelectCard(event.value);
+	}
 
 	handleCekVoucher(event) {
 		event.preventDefault();
@@ -89,14 +113,12 @@ export default class CardPembayaran extends Component {
 		console.log(this.state);
 	}
 
-
 	submitPayment() {
 		console.log(this.state);
 	}
 
-	
 	render() {
-		const { coupon, subTotal, total, deliveryCostDiscount, deliveryCost } = this.props.payments;
+		const { coupon, subTotal, total, deliveryCostDiscount, deliveryCost, paymentMethods, selectedPayment } = this.props.payments;
 		let voucherBox = '';
 		if (this.props.coupon === '' || this.props.validCoupon === null) { 
 			voucherBox = (
@@ -122,6 +144,60 @@ export default class CardPembayaran extends Component {
 					</Level.Right>
 				</Level>
 			);			
+		}
+		let paymentOptions = false;
+		if (selectedPayment) {
+			switch (selectedPayment.value) {
+			case paymentType.BANK_TRANSFER:
+			case paymentType.CONVENIENCE_STORE:
+			case paymentType.E_MONEY:
+			case paymentType.INTERNET_BANKING:
+				paymentOptions = (
+					<InputGroup>
+						<Select name={`payment-${selectedPayment.value}`} selectedLabel='-- Tambah Baru' options={selectedPayment.paymentItems} onChange={this.onPaymentOptionChange} />
+					</InputGroup>
+				);
+				break;
+			case paymentType.CREDIT_CARD:
+				paymentOptions = (
+					<InputGroup>
+						{ 
+							selectedPayment.paymentItems.map((option, index) => {
+								if (option.cards.length < 1) {
+									option.cards.map((card, cardIndex) => {
+										return (
+											<div>
+												<InputGroup>
+													<Radio key={cardIndex} name='cc' variant='list' creditCard value={card.value} content={card.label} onChange={this.onSelectCard} checked={card.selected} />
+												</InputGroup>
+												{ renderIf(card.selected)(
+													<Row gapless>
+														<Col grid={4}>
+															<Input type='number' placeholder='cvv' />
+														</Col>
+														<Col grid={4}>
+															<Sprites name='cvv' />
+														</Col>
+													</Row>
+												) }
+											</div>
+										);
+									});
+								} else {
+									return (
+										<Select key={index} name='cc' selectedLabel='-- Tambah Baru' options={option.cards} onChange={this.onSelectCard} />
+									);
+								}
+								return option;
+							})
+						}
+					</InputGroup>
+				);
+				break;
+			default:
+				paymentOptions = false;
+				break;	
+			} 
 		}
 
 		return (
@@ -163,7 +239,7 @@ export default class CardPembayaran extends Component {
 					<div className={styles.hasCheckoutAction}>
 						<p>Pilih Metode Pembayaran</p>
 						<InputGroup>
-							<Select selectedLabel='-- Pilih Metode Lain' options={PaymentOptions} />
+							<Select selectedLabel='-- Pilih Metode Lain' name='paymentMethods' options={paymentMethods.methods} onChange={this.onPaymentMethodChange} />
 							<Tooltip align='right' content='Info' color='white'>
 								<p><Sprites name='uob' /></p>
 								<p>Gunakan Kartu Kredit UOB Indonesia dan dapatkan Diskon Tambahan Rp100.000* dengan minimum transaksi Rp2.500.000</p>
@@ -177,63 +253,48 @@ export default class CardPembayaran extends Component {
 								</ol>
 							</Tooltip>
 						</InputGroup>
-						<InputGroup>
-							<Select selectedLabel='-- Tambah Baru' options={CreditCard} />
-						</InputGroup>
-						<InputGroup>
-							<Select selectedLabel='-- Pilih Bank Lainnya' options={InternetBanking} />
-						</InputGroup>
-						<InputGroup>
-							<Select selectedLabel='-- Pilih Opsi Lainnya' options={GeraiTunai} />
-						</InputGroup>
-						<InputGroup>
-							<Select selectedLabel='-- Pilih Opsi Lainnya' options={UangElektronik} />
-						</InputGroup>
-						<InputGroup>
-							<Radio name='cc' variant='list' creditCard value='1' content='4111 &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4444' />
-							<Radio name='cc' variant='list' creditCard value='2' content='2222 &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4444' />
-						</InputGroup>
-						<InputGroup>
-							<Button clean icon='plus-circle' iconPosition='left' content='Tambah Kartu' />
-						</InputGroup>
-						<InputGroup>
-							<Select selectedLabel='-- Pilih Bank' options={Bank} />
-							<Tooltip align='right' content='Info'>
-								<p>Info pembayaran BCA KlikPay</p>
-								<ol>
-									<li>Setelah klik tombol &quot;Bayar Sekarang&quot; di bawah, Anda akan diarahkan ke halaman BCA KlikPay.</li>
-									<li>Masukkan alamat email dan password BCA KlikPay Anda, lalu cek informasi transaksi (nama merchant, waktu transaksi, dan jumlah uang yang harus dibayarkan)</li>
-									<li>Tekan tombol &quot;Kirim OTP&quot; untuk menerima kode OTP (One Time Password) via SMS, jadi pastikan handphone Anda aktif.</li>
-									<li>Masukkan kode OTP ke kolom yang tersedia, kemudian klik tombol &quot;Bayar&quot;.</li>
-									<li>Setelah pembayaran berhasil dilakukan, klik tombol &quot;Kembali ke situs merchant&quot; untuk melihat status pembayaran dan pembelian anda.</li>
-								</ol>
-							</Tooltip>
-						</InputGroup>
-						<p>SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke :</p>
-						<InputGroup>
-							<Input type='text' value='082113982173' />
-						</InputGroup>
-						<InputGroup>
-							<Input placeholder='Masukkan Nomor Kartu' sprites='payment-option' creditCard />
-						</InputGroup>
-						<InputGroup>
-							<Input label='Masukkan OVO ID' type='number' placeholder='OVO ID' />
-						</InputGroup>
-						<label htmlFor='masa-berlaku'>Masa Berlaku</label>
-						<Level padded>
-							<Level.Item>
-								<Select top selectedLabel='-- Bulan' options={Bulan} />
-							</Level.Item>
-							<Level.Item>
-								<Select top selectedLabel='-- Tahun' options={Tahun} />
-							</Level.Item>
-							<Level.Item>
-								<Input type='number' placeholder='cvv' />
-							</Level.Item>
-							<Level.Item>
-								<Sprites name='cvv' />
-							</Level.Item>
-						</Level>
+						{ renderIf(paymentOptions)(paymentOptions) }
+						{ renderIf(selectedPayment.value === paymentType.CREDIT_CARD)(
+							<InputGroup>
+								<Button clean icon='plus-circle' iconPosition='left' content='Tambah Kartu' onClick={this.onNewCreditCard} />
+							</InputGroup>
+						)}
+						{ renderIf(this.props.payments.openNewCreditCard && selectedPayment.value === paymentType.CREDIT_CARD)(
+							<div>
+								<InputGroup>
+									<Input placeholder='Masukkan Nomor Kartu' sprites='payment-option' creditCard />
+								</InputGroup>
+								<label htmlFor='masa-berlaku'>Masa Berlaku</label>
+								<Level padded>
+									<Level.Item>
+										<Select top selectedLabel='-- Bulan' options={Bulan} />
+									</Level.Item>
+									<Level.Item>
+										<Select top selectedLabel='-- Tahun' options={Tahun} />
+									</Level.Item>
+									<Level.Item>
+										<Input type='number' placeholder='cvv' />
+									</Level.Item>
+									<Level.Item>
+										<Sprites name='cvv' />
+									</Level.Item>
+								</Level>
+							</div>
+						)}
+
+						<div>
+							<InputGroup>
+								<Input placeholder='Masukkan Nomor Kartu' sprites='payment-option' creditCard />
+							</InputGroup>
+							<Row>
+								<Col grid={3}>
+									<Input type='text' placeholder='cvv' />
+								</Col>
+								<Col grid={9}>
+									<Sprites name='cvv' />
+								</Col>
+							</Row>
+						</div>
 						<div className={styles.checkOutAction}>
 							<Checkbox text='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />
 							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' />

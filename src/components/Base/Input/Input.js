@@ -85,6 +85,7 @@ export default class Input extends Component {
 		onClick,
 		readOnly,
 		onKeyPress,
+		maxlength,
 		sprites,
 		icon,
 		message,
@@ -122,7 +123,7 @@ export default class Input extends Component {
 							placeholder={placeholder} 
 							mask='1111 1111 1111 1111' 
 							name='card' 
-							size={20} 
+							size={20}
 							onChange={this.onChange} 
 						/>
 						: 
