@@ -14,7 +14,6 @@ export default class CardPesananPengiriman extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-
 		this.onDeleteCart = this.onDeleteCart.bind(this);
 	}
 

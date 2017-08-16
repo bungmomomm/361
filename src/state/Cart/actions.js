@@ -107,7 +107,7 @@ const getPlaceOrderCart = (token, address) => dispatch => {
 	});
 };
 
-const deleteCart = (token, productId, cart) => dispatch => {
+const deleteCart = (token, productId, props) => dispatch => {
 	dispatch(deleteRequest(productId));
 
 	const req = {
@@ -115,32 +115,36 @@ const deleteCart = (token, productId, cart) => dispatch => {
 		path: `me/carts/${productId}`,
 		token
 	};
-	console.log(req);
-	if (cart.length > 0) {
-		cart.forEach((element) => {
-			const prodIndex = element.store.products.findIndex(e => e.id === productId);
+	
+	request(req)
+	.then((response) => {
+		if (props.cart.length > 0) {
+			props.cart.forEach((element, index) => {
+				const prodIndex = element.store.products.findIndex(e => e.id === productId);
+				const prod = element.store.products.find(e => e.id === productId);
 			
-			if (prodIndex !== -1) {
-				element.store.products.splice(prodIndex, 1);
+				if (prodIndex !== -1) {
+					props.cart[index].store.products.splice(prodIndex, 1);
+					props.cart[index].store.price.sub_total -= prod.price;
+					props.cart[index].store.price.total -= prod.price;
+
+					props.payments.subTotal = parseFloat(props.payments.subTotal) - prod.price;
+					props.payments.total = parseFloat(props.payments.total) - prod.price;
+					dispatch(paymentInfoUpdated(props.payments));
+				}
+			
+			}, this);
+		
+			const storeWithEmptyProduct = props.cart.findIndex(e => e.store.products.length < 1);
+			if (storeWithEmptyProduct !== -1) {
+				props.cart.splice(storeWithEmptyProduct, 1);
 			}
-			
-		}, this);
-		
-		const storeWithEmptyProduct = cart.findIndex(e => e.store.products.length < 1);
-		if (storeWithEmptyProduct !== -1) {
-			cart.splice(storeWithEmptyProduct, 1);
+			dispatch(cartReceived(props.cart));
 		}
-		
-		
-		dispatch(cartReceived(cart));
-	}
-	// request(req)
-	// .then((response) => {
-		
-	// })
-	// .catch((error) => {
-	// 	console.log(error);
-	// });
+	})
+	.catch((error) => {
+		console.log(error);
+	});
 
 };
 

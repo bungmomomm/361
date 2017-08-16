@@ -42,7 +42,7 @@ class Checkout extends Component {
 			refreshToken: this.props.cookies.get('user.rf.token'),
 			addresses: {}, 
 			soNumber: null,
-			cart: {}
+			cart: []
 		};
 		this.onAddCoupon = this.onAddCoupon.bind(this);
 		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
@@ -104,7 +104,9 @@ class Checkout extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		// console.log(nextProps);
+		this.setState({
+			cart: nextProps.cart
+		});
 	}
 
 	onAddCoupon(coupon) {
@@ -137,7 +139,12 @@ class Checkout extends Component {
 
 	onDeleteCart(cart) {
 		const { dispatch } = this.props;
-		dispatch(deleteCart(this.state.token, cart.data.id, this.props.cart));
+		dispatch(deleteCart(this.state.token, cart.data.id, this.props));
+
+		this.setState({
+			cart: this.props.cart,
+		});
+
 	}
 	
 	onPaymentMethodChange(event) {
@@ -191,7 +198,7 @@ class Checkout extends Component {
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>(5 items)</span></div>
 									{
 										renderIf(cart)(
-											<CardPesananPengiriman cart={cart} onDeleteCart={this.onDeleteCart} />
+											<CardPesananPengiriman cart={this.state.cart} onDeleteCart={this.onDeleteCart} />
 										)
 									}
 								</Col>
