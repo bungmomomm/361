@@ -14,6 +14,8 @@ import {
 	Card, 
 	Button, 
 	Checkbox,
+	Col,
+	Row,
 	Radio 
 } from '@/components/Base';
 
@@ -257,6 +259,20 @@ export default class CardPembayaran extends Component {
 								</Level>
 							</div>
 						)}
+
+						<div>
+							<InputGroup>
+								<Input placeholder='Masukkan Nomor Kartu' sprites='payment-option' creditCard />
+							</InputGroup>
+							<Row>
+								<Col grid={3}>
+									<Input type='text' placeholder='cvv' />
+								</Col>
+								<Col grid={9}>
+									<Sprites name='cvv' />
+								</Col>
+							</Row>
+						</div>
 						<div className={styles.checkOutAction}>
 							<Checkbox text='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />
 							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' />

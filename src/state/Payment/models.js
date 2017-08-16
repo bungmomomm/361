@@ -1,4 +1,5 @@
-import camelcaseKeys from 'camelcase-keys';
+import humps from 'lodash-humps';
+
 const getRelations = (data, lookup, format) => {
 	return data.data.map((item, index) => {
 		const obj = lookup.filter(itemLookup => itemLookup.type === item.type && itemLookup.id === item.id).pop();
@@ -96,8 +97,8 @@ const getListAvailablePaymentMethod = (response) => {
 	const paymentList = [];
 	const paymentData = {};
 	payments.forEach((item) => {
-		paymentData[item.id] = camelcaseKeys(item, { deep: true });
-		paymentList.push(camelcaseKeys(item, { deep: true }));
+		paymentData[item.id] = humps(item);
+		paymentList.push(humps(item));
 	});
 	
 	const returnData = {
