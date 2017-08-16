@@ -6,6 +6,8 @@ import { paymentType } from '@/state/Payment/constants';
 
 // component load
 import { 
+	Col,
+	Row,
 	Tooltip, 
 	Level, 
 	Input, 
@@ -150,7 +152,6 @@ export default class CardPembayaran extends Component {
 			case paymentType.CONVENIENCE_STORE:
 			case paymentType.E_MONEY:
 			case paymentType.INTERNET_BANKING:
-				paymentOptions = false;
 				paymentOptions = (
 					<InputGroup>
 						<Select name={`payment-${selectedPayment.value}`} selectedLabel='-- Tambah Baru' options={selectedPayment.paymentItems} onChange={this.onPaymentOptionChange} />
@@ -161,11 +162,34 @@ export default class CardPembayaran extends Component {
 				paymentOptions = (
 					<InputGroup>
 						{ 
-							selectedPayment.paymentItems.map((option, index) =>
-								option.cards.map((card, cardIndex) => 
-									<Radio key={cardIndex} name='cc' variant='list' creditCard value={card.value} content={card.label} onChange={this.onSelectCard} checked={option.selectedCard === card.value} />
-								)
-							)
+							selectedPayment.paymentItems.map((option, index) => {
+								if (option.cards.length < 1) {
+									option.cards.map((card, cardIndex) => {
+										return (
+											<div>
+												<InputGroup>
+													<Radio key={cardIndex} name='cc' variant='list' creditCard value={card.value} content={card.label} onChange={this.onSelectCard} checked={card.selected} />
+												</InputGroup>
+												{ renderIf(card.selected)(
+													<Row gapless>
+														<Col grid={4}>
+															<Input type='number' placeholder='cvv' />
+														</Col>
+														<Col grid={4}>
+															<Sprites name='cvv' />
+														</Col>
+													</Row>
+												) }
+											</div>
+										);
+									});
+								} else {
+									return (
+										<Select key={index} name='cc' selectedLabel='-- Tambah Baru' options={option.cards} onChange={this.onSelectCard} />
+									);
+								}
+								return option;
+							})
 						}
 					</InputGroup>
 				);
@@ -229,13 +253,13 @@ export default class CardPembayaran extends Component {
 								</ol>
 							</Tooltip>
 						</InputGroup>
-						{ paymentOptions }
+						{ renderIf(paymentOptions)(paymentOptions) }
 						{ renderIf(selectedPayment.value === paymentType.CREDIT_CARD)(
 							<InputGroup>
 								<Button clean icon='plus-circle' iconPosition='left' content='Tambah Kartu' onClick={this.onNewCreditCard} />
 							</InputGroup>
 						)}
-						{ renderIf(this.props.payments.openNewCreditCard)(
+						{ renderIf(this.props.payments.openNewCreditCard && selectedPayment.value === paymentType.CREDIT_CARD)(
 							<div>
 								<InputGroup>
 									<Input placeholder='Masukkan Nomor Kartu' sprites='payment-option' creditCard />
@@ -257,6 +281,20 @@ export default class CardPembayaran extends Component {
 								</Level>
 							</div>
 						)}
+
+						<div>
+							<InputGroup>
+								<Input placeholder='Masukkan Nomor Kartu' sprites='payment-option' creditCard />
+							</InputGroup>
+							<Row>
+								<Col grid={3}>
+									<Input type='text' placeholder='cvv' />
+								</Col>
+								<Col grid={9}>
+									<Sprites name='cvv' />
+								</Col>
+							</Row>
+						</div>
 						<div className={styles.checkOutAction}>
 							<Checkbox text='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />
 							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' />
