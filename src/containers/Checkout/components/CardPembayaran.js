@@ -118,7 +118,16 @@ export default class CardPembayaran extends Component {
 	}
 
 	render() {
-		const { coupon, subTotal, total, deliveryCostDiscount, deliveryCost, paymentMethods, selectedPayment } = this.props.payments;
+		const { 
+			coupon, 
+			subTotal, 
+			total, 
+			deliveryCostDiscount, 
+			deliveryCost, 
+			paymentMethods, 
+			selectedPayment 
+		} = this.props.payments;
+		
 		let voucherBox = '';
 		if (this.props.coupon === '' || this.props.validCoupon === null) { 
 			voucherBox = (

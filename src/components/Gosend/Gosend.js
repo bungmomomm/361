@@ -27,7 +27,6 @@ class Gosend extends Component {
 			]
 		};
 		this.showGoogleMap = this.showGoogleMap.bind(this);
-		this.onMarkerDragged = this.onMarkerDragged.bind(this);
 		this.onMouseoverPolygon = this.onMouseoverPolygon.bind(this);
 		this.renderAutocomplete = this.renderAutocomplete.bind(this);
 		this.autocomplete = '';
@@ -44,20 +43,12 @@ class Gosend extends Component {
 	componentWillUnmount() {
 		window.removeEventListener('click', this.autocomplete, false);
 	}
-
-	onMarkerDragged(props, marker, e) {
-		this.setState({
-			markerInPolygon: true
-		});
-	}
 	
 	onMouseoverPolygon(props, polygon, e) {
-		if (this.state.markerInPolygon) {
-			this.setCenter({
-				lat: e.latLng.lat(),
-				lng: e.latLng.lng()
-			});
-		}
+		this.setCenter({
+			lat: e.latLng.lat(),
+			lng: e.latLng.lng()
+		});
 	}
 
 	onMapClicked(props) {
@@ -149,7 +140,6 @@ class Gosend extends Component {
 										className={styles.googleMapArea}
 										scrollwheel={false}
 										initialCenter={this.state.center}
-										center={this.state.center}
 										centerAroundCurrentLocation={false}
 									>
 										<Polygon
@@ -158,16 +148,14 @@ class Gosend extends Component {
 											strokeOpacity={0.8}
 											strokeWeight={2}
 											fillColor='#0000FF'
-											onMouseover={this.onMouseoverPolygon}
+											onClick={this.onMouseoverPolygon}
 											fillOpacity={0.35} 
 										/>
 										<Marker
 											title={'The marker`s title will appear as a tooltip.'}
 											name={'Current location'} 
 											position={this.state.center}
-											draggable
-											onDragend={this.onMarkerDragged}
-											setClickableIcons={false}
+											clickable={false}
 											icon={{
 												url: this.markerIcon
 											}}
