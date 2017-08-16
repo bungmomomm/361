@@ -15,11 +15,12 @@ const addressesRequest = (token) => ({
 	}
 });
 
-const addressesReceived = (addresses) => ({
+const addressesReceived = (addresses, latesto2o) => ({
 	type: ADDR_GET_ADDRESS,
 	status: 1,
 	payload: {
-		addresses
+		addresses,
+		latesto2o
 	}
 });
 
@@ -71,19 +72,32 @@ const getAddresses = (token) => dispatch => {
 		const address = response.data.data.map((value, index) => {
 			return value;
 		}).filter(e => e.type === 'shipping');
-		
-		dispatch(addressesReceived(address));
+		let latesto2o = response.data.data.map((value, index) => {
+			return value;
+		}).filter(e => e.type === 'latest_o2o');
+		if (latesto2o) {
+			latesto2o = [{
+				value: latesto2o[0].id,
+				selected: true,
+				label: latesto2o[0].attributes.address_label,
+				info: latesto2o[0].attributes.address,
+				city: latesto2o[0].attributes.city,
+				province: latesto2o[0].attributes.province,
+				phone: latesto2o[0].attributes.phone
+			}];
+		}
+		dispatch(addressesReceived(address, latesto2o));
 	})
 	.catch((error) => {
 		console.log(error);
 	});
 };
 
-const getO2OList = (token) => dispatch => {
+const getO2OList = (token, province = 6) => dispatch => {
 	dispatch(o2oListRequest(token));
 	const req = {
 		token,
-		path: 'pickup_locations',
+		path: `pickup_locations/search_o2o?province_id=${province}`,
 		method: 'GET'
 	};
 	request(req)
@@ -93,7 +107,7 @@ const getO2OList = (token) => dispatch => {
 		result.forEach((value, index) => {
 			o2oList.push({
 				value: value.id,
-				selected: true,
+				selected: false,
 				label: value.attributes.address_label,
 				info: value.attributes.address,
 				city: value.attributes.city,

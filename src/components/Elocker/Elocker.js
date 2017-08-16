@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 // import PropTypes from 'prop-types';
 import styles from './Elocker.scss';
 // component load
-import { Input, Select, Card } from '@/components/Base';
+import { Input, Select, Card, Button } from '@/components/Base';
 
 // Dummy Data
 import { Provinsi } from '@/data';
@@ -13,9 +13,11 @@ export default class Elocker extends Component {
 		this.props = props;
 		this.getSelectedProvince = this.getSelectedProvince.bind(this);
 		this.getFilterCity = this.getFilterCity.bind(this);
-		this.provinceFilterResult = this.props.stores;
+		this.submitLocker = this.submitLocker.bind(this);
+		this.provinceFilterResult = this.props.listo2o;
 		this.state = {
-			ElockerList: this.props.stores
+			ElockerList: this.props.listo2o,
+			selectedLocker: null
 		};
 	}
 
@@ -24,12 +26,14 @@ export default class Elocker extends Component {
 // ----------------------------------------
 
 	getSelectedProvince(event) {
-		const filterData = this.computeFilter(event.value, this.state.ElockerList, 'province');
-		this.provinceFilterResult = filterData;
+
+		this.props.onGetListO2o(event.value);
+		// const filterData = this.computeFilter(event.value, this.state.ElockerList, 'province');
+		// this.provinceFilterResult = filterData;
 	}
 
 	getFilterCity(event) {
-		this.computeFilter(event.target.value, this.provinceFilterResult, 'city');
+		this.computeFilter(event.target.value, this.props.listo2o, 'city');
 	}
 
 // ----------------------------------------
@@ -37,9 +41,7 @@ export default class Elocker extends Component {
 // ----------------------------------------
 
 	setFilterProvince(filterData) {
-		this.setState({
-			ElockerList: filterData
-		});
+		this.props.setFilterLocker(filterData);
 	}
 
 // ----------------------------------------
@@ -59,12 +61,18 @@ export default class Elocker extends Component {
 
 
 	handleChooseElocker(i) {
-		const TempElocker = this.state.ElockerList;
+		const TempElocker = this.props.listo2o;
 		for (let key = 0; key < TempElocker.length; key++) {
 			TempElocker[key].selected = i === key || false;
 		}
-
+		this.setState({
+			selectedLocker: TempElocker[i]
+		});
 		this.setFilterProvince(TempElocker);
+	}
+	
+	submitLocker(event) {
+		this.props.onSelectedLocker(this.state.selectedLocker);
 	}
 
 	render() {
@@ -80,8 +88,8 @@ export default class Elocker extends Component {
 				</div>
 				<div className={styles.eLockerList}>
 					{
-						!this.state.ElockerList ? null :
-						this.state.ElockerList.map((elocker, index) => (
+						!this.props.filtero2o ? null :
+						this.props.filtero2o.map((elocker, index) => (
 							<Card onClick={() => this.handleChooseElocker(index)} key={index} selected={!!elocker.selected} radius>
 								<Card.Title>{elocker.label}</Card.Title>
 								<p>{elocker.info}</p>
@@ -89,6 +97,7 @@ export default class Elocker extends Component {
 						))
 					}
 				</div>
+				<Button onClick={this.submitLocker} content='Pilih Lokasi Toko / E-locker' color='dark' block size='large' iconPosition='right' icon='angle-right' />
 			</div>
 		);
 	}
