@@ -21,6 +21,7 @@ const deleteRequest = (productId) => ({
 		productId
 	}
 });
+
 const placeOrderRequest = (token, address) => ({
 	type: CRT_PLACE_ORDER,
 	status: 0,
@@ -40,7 +41,7 @@ const placeOrderReceived = (soNumber) => ({
 
 const gettingCart = (token) => ({
 	type: CRT_GET_CART,
-	status: 1,
+	status: 0,
 	payload: {
 		token
 	}
