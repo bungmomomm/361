@@ -40,21 +40,15 @@ class Checkout extends Component {
 			enableNewAddress: false,
 			token: this.props.cookies.get('user.token'),
 			refreshToken: this.props.cookies.get('user.rf.token'),
-<<<<<<< Updated upstream
 			addresses: {},
 			soNumber: null,
-			cart: [],
+			cart: this.props.cart,
 			listo2o: {},
 			latesto2o: {},
 			o2oProvinces: {},
 			selectedLocker: null,
 			showModalO2o: false,
 			selectO2oFromModal: false,
-=======
-			addresses: {}, 
-			cart: this.props.cart
-			
->>>>>>> Stashed changes
 		};
 		this.onAddCoupon = this.onAddCoupon.bind(this);
 		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
@@ -247,7 +241,7 @@ class Checkout extends Component {
 								<Col grid={4} className={enablePesananPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>(5 items)</span></div>
 									{
-										<CardPesananPengiriman cart={this.state.cart} onDeleteCart={this.onDeleteCart} />
+										<CardPesananPengiriman cart={!this.state.cart ? [] : this.state.cart} onDeleteCart={this.onDeleteCart} />
 									}
 								</Col>
 								<Col grid={4} className={enablePembayaran ? '' : styles.disabled}>
@@ -291,7 +285,7 @@ const mapStateToProps = (state) => {
 		orderId: 1,
 		coupon: state.coupon,
 		addresses: state.addresses.data,
-		cart: state.cart.cart,
+		cart: state.cart.data,
 		payments: state.payments,
 		listo2o: state.addresses.o2o,
 		latesto2o: state.addresses.latesto2o,
