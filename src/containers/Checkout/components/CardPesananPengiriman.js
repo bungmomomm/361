@@ -26,6 +26,7 @@ export default class CardPesananPengiriman extends Component {
 			<Card stretch>
 				<div className={styles.overflow}>
 					{
+						
 						this.props.cart.map((storeData, i) => (
 							<StoreBox color='' key={i} name={storeData.store.name} location={storeData.store.location}>
 								{

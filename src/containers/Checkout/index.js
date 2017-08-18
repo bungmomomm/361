@@ -24,7 +24,7 @@ import CardPengiriman from './components/CardPengiriman';
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { addCoupon, removeCoupon, resetCoupon } from '@/state/Coupon/actions';
-import { getAddresses, getO2OList } from '@/state/Adresses/actions';
+import { getAddresses, getO2OList, getO2OProvinces } from '@/state/Adresses/actions';
 import { getPlaceOrderCart, getCart, deleteCart } from '@/state/Cart/actions';
 import { getAvailablePaymentMethod, changePaymentMethod, changePaymentOption, openNewCreditCard, selectCreditCard } from '@/state/Payment/actions';
 
@@ -42,9 +42,10 @@ class Checkout extends Component {
 			refreshToken: this.props.cookies.get('user.rf.token'),
 			addresses: {},
 			soNumber: null,
-			cart: [],
+			cart: this.props.cart,
 			listo2o: {},
 			latesto2o: {},
+			o2oProvinces: {},
 			selectedLocker: null,
 			showModalO2o: false,
 			selectO2oFromModal: false,
@@ -60,7 +61,7 @@ class Checkout extends Component {
 		this.onNewCreditCard = this.onNewCreditCard.bind(this);
 		this.onSelectCard = this.onSelectCard.bind(this);
 		this.onGetListO2o = this.onGetListO2o.bind(this);
-		this.onSetListO2o = this.onSetListO2o.bind(this);
+		this.onGetO2oProvinces = this.onGetO2oProvinces.bind(this);
 		this.onOpenModalO2o = this.onOpenModalO2o.bind(this);
 		this.onSelectedLocker = this.onSelectedLocker.bind(this);
 	}
@@ -176,9 +177,10 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 		dispatch(getO2OList(this.state.token, provinceId));
 	}
-
-	onSetListO2o(list) {
-		this.listo2o = list;
+	
+	onGetO2oProvinces() {
+		const { dispatch } = this.props;
+		dispatch(getO2OProvinces(this.state.token));
 	}
 
 	onOpenModalO2o() {
@@ -188,10 +190,16 @@ class Checkout extends Component {
 	}
 
 	onSelectedLocker(selectedLocker, isSelectFromModal = false) {
+		const TempElocker = this.props.latesto2o;
+		for (let key = 0; key < TempElocker.length; key++) {
+			if (TempElocker[key].value === selectedLocker.value) {
+				isSelectFromModal = false;
+			}
+		}
 		this.setState({
 			selectedLocker,
 			showModalO2o: false,
-			selectO2oFromModal: true,
+			selectO2oFromModal: isSelectFromModal,
 		});
 	}
 
@@ -204,13 +212,15 @@ class Checkout extends Component {
 
 		const {
 			coupon,
-			cart,
+			// cart,
 			payments,
 			user,
 			addresses,
             listo2o,
 			latesto2o,
+			o2oProvinces,			
 		} = this.props;
+		console.log(this.props);
 		
 		return (
 			this.props.loading ? <Loading /> : (
@@ -223,15 +233,15 @@ class Checkout extends Component {
 								<Col grid={4} className={enableAlamatPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
 									{
-										<CardPengiriman addresses={addresses} onChoisedAddress={this.onChoisedAddress} onChangeAddress={this.onChangeAddress} onGetListO2o={this.onGetListO2o} listo2o={listo2o} onOpenModalO2o={this.onOpenModalO2o} latesto2o={latesto2o} selectedLocker={this.state.selectedLocker ? this.state.selectedLocker : (latesto2o ? latesto2o[0] : null)} onSelectedLocker={this.onSelectedLocker} selectO2oFromModal={this.state.selectO2oFromModal} />
+										renderIf(addresses)(
+											<CardPengiriman addresses={addresses} onChoisedAddress={this.onChoisedAddress} onChangeAddress={this.onChangeAddress} onGetO2oProvinces={this.onGetO2oProvinces} onGetListO2o={this.onGetListO2o} listo2o={listo2o} onOpenModalO2o={this.onOpenModalO2o} latesto2o={latesto2o} selectedLocker={this.state.selectedLocker ? this.state.selectedLocker : (latesto2o ? latesto2o[0] : null)} onSelectedLocker={this.onSelectedLocker} selectO2oFromModal={this.state.selectO2oFromModal} />
+										)
 									}
 								</Col>
 								<Col grid={4} className={enablePesananPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>(5 items)</span></div>
 									{
-										renderIf(cart)(
-											<CardPesananPengiriman cart={this.state.cart} onDeleteCart={this.onDeleteCart} />
-										)
+										<CardPesananPengiriman cart={!this.state.cart ? [] : this.state.cart} onDeleteCart={this.onDeleteCart} />
 									}
 								</Col>
 								<Col grid={4} className={enablePembayaran ? '' : styles.disabled}>
@@ -254,7 +264,7 @@ class Checkout extends Component {
 						</Container>
 					</div>
 					<NewAddressModalbox shown={this.state.enableNewAddress} />
-					<ElockerModalbox shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
+					<ElockerModalbox shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} o2oProvinces={!o2oProvinces ? null : o2oProvinces} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
 					<PaymentSuccessModalbox />
 					<PaymentErrorModalbox />
 					<VerifikasiNoHandponeModalbox />
@@ -270,14 +280,16 @@ Checkout.propTypes = {
 
 
 const mapStateToProps = (state) => {
+	console.log(state.addresses.data);
 	return {
 		orderId: 1,
 		coupon: state.coupon,
 		addresses: state.addresses.data,
-		cart: state.cart.cart,
+		cart: state.cart.data,
 		payments: state.payments,
 		listo2o: state.addresses.o2o,
 		latesto2o: state.addresses.latesto2o,
+		o2oProvinces: state.addresses.o2oProvinces
 	};
 };
 

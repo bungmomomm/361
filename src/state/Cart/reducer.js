@@ -6,7 +6,39 @@ import {
 } from './constants';
 
 const initialState = {
-	tracking: []
+	data: [
+		{
+			store: {
+				id: 0, 
+				location: '',
+				name: '',
+				totalItems: 0,
+				storeImage: '',
+				price: {
+					finalDeliveryCost: 0, 
+					subTotal: 0,
+					total: 0
+				},
+				products: [{
+					id: 0,
+					image: '',
+					maxQty: 0,
+					name: '',
+					price: 0,
+					qty: 0,
+					attribute: []
+				}],
+				shipping: {
+					note: '',
+					o2oSupported: false, 
+					gosend: {
+						gosendActivated: false, 
+						gosendSupported: false
+					}
+				}
+			}
+		}
+	]
 };
 
 export default (state = initialState, action) => {
@@ -24,9 +56,14 @@ export default (state = initialState, action) => {
 	}
 
 	case CRT_GET_CART: {
+		if (action.status !== 1) {
+			return {
+				...state, 
+			};	
+		}
 		return {
 			...state, 
-			cart: action.payload.cart,
+			data: action.payload.cart,
 		};
 	}
 

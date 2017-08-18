@@ -1,7 +1,9 @@
 import { request } from '@/utils';
+import humps from 'lodash-humps';
 import { 
 	ADDR_GET_ADDRESS,
 	ADDR_O2O_LIST,
+	ADDR_O2O_PROVINCE,
 	// ADDR_SAVE_ADDRESS,
 	// ADDR_DROP_SHIPPER,
 	// ADDR_O2O_LIST 
@@ -40,6 +42,22 @@ const o2oListReceived = (o2o) => ({
 	}
 });
 
+const o2oProvinceRequest = (token) => ({
+	type: ADDR_O2O_PROVINCE,
+	status: 0,
+	payload: {
+		token
+	}
+});
+
+const o2oProvinceReceived = (o2oProvinces) => ({
+	type: ADDR_O2O_PROVINCE,
+	status: 1,
+	payload: {
+		o2oProvinces
+	}
+});
+
 // const addressSave = (address) => ({
 // 	type: ADDR_SAVE_ADDRESS,
 // 	status: 0,
@@ -70,7 +88,7 @@ const getAddresses = (token) => dispatch => {
 	request(req)
 	.then((response) => {
 		const address = response.data.data.map((value, index) => {
-			return value;
+			return humps(value);
 		}).filter(e => e.type === 'shipping');
 		let latesto2o = response.data.data.map((value, index) => {
 			return value;
@@ -97,7 +115,7 @@ const getO2OList = (token, province = 6) => dispatch => {
 	dispatch(o2oListRequest(token));
 	const req = {
 		token,
-		path: `pickup_locations/search_o2o?province_id=${province}`,
+		path: `pickup_locations/search_o2o?page=1&per_page=1000&province_id=${province}`,
 		method: 'GET'
 	};
 	request(req)
@@ -116,6 +134,32 @@ const getO2OList = (token, province = 6) => dispatch => {
 			});
 		});
 		dispatch(o2oListReceived(o2oList));
+	})
+	.catch((error) => {
+		console.log(error);
+	});
+};
+
+
+const getO2OProvinces = (token) => dispatch => {
+	dispatch(o2oProvinceRequest(token));
+	const req = {
+		token,
+		path: 'pickup_locations/provinces',
+		method: 'GET'
+	};
+	request(req)
+	.then((response) => {
+		const result = response.data.data;
+		const o2oProvinces = [];
+		result.forEach((value, index) => {
+			o2oProvinces.push({
+				value: value.id,
+				// selected: false,
+				label: value.attributes.name,
+			});
+		});
+		dispatch(o2oProvinceReceived(o2oProvinces));
 	})
 	.catch((error) => {
 		console.log(error);
@@ -142,5 +186,6 @@ const getO2OList = (token, province = 6) => dispatch => {
 export default {
 	getAddresses,
 	getO2OList,
+	getO2OProvinces,
 	// saveAddress
 };
