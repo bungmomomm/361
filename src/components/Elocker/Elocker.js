@@ -4,20 +4,17 @@ import styles from './Elocker.scss';
 // component load
 import { Input, Select, Card, Button } from '@/components/Base';
 
-// Dummy Data
-import { Provinsi } from '@/data';
-
 export default class Elocker extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.getSelectedProvince = this.getSelectedProvince.bind(this);
-		this.getFilterCity = this.getFilterCity.bind(this);
+		this.getFilterLabel = this.getFilterLabel.bind(this);
 		this.submitLocker = this.submitLocker.bind(this);
 		this.provinceFilterResult = this.props.listo2o;
 		this.state = {
 			ElockerList: this.props.listo2o,
-			selectedLocker: null
+			selectedLocker: null,
 		};
 	}
 
@@ -26,14 +23,14 @@ export default class Elocker extends Component {
 // ----------------------------------------
 
 	getSelectedProvince(event) {
-
 		this.props.onGetListO2o(event.value);
+		this.props.setCurrentProvince(event);
 		// const filterData = this.computeFilter(event.value, this.state.ElockerList, 'province');
 		// this.provinceFilterResult = filterData;
 	}
 
-	getFilterCity(event) {
-		this.computeFilter(event.target.value, this.props.listo2o, 'city');
+	getFilterLabel(event) {
+		this.computeFilter(event.target.value, this.props.listo2o, 'label');
 	}
 
 // ----------------------------------------
@@ -61,7 +58,7 @@ export default class Elocker extends Component {
 
 
 	handleChooseElocker(i) {
-		const TempElocker = this.props.listo2o;
+		const TempElocker = this.props.filtero2o;
 		for (let key = 0; key < TempElocker.length; key++) {
 			TempElocker[key].selected = i === key || false;
 		}
@@ -80,10 +77,15 @@ export default class Elocker extends Component {
 			<div className={styles.eLocker}>
 				<div className={styles.header}>
 					<div className={styles.provinsiWrapper}>
-						<Select options={Provinsi} onChange={this.getSelectedProvince} />
+						<Select 
+							options={this.props.o2oProvinces ? this.props.o2oProvinces : []} 
+							onChange={this.getSelectedProvince}
+							selected={this.props.currentProvince}
+							selectedLabel={this.props.currentProvince.label}
+						/>
 					</div>
 					<div className={styles.kotaFilterWrapper}>
-						<Input onChange={this.getFilterCity} placeholder='Nama Kota, Jakarta, Medan' />
+						<Input onChange={this.getFilterLabel} placeholder='Nama Kota, Jakarta, Medan' />
 					</div>
 				</div>
 				<div className={styles.eLockerList}>

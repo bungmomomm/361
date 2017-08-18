@@ -28,7 +28,7 @@ export default class CardPengiriman extends Component {
 			o2o: [],
 			selectedAddress: null,
 			disabledO2o: false,
-			closeSelect: false,
+			closeSelect: true,
 		};
 		this.onChoisedAddress = this.onChoisedAddress.bind(this);
 		this.onChangeAddress = this.onChangeAddress.bind(this);
@@ -78,6 +78,7 @@ export default class CardPengiriman extends Component {
 			});
 			if (!this.props.listo2o) {
 				this.props.onGetListO2o();
+				this.props.onGetO2oProvinces();
 			}
 		} else {
 			this.setState({
@@ -156,7 +157,7 @@ export default class CardPengiriman extends Component {
 										options={(typeof this.props.latesto2o !== 'undefined') ? this.props.latesto2o : []}
 										onChange={this.onChosenLocker}
 										addButton={addMoreButton}
-										showOption={!this.state.closeSelect}
+										shown={!this.state.closeSelect}
 									/>
 								</InputGroup>
 								<Level>

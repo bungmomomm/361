@@ -36,6 +36,16 @@ export default class Select extends Component {
 				options: nextProps.options
 			});
 		}
+		if (this.state.showOption !== nextProps.shown) {
+			this.setState({
+				showOption: nextProps.shown
+			});
+		}
+		if ((this.state.selectedLabel !== nextProps.selectedLabel) && !!nextProps.selectedLabel) {
+			this.setState({
+				selectedLabel: nextProps.selectedLabel
+			});
+		}
 	}
 
 // ----------------------------------------
