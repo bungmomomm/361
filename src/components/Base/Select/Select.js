@@ -256,7 +256,7 @@ Select.propTypes = {
 	horizontal: PropTypes.bool,
 	required: PropTypes.bool,
 	top: PropTypes.bool,
-	selected: PropTypes.Object,
+	selected: PropTypes.object,
 	label: PropTypes.string,
 	filter: PropTypes.bool,
 	message: PropTypes.string

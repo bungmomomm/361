@@ -40,6 +40,7 @@ class Checkout extends Component {
 			enableNewAddress: false,
 			token: this.props.cookies.get('user.token'),
 			refreshToken: this.props.cookies.get('user.rf.token'),
+<<<<<<< Updated upstream
 			addresses: {},
 			soNumber: null,
 			cart: [],
@@ -49,6 +50,11 @@ class Checkout extends Component {
 			selectedLocker: null,
 			showModalO2o: false,
 			selectO2oFromModal: false,
+=======
+			addresses: {}, 
+			cart: this.props.cart
+			
+>>>>>>> Stashed changes
 		};
 		this.onAddCoupon = this.onAddCoupon.bind(this);
 		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
@@ -212,7 +218,7 @@ class Checkout extends Component {
 
 		const {
 			coupon,
-			cart,
+			// cart,
 			payments,
 			user,
 			addresses,
@@ -220,6 +226,7 @@ class Checkout extends Component {
 			latesto2o,
 			o2oProvinces,			
 		} = this.props;
+		console.log(this.props);
 		
 		return (
 			this.props.loading ? <Loading /> : (
@@ -240,9 +247,7 @@ class Checkout extends Component {
 								<Col grid={4} className={enablePesananPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>(5 items)</span></div>
 									{
-										renderIf(cart)(
-											<CardPesananPengiriman cart={this.state.cart} onDeleteCart={this.onDeleteCart} />
-										)
+										<CardPesananPengiriman cart={this.state.cart} onDeleteCart={this.onDeleteCart} />
 									}
 								</Col>
 								<Col grid={4} className={enablePembayaran ? '' : styles.disabled}>
@@ -281,6 +286,7 @@ Checkout.propTypes = {
 
 
 const mapStateToProps = (state) => {
+	// console.log(state.cart.cart);
 	return {
 		orderId: 1,
 		coupon: state.coupon,

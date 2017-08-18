@@ -1,4 +1,5 @@
 import { request } from '@/utils';
+import humps from 'lodash-humps';
 import { 
 	ADDR_GET_ADDRESS,
 	ADDR_O2O_LIST,
@@ -87,7 +88,7 @@ const getAddresses = (token) => dispatch => {
 	request(req)
 	.then((response) => {
 		const address = response.data.data.map((value, index) => {
-			return value;
+			return humps(value);
 		}).filter(e => e.type === 'shipping');
 		let latesto2o = response.data.data.map((value, index) => {
 			return value;
