@@ -90,10 +90,12 @@ const getAddresses = (token) => dispatch => {
 		const address = response.data.data.map((value, index) => {
 			return humps(value);
 		}).filter(e => e.type === 'shipping');
+
 		let latesto2o = response.data.data.map((value, index) => {
 			return value;
 		}).filter(e => e.type === 'latest_o2o');
-		if (latesto2o) {
+
+		if (latesto2o.length > 0) {
 			latesto2o = [{
 				value: latesto2o[0].id,
 				selected: true,
@@ -104,6 +106,7 @@ const getAddresses = (token) => dispatch => {
 				phone: latesto2o[0].attributes.phone
 			}];
 		}
+
 		dispatch(addressesReceived(address, latesto2o));
 	})
 	.catch((error) => {
