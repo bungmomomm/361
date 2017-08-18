@@ -305,7 +305,7 @@ export default class CardPembayaran extends Component {
 							</Row>
 						</div>
 						<div className={styles.checkOutAction}>
-							<Checkbox text='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />
+							<Checkbox checked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />
 							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' />
 						</div>
 					</div>

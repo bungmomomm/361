@@ -1,0 +1,83 @@
+@import 'mixins';
+@import 'variables';
+
+.CreditCardRadioWrapper{
+	position: relative;
+	cursor: pointer;
+	display: flex;
+    align-items: center;
+	line-height: 1;
+	margin-bottom: rem(15px);
+	background: #FAFAFA;
+    height: 35px;
+	padding: 0px 15px;
+	position: relative;
+	&:last-child{
+		margin-bottom: 0;
+	}
+}
+
+.creditCardRadio{
+	display: inline-block;
+	position: absolute;
+    z-index: -1;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.creditCardRadio:checked + .creditCardRadioInput{
+	background-color: color(orange);
+	border-color: color(orange);
+	&:after{
+		content: "";
+		position: absolute;
+		left: 1px;
+    	top: 1px;
+		width: 9px;
+		height: 9px;
+		background: color(orange);
+		display: block;
+		border-radius: 50%;
+		border:2px solid #fff;
+	}
+}
+
+.creditCardRadioInput{
+	width: rem(13px);
+    height: rem(13px);
+    display: inline-block;
+    vertical-align: middle;
+	margin-right: rem(10px);
+    border-radius: 50%;
+    border: 1px solid #c5c5c5;
+    position: relative;
+	background-color: #fff;
+}
+
+.creditCardRadioText{
+	opacity: 0.7;
+	pointer-events: none;
+}
+
+.creditCardRadio:checked ~ .creditCardRadioText{
+	opacity: 1;
+}
+
+.blockList{
+	position: absolute;
+	left: 0;
+	top: 0;
+	height: 100%;
+	width: 100%;
+	border: 1px solid #EBEBEB;
+	border-radius: 4px;
+}
+
+.creditCardRadio:checked ~ .blockList{
+	border: 1px solid color(orange);
+}
+
+.sprites{
+	position: absolute;
+    right: 15px;
+}

@@ -44,6 +44,7 @@ export default class Select extends Component {
 
 	getFilter(event) {
 		const filterValue = event.target.value.toUpperCase();
+		console.log(filterValue);
 		const filterData = this.props.options.map((option) => {
 			const filterLabel = option.label.toUpperCase();
 			return (filterLabel.toUpperCase().indexOf(filterValue) > -1) ? option : null;
@@ -62,6 +63,7 @@ export default class Select extends Component {
 // ----------------------------------------
 
 	setFilterOption(filterData) {
+		console.log(filterData);
 		this.setState({
 			options: filterData
 		});
@@ -172,7 +174,7 @@ export default class Select extends Component {
 										type='text' 
 										name='quickfilter' 
 										onChange={this.getFilter} 
-										placeholder='Quick Search' 
+										placeholder='Quick Search'
 									/>
 								</div>
 							)

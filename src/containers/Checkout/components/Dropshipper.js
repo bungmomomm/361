@@ -1,28 +1,28 @@
 import React, { Component } from 'react';
 
 // component load
-import { Checkbox, Box, Input, InputGroup } from '@/components/Base';
+import { Checkbox, Segment, Input, InputGroup } from '@/components/Base';
 
 export default class Dropshipper extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.onChange = this.onChange.bind(this);
 		this.state = {
 			showContent: false
 		};
-		this.onChange = this.onChange.bind(this);
 	}
 	
-	onChange(event) {
+	onChange(checked) {
 		this.setState({
-			showContent: event
+			showContent: checked
 		});
 	}
 
 	render() {
 		return (
-			<Box>
-				<Checkbox text='Kirim sebagai Dropshipper' value='dropdshipper-on' onChange={this.onChange} />
+			<Segment>
+				<Checkbox content='Kirim sebagai Dropshipper' value='dropdshipper-on' onClick={this.onChange} />
 				{
 				this.state.showContent ? (
 					<div>
@@ -35,7 +35,7 @@ export default class Dropshipper extends Component {
 					</div>
 				) : null
 				}
-			</Box>
+			</Segment>
 		);
 	}
 };

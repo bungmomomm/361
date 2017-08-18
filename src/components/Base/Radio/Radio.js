@@ -1,128 +1,59 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import creditCardType from 'credit-card-type';
-
-import Sprites from '@/components/Sprites';
-import { injectProps } from '@/decorators';
-import { newId, renderIf } from '@/utils';
 
 import styles from './Radio.scss';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
 
-export default class Radio extends Component {
-	constructor(props) {
-		super(props);
-		this.props = props;
-		this.onChange = this.onChange.bind(this);
-		this.state = {
-			checked: this.props.checked || false
-		};
-	}
+import { newId } from '@/utils';
 
-	componentWillMount() {
-		if (this.props.creditCard) {
-			const cc = this.props.content;
-			const ccNumber = cc.slice(0, 2);
-			this.creditCardValidation(ccNumber);
-		}
-	}
+const Radio = (props) => {
+	const RadioClass = cx({
+		radioWrapper: true
+	});
+	
+	const onClick = (event) => {
+		return props.onClick ? props.onClick(event.target.checked) : null;
+	};
+	
+	const onChange = (value) => {
+		return props.onChange ? props.onChange(event.target.checked) : null;
+	};
 
-	componentWillReceiveProps(nextProps) {
-		if (this.state.checked !== nextProps.checked) {
-			this.setState({
-				checked: nextProps.checked || false
-			});
-		}
-	}
+	const idFor = newId();
+	const input = (
+		<input
+			id={idFor}
+			type='radio'
+			defaultChecked={props.checked}
+			className={styles.radio} 
+			name={props.name} 
+			onClick={onClick}
+			onChange={onChange}
+			value={props.value} 
+			disabled={props.disabled}
+		/>
+	);
 
-// ----------------------------------------
-// Getters
-// ----------------------------------------
-
-// ----------------------------------------
-// Setters
-// ----------------------------------------
-
-// ----------------------------------------
-// Event Handlers
-// ----------------------------------------
-	onChange(event) {
-		const ContentState = !this.state.checked;
-		this.setState({
-			checked: ContentState
-		});
-		return this.props.onChange ? this.props.onChange({
-			object: this,
-			checked: ContentState,
-			value: this.props.value
-		}) : null;
-	}
-
-	creditCardValidation(ccNumber) {
-		const validCard = creditCardType(ccNumber);
-		if (validCard[0]) {
-			const type = validCard[0].type;
-			if (type === 'jcb' || type === 'visa' || type === 'master-card') {
-				this.setState({
-					sprites: type
-				});
-			}
-		}
-	}
-// ----------------------------------------
-// Render
-// ----------------------------------------
-
-	@injectProps
-	render({
-		value,
-		name,
-		content,
-		variant,
-		creditCard
-	}) {
-		const idFor = newId();
-		const { 
-			checked 
-		} = this.state;
-
-		const radioWrapper = cx({
-			radioWrapper: true,
-			[`${variant}`]: !!variant
-		});
-		return (
-			<label className={radioWrapper} htmlFor={idFor}>
-				<input 
-					id={idFor} 
-					type='radio' 
-					checked={checked} 
-					onChange={this.onChange} 
-					defaultValue={value} 
-					className={styles.radio} 
-					name={name} 
-				/>
-				<span className={styles.radioInput} />
-				<span className={styles.radioText}>
-					{content}
-				</span>
-				{ 
-					renderIf(variant === 'list')(
-						<div className={styles.blockList} />
-					)
-				}
-				{
-					renderIf(this.state.sprites)(
-						<span className={styles.sprites}>
-							<Sprites name={this.state.sprites} />
-						</span>
-					)
-				} 
-			</label>
-		);
-	}
+	return (
+		<label className={RadioClass} htmlFor={idFor}>
+			{input}
+			<span className={styles.radioInput} />
+			<span className={styles.radioText}>
+				{props.content}
+			</span>
+		</label>
+	);
 };
 
+export default Radio;
+
 Radio.propTypes = {
-	test: PropTypes.bool
+	value: PropTypes.string,
+	name: PropTypes.string,
+	content: PropTypes.string,
+	disabled: PropTypes.bool,
+	onClick: PropTypes.func,
+	onChange: PropTypes.func,
+	checked: PropTypes.bool
 };

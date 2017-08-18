@@ -9,7 +9,7 @@ import {
 	Button, 
 	Tabs,
 	Alert,
-	Box,
+	Segment,
 } from '@/components/Base';
 
 import Dropshipper from './Dropshipper';
@@ -110,7 +110,7 @@ export default class CardPengiriman extends Component {
 					<Alert align='center' color='yellow' close>
 						Gratis ongkos kirim hingga Rp 15,000 untuk minimal pembelian sebesar Rp 100,000
 					</Alert>
-					<Box>
+					<Segment>
 						<InputGroup>
 							<Select 
 								name='alamat'
@@ -136,7 +136,7 @@ export default class CardPengiriman extends Component {
 								<Button type='button' icon='pencil' iconPosition='left' className='font-orange' content='Ubah Alamat ini' onClick={this.onChangeAddress} />
 							</div>
 						}
-					</Box>
+					</Segment>
 					<Dropshipper />
 					<Button content='Masukan Alamat Pengiriman' color='dark' block size='large' iconPosition='right' icon='angle-right' />
 				</Tabs.Panel>
@@ -147,7 +147,7 @@ export default class CardPengiriman extends Component {
 					{
 						!this.props.selectedLocker ? <Button onClick={this.openModal} content='Pilih Lokasi Toko / E-locker' color='dark' block size='large' iconPosition='right' icon='angle-right' /> :
 						<div>
-							<Box>
+							<Segment>
 								<InputGroup>
 									<Select
 										filter
@@ -166,7 +166,7 @@ export default class CardPengiriman extends Component {
 									{this.props.selectedLocker.info} <br />
 									Telp: {this.props.selectedLocker.phone}
 								</p>
-							</Box>
+							</Segment>
 						</div>
 					}
 					{this.state.disabledO2o ? <p className='font-red'>Satu atau lebih produk dalam keranjang belanja anda tidak menyediakan layanan Ambil di Toko / Elocker (O2O)</p> : null }

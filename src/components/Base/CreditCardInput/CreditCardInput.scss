@@ -34,7 +34,7 @@
 	}
 }
 
-.sprites, .icon{
+.sprites{
 	position: absolute;
 	right: 10px;
 	top: 0px;
@@ -43,19 +43,17 @@
     align-items: center;
 }
 
+.payment-option{
+	padding-right: 90px;
+}
+
 // VARIANT
 .green{
 	@include inputStyle(green);
-	+ .message{
-		color: color(green);
-	}
 }
 
 .yellow{
 	@include inputStyle(yellow);
-	+ .message{
-		color: color(yellow);
-	}
 }
 
 .red{
@@ -71,37 +69,33 @@
 // SIZE
 .small{
 	height: 27px;
-	~ .sprites, 
-	~ .icon{
+	~ .sprites{
 		height: 27px;
 	}
 }
 
 .medium{
 	height: 35px;
-	~ .sprites, 
-	~ .icon{
+	~ .sprites{
 		height: 35px;
 	}
 }
 
 .large{
 	height: 45px;
-	~ .sprites, 
-	~ .icon{
+	~ .sprites{
 		height: 45px;
 	}
 }
 // END SIZE
-
 label{
-	~ .sprites, 
-	~ .icon{
+	~ .sprites{
 		top: 20px;
 	} 
 }
 
 // Boolean
+
 .message{
 	margin-top: 5px;
 	display: block;

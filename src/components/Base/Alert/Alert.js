@@ -1,23 +1,37 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+
 import styles from './Alert.scss';
-import Icon from '@/components/Icon';
-import { renderIf } from '@/utils';
-import { injectProps } from '@/decorators';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
 
+import Icon from '@/components/Icon';
+import { renderIf } from '@/utils';
+import { injectProps } from '@/decorators';
 
+/**
+ * A Alert is used to create a Alert content.
+ */
 export default class Alert extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			show: true
+			show: this.props.show || true
 		};
+		this.handleClose = this.handleClose.bind(this);
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (this.state.show !== nextProps.show) {
+			this.setState({ show: nextProps.show });
+		}
+	}
+	
+	handleClose() {
+		this.setState({ show: false });
 	}
 	
 	@injectProps
-
 	render({
 		icon,
 		children,
@@ -27,35 +41,37 @@ export default class Alert extends Component {
 	}) {
 
 		const classAlert = cx({
-			Alert: true,
+			alert: true,
 			[`${color}`]: !!color,
 			[`${align}`]: !!align
 		});
 
+		const IconElement = (
+			renderIf(icon)(
+				<Icon name={icon} />
+			)
+		);
+
+		const ButtonClose = (
+			renderIf(close)(
+				<button 
+					type='button'
+					className={styles.close}
+					onClick={this.handleClose}
+				>
+					<Icon name='times' />
+				</button>
+			)
+		);
+
 		return (
 			renderIf(this.state.show)(
 				<div className={classAlert}>
-					{
-						renderIf(icon)(
-							<Icon className={styles.icon} />
-						)
-					}
-					{children}
-					{
-						renderIf(close)(
-							<button 
-								type='button'
-								className={styles.close}
-								onClick={
-									() => this.setState({ 
-										show: false
-									})
-								}
-							>
-								<Icon name='times' />
-							</button>
-						) 
-					}
+					{IconElement}
+					<span>
+						{children}
+					</span>
+					{ButtonClose}
 				</div>
 			)
 		);
@@ -63,7 +79,14 @@ export default class Alert extends Component {
 };
 
 Alert.propTypes = {
+	/** Alert can be colored. */
 	color: PropTypes.oneOf(['red', 'yellow', 'orange', 'green', 'grey', 'dark']),
+
+	/** Formats content to be aligned. */
 	align: PropTypes.oneOf(['left', 'center', 'right']),
-	close: PropTypes.bool
+	
+	/** A segment may be formatted to close. */
+	close: PropTypes.bool,
+
+	show: PropTypes.bool
 };

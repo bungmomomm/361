@@ -4,9 +4,10 @@ import Card from './Card/Card';
 import Row from './Row/Row';
 import Tabs from './Tabs/Tabs';
 import Alert from './Alert/Alert';
-import Box from './Box/Box';
+import Segment from './Segment/Segment';
 import Select from './Select/Select';
 import Input from './Input/Input';
+import CreditCardInput from './CreditCardInput/CreditCardInput';
 import InputGroup from './InputGroup/InputGroup';
 import Button from './Button/Button';
 import Checkbox from './Checkbox/Checkbox';
@@ -15,6 +16,7 @@ import Modal from './Modal/Modal';
 import Textarea from './Textarea/Textarea';
 import Tooltip from './Tooltip/Tooltip';
 import Radio from './Radio/Radio';
+import CreditCardRadio from './CreditCardRadio/CreditCardRadio';
 
 export default {
 	Container,
@@ -23,9 +25,10 @@ export default {
 	Card,
 	Tabs,
 	Alert,
-	Box,
+	Segment,
 	Select,
 	Input,
+	CreditCardInput,
 	InputGroup,
 	Button,
 	Checkbox,
@@ -33,5 +36,6 @@ export default {
 	Modal,
 	Textarea,
 	Tooltip,
-	Radio
+	Radio,
+	CreditCardRadio
 };

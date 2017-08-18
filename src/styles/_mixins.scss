@@ -59,6 +59,26 @@
 	}
 }
 
+@mixin laoding($color: #fff) {
+	pointer-events: none;
+	color: transparent;
+	opacity: 0.8;
+	&:after {
+		content: "";
+		animation: spin 500ms infinite linear;
+		border: 2px solid $color;
+		border-radius: 50%;
+		border-right-color: transparent;
+		border-top-color: transparent;
+		display: block;
+		height: rem(12px);
+		width: rem(12px);
+		left: calc(50% - (14px / 2));
+		top: calc(50% - (14px / 2));
+		position: absolute;
+	}
+}
+
 @mixin font($weight) {
 	@include map-to-style(map-deep-get($typography, font-family, $weight));
 }

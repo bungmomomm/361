@@ -4,7 +4,7 @@ import { Validator } from 'ree-validate';
 // component load
 import Gosend from '@/components/Gosend';
 import Icon from '@/components/Icon';
-import { Textarea, Modal, Level, Input, InputGroup, Select, Alert, Box, Button } from '@/components/Base';
+import { Textarea, Modal, Level, Input, InputGroup, Select, Alert, Segment, Button } from '@/components/Base';
 
 // Dummy Data
 import { Provinsi } from '@/data';
@@ -194,13 +194,13 @@ export default class NewAddressModalbox extends Component {
 								lng: 106.821247
 							}} 
 						/>
-						<Box row>
+						<Segment row>
 							<Icon name='map-marker' />
 							<div>Jalan Bangka II No.20, Pela Mampang, 
 							Mampang Prapatan, Kota Jakarta Selatan, 
 							DKI jakarta 12720</div>
 							<button className='font-small font-orange'>Ganti Lokasi</button>
-						</Box>
+						</Segment>
 						<p className='font-small font-orange'>Lokasi peta harus sesuai dengan alamat pengiriman. Lokasi diperlukan jika ingin menggunakan jasa pengiriman GO-SEND.</p>
 					</div>
 				</Modal.Body>
