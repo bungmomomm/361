@@ -21,6 +21,7 @@ export default (state = initialState, action) => {
 	case ADDR_GET_ADDRESS: {
 		return {
 			data: action.payload.addresses,
+			billing: action.payload.billing,
 			latesto2o: action.payload.latesto2o,
 		};
 

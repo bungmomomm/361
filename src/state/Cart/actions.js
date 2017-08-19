@@ -74,9 +74,9 @@ const getCart = token => dispatch => {
 	});
 };
 
-const getPlaceOrderCart = (token, address) => dispatch => {
+const getPlaceOrderCart = (token, address, billing = false) => dispatch => {
 	dispatch(placeOrderRequest(token, address));
-	const data = setPayloadPlaceOrder(address);
+	const data = setPayloadPlaceOrder(address, billing);
 	
 	const req = {
 		token, 

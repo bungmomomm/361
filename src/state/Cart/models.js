@@ -1,30 +1,39 @@
 import humps from 'lodash-humps';
 
-const setPayloadPlaceOrder = (address) => {
+const setPayloadPlaceOrder = (address, billing = false) => {
+	let attributes;
+	let id;
+	if (billing) {
+		id = billing.id;
+	} else {
+		attributes = {
+			address: address.attributes.address,
+			address_label: address.attributes.address_label,
+			city: address.attributes.city,
+			district: address.attributes.district,
+			fullname: address.attributes.fullname,
+			phone: address.attributes.phone,
+			province: address.attributes.province,
+			zipcode: address.attributes.zipcode
+		};
+	}
+
 	return {
 		attributes: {
 			delivery_method: address.type,
-			latitude: address.attributes.latitude,
-			longitude: address.attributes.longitude
+			latitude: !address.attributes.latitude ? '' : address.attributes.latitude,
+			longitude: !address.attributes.longitude ? '' : address.attributes.longitude,
 		},
 		relationships: {
 			address: {
 				data: [
 					{
 						id: address.id,
-						type: address.type
+						type: address.type === 'pickup' ? 'pickup_location' : address.type
 					},
 					{
-						attributes: {
-							address: address.attributes.address,
-							address_label: address.attributes.address_label,
-							city: address.attributes.city,
-							district: address.attributes.district,
-							fullname: address.attributes.fullname,
-							phone: address.attributes.phone,
-							province: address.attributes.province,
-							zipcode: address.attributes.zipcode
-						},
+						attributes,
+						id,
 						type: 'billing'
 					}
 				]

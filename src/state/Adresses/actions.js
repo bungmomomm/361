@@ -17,11 +17,12 @@ const addressesRequest = (token) => ({
 	}
 });
 
-const addressesReceived = (addresses, latesto2o) => ({
+const addressesReceived = (addresses, billing, latesto2o) => ({
 	type: ADDR_GET_ADDRESS,
 	status: 1,
 	payload: {
 		addresses,
+		billing,
 		latesto2o
 	}
 });
@@ -91,6 +92,10 @@ const getAddresses = (token) => dispatch => {
 			return humps(value);
 		}).filter(e => e.type === 'shipping');
 
+		const billing = response.data.data.map((value, index) => {
+			return humps(value);
+		}).filter(e => e.type === 'billing');
+
 		let latesto2o = response.data.data.map((value, index) => {
 			return value;
 		}).filter(e => e.type === 'latest_o2o');
@@ -98,16 +103,14 @@ const getAddresses = (token) => dispatch => {
 		if (latesto2o.length > 0) {
 			latesto2o = [{
 				value: latesto2o[0].id,
+				id: latesto2o[0].id,
 				selected: true,
 				label: latesto2o[0].attributes.address_label,
-				info: latesto2o[0].attributes.address,
-				city: latesto2o[0].attributes.city,
-				province: latesto2o[0].attributes.province,
-				phone: latesto2o[0].attributes.phone
+				attributes: latesto2o[0].attributes
 			}];
 		}
 
-		dispatch(addressesReceived(address, latesto2o));
+		dispatch(addressesReceived(address, billing, latesto2o));
 	})
 	.catch((error) => {
 		console.log(error);
@@ -124,19 +127,7 @@ const getO2OList = (token, province = 6) => dispatch => {
 	request(req)
 	.then((response) => {
 		const result = response.data.data;
-		const o2oList = [];
-		result.forEach((value, index) => {
-			o2oList.push({
-				value: value.id,
-				selected: false,
-				label: value.attributes.address_label,
-				info: value.attributes.address,
-				city: value.attributes.city,
-				province: value.attributes.province,
-				phone: value.attributes.phone,
-			});
-		});
-		dispatch(o2oListReceived(o2oList));
+		dispatch(o2oListReceived(result));
 	})
 	.catch((error) => {
 		console.log(error);

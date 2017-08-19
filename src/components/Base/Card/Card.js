@@ -9,10 +9,11 @@ const Card = (props) => {
 	const cardClass = cx({
 		card: true,
 		radius: !!props.radius,
-		loading: !!props.loading
+		loading: !!props.loading,
+		selected: !!props.selected
 	});
 	return (
-		<div className={cardClass}>
+		<div role='button' tabIndex={0} className={cardClass} onClick={props.onClick}>
 			{props.children}
 		</div>
 	);
@@ -20,7 +21,8 @@ const Card = (props) => {
 
 Card.propTypes = {
 	grid: PropTypes.number,
-	className: PropTypes.string
+	className: PropTypes.string,
+	onClick: PropTypes.func
 };
 
 const Title = (props) => {

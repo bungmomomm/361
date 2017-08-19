@@ -11,10 +11,12 @@ export default class Elocker extends Component {
 		this.getSelectedProvince = this.getSelectedProvince.bind(this);
 		this.getFilterLabel = this.getFilterLabel.bind(this);
 		this.submitLocker = this.submitLocker.bind(this);
+		this.handleChooseElocker = this.handleChooseElocker.bind(this);
 		this.provinceFilterResult = this.props.listo2o;
 		this.state = {
 			ElockerList: this.props.listo2o,
 			selectedLocker: null,
+			selected: null,
 		};
 	}
 
@@ -30,7 +32,7 @@ export default class Elocker extends Component {
 	}
 
 	getFilterLabel(event) {
-		this.computeFilter(event.target.value, this.props.listo2o, 'label');
+		this.computeFilter(event.target.value, this.props.listo2o, 'address_label');
 	}
 
 // ----------------------------------------
@@ -47,7 +49,7 @@ export default class Elocker extends Component {
 
 	computeFilter(filter, List, field) {
 		const filterData = List.map((item) => {
-			const filterLabel = item[`${field}`].toUpperCase();
+			const filterLabel = item.attributes[`${field}`].toUpperCase();
 			return (filterLabel.toUpperCase().indexOf(filter.toUpperCase()) > -1) ? item : null;
 		}).filter((item) => {
 			return item;
@@ -59,11 +61,14 @@ export default class Elocker extends Component {
 
 	handleChooseElocker(i) {
 		const TempElocker = this.props.filtero2o;
-		for (let key = 0; key < TempElocker.length; key++) {
-			TempElocker[key].selected = i === key || false;
-		}
-		this.setState({
-			selectedLocker: TempElocker[i]
+		TempElocker.map((data, index) => {
+			if (index === i) {
+				this.setState({
+					selectedLocker: data,
+					selected: data.id
+				});
+			}
+			return TempElocker;
 		});
 		this.setFilterProvince(TempElocker);
 	}
@@ -92,9 +97,9 @@ export default class Elocker extends Component {
 					{
 						!this.props.filtero2o ? null :
 						this.props.filtero2o.map((elocker, index) => (
-							<Card onClick={() => this.handleChooseElocker(index)} key={index} selected={!!elocker.selected} radius>
-								<Card.Title>{elocker.label}</Card.Title>
-								<p>{elocker.info}</p>
+							<Card onClick={() => this.handleChooseElocker(index)} key={index} selected={this.state.selected === elocker.id} radius>
+								<Card.Title>{elocker.attributes.address_label}</Card.Title>
+								<p>{elocker.attributes.address}</p>
 							</Card>
 						))
 					}

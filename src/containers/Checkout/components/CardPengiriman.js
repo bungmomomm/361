@@ -85,6 +85,9 @@ export default class CardPengiriman extends Component {
 				elockerTab: false
 			});
 		}
+		// if (this.props.latesto2o) {
+		// 	this.props.onSelectedLocker(this.props.latesto2o[0]);	
+		// }
 	}
 
 	openModal(even) {
@@ -142,7 +145,7 @@ export default class CardPengiriman extends Component {
 					<Button content='Masukan Alamat Pengiriman' color='dark' block size='large' iconPosition='right' icon='angle-right' />
 				</Tabs.Panel>
 				<Tabs.Panel title='Ambil Di Toko/E-locker (O2O)' sprites='o2o-off' spritesActive='o2o-on' >
-					<Alert align='center' color='yellow'>
+					<Alert align='center' color='yellow' show={this.state.elockerTab} >
 						Maksimum 2 kg perorder untuk Ambil di Toko. Pesanan diatas 2 kg akan langsung dikirimkan ke Alamat Anda.
 					</Alert>
 					{
@@ -152,7 +155,7 @@ export default class CardPengiriman extends Component {
 								<InputGroup>
 									<Select
 										filter
-										selectedLabel={this.props.selectO2oFromModal ? '-- Pilih Alamat E-Locker' : this.props.selectedLocker.label}
+										selectedLabel={this.props.selectO2oFromModal ? '-- Pilih Alamat E-Locker' : this.props.selectedLocker.attributes.address_label}
 										selected={this.props.selectO2oFromModal ? {} : this.props.selectedLocker}
 										options={(typeof this.props.latesto2o !== 'undefined') ? this.props.latesto2o : []}
 										onChange={this.onChosenLocker}
@@ -161,11 +164,11 @@ export default class CardPengiriman extends Component {
 									/>
 								</InputGroup>
 								<Level>
-									<Level.Left><strong>{this.props.selectedLocker.label} &nbsp; <Icon name='map-marker' /></strong></Level.Left>
+									<Level.Left><strong>{this.props.selectedLocker.attributes.address_label} &nbsp; <Icon name='map-marker' /></strong></Level.Left>
 								</Level>
 								<p>
-									{this.props.selectedLocker.info} <br />
-									Telp: {this.props.selectedLocker.phone}
+									{this.props.selectedLocker.attributes.address} <br />
+									Telp: {this.props.selectedLocker.attributes.phone}
 								</p>
 							</Segment>
 						</div>

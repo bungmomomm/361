@@ -138,7 +138,8 @@ class Checkout extends Component {
 
 	onChoisedAddress(address) {
 		const { dispatch } = this.props;
-		dispatch(getPlaceOrderCart(this.state.token, address));
+		const billing = this.props.billing.length > 0 ? this.props.billing[0] : false;
+		dispatch(getPlaceOrderCart(this.state.token, address, billing));
 	}
 
 	onChangeAddress(address) {
@@ -192,7 +193,7 @@ class Checkout extends Component {
 	onSelectedLocker(selectedLocker, isSelectFromModal = false) {
 		const TempElocker = this.props.latesto2o;
 		for (let key = 0; key < TempElocker.length; key++) {
-			if (TempElocker[key].value === selectedLocker.value) {
+			if (TempElocker[key].value === selectedLocker.id) {
 				isSelectFromModal = false;
 			}
 		}
@@ -201,6 +202,8 @@ class Checkout extends Component {
 			showModalO2o: false,
 			selectO2oFromModal: isSelectFromModal,
 		});
+		selectedLocker.type = 'pickup';
+		this.onChoisedAddress(selectedLocker);
 	}
 
 	render() {
@@ -285,6 +288,7 @@ const mapStateToProps = (state) => {
 		orderId: 1,
 		coupon: state.coupon,
 		addresses: state.addresses.data,
+		billing: state.addresses.billing,
 		cart: state.cart.data,
 		payments: state.payments,
 		listo2o: state.addresses.o2o,
