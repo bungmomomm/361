@@ -35,8 +35,8 @@ class Checkout extends Component {
 		this.props = props;
 		this.state = {
 			enableAlamatPengiriman: true,
-			enablePesananPengiriman: true,
-			enablePembayaran: true,
+			enablePesananPengiriman: false,
+			enablePembayaran: false,
 			enableNewAddress: false,
 			token: this.props.cookies.get('user.token'),
 			refreshToken: this.props.cookies.get('user.rf.token'),
@@ -140,6 +140,10 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 		const billing = this.props.billing.length > 0 ? this.props.billing[0] : false;
 		dispatch(getPlaceOrderCart(this.state.token, address, billing));
+		this.setState({
+			enablePesananPengiriman: true,
+			enablePembayaran: true,
+		});
 	}
 
 	onChangeAddress(address) {
@@ -221,9 +225,9 @@ class Checkout extends Component {
 			addresses,
             listo2o,
 			latesto2o,
-			o2oProvinces,			
+			o2oProvinces,
+			isPickupable,			
 		} = this.props;
-		console.log(this.props);
 		
 		return (
 			this.props.loading ? <Loading /> : (
@@ -237,7 +241,7 @@ class Checkout extends Component {
 									<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
 									{
 										renderIf(addresses)(
-											<CardPengiriman addresses={addresses} onChoisedAddress={this.onChoisedAddress} onChangeAddress={this.onChangeAddress} onGetO2oProvinces={this.onGetO2oProvinces} onGetListO2o={this.onGetListO2o} listo2o={listo2o} onOpenModalO2o={this.onOpenModalO2o} latesto2o={latesto2o} selectedLocker={this.state.selectedLocker ? this.state.selectedLocker : (latesto2o ? latesto2o[0] : null)} onSelectedLocker={this.onSelectedLocker} selectO2oFromModal={this.state.selectO2oFromModal} />
+											<CardPengiriman addresses={addresses} onChoisedAddress={this.onChoisedAddress} onChangeAddress={this.onChangeAddress} onGetO2oProvinces={this.onGetO2oProvinces} onGetListO2o={this.onGetListO2o} listo2o={listo2o} onOpenModalO2o={this.onOpenModalO2o} latesto2o={latesto2o} selectedLocker={this.state.selectedLocker ? this.state.selectedLocker : (latesto2o ? latesto2o[0] : null)} onSelectedLocker={this.onSelectedLocker} selectO2oFromModal={this.state.selectO2oFromModal} isPickupable={isPickupable} />
 										)
 									}
 								</Col>
@@ -283,7 +287,6 @@ Checkout.propTypes = {
 
 
 const mapStateToProps = (state) => {
-	console.log(state.addresses.data);
 	return {
 		orderId: 1,
 		coupon: state.coupon,
@@ -293,7 +296,8 @@ const mapStateToProps = (state) => {
 		payments: state.payments,
 		listo2o: state.addresses.o2o,
 		latesto2o: state.addresses.latesto2o,
-		o2oProvinces: state.addresses.o2oProvinces
+		o2oProvinces: state.addresses.o2oProvinces,
+		isPickupable: state.cart.isPickupable,
 	};
 };
 
