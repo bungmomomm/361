@@ -120,7 +120,7 @@ export default class CardPengiriman extends Component {
 								filter 
 								selectedLabel='-- Pilih Alamat Lainnya' 
 								options={this.state.shipping} 
-								onChange={this.onChoisedAddress} 
+								onChange={this.onChoisedAddress}
 							/>
 						</InputGroup>
 						{
@@ -164,7 +164,7 @@ export default class CardPengiriman extends Component {
 									/>
 								</InputGroup>
 								<Level>
-									<Level.Left><strong>{this.props.selectedLocker.attributes.address_label} &nbsp; <Icon name='map-marker' /></strong></Level.Left>
+									<Level.Left><strong>{this.props.selectedLocker.attributes.address_label} &nbsp; </strong></Level.Left>
 								</Level>
 								<p>
 									{this.props.selectedLocker.attributes.address} <br />

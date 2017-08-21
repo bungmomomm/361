@@ -17,6 +17,7 @@ export default class Elocker extends Component {
 			ElockerList: this.props.listo2o,
 			selectedLocker: null,
 			selected: null,
+			filter: '',
 		};
 	}
 
@@ -27,6 +28,9 @@ export default class Elocker extends Component {
 	getSelectedProvince(event) {
 		this.props.onGetListO2o(event.value);
 		this.props.setCurrentProvince(event);
+		this.setState({
+			filter: ''
+		});
 		// const filterData = this.computeFilter(event.value, this.state.ElockerList, 'province');
 		// this.provinceFilterResult = filterData;
 	}
@@ -50,11 +54,17 @@ export default class Elocker extends Component {
 	computeFilter(filter, List, field) {
 		const filterData = List.map((item) => {
 			const filterLabel = item.attributes[`${field}`].toUpperCase();
-			return (filterLabel.toUpperCase().indexOf(filter.toUpperCase()) > -1) ? item : null;
+			const isFilteredByLabel = (filterLabel.toUpperCase().indexOf(filter.toUpperCase()) > -1);
+			const filterAddress = item.attributes.address.toLowerCase();
+			const isFilteredByAddress = (filterAddress.toLowerCase().indexOf(filter.toLowerCase()) > -1);
+			return (isFilteredByLabel || isFilteredByAddress) ? item : null;
 		}).filter((item) => {
 			return item;
 		});
 		this.setFilterProvince(filterData);
+		this.setState({
+			filter
+		});
 		return filterData;
 	}
 
@@ -90,7 +100,7 @@ export default class Elocker extends Component {
 						/>
 					</div>
 					<div className={styles.kotaFilterWrapper}>
-						<Input onChange={this.getFilterLabel} placeholder='Nama Kota, Jakarta, Medan' />
+						<Input onChange={this.getFilterLabel} placeholder='Nama Kota, Jakarta, Medan' value={this.state.filter} />
 					</div>
 				</div>
 				<div className={styles.eLockerList}>
