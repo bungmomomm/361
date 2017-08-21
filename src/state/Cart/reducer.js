@@ -64,6 +64,7 @@ export default (state = initialState, action) => {
 		return {
 			...state, 
 			data: action.payload.cart,
+			isPickupable: action.payload.isPickupable,
 		};
 	}
 

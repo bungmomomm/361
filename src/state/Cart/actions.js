@@ -47,11 +47,12 @@ const gettingCart = (token) => ({
 	}
 });
 
-const cartReceived = (cart) => ({
+const cartReceived = (cart, isPickupable = 0) => ({
 	type: CRT_GET_CART,
 	status: 1,
 	payload: {
-		cart
+		cart,
+		isPickupable
 	}
 });
 
@@ -66,8 +67,11 @@ const getCart = token => dispatch => {
 
 	request(req)
 	.then((response) => {
+		const isPickupable = response.data.data.attributes.delivery_method.map((value, index) => {
+			return value;
+		}).filter(e => e.id === 'pickup');
 		dispatch(paymentInfoUpdated(getCartPaymentData(response.data)));
-		dispatch(cartReceived(setCartModel(response.data)));
+		dispatch(cartReceived(setCartModel(response.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable));
 	})
 	.catch((error) => {
 		console.log(error);
@@ -96,8 +100,11 @@ const getPlaceOrderCart = (token, address, billing = false) => dispatch => {
 			method: 'GET'
 		})
 		.then((res) => {
+			const isPickupable = res.data.data.attributes.delivery_method.map((value, index) => {
+				return value;
+			}).filter(e => e.id === 'pickup');
 			dispatch(paymentInfoUpdated(getCartPaymentData(res.data)));
-			dispatch(cartReceived(setCartModel(res.data)));
+			dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable));
 		})
 		.catch((error) => {
 			console.log(error);

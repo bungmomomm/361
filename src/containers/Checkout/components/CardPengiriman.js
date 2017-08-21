@@ -27,7 +27,6 @@ export default class CardPengiriman extends Component {
 			shipping: [],
 			o2o: [],
 			selectedAddress: null,
-			disabledO2o: false,
 			closeSelect: true,
 		};
 		this.onChoisedAddress = this.onChoisedAddress.bind(this);
@@ -149,6 +148,7 @@ export default class CardPengiriman extends Component {
 						Maksimum 2 kg perorder untuk Ambil di Toko. Pesanan diatas 2 kg akan langsung dikirimkan ke Alamat Anda.
 					</Alert>
 					{
+						this.props.isPickupable === '0' ? null :
 						!this.props.selectedLocker ? <Button onClick={this.openModal} content='Pilih Lokasi Toko / E-locker' color='dark' block size='large' iconPosition='right' icon='angle-right' /> :
 						<div>
 							<Segment>
@@ -173,7 +173,7 @@ export default class CardPengiriman extends Component {
 							</Segment>
 						</div>
 					}
-					{this.state.disabledO2o ? <p className='font-red'>Satu atau lebih produk dalam keranjang belanja anda tidak menyediakan layanan Ambil di Toko / Elocker (O2O)</p> : null }
+					{this.props.isPickupable === '0' ? <p className='font-red'>Satu atau lebih produk dalam keranjang belanja anda tidak menyediakan layanan Ambil di Toko / Elocker (O2O)</p> : null }
 				</Tabs.Panel>
 			</Tabs>
 		);
