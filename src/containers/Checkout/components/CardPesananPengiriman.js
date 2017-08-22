@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import styles from '../Checkout.scss';
 
 // component load
-import { Card } from '@/components/Base';
+import { Card } from '@/components';
 import StoreBox from './Store/StoreBox';
 import CheckoutResult from './Store/CheckoutResult';
 import CheckoutProduct from './Product/CheckoutProduct';

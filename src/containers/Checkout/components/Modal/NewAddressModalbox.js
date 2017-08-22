@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import styles from '../../Checkout.scss';
 import { Validator } from 'ree-validate';
+
 // component load
-import Gosend from '@/components/Gosend';
-import Icon from '@/components/Icon';
-import { Textarea, Modal, Level, Input, InputGroup, Select, Alert, Segment, Button } from '@/components/Base';
+import { Gosend, Icon, Textarea, Modal, Level, Input, InputGroup, Select, Alert, Segment, Button } from '@/components';
 
 // Dummy Data
 import { Provinsi } from '@/data';

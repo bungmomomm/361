@@ -1,0 +1,132 @@
+@import 'mixins';
+@import 'variables';
+
+@mixin inputStyle($inputColor){
+	border-color: map-deep-get($color, $inputColor, base);
+	color: map-deep-get($color, $inputColor, base);
+	&:focus{
+		border-color: map-deep-get($color, $inputColor, base);
+	}
+	+ .msg{
+		color: map-deep-get($color, $inputColor, base);
+	}
+}
+
+.inputWrapper{
+	position: relative;
+	width: 100%;
+}
+
+.input{
+	background: #FFFFFF;
+	border: 1px solid border(color);
+	border-radius: border(radius);
+	font-size: 12px;
+	color: color(black);
+	height: 35px;
+	padding: 0px 15px;
+	display: flex;
+	width: 100%;
+	justify-content: space-between;
+	&:focus{
+		outline: 0px;
+		border: 1px solid border(color, hover);
+	}
+}
+
+.sprites, .icon{
+	position: absolute;
+	right: 10px;
+	top: 0px;
+	height: 100%;
+	display: flex;
+    align-items: center;
+}
+
+// VARIANT
+.green{
+	@include inputStyle(green);
+	+ .message{
+		color: color(green);
+	}
+}
+
+.yellow{
+	@include inputStyle(yellow);
+	+ .message{
+		color: color(yellow);
+	}
+}
+
+.red{
+	@include inputStyle(red);
+	+ .message{
+		color: color(red);
+	}
+}
+
+
+// END VARIANT
+
+// SIZE
+.small{
+	height: 27px;
+	~ .sprites, 
+	~ .icon{
+		height: 27px;
+	}
+}
+
+.medium{
+	height: 35px;
+	~ .sprites, 
+	~ .icon{
+		height: 35px;
+	}
+}
+
+.large{
+	height: 45px;
+	~ .sprites, 
+	~ .icon{
+		height: 45px;
+	}
+}
+// END SIZE
+
+label{
+	color: #4a4a4a;
+	font-weight: 300;
+    font-size: 12px;
+    line-height: 1.4;
+	~ .sprites, 
+	~ .icon{
+		top: 20px;
+	} 
+}
+
+// Boolean
+.message{
+	margin-top: 5px;
+	display: block;
+	font-size: 10px;
+	text-align: right;
+}
+
+.horizontal{
+	display: flex;
+	flex-flow: row wrap;
+	align-items: center;
+	label{
+		margin-bottom: 0px;
+		width: 30%;
+		display: block;
+	}
+	input{
+		flex: 1;
+	}
+	.message{
+		flex: 0 0 100%;
+	}
+
+}

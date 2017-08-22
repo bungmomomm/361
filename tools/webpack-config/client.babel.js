@@ -49,7 +49,7 @@ const config = Object.assign(commonConfig, {
 		new Dotenv({
 			path: './.env', 
 			safe: true,
-			systemvars : true
+			systemvars: true
 		})
 
 	]

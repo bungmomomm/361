@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import styles from '../Checkout.scss';
-import Sprites from '@/components/Sprites';
 import { Validator } from 'ree-validate';
 import { paymentType } from '@/state/Payment/constants';
 
@@ -16,8 +15,9 @@ import {
 	Card, 
 	Button, 
 	Checkbox,
-	Radio 
-} from '@/components/Base';
+	Radio,
+	Sprites
+} from '@/components';
 
 // Dummy Data
 import { 
@@ -147,7 +147,7 @@ export default class CardPembayaran extends Component {
 					<Level.Left>Kode Voucher</Level.Left>
 					<Level.Right>
 						<InputGroup addons addonsAttached>
-							<Input size='small' name='voucherCode' color='yellow' message='kode voucher salah' onChange={this.onChange} onKeyPress={this.onChange} value={this.props.coupon} />
+							<Input size='small' name='voucherCode' color='red' message='kode voucher salah' onChange={this.onChange} onKeyPress={this.onChange} value={this.props.coupon} />
 							<Button type='button' className='font-red' size='small' icon='times' iconPosition='right' onClick={this.props.onResetCoupon} />
 						</InputGroup>
 					</Level.Right>

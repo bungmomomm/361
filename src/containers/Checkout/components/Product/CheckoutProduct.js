@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styles from './CheckoutProduct.scss';
-import Figure from '@/components/Figure';
-import { Button } from '@/components/Base';
-import Stepper from '@/components/Stepper';
+import { Button, Figure, Stepper } from '@/components';
 
 import { currency } from '@/utils';
 

@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styles from './CheckoutResult.scss';
-import { Checkbox } from '@/components/Base';
+import { Checkbox, Sprites } from '@/components';
 
-import Sprites from '@/components/Sprites';
 import { currency } from '@/utils';
 
 const CheckoutResult = (props) => {

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Recaptcha from 'react-recaptcha';
 
 // component load
-import { Modal, Input, Button, InputGroup } from '@/components/Base';
+import { Modal, Input, Button, InputGroup } from '@/components';
 
 export default class VerifikasiNoHandponeModalbox extends Component {
 	constructor(props) {

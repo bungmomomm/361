@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 // component load
-import { Checkbox, Segment, Input, InputGroup } from '@/components/Base';
+import { Checkbox, Segment, Input, InputGroup } from '@/components';
 
 export default class Dropshipper extends Component {
 	constructor(props) {

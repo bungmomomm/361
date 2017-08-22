@@ -1,8 +1,7 @@
 import React from 'react';
 
 // component load
-import { Modal } from '@/components/Base';
-import Icon from '@/components/Icon';
+import { Modal, Icon } from '@/components';
 
 export default (props) => {
 	return (
