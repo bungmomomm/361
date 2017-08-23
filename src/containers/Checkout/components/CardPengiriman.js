@@ -120,7 +120,7 @@ export default class CardPengiriman extends Component {
 		return (
 			<Tabs tabActive={0} stretch onBeforeChange={this.onGetListO2o} >
 				<Tabs.Panel title='Kirim ke Alamat' sprites='truck-off' spritesActive='truck-on'>
-					<Alert align='center' color='yellow' close>
+					<Alert align='center' color='yellow'>
 						Gratis ongkos kirim hingga Rp 15,000 untuk minimal pembelian sebesar Rp 100,000
 					</Alert>
 					<Segment>

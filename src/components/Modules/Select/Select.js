@@ -19,7 +19,7 @@ export default class Select extends Component {
 			selectedLabel: this.props.selectedLabel || 'Please Select...',
 			showOption: false,
 			selected: this.props.selected || {},
-			emptyFilter: true,
+			emptyFilter: false,
 		};
 		this.getFilter = this.getFilter.bind(this);
 		this.setOptions = this.setOptions.bind(this);
