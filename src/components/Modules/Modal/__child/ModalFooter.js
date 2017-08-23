@@ -1,7 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
-import styles from './Modal.scss';
+import styles from '../Modal.scss';
 const cx = classNames.bind(styles);
 
 const Footer = (props) => {
@@ -16,7 +15,3 @@ const Footer = (props) => {
 };
 
 export default Footer;
-
-Footer.propTypes = {
-	children: PropTypes.node
-};

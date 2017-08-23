@@ -3,6 +3,7 @@
 
 .TooltipWrapper{
 	position: relative;
+	display: inline-block;
 	&.right{
 		.infoButton{
 			left: auto;
@@ -35,7 +36,9 @@
 	padding: 15px;
 	font-size: 11px;
 	position: absolute;
-	max-width: 100%;
+	max-width: 400px;
+	width: 100%;
+	min-width: 200px;
 	z-index: 1;
 	right: 25px;
 	top: 0px;
@@ -44,6 +47,9 @@
 	display: none;
 	&:hover{
 		display: block;
+	}
+	p{
+		color: #fff;
 	}
 	&:after{
 		content: '';
@@ -73,28 +79,18 @@
 		color: color(black);
 		border: 1px solid border(color);
 		box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-	}
-}
-
-.right{
-	.content{
-		right: auto;
-		left: 25px;		
-		&:after{
-			content: '';
-			right:auto;
-			left: -7px;
-			margin-top: 7px;
-			border-width: 3.5px 7px 3.5px 0;
-			border-color: transparent color(black) transparent transparent;
+		p{
+			color: color(black);
 		}
 	}
 }
 
-.left{
-	.content{
-		right: 25px;
-		left: auto;		
+.right{
+	float: right;
+	.area{
+		right: 100%;
+		left: auto;
+		margin-right: 7px;
 		&:after{
 			content: '';
 			right:auto;
@@ -106,16 +102,23 @@
 	}
 }
 
-.white.right{
+.left{
+	float: left;
 	.area{
+		margin-left: 10px;
+		left: 100%;
 		&:after{
 			content: '';
-			border-color: transparent #fff transparent transparent;
+			right:auto;
+			left: -7px;
+			margin-top: 7px;
+			border-width: 3.5px 7px 3.5px 0;
+			border-color: transparent color(black) transparent transparent;
 		}
 	}
 }
 
-.white.left{
+.white.right{
 	.area{
 		&:after{
 			content: '';
@@ -124,10 +127,19 @@
 	}
 }
 
-.align_left{
-	text-align: left;
+.white.left{
+	.area{
+		&:after{
+			content: '';
+			border-color: transparent rgba(0,0,0,0.1) transparent transparent;
+		}
+	}
 }
 
-.align_right{
-	text-align: right;
+.tooltipContainer{
+	&:after {
+		display: block;
+		clear: both;
+		content: "";
+	}
 }

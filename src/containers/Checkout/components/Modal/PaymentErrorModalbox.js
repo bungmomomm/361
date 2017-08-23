@@ -5,7 +5,7 @@ import { Modal, Icon } from '@/components';
 
 export default (props) => {
 	return (
-		<Modal small shown={props.shown}>
+		<Modal size='small' shown={props.shown}>
 			<Modal.Header>
 				<Icon name='times' custom='error' />
 			</Modal.Header>

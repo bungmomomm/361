@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Panel from './TabPanel';
+import Panel from './__child/TabPanel';
 
 import Icon from '../../Elements/Icon/Icon';
 import Sprites from '../../Elements/Sprites/Sprites';
@@ -120,12 +120,16 @@ export default class Tabs extends Component {
 		);
 	}
 };
-Tabs.propTypes = {
-	tabActive: PropTypes.number,
-	onBeforeChange: PropTypes.func,
-	onAfterChange: PropTypes.func,
-	stretch: PropTypes.bool,
-	children: PropTypes.node
-};
 
 Tabs.Panel = Panel;
+
+Tabs.propTypes = {
+	/** Active Tab. */
+	tabActive: PropTypes.number,
+	/** Callback BeforeChange. */
+	onBeforeChange: PropTypes.func,
+	/** Callback AfterChange. */
+	onAfterChange: PropTypes.func,
+	/** Stretch Tab. */
+	stretch: PropTypes.bool
+};

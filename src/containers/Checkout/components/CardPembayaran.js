@@ -252,7 +252,7 @@ export default class CardPembayaran extends Component {
 						<p>Pilih Metode Pembayaran</p>
 						<InputGroup>
 							<Select selectedLabel='-- Pilih Metode Lain' name='paymentMethods' options={paymentMethods.methods} onChange={this.onPaymentMethodChange} />
-							<Tooltip align='right' content='Info' color='white'>
+							<Tooltip position='right' content='Info' color='white'>
 								<p><Sprites name='uob' /></p>
 								<p>Gunakan Kartu Kredit UOB Indonesia dan dapatkan Diskon Tambahan Rp100.000* dengan minimum transaksi Rp2.500.000</p>
 								<p>*kuota terbatas</p>

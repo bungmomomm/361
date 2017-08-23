@@ -46,7 +46,7 @@ export default class ElockerModalBox extends Component {
 
 	render() {
 		return (
-			<Modal large shown={this.props.shown} >
+			<Modal size='large' shown={this.props.shown} >
 				<Modal.Header>
 					Pilih Lokasi E-Locker (O2O)
 				</Modal.Header>

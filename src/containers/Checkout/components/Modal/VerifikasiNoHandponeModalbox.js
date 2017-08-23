@@ -23,7 +23,7 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 	render() {
 		return (
 			!this.state.shown ? null : (
-				<Modal small shown={this.props.shown}>
+				<Modal size='small' shown={this.props.shown}>
 					<Modal.Header>
 						<p>Verifikasi No Handphone</p>
 						<p className='font-grey'><small>Mohon masukan no Handphone anda untuk verifikasi data</small></p>

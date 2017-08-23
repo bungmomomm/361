@@ -1,22 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
-import styles from './Tabs.scss';
+import styles from '../Modal.scss';
 const cx = classNames.bind(styles);
 
-const Panel = (props) => {
-	const panelClass = cx({
-		panel: true
+const Header = (props) => {
+	const ItemClass = cx({
+		Header: true
 	});
 	return (
-		<div className={panelClass}>
+		<div className={ItemClass}>
 			{props.children}
 		</div>
 	);
 };
 
-export default Panel;
+export default Header;
 
-Panel.propTypes = {
+Header.propTypes = {
 	children: PropTypes.node
 };
