@@ -28,10 +28,10 @@ export default class CardPesananPengiriman extends Component {
 					{
 						
 						this.props.cart.map((storeData, i) => (
-							<StoreBox color='' key={i} name={storeData.store.name} location={storeData.store.location}>
+							<StoreBox color={this.props.restrictO2o ? 'red' : ''} key={i} name={storeData.store.name} location={storeData.store.location}>
 								{
 									storeData.store.products.map((product, index) => (
-										<CheckoutProduct key={index} data={product} onDeleteCart={this.onDeleteCart} />
+										<CheckoutProduct restrictO2o={this.props.restrictO2o} key={index} data={product} onDeleteCart={this.onDeleteCart} />
 									))
 								}
 								<CheckoutResult key={i} shipping={storeData.store.shipping} price={storeData.store.price} />

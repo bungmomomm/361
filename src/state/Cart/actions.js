@@ -67,7 +67,7 @@ const getCart = token => dispatch => {
 
 	request(req)
 	.then((response) => {
-		const isPickupable = response.data.data.attributes.delivery_method_provided.map((value, index) => {
+		const isPickupable = response.data.data.attributes.delivery_method.map((value, index) => {
 			return value;
 		}).filter(e => e.id === 'pickup');
 		dispatch(paymentInfoUpdated(getCartPaymentData(response.data)));
