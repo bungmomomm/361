@@ -107,6 +107,16 @@ export default class CardPengiriman extends Component {
 			/>
 		);
 
+		const addMoreAddress = (
+			<Button
+				onClick={this.onChangeAddress}
+				content='Tambah Alamat Baru'
+				className='font-orange'
+				icon='plus'
+				iconPosition='left'
+			/>
+		);
+
 		return (
 			<Tabs tabActive={0} stretch onBeforeChange={this.onGetListO2o} >
 				<Tabs.Panel title='Kirim ke Alamat' sprites='truck-off' spritesActive='truck-on'>
@@ -121,6 +131,7 @@ export default class CardPengiriman extends Component {
 								selectedLabel='-- Pilih Alamat Lainnya' 
 								options={this.state.shipping} 
 								onChange={this.onChoisedAddress}
+								addButton={addMoreAddress}
 							/>
 						</InputGroup>
 						{
@@ -140,7 +151,10 @@ export default class CardPengiriman extends Component {
 							</div>
 						}
 					</Segment>
-					<Dropshipper />
+					{
+						!this.state.selectedAddress ? null : 
+						<Dropshipper setDropship={this.props.setDropship} errorDropship={this.props.errorDropship} checkDropship={this.props.checkDropship} />
+					}
 					<Button content='Masukan Alamat Pengiriman' color='dark' block size='large' iconPosition='right' icon='angle-right' />
 				</Tabs.Panel>
 				<Tabs.Panel title='Ambil Di Toko/E-locker (O2O)' sprites='o2o-off' spritesActive='o2o-on' >
