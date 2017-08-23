@@ -113,14 +113,14 @@ const selectCreditCard = (card) => dispatch => {
 	dispatch(creditCardSelected(card));
 };
 
-const pay = (token, payment) => dispatch => {
+const pay = (token, orderId, payment) => dispatch => {
 	dispatch(payRequest());
 	return request({
 		token,
-		path: 'dopayments',
+		path: 'payments',
 		method: 'POST',
 		body: {
-			data: getPaymentPayload(payment)
+			data: getPaymentPayload(orderId, payment)
 		}
 	}).then((response) => {
 		dispatch(payReceived(response.data));

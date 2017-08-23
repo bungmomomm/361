@@ -260,7 +260,7 @@ class Checkout extends Component {
 		// console.log(this.state, this.props);// .payments.selectedPaymentOption);
 
 		const { dispatch } = this.props;
-		dispatch(pay(this.state.token, this.props.payments.selectedPaymentOption));
+		dispatch(pay(this.state.token, this.props.orderId, this.props.payments.selectedPaymentOption));
 	}
 
 	getDistricts(cityAndProvince) {
