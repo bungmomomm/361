@@ -26,13 +26,13 @@ import { withCookies, Cookies } from 'react-cookie';
 import { addCoupon, removeCoupon, resetCoupon } from '@/state/Coupon/actions';
 import { getAddresses, getO2OList, getO2OProvinces, getCityProvince, getDistrict } from '@/state/Adresses/actions';
 import { getPlaceOrderCart, getCart, deleteCart } from '@/state/Cart/actions';
-import { 
-	getAvailablePaymentMethod, 
-	changePaymentMethod, 
-	changePaymentOption, 
-	openNewCreditCard, 
+import {
+	getAvailablePaymentMethod,
+	changePaymentMethod,
+	changePaymentOption,
+	openNewCreditCard,
 	selectCreditCard,
-	pay 
+	pay
 } from '@/state/Payment/actions';
 
 
@@ -58,6 +58,7 @@ class Checkout extends Component {
 			latesto2o: {},
 			o2oProvinces: {},
 			selectedLocker: null,
+			selectedAddress: null,
 			showModalO2o: false,
 			selectO2oFromModal: false,
 			dropshipper: false,
@@ -86,6 +87,7 @@ class Checkout extends Component {
 		this.onSelectedLocker = this.onSelectedLocker.bind(this);
 		this.setDropship = this.setDropship.bind(this);
 		this.checkDropship = this.checkDropship.bind(this);
+		this.submitDropship = this.submitDropship.bind(this);
 		this.getDistricts = this.getDistricts.bind(this);
 		this.onDoPayment = this.onDoPayment.bind(this);
 	}
@@ -163,11 +165,15 @@ class Checkout extends Component {
 	onChoisedAddress(address) {
 		const { dispatch } = this.props;
 		const billing = this.props.billing.length > 0 ? this.props.billing[0] : false;
+		if (!!address.type && address.type !== 'pickup') {
+			this.setState({
+				selectedAddress: address
+			});
+		}
 		dispatch(getPlaceOrderCart(this.state.token, address, billing));
 		this.setState({
 			enablePesananPengiriman: true,
 			enablePembayaran: true,
-			selectedLocker: address
 		});
 	}
 
@@ -249,7 +255,7 @@ class Checkout extends Component {
 		selectedLocker.type = 'pickup';
 		this.onChoisedAddress(selectedLocker);
 	}
-	
+
 	onDoPayment() {
 		// console.log(this.state, this.props);// .payments.selectedPaymentOption);
 
@@ -264,29 +270,44 @@ class Checkout extends Component {
 		console.log(this.props);
 	}
 
-	setDropship(checked, dropshipName = 'dropship_name', value = '') {
-		const formDropshipper = this.state.formDropshipper;
-		formDropshipper[`${dropshipName}`] = value;
+	setDropship(checked, dropshipName = 'dropship_name', value = '', onClick = false) {
+		let formDropshipper = this.state.formDropshipper;
+		if (dropshipName) {
+			formDropshipper[`${dropshipName}`] = value;
+		}
+		if (!checked) {
+			formDropshipper = {
+				dropship_name: '',
+				dropship_phone: '',
+			};
+		}
 		this.setState({
 			dropshipper: checked,
 			formDropshipper,
-			isValidDropshipper: false
+			isValidDropshipper: false,
+			errorDropship: checked ? this.state.errorDropship : null,
 		});
+		if (onClick) {
+			const tempSelectedAddress = this.state.selectedAddress;
+			tempSelectedAddress.attributes.is_dropshipper = checked;
+			this.onChoisedAddress(tempSelectedAddress);
+		}
 	}
 
-	checkDropship() {
+	checkDropship(field = 'all') {
 		if (this.state.dropshipper) {
-			this.validator.validateAll(this.state.formDropshipper)
+			let formDropshipper = {};
+			if (field !== 'all') {
+				formDropshipper[`${field}`] = this.state.formDropshipper[`${field}`];
+			} else {
+				formDropshipper = this.state.formDropshipper;
+			}
+			this.validator.validateAll(formDropshipper)
 			.then(success => {
 				if (success) {
 					this.setState({
-						isValidDropshipper: true
+						isValidDropshipper: field !== 'all' ? this.state.isValidDropshipper : true
 					});
-					const tempSelectedAddress = this.state.selectedLocker;
-					tempSelectedAddress.attributes.is_dropshipper = this.state.dropshipper;
-					tempSelectedAddress.attributes.dropship_name = this.state.formDropshipper.dropship_name;
-					tempSelectedAddress.attributes.dropship_phone = this.state.formDropshipper.dropship_phone;
-					this.onChoisedAddress(tempSelectedAddress);
 				} else {
 					const { errorBag } = this.validator;
 					this.setState({
@@ -301,7 +322,18 @@ class Checkout extends Component {
 			});
 		}
 	}
-	
+
+	submitDropship() {
+		if (this.state.isValidDropshipper) {
+			const tempSelectedAddress = this.state.selectedAddress;
+			tempSelectedAddress.attributes.is_dropshipper = this.state.dropshipper;
+			tempSelectedAddress.attributes.dropship_name = this.state.formDropshipper.dropship_name;
+			tempSelectedAddress.attributes.dropship_phone = this.state.formDropshipper.dropship_phone;
+			this.onChoisedAddress(tempSelectedAddress);
+		} else {
+			this.checkDropship();
+		}
+	}
 
 	render() {
 		const {
@@ -361,7 +393,7 @@ class Checkout extends Component {
 										onNewCreditCard={this.onNewCreditCard}
 										onSelectCard={this.onSelectCard}
 										dropshipper={this.state.dropshipper}
-										checkDropship={this.checkDropship}
+										checkDropship={this.submitDropship}
 										isValidDropshipper={this.state.isValidDropshipper}
 										onDoPayment={this.onDoPayment}
 									/>

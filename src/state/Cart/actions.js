@@ -67,7 +67,7 @@ const getCart = token => dispatch => {
 
 	request(req)
 	.then((response) => {
-		const isPickupable = response.data.data.attributes.delivery_method.map((value, index) => {
+		const isPickupable = response.data.data.attributes.delivery_method_provided.map((value, index) => {
 			return value;
 		}).filter(e => e.id === 'pickup');
 		dispatch(paymentInfoUpdated(getCartPaymentData(response.data)));
@@ -100,7 +100,7 @@ const getPlaceOrderCart = (token, address, billing = false) => dispatch => {
 			method: 'GET'
 		})
 		.then((res) => {
-			const isPickupable = res.data.data.attributes.delivery_method.map((value, index) => {
+			const isPickupable = res.data.data.attributes.delivery_method_provided.map((value, index) => {
 				return value;
 			}).filter(e => e.id === 'pickup');
 			dispatch(paymentInfoUpdated(getCartPaymentData(res.data)));
@@ -147,7 +147,7 @@ const deleteCart = (token, productId, props) => dispatch => {
 			if (storeWithEmptyProduct !== -1) {
 				props.cart.splice(storeWithEmptyProduct, 1);
 			}
-			dispatch(cartReceived(props.cart));
+			dispatch(cartReceived(props.cart, props.isPickupable));
 		}
 	})
 	.catch((error) => {
