@@ -24,8 +24,8 @@ const setPayloadPlaceOrder = (address, billing = false) => {
 			latitude: !address.attributes.latitude ? '' : address.attributes.latitude,
 			longitude: !address.attributes.longitude ? '' : address.attributes.longitude,
 			dropship_name: !address.attributes.dropship_name ? '' : address.attributes.dropship_name,
-			dropship_phone: !address.attributes.dropship_phone ? '' : address.attributes.dropship_phone,			
-			is_dropshipper: !address.attributes.is_dropshipper ? 0 : address.attributes.is_dropshipper,
+			dropship_phone: !address.attributes.dropship_phone ? '' : address.attributes.dropship_phone,
+			is_dropshipper: !address.attributes.is_dropshipper ? 0 : 1,
 		},
 		relationships: {
 			address: {

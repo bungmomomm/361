@@ -75,6 +75,7 @@ export default class CardPengiriman extends Component {
 			this.setState({
 				elockerTab: true
 			});
+			this.props.activeShippingTab(false);
 			if (!this.props.listo2o) {
 				this.props.onGetListO2o();
 				this.props.onGetO2oProvinces();
@@ -83,6 +84,7 @@ export default class CardPengiriman extends Component {
 			this.setState({
 				elockerTab: false
 			});
+			this.props.activeShippingTab(true);
 		}
 		// if (this.props.latesto2o) {
 		// 	this.props.onSelectedLocker(this.props.latesto2o[0]);	
@@ -118,7 +120,7 @@ export default class CardPengiriman extends Component {
 		);
 
 		return (
-			<Tabs tabActive={0} stretch onBeforeChange={this.onGetListO2o} >
+			<Tabs tabActive={0} stretch onAfterChange={this.onGetListO2o} >
 				<Tabs.Panel title='Kirim ke Alamat' sprites='truck-off' spritesActive='truck-on'>
 					<Alert align='center' color='yellow'>
 						Gratis ongkos kirim hingga Rp 15,000 untuk minimal pembelian sebesar Rp 100,000

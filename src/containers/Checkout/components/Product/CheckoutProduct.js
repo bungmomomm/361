@@ -43,7 +43,7 @@ export default class CheckoutProduct extends Component {
 						<Button clean size='small' icon='trash-o' iconPosition='left' content='Hapus' onClick={this.onDeleteCart} />
 					</div>
 					<div className={styles.bodyRight}>
-						<div><strong>Keterangan:</strong></div>
+						{/* <div><strong>Keterangan:</strong></div> */}
 						{
 							this.props.data.attribute.map((list, i) => (
 								<div key={i}><em>{list}</em></div>
@@ -51,6 +51,12 @@ export default class CheckoutProduct extends Component {
 						}
 					</div>
 				</div>
+				{
+					!this.props.restrictO2o ? null :
+					<div className={styles.body}>
+						<p className='font-red'>Penjual tidak menyediakan layanan o2o</p>
+					</div>
+				}
 			</div>
 		);
 	}
