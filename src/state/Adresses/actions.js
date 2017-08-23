@@ -4,35 +4,54 @@ import {
 	ADDR_GET_ADDRESS,
 	ADDR_O2O_LIST,
 	ADDR_O2O_PROVINCE,
-	ADDR_GET_DISTRICT
+	// ADDR_GET_DISTRICT,
+	ADDR_GET_CITY_PROVINCE
 	// ADDR_SAVE_ADDRESS,
 	// ADDR_DROP_SHIPPER,
 	// ADDR_O2O_LIST 
 } from './constants';
 
-const districtRequest = (token) => ({
-	type: ADDR_GET_DISTRICT,
+// const districtRequest = (token) => ({
+// 	type: ADDR_GET_DISTRICT,
+// 	status: 0, 
+// 	payload: {
+// 		token
+// 	}
+// });
+
+// const districtReceived = (district) => ({
+// 	type: ADDR_GET_DISTRICT,
+// 	status: 1, 
+// 	payload: {
+// 		district
+// 	}
+// });
+
+
+const cityProvinceRequest = (token) => ({
+	type: ADDR_GET_CITY_PROVINCE,
 	status: 0, 
 	payload: {
 		token
 	}
 });
 
-// const districtReceived = (province) => ({
-// 	type: ADDR_GET_DISTRICT,
-// 	status: 1, 
-// 	payload: {
-// 		province
-// 	}
-// });
+const cityProvinceReceived = (cityProv) => ({
+	type: ADDR_GET_CITY_PROVINCE,
+	status: 1, 
+	payload: {
+		cityProv
+	}
+});
 
 const addressesRequest = (token) => ({
-	type: ADDR_GET_ADDRESS,
+	type: ADDR_GET_CITY_PROVINCE,
 	status: 0,
 	payload: {
 		token
 	}
 });
+
 
 const addressesReceived = (addresses, billing, latesto2o) => ({
 	type: ADDR_GET_ADDRESS,
@@ -134,38 +153,46 @@ const getAddresses = (token) => dispatch => {
 	});
 };
 
-const getProvince = (token) => dispatch => {
-	dispatch(districtRequest(token));
+// const getDistrict = (token, label) => dispatch => {
+// 	dispatch(districtRequest(token));
+// 	const cityProvince = label.split(',');
+
+// 	const req = {
+// 		token, 
+// 		path: `districts?province=${cityProvince[1].replace(/ /g, '+')}&city=${cityProvince[0].replace(/ /g, '+')}`,
+// 		// path: 'districts?province=DKI+JAKARTA&city=Jakarta+Timur',
+// 		method: 'GET'
+// 	};
+// 	request(req)
+// 	.then((response) => {
+// 		console.log(response);
+// 		// dispatch(districtReceived(cityProvince));
+// 	})
+// 	.catch((error) => {
+// 		console.log(error);
+// 	});
+// };
+
+const getCityProvince = (token) => dispatch => {
+	dispatch(cityProvinceRequest(token));
 	const req = {
 		token, 
-		path: 'me/addresses',
+		path: 'provinces_and_cities?terms=&page=1&per_page=25',
 		method: 'GET'
 	};
 	request(req)
 	.then((response) => {
-		const address = response.data.data.map((value, index) => {
+		const cityProvince = [];
+		response.data.included.map((value, index) => {
 			return humps(value);
-		}).filter(e => e.type === 'shipping');
-
-		const billing = response.data.data.map((value, index) => {
-			return humps(value);
-		}).filter(e => e.type === 'billing');
-
-		let latesto2o = response.data.data.map((value, index) => {
-			return value;
-		}).filter(e => e.type === 'latest_o2o');
-
-		if (latesto2o.length > 0) {
-			latesto2o = [{
-				value: latesto2o[0].id,
-				id: latesto2o[0].id,
-				selected: true,
-				label: latesto2o[0].attributes.address_label,
-				attributes: latesto2o[0].attributes
-			}];
-		}
-
-		dispatch(addressesReceived(address, billing, latesto2o));
+		}).filter(e => e.type === 'locations').forEach((data, index) => {
+			const datas = {
+				value: data.attributes.name,
+				label: data.attributes.name,
+			};
+			cityProvince.push(datas);
+		});
+		dispatch(cityProvinceReceived(cityProvince));
 	})
 	.catch((error) => {
 		console.log(error);
@@ -236,6 +263,7 @@ export default {
 	getAddresses,
 	getO2OList,
 	getO2OProvinces,
-	getProvince
+	getCityProvince,
+	// getDistrict
 	// saveAddress
 };

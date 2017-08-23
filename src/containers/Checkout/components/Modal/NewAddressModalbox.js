@@ -39,10 +39,11 @@ export default class NewAddressModalbox extends Component {
 		this.onChange = this.onChange.bind(this);
 		this.onChangeSelect = this.onChangeSelect.bind(this);
 		this.validateAndSubmit = this.validateAndSubmit.bind(this);
+		this.getDistricts = this.getDistricts.bind(this);
 	}
 
 	componentWillReceiveProps() {
-		console.log(this.props);
+		// console.log(this.props);
 	}
 
 	onChange(e) {
@@ -52,7 +53,12 @@ export default class NewAddressModalbox extends Component {
 	}
 
 	onChangeSelect(e) {
+		console.log(e);
 		this.setErrors(e.name, e.value);
+	}
+
+	getDistricts(cityProv) {
+		this.props.getDistricts(cityProv);
 	}
 
 	setErrors(name, value) {
@@ -148,7 +154,7 @@ export default class NewAddressModalbox extends Component {
 										onChange={this.onChangeSelect}
 										error={errors.has('provinsi')}
 										message={errors.has('provinsi') ? 'Provinsi field is required.' : ''}
-										options={Provinsi} 
+										options={this.props.cityProv} 
 									/>
 								)
 							}

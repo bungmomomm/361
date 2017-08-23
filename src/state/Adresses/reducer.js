@@ -3,11 +3,23 @@ import {
 	ADDR_SAVE_ADDRESS,
 	ADDR_DROP_SHIPPER,
 	ADDR_O2O_LIST,
-	ADDR_O2O_PROVINCE 
+	ADDR_GET_DISTRICT,
+	ADDR_GET_CITY_PROVINCE
 } from './constants';
 
 const initialState = {
-	tracking: []
+	data: [{
+		attributes: {
+			address: '',
+			addressLabel: '',
+			city: '',
+			country: {
+				iso2: '',
+				name: '',
+				officialName: ''
+			}
+		}
+	}]
 };
 
 export default (state = initialState, action) => {
@@ -21,8 +33,6 @@ export default (state = initialState, action) => {
 	case ADDR_GET_ADDRESS: {
 		return {
 			data: action.payload.addresses,
-			billing: action.payload.billing,
-			latesto2o: action.payload.latesto2o,
 		};
 
 	}
@@ -43,13 +53,19 @@ export default (state = initialState, action) => {
 	case ADDR_O2O_LIST: {
 		return {
 			...state, 
-			o2o: action.payload.o2o,
+			data: action.payload.data,
 		};
 	}
-	case ADDR_O2O_PROVINCE: {
+	case ADDR_GET_DISTRICT: {
 		return {
 			...state, 
-			o2oProvinces: action.payload.o2oProvinces,
+			district: action.payload.district
+		};
+	}
+	case ADDR_GET_CITY_PROVINCE: {
+		return {
+			...state, 
+			cityProv: action.payload.cityProv
 		};
 	}
 	default: 

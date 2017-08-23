@@ -24,7 +24,7 @@ import CardPengiriman from './components/CardPengiriman';
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { addCoupon, removeCoupon, resetCoupon } from '@/state/Coupon/actions';
-import { getAddresses, getO2OList, getO2OProvinces } from '@/state/Adresses/actions';
+import { getAddresses, getO2OList, getO2OProvinces, getCityProvince, getDistrict } from '@/state/Adresses/actions';
 import { getPlaceOrderCart, getCart, deleteCart } from '@/state/Cart/actions';
 import { getAvailablePaymentMethod, changePaymentMethod, changePaymentOption, openNewCreditCard, selectCreditCard } from '@/state/Payment/actions';
 
@@ -60,7 +60,8 @@ class Checkout extends Component {
 			},
 			errorDropship: null,
 			isValidDropshipper: true,
-			formDataAddress: {}
+			formDataAddress: {},
+			cityProv: this.props.cityProv
 		};
 		this.onAddCoupon = this.onAddCoupon.bind(this);
 		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
@@ -78,6 +79,7 @@ class Checkout extends Component {
 		this.onSelectedLocker = this.onSelectedLocker.bind(this);
 		this.setDropship = this.setDropship.bind(this);
 		this.checkDropship = this.checkDropship.bind(this);
+		this.getDistricts = this.getDistricts.bind(this);
 	}
 
 	componentWillMount() {
@@ -162,6 +164,7 @@ class Checkout extends Component {
 	}
 
 	onChangeAddress(address) {
+		const { dispatch } = this.props;
 		const editAddress = address.attributes;
 		const formDataAddress = {
 			label: editAddress.addressLabel,
@@ -174,6 +177,7 @@ class Checkout extends Component {
 			kodepos: editAddress.zipcode,
 			address: editAddress.address
 		};
+		dispatch(getCityProvince(this.state.token));
 		this.setState({
 			enableNewAddress: true,
 			formDataAddress
@@ -238,6 +242,13 @@ class Checkout extends Component {
 		this.onChoisedAddress(selectedLocker);
 	}
 
+	getDistricts(cityAndProvince) {
+		const { dispatch } = this.props;
+		dispatch(getDistrict(this.state.token, cityAndProvince));
+		console.log(cityAndProvince);
+		console.log(this.props);
+	}
+
 	setDropship(checked, dropshipName = 'dropship_name', value = '') {
 		const formDropshipper = this.state.formDropshipper;
 		formDropshipper[`${dropshipName}`] = value;
@@ -281,7 +292,8 @@ class Checkout extends Component {
 			enableAlamatPengiriman,
 			enablePesananPengiriman,
 			enablePembayaran,
-			formDataAddress
+			formDataAddress,
+			cityProv
 		} = this.state;
 
 		const {
@@ -340,7 +352,7 @@ class Checkout extends Component {
 							</Row>
 						</Container>
 					</div>
-					<NewAddressModalbox shown={this.state.enableNewAddress} formDataAddress={formDataAddress} />
+					<NewAddressModalbox shown={this.state.enableNewAddress} formDataAddress={formDataAddress} cityProv={cityProv} getDistricts={this.getDistricts} />
 					<ElockerModalbox shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} o2oProvinces={!o2oProvinces ? null : o2oProvinces} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
 					<PaymentSuccessModalbox />
 					<PaymentErrorModalbox />
@@ -368,6 +380,7 @@ const mapStateToProps = (state) => {
 		latesto2o: state.addresses.latesto2o,
 		o2oProvinces: state.addresses.o2oProvinces,
 		isPickupable: state.cart.isPickupable,
+		cityProv: state.addresses.cityProv
 	};
 };
 
