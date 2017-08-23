@@ -7,6 +7,8 @@ import styles from './Checkout.scss';
 import { Container, Row, Col, Loading, CheckoutHeader } from '@/components';
 import { renderIf } from '@/utils';
 
+import { Validator } from 'ree-validate';
+
 // Checkout Component
 import NewAddressModalbox from './components/Modal/NewAddressModalbox';
 import ElockerModalbox from './components/Modal/ElockerModalbox';
@@ -31,6 +33,10 @@ class Checkout extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.validator = new Validator({
+			dropship_name: 'required|max:100',
+			dropship_phone: 'required|numeric|min:6|max:14',
+		});
 		this.state = {
 			enableAlamatPengiriman: true,
 			enablePesananPengiriman: false,
@@ -47,6 +53,14 @@ class Checkout extends Component {
 			selectedLocker: null,
 			showModalO2o: false,
 			selectO2oFromModal: false,
+			dropshipper: false,
+			formDropshipper: {
+				dropship_name: '',
+				dropship_phone: '',
+			},
+			errorDropship: null,
+			isValidDropshipper: true,
+			formDataAddress: {}
 		};
 		this.onAddCoupon = this.onAddCoupon.bind(this);
 		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
@@ -62,6 +76,8 @@ class Checkout extends Component {
 		this.onGetO2oProvinces = this.onGetO2oProvinces.bind(this);
 		this.onOpenModalO2o = this.onOpenModalO2o.bind(this);
 		this.onSelectedLocker = this.onSelectedLocker.bind(this);
+		this.setDropship = this.setDropship.bind(this);
+		this.checkDropship = this.checkDropship.bind(this);
 	}
 
 	componentWillMount() {
@@ -141,12 +157,26 @@ class Checkout extends Component {
 		this.setState({
 			enablePesananPengiriman: true,
 			enablePembayaran: true,
+			selectedLocker: address
 		});
 	}
 
 	onChangeAddress(address) {
+		const editAddress = address.attributes;
+		const formDataAddress = {
+			label: editAddress.addressLabel,
+			nama: editAddress.fullname,
+			noHP: editAddress.phone,
+			kota: editAddress.city,
+			provinsi: editAddress.province,
+			kotProv: `${editAddress.city}, ${editAddress.province}`,
+			kecamatan: editAddress.district,
+			kodepos: editAddress.zipcode,
+			address: editAddress.address
+		};
 		this.setState({
-			enableNewAddress: true
+			enableNewAddress: true,
+			formDataAddress
 		});
 	}
 
@@ -208,11 +238,50 @@ class Checkout extends Component {
 		this.onChoisedAddress(selectedLocker);
 	}
 
+	setDropship(checked, dropshipName = 'dropship_name', value = '') {
+		const formDropshipper = this.state.formDropshipper;
+		formDropshipper[`${dropshipName}`] = value;
+		this.setState({
+			dropshipper: checked,
+			formDropshipper,
+			isValidDropshipper: false
+		});
+	}
+
+	checkDropship() {
+		if (this.state.dropshipper) {
+			this.validator.validateAll(this.state.formDropshipper)
+			.then(success => {
+				if (success) {
+					this.setState({
+						isValidDropshipper: true
+					});
+					const tempSelectedAddress = this.state.selectedLocker;
+					tempSelectedAddress.attributes.is_dropshipper = this.state.dropshipper;
+					tempSelectedAddress.attributes.dropship_name = this.state.formDropshipper.dropship_name;
+					tempSelectedAddress.attributes.dropship_phone = this.state.formDropshipper.dropship_phone;
+					this.onChoisedAddress(tempSelectedAddress);
+				} else {
+					const { errorBag } = this.validator;
+					this.setState({
+						isValidDropshipper: false,
+						errorDropship: errorBag
+					});
+				}
+			});
+		} else {
+			this.setState({
+				isValidDropshipper: true
+			});
+		}
+	}
+
 	render() {
 		const {
 			enableAlamatPengiriman,
 			enablePesananPengiriman,
 			enablePembayaran,
+			formDataAddress
 		} = this.state;
 
 		const {
@@ -239,7 +308,7 @@ class Checkout extends Component {
 									<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
 									{
 										renderIf(addresses)(
-											<CardPengiriman addresses={addresses} onChoisedAddress={this.onChoisedAddress} onChangeAddress={this.onChangeAddress} onGetO2oProvinces={this.onGetO2oProvinces} onGetListO2o={this.onGetListO2o} listo2o={listo2o} onOpenModalO2o={this.onOpenModalO2o} latesto2o={latesto2o} selectedLocker={this.state.selectedLocker ? this.state.selectedLocker : (latesto2o ? latesto2o[0] : null)} onSelectedLocker={this.onSelectedLocker} selectO2oFromModal={this.state.selectO2oFromModal} isPickupable={isPickupable} />
+											<CardPengiriman addresses={addresses} onChoisedAddress={this.onChoisedAddress} onChangeAddress={this.onChangeAddress} onGetO2oProvinces={this.onGetO2oProvinces} onGetListO2o={this.onGetListO2o} listo2o={listo2o} onOpenModalO2o={this.onOpenModalO2o} latesto2o={latesto2o} selectedLocker={this.state.selectedLocker ? this.state.selectedLocker : (latesto2o ? latesto2o[0] : null)} onSelectedLocker={this.onSelectedLocker} selectO2oFromModal={this.state.selectO2oFromModal} isPickupable={isPickupable} dropshipper={this.state.dropshipper} setDropship={this.setDropship} checkDropship={this.checkDropship} errorDropship={this.state.errorDropship} />
 										)
 									}
 								</Col>
@@ -263,12 +332,15 @@ class Checkout extends Component {
 										onPaymentOptionChange={this.onPaymentOptionChange}
 										onNewCreditCard={this.onNewCreditCard}
 										onSelectCard={this.onSelectCard}
+										dropshipper={this.state.dropshipper}
+										checkDropship={this.checkDropship}
+										isValidDropshipper={this.state.isValidDropshipper}
 									/>
 								</Col>
 							</Row>
 						</Container>
 					</div>
-					<NewAddressModalbox shown={this.state.enableNewAddress} />
+					<NewAddressModalbox shown={this.state.enableNewAddress} formDataAddress={formDataAddress} />
 					<ElockerModalbox shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} o2oProvinces={!o2oProvinces ? null : o2oProvinces} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
 					<PaymentSuccessModalbox />
 					<PaymentErrorModalbox />
