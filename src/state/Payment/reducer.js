@@ -2,6 +2,7 @@ import * as constants from './constants';
 
 const initialState = {
 	selectedPayment: false,
+	loading: false,
 	paymentMethods: {
 		methods: [],
 		payments: {}
@@ -18,16 +19,16 @@ export default (state = initialState, action) => {
 
 	case constants.PAY_LIST_PAYMENT_METHOD: {
 		let resultState = state;
-		if (action.status === 1) {
+		if (action.status) {
 			resultState = {
 				...state, 
-				loading: 1,
+				loading: false,
 				paymentMethods: action.payload.data
 			};
 		} else {
 			resultState = {
 				...state, 
-				loading: 0
+				loading: true
 			};
 		}
 		return resultState;
@@ -80,6 +81,20 @@ export default (state = initialState, action) => {
 		return {
 			...state,
 			...action.payload
+		};
+	}
+
+	case constants.PAY: {
+		if (action.status) {
+			return {
+				...state,
+				loading: !action.status,
+				payment: action.payload.payment
+			};
+		}
+		return {
+			...state,
+			loading: !action.status
 		};
 	}
 	default: 

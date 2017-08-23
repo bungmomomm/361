@@ -26,7 +26,14 @@ import { withCookies, Cookies } from 'react-cookie';
 import { addCoupon, removeCoupon, resetCoupon } from '@/state/Coupon/actions';
 import { getAddresses, getO2OList, getO2OProvinces, getCityProvince, getDistrict } from '@/state/Adresses/actions';
 import { getPlaceOrderCart, getCart, deleteCart } from '@/state/Cart/actions';
-import { getAvailablePaymentMethod, changePaymentMethod, changePaymentOption, openNewCreditCard, selectCreditCard } from '@/state/Payment/actions';
+import { 
+	getAvailablePaymentMethod, 
+	changePaymentMethod, 
+	changePaymentOption, 
+	openNewCreditCard, 
+	selectCreditCard,
+	pay 
+} from '@/state/Payment/actions';
 
 
 class Checkout extends Component {
@@ -80,6 +87,7 @@ class Checkout extends Component {
 		this.setDropship = this.setDropship.bind(this);
 		this.checkDropship = this.checkDropship.bind(this);
 		this.getDistricts = this.getDistricts.bind(this);
+		this.onDoPayment = this.onDoPayment.bind(this);
 	}
 
 	componentWillMount() {
@@ -136,15 +144,15 @@ class Checkout extends Component {
 	}
 
 	onAddCoupon(coupon) {
-		const { dispatch, orderId } = this.props;
+		const { dispatch, soNumber } = this.props;
 		if (coupon) {
-			dispatch(addCoupon(this.state.token, orderId, coupon));
+			dispatch(addCoupon(this.state.token, soNumber, coupon));
 		}
 	}
 
 	onRemoveCoupon(event) {
-		const { dispatch, orderId } = this.props;
-		dispatch(removeCoupon(this.state.token, orderId));
+		const { dispatch, soNumber } = this.props;
+		dispatch(removeCoupon(this.state.token, soNumber));
 	}
 
 	onResetCoupon(event) {
@@ -241,6 +249,13 @@ class Checkout extends Component {
 		selectedLocker.type = 'pickup';
 		this.onChoisedAddress(selectedLocker);
 	}
+	
+	onDoPayment() {
+		// console.log(this.state, this.props);// .payments.selectedPaymentOption);
+
+		const { dispatch } = this.props;
+		dispatch(pay(this.state.token, this.props.payments.selectedPaymentOption));
+	}
 
 	getDistricts(cityAndProvince) {
 		const { dispatch } = this.props;
@@ -286,6 +301,7 @@ class Checkout extends Component {
 			});
 		}
 	}
+	
 
 	render() {
 		const {
@@ -347,6 +363,7 @@ class Checkout extends Component {
 										dropshipper={this.state.dropshipper}
 										checkDropship={this.checkDropship}
 										isValidDropshipper={this.state.isValidDropshipper}
+										onDoPayment={this.onDoPayment}
 									/>
 								</Col>
 							</Row>
@@ -370,9 +387,9 @@ Checkout.propTypes = {
 
 const mapStateToProps = (state) => {
 	return {
-		orderId: 1,
+		soNumber: state.cart.soNumber,
 		coupon: state.coupon,
-		addresses: state.addresses.data,
+		addresses: state.addresses.addresses,
 		billing: state.addresses.billing,
 		cart: state.cart.data,
 		payments: state.payments,

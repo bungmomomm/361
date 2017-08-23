@@ -1,15 +1,15 @@
 import * as constants from './constants';
-import { getListAvailablePaymentMethod } from './models';
+import { getListAvailablePaymentMethod, getPaymentPayload } from './models';
 import { request } from '@/utils';
 
 const availablePaymentMethodRequest = () => ({
 	type: constants.PAY_LIST_PAYMENT_METHOD,
-	status: 0
+	status: false
 });
 
 const availablePaymentMethodReceived = (data) => ({
 	type: constants.PAY_LIST_PAYMENT_METHOD,
-	status: 1,
+	status: true,
 	payload: {
 		data
 	}
@@ -56,6 +56,19 @@ const creditCardDeselect = () => ({
 	status: false
 });
 
+const payRequest = () => ({
+	type: constants.PAY,
+	status: false
+});
+
+const payReceived = (payment) => ({
+	type: constants.PAY,
+	status: true,
+	payload: {
+		payment
+	}
+});
+
 const getAvailablePaymentMethod = (token) => (dispatch) => {
 	dispatch(availablePaymentMethodRequest());
 	return request({
@@ -100,6 +113,23 @@ const selectCreditCard = (card) => dispatch => {
 	dispatch(creditCardSelected(card));
 };
 
+const pay = (token, payment) => dispatch => {
+	dispatch(payRequest());
+	return request({
+		token,
+		path: 'dopayments',
+		method: 'POST',
+		body: {
+			data: getPaymentPayload(payment)
+		}
+	}).then((response) => {
+		dispatch(payReceived(response.data));
+	}).catch((error) => {
+		// showError
+		dispatch(payReceived({}));
+	});
+};
+
 export default {
 	paymentInfoUpdated,
 	getAvailablePaymentMethod,
@@ -108,5 +138,6 @@ export default {
 	closeNewCreditCard,
 	openNewCreditCard,
 	selectCreditCard,
-	deselectCreditCard
+	deselectCreditCard,
+	pay
 };

@@ -8,13 +8,21 @@ const PAY_CREDIT_CARD_DESELECT = 'PAY_CREDIT_CARD_DESELECT';
 const PAY_UPDATED = 'PAY_UPDATED';
 const PAY = 'PAY';
 
-const paymentType = {
+const paymentGroupName = {
 	BANK_TRANSFER: 'bank_transfer',
 	CREDIT_CARD: 'credit_card',
 	INSTALLMENT: 'installment',
 	CONVENIENCE_STORE: 'convenience_store',
 	E_MONEY: 'e_money',
 	INTERNET_BANKING: 'internet_banking'
+};
+
+const paymentMethodName = {
+	VIRTUAL_ACCOUNT: 'virtual_account',
+	BANK_TRANSFER: 'bank_transfer',
+	COMMERCE_VERITRANS: 'commerce_veritrans',
+	COMMERCE_VERITRANS_INSTALLMENT: 'commerce_veritrans_installment',
+	POS_PAY: 'pos_pay'
 };
 
 
@@ -28,5 +36,6 @@ export default {
 	PAY_CREDIT_CARD_SELECTED,
 	PAY_CREDIT_CARD_DESELECT,
 	PAY,
-	paymentType
+	paymentGroupName,
+	paymentMethodName
 };

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styles from '../Checkout.scss';
 import { Validator } from 'ree-validate';
-import { paymentType } from '@/state/Payment/constants';
+import { paymentGroupName } from '@/state/Payment/constants';
 
 // component load
 import { 
@@ -109,15 +109,15 @@ export default class CardPembayaran extends Component {
 	}
 
 	handleSubmit(event) {
-		event.preventDefault();
 		console.log(this.state);
+		event.preventDefault();
 	}
 
 	submitPayment() {
 		if (!this.props.isValidDropshipper) {
 			this.props.checkDropship();
 		}
-		console.log(this.state);
+		this.props.onDoPayment();
 	}
 
 	render() {
@@ -128,9 +128,9 @@ export default class CardPembayaran extends Component {
 			deliveryCostDiscount, 
 			deliveryCost, 
 			paymentMethods, 
+			loading,
 			selectedPayment 
 		} = this.props.payments;
-		
 		let voucherBox = '';
 		if (this.props.coupon === '' || this.props.validCoupon === null) { 
 			voucherBox = (
@@ -160,17 +160,17 @@ export default class CardPembayaran extends Component {
 		let paymentOptions = false;
 		if (selectedPayment) {
 			switch (selectedPayment.value) {
-			case paymentType.BANK_TRANSFER:
-			case paymentType.CONVENIENCE_STORE:
-			case paymentType.E_MONEY:
-			case paymentType.INTERNET_BANKING:
+			case paymentGroupName.BANK_TRANSFER:
+			case paymentGroupName.CONVENIENCE_STORE:
+			case paymentGroupName.E_MONEY:
+			case paymentGroupName.INTERNET_BANKING:
 				paymentOptions = (
 					<InputGroup>
-						<Select name={`payment-${selectedPayment.value}`} selectedLabel='-- Tambah Baru' options={selectedPayment.paymentItems} onChange={this.onPaymentOptionChange} />
+						<Select emptyFilter={false} name={`payment-${selectedPayment.value}`} selectedLabel='-- Tambah Baru' options={selectedPayment.paymentItems} onChange={this.onPaymentOptionChange} />
 					</InputGroup>
 				);
 				break;
-			case paymentType.CREDIT_CARD:
+			case paymentGroupName.CREDIT_CARD:
 				paymentOptions = (
 					<InputGroup>
 						{ 
@@ -197,7 +197,7 @@ export default class CardPembayaran extends Component {
 									});
 								} else {
 									return (
-										<Select key={index} name='cc' selectedLabel='-- Tambah Baru' options={option.cards} onChange={this.onSelectCard} />
+										<Select emptyFilter={false} key={index} name='cc' selectedLabel='-- Tambah Baru' options={option.cards} onChange={this.onSelectCard} />
 									);
 								}
 								return option;
@@ -266,12 +266,12 @@ export default class CardPembayaran extends Component {
 							</Tooltip>
 						</InputGroup>
 						{ renderIf(paymentOptions)(paymentOptions) }
-						{ renderIf(selectedPayment.value === paymentType.CREDIT_CARD)(
+						{ renderIf(selectedPayment.value === paymentGroupName.CREDIT_CARD)(
 							<InputGroup>
 								<Button clean icon='plus-circle' iconPosition='left' content='Tambah Kartu' onClick={this.onNewCreditCard} />
 							</InputGroup>
 						)}
-						{ renderIf(this.props.payments.openNewCreditCard && selectedPayment.value === paymentType.CREDIT_CARD)(
+						{ renderIf(this.props.payments.openNewCreditCard && selectedPayment.value === paymentGroupName.CREDIT_CARD)(
 							<div>
 								<InputGroup>
 									<Input placeholder='Masukkan Nomor Kartu' sprites='payment-option' creditCard />
@@ -294,22 +294,10 @@ export default class CardPembayaran extends Component {
 							</div>
 						)}
 
-						<div>
-							<InputGroup>
-								<Input placeholder='Masukkan Nomor Kartu' sprites='payment-option' creditCard />
-							</InputGroup>
-							<Row>
-								<Col grid={3}>
-									<Input type='text' placeholder='cvv' />
-								</Col>
-								<Col grid={9}>
-									<Sprites name='cvv' />
-								</Col>
-							</Row>
-						</div>
+						
 						<div className={styles.checkOutAction}>
 							<Checkbox checked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />
-							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' />
+							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' loading={loading} />
 						</div>
 					</div>
 				</div>

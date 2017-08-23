@@ -1,4 +1,5 @@
 import humps from 'lodash-humps';
+import { paymentMethodName, paymentGroupName } from './constants';
 
 const getRelations = (data, lookup, format) => {
 	return data.data.map((item, index) => {
@@ -26,6 +27,7 @@ const getCardRelations = (data, lookup) => {
 
 const paymentMethodItem = payment => {
 	return {
+		...payment.attributes,
 		value: payment.id,
 		label: payment.attributes.title,
 		name: payment.attributes.unique_constant,
@@ -62,7 +64,7 @@ const getListAvailablePaymentMethod = (response) => {
 			payment_items: getRelations(method.relationships.payment_items, response.included)
 		};
 		switch (method.id) {
-		case 'credit_card':
+		case paymentGroupName.CREDIT_CARD:
 			// get credit and bank number
 			methodData.payment_items = methodData.payment_items.map((payment, paymentIndex) => {
 				const paymentData = {
@@ -72,7 +74,7 @@ const getListAvailablePaymentMethod = (response) => {
 				return paymentData;
 			});
 			break;
-		case 'installment':
+		case paymentGroupName.INSTALLMENT:
 			methodData.payment_items = methodData.payment_items.map((payment, paymentIndex) => {
 				const paymentData = {
 					...paymentMethodItem(payment),
@@ -109,6 +111,43 @@ const getListAvailablePaymentMethod = (response) => {
 	return returnData;
 };
 
+const getPaymentPayload = (payment, orderId) => {
+	const paymentPayload = {
+		type: 'payment',
+		attributes: {
+			product_type: 'product',
+			payment_method: payment.paymentMethod
+		},
+		relationships: {
+			order: {
+				data: {
+					type: 'order',
+					id: orderId
+				}
+			}
+		}
+	};
+	switch (payment.paymentMethod) {
+	case paymentMethodName.VIRTUAL_ACCOUNT:
+		paymentPayload.attributes.virtual_account = {
+			id: payment.value
+		};
+		break;
+	case paymentMethodName.BANK_TRANSFER:
+		break;
+	case paymentMethodName.COMMERCE_VERITRANS:
+		break;
+	case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
+		break;
+	case paymentMethodName.POS_PAY:
+		break;
+	default:
+		break;
+	}
+	console.log(paymentPayload);
+};
+
 export default {
-	getListAvailablePaymentMethod
+	getListAvailablePaymentMethod,
+	getPaymentPayload
 };
