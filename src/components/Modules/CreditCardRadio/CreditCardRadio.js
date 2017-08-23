@@ -22,7 +22,9 @@ class CreditCardRadio extends Component {
 
 	componentWillMount() {
 		const cc = this.props.content;
-		const ccNumber = cc.slice(0, 2);
+		const ccNumber = () => {
+			return (!cc || !cc.length) ? cc.slice(0, 2) : null;
+		};
 		this.creditCardValidation(ccNumber);
 	}
 
@@ -87,10 +89,14 @@ class CreditCardRadio extends Component {
 export default CreditCardRadio;
 
 CreditCardRadio.propTypes = {
+	/** Attribute value. */
 	value: PropTypes.string,
+	/** Attribute Name. */
 	name: PropTypes.string,
+	/** Content. */
 	content: PropTypes.string,
+	/** Disabled Radio. */
 	disabled: PropTypes.bool,
-	onClick: PropTypes.func,
+	/** Default checked Radio. */
 	checked: PropTypes.bool
 };

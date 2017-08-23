@@ -21,16 +21,14 @@ export default class Modal extends Component {
 		};
 		this.handleClose = this.handleClose.bind(this);
 	}
-	
-	componentWillMount() {
-		this.toggleBodyOverflow();
-	}
 
 	componentWillReceiveProps(nextProps) {
-		this.setState({
-			displayModal: nextProps.shown
-		});
-		this.toggleBodyOverflow();
+		if (this.state.displayModal !== nextProps.shown) {
+			this.setState({
+				displayModal: nextProps.shown
+			});
+			document.body.style.overflow = nextProps.shown ? 'hidden' : '';
+		}
 	}
 
 	handleClose() {
@@ -40,13 +38,9 @@ export default class Modal extends Component {
 		if (this.props.onClose) {
 			this.props.onClose(true);
 		}
-		this.toggleBodyOverflow();
+		document.body.style.overflow = '';
 	}
 
-	toggleBodyOverflow() {
-		document.body.style.overflow = this.state.displayModal ? '' : 'hidden';
-	}
-	
 	@injectProps
 	render({
 		large,

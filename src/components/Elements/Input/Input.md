@@ -30,7 +30,7 @@ Horizontal
 ```js
 <div className="example">
     <InputGroup>
-        <Input horizontal label='Horizontal layout' message='Horizontal layout with message' color='green' placeholder='Size small'/>
+        <Input horizontal label='Horizontal layout' icon='bookmark' message='Horizontal layout with message' color='green' placeholder='Size small'/>
     </InputGroup>
     <InputGroup>
         <Input horizontal message='textarea is required' color='red' label='Horizontal layout with message' placeholder='Placeholder'/>

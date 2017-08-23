@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 // import PropTypes from 'prop-types';
 import styles from './Elocker.scss';
 // component load
-import { Input, Select, Card, Button } from '@/components';
+import Input from '@/components/Elements/Input/Input';
+import Select from '@/components/Modules/Select/Select';
+import Card from '@/components/Elements/Card/Card';
+import Button from '@/components/Elements/Button/Button';
 
 export default class Elocker extends Component {
 	constructor(props) {

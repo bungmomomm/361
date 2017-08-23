@@ -8,6 +8,12 @@ import { Stepper } from '@/components';
 
 ```js
 <div className="example">
-    <Stepper />
+    <InputGroup>
+        <Stepper />
+    </InputGroup>
+    <InputGroup>
+        <label>with default = 2 value and max value = 5</label>
+        <Stepper value={2} maxValue={5} />
+    </InputGroup>
 </div>
 ```

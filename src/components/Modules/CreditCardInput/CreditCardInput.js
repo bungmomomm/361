@@ -95,13 +95,18 @@ export default class CreditCardInput extends Component {
 			horizontal: !!horizontal
 		});
 
+		const inputCreditCardClass = cx({
+			inputBody: true,
+			horizontal: !!horizontal,
+		});
+
 		const inputClass = cx({
 			input: true,
 			error: !!error,
-			[`${size}`]: !!size,
-			[`${color}`]: !!color,
+			[`CreditCardInput__${size}`]: !!size,
+			[`CreditCardInput__${color}`]: !!color,
 			[`CreditCardInput__${this.state.ccValid}`]: !!this.state.ccValid,
-			[`${sprites}`]: !!sprites
+			[`CreditCardInput__${sprites}`]: !!sprites
 		});
 		
 		const idFor = newId();
@@ -125,23 +130,27 @@ export default class CreditCardInput extends Component {
 				<div className={styles.message}>{message}</div>
 			)
 		);
+
+		const InputElement = (
+			<MaskedInput
+				className={inputClass} 
+				placeholder={placeholder} 
+				mask='1111 1111 1111 1111' 
+				name='card'
+				size={20}
+				value={value}
+				onChange={this.onChange}
+			/>
+		);
 		
 		return (
 			<div className={inputWrapper}>
 				{LabelElement} 
-				{
-					<MaskedInput
-						className={inputClass} 
-						placeholder={placeholder} 
-						mask='1111 1111 1111 1111' 
-						name='card' 
-						size={20}
-						value={value}
-						onChange={this.onChange}
-					/>
-				} 
-				{SpritesElement}
-				{MessageElement}
+				<div className={inputCreditCardClass}>
+					{InputElement} 
+					{MessageElement}
+					{SpritesElement}
+				</div>
 			</div>
 		);
 	}
@@ -149,19 +158,28 @@ export default class CreditCardInput extends Component {
 
 CreditCardInput.propTypes = {
 	ccType: PropTypes.string,
-	onChange: PropTypes.func,
-	horizontal: PropTypes.bool,
 	error: PropTypes.bool,
-	size: PropTypes.oneOf(['small', 'medium', 'large']),
-	color: PropTypes.oneOf(['green', 'red', 'yellow']),
-	label: PropTypes.string,
 	creditCard: PropTypes.bool,
+	size: PropTypes.oneOf(['small', 'medium', 'large']),
+	color: PropTypes.oneOf(['red', 'yellow', 'orange', 'green']),
+	/** make horinzontal layout. */
+	horizontal: PropTypes.bool,
+	/** label content. */
+	label: PropTypes.string,
+	/** Input Attribute Type. */
 	type: PropTypes.oneOf(['text', 'password', 'date', 'email', 'hidden', 'password', 'number', 'search']),
+	/** Input Attribute Name. */
 	name: PropTypes.string,
+	/** Input Attribute Placeholder. */
 	placeholder: PropTypes.string,
-	onClick: PropTypes.func,
-	onKeyPress: PropTypes.func,
+	/** Input Attribute value. */
+	value: PropTypes.string,
+	/** Input Attribute Read Only. */
+	readOnly: PropTypes.bool,
+	/** Add image Sprites. */
 	sprites: PropTypes.string,
+	/** Add Icon. */
 	icon: PropTypes.string,
+	/** Textarea info or message. */
 	message: PropTypes.string
 };

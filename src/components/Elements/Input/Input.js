@@ -123,7 +123,8 @@ Input.propTypes = {
 	color: PropTypes.oneOf(['red', 'yellow', 'orange', 'green']),
 	/** label content. */
 	label: PropTypes.string,
-	type: PropTypes.string,
+	/** Input Attribute Type. */
+	type: PropTypes.oneOf(['text', 'password', 'date', 'email', 'hidden', 'password', 'number', 'search']),
 	/** Input Attribute Name. */
 	name: PropTypes.string,
 	/** Input Attribute Placeholder. */

@@ -79,7 +79,7 @@
 	display: none;
 	&.shown{
 		display: block;
-		width: 100%;
+		min-width: 100%;
 	}
 	> button{
 		padding: 15px;

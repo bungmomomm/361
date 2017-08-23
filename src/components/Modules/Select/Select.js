@@ -49,7 +49,6 @@ export default class Select extends Component {
 
 	getFilter(event) {
 		const filterValue = event.target.value.toUpperCase();
-		console.log(filterValue);
 		const filterData = this.props.options.map((option) => {
 			const filterLabel = option.label.toUpperCase();
 			return (filterLabel.toUpperCase().indexOf(filterValue) > -1) ? option : null;
