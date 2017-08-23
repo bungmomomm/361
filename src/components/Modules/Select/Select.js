@@ -31,19 +31,14 @@ export default class Select extends Component {
 				selected: nextProps.selected
 			});
 		}
-		if (this.props.options !== nextProps.options) {
-			this.setState({
-				options: nextProps.options
-			});
-		}
 		if (this.state.showOption !== nextProps.shown) {
 			this.setState({
 				showOption: nextProps.shown
 			});
 		}
-		if ((this.state.selectedLabel !== nextProps.selectedLabel) && !!nextProps.selectedLabel) {
+		if (this.state.options !== nextProps.options) {
 			this.setState({
-				selectedLabel: nextProps.selectedLabel
+				options: nextProps.options
 			});
 		}
 	}
@@ -73,7 +68,6 @@ export default class Select extends Component {
 // ----------------------------------------
 
 	setFilterOption(filterData) {
-		console.log(filterData);
 		this.setState({
 			options: filterData
 		});

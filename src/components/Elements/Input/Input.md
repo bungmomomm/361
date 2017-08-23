@@ -13,6 +13,15 @@ Normal
     <InputGroup>
         <Input label='label' placeholder='Placeholder'/>
     </InputGroup>
+    <InputGroup>
+        <Input label='label' color='red' placeholder='Color Red'/>
+    </InputGroup>
+    <InputGroup>    
+        <Input label='label' color='green' placeholder='Color Green'/>
+    </InputGroup>
+    <InputGroup>    
+        <Input label='label' color='yellow' placeholder='Color Yellow'/>
+    </InputGroup>
 </div>
 ```
 
@@ -21,7 +30,10 @@ Horizontal
 ```js
 <div className="example">
     <InputGroup>
-        <Input horizontal label='Horizontal layout' size='small' placeholder='Size small'/>
+        <Input horizontal label='Horizontal layout' message='Horizontal layout with message' color='green' placeholder='Size small'/>
+    </InputGroup>
+    <InputGroup>
+        <Input horizontal message='textarea is required' color='red' label='Horizontal layout with message' placeholder='Placeholder'/>
     </InputGroup>
 </div>
 ```
@@ -42,24 +54,6 @@ Sprites
 <div className="example">
     <InputGroup>
         <Input sprites='gosend' label='with Sprites' placeholder='with Sprites' />
-    </InputGroup>
-</div>
-```
-
-
-
-Color
-
-```js
-<div className="example">
-    <InputGroup>
-        <Input label='label' color='red' placeholder='Color Red'/>
-    </InputGroup>
-    <InputGroup>    
-        <Input label='label' color='green' placeholder='Color Green'/>
-    </InputGroup>
-    <InputGroup>    
-        <Input label='label' color='yellow' placeholder='Color Yellow'/>
     </InputGroup>
 </div>
 ```

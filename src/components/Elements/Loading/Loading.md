@@ -8,7 +8,7 @@ import { Loading } from '@/components';
 
 Normal
 
-```js
+```html
 <div className="example">
     <Loading />
 </div>

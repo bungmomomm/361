@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import creditCardType from 'credit-card-type';
 
-import { Sprites } from '@/components';
+import Sprites from '@/components/Elements/Sprites';
 import { newId, renderIf } from '@/utils';
 import { injectProps } from '@/decorators';
 

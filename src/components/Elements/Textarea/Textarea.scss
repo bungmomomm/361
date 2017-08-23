@@ -18,18 +18,16 @@
 
 .horizontal{
 	display: flex;
-	flex-flow: row wrap;
-	align-items: center;
 	label{
-		margin-bottom: 0px;
-		width: 30%;
-		display: block;
+		flex-basis: 0;
+		flex-grow: 1;
+		flex-shrink: 0;
+		margin-right: rem(10px);
+		text-align: left;
+		padding-top: rem(10px);
 	}
 	.Textarea{
 		flex: 1;
-	}
-	.message{
-		flex: 0 0 100%;
 	}
 }
 
@@ -61,14 +59,23 @@
 
 .red{
 	@include inputStyle(red);
+	+ .message{
+		color: color(red);
+	}
 }
 
 .green{
 	@include inputStyle(green);
+	+ .message{
+		color: color(green);
+	}
 }
 
 .yellow{
 	@include inputStyle(yellow);
+	+ .message{
+		color: color(yellow);
+	}
 }
 
 // SIZE
@@ -104,4 +111,24 @@
 	height: 100%;
 	display: flex;
     align-items: center;
+}
+
+.textareaBody{
+	display: flex;
+	flex-basis: 0;
+	flex-grow: 4;
+	flex-shrink: 1;
+	flex-direction: column;
+	position: relative;
+}
+
+label{
+	color: #4a4a4a;
+	font-weight: 300;
+    font-size: 12px;
+    line-height: 1.4;
+	~ .sprites, 
+	~ .icon{
+		top: 20px;
+	} 
 }

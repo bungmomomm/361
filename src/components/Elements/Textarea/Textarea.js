@@ -37,6 +37,11 @@ export default class Textarea extends Component {
 			horizontal: !!horizontal
 		});
 
+		const TextareaBodyClass = cx({
+			textareaBody: true,
+			horizontal: !!horizontal,
+		});
+
 		const TextareaClass = cx({
 			Textarea: true,
 			[`Textarea__${color}`]: !!color,
@@ -74,23 +79,29 @@ export default class Textarea extends Component {
 				<div className={styles.message}>{message}</div>
 			)
 		);
+
+		const TextAreaElement = (
+			<textarea 
+				id={idFor}
+				className={TextareaClass} 
+				name={name}
+				readOnly={readOnly}
+				placeholder={placeholder}
+				defaultValue={value}
+				onClick={onClick}
+				onChange={onChange}
+			/>
+		);
 		
 		return (
 			<div className={TextareaWrapper}>
 				{LabelElement}
-				<textarea 
-					id={idFor}
-					className={TextareaClass} 
-					name={name}
-					readOnly={readOnly}
-					placeholder={placeholder}
-					defaultValue={value}
-					onClick={onClick}
-					onChange={onChange}
-				/>
-				{SpritesElement}
-				{IconElement}
-				{MessageElement}
+				<div className={TextareaBodyClass}>
+					{TextAreaElement}
+					{SpritesElement}
+					{IconElement}
+					{MessageElement}
+				</div>
 			</div>
 		);
 	}

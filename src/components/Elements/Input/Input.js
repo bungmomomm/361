@@ -43,6 +43,11 @@ export default class Input extends Component {
 			horizontal: !!horizontal
 		});
 
+		const inputBodyClass = cx({
+			inputBody: true,
+			horizontal: !!horizontal,
+		});
+
 		const inputClass = cx({
 			input: true,
 			[`Input__${size}`]: !!size,
@@ -81,24 +86,30 @@ export default class Input extends Component {
 			)
 		);
 
+		const InputElement = (
+			<input
+				id={idFor}
+				className={inputClass} 
+				type={type}
+				name={name}
+				readOnly={readOnly}
+				placeholder={placeholder}
+				defaultValue={value}
+				onClick={onClick}
+				onKeyPress={onKeyPress}
+				onChange={onChange}
+			/>
+		);
+
 		return (
 			<div className={inputWrapper}>
 				{LabelElement}
-				<input 
-					id={idFor}
-					className={inputClass} 
-					type={type}
-					name={name}
-					readOnly={readOnly}
-					placeholder={placeholder}
-					defaultValue={value}
-					onClick={onClick}
-					onKeyPress={onKeyPress}
-					onChange={onChange}
-				/>
-				{SpritesElement}
-				{IconElement}
-				{MessageElement}
+				<div className={inputBodyClass}>
+					{InputElement}
+					{MessageElement}
+					{SpritesElement}
+					{IconElement}
+				</div>
 			</div>
 		);
 	}

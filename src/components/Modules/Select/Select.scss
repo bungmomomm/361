@@ -3,14 +3,14 @@
 
 .Select{
 	position: relative;
-	min-width: 90px;
+	// min-width: 90px;
 	:global{
 		.icon-sort-asc{
 			font-size: 14px;
 		}
 		.icon-sort-desc{
 			font-size: 14px;
-			top: -3px;
+			top: -2px;
     		position: relative;
 		}
 	}
@@ -74,13 +74,12 @@
 	position: absolute;
 	top: 100%;
 	left: 0px;
-	width: 100%;
-	border-top: 0px;
-	margin-top: -3px;
+	margin-top: -1px;
 	z-index: 1;
 	display: none;
 	&.shown{
 		display: block;
+		width: 100%;
 	}
 	> button{
 		padding: 15px;
@@ -98,7 +97,7 @@
 		border-top: 1px solid #C5C5C5;
 		border-bottom: 0px;
 		margin-top: 0px;
-		margin-bottom: -3px;
+		margin-bottom: -1px;
 	}
 }
 
@@ -110,6 +109,7 @@
 	line-height: 1;
 	flex:1;
 	padding-right: 8px;
+	white-space: nowrap;
 }
 
 .error{
@@ -180,5 +180,12 @@
 	}	
 	.selectedContainer{
 		z-index: 12;
+	}
+	.previewLabel{
+		border-bottom-left-radius: 0px;
+		border-bottom-right-radius: 0px;
+		border-bottom: 0px;
+		position: relative;
+		z-index: 2;
 	}
 }

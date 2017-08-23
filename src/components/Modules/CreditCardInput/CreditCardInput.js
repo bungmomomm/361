@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { injectProps } from '@/decorators';
 import { newId, renderIf } from '@/utils';
-import { Sprites } from '@/components';
+import Sprites from '@/components/Elements/Sprites';
 
 import creditCardType from 'credit-card-type';
 import MaskedInput from 'react-maskedinput';
