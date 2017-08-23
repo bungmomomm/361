@@ -18,7 +18,8 @@ export default class Select extends Component {
 			options: [],
 			selectedLabel: this.props.selectedLabel || 'Please Select...',
 			showOption: false,
-			selected: this.props.selected || {}
+			selected: this.props.selected || {},
+			emptyFilter: true,
 		};
 		this.getFilter = this.getFilter.bind(this);
 		this.setOptions = this.setOptions.bind(this);
@@ -38,7 +39,8 @@ export default class Select extends Component {
 		}
 		if (this.state.options !== nextProps.options) {
 			this.setState({
-				options: nextProps.options
+				options: nextProps.options,
+				emptyFilter: false,
 			});
 		}
 	}
@@ -68,7 +70,8 @@ export default class Select extends Component {
 
 	setFilterOption(filterData) {
 		this.setState({
-			options: filterData
+			options: filterData,
+			emptyFilter: filterData.length < 1 || false,
 		});
 	}
 
@@ -111,7 +114,6 @@ export default class Select extends Component {
 		horizontal,
 		top,
 		label,
-		required,
 		filter,
 		selected,
 		message,
@@ -123,14 +125,102 @@ export default class Select extends Component {
 			Select: true,
 			error: !!error,
 			horizontal: !!horizontal,
-			required: !!required,
 			shown: this.state.showOption,
 			top: !!top,
+		});
+
+		const OptionsClass = cx({
+			listData: true,
+			shown: this.state.showOption
 		});
 
 		const {
 			options
 		} = this.state;
+
+		const LabelElement = (
+			renderIf(label)(
+				<label htmlFor={idFor}>
+					{label}
+				</label>
+			)
+		);
+
+		const ImageElement = (
+			renderIf(this.state.selected.imagePath)(
+				<img src={this.state.selected.imagePath} alt='logo' />
+			)	
+		);
+		
+		const SpritesElement = (
+			renderIf(this.state.selected.sprites)(
+				<Sprites name={this.state.selected.sprites} />
+			)
+		);
+
+		const FilterElement = (
+			renderIf(filter)(
+				<div className={styles.quickFilter}>
+					<Input 
+						type='text' 
+						name='quickfilter' 
+						onChange={this.getFilter} 
+						placeholder='Quick Search'
+					/>
+				</div>
+			)
+		);
+
+		const AddButton = (
+			renderIf(addButton)(
+				addButton
+			)
+		);
+
+		const MessageRender = (
+			renderIf(message)(
+				<div className={styles.message}>
+					{message}
+				</div>
+			)
+		);
+
+		const OptionsElement = (
+			renderIf(options && options.length)(
+				options.map((option, i) => (
+					<button 
+						key={i}
+						type='button'
+						className={
+							option.value !== this.state.selected.value ? null : styles.selected
+						} 
+						onClick={() => this.setSelectOption(option)} 
+						disabled={!!option.disabled}
+					>
+						<div className={styles.text}>
+							{ option.label} 
+							{[
+								renderIf(option.imagePath)(
+									<img src={option.imagePath} alt='logo' />
+								),
+								renderIf(option.sprites)(
+									<Sprites name={option.sprites} />
+								)
+							]}
+						</div>
+						{[
+							renderIf(option.info)(
+								<div className={styles.info}>{option.info}</div>
+							),
+							renderIf(option.message)(
+								<div className={styles.optionMessage}>{option.message}</div>
+							)
+						]}
+					</button>
+				))
+			)
+		);
+
 		return (
 			<div className={SelectWrapper}>
 				<div 
@@ -139,14 +229,7 @@ export default class Select extends Component {
 					onClick={this.hideDropdown} 
 					className={styles.overlay}
 				/>
-				{ 
-					renderIf(label)(
-						<label htmlFor={idFor}>
-							{label}
-							{required ? ' *' : ''}
-						</label>
-					)
-				} 
+				{LabelElement} 
 				<div className={styles.selectedContainer}>
 					<button 
 						type='button'
@@ -155,88 +238,23 @@ export default class Select extends Component {
 						className={styles.previewLabel}
 					>	
 						<div className={styles.text}>
-							{
-								this.state.selectedLabel
-							} {
-								renderIf(this.state.selected.imagePath)(
-									<img src={this.state.selected.imagePath} alt='logo' />
-								)
-							} {
-								renderIf(this.state.selected.sprites)(
-									<Sprites name={this.state.selected.sprites} />
-								)
-							}
+							{this.state.selectedLabel} 
+							{ImageElement} 
+							{SpritesElement}
 						</div>
 						<Icon name={this.state.showOption ? 'sort-asc' : 'sort-desc'} />
 					</button>
-					<div className={this.state.showOption ? `${styles.listData} ${styles.shown}` : styles.listData}>
-						{
-							renderIf(filter)(
-								<div className={styles.quickFilter}>
-									<Input 
-										type='text' 
-										name='quickfilter' 
-										onChange={this.getFilter} 
-										placeholder='Quick Search'
-									/>
-								</div>
-							)
-						}
-						
+					<div className={OptionsClass}>
+						{FilterElement}
 						<div className={styles.overflow}>
 							{
-								renderIf(options.length > 0)(
-									options.map((option, i) => (
-										<button 
-											key={i}
-											type='button'
-											className={
-												option.value !== this.state.selected.value ? null : styles.selected
-											} 
-											onClick={() => this.setSelectOption(option)} 
-											disabled={!!option.disabled}
-										>
-											<div className={styles.text}>
-												{
-													option.label
-												} {
-													renderIf(option.imagePath)(
-														<img src={option.imagePath} alt='logo' />
-													)
-												} {
-													renderIf(option.sprites)(
-														<Sprites name={option.sprites} />
-													)
-												}
-											</div>
-											{
-												renderIf(option.info)(
-													<div className={styles.info}>{option.info}</div>
-												)
-											} {
-												renderIf(option.message)(
-													<div className={styles.optionMessage}>{option.message}</div>
-												)
-											}
-										</button>
-									))
-								)
+								this.state.emptyFilter ? <button disabled>No items in the collection!</button> : OptionsElement
 							}
 						</div>
-						{
-							renderIf(addButton)(
-								addButton
-							)
-						}
+						{AddButton}
 					</div>
 				</div>
-				{
-					renderIf(message)(
-						<div className={styles.message}>
-							{message}
-						</div>
-					)
-				}
+				{MessageRender}
 			</div>
 		);
 	}
@@ -244,15 +262,23 @@ export default class Select extends Component {
 
 Select.propTypes = {
 	selectedLabel: PropTypes.string,
+	/** List Data. */
 	options: PropTypes.array,
+	/** Attribute name. */
 	name: PropTypes.string,
-	onChange: PropTypes.func,
 	error: PropTypes.bool,
+	/** make horinzontal layout. */
 	horizontal: PropTypes.bool,
-	required: PropTypes.bool,
+	/** List data Position. */
 	top: PropTypes.bool,
+	/** List data Position. */
 	selected: PropTypes.object,
+	/** Label. */
 	label: PropTypes.string,
+	/** Enable Filter module. */
 	filter: PropTypes.bool,
+	/** Add custom component or custom action button. */
+	addButton: PropTypes.node,
+	/** info or message. */
 	message: PropTypes.string
 };
