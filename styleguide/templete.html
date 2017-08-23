@@ -1,0 +1,293 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>re-bulma styleguide</title>
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Lato:300,400,600,700" rel="stylesheet">
+    </head>
+    <body>
+        <style>
+                *, *::before, *::after {
+                    box-sizing: inherit;
+                }
+                
+                label{
+                    margin-bottom: 5px;
+                    display: block;
+                }
+
+                button {
+                    background: transparent;
+                    border: 1px solid transparent;
+                    cursor: pointer;
+                    outline: 0px;
+                  }
+                  
+                  label {
+                    margin-bottom: 5px;
+                    display: block;
+                  }
+                  
+                  :global body ::-webkit-scrollbar {
+                    width: 8px;
+                  }
+                  :global body ::-webkit-scrollbar-track {
+                    border-radius: 5px;
+                    background: transparent;
+                  }
+                  :global body ::-webkit-scrollbar-thumb {
+                    border-radius: 5px;
+                    background: rgba(0, 0, 0, 0.2);
+                  }
+                  :global body ::-webkit-scrollbar-thumb:hover {
+                    background: rgba(0, 0, 0, 0.4);
+                  }
+                  :global body ::-webkit-scrollbar-thumb:window-inactive {
+                    background: rgba(0, 0, 0, 0.05);
+                  }
+                  :global body input[type=number]::-webkit-outer-spin-button,
+                  :global body input[type=number]::-webkit-inner-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                  }
+                  :global body input[type=number] {
+                    -moz-appearance: textfield;
+                  }
+                  :global body #root,
+                  :global body #root > main,
+                  :global body .page {
+                    height: 100%;
+                  }
+                  :global body .font-small {
+                    font-size: 10px;
+                  }
+                  :global body .text-right {
+                    text-align: right;
+                  }
+                  :global body .text-center {
+                    text-align: center;
+                  }
+                  :global body .text-left {
+                    text-align: left;
+                  }
+                  
+            html{
+                font-weight: 300;
+                font-size: 10px;
+                line-height: 1.4;   
+            }
+            .example button{
+                margin-right: 10px;
+            }
+            
+            .example{
+                font-size: 12px;
+            }
+            
+
+            .example-icon i{
+                margin-right: 15px;
+            }
+            
+            .example_level .Level__left,
+            .example_level .Level__item,
+            .example_level .Level__right,
+            .example_col .Col__col{
+                background-color: lightblue;
+                border: 1px solid #fff;
+                padding: 15px;
+                color: #fff;
+                font-size: 12px;
+            }
+
+            .button-0-24:after{
+                content: "\f107";
+                display: inline-block;
+                font: normal normal normal 14px/1 FontAwesome;
+                font-size: inherit;
+                text-rendering: auto;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                font-size: 20px;
+                margin-left: 5px;
+            }
+            body, p{
+                font-family: 'Lato', sans-serif !important;
+                color: #454d5d !important;
+                font-weight: 300;
+                line-height: 1.4;
+            }
+            .logo-0-5 h1{
+                font-size: 15px;
+                padding-left: 55px;
+                padding-top: 15px;
+                font-weight: 600;
+                text-shadow: 0px 0px 1px #fff;
+                opacity: 0.8;
+            }
+            .logo-0-5{
+                background: #f8f9fa url(https://lh3.googleusercontent.com/pjA_ImkCGlqa31e6U5yxmMi3rdclCKYAxB-HVRzRLbHON6anmdAbLQqDvmribJglYg=w300);
+                background-position: 15px center;
+                background-size: 40px;
+                height: 100px;
+                background-repeat: no-repeat;
+                border: 0px;
+            }
+            .sidebar-0-4{
+                width: 250px;
+                background: #f8f9fa;
+                border: 0px;
+            }
+            .hasSidebar-0-2{
+                padding-left: 250px;
+            }
+            .sidebar-0-4 .list-0-57 > li > a{
+                background-color: rgba(0,0,0,0.07);
+            }
+            .heading-0-11{
+                padding-top: 1.25rem;
+                font-size: 28px;
+            }
+            .isPrimary-0-12{
+                position: relative;
+                padding-top: 1.5rem;
+                padding-bottom: 1rem;
+                margin-bottom: 3rem;
+                font-size: 40px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+            .isPrimary-0-12:before {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 4px;
+                background-color: #55ba6f;
+                border-radius: 4px;
+            }
+            .sidebar-0-4 ul li ul li a{
+                padding-left: 15px !important;
+                background: transparent !important;
+            }
+            .sidebar-0-4 input{
+                background-color: rgba(255,255,255,0.7);
+                border:1px solid rgba(0,0,0,0.1);
+                font-size: 13px !important;
+                color: #5b657a;
+            }
+            .sidebar-0-4 input::-webkit-input-placeholder {
+                font-size: 13px !important;
+            }
+            .list-0-57{
+                padding-left: 0 !important;
+            }
+            .sidebar-0-4 ul li a{
+                color: #5b657a !important;
+                display: block !important;
+                padding: 10px 20px !important;
+                font-size: 13px !important;
+            }
+            #banner{
+                height: 100vh;
+                color: #444;
+                padding-left: 250px;
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            #banner h1{
+                font-size: 40px;
+                margin: 30px 0;
+            }
+            #banner p{
+                font-size: 16px;
+                color: #454d5d;
+                margin-bottom: 50px;
+            }
+            #banner img{
+                margin: 10px 20px;
+            }
+            
+            #banner a{
+                color: #fff;
+                background-color: #eb5424;
+                border-color: #e14615;
+                padding: 16px 30px;
+                font-size: 14px;
+                line-height: 1.3333333;
+                border-radius: 3px;
+                text-decoration: none;
+            }
+            .m-header__color-bar {
+                overflow: hidden;
+                height: 4px;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: 1;
+            }
+            .m-header__color-bar>div {
+                float: left;
+                height: 4px;
+            }
+            .m-header__color-bar>div:first-child {
+                background: #FAB117;
+                width: 30%;
+            }
+            .m-header__color-bar>div:nth-child(2) {
+                background: #F16651;
+                width: 30%;
+            }
+            .m-header__color-bar>div:last-child {
+                background: #5FC8D7;
+                width: 40%;
+            }
+            .footer-0-6{
+                display: none !important;
+            }
+        </style>
+        <div class="m-header__color-bar">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div id="banner">
+            <h1>MatahariMall Style Guide</h1>
+            <div>
+                <img src="http://daynin.github.io/clojurescript-presentation/img/react-logo.png" height="50" alt="">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR38grk_OzI32mPKfJjkGpsC0hR7wumGucG2DP2EbZiKhrnXsgfvA" height="40" alt="">
+                <img src="https://jeremyrajan.gallerycdn.vsassets.io/extensions/jeremyrajan/webpack/2.0.0/1489299001844/Microsoft.VisualStudio.Services.Icons.Default" height="50" alt="">
+                <img src="https://raw.githubusercontent.com/sebastian-software/postcss-smart-import/HEAD/assets/postcss.png" height="50" alt="">
+                <img src="https://avatars2.githubusercontent.com/u/12612655?v=4&s=400" height="50" alt="">  
+            </div>
+            <h2>A collection of common UI patterns used in MatahariMall for future project.</h2>
+            <p>
+                A MatahariMall Front End framework based on React, Flux, PostCSS, CSSModules, and Flexbox. <br>
+                The aim of this library is to provide a toolbelt of components, that will allow us to compose sites more quickly and consistently.
+            </p>
+            
+            
+            <a href="">Fork from github</a>
+        </div>
+        <script>
+            function hideBanner() {
+                if(window.location.href.indexOf("#!") > -1) {
+                    document.getElementById("banner").style.display = "none";
+                }
+            }
+            window.onpopstate = function (event) {
+                hideBanner();
+            }
+            hideBanner();
+            
+        </script>
+        <div id="app"></div>
+    </body>
+</html>

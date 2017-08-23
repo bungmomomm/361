@@ -94,6 +94,21 @@ $color: (
 	)
 );
 
+$alertColor: (
+	yellow: (
+		base: #FEF5EA,
+		darker: #AF9F74
+	),
+	red: (
+		base:#F2DEDF,
+		darker: #DFA4A4
+	),
+	green: (
+		base: #64BE64,
+		hover: darken(#64BE64, 10%)
+	),
+);
+
 $border: (
 	radius: (
 		base: 4px,

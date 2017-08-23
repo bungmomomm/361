@@ -14,10 +14,9 @@ import {
 	CreditCardRadio,
 	Input,
 	CreditCardInput,
-	Select
-} from '@/components/Base';
-
-import Stepper from '@/components/Stepper';
+	Select,
+	Stepper
+} from '@/components';
 
 import { 
 		// UangElektronik, 

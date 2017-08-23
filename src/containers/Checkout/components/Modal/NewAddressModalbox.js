@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import styles from '../../Checkout.scss';
 import { Validator } from 'ree-validate';
+
 // component load
-import Gosend from '@/components/Gosend';
-import Icon from '@/components/Icon';
-import { Textarea, Modal, Level, Input, InputGroup, Select, Alert, Segment, Button } from '@/components/Base';
+import { Gosend, Icon, Textarea, Modal, Level, Input, InputGroup, Select, Alert, Segment, Button } from '@/components';
 
 // Dummy Data
 import { Provinsi } from '@/data';
@@ -195,11 +194,19 @@ export default class NewAddressModalbox extends Component {
 							}} 
 						/>
 						<Segment row>
-							<Icon name='map-marker' />
-							<div>Jalan Bangka II No.20, Pela Mampang, 
-							Mampang Prapatan, Kota Jakarta Selatan, 
-							DKI jakarta 12720</div>
-							<button className='font-small font-orange'>Ganti Lokasi</button>
+							<Level padded>
+								<Level.Item>
+									<Icon name='map-marker' />
+								</Level.Item>
+								<Level.Item>
+									Jalan Bangka II No.20, Pela Mampang, 
+									Mampang Prapatan, Kota Jakarta Selatan, 
+									DKI jakarta 12720
+								</Level.Item>
+								<Level.Item>
+									<button className='font-small font-orange'>Ganti Lokasi</button>
+								</Level.Item>
+							</Level>
 						</Segment>
 						<p className='font-small font-orange'>Lokasi peta harus sesuai dengan alamat pengiriman. Lokasi diperlukan jika ingin menggunakan jasa pengiriman GO-SEND.</p>
 					</div>

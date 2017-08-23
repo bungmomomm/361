@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
-import Icon from '@/components/Icon';
 
 // component load
 import { 
 	Level, 
 	InputGroup, 
 	Select,  
+	Icon,
 	Button, 
 	Tabs,
 	Alert,
 	Segment,
-} from '@/components/Base';
+} from '@/components';
 
 import Dropshipper from './Dropshipper';
 

@@ -1,0 +1,31 @@
+@import 'mixins';
+@import 'variables';
+
+.segment {
+	background: #FAFAFA;
+	border: 1px solid border(color);
+	border-radius: border(radius);
+	padding: rem(15px) rem(20px);
+	margin-bottom: rem(15px);
+	outline: 0px;
+	// flex:1;
+	&:last-child{
+		margin-bottom: 0;
+	}
+}
+
+.loading{
+	@include laoding();
+}
+
+.right{
+	text-align: left;
+}
+
+.center{
+	text-align: center;
+}
+
+.right{
+	text-align: right;
+}

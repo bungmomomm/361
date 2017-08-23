@@ -4,9 +4,7 @@ import Helmet from 'react-helmet';
 import styles from './Checkout.scss';
 
 // component load
-import { CheckoutHeader } from '@/components/Header';
-import Loading from '@/components/Loading';
-import { Container, Row, Col } from '@/components/Base';
+import { Container, Row, Col, Loading, CheckoutHeader } from '@/components';
 import { renderIf } from '@/utils';
 
 import { Validator } from 'ree-validate';
@@ -289,9 +287,9 @@ class Checkout extends Component {
 					<Helmet title='Checkout' />
 					<CheckoutHeader user={user} />
 					<div className={styles.checkout}>
-						<Container>
-							<Row>
-								<Col grid={4} className={enableAlamatPengiriman ? '' : styles.disabled}>
+						<Container className={styles.fullHeight}>
+							<Row className={styles.fullHeight}>
+								<Col flex grid={4} className={enableAlamatPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
 									{
 										renderIf(addresses)(
@@ -299,13 +297,13 @@ class Checkout extends Component {
 										)
 									}
 								</Col>
-								<Col grid={4} className={enablePesananPengiriman ? '' : styles.disabled}>
+								<Col flex grid={4} className={enablePesananPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>(5 items)</span></div>
 									{
 										<CardPesananPengiriman cart={!this.state.cart ? [] : this.state.cart} onDeleteCart={this.onDeleteCart} />
 									}
 								</Col>
-								<Col grid={4} className={enablePembayaran ? '' : styles.disabled}>
+								<Col flex grid={4} className={enablePembayaran ? '' : styles.disabled}>
 									<div className={styles.title}>3. Pembayaran</div>
 									<CardPembayaran
 										loadingButtonCoupon={coupon.loading}

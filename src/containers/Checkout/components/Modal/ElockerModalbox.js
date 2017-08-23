@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 
 // component load
-import { Modal } from '@/components/Base';
-import Elocker from '@/components/Elocker';
+import { Modal, Elocker } from '@/components';
 
 export default class ElockerModalBox extends Component {
 	constructor(props) {

@@ -1,0 +1,134 @@
+@import 'mixins';
+@import 'variables';
+
+@mixin inputStyle($inputColor){
+	border-color: map-deep-get($color, $inputColor, base);
+	color: map-deep-get($color, $inputColor, base);
+	&:focus{
+		border-color: map-deep-get($color, $inputColor, base);
+	}
+	+ .msg{
+		color: map-deep-get($color, $inputColor, base);
+	}
+}
+
+.TextareaWrapper{
+	position: relative;
+}
+
+.horizontal{
+	display: flex;
+	label{
+		flex-basis: 0;
+		flex-grow: 1;
+		flex-shrink: 0;
+		margin-right: rem(10px);
+		text-align: left;
+		padding-top: rem(10px);
+	}
+	.Textarea{
+		flex: 1;
+	}
+}
+
+.Textarea{
+	background: #fff;
+	background: #FFFFFF;
+	border: 1px solid border(color);
+	border-radius: border(radius);
+	font-size: 12px;
+	color: color(black);
+	min-height: 40px;
+	resize: vertical;
+	padding: 10px 15px;
+	display: block;
+	width: 100%;
+	justify-content: space-between;
+	&:focus{
+		outline: 0px;
+		border: 1px solid border(color, hover);
+	}
+}
+
+.message{
+	margin-top: 5px;
+    display: block;
+    font-size: 10px;
+    text-align: right;
+}
+
+.red{
+	@include inputStyle(red);
+	+ .message{
+		color: color(red);
+	}
+}
+
+.green{
+	@include inputStyle(green);
+	+ .message{
+		color: color(green);
+	}
+}
+
+.yellow{
+	@include inputStyle(yellow);
+	+ .message{
+		color: color(yellow);
+	}
+}
+
+// SIZE
+.small{
+	height: rem(40px);
+	~ .sprites, 
+	~ .icon{
+		height: 27px;
+	}
+}
+
+.medium{
+	height: rem(60px);
+	~ .sprites, 
+	~ .icon{
+		height: 35px;
+	}
+}
+
+.large{
+	height: rem(90px);
+	~ .sprites, 
+	~ .icon{
+		height: 45px;
+	}
+}
+
+
+.sprites, .icon{
+	position: absolute;
+	right: 10px;
+	top: 0px;
+	height: 100%;
+	display: flex;
+    align-items: center;
+}
+
+.textareaBody{
+	display: flex;
+	flex-basis: 0;
+	flex-grow: 4;
+	flex-shrink: 1;
+	flex-direction: column;
+	position: relative;
+}
+
+label{
+	color: #4a4a4a;
+	font-weight: 300;
+    font-size: 12px;
+    line-height: 1.4;
+	~ .sprites, 
+	~ .icon{
+		top: 20px;
+	} 
+}
