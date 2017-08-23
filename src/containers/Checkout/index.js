@@ -60,6 +60,7 @@ class Checkout extends Component {
 			},
 			errorDropship: null,
 			isValidDropshipper: true,
+			formDataAddress: {}
 		};
 		this.onAddCoupon = this.onAddCoupon.bind(this);
 		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
@@ -161,8 +162,21 @@ class Checkout extends Component {
 	}
 
 	onChangeAddress(address) {
+		const editAddress = address.attributes;
+		const formDataAddress = {
+			label: editAddress.addressLabel,
+			nama: editAddress.fullname,
+			noHP: editAddress.phone,
+			kota: editAddress.city,
+			provinsi: editAddress.province,
+			kotProv: `${editAddress.city}, ${editAddress.province}`,
+			kecamatan: editAddress.district,
+			kodepos: editAddress.zipcode,
+			address: editAddress.address
+		};
 		this.setState({
-			enableNewAddress: true
+			enableNewAddress: true,
+			formDataAddress
 		});
 	}
 
@@ -267,6 +281,7 @@ class Checkout extends Component {
 			enableAlamatPengiriman,
 			enablePesananPengiriman,
 			enablePembayaran,
+			formDataAddress
 		} = this.state;
 
 		const {
@@ -325,7 +340,7 @@ class Checkout extends Component {
 							</Row>
 						</Container>
 					</div>
-					<NewAddressModalbox shown={this.state.enableNewAddress} />
+					<NewAddressModalbox shown={this.state.enableNewAddress} formDataAddress={formDataAddress} />
 					<ElockerModalbox shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} o2oProvinces={!o2oProvinces ? null : o2oProvinces} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
 					<PaymentSuccessModalbox />
 					<PaymentErrorModalbox />

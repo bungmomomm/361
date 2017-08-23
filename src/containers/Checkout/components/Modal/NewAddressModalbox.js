@@ -39,6 +39,10 @@ export default class NewAddressModalbox extends Component {
 		this.validateAndSubmit = this.validateAndSubmit.bind(this);
 	}
 
+	componentWillReceiveProps() {
+		console.log(this.props);
+	}
+
 	onChange(e) {
 		const name = e.target.name;
 		const value = e.target.value;
@@ -98,6 +102,7 @@ export default class NewAddressModalbox extends Component {
 								error={errors.has('name')}
 								message={errors.has('name') ? 'Name field is required.' : ''}
 								type='text'
+								value={typeof this.props.formDataAddress.label !== 'undefined' ? this.props.formDataAddress.label : ''}
 							/>
 						</InputGroup>
 						<InputGroup>
@@ -111,6 +116,7 @@ export default class NewAddressModalbox extends Component {
 								error={errors.has('penerima')}
 								message={errors.has('name') ? 'Penerima field is required.' : ''}
 								type='text'
+								value={typeof this.props.formDataAddress.nama !== 'undefined' ? this.props.formDataAddress.nama : ''}
 							/>
 						</InputGroup>
 						<InputGroup>
@@ -124,6 +130,7 @@ export default class NewAddressModalbox extends Component {
 								error={errors.has('no_hp')}
 								message={errors.has('name') ? 'No Hp field is required.' : ''}
 								type='number'
+								value={typeof this.props.formDataAddress.noHP !== 'undefined' ? this.props.formDataAddress.noHP : ''}
 							/>
 						</InputGroup>
 						<InputGroup>
@@ -133,7 +140,7 @@ export default class NewAddressModalbox extends Component {
 								filter
 								required
 								name='provinsi'
-								selectedLabel='-- Silahkan Pilih' 
+								selectedLabel={typeof this.props.formDataAddress.kotProv !== 'undefined' ? this.props.formDataAddress.kotProv : '-- Silahkan Pilih'} 
 								onChange={this.onChangeSelect}
 								error={errors.has('provinsi')}
 								message={errors.has('provinsi') ? 'Provinsi field is required.' : ''}
@@ -146,7 +153,7 @@ export default class NewAddressModalbox extends Component {
 								label='Kecamatan'
 								filter
 								required
-								selectedLabel='-- Silahkan Pilih' 
+								selectedLabel={typeof this.props.formDataAddress.kecamatan !== 'undefined' ? this.props.formDataAddress.kecamatan : '-- Silahkan Pilih'} 
 								onChange={this.onChangeSelect}
 								error={errors.has('kecamatan')}
 								message={errors.has('kecamatan') ? 'Kecamatan field is required.' : ''}
@@ -164,6 +171,7 @@ export default class NewAddressModalbox extends Component {
 								onChange={this.onChange}
 								error={errors.has('kodepos')}
 								message={errors.has('kodepos') ? 'Kode Pos field is required.' : ''}
+								value={typeof this.props.formDataAddress.kodepos !== 'undefined' ? this.props.formDataAddress.kodepos : ''}
 							/>
 						</InputGroup>
 						<InputGroup>
@@ -176,6 +184,7 @@ export default class NewAddressModalbox extends Component {
 								onChange={this.onChange}
 								error={errors.has('address')}
 								message={errors.has('address') ? 'Address field is required.' : ''}
+								value={typeof this.props.formDataAddress.address !== 'undefined' ? this.props.formDataAddress.address : ''}
 							/>
 						</InputGroup>
 						<Alert color='yellow'>

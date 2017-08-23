@@ -4,10 +4,27 @@ import {
 	ADDR_GET_ADDRESS,
 	ADDR_O2O_LIST,
 	ADDR_O2O_PROVINCE,
+	ADDR_GET_DISTRICT
 	// ADDR_SAVE_ADDRESS,
 	// ADDR_DROP_SHIPPER,
 	// ADDR_O2O_LIST 
 } from './constants';
+
+const districtRequest = (token) => ({
+	type: ADDR_GET_DISTRICT,
+	status: 0, 
+	payload: {
+		token
+	}
+});
+
+// const districtReceived = (province) => ({
+// 	type: ADDR_GET_DISTRICT,
+// 	status: 1, 
+// 	payload: {
+// 		province
+// 	}
+// });
 
 const addressesRequest = (token) => ({
 	type: ADDR_GET_ADDRESS,
@@ -117,6 +134,44 @@ const getAddresses = (token) => dispatch => {
 	});
 };
 
+const getProvince = (token) => dispatch => {
+	dispatch(districtRequest(token));
+	const req = {
+		token, 
+		path: 'me/addresses',
+		method: 'GET'
+	};
+	request(req)
+	.then((response) => {
+		const address = response.data.data.map((value, index) => {
+			return humps(value);
+		}).filter(e => e.type === 'shipping');
+
+		const billing = response.data.data.map((value, index) => {
+			return humps(value);
+		}).filter(e => e.type === 'billing');
+
+		let latesto2o = response.data.data.map((value, index) => {
+			return value;
+		}).filter(e => e.type === 'latest_o2o');
+
+		if (latesto2o.length > 0) {
+			latesto2o = [{
+				value: latesto2o[0].id,
+				id: latesto2o[0].id,
+				selected: true,
+				label: latesto2o[0].attributes.address_label,
+				attributes: latesto2o[0].attributes
+			}];
+		}
+
+		dispatch(addressesReceived(address, billing, latesto2o));
+	})
+	.catch((error) => {
+		console.log(error);
+	});
+};
+
 const getO2OList = (token, province = 6) => dispatch => {
 	dispatch(o2oListRequest(token));
 	const req = {
@@ -181,5 +236,6 @@ export default {
 	getAddresses,
 	getO2OList,
 	getO2OProvinces,
+	getProvince
 	// saveAddress
 };
