@@ -185,42 +185,6 @@ export default class Select extends Component {
 			)
 		);
 
-		const OptionsElement = (
-			renderIf(options && options.length)(
-				options.map((option, i) => (
-					<button 
-						key={i}
-						type='button'
-						className={
-							option.value !== this.state.selected.value ? null : styles.selected
-						} 
-						onClick={() => this.setSelectOption(option)} 
-						disabled={!!option.disabled}
-					>
-						<div className={styles.text}>
-							{ option.label} 
-							{[
-								renderIf(option.imagePath)(
-									<img src={option.imagePath} alt='logo' />
-								),
-								renderIf(option.sprites)(
-									<Sprites name={option.sprites} />
-								)
-							]}
-						</div>
-						{[
-							renderIf(option.info)(
-								<div className={styles.info}>{option.info}</div>
-							),
-							renderIf(option.message)(
-								<div className={styles.optionMessage}>{option.message}</div>
-							)
-						]}
-					</button>
-				))
-			)
-		);
-
 		return (
 			<div className={SelectWrapper}>
 				<div 
@@ -248,7 +212,41 @@ export default class Select extends Component {
 						{FilterElement}
 						<div className={styles.overflow}>
 							{
-								this.state.emptyFilter ? <button disabled>No items in the collection!</button> : OptionsElement
+								renderIf(options.length > 0)(
+									options.map((option, i) => (
+										<button 
+											key={i}
+											type='button'
+											className={
+												option.value !== this.state.selected.value ? null : styles.selected
+											} 
+											onClick={() => this.setSelectOption(option)} 
+											disabled={!!option.disabled}
+										>
+											<div className={styles.text}>
+												{ option.label} 
+												{
+													renderIf(option.imagePath)(
+														<img src={option.imagePath} alt='logo' />
+													)
+												}{
+													renderIf(option.sprites)(
+														<Sprites name={option.sprites} />
+													)
+												}
+											</div>
+											{
+												renderIf(option.info)(
+													<div className={styles.info}>{option.info}</div>
+												)
+											}{
+												renderIf(option.message)(
+													<div className={styles.optionMessage}>{option.message}</div>
+												)
+											}
+										</button>
+									))
+								)
 							}
 						</div>
 						{AddButton}
