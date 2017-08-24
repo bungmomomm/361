@@ -68,7 +68,8 @@ class Checkout extends Component {
 			errorDropship: null,
 			isValidDropshipper: true,
 			formDataAddress: {},
-			cityProv: this.props.cityProv
+			cityProv: this.props.cityProv, 
+			district: this.props.district
 		};
 		this.onAddCoupon = this.onAddCoupon.bind(this);
 		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
@@ -260,8 +261,7 @@ class Checkout extends Component {
 	getDistricts(cityAndProvince) {
 		const { dispatch } = this.props;
 		dispatch(getDistrict(this.state.token, cityAndProvince));
-		console.log(cityAndProvince);
-		console.log(this.props);
+		console.log(this.state);
 	}
 
 	setDropship(checked, dropshipName = 'dropship_name', value = '') {
@@ -321,8 +321,10 @@ class Checkout extends Component {
             listo2o,
 			latesto2o,
 			o2oProvinces,
-			isPickupable,			
+			isPickupable		
 		} = this.props;
+		
+		console.log(this.props);
 		
 		return (
 			this.props.loading ? <Loading /> : (
@@ -369,7 +371,17 @@ class Checkout extends Component {
 							</Row>
 						</Container>
 					</div>
-					<NewAddressModalbox shown={this.state.enableNewAddress} formDataAddress={formDataAddress} cityProv={cityProv} getDistricts={this.getDistricts} />
+					{ 
+						renderIf(cityProv || this.state.cityProv)(
+							<NewAddressModalbox 
+								shown={this.state.enableNewAddress} 
+								formDataAddress={formDataAddress} 
+								cityProv={cityProv} 
+								district={this.props.district} 
+								getDistricts={this.getDistricts} 
+							/>
+						)
+					}
 					<ElockerModalbox shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} o2oProvinces={!o2oProvinces ? null : o2oProvinces} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
 					<PaymentSuccessModalbox />
 					<PaymentErrorModalbox />
@@ -397,7 +409,8 @@ const mapStateToProps = (state) => {
 		latesto2o: state.addresses.latesto2o,
 		o2oProvinces: state.addresses.o2oProvinces,
 		isPickupable: state.cart.isPickupable,
-		cityProv: state.addresses.cityProv
+		cityProv: state.addresses.cityProv, 
+		district: state.addresses.district
 	};
 };
 

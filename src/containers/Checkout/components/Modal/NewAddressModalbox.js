@@ -8,7 +8,7 @@ import { Gosend, Icon, Textarea, Modal, Level, Input, InputGroup, Select, Alert,
 import { renderIf } from '@/utils';
 
 // Dummy Data
-import { Provinsi } from '@/data';
+// import { Provinsi } from '@/data';
 
 export default class NewAddressModalbox extends Component {
 	constructor(props) {
@@ -35,6 +35,7 @@ export default class NewAddressModalbox extends Component {
 				address: ''
 			},
 			errors: this.validator.errorBag,
+			district: {}
 		};
 		this.onChange = this.onChange.bind(this);
 		this.onChangeSelect = this.onChangeSelect.bind(this);
@@ -42,8 +43,10 @@ export default class NewAddressModalbox extends Component {
 		this.getDistricts = this.getDistricts.bind(this);
 	}
 
-	componentWillReceiveProps() {
-		// console.log(this.props);
+	componentWillReceiveProps(nextProps) {
+		this.setState({
+			district: nextProps.district
+		});
 	}
 
 	onChange(e) {
@@ -53,7 +56,9 @@ export default class NewAddressModalbox extends Component {
 	}
 
 	onChangeSelect(e) {
-		console.log(e);
+		if (e.name === 'provinsi') {
+			this.getDistricts(e.value);
+		}
 		this.setErrors(e.name, e.value);
 	}
 
@@ -93,6 +98,7 @@ export default class NewAddressModalbox extends Component {
 	
 	render() {
 		const { errors } = this.state;
+		// console.log(this.props.cityProv);
 		return (
 			<Modal shown={this.props.shown}>
 				<Modal.Header>
@@ -142,36 +148,33 @@ export default class NewAddressModalbox extends Component {
 							/>
 						</InputGroup>
 						<InputGroup>
-							{
-								renderIf(Provinsi)(
-									<Select 
-										horizontal
-										label='Kota, Provinsi'
-										filter
-										required
-										name='provinsi'
-										selectedLabel={typeof this.props.formDataAddress.kotProv !== 'undefined' ? this.props.formDataAddress.kotProv : '-- Silahkan Pilih'} 
-										onChange={this.onChangeSelect}
-										error={errors.has('provinsi')}
-										message={errors.has('provinsi') ? 'Provinsi field is required.' : ''}
-										options={this.props.cityProv} 
-									/>
-								)
-							}
+							<Select 
+								horizontal
+								label='Kota, Provinsi'
+								filter
+								required
+								name='provinsi'
+								selectedLabel={typeof this.props.formDataAddress.kotProv !== 'undefined' ? this.props.formDataAddress.kotProv : '-- Silahkan Pilih'} 
+								onChange={this.onChangeSelect}
+								error={errors.has('provinsi')}
+								message={errors.has('provinsi') ? 'Provinsi field is required.' : ''}
+								options={this.props.cityProv} 
+							/>
 						</InputGroup>
 						<InputGroup>
 							{
-								renderIf(Provinsi)(
+								renderIf(this.props.district)(
 									<Select 
 										horizontal
 										label='Kecamatan'
+										name='district'
 										filter
 										required
-										selectedLabel={typeof this.props.formDataAddress.kecamatan !== 'undefined' ? this.props.formDataAddress.kecamatan : '-- Silahkan Pilih'} 
+										selectedLabel='-- Silahkan Pilih'
 										onChange={this.onChangeSelect}
 										error={errors.has('kecamatan')}
 										message={errors.has('kecamatan') ? 'Kecamatan field is required.' : ''}
-										options={Provinsi} 
+										options={this.props.district} 
 									/>
 								)
 							}
