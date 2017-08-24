@@ -86,6 +86,7 @@ export default (state = initialState, action) => {
 
 	case constants.PAY: {
 		if (action.status) {
+			top.location.href = `/checkout/${action.payload.soNumber}/complete`;			
 			return {
 				...state,
 				loading: !action.status,

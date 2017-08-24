@@ -131,8 +131,14 @@ export default class CardPembayaran extends Component {
 			loading,
 			selectedPayment 
 		} = this.props.payments;
+		let couponId = false;
+		if (this.props.validCoupon && this.props.coupon !== '') {
+			couponId = this.props.coupon;
+		} else if (this.props.payments.couponId) {
+			couponId = this.props.payments.couponId;
+		}
 		let voucherBox = '';
-		if (this.props.coupon === '' || this.props.validCoupon === null) { 
+		if (couponId === '' || this.props.validCoupon === null) { 
 			voucherBox = (
 				<Level>
 					<Level.Left>Kode Voucher</Level.Left>
@@ -144,7 +150,7 @@ export default class CardPembayaran extends Component {
 					</Level.Right>
 				</Level>
 			);
-		} else if (!this.props.validCoupon && this.props.coupon !== '') {
+		} else if (!this.props.validCoupon && couponId !== '') {
 			voucherBox = (
 				<Level>
 					<Level.Left>Kode Voucher</Level.Left>
@@ -211,7 +217,7 @@ export default class CardPembayaran extends Component {
 				break;	
 			} 
 		}
-
+		console.log(couponId);
 		return (
 			<Card>
 				<div className={styles.overflow}>
@@ -220,9 +226,9 @@ export default class CardPembayaran extends Component {
 						<Level.Right className='text-right'>{currency(subTotal)}</Level.Right>
 					</Level>
 					{
-						!this.props.validCoupon ? null : (
+						!couponId ? null : (
 							<Level>
-								<Level.Left>Voucher : <strong>{this.props.loadingButtonCoupon ? 'loading...' : this.props.coupon }</strong> <Button icon='times-circle' iconPosition='right' onClick={this.props.onRemoveCoupon} /></Level.Left>
+								<Level.Left>Voucher : <strong>{this.props.loadingButtonCoupon ? 'loading...' : couponId }</strong> <Button icon='times-circle' iconPosition='right' onClick={this.props.onRemoveCoupon} /></Level.Left>
 								<Level.Right className='text-right'>{currency(-coupon)}</Level.Right>
 							</Level>
 						)
@@ -294,6 +300,9 @@ export default class CardPembayaran extends Component {
 							</div>
 						)}
 
+						<InputGroup>
+							<Input label='Masukkan OVO ID' type='number' placeholder='OVO ID' />
+						</InputGroup>
 						
 						<div className={styles.checkOutAction}>
 							<Checkbox checked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />

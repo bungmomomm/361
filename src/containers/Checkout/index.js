@@ -32,8 +32,12 @@ import {
 	changePaymentOption,
 	openNewCreditCard,
 	selectCreditCard,
-	pay
+	pay,
+	applyBin
 } from '@/state/Payment/actions';
+import { 
+	paymentMethodName
+} from '@/state/Payment/constants';
 
 
 class Checkout extends Component {
@@ -216,7 +220,24 @@ class Checkout extends Component {
 	}
 
 	onPaymentOptionChange(event, paymentMethod) {
-		this.props.dispatch(changePaymentOption(event.value, paymentMethod, this.props.payments.paymentMethods));
+		const { dispatch } = this.props;
+		const option = event.value;
+		if (option) {
+			const selectedPaymentOption = this.props.payments.paymentMethods.payments[paymentMethod.id].paymentItems.filter((item) => parseInt(item.value, 10) === parseInt(option, 10)).pop();
+			let cardNumber = '';
+			let bankName = '';
+			switch (selectedPaymentOption.paymentMethod) {
+			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
+			case paymentMethodName.COMMERCE_VERITRANS:
+				cardNumber = this.props.payments.selectCreditCard.value;
+				bankName = this.props.payments.selectedBank.value;
+				break;
+			default:
+				break;
+			}
+			dispatch(changePaymentOption(selectedPaymentOption));
+			dispatch(applyBin(this.state.token, selectedPaymentOption.value, cardNumber, bankName));
+		}
 	}
 
 	onNewCreditCard(event) {
@@ -260,16 +281,13 @@ class Checkout extends Component {
 	}
 
 	onDoPayment() {
-		// console.log(this.state, this.props);// .payments.selectedPaymentOption);
-
 		const { dispatch } = this.props;
-		dispatch(pay(this.state.token, this.props.orderId, this.props.payments.selectedPaymentOption));
+		dispatch(pay(this.state.token, this.props.soNumber, this.props.payments.selectedPaymentOption));
 	}
 
 	getDistricts(cityAndProvince) {
 		const { dispatch } = this.props;
 		dispatch(getDistrict(this.state.token, cityAndProvince));
-		console.log(this.state);
 	}
 
 	setDropship(checked, dropshipName = 'dropship_name', value = '', onClick = false) {
@@ -368,10 +386,7 @@ class Checkout extends Component {
 			latesto2o,
 			o2oProvinces,
 			isPickupable		
-		} = this.props;
-		
-		console.log(this.props);
-		
+		} = this.props;		
 		return (
 			this.props.loading ? <Loading /> : (
 				<div className='page'>

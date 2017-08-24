@@ -6,6 +6,7 @@ const PAY_NEW_CREDIT_CARD = 'PAY_NEW_CREDIT_CARD';
 const PAY_CREDIT_CARD_SELECTED = 'PAY_CREDIT_CARD_SELECTED';
 const PAY_CREDIT_CARD_DESELECT = 'PAY_CREDIT_CARD_DESELECT';
 const PAY_UPDATED = 'PAY_UPDATED';
+const PAY_APPLY_BIN = 'PAY_APPLY_BIN';
 const PAY = 'PAY';
 
 const paymentGroupName = {
@@ -36,6 +37,7 @@ export default {
 	PAY_CREDIT_CARD_SELECTED,
 	PAY_CREDIT_CARD_DESELECT,
 	PAY,
+	PAY_APPLY_BIN,
 	paymentGroupName,
 	paymentMethodName
 };
