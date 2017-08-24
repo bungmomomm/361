@@ -239,8 +239,8 @@ class Checkout extends Component {
 			switch (selectedPaymentOption.paymentMethod) {
 			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 			case paymentMethodName.COMMERCE_VERITRANS:
-				cardNumber = this.props.payments.selectCreditCard.value;
-				bankName = this.props.payments.selectedBank.value;
+				cardNumber = this.props.payments.selectCard ? this.props.payments.selectCard.value : '';
+				bankName = this.props.payments.selectedBank ? this.props.payments.selectedBank.value : '';
 				break;
 			default:
 				break;
@@ -292,7 +292,29 @@ class Checkout extends Component {
 
 	onDoPayment() {
 		const { dispatch } = this.props;
-		dispatch(pay(this.state.token, this.props.soNumber, this.props.payments.selectedPaymentOption));
+		switch (this.props.payments.paymentMethod) {
+		case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
+		case paymentMethodName.COMMERCE_VERITRANS:
+			dispatch(
+				pay(
+					this.state.token, 
+					this.props.soNumber, 
+					this.props.payments.selectedPaymentOption,
+					this.props.payments.selectCard,
+					this.props.payments.selectedBank
+				)
+			);
+			break;
+		default:
+			dispatch(
+				pay(
+					this.state.token, 
+					this.props.soNumber, 
+					this.props.payments.selectedPaymentOption
+				)
+			);
+			break;
+		}
 	}
 
 	getDistricts(cityAndProvince) {
@@ -382,8 +404,7 @@ class Checkout extends Component {
 			enableAlamatPengiriman,
 			enablePesananPengiriman,
 			enablePembayaran,
-			formDataAddress,
-			cityProv
+			formDataAddress
 		} = this.state;
 
 		const {
@@ -397,6 +418,7 @@ class Checkout extends Component {
 			o2oProvinces,
 			isPickupable		
 		} = this.props;		
+		
 		return (
 			this.props.loading ? <Loading /> : (
 				<div className='page'>
@@ -443,11 +465,11 @@ class Checkout extends Component {
 						</Container>
 					</div>
 					{ 
-						renderIf(cityProv || this.state.cityProv)(
+						renderIf(this.props.cityProv)(
 							<NewAddressModalbox 
 								shown={this.state.enableNewAddress} 
 								formDataAddress={formDataAddress} 
-								cityProv={cityProv} 
+								cityProv={this.props.cityProv} 
 								district={this.props.district} 
 								getDistricts={this.getDistricts} 
 							/>

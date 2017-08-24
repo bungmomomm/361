@@ -62,10 +62,11 @@ const payRequest = () => ({
 	status: false
 });
 
-const payReceived = (payment) => ({
+const payReceived = (soNumber, payment) => ({
 	type: constants.PAY,
 	status: true,
 	payload: {
+		soNumber,
 		payment
 	}
 });
@@ -118,17 +119,17 @@ const selectCreditCard = (card) => dispatch => {
 	dispatch(creditCardSelected(card));
 };
 
-const pay = (token, orderId, payment) => dispatch => {
+const pay = (token, soNumber, payment) => dispatch => {
 	dispatch(payRequest());
 	return request({
 		token,
 		path: 'payments',
 		method: 'POST',
 		body: {
-			data: getPaymentPayload(orderId, payment)
+			data: getPaymentPayload(soNumber, payment)
 		}
 	}).then((response) => {
-		dispatch(payReceived(response.data));
+		dispatch(payReceived(soNumber, response.data));
 	}).catch((error) => {
 		// showError
 		dispatch(payReceived({}));

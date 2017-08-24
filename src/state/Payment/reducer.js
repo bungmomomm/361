@@ -59,9 +59,11 @@ export default (state = initialState, action) => {
 		const paymentItems = state.selectedPayment.paymentItems.map((item, index) => {
 			item.cards = item.cards.map((card, cardIndex) => {
 				card.selected = false;
+				state.selectedCard = false;
 				if (action.status) {
 					if (card.value === action.payload.card) {
 						card.selected = true;
+						state.selectedCard = card;
 					}
 				}
 				return card;

@@ -71,6 +71,11 @@ export default class CardPembayaran extends Component {
 		this.onPaymentOptionChange = this.onPaymentOptionChange.bind(this);
 		this.onNewCreditCard = this.onNewCreditCard.bind(this);
 		this.onSelectCard = this.onSelectCard.bind(this);
+
+		this.onCardNumberChange = this.onCardNumberChange.bind(this);
+		this.onCardMonthChange = this.onCardMonthChange.bind(this);
+		this.onCardYearChange = this.onCardYearChange.bind(this);
+		this.onCardCvvChange = this.onCardCvvChange.bind(this);
 	}
 	onChange(event) {
 		this.setState({
@@ -99,6 +104,18 @@ export default class CardPembayaran extends Component {
 
 	onSelectCard(event) {
 		this.props.onSelectCard(event.value);
+	}
+	onCardNumberChange() {
+		console.log(this.state);
+	}
+	onCardMonthChange() {
+		console.log(this.state);
+	}
+	onCardYearChange() {
+		console.log(this.state);
+	}
+	onCardCvvChange() {
+		console.log(this.state);
 	}
 
 	handleCekVoucher(event) {
@@ -138,7 +155,7 @@ export default class CardPembayaran extends Component {
 			couponId = this.props.payments.couponId;
 		}
 		let voucherBox = '';
-		if (couponId === '' || this.props.validCoupon === null) { 
+		if (this.props.validCoupon === null && !couponId) { 
 			voucherBox = (
 				<Level>
 					<Level.Left>Kode Voucher</Level.Left>
@@ -150,7 +167,7 @@ export default class CardPembayaran extends Component {
 					</Level.Right>
 				</Level>
 			);
-		} else if (!this.props.validCoupon && couponId !== '') {
+		} else if (this.props.validCoupon !== null && !this.props.validCoupon && this.props.coupon !== '') {
 			voucherBox = (
 				<Level>
 					<Level.Left>Kode Voucher</Level.Left>
@@ -280,18 +297,18 @@ export default class CardPembayaran extends Component {
 						{ renderIf(this.props.payments.openNewCreditCard && selectedPayment.value === paymentGroupName.CREDIT_CARD)(
 							<div>
 								<InputGroup>
-									<Input placeholder='Masukkan Nomor Kartu' sprites='payment-option' creditCard />
+									<Input placeholder='Masukkan Nomor Kartu' sprites='payment-option' creditCard onBlur={this.onCardNumberChange} />
 								</InputGroup>
 								<label htmlFor='masa-berlaku'>Masa Berlaku</label>
 								<Level padded>
 									<Level.Item>
-										<Select top selectedLabel='-- Bulan' options={Bulan} />
+										<Select top selectedLabel='-- Bulan' options={Bulan} onChange={this.onCardMonthChange} />
 									</Level.Item>
 									<Level.Item>
-										<Select top selectedLabel='-- Tahun' options={Tahun} />
+										<Select top selectedLabel='-- Tahun' options={Tahun} onChange={this.onCardYearChange} />
 									</Level.Item>
 									<Level.Item>
-										<Input type='number' placeholder='cvv' />
+										<Input type='number' placeholder='cvv' onChange={this.onCardCvvChange} />
 									</Level.Item>
 									<Level.Item>
 										<Sprites name='cvv' />

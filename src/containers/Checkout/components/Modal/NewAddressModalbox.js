@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
 import styles from '../../Checkout.scss';
+import humps from 'lodash-humps';
 import { Validator } from 'ree-validate';
 
 // component load
 import { Gosend, Icon, Textarea, Modal, Level, Input, InputGroup, Select, Alert, Segment, Button } from '@/components';
+
+import { Polygon } from '@/data/polygons';
 
 import { renderIf } from '@/utils';
 
@@ -37,12 +40,13 @@ export default class NewAddressModalbox extends Component {
 			errors: this.validator.errorBag,
 			district: {},
 			enableGosend: false,
-			gosendData: null
+			gosendData: {}
 		};
 		this.onChange = this.onChange.bind(this);
 		this.onChangeSelect = this.onChangeSelect.bind(this);
 		this.validateAndSubmit = this.validateAndSubmit.bind(this);
 		this.getDistricts = this.getDistricts.bind(this);
+		this.kecamatan = null;
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -61,11 +65,20 @@ export default class NewAddressModalbox extends Component {
 		if (e.name === 'provinsi') {
 			this.getDistricts(e.value);
 		}
-
-		const provinsi = e.value.toLowerCase();
-		if (provinsi.includes('jakarta')) {
+		
+		if (e.name === 'kecamatan') {
+			this.kecamatan = humps(e.value.toLowerCase());
+			console.log(this.kecamatan);
+			const PolygonResult = Polygon.map((option) => {
+				return option[this.kecamatan] ? option : null;
+			}).filter((option) => {
+				return option;
+			});
 			this.setState({
-				enableGosend: true
+				gosendData: {
+					center: PolygonResult[0][this.kecamatan].center,
+					location_coords: PolygonResult[0][this.kecamatan].location_coords
+				}
 			});
 		}
 		this.setErrors(e.name, e.value);
@@ -107,8 +120,7 @@ export default class NewAddressModalbox extends Component {
 	
 	render() {
 		const { 
-			errors, 
-			enableGosend,
+			errors,
 			gosendData
 		} = this.state;
 		return (
@@ -170,27 +182,27 @@ export default class NewAddressModalbox extends Component {
 								onChange={this.onChangeSelect}
 								error={errors.has('provinsi')}
 								message={errors.has('provinsi') ? 'Provinsi field is required.' : ''}
-								options={this.props.cityProv} 
+								options={this.props.cityProv || []} 
 							/>
 						</InputGroup>
-						<InputGroup>
-							{
-								renderIf(this.props.district)(
+						{
+							renderIf(this.props.district)(
+								<InputGroup>
 									<Select 
 										horizontal
 										label='Kecamatan'
-										name='district'
+										name='kecamatan'
 										filter
 										required
 										selectedLabel='-- Silahkan Pilih'
 										onChange={this.onChangeSelect}
 										error={errors.has('kecamatan')}
 										message={errors.has('kecamatan') ? 'Kecamatan field is required.' : ''}
-										options={this.props.district} 
+										options={this.props.district || []} 
 									/>
-								)
-							}
-						</InputGroup>
+								</InputGroup>
+							)
+						}
 						<InputGroup>
 							<Input 
 								label='Kode Pos'
@@ -227,36 +239,34 @@ export default class NewAddressModalbox extends Component {
 							</small>
 						</Alert>
 						{
-							renderIf(enableGosend)(
-								[
-									<Gosend
-										zoom={15} 
-										center={{ 
-											lat: -6.164118, 
-											lng: 106.821247
-										}} 
-									/>,
-									renderIf(gosendData)(
-										[
-											<Segment row>
-												<Level padded>
-													<Level.Item>
-														<Icon name='map-marker' />
-													</Level.Item>
-													<Level.Item>
-														Jalan Bangka II No.20, Pela Mampang, 
-														Mampang Prapatan, Kota Jakarta Selatan, 
-														DKI jakarta 12720
-													</Level.Item>
-													<Level.Item>
-														<button className='font-small font-orange'>Ganti Lokasi</button>
-													</Level.Item>
-												</Level>
-											</Segment>,
-											<p className='font-small font-orange'>Lokasi peta harus sesuai dengan alamat pengiriman. Lokasi diperlukan jika ingin menggunakan jasa pengiriman GO-SEND.</p>
-										]
-									)
-								]
+							renderIf(gosendData)(
+								<Gosend
+									zoom={15} 
+									center={gosendData.center} 
+									polygonArea={gosendData.location_coords} 
+								/>
+							)
+						}
+						{
+							renderIf(gosendData)(
+								<div>
+									<Segment row>
+										<Level padded>
+											<Level.Item>
+												<Icon name='map-marker' />
+											</Level.Item>
+											<Level.Item>
+												Jalan Bangka II No.20, Pela Mampang, 
+												Mampang Prapatan, Kota Jakarta Selatan, 
+												DKI jakarta 12720
+											</Level.Item>
+											<Level.Item>
+												<button className='font-small font-orange'>Ganti Lokasi</button>
+											</Level.Item>
+										</Level>
+									</Segment>
+									<p className='font-small font-orange'>Lokasi peta harus sesuai dengan alamat pengiriman. Lokasi diperlukan jika ingin menggunakan jasa pengiriman GO-SEND.</p>
+								</div>
 							)
 						}
 					</div>
