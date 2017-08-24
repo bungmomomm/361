@@ -92,22 +92,27 @@
 		display: block;
 		min-width: 100%;
 	}
+	.flex{
+		padding: 15px;
+		width: 100%;
+		flex-direction: column;
+	}
+	.text{
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		line-height: 1;
+		flex:1;
+		padding-right: 8px;
+		white-space: nowrap;
+	}
+	button{
+		padding: 0px;
+		width: 100%;
+	}
 	> button{
 		padding: 15px;
-		.flex{
-			width: 100%;
-			display: flex;
-		}
-		.text{
-			width: 100%;
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			line-height: 1;
-			flex:1;
-			padding-right: 8px;
-			white-space: nowrap;
-		}
 	}
 }
 
@@ -167,7 +172,7 @@
 	max-height: 320px;
 	overflow-y: auto;
 	margin-top: 10px;
-	> .flex{
+	.flex{
 		padding: 10px;
 		width: 100%;
 		color: color(black);

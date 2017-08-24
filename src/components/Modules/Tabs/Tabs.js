@@ -79,27 +79,29 @@ export default class Tabs extends Component {
 									disabled={this.state.tabActive === i}
 									type='button'
 								>
-									{
-										renderIf(tabTitle.icon)(
-											<Icon 
-												name={
-													(this.state.tabActive === i && tabTitle.iconActive) ? 
-													tabTitle.iconActive : tabTitle.icon
-												}
-											/>
-										)
-									}
-									{
-										renderIf(tabTitle.sprites)(
-											<Sprites 
-												name={
-													(this.state.tabActive === i && tabTitle.spritesActive) ? 
-													tabTitle.spritesActive : tabTitle.sprites
-												}
-											/>
-										)
-									}
-									{tabTitle.title}
+									<span className={styles.flex}>
+										{
+											renderIf(tabTitle.icon)(
+												<Icon 
+													name={
+														(this.state.tabActive === i && tabTitle.iconActive) ? 
+														tabTitle.iconActive : tabTitle.icon
+													}
+												/>
+											)
+										}
+										{
+											renderIf(tabTitle.sprites)(
+												<Sprites 
+													name={
+														(this.state.tabActive === i && tabTitle.spritesActive) ? 
+														tabTitle.spritesActive : tabTitle.sprites
+													}
+												/>
+											)
+										}
+										{tabTitle.title}
+									</span>
 								</button>
 							);
 						})
