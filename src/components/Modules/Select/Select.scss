@@ -112,12 +112,28 @@
 	white-space: nowrap;
 }
 
-.error{
+.red{
 	.previewLabel, .listData{
 		border-color: color(red);
 	}
-	.message{
+	.message, .icon{
 		color: color(red);
+	}
+}
+.green{
+	.previewLabel, .listData{
+		border-color: color(green);
+	}
+	.message, .icon{
+		color: color(green);
+	}
+}
+.yellow{
+	.previewLabel, .listData{
+		border-color: color(yellow);
+	}
+	.message, .icon{
+		color: color(yellow);
 	}
 }
 
@@ -140,6 +156,11 @@
 		position: relative;
 		@include font(medium);
 		padding: 10px 15px;
+		.text{
+			white-space: normal;
+			text-align: left;
+			line-height: 1.2;
+		}
 		img{
 			height: 14px;
 			width: auto;

@@ -35,7 +35,9 @@ export default class NewAddressModalbox extends Component {
 				address: ''
 			},
 			errors: this.validator.errorBag,
-			district: {}
+			district: {},
+			enableGosend: false,
+			gosendData: null
 		};
 		this.onChange = this.onChange.bind(this);
 		this.onChangeSelect = this.onChangeSelect.bind(this);
@@ -58,6 +60,13 @@ export default class NewAddressModalbox extends Component {
 	onChangeSelect(e) {
 		if (e.name === 'provinsi') {
 			this.getDistricts(e.value);
+		}
+
+		const provinsi = e.value.toLowerCase();
+		if (provinsi.includes('jakarta')) {
+			this.setState({
+				enableGosend: true
+			});
 		}
 		this.setErrors(e.name, e.value);
 	}
@@ -97,10 +106,13 @@ export default class NewAddressModalbox extends Component {
 
 	
 	render() {
-		const { errors } = this.state;
-		// console.log(this.props.cityProv);
+		const { 
+			errors, 
+			enableGosend,
+			gosendData
+		} = this.state;
 		return (
-			<Modal shown={this.props.shown}>
+			<Modal size='medium' shown={this.props.shown}>
 				<Modal.Header>
 					<div>Buat Alamat Baru</div>
 				</Modal.Header>
@@ -214,29 +226,39 @@ export default class NewAddressModalbox extends Component {
 								</em>
 							</small>
 						</Alert>
-						<Gosend 
-							zoom={15} 
-							center={{ 
-								lat: -6.164118, 
-								lng: 106.821247
-							}} 
-						/>
-						<Segment row>
-							<Level padded>
-								<Level.Item>
-									<Icon name='map-marker' />
-								</Level.Item>
-								<Level.Item>
-									Jalan Bangka II No.20, Pela Mampang, 
-									Mampang Prapatan, Kota Jakarta Selatan, 
-									DKI jakarta 12720
-								</Level.Item>
-								<Level.Item>
-									<button className='font-small font-orange'>Ganti Lokasi</button>
-								</Level.Item>
-							</Level>
-						</Segment>
-						<p className='font-small font-orange'>Lokasi peta harus sesuai dengan alamat pengiriman. Lokasi diperlukan jika ingin menggunakan jasa pengiriman GO-SEND.</p>
+						{
+							renderIf(enableGosend)(
+								[
+									<Gosend
+										zoom={15} 
+										center={{ 
+											lat: -6.164118, 
+											lng: 106.821247
+										}} 
+									/>,
+									renderIf(gosendData)(
+										[
+											<Segment row>
+												<Level padded>
+													<Level.Item>
+														<Icon name='map-marker' />
+													</Level.Item>
+													<Level.Item>
+														Jalan Bangka II No.20, Pela Mampang, 
+														Mampang Prapatan, Kota Jakarta Selatan, 
+														DKI jakarta 12720
+													</Level.Item>
+													<Level.Item>
+														<button className='font-small font-orange'>Ganti Lokasi</button>
+													</Level.Item>
+												</Level>
+											</Segment>,
+											<p className='font-small font-orange'>Lokasi peta harus sesuai dengan alamat pengiriman. Lokasi diperlukan jika ingin menggunakan jasa pengiriman GO-SEND.</p>
+										]
+									)
+								]
+							)
+						}
 					</div>
 				</Modal.Body>
 				<Modal.Footer>

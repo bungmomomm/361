@@ -1,7 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
-import styles from './Modal.scss';
+import styles from '../Modal.scss';
 const cx = classNames.bind(styles);
 
 const Body = (props) => {
@@ -16,7 +15,3 @@ const Body = (props) => {
 };
 
 export default Body;
-
-Body.propTypes = {
-	children: PropTypes.node
-};

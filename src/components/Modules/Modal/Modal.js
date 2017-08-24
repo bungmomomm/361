@@ -4,9 +4,9 @@ import Icon from '../../Elements/Icon';
 import { injectProps } from '@/decorators';
 import { renderIf } from '@/utils';
 
-import Header from './ModalHeader';
-import Body from './ModalBody';
-import Footer from './ModalFooter';
+import Header from './__child/ModalHeader';
+import Body from './__child/ModalBody';
+import Footer from './__child/ModalFooter';
 
 import styles from './Modal.scss';
 import classNames from 'classnames/bind';
@@ -43,8 +43,7 @@ export default class Modal extends Component {
 
 	@injectProps
 	render({
-		large,
-		small,
+		size,
 		children
 	}) {
 		const ModalClass = cx({
@@ -53,8 +52,7 @@ export default class Modal extends Component {
 
 		const ModalWrapperClass = cx({
 			wrapper: true,
-			large: !!large,
-			small: !!small
+			[`Modal__${size}`]: !!size,
 		});
 		return (
 			renderIf(this.state.displayModal)(
@@ -86,7 +84,7 @@ Modal.Body = Body;
 Modal.Footer = Footer;
 
 Modal.propTypes = {
+	/** Trigger show Modal. */
 	shown: PropTypes.bool,
-	large: PropTypes.bool,
-	small: PropTypes.bool
+	size: PropTypes.oneOf(['small', 'medium', 'large']),
 };

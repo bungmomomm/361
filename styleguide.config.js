@@ -95,6 +95,7 @@ module.exports = {
 		}
 	},
 	styleguideDir: 'dist/guide',
+	ignore: ['**/__child/**'],
 	sections: [
 		{ name: 'Elements', components: 'src/components/Elements/**/*.js' },
 		{ name: 'Grid', components: 'src/components/Grid/**/*.js' },

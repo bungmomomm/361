@@ -111,7 +111,7 @@ const getListAvailablePaymentMethod = (response) => {
 	return returnData;
 };
 
-const getPaymentPayload = (payment, orderId) => {
+const getPaymentPayload = (orderId, payment) => {
 	const paymentPayload = {
 		type: 'payment',
 		attributes: {
@@ -145,6 +145,7 @@ const getPaymentPayload = (payment, orderId) => {
 		break;
 	}
 	console.log(paymentPayload);
+	return paymentPayload;
 };
 
 export default {

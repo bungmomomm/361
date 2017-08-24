@@ -117,7 +117,9 @@ export default class Elocker extends Component {
 						))
 					}
 				</div>
-				<Button onClick={this.submitLocker} content='Pilih Lokasi Toko / E-locker' color='dark' block size='large' iconPosition='right' icon='angle-right' />
+				<div className='pull-right'>
+					<Button onClick={this.submitLocker} content='Pilih Lokasi Toko / E-locker' color='dark' size='large' iconPosition='right' icon='angle-right' />
+				</div>
 			</div>
 		);
 	}

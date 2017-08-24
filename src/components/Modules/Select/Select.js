@@ -110,7 +110,7 @@ export default class Select extends Component {
 
 	@injectProps
 	render({
-		error,
+		color,
 		horizontal,
 		top,
 		label,
@@ -123,9 +123,9 @@ export default class Select extends Component {
 
 		const SelectWrapper = cx({
 			Select: true,
-			error: !!error,
 			horizontal: !!horizontal,
 			shown: this.state.showOption,
+			[`${color}`]: !!color,
 			top: !!top,
 		});
 
@@ -259,17 +259,18 @@ export default class Select extends Component {
 };
 
 Select.propTypes = {
+	/** Default select text. */
 	selectedLabel: PropTypes.string,
 	/** List Data. */
 	options: PropTypes.array,
 	/** Attribute name. */
 	name: PropTypes.string,
-	error: PropTypes.bool,
+	color: PropTypes.oneOf(['red', 'yellow', 'orange', 'green']),
 	/** make horinzontal layout. */
 	horizontal: PropTypes.bool,
 	/** List data Position. */
 	top: PropTypes.bool,
-	/** List data Position. */
+	/** selected Value. */
 	selected: PropTypes.object,
 	/** Label. */
 	label: PropTypes.string,
