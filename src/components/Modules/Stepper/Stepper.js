@@ -26,7 +26,7 @@ export default class Stepper extends Component {
 		};
 		this.setState(stepperValue);
 		if (this.props.onChange) {
-			this.props.onChange(this.state);
+			this.props.onChange(stepperValue);
 		}
 	};
 
@@ -40,12 +40,22 @@ export default class Stepper extends Component {
 		this.setState({ 
 			value: this.state.value + 1 
 		});
+		if (this.props.onChange) {
+			this.props.onChange({ 
+				value: this.state.value + 1 
+			});
+		}
 	}
 
 	decrement() {
 		this.setState({ 
 			value: this.state.value - 1 
 		});
+		if (this.props.onChange) {
+			this.props.onChange({ 
+				value: this.state.value - 1 
+			});
+		}
 	}
 
 	render() {

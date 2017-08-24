@@ -15,10 +15,15 @@ export default class CardPesananPengiriman extends Component {
 		super(props);
 		this.props = props;
 		this.onDeleteCart = this.onDeleteCart.bind(this);
+		this.onUpdateQty = this.onUpdateQty.bind(this);
 	}
 
 	onDeleteCart(cart) {
 		this.props.onDeleteCart(cart);
+	}
+
+	onUpdateQty(qty, id) {
+		this.props.onUpdateQty(qty, id);
 	}
 	
 	render() {
@@ -26,12 +31,12 @@ export default class CardPesananPengiriman extends Component {
 			<Card stretch>
 				<div className={styles.overflow}>
 					{
-						
+
 						this.props.cart.map((storeData, i) => (
 							<StoreBox color={this.props.restrictO2o && !storeData.store.shipping.o2oSupported ? 'red' : ''} key={i} name={storeData.store.name} location={storeData.store.location}>
 								{
 									storeData.store.products.map((product, index) => (
-										<CheckoutProduct restrictO2o={this.props.restrictO2o && !storeData.store.shipping.o2oSupported} key={index} data={product} onDeleteCart={this.onDeleteCart} />
+										<CheckoutProduct restrictO2o={this.props.restrictO2o && !storeData.store.shipping.o2oSupported} key={index} data={product} onDeleteCart={this.onDeleteCart} onUpdateQty={this.onUpdateQty} />
 									))
 								}
 								<CheckoutResult key={i} shipping={storeData.store.shipping} price={storeData.store.price} />

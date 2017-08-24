@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import styles from './CheckoutProduct.scss';
 import { Button, Figure, Stepper } from '@/components';
 
-import { currency } from '@/utils';
+import { currency, renderIf } from '@/utils';
 
 
 export default class CheckoutProduct extends Component {
@@ -12,9 +12,15 @@ export default class CheckoutProduct extends Component {
 		this.props = props;
 
 		this.onDeleteCart = this.onDeleteCart.bind(this);
+		this.onUpdateQty = this.onUpdateQty.bind(this);
 	}
 	onDeleteCart() {
 		this.props.onDeleteCart(this.props);
+	}
+	onUpdateQty(state) {
+		if (parseInt(state.value, 10) > 0) {
+			this.props.onUpdateQty(state.value, this.props.data.id);
+		}
 	}
 	render() {
 		return (
@@ -33,7 +39,11 @@ export default class CheckoutProduct extends Component {
 						<div className={styles.option}>
 							<div className={styles.price}>{currency(this.props.data.price)}</div>
 							<div className={styles.qty}>
-								<Stepper value={this.props.data.qty} maxValue={this.props.data.maxQty} />
+								{
+									renderIf(this.props.data.qty)(
+										<Stepper value={this.props.data.qty} maxValue={this.props.data.maxQty} onChange={this.onUpdateQty} />
+									)
+								}
 							</div>
 						</div>
 					</div>

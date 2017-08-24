@@ -44,6 +44,9 @@ const request = (props) => {
 	case 'DELETE': {
 		return axios.delete(url, { headers });
 	}
+	case 'PUT': {
+		return axios.put(url, props.body, { headers });
+	}
 	default: 
 		if (!props.body) {
 			throw new Error('post should send the data');
