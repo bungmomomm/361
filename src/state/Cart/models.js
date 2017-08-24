@@ -90,7 +90,7 @@ const setCartModel = (jsoApiResponse) => {
 				total_items: attr.total_items,
 				store_image: attr.store_image,
 				price: {
-					final_delivery_cost: parseInt(attr.total_price.final_delivery_cost, 10),
+					final_delivery_cost: attr.total_price.final_delivery_cost === '' ? 0 : parseInt(attr.total_price.final_delivery_cost, 10),
 					sub_total: parseInt(attr.total_price.sub_total, 10),
 					total: parseInt(attr.total_price.total, 10),
 				},

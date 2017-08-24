@@ -156,8 +156,43 @@ const deleteCart = (token, productId, props) => dispatch => {
 
 };
 
+const updateQtyCart = (token, productQty, productId, props) => dispatch => {
+	dispatch(gettingCart(token));
+
+	const req = {
+		method: 'PUT',
+		path: `orders/${props.soNumber}/update`,
+		token,
+		body: {
+			data: [
+				{
+					type: 'cart_items',
+					id: productId,
+					attributes: {
+						quantity: productQty
+					}
+				}
+			]
+		}
+	};
+	
+	request(req)
+	.then((res) => {
+		const isPickupable = res.data.data.attributes.delivery_method_provided.map((value, index) => {
+			return value;
+		}).filter(e => e.id === 'pickup');
+		dispatch(paymentInfoUpdated(getCartPaymentData(res.data)));
+		dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable));
+	})
+	.catch((error) => {
+		console.log(error);
+	});
+
+};
+
 export default {
 	getPlaceOrderCart,
 	getCart,
-	deleteCart
+	deleteCart,
+	updateQtyCart,
 };

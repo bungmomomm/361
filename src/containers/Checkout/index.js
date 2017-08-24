@@ -25,7 +25,7 @@ import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { addCoupon, removeCoupon, resetCoupon } from '@/state/Coupon/actions';
 import { getAddresses, getO2OList, getO2OProvinces, getCityProvince, getDistrict } from '@/state/Adresses/actions';
-import { getPlaceOrderCart, getCart, deleteCart } from '@/state/Cart/actions';
+import { getPlaceOrderCart, getCart, updateQtyCart } from '@/state/Cart/actions';
 import {
 	getAvailablePaymentMethod,
 	changePaymentMethod,
@@ -78,6 +78,7 @@ class Checkout extends Component {
 		this.onChoisedAddress = this.onChoisedAddress.bind(this);
 		this.onChangeAddress = this.onChangeAddress.bind(this);
 		this.onDeleteCart = this.onDeleteCart.bind(this);
+		this.onUpdateQty = this.onUpdateQty.bind(this);
 		this.onPaymentMethodChange = this.onPaymentMethodChange.bind(this);
 		this.onPaymentOptionChange = this.onPaymentOptionChange.bind(this);
 		this.onNewCreditCard = this.onNewCreditCard.bind(this);
@@ -202,12 +203,21 @@ class Checkout extends Component {
 
 	onDeleteCart(cart) {
 		const { dispatch } = this.props;
-		dispatch(deleteCart(this.state.token, cart.data.id, this.props));
+		dispatch(updateQtyCart(this.state.token, 0, cart.data.id, this.props));
 
 		this.setState({
 			cart: this.props.cart,
 		});
 
+	}
+
+	onUpdateQty(qty, id) {
+		const { dispatch } = this.props;
+		dispatch(updateQtyCart(this.state.token, qty, id, this.props));
+
+		this.setState({
+			cart: this.props.cart,
+		});
 	}
 
 	onPaymentMethodChange(event) {
@@ -389,7 +399,7 @@ class Checkout extends Component {
 								<Col flex grid={4} className={enablePesananPengiriman || this.state.restrictO2o ? '' : styles.disabled}>
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>(5 items)</span></div>
 									{
-										<CardPesananPengiriman cart={!this.state.cart ? [] : this.state.cart} onDeleteCart={this.onDeleteCart} restrictO2o={this.state.restrictO2o} />
+										<CardPesananPengiriman cart={!this.state.cart ? [] : this.state.cart} onDeleteCart={this.onDeleteCart} onUpdateQty={this.onUpdateQty} restrictO2o={this.state.restrictO2o} />
 									}
 								</Col>
 								<Col flex grid={4} className={enablePembayaran && !this.state.restrictO2o ? '' : styles.disabled}>
