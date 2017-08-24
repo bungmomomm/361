@@ -46,8 +46,8 @@ export default class Textarea extends Component {
 
 		const TextareaClass = cx({
 			Textarea: true,
-			[`Textarea__${color}`]: !!color,
-			[`Textarea__${size}`]: !!size
+			[`${color}`]: !!color,
+			[`${size}`]: !!size
 		});
 		
 		const idFor = newId();

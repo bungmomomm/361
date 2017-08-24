@@ -52,8 +52,8 @@ export default class Input extends Component {
 
 		const inputClass = cx({
 			input: true,
-			[`Input__${size}`]: !!size,
-			[`Input__${color}`]: !!color
+			[`${size}`]: !!size,
+			[`${color}`]: !!color
 		});
 
 		const idFor = newId();

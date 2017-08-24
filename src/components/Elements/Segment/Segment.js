@@ -8,7 +8,7 @@ const cx = classNames.bind(styles);
 const Segment = (props) => {
 	const SegmentClass = cx({
 		segment: true,
-		[`Segment__${props.align}`]: !!props.align,
+		[`${props.align}`]: !!props.align,
 		[`${props.className}`]: !!props.className,
 	});
 	
