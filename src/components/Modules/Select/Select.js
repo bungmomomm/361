@@ -201,12 +201,14 @@ export default class Select extends Component {
 						onClick={this.setOptions} 
 						className={styles.previewLabel}
 					>	
-						<div className={styles.text}>
-							{this.state.selectedLabel} 
-							{ImageElement} 
-							{SpritesElement}
-						</div>
-						<Icon name={this.state.showOption ? 'sort-asc' : 'sort-desc'} />
+						<span className={styles.flex}>
+							<span className={styles.text}>
+								{this.state.selectedLabel} 
+								{ImageElement} 
+								{SpritesElement}
+							</span>
+							<Icon name={this.state.showOption ? 'sort-asc' : 'sort-desc'} />
+						</span>
 					</button>
 					<div className={OptionsClass}>
 						{FilterElement}
@@ -223,27 +225,29 @@ export default class Select extends Component {
 											onClick={() => this.setSelectOption(option)} 
 											disabled={!!option.disabled}
 										>
-											<div className={styles.text}>
-												{ option.label} 
+											<span className={styles.flex}>
+												<span className={styles.text}>
+													{ option.label} 
+													{
+														renderIf(option.imagePath)(
+															<img src={option.imagePath} alt='logo' />
+														)
+													}{
+														renderIf(option.sprites)(
+															<Sprites name={option.sprites} />
+														)
+													}
+												</span>
 												{
-													renderIf(option.imagePath)(
-														<img src={option.imagePath} alt='logo' />
+													renderIf(option.info)(
+														<div className={styles.info}>{option.info}</div>
 													)
 												}{
-													renderIf(option.sprites)(
-														<Sprites name={option.sprites} />
+													renderIf(option.message)(
+														<div className={styles.optionMessage}>{option.message}</div>
 													)
 												}
-											</div>
-											{
-												renderIf(option.info)(
-													<div className={styles.info}>{option.info}</div>
-												)
-											}{
-												renderIf(option.message)(
-													<div className={styles.optionMessage}>{option.message}</div>
-												)
-											}
+											</span>
 										</button>
 									))
 								)

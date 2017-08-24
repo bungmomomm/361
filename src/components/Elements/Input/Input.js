@@ -35,6 +35,8 @@ export default class Input extends Component {
 		onKeyPress,
 		onChange,
 		icon,
+		onBlur,
+		onFocus,
 		message,
 		color
 	}) {
@@ -97,6 +99,8 @@ export default class Input extends Component {
 				defaultValue={value}
 				onClick={onClick}
 				onKeyPress={onKeyPress}
+				onBlur={onBlur}
+				onFocus={onFocus}
 				onChange={onChange}
 			/>
 		);
