@@ -328,10 +328,12 @@ class Checkout extends Component {
 
 	onSubmitAddress(formData) {
 		const { dispatch } = this.props;
-		console.log(this.state.selectedAddress);
-		// dispatch(getPlaceOrderCart(this.state.token, address, billing)); 
+		// console.log(this.state.selectedAddress);
 		dispatch(saveAddress(this.state.token, formData));
-		
+		// dispatch(getPlaceOrderCart(this.state.token, this.state.selectedAddress)); 
+		this.setState({
+			enableNewAddress: false
+		});
 	}
 	
 	onCardNumberChange(event) {
@@ -453,7 +455,6 @@ class Checkout extends Component {
 			o2oProvinces,
 			isPickupable		
 		} = this.props;
-		console.log(this.state.cityProv);
 		return (
 			this.props.loading ? <Loading /> : (
 				<div className='page'>
@@ -504,11 +505,11 @@ class Checkout extends Component {
 						</Container>
 					</div>
 					{ 
-						renderIf(this.state.cityProv)(
+						renderIf(this.props.cityProv)(
 							<NewAddressModalbox 
 								shown={this.state.enableNewAddress} 
 								formDataAddress={formDataAddress} 
-								cityProv={this.state.cityProv} 
+								cityProv={this.props.cityProv} 
 								district={this.props.district} 
 								getDistricts={this.getDistricts} 
 								onSubmitAddress={this.onSubmitAddress} 
