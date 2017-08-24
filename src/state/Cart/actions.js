@@ -81,7 +81,6 @@ const getCart = token => dispatch => {
 const getPlaceOrderCart = (token, address, billing = false) => dispatch => {
 	dispatch(placeOrderRequest(token, address));
 	const data = setPayloadPlaceOrder(address, billing);
-	
 	const req = {
 		token, 
 		path: 'orders',

@@ -1,5 +1,6 @@
 import { request } from '@/utils';
 import humps from 'lodash-humps';
+import { getPlaceOrderCart } from '@/state/Cart/actions';
 import { 
 	ADDR_GET_ADDRESS,
 	ADDR_O2O_LIST,
@@ -87,17 +88,6 @@ const o2oProvinceReceived = (o2oProvinces) => ({
 	}
 });
 
-// const addressSave = (address) => ({
-// 	type: ADDR_SAVE_ADDRESS,
-// 	status: 1,
-// 	payload: {
-// 		address
-// 	}
-// });
-// const addressFailed = () => ({
-// 	type: ADDR_FAILED
-// });
-
 const getAddresses = (token) => dispatch => {
 	dispatch(addressesRequest(token));
 	const req = {
@@ -136,7 +126,7 @@ const getAddresses = (token) => dispatch => {
 	});
 };
 
-const saveAddress = (token, formData) => dispatch => {
+const saveAddress = (token, formData, selectedAddress) => dispatch => {
 	
 	const req = {
 		token, 
@@ -150,12 +140,12 @@ const saveAddress = (token, formData) => dispatch => {
 			data: {
 				type: 'shipping',
 				attributes: {
-					address_label: formData.address,
-					fullname: formData.name,
+					address_label: formData.name,
+					fullname: formData.penerima,
 					address: formData.address,
-					province: cityProvince[1],
-					city: cityProvince[0],
-					district: formData.kecamatan,
+					province: cityProvince[1].trim(),
+					city: cityProvince[0].trim(),
+					district: formData.kecamatan.trim(),
 					zipcode: formData.kodepos,
 					phone: formData.no_hp,
 					fg_default: 0
@@ -163,9 +153,11 @@ const saveAddress = (token, formData) => dispatch => {
 			}
 		};
 	}
+	console.log(req);
 	request(req)
 	.then((response) => {
 		// dispatch(addressSave(formData));
+		dispatch(getPlaceOrderCart(token, selectedAddress));
 	})
 	.catch((error) => {
 		console.log(error);
@@ -270,23 +262,6 @@ const getO2OProvinces = (token) => dispatch => {
 		console.log(error);
 	});
 };
-
-// const saveAddress = token => dispatch => {
-// 	dispatch(addressSave(token));
-// 	return axios.post('/addresses', { token }).then((response) => {
-// 		const addresses = response.data;
-// 		// mimic request api
-// 		setTimeout(() => {
-// 			const rand = Math.ceil(Math.random() * 1);
-// 			if (rand === 1) {
-// 				dispatch(addressSaved(addresses));
-// 			} else {
-// 				dispatch(addressFailed());
-// 			}
-// 		}, 2000);
-// 	});	
-// };
-
 
 export default {
 	getAddresses,
