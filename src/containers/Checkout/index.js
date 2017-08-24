@@ -99,6 +99,11 @@ class Checkout extends Component {
 		this.onDoPayment = this.onDoPayment.bind(this);
 		this.activeShippingTab = this.activeShippingTab.bind(this);
 		this.onSubmitAddress = this.onSubmitAddress.bind(this);
+
+		this.onCardNumberChange = this.onCardNumberChange.bind(this);
+		this.onCardMonthChange = this.onCardMonthChange.bind(this);
+		this.onCardYearChange = this.onCardYearChange.bind(this);
+		this.onCardCvvChange = this.onCardCvvChange.bind(this);
 	}
 
 	componentWillMount() {
@@ -328,6 +333,24 @@ class Checkout extends Component {
 		dispatch(saveAddress(this.state.token, formData));
 		
 	}
+	
+	onCardNumberChange(event) {
+		console.log(event, this.state.test);
+		// this.props.dispatch(changeCreditCardNumber(event));
+		// this.props.onCardNumberChange(event);
+	}
+	onCardMonthChange(event) {
+		console.log(event, this.state.test);
+		// this.props.onCardMonthChange(event);
+	}
+	onCardYearChange(event) {
+		console.log(event, this.state.test);
+		// this.props.onCardYearChange(event);
+	}
+	onCardCvvChange(event) {
+		console.log(event, this.state.test);
+		// this.props.onCardCvvChange(event);
+	}
 
 	getDistricts(cityAndProvince) {
 		const { dispatch } = this.props;
@@ -471,6 +494,10 @@ class Checkout extends Component {
 										checkDropship={this.submitDropship}
 										isValidDropshipper={this.state.isValidDropshipper}
 										onDoPayment={this.onDoPayment}
+										onCardNumberChange={this.onCardNumberChange}
+										onCardMonthChange={this.onCardMonthChange}
+										onCardYearChange={this.onCardYearChange}
+										onCardCvvChange={this.onCardCvvChange}
 									/>
 								</Col>
 							</Row>

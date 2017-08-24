@@ -105,17 +105,17 @@ export default class CardPembayaran extends Component {
 	onSelectCard(event) {
 		this.props.onSelectCard(event.value);
 	}
-	onCardNumberChange() {
-		console.log(this.state);
+	onCardNumberChange(event) {
+		this.props.onCardNumberChange(event);
 	}
 	onCardMonthChange() {
-		console.log(this.state);
+		this.props.onCardMonthChange(event);
 	}
 	onCardYearChange() {
-		console.log(this.state);
+		this.props.onCardYearChange(event);
 	}
 	onCardCvvChange() {
-		console.log(this.state);
+		this.props.onCardCvvChange(event);
 	}
 
 	handleCekVoucher(event) {
