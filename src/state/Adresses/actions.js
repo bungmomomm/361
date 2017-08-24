@@ -5,19 +5,11 @@ import {
 	ADDR_O2O_LIST,
 	ADDR_O2O_PROVINCE,
 	ADDR_GET_DISTRICT,
-	ADDR_GET_CITY_PROVINCE
+	ADDR_GET_CITY_PROVINCE,
 	// ADDR_SAVE_ADDRESS,
 	// ADDR_DROP_SHIPPER,
 	// ADDR_O2O_LIST 
 } from './constants';
-
-// const districtRequest = (token) => ({
-// 	type: ADDR_GET_DISTRICT,
-// 	status: 0, 
-// 	payload: {
-// 		token
-// 	}
-// });
 
 const districtReceived = (district) => ({
 	type: ADDR_GET_DISTRICT,
@@ -97,20 +89,11 @@ const o2oProvinceReceived = (o2oProvinces) => ({
 
 // const addressSave = (address) => ({
 // 	type: ADDR_SAVE_ADDRESS,
-// 	status: 0,
+// 	status: 1,
 // 	payload: {
 // 		address
 // 	}
 // });
-
-// const addressSaved = (addresses) => ({
-// 	type: ADDR_SAVE_ADDRESS,
-// 	status: 1,
-// 	payload: {
-// 		addresses
-// 	}
-// });
-
 // const addressFailed = () => ({
 // 	type: ADDR_FAILED
 // });
@@ -151,6 +134,43 @@ const getAddresses = (token) => dispatch => {
 	.catch((error) => {
 		console.log(error);
 	});
+};
+
+const saveAddress = (token, formData) => dispatch => {
+	
+	const req = {
+		token, 
+		path: `me/addresses/${formData.isEdit ? formData.id : ''}`,
+		method: formData.isEdit ? 'PUT' : 'POST'
+	}; 
+	
+	if (formData.isEdit) {
+		const cityProvince = formData.provinsi.split(',');
+		req.body = {
+			data: {
+				type: 'shipping',
+				attributes: {
+					address_label: formData.address,
+					fullname: formData.name,
+					address: formData.address,
+					province: cityProvince[1],
+					city: cityProvince[0],
+					district: formData.kecamatan,
+					zipcode: formData.kodepos,
+					phone: formData.no_hp,
+					fg_default: 0
+				}
+			}
+		};
+	}
+	request(req)
+	.then((response) => {
+		// dispatch(addressSave(formData));
+	})
+	.catch((error) => {
+		console.log(error);
+	});
+
 };
 
 const getDistrict = (token, label) => dispatch => {
@@ -273,6 +293,6 @@ export default {
 	getO2OList,
 	getO2OProvinces,
 	getCityProvince,
-	getDistrict
-	// saveAddress
+	getDistrict,
+	saveAddress
 };

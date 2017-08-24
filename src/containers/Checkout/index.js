@@ -24,7 +24,7 @@ import CardPengiriman from './components/CardPengiriman';
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { addCoupon, removeCoupon, resetCoupon } from '@/state/Coupon/actions';
-import { getAddresses, getO2OList, getO2OProvinces, getCityProvince, getDistrict } from '@/state/Adresses/actions';
+import { getAddresses, getO2OList, getO2OProvinces, getCityProvince, getDistrict, saveAddress } from '@/state/Adresses/actions';
 import { getPlaceOrderCart, getCart, updateQtyCart } from '@/state/Cart/actions';
 import {
 	getAvailablePaymentMethod,
@@ -98,6 +98,12 @@ class Checkout extends Component {
 		this.getDistricts = this.getDistricts.bind(this);
 		this.onDoPayment = this.onDoPayment.bind(this);
 		this.activeShippingTab = this.activeShippingTab.bind(this);
+		this.onSubmitAddress = this.onSubmitAddress.bind(this);
+
+		this.onCardNumberChange = this.onCardNumberChange.bind(this);
+		this.onCardMonthChange = this.onCardMonthChange.bind(this);
+		this.onCardYearChange = this.onCardYearChange.bind(this);
+		this.onCardCvvChange = this.onCardCvvChange.bind(this);
 	}
 
 	componentWillMount() {
@@ -189,6 +195,7 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 		const editAddress = address.attributes;
 		const formDataAddress = {
+			id: address.id,
 			label: editAddress.addressLabel,
 			nama: editAddress.fullname,
 			noHP: editAddress.phone,
@@ -197,8 +204,10 @@ class Checkout extends Component {
 			kotProv: `${editAddress.city}, ${editAddress.province}`,
 			kecamatan: editAddress.district,
 			kodepos: editAddress.zipcode,
-			address: editAddress.address
+			address: editAddress.address,
+			isEdit: true
 		};
+		this.getDistricts(`${editAddress.city}, ${editAddress.province}`);
 		dispatch(getCityProvince(this.state.token));
 		this.setState({
 			enableNewAddress: true,
@@ -317,6 +326,32 @@ class Checkout extends Component {
 		}
 	}
 
+	onSubmitAddress(formData) {
+		const { dispatch } = this.props;
+		console.log(this.state.selectedAddress);
+		// dispatch(getPlaceOrderCart(this.state.token, address, billing)); 
+		dispatch(saveAddress(this.state.token, formData));
+		
+	}
+	
+	onCardNumberChange(event) {
+		console.log(event, this.state.test);
+		// this.props.dispatch(changeCreditCardNumber(event));
+		// this.props.onCardNumberChange(event);
+	}
+	onCardMonthChange(event) {
+		console.log(event, this.state.test);
+		// this.props.onCardMonthChange(event);
+	}
+	onCardYearChange(event) {
+		console.log(event, this.state.test);
+		// this.props.onCardYearChange(event);
+	}
+	onCardCvvChange(event) {
+		console.log(event, this.state.test);
+		// this.props.onCardCvvChange(event);
+	}
+
 	getDistricts(cityAndProvince) {
 		const { dispatch } = this.props;
 		dispatch(getDistrict(this.state.token, cityAndProvince));
@@ -417,8 +452,8 @@ class Checkout extends Component {
 			latesto2o,
 			o2oProvinces,
 			isPickupable		
-		} = this.props;		
-		
+		} = this.props;
+		console.log(this.state.cityProv);
 		return (
 			this.props.loading ? <Loading /> : (
 				<div className='page'>
@@ -459,19 +494,24 @@ class Checkout extends Component {
 										checkDropship={this.submitDropship}
 										isValidDropshipper={this.state.isValidDropshipper}
 										onDoPayment={this.onDoPayment}
+										onCardNumberChange={this.onCardNumberChange}
+										onCardMonthChange={this.onCardMonthChange}
+										onCardYearChange={this.onCardYearChange}
+										onCardCvvChange={this.onCardCvvChange}
 									/>
 								</Col>
 							</Row>
 						</Container>
 					</div>
 					{ 
-						renderIf(this.props.cityProv)(
+						renderIf(this.state.cityProv)(
 							<NewAddressModalbox 
 								shown={this.state.enableNewAddress} 
 								formDataAddress={formDataAddress} 
-								cityProv={this.props.cityProv} 
+								cityProv={this.state.cityProv} 
 								district={this.props.district} 
 								getDistricts={this.getDistricts} 
+								onSubmitAddress={this.onSubmitAddress} 
 							/>
 						)
 					}

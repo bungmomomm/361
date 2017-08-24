@@ -41,7 +41,7 @@ export default class Button extends Component {
 			loading: !!loading,
 			circular: !!circular,
 			[`${size}`]: !!size,
-			[`Button__iconPosition_${iconPosition}`]: !!iconPosition,
+			[`iconPosition_${iconPosition}`]: !!iconPosition,
 			[`${className}`]: !!className
 		});
 

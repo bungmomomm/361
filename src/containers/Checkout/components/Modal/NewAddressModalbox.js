@@ -24,18 +24,22 @@ export default class NewAddressModalbox extends Component {
 			provinsi: 'required',
 			kecamatan: 'required',
 			kodepos: 'required',
-			address: 'required'
+			address: 'required',
+			id: 'required',
+			isEdit: 'required'
 		});
 
 		this.state = {
 			formData: {
+				id: 0,
 				name: '',
 				penerima: '',
 				no_hp: '',
 				provinsi: '',
 				kecamatan: '',
 				kodepos: '',
-				address: ''
+				address: '',
+				isEdit: false
 			},
 			errors: this.validator.errorBag,
 			district: {},
@@ -44,14 +48,28 @@ export default class NewAddressModalbox extends Component {
 		};
 		this.onChange = this.onChange.bind(this);
 		this.onChangeSelect = this.onChangeSelect.bind(this);
+		this.onSubmitAddress = this.onSubmitAddress.bind(this);
 		this.validateAndSubmit = this.validateAndSubmit.bind(this);
 		this.getDistricts = this.getDistricts.bind(this);
 		this.kecamatan = null;
 	}
 
 	componentWillReceiveProps(nextProps) {
+		console.log(nextProps);
 		this.setState({
-			district: nextProps.district
+			district: nextProps.district,
+			cityProv: nextProps.cityProv,
+			formData: {
+				id: nextProps.formDataAddress.id,
+				name: nextProps.formDataAddress.label,
+				penerima: nextProps.formDataAddress.nama,
+				no_hp: nextProps.formDataAddress.noHP,
+				provinsi: nextProps.formDataAddress.kotProv,
+				kecamatan: nextProps.formDataAddress.kecamatan,
+				kodepos: nextProps.formDataAddress.kodepos,
+				address: nextProps.formDataAddress.address,
+				isEdit: nextProps.formDataAddress.isEdit
+			}
 		});
 	}
 
@@ -84,6 +102,10 @@ export default class NewAddressModalbox extends Component {
 		this.setErrors(e.name, e.value);
 	}
 
+	onSubmitAddress(formData) {
+		this.props.onSubmitAddress(formData);
+	}
+
 	getDistricts(cityProv) {
 		this.props.getDistricts(cityProv);
 	}
@@ -100,7 +122,7 @@ export default class NewAddressModalbox extends Component {
 	}
 
 	submit(formData) {
-		console.log(this.state);
+		this.onSubmitAddress(formData);
 	}
 
 	validateAndSubmit(e) {
@@ -191,10 +213,10 @@ export default class NewAddressModalbox extends Component {
 									<Select 
 										horizontal
 										label='Kecamatan'
-										name='kecamatan'
+										name='kecamatan' 
 										filter
 										required
-										selectedLabel='-- Silahkan Pilih'
+										selectedLabel={typeof this.props.formDataAddress.kecamatan !== 'undefined' ? this.props.formDataAddress.kecamatan : '-- Silahkan Pilih'} 
 										onChange={this.onChangeSelect}
 										error={errors.has('kecamatan')}
 										message={errors.has('kecamatan') ? 'Kecamatan field is required.' : ''}

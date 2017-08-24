@@ -103,10 +103,10 @@ export default class CreditCardInput extends Component {
 		const inputClass = cx({
 			input: true,
 			error: !!error,
-			[`CreditCardInput__${size}`]: !!size,
-			[`CreditCardInput__${color}`]: !!color,
-			[`CreditCardInput__${this.state.ccValid}`]: !!this.state.ccValid,
-			[`CreditCardInput__${sprites}`]: !!sprites
+			[`${size}`]: !!size,
+			[`${color}`]: !!color,
+			[`${this.state.ccValid}`]: !!this.state.ccValid,
+			[`${sprites}`]: !!sprites
 		});
 		
 		const idFor = newId();

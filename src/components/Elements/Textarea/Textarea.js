@@ -30,6 +30,8 @@ export default class Textarea extends Component {
 		message,
 		icon,
 		readOnly,
+		onBlur,
+		onFocus,
 		sprites
 	}) {
 		const TextareaWrapper = cx({
@@ -44,8 +46,8 @@ export default class Textarea extends Component {
 
 		const TextareaClass = cx({
 			Textarea: true,
-			[`Textarea__${color}`]: !!color,
-			[`Textarea__${size}`]: !!size
+			[`${color}`]: !!color,
+			[`${size}`]: !!size
 		});
 		
 		const idFor = newId();
@@ -90,6 +92,8 @@ export default class Textarea extends Component {
 				defaultValue={value}
 				onClick={onClick}
 				onChange={onChange}
+				onBlur={onBlur}
+				onFocus={onFocus}
 			/>
 		);
 		

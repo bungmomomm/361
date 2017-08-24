@@ -42,8 +42,8 @@ export default class Alert extends Component {
 
 		const classAlert = cx({
 			alert: true,
-			[`Alert__${color}`]: !!color,
-			[`Alert__${align}`]: !!align
+			[`${color}`]: !!color,
+			[`${align}`]: !!align
 		});
 
 		const IconElement = (

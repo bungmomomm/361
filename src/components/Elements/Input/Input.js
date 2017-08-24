@@ -35,6 +35,8 @@ export default class Input extends Component {
 		onKeyPress,
 		onChange,
 		icon,
+		onBlur,
+		onFocus,
 		message,
 		color
 	}) {
@@ -50,8 +52,8 @@ export default class Input extends Component {
 
 		const inputClass = cx({
 			input: true,
-			[`Input__${size}`]: !!size,
-			[`Input__${color}`]: !!color
+			[`${size}`]: !!size,
+			[`${color}`]: !!color
 		});
 
 		const idFor = newId();
@@ -97,6 +99,8 @@ export default class Input extends Component {
 				defaultValue={value}
 				onClick={onClick}
 				onKeyPress={onKeyPress}
+				onBlur={onBlur}
+				onFocus={onFocus}
 				onChange={onChange}
 			/>
 		);

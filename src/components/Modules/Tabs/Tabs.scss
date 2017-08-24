@@ -25,25 +25,28 @@
     display: flex;
     flex:none;
     button{
-        display: inline-flex;
-        font-weight: 600;
-        padding: 18px 20px 20px 20px;
-        font-size: 14px;
-        color: #7F7F7F;
-        text-align: left;
         flex:1;
-        border: 1px solid transparent;
-        border-top: 2px solid transparent;
-        border-bottom: 0px;
         cursor: pointer;
-        align-items: center;
-        position: relative;
         i, img{
             margin-right: 10px;
             flex: none;
         }
         &[disabled]{
             opacity: 1;
+        }
+        .flex{
+            display: inline-flex;
+            font-weight: 600;
+            padding: 18px 20px 20px 20px;
+            font-size: 14px;
+            color: #7F7F7F;
+            text-align: left;
+            border: 1px solid transparent;
+            border-top: 2px solid transparent;
+            border-bottom: 0px;
+            align-items: center;
+            position: relative;
+
         }
     }
     .TabActive{

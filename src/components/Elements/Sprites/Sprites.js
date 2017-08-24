@@ -7,7 +7,7 @@ const cx = classNames.bind(styles);
 const Sprites = (props) => {
 	const classSprites = cx({
 		sprites: true,
-		[`sprites__${props.name}`]: !!props.name,
+		[`${props.name}`]: !!props.name,
 	});
 	return (
 		<i className={classSprites} />
