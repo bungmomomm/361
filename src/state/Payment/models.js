@@ -107,7 +107,6 @@ const getListAvailablePaymentMethod = (response) => {
 		methods: paymentList,
 		payments: paymentData
 	};
-	console.log(returnData);
 	return returnData;
 };
 

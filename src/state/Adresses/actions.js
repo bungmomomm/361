@@ -4,7 +4,7 @@ import {
 	ADDR_GET_ADDRESS,
 	ADDR_O2O_LIST,
 	ADDR_O2O_PROVINCE,
-	// ADDR_GET_DISTRICT,
+	ADDR_GET_DISTRICT,
 	ADDR_GET_CITY_PROVINCE
 	// ADDR_SAVE_ADDRESS,
 	// ADDR_DROP_SHIPPER,
@@ -19,13 +19,13 @@ import {
 // 	}
 // });
 
-// const districtReceived = (district) => ({
-// 	type: ADDR_GET_DISTRICT,
-// 	status: 1, 
-// 	payload: {
-// 		district
-// 	}
-// });
+const districtReceived = (district) => ({
+	type: ADDR_GET_DISTRICT,
+	status: 1, 
+	payload: {
+		district
+	}
+});
 
 
 const cityProvinceRequest = (token) => ({
@@ -45,7 +45,7 @@ const cityProvinceReceived = (cityProv) => ({
 });
 
 const addressesRequest = (token) => ({
-	type: ADDR_GET_CITY_PROVINCE,
+	type: ADDR_GET_ADDRESS,
 	status: 0,
 	payload: {
 		token
@@ -153,25 +153,34 @@ const getAddresses = (token) => dispatch => {
 	});
 };
 
-// const getDistrict = (token, label) => dispatch => {
-// 	dispatch(districtRequest(token));
-// 	const cityProvince = label.split(',');
+const getDistrict = (token, label) => dispatch => {
+	// dispatch(districtRequest(token));
+	const cityProvince = label.split(',');
 
-// 	const req = {
-// 		token, 
-// 		path: `districts?province=${cityProvince[1].replace(/ /g, '+')}&city=${cityProvince[0].replace(/ /g, '+')}`,
-// 		// path: 'districts?province=DKI+JAKARTA&city=Jakarta+Timur',
-// 		method: 'GET'
-// 	};
-// 	request(req)
-// 	.then((response) => {
-// 		console.log(response);
-// 		// dispatch(districtReceived(cityProvince));
-// 	})
-// 	.catch((error) => {
-// 		console.log(error);
-// 	});
-// };
+	const req = {
+		token, 
+		path: `districts?province=${cityProvince[1].trim().replace(/ /g, '+')}&city=${cityProvince[0].trim().replace(/ /g, '+')}`,
+		method: 'GET'
+	};
+	request(req)
+	.then((response) => {
+		const district = [];
+		// if (response.data.data.length > 0) {
+		response.data.data.forEach((value, index) => {
+			const dvalue = {
+				value: value.attributes.name, 
+				label: value.attributes.name,
+				isSupportedPinPoint: value.attributes.is_supported_pin_point
+			};
+			district.push(dvalue);
+		});
+		// }
+		dispatch(districtReceived(district));
+	})
+	.catch((error) => {
+		console.log(error);
+	});
+};
 
 const getCityProvince = (token) => dispatch => {
 	dispatch(cityProvinceRequest(token));
@@ -264,6 +273,6 @@ export default {
 	getO2OList,
 	getO2OProvinces,
 	getCityProvince,
-	// getDistrict
+	getDistrict
 	// saveAddress
 };

@@ -70,7 +70,7 @@ const getCart = token => dispatch => {
 		const isPickupable = response.data.data.attributes.delivery_method.map((value, index) => {
 			return value;
 		}).filter(e => e.id === 'pickup');
-		dispatch(paymentInfoUpdated(getCartPaymentData(response.data)));
+		dispatch(paymentInfoUpdated(getCartPaymentData(response.data.data.attributes.total_pricing, 'cart')));
 		dispatch(cartReceived(setCartModel(response.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable));
 	})
 	.catch((error) => {
@@ -103,7 +103,7 @@ const getPlaceOrderCart = (token, address, billing = false) => dispatch => {
 			const isPickupable = res.data.data.attributes.delivery_method_provided.map((value, index) => {
 				return value;
 			}).filter(e => e.id === 'pickup');
-			dispatch(paymentInfoUpdated(getCartPaymentData(res.data)));
+			dispatch(paymentInfoUpdated(getCartPaymentData(res.data.data.attributes.total_price, 'order')));
 			dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable));
 		})
 		.catch((error) => {

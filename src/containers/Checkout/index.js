@@ -32,8 +32,12 @@ import {
 	changePaymentOption,
 	openNewCreditCard,
 	selectCreditCard,
-	pay
+	pay,
+	applyBin
 } from '@/state/Payment/actions';
+import { 
+	paymentMethodName
+} from '@/state/Payment/constants';
 
 
 class Checkout extends Component {
@@ -69,7 +73,8 @@ class Checkout extends Component {
 			errorDropship: null,
 			isValidDropshipper: true,
 			formDataAddress: {},
-			cityProv: this.props.cityProv,
+			cityProv: this.props.cityProv, 
+			district: this.props.district,
 			restrictO2o: false, 
 		};
 		this.onAddCoupon = this.onAddCoupon.bind(this);
@@ -225,7 +230,24 @@ class Checkout extends Component {
 	}
 
 	onPaymentOptionChange(event, paymentMethod) {
-		this.props.dispatch(changePaymentOption(event.value, paymentMethod, this.props.payments.paymentMethods));
+		const { dispatch } = this.props;
+		const option = event.value;
+		if (option) {
+			const selectedPaymentOption = this.props.payments.paymentMethods.payments[paymentMethod.id].paymentItems.filter((item) => parseInt(item.value, 10) === parseInt(option, 10)).pop();
+			let cardNumber = '';
+			let bankName = '';
+			switch (selectedPaymentOption.paymentMethod) {
+			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
+			case paymentMethodName.COMMERCE_VERITRANS:
+				cardNumber = this.props.payments.selectCreditCard.value;
+				bankName = this.props.payments.selectedBank.value;
+				break;
+			default:
+				break;
+			}
+			dispatch(changePaymentOption(selectedPaymentOption));
+			dispatch(applyBin(this.state.token, selectedPaymentOption.value, cardNumber, bankName));
+		}
 	}
 
 	onNewCreditCard(event) {
@@ -269,17 +291,13 @@ class Checkout extends Component {
 	}
 
 	onDoPayment() {
-		// console.log(this.state, this.props);// .payments.selectedPaymentOption);
-
 		const { dispatch } = this.props;
-		dispatch(pay(this.state.token, this.props.orderId, this.props.payments.selectedPaymentOption));
+		dispatch(pay(this.state.token, this.props.soNumber, this.props.payments.selectedPaymentOption));
 	}
 
 	getDistricts(cityAndProvince) {
 		const { dispatch } = this.props;
 		dispatch(getDistrict(this.state.token, cityAndProvince));
-		console.log(cityAndProvince);
-		console.log(this.props);
 	}
 
 	setDropship(checked, dropshipName = 'dropship_name', value = '', onClick = false) {
@@ -377,9 +395,8 @@ class Checkout extends Component {
             listo2o,
 			latesto2o,
 			o2oProvinces,
-			isPickupable,			
-		} = this.props;
-		
+			isPickupable		
+		} = this.props;		
 		return (
 			this.props.loading ? <Loading /> : (
 				<div className='page'>
@@ -425,7 +442,17 @@ class Checkout extends Component {
 							</Row>
 						</Container>
 					</div>
-					<NewAddressModalbox shown={this.state.enableNewAddress} formDataAddress={formDataAddress} cityProv={cityProv} getDistricts={this.getDistricts} />
+					{ 
+						renderIf(cityProv || this.state.cityProv)(
+							<NewAddressModalbox 
+								shown={this.state.enableNewAddress} 
+								formDataAddress={formDataAddress} 
+								cityProv={cityProv} 
+								district={this.props.district} 
+								getDistricts={this.getDistricts} 
+							/>
+						)
+					}
 					<ElockerModalbox shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} o2oProvinces={!o2oProvinces ? null : o2oProvinces} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
 					<PaymentSuccessModalbox />
 					<PaymentErrorModalbox />
@@ -453,7 +480,8 @@ const mapStateToProps = (state) => {
 		latesto2o: state.addresses.latesto2o,
 		o2oProvinces: state.addresses.o2oProvinces,
 		isPickupable: state.cart.isPickupable,
-		cityProv: state.addresses.cityProv
+		cityProv: state.addresses.cityProv, 
+		district: state.addresses.district
 	};
 };
 

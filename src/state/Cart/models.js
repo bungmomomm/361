@@ -102,7 +102,7 @@ const setCartModel = (jsoApiResponse) => {
 	});
 };
 
-const getCartPaymentData = (response) => {
+const getCartPaymentData = (data, type) => {
 	let defaultData = {
 		count: 0,
 		coupon: 0,
@@ -114,18 +114,18 @@ const getCartPaymentData = (response) => {
 		subTotal: 0,
 		total: 0
 	};
-	switch (response.data.type) {
+	switch (type) {
 	case 'order':
 		defaultData = {
 			...defaultData,
-			...humps(response.data.attributes.total_price)
+			...humps(data)
 		};
 		break;
 	case 'cart':
 		defaultData = {
 			...defaultData,
-			subTotal: response.data.attributes.total_pricing.effective_price,
-			total: response.data.attributes.total_pricing.effective_price
+			subTotal: data.effective_price,
+			total: data.effective_price
 		};
 		break;
 	default:

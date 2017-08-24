@@ -1,6 +1,7 @@
 import * as constants from './constants';
 import { getListAvailablePaymentMethod, getPaymentPayload } from './models';
 import { request } from '@/utils';
+import { getCartPaymentData } from '@/state/Cart/models';
 
 const availablePaymentMethodRequest = () => ({
 	type: constants.PAY_LIST_PAYMENT_METHOD,
@@ -69,6 +70,14 @@ const payReceived = (payment) => ({
 	}
 });
 
+const applyBinReceived = (data) => ({
+	type: constants.PAY_APPLY_BIN,
+	status: true,
+	payload: {
+		data
+	}
+});
+
 const getAvailablePaymentMethod = (token) => (dispatch) => {
 	dispatch(availablePaymentMethodRequest());
 	return request({
@@ -81,11 +90,7 @@ const getAvailablePaymentMethod = (token) => (dispatch) => {
 	});
 };
 
-const changePaymentOption = (option, paymentMethod, data) => dispatch => {
-	let selectedPaymentOption = false;
-	if (option) {
-		selectedPaymentOption = data.payments[paymentMethod.id].paymentItems.filter((item) => parseInt(item.value, 10) === parseInt(option, 10)).pop();
-	}
+const changePaymentOption = (selectedPaymentOption) => dispatch => {
 	dispatch(paymentOptionChanged(selectedPaymentOption));
 };
 
@@ -130,6 +135,34 @@ const pay = (token, orderId, payment) => dispatch => {
 	});
 };
 
+const applyBin = (token, paymentMethodId, cardNumber, bankName) => dispatch => {
+	return request({
+		token,
+		path: 'payments/apply_discount',
+		method: 'POST',
+		body: {
+			data: {
+				attributes: {
+					payment_method: paymentMethodId,
+					card_number: cardNumber,
+					bank: bankName
+				}
+			}
+		}
+	}).then((response) => {
+		const item = response.data.data.relationships.carts.data.pop();
+		if (item) {
+			const totalPrice = response.data.included.filter(itemLookup => itemLookup.type === item.type && itemLookup.id === item.id).pop();
+			dispatch(paymentInfoUpdated(getCartPaymentData(totalPrice.attributes.total_price, 'order')));
+			dispatch(applyBinReceived(response.data));
+		}
+	}).catch((error) => {
+		console.log(error);
+		// showError
+		dispatch(applyBinReceived({}));
+	});
+};
+
 export default {
 	paymentInfoUpdated,
 	getAvailablePaymentMethod,
@@ -139,5 +172,6 @@ export default {
 	openNewCreditCard,
 	selectCreditCard,
 	deselectCreditCard,
-	pay
+	pay,
+	applyBin
 };
