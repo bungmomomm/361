@@ -239,8 +239,8 @@ class Checkout extends Component {
 			switch (selectedPaymentOption.paymentMethod) {
 			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 			case paymentMethodName.COMMERCE_VERITRANS:
-				cardNumber = this.props.payments.selectCreditCard.value;
-				bankName = this.props.payments.selectedBank.value;
+				cardNumber = this.props.payments.selectCard ? this.props.payments.selectCard.value : '';
+				bankName = this.props.payments.selectedBank ? this.props.payments.selectedBank.value : '';
 				break;
 			default:
 				break;
@@ -292,7 +292,29 @@ class Checkout extends Component {
 
 	onDoPayment() {
 		const { dispatch } = this.props;
-		dispatch(pay(this.state.token, this.props.soNumber, this.props.payments.selectedPaymentOption));
+		switch (this.props.payments.paymentMethod) {
+		case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
+		case paymentMethodName.COMMERCE_VERITRANS:
+			dispatch(
+				pay(
+					this.state.token, 
+					this.props.soNumber, 
+					this.props.payments.selectedPaymentOption,
+					this.props.payments.selectCard,
+					this.props.payments.selectedBank
+				)
+			);
+			break;
+		default:
+			dispatch(
+				pay(
+					this.state.token, 
+					this.props.soNumber, 
+					this.props.payments.selectedPaymentOption
+				)
+			);
+			break;
+		}
 	}
 
 	getDistricts(cityAndProvince) {
