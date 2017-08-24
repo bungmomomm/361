@@ -127,16 +127,12 @@ const getAddresses = (token) => dispatch => {
 };
 
 const saveAddress = (token, formData, selectedAddress) => dispatch => {
-	
+	const cityProvince = formData.provinsi.split(',');
 	const req = {
 		token, 
 		path: `me/addresses/${formData.isEdit ? formData.id : ''}`,
-		method: formData.isEdit ? 'PUT' : 'POST'
-	}; 
-	
-	if (formData.isEdit) {
-		const cityProvince = formData.provinsi.split(',');
-		req.body = {
+		method: formData.isEdit ? 'PUT' : 'POST', 
+		body: {
 			data: {
 				type: 'shipping',
 				attributes: {
@@ -151,13 +147,16 @@ const saveAddress = (token, formData, selectedAddress) => dispatch => {
 					fg_default: 0
 				}
 			}
-		};
-	}
-	console.log(req);
+		}
+	}; 
+
 	request(req)
 	.then((response) => {
-		// dispatch(addressSave(formData));
-		dispatch(getPlaceOrderCart(token, selectedAddress));
+		if (formData.isEdit) {
+			dispatch(getPlaceOrderCart(token, selectedAddress));
+		}
+		
+		dispatch(getAddresses(token));
 	})
 	.catch((error) => {
 		console.log(error);

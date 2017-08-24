@@ -80,6 +80,7 @@ const getCart = token => dispatch => {
 
 const getPlaceOrderCart = (token, address, billing = false) => dispatch => {
 	dispatch(placeOrderRequest(token, address));
+	console.log(address);
 	const data = setPayloadPlaceOrder(address, billing);
 	const req = {
 		token, 

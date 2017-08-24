@@ -191,24 +191,31 @@ class Checkout extends Component {
 		});
 	}
 
-	onChangeAddress(address) {
+	onChangeAddress(address, flagAdd) {
+
 		const { dispatch } = this.props;
-		const editAddress = address.attributes;
-		const formDataAddress = {
-			id: address.id,
-			label: editAddress.addressLabel,
-			nama: editAddress.fullname,
-			noHP: editAddress.phone,
-			kota: editAddress.city,
-			provinsi: editAddress.province,
-			kotProv: `${editAddress.city}, ${editAddress.province}`,
-			kecamatan: editAddress.district,
-			kodepos: editAddress.zipcode,
-			address: editAddress.address,
-			isEdit: true
-		};
-		this.getDistricts(`${editAddress.city}, ${editAddress.province}`);
 		dispatch(getCityProvince(this.state.token));
+		let formDataAddress = {
+			isEdit: false
+		};
+		if (!flagAdd) {
+			const editAddress = address.attributes;
+			formDataAddress = {
+				id: address.id,
+				label: editAddress.addressLabel,
+				nama: editAddress.fullname,
+				noHP: editAddress.phone,
+				kota: editAddress.city,
+				provinsi: editAddress.province,
+				kotProv: `${editAddress.city}, ${editAddress.province}`,
+				kecamatan: editAddress.district,
+				kodepos: editAddress.zipcode,
+				address: editAddress.address,
+				isEdit: true
+			};
+			this.getDistricts(`${editAddress.city}, ${editAddress.province}`);
+		}
+		
 		this.setState({
 			enableNewAddress: true,
 			formDataAddress
@@ -328,9 +335,7 @@ class Checkout extends Component {
 
 	onSubmitAddress(formData) {
 		const { dispatch } = this.props;
-		// console.log(this.state.selectedAddress);
 		dispatch(saveAddress(this.state.token, formData));
-		// dispatch(getPlaceOrderCart(this.state.token, this.state.selectedAddress)); 
 		this.setState({
 			enableNewAddress: false
 		});

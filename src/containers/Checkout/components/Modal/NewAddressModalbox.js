@@ -31,7 +31,7 @@ export default class NewAddressModalbox extends Component {
 
 		this.state = {
 			formData: {
-				id: this.props.formDataAddress.id,
+				id: this.props.formDataAddress.id || 0,
 				name: this.props.formDataAddress.label,
 				penerima: this.props.formDataAddress.nama,
 				no_hp: this.props.formDataAddress.noHP,
@@ -53,24 +53,6 @@ export default class NewAddressModalbox extends Component {
 		this.getDistricts = this.getDistricts.bind(this);
 		this.kecamatan = null;
 	}
-
-	// componentWillReceiveProps(nextProps) {
-	// 	this.setState({
-	// 		district: nextProps.district,
-	// 		cityProv: nextProps.cityProv,
-	// 		formData: {
-	// 			id: nextProps.formDataAddress.id,
-	// 			name: nextProps.formDataAddress.label,
-	// 			penerima: nextProps.formDataAddress.nama,
-	// 			no_hp: nextProps.formDataAddress.noHP,
-	// 			provinsi: nextProps.formDataAddress.kotProv,
-	// 			kecamatan: nextProps.formDataAddress.kecamatan,
-	// 			kodepos: nextProps.formDataAddress.kodepos,
-	// 			address: nextProps.formDataAddress.address,
-	// 			isEdit: nextProps.formDataAddress.isEdit
-	// 		}
-	// 	});
-	// }
 
 	onChange(e) {
 		const name = e.target.name;
@@ -121,14 +103,13 @@ export default class NewAddressModalbox extends Component {
 	}
 
 	submit(formData) {
-		
+		console.log('asdasdasd');
 		this.onSubmitAddress(formData);
 	}
 
 	validateAndSubmit(e) {
 		e.preventDefault();
 		const { formData } = this.state;
-		console.log(formData);
 		this.validator.validateAll(formData).then(success => {
 			if (success) {
 				this.submit(formData);
@@ -149,7 +130,7 @@ export default class NewAddressModalbox extends Component {
 		return (
 			<Modal size='medium' shown={this.props.shown}>
 				<Modal.Header>
-					<div>{ this.props.isEdit ? 'Ubah Alamat' : 'Buat Alamat Baru'}</div>
+					<div>{ this.state.isEdit ? 'Ubah Alamat' : 'Buat Alamat Baru'}</div>
 				</Modal.Header>
 				<Modal.Body>
 					<div className={styles.overflow} ref={(overflow) => { this.fieldOverflow = overflow; }}>
