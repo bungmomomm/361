@@ -99,6 +99,11 @@ const setCartModel = (jsoApiResponse) => {
 			}
 		};
 		return x;
+	}).sort((a, b) => {
+		return b.store.price.total - a.store.price.total;
+	})
+	.sort((a, b) => {
+		return a.store.shipping.o2oSupported - b.store.shipping.o2oSupported;
 	});
 };
 
