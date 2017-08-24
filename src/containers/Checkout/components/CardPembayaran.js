@@ -138,7 +138,7 @@ export default class CardPembayaran extends Component {
 			couponId = this.props.payments.couponId;
 		}
 		let voucherBox = '';
-		if (couponId === '' || this.props.validCoupon === null) { 
+		if (this.props.validCoupon === null && !couponId) { 
 			voucherBox = (
 				<Level>
 					<Level.Left>Kode Voucher</Level.Left>
@@ -150,7 +150,7 @@ export default class CardPembayaran extends Component {
 					</Level.Right>
 				</Level>
 			);
-		} else if (!this.props.validCoupon && couponId !== '') {
+		} else if (this.props.validCoupon !== null && !this.props.validCoupon && this.props.coupon !== '') {
 			voucherBox = (
 				<Level>
 					<Level.Left>Kode Voucher</Level.Left>
