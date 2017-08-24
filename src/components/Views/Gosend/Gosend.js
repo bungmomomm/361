@@ -22,11 +22,7 @@ class Gosend extends Component {
 			icon: 'gosend-marker.png',
 			autocomplete: false,
 			markerInPolygon: false,
-			polygonArea: [
-				{ lat: -6.159403, lng: 106.817739 },
-				{ lat: -6.187126, lng: 106.812802 },
-				{ lat: -6.163686, lng: 106.840183 }
-			]
+			polygonArea: this.props.polygonArea || []
 		};
 		this.showGoogleMap = this.showGoogleMap.bind(this);
 		this.onMouseoverPolygon = this.onMouseoverPolygon.bind(this);
@@ -77,7 +73,9 @@ class Gosend extends Component {
 
 	showGoogleMap() {
 		this.setState({
-			displayMap: true
+			displayMap: true,
+			center: this.props.center,
+			polygonArea: this.props.polygonArea
 		});
 	}
 
@@ -138,7 +136,7 @@ class Gosend extends Component {
 								renderIf(this.props.google)(
 									<Map 
 										google={this.props.google} 
-										zoom={14}
+										zoom={12}
 										className={styles.googleMapArea}
 										scrollwheel={false}
 										initialCenter={this.state.center}

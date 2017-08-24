@@ -9,7 +9,8 @@ const cx = classNames.bind(styles);
 const StoreBox = (props) => {
 	const BoxWrapper = cx({
 		box: true,
-		[`${props.color}`]: !!props.color
+		[`${props.color}`]: !!props.color,
+		loading: !!props.loading
 	});
 	return (
 		<div className={BoxWrapper} >
@@ -27,5 +28,5 @@ export default StoreBox;
 StoreBox.propTypes = {
 	name: PropTypes.string,
 	location: PropTypes.string,
-	children: PropTypes.node
+	loading: PropTypes.bool
 };
