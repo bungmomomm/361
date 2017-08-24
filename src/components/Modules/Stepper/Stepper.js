@@ -19,7 +19,8 @@ export default class Stepper extends Component {
 
 	onChange(event) {
 		let value = event.target.value;
-		value = value >= this.props.maxValue ? this.props.maxValue : value;
+		value = value >= this.props.maxValue && value ? this.props.maxValue : value;
+		value = value === '' ? value : (value <= 0 ? 1 : value);
 		const stepperValue = {
 			value,
 			error: (event.target.value >= this.props.maxValue)

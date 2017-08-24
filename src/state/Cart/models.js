@@ -86,7 +86,7 @@ const setCartModel = (jsoApiResponse) => {
 			store: {
 				id: value.id,
 				name: attr.store_name,
-				location: 'mesti di update di api',
+				location: attr.store_location,
 				total_items: attr.total_items,
 				store_image: attr.store_image,
 				price: {
