@@ -60,12 +60,14 @@ export default (state = initialState, action) => {
 		const paymentItems = state.selectedPayment.paymentItems.map((item, index) => {
 			item.cards = item.cards.map((card, cardIndex) => {
 				card.selected = false;
-				state.selectedCard = false;
 				if (action.status) {
 					if (card.value === action.payload.card) {
 						card.selected = true;
 						state.selectedCard = card;
 					}
+					state.paymentMethod = item.paymentMethod;
+				} else {
+					state.selectedCard = false;
 				}
 				return card;
 			});
@@ -99,7 +101,7 @@ export default (state = initialState, action) => {
 			year: 0,
 			cvv: 0
 		};
-		switch (action.type) {
+		switch (action.mode) {
 		case 'card_number':
 			selectedCard.value = action.payload.cardNumber;
 			break;
@@ -127,7 +129,19 @@ export default (state = initialState, action) => {
 			...action.payload
 		};
 	}
-
+	case constants.PAY_VT_MODAL_BOX_TOGGLE: {
+		return {
+			...state,
+			show3Ds: action.status,
+			vtRedirectUrl: action.payload.url
+		};
+	}
+	case constants.PAY_PAYMENT_ERROR: {
+		return {
+			...state,
+			paymentError: action.message
+		};
+	}
 	case constants.PAY: {
 		if (action.status) {
 			top.location.href = `${getBaseUrl()}/checkout/${action.payload.soNumber}/complete`;			

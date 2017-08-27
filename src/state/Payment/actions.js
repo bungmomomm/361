@@ -44,6 +44,38 @@ const paymentInfoUpdated = (data) => ({
 	}
 });
 
+const creditCardNumberChange = (cardNumber) => ({
+	type: constants.PAY_CREDIT_CARD_ADD,
+	mode: 'card_number',
+	payload: {
+		cardNumber
+	}
+});
+
+const creditCardMonthChange = (month) => ({
+	type: constants.PAY_CREDIT_CARD_ADD,
+	mode: 'month',
+	payload: {
+		month
+	}
+});
+
+const creditCardYearChange = (year) => ({
+	type: constants.PAY_CREDIT_CARD_ADD,
+	mode: 'year',
+	payload: {
+		year
+	}
+});
+
+const creditCardCvvChange = (cvv) => ({
+	type: constants.PAY_CREDIT_CARD_ADD,
+	mode: 'cvv',
+	payload: {
+		cvv
+	}
+});
+
 const creditCardSelected = (card) => ({
 	type: constants.PAY_CREDIT_CARD_SELECTED,
 	status: true,
@@ -68,6 +100,21 @@ const payReceived = (soNumber, payment) => ({
 	payload: {
 		soNumber,
 		payment
+	}
+});
+
+const toggleVtModalBox = (state, url) => ({
+	type: constants.PAY_VT_MODAL_BOX_TOGGLE,
+	status: state,
+	payload: {
+		url
+	}
+});
+
+const togglePaymentErrorModalBox = (message = false) => ({
+	type: constants.PAY_PAYMENT_ERROR,
+	payload: {
+		message
 	}
 });
 
@@ -114,19 +161,47 @@ const closeNewCreditCard = () => dispatch => {
 	dispatch(newCreditCardOpened(false));
 };
 
+const changeCreditCardNumber = (cardNumber) => dispatch => {
+	dispatch(creditCardNumberChange(cardNumber));
+};
+
+const changeCreditCardMonth = (month) => dispatch => {
+	dispatch(creditCardMonthChange(month));
+};
+
+const changeCreditCardYear = (year) => dispatch => {
+	dispatch(creditCardYearChange(year));
+};
+
+const changeCreditCardCvv = (cvv) => dispatch => {
+	dispatch(creditCardCvvChange(cvv));
+};
+
+const vtModalBoxOpen = (state, url) => dispatch => {
+	dispatch(toggleVtModalBox(state, url));
+};
+
+const paymentError = (message) => dispatch => {
+	dispatch(togglePaymentErrorModalBox(message));
+};
+
+const paymentErrorClose = () => dispatch => {
+	dispatch(togglePaymentErrorModalBox(false));
+};
+
 const selectCreditCard = (card) => dispatch => {
 	dispatch(closeNewCreditCard(false));
 	dispatch(creditCardSelected(card));
 };
 
-const pay = (token, soNumber, payment) => dispatch => {
+const pay = (token, soNumber, payment, paymentDetail = false) => dispatch => {
 	dispatch(payRequest());
 	return request({
 		token,
 		path: 'payments',
 		method: 'POST',
 		body: {
-			data: getPaymentPayload(soNumber, payment)
+			data: getPaymentPayload(soNumber, payment, paymentDetail)
 		}
 	}).then((response) => {
 		dispatch(payReceived(soNumber, response.data));
@@ -173,6 +248,13 @@ export default {
 	openNewCreditCard,
 	selectCreditCard,
 	deselectCreditCard,
+	changeCreditCardNumber,
+	changeCreditCardMonth,
+	changeCreditCardYear,
+	changeCreditCardCvv,
+	vtModalBoxOpen,
+	paymentError,
+	paymentErrorClose,
 	pay,
 	applyBin
 };

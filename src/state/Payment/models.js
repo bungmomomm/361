@@ -110,7 +110,7 @@ const getListAvailablePaymentMethod = (response) => {
 	return returnData;
 };
 
-const getPaymentPayload = (orderId, payment) => {
+const getPaymentPayload = (orderId, payment, paymentDetail) => {
 	const paymentPayload = {
 		type: 'payment',
 		attributes: {
@@ -135,6 +135,7 @@ const getPaymentPayload = (orderId, payment) => {
 	case paymentMethodName.BANK_TRANSFER:
 		break;
 	case paymentMethodName.COMMERCE_VERITRANS:
+
 		break;
 	case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 		break;

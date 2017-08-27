@@ -1,6 +1,9 @@
 import { request } from '@/utils';
 import humps from 'lodash-humps';
 import { getPlaceOrderCart } from '@/state/Cart/actions';
+import {
+	getAvailablePaymentMethod
+} from '@/state/Payment/actions';
 import { 
 	ADDR_GET_ADDRESS,
 	ADDR_O2O_LIST,
@@ -120,6 +123,7 @@ const getAddresses = (token) => dispatch => {
 		}
 
 		dispatch(addressesReceived(address, billing, latesto2o));
+		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
 		console.log(error);
@@ -187,6 +191,7 @@ const getDistrict = (token, label) => dispatch => {
 		});
 		// }
 		dispatch(districtReceived(district));
+		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
 		console.log(error);
@@ -213,6 +218,7 @@ const getCityProvince = (token) => dispatch => {
 			cityProvince.push(datas);
 		});
 		dispatch(cityProvinceReceived(cityProvince));
+		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
 		console.log(error);
@@ -230,6 +236,7 @@ const getO2OList = (token, province = 6) => dispatch => {
 	.then((response) => {
 		const result = response.data.data;
 		dispatch(o2oListReceived(result));
+		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
 		console.log(error);
@@ -256,6 +263,7 @@ const getO2OProvinces = (token) => dispatch => {
 			});
 		});
 		dispatch(o2oProvinceReceived(o2oProvinces));
+		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
 		console.log(error);

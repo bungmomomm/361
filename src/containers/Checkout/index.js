@@ -15,6 +15,7 @@ import ElockerModalbox from './components/Modal/ElockerModalbox';
 import PaymentSuccessModalbox from './components/Modal/PaymentSuccessModalbox';
 import PaymentErrorModalbox from './components/Modal/PaymentErrorModalbox';
 import VerifikasiNoHandponeModalbox from './components/Modal/VerifikasiNoHandponeModalbox';
+import Vt3dsModalBox from './components/Modal/Vt3dsModalBox';
 
 // Section Component
 import CardPesananPengiriman from './components/CardPesananPengiriman';
@@ -32,6 +33,12 @@ import {
 	changePaymentOption,
 	openNewCreditCard,
 	selectCreditCard,
+	changeCreditCardNumber,
+	changeCreditCardYear,
+	changeCreditCardMonth,
+	changeCreditCardCvv,
+	vtModalBoxOpen,
+	paymentError,
 	pay,
 	applyBin
 } from '@/state/Payment/actions';
@@ -39,6 +46,7 @@ import {
 	paymentMethodName
 } from '@/state/Payment/constants';
 
+const Veritrans = window.Veritrans || {};
 
 class Checkout extends Component {
 	constructor(props) {
@@ -104,6 +112,7 @@ class Checkout extends Component {
 		this.onCardMonthChange = this.onCardMonthChange.bind(this);
 		this.onCardYearChange = this.onCardYearChange.bind(this);
 		this.onCardCvvChange = this.onCardCvvChange.bind(this);
+		this.onVt3dsModalBoxClose = this.onVt3dsModalBoxClose.bind(this);
 	}
 
 	componentWillMount() {
@@ -255,7 +264,7 @@ class Checkout extends Component {
 			switch (selectedPaymentOption.paymentMethod) {
 			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 			case paymentMethodName.COMMERCE_VERITRANS:
-				cardNumber = this.props.payments.selectCard ? this.props.payments.selectCard.value : '';
+				cardNumber = this.props.payments.selectedCard ? this.props.payments.selectedCard.value : '';
 				bankName = this.props.payments.selectedBank ? this.props.payments.selectedBank.value : '';
 				break;
 			default:
@@ -306,20 +315,125 @@ class Checkout extends Component {
 		this.onChoisedAddress(selectedLocker);
 	}
 
+	onRequestVtToken(installment = false) {
+		const { dispatch } = this.props;
+		const cardDetail = {
+			card_cvv: this.props.payments.selectedCardDetail.cvv,
+			secure: true,
+			gross_amount: this.props.payments.total,
+		};
+
+		if (installment) {
+			cardDetail.card_number = this.selectCard.value;
+			cardDetail.bank = this.selectedBank.value;
+			cardDetail.installment = true;
+			cardDetail.installment_term = this.props.payments.selectedInstallment.term;
+		} else {
+			if (this.props.payments.twoClickEnabled) {
+				cardDetail.token_id = this.props.payments.selectedCard.value;
+				cardDetail.two_click = true;
+			} else {
+				cardDetail.card_number = this.props.payments.selectedCard.value;
+				cardDetail.card_exp_month = this.props.payments.selectedCardDetail.month;
+				cardDetail.card_exp_year = this.props.payments.selectedCardDetail.year;
+			}
+
+			if (typeof this.props.payments.selectedBank !== 'undefined' && this.props.payments.selectedBank.value.toLowerCase() === 'bca') {
+				cardDetail.channel = 'migs';
+			}
+		}
+
+		const card = () => ({
+			card_number: this.props.payments.selectedCard.value,
+			card_exp_month: this.props.payments.selectedCardDetail.month,
+			card_exp_year: this.props.payments.selectedCardDetail.year,
+			card_cvv: this.props.payments.selectedCardDetail.cvv,
+			secure: false,
+			gross_amount: this.props.payments.total
+		});
+
+		
+		const onVtCreditCardCallback = (response) => {
+			if (response.redirect_url) {
+				const payment = {
+					token_id: response.token_id
+				};
+				if (response.bank) {
+					payment.bank = response.bank;
+				}
+				dispatch(vtModalBoxOpen(true, response.redirect_url));
+			} else if (parseInt(response.status_code, 10) === 200) {
+				dispatch(vtModalBoxOpen(false));
+				dispatch(
+					pay(
+						this.state.token, 
+						this.props.soNumber, 
+						this.props.payments.selectedPaymentOption,
+						{
+							card: {
+								value: this.props.payments.selectedCard.value,
+								bank: this.props.payments.selectedBank.value,
+								detail: this.props.selectedCardDetail
+							}
+						}
+					)
+				);
+			} else {
+				dispatch(vtModalBoxOpen(true, 'http://ayunovanti.com'));
+				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
+			}
+		};
+		
+		const onVtInstallmentCallback = (response) => {
+			if (response.redirect_url) {
+				const payment = {
+					token_id: response.token_id
+				};
+				if (response.bank) {
+					payment.bank = response.bank;
+				}
+				dispatch(vtModalBoxOpen(true, response.redirect_url));
+			} else if (parseInt(response.status_code, 10) === 200) {
+				dispatch(vtModalBoxOpen(false));
+				dispatch(
+					pay(
+						this.state.token, 
+						this.props.soNumber, 
+						this.props.payments.selectedPaymentOption,
+						{
+							card: {
+								value: this.props.payments.selectedCard.value,
+								bank: this.props.payments.selectedBank.value,
+								detail: this.props.selectedCardDetail
+							},
+							term: {
+								
+							}
+						}
+					)
+				);
+			} else {
+				dispatch(vtModalBoxOpen(false));
+				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
+			}	
+		};
+		Veritrans.token(
+			card, 
+			installment ? onVtInstallmentCallback : onVtCreditCardCallback
+		);
+	}
+
+	onVt3dsModalBoxClose() {
+		const { dispatch } = this.props;
+		dispatch(vtModalBoxOpen(false));
+	}
+
 	onDoPayment() {
 		const { dispatch } = this.props;
 		switch (this.props.payments.paymentMethod) {
 		case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 		case paymentMethodName.COMMERCE_VERITRANS:
-			dispatch(
-				pay(
-					this.state.token, 
-					this.props.soNumber, 
-					this.props.payments.selectedPaymentOption,
-					this.props.payments.selectCard,
-					this.props.payments.selectedBank
-				)
-			);
+			this.onRequestVtToken();
 			break;
 		default:
 			dispatch(
@@ -343,20 +457,19 @@ class Checkout extends Component {
 	
 	onCardNumberChange(event) {
 		console.log(event, this.state.test);
-		// this.props.dispatch(changeCreditCardNumber(event));
-		// this.props.onCardNumberChange(event);
+		this.props.dispatch(changeCreditCardNumber(event.target.value));
 	}
-	onCardMonthChange(event) {
+	onCardMonthChange(monthData) {
 		console.log(event, this.state.test);
-		// this.props.onCardMonthChange(event);
+		this.props.dispatch(changeCreditCardMonth(monthData.value));
 	}
-	onCardYearChange(event) {
+	onCardYearChange(yearData) {
 		console.log(event, this.state.test);
-		// this.props.onCardYearChange(event);
+		this.props.dispatch(changeCreditCardYear(yearData.value));
 	}
 	onCardCvvChange(event) {
 		console.log(event, this.state.test);
-		// this.props.onCardCvvChange(event);
+		this.props.dispatch(changeCreditCardCvv(event.target.value));
 	}
 
 	getDistricts(cityAndProvince) {
@@ -522,9 +635,14 @@ class Checkout extends Component {
 						)
 					}
 					<ElockerModalbox shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} o2oProvinces={!o2oProvinces ? null : o2oProvinces} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
-					<PaymentSuccessModalbox />
-					<PaymentErrorModalbox />
+					<PaymentSuccessModalbox shown={this.props.payments.paymentSuccess} />
+					<PaymentErrorModalbox shown={this.props.payments.paymentError} />
 					<VerifikasiNoHandponeModalbox />
+					<Vt3dsModalBox
+						shown={this.props.payments.show3Ds} 
+						src={this.props.payments.vtRedirectUrl}
+						onClose={this.onVt3dsModalBoxClose}
+					/>
 				</div>
 			)
 		);
