@@ -31,15 +31,15 @@ export default class NewAddressModalbox extends Component {
 
 		this.state = {
 			formData: {
-				id: 0,
-				name: '',
-				penerima: '',
-				no_hp: '',
-				provinsi: '',
-				kecamatan: '',
-				kodepos: '',
-				address: '',
-				isEdit: false
+				id: this.props.formDataAddress.id || 0,
+				name: this.props.formDataAddress.label,
+				penerima: this.props.formDataAddress.nama,
+				no_hp: this.props.formDataAddress.noHP,
+				provinsi: this.props.formDataAddress.kotProv,
+				kecamatan: this.props.formDataAddress.kecamatan,
+				kodepos: this.props.formDataAddress.kodepos,
+				address: this.props.formDataAddress.address,
+				isEdit: this.props.formDataAddress.isEdit || false
 			},
 			errors: this.validator.errorBag,
 			district: {},
@@ -52,25 +52,6 @@ export default class NewAddressModalbox extends Component {
 		this.validateAndSubmit = this.validateAndSubmit.bind(this);
 		this.getDistricts = this.getDistricts.bind(this);
 		this.kecamatan = null;
-	}
-
-	componentWillReceiveProps(nextProps) {
-		console.log(nextProps);
-		this.setState({
-			district: nextProps.district,
-			cityProv: nextProps.cityProv,
-			formData: {
-				id: nextProps.formDataAddress.id,
-				name: nextProps.formDataAddress.label,
-				penerima: nextProps.formDataAddress.nama,
-				no_hp: nextProps.formDataAddress.noHP,
-				provinsi: nextProps.formDataAddress.kotProv,
-				kecamatan: nextProps.formDataAddress.kecamatan,
-				kodepos: nextProps.formDataAddress.kodepos,
-				address: nextProps.formDataAddress.address,
-				isEdit: nextProps.formDataAddress.isEdit
-			}
-		});
 	}
 
 	onChange(e) {
@@ -122,6 +103,7 @@ export default class NewAddressModalbox extends Component {
 	}
 
 	submit(formData) {
+		console.log('asdasdasd');
 		this.onSubmitAddress(formData);
 	}
 
@@ -148,7 +130,7 @@ export default class NewAddressModalbox extends Component {
 		return (
 			<Modal size='medium' shown={this.props.shown}>
 				<Modal.Header>
-					<div>Buat Alamat Baru</div>
+					<div>{ this.state.isEdit ? 'Ubah Alamat' : 'Buat Alamat Baru'}</div>
 				</Modal.Header>
 				<Modal.Body>
 					<div className={styles.overflow} ref={(overflow) => { this.fieldOverflow = overflow; }}>
@@ -200,7 +182,7 @@ export default class NewAddressModalbox extends Component {
 								filter
 								required
 								name='provinsi'
-								selectedLabel={typeof this.props.formDataAddress.kotProv !== 'undefined' ? this.props.formDataAddress.kotProv : '-- Silahkan Pilih'} 
+								selectedLabel={typeof this.props.formDataAddress.kotProv !== 'undefined' ? this.props.formDataAddress.kotProv : '-- Silakan Pilih'} 
 								onChange={this.onChangeSelect}
 								error={errors.has('provinsi')}
 								message={errors.has('provinsi') ? 'Provinsi field is required.' : ''}
@@ -216,7 +198,7 @@ export default class NewAddressModalbox extends Component {
 										name='kecamatan' 
 										filter
 										required
-										selectedLabel={typeof this.props.formDataAddress.kecamatan !== 'undefined' ? this.props.formDataAddress.kecamatan : '-- Silahkan Pilih'} 
+										selectedLabel={typeof this.props.formDataAddress.kecamatan !== 'undefined' ? this.props.formDataAddress.kecamatan : '-- Silakan Pilih'} 
 										onChange={this.onChangeSelect}
 										error={errors.has('kecamatan')}
 										message={errors.has('kecamatan') ? 'Kecamatan field is required.' : ''}

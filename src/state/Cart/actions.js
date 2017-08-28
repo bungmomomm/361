@@ -72,6 +72,7 @@ const getCart = token => dispatch => {
 		}).filter(e => e.id === 'pickup');
 		dispatch(paymentInfoUpdated(getCartPaymentData(response.data.data.attributes.total_pricing, 'cart')));
 		dispatch(cartReceived(setCartModel(response.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable));
+		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
 		console.log(error);
@@ -80,8 +81,8 @@ const getCart = token => dispatch => {
 
 const getPlaceOrderCart = (token, address, billing = false) => dispatch => {
 	dispatch(placeOrderRequest(token, address));
+	console.log(address);
 	const data = setPayloadPlaceOrder(address, billing);
-	
 	const req = {
 		token, 
 		path: 'orders',
@@ -105,6 +106,7 @@ const getPlaceOrderCart = (token, address, billing = false) => dispatch => {
 			}).filter(e => e.id === 'pickup');
 			dispatch(paymentInfoUpdated(getCartPaymentData(res.data.data.attributes.total_price, 'order')));
 			dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable));
+			dispatch(getAvailablePaymentMethod(token));
 		})
 		.catch((error) => {
 			console.log(error);
@@ -148,6 +150,7 @@ const deleteCart = (token, productId, props) => dispatch => {
 				props.cart.splice(storeWithEmptyProduct, 1);
 			}
 			dispatch(cartReceived(props.cart, props.isPickupable));
+			dispatch(getAvailablePaymentMethod(token));
 		}
 	})
 	.catch((error) => {

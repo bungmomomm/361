@@ -108,14 +108,14 @@ export default class CardPembayaran extends Component {
 	onCardNumberChange(event) {
 		this.props.onCardNumberChange(event);
 	}
-	onCardMonthChange() {
-		this.props.onCardMonthChange(event);
+	onCardMonthChange(data) {
+		this.props.onCardMonthChange(data);
 	}
-	onCardYearChange() {
-		this.props.onCardYearChange(event);
+	onCardYearChange(data) {
+		this.props.onCardYearChange(data);
 	}
-	onCardCvvChange() {
-		this.props.onCardCvvChange(event);
+	onCardCvvChange(data) {
+		this.props.onCardCvvChange(data);
 	}
 
 	handleCekVoucher(event) {
@@ -208,7 +208,7 @@ export default class CardPembayaran extends Component {
 												{ renderIf(card.selected)(
 													<Row gapless>
 														<Col grid={4}>
-															<Input type='number' placeholder='cvv' />
+															<Input type='number' placeholder='cvv' onBlur={this.onCardCvvChange} />
 														</Col>
 														<Col grid={4}>
 															<Sprites name='cvv' />
@@ -220,7 +220,17 @@ export default class CardPembayaran extends Component {
 									});
 								} else {
 									return (
-										<Select emptyFilter={false} key={index} name='cc' selectedLabel='-- Tambah Baru' options={option.cards} onChange={this.onSelectCard} />
+										<div key={index}>
+											<Select emptyFilter={false} name='cc' selectedLabel='-- Tambah Baru' options={option.cards} onChange={this.onSelectCard} />
+											<Row gapless>
+												<Col grid={4}>
+													<Input type='number' placeholder='cvv' onBlur={this.onCardCvvChange} />
+												</Col>
+												<Col grid={4}>
+													<Sprites name='cvv' />
+												</Col>
+											</Row>
+										</div>
 									);
 								}
 								return option;
@@ -308,7 +318,7 @@ export default class CardPembayaran extends Component {
 										<Select top selectedLabel='-- Tahun' options={Tahun} onChange={this.onCardYearChange} />
 									</Level.Item>
 									<Level.Item>
-										<Input type='number' placeholder='cvv' onChange={this.onCardCvvChange} />
+										<Input type='number' placeholder='cvv' onBlur={this.onCardCvvChange} />
 									</Level.Item>
 									<Level.Item>
 										<Sprites name='cvv' />

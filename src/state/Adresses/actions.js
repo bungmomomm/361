@@ -1,5 +1,9 @@
 import { request } from '@/utils';
 import humps from 'lodash-humps';
+import { getPlaceOrderCart } from '@/state/Cart/actions';
+import {
+	getAvailablePaymentMethod
+} from '@/state/Payment/actions';
 import { 
 	ADDR_GET_ADDRESS,
 	ADDR_O2O_LIST,
@@ -87,17 +91,6 @@ const o2oProvinceReceived = (o2oProvinces) => ({
 	}
 });
 
-// const addressSave = (address) => ({
-// 	type: ADDR_SAVE_ADDRESS,
-// 	status: 1,
-// 	payload: {
-// 		address
-// 	}
-// });
-// const addressFailed = () => ({
-// 	type: ADDR_FAILED
-// });
-
 const getAddresses = (token) => dispatch => {
 	dispatch(addressesRequest(token));
 	const req = {
@@ -130,42 +123,44 @@ const getAddresses = (token) => dispatch => {
 		}
 
 		dispatch(addressesReceived(address, billing, latesto2o));
+		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
 		console.log(error);
 	});
 };
 
-const saveAddress = (token, formData) => dispatch => {
-	
+const saveAddress = (token, formData, selectedAddress) => dispatch => {
+	const cityProvince = formData.provinsi.split(',');
 	const req = {
 		token, 
 		path: `me/addresses/${formData.isEdit ? formData.id : ''}`,
-		method: formData.isEdit ? 'PUT' : 'POST'
-	}; 
-	
-	if (formData.isEdit) {
-		const cityProvince = formData.provinsi.split(',');
-		req.body = {
+		method: formData.isEdit ? 'PUT' : 'POST', 
+		body: {
 			data: {
 				type: 'shipping',
 				attributes: {
-					address_label: formData.address,
-					fullname: formData.name,
+					address_label: formData.name,
+					fullname: formData.penerima,
 					address: formData.address,
-					province: cityProvince[1],
-					city: cityProvince[0],
-					district: formData.kecamatan,
+					province: cityProvince[1].trim(),
+					city: cityProvince[0].trim(),
+					district: formData.kecamatan.trim(),
 					zipcode: formData.kodepos,
 					phone: formData.no_hp,
 					fg_default: 0
 				}
 			}
-		};
-	}
+		}
+	}; 
+
 	request(req)
 	.then((response) => {
-		// dispatch(addressSave(formData));
+		if (formData.isEdit) {
+			dispatch(getPlaceOrderCart(token, selectedAddress));
+		}
+		
+		dispatch(getAddresses(token));
 	})
 	.catch((error) => {
 		console.log(error);
@@ -196,6 +191,7 @@ const getDistrict = (token, label) => dispatch => {
 		});
 		// }
 		dispatch(districtReceived(district));
+		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
 		console.log(error);
@@ -222,6 +218,7 @@ const getCityProvince = (token) => dispatch => {
 			cityProvince.push(datas);
 		});
 		dispatch(cityProvinceReceived(cityProvince));
+		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
 		console.log(error);
@@ -239,6 +236,7 @@ const getO2OList = (token, province = 6) => dispatch => {
 	.then((response) => {
 		const result = response.data.data;
 		dispatch(o2oListReceived(result));
+		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
 		console.log(error);
@@ -265,28 +263,12 @@ const getO2OProvinces = (token) => dispatch => {
 			});
 		});
 		dispatch(o2oProvinceReceived(o2oProvinces));
+		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
 		console.log(error);
 	});
 };
-
-// const saveAddress = token => dispatch => {
-// 	dispatch(addressSave(token));
-// 	return axios.post('/addresses', { token }).then((response) => {
-// 		const addresses = response.data;
-// 		// mimic request api
-// 		setTimeout(() => {
-// 			const rand = Math.ceil(Math.random() * 1);
-// 			if (rand === 1) {
-// 				dispatch(addressSaved(addresses));
-// 			} else {
-// 				dispatch(addressFailed());
-// 			}
-// 		}, 2000);
-// 	});	
-// };
-
 
 export default {
 	getAddresses,

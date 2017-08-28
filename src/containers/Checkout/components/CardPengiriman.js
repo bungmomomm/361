@@ -61,8 +61,8 @@ export default class CardPengiriman extends Component {
 		this.props.onChoisedAddress(selectedAddress);
 	}
 
-	onChangeAddress() {
-		this.props.onChangeAddress(this.state.selectedAddress);
+	onChangeAddress(e) {
+		this.props.onChangeAddress(this.state.selectedAddress, e);
 	}
 
 	onChosenLocker(dataChosen) {
@@ -111,7 +111,7 @@ export default class CardPengiriman extends Component {
 
 		const addMoreAddress = (
 			<Button
-				onClick={this.onChangeAddress}
+				onClick={() => this.onChangeAddress('add')}
 				content='Tambah Alamat Baru'
 				className='font-orange'
 				icon='plus'
