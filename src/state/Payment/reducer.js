@@ -179,9 +179,7 @@ export default (state = initialState, action) => {
 					action.payload.callback
 				);
 			} else if (action.mode === 'complete') {
-				if (Math.random() === 1) {
-					top.location.href = `${getBaseUrl()}/checkout/${action.payload.soNumber}/complete`;
-				}
+				top.location.href = `${getBaseUrl()}/checkout/${action.payload.soNumber}/complete`;
 				return {
 					...initialState,
 					...state,
