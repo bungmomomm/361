@@ -174,7 +174,7 @@ export default (state = initialState, action) => {
 	case constants.PAY: {
 		if (action.status) {
 			if (action.mode === 'cc') {
-				Veritrans.token(
+				Veritrans().token(
 					action.payload.card,
 					action.payload.callback
 				);

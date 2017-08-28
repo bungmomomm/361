@@ -305,6 +305,8 @@ class Checkout extends Component {
 
 	onSelectCard(event) {
 		this.props.dispatch(selectCreditCard(event));
+		const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems.pop();
+		this.props.dispatch(applyBin(this.state.token, selectedPaymentOption.value, event, ''));
 	}
 
 	onGetListO2o(provinceId) {
@@ -341,6 +343,7 @@ class Checkout extends Component {
 
 	onRequestVtToken(installment = false) {
 		const { dispatch } = this.props;
+		let bankName = '';
 		const cardDetail = {
 			card_cvv: this.props.payments.selectedCardDetail.cvv,
 			secure: true,
@@ -372,11 +375,8 @@ class Checkout extends Component {
 		
 		const onVtCreditCardCallback = (response) => {
 			if (response.redirect_url) {
-				const payment = {
-					token_id: response.token_id
-				};
 				if (response.bank) {
-					payment.bank = response.bank;
+					bankName = response.bank;
 				}
 				dispatch(vtModalBoxOpen(true, response.redirect_url));
 			} else if (parseInt(response.status_code, 10) === 200) {
@@ -394,7 +394,7 @@ class Checkout extends Component {
 							card: {
 								masked: this.props.payments.selectedCard.label,
 								value: response.token_id,
-								bank: response.bank,
+								bank: bankName,
 								detail: this.props.payments.selectedCardDetail
 							}
 						}
@@ -408,11 +408,11 @@ class Checkout extends Component {
 		
 		const onVtInstallmentCallback = (response) => {
 			if (response.redirect_url) {
-				const payment = {
-					token_id: response.token_id
-				};
+				// const payment = {
+				// 	token_id: response.token_id
+				// };
 				if (response.bank) {
-					payment.bank = response.bank;
+					bankName = response.bank;
 				}
 				dispatch(vtModalBoxOpen(true, response.redirect_url));
 			} else if (parseInt(response.status_code, 10) === 200) {

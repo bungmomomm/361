@@ -146,7 +146,8 @@ export default class CardPembayaran extends Component {
 			deliveryCost, 
 			paymentMethods, 
 			loading,
-			selectedPayment 
+			selectedPayment,
+			selectedCard 
 		} = this.props.payments;
 		let couponId = false;
 		if (this.props.validCoupon && this.props.coupon !== '') {
@@ -222,14 +223,16 @@ export default class CardPembayaran extends Component {
 									return (
 										<div key={index}>
 											<Select emptyFilter={false} name='cc' selectedLabel='-- Tambah Baru' options={option.cards} onChange={this.onSelectCard} />
-											<Row gapless>
-												<Col grid={4}>
-													<Input type='number' placeholder='cvv' onBlur={this.onCardCvvChange} />
-												</Col>
-												<Col grid={4}>
-													<Sprites name='cvv' />
-												</Col>
-											</Row>
+											{ renderIf(selectedCard)(
+												<Row gapless>
+													<Col grid={4}>
+														<Input type='number' placeholder='cvv' onBlur={this.onCardCvvChange} />
+													</Col>
+													<Col grid={4}>
+														<Sprites name='cvv' />
+													</Col>
+												</Row>
+											) }
 										</div>
 									);
 								}
