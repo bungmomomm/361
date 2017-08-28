@@ -11,6 +11,7 @@ const PAY_UPDATED = 'PAY_UPDATED';
 const PAY_APPLY_BIN = 'PAY_APPLY_BIN';
 const PAY_VT_MODAL_BOX_TOGGLE = 'PAY_VT_MODAL_BOX_TOGGLE';
 const PAY_PAYMENT_ERROR = 'PAY_PAYMENT_ERROR';
+const PAY_ERROR = 'PAY_ERROR';
 const PAY = 'PAY';
 
 const paymentGroupName = {
@@ -44,6 +45,7 @@ export default {
 	PAY_CREDIT_CARD_ADD,
 	PAY_VT_MODAL_BOX_TOGGLE,
 	PAY_PAYMENT_ERROR,
+	PAY_ERROR,
 	PAY,
 	PAY_APPLY_BIN,
 	paymentGroupName,

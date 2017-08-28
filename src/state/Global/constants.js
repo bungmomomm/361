@@ -1,0 +1,5 @@
+const GLOBAL_DIALOG_TOGGLE = 'GLOBAL_DIALOG_TOGGLE';
+
+export default {
+	GLOBAL_DIALOG_TOGGLE
+};
