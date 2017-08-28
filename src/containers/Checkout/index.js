@@ -608,7 +608,7 @@ class Checkout extends Component {
 									}
 								</Col>
 								<Col flex grid={4} className={enablePesananPengiriman || this.state.restrictO2o ? '' : styles.disabled}>
-									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>(5 items)</span></div>
+									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>({this.props.totalItems} items)</span></div>
 									{
 										<CardPesananPengiriman loading={this.state.loadingUpdateCart} cart={!this.state.cart ? [] : this.state.cart} onDeleteCart={this.onDeleteCart} onUpdateQty={this.onUpdateQty} restrictO2o={this.state.restrictO2o} />
 									}
@@ -686,7 +686,8 @@ const mapStateToProps = (state) => {
 		o2oProvinces: state.addresses.o2oProvinces,
 		isPickupable: state.cart.isPickupable,
 		cityProv: state.addresses.cityProv, 
-		district: state.addresses.district
+		district: state.addresses.district,
+		totalItems: state.cart.totalItems,
 	};
 };
 

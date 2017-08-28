@@ -50,7 +50,10 @@ export default class CheckoutProduct extends Component {
 				</div>
 				<div className={styles.body}>
 					<div className={styles.bodyLeft}>
-						<Button clean size='small' icon='trash-o' iconPosition='left' content='Hapus' onClick={this.onDeleteCart} />
+						{
+							!this.props.showBtnDelete ? null :
+							<Button clean size='small' icon='trash-o' iconPosition='left' content='Hapus' onClick={this.onDeleteCart} />
+						}
 					</div>
 					<div className={styles.bodyRight}>
 						{/* <div><strong>Keterangan:</strong></div> */}
