@@ -1,5 +1,5 @@
 import { request } from '@/utils';
-import { paymentInfoUpdated } from '@/state/Payment/actions';
+import { paymentInfoUpdated, getAvailablePaymentMethod } from '@/state/Payment/actions';
 import { 
 	CRT_GET_CART,
 	CRT_PLACE_ORDER,
@@ -183,6 +183,7 @@ const updateQtyCart = (token, productQty, productId, props) => dispatch => {
 		}).filter(e => e.id === 'pickup');
 		dispatch(paymentInfoUpdated(getCartPaymentData(res.data.data.attributes.total_price, 'order')));
 		dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable));
+		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
 		console.log(error);

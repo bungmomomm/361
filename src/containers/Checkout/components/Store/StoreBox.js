@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { Icon } from '@/components';
 import styles from './StoreBox.scss';
 
+import { renderIf } from '@/utils';
+
 import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
 
@@ -16,7 +18,13 @@ const StoreBox = (props) => {
 		<div className={BoxWrapper} >
 			<div className={styles.header}>
 				<div className={styles.name}>{props.name}</div>
-				<div className={styles.location}><Icon name='map-marker' /> {props.location}</div>
+				<div className={styles.location}>
+					{
+						renderIf(props.location)(
+							[<Icon name='map-marker' />, props.location]
+						)
+					}
+				</div>
 			</div>
 			{props.children}
 		</div>

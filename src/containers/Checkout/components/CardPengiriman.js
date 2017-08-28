@@ -86,9 +86,9 @@ export default class CardPengiriman extends Component {
 			});
 			this.props.activeShippingTab(true);
 		}
-		// if (this.props.latesto2o) {
-		// 	this.props.onSelectedLocker(this.props.latesto2o[0]);	
-		// }
+		if (this.props.latesto2o.length > 0) {
+			this.props.onSelectedLocker(this.props.latesto2o[0]);	
+		}
 	}
 
 	openModal(even) {
