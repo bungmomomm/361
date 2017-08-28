@@ -7,7 +7,7 @@ import Input from '../../Elements/Input/Input';
 import Button from '../../Elements/Button/Button';
 import Alert from '../../Modules/Alert/Alert';
 import { Map, Marker, Polygon, GoogleApiWrapper } from 'google-maps-react';
-import { renderIf } from '@/utils';
+import { renderIf, geocoder } from '@/utils';
 
 const cx = classNames.bind(styles);
 
@@ -41,8 +41,22 @@ class Gosend extends Component {
 	componentWillUnmount() {
 		window.removeEventListener('click', this.autocomplete, false);
 	}
+
+	onGeoLoad(results, status) {
+		console.log(results);
+		console.log(this);
+	}
 	
 	onMouseoverPolygon(props, polygon, e) {
+		// const geo = geocoder();
+		console.log(geocoder());
+		console.log(geocoder().geocode({ address: 'Jakarta, Indonesia' }));
+		// const latlongitude = latlng(e.latLng.lat(), e.latLng.lng());
+		// const paramsGeo = {
+		// 	latLng: latlongitude
+		// };
+		// geo.geocode.geocode(paramsGeo, this.onGeoLoad);
+
 		this.setCenter({
 			lat: e.latLng.lat(),
 			lng: e.latLng.lng()
