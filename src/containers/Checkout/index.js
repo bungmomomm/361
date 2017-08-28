@@ -25,7 +25,14 @@ import CardPengiriman from './components/CardPengiriman';
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { addCoupon, removeCoupon, resetCoupon } from '@/state/Coupon/actions';
-import { getAddresses, getO2OList, getO2OProvinces, getCityProvince, getDistrict, saveAddress } from '@/state/Adresses/actions';
+import { 
+	getAddresses, 
+	getO2OList, 
+	getO2OProvinces, 
+	getCityProvince, 
+	getDistrict, 
+	saveAddress 
+} from '@/state/Adresses/actions';
 import { getPlaceOrderCart, getCart, updateQtyCart } from '@/state/Cart/actions';
 import {
 	getAvailablePaymentMethod,
@@ -83,7 +90,9 @@ class Checkout extends Component {
 			formDataAddress: {},
 			cityProv: this.props.cityProv, 
 			district: this.props.district,
-			restrictO2o: false, 
+			restrictO2o: false,
+			loadingUpdateCart: false,
+			addressTabActive: true,
 		};
 		this.onAddCoupon = this.onAddCoupon.bind(this);
 		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
@@ -164,7 +173,8 @@ class Checkout extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		this.setState({
-			cart: nextProps.cart
+			cart: nextProps.cart,
+			loadingUpdateCart: nextProps.loadingUpdateCart
 		});
 	}
 
@@ -201,13 +211,12 @@ class Checkout extends Component {
 	}
 
 	onChangeAddress(address, flagAdd) {
-
 		const { dispatch } = this.props;
 		dispatch(getCityProvince(this.state.token));
 		let formDataAddress = {
 			isEdit: false
 		};
-		if (!flagAdd) {
+		if (flagAdd !== 'add') {
 			const editAddress = address.attributes;
 			formDataAddress = {
 				id: address.id,
@@ -237,6 +246,7 @@ class Checkout extends Component {
 
 		this.setState({
 			cart: this.props.cart,
+			loadingUpdateCart: true,
 		});
 
 	}
@@ -552,6 +562,20 @@ class Checkout extends Component {
 				restrictO2o: false
 			});
 		}
+		this.setState({
+			addressTabActive: active
+		});
+		if ((!this.state.selectedLocker && !active) || (!this.state.selectedAddress && active)) {
+			this.setState({
+				enablePesananPengiriman: false,
+				enablePembayaran: false,
+			});
+		} else if ((this.state.selectedAddress && active) || (this.state.selectedLocker && !active)) {
+			this.setState({
+				enablePesananPengiriman: true,
+				enablePembayaran: true,
+			});
+		}
 	}
 
 	render() {
@@ -590,9 +614,9 @@ class Checkout extends Component {
 									}
 								</Col>
 								<Col flex grid={4} className={enablePesananPengiriman || this.state.restrictO2o ? '' : styles.disabled}>
-									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>(5 items)</span></div>
+									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>({this.props.totalItems} items)</span></div>
 									{
-										<CardPesananPengiriman cart={!this.state.cart ? [] : this.state.cart} onDeleteCart={this.onDeleteCart} onUpdateQty={this.onUpdateQty} restrictO2o={this.state.restrictO2o} />
+										<CardPesananPengiriman loading={this.state.loadingUpdateCart} cart={!this.state.cart ? [] : this.state.cart} onDeleteCart={this.onDeleteCart} onUpdateQty={this.onUpdateQty} restrictO2o={this.state.restrictO2o} />
 									}
 								</Col>
 								<Col flex grid={4} className={enablePembayaran && !this.state.restrictO2o ? '' : styles.disabled}>
@@ -661,13 +685,15 @@ const mapStateToProps = (state) => {
 		addresses: state.addresses.addresses,
 		billing: state.addresses.billing,
 		cart: state.cart.data,
+		loadingUpdateCart: state.cart.loading,
 		payments: state.payments,
 		listo2o: state.addresses.o2o,
 		latesto2o: state.addresses.latesto2o,
 		o2oProvinces: state.addresses.o2oProvinces,
 		isPickupable: state.cart.isPickupable,
 		cityProv: state.addresses.cityProv, 
-		district: state.addresses.district
+		district: state.addresses.district,
+		totalItems: state.cart.totalItems,
 	};
 };
 

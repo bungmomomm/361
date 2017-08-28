@@ -69,7 +69,7 @@ const getListAvailablePaymentMethod = (response) => {
 			methodData.payment_items = methodData.payment_items.map((payment, paymentIndex) => {
 				const paymentData = {
 					...paymentMethodItem(payment),
-					cards: getCardRelations(payment.relationships.card_number, response.included)
+					cards: !payment.relationships ? [] : getCardRelations(payment.relationships.card_number, response.included)
 				};
 				return paymentData;
 			});
@@ -78,7 +78,7 @@ const getListAvailablePaymentMethod = (response) => {
 			methodData.payment_items = methodData.payment_items.map((payment, paymentIndex) => {
 				const paymentData = {
 					...paymentMethodItem(payment),
-					cards: getCardRelations(payment.relationships.card_number, response.included),
+					cards: !payment.relationships.card_number ? [] : getCardRelations(payment.relationships.card_number, response.included),
 					banks: getRelations(payment.relationships.banks, response.included)
 				};
 				paymentData.banks = paymentData.banks.map((bank, bankIndex) => {
