@@ -11,6 +11,7 @@ import {
 	Alert,
 	Segment,
 } from '@/components';
+import { renderIf } from '@/utils';
 
 import Dropshipper from './Dropshipper';
 
@@ -157,7 +158,12 @@ export default class CardPengiriman extends Component {
 						!this.state.selectedAddress ? null : 
 						<Dropshipper setDropship={this.props.setDropship} errorDropship={this.props.errorDropship} checkDropship={this.props.checkDropship} />
 					}
-					<Button content='Masukan Alamat Pengiriman' color='dark' block size='large' iconPosition='right' icon='angle-right' />
+					{
+						renderIf(this.state.shipping.length === 0)(
+							<Button content='Masukan Alamat Pengiriman' color='dark' block size='large' iconPosition='right' icon='angle-right' onClick={() => this.onChangeAddress('add')} />
+						)
+					}
+					
 				</Tabs.Panel>
 				<Tabs.Panel title='Ambil Di Toko/E-locker (O2O)' sprites='o2o-off' spritesActive='o2o-on' >
 					<Alert align='center' color='yellow' show={this.state.elockerTab} >
