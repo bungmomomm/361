@@ -44,11 +44,13 @@ export default class NewAddressModalbox extends Component {
 			errors: this.validator.errorBag,
 			district: {},
 			enableGosend: false,
-			gosendData: {}
+			gosendData: {}, 
+			formattedAddress: ''
 		};
 		this.onChange = this.onChange.bind(this);
 		this.onChangeSelect = this.onChangeSelect.bind(this);
 		this.onSubmitAddress = this.onSubmitAddress.bind(this);
+		this.onGeoLoad = this.onGeoLoad.bind(this);
 		this.validateAndSubmit = this.validateAndSubmit.bind(this);
 		this.getDistricts = this.getDistricts.bind(this);
 		this.kecamatan = null;
@@ -95,6 +97,14 @@ export default class NewAddressModalbox extends Component {
 		this.props.onSubmitAddress(formData);
 	}
 
+	onGeoLoad(lat, long, formattedAddress) {
+		console.log(formattedAddress);
+		this.setState({
+			formattedAddress, 
+			isEdit: true
+		});
+	}
+
 	getDistricts(cityProv) {
 		this.props.getDistricts(cityProv);
 	}
@@ -133,9 +143,10 @@ export default class NewAddressModalbox extends Component {
 		const { 
 			errors,
 			gosendData,
-			enableGosend
+			enableGosend, 
+			isEdit
 		} = this.state;
-		console.log(this.props);
+		console.log(this.state);
 		return (
 			<Modal size='medium' shown={this.props.shown}>
 				<Modal.Header>
@@ -257,11 +268,12 @@ export default class NewAddressModalbox extends Component {
 									zoom={15} 
 									center={gosendData.center} 
 									polygonArea={gosendData.location_coords} 
+									onGeoLoad={this.onGeoLoad}
 								/>
 							)
 						}
 						{
-							renderIf(enableGosend && this.props.formDataAddress.isEdit)(
+							renderIf(enableGosend && isEdit)(
 								<div>
 									<Segment row>
 										<Level padded>
@@ -269,9 +281,9 @@ export default class NewAddressModalbox extends Component {
 												<Icon name='map-marker' />
 											</Level.Item>
 											<Level.Item>
-												Jalan Bangka II No.20, Pela Mampang, 
-												Mampang Prapatan, Kota Jakarta Selatan, 
-												DKI jakarta 12720
+												{
+													this.state.formattedAddress
+												}
 											</Level.Item>
 											<Level.Item>
 												<button className='font-small font-orange'>Ganti Lokasi</button>
