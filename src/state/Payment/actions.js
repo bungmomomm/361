@@ -94,12 +94,22 @@ const payRequest = () => ({
 	status: false
 });
 
-const payReceived = (soNumber, payment) => ({
+const payReceived = (soNumber, payment, mode, card, callback) => ({
 	type: constants.PAY,
 	status: true,
+	mode,
 	payload: {
 		soNumber,
-		payment
+		payment,
+		card,
+		callback
+	}
+});
+
+const payError = (error) => ({
+	type: constants.PAY_ERROR,
+	payload: {
+		error
 	}
 });
 
@@ -194,20 +204,26 @@ const selectCreditCard = (card) => dispatch => {
 	dispatch(creditCardSelected(card));
 };
 
-const pay = (token, soNumber, payment, paymentDetail = false) => dispatch => {
+const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete', card = false, callback = false) => dispatch => {
 	dispatch(payRequest());
+	if (
+		payment.paymentMethod === 'commerce_veritrans_installment'
+		&& payment.paymentMethod === 'commerce_veritrans'
+	) {
+		// prepare cc
+	}
 	return request({
 		token,
 		path: 'payments',
 		method: 'POST',
 		body: {
-			data: getPaymentPayload(soNumber, payment, paymentDetail)
+			data: getPaymentPayload(soNumber, payment, paymentDetail, mode)
 		}
 	}).then((response) => {
-		dispatch(payReceived(soNumber, response.data));
+		dispatch(payReceived(soNumber, response.data, mode, card, callback));
 	}).catch((error) => {
 		// showError
-		dispatch(payReceived({}));
+		dispatch(payError(error));
 	});
 };
 
@@ -255,6 +271,7 @@ export default {
 	vtModalBoxOpen,
 	paymentError,
 	paymentErrorClose,
+	payError,
 	pay,
 	applyBin
 };

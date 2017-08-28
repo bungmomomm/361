@@ -16,6 +16,7 @@ import PaymentSuccessModalbox from './components/Modal/PaymentSuccessModalbox';
 import PaymentErrorModalbox from './components/Modal/PaymentErrorModalbox';
 import VerifikasiNoHandponeModalbox from './components/Modal/VerifikasiNoHandponeModalbox';
 import Vt3dsModalBox from './components/Modal/Vt3dsModalBox';
+import EcashModalBox from './components/Modal/EcashModalBox';
 
 // Section Component
 import CardPesananPengiriman from './components/CardPesananPengiriman';
@@ -53,12 +54,15 @@ import {
 	paymentMethodName
 } from '@/state/Payment/constants';
 
-const Veritrans = window.Veritrans || {};
+import { actions as globalAction } from '@/state/Global';
+
+import { Veritrans } from '@/utils/vt';
 
 class Checkout extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.Veritrans = Veritrans();
 		this.validator = new Validator({
 			dropship_name: 'required|max:100',
 			dropship_phone: 'required|numeric|min:6|max:14',
@@ -93,6 +97,7 @@ class Checkout extends Component {
 			restrictO2o: false,
 			loadingUpdateCart: false,
 			addressTabActive: true,
+			isValidPayment: false,
 		};
 		this.onAddCoupon = this.onAddCoupon.bind(this);
 		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
@@ -122,6 +127,8 @@ class Checkout extends Component {
 		this.onCardYearChange = this.onCardYearChange.bind(this);
 		this.onCardCvvChange = this.onCardCvvChange.bind(this);
 		this.onVt3dsModalBoxClose = this.onVt3dsModalBoxClose.bind(this);
+		this.onMandiriEcashClose = this.onMandiriEcashClose.bind(this);
+		this.closeModalElocker = this.closeModalElocker.bind(this);
 	}
 
 	componentWillMount() {
@@ -182,6 +189,15 @@ class Checkout extends Component {
 			cart: nextProps.cart,
 			loadingUpdateCart: nextProps.loadingUpdateCart
 		});
+		if ((!this.props.isPickupable || this.props.isPickupable === '0') && !this.state.addressTabActive) {
+			this.setState({
+				restrictO2o: true
+			});
+		} else {
+			this.setState({
+				restrictO2o: false
+			});
+		}
 	}
 
 	onAddCoupon(coupon) {
@@ -360,14 +376,7 @@ class Checkout extends Component {
 			}
 		}
 
-		const card = () => ({
-			card_number: this.props.payments.selectedCard.value,
-			card_exp_month: this.props.payments.selectedCardDetail.month,
-			card_exp_year: this.props.payments.selectedCardDetail.year,
-			card_cvv: this.props.payments.selectedCardDetail.cvv,
-			secure: false,
-			gross_amount: this.props.payments.total
-		});
+		const card = () => (cardDetail);
 
 		
 		const onVtCreditCardCallback = (response) => {
@@ -387,16 +396,21 @@ class Checkout extends Component {
 						this.props.soNumber, 
 						this.props.payments.selectedPaymentOption,
 						{
+							amount: this.props.payments.total,
+							status: 'success',
+							status_code: response.status_code,
+							status_message: response.status_message,
 							card: {
-								value: this.props.payments.selectedCard.value,
-								bank: this.props.payments.selectedBank.value,
-								detail: this.props.selectedCardDetail
+								masked: this.props.payments.selectedCard.label,
+								value: response.token_id,
+								bank: response.bank,
+								detail: this.props.payments.selectedCardDetail
 							}
 						}
 					)
 				);
 			} else {
-				dispatch(vtModalBoxOpen(true, 'http://ayunovanti.com'));
+				dispatch(vtModalBoxOpen(true));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
 			}
 		};
@@ -421,7 +435,7 @@ class Checkout extends Component {
 							card: {
 								value: this.props.payments.selectedCard.value,
 								bank: this.props.payments.selectedBank.value,
-								detail: this.props.selectedCardDetail
+								detail: this.props.payments.selectedCardDetail
 							},
 							term: {
 								
@@ -434,15 +448,32 @@ class Checkout extends Component {
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
 			}	
 		};
-		Veritrans.token(
-			card, 
-			installment ? onVtInstallmentCallback : onVtCreditCardCallback
+		dispatch(
+			pay(
+				this.state.token,
+				this.props.soNumber,
+				this.props.payments.selectedPaymentOption,
+				{
+					amount: this.props.payments.total,
+					card: {
+						value: this.props.payments.selectedCard.value
+					}
+				},
+				'cc',
+				card,
+				installment ? onVtInstallmentCallback : onVtCreditCardCallback
+			)
 		);
 	}
 
 	onVt3dsModalBoxClose() {
 		const { dispatch } = this.props;
 		dispatch(vtModalBoxOpen(false));
+	}
+
+	onMandiriEcashClose() {
+		const { dispatch } = this.props;
+		dispatch(globalAction.dialogOpen(false));
 	}
 
 	onDoPayment() {
@@ -554,6 +585,9 @@ class Checkout extends Component {
 			tempSelectedAddress.attributes.dropship_name = this.state.formDropshipper.dropship_name;
 			tempSelectedAddress.attributes.dropship_phone = this.state.formDropshipper.dropship_phone;
 			this.onChoisedAddress(tempSelectedAddress);
+			this.setState({
+				isValidPayment: true,
+			});
 		} else {
 			this.checkDropship();
 		}
@@ -583,6 +617,12 @@ class Checkout extends Component {
 				enablePembayaran: true,
 			});
 		}
+	}
+
+	closeModalElocker() {
+		this.setState({
+			showModalO2o: false
+		});
 	}
 
 	render() {
@@ -662,7 +702,7 @@ class Checkout extends Component {
 										onSelectCard={this.onSelectCard}
 										dropshipper={this.state.dropshipper}
 										checkDropship={this.submitDropship}
-										isValidDropshipper={this.state.isValidDropshipper}
+										isValidDropshipper={this.state.isValidPayment}
 										onDoPayment={this.onDoPayment}
 										onCardNumberChange={this.onCardNumberChange}
 										onCardMonthChange={this.onCardMonthChange}
@@ -685,15 +725,16 @@ class Checkout extends Component {
 							/>
 						)
 					}
-					<ElockerModalbox shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} o2oProvinces={!o2oProvinces ? null : o2oProvinces} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
+					<ElockerModalbox closeModalElocker={this.closeModalElocker} shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} o2oProvinces={!o2oProvinces ? null : o2oProvinces} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
 					<PaymentSuccessModalbox shown={this.props.payments.paymentSuccess} />
 					<PaymentErrorModalbox shown={this.props.payments.paymentError} />
 					<VerifikasiNoHandponeModalbox />
 					<Vt3dsModalBox
-						shown={this.props.payments.show3Ds} 
+						shown={this.props.payments.show3ds}
 						src={this.props.payments.vtRedirectUrl}
 						onClose={this.onVt3dsModalBoxClose}
 					/>
+					<EcashModalBox shown={this.props.payments.showEcash} src={this.props.payments.mandiriRedirectUrl} onClose={this.onMandiriEcashClose} />
 				</div>
 			)
 		);

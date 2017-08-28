@@ -4,7 +4,8 @@ import {
 	ADDR_DROP_SHIPPER,
 	ADDR_O2O_LIST,
 	ADDR_GET_DISTRICT,
-	ADDR_GET_CITY_PROVINCE
+	ADDR_GET_CITY_PROVINCE,
+	ADDR_O2O_PROVINCE,
 } from './constants';
 
 const initialState = {
@@ -68,6 +69,12 @@ export default (state = initialState, action) => {
 		return {
 			...state, 
 			cityProv: action.payload.cityProv
+		};
+	}
+	case ADDR_O2O_PROVINCE: {
+		return {
+			...state, 
+			o2oProvinces: action.payload.o2oProvinces,
 		};
 	}
 	default: 

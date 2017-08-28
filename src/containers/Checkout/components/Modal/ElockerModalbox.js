@@ -19,6 +19,7 @@ export default class ElockerModalBox extends Component {
 		this.setFilterLocker = this.setFilterLocker.bind(this);
 		this.onGetListO2o = this.onGetListO2o.bind(this);
 		this.setCurrentProvince = this.setCurrentProvince.bind(this);
+		this.onClose = this.onClose.bind(this);
 	}
 
 	onSelectedLocker(elocker) {
@@ -32,8 +33,12 @@ export default class ElockerModalBox extends Component {
 		this.props.onGetListO2o(listo2o);
 	}
 
+	onClose(event) {
+		this.props.closeModalElocker(event);
+	}
+
 	setFilterLocker(listo2o) {
-		this.setState({
+		this.setState({	
 			filtero2o: listo2o,
 		});
 	}
@@ -46,7 +51,7 @@ export default class ElockerModalBox extends Component {
 
 	render() {
 		return (
-			<Modal size='large' shown={this.props.shown} >
+			<Modal size='large' shown={this.props.shown} onClose={this.onClose} >
 				<Modal.Header>
 					Pilih Lokasi E-Locker (O2O)
 				</Modal.Header>

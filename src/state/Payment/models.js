@@ -110,12 +110,11 @@ const getListAvailablePaymentMethod = (response) => {
 	return returnData;
 };
 
-const getPaymentPayload = (orderId, payment, paymentDetail) => {
+const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
 	const paymentPayload = {
 		type: 'payment',
 		attributes: {
-			product_type: 'product',
-			payment_method: payment.paymentMethod
+			payment_method: payment.paymentMethod,
 		},
 		relationships: {
 			order: {
@@ -126,6 +125,7 @@ const getPaymentPayload = (orderId, payment, paymentDetail) => {
 			}
 		}
 	};
+	
 	switch (payment.paymentMethod) {
 	case paymentMethodName.VIRTUAL_ACCOUNT:
 		paymentPayload.attributes.virtual_account = {
@@ -135,9 +135,38 @@ const getPaymentPayload = (orderId, payment, paymentDetail) => {
 	case paymentMethodName.BANK_TRANSFER:
 		break;
 	case paymentMethodName.COMMERCE_VERITRANS:
-
+		paymentPayload.attributes.amount = paymentDetail.amount;
+		paymentPayload.attributes.status = paymentDetail.status;
+		if (mode === 'cc') {
+			paymentPayload.attributes.credit_card = {
+				card_number: paymentDetail.card.value
+			};
+		} else {
+			paymentPayload.attributes.credit_card = {
+				bank: paymentDetail.card.bank,
+				masked_card: paymentDetail.card.masked,
+				status_code: paymentDetail.status_code,
+				status_message: paymentDetail.status_message,
+				token_id: paymentDetail.card.value
+			};		
+		}
 		break;
 	case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
+		paymentPayload.attributes.amount = paymentDetail.amount;
+		paymentPayload.attributes.status = paymentDetail.status;
+		if (mode === 'cc') {
+			paymentPayload.attributes.credit_card = {
+				card_number: paymentDetail.card.value
+			};
+		} else {
+			paymentPayload.attributes.credit_card = {
+				bank: paymentDetail.card.bank,
+				masked_card: paymentDetail.card.masked,
+				status_code: paymentDetail.status_code,
+				status_message: paymentDetail.status_message,
+				token_id: paymentDetail.card.value
+			};		
+		}
 		break;
 	case paymentMethodName.POS_PAY:
 		break;
