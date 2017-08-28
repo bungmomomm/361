@@ -93,6 +93,7 @@ class Checkout extends Component {
 			restrictO2o: false,
 			loadingUpdateCart: false,
 			addressTabActive: true,
+			isValidPayment: false,
 		};
 		this.onAddCoupon = this.onAddCoupon.bind(this);
 		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
@@ -122,6 +123,7 @@ class Checkout extends Component {
 		this.onCardYearChange = this.onCardYearChange.bind(this);
 		this.onCardCvvChange = this.onCardCvvChange.bind(this);
 		this.onVt3dsModalBoxClose = this.onVt3dsModalBoxClose.bind(this);
+		this.closeModalElocker = this.closeModalElocker.bind(this);
 	}
 
 	componentWillMount() {
@@ -556,6 +558,9 @@ class Checkout extends Component {
 			tempSelectedAddress.attributes.dropship_name = this.state.formDropshipper.dropship_name;
 			tempSelectedAddress.attributes.dropship_phone = this.state.formDropshipper.dropship_phone;
 			this.onChoisedAddress(tempSelectedAddress);
+			this.setState({
+				isValidPayment: true,
+			});
 		} else {
 			this.checkDropship();
 		}
@@ -585,6 +590,12 @@ class Checkout extends Component {
 				enablePembayaran: true,
 			});
 		}
+	}
+
+	closeModalElocker() {
+		this.setState({
+			showModalO2o: false
+		});
 	}
 
 	render() {
@@ -644,7 +655,7 @@ class Checkout extends Component {
 										onSelectCard={this.onSelectCard}
 										dropshipper={this.state.dropshipper}
 										checkDropship={this.submitDropship}
-										isValidDropshipper={this.state.isValidDropshipper}
+										isValidDropshipper={this.state.isValidPayment}
 										onDoPayment={this.onDoPayment}
 										onCardNumberChange={this.onCardNumberChange}
 										onCardMonthChange={this.onCardMonthChange}
@@ -667,7 +678,7 @@ class Checkout extends Component {
 							/>
 						)
 					}
-					<ElockerModalbox shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} o2oProvinces={!o2oProvinces ? null : o2oProvinces} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
+					<ElockerModalbox closeModalElocker={this.closeModalElocker} shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} o2oProvinces={!o2oProvinces ? null : o2oProvinces} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
 					<PaymentSuccessModalbox shown={this.props.payments.paymentSuccess} />
 					<PaymentErrorModalbox shown={this.props.payments.paymentError} />
 					<VerifikasiNoHandponeModalbox />
