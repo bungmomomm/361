@@ -98,7 +98,9 @@ class Checkout extends Component {
 			loadingUpdateCart: false,
 			addressTabActive: true,
 			isValidPayment: false,
+			tahun: []
 		};
+		
 		this.onAddCoupon = this.onAddCoupon.bind(this);
 		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
 		this.onResetCoupon = this.onResetCoupon.bind(this);
@@ -136,7 +138,19 @@ class Checkout extends Component {
 		dispatch(getAddresses(this.state.token));
 		dispatch(getCart(this.state.token));
 		dispatch(getAvailablePaymentMethod(this.state.token));
-
+		const t = new Date();
+		const thisYear = t.getFullYear();
+		let year = 0;
+		const tahun = [];
+		for (year = thisYear; year < (thisYear + 10); year++) {
+			tahun.push({
+				value: year,
+				label: year
+			});
+		}
+		this.setState({
+			tahun
+		});
 		window.dataLayer.push({
 			event: 'checkout',
 			userID: '10c53c28efe87fe0c27262ba36f11d5d',
@@ -353,8 +367,8 @@ class Checkout extends Component {
 		};
 
 		if (installment) {
-			cardDetail.card_number = this.selectCard.value;
-			cardDetail.bank = this.selectedBank.value;
+			cardDetail.card_number = this.props.payments.selectedCard.value;
+			cardDetail.bank = this.props.payments.selectedBank.value;
 			cardDetail.installment = true;
 			cardDetail.installment_term = this.props.payments.selectedInstallment.term;
 		} else {
@@ -474,7 +488,7 @@ class Checkout extends Component {
 		switch (this.props.payments.paymentMethod) {
 		case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 		case paymentMethodName.COMMERCE_VERITRANS:
-			this.onRequestVtToken();
+			this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
 			break;
 		default:
 			dispatch(
@@ -681,6 +695,7 @@ class Checkout extends Component {
 										onCardMonthChange={this.onCardMonthChange}
 										onCardYearChange={this.onCardYearChange}
 										onCardCvvChange={this.onCardCvvChange}
+										tahun={this.state.tahun}
 									/>
 								</Col>
 							</Row>

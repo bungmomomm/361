@@ -242,9 +242,9 @@ const applyBin = (token, paymentMethodId, cardNumber, bankName) => dispatch => {
 			}
 		}
 	}).then((response) => {
-		const item = response.data.data.relationships.carts.data.pop();
-		if (item) {
-			const totalPrice = response.data.included.filter(itemLookup => itemLookup.type === item.type && itemLookup.id === item.id).pop();
+		if (typeof response.data.data.relationships.carts.data[0] !== 'undefined') {
+			const item = response.data.data.relationships.carts.data[0];
+			const totalPrice = response.data.included.filter(itemLookup => itemLookup.type === item.type && itemLookup.id === item.id)[0];
 			dispatch(paymentInfoUpdated(getCartPaymentData(totalPrice.attributes.total_price, 'order')));
 			dispatch(applyBinReceived(response.data));
 		}

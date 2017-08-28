@@ -25,8 +25,7 @@ import {
 // 	GeraiTunai, 
 // 	InternetBanking, 
 // 	Bank, 
-	Bulan, 
-	Tahun
+	Bulan
 } from '@/data';
 
 // import utils
@@ -248,7 +247,7 @@ export default class CardPembayaran extends Component {
 				break;	
 			} 
 		}
-		console.log(couponId);
+		console.log(this.props.tahun);
 		return (
 			<Card>
 				<div className={styles.overflow}>
@@ -319,7 +318,7 @@ export default class CardPembayaran extends Component {
 										<Select top selectedLabel='-- Bulan' options={Bulan} onChange={this.onCardMonthChange} />
 									</Level.Item>
 									<Level.Item>
-										<Select top selectedLabel='-- Tahun' options={Tahun} onChange={this.onCardYearChange} />
+										<Select top selectedLabel='-- Tahun' options={this.props.tahun} onChange={this.onCardYearChange} />
 									</Level.Item>
 									<Level.Item>
 										<Input type='number' placeholder='cvv' onBlur={this.onCardCvvChange} />

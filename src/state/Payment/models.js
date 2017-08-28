@@ -3,7 +3,7 @@ import { paymentMethodName, paymentGroupName } from './constants';
 
 const getRelations = (data, lookup, format) => {
 	return data.data.map((item, index) => {
-		const obj = lookup.filter(itemLookup => itemLookup.type === item.type && itemLookup.id === item.id).pop();
+		const obj = lookup.filter(itemLookup => itemLookup.type === item.type && itemLookup.id === item.id)[0];
 		return {
 			...obj,
 			...obj.attributes
@@ -13,7 +13,7 @@ const getRelations = (data, lookup, format) => {
 
 const getCardRelations = (data, lookup) => {
 	return data.data.map((item, index) => {
-		const card = lookup.filter(itemLookup => itemLookup.type === item.type && itemLookup.id === item.id).pop();
+		const card = lookup.filter(itemLookup => itemLookup.type === item.type && itemLookup.id === item.id)[0];
 		return {
 			value: card.id,
 			label: card.attributes.credit_card_number_with_separator,
@@ -35,20 +35,20 @@ const paymentMethodItem = payment => {
 		disabled: payment.attributes.fg_enable ? 0 : 1,
 		message: payment.attributes.description,
 		disable_message: payment.attributes.disable_message,
-		settings: payment.attributes.settings.pop()
+		settings: payment.attributes.settings[0]
 	};
 };
 
 const paymentMethod = method => {
-	let info = method.attributes.settings.pop();
-	if (typeof (info) === 'undefined') {
-		info = false;
+	let info = false;
+	if (typeof (method.attributes.settings[0]) !== 'undefined') {
+		info = method.attributes.settings[0];
 	}
 	return {
 		id: method.id,
 		value: method.id,
 		label: method.attributes.title,
-		info: info ? info.info.pop() : '',
+		info: info ? info.info[0] : '',
 		image: info ? info.image : ''
 	};
 };

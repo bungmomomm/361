@@ -113,7 +113,7 @@ export default (state = initialState, action) => {
 			...selectedCard,
 			...state.selectedCard
 		};
-		const selectedCardDetail = {
+		const selectedCardDetail = state.selectedCardDetail || {
 			month: 0,
 			year: 0,
 			cvv: 0
@@ -138,7 +138,9 @@ export default (state = initialState, action) => {
 			...initialState,
 			...state,
 			selectedCard,
-			selectedCardDetail
+			selectedCardDetail,
+			paymentMethod: 'commerce_veritrans',
+			selectedPaymentOption: state.paymentMethods.payments.credit_card.paymentItems[0]
 		};
 	}
 	case constants.PAY_UPDATED: {
