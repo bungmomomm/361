@@ -124,7 +124,7 @@ Input.propTypes = {
 	/** make horinzontal layout. */
 	horizontal: PropTypes.bool,
 	size: PropTypes.oneOf(['small', 'medium', 'large']),
-	color: PropTypes.oneOf(['red', 'yellow', 'orange', 'green']),
+	color: PropTypes.oneOf(['red', 'yellow', 'orange', 'green', 'black']),
 	/** label content. */
 	label: PropTypes.string,
 	/** Input Attribute Type. */

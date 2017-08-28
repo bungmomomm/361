@@ -176,8 +176,7 @@ export default class CardPengiriman extends Component {
 							<Segment>
 								<InputGroup>
 									<Select
-										filter
-										selectedLabel={this.props.selectO2oFromModal ? '-- Pilih Alamat E-Locker' : this.props.selectedLocker.attributes.address_label}
+										selectedLabel={this.props.selectO2oFromModal ? '-- Pilih Lokasi / Toko E-Locker Lainnya' : this.props.selectedLocker.attributes.address_label}
 										selected={this.props.selectO2oFromModal ? {} : this.props.selectedLocker}
 										options={(typeof this.props.latesto2o !== 'undefined') ? this.props.latesto2o : []}
 										onChange={this.onChosenLocker}
