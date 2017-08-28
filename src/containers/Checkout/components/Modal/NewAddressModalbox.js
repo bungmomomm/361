@@ -135,11 +135,11 @@ export default class NewAddressModalbox extends Component {
 			gosendData,
 			enableGosend
 		} = this.state;
-		
+		console.log(this.props);
 		return (
 			<Modal size='medium' shown={this.props.shown}>
 				<Modal.Header>
-					<div>{ this.state.isEdit ? 'Ubah Alamat' : 'Buat Alamat Baru'}</div>
+					<div>{ this.props.formDataAddress.isEdit ? 'Ubah Alamat' : 'Buat Alamat Baru'}</div>
 				</Modal.Header>
 				<Modal.Body>
 					<div className={styles.overflow} ref={(overflow) => { this.fieldOverflow = overflow; }}>
@@ -261,7 +261,7 @@ export default class NewAddressModalbox extends Component {
 							)
 						}
 						{
-							renderIf(enableGosend && this.state.isEdit)(
+							renderIf(enableGosend && this.props.formDataAddress.isEdit)(
 								<div>
 									<Segment row>
 										<Level padded>
