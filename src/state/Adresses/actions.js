@@ -91,7 +91,7 @@ const o2oProvinceReceived = (o2oProvinces) => ({
 	}
 });
 
-const getAddresses = (token) => dispatch => {
+const getAddresses = (token) => dispatch => new Promise((resolve, reject) => {
 	dispatch(addressesRequest(token));
 	const req = {
 		token, 
@@ -103,6 +103,20 @@ const getAddresses = (token) => dispatch => {
 		const address = response.data.data.map((value, index) => {
 			return humps(value);
 		}).filter(e => e.type === 'shipping');
+
+		let defaultAddress = [];	
+		if (address.length > 0) {
+
+			const minimumDateISO = Math.min(...address.map((value, index) => {
+				return Date.parse(value.attributes.createdTime);
+			}));
+			
+			defaultAddress = address
+								.filter(e => e.attributes.fgDefault === '1' || 
+										Date.parse(e.attributes.createdTime) === minimumDateISO
+								)[0];
+		}
+		resolve(defaultAddress);
 
 		const billing = response.data.data.map((value, index) => {
 			return humps(value);
@@ -128,7 +142,7 @@ const getAddresses = (token) => dispatch => {
 	.catch((error) => {
 		console.log(error);
 	});
-};
+});
 
 const saveAddress = (token, formData, selectedAddress) => dispatch => {
 	const cityProvince = formData.provinsi.split(',');

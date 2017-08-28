@@ -27,7 +27,7 @@ export default class CardPengiriman extends Component {
 			elockerTab: false,
 			shipping: [],
 			o2o: [],
-			selectedAddress: null,
+			selectedAddress: this.props.selectedAddress || null,
 			closeSelect: true,
 		};
 		this.onChoisedAddress = this.onChoisedAddress.bind(this);
@@ -48,10 +48,12 @@ export default class CardPengiriman extends Component {
 					info: `${value.attributes.address}, ${value.attributes.district}, ${value.attributes.city}, ${value.attributes.province}`
 				});
 			});
+			console.log(address);
 			this.setState({
 				shipping: address
 			});
 		}
+		
 	}
 
 	onChoisedAddress(dataChoised) {

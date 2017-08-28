@@ -135,7 +135,13 @@ class Checkout extends Component {
 
 	componentWillMount() {
 		const { dispatch } = this.props;
-		dispatch(getAddresses(this.state.token));
+		dispatch(getAddresses(this.state.token)).then(defaultAddress => {
+			if (typeof defaultAddress.type !== 'undefined') {
+				this.setState({
+					selectedAddress: defaultAddress
+				});
+			}
+		});
 		dispatch(getCart(this.state.token));
 		dispatch(getAvailablePaymentMethod(this.state.token));
 		const t = new Date();
@@ -226,6 +232,7 @@ class Checkout extends Component {
 	}
 
 	onChoisedAddress(address) {
+		console.log(this.state);
 		const { dispatch } = this.props;
 		const billing = this.props.billing.length > 0 ? this.props.billing[0] : false;
 		if (!!address.type && address.type !== 'pickup') {
@@ -651,6 +658,7 @@ class Checkout extends Component {
 			o2oProvinces,
 			isPickupable		
 		} = this.props;
+		
 		return (
 			this.props.loading ? <Loading /> : (
 				<div className='page'>
@@ -662,8 +670,27 @@ class Checkout extends Component {
 								<Col flex grid={4} className={enableAlamatPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
 									{
-										renderIf(addresses)(
-											<CardPengiriman addresses={addresses} onChoisedAddress={this.onChoisedAddress} onChangeAddress={this.onChangeAddress} onGetO2oProvinces={this.onGetO2oProvinces} onGetListO2o={this.onGetListO2o} listo2o={listo2o} onOpenModalO2o={this.onOpenModalO2o} latesto2o={latesto2o} selectedLocker={this.state.selectedLocker ? this.state.selectedLocker : (latesto2o ? latesto2o[0] : null)} onSelectedLocker={this.onSelectedLocker} selectO2oFromModal={this.state.selectO2oFromModal} isPickupable={isPickupable} dropshipper={this.state.dropshipper} setDropship={this.setDropship} checkDropship={this.checkDropship} errorDropship={this.state.errorDropship} activeShippingTab={this.activeShippingTab} />
+										renderIf(addresses && this.state.selectedAddress)(
+											<CardPengiriman 
+												selectedAddress={this.state.selectedAddress}
+												addresses={addresses} 
+												onChoisedAddress={this.onChoisedAddress} 
+												onChangeAddress={this.onChangeAddress} 
+												onGetO2oProvinces={this.onGetO2oProvinces} 
+												onGetListO2o={this.onGetListO2o} 
+												listo2o={listo2o} 
+												onOpenModalO2o={this.onOpenModalO2o} 
+												latesto2o={latesto2o} 
+												selectedLocker={this.state.selectedLocker ? this.state.selectedLocker : (latesto2o ? latesto2o[0] : null)} 
+												onSelectedLocker={this.onSelectedLocker} 
+												selectO2oFromModal={this.state.selectO2oFromModal} 
+												isPickupable={isPickupable} 
+												dropshipper={this.state.dropshipper} 
+												setDropship={this.setDropship} 
+												checkDropship={this.checkDropship} 
+												errorDropship={this.state.errorDropship} 
+												activeShippingTab={this.activeShippingTab} 
+											/>
 										)
 									}
 								</Col>
