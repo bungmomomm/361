@@ -73,12 +73,15 @@ export default class NewAddressModalbox extends Component {
 			}).filter((option) => {
 				return option;
 			});
-			this.setState({
-				gosendData: {
-					center: PolygonResult[0][this.kecamatan].center,
-					location_coords: PolygonResult[0][this.kecamatan].location_coords
-				}
-			});
+			console.log(PolygonResult);
+			if (PolygonResult.length > 0) {
+				this.setState({
+					gosendData: {
+						center: PolygonResult[0][this.kecamatan].center,
+						location_coords: PolygonResult[0][this.kecamatan].location_coords
+					}
+				});
+			}	
 		}
 		this.setErrors(e.name, e.value);
 	}

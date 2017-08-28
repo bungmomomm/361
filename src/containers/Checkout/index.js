@@ -25,7 +25,14 @@ import CardPengiriman from './components/CardPengiriman';
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { addCoupon, removeCoupon, resetCoupon } from '@/state/Coupon/actions';
-import { getAddresses, getO2OList, getO2OProvinces, getCityProvince, getDistrict, saveAddress } from '@/state/Adresses/actions';
+import { 
+	getAddresses, 
+	getO2OList, 
+	getO2OProvinces, 
+	getCityProvince, 
+	getDistrict, 
+	saveAddress 
+} from '@/state/Adresses/actions';
 import { getPlaceOrderCart, getCart, updateQtyCart } from '@/state/Cart/actions';
 import {
 	getAvailablePaymentMethod,
@@ -201,13 +208,12 @@ class Checkout extends Component {
 	}
 
 	onChangeAddress(address, flagAdd) {
-
 		const { dispatch } = this.props;
 		dispatch(getCityProvince(this.state.token));
 		let formDataAddress = {
 			isEdit: false
 		};
-		if (!flagAdd) {
+		if (flagAdd !== 'add') {
 			const editAddress = address.attributes;
 			formDataAddress = {
 				id: address.id,
