@@ -176,6 +176,15 @@ class Checkout extends Component {
 			cart: nextProps.cart,
 			loadingUpdateCart: nextProps.loadingUpdateCart
 		});
+		if ((!this.props.isPickupable || this.props.isPickupable === '0') && !this.state.addressTabActive) {
+			this.setState({
+				restrictO2o: true
+			});
+		} else {
+			this.setState({
+				restrictO2o: false
+			});
+		}
 	}
 
 	onAddCoupon(coupon) {
