@@ -20,7 +20,7 @@ export default class NewAddressModalbox extends Component {
 		this.validator = new Validator({
 			name: 'required',
 			penerima: 'required',
-			no_hp: 'required',
+			no_hp: 'required|digits:6|max:14',
 			provinsi: 'required',
 			kecamatan: 'required',
 			kodepos: 'required',
@@ -55,6 +55,7 @@ export default class NewAddressModalbox extends Component {
 	}
 
 	onChange(e) {
+		console.log(e);
 		const name = e.target.name;
 		const value = e.target.value;
 		this.setErrors(name, value);
@@ -63,17 +64,21 @@ export default class NewAddressModalbox extends Component {
 	onChangeSelect(e) {
 		if (e.name === 'provinsi') {
 			this.getDistricts(e.value);
+			const enableGosend = e.label.toLowerCase().includes('jakarta');
+			this.setState({
+				enableGosend
+			});
 		}
 		
 		if (e.name === 'kecamatan') {
 			this.kecamatan = humps(e.value.toLowerCase());
-			console.log(this.kecamatan);
+			
 			const PolygonResult = Polygon.map((option) => {
 				return option[this.kecamatan] ? option : null;
 			}).filter((option) => {
 				return option;
 			});
-			console.log(PolygonResult);
+			
 			if (PolygonResult.length > 0) {
 				this.setState({
 					gosendData: {
@@ -106,7 +111,6 @@ export default class NewAddressModalbox extends Component {
 	}
 
 	submit(formData) {
-		console.log('asdasdasd');
 		this.onSubmitAddress(formData);
 	}
 
@@ -128,12 +132,14 @@ export default class NewAddressModalbox extends Component {
 	render() {
 		const { 
 			errors,
-			gosendData
+			gosendData,
+			enableGosend
 		} = this.state;
+		console.log(this.props);
 		return (
 			<Modal size='medium' shown={this.props.shown}>
 				<Modal.Header>
-					<div>{ this.state.isEdit ? 'Ubah Alamat' : 'Buat Alamat Baru'}</div>
+					<div>{ this.props.formDataAddress.isEdit ? 'Ubah Alamat' : 'Buat Alamat Baru'}</div>
 				</Modal.Header>
 				<Modal.Body>
 					<div className={styles.overflow} ref={(overflow) => { this.fieldOverflow = overflow; }}>
@@ -246,7 +252,7 @@ export default class NewAddressModalbox extends Component {
 							</small>
 						</Alert>
 						{
-							renderIf(gosendData)(
+							renderIf(enableGosend)(
 								<Gosend
 									zoom={15} 
 									center={gosendData.center} 
@@ -255,7 +261,7 @@ export default class NewAddressModalbox extends Component {
 							)
 						}
 						{
-							renderIf(gosendData)(
+							renderIf(enableGosend && this.props.formDataAddress.isEdit)(
 								<div>
 									<Segment row>
 										<Level padded>
