@@ -96,6 +96,7 @@ const getListAvailablePaymentMethod = (response) => {
 					});
 					bank.info = bank.name;
 					bank.label = bank.name;
+					bank.value = bank.name;
 					return bank;
 				});
 				return paymentData;
