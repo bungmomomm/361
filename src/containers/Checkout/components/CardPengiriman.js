@@ -37,8 +37,10 @@ export default class CardPengiriman extends Component {
 		this.openModal = this.openModal.bind(this);
 	}
 
-	componentWillMount() {
-		const shipping = this.props.addresses;
+	componentWillMount() {}
+
+	componentWillReceiveProps(nextProps) {
+		const shipping = nextProps.addresses;
 		const address = [];
 		if (typeof shipping !== 'undefined') {
 			shipping.forEach((value, index) => {
@@ -52,7 +54,6 @@ export default class CardPengiriman extends Component {
 				shipping: address
 			});
 		}
-
 	}
 
 	onChoisedAddress(dataChoised) {
@@ -120,7 +121,7 @@ export default class CardPengiriman extends Component {
 				iconPosition='left'
 			/>
 		);
-
+		
 		return (
 			<Tabs tabActive={0} stretch onAfterChange={this.onGetListO2o} >
 				<Tabs.Panel title='Kirim ke Alamat' sprites='truck-off' spritesActive='truck-on'>

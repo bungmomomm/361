@@ -798,7 +798,6 @@ Checkout.propTypes = {
 };
 
 const mapStateToProps = (state) => {
-	console.log(state.addresses.o2o);
 	return {
 		soNumber: state.cart.soNumber,
 		coupon: state.coupon,
