@@ -35,10 +35,16 @@ class Gosend extends Component {
 		this.renderAutocomplete = this.renderAutocomplete.bind(this);
 		this.autocomplete = '';
 		this.insidePolygon = '';
+		console.log(this.props.polygonArea);
+	}
+
+	componentWillReceiveProps(nextProps) {
+		// console.log(nextProps);
 	}
 
 	componentDidUpdate(prevProps) {
 		const { map } = this.props;
+		this.onGeoLoad(this.props.center.lat, this.props.center.lng);
 		if (map !== prevProps.map) {
 			this.renderAutoComplete();
 		}
@@ -50,21 +56,21 @@ class Gosend extends Component {
 
 	onGeoLoad(lat, lng) {
 		const { google } = this.props;
-		const geo = new google.maps.Geocoder();
-		const latLng = new google.maps.LatLng(lat, lng);
-		
-		geo.geocode({ latLng }, (results, status) => {
-			if (status === google.maps.GeocoderStatus.OK) {
-				this.setAddress(results[0].formatted_address);
-				this.props.onGeoLoad(
-					this.state.point.lat, 
-					this.state.point.lng,
-					results[0].formatted_address
-				);
-				this.hideGoogleMap();
-			}
-		});
-		
+		if (google) {
+			const geo = new google.maps.Geocoder();
+			const latLng = new google.maps.LatLng(lat, lng);
+			geo.geocode({ latLng }, (results, status) => {
+				if (status === google.maps.GeocoderStatus.OK) {
+					this.setAddress(results[0].formatted_address);
+					this.props.onGeoLoad(
+						lat, 
+						lng,
+						results[0].formatted_address
+					);
+					this.hideGoogleMap();
+				}
+			});
+		}
 	}
 
 	onSetPoint(props, marker, e) {
@@ -118,6 +124,7 @@ class Gosend extends Component {
 	}
 
 	hideGoogleMap() {
+		// console.log(this);
 		this.setState({
 			displayMap: false
 		});
@@ -152,21 +159,27 @@ class Gosend extends Component {
 
 		return (
 			<div className={gosendClass}>
-				<div className={styles.header}>
-					<Button 
-						type='button' 
-						onClick={this.showGoogleMap} 
-						content='Tunjukan Dalam Peta' 
-						size='small' 
-						color='grey' 
-						icon='map-marker' 
-						iconPosition='left' 
-					/>
-					<div className={styles.desc}>
-						Lokasi peta harus sesuai dengan alamat pengiriman. Lokasi diperlukan jika ingin menggunakan jasa pengiriman GO-SEND.
-					</div>
-				</div>
-				<div><small><em>(Optional)</em></small></div>
+				{
+					renderIf(!this.props.isFromCustomer)(
+						<div>
+							<div className={styles.header}>
+								<Button 
+									type='button' 
+									onClick={this.showGoogleMap} 
+									content='Tunjukan Dalam Peta' 
+									size='small' 
+									color='grey' 
+									icon='map-marker' 
+									iconPosition='left' 
+								/>
+								<div className={styles.desc}>
+									Lokasi peta harus sesuai dengan alamat pengiriman. Lokasi diperlukan jika ingin menggunakan jasa pengiriman GO-SEND.
+								</div>
+							</div>
+							<div><small><em>(Optional)</em></small></div>
+						</div>
+					)
+				}
 				{
 					renderIf(this.state.displayMap)(
 						<div className={styles.googleMap}>

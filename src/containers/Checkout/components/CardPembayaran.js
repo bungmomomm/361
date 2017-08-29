@@ -178,7 +178,7 @@ export default class CardPembayaran extends Component {
 		if (this.props.validCoupon === null && !couponId) { 
 			voucherBox = (
 				<Level>
-					<Level.Left>Kode Voucher</Level.Left>
+					<Level.Left className={styles.voucherLabel}>Kode Voucher</Level.Left>
 					<Level.Right>
 						<InputGroup addons>
 							<Input size='small' name='voucherCode' onChange={this.onChange} onKeyPress={this.onChange} color='green' value={this.props.coupon} />
@@ -190,7 +190,7 @@ export default class CardPembayaran extends Component {
 		} else if (this.props.validCoupon !== null && !this.props.validCoupon && this.props.coupon !== '') {
 			voucherBox = (
 				<Level>
-					<Level.Left>Kode Voucher</Level.Left>
+					<Level.Left className={styles.voucherLabel}>Kode Voucher</Level.Left>
 					<Level.Right>
 						<InputGroup addons addonsAttached>
 							<Input size='small' name='voucherCode' color='red' message='kode voucher salah' onChange={this.onChange} onKeyPress={this.onChange} value={this.props.coupon} />
@@ -350,8 +350,8 @@ export default class CardPembayaran extends Component {
 			<Card>
 				<div className={styles.overflow}>
 					<Level>
-						<Level.Left>Subtotal</Level.Left>
-						<Level.Right className='text-right'>{currency(subTotal)}</Level.Right>
+						<Level.Left><strong>Subtotal</strong></Level.Left>
+						<Level.Right className='text-right'><strong>{currency(subTotal)}</strong></Level.Right>
 					</Level>
 					{
 						!couponId ? null : (

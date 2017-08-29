@@ -21,6 +21,10 @@
 	pointer-events: none;
 }
 
+.sprites, .icon{
+   margin-left: 10px;
+}
+
 .disabled{
 	cursor: not-allowed;
 	.checkboxText{

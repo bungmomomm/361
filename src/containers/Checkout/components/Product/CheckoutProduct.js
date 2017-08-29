@@ -41,7 +41,7 @@ export default class CheckoutProduct extends Component {
 							<div className={styles.qty}>
 								{
 									renderIf(this.props.data.qty)(
-										<Stepper value={this.props.data.qty} maxValue={this.props.data.maxQty} onChange={this.onUpdateQty} />
+										<Stepper size='small' value={this.props.data.qty} maxValue={this.props.data.maxQty} onChange={this.onUpdateQty} />
 									)
 								}
 							</div>

@@ -145,7 +145,7 @@ export default class CardPengiriman extends Component {
 									<Level.Right className='text-right'><Icon name='map-marker' /> &nbsp; Lokasi Sudah Ditandai</Level.Right>
 								</Level>
 								<p>
-									{this.state.selectedAddress.attributes.fullname} <br />
+									<strong>{this.state.selectedAddress.attributes.fullname}</strong> <br />
 									{this.state.selectedAddress.attributes.address} <br />
 									{this.state.selectedAddress.attributes.district}, {this.state.selectedAddress.attributes.city}, {this.state.selectedAddress.attributes.province}, {this.state.selectedAddress.attributes.zipcode} <br />
 									P: {this.state.selectedAddress.attributes.phone}

@@ -57,7 +57,7 @@ const Checkbox = (props) => {
 			{input}
 			<span className={styles.checkboxInput} />
 			<span className={styles.checkboxText}>
-				{props.content} &nbsp;
+				{props.content}
 				{SpritesElement}
 				{IconElement}
 			</span>

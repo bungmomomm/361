@@ -253,6 +253,7 @@ class Checkout extends Component {
 			isEdit: false
 		};
 		if (flagAdd !== 'add') {
+			console.log(address);
 			const editAddress = address.attributes;
 			formDataAddress = {
 				id: address.id,
@@ -265,6 +266,8 @@ class Checkout extends Component {
 				kecamatan: editAddress.district,
 				kodepos: editAddress.zipcode,
 				address: editAddress.address,
+				latitude: editAddress.latitude,
+				longitude: editAddress.longitude,
 				isEdit: true
 			};
 			this.getDistricts(`${editAddress.city}, ${editAddress.province}`);
@@ -521,6 +524,7 @@ class Checkout extends Component {
 	}
 
 	onSubmitAddress(formData) {
+		console.log(formData);
 		const { dispatch } = this.props;
 		dispatch(saveAddress(this.state.token, formData));
 		this.setState({
