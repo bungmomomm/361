@@ -198,9 +198,44 @@ const updateQtyCart = (token, productQty, productId, props) => dispatch => {
 
 };
 
+
+const updateGosend = (token, storeId, shippingMethodId, props) => dispatch => {
+	dispatch(gettingCart(token));
+
+	const req = {
+		method: 'PUT',
+		path: `orders/${props.soNumber}/apply_shipping_method`,
+		token,
+		body: {
+			data: {
+				type: 'cart_items',
+				attributes: {
+					shipping_method_id: shippingMethodId,
+					store_id: storeId,
+				}
+			}
+		}
+	};
+	
+	request(req)
+	.then((res) => {
+		const isPickupable = res.data.data.attributes.delivery_method_provided.map((value, index) => {
+			return value;
+		}).filter(e => e.id === 'pickup');
+		dispatch(paymentInfoUpdated(getCartPaymentData(res.data.data.attributes.total_price, 'order')));
+		dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, res.data.data.attributes.total_price.count));
+		dispatch(getAvailablePaymentMethod(token));
+	})
+	.catch((error) => {
+		console.log(error);
+	});
+
+};
+
 export default {
 	getPlaceOrderCart,
 	getCart,
 	deleteCart,
 	updateQtyCart,
+	updateGosend,
 };

@@ -16,10 +16,11 @@ export default class Elocker extends Component {
 		this.submitLocker = this.submitLocker.bind(this);
 		this.handleChooseElocker = this.handleChooseElocker.bind(this);
 		this.provinceFilterResult = this.props.listo2o;
+		console.log(this.props);
 		this.state = {
 			ElockerList: this.props.listo2o,
 			selectedLocker: null,
-			selected: null,
+			selected: this.props.selected || null,
 			filter: '',
 		};
 	}

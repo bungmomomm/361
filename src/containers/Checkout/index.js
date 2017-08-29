@@ -34,7 +34,7 @@ import {
 	getDistrict, 
 	saveAddress 
 } from '@/state/Adresses/actions';
-import { getPlaceOrderCart, getCart, updateQtyCart } from '@/state/Cart/actions';
+import { getPlaceOrderCart, getCart, updateQtyCart, updateGosend } from '@/state/Cart/actions';
 import {
 	getAvailablePaymentMethod,
 	changePaymentMethod,
@@ -127,6 +127,7 @@ class Checkout extends Component {
 		this.onVt3dsModalBoxClose = this.onVt3dsModalBoxClose.bind(this);
 		this.onMandiriEcashClose = this.onMandiriEcashClose.bind(this);
 		this.closeModalElocker = this.closeModalElocker.bind(this);
+		this.shippingMethodGosend = this.shippingMethodGosend.bind(this);
 	}
 
 	componentWillMount() {
@@ -649,6 +650,11 @@ class Checkout extends Component {
 		});
 	}
 
+	shippingMethodGosend(methodId, storeId) {
+		const { dispatch } = this.props;
+		dispatch(updateGosend(this.state.token, storeId, methodId, this.props));
+	}
+
 	render() {
 		const {
 			enableAlamatPengiriman,
@@ -707,7 +713,15 @@ class Checkout extends Component {
 								<Col flex grid={4} className={enablePesananPengiriman || this.state.restrictO2o ? '' : styles.disabled}>
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>({this.props.totalItems} items)</span></div>
 									{
-										<CardPesananPengiriman loading={this.state.loadingUpdateCart} cart={!this.state.cart ? [] : this.state.cart} onDeleteCart={this.onDeleteCart} onUpdateQty={this.onUpdateQty} restrictO2o={this.state.restrictO2o} />
+										<CardPesananPengiriman 
+											loading={this.state.loadingUpdateCart} 
+											cart={!this.state.cart ? [] : this.state.cart} 
+											onDeleteCart={this.onDeleteCart} 
+											onUpdateQty={this.onUpdateQty} 
+											restrictO2o={this.state.restrictO2o} 
+											shippingMethodGosend={this.shippingMethodGosend}
+											selectedAddress={this.state.selectedAddress}
+										/>
 									}
 								</Col>
 								<Col flex grid={4} className={enablePembayaran && !this.state.restrictO2o ? '' : styles.disabled}>
@@ -771,6 +785,7 @@ Checkout.propTypes = {
 };
 
 const mapStateToProps = (state) => {
+	console.log(state.addresses.o2o);
 	return {
 		soNumber: state.cart.soNumber,
 		coupon: state.coupon,

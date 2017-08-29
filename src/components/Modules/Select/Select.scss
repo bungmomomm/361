@@ -46,7 +46,7 @@
 	border: 1px solid border(color, hover);
 	font-family: HelveticaNeueLTStd-Roman;
 	height: 35px;
-	min-width: 100px;
+	min-width: 90px;
 	width: 100%;
 	display: flex;
 	justify-content: space-between;
@@ -64,7 +64,6 @@
 	}
 
 	.flex{
-		min-width: 100px;
 		width: 100%;
 		justify-content: space-between;
 		align-items: center;
@@ -72,6 +71,10 @@
 
 	.text{
 		display: inline-block;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		padding-right: 20px;
 	}
 }
 

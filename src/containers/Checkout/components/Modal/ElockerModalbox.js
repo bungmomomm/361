@@ -10,6 +10,7 @@ export default class ElockerModalBox extends Component {
 		this.state = {
 			listo2o: null,
 			filtero2o: null,
+			selected: this.props.selected || null,
 			province: {
 				label: 'DKI JAKARTA',
 				value: 6
@@ -24,6 +25,9 @@ export default class ElockerModalBox extends Component {
 
 	onSelectedLocker(elocker) {
 		this.props.onSelectedLocker(elocker, true);
+		this.setState({
+			selected: elocker.id
+		});
 	}
 
 	onGetListO2o(listo2o) {
@@ -56,7 +60,17 @@ export default class ElockerModalBox extends Component {
 					Pilih Lokasi E-Locker (O2O)
 				</Modal.Header>
 				<Modal.Body>
-					<Elocker o2oProvinces={this.props.o2oProvinces} listo2o={this.props.listo2o} filtero2o={this.state.filtero2o ? this.state.filtero2o : this.props.listo2o} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} setFilterLocker={this.setFilterLocker} currentProvince={this.state.province} setCurrentProvince={this.setCurrentProvince} />
+					<Elocker 
+						o2oProvinces={this.props.o2oProvinces}
+						listo2o={this.props.listo2o}
+						filtero2o={this.state.filtero2o ? this.state.filtero2o : this.props.listo2o}
+						onGetListO2o={this.onGetListO2o}
+						onSelectedLocker={this.onSelectedLocker}
+						selected={this.state.selected}
+						setFilterLocker={this.setFilterLocker}
+						currentProvince={this.state.province}
+						setCurrentProvince={this.setCurrentProvince}
+					/>
 				</Modal.Body>
 			</Modal>
 		);
