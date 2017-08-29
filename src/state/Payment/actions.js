@@ -155,6 +155,18 @@ const applyBinReceived = (data) => ({
 	}
 });
 
+// installment
+const changeBankName = (token, bank) => ({
+	type: constants.PAY_CHANGE_BANK,
+	status: true,
+	payload: {
+		token,
+		bank
+	}
+});
+
+// action
+
 const getAvailablePaymentMethod = (token) => (dispatch) => {
 	dispatch(availablePaymentMethodRequest());
 	return request({
@@ -232,6 +244,13 @@ const selectCreditCard = (card) => dispatch => {
 	dispatch(creditCardSelected(card));
 };
 
+// installment
+
+const bankNameChange = (token, bank) => dispatch => new Promise((resolve, reject) => {
+	dispatch(changeBankName(token, bank));
+	resolve(bank);
+});
+
 const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete', card = false, callback = false) => dispatch => {
 	dispatch(payRequest());
 	if (
@@ -300,6 +319,7 @@ export default {
 	changeCreditCardMonth,
 	changeCreditCardYear,
 	changeCreditCardCvv,
+	bankNameChange,
 	vtModalBoxOpen,
 	paymentError,
 	paymentErrorClose,
