@@ -65,6 +65,14 @@ export default (state = initialState, action) => {
 		};
 	}
 
+	case constants.PAY_CHANGE_BANK: {
+		return {
+			...state,
+			selectedBank: action.payload.bank,
+			paymentMethod: action.payload.selectedPaymentOption.paymentMethod
+		};
+	}
+
 	case constants.PAY_CREDIT_CARD_SELECTED: {
 		const paymentItems = state.selectedPayment.paymentItems.map((item, index) => {
 			item.cards = item.cards.map((card, cardIndex) => {

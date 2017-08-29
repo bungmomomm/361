@@ -156,10 +156,11 @@ const applyBinReceived = (data) => ({
 });
 
 // installment
-const changeBankName = (token, bank) => ({
+const changeBankName = (token, bank, selectedPaymentOption) => ({
 	type: constants.PAY_CHANGE_BANK,
 	status: true,
 	payload: {
+		selectedPaymentOption,
 		token,
 		bank
 	}
@@ -246,8 +247,8 @@ const selectCreditCard = (card) => dispatch => {
 
 // installment
 
-const bankNameChange = (token, bank) => dispatch => new Promise((resolve, reject) => {
-	dispatch(changeBankName(token, bank));
+const bankNameChange = (token, bank, selectedPaymentOption) => dispatch => new Promise((resolve, reject) => {
+	dispatch(changeBankName(token, bank, selectedPaymentOption));	
 	resolve(bank);
 });
 

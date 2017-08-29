@@ -49,6 +49,7 @@ import {
 	ecashModalBoxOpen,
 	paymentError,
 	pay,
+	bankNameChange,
 	applyBin
 } from '@/state/Payment/actions';
 import { 
@@ -128,6 +129,7 @@ class Checkout extends Component {
 		this.onMandiriEcashClose = this.onMandiriEcashClose.bind(this);
 		this.closeModalElocker = this.closeModalElocker.bind(this);
 		this.shippingMethodGosend = this.shippingMethodGosend.bind(this);
+		this.onBankChange = this.onBankChange.bind(this);
 	}
 
 	componentWillMount() {
@@ -546,11 +548,17 @@ class Checkout extends Component {
 		this.props.dispatch(changeCreditCardCvv(event.target.value));
 	}
 
+	onBankChange(bank) {
+		const { dispatch } = this.props;
+		const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
+		dispatch(bankNameChange(this.state.token, bank, selectedPaymentOption));
+	}
+	
 	getDistricts(cityAndProvince) {
 		const { dispatch } = this.props;
 		dispatch(getDistrict(this.state.token, cityAndProvince));
 	}
-
+	
 	setDropship(checked, dropshipName = 'dropship_name', value = '', onClick = false) {
 		let formDropshipper = this.state.formDropshipper;
 		if (dropshipName) {
@@ -751,6 +759,7 @@ class Checkout extends Component {
 										onCardYearChange={this.onCardYearChange}
 										onCardCvvChange={this.onCardCvvChange}
 										tahun={this.state.tahun}
+										onBankChange={this.onBankChange}
 									/>
 								</Col>
 							</Row>
