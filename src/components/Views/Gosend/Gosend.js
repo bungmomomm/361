@@ -35,7 +35,6 @@ class Gosend extends Component {
 		this.renderAutocomplete = this.renderAutocomplete.bind(this);
 		this.autocomplete = '';
 		this.insidePolygon = '';
-		console.log(this.props.polygonArea);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -44,7 +43,11 @@ class Gosend extends Component {
 
 	componentDidUpdate(prevProps) {
 		const { map } = this.props;
-		this.onGeoLoad(this.props.center.lat, this.props.center.lng);
+		
+		if (this.props.isCustomerData) {
+			this.onGeoLoad(this.props.center.lat, this.props.center.lng);
+		}
+		
 		if (map !== prevProps.map) {
 			this.renderAutoComplete();
 		}
@@ -67,7 +70,7 @@ class Gosend extends Component {
 						lng,
 						results[0].formatted_address
 					);
-					this.hideGoogleMap();
+					// this.hideGoogleMap();
 				}
 			});
 		}
@@ -118,8 +121,8 @@ class Gosend extends Component {
 	showGoogleMap() {
 		this.setState({
 			displayMap: true,
-			center: this.props.center,
-			polygonArea: this.props.polygonArea
+			// center: this.props.center,
+			// polygonArea: this.props.polygonArea
 		});
 	}
 
@@ -156,30 +159,25 @@ class Gosend extends Component {
 		const gosendClass = cx({
 			Gosend: true
 		});
+		
 
 		return (
 			<div className={gosendClass}>
-				{
-					renderIf(!this.props.isFromCustomer)(
-						<div>
-							<div className={styles.header}>
-								<Button 
-									type='button' 
-									onClick={this.showGoogleMap} 
-									content='Tunjukan Dalam Peta' 
-									size='small' 
-									color='grey' 
-									icon='map-marker' 
-									iconPosition='left' 
-								/>
-								<div className={styles.desc}>
-									Lokasi peta harus sesuai dengan alamat pengiriman. Lokasi diperlukan jika ingin menggunakan jasa pengiriman GO-SEND.
-								</div>
-							</div>
-							<div><small><em>(Optional)</em></small></div>
-						</div>
-					)
-				}
+				<div className={styles.header}>
+					<Button 
+						type='button' 
+						onClick={this.showGoogleMap} 
+						content='Tunjukan Dalam Peta' 
+						size='small' 
+						color='grey' 
+						icon='map-marker' 
+						iconPosition='left' 
+					/>
+					<div className={styles.desc}>
+						Lokasi peta harus sesuai dengan alamat pengiriman. Lokasi diperlukan jika ingin menggunakan jasa pengiriman GO-SEND.
+					</div>
+				</div>
+				<div><small><em>(Optional)</em></small></div>
 				{
 					renderIf(this.state.displayMap)(
 						<div className={styles.googleMap}>

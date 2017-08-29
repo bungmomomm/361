@@ -430,3 +430,10 @@ export const Provinsi = [
 		value: '34'
 	}
 ];
+
+export const pointStep = {
+	pointHide: 'pointHide',
+	pinPoint: 'pinPoint',
+	showPointAddress: 'showPointAddress',
+	pinPoined: 'pinPoined'
+};
