@@ -187,7 +187,7 @@ export default (state = initialState, action) => {
 					action.payload.card,
 					action.payload.callback
 				);
-			} else if (action.mode === 'mandiri_ecash') {
+			} else if (action.mode === 'mandiri_ecash' || action.mode === 'bca_klikpay') {
 				top.location.href = action.payload.payment.data;
 				return state;
 			} else if (action.mode === 'complete') {

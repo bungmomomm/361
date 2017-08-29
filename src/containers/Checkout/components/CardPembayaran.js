@@ -428,7 +428,20 @@ export default class CardPembayaran extends Component {
 								</Level>
 							</div>
 						)}
-
+						{ renderIf(selectedPayment.value === paymentGroupName.INTERNET_BANKING)(
+							<InputGroup>
+								<Tooltip align='right' content='Info'>
+									<p>Info pembayaran BCA KlikPay</p>
+									<ol>
+										<li>Setelah klik tombol &quot;Bayar Sekarang&quot; di bawah, Anda akan diarahkan ke halaman BCA KlikPay.</li>
+										<li>Masukkan alamat email dan password BCA KlikPay Anda, lalu cek informasi transaksi (nama merchant, waktu transaksi, dan jumlah uang yang harus dibayarkan)</li>
+										<li>Tekan tombol &quot;Kirim OTP&quot; untuk menerima kode OTP (One Time Password) via SMS, jadi pastikan handphone Anda aktif.</li>
+										<li>Masukkan kode OTP ke kolom yang tersedia, kemudian klik tombol &quot;Bayar&quot;.</li>
+										<li>Setelah pembayaran berhasil dilakukan, klik tombol &quot;Kembali ke situs merchant&quot; untuk melihat status pembayaran dan pembelian anda.</li>
+									</ol>
+								</Tooltip>
+							</InputGroup>
+						)}
 						<InputGroup>
 							<Input label='Masukkan OVO ID' type='number' placeholder='OVO ID' />
 						</InputGroup>

@@ -499,8 +499,12 @@ class Checkout extends Component {
 				this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
 				break;
 			default:
-				if (this.props.payments.selectedPaymentOption && this.props.payments.selectedPaymentOption.uniqueConstant === 'mandiri_ecash') {
-					mode = 'mandiri_ecash';
+				if (this.props.payments.selectedPaymentOption) {
+					if (this.props.payments.selectedPaymentOption.uniqueConstant === 'mandiri_ecash') {
+						mode = 'mandiri_ecash';
+					} else if (this.props.payments.selectedPaymentOption.uniqueConstant === 'bca_klikpay') {
+						mode = 'bca_klikpay';
+					}
 				}
 				dispatch(
 					pay(
