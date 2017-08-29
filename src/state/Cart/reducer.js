@@ -53,7 +53,7 @@ export default (state = initialState, action) => {
 		return {
 			...state, 
 			soNumber: action.payload.soNumber,
-			loading: false,
+			loading: true,
 		};
 	}
 
@@ -77,7 +77,7 @@ export default (state = initialState, action) => {
 		return {
 			...state, 
 			data: action.payload.data,
-			loading: false,
+			loading: true,
 		};
 	}
 
@@ -85,7 +85,7 @@ export default (state = initialState, action) => {
 		return {
 			...state, 
 			productId: action.payload.productId,
-			loading: false,
+			loading: true,
 		};
 	}
 	default: 

@@ -132,6 +132,7 @@ class Checkout extends Component {
 		this.shippingMethodGosend = this.shippingMethodGosend.bind(this);
 		this.onBankChange = this.onBankChange.bind(this);
 		this.onOvoNumberChange = this.onOvoNumberChange.bind(this);
+		this.closeModalShippingAddress = this.closeModalShippingAddress.bind(this);
 	}
 
 	componentWillMount() {
@@ -675,6 +676,12 @@ class Checkout extends Component {
 		});
 	}
 
+	closeModalShippingAddress() {
+		this.setState({
+			enableNewAddress: false
+		});
+	}
+
 	shippingMethodGosend(methodId, storeId) {
 		const { dispatch } = this.props;
 		dispatch(updateGosend(this.state.token, storeId, methodId, this.props));
@@ -784,6 +791,7 @@ class Checkout extends Component {
 								district={this.props.district} 
 								getDistricts={this.getDistricts} 
 								onSubmitAddress={this.onSubmitAddress} 
+								closeModalShippingAddress={this.closeModalShippingAddress}
 							/>
 						)
 					}

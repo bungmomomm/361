@@ -67,6 +67,7 @@ export default class NewAddressModalbox extends Component {
 		this.getDistricts = this.getDistricts.bind(this);
 		this.onChangePoint = this.onChangePoint.bind(this);
 		this.kecamatan = null;
+		this.onClose = this.onClose.bind(this);
 	}
 
 	componentWillMount() {
@@ -122,6 +123,10 @@ export default class NewAddressModalbox extends Component {
 				location_coords: locationCoords
 			}
 		});
+	}
+
+	onClose(event) {
+		this.props.closeModalShippingAddress(event);
 	}
 
 	getPolygonData(kecamatan) {
@@ -207,7 +212,7 @@ export default class NewAddressModalbox extends Component {
 			isPinPoint
 		} = this.state;
 		return (
-			<Modal size='medium' shown={this.props.shown}>
+			<Modal size='medium' shown={this.props.shown} onClose={this.onClose} >
 				<Modal.Header>
 					<div>{ this.props.formDataAddress.isEdit ? 'Ubah Alamat' : 'Buat Alamat Baru'}</div>
 				</Modal.Header>
