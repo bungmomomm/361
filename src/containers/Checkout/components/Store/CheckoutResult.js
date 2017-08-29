@@ -8,9 +8,6 @@ import { currency } from '@/utils';
 const CheckoutResult = (props) => {
 	return (
 		<div className={styles.footer}>
-			<div className={styles.deliveryInfo}>
-				<Checkbox name='gojek' content='Pengiriman:' disabled sprites='gosend' />
-			</div>
 			{
 				props.shipping.gosend.gosendActivated && props.shipping.gosend.gosendSupported ? 
 					<div className={styles.deliveryInfo}>
