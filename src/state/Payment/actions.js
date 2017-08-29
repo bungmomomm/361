@@ -121,6 +121,16 @@ const toggleVtModalBox = (state, url) => ({
 	}
 });
 
+const toggleEcashModalBox = (state, url) => ({
+	type: constants.PAY_ECASH_MODAL_BOX_TOGGLE,
+	status: true,
+	mode: 'mandiri_ecash',
+	payload: {
+		state,
+		url
+	}
+});
+
 const togglePaymentErrorModalBox = (message = false) => ({
 	type: constants.PAY_PAYMENT_ERROR,
 	payload: {
@@ -191,6 +201,10 @@ const vtModalBoxOpen = (state, url) => dispatch => {
 	dispatch(toggleVtModalBox(state, url));
 };
 
+const ecashModalBoxOpen = (state, url) => dispatch => {
+	dispatch(toggleEcashModalBox(state, url));
+};
+
 const paymentError = (message) => dispatch => {
 	dispatch(togglePaymentErrorModalBox(message));
 };
@@ -220,6 +234,9 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 			data: getPaymentPayload(soNumber, payment, paymentDetail, mode)
 		}
 	}).then((response) => {
+		if (typeof response.data.data[0] !== 'undefined') {
+			soNumber = response.data.data[0].id;
+		}
 		dispatch(payReceived(soNumber, response.data, mode, card, callback));
 	}).catch((error) => {
 		// showError
@@ -271,6 +288,7 @@ export default {
 	vtModalBoxOpen,
 	paymentError,
 	paymentErrorClose,
+	ecashModalBoxOpen,
 	payError,
 	pay,
 	applyBin

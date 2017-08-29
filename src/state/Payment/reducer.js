@@ -16,7 +16,6 @@ export default (state = initialState, action) => {
 
 	if (typeof action === 'undefined') {
 		return {
-			...initialState,
 			...state
 		};
 	}
@@ -27,14 +26,12 @@ export default (state = initialState, action) => {
 		let resultState = state;
 		if (action.status) {
 			resultState = {
-				...initialState,
 				...state, 
 				loading: false,
 				paymentMethods: action.payload.data
 			};
 		} else {
 			resultState = {
-				...initialState,
 				...state, 
 				loading: true
 			};
@@ -43,7 +40,6 @@ export default (state = initialState, action) => {
 	}
 	case constants.PAY_PAYMENT_METHOD_CHANGED: {
 		return {
-			...initialState,
 			...state,
 			selectedPayment: action.payload.selectedPayment,
 			selectedPaymentOption: null,
@@ -53,7 +49,6 @@ export default (state = initialState, action) => {
 
 	case constants.PAY_PAYMENT_OPTION_CHANGED: {
 		return {
-			...initialState,
 			...state,
 			selectedPaymentOption: action.payload.selectedPaymentOption,
 			paymentMethod: action.payload.selectedPaymentOption.paymentMethod
@@ -62,7 +57,6 @@ export default (state = initialState, action) => {
 
 	case constants.PAY_NEW_CREDIT_CARD: {
 		return {
-			...initialState,
 			...state,
 			twoClickEnabled: !action.payload.status,
 			openNewCreditCard: action.payload.status
@@ -89,7 +83,6 @@ export default (state = initialState, action) => {
 			return item;
 		});
 		return {
-			...initialState,
 			...state,
 			selectedPayment: {
 				...state.selectedPayment,
@@ -100,7 +93,6 @@ export default (state = initialState, action) => {
 
 	case constants.PAY_CREDIT_CARD_BANK_ADD: {
 		return {
-			...initialState,
 			...state
 		};
 	}
@@ -135,7 +127,6 @@ export default (state = initialState, action) => {
 			break;
 		}
 		return {
-			...initialState,
 			...state,
 			selectedCard,
 			selectedCardDetail,
@@ -145,29 +136,32 @@ export default (state = initialState, action) => {
 	}
 	case constants.PAY_UPDATED: {
 		return {
-			...initialState,
 			...state,
 			...action.payload
 		};
 	}
 	case constants.PAY_VT_MODAL_BOX_TOGGLE: {
 		return {
-			...initialState,
 			...state,
 			show3ds: action.status,
 			vtRedirectUrl: action.payload.url
 		};
 	}
+	case constants.PAY_ECASH_MODAL_BOX_TOGGLE: {
+		return {
+			...state,
+			showEcash: action.status,
+			mandiriRedirectUrl: action.payload.url
+		};
+	}
 	case constants.PAY_PAYMENT_ERROR: {
 		return {
-			...initialState,
 			...state,
 			paymentError: action.message
 		};
 	}
 	case constants.PAY_ERROR: {
 		return {
-			...initialState,
 			...state,
 			loading: false,
 			error: action.payload.error
@@ -180,29 +174,35 @@ export default (state = initialState, action) => {
 					action.payload.card,
 					action.payload.callback
 				);
+			} else if (action.mode === 'mandiri_ecash') {
+				top.location.href = action.payload.payment.data;
+				return state;
 			} else if (action.mode === 'complete') {
 				top.location.href = `${getBaseUrl()}/checkout/${action.payload.soNumber}/complete`;
 				return {
-					...initialState,
 					...state,
 					loading: !action.status,
 					payment: action.payload.payment
 				};
 			}
+			let result = {};
+			if (typeof action.payload.soNumber !== 'undefined') {
+				result = {
+					soNumber: action.payload.soNumber
+				};
+			}
 			return {
-				...initialState,
-				...state
+				...state,
+				...result
 			};
 		}		
 		return {
-			...initialState,
 			...state,
 			loading: !action.status
 		};
 	}
 	default: 
 		return {
-			...initialState,
 			...state
 		};
 	}

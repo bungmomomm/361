@@ -6,6 +6,7 @@ import { paymentGroupName } from '@/state/Payment/constants';
 // component load
 import { 
 	Col,
+	CreditCardInput,
 	Row,
 	Tooltip, 
 	Level, 
@@ -147,6 +148,7 @@ export default class CardPembayaran extends Component {
 			paymentMethods, 
 			loading,
 			selectedPayment,
+			twoClickEnabled,
 			selectedCard 
 		} = this.props.payments;
 		let couponId = false;
@@ -207,7 +209,7 @@ export default class CardPembayaran extends Component {
 													<Radio key={cardIndex} name='cc' variant='list' creditCard value={card.value} content={card.label} onChange={this.onSelectCard} checked={card.selected} />
 												</InputGroup>
 												{ renderIf(card.selected)(
-													<Row gapless>
+													<Row>
 														<Col grid={4}>
 															<Input type='number' placeholder='cvv' onBlur={this.onCardCvvChange} />
 														</Col>
@@ -222,9 +224,11 @@ export default class CardPembayaran extends Component {
 								} else {
 									return (
 										<div key={index}>
-											<Select emptyFilter={false} name='cc' selectedLabel='-- Tambah Baru' options={option.cards} onChange={this.onSelectCard} />
-											{ renderIf(selectedCard)(
-												<Row gapless>
+											<InputGroup>
+												<Select emptyFilter={false} name='cc' selectedLabel='-- Tambah Baru' options={option.cards} onChange={this.onSelectCard} />
+											</InputGroup>
+											{ renderIf((selectedCard && twoClickEnabled))(
+												<Row>
 													<Col grid={4}>
 														<Input type='number' placeholder='cvv' onBlur={this.onCardCvvChange} />
 													</Col>
@@ -310,7 +314,7 @@ export default class CardPembayaran extends Component {
 						{ renderIf(this.props.payments.openNewCreditCard && selectedPayment.value === paymentGroupName.CREDIT_CARD)(
 							<div>
 								<InputGroup>
-									<Input placeholder='Masukkan Nomor Kartu' sprites='payment-option' creditCard onBlur={this.onCardNumberChange} />
+									<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onBlur={this.onCardNumberChange} />
 								</InputGroup>
 								<label htmlFor='masa-berlaku'>Masa Berlaku</label>
 								<Level padded>
