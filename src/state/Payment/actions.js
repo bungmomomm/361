@@ -44,6 +44,15 @@ const paymentInfoUpdated = (data) => ({
 	}
 });
 
+const creditCardNumberChangeAndApplyBin = (token, cardNumber) => ({
+	type: constants.PAY_CREDIT_CARD_ADD,
+	mode: 'card_number_apply',
+	payload: {
+		token,
+		cardNumber
+	}
+});
+
 const creditCardNumberChange = (cardNumber) => ({
 	type: constants.PAY_CREDIT_CARD_ADD,
 	mode: 'card_number',
@@ -121,6 +130,16 @@ const toggleVtModalBox = (state, url) => ({
 	}
 });
 
+const toggleEcashModalBox = (state, url) => ({
+	type: constants.PAY_ECASH_MODAL_BOX_TOGGLE,
+	status: true,
+	mode: 'mandiri_ecash',
+	payload: {
+		state,
+		url
+	}
+});
+
 const togglePaymentErrorModalBox = (message = false) => ({
 	type: constants.PAY_PAYMENT_ERROR,
 	payload: {
@@ -135,6 +154,18 @@ const applyBinReceived = (data) => ({
 		data
 	}
 });
+
+// installment
+const changeBankName = (token, bank) => ({
+	type: constants.PAY_CHANGE_BANK,
+	status: true,
+	payload: {
+		token,
+		bank
+	}
+});
+
+// action
 
 const getAvailablePaymentMethod = (token) => (dispatch) => {
 	dispatch(availablePaymentMethodRequest());
@@ -171,6 +202,11 @@ const closeNewCreditCard = () => dispatch => {
 	dispatch(newCreditCardOpened(false));
 };
 
+const changeCreditCardNumberAndApplyBin = (token, cardNumber) => dispatch => {
+	
+	dispatch(creditCardNumberChangeAndApplyBin(token, cardNumber));
+};
+
 const changeCreditCardNumber = (cardNumber) => dispatch => {
 	dispatch(creditCardNumberChange(cardNumber));
 };
@@ -191,6 +227,10 @@ const vtModalBoxOpen = (state, url) => dispatch => {
 	dispatch(toggleVtModalBox(state, url));
 };
 
+const ecashModalBoxOpen = (state, url) => dispatch => {
+	dispatch(toggleEcashModalBox(state, url));
+};
+
 const paymentError = (message) => dispatch => {
 	dispatch(togglePaymentErrorModalBox(message));
 };
@@ -203,6 +243,13 @@ const selectCreditCard = (card) => dispatch => {
 	dispatch(closeNewCreditCard(false));
 	dispatch(creditCardSelected(card));
 };
+
+// installment
+
+const bankNameChange = (token, bank) => dispatch => new Promise((resolve, reject) => {
+	dispatch(changeBankName(token, bank));
+	resolve(bank);
+});
 
 const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete', card = false, callback = false) => dispatch => {
 	dispatch(payRequest());
@@ -220,6 +267,9 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 			data: getPaymentPayload(soNumber, payment, paymentDetail, mode)
 		}
 	}).then((response) => {
+		if (typeof response.data.data[0] !== 'undefined') {
+			soNumber = response.data.data[0].id;
+		}
 		dispatch(payReceived(soNumber, response.data, mode, card, callback));
 	}).catch((error) => {
 		// showError
@@ -264,13 +314,16 @@ export default {
 	openNewCreditCard,
 	selectCreditCard,
 	deselectCreditCard,
+	changeCreditCardNumberAndApplyBin,
 	changeCreditCardNumber,
 	changeCreditCardMonth,
 	changeCreditCardYear,
 	changeCreditCardCvv,
+	bankNameChange,
 	vtModalBoxOpen,
 	paymentError,
 	paymentErrorClose,
+	ecashModalBoxOpen,
 	payError,
 	pay,
 	applyBin

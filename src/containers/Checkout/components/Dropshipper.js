@@ -40,7 +40,7 @@ export default class Dropshipper extends Component {
 								type='text' 
 								name='dropship_name' 
 								placeholder='Nama Dropshipper' 
-								onChange={this.onChange}
+								onBlur={this.onChange}
 								errors={!this.props.errorDropship ? false : this.props.errorDropship.has('dropship_name')}
 								color={!this.props.errorDropship ? 'black' : (this.props.errorDropship.first('dropship_name') ? 'red' : 'black')}
 								message={!this.props.errorDropship ? '' : (this.props.errorDropship.first('dropship_name') ? 'Nama dropshipper harus diisi' : '')}
@@ -51,7 +51,7 @@ export default class Dropshipper extends Component {
 								type='number' 
 								name='dropship_phone' 
 								placeholder='No Handphone' 
-								onChange={this.onChange}
+								onBlur={this.onChange}
 								errors={!this.props.errorDropship ? false : this.props.errorDropship.has('dropship_phone')}
 								color={!this.props.errorDropship ? 'black' : (this.props.errorDropship.first('dropship_phone') ? 'red' : 'black')}
 								message={!this.props.errorDropship ? '' : (this.props.errorDropship.first('dropship_phone') ? 'Salah format, minimal 6 maksimal 14 digit' : '')}

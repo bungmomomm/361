@@ -49,7 +49,7 @@ const paymentMethod = method => {
 		value: method.id,
 		label: method.attributes.title,
 		info: info ? info.info[0] : '',
-		image: info ? info.image : ''
+		sprites: method.id
 	};
 };
 
@@ -83,6 +83,13 @@ const getListAvailablePaymentMethod = (response) => {
 				};
 				paymentData.banks = paymentData.banks.map((bank, bankIndex) => {
 					bank.installments = getRelations(bank.relationships.installment, response.included);
+					bank.listCicilan = bank.installments.map((installment, bankInstallmentIndex) => {
+						installment.info = installment.description;
+						installment.label = installment.description;
+						return installment;
+					});
+					bank.info = bank.name;
+					bank.label = bank.name;
 					return bank;
 				});
 				return paymentData;

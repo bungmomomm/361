@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import styles from '../../Checkout.scss';
-import humps from 'lodash-humps';
 import { Validator } from 'ree-validate';
 
 // component load
@@ -85,24 +84,16 @@ export default class NewAddressModalbox extends Component {
 		}
 		
 		if (e.name === 'kecamatan') {
-			// this.kecamatan = humps(e.value.toLowerCase());
-			
-			// const PolygonResult = Polygon.map((option) => {
-			// 	return option[this.kecamatan] ? option : null;
-			// }).filter((option) => {
-			// 	return option;
-			// });
-
 			const PolygonResult = this.getPolygonData(e.value.toLowerCase());
 			
-			if (PolygonResult.length > 0) {
-				this.setState({
-					gosendData: {
-						center: PolygonResult[0][this.kecamatan].center,
-						location_coords: PolygonResult[0][this.kecamatan].location_coords
-					}
-				});
-			}	
+			// if (PolygonResult.length > 0) {
+			this.setState({
+				gosendData: {
+					center: PolygonResult.center,
+					location_coords: PolygonResult.location_coords
+				}
+			});
+			// }	
 		}
 		this.setErrors(e.name, e.value);
 	}
@@ -131,8 +122,8 @@ export default class NewAddressModalbox extends Component {
 	onChangePoint() {
 		const PolygonResult = this.getPolygonData(this.props.formDataAddress.kecamatan.toLowerCase());
 		const gosendData = this.state.gosendData;
-		const center = PolygonResult.length > 0 ? PolygonResult[0][this.kecamatan].center : [];
-		const locationCoords = PolygonResult.length > 0 ? PolygonResult[0][this.kecamatan].location_coords : [];
+		const center = PolygonResult.center;
+		const locationCoords = PolygonResult.location_coords;
 		this.setState({
 			gosendData: {
 				...gosendData,
@@ -144,20 +135,18 @@ export default class NewAddressModalbox extends Component {
 	}
 
 	getPolygonData(kecamatan) {
-		this.kecamatan = humps(kecamatan);
-		// console.log(this.kecamatan);
+		this.kecamatan = kecamatan;
+		const district = this.kecamatan.toLowerCase().replace(/\W+(.)/g, (match, chr) => {
+			return chr.toUpperCase();
+		});
 			
 		const data = Polygon.map((option) => {
-			return option[this.kecamatan] ? option : null;
+			return option[district] ? option : null;
 		}).filter((option) => {
 			return option;
 		});
 		
-		if (data.length > 0) {
-			return data;
-		}
-
-		return [];
+		return data[0][district];
 		
 	}
 
@@ -202,7 +191,6 @@ export default class NewAddressModalbox extends Component {
 			// enableGosend,
 			isPinPoint
 		} = this.state;
-		
 		return (
 			<Modal size='medium' shown={this.props.shown}>
 				<Modal.Header>
@@ -331,7 +319,13 @@ export default class NewAddressModalbox extends Component {
 						}
 						{
 							renderIf(gosendData.isFromCustomer && (this.props.formDataAddress.isEdit || isPinPoint))(
+
 								<div>
+									<Gosend
+										zoom={15} 
+										center={gosendData.center} 
+										polygonArea={gosendData.location_coords} 
+									/>
 									<Segment row>
 										<Level padded>
 											<Level.Item>

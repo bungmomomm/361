@@ -6,6 +6,8 @@ import { paymentGroupName } from '@/state/Payment/constants';
 // component load
 import { 
 	Col,
+	CreditCardInput,
+	CreditCardRadio,
 	Row,
 	Tooltip, 
 	Level, 
@@ -15,7 +17,7 @@ import {
 	Card, 
 	Button, 
 	Checkbox,
-	Radio,
+	// Radio,
 	Sprites
 } from '@/components';
 
@@ -75,6 +77,7 @@ export default class CardPembayaran extends Component {
 		this.onCardMonthChange = this.onCardMonthChange.bind(this);
 		this.onCardYearChange = this.onCardYearChange.bind(this);
 		this.onCardCvvChange = this.onCardCvvChange.bind(this);
+		this.onInstallmentBankChange = this.onInstallmentBankChange.bind(this);
 	}
 	onChange(event) {
 		this.setState({
@@ -98,6 +101,7 @@ export default class CardPembayaran extends Component {
 	}
 
 	onNewCreditCard(event) {
+		console.log(event, this);
 		this.props.onNewCreditCard(event);
 	}
 
@@ -116,6 +120,12 @@ export default class CardPembayaran extends Component {
 	onCardCvvChange(data) {
 		this.props.onCardCvvChange(data);
 	}
+	onInstallmentBankChange(data) {
+		this.setState({
+			paymentMethodChanged: true
+		});
+		// this.props.onPaymentMethodChange();
+	}
 
 	handleCekVoucher(event) {
 		event.preventDefault();
@@ -125,8 +135,7 @@ export default class CardPembayaran extends Component {
 	}
 
 	handleSubmit(event) {
-		console.log(this.state);
-		event.preventDefault();
+		event.preventDefault(this);
 	}
 
 	submitPayment() {
@@ -147,6 +156,7 @@ export default class CardPembayaran extends Component {
 			paymentMethods, 
 			loading,
 			selectedPayment,
+			twoClickEnabled,
 			selectedCard 
 		} = this.props.payments;
 		let couponId = false;
@@ -181,8 +191,10 @@ export default class CardPembayaran extends Component {
 				</Level>
 			);			
 		}
-		let paymentOptions = false;
+		let paymentOptions = false; 
+		let installmentPayment = false;
 		if (selectedPayment) {
+			console.log(selectedPayment.paymentItems);
 			switch (selectedPayment.value) {
 			case paymentGroupName.BANK_TRANSFER:
 			case paymentGroupName.CONVENIENCE_STORE:
@@ -204,7 +216,80 @@ export default class CardPembayaran extends Component {
 										return (
 											<div>
 												<InputGroup>
-													<Radio key={cardIndex} name='cc' variant='list' creditCard value={card.value} content={card.label} onChange={this.onSelectCard} checked={card.selected} />
+													<CreditCardRadio key={cardIndex} name='cc' variant='list' creditCard value={card.value} content={card.label} onChange={this.onSelectCard} checked={card.selected} />
+												</InputGroup>
+												{ renderIf(card.selected)(
+													<Row>
+														<Col grid={4}>
+															<Input type='number' placeholder='cvv' onBlur={this.onCardCvvChange} />
+														</Col>
+														<Col grid={4}>
+															<Sprites name='cvv' />
+														</Col>
+													</Row>
+												) }
+											</div>
+										);
+									});
+								} else {
+									return (
+										<div key={index}>
+											<InputGroup>
+												<Select emptyFilter={false} name='cc' selectedLabel='-- Tambah Baru' options={option.cards} onChange={this.onSelectCard} />
+											</InputGroup>
+											{ renderIf((selectedCard && twoClickEnabled))(
+												<Row>
+													<Col grid={4}>
+														<Input type='number' placeholder='cvv' onBlur={this.onCardCvvChange} />
+													</Col>
+													<Col grid={3}>
+														<Sprites name='cvv' />
+													</Col>
+												</Row>
+											) }
+										</div>
+									);
+								}
+								return (
+									<div key={index} />
+								);
+							})
+						}
+					</InputGroup>
+				);
+				break;
+			case paymentGroupName.INSTALLMENT:
+				installmentPayment = (
+					<InputGroup>
+						{ 
+							selectedPayment.paymentItems.map((installment, index) => {
+								return (
+									<div key={index}>
+										<InputGroup>
+											<p>Pilih Bank</p>
+											<Select emptyFilter={false} name='bank' selectedLabel='---' options={installment.banks} onChange={this.onInstallmentBankChange} />
+										</InputGroup>
+										<InputGroup>
+											<p>Pilih Lama Cicilan</p>
+											<Select emptyFilter={false} name='bank' selectedLabel='---' options={installment.banks[index].listCicilan} />
+										</InputGroup>
+									</div>
+								);
+							})
+						}
+					</InputGroup>
+				);
+
+				paymentOptions = (
+					<InputGroup>
+						{ 
+							selectedPayment.paymentItems.map((option, index) => {
+								if (option.cards.length < 1) {
+									option.cards.map((card, cardIndex) => {
+										return (
+											<div>
+												<InputGroup>
+													<CreditCardRadio key={cardIndex} name='cc' variant='list' creditCard value={card.value} content={card.label} onChange={this.onSelectCard} checked={card.selected} />
 												</InputGroup>
 												{ renderIf(card.selected)(
 													<Row gapless>
@@ -222,17 +307,22 @@ export default class CardPembayaran extends Component {
 								} else {
 									return (
 										<div key={index}>
-											<Select emptyFilter={false} name='cc' selectedLabel='-- Tambah Baru' options={option.cards} onChange={this.onSelectCard} />
-											{ renderIf(selectedCard)(
-												<Row gapless>
-													<Col grid={4}>
-														<Input type='number' placeholder='cvv' onBlur={this.onCardCvvChange} />
-													</Col>
-													<Col grid={4}>
-														<Sprites name='cvv' />
-													</Col>
-												</Row>
-											) }
+											<InputGroup>
+												<p>Jenis Kartu</p>
+												<Select emptyFilter={false} name='cc' selectedLabel='Pilih Jenis Kartu' options={option.cards} onChange={this.onSelectCard} />
+											</InputGroup>
+											<InputGroup>
+												{ renderIf(selectedCard)(
+													<Row>
+														<Col grid={4}>
+															<Input type='number' placeholder='cvv' onBlur={this.onCardCvvChange} />
+														</Col>
+														<Col grid={4}>
+															<Sprites name='cvv' />
+														</Col>
+													</Row>
+												) }
+											</InputGroup>
 										</div>
 									);
 								}
@@ -247,7 +337,6 @@ export default class CardPembayaran extends Component {
 				break;	
 			} 
 		}
-		// console.log(this.props.tahun);
 		return (
 			<Card>
 				<div className={styles.overflow}>
@@ -301,6 +390,7 @@ export default class CardPembayaran extends Component {
 								</ol>
 							</Tooltip>
 						</InputGroup>
+						{ renderIf(installmentPayment)(installmentPayment) }
 						{ renderIf(paymentOptions)(paymentOptions) }
 						{ renderIf(selectedPayment.value === paymentGroupName.CREDIT_CARD)(
 							<InputGroup>
@@ -310,7 +400,7 @@ export default class CardPembayaran extends Component {
 						{ renderIf(this.props.payments.openNewCreditCard && selectedPayment.value === paymentGroupName.CREDIT_CARD)(
 							<div>
 								<InputGroup>
-									<Input placeholder='Masukkan Nomor Kartu' sprites='payment-option' creditCard onBlur={this.onCardNumberChange} />
+									<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onChange={this.onCardNumberChange} />
 								</InputGroup>
 								<label htmlFor='masa-berlaku'>Masa Berlaku</label>
 								<Level padded>

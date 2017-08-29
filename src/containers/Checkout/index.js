@@ -34,7 +34,7 @@ import {
 	getDistrict, 
 	saveAddress 
 } from '@/state/Adresses/actions';
-import { getPlaceOrderCart, getCart, updateQtyCart } from '@/state/Cart/actions';
+import { getPlaceOrderCart, getCart, updateQtyCart, updateGosend } from '@/state/Cart/actions';
 import {
 	getAvailablePaymentMethod,
 	changePaymentMethod,
@@ -46,6 +46,7 @@ import {
 	changeCreditCardMonth,
 	changeCreditCardCvv,
 	vtModalBoxOpen,
+	ecashModalBoxOpen,
 	paymentError,
 	pay,
 	applyBin
@@ -54,15 +55,10 @@ import {
 	paymentMethodName
 } from '@/state/Payment/constants';
 
-import { actions as globalAction } from '@/state/Global';
-
-import { Veritrans } from '@/utils/vt';
-
 class Checkout extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.Veritrans = Veritrans();
 		this.validator = new Validator({
 			dropship_name: 'required|max:100',
 			dropship_phone: 'required|numeric|min:6|max:14',
@@ -131,6 +127,7 @@ class Checkout extends Component {
 		this.onVt3dsModalBoxClose = this.onVt3dsModalBoxClose.bind(this);
 		this.onMandiriEcashClose = this.onMandiriEcashClose.bind(this);
 		this.closeModalElocker = this.closeModalElocker.bind(this);
+		this.shippingMethodGosend = this.shippingMethodGosend.bind(this);
 	}
 
 	componentWillMount() {
@@ -240,11 +237,11 @@ class Checkout extends Component {
 				selectedAddress: address
 			});
 		}
-		dispatch(getPlaceOrderCart(this.state.token, address, billing));
 		this.setState({
 			enablePesananPengiriman: true,
 			enablePembayaran: true,
 		});
+		return dispatch(getPlaceOrderCart(this.state.token, address, billing));
 	}
 
 	onChangeAddress(address, flagAdd) {
@@ -308,7 +305,7 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 		const option = event.value;
 		if (option) {
-			const selectedPaymentOption = this.props.payments.paymentMethods.payments[paymentMethod.id].paymentItems.filter((item) => parseInt(item.value, 10) === parseInt(option, 10)).pop();
+			const selectedPaymentOption = this.props.payments.paymentMethods.payments[paymentMethod.id].paymentItems.filter((item) => parseInt(item.value, 10) === parseInt(option, 10))[0];
 			let cardNumber = '';
 			let bankName = '';
 			switch (selectedPaymentOption.paymentMethod) {
@@ -331,7 +328,7 @@ class Checkout extends Component {
 
 	onSelectCard(event) {
 		this.props.dispatch(selectCreditCard(event));
-		const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems.pop();
+		const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
 		this.props.dispatch(applyBin(this.state.token, selectedPaymentOption.value, event, ''));
 	}
 
@@ -427,7 +424,7 @@ class Checkout extends Component {
 					)
 				);
 			} else {
-				dispatch(vtModalBoxOpen(true));
+				dispatch(vtModalBoxOpen(false));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
 			}
 		};
@@ -490,25 +487,33 @@ class Checkout extends Component {
 
 	onMandiriEcashClose() {
 		const { dispatch } = this.props;
-		dispatch(globalAction.dialogOpen(false));
+		dispatch(ecashModalBoxOpen(false));
 	}
 
 	onDoPayment() {
 		const { dispatch } = this.props;
-		switch (this.props.payments.paymentMethod) {
-		case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
-		case paymentMethodName.COMMERCE_VERITRANS:
-			this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
-			break;
-		default:
-			dispatch(
-				pay(
-					this.state.token, 
-					this.props.soNumber, 
-					this.props.payments.selectedPaymentOption
-				)
-			);
-			break;
+		if (typeof this.props.payments.paymentMethod !== 'undefined') {
+			let mode = 'complete';		
+			switch (this.props.payments.paymentMethod) {
+			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
+			case paymentMethodName.COMMERCE_VERITRANS:
+				this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
+				break;
+			default:
+				if (this.props.payments.selectedPaymentOption && this.props.payments.selectedPaymentOption.uniqueConstant === 'mandiri_ecash') {
+					mode = 'mandiri_ecash';
+				}
+				dispatch(
+					pay(
+						this.state.token, 
+						this.props.soNumber, 
+						this.props.payments.selectedPaymentOption,
+						false,
+						mode
+					)
+				);
+				break;
+			}
 		}
 	}
 
@@ -520,10 +525,13 @@ class Checkout extends Component {
 			enableNewAddress: false
 		});
 	}
-	
 	onCardNumberChange(event) {
 		console.log(event, this.state.test);
-		this.props.dispatch(changeCreditCardNumber(event.target.value));
+		if (event.valid) {
+			this.props.dispatch(changeCreditCardNumber(event.ccNumber));
+			const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
+			this.props.dispatch(applyBin(this.state.token, selectedPaymentOption.value, event, ''));
+		}
 	}
 	onCardMonthChange(monthData) {
 		console.log(event, this.state.test);
@@ -593,6 +601,7 @@ class Checkout extends Component {
 			this.setState({
 				isValidDropshipper: true
 			});
+			this.onDoPayment();
 		}
 	}
 
@@ -602,9 +611,11 @@ class Checkout extends Component {
 			tempSelectedAddress.attributes.is_dropshipper = this.state.dropshipper;
 			tempSelectedAddress.attributes.dropship_name = this.state.formDropshipper.dropship_name;
 			tempSelectedAddress.attributes.dropship_phone = this.state.formDropshipper.dropship_phone;
-			this.onChoisedAddress(tempSelectedAddress);
-			this.setState({
-				isValidPayment: true,
+			this.onChoisedAddress(tempSelectedAddress).then(() => {
+				this.setState({
+					isValidPayment: true,
+				});
+				this.onDoPayment();
 			});
 		} else {
 			this.checkDropship();
@@ -641,6 +652,11 @@ class Checkout extends Component {
 		this.setState({
 			showModalO2o: false
 		});
+	}
+
+	shippingMethodGosend(methodId, storeId) {
+		const { dispatch } = this.props;
+		dispatch(updateGosend(this.state.token, storeId, methodId, this.props));
 	}
 
 	render() {
@@ -701,7 +717,15 @@ class Checkout extends Component {
 								<Col flex grid={4} className={enablePesananPengiriman || this.state.restrictO2o ? '' : styles.disabled}>
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>({this.props.totalItems} items)</span></div>
 									{
-										<CardPesananPengiriman loading={this.state.loadingUpdateCart} cart={!this.state.cart ? [] : this.state.cart} onDeleteCart={this.onDeleteCart} onUpdateQty={this.onUpdateQty} restrictO2o={this.state.restrictO2o} />
+										<CardPesananPengiriman 
+											loading={this.state.loadingUpdateCart} 
+											cart={!this.state.cart ? [] : this.state.cart} 
+											onDeleteCart={this.onDeleteCart} 
+											onUpdateQty={this.onUpdateQty} 
+											restrictO2o={this.state.restrictO2o} 
+											shippingMethodGosend={this.shippingMethodGosend}
+											selectedAddress={this.state.selectedAddress}
+										/>
 									}
 								</Col>
 								<Col flex grid={4} className={enablePembayaran && !this.state.restrictO2o ? '' : styles.disabled}>
@@ -764,8 +788,8 @@ Checkout.propTypes = {
 	cookies: instanceOf(Cookies).isRequired
 };
 
-
 const mapStateToProps = (state) => {
+	console.log(state.addresses.o2o);
 	return {
 		soNumber: state.cart.soNumber,
 		coupon: state.coupon,

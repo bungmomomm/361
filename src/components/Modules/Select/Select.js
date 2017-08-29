@@ -29,7 +29,8 @@ export default class Select extends Component {
 	componentWillReceiveProps(nextProps) {
 		if (this.props.selected !== nextProps.selected) {
 			this.setState({
-				selected: nextProps.selected
+				selected: nextProps.selected,
+				selectedLabel: nextProps.selectedLabel
 			});
 		}
 		if (this.state.showOption !== nextProps.shown) {
