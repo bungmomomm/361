@@ -52,7 +52,7 @@ export default class CardPengiriman extends Component {
 				shipping: address
 			});
 		}
-		
+
 	}
 
 	onChoisedAddress(dataChoised) {
@@ -77,6 +77,7 @@ export default class CardPengiriman extends Component {
 			this.setState({
 				elockerTab: true
 			});
+			this.props.activeShippingTab(false);
 			if (!this.props.listo2o) {
 				this.props.onGetListO2o();
 				this.props.onGetO2oProvinces();
