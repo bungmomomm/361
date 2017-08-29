@@ -80,6 +80,7 @@ export default class CardPembayaran extends Component {
 		this.onInstallmentBankChange = this.onInstallmentBankChange.bind(this);
 		this.onBankChange = this.onBankChange.bind(this);
 		this.onOvoNumberChange = this.onOvoNumberChange.bind(this);
+		this.onTermChange = this.onTermChange.bind(this);
 	}
 	onChange(event) {
 		this.setState({
@@ -139,6 +140,12 @@ export default class CardPembayaran extends Component {
 
 	onOvoNumberChange(event) {
 		this.props.onOvoNumberChange(event);
+	}
+
+	onTermChange(event) {
+		console.log(event);
+		console.log(this.state);
+		this.props.onTermChange(event.value);
 	}
 
 	handleCekVoucher(event) {
@@ -285,7 +292,7 @@ export default class CardPembayaran extends Component {
 										</InputGroup>
 										<InputGroup>
 											<p>Pilih Lama Cicilan</p>
-											<Select emptyFilter={false} name='bank' selectedLabel='---' options={installment.banks[index].listCicilan} />
+											<Select emptyFilter={false} name='bank' selectedLabel='---' options={installment.banks[index].listCicilan} onChange={this.onTermChange} />
 										</InputGroup>
 									</div>
 								);

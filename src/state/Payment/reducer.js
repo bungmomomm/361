@@ -173,6 +173,12 @@ export default (state = initialState, action) => {
 			paymentError: action.message
 		};
 	}
+	case constants.PAY_TERM_CHANGE: {
+		return {
+			...state,
+			term: action.payload.term
+		};
+	}
 	case constants.PAY_CHANGE_OVO_NUMBER: {
 		return {
 			...state,

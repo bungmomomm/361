@@ -51,7 +51,8 @@ import {
 	pay,
 	bankNameChange,
 	applyBin,
-	changeOvoNumber
+	changeOvoNumber,
+	termChange
 } from '@/state/Payment/actions';
 import { 
 	paymentMethodName
@@ -133,6 +134,7 @@ class Checkout extends Component {
 		this.onBankChange = this.onBankChange.bind(this);
 		this.onOvoNumberChange = this.onOvoNumberChange.bind(this);
 		this.closeModalShippingAddress = this.closeModalShippingAddress.bind(this);
+		this.onTermChange = this.onTermChange.bind(this);
 	}
 
 	componentWillMount() {
@@ -303,12 +305,7 @@ class Checkout extends Component {
 	}
 
 	onPaymentMethodChange(event) {
-		this.props.dispatch(changePaymentMethod(event.value, this.props.payments.paymentMethods)).then(() => {
-			if (event.value === 'cod') {
-				const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
-				this.props.dispatch(changePaymentOption(selectedPaymentOption));
-			}
-		});
+		this.props.dispatch(changePaymentMethod(event.value, this.props.payments.paymentMethods));
 	}
 
 	onPaymentOptionChange(event, paymentMethod) {
@@ -387,7 +384,7 @@ class Checkout extends Component {
 			cardDetail.card_number = this.props.payments.selectedCard.value;
 			cardDetail.bank = this.props.payments.selectedBank.value;
 			cardDetail.installment = true;
-			cardDetail.installment_term = this.props.payments.selectedInstallment.term;
+			cardDetail.installment_term = this.props.payments.term.term;
 		} else {
 			if (this.props.payments.twoClickEnabled) {
 				cardDetail.token_id = this.props.payments.selectedCard.value;
@@ -461,9 +458,7 @@ class Checkout extends Component {
 								bank: this.props.payments.selectedBank.value,
 								detail: this.props.payments.selectedCardDetail
 							},
-							term: {
-								
-							}
+							term: this.props.payments.term
 						}
 					)
 				);
@@ -505,14 +500,17 @@ class Checkout extends Component {
 		dispatch(changeOvoNumber(event.target.value));
 	}
 
+	onTermChange(term) {
+		const { dispatch } = this.props;
+		dispatch(termChange(term));
+	}
+
 	onDoPayment() {
 		const { dispatch } = this.props;
 		if (typeof this.props.payments.paymentMethod !== 'undefined') {
 			let mode = 'complete';		
 			switch (this.props.payments.paymentMethod) {
 			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
-				this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
-				break;
 			case paymentMethodName.COMMERCE_VERITRANS:
 				this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
 				break;
@@ -782,6 +780,7 @@ class Checkout extends Component {
 										tahun={this.state.tahun}
 										onBankChange={this.onBankChange}
 										onOvoNumberChange={this.onOvoNumberChange}
+										onTermChange={this.onTermChange}
 									/>
 								</Col>
 							</Row>

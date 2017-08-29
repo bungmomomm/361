@@ -86,6 +86,12 @@ const getListAvailablePaymentMethod = (response) => {
 					bank.listCicilan = bank.installments.map((installment, bankInstallmentIndex) => {
 						installment.info = installment.description;
 						installment.label = installment.description;
+						installment.value = {
+							id: installment.id,
+							siteid: installment.siteid,
+							provider: bank.provider,
+							term: installment.term
+						};
 						return installment;
 					});
 					bank.info = bank.name;
@@ -154,13 +160,13 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
 		break;
 	case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 		paymentPayload.attributes.amount = paymentDetail.amount;
-		if (mode === 'cc') {
+		if (mode !== 'cc') {
 			paymentPayload.attributes.credit_card = {
 				bank: paymentDetail.card.bank,
-				masked_card: paymentDetail.card.masked,
-				status_code: paymentDetail.status_code,
-				status_message: paymentDetail.status_message,
-				token_id: paymentDetail.card.value
+				token_id: paymentDetail.card.value,
+				term: paymentDetail.term.term,
+				site_id: paymentDetail.term.siteid,
+				provider: paymentDetail.term.provider
 			};		
 		}
 		break;

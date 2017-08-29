@@ -173,6 +173,13 @@ const changeBankName = (token, bank, selectedPaymentOption) => ({
 	}
 });
 
+const changeInstallment = (term) => ({
+	type: constants.PAY_TERM_CHANGE,
+	payload: {
+		term
+	}
+});
+
 // action
 
 const getAvailablePaymentMethod = (token) => (dispatch) => {
@@ -262,6 +269,11 @@ const selectCreditCard = (card) => dispatch => {
 const bankNameChange = (token, bank, selectedPaymentOption) => dispatch => new Promise((resolve, reject) => {
 	dispatch(changeBankName(token, bank, selectedPaymentOption));	
 	resolve(bank);
+});
+
+const termChange = (term) => dispatch => new Promise((resolve, reject) => {
+	dispatch(changeInstallment(term));
+	resolve(term);
 });
 
 const changeOvoNumber = (ovoNumber) => dispatch => {
@@ -380,6 +392,7 @@ export default {
 	vtModalBoxOpen,
 	paymentError,
 	paymentErrorClose,
+	termChange,
 	ecashModalBoxOpen,
 	changeOvoNumber,
 	payError,
