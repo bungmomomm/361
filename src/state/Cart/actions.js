@@ -1,5 +1,5 @@
 import { request } from '@/utils';
-import { paymentInfoUpdated } from '@/state/Payment/actions';
+import { paymentInfoUpdated, getAvailablePaymentMethod } from '@/state/Payment/actions';
 import { 
 	CRT_GET_CART,
 	CRT_PLACE_ORDER,
@@ -47,12 +47,13 @@ const gettingCart = (token) => ({
 	}
 });
 
-const cartReceived = (cart, isPickupable = 0) => ({
+const cartReceived = (cart, isPickupable = 0, totalItems = 0) => ({
 	type: CRT_GET_CART,
 	status: 1,
 	payload: {
 		cart,
-		isPickupable
+		isPickupable,
+		totalItems
 	}
 });
 
@@ -71,7 +72,8 @@ const getCart = token => dispatch => {
 			return value;
 		}).filter(e => e.id === 'pickup');
 		dispatch(paymentInfoUpdated(getCartPaymentData(response.data.data.attributes.total_pricing, 'cart')));
-		dispatch(cartReceived(setCartModel(response.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable));
+		dispatch(cartReceived(setCartModel(response.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, response.data.data.attributes.total_cart));
+		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
 		console.log(error);
@@ -80,6 +82,7 @@ const getCart = token => dispatch => {
 
 const getPlaceOrderCart = (token, address, billing = false) => dispatch => {
 	dispatch(placeOrderRequest(token, address));
+	console.log(address);
 	const data = setPayloadPlaceOrder(address, billing);
 	const req = {
 		token, 
@@ -103,7 +106,8 @@ const getPlaceOrderCart = (token, address, billing = false) => dispatch => {
 				return value;
 			}).filter(e => e.id === 'pickup');
 			dispatch(paymentInfoUpdated(getCartPaymentData(res.data.data.attributes.total_price, 'order')));
-			dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable));
+			dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, response.data.data.attributes.total_price.count));
+			dispatch(getAvailablePaymentMethod(token));
 		})
 		.catch((error) => {
 			console.log(error);
@@ -146,7 +150,8 @@ const deleteCart = (token, productId, props) => dispatch => {
 			if (storeWithEmptyProduct !== -1) {
 				props.cart.splice(storeWithEmptyProduct, 1);
 			}
-			dispatch(cartReceived(props.cart, props.isPickupable));
+			dispatch(cartReceived(props.cart, props.isPickupable, props.totalItems));
+			dispatch(getAvailablePaymentMethod(token));
 		}
 	})
 	.catch((error) => {
@@ -181,7 +186,8 @@ const updateQtyCart = (token, productQty, productId, props) => dispatch => {
 			return value;
 		}).filter(e => e.id === 'pickup');
 		dispatch(paymentInfoUpdated(getCartPaymentData(res.data.data.attributes.total_price, 'order')));
-		dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable));
+		dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, res.data.data.attributes.total_price.count));
+		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
 		console.log(error);

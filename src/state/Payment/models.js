@@ -3,7 +3,7 @@ import { paymentMethodName, paymentGroupName } from './constants';
 
 const getRelations = (data, lookup, format) => {
 	return data.data.map((item, index) => {
-		const obj = lookup.filter(itemLookup => itemLookup.type === item.type && itemLookup.id === item.id).pop();
+		const obj = lookup.filter(itemLookup => itemLookup.type === item.type && itemLookup.id === item.id)[0];
 		return {
 			...obj,
 			...obj.attributes
@@ -13,7 +13,7 @@ const getRelations = (data, lookup, format) => {
 
 const getCardRelations = (data, lookup) => {
 	return data.data.map((item, index) => {
-		const card = lookup.filter(itemLookup => itemLookup.type === item.type && itemLookup.id === item.id).pop();
+		const card = lookup.filter(itemLookup => itemLookup.type === item.type && itemLookup.id === item.id)[0];
 		return {
 			value: card.id,
 			label: card.attributes.credit_card_number_with_separator,
@@ -35,20 +35,20 @@ const paymentMethodItem = payment => {
 		disabled: payment.attributes.fg_enable ? 0 : 1,
 		message: payment.attributes.description,
 		disable_message: payment.attributes.disable_message,
-		settings: payment.attributes.settings.pop()
+		settings: payment.attributes.settings[0]
 	};
 };
 
 const paymentMethod = method => {
-	let info = method.attributes.settings.pop();
-	if (typeof (info) === 'undefined') {
-		info = false;
+	let info = false;
+	if (typeof (method.attributes.settings[0]) !== 'undefined') {
+		info = method.attributes.settings[0];
 	}
 	return {
 		id: method.id,
 		value: method.id,
 		label: method.attributes.title,
-		info: info ? info.info.pop() : '',
+		info: info ? info.info[0] : '',
 		image: info ? info.image : ''
 	};
 };
@@ -69,7 +69,7 @@ const getListAvailablePaymentMethod = (response) => {
 			methodData.payment_items = methodData.payment_items.map((payment, paymentIndex) => {
 				const paymentData = {
 					...paymentMethodItem(payment),
-					cards: getCardRelations(payment.relationships.card_number, response.included)
+					cards: !payment.relationships ? [] : getCardRelations(payment.relationships.card_number, response.included)
 				};
 				return paymentData;
 			});
@@ -78,7 +78,7 @@ const getListAvailablePaymentMethod = (response) => {
 			methodData.payment_items = methodData.payment_items.map((payment, paymentIndex) => {
 				const paymentData = {
 					...paymentMethodItem(payment),
-					cards: getCardRelations(payment.relationships.card_number, response.included),
+					cards: !payment.relationships.card_number ? [] : getCardRelations(payment.relationships.card_number, response.included),
 					banks: getRelations(payment.relationships.banks, response.included)
 				};
 				paymentData.banks = paymentData.banks.map((bank, bankIndex) => {
@@ -110,12 +110,11 @@ const getListAvailablePaymentMethod = (response) => {
 	return returnData;
 };
 
-const getPaymentPayload = (orderId, payment) => {
+const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
 	const paymentPayload = {
 		type: 'payment',
 		attributes: {
-			product_type: 'product',
-			payment_method: payment.paymentMethod
+			payment_method: payment.paymentMethod,
 		},
 		relationships: {
 			order: {
@@ -126,6 +125,7 @@ const getPaymentPayload = (orderId, payment) => {
 			}
 		}
 	};
+	
 	switch (payment.paymentMethod) {
 	case paymentMethodName.VIRTUAL_ACCOUNT:
 		paymentPayload.attributes.virtual_account = {
@@ -135,8 +135,27 @@ const getPaymentPayload = (orderId, payment) => {
 	case paymentMethodName.BANK_TRANSFER:
 		break;
 	case paymentMethodName.COMMERCE_VERITRANS:
+		paymentPayload.attributes.amount = parseInt(paymentDetail.amount, 10);
+		paymentPayload.attributes.product_type = '';
+		if (mode !== 'cc') {
+			paymentPayload.attributes.credit_card = {
+				bank: paymentDetail.card.bank,
+				token_id: paymentDetail.card.value,
+				save_cc: 1
+			};		
+		}
 		break;
 	case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
+		paymentPayload.attributes.amount = paymentDetail.amount;
+		if (mode === 'cc') {
+			paymentPayload.attributes.credit_card = {
+				bank: paymentDetail.card.bank,
+				masked_card: paymentDetail.card.masked,
+				status_code: paymentDetail.status_code,
+				status_message: paymentDetail.status_message,
+				token_id: paymentDetail.card.value
+			};		
+		}
 		break;
 	case paymentMethodName.POS_PAY:
 		break;

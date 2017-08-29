@@ -11,6 +11,7 @@ import {
 	Alert,
 	Segment,
 } from '@/components';
+import { renderIf } from '@/utils';
 
 import Dropshipper from './Dropshipper';
 
@@ -26,7 +27,7 @@ export default class CardPengiriman extends Component {
 			elockerTab: false,
 			shipping: [],
 			o2o: [],
-			selectedAddress: null,
+			selectedAddress: this.props.selectedAddress || null,
 			closeSelect: true,
 		};
 		this.onChoisedAddress = this.onChoisedAddress.bind(this);
@@ -47,10 +48,12 @@ export default class CardPengiriman extends Component {
 					info: `${value.attributes.address}, ${value.attributes.district}, ${value.attributes.city}, ${value.attributes.province}`
 				});
 			});
+			console.log(address);
 			this.setState({
 				shipping: address
 			});
 		}
+		
 	}
 
 	onChoisedAddress(dataChoised) {
@@ -61,8 +64,8 @@ export default class CardPengiriman extends Component {
 		this.props.onChoisedAddress(selectedAddress);
 	}
 
-	onChangeAddress() {
-		this.props.onChangeAddress(this.state.selectedAddress);
+	onChangeAddress(e) {
+		this.props.onChangeAddress(this.state.selectedAddress, e);
 	}
 
 	onChosenLocker(dataChosen) {
@@ -86,9 +89,9 @@ export default class CardPengiriman extends Component {
 			});
 			this.props.activeShippingTab(true);
 		}
-		// if (this.props.latesto2o) {
-		// 	this.props.onSelectedLocker(this.props.latesto2o[0]);	
-		// }
+		if (this.props.latesto2o.length > 0) {
+			this.props.onSelectedLocker(this.props.latesto2o[0]);	
+		}
 	}
 
 	openModal(even) {
@@ -111,7 +114,7 @@ export default class CardPengiriman extends Component {
 
 		const addMoreAddress = (
 			<Button
-				onClick={this.onChangeAddress}
+				onClick={() => this.onChangeAddress('add')}
 				content='Tambah Alamat Baru'
 				className='font-orange'
 				icon='plus'
@@ -157,7 +160,12 @@ export default class CardPengiriman extends Component {
 						!this.state.selectedAddress ? null : 
 						<Dropshipper setDropship={this.props.setDropship} errorDropship={this.props.errorDropship} checkDropship={this.props.checkDropship} />
 					}
-					<Button content='Masukan Alamat Pengiriman' color='dark' block size='large' iconPosition='right' icon='angle-right' />
+					{
+						renderIf(this.state.shipping.length === 0)(
+							<Button content='Masukan Alamat Pengiriman' color='dark' block size='large' iconPosition='right' icon='angle-right' onClick={() => this.onChangeAddress('add')} />
+						)
+					}
+					
 				</Tabs.Panel>
 				<Tabs.Panel title='Ambil Di Toko/E-locker (O2O)' sprites='o2o-off' spritesActive='o2o-on' >
 					<Alert align='center' color='yellow' show={this.state.elockerTab} >
@@ -170,8 +178,7 @@ export default class CardPengiriman extends Component {
 							<Segment>
 								<InputGroup>
 									<Select
-										filter
-										selectedLabel={this.props.selectO2oFromModal ? '-- Pilih Alamat E-Locker' : this.props.selectedLocker.attributes.address_label}
+										selectedLabel={this.props.selectO2oFromModal ? '-- Pilih Lokasi / Toko E-Locker Lainnya' : this.props.selectedLocker.attributes.address_label}
 										selected={this.props.selectO2oFromModal ? {} : this.props.selectedLocker}
 										options={(typeof this.props.latesto2o !== 'undefined') ? this.props.latesto2o : []}
 										onChange={this.onChosenLocker}

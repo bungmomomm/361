@@ -44,6 +44,38 @@ const paymentInfoUpdated = (data) => ({
 	}
 });
 
+const creditCardNumberChange = (cardNumber) => ({
+	type: constants.PAY_CREDIT_CARD_ADD,
+	mode: 'card_number',
+	payload: {
+		cardNumber
+	}
+});
+
+const creditCardMonthChange = (month) => ({
+	type: constants.PAY_CREDIT_CARD_ADD,
+	mode: 'month',
+	payload: {
+		month
+	}
+});
+
+const creditCardYearChange = (year) => ({
+	type: constants.PAY_CREDIT_CARD_ADD,
+	mode: 'year',
+	payload: {
+		year
+	}
+});
+
+const creditCardCvvChange = (cvv) => ({
+	type: constants.PAY_CREDIT_CARD_ADD,
+	mode: 'cvv',
+	payload: {
+		cvv
+	}
+});
+
 const creditCardSelected = (card) => ({
 	type: constants.PAY_CREDIT_CARD_SELECTED,
 	status: true,
@@ -62,12 +94,37 @@ const payRequest = () => ({
 	status: false
 });
 
-const payReceived = (soNumber, payment) => ({
+const payReceived = (soNumber, payment, mode, card, callback) => ({
 	type: constants.PAY,
 	status: true,
+	mode,
 	payload: {
 		soNumber,
-		payment
+		payment,
+		card,
+		callback
+	}
+});
+
+const payError = (error) => ({
+	type: constants.PAY_ERROR,
+	payload: {
+		error
+	}
+});
+
+const toggleVtModalBox = (state, url) => ({
+	type: constants.PAY_VT_MODAL_BOX_TOGGLE,
+	status: state,
+	payload: {
+		url
+	}
+});
+
+const togglePaymentErrorModalBox = (message = false) => ({
+	type: constants.PAY_PAYMENT_ERROR,
+	payload: {
+		message
 	}
 });
 
@@ -114,25 +171,59 @@ const closeNewCreditCard = () => dispatch => {
 	dispatch(newCreditCardOpened(false));
 };
 
+const changeCreditCardNumber = (cardNumber) => dispatch => {
+	dispatch(creditCardNumberChange(cardNumber));
+};
+
+const changeCreditCardMonth = (month) => dispatch => {
+	dispatch(creditCardMonthChange(month));
+};
+
+const changeCreditCardYear = (year) => dispatch => {
+	dispatch(creditCardYearChange(year));
+};
+
+const changeCreditCardCvv = (cvv) => dispatch => {
+	dispatch(creditCardCvvChange(cvv));
+};
+
+const vtModalBoxOpen = (state, url) => dispatch => {
+	dispatch(toggleVtModalBox(state, url));
+};
+
+const paymentError = (message) => dispatch => {
+	dispatch(togglePaymentErrorModalBox(message));
+};
+
+const paymentErrorClose = () => dispatch => {
+	dispatch(togglePaymentErrorModalBox(false));
+};
+
 const selectCreditCard = (card) => dispatch => {
 	dispatch(closeNewCreditCard(false));
 	dispatch(creditCardSelected(card));
 };
 
-const pay = (token, soNumber, payment) => dispatch => {
+const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete', card = false, callback = false) => dispatch => {
 	dispatch(payRequest());
+	if (
+		payment.paymentMethod === 'commerce_veritrans_installment'
+		&& payment.paymentMethod === 'commerce_veritrans'
+	) {
+		// prepare cc
+	}
 	return request({
 		token,
 		path: 'payments',
 		method: 'POST',
 		body: {
-			data: getPaymentPayload(soNumber, payment)
+			data: getPaymentPayload(soNumber, payment, paymentDetail, mode)
 		}
 	}).then((response) => {
-		dispatch(payReceived(soNumber, response.data));
+		dispatch(payReceived(soNumber, response.data, mode, card, callback));
 	}).catch((error) => {
 		// showError
-		dispatch(payReceived({}));
+		dispatch(payError(error));
 	});
 };
 
@@ -151,9 +242,9 @@ const applyBin = (token, paymentMethodId, cardNumber, bankName) => dispatch => {
 			}
 		}
 	}).then((response) => {
-		const item = response.data.data.relationships.carts.data.pop();
-		if (item) {
-			const totalPrice = response.data.included.filter(itemLookup => itemLookup.type === item.type && itemLookup.id === item.id).pop();
+		if (typeof response.data.data.relationships.carts.data[0] !== 'undefined') {
+			const item = response.data.data.relationships.carts.data[0];
+			const totalPrice = response.data.included.filter(itemLookup => itemLookup.type === item.type && itemLookup.id === item.id)[0];
 			dispatch(paymentInfoUpdated(getCartPaymentData(totalPrice.attributes.total_price, 'order')));
 			dispatch(applyBinReceived(response.data));
 		}
@@ -173,6 +264,14 @@ export default {
 	openNewCreditCard,
 	selectCreditCard,
 	deselectCreditCard,
+	changeCreditCardNumber,
+	changeCreditCardMonth,
+	changeCreditCardYear,
+	changeCreditCardCvv,
+	vtModalBoxOpen,
+	paymentError,
+	paymentErrorClose,
+	payError,
 	pay,
 	applyBin
 };

@@ -17,6 +17,12 @@ export default class Stepper extends Component {
 		this.onChange = this.onChange.bind(this);
 	}
 
+	componentWillReceiveProps(nextProps) {
+		this.setState({
+			value: nextProps.value
+		});
+	}
+
 	onChange(event) {
 		let value = event.target.value;
 		value = value >= this.props.maxValue && value ? this.props.maxValue : value;

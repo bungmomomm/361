@@ -6,6 +6,7 @@ import {
 } from './constants';
 
 const initialState = {
+	loading: false,
 	data: [
 		{
 			store: {
@@ -65,6 +66,8 @@ export default (state = initialState, action) => {
 			...state, 
 			data: action.payload.cart,
 			isPickupable: action.payload.isPickupable,
+			totalItems: action.payload.totalItems,
+			loading: true,
 		};
 	}
 

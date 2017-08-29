@@ -19,7 +19,7 @@ export default class NewAddressModalbox extends Component {
 		this.validator = new Validator({
 			name: 'required',
 			penerima: 'required',
-			no_hp: 'required',
+			no_hp: 'required|digits:6|max:14',
 			provinsi: 'required',
 			kecamatan: 'required',
 			kodepos: 'required',
@@ -30,7 +30,7 @@ export default class NewAddressModalbox extends Component {
 
 		this.state = {
 			formData: {
-				id: this.props.formDataAddress.id,
+				id: this.props.formDataAddress.id || 0,
 				name: this.props.formDataAddress.label,
 				penerima: this.props.formDataAddress.nama,
 				no_hp: this.props.formDataAddress.noHP,
@@ -43,33 +43,17 @@ export default class NewAddressModalbox extends Component {
 			errors: this.validator.errorBag,
 			district: {},
 			enableGosend: false,
-			gosendData: {}
+			gosendData: {}, 
+			formattedAddress: ''
 		};
 		this.onChange = this.onChange.bind(this);
 		this.onChangeSelect = this.onChangeSelect.bind(this);
 		this.onSubmitAddress = this.onSubmitAddress.bind(this);
+		this.onGeoLoad = this.onGeoLoad.bind(this);
 		this.validateAndSubmit = this.validateAndSubmit.bind(this);
 		this.getDistricts = this.getDistricts.bind(this);
 		this.kecamatan = null;
 	}
-
-	// componentWillReceiveProps(nextProps) {
-	// 	this.setState({
-	// 		district: nextProps.district,
-	// 		cityProv: nextProps.cityProv,
-	// 		formData: {
-	// 			id: nextProps.formDataAddress.id,
-	// 			name: nextProps.formDataAddress.label,
-	// 			penerima: nextProps.formDataAddress.nama,
-	// 			no_hp: nextProps.formDataAddress.noHP,
-	// 			provinsi: nextProps.formDataAddress.kotProv,
-	// 			kecamatan: nextProps.formDataAddress.kecamatan,
-	// 			kodepos: nextProps.formDataAddress.kodepos,
-	// 			address: nextProps.formDataAddress.address,
-	// 			isEdit: nextProps.formDataAddress.isEdit
-	// 		}
-	// 	});
-	// }
 
 	onChange(e) {
 		const name = e.target.name;
@@ -80,6 +64,10 @@ export default class NewAddressModalbox extends Component {
 	onChangeSelect(e) {
 		if (e.name === 'provinsi') {
 			this.getDistricts(e.value);
+			const enableGosend = e.label.toLowerCase().includes('jakarta');
+			this.setState({
+				enableGosend
+			});
 		}
 		
 		if (e.name === 'kecamatan') {
@@ -106,6 +94,13 @@ export default class NewAddressModalbox extends Component {
 		this.props.onSubmitAddress(formData);
 	}
 
+	onGeoLoad(lat, long, formattedAddress) {
+		this.setState({
+			formattedAddress, 
+			isEdit: true
+		});
+	}
+
 	getDistricts(cityProv) {
 		this.props.getDistricts(cityProv);
 	}
@@ -122,14 +117,12 @@ export default class NewAddressModalbox extends Component {
 	}
 
 	submit(formData) {
-		
 		this.onSubmitAddress(formData);
 	}
 
 	validateAndSubmit(e) {
 		e.preventDefault();
 		const { formData } = this.state;
-		console.log(formData);
 		this.validator.validateAll(formData).then(success => {
 			if (success) {
 				this.submit(formData);
@@ -147,10 +140,11 @@ export default class NewAddressModalbox extends Component {
 			errors,
 			gosendData
 		} = this.state;
+
 		return (
 			<Modal size='medium' shown={this.props.shown}>
 				<Modal.Header>
-					<div>{ this.props.isEdit ? 'Ubah Alamat' : 'Buat Alamat Baru'}</div>
+					<div>{ this.props.formDataAddress.isEdit ? 'Ubah Alamat' : 'Buat Alamat Baru'}</div>
 				</Modal.Header>
 				<Modal.Body>
 					<div className={styles.overflow} ref={(overflow) => { this.fieldOverflow = overflow; }}>
@@ -276,9 +270,9 @@ export default class NewAddressModalbox extends Component {
 												<Icon name='map-marker' />
 											</Level.Item>
 											<Level.Item>
-												Jalan Bangka II No.20, Pela Mampang, 
-												Mampang Prapatan, Kota Jakarta Selatan, 
-												DKI jakarta 12720
+												{
+													this.state.formattedAddress
+												}
 											</Level.Item>
 											<Level.Item>
 												<button className='font-small font-orange'>Ganti Lokasi</button>

@@ -1,6 +1,9 @@
 import { request } from '@/utils';
 import humps from 'lodash-humps';
 import { getPlaceOrderCart } from '@/state/Cart/actions';
+import {
+	getAvailablePaymentMethod
+} from '@/state/Payment/actions';
 import { 
 	ADDR_GET_ADDRESS,
 	ADDR_O2O_LIST,
@@ -88,7 +91,7 @@ const o2oProvinceReceived = (o2oProvinces) => ({
 	}
 });
 
-const getAddresses = (token) => dispatch => {
+const getAddresses = (token) => dispatch => new Promise((resolve, reject) => {
 	dispatch(addressesRequest(token));
 	const req = {
 		token, 
@@ -100,6 +103,20 @@ const getAddresses = (token) => dispatch => {
 		const address = response.data.data.map((value, index) => {
 			return humps(value);
 		}).filter(e => e.type === 'shipping');
+
+		let defaultAddress = [];	
+		if (address.length > 0) {
+
+			const minimumDateISO = Math.min(...address.map((value, index) => {
+				return Date.parse(value.attributes.createdTime);
+			}));
+			
+			defaultAddress = address
+								.filter(e => e.attributes.fgDefault === '1' || 
+										Date.parse(e.attributes.createdTime) === minimumDateISO
+								)[0];
+		}
+		resolve(defaultAddress);
 
 		const billing = response.data.data.map((value, index) => {
 			return humps(value);
@@ -120,23 +137,20 @@ const getAddresses = (token) => dispatch => {
 		}
 
 		dispatch(addressesReceived(address, billing, latesto2o));
+		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
 		console.log(error);
 	});
-};
+});
 
 const saveAddress = (token, formData, selectedAddress) => dispatch => {
-	
+	const cityProvince = formData.provinsi.split(',');
 	const req = {
 		token, 
 		path: `me/addresses/${formData.isEdit ? formData.id : ''}`,
-		method: formData.isEdit ? 'PUT' : 'POST'
-	}; 
-	
-	if (formData.isEdit) {
-		const cityProvince = formData.provinsi.split(',');
-		req.body = {
+		method: formData.isEdit ? 'PUT' : 'POST', 
+		body: {
 			data: {
 				type: 'shipping',
 				attributes: {
@@ -151,13 +165,16 @@ const saveAddress = (token, formData, selectedAddress) => dispatch => {
 					fg_default: 0
 				}
 			}
-		};
-	}
-	console.log(req);
+		}
+	}; 
+
 	request(req)
 	.then((response) => {
-		// dispatch(addressSave(formData));
-		dispatch(getPlaceOrderCart(token, selectedAddress));
+		if (formData.isEdit) {
+			dispatch(getPlaceOrderCart(token, selectedAddress));
+		}
+		
+		dispatch(getAddresses(token));
 	})
 	.catch((error) => {
 		console.log(error);
@@ -188,6 +205,7 @@ const getDistrict = (token, label) => dispatch => {
 		});
 		// }
 		dispatch(districtReceived(district));
+		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
 		console.log(error);
@@ -214,6 +232,7 @@ const getCityProvince = (token) => dispatch => {
 			cityProvince.push(datas);
 		});
 		dispatch(cityProvinceReceived(cityProvince));
+		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
 		console.log(error);
@@ -231,6 +250,7 @@ const getO2OList = (token, province = 6) => dispatch => {
 	.then((response) => {
 		const result = response.data.data;
 		dispatch(o2oListReceived(result));
+		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
 		console.log(error);
@@ -257,6 +277,7 @@ const getO2OProvinces = (token) => dispatch => {
 			});
 		});
 		dispatch(o2oProvinceReceived(o2oProvinces));
+		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
 		console.log(error);

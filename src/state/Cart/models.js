@@ -68,9 +68,7 @@ const setCartModel = (jsoApiResponse) => {
 				maxQty: parseInt(prods.attributes.max_quantity, 10),
 				image: prods.attributes.thumbnail_url,
 				id: parseInt(prodRel.id, 10),
-				attribute: [
-					'color: white'
-				],
+				attribute: [],
 			};
 		});
 		
