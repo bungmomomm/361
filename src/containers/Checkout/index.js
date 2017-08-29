@@ -788,7 +788,7 @@ class Checkout extends Component {
 					<ElockerModalbox closeModalElocker={this.closeModalElocker} shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} o2oProvinces={!o2oProvinces ? null : o2oProvinces} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
 					<PaymentSuccessModalbox shown={this.props.payments.paymentSuccess} />
 					<PaymentErrorModalbox shown={this.props.payments.paymentError} />
-					<VerifikasiNoHandponeModalbox shown />
+					<VerifikasiNoHandponeModalbox />
 					<Vt3dsModalBox
 						shown={this.props.payments.show3ds}
 						src={this.props.payments.vtRedirectUrl}
