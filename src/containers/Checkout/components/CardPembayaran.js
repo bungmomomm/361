@@ -222,13 +222,15 @@ export default class CardPembayaran extends Component {
 								} else {
 									return (
 										<div key={index}>
-											<Select emptyFilter={false} name='cc' selectedLabel='-- Tambah Baru' options={option.cards} onChange={this.onSelectCard} />
+											<InputGroup>
+												<Select emptyFilter={false} name='cc' selectedLabel='-- Tambah Baru' options={option.cards} onChange={this.onSelectCard} />
+											</InputGroup>
 											{ renderIf(selectedCard)(
-												<Row gapless>
-													<Col grid={4}>
+												<Row>
+													<Col grid={3}>
 														<Input type='number' placeholder='cvv' onBlur={this.onCardCvvChange} />
 													</Col>
-													<Col grid={4}>
+													<Col grid={3}>
 														<Sprites name='cvv' />
 													</Col>
 												</Row>

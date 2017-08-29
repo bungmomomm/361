@@ -21,6 +21,14 @@
 	pointer-events: none;
 }
 
+.disabled{
+	cursor: not-allowed;
+	.checkboxText{
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+}
+
 .Checkbox:checked + .checkboxInput{
 	background-color: color(black);
 	border-color: color(black);
