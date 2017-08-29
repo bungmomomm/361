@@ -80,7 +80,7 @@ const getCart = token => dispatch => {
 	});
 };
 
-const getPlaceOrderCart = (token, address, billing = false) => dispatch => {
+const getPlaceOrderCart = (token, address, billing = false) => dispatch => new Promise((resolve, reject) => {
 	dispatch(placeOrderRequest(token, address));
 	console.log(address);
 	const data = setPayloadPlaceOrder(address, billing);
@@ -108,15 +108,18 @@ const getPlaceOrderCart = (token, address, billing = false) => dispatch => {
 			dispatch(paymentInfoUpdated(getCartPaymentData(res.data.data.attributes.total_price, 'order')));
 			dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, response.data.data.attributes.total_price.count));
 			dispatch(getAvailablePaymentMethod(token));
+			resolve(setCartModel(res.data));
 		})
 		.catch((error) => {
 			console.log(error);
+			reject(error);
 		});
 	})
 	.catch((error) => {
 		console.log(error);
+		reject(error);
 	});
-};
+});
 
 const deleteCart = (token, productId, props) => dispatch => {
 	dispatch(deleteRequest(productId));

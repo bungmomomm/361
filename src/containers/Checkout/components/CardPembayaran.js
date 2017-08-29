@@ -7,6 +7,7 @@ import { paymentGroupName } from '@/state/Payment/constants';
 import { 
 	Col,
 	CreditCardInput,
+	CreditCardRadio,
 	Row,
 	Tooltip, 
 	Level, 
@@ -16,7 +17,7 @@ import {
 	Card, 
 	Button, 
 	Checkbox,
-	Radio,
+	// Radio,
 	Sprites
 } from '@/components';
 
@@ -99,6 +100,7 @@ export default class CardPembayaran extends Component {
 	}
 
 	onNewCreditCard(event) {
+		console.log(event, this);
 		this.props.onNewCreditCard(event);
 	}
 
@@ -205,7 +207,7 @@ export default class CardPembayaran extends Component {
 										return (
 											<div>
 												<InputGroup>
-													<Radio key={cardIndex} name='cc' variant='list' creditCard value={card.value} content={card.label} onChange={this.onSelectCard} checked={card.selected} />
+													<CreditCardRadio key={cardIndex} name='cc' variant='list' creditCard value={card.value} content={card.label} onChange={this.onSelectCard} checked={card.selected} />
 												</InputGroup>
 												{ renderIf(card.selected)(
 													<Row>
@@ -239,7 +241,9 @@ export default class CardPembayaran extends Component {
 										</div>
 									);
 								}
-								return option;
+								return (
+									<div key={index} />
+								);
 							})
 						}
 					</InputGroup>
@@ -312,7 +316,7 @@ export default class CardPembayaran extends Component {
 						{ renderIf(this.props.payments.openNewCreditCard && selectedPayment.value === paymentGroupName.CREDIT_CARD)(
 							<div>
 								<InputGroup>
-									<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onBlur={this.onCardNumberChange} />
+									<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onChange={this.onCardNumberChange} />
 								</InputGroup>
 								<label htmlFor='masa-berlaku'>Masa Berlaku</label>
 								<Level padded>

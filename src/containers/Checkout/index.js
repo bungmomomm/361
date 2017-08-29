@@ -236,11 +236,11 @@ class Checkout extends Component {
 				selectedAddress: address
 			});
 		}
-		dispatch(getPlaceOrderCart(this.state.token, address, billing));
 		this.setState({
 			enablePesananPengiriman: true,
 			enablePembayaran: true,
 		});
+		return dispatch(getPlaceOrderCart(this.state.token, address, billing));
 	}
 
 	onChangeAddress(address, flagAdd) {
@@ -301,7 +301,7 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 		const option = event.value;
 		if (option) {
-			const selectedPaymentOption = this.props.payments.paymentMethods.payments[paymentMethod.id].paymentItems.filter((item) => parseInt(item.value, 10) === parseInt(option, 10)).pop();
+			const selectedPaymentOption = this.props.payments.paymentMethods.payments[paymentMethod.id].paymentItems.filter((item) => parseInt(item.value, 10) === parseInt(option, 10))[0];
 			let cardNumber = '';
 			let bankName = '';
 			switch (selectedPaymentOption.paymentMethod) {
@@ -324,7 +324,7 @@ class Checkout extends Component {
 
 	onSelectCard(event) {
 		this.props.dispatch(selectCreditCard(event));
-		const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems.pop();
+		const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
 		this.props.dispatch(applyBin(this.state.token, selectedPaymentOption.value, event, ''));
 	}
 
@@ -520,10 +520,13 @@ class Checkout extends Component {
 			enableNewAddress: false
 		});
 	}
-	
 	onCardNumberChange(event) {
 		console.log(event, this.state.test);
-		this.props.dispatch(changeCreditCardNumber(event.target.value));
+		if (event.valid) {
+			this.props.dispatch(changeCreditCardNumber(event.ccNumber));
+			const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
+			this.props.dispatch(applyBin(this.state.token, selectedPaymentOption.value, event, ''));
+		}
 	}
 	onCardMonthChange(monthData) {
 		console.log(event, this.state.test);
@@ -603,11 +606,12 @@ class Checkout extends Component {
 			tempSelectedAddress.attributes.is_dropshipper = this.state.dropshipper;
 			tempSelectedAddress.attributes.dropship_name = this.state.formDropshipper.dropship_name;
 			tempSelectedAddress.attributes.dropship_phone = this.state.formDropshipper.dropship_phone;
-			this.onChoisedAddress(tempSelectedAddress);
-			this.setState({
-				isValidPayment: true,
+			this.onChoisedAddress(tempSelectedAddress).then(() => {
+				this.setState({
+					isValidPayment: true,
+				});
+				this.onDoPayment();
 			});
-			this.onDoPayment();
 		} else {
 			this.checkDropship();
 		}
