@@ -41,20 +41,18 @@ export default class Dropshipper extends Component {
 								name='dropship_name' 
 								placeholder='Nama Dropshipper' 
 								onBlur={this.onChange}
-								errors={!this.props.errorDropship ? false : this.props.errorDropship.has('dropship_name')}
-								color={!this.props.errorDropship ? 'black' : (this.props.errorDropship.first('dropship_name') ? 'red' : 'black')}
-								message={!this.props.errorDropship ? '' : (this.props.errorDropship.first('dropship_name') ? 'Nama dropshipper harus diisi' : '')}
+								color={this.props.errorDropship && this.props.errorDropship.has('dropship_name') ? 'red' : null}
+								message={this.props.errorDropship && this.props.errorDropship.first('dropship_name') ? 'Nama dropshipper harus diisi' : null}
 							/>
 						</InputGroup>
 						<InputGroup>
 							<Input 
 								type='number' 
 								name='dropship_phone' 
-								placeholder='No Handphone' 
+								placeholder='No Handphone'
 								onBlur={this.onChange}
-								errors={!this.props.errorDropship ? false : this.props.errorDropship.has('dropship_phone')}
-								color={!this.props.errorDropship ? 'black' : (this.props.errorDropship.first('dropship_phone') ? 'red' : 'black')}
-								message={!this.props.errorDropship ? '' : (this.props.errorDropship.first('dropship_phone') ? 'Salah format, minimal 6 maksimal 14 digit' : '')}
+								color={this.props.errorDropship && this.props.errorDropship.first('dropship_phone') ? 'red' : null}
+								message={this.props.errorDropship && this.props.errorDropship.first('dropship_phone') ? 'Salah format, minimal 6 maksimal 14 digit' : null}
 							/>
 						</InputGroup>
 					</div>

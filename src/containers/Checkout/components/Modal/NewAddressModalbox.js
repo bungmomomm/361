@@ -47,6 +47,7 @@ export default class NewAddressModalbox extends Component {
 			errors: this.validator.errorBag,
 			district: {},
 			enableGosend: false,
+			inGosendArea: false,
 			gosendData: {
 				center: {
 					lat: this.props.formDataAddress.latitude,
@@ -68,6 +69,14 @@ export default class NewAddressModalbox extends Component {
 		this.kecamatan = null;
 	}
 
+	componentWillMount() {
+		if (this.props.formDataAddress.kotProv.toLowerCase().includes('jakarta')) {
+			this.setState({
+				inGosendArea: true
+			});
+		}
+	}
+
 	onChange(e) {
 		const name = e.target.name;
 		const value = e.target.value;
@@ -75,26 +84,7 @@ export default class NewAddressModalbox extends Component {
 	}
 
 	onChangeSelect(e) {
-		if (e.name === 'provinsi') {
-			this.getDistricts(e.value);
-			const enableGosend = e.label.toLowerCase().includes('jakarta');
-			this.setState({
-				enableGosend
-			});
-		}
-		
-		if (e.name === 'kecamatan') {
-			const PolygonResult = this.getPolygonData(e.value.toLowerCase());
-			
-			// if (PolygonResult.length > 0) {
-			this.setState({
-				gosendData: {
-					center: PolygonResult.center,
-					location_coords: PolygonResult.location_coords
-				}
-			});
-			// }	
-		}
+		this.gosendCheck(e);
 		this.setErrors(e.name, e.value);
 	}
 
@@ -165,6 +155,30 @@ export default class NewAddressModalbox extends Component {
 		});
 	}
 
+	gosendCheck(e) {
+		if (e.name === 'provinsi') {
+			this.getDistricts(e.value);
+			const enableGosend = e.label.toLowerCase().includes('jakarta');
+			this.setState({
+				enableGosend
+			});
+		}
+		
+		if (e.name === 'kecamatan') {
+			const PolygonResult = this.getPolygonData(e.value.toLowerCase());
+			
+			// if (PolygonResult.length > 0) {
+			this.setState({
+				inGosendArea: true,
+				gosendData: {
+					center: PolygonResult.center,
+					location_coords: PolygonResult.location_coords
+				}
+			});
+			// }	
+		}
+	}
+
 	submit(formData) {
 		this.onSubmitAddress(formData);
 	}
@@ -188,6 +202,7 @@ export default class NewAddressModalbox extends Component {
 		const { 
 			errors,
 			gosendData,
+			inGosendArea,
 			// enableGosend,
 			isPinPoint
 		} = this.state;
@@ -307,7 +322,7 @@ export default class NewAddressModalbox extends Component {
 							</small>
 						</Alert>
 						{
-							renderIf(gosendData.center)(
+							renderIf(gosendData.center && inGosendArea)(
 								<Gosend
 									zoom={15} 
 									center={gosendData.center} 
@@ -319,7 +334,6 @@ export default class NewAddressModalbox extends Component {
 						}
 						{
 							renderIf(gosendData.isFromCustomer && (this.props.formDataAddress.isEdit || isPinPoint))(
-
 								<div>
 									<Gosend
 										zoom={15} 
