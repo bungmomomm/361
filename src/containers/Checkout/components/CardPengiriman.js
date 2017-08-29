@@ -48,7 +48,7 @@ export default class CardPengiriman extends Component {
 					info: `${value.attributes.address}, ${value.attributes.district}, ${value.attributes.city}, ${value.attributes.province}`
 				});
 			});
-			console.log(address);
+			// console.log(address);
 			this.setState({
 				shipping: address
 			});

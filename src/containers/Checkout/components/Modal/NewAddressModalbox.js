@@ -20,13 +20,15 @@ export default class NewAddressModalbox extends Component {
 		this.validator = new Validator({
 			name: 'required',
 			penerima: 'required',
-			no_hp: 'required|digits:6|max:14',
+			no_hp: 'required|min:6|max:14|regex:^([0-9]+)$',
 			provinsi: 'required',
 			kecamatan: 'required',
 			kodepos: 'required',
 			address: 'required',
-			id: 'required',
-			isEdit: 'required'
+			id: 'min:1',
+			isEdit: 'min:1',
+			longitude: 'min:1',
+			latitude: 'min:1'
 		});
 
 		this.state = {
@@ -39,13 +41,23 @@ export default class NewAddressModalbox extends Component {
 				kecamatan: this.props.formDataAddress.kecamatan,
 				kodepos: this.props.formDataAddress.kodepos,
 				address: this.props.formDataAddress.address,
-				isEdit: this.props.formDataAddress.isEdit || false
+				isEdit: this.props.formDataAddress.isEdit || false,
+				latitude: this.props.formDataAddress.latitude || null,
+				longitude: this.props.formDataAddress.longitude || null,
 			},
 			errors: this.validator.errorBag,
 			district: {},
 			enableGosend: false,
-			gosendData: {}, 
-			formattedAddress: ''
+			gosendData: {
+				center: {
+					lat: this.props.formDataAddress.latitude,
+					lng: this.props.formDataAddress.longitude,
+				},
+				location_coords: null,
+				isFromCustomer: this.props.formDataAddress.longitude && this.props.formDataAddress.latitude
+			}, 
+			formattedAddress: '', 
+			isPinPoint: false
 		};
 		this.onChange = this.onChange.bind(this);
 		this.onChangeSelect = this.onChangeSelect.bind(this);
@@ -53,11 +65,11 @@ export default class NewAddressModalbox extends Component {
 		this.onGeoLoad = this.onGeoLoad.bind(this);
 		this.validateAndSubmit = this.validateAndSubmit.bind(this);
 		this.getDistricts = this.getDistricts.bind(this);
+		this.onChangePoint = this.onChangePoint.bind(this);
 		this.kecamatan = null;
 	}
 
 	onChange(e) {
-		console.log(e);
 		const name = e.target.name;
 		const value = e.target.value;
 		this.setErrors(name, value);
@@ -73,13 +85,15 @@ export default class NewAddressModalbox extends Component {
 		}
 		
 		if (e.name === 'kecamatan') {
-			this.kecamatan = humps(e.value.toLowerCase());
+			// this.kecamatan = humps(e.value.toLowerCase());
 			
-			const PolygonResult = Polygon.map((option) => {
-				return option[this.kecamatan] ? option : null;
-			}).filter((option) => {
-				return option;
-			});
+			// const PolygonResult = Polygon.map((option) => {
+			// 	return option[this.kecamatan] ? option : null;
+			// }).filter((option) => {
+			// 	return option;
+			// });
+
+			const PolygonResult = this.getPolygonData(e.value.toLowerCase());
 			
 			if (PolygonResult.length > 0) {
 				this.setState({
@@ -98,11 +112,53 @@ export default class NewAddressModalbox extends Component {
 	}
 
 	onGeoLoad(lat, long, formattedAddress) {
-		console.log(formattedAddress);
+		const formData = this.state.formData;
+		const gosendData = this.state.gosendData;
 		this.setState({
 			formattedAddress, 
-			isEdit: true
+			isPinPoint: true, 
+			formData: {
+				...formData,
+				longitude: long.toString(), 
+				latitude: lat.toString()
+			},
+			gosendData: {
+				...gosendData,
+				isFromCustomer: true
+			}
 		});
+	}
+	onChangePoint() {
+		const PolygonResult = this.getPolygonData(this.props.formDataAddress.kecamatan.toLowerCase());
+		const gosendData = this.state.gosendData;
+		const center = PolygonResult.length > 0 ? PolygonResult[0][this.kecamatan].center : [];
+		const locationCoords = PolygonResult.length > 0 ? PolygonResult[0][this.kecamatan].location_coords : [];
+		this.setState({
+			gosendData: {
+				...gosendData,
+				isFromCustomer: false,
+				center,
+				location_coords: locationCoords
+			}
+		});
+	}
+
+	getPolygonData(kecamatan) {
+		this.kecamatan = humps(kecamatan);
+		// console.log(this.kecamatan);
+			
+		const data = Polygon.map((option) => {
+			return option[this.kecamatan] ? option : null;
+		}).filter((option) => {
+			return option;
+		});
+		
+		if (data.length > 0) {
+			return data;
+		}
+
+		return [];
+		
 	}
 
 	getDistricts(cityProv) {
@@ -143,10 +199,10 @@ export default class NewAddressModalbox extends Component {
 		const { 
 			errors,
 			gosendData,
-			enableGosend, 
-			isEdit
+			// enableGosend,
+			isPinPoint
 		} = this.state;
-		console.log(this.state);
+		
 		return (
 			<Modal size='medium' shown={this.props.shown}>
 				<Modal.Header>
@@ -190,7 +246,7 @@ export default class NewAddressModalbox extends Component {
 								placeholder='Contoh : 08123456789'
 								name='no_hp'
 								error={errors.has('no_hp')}
-								message={errors.has('name') ? 'No Hp field is required.' : ''}
+								message={errors.first('no_hp')}
 								type='number'
 								value={typeof this.props.formDataAddress.noHP !== 'undefined' ? this.props.formDataAddress.noHP : ''}
 							/>
@@ -237,7 +293,7 @@ export default class NewAddressModalbox extends Component {
 								type='number'
 								onChange={this.onChange}
 								error={errors.has('kodepos')}
-								message={errors.has('kodepos') ? 'Kode Pos field is required.' : ''}
+								message={errors.first('kodepos')}
 								value={typeof this.props.formDataAddress.kodepos !== 'undefined' ? this.props.formDataAddress.kodepos : ''}
 							/>
 						</InputGroup>
@@ -263,17 +319,18 @@ export default class NewAddressModalbox extends Component {
 							</small>
 						</Alert>
 						{
-							renderIf(enableGosend)(
+							renderIf(gosendData.center)(
 								<Gosend
 									zoom={15} 
 									center={gosendData.center} 
 									polygonArea={gosendData.location_coords} 
 									onGeoLoad={this.onGeoLoad}
+									isFromCustomer={gosendData.isFromCustomer}
 								/>
 							)
 						}
 						{
-							renderIf(enableGosend && isEdit)(
+							renderIf(gosendData.isFromCustomer && (this.props.formDataAddress.isEdit || isPinPoint))(
 								<div>
 									<Segment row>
 										<Level padded>
@@ -286,7 +343,7 @@ export default class NewAddressModalbox extends Component {
 												}
 											</Level.Item>
 											<Level.Item>
-												<button className='font-small font-orange'>Ganti Lokasi</button>
+												<button onClick={this.onChangePoint} className='font-small font-orange'>Ganti Lokasi</button>
 											</Level.Item>
 										</Level>
 									</Segment>

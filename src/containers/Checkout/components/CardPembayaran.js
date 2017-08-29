@@ -247,7 +247,7 @@ export default class CardPembayaran extends Component {
 				break;	
 			} 
 		}
-		console.log(this.props.tahun);
+		// console.log(this.props.tahun);
 		return (
 			<Card>
 				<div className={styles.overflow}>

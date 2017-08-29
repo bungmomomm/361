@@ -103,6 +103,7 @@ const getAddresses = (token) => dispatch => new Promise((resolve, reject) => {
 		const address = response.data.data.map((value, index) => {
 			return humps(value);
 		}).filter(e => e.type === 'shipping');
+		console.log(address);
 
 		let defaultAddress = [];	
 		if (address.length > 0) {
@@ -162,7 +163,10 @@ const saveAddress = (token, formData, selectedAddress) => dispatch => {
 					district: formData.kecamatan.trim(),
 					zipcode: formData.kodepos,
 					phone: formData.no_hp,
-					fg_default: 0
+					fg_default: 1,
+					longitude: formData.longitude,
+					latitude: formData.latitude,
+					country: 'ID'
 				}
 			}
 		}
