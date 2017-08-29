@@ -143,8 +143,6 @@ export default class CardPembayaran extends Component {
 	}
 
 	onTermChange(event) {
-		console.log(event);
-		console.log(this.state);
 		this.props.onTermChange(event.value);
 	}
 
@@ -303,53 +301,24 @@ export default class CardPembayaran extends Component {
 
 				paymentOptions = (
 					<InputGroup>
-						{ 
-							selectedPayment.paymentItems.map((option, index) => {
-								if (option.cards.length < 1) {
-									option.cards.map((card, cardIndex) => {
-										return (
-											<div>
-												<InputGroup>
-													<CreditCardRadio key={cardIndex} name='cc' variant='list' creditCard value={card.value} content={card.label} onChange={this.onSelectCard} checked={card.selected} />
-												</InputGroup>
-												{ renderIf(card.selected)(
-													<Row gapless>
-														<Col grid={4}>
-															<Input type='number' placeholder='cvv' onBlur={this.onCardCvvChange} />
-														</Col>
-														<Col grid={4}>
-															<Sprites name='cvv' />
-														</Col>
-													</Row>
-												) }
-											</div>
-										);
-									});
-								} else {
-									return (
-										<div key={index}>
-											<InputGroup>
-												<p>Jenis Kartu</p>
-												<Select emptyFilter={false} name='cc' selectedLabel='Pilih Jenis Kartu' options={option.cards} onChange={this.onSelectCard} />
-											</InputGroup>
-											<InputGroup>
-												{ renderIf(selectedCard)(
-													<Row>
-														<Col grid={4}>
-															<Input type='number' placeholder='cvv' onBlur={this.onCardCvvChange} />
-														</Col>
-														<Col grid={4}>
-															<Sprites name='cvv' />
-														</Col>
-													</Row>
-												) }
-											</InputGroup>
-										</div>
-									);
-								}
-								return option.description;
-							})
-						}
+						<InputGroup>
+							<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onChange={this.onCardNumberChange} />
+						</InputGroup>
+						<label htmlFor='masa-berlaku'>Masa Berlaku</label>
+						<Level padded>
+							<Level.Item>
+								<Select top selectedLabel='-- Bulan' options={Bulan} onChange={this.onCardMonthChange} />
+							</Level.Item>
+							<Level.Item>
+								<Select top selectedLabel='-- Tahun' options={this.props.tahun} onChange={this.onCardYearChange} />
+							</Level.Item>
+							<Level.Item>
+								<Input type='number' placeholder='cvv' onBlur={this.onCardCvvChange} />
+							</Level.Item>
+							<Level.Item>
+								<Sprites name='cvv' />
+							</Level.Item>
+						</Level>
 					</InputGroup>
 				);
 				break;
