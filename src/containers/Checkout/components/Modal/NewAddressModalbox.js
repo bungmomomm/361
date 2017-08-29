@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import styles from '../../Checkout.scss';
-import humps from 'lodash-humps';
 import { Validator } from 'ree-validate';
 
 // component load
@@ -57,7 +56,6 @@ export default class NewAddressModalbox extends Component {
 	}
 
 	onChange(e) {
-		console.log(e);
 		const name = e.target.name;
 		const value = e.target.value;
 		this.setErrors(name, value);
@@ -73,22 +71,21 @@ export default class NewAddressModalbox extends Component {
 		}
 		
 		if (e.name === 'kecamatan') {
-			this.kecamatan = humps(e.value.toLowerCase());
-			
+			this.kecamatan = e.value.toLowerCase();
+			const kecamatan = this.kecamatan.toLowerCase().replace(/\W+(.)/g, (match, chr) => {
+				return chr.toUpperCase();
+			});
 			const PolygonResult = Polygon.map((option) => {
-				return option[this.kecamatan] ? option : null;
+				return option[kecamatan] ? option : null;
 			}).filter((option) => {
 				return option;
 			});
-			
-			if (PolygonResult.length > 0) {
-				this.setState({
-					gosendData: {
-						center: PolygonResult[0][this.kecamatan].center,
-						location_coords: PolygonResult[0][this.kecamatan].location_coords
-					}
-				});
-			}	
+			this.setState({
+				gosendData: {
+					center: PolygonResult[0][kecamatan].center,
+					location_coords: PolygonResult[0][kecamatan].location_coords
+				}
+			});
 		}
 		this.setErrors(e.name, e.value);
 	}
@@ -98,7 +95,6 @@ export default class NewAddressModalbox extends Component {
 	}
 
 	onGeoLoad(lat, long, formattedAddress) {
-		console.log(formattedAddress);
 		this.setState({
 			formattedAddress, 
 			isEdit: true
@@ -142,11 +138,9 @@ export default class NewAddressModalbox extends Component {
 	render() {
 		const { 
 			errors,
-			gosendData,
-			enableGosend, 
-			isEdit
+			gosendData
 		} = this.state;
-		console.log(this.state);
+
 		return (
 			<Modal size='medium' shown={this.props.shown}>
 				<Modal.Header>
@@ -263,18 +257,13 @@ export default class NewAddressModalbox extends Component {
 							</small>
 						</Alert>
 						{
-							renderIf(enableGosend)(
-								<Gosend
-									zoom={15} 
-									center={gosendData.center} 
-									polygonArea={gosendData.location_coords} 
-									onGeoLoad={this.onGeoLoad}
-								/>
-							)
-						}
-						{
-							renderIf(enableGosend && isEdit)(
+							renderIf(gosendData)(
 								<div>
+									<Gosend
+										zoom={15} 
+										center={gosendData.center} 
+										polygonArea={gosendData.location_coords} 
+									/>
 									<Segment row>
 										<Level padded>
 											<Level.Item>
