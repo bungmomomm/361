@@ -21,23 +21,26 @@
 
 .selectedContainer{
 	position: relative;
-	width: 100%;
+	display: flex;
+	flex-basis: 0;
+	flex-grow: 3;
+	flex-shrink: 1;
+	flex-direction: column;
+	position: relative;
 }
 
 .horizontal{
 	display: flex;
-	flex-flow: row wrap;
-	align-items: center;
 	label{
-		margin-bottom: 0px;
-		width: 30%;
-		display: block;
+		flex-basis: 0;
+		flex-grow: 1;
+		flex-shrink: 0;
+		margin-right: rem(10px);
+		text-align: left;
+		padding-top: rem(10px);
 	}
-	.selectedContainer{
+	selectedContainer{
 		flex: 1;
-	}
-	.message{
-		flex: 0 0 100%;
 	}
 }
 

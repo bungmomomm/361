@@ -49,7 +49,7 @@ const paymentMethod = method => {
 		value: method.id,
 		label: method.attributes.title,
 		info: info ? info.info[0] : '',
-		image: info ? info.image : ''
+		sprites: method.id
 	};
 };
 
