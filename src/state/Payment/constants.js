@@ -23,7 +23,8 @@ const paymentGroupName = {
 	INSTALLMENT: 'installment',
 	CONVENIENCE_STORE: 'convenience_store',
 	E_MONEY: 'e_money',
-	INTERNET_BANKING: 'internet_banking'
+	INTERNET_BANKING: 'internet_banking',
+	COD: 'cod'
 };
 
 const paymentMethodName = {
@@ -31,7 +32,8 @@ const paymentMethodName = {
 	BANK_TRANSFER: 'bank_transfer',
 	COMMERCE_VERITRANS: 'commerce_veritrans',
 	COMMERCE_VERITRANS_INSTALLMENT: 'commerce_veritrans_installment',
-	POS_PAY: 'pos_pay'
+	POS_PAY: 'pos_pay',
+	COMMERCE_COD: 'commerce_cod'
 };
 
 

@@ -303,7 +303,12 @@ class Checkout extends Component {
 	}
 
 	onPaymentMethodChange(event) {
-		this.props.dispatch(changePaymentMethod(event.value, this.props.payments.paymentMethods));
+		this.props.dispatch(changePaymentMethod(event.value, this.props.payments.paymentMethods)).then(() => {
+			if (event.value === 'cod') {
+				const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
+				this.props.dispatch(changePaymentOption(selectedPaymentOption));
+			}
+		});
 	}
 
 	onPaymentOptionChange(event, paymentMethod) {

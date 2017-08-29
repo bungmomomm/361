@@ -194,7 +194,12 @@ const changePaymentOption = (selectedPaymentOption) => dispatch => {
 const changePaymentMethod = (paymentMethod, data) => dispatch => {
 	const selectedPayment = data.payments[paymentMethod];
 	dispatch(paymentMethodChanged(selectedPayment));
-	dispatch(changePaymentOption(false));
+	if (selectedPayment.value === 'cod') {
+		const selectedPaymentOption = selectedPayment.paymentItems[0];
+		dispatch(changePaymentOption(selectedPaymentOption));
+	} else {
+		dispatch(changePaymentOption(false));
+	}
 };
 
 const deselectCreditCard = () => dispatch => {
