@@ -46,6 +46,7 @@ import {
 	changeCreditCardMonth,
 	changeCreditCardCvv,
 	vtModalBoxOpen,
+	ecashModalBoxOpen,
 	paymentError,
 	pay,
 	applyBin
@@ -54,15 +55,10 @@ import {
 	paymentMethodName
 } from '@/state/Payment/constants';
 
-import { actions as globalAction } from '@/state/Global';
-
-import { Veritrans } from '@/utils/vt';
-
 class Checkout extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.Veritrans = Veritrans();
 		this.validator = new Validator({
 			dropship_name: 'required|max:100',
 			dropship_phone: 'required|numeric|min:6|max:14',
@@ -424,7 +420,7 @@ class Checkout extends Component {
 					)
 				);
 			} else {
-				dispatch(vtModalBoxOpen(true));
+				dispatch(vtModalBoxOpen(false));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
 			}
 		};
@@ -487,25 +483,33 @@ class Checkout extends Component {
 
 	onMandiriEcashClose() {
 		const { dispatch } = this.props;
-		dispatch(globalAction.dialogOpen(false));
+		dispatch(ecashModalBoxOpen(false));
 	}
 
 	onDoPayment() {
 		const { dispatch } = this.props;
-		switch (this.props.payments.paymentMethod) {
-		case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
-		case paymentMethodName.COMMERCE_VERITRANS:
-			this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
-			break;
-		default:
-			dispatch(
-				pay(
-					this.state.token, 
-					this.props.soNumber, 
-					this.props.payments.selectedPaymentOption
-				)
-			);
-			break;
+		if (typeof this.props.payments.paymentMethod !== 'undefined') {
+			let mode = 'complete';		
+			switch (this.props.payments.paymentMethod) {
+			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
+			case paymentMethodName.COMMERCE_VERITRANS:
+				this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
+				break;
+			default:
+				if (this.props.payments.selectedPaymentOption && this.props.payments.selectedPaymentOption.uniqueConstant === 'mandiri_ecash') {
+					mode = 'mandiri_ecash';
+				}
+				dispatch(
+					pay(
+						this.state.token, 
+						this.props.soNumber, 
+						this.props.payments.selectedPaymentOption,
+						false,
+						mode
+					)
+				);
+				break;
+			}
 		}
 	}
 
@@ -589,6 +593,7 @@ class Checkout extends Component {
 			this.setState({
 				isValidDropshipper: true
 			});
+			this.onDoPayment();
 		}
 	}
 
@@ -602,6 +607,7 @@ class Checkout extends Component {
 			this.setState({
 				isValidPayment: true,
 			});
+			this.onDoPayment();
 		} else {
 			this.checkDropship();
 		}
@@ -759,7 +765,6 @@ class Checkout extends Component {
 Checkout.propTypes = {
 	cookies: instanceOf(Cookies).isRequired
 };
-
 
 const mapStateToProps = (state) => {
 	console.log(state.addresses.o2o);

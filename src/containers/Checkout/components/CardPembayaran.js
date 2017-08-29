@@ -6,6 +6,7 @@ import { paymentGroupName } from '@/state/Payment/constants';
 // component load
 import { 
 	Col,
+	CreditCardInput,
 	Row,
 	Tooltip, 
 	Level, 
@@ -125,8 +126,7 @@ export default class CardPembayaran extends Component {
 	}
 
 	handleSubmit(event) {
-		console.log(this.state);
-		event.preventDefault();
+		event.preventDefault(this);
 	}
 
 	submitPayment() {
@@ -147,6 +147,7 @@ export default class CardPembayaran extends Component {
 			paymentMethods, 
 			loading,
 			selectedPayment,
+			twoClickEnabled,
 			selectedCard 
 		} = this.props.payments;
 		let couponId = false;
@@ -207,7 +208,7 @@ export default class CardPembayaran extends Component {
 													<Radio key={cardIndex} name='cc' variant='list' creditCard value={card.value} content={card.label} onChange={this.onSelectCard} checked={card.selected} />
 												</InputGroup>
 												{ renderIf(card.selected)(
-													<Row gapless>
+													<Row>
 														<Col grid={4}>
 															<Input type='number' placeholder='cvv' onBlur={this.onCardCvvChange} />
 														</Col>
@@ -225,9 +226,9 @@ export default class CardPembayaran extends Component {
 											<InputGroup>
 												<Select emptyFilter={false} name='cc' selectedLabel='-- Tambah Baru' options={option.cards} onChange={this.onSelectCard} />
 											</InputGroup>
-											{ renderIf(selectedCard)(
+											{ renderIf((selectedCard && twoClickEnabled))(
 												<Row>
-													<Col grid={3}>
+													<Col grid={4}>
 														<Input type='number' placeholder='cvv' onBlur={this.onCardCvvChange} />
 													</Col>
 													<Col grid={3}>
@@ -249,7 +250,6 @@ export default class CardPembayaran extends Component {
 				break;	
 			} 
 		}
-		console.log(this.props.tahun);
 		return (
 			<Card>
 				<div className={styles.overflow}>
@@ -312,7 +312,7 @@ export default class CardPembayaran extends Component {
 						{ renderIf(this.props.payments.openNewCreditCard && selectedPayment.value === paymentGroupName.CREDIT_CARD)(
 							<div>
 								<InputGroup>
-									<Input placeholder='Masukkan Nomor Kartu' sprites='payment-option' creditCard onBlur={this.onCardNumberChange} />
+									<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onBlur={this.onCardNumberChange} />
 								</InputGroup>
 								<label htmlFor='masa-berlaku'>Masa Berlaku</label>
 								<Level padded>
