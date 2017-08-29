@@ -37,8 +37,10 @@ export default class CardPengiriman extends Component {
 		this.openModal = this.openModal.bind(this);
 	}
 
-	componentWillMount() {
-		const shipping = this.props.addresses;
+	componentWillMount() {}
+
+	componentWillReceiveProps(nextProps) {
+		const shipping = nextProps.addresses;
 		const address = [];
 		if (typeof shipping !== 'undefined') {
 			shipping.forEach((value, index) => {
@@ -52,7 +54,6 @@ export default class CardPengiriman extends Component {
 				shipping: address
 			});
 		}
-
 	}
 
 	onChoisedAddress(dataChoised) {
@@ -120,25 +121,28 @@ export default class CardPengiriman extends Component {
 				iconPosition='left'
 			/>
 		);
-
+		
 		return (
 			<Tabs tabActive={0} stretch onAfterChange={this.onGetListO2o} >
 				<Tabs.Panel title='Kirim ke Alamat' sprites='truck-off' spritesActive='truck-on'>
 					<Alert align='center' color='yellow'>
 						Gratis ongkos kirim hingga Rp 15,000 untuk minimal pembelian sebesar Rp 100,000
 					</Alert>
-					<Segment>
-						<InputGroup>
-							<Select 
-								name='alamat'
-								filter 
-								selectedLabel='-- Pilih Alamat Lainnya' 
-								options={this.state.shipping} 
-								onChange={this.onChoisedAddress}
-								addButton={addMoreAddress}
-							/>
-						</InputGroup>
-						{
+					{
+						renderIf(this.state.shipping.length > 0)(
+							<Segment>
+								<InputGroup>
+									<Select 
+										name='alamat'
+										filter 
+										selectedLabel='-- Pilih Alamat Lainnya' 
+										options={this.state.shipping} 
+										onChange={this.onChoisedAddress}
+										addButton={addMoreAddress}
+									/>
+								</InputGroup>
+						
+								{
 							!this.state.selectedAddress ? null : 
 							<div>
 								<Level>
@@ -154,7 +158,10 @@ export default class CardPengiriman extends Component {
 								<Button type='button' icon='pencil' iconPosition='left' className='font-orange' content='Ubah Alamat ini' onClick={this.onChangeAddress} />
 							</div>
 						}
-					</Segment>
+							</Segment>
+						)
+					}
+					
 					{
 						!this.state.selectedAddress ? null : 
 						<Dropshipper setDropship={this.props.setDropship} errorDropship={this.props.errorDropship} checkDropship={this.props.checkDropship} />

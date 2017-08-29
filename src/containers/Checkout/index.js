@@ -701,30 +701,26 @@ class Checkout extends Component {
 							<Row className={styles.fullHeight}>
 								<Col flex grid={4} className={enableAlamatPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
-									{
-										renderIf(addresses && this.state.selectedAddress)(
-											<CardPengiriman 
-												selectedAddress={this.state.selectedAddress}
-												addresses={addresses} 
-												onChoisedAddress={this.onChoisedAddress} 
-												onChangeAddress={this.onChangeAddress} 
-												onGetO2oProvinces={this.onGetO2oProvinces} 
-												onGetListO2o={this.onGetListO2o} 
-												listo2o={listo2o} 
-												onOpenModalO2o={this.onOpenModalO2o} 
-												latesto2o={latesto2o} 
-												selectedLocker={this.state.selectedLocker ? this.state.selectedLocker : (latesto2o ? latesto2o[0] : null)} 
-												onSelectedLocker={this.onSelectedLocker} 
-												selectO2oFromModal={this.state.selectO2oFromModal} 
-												isPickupable={isPickupable} 
-												dropshipper={this.state.dropshipper} 
-												setDropship={this.setDropship} 
-												checkDropship={this.checkDropship} 
-												errorDropship={this.state.errorDropship} 
-												activeShippingTab={this.activeShippingTab} 
-											/>
-										)
-									}
+									<CardPengiriman 
+										selectedAddress={this.state.selectedAddress}
+										addresses={addresses} 
+										onChoisedAddress={this.onChoisedAddress} 
+										onChangeAddress={this.onChangeAddress} 
+										onGetO2oProvinces={this.onGetO2oProvinces} 
+										onGetListO2o={this.onGetListO2o} 
+										listo2o={listo2o} 
+										onOpenModalO2o={this.onOpenModalO2o} 
+										latesto2o={latesto2o} 
+										selectedLocker={this.state.selectedLocker ? this.state.selectedLocker : (latesto2o ? latesto2o[0] : null)} 
+										onSelectedLocker={this.onSelectedLocker} 
+										selectO2oFromModal={this.state.selectO2oFromModal} 
+										isPickupable={isPickupable} 
+										dropshipper={this.state.dropshipper} 
+										setDropship={this.setDropship} 
+										checkDropship={this.checkDropship} 
+										errorDropship={this.state.errorDropship} 
+										activeShippingTab={this.activeShippingTab} 
+									/>
 								</Col>
 								<Col flex grid={4} className={enablePesananPengiriman || this.state.restrictO2o ? '' : styles.disabled}>
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>({this.props.totalItems} items)</span></div>
@@ -802,7 +798,6 @@ Checkout.propTypes = {
 };
 
 const mapStateToProps = (state) => {
-	console.log(state.addresses.o2o);
 	return {
 		soNumber: state.cart.soNumber,
 		coupon: state.coupon,
