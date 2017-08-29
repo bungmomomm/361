@@ -71,10 +71,12 @@ export default class NewAddressModalbox extends Component {
 	}
 
 	componentWillMount() {
-		if (this.props.formDataAddress.kotProv.toLowerCase().includes('jakarta')) {
-			this.setState({
-				inGosendArea: true
-			});
+		if (this.props.formDataAddress.kotProv) {
+			if (this.props.formDataAddress.kotProv.toLowerCase().includes('jakarta')) {
+				this.setState({
+					inGosendArea: true
+				});
+			}
 		}
 	}
 
@@ -220,12 +222,12 @@ export default class NewAddressModalbox extends Component {
 					<div className={styles.overflow} ref={(overflow) => { this.fieldOverflow = overflow; }}>
 						<InputGroup>
 							<Input 
-								label='Simpan Sebagai' 
+								label='Simpan Sebagai *' 
 								horizontal
 								onChange={this.onChange}
 								placeholder='Contoh: rumah, kantor, rumah pacar'
 								name='name'
-								error={errors.has('name')}
+								color={errors.has('name') ? 'red' : null}
 								message={errors.has('name') ? 'Name field is required.' : ''}
 								type='text'
 								value={typeof this.props.formDataAddress.label !== 'undefined' ? this.props.formDataAddress.label : ''}
@@ -233,27 +235,25 @@ export default class NewAddressModalbox extends Component {
 						</InputGroup>
 						<InputGroup>
 							<Input 
-								label='Nama Penerima'
+								label='Nama Penerima *'
 								horizontal
-								required
 								onChange={this.onChange}
 								placeholder='Masukan nama lengkap penerima'
 								name='penerima'
-								error={errors.has('penerima')}
-								message={errors.has('name') ? 'Penerima field is required.' : ''}
+								color={errors.has('penerima') ? 'red' : null}
+								message={errors.has('penerima') ? 'Penerima field is required.' : ''}
 								type='text'
 								value={typeof this.props.formDataAddress.nama !== 'undefined' ? this.props.formDataAddress.nama : ''}
 							/>
 						</InputGroup>
 						<InputGroup>
 							<Input 
-								label='No Handphone'
+								label='No Handphone *'
 								horizontal
-								required
 								onChange={this.onChange}
 								placeholder='Contoh : 08123456789'
 								name='no_hp'
-								error={errors.has('no_hp')}
+								color={errors.has('no_hp') ? 'red' : null}
 								message={errors.first('no_hp')}
 								type='number'
 								value={typeof this.props.formDataAddress.noHP !== 'undefined' ? this.props.formDataAddress.noHP : ''}
@@ -262,13 +262,12 @@ export default class NewAddressModalbox extends Component {
 						<InputGroup>
 							<Select 
 								horizontal
-								label='Kota, Provinsi'
+								label='Kota, Provinsi *'
 								filter
-								required
 								name='provinsi'
 								selectedLabel={typeof this.props.formDataAddress.kotProv !== 'undefined' ? this.props.formDataAddress.kotProv : '-- Silakan Pilih'} 
 								onChange={this.onChangeSelect}
-								error={errors.has('provinsi')}
+								color={errors.has('provinsi') ? 'red' : null}
 								message={errors.has('provinsi') ? 'Provinsi field is required.' : ''}
 								options={this.props.cityProv || []} 
 							/>
@@ -278,13 +277,12 @@ export default class NewAddressModalbox extends Component {
 								<InputGroup>
 									<Select 
 										horizontal
-										label='Kecamatan'
+										label='Kecamatan *'
 										name='kecamatan' 
 										filter
-										required
 										selectedLabel={typeof this.props.formDataAddress.kecamatan !== 'undefined' ? this.props.formDataAddress.kecamatan : '-- Silakan Pilih'} 
 										onChange={this.onChangeSelect}
-										error={errors.has('kecamatan')}
+										color={errors.has('kecamatan') ? 'red' : null}
 										message={errors.has('kecamatan') ? 'Kecamatan field is required.' : ''}
 										options={this.props.district || []} 
 									/>
@@ -293,14 +291,13 @@ export default class NewAddressModalbox extends Component {
 						}
 						<InputGroup>
 							<Input 
-								label='Kode Pos'
+								label='Kode Pos *'
 								horizontal
-								required
 								placeholder='Contoh : 12345'
 								name='kodepos'
 								type='number'
 								onChange={this.onChange}
-								error={errors.has('kodepos')}
+								color={errors.has('kodepos') ? 'red' : null}
 								message={errors.first('kodepos')}
 								value={typeof this.props.formDataAddress.kodepos !== 'undefined' ? this.props.formDataAddress.kodepos : ''}
 							/>
@@ -308,12 +305,11 @@ export default class NewAddressModalbox extends Component {
 						<InputGroup>
 							<Textarea 
 								horizontal
-								label='Alamat'
-								required
+								label='Alamat *'
 								placeholder='Masukkan Alamat Lengkap'
 								name='address'
 								onChange={this.onChange}
-								error={errors.has('address')}
+								color={errors.has('address') ? 'red' : null}
 								message={errors.has('address') ? 'Address field is required.' : ''}
 								value={typeof this.props.formDataAddress.address !== 'undefined' ? this.props.formDataAddress.address : ''}
 							/>

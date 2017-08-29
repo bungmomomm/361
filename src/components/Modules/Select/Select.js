@@ -256,8 +256,8 @@ export default class Select extends Component {
 						</div>
 						{AddButton}
 					</div>
+					{MessageRender}
 				</div>
-				{MessageRender}
 			</div>
 		);
 	}
