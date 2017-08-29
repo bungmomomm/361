@@ -50,7 +50,8 @@ import {
 	paymentError,
 	pay,
 	bankNameChange,
-	applyBin
+	applyBin,
+	changeOvoNumber
 } from '@/state/Payment/actions';
 import { 
 	paymentMethodName
@@ -130,6 +131,7 @@ class Checkout extends Component {
 		this.closeModalElocker = this.closeModalElocker.bind(this);
 		this.shippingMethodGosend = this.shippingMethodGosend.bind(this);
 		this.onBankChange = this.onBankChange.bind(this);
+		this.onOvoNumberChange = this.onOvoNumberChange.bind(this);
 	}
 
 	componentWillMount() {
@@ -492,6 +494,11 @@ class Checkout extends Component {
 		dispatch(ecashModalBoxOpen(false));
 	}
 
+	onOvoNumberChange(event) {
+		const { dispatch } = this.props;
+		dispatch(changeOvoNumber(event.target.value));
+	}
+
 	onDoPayment() {
 		const { dispatch } = this.props;
 		if (typeof this.props.payments.paymentMethod !== 'undefined') {
@@ -760,6 +767,7 @@ class Checkout extends Component {
 										onCardCvvChange={this.onCardCvvChange}
 										tahun={this.state.tahun}
 										onBankChange={this.onBankChange}
+										onOvoNumberChange={this.onOvoNumberChange}
 									/>
 								</Col>
 							</Row>
@@ -797,8 +805,13 @@ Checkout.propTypes = {
 	cookies: instanceOf(Cookies).isRequired
 };
 
+const getBillingAddress = (state) => {
+	return typeof state.addresses.billing !== 'undefined' ? state.addresses.billing[0] : false;
+};
+
 const mapStateToProps = (state) => {
 	return {
+		billingAddress: getBillingAddress(state),
 		soNumber: state.cart.soNumber,
 		coupon: state.coupon,
 		addresses: state.addresses.addresses,
