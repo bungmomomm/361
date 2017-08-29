@@ -80,7 +80,7 @@ const getCart = token => dispatch => {
 	});
 };
 
-const getPlaceOrderCart = (token, address, billing = false) => dispatch => {
+const getPlaceOrderCart = (token, address, billing = false) => dispatch => new Promise((resolve, reject) => {
 	dispatch(placeOrderRequest(token, address));
 	console.log(address);
 	const data = setPayloadPlaceOrder(address, billing);
@@ -108,15 +108,18 @@ const getPlaceOrderCart = (token, address, billing = false) => dispatch => {
 			dispatch(paymentInfoUpdated(getCartPaymentData(res.data.data.attributes.total_price, 'order')));
 			dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, response.data.data.attributes.total_price.count));
 			dispatch(getAvailablePaymentMethod(token));
+			resolve(setCartModel(res.data));
 		})
 		.catch((error) => {
 			console.log(error);
+			reject(error);
 		});
 	})
 	.catch((error) => {
 		console.log(error);
+		reject(error);
 	});
-};
+});
 
 const deleteCart = (token, productId, props) => dispatch => {
 	dispatch(deleteRequest(productId));
@@ -195,9 +198,44 @@ const updateQtyCart = (token, productQty, productId, props) => dispatch => {
 
 };
 
+
+const updateGosend = (token, storeId, shippingMethodId, props) => dispatch => {
+	dispatch(gettingCart(token));
+
+	const req = {
+		method: 'PUT',
+		path: `orders/${props.soNumber}/apply_shipping_method`,
+		token,
+		body: {
+			data: {
+				type: 'cart_items',
+				attributes: {
+					shipping_method_id: shippingMethodId,
+					store_id: storeId,
+				}
+			}
+		}
+	};
+	
+	request(req)
+	.then((res) => {
+		const isPickupable = res.data.data.attributes.delivery_method_provided.map((value, index) => {
+			return value;
+		}).filter(e => e.id === 'pickup');
+		dispatch(paymentInfoUpdated(getCartPaymentData(res.data.data.attributes.total_price, 'order')));
+		dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, res.data.data.attributes.total_price.count));
+		dispatch(getAvailablePaymentMethod(token));
+	})
+	.catch((error) => {
+		console.log(error);
+	});
+
+};
+
 export default {
 	getPlaceOrderCart,
 	getCart,
 	deleteCart,
 	updateQtyCart,
+	updateGosend,
 };

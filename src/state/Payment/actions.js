@@ -44,6 +44,15 @@ const paymentInfoUpdated = (data) => ({
 	}
 });
 
+const creditCardNumberChangeAndApplyBin = (token, cardNumber) => ({
+	type: constants.PAY_CREDIT_CARD_ADD,
+	mode: 'card_number_apply',
+	payload: {
+		token,
+		cardNumber
+	}
+});
+
 const creditCardNumberChange = (cardNumber) => ({
 	type: constants.PAY_CREDIT_CARD_ADD,
 	mode: 'card_number',
@@ -181,6 +190,11 @@ const closeNewCreditCard = () => dispatch => {
 	dispatch(newCreditCardOpened(false));
 };
 
+const changeCreditCardNumberAndApplyBin = (token, cardNumber) => dispatch => {
+	
+	dispatch(creditCardNumberChangeAndApplyBin(token, cardNumber));
+};
+
 const changeCreditCardNumber = (cardNumber) => dispatch => {
 	dispatch(creditCardNumberChange(cardNumber));
 };
@@ -281,6 +295,7 @@ export default {
 	openNewCreditCard,
 	selectCreditCard,
 	deselectCreditCard,
+	changeCreditCardNumberAndApplyBin,
 	changeCreditCardNumber,
 	changeCreditCardMonth,
 	changeCreditCardYear,

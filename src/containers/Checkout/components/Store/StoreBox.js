@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Icon } from '@/components';
 import styles from './StoreBox.scss';
 
-import { renderIf } from '@/utils';
+import { newId, renderIf } from '@/utils';
 
 import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
@@ -14,14 +14,16 @@ const StoreBox = (props) => {
 		[`${props.color}`]: !!props.color,
 		loading: !!props.loading
 	});
+	const idFor = newId();
 	return (
+		
 		<div className={BoxWrapper} >
 			<div className={styles.header}>
 				<div className={styles.name}>{props.name}</div>
 				<div className={styles.location}>
 					{
 						renderIf(props.location)(
-							[<Icon name='map-marker' />, props.location]
+							[<Icon key={idFor} name='map-marker' />, props.location]
 						)
 					}
 				</div>

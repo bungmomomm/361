@@ -1,6 +1,7 @@
 import * as constants from './constants';
 import { getBaseUrl } from '@/utils';
 import { Veritrans } from '@/utils/vt';
+import { applyBin } from './actions';
 
 const initialState = {
 	selectedPayment: false,
@@ -123,6 +124,9 @@ export default (state = initialState, action) => {
 			break;
 		case 'cvv':
 			selectedCardDetail.cvv = action.payload.cvv;
+			break;
+		case 'card_number_apply':
+			applyBin(action.payload.token, 'commenrce_veritrans', action.payload.cardNumber);
 			break;
 		default:
 			break;

@@ -34,7 +34,7 @@ import {
 	getDistrict, 
 	saveAddress 
 } from '@/state/Adresses/actions';
-import { getPlaceOrderCart, getCart, updateQtyCart } from '@/state/Cart/actions';
+import { getPlaceOrderCart, getCart, updateQtyCart, updateGosend } from '@/state/Cart/actions';
 import {
 	getAvailablePaymentMethod,
 	changePaymentMethod,
@@ -127,6 +127,7 @@ class Checkout extends Component {
 		this.onVt3dsModalBoxClose = this.onVt3dsModalBoxClose.bind(this);
 		this.onMandiriEcashClose = this.onMandiriEcashClose.bind(this);
 		this.closeModalElocker = this.closeModalElocker.bind(this);
+		this.shippingMethodGosend = this.shippingMethodGosend.bind(this);
 	}
 
 	componentWillMount() {
@@ -236,11 +237,11 @@ class Checkout extends Component {
 				selectedAddress: address
 			});
 		}
-		dispatch(getPlaceOrderCart(this.state.token, address, billing));
 		this.setState({
 			enablePesananPengiriman: true,
 			enablePembayaran: true,
 		});
+		return dispatch(getPlaceOrderCart(this.state.token, address, billing));
 	}
 
 	onChangeAddress(address, flagAdd) {
@@ -301,7 +302,7 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 		const option = event.value;
 		if (option) {
-			const selectedPaymentOption = this.props.payments.paymentMethods.payments[paymentMethod.id].paymentItems.filter((item) => parseInt(item.value, 10) === parseInt(option, 10)).pop();
+			const selectedPaymentOption = this.props.payments.paymentMethods.payments[paymentMethod.id].paymentItems.filter((item) => parseInt(item.value, 10) === parseInt(option, 10))[0];
 			let cardNumber = '';
 			let bankName = '';
 			switch (selectedPaymentOption.paymentMethod) {
@@ -324,7 +325,7 @@ class Checkout extends Component {
 
 	onSelectCard(event) {
 		this.props.dispatch(selectCreditCard(event));
-		const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems.pop();
+		const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
 		this.props.dispatch(applyBin(this.state.token, selectedPaymentOption.value, event, ''));
 	}
 
@@ -520,10 +521,13 @@ class Checkout extends Component {
 			enableNewAddress: false
 		});
 	}
-	
 	onCardNumberChange(event) {
 		console.log(event, this.state.test);
-		this.props.dispatch(changeCreditCardNumber(event.target.value));
+		if (event.valid) {
+			this.props.dispatch(changeCreditCardNumber(event.ccNumber));
+			const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
+			this.props.dispatch(applyBin(this.state.token, selectedPaymentOption.value, event, ''));
+		}
 	}
 	onCardMonthChange(monthData) {
 		console.log(event, this.state.test);
@@ -603,11 +607,12 @@ class Checkout extends Component {
 			tempSelectedAddress.attributes.is_dropshipper = this.state.dropshipper;
 			tempSelectedAddress.attributes.dropship_name = this.state.formDropshipper.dropship_name;
 			tempSelectedAddress.attributes.dropship_phone = this.state.formDropshipper.dropship_phone;
-			this.onChoisedAddress(tempSelectedAddress);
-			this.setState({
-				isValidPayment: true,
+			this.onChoisedAddress(tempSelectedAddress).then(() => {
+				this.setState({
+					isValidPayment: true,
+				});
+				this.onDoPayment();
 			});
-			this.onDoPayment();
 		} else {
 			this.checkDropship();
 		}
@@ -643,6 +648,11 @@ class Checkout extends Component {
 		this.setState({
 			showModalO2o: false
 		});
+	}
+
+	shippingMethodGosend(methodId, storeId) {
+		const { dispatch } = this.props;
+		dispatch(updateGosend(this.state.token, storeId, methodId, this.props));
 	}
 
 	render() {
@@ -703,7 +713,15 @@ class Checkout extends Component {
 								<Col flex grid={4} className={enablePesananPengiriman || this.state.restrictO2o ? '' : styles.disabled}>
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>({this.props.totalItems} items)</span></div>
 									{
-										<CardPesananPengiriman loading={this.state.loadingUpdateCart} cart={!this.state.cart ? [] : this.state.cart} onDeleteCart={this.onDeleteCart} onUpdateQty={this.onUpdateQty} restrictO2o={this.state.restrictO2o} />
+										<CardPesananPengiriman 
+											loading={this.state.loadingUpdateCart} 
+											cart={!this.state.cart ? [] : this.state.cart} 
+											onDeleteCart={this.onDeleteCart} 
+											onUpdateQty={this.onUpdateQty} 
+											restrictO2o={this.state.restrictO2o} 
+											shippingMethodGosend={this.shippingMethodGosend}
+											selectedAddress={this.state.selectedAddress}
+										/>
 									}
 								</Col>
 								<Col flex grid={4} className={enablePembayaran && !this.state.restrictO2o ? '' : styles.disabled}>
