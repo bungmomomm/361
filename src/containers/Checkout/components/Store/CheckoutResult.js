@@ -6,18 +6,25 @@ import { Checkbox, Sprites } from '@/components';
 import { currency } from '@/utils';
 
 const CheckoutResult = (props) => {
+	const selectedAddress = props.selectedAddress;
+	const latLng = !selectedAddress ? false : selectedAddress.attributes.latitude && selectedAddress.attributes.longitude && selectedAddress.attributes.latitude !== '' && selectedAddress.attributes.longitude !== '';
 	return (
 		<div className={styles.footer}>
-			<div className={styles.deliveryInfo}>
-				<Checkbox name='gojek' content='Pengiriman:' disabled sprites='gosend' />
-			</div>
 			{
-				props.shipping.gosend.gosendActivated && props.shipping.gosend.gosendSupported ? 
+				props.shipping.gosend.gosendSupported && props.shipping.gosend.gosendApplicable ? 
 					<div className={styles.deliveryInfo}>
-						<Checkbox name='gojek' content='Pengiriman:' /> &nbsp; <Sprites name='gosend' />
+						<Checkbox name='gojek' content='Pengiriman:' checked={props.shipping.gosend.gosendActivated} value={props.store} onClick={props.checkGosendMethod} /> &nbsp; <Sprites name='gosend' />
 					</div>
 					:
-					<div className={styles.deliveryInfo}>{props.shipping.note}</div>
+					(
+						props.shipping.gosend.gosendSupported && !latLng ? 
+							<div className={styles.deliveryInfo}>
+								<Checkbox name='gojek' content='Pengiriman:' disabled sprites='gosend' />
+								<div className='font-orange'>Mohon pilih titik lokasi pengiriman anda</div>
+							</div>
+						:
+						!props.shipping.note ? null : <div className={styles.deliveryInfo}>{props.shipping.note}</div>
+					)
 			}
 			
 			<div className={styles.price}>

@@ -17,7 +17,7 @@ const Checkbox = (props) => {
 
 	const onClick = (event) => {
 		if (props.onClick) {
-			return props.onClick(event.target.checked);
+			return props.onClick(event.target.checked, event.target.value);
 		}
 		return null;
 	};
