@@ -48,7 +48,6 @@ export default class CardPengiriman extends Component {
 					info: `${value.attributes.address}, ${value.attributes.district}, ${value.attributes.city}, ${value.attributes.province}`
 				});
 			});
-			console.log(address);
 			this.setState({
 				shipping: address
 			});
@@ -78,7 +77,6 @@ export default class CardPengiriman extends Component {
 			this.setState({
 				elockerTab: true
 			});
-			this.props.activeShippingTab(false);
 			if (!this.props.listo2o) {
 				this.props.onGetListO2o();
 				this.props.onGetO2oProvinces();
@@ -186,9 +184,9 @@ export default class CardPengiriman extends Component {
 										shown={!this.state.closeSelect}
 									/>
 								</InputGroup>
-								<Level>
-									<Level.Left><strong>{this.props.selectedLocker.attributes.address_label} &nbsp; </strong></Level.Left>
-								</Level>
+								<p>
+									<strong>{this.props.selectedLocker.attributes.address_label} &nbsp; </strong>
+								</p>
 								<p>
 									{this.props.selectedLocker.attributes.address} <br />
 									Telp: {this.props.selectedLocker.attributes.phone}

@@ -1,15 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import Icon from '../../Elements/Icon/Icon';
+import Sprites from '../../Elements/Sprites/Sprites';
+
 import styles from './Radio.scss';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
 
-import { newId } from '@/utils';
+import { newId, renderIf } from '@/utils';
 
 const Radio = (props) => {
 	const RadioClass = cx({
-		radioWrapper: true
+		radioWrapper: true,
+		disabled: props.disabled
 	});
 	
 	const onClick = (event) => {
@@ -35,12 +39,31 @@ const Radio = (props) => {
 		/>
 	);
 
+	const SpritesElement = (
+		renderIf(props.sprites)(
+			<span className={styles.sprites}>
+				<Sprites name={props.sprites} />
+			</span>
+		)
+	);
+
+	const IconElement = (
+		renderIf(props.icon)(
+			<span className={styles.icon}>
+				<Icon name={props.icon} />
+			</span>
+		)
+	);
+
+
 	return (
 		<label className={RadioClass} htmlFor={idFor}>
 			{input}
 			<span className={styles.radioInput} />
 			<span className={styles.radioText}>
-				{props.content}
+				{props.content} &nbsp;
+				{SpritesElement}
+				{IconElement}
 			</span>
 		</label>
 	);

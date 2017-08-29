@@ -239,7 +239,7 @@ export default class CardPembayaran extends Component {
 													<Col grid={4}>
 														<Input type='number' placeholder='cvv' onBlur={this.onCardCvvChange} />
 													</Col>
-													<Col grid={4}>
+													<Col grid={3}>
 														<Sprites name='cvv' />
 													</Col>
 												</Row>

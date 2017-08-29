@@ -77,7 +77,8 @@ const setCartModel = (jsoApiResponse) => {
 			o2oSupported: attr.o2o_supported === '1',
 			gosend: {
 				gosendSupported: attr.gosend_supported === '1',
-				gosendActivated: attr.gosend_supported === '1',
+				gosendActivated: attr.gosend_activated === '1',
+				gosendApplicable: attr.gosend_applicable === '1',
 			}
 		};
 		const x = {
