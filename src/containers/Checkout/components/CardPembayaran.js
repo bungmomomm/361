@@ -126,8 +126,7 @@ export default class CardPembayaran extends Component {
 	}
 
 	handleSubmit(event) {
-		console.log(this.state);
-		event.preventDefault();
+		event.preventDefault(this);
 	}
 
 	submitPayment() {
@@ -251,7 +250,6 @@ export default class CardPembayaran extends Component {
 				break;	
 			} 
 		}
-		console.log(this.props.tahun);
 		return (
 			<Card>
 				<div className={styles.overflow}>

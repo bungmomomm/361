@@ -55,13 +55,10 @@ import {
 	paymentMethodName
 } from '@/state/Payment/constants';
 
-import { Veritrans } from '@/utils/vt';
-
 class Checkout extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.Veritrans = Veritrans();
 		this.validator = new Validator({
 			dropship_name: 'required|max:100',
 			dropship_phone: 'required|numeric|min:6|max:14',
@@ -491,26 +488,28 @@ class Checkout extends Component {
 
 	onDoPayment() {
 		const { dispatch } = this.props;
-		let mode = 'complete';
-		switch (this.props.payments.paymentMethod) {
-		case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
-		case paymentMethodName.COMMERCE_VERITRANS:
-			this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
-			break;
-		default:
-			if (this.props.payments.selectedPaymentOption && this.props.payments.selectedPaymentOption.uniqueConstant === 'mandiri_ecash') {
-				mode = 'mandiri_ecash';
+		if (typeof this.props.payments.paymentMethod !== 'undefined') {
+			let mode = 'complete';		
+			switch (this.props.payments.paymentMethod) {
+			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
+			case paymentMethodName.COMMERCE_VERITRANS:
+				this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
+				break;
+			default:
+				if (this.props.payments.selectedPaymentOption && this.props.payments.selectedPaymentOption.uniqueConstant === 'mandiri_ecash') {
+					mode = 'mandiri_ecash';
+				}
+				dispatch(
+					pay(
+						this.state.token, 
+						this.props.soNumber, 
+						this.props.payments.selectedPaymentOption,
+						false,
+						mode
+					)
+				);
+				break;
 			}
-			dispatch(
-				pay(
-					this.state.token, 
-					this.props.soNumber, 
-					this.props.payments.selectedPaymentOption,
-					false,
-					mode
-				)
-			);
-			break;
 		}
 	}
 

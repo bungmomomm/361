@@ -6,6 +6,7 @@ const initialState = {
 	selectedPayment: false,
 	loading: false,
 	twoClickEnabled: true,
+	selectedPaymentOption: null,
 	paymentMethods: {
 		methods: [],
 		payments: {}
@@ -131,7 +132,7 @@ export default (state = initialState, action) => {
 			selectedCard,
 			selectedCardDetail,
 			paymentMethod: 'commerce_veritrans',
-			selectedPaymentOption: state.paymentMethods.payments.credit_card.paymentItems[0]
+			selectedPaymentOption: state.selectedPaymentOption ? state.selectedPaymentOption : state.paymentMethods.payments.credit_card.paymentItems[0]
 		};
 	}
 	case constants.PAY_UPDATED: {

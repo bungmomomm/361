@@ -20,6 +20,7 @@ export default class CreditCardInput extends Component {
 			sprites: 'payment-option'
 		};
 		this.onChange = this.onChange.bind(this);
+		this.onBlur = this.onBlur.bind(this);
 	}
 	
 	componentWillMount() {
@@ -86,6 +87,7 @@ export default class CreditCardInput extends Component {
 		onClick,
 		readOnly,
 		onKeyPress,
+		onBlur,
 		sprites,
 		message,
 		color
@@ -140,6 +142,7 @@ export default class CreditCardInput extends Component {
 				size={20}
 				value={value}
 				onChange={this.onChange}
+				onBlur={this.onBlur}
 			/>
 		);
 		
