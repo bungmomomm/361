@@ -50,7 +50,8 @@ import {
 	paymentError,
 	pay,
 	bankNameChange,
-	applyBin
+	applyBin,
+	changeOvoNumber
 } from '@/state/Payment/actions';
 import { 
 	paymentMethodName
@@ -130,6 +131,7 @@ class Checkout extends Component {
 		this.closeModalElocker = this.closeModalElocker.bind(this);
 		this.shippingMethodGosend = this.shippingMethodGosend.bind(this);
 		this.onBankChange = this.onBankChange.bind(this);
+		this.onOvoNumberChange = this.onOvoNumberChange.bind(this);
 	}
 
 	componentWillMount() {
@@ -492,6 +494,11 @@ class Checkout extends Component {
 		dispatch(ecashModalBoxOpen(false));
 	}
 
+	onOvoNumberChange(event) {
+		const { dispatch } = this.props;
+		dispatch(changeOvoNumber(event.target.value));
+	}
+
 	onDoPayment() {
 		const { dispatch } = this.props;
 		if (typeof this.props.payments.paymentMethod !== 'undefined') {
@@ -502,8 +509,12 @@ class Checkout extends Component {
 				this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
 				break;
 			default:
-				if (this.props.payments.selectedPaymentOption && this.props.payments.selectedPaymentOption.uniqueConstant === 'mandiri_ecash') {
-					mode = 'mandiri_ecash';
+				if (this.props.payments.selectedPaymentOption) {
+					if (this.props.payments.selectedPaymentOption.uniqueConstant === 'mandiri_ecash') {
+						mode = 'mandiri_ecash';
+					} else if (this.props.payments.selectedPaymentOption.uniqueConstant === 'bca_klikpay') {
+						mode = 'bca_klikpay';
+					}
 				}
 				dispatch(
 					pay(
@@ -697,30 +708,26 @@ class Checkout extends Component {
 							<Row className={styles.fullHeight}>
 								<Col flex grid={4} className={enableAlamatPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
-									{
-										renderIf(addresses && this.state.selectedAddress)(
-											<CardPengiriman 
-												selectedAddress={this.state.selectedAddress}
-												addresses={addresses} 
-												onChoisedAddress={this.onChoisedAddress} 
-												onChangeAddress={this.onChangeAddress} 
-												onGetO2oProvinces={this.onGetO2oProvinces} 
-												onGetListO2o={this.onGetListO2o} 
-												listo2o={listo2o} 
-												onOpenModalO2o={this.onOpenModalO2o} 
-												latesto2o={latesto2o} 
-												selectedLocker={this.state.selectedLocker ? this.state.selectedLocker : (latesto2o ? latesto2o[0] : null)} 
-												onSelectedLocker={this.onSelectedLocker} 
-												selectO2oFromModal={this.state.selectO2oFromModal} 
-												isPickupable={isPickupable} 
-												dropshipper={this.state.dropshipper} 
-												setDropship={this.setDropship} 
-												checkDropship={this.checkDropship} 
-												errorDropship={this.state.errorDropship} 
-												activeShippingTab={this.activeShippingTab} 
-											/>
-										)
-									}
+									<CardPengiriman 
+										selectedAddress={this.state.selectedAddress}
+										addresses={addresses} 
+										onChoisedAddress={this.onChoisedAddress} 
+										onChangeAddress={this.onChangeAddress} 
+										onGetO2oProvinces={this.onGetO2oProvinces} 
+										onGetListO2o={this.onGetListO2o} 
+										listo2o={listo2o} 
+										onOpenModalO2o={this.onOpenModalO2o} 
+										latesto2o={latesto2o} 
+										selectedLocker={this.state.selectedLocker ? this.state.selectedLocker : (latesto2o ? latesto2o[0] : null)} 
+										onSelectedLocker={this.onSelectedLocker} 
+										selectO2oFromModal={this.state.selectO2oFromModal} 
+										isPickupable={isPickupable} 
+										dropshipper={this.state.dropshipper} 
+										setDropship={this.setDropship} 
+										checkDropship={this.checkDropship} 
+										errorDropship={this.state.errorDropship} 
+										activeShippingTab={this.activeShippingTab} 
+									/>
 								</Col>
 								<Col flex grid={4} className={enablePesananPengiriman || this.state.restrictO2o ? '' : styles.disabled}>
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>({this.props.totalItems} items)</span></div>
@@ -760,6 +767,7 @@ class Checkout extends Component {
 										onCardCvvChange={this.onCardCvvChange}
 										tahun={this.state.tahun}
 										onBankChange={this.onBankChange}
+										onOvoNumberChange={this.onOvoNumberChange}
 									/>
 								</Col>
 							</Row>
@@ -797,9 +805,13 @@ Checkout.propTypes = {
 	cookies: instanceOf(Cookies).isRequired
 };
 
+const getBillingAddress = (state) => {
+	return typeof state.addresses.billing !== 'undefined' ? state.addresses.billing[0] : false;
+};
+
 const mapStateToProps = (state) => {
-	console.log(state.addresses.o2o);
 	return {
+		billingAddress: getBillingAddress(state),
 		soNumber: state.cart.soNumber,
 		coupon: state.coupon,
 		addresses: state.addresses.addresses,

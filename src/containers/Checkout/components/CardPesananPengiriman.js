@@ -33,7 +33,7 @@ export default class CardPesananPengiriman extends Component {
 	
 	render() {
 		return (
-			<Card stretch>
+			<Card stretch loading={this.props.loading} >
 				<div className={styles.overflow}>
 					{
 

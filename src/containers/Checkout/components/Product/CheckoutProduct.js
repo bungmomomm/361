@@ -41,7 +41,7 @@ export default class CheckoutProduct extends Component {
 							<div className={styles.qty}>
 								{
 									renderIf(this.props.data.qty)(
-										<Stepper value={this.props.data.qty} maxValue={this.props.data.maxQty} onChange={this.onUpdateQty} />
+										<Stepper size='small' value={this.props.data.qty} maxValue={this.props.data.maxQty} onChange={this.onUpdateQty} />
 									)
 								}
 							</div>
@@ -51,7 +51,7 @@ export default class CheckoutProduct extends Component {
 				<div className={styles.body}>
 					<div className={styles.bodyLeft}>
 						{
-							!this.props.showBtnDelete ? null :
+							!this.props.showBtnDelete ? <Button /> :
 							<Button clean size='small' icon='trash-o' iconPosition='left' content='Hapus' onClick={this.onDeleteCart} />
 						}
 					</div>

@@ -173,6 +173,12 @@ export default (state = initialState, action) => {
 			paymentError: action.message
 		};
 	}
+	case constants.PAY_CHANGE_OVO_NUMBER: {
+		return {
+			...state,
+			ovoNumber: action.payload.ovoNumber
+		};
+	}
 	case constants.PAY_ERROR: {
 		return {
 			...state,
@@ -187,7 +193,7 @@ export default (state = initialState, action) => {
 					action.payload.card,
 					action.payload.callback
 				);
-			} else if (action.mode === 'mandiri_ecash') {
+			} else if (action.mode === 'mandiri_ecash' ||	 action.mode === 'bca_klikpay') {
 				top.location.href = action.payload.payment.data;
 				return state;
 			} else if (action.mode === 'complete') {

@@ -79,6 +79,7 @@ export default class CardPembayaran extends Component {
 		this.onCardCvvChange = this.onCardCvvChange.bind(this);
 		this.onInstallmentBankChange = this.onInstallmentBankChange.bind(this);
 		this.onBankChange = this.onBankChange.bind(this);
+		this.onOvoNumberChange = this.onOvoNumberChange.bind(this);
 	}
 	onChange(event) {
 		this.setState({
@@ -136,6 +137,10 @@ export default class CardPembayaran extends Component {
 		this.props.onBankChange(bank);
 	}
 
+	onOvoNumberChange(event) {
+		this.props.onOvoNumberChange(event);
+	}
+
 	handleCekVoucher(event) {
 		event.preventDefault();
 		this.setState({
@@ -178,7 +183,7 @@ export default class CardPembayaran extends Component {
 		if (this.props.validCoupon === null && !couponId) { 
 			voucherBox = (
 				<Level>
-					<Level.Left>Kode Voucher</Level.Left>
+					<Level.Left className={styles.voucherLabel}>Kode Voucher</Level.Left>
 					<Level.Right>
 						<InputGroup addons>
 							<Input size='small' name='voucherCode' onChange={this.onChange} onKeyPress={this.onChange} color='green' value={this.props.coupon} />
@@ -190,7 +195,7 @@ export default class CardPembayaran extends Component {
 		} else if (this.props.validCoupon !== null && !this.props.validCoupon && this.props.coupon !== '') {
 			voucherBox = (
 				<Level>
-					<Level.Left>Kode Voucher</Level.Left>
+					<Level.Left className={styles.voucherLabel}>Kode Voucher</Level.Left>
 					<Level.Right>
 						<InputGroup addons addonsAttached>
 							<Input size='small' name='voucherCode' color='red' message='kode voucher salah' onChange={this.onChange} onKeyPress={this.onChange} value={this.props.coupon} />
@@ -350,8 +355,8 @@ export default class CardPembayaran extends Component {
 			<Card>
 				<div className={styles.overflow}>
 					<Level>
-						<Level.Left>Subtotal</Level.Left>
-						<Level.Right className='text-right'>{currency(subTotal)}</Level.Right>
+						<Level.Left><strong>Subtotal</strong></Level.Left>
+						<Level.Right className='text-right'><strong>{currency(subTotal)}</strong></Level.Right>
 					</Level>
 					{
 						!couponId ? null : (
@@ -428,9 +433,22 @@ export default class CardPembayaran extends Component {
 								</Level>
 							</div>
 						)}
-
+						{ renderIf(selectedPayment.value === paymentGroupName.INTERNET_BANKING)(
+							<InputGroup>
+								<Tooltip align='right' content='Info'>
+									<p>Info pembayaran BCA KlikPay</p>
+									<ol>
+										<li>Setelah klik tombol &quot;Bayar Sekarang&quot; di bawah, Anda akan diarahkan ke halaman BCA KlikPay.</li>
+										<li>Masukkan alamat email dan password BCA KlikPay Anda, lalu cek informasi transaksi (nama merchant, waktu transaksi, dan jumlah uang yang harus dibayarkan)</li>
+										<li>Tekan tombol &quot;Kirim OTP&quot; untuk menerima kode OTP (One Time Password) via SMS, jadi pastikan handphone Anda aktif.</li>
+										<li>Masukkan kode OTP ke kolom yang tersedia, kemudian klik tombol &quot;Bayar&quot;.</li>
+										<li>Setelah pembayaran berhasil dilakukan, klik tombol &quot;Kembali ke situs merchant&quot; untuk melihat status pembayaran dan pembelian anda.</li>
+									</ol>
+								</Tooltip>
+							</InputGroup>
+						)}
 						<InputGroup>
-							<Input label='Masukkan OVO ID' type='number' placeholder='OVO ID' />
+							<Input label='Masukkan OVO ID' type='number' placeholder='OVO ID' onChange={this.onOvoNumberChange} />
 						</InputGroup>
 						
 						<div className={styles.checkOutAction}>

@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import styles from './Stepper.scss';
+
 import Icon from '../../Elements/Icon/Icon';
 import { renderIf } from '@/utils';
+
+import styles from './Stepper.scss';
+import classNames from 'classnames/bind';
+const cx = classNames.bind(styles);
 
 export default class Stepper extends Component {
 	constructor(props) {
@@ -15,27 +19,33 @@ export default class Stepper extends Component {
 		this.increment = this.increment.bind(this);
 		this.decrement = this.decrement.bind(this);
 		this.onChange = this.onChange.bind(this);
+		this.onBlur = this.onBlur.bind(this);
 	}
 
 	componentWillReceiveProps(nextProps) {
-		this.setState({
-			value: nextProps.value
-		});
+		if (this.state.value !== nextProps.value) {
+			this.setState({
+				value: nextProps.value
+			});
+		}
 	}
 
 	onChange(event) {
 		let value = event.target.value;
 		value = value >= this.props.maxValue && value ? this.props.maxValue : value;
-		value = value === '' ? value : (value <= 0 ? 1 : value);
+		value = value === '' ? value : (value <= 0 ? this.state.value : value);
 		const stepperValue = {
 			value,
 			error: (event.target.value >= this.props.maxValue)
 		};
 		this.setState(stepperValue);
-		if (this.props.onChange) {
-			this.props.onChange(stepperValue);
-		}
 	};
+
+	onBlur(event) {
+		if (this.props.onChange) {
+			this.props.onChange(this.state);
+		}
+	}
 
 	checkMax() {
 		this.setState({
@@ -66,8 +76,13 @@ export default class Stepper extends Component {
 	}
 
 	render() {
+		const stepperWrapper = cx({
+			Stepper: true,
+			[`${this.props.size}`]: !!this.props.size
+		});
+
 		return (
-			<div className={styles.Stepper}>
+			<div className={stepperWrapper}>
 				<button 
 					onClick={this.decrement}
 					type='button' 
@@ -76,7 +91,7 @@ export default class Stepper extends Component {
 				>
 					<Icon name='minus' />
 				</button>
-				<input type='number' onChange={this.onChange} value={this.state.value} />
+				<input type='number' onBlur={this.onBlur} onChange={this.onChange} value={this.state.value} />
 				<button 
 					onClick={this.increment}
 					type='button' 
