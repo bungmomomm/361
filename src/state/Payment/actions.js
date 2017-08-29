@@ -155,6 +155,13 @@ const applyBinReceived = (data) => ({
 	}
 });
 
+const ovoNumberChange = (ovoNumber) => ({
+	type: constants.PAY_CHANGE_OVO_NUMBER,
+	payload: {
+		ovoNumber
+	}
+});
+
 // installment
 const changeBankName = (token, bank, selectedPaymentOption) => ({
 	type: constants.PAY_CHANGE_BANK,
@@ -252,31 +259,75 @@ const bankNameChange = (token, bank, selectedPaymentOption) => dispatch => new P
 	resolve(bank);
 });
 
-const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete', card = false, callback = false) => dispatch => {
+const changeOvoNumber = (ovoNumber) => dispatch => {
+	ovoNumberChange(ovoNumber);
+};
+
+const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete', card = false, callback = false) => dispatch => new Promise((resolve, reject) => {
 	dispatch(payRequest());
 	if (
 		payment.paymentMethod === 'commerce_veritrans_installment'
 		&& payment.paymentMethod === 'commerce_veritrans'
 	) {
 		// prepare cc
+		request({
+			token,
+			path: 'payments/prepare_ccpayment',
+			method: 'POST',
+			body: {
+				data: {
+					type: 'prepare_ccpayment',
+					attributes: {
+						card_number: paymentDetail.card.value
+					}
+				}
+			}
+		}).then((prep) => {
+			if (prep.data.data.attributes.channel === 'migs') {
+				paymentDetail.card.bank = 'bca';
+			}
+			request({
+				token,
+				path: 'payments',
+				method: 'POST',
+				body: {
+					data: getPaymentPayload(soNumber, payment, paymentDetail, mode)
+				}
+			}).then((response) => {
+				if (typeof response.data.data[0] !== 'undefined' && typeof response.data.data[0].id !== 'undefined') {
+					soNumber = response.data.data[0].id;
+				}
+				dispatch(payReceived(soNumber, response.data, mode, card, callback));
+				resolve(soNumber, response.data, mode, card, callback);
+			}).catch((error) => {
+				// showError
+				dispatch(payError(error));
+				reject(error);
+			});
+		}).catch((error) => {
+			reject(error);
+		});
+	} else {
+		request({
+			token,
+			path: 'payments',
+			method: 'POST',
+			body: {
+				data: getPaymentPayload(soNumber, payment, paymentDetail, mode)
+			}
+		}).then((response) => {
+			if (typeof response.data.data[0] !== 'undefined' && typeof response.data.data[0].id !== 'undefined') {
+				soNumber = response.data.data[0].id;
+			}
+			dispatch(payReceived(soNumber, response.data, mode, card, callback));
+			resolve(soNumber, response.data, mode, card, callback);
+		}).catch((error) => {
+			// showError
+			dispatch(payError(error));
+			reject(error);
+		});
 	}
-	return request({
-		token,
-		path: 'payments',
-		method: 'POST',
-		body: {
-			data: getPaymentPayload(soNumber, payment, paymentDetail, mode)
-		}
-	}).then((response) => {
-		if (typeof response.data.data[0] !== 'undefined') {
-			soNumber = response.data.data[0].id;
-		}
-		dispatch(payReceived(soNumber, response.data, mode, card, callback));
-	}).catch((error) => {
-		// showError
-		dispatch(payError(error));
-	});
-};
+});
 
 const applyBin = (token, paymentMethodId, cardNumber, bankName) => dispatch => {
 	return request({
@@ -325,6 +376,7 @@ export default {
 	paymentError,
 	paymentErrorClose,
 	ecashModalBoxOpen,
+	changeOvoNumber,
 	payError,
 	pay,
 	applyBin
