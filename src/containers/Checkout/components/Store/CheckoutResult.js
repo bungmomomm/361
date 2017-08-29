@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styles from './CheckoutResult.scss';
-import { Checkbox, Sprites } from '@/components';
+import { Checkbox } from '@/components';
 
 import { currency } from '@/utils';
 
@@ -13,13 +13,13 @@ const CheckoutResult = (props) => {
 			{
 				props.shipping.gosend.gosendSupported && props.shipping.gosend.gosendApplicable ? 
 					<div className={styles.deliveryInfo}>
-						<Checkbox name='gojek' content='Pengiriman:' checked={props.shipping.gosend.gosendActivated} value={props.store} onClick={props.checkGosendMethod} /> &nbsp; <Sprites name='gosend' />
+						<Checkbox name='gojek' content='Pengiriman:' checked={props.shipping.gosend.gosendActivated} value={props.store} onClick={props.checkGosendMethod} sprites='gosend' /> 
 					</div>
 					:
 					(
 						props.shipping.gosend.gosendSupported && !latLng ? 
 							<div className={styles.deliveryInfo}>
-								<Checkbox name='gojek' content='Pengiriman:' disabled sprites='gosend' />
+								<Checkbox name='gojek' content='Pengiriman:' disabled checked={false} sprites='gosend' />
 								<div className='font-orange'>Mohon pilih titik lokasi pengiriman anda</div>
 							</div>
 						:

@@ -335,7 +335,7 @@ export default class CardPembayaran extends Component {
 										</div>
 									);
 								}
-								return option;
+								return option.description;
 							})
 						}
 					</InputGroup>
