@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import styles from '../../Checkout.scss';
-import humps from 'lodash-humps';
 import { Validator } from 'ree-validate';
 
 // component load
@@ -84,17 +83,19 @@ export default class NewAddressModalbox extends Component {
 		}
 		
 		if (e.name === 'kecamatan') {
-			this.kecamatan = humps(e.value.toLowerCase());
-			console.log(this.kecamatan);
+			this.kecamatan = e.value.toLowerCase();
+			const kecamatan = this.kecamatan.toLowerCase().replace(/\W+(.)/g, (match, chr) => {
+				return chr.toUpperCase();
+			});
 			const PolygonResult = Polygon.map((option) => {
-				return option[this.kecamatan] ? option : null;
+				return option[kecamatan] ? option : null;
 			}).filter((option) => {
 				return option;
 			});
 			this.setState({
 				gosendData: {
-					center: PolygonResult[0][this.kecamatan].center,
-					location_coords: PolygonResult[0][this.kecamatan].location_coords
+					center: PolygonResult[0][kecamatan].center,
+					location_coords: PolygonResult[0][kecamatan].location_coords
 				}
 			});
 		}
@@ -263,16 +264,12 @@ export default class NewAddressModalbox extends Component {
 						</Alert>
 						{
 							renderIf(gosendData)(
-								<Gosend
-									zoom={15} 
-									center={gosendData.center} 
-									polygonArea={gosendData.location_coords} 
-								/>
-							)
-						}
-						{
-							renderIf(gosendData)(
 								<div>
+									<Gosend
+										zoom={15} 
+										center={gosendData.center} 
+										polygonArea={gosendData.location_coords} 
+									/>
 									<Segment row>
 										<Level padded>
 											<Level.Item>
