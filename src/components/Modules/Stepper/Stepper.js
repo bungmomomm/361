@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import styles from './Stepper.scss';
+
 import Icon from '../../Elements/Icon/Icon';
 import { renderIf } from '@/utils';
+
+import styles from './Stepper.scss';
+import classNames from 'classnames/bind';
+const cx = classNames.bind(styles);
 
 export default class Stepper extends Component {
 	constructor(props) {
@@ -66,8 +70,13 @@ export default class Stepper extends Component {
 	}
 
 	render() {
+		const stepperWrapper = cx({
+			Stepper: true,
+			[`${this.props.size}`]: !!this.props.size
+		});
+
 		return (
-			<div className={styles.Stepper}>
+			<div className={stepperWrapper}>
 				<button 
 					onClick={this.decrement}
 					type='button' 

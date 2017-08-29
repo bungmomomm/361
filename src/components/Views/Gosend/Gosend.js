@@ -56,20 +56,21 @@ class Gosend extends Component {
 
 	onGeoLoad(lat, lng) {
 		const { google } = this.props;
-		const geo = new google.maps.Geocoder();
-		const latLng = new google.maps.LatLng(lat, lng);
-		
-		geo.geocode({ latLng }, (results, status) => {
-			if (status === google.maps.GeocoderStatus.OK) {
-				this.setAddress(results[0].formatted_address);
-				this.props.onGeoLoad(
-					lat, 
-					lng,
-					results[0].formatted_address
-				);
-				this.hideGoogleMap();
-			}
-		});
+		if (google) {
+			const geo = new google.maps.Geocoder();
+			const latLng = new google.maps.LatLng(lat, lng);
+			geo.geocode({ latLng }, (results, status) => {
+				if (status === google.maps.GeocoderStatus.OK) {
+					this.setAddress(results[0].formatted_address);
+					this.props.onGeoLoad(
+						lat, 
+						lng,
+						results[0].formatted_address
+					);
+					this.hideGoogleMap();
+				}
+			});
+		}
 	}
 
 	onSetPoint(props, marker, e) {
