@@ -288,7 +288,7 @@ export default class CardPembayaran extends Component {
 										return (
 											<div>
 												<InputGroup>
-													<Radio key={cardIndex} name='cc' variant='list' creditCard value={card.value} content={card.label} onChange={this.onSelectCard} checked={card.selected} />
+													<CreditCardRadio key={cardIndex} name='cc' variant='list' creditCard value={card.value} content={card.label} onChange={this.onSelectCard} checked={card.selected} />
 												</InputGroup>
 												{ renderIf(card.selected)(
 													<Row gapless>
