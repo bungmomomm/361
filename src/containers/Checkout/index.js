@@ -52,7 +52,11 @@ import {
 	bankNameChange,
 	applyBin,
 	changeOvoNumber,
-	termChange
+	termChange,
+	changeInstallmentCCNumber,
+	changeInstallmentCCMonth,
+	changeInstallmentCCYear,
+	changeInstallmentCCCvv
 } from '@/state/Payment/actions';
 import { 
 	paymentMethodName
@@ -135,6 +139,10 @@ class Checkout extends Component {
 		this.onOvoNumberChange = this.onOvoNumberChange.bind(this);
 		this.closeModalShippingAddress = this.closeModalShippingAddress.bind(this);
 		this.onTermChange = this.onTermChange.bind(this);
+		this.onInstallmentCCNumberChange = this.onInstallmentCCNumberChange.bind(this);
+		this.onInstallmentCCMonthChange = this.onInstallmentCCMonthChange.bind(this);
+		this.onInstallmentCCYearChange = this.onInstallmentCCYearChange.bind(this);
+		this.onInstallmentCCCvvChange = this.onInstallmentCCCvvChange.bind(this);
 	}
 
 	componentWillMount() {
@@ -572,6 +580,26 @@ class Checkout extends Component {
 		const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
 		dispatch(bankNameChange(this.state.token, bank, selectedPaymentOption));
 	}
+	onInstallmentCCNumberChange(event) {
+		console.log('index - event', event);
+		if (event.valid) {
+			this.props.dispatch(changeInstallmentCCNumber(event.ccNumber));
+			const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
+			this.props.dispatch(applyBin(this.state.token, selectedPaymentOption.value, event, ''));
+		}
+	}
+	onInstallmentCCMonthChange(monthData) {
+		console.log(event, this.state.test);
+		this.props.dispatch(changeInstallmentCCMonth(monthData.value));
+	}
+	onInstallmentCCYearChange(yearData) {
+		console.log(event, this.state.test);
+		this.props.dispatch(changeInstallmentCCYear(yearData.value));
+	}
+	onInstallmentCCCvvChange(event) {
+		console.log(event, this.state.test);
+		this.props.dispatch(changeInstallmentCCCvv(event.target.value));
+	}
 	
 	getDistricts(cityAndProvince) {
 		const { dispatch } = this.props;
@@ -783,6 +811,10 @@ class Checkout extends Component {
 										onBankChange={this.onBankChange}
 										onOvoNumberChange={this.onOvoNumberChange}
 										onTermChange={this.onTermChange}
+										onInstallmentCCNumberChange={this.onInstallmentCCNumberChange}
+										onInstallmentCCMonthChange={this.onInstallmentCCMonthChange}
+										onInstallmentCCYearChange={this.onInstallmentCCYearChange}
+										onInstallmentCCCvvChange={this.onInstallmentCCCvvChange}
 									/>
 								</Col>
 							</Row>

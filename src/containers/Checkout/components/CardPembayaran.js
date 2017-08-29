@@ -81,6 +81,10 @@ export default class CardPembayaran extends Component {
 		this.onBankChange = this.onBankChange.bind(this);
 		this.onOvoNumberChange = this.onOvoNumberChange.bind(this);
 		this.onTermChange = this.onTermChange.bind(this);
+		this.onInstallmentCCNumberChange = this.onInstallmentCCNumberChange.bind(this);
+		this.onInstallmentCCMonthChange = this.onInstallmentCCMonthChange.bind(this);
+		this.onInstallmentCCYearChange = this.onInstallmentCCYearChange.bind(this);
+		this.onInstallmentCCCvvChange = this.onInstallmentCCCvvChange.bind(this);
 	}
 	onChange(event) {
 		this.setState({
@@ -136,6 +140,19 @@ export default class CardPembayaran extends Component {
 	onBankChange(event) {
 		const bank = event.target;
 		this.props.onBankChange(bank);
+	}
+
+	onInstallmentCCNumberChange(event) {
+		this.props.onInstallmentCCNumberChange(event);
+	}
+	onInstallmentCCMonthChange(data) {
+		this.props.onInstallmentCCMonthChange(data);
+	}
+	onInstallmentCCYearChange(data) {
+		this.props.onInstallmentCCYearChange(data);
+	}
+	onInstallmentCCCvvChange(data) {
+		this.props.onInstallmentCCCvvChange(data);
 	}
 
 	onOvoNumberChange(event) {
@@ -302,18 +319,18 @@ export default class CardPembayaran extends Component {
 				paymentOptions = (
 					<InputGroup>
 						<InputGroup>
-							<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onChange={this.onCardNumberChange} />
+							<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onChange={this.onInstallmentCCNumberChange} />
 						</InputGroup>
 						<label htmlFor='masa-berlaku'>Masa Berlaku</label>
 						<Level padded>
 							<Level.Item>
-								<Select top selectedLabel='-- Bulan' options={Bulan} onChange={this.onCardMonthChange} />
+								<Select top selectedLabel='-- Bulan' options={Bulan} onChange={this.onInstallmentCCMonthChange} />
 							</Level.Item>
 							<Level.Item>
-								<Select top selectedLabel='-- Tahun' options={this.props.tahun} onChange={this.onCardYearChange} />
+								<Select top selectedLabel='-- Tahun' options={this.props.tahun} onChange={this.onInstallmentCCYearChange} />
 							</Level.Item>
 							<Level.Item>
-								<Input type='number' placeholder='cvv' onBlur={this.onCardCvvChange} />
+								<Input type='number' placeholder='cvv' onBlur={this.onInstallmentCCCvvChange} />
 							</Level.Item>
 							<Level.Item>
 								<Sprites name='cvv' />

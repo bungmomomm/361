@@ -147,6 +147,47 @@ export default (state = initialState, action) => {
 			selectedPaymentOption: state.selectedPaymentOption ? state.selectedPaymentOption : state.paymentMethods.payments.credit_card.paymentItems[0]
 		};
 	}
+	case constants.PAY_INSTALLMENT_CREDIT_CARD_ADD: {
+		let selectedCard = {
+			value: 0
+		};
+		selectedCard = {
+			...selectedCard,
+			...state.selectedCard
+		};
+		const selectedCardDetail = state.selectedCardDetail || {
+			month: 0,
+			year: 0,
+			cvv: 0
+		};
+		switch (action.mode) {
+		case 'card_number':
+			selectedCard.value = action.payload.cardNumber;	
+			break;
+		case 'month':
+			selectedCardDetail.month = action.payload.month;
+			break;
+		case 'year':
+			selectedCardDetail.year = action.payload.year;
+			break;
+		case 'cvv':
+			selectedCardDetail.cvv = action.payload.cvv;
+			break;
+		case 'card_number_apply':
+			applyBin(action.payload.token, 'commerce_veritrans_installment', action.payload.cardNumber);
+			break;
+		default:
+			break;
+		}
+		const selectedPaymentOption = state.selectedPaymentOption ? state.selectedPaymentOption : state.selectedPayment.paymentItems[0];
+		selectedPaymentOption.term = state.term;
+		return {
+			...state,
+			selectedCard,
+			selectedCardDetail,
+			selectedPaymentOption
+		};
+	}
 	case constants.PAY_UPDATED: {
 		return {
 			...state,

@@ -180,6 +180,35 @@ const changeInstallment = (term) => ({
 	}
 });
 
+const installmentCCNumberChanged = (cardNumber) => ({
+	type: constants.PAY_INSTALLMENT_CREDIT_CARD_ADD,
+	mode: 'card_number',
+	payload: {
+		cardNumber
+	}
+});
+const InstallmentCCMonthChange = (month) => ({
+	type: constants.PAY_INSTALLMENT_CREDIT_CARD_ADD,
+	mode: 'month',
+	payload: {
+		month
+	}
+});
+const InstallmentCCYearChange = (year) => ({
+	type: constants.PAY_INSTALLMENT_CREDIT_CARD_ADD,
+	mode: 'year',
+	payload: {
+		year
+	}
+});
+const InstallmentCCCvvChange = (cvv) => ({
+	type: constants.PAY_INSTALLMENT_CREDIT_CARD_ADD,
+	mode: 'cvv',
+	payload: {
+		cvv
+	}
+});
+
 // action
 
 const getAvailablePaymentMethod = (token) => (dispatch) => {
@@ -243,6 +272,21 @@ const changeCreditCardCvv = (cvv) => dispatch => {
 	dispatch(creditCardCvvChange(cvv));
 };
 
+const changeInstallmentCCNumber = (cardNumber) => dispatch => {
+	dispatch(installmentCCNumberChanged(cardNumber));
+};
+const changeInstallmentCCMonth = (month) => dispatch => {
+	dispatch(InstallmentCCMonthChange(month));
+};
+
+const changeInstallmentCCYear = (year) => dispatch => {
+	dispatch(InstallmentCCYearChange(year));
+};
+
+const changeInstallmentCCCvv = (cvv) => dispatch => {
+	dispatch(InstallmentCCCvvChange(cvv));
+};
+
 const vtModalBoxOpen = (state, url) => dispatch => {
 	dispatch(toggleVtModalBox(state, url));
 };
@@ -284,7 +328,7 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 	dispatch(payRequest());
 	if (
 		payment.paymentMethod === 'commerce_veritrans_installment'
-		&& payment.paymentMethod === 'commerce_veritrans'
+		|| payment.paymentMethod === 'commerce_veritrans'
 	) {
 		// prepare cc
 		request({
@@ -393,6 +437,10 @@ export default {
 	paymentError,
 	paymentErrorClose,
 	termChange,
+	changeInstallmentCCNumber,
+	changeInstallmentCCMonth,
+	changeInstallmentCCYear,
+	changeInstallmentCCCvv,
 	ecashModalBoxOpen,
 	changeOvoNumber,
 	payError,

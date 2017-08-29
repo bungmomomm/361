@@ -125,6 +125,10 @@ const getListAvailablePaymentMethod = (response) => {
 };
 
 const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
+	console.log('ORDERID: ', orderId);
+	console.log('PAYMENT: ', payment);
+	console.log('PAYMENT-DETAIL: ', paymentDetail);
+	console.log('MODE: ', mode);
 	const paymentPayload = {
 		type: 'payment',
 		attributes: {
@@ -161,13 +165,13 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
 		break;
 	case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 		paymentPayload.attributes.amount = paymentDetail.amount;
-		if (mode !== 'cc') {
+		if (mode === 'cc') {
 			paymentPayload.attributes.credit_card = {
 				bank: paymentDetail.card.bank,
 				token_id: paymentDetail.card.value,
-				term: paymentDetail.term.term,
-				site_id: paymentDetail.term.siteid,
-				provider: paymentDetail.term.provider
+				term: payment.term.term,
+				site_id: payment.term.siteid,
+				provider: payment.term.provider
 			};		
 		}
 		break;
