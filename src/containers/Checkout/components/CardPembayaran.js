@@ -78,6 +78,7 @@ export default class CardPembayaran extends Component {
 		this.onCardYearChange = this.onCardYearChange.bind(this);
 		this.onCardCvvChange = this.onCardCvvChange.bind(this);
 		this.onInstallmentBankChange = this.onInstallmentBankChange.bind(this);
+		this.onBankChange = this.onBankChange.bind(this);
 	}
 	onChange(event) {
 		this.setState({
@@ -121,10 +122,18 @@ export default class CardPembayaran extends Component {
 		this.props.onCardCvvChange(data);
 	}
 	onInstallmentBankChange(data) {
+		console.log(data);
 		this.setState({
 			paymentMethodChanged: true
 		});
+		const bank = data;
+		this.props.onBankChange(bank);
 		// this.props.onPaymentMethodChange();
+	}
+
+	onBankChange(event) {
+		const bank = event.target;
+		this.props.onBankChange(bank);
 	}
 
 	handleCekVoucher(event) {
