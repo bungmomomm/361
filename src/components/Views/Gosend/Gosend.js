@@ -7,7 +7,7 @@ import Input from '../../Elements/Input/Input';
 import Button from '../../Elements/Button/Button';
 import Alert from '../../Modules/Alert/Alert';
 import { Map, Marker, Polygon, GoogleApiWrapper } from 'google-maps-react';
-import { renderIf, geocoder } from '@/utils';
+import { renderIf } from '@/utils';
 
 const cx = classNames.bind(styles);
 
@@ -22,10 +22,16 @@ class Gosend extends Component {
 			icon: 'gosend-marker.png',
 			autocomplete: false,
 			markerInPolygon: false,
-			polygonArea: this.props.polygonArea || []
+			polygonArea: this.props.polygonArea || [],
+			point: {
+				lat: null,
+				lng: null
+			}
 		};
 		this.showGoogleMap = this.showGoogleMap.bind(this);
 		this.onMouseoverPolygon = this.onMouseoverPolygon.bind(this);
+		this.onGeoLoad = this.onGeoLoad.bind(this);
+		this.onSetPoint = this.onSetPoint.bind(this);
 		this.renderAutocomplete = this.renderAutocomplete.bind(this);
 		this.autocomplete = '';
 		this.insidePolygon = '';
@@ -42,25 +48,43 @@ class Gosend extends Component {
 		window.removeEventListener('click', this.autocomplete, false);
 	}
 
-	onGeoLoad(results, status) {
-		console.log(results);
-		console.log(this);
+	onGeoLoad(lat, lng) {
+		const { google } = this.props;
+		const geo = new google.maps.Geocoder();
+		const latLng = new google.maps.LatLng(lat, lng);
+		
+		geo.geocode({ latLng }, (results, status) => {
+			if (status === google.maps.GeocoderStatus.OK) {
+				this.setAddress(results[0].formatted_address);
+				this.props.onGeoLoad(
+					this.state.point.lat, 
+					this.state.point.lng,
+					results[0].formatted_address
+				);
+				this.hideGoogleMap();
+			}
+		});
+		
+	}
+
+	onSetPoint(props, marker, e) {
+		this.setState({
+			point: {
+				lat: e.latLng.lat(),
+				lng: e.latLng.lng()
+			}
+		});
+
+		this.onGeoLoad(e.latLng.lat(), e.latLng.lng());
+
 	}
 	
 	onMouseoverPolygon(props, polygon, e) {
-		// const geo = geocoder();
-		console.log(geocoder());
-		console.log(geocoder().geocode({ address: 'Jakarta, Indonesia' }));
-		// const latlongitude = latlng(e.latLng.lat(), e.latLng.lng());
-		// const paramsGeo = {
-		// 	latLng: latlongitude
-		// };
-		// geo.geocode.geocode(paramsGeo, this.onGeoLoad);
-
 		this.setCenter({
 			lat: e.latLng.lat(),
 			lng: e.latLng.lng()
 		});
+		this.onGeoLoad(e.latLng.lat(), e.latLng.lng());
 	}
 
 	onMapClicked(props) {
@@ -90,6 +114,12 @@ class Gosend extends Component {
 			displayMap: true,
 			center: this.props.center,
 			polygonArea: this.props.polygonArea
+		});
+	}
+
+	hideGoogleMap() {
+		this.setState({
+			displayMap: false
 		});
 	}
 
@@ -173,6 +203,7 @@ class Gosend extends Component {
 											icon={{
 												url: this.markerIcon
 											}}
+											onClick={this.onSetPoint}
 										/>
 									</Map>
 								)
@@ -199,6 +230,6 @@ Gosend.propTypes = {
 };
 
 export default GoogleApiWrapper({
-	apiKey: ('AIzaSyDi3S2lVNeA-V8N0QXFqtLLY4rTo2ay-OQ')
+	apiKey: ('AIzaSyChjpQSbwKaJOCJy_06GAwU9dNMwVq_rg4')
 })(Gosend);
 
