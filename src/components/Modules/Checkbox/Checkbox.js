@@ -27,7 +27,7 @@ const Checkbox = (props) => {
 		<input
 			id={idFor}
 			type='checkbox'
-			checked={props.checked}
+			defaultChecked={props.checked}
 			className={styles.Checkbox} 
 			name={props.name} 
 			onClick={onClick}
