@@ -79,6 +79,7 @@ export default class CardPembayaran extends Component {
 		this.onCardCvvChange = this.onCardCvvChange.bind(this);
 		this.onInstallmentBankChange = this.onInstallmentBankChange.bind(this);
 		this.onBankChange = this.onBankChange.bind(this);
+		this.onOvoNumberChange = this.onOvoNumberChange.bind(this);
 	}
 	onChange(event) {
 		this.setState({
@@ -134,6 +135,10 @@ export default class CardPembayaran extends Component {
 	onBankChange(event) {
 		const bank = event.target;
 		this.props.onBankChange(bank);
+	}
+
+	onOvoNumberChange(event) {
+		this.props.onOvoNumberChange(event);
 	}
 
 	handleCekVoucher(event) {
@@ -443,7 +448,7 @@ export default class CardPembayaran extends Component {
 							</InputGroup>
 						)}
 						<InputGroup>
-							<Input label='Masukkan OVO ID' type='number' placeholder='OVO ID' />
+							<Input label='Masukkan OVO ID' type='number' placeholder='OVO ID' onChange={this.onOvoNumberChange} />
 						</InputGroup>
 						
 						<div className={styles.checkOutAction}>
