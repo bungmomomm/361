@@ -142,7 +142,9 @@ class Checkout extends Component {
 		dispatch(getAddresses(this.state.token)).then(defaultAddress => {
 			if (typeof defaultAddress.type !== 'undefined') {
 				this.setState({
-					selectedAddress: defaultAddress
+					selectedAddress: defaultAddress,
+					enablePesananPengiriman: true, 
+					enablePembayaran: true
 				});
 			}
 		});

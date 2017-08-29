@@ -27,8 +27,9 @@ export default class CardPengiriman extends Component {
 			elockerTab: false,
 			shipping: [],
 			o2o: [],
-			selectedAddress: this.props.selectedAddress || null,
+			selectedAddress: null,
 			closeSelect: true,
+			latLngExist: false
 		};
 		this.onChoisedAddress = this.onChoisedAddress.bind(this);
 		this.onChangeAddress = this.onChangeAddress.bind(this);
@@ -42,6 +43,15 @@ export default class CardPengiriman extends Component {
 	componentWillReceiveProps(nextProps) {
 		const shipping = nextProps.addresses;
 		const address = [];
+		const selectedAddress = nextProps.selectedAddress;
+		if (selectedAddress) {
+			const latLngExist = selectedAddress.attributes.longitude !== '' && selectedAddress.attributes.latitude !== '';
+			this.setState({
+				selectedAddress,
+				latLngExist
+			});
+		}
+		
 		if (typeof shipping !== 'undefined') {
 			shipping.forEach((value, index) => {
 				address.push({
@@ -121,6 +131,7 @@ export default class CardPengiriman extends Component {
 				iconPosition='left'
 			/>
 		);
+		const { latLngExist } = this.state;
 		
 		return (
 			<Tabs tabActive={0} stretch onAfterChange={this.onGetListO2o} >
@@ -147,7 +158,15 @@ export default class CardPengiriman extends Component {
 							<div>
 								<Level>
 									<Level.Left><strong>{this.state.selectedAddress.attributes.address_label}</strong></Level.Left>
-									<Level.Right className='text-right'><Icon name='map-marker' /> &nbsp; Lokasi Sudah Ditandai</Level.Right>
+									<Level.Right className='text-right'>
+										{
+											renderIf(latLngExist)(
+												<div>	
+													<Icon name='map-marker' /> &nbsp; Lokasi Sudah Ditandai
+												</div>
+											)
+										}
+									</Level.Right>
 								</Level>
 								<p>
 									<strong>{this.state.selectedAddress.attributes.fullname}</strong> <br />

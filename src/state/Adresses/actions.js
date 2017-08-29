@@ -103,21 +103,6 @@ const getAddresses = (token) => dispatch => new Promise((resolve, reject) => {
 		const address = response.data.data.map((value, index) => {
 			return humps(value);
 		}).filter(e => e.type === 'shipping');
-		console.log(address);
-
-		let defaultAddress = [];	
-		if (address.length > 0) {
-
-			const minimumDateISO = Math.min(...address.map((value, index) => {
-				return Date.parse(value.attributes.createdTime);
-			}));
-			
-			defaultAddress = address
-								.filter(e => e.attributes.fgDefault === '1' || 
-										Date.parse(e.attributes.createdTime) === minimumDateISO
-								)[0];
-		}
-		resolve(defaultAddress);
 
 		const billing = response.data.data.map((value, index) => {
 			return humps(value);
@@ -136,10 +121,24 @@ const getAddresses = (token) => dispatch => new Promise((resolve, reject) => {
 				attributes: latesto2o[0].attributes
 			}];
 		}
+		let defaultAddress = [];	
+		if (address.length > 0) {
 
+			const minimumDateISO = Math.min(...address.map((value, index) => {
+				return Date.parse(value.attributes.createdTime);
+			}));
+			
+			defaultAddress = address
+								.filter(e => e.attributes.fgDefault === '1' || 
+										Date.parse(e.attributes.createdTime) === minimumDateISO
+								)[0];
+			dispatch(getPlaceOrderCart(token, defaultAddress));
+		}
 		dispatch(addressesReceived(address, billing, latesto2o));
 		dispatch(getAvailablePaymentMethod(token));
+		resolve(defaultAddress);
 	})
+	
 	.catch((error) => {
 		console.log(error);
 	});

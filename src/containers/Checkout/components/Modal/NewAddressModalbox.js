@@ -9,8 +9,8 @@ import { Polygon } from '@/data/polygons';
 
 import { renderIf } from '@/utils';
 
-// Dummy Data
-// import { Provinsi } from '@/data';
+// step point 
+import { pointStep } from '@/data';
 
 export default class NewAddressModalbox extends Component {
 	constructor(props) {
@@ -46,18 +46,16 @@ export default class NewAddressModalbox extends Component {
 			},
 			errors: this.validator.errorBag,
 			district: {},
-			enableGosend: false,
-			inGosendArea: false,
 			gosendData: {
 				center: {
 					lat: this.props.formDataAddress.latitude,
 					lng: this.props.formDataAddress.longitude,
 				},
 				location_coords: null,
-				isFromCustomer: this.props.formDataAddress.longitude && this.props.formDataAddress.latitude
+				stepPoint: pointStep.pointHide
 			}, 
-			formattedAddress: '', 
-			isPinPoint: false
+			formattedAddress: '',
+			isCustomerData: false
 		};
 		this.onChange = this.onChange.bind(this);
 		this.onChangeSelect = this.onChangeSelect.bind(this);
@@ -71,13 +69,19 @@ export default class NewAddressModalbox extends Component {
 	}
 
 	componentWillMount() {
-		if (this.props.formDataAddress.kotProv) {
-			if (this.props.formDataAddress.kotProv.toLowerCase().includes('jakarta')) {
-				this.setState({
-					inGosendArea: true
-				});
-			}
-		}
+		const la = this.props.formDataAddress.latitude || '';
+		const lo = this.props.formDataAddress.longitude || '';
+		
+		if (la !== '' && lo !== '') {
+			const gosendData = this.state.gosendData;
+			this.setState({
+				gosendData: {
+					...gosendData,
+					stepPoint: pointStep.showPointAddress
+				}, 
+				isCustomerData: true
+			});
+		}		
 	}
 
 	onChange(e) {
@@ -100,6 +104,8 @@ export default class NewAddressModalbox extends Component {
 		const gosendData = this.state.gosendData;
 		this.setState({
 			formattedAddress, 
+			cityProvGosend: false, 
+			districtGosend: true,
 			isPinPoint: true, 
 			formData: {
 				...formData,
@@ -108,21 +114,22 @@ export default class NewAddressModalbox extends Component {
 			},
 			gosendData: {
 				...gosendData,
-				isFromCustomer: true
+				stepPoint: pointStep.pinPoined
 			}
 		});
 	}
 	onChangePoint() {
-		const PolygonResult = this.getPolygonData(this.props.formDataAddress.kecamatan.toLowerCase());
+		const kecamatan = this.props.formDataAddress.kecamatan || this.state.formData.kecamatan;
+		const PolygonResult = this.getPolygonData(kecamatan.toLowerCase());
 		const gosendData = this.state.gosendData;
 		const center = PolygonResult.center;
 		const locationCoords = PolygonResult.location_coords;
 		this.setState({
 			gosendData: {
 				...gosendData,
-				isFromCustomer: false,
 				center,
-				location_coords: locationCoords
+				location_coords: locationCoords,
+				stepPoint: pointStep.pinPoint
 			}
 		});
 	}
@@ -174,10 +181,11 @@ export default class NewAddressModalbox extends Component {
 		if (e.name === 'kecamatan') {
 			const PolygonResult = this.getPolygonData(e.value.toLowerCase());
 			
-			// if (PolygonResult.length > 0) {
+			const gosendData = this.state.gosendData;
 			this.setState({
-				inGosendArea: true,
 				gosendData: {
+					...gosendData,
+					stepPoint: pointStep.pinPoint,
 					center: PolygonResult.center,
 					location_coords: PolygonResult.location_coords
 				}
@@ -209,9 +217,7 @@ export default class NewAddressModalbox extends Component {
 		const { 
 			errors,
 			gosendData,
-			inGosendArea,
-			// enableGosend,
-			isPinPoint
+			isCustomerData
 		} = this.state;
 		return (
 			<Modal size='medium' shown={this.props.shown} onClose={this.onClose} >
@@ -323,24 +329,19 @@ export default class NewAddressModalbox extends Component {
 							</small>
 						</Alert>
 						{
-							renderIf(gosendData.center && inGosendArea)(
+							renderIf(gosendData.stepPoint === pointStep.pinPoint)(
 								<Gosend
 									zoom={15} 
 									center={gosendData.center} 
 									polygonArea={gosendData.location_coords} 
 									onGeoLoad={this.onGeoLoad}
-									isFromCustomer={gosendData.isFromCustomer}
+									isCustomerData={isCustomerData}
 								/>
 							)
 						}
 						{
-							renderIf(gosendData.isFromCustomer && (this.props.formDataAddress.isEdit || isPinPoint))(
+							renderIf(gosendData.stepPoint === pointStep.showPointAddress || gosendData.stepPoint === pointStep.pinPoined)(
 								<div>
-									<Gosend
-										zoom={15} 
-										center={gosendData.center} 
-										polygonArea={gosendData.location_coords} 
-									/>
 									<Segment row>
 										<Level padded>
 											<Level.Item>
