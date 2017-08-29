@@ -52,7 +52,8 @@ export default (state = initialState, action) => {
 	case CRT_PLACE_ORDER: {
 		return {
 			...state, 
-			soNumber: action.payload.soNumber
+			soNumber: action.payload.soNumber,
+			loading: false,
 		};
 	}
 
@@ -60,6 +61,7 @@ export default (state = initialState, action) => {
 		if (action.status !== 1) {
 			return {
 				...state, 
+				loading: !action.status,
 			};	
 		}
 		return {
@@ -67,7 +69,7 @@ export default (state = initialState, action) => {
 			data: action.payload.cart,
 			isPickupable: action.payload.isPickupable,
 			totalItems: action.payload.totalItems,
-			loading: true,
+			loading: !action.status,
 		};
 	}
 
@@ -75,6 +77,7 @@ export default (state = initialState, action) => {
 		return {
 			...state, 
 			data: action.payload.data,
+			loading: false,
 		};
 	}
 
@@ -82,6 +85,7 @@ export default (state = initialState, action) => {
 		return {
 			...state, 
 			productId: action.payload.productId,
+			loading: false,
 		};
 	}
 	default: 

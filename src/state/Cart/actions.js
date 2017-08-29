@@ -192,7 +192,7 @@ const updateQtyCart = (token, productQty, productId, props) => dispatch => {
 		dispatch(paymentInfoUpdated(getCartPaymentData(res.data.data.attributes.total_price, 'order')));
 		dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, res.data.data.attributes.total_price.count));
 		dispatch(getAvailablePaymentMethod(token));
-		if (!res.data.data.attributes.total_price.coupon_id) {
+		if (props.coupon.coupon && !res.data.data.attributes.total_price.coupon_id) {
 			dispatch(removeCoupon(token, props.soNumber));
 		}
 	})
