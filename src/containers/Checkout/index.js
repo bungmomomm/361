@@ -58,7 +58,8 @@ import {
 	changeInstallmentCCNumber,
 	changeInstallmentCCMonth,
 	changeInstallmentCCYear,
-	changeInstallmentCCCvv
+	changeInstallmentCCCvv,
+	saveCC
 } from '@/state/Payment/actions';
 import { 
 	paymentMethodName
@@ -156,6 +157,7 @@ class Checkout extends Component {
 		this.onResendOtp = this.onResendOtp.bind(this);
 		this.onVerity = this.onVerity.bind(this);
 		this.onRequestSprintInstallment = this.onRequestSprintInstallment.bind(this);
+		this.onSaveCcOption = this.onSaveCcOption.bind(this);
 	}
 
 	componentWillMount() {
@@ -357,7 +359,6 @@ class Checkout extends Component {
 	}
 
 	onPaymentMethodChange(event) {
-		console.log('asdasdasdasd', event);
 		this.props.dispatch(changePaymentMethod(event.value, this.props.payments.paymentMethods));
 	}
 
@@ -424,7 +425,7 @@ class Checkout extends Component {
 		this.onChoisedAddress(selectedLocker);
 	}
 
-	onRequestSprintInstallment() {
+	onRequestSprintInstallment(mode) {
 		const { dispatch } = this.props;
 		dispatch(
 			pay(
@@ -441,8 +442,10 @@ class Checkout extends Component {
 					cardNumber: this.props.payments.selectedCard.value,
 					cardCVV: this.props.payments.selectedCardDetail.cvv,
 					cardMonth: this.props.payments.selectedCardDetail.month,
-					cardYear: this.props.payments.selectedCardDetail.year
-				}
+					cardYear: this.props.payments.selectedCardDetail.year,
+					amount: this.props.payments.total,
+				},
+				mode
 			)
 		);
 	}
@@ -505,8 +508,9 @@ class Checkout extends Component {
 								bank: bankName,
 								detail: this.props.payments.selectedCardDetail
 							},
+							saveCC: this.props.payments.saveCC,
 							ovoPhoneNumber: this.props.payments.ovoNumber,
-							billingPhoneNumber: this.props.billingAddress.phone
+							billingPhoneNumber: this.props.payments.billingPhoneNumber
 						}
 					)
 				);
@@ -538,9 +542,10 @@ class Checkout extends Component {
 								bank: bankName,
 								detail: this.props.payments.selectedCardDetail
 							},
+							saveCC: this.props.payments.saveCC,
 							term: this.props.payments.term,
 							ovoPhoneNumber: this.props.payments.ovoNumber,
-							billingPhoneNumber: this.props.billingAddress.phone
+							billingPhoneNumber: this.props.payments.billingPhoneNumber
 						}
 					)
 				);
@@ -560,7 +565,7 @@ class Checkout extends Component {
 						value: this.props.payments.selectedCard.value
 					},
 					ovoPhoneNumber: this.props.payments.ovoNumber,
-					billingPhoneNumber: this.props.billingAddress.phone
+					billingPhoneNumber: this.props.payments.billingPhoneNumber
 				},
 				'cc',
 				card,
@@ -599,7 +604,8 @@ class Checkout extends Component {
 				this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
 				break;
 			case paymentMethodName.COMMERCE_SPRINT_ASIA:
-				this.onRequestSprintInstallment();
+				mode = 'sprint';
+				this.onRequestSprintInstallment(mode);
 				break;
 			default:
 				if (this.props.payments.selectedPaymentOption) {
@@ -609,7 +615,6 @@ class Checkout extends Component {
 						mode = 'bca_klikpay';
 					}
 				}
-				console.log(this.props);
 				dispatch(
 					pay(
 						this.state.token, 
@@ -628,7 +633,6 @@ class Checkout extends Component {
 	}
 
 	onSubmitAddress(formData) {
-		console.log(formData);
 		const { dispatch } = this.props;
 		dispatch(saveAddress(this.state.token, formData));
 		this.setState({
@@ -636,7 +640,6 @@ class Checkout extends Component {
 		});
 	}
 	onCardNumberChange(event) {
-		console.log(event, this.state.test);
 		if (event.valid) {
 			this.props.dispatch(changeCreditCardNumber(event.ccNumber));
 			const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
@@ -645,15 +648,12 @@ class Checkout extends Component {
 	}
 
 	onCardMonthChange(monthData) {
-		console.log(event, this.state.test);
 		this.props.dispatch(changeCreditCardMonth(monthData.value));
 	}
 	onCardYearChange(yearData) {
-		console.log(event, this.state.test);
 		this.props.dispatch(changeCreditCardYear(yearData.value));
 	}
 	onCardCvvChange(event) {
-		console.log(event, this.state.test);
 		this.props.dispatch(changeCreditCardCvv(event.target.value));
 	}
 
@@ -663,7 +663,6 @@ class Checkout extends Component {
 		dispatch(bankNameChange(this.state.token, bank, selectedPaymentOption));
 	}
 	onInstallmentCCNumberChange(event) {
-		console.log('index - event', event);
 		if (event.valid) {
 			this.props.dispatch(changeInstallmentCCNumber(event.ccNumber));
 			const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
@@ -671,16 +670,17 @@ class Checkout extends Component {
 		}
 	}
 	onInstallmentCCMonthChange(monthData) {
-		console.log(event, this.state.test);
 		this.props.dispatch(changeInstallmentCCMonth(monthData.value));
 	}
 	onInstallmentCCYearChange(yearData) {
-		console.log(event, this.state.test);
 		this.props.dispatch(changeInstallmentCCYear(yearData.value));
 	}
 	onInstallmentCCCvvChange(event) {
-		console.log(event, this.state.test);
 		this.props.dispatch(changeInstallmentCCCvv(event.target.value));
+	}
+
+	onSaveCcOption(event) {
+		this.props.dispatch(saveCC(event));
 	}
 
 	onCloseErrorBox() {
@@ -937,6 +937,7 @@ class Checkout extends Component {
 										onInstallmentCCMonthChange={this.onInstallmentCCMonthChange}
 										onInstallmentCCYearChange={this.onInstallmentCCYearChange}
 										onInstallmentCCCvvChange={this.onInstallmentCCCvvChange}
+										onSaveCcOption={this.onSaveCcOption}
 									/>
 								</Col>
 							</Row>
@@ -987,10 +988,48 @@ Checkout.propTypes = {
 };
 
 const getBillingAddress = (state) => {
-	return typeof state.addresses.billing !== 'undefined' ? state.addresses.billing[0] : false;
+	if (
+		typeof state === 'undefined'
+	) {
+		return false;
+	}
+	if (
+		typeof state.addresses === 'undefined'
+	) {
+		return false;
+	}
+	if (
+		typeof state.addresses.billing === 'undefined'
+	) {
+		return false;
+	}
+	return state.addresses.billing[0];
+};
+
+const getOvoInfo = (state) => {
+	if (
+		typeof state === 'undefined'
+	) {
+		return false;
+	}
+	if (
+		typeof state.cart === 'undefined'
+	) {
+		return false;
+	}
+	if (
+		typeof state.cart.ovoInfo === 'undefined'
+	) {
+		return false;
+	}
+	return state.cart.ovoInfo;
 };
 
 const mapStateToProps = (state) => {
+	const billingAddress = getBillingAddress(state);
+	state.payments.billingPhoneNumber = billingAddress ? billingAddress.attributes.phone : null;
+	state.payments.ovoInfo = getOvoInfo();
+	state.payments.ovoPhoneNumber = state.payments.ovoInfo ? state.payments.ovoInfo.ovoId : null;
 	return {
 		billingAddress: getBillingAddress(state),
 		soNumber: state.cart.soNumber,

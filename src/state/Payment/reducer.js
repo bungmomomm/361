@@ -217,6 +217,8 @@ export default (state = initialState, action) => {
 		};
 	}
 	case constants.PAY_TERM_CHANGE: {
+		const selectedPaymentOption = state.selectedPaymentOption ? state.selectedPaymentOption : state.selectedPayment.paymentItems[0];
+		selectedPaymentOption.term = action.payload.term;
 		return {
 			...state,
 			term: action.payload.term
@@ -232,6 +234,13 @@ export default (state = initialState, action) => {
 		return {
 			...state,
 			billingNumber: action.payload.billingNumber
+		};
+	}
+
+	case constants.PAY_SAVE_CC: {
+		return {
+			...state,
+			saveCC: action.state
 		};
 	}
 	case constants.PAY_ERROR: {

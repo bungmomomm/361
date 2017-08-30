@@ -35,7 +35,7 @@ export default class NewAddressModalbox extends Component {
 			no_hp: 'required|min:6|max:14|regex:^([0-9]+)$',
 			provinsi: 'required',
 			kecamatan: 'required',
-			kodepos: 'required',
+			kodepos: 'required|min:5',
 			address: 'required',
 			id: 'min:1',
 			isEdit: 'min:1',

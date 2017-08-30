@@ -48,13 +48,14 @@ const gettingCart = (token) => ({
 	}
 });
 
-const cartReceived = (cart, isPickupable = 0, totalItems = 0) => ({
+const cartReceived = (cart, isPickupable = 0, totalItems = 0, ovoInfo = false) => ({
 	type: CRT_GET_CART,
 	status: 1,
 	payload: {
 		cart,
 		isPickupable,
-		totalItems
+		totalItems,
+		ovoInfo
 	}
 });
 
@@ -106,7 +107,7 @@ const getPlaceOrderCart = (token, address, billing = false) => dispatch => new P
 				return value;
 			}).filter(e => e.id === 'pickup');
 			dispatch(paymentInfoUpdated(getCartPaymentData(res.data.data.attributes.total_price, 'order')));
-			dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, response.data.data.attributes.total_price.count));
+			dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, response.data.data.attributes.total_price.count, { ovoId: res.data.data.attributes.ovo_id, ovoFlag: res.data.data.attributes.ovo_verified_flag }));
 			dispatch(getAvailablePaymentMethod(token));
 			resolve(setCartModel(res.data));
 		})

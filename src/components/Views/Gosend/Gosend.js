@@ -5,7 +5,7 @@ import classNames from 'classnames/bind';
 import Icon from '../../Elements/Icon/Icon';
 import Input from '../../Elements/Input/Input';
 import Button from '../../Elements/Button/Button';
-import Alert from '../../Modules/Alert/Alert';
+// import Alert from '../../Modules/Alert/Alert';
 import { Map, Marker, Polygon, GoogleApiWrapper } from 'google-maps-react';
 import { renderIf } from '@/utils';
 
@@ -233,9 +233,9 @@ class Gosend extends Component {
 								<Icon name='map-marker' /> 
 								<span>{this.state.formattedAddress}</span>
 							</div>
-							<Alert align='center' color='red' close>
+							{/* <Alert align='center' color='red' close>
 								<em>Lokasi tidak sesuai dengan alamat pengiriman</em>
-							</Alert>
+							</Alert> */}
 						</div>
 					)
 				}

@@ -70,6 +70,9 @@ const getListAvailablePaymentMethod = (response) => {
 					...paymentMethodItem(payment),
 					cards: !payment.relationships ? [] : getCardRelations(payment.relationships.card_number, response.included)
 				};
+				if (parseInt(paymentData.fg_default, 10) === 1) {
+					methodData.selected = true;
+				}
 				return paymentData;
 			});
 			break;
@@ -102,12 +105,21 @@ const getListAvailablePaymentMethod = (response) => {
 					};
 					return bank;
 				});
+				if (parseInt(paymentData.fg_default, 10) === 1) {
+					methodData.selected = true;
+				}
+
 				return paymentData;
 			});
 			break;
 		default:
 			methodData.payment_items = methodData.payment_items.map((payment, paymentIndex) => {
-				return paymentMethodItem(payment);
+				const paymentData = paymentMethodItem(payment);
+				if (parseInt(paymentData.fg_default, 10) === 1) {
+					methodData.selected = true;
+				}
+
+				return paymentData;
 			});
 			break;
 		}
@@ -135,19 +147,20 @@ const getListAvailablePaymentMethod = (response) => {
 const getSprintPayload = (orderId, payment, paymentDetail) => {
 	return {
 		so_number: orderId,
-		bank_name: paymentDetail.card.bank,
+		bank_name: paymentDetail.card.bank.value,
 		term: payment.term.term,
 		cc: {
 			card_number: paymentDetail.cardNumber,
 			card_expiration_month: paymentDetail.cardMonth,
 			card_expiration_year: paymentDetail.cardYear,
 			card_type: '',
-			card_cvv: paymentDetail.cardCVV
+			card_cvv: paymentDetail.cardCVV,
+			amount: paymentDetail.amount
 		}
 	};
 };
 
-const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
+const getPaymentPayload = (orderId, payment, paymentDetail, mode, saveCC = false) => {
 	const paymentPayload = {
 		type: 'payment',
 		attributes: {
@@ -180,7 +193,7 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
 			paymentPayload.attributes.credit_card = {
 				bank: paymentDetail.card.bank,
 				token_id: paymentDetail.card.value,
-				save_cc: 1
+				save_cc: saveCC
 			};		
 		}
 		break;
