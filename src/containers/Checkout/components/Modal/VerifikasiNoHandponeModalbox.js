@@ -114,11 +114,11 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 										<Input disabled={this.state.alreadySubmitPhone} name='phone' number placeholder='No Handphone anda (contoh: 08219823982189)' onChange={this.validatePhone} />
 									</InputGroup>
 									<InputGroup>
-										{/* { renderIf(process.env.GOOGLE_CAPTCHA_SITE_KEY)( */}
-										{/*<Recaptcha*/}
-											{/*sitekey={process.env.GOOGLE_CAPTCHA_SITE_KEY}*/}
-										{/*/>*/}
-										{/* ) } */}
+										{/* { renderIf(process.env.GOOGLE_CAPTCHA_SITE_KEY)(
+											<Recaptcha
+												sitekey={process.env.GOOGLE_CAPTCHA_SITE_KEY}
+											/>
+										 ) } */}
 									</InputGroup>
 								</div>
 							:
