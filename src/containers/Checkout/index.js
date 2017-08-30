@@ -360,10 +360,6 @@ class Checkout extends Component {
 	}
 
 	onPaymentMethodChange(event) {
-<<<<<<< Updated upstream
-=======
-		
->>>>>>> Stashed changes
 		this.props.dispatch(changePaymentMethod(event.value, this.props.payments.paymentMethods));
 	}
 
@@ -646,10 +642,7 @@ class Checkout extends Component {
 		});
 	}
 	onCardNumberChange(event) {
-<<<<<<< Updated upstream
-=======
 		
->>>>>>> Stashed changes
 		if (event.valid) {
 			this.props.dispatch(changeCreditCardNumber(event.ccNumber));
 			const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
@@ -658,24 +651,12 @@ class Checkout extends Component {
 	}
 
 	onCardMonthChange(monthData) {
-<<<<<<< Updated upstream
 		this.props.dispatch(changeCreditCardMonth(monthData.value));
 	}
 	onCardYearChange(yearData) {
 		this.props.dispatch(changeCreditCardYear(yearData.value));
 	}
 	onCardCvvChange(event) {
-=======
-		
-		this.props.dispatch(changeCreditCardMonth(monthData.value));
-	}
-	onCardYearChange(yearData) {
-		
-		this.props.dispatch(changeCreditCardYear(yearData.value));
-	}
-	onCardCvvChange(event) {
-		
->>>>>>> Stashed changes
 		this.props.dispatch(changeCreditCardCvv(event.target.value));
 	}
 
@@ -685,10 +666,6 @@ class Checkout extends Component {
 		dispatch(bankNameChange(this.state.token, bank, selectedPaymentOption));
 	}
 	onInstallmentCCNumberChange(event) {
-<<<<<<< Updated upstream
-=======
-		
->>>>>>> Stashed changes
 		if (event.valid) {
 			this.props.dispatch(changeInstallmentCCNumber(event.ccNumber));
 			const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
@@ -696,24 +673,12 @@ class Checkout extends Component {
 		}
 	}
 	onInstallmentCCMonthChange(monthData) {
-<<<<<<< Updated upstream
 		this.props.dispatch(changeInstallmentCCMonth(monthData.value));
 	}
 	onInstallmentCCYearChange(yearData) {
 		this.props.dispatch(changeInstallmentCCYear(yearData.value));
 	}
 	onInstallmentCCCvvChange(event) {
-=======
-		
-		this.props.dispatch(changeInstallmentCCMonth(monthData.value));
-	}
-	onInstallmentCCYearChange(yearData) {
-		
-		this.props.dispatch(changeInstallmentCCYear(yearData.value));
-	}
-	onInstallmentCCCvvChange(event) {
-		
->>>>>>> Stashed changes
 		this.props.dispatch(changeInstallmentCCCvv(event.target.value));
 	}
 
@@ -1026,10 +991,6 @@ Checkout.propTypes = {
 };
 
 const getBillingAddress = (state) => {
-<<<<<<< Updated upstream
-=======
-	
->>>>>>> Stashed changes
 	if (
 		typeof state === 'undefined'
 	) {
