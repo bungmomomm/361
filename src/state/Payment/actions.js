@@ -218,6 +218,25 @@ const InstallmentCCCvvChange = (cvv) => ({
 
 // action
 
+const changePaymentOption = (selectedPaymentOption) => dispatch => {
+	dispatch(paymentOptionChanged(selectedPaymentOption));
+};
+
+const changePaymentMethod = (paymentMethod, data) => dispatch => {
+	if (!paymentMethod) {
+		dispatch(paymentMethodChanged(false));
+	} else {
+		const selectedPayment = data.payments[paymentMethod];
+		dispatch(paymentMethodChanged(selectedPayment));
+		if (selectedPayment.value === 'cod' || selectedPayment.value === 'gratis') {
+			const selectedPaymentOption = selectedPayment.paymentItems[0];
+			dispatch(changePaymentOption(selectedPaymentOption));
+		} else {
+			dispatch(changePaymentOption(false));
+		}
+	}
+};
+
 const getAvailablePaymentMethod = (token) => (dispatch) => {
 	dispatch(availablePaymentMethodRequest());
 	return request({
@@ -226,23 +245,10 @@ const getAvailablePaymentMethod = (token) => (dispatch) => {
 		method: 'GET'
 	}).then((response) => {
 		dispatch(availablePaymentMethodReceived(getListAvailablePaymentMethod(response.data)));
+		dispatch(changePaymentMethod(false, false));
+		dispatch(changePaymentOption(false));
 	}).catch((error) => {
 	});
-};
-
-const changePaymentOption = (selectedPaymentOption) => dispatch => {
-	dispatch(paymentOptionChanged(selectedPaymentOption));
-};
-
-const changePaymentMethod = (paymentMethod, data) => dispatch => {
-	const selectedPayment = data.payments[paymentMethod];
-	dispatch(paymentMethodChanged(selectedPayment));
-	if (selectedPayment.value === 'cod' || selectedPayment.value === 'gratis') {
-		const selectedPaymentOption = selectedPayment.paymentItems[0];
-		dispatch(changePaymentOption(selectedPaymentOption));
-	} else {
-		dispatch(changePaymentOption(false));
-	}
 };
 
 const deselectCreditCard = () => dispatch => {
