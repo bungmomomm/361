@@ -211,7 +211,8 @@ export default (state = initialState, action) => {
 	case constants.PAY_PAYMENT_ERROR: {
 		return {
 			...state,
-			paymentError: action.message
+			loading: false,
+			paymentError: action.payload.message
 		};
 	}
 	case constants.PAY_TERM_CHANGE: {
@@ -230,6 +231,7 @@ export default (state = initialState, action) => {
 		return {
 			...state,
 			loading: false,
+			paymentError: action.payload.error,
 			error: action.payload.error
 		};
 	}
@@ -245,11 +247,7 @@ export default (state = initialState, action) => {
 				return state;
 			} else if (action.mode === 'complete') {
 				top.location.href = `${getBaseUrl()}/checkout/${action.payload.soNumber}/complete`;
-				return {
-					...state,
-					loading: !action.status,
-					payment: action.payload.payment
-				};
+				return state;
 			}
 			let result = {};
 			if (typeof action.payload.soNumber !== 'undefined') {

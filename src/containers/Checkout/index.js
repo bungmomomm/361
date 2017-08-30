@@ -48,6 +48,7 @@ import {
 	vtModalBoxOpen,
 	ecashModalBoxOpen,
 	paymentError,
+	paymentSuccess,
 	pay,
 	bankNameChange,
 	applyBin,
@@ -143,6 +144,8 @@ class Checkout extends Component {
 		this.onInstallmentCCMonthChange = this.onInstallmentCCMonthChange.bind(this);
 		this.onInstallmentCCYearChange = this.onInstallmentCCYearChange.bind(this);
 		this.onInstallmentCCCvvChange = this.onInstallmentCCCvvChange.bind(this);
+		this.onCloseSuccessBox = this.onCloseSuccessBox.bind(this);
+		this.onCloseErrorBox = this.onCloseErrorBox.bind(this);
 	}
 
 	componentWillMount() {
@@ -600,7 +603,15 @@ class Checkout extends Component {
 		console.log(event, this.state.test);
 		this.props.dispatch(changeInstallmentCCCvv(event.target.value));
 	}
+
+	onCloseErrorBox() {
+		this.props.dispatch(paymentError(false));
+	}
 	
+	onCloseSuccessBox() {
+		this.props.dispatch(paymentSuccess(false));
+	}
+
 	getDistricts(cityAndProvince) {
 		const { dispatch } = this.props;
 		dispatch(getDistrict(this.state.token, cityAndProvince));
@@ -834,8 +845,8 @@ class Checkout extends Component {
 						)
 					}
 					<ElockerModalbox closeModalElocker={this.closeModalElocker} shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} o2oProvinces={!o2oProvinces ? null : o2oProvinces} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
-					<PaymentSuccessModalbox shown={this.props.payments.paymentSuccess} />
-					<PaymentErrorModalbox shown={this.props.payments.paymentError} />
+					<PaymentSuccessModalbox shown={this.props.payments.paymentSuccess} onClose={this.onCloseSuccessBox} />
+					<PaymentErrorModalbox shown={this.props.payments.paymentError} onClose={this.onCloseErrorBox} />
 					<VerifikasiNoHandponeModalbox />
 					<Vt3dsModalBox
 						shown={this.props.payments.show3ds}
