@@ -235,7 +235,13 @@ export default class CardPembayaran extends Component {
 		let paymentOptions = false; 
 		let installmentPayment = false;
 		let info = '';
-		info = selectedPaymentOption && typeof selectedPaymentOption.settings !== 'undefined' ? selectedPaymentOption.settings.info.join(' ') : '';			
+		if (selectedPaymentOption) {
+			if (typeof selectedPaymentOption.settings !== 'undefined') {
+				if (typeof selectedPaymentOption.settings.info !== 'undefined') {
+					info = selectedPaymentOption.settings.info.join(' ');	
+				}
+			}
+		}	
 		if (selectedPayment) {
 			switch (selectedPayment.value) {
 			case paymentGroupName.BANK_TRANSFER:
