@@ -11,13 +11,13 @@ const CheckoutResult = (props) => {
 	return (
 		<div className={styles.footer}>
 			{
-				props.shipping.gosend.gosendSupported && props.shipping.gosend.gosendApplicable ? 
+				props.shipping.gosend.gosendSupported && props.shipping.gosend.gosendApplicable && props.addressTabActive ? 
 					<div className={styles.deliveryInfo}>
 						<Checkbox name='gojek' content='Pengiriman:' checked={props.shipping.gosend.gosendActivated} value={props.store} onClick={props.checkGosendMethod} sprites='gosend' /> 
 					</div>
 					:
 					(
-						props.shipping.gosend.gosendSupported && !latLng ? 
+						props.shipping.gosend.gosendSupported && !latLng && props.addressTabActive ? 
 							<div className={styles.deliveryInfo}>
 								<Checkbox name='gojek' content='Pengiriman:' disabled checked={false} sprites='gosend' />
 								<div className='font-orange'>Mohon pilih titik lokasi pengiriman anda</div>

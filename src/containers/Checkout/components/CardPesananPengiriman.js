@@ -50,7 +50,7 @@ export default class CardPesananPengiriman extends Component {
 										<CheckoutProduct showBtnDelete={this.props.cart.length < 2 && storeData.store.products.length < 2 ? 0 : 1} restrictO2o={this.props.restrictO2o && !storeData.store.shipping.o2oSupported} key={index} data={product} onDeleteCart={this.onDeleteCart} onUpdateQty={this.onUpdateQty} />
 									))
 								}
-								<CheckoutResult key={i} shipping={storeData.store.shipping} price={storeData.store.price} checkGosendMethod={this.checkGosendMethod} store={storeData.store.id} selectedAddress={this.props.selectedAddress} />
+								<CheckoutResult addressTabActive={this.props.addressTabActive} key={i} shipping={storeData.store.shipping} price={storeData.store.price} checkGosendMethod={this.checkGosendMethod} store={storeData.store.id} selectedAddress={this.props.selectedAddress} />
 							</StoreBox>
 						))
 					}

@@ -692,7 +692,7 @@ class Checkout extends Component {
 		});
 		if ((!this.state.selectedLocker && !active) || (!this.state.selectedAddress && active)) {
 			this.setState({
-				enablePesananPengiriman: false,
+				enablePesananPengiriman: !active,
 				enablePembayaran: false,
 			});
 		} else if ((this.state.selectedAddress && active) || (this.state.selectedLocker && !active)) {
@@ -782,6 +782,7 @@ class Checkout extends Component {
 											restrictO2o={this.state.restrictO2o} 
 											shippingMethodGosend={this.shippingMethodGosend}
 											selectedAddress={this.state.selectedAddress}
+											addressTabActive={this.state.addressTabActive}
 										/>
 									}
 								</Col>
