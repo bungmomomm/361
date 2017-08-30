@@ -70,6 +70,7 @@ export default (state = initialState, action) => {
 			isPickupable: action.payload.isPickupable,
 			totalItems: action.payload.totalItems,
 			loading: !action.status,
+			ovoInfo: action.payload.ovoInfo
 		};
 	}
 

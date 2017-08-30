@@ -70,6 +70,9 @@ const getListAvailablePaymentMethod = (response) => {
 					...paymentMethodItem(payment),
 					cards: !payment.relationships ? [] : getCardRelations(payment.relationships.card_number, response.included)
 				};
+				if (parseInt(paymentData.fg_default, 10) === 1) {
+					methodData.selected = true;
+				}
 				return paymentData;
 			});
 			break;
@@ -102,12 +105,21 @@ const getListAvailablePaymentMethod = (response) => {
 					};
 					return bank;
 				});
+				if (parseInt(paymentData.fg_default, 10) === 1) {
+					methodData.selected = true;
+				}
+
 				return paymentData;
 			});
 			break;
 		default:
 			methodData.payment_items = methodData.payment_items.map((payment, paymentIndex) => {
-				return paymentMethodItem(payment);
+				const paymentData = paymentMethodItem(payment);
+				if (parseInt(paymentData.fg_default, 10) === 1) {
+					methodData.selected = true;
+				}
+
+				return paymentData;
 			});
 			break;
 		}

@@ -507,7 +507,7 @@ class Checkout extends Component {
 								detail: this.props.payments.selectedCardDetail
 							},
 							ovoPhoneNumber: this.props.payments.ovoNumber,
-							billingPhoneNumber: this.props.billingAddress.phone
+							billingPhoneNumber: this.props.payments.billingPhoneNumber
 						}
 					)
 				);
@@ -541,7 +541,7 @@ class Checkout extends Component {
 							},
 							term: this.props.payments.term,
 							ovoPhoneNumber: this.props.payments.ovoNumber,
-							billingPhoneNumber: this.props.billingAddress.phone
+							billingPhoneNumber: this.props.payments.billingPhoneNumber
 						}
 					)
 				);
@@ -561,7 +561,7 @@ class Checkout extends Component {
 						value: this.props.payments.selectedCard.value
 					},
 					ovoPhoneNumber: this.props.payments.ovoNumber,
-					billingPhoneNumber: this.props.billingAddress.phone
+					billingPhoneNumber: this.props.payments.billingPhoneNumber
 				},
 				'cc',
 				card,
@@ -983,10 +983,49 @@ Checkout.propTypes = {
 };
 
 const getBillingAddress = (state) => {
-	return typeof state.addresses.billing !== 'undefined' ? state.addresses.billing[0] : false;
+	console.log(state);
+	if (
+		typeof state === 'undefined'
+	) {
+		return false;
+	}
+	if (
+		typeof state.addresses === 'undefined'
+	) {
+		return false;
+	}
+	if (
+		typeof state.addresses.billing === 'undefined'
+	) {
+		return false;
+	}
+	return state.addresses.billing[0];
+};
+
+const getOvoInfo = (state) => {
+	if (
+		typeof state === 'undefined'
+	) {
+		return false;
+	}
+	if (
+		typeof state.cart === 'undefined'
+	) {
+		return false;
+	}
+	if (
+		typeof state.cart.ovoInfo === 'undefined'
+	) {
+		return false;
+	}
+	return state.cart.ovoInfo;
 };
 
 const mapStateToProps = (state) => {
+	const billingAddress = getBillingAddress(state);
+	state.payments.billingPhoneNumber = billingAddress ? billingAddress.attributes.phone : null;
+	state.payments.ovoInfo = getOvoInfo();
+	state.payments.ovoPhoneNumber = state.payments.ovoInfo ? state.payments.ovoInfo.ovoId : null;
 	return {
 		billingAddress: getBillingAddress(state),
 		soNumber: state.cart.soNumber,

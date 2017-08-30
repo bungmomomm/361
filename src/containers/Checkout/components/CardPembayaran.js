@@ -344,6 +344,9 @@ export default class CardPembayaran extends Component {
 				break;	
 			} 
 		}
+
+		const ovoEnabledEdit = !(this.props.payments.ovoInfo && this.props.payments.ovoInfo.ovoFlag < 1);
+
 		return (
 			<Card>
 				<div className={styles.overflow}>
@@ -441,7 +444,10 @@ export default class CardPembayaran extends Component {
 							</InputGroup>
 						)}
 						<InputGroup>
-							<Input label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' type='number' placeholder='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' onChange={this.onOvoNumberChange} />
+							<Input label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' type='number' value={this.props.payments.billingPhoneNumber ? this.props.payments.billingPhoneNumber : ''} placeholder='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' onChange={(event) => this.props.onBillingNumberChange(event)} />
+						</InputGroup>
+						<InputGroup>
+							<Input value={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''} label='Masukkan OVO ID' type='number' placeholder='OVO ID' onChange={(event) => this.props.onOvoNumberChange(event)} readonly={ovoEnabledEdit} />
 						</InputGroup>
 						
 						<div className={styles.checkOutAction}>
