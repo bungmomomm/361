@@ -163,7 +163,7 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
 		break;
 	case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 		paymentPayload.attributes.amount = paymentDetail.amount;
-		if (mode === 'cc') {
+		if (mode !== 'cc') {
 			paymentPayload.attributes.credit_card = {
 				bank: paymentDetail.card.bank,
 				token_id: paymentDetail.card.value,
@@ -171,6 +171,15 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
 				site_id: payment.term.siteid,
 				provider: payment.term.provider
 			};		
+		} else {
+			paymentPayload.attributes.af_track_id = '';
+			paymentPayload.attributes.af_trx_click = '';
+			paymentPayload.attributes.af_trx_id = '';
+			paymentPayload.attributes.card_number = '';
+			paymentPayload.attributes.ovo_phone_number = '';
+			paymentPayload.attributes.payment_installment_provider = payment.term.provider;
+			paymentPayload.attributes.billing_phone_number = '';
+			paymentPayload.attributes.product_type = '';
 		}
 		break;
 	case paymentMethodName.POS_PAY:

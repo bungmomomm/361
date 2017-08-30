@@ -402,6 +402,8 @@ class Checkout extends Component {
 			cardDetail.bank = this.props.payments.selectedBank.value;
 			cardDetail.installment = true;
 			cardDetail.installment_term = this.props.payments.term.term;
+			cardDetail.card_exp_month = this.props.payments.selectedCardDetail.month;
+			cardDetail.card_exp_year = this.props.payments.selectedCardDetail.year;
 		} else {
 			if (this.props.payments.twoClickEnabled) {
 				cardDetail.token_id = this.props.payments.selectedCard.value;
