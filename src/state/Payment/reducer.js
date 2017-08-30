@@ -211,7 +211,8 @@ export default (state = initialState, action) => {
 	case constants.PAY_PAYMENT_ERROR: {
 		return {
 			...state,
-			paymentError: action.message
+			loading: false,
+			paymentError: action.payload.message
 		};
 	}
 	case constants.PAY_TERM_CHANGE: {
