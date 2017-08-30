@@ -103,6 +103,7 @@ class Checkout extends Component {
 			loadingUpdateCart: false,
 			addressTabActive: true,
 			isValidPayment: false,
+			loadingCardPengiriman: false,
 			tahun: []
 		};
 		
@@ -222,6 +223,11 @@ class Checkout extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
+		if (this.state.cityProv !== nextProps.cityProv) {
+			this.setState({
+				loadingCardPengiriman: false
+			});
+		}
 		this.setState({
 			cart: nextProps.cart,
 			loadingUpdateCart: nextProps.loadingUpdateCart
@@ -255,9 +261,9 @@ class Checkout extends Component {
 	}
 
 	onChoisedAddress(address) {
-		console.log(this.state);
 		const { dispatch } = this.props;
 		const billing = this.props.billing.length > 0 ? this.props.billing[0] : false;
+		console.log('masuk');
 		if (!!address.type && address.type !== 'pickup') {
 			this.setState({
 				selectedAddress: address
@@ -267,6 +273,15 @@ class Checkout extends Component {
 			enablePesananPengiriman: true,
 			enablePembayaran: true,
 		});
+		// dispatch(getAddresses(this.state.token)).then(defaultAddress => {
+		// 	if (typeof defaultAddress.type !== 'undefined') {
+		// 		this.setState({
+		// 			selectedAddress: defaultAddress,
+		// 			enablePesananPengiriman: true, 
+		// 			enablePembayaran: true
+		// 		});
+		// 	}
+		// });
 		return dispatch(getPlaceOrderCart(this.state.token, address, billing));
 	}
 
@@ -299,6 +314,7 @@ class Checkout extends Component {
 		
 		this.setState({
 			enableNewAddress: true,
+			loadingCardPengiriman: true,
 			formDataAddress
 		});
 	}
@@ -819,6 +835,7 @@ class Checkout extends Component {
 										checkDropship={this.checkDropship} 
 										errorDropship={this.state.errorDropship} 
 										activeShippingTab={this.activeShippingTab} 
+										loading={this.state.loadingCardPengiriman}
 									/>
 								</Col>
 								<Col flex grid={4} className={enablePesananPengiriman || this.state.restrictO2o ? '' : styles.disabled}>

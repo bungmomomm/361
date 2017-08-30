@@ -187,12 +187,16 @@ class Gosend extends Component {
 				{
 					renderIf(this.state.displayMap)(
 						<div className={styles.googleMap}>
-							<div className={styles.mapInput}>
-								<Input 
-									onClick={this.renderAutocomplete} 
-									placeholder='Search Address'
-								/>
-							</div>
+							{
+								renderIf(false)(
+									<div className={styles.mapInput}>
+										<Input 
+											onClick={this.renderAutocomplete} 
+											placeholder='Search Address'
+										/>
+									</div>
+								)
+							}
 							{
 								renderIf(this.props.google)(
 									<Map 
