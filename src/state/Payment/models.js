@@ -176,9 +176,7 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
 			paymentPayload.attributes.af_trx_click = '';
 			paymentPayload.attributes.af_trx_id = '';
 			paymentPayload.attributes.card_number = '';
-			paymentPayload.attributes.ovo_phone_number = '';
 			paymentPayload.attributes.payment_installment_provider = payment.term.provider;
-			paymentPayload.attributes.billing_phone_number = '';
 			paymentPayload.attributes.product_type = '';
 		}
 		break;
