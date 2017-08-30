@@ -177,6 +177,7 @@ export default class CardPembayaran extends Component {
 	}
 
 	submitPayment() {
+		console.log('asdasdasd');
 		if (!this.props.isValidDropshipper) {
 			this.props.checkDropship();
 		} else {

@@ -34,7 +34,7 @@ import {
 	getDistrict, 
 	saveAddress 
 } from '@/state/Adresses/actions';
-import { getPlaceOrderCart, getCart, updateQtyCart, updateGosend } from '@/state/Cart/actions';
+import { getPlaceOrderCart, getCart, updateQtyCart, deleteCart, updateGosend } from '@/state/Cart/actions';
 import {
 	getAvailablePaymentMethod,
 	changePaymentMethod,
@@ -103,8 +103,13 @@ class Checkout extends Component {
 			loadingUpdateCart: false,
 			addressTabActive: true,
 			isValidPayment: false,
+<<<<<<< HEAD
 			loadingCardPengiriman: false,
 			tahun: []
+=======
+			tahun: [],
+			showModalOtp: false,
+>>>>>>> 66b7a27d4815f58856cbc40cbbbbe6df76b1d25f
 		};
 		
 		this.onAddCoupon = this.onAddCoupon.bind(this);
@@ -153,6 +158,7 @@ class Checkout extends Component {
 		this.onVerificationClose = this.onVerificationClose.bind(this);
 		this.onResendOtp = this.onResendOtp.bind(this);
 		this.onVerity = this.onVerity.bind(this);
+		this.onRequestSprintInstallment = this.onRequestSprintInstallment.bind(this);
 	}
 
 	componentWillMount() {
@@ -241,6 +247,12 @@ class Checkout extends Component {
 				restrictO2o: false
 			});
 		}
+
+		if (!nextProps.coupon.validCoupon && nextProps.coupon.code === 403) {
+			this.setState({
+				showModalOtp: true
+			});
+		}
 	}
 
 	onAddCoupon(coupon) {
@@ -321,7 +333,11 @@ class Checkout extends Component {
 
 	onDeleteCart(cart) {
 		const { dispatch } = this.props;
-		dispatch(updateQtyCart(this.state.token, 0, cart.data.id, this.props));
+		if (this.props.soNumber) {
+			dispatch(updateQtyCart(this.state.token, 0, cart.data.id, this.props));
+		} else {
+			dispatch(deleteCart(this.state.token, cart.data.id, this.props));
+		}		
 
 		this.setState({
 			cart: this.props.cart,
@@ -332,7 +348,11 @@ class Checkout extends Component {
 
 	onUpdateQty(qty, id) {
 		const { dispatch } = this.props;
-		dispatch(updateQtyCart(this.state.token, qty, id, this.props));
+		if (this.props.soNumber) {
+			dispatch(updateQtyCart(this.state.token, qty, id, this.props));
+		} else {
+			dispatch(updateQtyCart(this.state.token, qty, id, this.props));
+		}
 
 		this.setState({
 			cart: this.props.cart,
@@ -340,6 +360,7 @@ class Checkout extends Component {
 	}
 
 	onPaymentMethodChange(event) {
+		console.log('asdasdasdasd', event);
 		this.props.dispatch(changePaymentMethod(event.value, this.props.payments.paymentMethods));
 	}
 
@@ -404,6 +425,29 @@ class Checkout extends Component {
 		});
 		selectedLocker.type = 'pickup';
 		this.onChoisedAddress(selectedLocker);
+	}
+
+	onRequestSprintInstallment() {
+		const { dispatch } = this.props;
+		dispatch(
+			pay(
+				this.state.token,
+				this.props.soNumber,
+				this.props.payments.selectedPaymentOption,
+				{
+					card: {
+						value: this.props.payments.selectedCard.value,
+						bank: this.props.payments.selectedBank.value,
+						detail: this.props.payments.selectedCardDetail
+					},
+					term: this.props.payments.term,
+					cardNumber: this.props.payments.selectedCard.value,
+					cardCVV: this.props.payments.selectedCardDetail.cvv,
+					cardMonth: this.props.payments.selectedCardDetail.month,
+					cardYear: this.props.payments.selectedCardDetail.year
+				}
+			)
+		);
 	}
 
 	onRequestVtToken(installment = false) {
@@ -557,6 +601,9 @@ class Checkout extends Component {
 			case paymentMethodName.COMMERCE_VERITRANS:
 				this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
 				break;
+			case paymentMethodName.COMMERCE_SPRINT_ASIA:
+				this.onRequestSprintInstallment();
+				break;
 			default:
 				if (this.props.payments.selectedPaymentOption) {
 					if (this.props.payments.selectedPaymentOption.uniqueConstant === 'mandiri_ecash') {
@@ -565,6 +612,7 @@ class Checkout extends Component {
 						mode = 'bca_klikpay';
 					}
 				}
+				console.log(this.props);
 				dispatch(
 					pay(
 						this.state.token, 
@@ -655,7 +703,9 @@ class Checkout extends Component {
 	}
 
 	onVerificationClose(event) {
-		console.log(this.state.test);
+		this.setState({
+			showModalOtp: false
+		});
 	}
 
 	onResendOtp(event) {
@@ -803,7 +853,7 @@ class Checkout extends Component {
 			latesto2o,
 			o2oProvinces,
 			isPickupable,
-			dispatch	
+			dispatch
 		} = this.props;
 		
 		return (
@@ -909,8 +959,9 @@ class Checkout extends Component {
 						paymentErrorMessage={this.props.paymentErrorMessage}
 						onClose={this.onCloseErrorBox} 
 					/>
-					<VerifikasiNoHandponeModalbox 	
-						onSubmitPhoneNumber={this.onSubmitPhoneNumber} 
+					<VerifikasiNoHandponeModalbox
+						shown={this.state.showModalOtp}
+						onSubmitPhoneNumber={this.onSubmitPhoneNumber}
 						onSubmitOtp={this.onSubmitOtp} 
 						onResendOtp={this.onResendOtp}
 						onVerificationClose={this.onVerificationClose}

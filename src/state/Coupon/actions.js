@@ -16,10 +16,11 @@ const couponAdded = (data) => ({
 	}
 });
 
-const couponInvalid = (message) => ({
+const couponInvalid = (message, code = 403) => ({
 	type: constants.CP_INVALID_COUPON,
 	payload: {
-		message
+		message,
+		code
 	}
 });
 
@@ -67,7 +68,7 @@ const addCoupon = (token, orderId, coupon) => dispatch => {
 		dispatch(getAvailablePaymentMethod(token));
 	}).catch((error) => {
 		console.log('asd', error);
-		dispatch(couponInvalid(error.response));
+		dispatch(couponInvalid(error.errorMessage, error.code));
 	});
 };
 
