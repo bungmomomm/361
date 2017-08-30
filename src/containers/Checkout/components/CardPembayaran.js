@@ -196,6 +196,7 @@ export default class CardPembayaran extends Component {
 			paymentMethods, 
 			loading,
 			selectedPayment,
+			selectedPaymentOption,
 			twoClickEnabled,
 			selectedCard 
 		} = this.props.payments;
@@ -233,8 +234,9 @@ export default class CardPembayaran extends Component {
 		}
 		let paymentOptions = false; 
 		let installmentPayment = false;
+		let info = '';
+		info = selectedPaymentOption && typeof selectedPaymentOption.settings !== 'undefined' ? selectedPaymentOption.settings.info.join(' ') : '';			
 		if (selectedPayment) {
-			console.log(selectedPayment.paymentItems);
 			switch (selectedPayment.value) {
 			case paymentGroupName.BANK_TRANSFER:
 			case paymentGroupName.CONVENIENCE_STORE:
@@ -243,6 +245,11 @@ export default class CardPembayaran extends Component {
 				paymentOptions = (
 					<InputGroup>
 						<Select emptyFilter={false} name={`payment-${selectedPayment.value}`} selectedLabel='-- Tambah Baru' options={selectedPayment.paymentItems} onChange={this.onPaymentOptionChange} />
+						{ renderIf(selectedPaymentOption && typeof selectedPaymentOption.settings !== 'undefined' && selectedPaymentOption.settings.info.length > 0)(
+							<Tooltip position='right' content='Info' color='white'>
+								{info}
+							</Tooltip>
+						)}
 					</InputGroup>
 				);
 				break;
@@ -346,7 +353,6 @@ export default class CardPembayaran extends Component {
 		}
 
 		const ovoEnabledEdit = !(this.props.payments.ovoInfo && this.props.payments.ovoInfo.ovoFlag < 1);
-
 		return (
 			<Card>
 				<div className={styles.overflow}>
@@ -387,18 +393,15 @@ export default class CardPembayaran extends Component {
 						<p>Pilih Metode Pembayaran</p>
 						<InputGroup>
 							<Select selectedLabel='-- Pilih Metode Lain' name='paymentMethods' options={paymentMethods.methods} onChange={this.onPaymentMethodChange} />
-							<Tooltip position='right' content='Info' color='white'>
-								<p><Sprites name='uob' /></p>
-								<p>Gunakan Kartu Kredit UOB Indonesia dan dapatkan Diskon Tambahan Rp100.000* dengan minimum transaksi Rp2.500.000</p>
-								<p>*kuota terbatas</p>
-								<hr />
-								<p>Syarat dan Ketentuan Cicilan 0% Regular:</p>
-								<ol>
-									<li>Cicilan tenor 3 bulan dengan minimum transaksi Rp 990.000 </li>
-									<li>Cicilan tenor 6 bulan dengan minimum transaksi Rp1.500.000 </li>
-									<li>Cicilan tenor 12 bulan dengan minimum transaksi Rp2.000.000</li>
-								</ol>
-							</Tooltip>
+							{ renderIf(
+								selectedPaymentOption &&
+								(selectedPayment.value === 'cod' || selectedPayment.value === 'gratis') &&
+								typeof selectedPaymentOption.settings !== 'undefined' && 
+								selectedPaymentOption.settings.info.length > 0)(
+									<Tooltip position='right' content='Info' color='white'>
+										{info}
+									</Tooltip>
+							)}
 						</InputGroup>
 						{ renderIf(installmentPayment)(installmentPayment) }
 						{ renderIf(paymentOptions)(paymentOptions) }
@@ -455,7 +458,7 @@ export default class CardPembayaran extends Component {
 						
 						<div className={styles.checkOutAction}>
 							<Checkbox checked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />
-							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' loading={loading} />
+							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' loading={loading} disabled={(this.props.payments.selectedPaymentOption === null || !this.props.payments.selectedPaymentOption)} />
 						</div>
 					</div>
 				</div>

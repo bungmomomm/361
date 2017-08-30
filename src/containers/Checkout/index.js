@@ -614,7 +614,6 @@ class Checkout extends Component {
 						mode = 'bca_klikpay';
 					}
 				}
-				console.log(this.props);
 				dispatch(
 					pay(
 						this.state.token, 
@@ -633,7 +632,6 @@ class Checkout extends Component {
 	}
 
 	onSubmitAddress(formData) {
-		console.log(formData);
 		const { dispatch } = this.props;
 		dispatch(saveAddress(this.state.token, formData));
 		this.setState({
@@ -641,7 +639,6 @@ class Checkout extends Component {
 		});
 	}
 	onCardNumberChange(event) {
-		console.log(event, this.state.test);
 		if (event.valid) {
 			this.props.dispatch(changeCreditCardNumber(event.ccNumber));
 			const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
@@ -650,15 +647,12 @@ class Checkout extends Component {
 	}
 
 	onCardMonthChange(monthData) {
-		console.log(event, this.state.test);
 		this.props.dispatch(changeCreditCardMonth(monthData.value));
 	}
 	onCardYearChange(yearData) {
-		console.log(event, this.state.test);
 		this.props.dispatch(changeCreditCardYear(yearData.value));
 	}
 	onCardCvvChange(event) {
-		console.log(event, this.state.test);
 		this.props.dispatch(changeCreditCardCvv(event.target.value));
 	}
 
@@ -668,7 +662,6 @@ class Checkout extends Component {
 		dispatch(bankNameChange(this.state.token, bank, selectedPaymentOption));
 	}
 	onInstallmentCCNumberChange(event) {
-		console.log('index - event', event);
 		if (event.valid) {
 			this.props.dispatch(changeInstallmentCCNumber(event.ccNumber));
 			const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
@@ -676,15 +669,12 @@ class Checkout extends Component {
 		}
 	}
 	onInstallmentCCMonthChange(monthData) {
-		console.log(event, this.state.test);
 		this.props.dispatch(changeInstallmentCCMonth(monthData.value));
 	}
 	onInstallmentCCYearChange(yearData) {
-		console.log(event, this.state.test);
 		this.props.dispatch(changeInstallmentCCYear(yearData.value));
 	}
 	onInstallmentCCCvvChange(event) {
-		console.log(event, this.state.test);
 		this.props.dispatch(changeInstallmentCCCvv(event.target.value));
 	}
 
@@ -991,7 +981,6 @@ Checkout.propTypes = {
 };
 
 const getBillingAddress = (state) => {
-	console.log(state);
 	if (
 		typeof state === 'undefined'
 	) {
