@@ -142,7 +142,8 @@ const getSprintPayload = (orderId, payment, paymentDetail) => {
 			card_expiration_month: paymentDetail.cardMonth,
 			card_expiration_year: paymentDetail.cardYear,
 			card_type: '',
-			card_cvv: paymentDetail.cardCVV
+			card_cvv: paymentDetail.cardCVV,
+			amount: paymentDetail.amount
 		}
 	};
 };

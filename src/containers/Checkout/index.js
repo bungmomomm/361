@@ -423,7 +423,7 @@ class Checkout extends Component {
 		this.onChoisedAddress(selectedLocker);
 	}
 
-	onRequestSprintInstallment() {
+	onRequestSprintInstallment(mode) {
 		const { dispatch } = this.props;
 		dispatch(
 			pay(
@@ -440,8 +440,10 @@ class Checkout extends Component {
 					cardNumber: this.props.payments.selectedCard.value,
 					cardCVV: this.props.payments.selectedCardDetail.cvv,
 					cardMonth: this.props.payments.selectedCardDetail.month,
-					cardYear: this.props.payments.selectedCardDetail.year
-				}
+					cardYear: this.props.payments.selectedCardDetail.year,
+					amount: this.props.payments.total,
+				},
+				mode
 			)
 		);
 	}
@@ -598,7 +600,8 @@ class Checkout extends Component {
 				this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
 				break;
 			case paymentMethodName.COMMERCE_SPRINT_ASIA:
-				this.onRequestSprintInstallment();
+				mode = 'sprint';
+				this.onRequestSprintInstallment(mode);
 				break;
 			default:
 				if (this.props.payments.selectedPaymentOption) {

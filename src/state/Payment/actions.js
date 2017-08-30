@@ -416,17 +416,20 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 			}
 
 			if (payment.paymentMethod === constants.paymentMethodName.COMMERCE_SPRINT_ASIA) {
-				const sprintBody = getSprintPayload(soNumber, payment, paymentDetail);
-				console.log(sprintBody);
+				const attributes = getSprintPayload(soNumber, payment, paymentDetail);
+				// console.log(sprintBody);
 				request({
 					token, 
 					path: 'payments/sprintinstallmentnew',
 					method: 'POST',
 					body: {
-						sprintBody
+						data: {
+							attributes
+						}
 					}
 				}).then((res) => {
-					console.log(res);
+					console.log(res.data);
+					window.document.write(res.data);
 				});
 			}
 
