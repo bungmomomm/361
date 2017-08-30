@@ -96,7 +96,10 @@ const getListAvailablePaymentMethod = (response) => {
 					bank.info = bank.name;
 					bank.sprites = bank.name.replace(' ', '_').toLowerCase();
 					bank.label = bank.name;
-					bank.value = bank.name;
+					bank.value = {
+						value: bank.name, 
+						provider: bank.provider
+					};
 					return bank;
 				});
 				return paymentData;
@@ -127,6 +130,21 @@ const getListAvailablePaymentMethod = (response) => {
 		availableMethods
 	};
 	return returnData;
+};
+
+const getSprintPayload = (orderId, payment, paymentDetail) => {
+	return {
+		so_number: orderId,
+		bank_name: paymentDetail.card.bank,
+		term: payment.term.term,
+		cc: {
+			card_number: paymentDetail.cardNumber,
+			card_expiration_month: paymentDetail.cardMonth,
+			card_expiration_year: paymentDetail.cardYear,
+			card_type: '',
+			card_cvv: paymentDetail.cardCVV
+		}
+	};
 };
 
 const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
@@ -185,6 +203,10 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
 			paymentPayload.attributes.product_type = '';
 		}
 		break;
+	case paymentMethodName.COMMERCE_SPRINT_ASIA: 
+		paymentPayload.attributes.payment_installment_provider = paymentMethodName.COMMERCE_SPRINT_ASIA;
+		paymentPayload.attributes.payment_method = paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT;
+		break;
 	case paymentMethodName.POS_PAY:
 		break;
 	default:
@@ -195,5 +217,6 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
 
 export default {
 	getListAvailablePaymentMethod,
-	getPaymentPayload
+	getPaymentPayload,
+	getSprintPayload
 };

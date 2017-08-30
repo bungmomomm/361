@@ -152,6 +152,7 @@ class Checkout extends Component {
 		this.onVerificationClose = this.onVerificationClose.bind(this);
 		this.onResendOtp = this.onResendOtp.bind(this);
 		this.onVerity = this.onVerity.bind(this);
+		this.onRequestSprintInstallment = this.onRequestSprintInstallment.bind(this);
 	}
 
 	componentWillMount() {
@@ -324,6 +325,7 @@ class Checkout extends Component {
 	}
 
 	onPaymentMethodChange(event) {
+		console.log('asdasdasdasd', event);
 		this.props.dispatch(changePaymentMethod(event.value, this.props.payments.paymentMethods));
 	}
 
@@ -388,6 +390,29 @@ class Checkout extends Component {
 		});
 		selectedLocker.type = 'pickup';
 		this.onChoisedAddress(selectedLocker);
+	}
+
+	onRequestSprintInstallment() {
+		const { dispatch } = this.props;
+		dispatch(
+			pay(
+				this.state.token, 
+				this.props.soNumber, 
+				this.props.payments.selectedPaymentOption,
+				{
+					card: {
+						value: this.props.payments.selectedCard.value,
+						bank: this.props.payments.selectedBank.value,
+						detail: this.props.payments.selectedCardDetail
+					},
+					term: this.props.payments.term,
+					cardNumber: this.props.payments.selectedCard.value, 
+					cardCVV: this.props.payments.selectedCardDetail.cvv,
+					cardMonth: this.props.payments.selectedCardDetail.month,
+					cardYear: this.props.payments.selectedCardDetail.year
+				}
+			)
+		);
 	}
 
 	onRequestVtToken(installment = false) {
@@ -541,6 +566,9 @@ class Checkout extends Component {
 			case paymentMethodName.COMMERCE_VERITRANS:
 				this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
 				break;
+			case paymentMethodName.COMMERCE_SPRINT_ASIA:
+				this.onRequestSprintInstallment();
+				break;
 			default:
 				if (this.props.payments.selectedPaymentOption) {
 					if (this.props.payments.selectedPaymentOption.uniqueConstant === 'mandiri_ecash') {
@@ -549,6 +577,7 @@ class Checkout extends Component {
 						mode = 'bca_klikpay';
 					}
 				}
+				console.log(this.props);
 				dispatch(
 					pay(
 						this.state.token, 

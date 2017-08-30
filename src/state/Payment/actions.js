@@ -1,5 +1,5 @@
 import * as constants from './constants';
-import { getListAvailablePaymentMethod, getPaymentPayload } from './models';
+import { getListAvailablePaymentMethod, getPaymentPayload, getSprintPayload } from './models';
 import { request } from '@/utils';
 import { getCartPaymentData } from '@/state/Cart/models';
 
@@ -217,10 +217,12 @@ const InstallmentCCCvvChange = (cvv) => ({
 });
 
 // action
-
-const changePaymentOption = (selectedPaymentOption) => dispatch => {
+const changePaymentOption = (selectedPaymentOption) => dispatch => new Promise((resolve, reject) => {
+	
 	dispatch(paymentOptionChanged(selectedPaymentOption));
-};
+
+	resolve(selectedPaymentOption);
+});
 
 const changePaymentMethod = (paymentMethod, data) => dispatch => {
 	if (!paymentMethod) {
@@ -323,7 +325,22 @@ const selectCreditCard = (card) => dispatch => {
 // installment
 
 const bankNameChange = (token, bank, selectedPaymentOption) => dispatch => new Promise((resolve, reject) => {
-	dispatch(changeBankName(token, bank, selectedPaymentOption));	
+	
+	if (bank.value.provider === 'sprint') {
+		selectedPaymentOption = {
+			...selectedPaymentOption,
+			name: constants.paymentMethodName.COMMERCE_SPRINT_ASIA,
+			paymentMethod: constants.paymentMethodName.COMMERCE_SPRINT_ASIA,
+			uniqueConstant: constants.paymentMethodName.COMMERCE_SPRINT_ASIA,
+
+		};
+		dispatch(changePaymentOption(selectedPaymentOption)).then((bankSelected) => {
+			dispatch(changeBankName(token, bank, selectedPaymentOption));	
+		});
+	} else {
+		dispatch(changeBankName(token, bank, selectedPaymentOption));	
+	}
+	
 	resolve(bank);
 });
 
@@ -396,6 +413,22 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 			if (typeof response.data.data[0] !== 'undefined' && typeof response.data.data[0].id !== 'undefined') {
 				soNumber = response.data.data[0].id;
 			}
+
+			if (payment.paymentMethod === constants.paymentMethodName.COMMERCE_SPRINT_ASIA) {
+				const sprintBody = getSprintPayload(soNumber, payment, paymentDetail);
+				console.log(sprintBody);
+				request({
+					token, 
+					path: 'payments/sprintinstallmentnew',
+					method: 'POST',
+					body: {
+						sprintBody
+					}
+				}).then((res) => {
+					console.log(res);
+				});
+			}
+
 			dispatch(payReceived(soNumber, response.data, mode, card, callback));
 			resolve(soNumber, response.data, mode, card, callback);
 		}).catch((error) => {
