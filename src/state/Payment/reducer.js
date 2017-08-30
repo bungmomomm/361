@@ -217,6 +217,8 @@ export default (state = initialState, action) => {
 		};
 	}
 	case constants.PAY_TERM_CHANGE: {
+		const selectedPaymentOption = state.selectedPaymentOption ? state.selectedPaymentOption : state.selectedPayment.paymentItems[0];
+		selectedPaymentOption.term = action.payload.term;
 		return {
 			...state,
 			term: action.payload.term
