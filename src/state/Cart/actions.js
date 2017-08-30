@@ -132,30 +132,7 @@ const deleteCart = (token, productId, props) => dispatch => {
 	
 	request(req)
 	.then((response) => {
-		if (props.cart.length > 0) {
-			props.cart.forEach((element, index) => {
-				const prodIndex = element.store.products.findIndex(e => e.id === productId);
-				const prod = element.store.products.find(e => e.id === productId);
-			
-				if (prodIndex !== -1) {
-					props.cart[index].store.products.splice(prodIndex, 1);
-					props.cart[index].store.price.sub_total -= prod.price;
-					props.cart[index].store.price.total -= prod.price;
-
-					props.payments.subTotal = parseFloat(props.payments.subTotal) - prod.price;
-					props.payments.total = parseFloat(props.payments.total) - prod.price;
-					dispatch(paymentInfoUpdated(props.payments));
-				}
-			
-			}, this);
-		
-			const storeWithEmptyProduct = props.cart.findIndex(e => e.store.products.length < 1);
-			if (storeWithEmptyProduct !== -1) {
-				props.cart.splice(storeWithEmptyProduct, 1);
-			}
-			dispatch(cartReceived(props.cart, props.isPickupable, props.totalItems));
-			dispatch(getAvailablePaymentMethod(token));
-		}
+		this.getCart(token);
 	})
 	.catch((error) => {
 		console.log(error);
