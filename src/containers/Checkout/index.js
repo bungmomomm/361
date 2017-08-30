@@ -102,7 +102,8 @@ class Checkout extends Component {
 			loadingUpdateCart: false,
 			addressTabActive: true,
 			isValidPayment: false,
-			tahun: []
+			tahun: [],
+			showModalOtp: false,
 		};
 		
 		this.onAddCoupon = this.onAddCoupon.bind(this);
@@ -231,6 +232,12 @@ class Checkout extends Component {
 		} else {
 			this.setState({
 				restrictO2o: false
+			});
+		}
+		
+		if (!nextProps.coupon.validCoupon && nextProps.coupon.code === 403) {
+			this.setState({
+				showModalOtp: true
 			});
 		}
 	}
@@ -634,7 +641,9 @@ class Checkout extends Component {
 	}
 
 	onVerificationClose(event) {
-		console.log(this.state.test);
+		this.setState({
+			showModalOtp: false
+		});
 	}
 
 	onResendOtp(event) {
@@ -882,6 +891,7 @@ class Checkout extends Component {
 						onClose={this.onCloseErrorBox} 
 					/>
 					<VerifikasiNoHandponeModalbox 
+						shown={this.state.showModalOtp}
 						onSubmitPhoneNumber={this.onSubmitPhoneNumber} 
 						onSubmitOtp={this.onSubmitOtp} 
 						onResendOtp={this.onResendOtp}

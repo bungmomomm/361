@@ -16,10 +16,11 @@ const couponAdded = (data) => ({
 	}
 });
 
-const couponInvalid = (message) => ({
+const couponInvalid = (message, code = 403) => ({
 	type: constants.CP_INVALID_COUPON,
 	payload: {
-		message
+		message,
+		code
 	}
 });
 
@@ -65,7 +66,7 @@ const addCoupon = (token, orderId, coupon) => dispatch => {
 		dispatch(paymentInfoUpdated(getCartPaymentData(response.data.data.attributes.total_price, 'order')));
 		dispatch(couponAdded({}));
 	}).catch((error) => {
-		dispatch(couponInvalid(error.errorMessage));
+		dispatch(couponInvalid(error.errorMessage, error.code));
 	});
 };
 

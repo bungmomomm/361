@@ -39,6 +39,7 @@ export default (state = initialState, action) => {
 	case CP_INVALID_COUPON: {
 		return {
 			...state,
+			code: action.payload.code,
 			message: action.payload.message,
 			validCoupon: false,
 			loading: false
