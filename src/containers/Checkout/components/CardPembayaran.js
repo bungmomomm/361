@@ -456,10 +456,10 @@ export default class CardPembayaran extends Component {
 							</InputGroup>
 						)}
 						<InputGroup>
-							<Input label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' type='number' value={this.props.payments.billingPhoneNumber ? this.props.payments.billingPhoneNumber : ''} placeholder='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' onChange={(event) => this.props.onBillingNumberChange(event)} />
+							<Input label='SMS Konfirmasi pembayaran' type='number' value={this.props.payments.billingPhoneNumber ? this.props.payments.billingPhoneNumber : ''} placeholder='No Telp Penagihan' onChange={(event) => this.props.onBillingNumberChange(event)} />
 						</InputGroup>
 						<InputGroup>
-							<Input value={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''} label='Masukkan OVO ID' type='number' placeholder='OVO ID' onChange={(event) => this.props.onOvoNumberChange(event)} readonly={ovoEnabledEdit} />
+							<Input value={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' type='number' placeholder='Masukkan nomor Hp yang terdaftar di OVO' onChange={(event) => this.props.onOvoNumberChange(event)} readonly={ovoEnabledEdit} />
 						</InputGroup>
 						
 						<div className={styles.checkOutAction}>
