@@ -103,13 +103,9 @@ class Checkout extends Component {
 			loadingUpdateCart: false,
 			addressTabActive: true,
 			isValidPayment: false,
-<<<<<<< HEAD
 			loadingCardPengiriman: false,
-			tahun: []
-=======
 			tahun: [],
 			showModalOtp: false,
->>>>>>> 66b7a27d4815f58856cbc40cbbbbe6df76b1d25f
 		};
 		
 		this.onAddCoupon = this.onAddCoupon.bind(this);
@@ -349,8 +345,6 @@ class Checkout extends Component {
 	onUpdateQty(qty, id) {
 		const { dispatch } = this.props;
 		if (this.props.soNumber) {
-			dispatch(updateQtyCart(this.state.token, qty, id, this.props));
-		} else {
 			dispatch(updateQtyCart(this.state.token, qty, id, this.props));
 		}
 
