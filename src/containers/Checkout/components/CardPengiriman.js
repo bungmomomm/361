@@ -150,8 +150,7 @@ export default class CardPengiriman extends Component {
 							<Segment>
 								<InputGroup>
 									<Select 
-										name='alamat'
-										filter 
+										name='alamat' 
 										selectedLabel='-- Pilih Alamat Lainnya' 
 										options={this.state.shipping} 
 										onChange={this.onChoisedAddress}

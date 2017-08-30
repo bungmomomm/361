@@ -147,7 +147,7 @@ const getListAvailablePaymentMethod = (response) => {
 const getSprintPayload = (orderId, payment, paymentDetail) => {
 	return {
 		so_number: orderId,
-		bank_name: paymentDetail.card.bank,
+		bank_name: paymentDetail.card.bank.value,
 		term: payment.term.term,
 		cc: {
 			card_number: paymentDetail.cardNumber,
