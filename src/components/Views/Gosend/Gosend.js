@@ -38,7 +38,13 @@ class Gosend extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		// console.log(nextProps);
+		if (this.state.center !== nextProps.center) {
+			this.setState({
+				center: nextProps.center,
+				polygonArea: nextProps.polygonArea,
+				displayMap: false
+			});
+		}
 	}
 
 	componentDidUpdate(prevProps) {

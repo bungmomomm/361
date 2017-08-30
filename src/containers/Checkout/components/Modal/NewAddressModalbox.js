@@ -13,6 +13,19 @@ import { renderIf } from '@/utils';
 import { pointStep } from '@/data';
 
 export default class NewAddressModalbox extends Component {
+	static getPolygonData(kecamatan) {
+		const district = kecamatan.toLowerCase().replace(/\W+(.)/g, (match, chr) => chr.toUpperCase());
+			
+		const data = Polygon.map((option) => {
+			return option[district] ? option : null;
+		}).filter((option) => {
+			return option;
+		});
+		
+		return data[0][district];
+		
+	}
+	
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -46,6 +59,8 @@ export default class NewAddressModalbox extends Component {
 			},
 			errors: this.validator.errorBag,
 			district: {},
+			loading: false,
+			enableGosend: false,
 			gosendData: {
 				center: {
 					lat: this.props.formDataAddress.latitude,
@@ -64,14 +79,12 @@ export default class NewAddressModalbox extends Component {
 		this.validateAndSubmit = this.validateAndSubmit.bind(this);
 		this.getDistricts = this.getDistricts.bind(this);
 		this.onChangePoint = this.onChangePoint.bind(this);
-		this.kecamatan = null;
 		this.onClose = this.onClose.bind(this);
 	}
 
 	componentWillMount() {
 		const la = this.props.formDataAddress.latitude || '';
 		const lo = this.props.formDataAddress.longitude || '';
-		
 		if (la !== '' && lo !== '') {
 			const gosendData = this.state.gosendData;
 			this.setState({
@@ -81,7 +94,30 @@ export default class NewAddressModalbox extends Component {
 				}, 
 				isCustomerData: true
 			});
-		}		
+		}
+		if (this.state.formData.isEdit) {
+			if (this.state.formData.provinsi.toLowerCase().includes('jakarta')) {
+				const PolygonResult = this.constructor.getPolygonData(this.state.formData.kecamatan.toLowerCase());
+				this.setState({
+					enableGosend: true,
+					gosendData: {
+						...this.state.gosendData,
+						stepPoint: pointStep.pinPoint,
+						center: PolygonResult.center,
+						location_coords: PolygonResult.location_coords
+					}
+				});
+			}
+		}
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (this.state.district !== nextProps.district) {
+			this.setState({
+				loading: false
+			});
+			// this.onChangePoint();
+		}
 	}
 
 	onChange(e) {
@@ -118,9 +154,10 @@ export default class NewAddressModalbox extends Component {
 			}
 		});
 	}
+
 	onChangePoint() {
-		const kecamatan = this.props.formDataAddress.kecamatan || this.state.formData.kecamatan;
-		const PolygonResult = this.getPolygonData(kecamatan.toLowerCase());
+		const kecamatan = this.state.formData.kecamatan;
+		const PolygonResult = this.constructor.getPolygonData(kecamatan.toLowerCase());
 		const gosendData = this.state.gosendData;
 		const center = PolygonResult.center;
 		const locationCoords = PolygonResult.location_coords;
@@ -136,22 +173,6 @@ export default class NewAddressModalbox extends Component {
 
 	onClose(event) {
 		this.props.closeModalShippingAddress(event);
-	}
-
-	getPolygonData(kecamatan) {
-		this.kecamatan = kecamatan;
-		const district = this.kecamatan.toLowerCase().replace(/\W+(.)/g, (match, chr) => {
-			return chr.toUpperCase();
-		});
-			
-		const data = Polygon.map((option) => {
-			return option[district] ? option : null;
-		}).filter((option) => {
-			return option;
-		});
-		
-		return data[0][district];
-		
 	}
 
 	getDistricts(cityProv) {
@@ -174,13 +195,13 @@ export default class NewAddressModalbox extends Component {
 			this.getDistricts(e.value);
 			const enableGosend = e.label.toLowerCase().includes('jakarta');
 			this.setState({
+				loading: true,
 				enableGosend
 			});
 		}
 		
-		if (e.name === 'kecamatan') {
-			const PolygonResult = this.getPolygonData(e.value.toLowerCase());
-			
+		if (e.name === 'kecamatan' && this.state.enableGosend) {
+			const PolygonResult = this.constructor.getPolygonData(e.value.toLowerCase());
 			const gosendData = this.state.gosendData;
 			this.setState({
 				gosendData: {
@@ -190,7 +211,6 @@ export default class NewAddressModalbox extends Component {
 					location_coords: PolygonResult.location_coords
 				}
 			});
-			// }	
 		}
 	}
 
@@ -212,7 +232,6 @@ export default class NewAddressModalbox extends Component {
 		});
 	}
 
-	
 	render() {
 		const { 
 			errors,
@@ -220,7 +239,7 @@ export default class NewAddressModalbox extends Component {
 			isCustomerData
 		} = this.state;
 		return (
-			<Modal size='medium' shown={this.props.shown} onClose={this.onClose} >
+			<Modal size='medium' loading={this.state.loading} shown={this.props.shown} onClose={this.onClose} >
 				<Modal.Header>
 					<div>{ this.props.formDataAddress.isEdit ? 'Ubah Alamat' : 'Buat Alamat Baru'}</div>
 				</Modal.Header>
@@ -236,7 +255,7 @@ export default class NewAddressModalbox extends Component {
 								color={errors.has('name') ? 'red' : null}
 								message={errors.has('name') ? 'Name field is required.' : ''}
 								type='text'
-								value={typeof this.props.formDataAddress.label !== 'undefined' ? this.props.formDataAddress.label : ''}
+								value={this.state.formData.name || ''}
 							/>
 						</InputGroup>
 						<InputGroup>
@@ -249,7 +268,7 @@ export default class NewAddressModalbox extends Component {
 								color={errors.has('penerima') ? 'red' : null}
 								message={errors.has('penerima') ? 'Penerima field is required.' : ''}
 								type='text'
-								value={typeof this.props.formDataAddress.nama !== 'undefined' ? this.props.formDataAddress.nama : ''}
+								value={this.state.formData.penerima || ''}
 							/>
 						</InputGroup>
 						<InputGroup>
@@ -262,7 +281,7 @@ export default class NewAddressModalbox extends Component {
 								color={errors.has('no_hp') ? 'red' : null}
 								message={errors.first('no_hp')}
 								type='number'
-								value={typeof this.props.formDataAddress.noHP !== 'undefined' ? this.props.formDataAddress.noHP : ''}
+								value={this.state.formData.no_hp || ''}
 							/>
 						</InputGroup>
 						<InputGroup>
@@ -271,7 +290,7 @@ export default class NewAddressModalbox extends Component {
 								label='Kota, Provinsi *'
 								filter
 								name='provinsi'
-								selectedLabel={typeof this.props.formDataAddress.kotProv !== 'undefined' ? this.props.formDataAddress.kotProv : '-- Silakan Pilih'} 
+								selectedLabel={this.state.formData.provinsi || '-- Silakan Pilih'} 
 								onChange={this.onChangeSelect}
 								color={errors.has('provinsi') ? 'red' : null}
 								message={errors.has('provinsi') ? 'Provinsi field is required.' : ''}
@@ -286,7 +305,7 @@ export default class NewAddressModalbox extends Component {
 										label='Kecamatan *'
 										name='kecamatan' 
 										filter
-										selectedLabel={typeof this.props.formDataAddress.kecamatan !== 'undefined' ? this.props.formDataAddress.kecamatan : '-- Silakan Pilih'} 
+										selectedLabel={this.state.formData.kecamatan || '-- Silakan Pilih'} 
 										onChange={this.onChangeSelect}
 										color={errors.has('kecamatan') ? 'red' : null}
 										message={errors.has('kecamatan') ? 'Kecamatan field is required.' : ''}
@@ -305,7 +324,7 @@ export default class NewAddressModalbox extends Component {
 								onChange={this.onChange}
 								color={errors.has('kodepos') ? 'red' : null}
 								message={errors.first('kodepos')}
-								value={typeof this.props.formDataAddress.kodepos !== 'undefined' ? this.props.formDataAddress.kodepos : ''}
+								value={this.state.formData.kodepos || ''}
 							/>
 						</InputGroup>
 						<InputGroup>
@@ -317,7 +336,7 @@ export default class NewAddressModalbox extends Component {
 								onChange={this.onChange}
 								color={errors.has('address') ? 'red' : null}
 								message={errors.has('address') ? 'Address field is required.' : ''}
-								value={typeof this.props.formDataAddress.address !== 'undefined' ? this.props.formDataAddress.address : ''}
+								value={this.state.formData.address || ''}
 							/>
 						</InputGroup>
 						<Alert color='yellow'>
@@ -329,7 +348,7 @@ export default class NewAddressModalbox extends Component {
 							</small>
 						</Alert>
 						{
-							renderIf(gosendData.stepPoint === pointStep.pinPoint)(
+							renderIf(gosendData.stepPoint === pointStep.pinPoint && this.state.enableGosend)(
 								<Gosend
 									zoom={15} 
 									center={gosendData.center} 

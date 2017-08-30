@@ -197,27 +197,30 @@ export default class CardPembayaran extends Component {
 			twoClickEnabled,
 			selectedCard 
 		} = this.props.payments;
+
 		let couponId = false;
+		let voucherBoxElement = '';
+
 		if (this.props.validCoupon && this.props.coupon !== '') {
 			couponId = this.props.coupon;
 		} else if (this.props.payments.couponId) {
 			couponId = this.props.payments.couponId;
 		}
-		let voucherBox = '';
+		
 		if (this.props.validCoupon === null && !couponId) { 
-			voucherBox = (
+			voucherBoxElement = (
 				<Level>
 					<Level.Left className={styles.voucherLabel}>Kode Voucher</Level.Left>
 					<Level.Right>
 						<InputGroup addons>
-							<Input size='small' name='voucherCode' onChange={this.onChange} onKeyPress={this.onChange} color='green' value={this.props.coupon} />
+							<Input size='small' name='voucherCode' color='green' onChange={this.onChange} onKeyPress={this.onChange} value={this.props.coupon} />
 							<Button type='submit' size='small' onClick={this.onAddCoupon} loading={this.props.loadingButtonCoupon} color='green' content='CEK' />
 						</InputGroup>
 					</Level.Right>
 				</Level>
 			);
 		} else if (this.props.validCoupon !== null && !this.props.validCoupon && this.props.coupon !== '') {
-			voucherBox = (
+			voucherBoxElement = (
 				<Level>
 					<Level.Left className={styles.voucherLabel}>Kode Voucher</Level.Left>
 					<Level.Right>
@@ -229,6 +232,22 @@ export default class CardPembayaran extends Component {
 				</Level>
 			);			
 		}
+
+		const CvvElement = (
+			<Row>
+				<Col grid={4}>
+					<InputGroup>
+						<Input type='password' placeholder='cvv' onBlur={this.onCardCvvChange} />
+					</InputGroup>
+				</Col>
+				<Col grid={3}>
+					<InputGroup>
+						<Sprites name='cvv' />
+					</InputGroup>
+				</Col>
+			</Row>
+		);
+
 		let paymentOptions = false; 
 		let installmentPayment = false;
 		if (selectedPayment) {
@@ -245,96 +264,63 @@ export default class CardPembayaran extends Component {
 				break;
 			case paymentGroupName.CREDIT_CARD:
 				paymentOptions = (
-					<InputGroup>
-						{ 
-							selectedPayment.paymentItems.map((option, index) => {
-								if (option.cards.length < 3) {
-									return option.cards.map((card, cardIndex) => {
-										return (
-											<div>
-												<InputGroup>
-													<CreditCardRadio key={cardIndex} name='cc' variant='list' creditCard value={card.value} content={card.label} onClick={this.onSelectCard} checked={card.selected} sprites={card.sprites} />
-												</InputGroup>
-												{ renderIf(card.selected)(
-													<Row>
-														<Col grid={4}>
-															<Input type='password' placeholder='cvv' onBlur={this.onCardCvvChange} />
-														</Col>
-														<Col grid={4}>
-															<Sprites name='cvv' />
-														</Col>
-													</Row>
-												) }
-											</div>
-										);
-									});
-								}
-								return (
-									<div key={index}>
-										<InputGroup>
-											<Select emptyFilter={false} name='cc' selectedLabel='-- Tambah Baru' options={option.cards} onChange={this.onSelectCard} />
-										</InputGroup>
-										{ renderIf((selectedCard && twoClickEnabled))(
-											<Row>
-												<Col grid={4}>
-													<Input type='password' placeholder='cvv' onBlur={this.onCardCvvChange} />
-												</Col>
-												<Col grid={3}>
-													<Sprites name='cvv' />
-												</Col>
-											</Row>
-										) }
-									</div>
-								);
-							})
-						}
-					</InputGroup>
+					selectedPayment.paymentItems.map((option, index) => (
+						option.cards.length < 3 ? (
+							option.cards.map((card, cardIndex) => (
+								<InputGroup key={cardIndex}>
+									<CreditCardRadio name='cc' variant='list' creditCard value={card.value} content={card.label} onClick={this.onSelectCard} checked={card.selected} sprites={card.sprites} />
+									{ renderIf(card.selected)(CvvElement) }
+								</InputGroup>
+							))
+						) : (
+							<InputGroup key={index}>
+								<Select emptyFilter={false} name='cc' selectedLabel='-- Tambah Baru' options={option.cards} onChange={this.onSelectCard} />
+								{ renderIf((selectedCard && twoClickEnabled))(CvvElement) }
+							</InputGroup>
+						)
+					))
 				);
 				break;
 			case paymentGroupName.INSTALLMENT:
 				installmentPayment = (
 					<InputGroup>
 						{ 
-							selectedPayment.paymentItems.map((installment, index) => {
-								return (
-									<div key={index}>
-										<InputGroup>
-											<p>Pilih Bank</p>
-											<Select emptyFilter={false} name='bank' selectedLabel='---' options={installment.banks} onChange={this.onInstallmentBankChange} />
-										</InputGroup>
-										<InputGroup>
-											<p>Pilih Lama Cicilan</p>
-											<Select emptyFilter={false} name='bank' selectedLabel='---' options={installment.banks[index].listCicilan} onChange={this.onTermChange} />
-										</InputGroup>
-									</div>
-								);
-							})
+							selectedPayment.paymentItems.map((installment, index) => (
+								<div key={index}>
+									<InputGroup>
+										<p>Pilih Bank</p>
+										<Select emptyFilter={false} name='bank' selectedLabel='---' options={installment.banks} onChange={this.onInstallmentBankChange} />
+									</InputGroup>
+									<InputGroup>
+										<p>Pilih Lama Cicilan</p>
+										<Select emptyFilter={false} name='bank' selectedLabel='---' options={installment.banks[index].listCicilan} onChange={this.onTermChange} />
+									</InputGroup>
+								</div>
+							))
 						}
 					</InputGroup>
 				);
 
-				paymentOptions = (
+				paymentOptions = [
 					<InputGroup>
-						<InputGroup>
-							<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onChange={this.onInstallmentCCNumberChange} />
-						</InputGroup>
-						<label htmlFor='masa-berlaku'>Masa Berlaku</label>
-						<Level padded>
-							<Level.Item>
-								<Select top selectedLabel='-- Bulan' options={Bulan} onChange={this.onInstallmentCCMonthChange} />
-							</Level.Item>
-							<Level.Item>
-								<Select top selectedLabel='-- Tahun' options={this.props.tahun} onChange={this.onInstallmentCCYearChange} />
-							</Level.Item>
-							<Level.Item>
-								<Input type='password' placeholder='cvv' onBlur={this.onInstallmentCCCvvChange} />
-							</Level.Item>
-							<Level.Item>
-								<Sprites name='cvv' />
-							</Level.Item>
-						</Level>
-					</InputGroup>
-				);
+						<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onChange={this.onInstallmentCCNumberChange} />
+					</InputGroup>,
+					<label htmlFor='masa-berlaku'>Masa Berlaku</label>,
+					<Level>
+						<Level.Item>
+							<Select top selectedLabel='-- Bulan' options={Bulan} onChange={this.onInstallmentCCMonthChange} />
+						</Level.Item>
+						<Level.Item>
+							<Select top selectedLabel='-- Tahun' options={this.props.tahun} onChange={this.onInstallmentCCYearChange} />
+						</Level.Item>
+						<Level.Item>
+							<Input type='password' placeholder='cvv' onBlur={this.onInstallmentCCCvvChange} />
+						</Level.Item>
+						<Level.Item>
+							<Sprites name='cvv' />
+						</Level.Item>
+					</Level>
+				];
 				break;
 			default:
 				paymentOptions = false;
@@ -342,7 +328,6 @@ export default class CardPembayaran extends Component {
 			} 
 		}
 
-		console.log((this.props.payments.selectedPaymentOption === null));
 		return (
 			<Card>
 				<div className={styles.overflow}>
@@ -351,7 +336,7 @@ export default class CardPembayaran extends Component {
 						<Level.Right className='text-right'><strong>{currency(subTotal)}</strong></Level.Right>
 					</Level>
 					{
-						!couponId ? null : (
+						renderIf(couponId)(
 							<Level>
 								<Level.Left>Voucher : <strong>{this.props.loadingButtonCoupon ? 'loading...' : couponId }</strong> <Button icon='times-circle' iconPosition='right' onClick={this.props.onRemoveCoupon} /></Level.Left>
 								<Level.Right className='text-right'>{currency(-coupon)}</Level.Right>
@@ -370,7 +355,7 @@ export default class CardPembayaran extends Component {
 							<div className='font-green text-right'>{currency(-deliveryCostDiscount)}</div>
 						</Level.Right>
 					</Level>
-					{voucherBox}
+					{voucherBoxElement}
 					<div className={styles.CheckoutTitle}>
 						<Level noMargin>
 							<Level.Left>Total Pembayaran</Level.Left>
@@ -403,28 +388,26 @@ export default class CardPembayaran extends Component {
 								<Button clean icon='plus-circle' iconPosition='left' content='Tambah Kartu' onClick={this.onNewCreditCard} />
 							</InputGroup>
 						)}
-						{ renderIf(this.props.payments.openNewCreditCard && selectedPayment.value === paymentGroupName.CREDIT_CARD)(
-							<div>
-								<InputGroup>
-									<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onChange={this.onCardNumberChange} />
-								</InputGroup>
-								<label htmlFor='masa-berlaku'>Masa Berlaku</label>
-								<Level padded>
-									<Level.Item>
-										<Select top selectedLabel='-- Bulan' options={Bulan} onChange={this.onCardMonthChange} />
-									</Level.Item>
-									<Level.Item>
-										<Select top selectedLabel='-- Tahun' options={this.props.tahun} onChange={this.onCardYearChange} />
-									</Level.Item>
-									<Level.Item>
-										<Input type='password' placeholder='cvv' onBlur={this.onCardCvvChange} />
-									</Level.Item>
-									<Level.Item>
-										<Sprites name='cvv' />
-									</Level.Item>
-								</Level>
-							</div>
-						)}
+						{ renderIf(this.props.payments.openNewCreditCard && selectedPayment.value === paymentGroupName.CREDIT_CARD)([
+							<InputGroup>
+								<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onChange={this.onCardNumberChange} />
+							</InputGroup>,
+							<label htmlFor='masa-berlaku'>Masa Berlaku</label>,
+							<Level padded>
+								<Level.Item>
+									<Select top selectedLabel='-- Bulan' options={Bulan} onChange={this.onCardMonthChange} />
+								</Level.Item>
+								<Level.Item>
+									<Select top selectedLabel='-- Tahun' options={this.props.tahun} onChange={this.onCardYearChange} />
+								</Level.Item>
+								<Level.Item>
+									<Input type='password' placeholder='cvv' onBlur={this.onCardCvvChange} />
+								</Level.Item>
+								<Level.Item>
+									<Sprites name='cvv' />
+								</Level.Item>
+							</Level>
+						])}
 						{ renderIf(selectedPayment.value === paymentGroupName.INTERNET_BANKING)(
 							<InputGroup>
 								<Tooltip align='right' content='Info'>
@@ -442,7 +425,6 @@ export default class CardPembayaran extends Component {
 						<InputGroup>
 							<Input label='Masukkan OVO ID' type='number' placeholder='OVO ID' onChange={this.onOvoNumberChange} />
 						</InputGroup>
-						
 						<div className={styles.checkOutAction}>
 							<Checkbox checked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />
 							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' loading={loading} disabled={(this.props.payments.selectedPaymentOption === null || !this.props.payments.selectedPaymentOption)} />
