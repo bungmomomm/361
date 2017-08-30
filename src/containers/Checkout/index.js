@@ -272,7 +272,7 @@ class Checkout extends Component {
 		dispatch(resetCoupon());
 	}
 
-	onChoisedAddress(address) {
+	onChoisedAddress(address, updatePaymentMethodList = true) {
 		const { dispatch } = this.props;
 		const billing = this.props.billing.length > 0 ? this.props.billing[0] : false;
 		
@@ -294,7 +294,7 @@ class Checkout extends Component {
 		// 		});
 		// 	}
 		// });
-		return dispatch(getPlaceOrderCart(this.state.token, address, billing));
+		return dispatch(getPlaceOrderCart(this.state.token, address, billing, updatePaymentMethodList));
 	}
 
 	onChangeAddress(address, flagAdd) {
@@ -787,7 +787,7 @@ class Checkout extends Component {
 			tempSelectedAddress.attributes.is_dropshipper = this.state.dropshipper;
 			tempSelectedAddress.attributes.dropship_name = this.state.formDropshipper.dropship_name;
 			tempSelectedAddress.attributes.dropship_phone = this.state.formDropshipper.dropship_phone;
-			this.onChoisedAddress(tempSelectedAddress).then(() => {
+			this.onChoisedAddress(tempSelectedAddress, false).then(() => {
 				this.setState({
 					isValidPayment: true,
 				});

@@ -82,7 +82,7 @@ const getCart = token => dispatch => {
 	});
 };
 
-const getPlaceOrderCart = (token, address, billing = false) => dispatch => new Promise((resolve, reject) => {
+const getPlaceOrderCart = (token, address, billing = false, updatePaymentMethodList = true) => dispatch => new Promise((resolve, reject) => {
 	dispatch(placeOrderRequest(token, address));
 	console.log('masuk');
 	const data = setPayloadPlaceOrder(address, billing);
@@ -109,7 +109,9 @@ const getPlaceOrderCart = (token, address, billing = false) => dispatch => new P
 			}).filter(e => e.id === 'pickup');
 			dispatch(paymentInfoUpdated(getCartPaymentData(res.data.data.attributes.total_price, 'order')));
 			dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, response.data.data.attributes.total_price.count, { ovoId: res.data.data.attributes.ovo_id, ovoFlag: res.data.data.attributes.ovo_verified_flag }));
-			dispatch(getAvailablePaymentMethod(token));
+			if (updatePaymentMethodList) {
+				dispatch(getAvailablePaymentMethod(token));
+			}
 			resolve(setCartModel(res.data));
 		})
 		.catch((error) => {
