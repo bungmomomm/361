@@ -261,7 +261,7 @@ export default class CardPembayaran extends Component {
 												{ renderIf(card.selected)(
 													<Row>
 														<Col grid={4}>
-															<Input type='number' placeholder='cvv' onBlur={this.onCardCvvChange} />
+															<Input type='password' placeholder='cvv' onBlur={this.onCardCvvChange} />
 														</Col>
 														<Col grid={4}>
 															<Sprites name='cvv' />
