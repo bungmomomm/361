@@ -338,8 +338,8 @@ const changeBillingNumber = (billingNumber) => dispatch => {
 const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete', card = false, callback = false) => dispatch => new Promise((resolve, reject) => {
 	dispatch(payRequest());
 	if (
-		payment.paymentMethod === 'commerce_veritrans_installment'
-		|| payment.paymentMethod === 'commerce_veritrans'
+		(payment.paymentMethod === 'commerce_veritrans_installment'
+		|| payment.paymentMethod === 'commerce_veritrans')
 	) {
 		// prepare cc
 		request({
@@ -355,7 +355,7 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 				}
 			}
 		}).then((prep) => {
-			if (prep.data.data.attributes.channel === 'migs') {
+			if (payment.paymentMethod === 'commerce_veritrans' && prep.data.data.attributes.channel === 'migs' && mode !== 'complete') {
 				paymentDetail.card.bank = 'bca';
 			}
 			request({

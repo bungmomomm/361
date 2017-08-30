@@ -477,8 +477,8 @@ class Checkout extends Component {
 						this.props.payments.selectedPaymentOption,
 						{
 							card: {
-								value: this.props.payments.selectedCard.value,
-								bank: this.props.payments.selectedBank.value,
+								value: response.token_id,
+								bank: bankName,
 								detail: this.props.payments.selectedCardDetail
 							},
 							term: this.props.payments.term,

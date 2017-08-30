@@ -112,14 +112,19 @@ const getListAvailablePaymentMethod = (response) => {
 	});
 	const paymentList = [];
 	const paymentData = {};
+	const availableMethods = {};
 	payments.forEach((item) => {
 		paymentData[item.id] = humps(item);
 		paymentList.push(humps(item));
+		item.payment_items.forEach((method) => {
+			availableMethods[method.value] = humps(method);
+		});
 	});
 	
 	const returnData = {
 		methods: paymentList,
-		payments: paymentData
+		payments: paymentData,
+		availableMethods
 	};
 	return returnData;
 };
