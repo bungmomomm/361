@@ -431,7 +431,7 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 				// console.log(sprintBody);
 				request({
 					token, 
-					path: 'payments/sprintinstallmentnew',
+					path: 'payments/websprintinstallment',
 					method: 'POST',
 					body: {
 						data: {
