@@ -132,7 +132,38 @@ const deleteCart = (token, productId, props) => dispatch => {
 	
 	request(req)
 	.then((response) => {
-		this.getCart(token);
+		dispatch(getCart(token));
+	})
+	.catch((error) => {
+		console.log(error);
+	});
+
+};
+
+
+const updateCartWithoutSO = (token, productQty, productId) => dispatch => {
+	dispatch(gettingCart(token));
+
+	const req = {
+		method: 'PATCH',
+		path: `me/carts/${productId}`,
+		token,
+		body: {
+			data: [
+				{
+					type: 'cart_items',
+					id: productId,
+					attributes: {
+						quantity: productQty
+					}
+				}
+			]
+		}
+	};
+	
+	request(req)
+	.then((response) => {
+		dispatch(getCart(token));
 	})
 	.catch((error) => {
 		console.log(error);
@@ -217,5 +248,6 @@ export default {
 	getCart,
 	deleteCart,
 	updateQtyCart,
+	updateCartWithoutSO,
 	updateGosend,
 };

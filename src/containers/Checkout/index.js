@@ -34,7 +34,7 @@ import {
 	getDistrict, 
 	saveAddress 
 } from '@/state/Adresses/actions';
-import { getPlaceOrderCart, getCart, updateQtyCart, deleteCart, updateGosend } from '@/state/Cart/actions';
+import { getPlaceOrderCart, getCart, updateQtyCart, updateCartWithoutSO, deleteCart, updateGosend } from '@/state/Cart/actions';
 import {
 	getAvailablePaymentMethod,
 	changePaymentMethod,
@@ -331,7 +331,7 @@ class Checkout extends Component {
 		if (this.props.soNumber) {
 			dispatch(updateQtyCart(this.state.token, qty, id, this.props));
 		} else {
-			dispatch(updateQtyCart(this.state.token, qty, id, this.props));
+			dispatch(updateCartWithoutSO(this.state.token, qty, id));
 		}
 
 		this.setState({
