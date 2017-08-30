@@ -44,10 +44,12 @@ export default class Modal extends Component {
 	@injectProps
 	render({
 		size,
+		loading,
 		children
 	}) {
 		const ModalClass = cx({
-			Modal: true
+			Modal: true,
+			loading: !!loading
 		});
 
 		const ModalWrapperClass = cx({

@@ -25,7 +25,7 @@ export default (state = initialState, action) => {
 	switch (action.type) {
 
 	case constants.PAY_LIST_PAYMENT_METHOD: {
-		let resultState = state;
+		let resultState = '';
 		if (action.status) {
 			resultState = {
 				...state, 

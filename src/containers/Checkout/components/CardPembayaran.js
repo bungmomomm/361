@@ -230,7 +230,6 @@ export default class CardPembayaran extends Component {
 		let paymentOptions = false; 
 		let installmentPayment = false;
 		if (selectedPayment) {
-			console.log(selectedPayment.paymentItems);
 			switch (selectedPayment.value) {
 			case paymentGroupName.BANK_TRANSFER:
 			case paymentGroupName.CONVENIENCE_STORE:

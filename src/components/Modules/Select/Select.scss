@@ -77,7 +77,11 @@
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		padding-right: 20px;
+		padding-right: 10px;
+		flex: 1;
+		justify-content: space-between;
+		display: flex;
+		align-content: center;
 	}
 }
 

@@ -48,8 +48,7 @@ const paymentMethod = method => {
 		id: method.id,
 		value: method.id,
 		label: method.attributes.title,
-		info: info ? info.info[0] : '',
-		sprites: method.id
+		info: info ? info.info[0] : ''
 	};
 };
 
@@ -95,6 +94,7 @@ const getListAvailablePaymentMethod = (response) => {
 						return installment;
 					});
 					bank.info = bank.name;
+					bank.sprites = bank.name.replace(' ', '_').toLowerCase();
 					bank.label = bank.name;
 					bank.value = bank.name;
 					return bank;
