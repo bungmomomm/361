@@ -96,7 +96,10 @@ const getListAvailablePaymentMethod = (response) => {
 					bank.info = bank.name;
 					bank.sprites = bank.name.replace(' ', '_').toLowerCase();
 					bank.label = bank.name;
-					bank.value = bank.name;
+					bank.value = {
+						value: bank.name, 
+						provider: bank.provider
+					};
 					return bank;
 				});
 				return paymentData;
@@ -112,16 +115,36 @@ const getListAvailablePaymentMethod = (response) => {
 	});
 	const paymentList = [];
 	const paymentData = {};
+	const availableMethods = {};
 	payments.forEach((item) => {
 		paymentData[item.id] = humps(item);
 		paymentList.push(humps(item));
+		item.payment_items.forEach((method) => {
+			availableMethods[method.value] = humps(method);
+		});
 	});
 	
 	const returnData = {
 		methods: paymentList,
-		payments: paymentData
+		payments: paymentData,
+		availableMethods
 	};
 	return returnData;
+};
+
+const getSprintPayload = (orderId, payment, paymentDetail) => {
+	return {
+		so_number: orderId,
+		bank_name: paymentDetail.card.bank,
+		term: payment.term.term,
+		cc: {
+			card_number: paymentDetail.cardNumber,
+			card_expiration_month: paymentDetail.cardMonth,
+			card_expiration_year: paymentDetail.cardYear,
+			card_type: '',
+			card_cvv: paymentDetail.cardCVV
+		}
+	};
 };
 
 const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
@@ -163,7 +186,7 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
 		break;
 	case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 		paymentPayload.attributes.amount = paymentDetail.amount;
-		if (mode === 'cc') {
+		if (mode !== 'cc') {
 			paymentPayload.attributes.credit_card = {
 				bank: paymentDetail.card.bank,
 				token_id: paymentDetail.card.value,
@@ -171,7 +194,18 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
 				site_id: payment.term.siteid,
 				provider: payment.term.provider
 			};		
+		} else {
+			paymentPayload.attributes.af_track_id = '';
+			paymentPayload.attributes.af_trx_click = '';
+			paymentPayload.attributes.af_trx_id = '';
+			paymentPayload.attributes.card_number = '';
+			paymentPayload.attributes.payment_installment_provider = payment.term.provider;
+			paymentPayload.attributes.product_type = '';
 		}
+		break;
+	case paymentMethodName.COMMERCE_SPRINT_ASIA: 
+		paymentPayload.attributes.payment_installment_provider = paymentMethodName.COMMERCE_SPRINT_ASIA;
+		paymentPayload.attributes.payment_method = paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT;
 		break;
 	case paymentMethodName.POS_PAY:
 		break;
@@ -183,5 +217,6 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
 
 export default {
 	getListAvailablePaymentMethod,
-	getPaymentPayload
+	getPaymentPayload,
+	getSprintPayload
 };

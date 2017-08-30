@@ -75,6 +75,7 @@ export default class CardPengiriman extends Component {
 	}
 
 	onChangeAddress(e) {
+		console.log(this.state.selectedAddress);
 		this.props.onChangeAddress(this.state.selectedAddress, e);
 	}
 

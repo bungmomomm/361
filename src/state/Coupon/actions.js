@@ -1,6 +1,6 @@
 import * as constants from './constants';
 import { request } from '@/utils';
-import { paymentInfoUpdated } from '@/state/Payment/actions';
+import { paymentInfoUpdated, getAvailablePaymentMethod } from '@/state/Payment/actions';
 import { getCartPaymentData } from '@/state/Cart/models';
 const couponAdd = (thecoupon) => ({
 	type: constants.CP_ADD_COUPON,
@@ -65,7 +65,9 @@ const addCoupon = (token, orderId, coupon) => dispatch => {
 	}).then((response) => {
 		dispatch(paymentInfoUpdated(getCartPaymentData(response.data.data.attributes.total_price, 'order')));
 		dispatch(couponAdded({}));
+		dispatch(getAvailablePaymentMethod(token));
 	}).catch((error) => {
+		console.log('asd', error);
 		dispatch(couponInvalid(error.errorMessage, error.code));
 	});
 };
@@ -85,7 +87,9 @@ const removeCoupon = (token, orderId) => dispatch => {
 	}).then((response) => {
 		dispatch(paymentInfoUpdated(getCartPaymentData(response.data.data.attributes.total_price, 'order')));
 		dispatch(couponDeleted({}));
+		dispatch(getAvailablePaymentMethod(token));
 	}).catch((error) => {
+		console.log(error);
 		dispatch(couponRequestFailed());
 	});
 };

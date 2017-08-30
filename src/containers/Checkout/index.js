@@ -53,6 +53,7 @@ import {
 	bankNameChange,
 	applyBin,
 	changeOvoNumber,
+	changeBillingNumber,
 	termChange,
 	changeInstallmentCCNumber,
 	changeInstallmentCCMonth,
@@ -151,6 +152,8 @@ class Checkout extends Component {
 		this.onSubmitOtp = this.onSubmitOtp.bind(this);
 		this.onVerificationClose = this.onVerificationClose.bind(this);
 		this.onResendOtp = this.onResendOtp.bind(this);
+		this.onVerity = this.onVerity.bind(this);
+		this.onRequestSprintInstallment = this.onRequestSprintInstallment.bind(this);
 	}
 
 	componentWillMount() {
@@ -234,7 +237,7 @@ class Checkout extends Component {
 				restrictO2o: false
 			});
 		}
-		
+
 		if (!nextProps.coupon.validCoupon && nextProps.coupon.code === 403) {
 			this.setState({
 				showModalOtp: true
@@ -329,6 +332,7 @@ class Checkout extends Component {
 	}
 
 	onPaymentMethodChange(event) {
+		console.log('asdasdasdasd', event);
 		this.props.dispatch(changePaymentMethod(event.value, this.props.payments.paymentMethods));
 	}
 
@@ -395,6 +399,29 @@ class Checkout extends Component {
 		this.onChoisedAddress(selectedLocker);
 	}
 
+	onRequestSprintInstallment() {
+		const { dispatch } = this.props;
+		dispatch(
+			pay(
+				this.state.token,
+				this.props.soNumber,
+				this.props.payments.selectedPaymentOption,
+				{
+					card: {
+						value: this.props.payments.selectedCard.value,
+						bank: this.props.payments.selectedBank.value,
+						detail: this.props.payments.selectedCardDetail
+					},
+					term: this.props.payments.term,
+					cardNumber: this.props.payments.selectedCard.value,
+					cardCVV: this.props.payments.selectedCardDetail.cvv,
+					cardMonth: this.props.payments.selectedCardDetail.month,
+					cardYear: this.props.payments.selectedCardDetail.year
+				}
+			)
+		);
+	}
+
 	onRequestVtToken(installment = false) {
 		const { dispatch } = this.props;
 		let bankName = '';
@@ -409,6 +436,8 @@ class Checkout extends Component {
 			cardDetail.bank = this.props.payments.selectedBank.value;
 			cardDetail.installment = true;
 			cardDetail.installment_term = this.props.payments.term.term;
+			cardDetail.card_exp_month = this.props.payments.selectedCardDetail.month;
+			cardDetail.card_exp_year = this.props.payments.selectedCardDetail.year;
 		} else {
 			if (this.props.payments.twoClickEnabled) {
 				cardDetail.token_id = this.props.payments.selectedCard.value;
@@ -480,8 +509,8 @@ class Checkout extends Component {
 						this.props.payments.selectedPaymentOption,
 						{
 							card: {
-								value: this.props.payments.selectedCard.value,
-								bank: this.props.payments.selectedBank.value,
+								value: response.token_id,
+								bank: bankName,
 								detail: this.props.payments.selectedCardDetail
 							},
 							term: this.props.payments.term,
@@ -544,6 +573,9 @@ class Checkout extends Component {
 			case paymentMethodName.COMMERCE_VERITRANS:
 				this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
 				break;
+			case paymentMethodName.COMMERCE_SPRINT_ASIA:
+				this.onRequestSprintInstallment();
+				break;
 			default:
 				if (this.props.payments.selectedPaymentOption) {
 					if (this.props.payments.selectedPaymentOption.uniqueConstant === 'mandiri_ecash') {
@@ -552,6 +584,7 @@ class Checkout extends Component {
 						mode = 'bca_klikpay';
 					}
 				}
+				console.log(this.props);
 				dispatch(
 					pay(
 						this.state.token, 
@@ -585,6 +618,7 @@ class Checkout extends Component {
 			this.props.dispatch(applyBin(this.state.token, selectedPaymentOption.value, event, ''));
 		}
 	}
+
 	onCardMonthChange(monthData) {
 		console.log(event, this.state.test);
 		this.props.dispatch(changeCreditCardMonth(monthData.value));
@@ -648,6 +682,10 @@ class Checkout extends Component {
 
 	onResendOtp(event) {
 		console.log(this.state.test);
+	}
+
+	onVerity(response) {
+		console.log(this.state, response);
 	}
 
 	getDistricts(cityAndProvince) {
@@ -786,7 +824,8 @@ class Checkout extends Component {
             listo2o,
 			latesto2o,
 			o2oProvinces,
-			isPickupable		
+			isPickupable,
+			dispatch
 		} = this.props;
 		
 		return (
@@ -860,6 +899,7 @@ class Checkout extends Component {
 										tahun={this.state.tahun}
 										onBankChange={this.onBankChange}
 										onOvoNumberChange={this.onOvoNumberChange}
+										onBillingNumberChange={(event) => dispatch(changeBillingNumber(event.target.value))}
 										onTermChange={this.onTermChange}
 										onInstallmentCCNumberChange={this.onInstallmentCCNumberChange}
 										onInstallmentCCMonthChange={this.onInstallmentCCMonthChange}
@@ -890,12 +930,13 @@ class Checkout extends Component {
 						paymentErrorMessage={this.props.paymentErrorMessage}
 						onClose={this.onCloseErrorBox} 
 					/>
-					<VerifikasiNoHandponeModalbox 
+					<VerifikasiNoHandponeModalbox
 						shown={this.state.showModalOtp}
-						onSubmitPhoneNumber={this.onSubmitPhoneNumber} 
+						onSubmitPhoneNumber={this.onSubmitPhoneNumber}
 						onSubmitOtp={this.onSubmitOtp} 
 						onResendOtp={this.onResendOtp}
-						onVerificationClose={this.onVerificationClose} 
+						onVerificationClose={this.onVerificationClose}
+						onVerity={this.onVerity}
 					/>
 					<Vt3dsModalBox
 						shown={this.props.payments.show3ds}

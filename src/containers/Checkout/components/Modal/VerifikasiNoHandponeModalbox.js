@@ -84,7 +84,7 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 			this.setState({
 				buttonSubmitOtp: true,
 			});
-		} 
+		}
 	}
 
 	hideModal() {
@@ -101,7 +101,7 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 				<Modal.Body>
 					<form>
 						{
-							!this.state.alreadySubmitPhone ? 
+							!this.state.alreadySubmitPhone ?
 								<div>
 									<InputGroup>
 										<Input disabled={this.state.alreadySubmitPhone} name='phone' number placeholder='No Handphone anda (contoh: 08219823982189)' onChange={this.validatePhone} />
@@ -110,6 +110,7 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 										{/* { renderIf(process.env.GOOGLE_CAPTCHA_SITE_KEY)( */}
 										<Recaptcha
 											sitekey={process.env.GOOGLE_CAPTCHA_SITE_KEY}
+                                            verifyCallback={(event) => this.props.onVerify}
 										/>
 										{/* ) } */}
 									</InputGroup>
@@ -140,7 +141,7 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 						) }
 					</InputGroup>
 					<InputGroup>
-						<Button onClick={this.hideModal} type='button' size='medium' content='Nanti aja' block className='font-orange' />
+						<Button onClick={this.onVerificationClose} type='button' size='medium' content='Nanti aja' block className='font-orange' />
 					</InputGroup>
 				</Modal.Footer>
 			</Modal>

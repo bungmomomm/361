@@ -1,5 +1,5 @@
 import * as constants from './constants';
-import { getListAvailablePaymentMethod, getPaymentPayload } from './models';
+import { getListAvailablePaymentMethod, getPaymentPayload, getSprintPayload } from './models';
 import { request } from '@/utils';
 import { getCartPaymentData } from '@/state/Cart/models';
 
@@ -162,6 +162,13 @@ const ovoNumberChange = (ovoNumber) => ({
 	}
 });
 
+const billingNumberChange = (billingNumber) => ({
+	type: constants.PAY_CHANGE_BILLING_NUMBER,
+	payload: {
+		billingNumber
+	}
+});
+
 // installment
 const changeBankName = (token, bank, selectedPaymentOption) => ({
 	type: constants.PAY_CHANGE_BANK,
@@ -210,6 +217,27 @@ const InstallmentCCCvvChange = (cvv) => ({
 });
 
 // action
+const changePaymentOption = (selectedPaymentOption) => dispatch => new Promise((resolve, reject) => {
+	
+	dispatch(paymentOptionChanged(selectedPaymentOption));
+
+	resolve(selectedPaymentOption);
+});
+
+const changePaymentMethod = (paymentMethod, data) => dispatch => {
+	if (!paymentMethod) {
+		dispatch(paymentMethodChanged(false));
+	} else {
+		const selectedPayment = data.payments[paymentMethod];
+		dispatch(paymentMethodChanged(selectedPayment));
+		if (selectedPayment.value === 'cod' || selectedPayment.value === 'gratis') {
+			const selectedPaymentOption = selectedPayment.paymentItems[0];
+			dispatch(changePaymentOption(selectedPaymentOption));
+		} else {
+			dispatch(changePaymentOption(false));
+		}
+	}
+};
 
 const getAvailablePaymentMethod = (token) => (dispatch) => {
 	dispatch(availablePaymentMethodRequest());
@@ -219,23 +247,10 @@ const getAvailablePaymentMethod = (token) => (dispatch) => {
 		method: 'GET'
 	}).then((response) => {
 		dispatch(availablePaymentMethodReceived(getListAvailablePaymentMethod(response.data)));
+		dispatch(changePaymentMethod(false, false));
+		dispatch(changePaymentOption(false));
 	}).catch((error) => {
 	});
-};
-
-const changePaymentOption = (selectedPaymentOption) => dispatch => {
-	dispatch(paymentOptionChanged(selectedPaymentOption));
-};
-
-const changePaymentMethod = (paymentMethod, data) => dispatch => {
-	const selectedPayment = data.payments[paymentMethod];
-	dispatch(paymentMethodChanged(selectedPayment));
-	if (selectedPayment.value === 'cod') {
-		const selectedPaymentOption = selectedPayment.paymentItems[0];
-		dispatch(changePaymentOption(selectedPaymentOption));
-	} else {
-		dispatch(changePaymentOption(false));
-	}
 };
 
 const deselectCreditCard = () => dispatch => {
@@ -311,7 +326,22 @@ const selectCreditCard = (card) => dispatch => {
 // installment
 
 const bankNameChange = (token, bank, selectedPaymentOption) => dispatch => new Promise((resolve, reject) => {
-	dispatch(changeBankName(token, bank, selectedPaymentOption));	
+	
+	if (bank.value.provider === 'sprint') {
+		selectedPaymentOption = {
+			...selectedPaymentOption,
+			name: constants.paymentMethodName.COMMERCE_SPRINT_ASIA,
+			paymentMethod: constants.paymentMethodName.COMMERCE_SPRINT_ASIA,
+			uniqueConstant: constants.paymentMethodName.COMMERCE_SPRINT_ASIA,
+
+		};
+		dispatch(changePaymentOption(selectedPaymentOption)).then((bankSelected) => {
+			dispatch(changeBankName(token, bank, selectedPaymentOption));	
+		});
+	} else {
+		dispatch(changeBankName(token, bank, selectedPaymentOption));	
+	}
+	
 	resolve(bank);
 });
 
@@ -321,14 +351,18 @@ const termChange = (term) => dispatch => new Promise((resolve, reject) => {
 });
 
 const changeOvoNumber = (ovoNumber) => dispatch => {
-	ovoNumberChange(ovoNumber);
+	dispatch(ovoNumberChange(ovoNumber));
+};
+
+const changeBillingNumber = (billingNumber) => dispatch => {
+	dispatch(billingNumberChange(billingNumber));
 };
 
 const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete', card = false, callback = false) => dispatch => new Promise((resolve, reject) => {
 	dispatch(payRequest());
 	if (
-		payment.paymentMethod === 'commerce_veritrans_installment'
-		|| payment.paymentMethod === 'commerce_veritrans'
+		(payment.paymentMethod === 'commerce_veritrans_installment'
+		|| payment.paymentMethod === 'commerce_veritrans')
 	) {
 		// prepare cc
 		request({
@@ -344,7 +378,7 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 				}
 			}
 		}).then((prep) => {
-			if (prep.data.data.attributes.channel === 'migs') {
+			if (payment.paymentMethod === 'commerce_veritrans' && prep.data.data.attributes.channel === 'migs' && mode !== 'complete') {
 				paymentDetail.card.bank = 'bca';
 			}
 			request({
@@ -380,6 +414,22 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 			if (typeof response.data.data[0] !== 'undefined' && typeof response.data.data[0].id !== 'undefined') {
 				soNumber = response.data.data[0].id;
 			}
+
+			if (payment.paymentMethod === constants.paymentMethodName.COMMERCE_SPRINT_ASIA) {
+				const sprintBody = getSprintPayload(soNumber, payment, paymentDetail);
+				console.log(sprintBody);
+				request({
+					token, 
+					path: 'payments/sprintinstallmentnew',
+					method: 'POST',
+					body: {
+						sprintBody
+					}
+				}).then((res) => {
+					console.log(res);
+				});
+			}
+
 			dispatch(payReceived(soNumber, response.data, mode, card, callback));
 			resolve(soNumber, response.data, mode, card, callback);
 		}).catch((error) => {
@@ -441,6 +491,7 @@ export default {
 	changeInstallmentCCMonth,
 	changeInstallmentCCYear,
 	changeInstallmentCCCvv,
+	changeBillingNumber,
 	ecashModalBoxOpen,
 	changeOvoNumber,
 	payError,

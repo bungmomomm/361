@@ -10,7 +10,8 @@ import {
 
 const initialState = {
 	loading: false,
-	validCoupon: null
+	validCoupon: null,
+	errorMessage: ''
 };
 
 export default (state = initialState, action) => {
