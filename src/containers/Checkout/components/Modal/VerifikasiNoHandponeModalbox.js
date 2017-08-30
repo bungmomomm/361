@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Recaptcha from 'react-recaptcha';
+// import Recaptcha from 'react-recaptcha';
 import { renderIf } from '@/utils';
 // component load
 import { Modal, Input, Button, InputGroup } from '@/components';
@@ -14,6 +14,9 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 			alreadySubmitPhone: false,
 			enableButtonOtp: true,
 			contentOtp: 'Resend OTP',
+			phone: null,
+			otp: null,
+			buttonResendOtp: false,
 		};
 		this.hideModal = this.hideModal.bind(this);
 		this.onSubmitPhoneNumber = this.onSubmitPhoneNumber.bind(this);
@@ -27,13 +30,14 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 
 	onSubmitPhoneNumber(event) {
 		this.setState({
-			alreadySubmitPhone: true
+			alreadySubmitPhone: true,
+			buttonResendOtp: true,
 		});
+		this.props.onSubmitPhoneNumber(this.state.phone);
 		this.setIntervalButton();
-		this.props.onSubmitPhoneNumber(event);
 	}
 	onSubmitOtp(event) {
-		this.props.onSubmitOtp(event);
+		this.props.onSubmitOtp(this.state.otp);
 	}
 	
 	onResendOtp(event) {
@@ -74,6 +78,7 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 		if (value.length > 6 && value.length < 14) {
 			this.setState({
 				buttonSubmitPhone: true,
+				phone: value,
 			});
 		}
 	}
@@ -83,8 +88,9 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 		if (value.length === 6) {
 			this.setState({
 				buttonSubmitOtp: true,
+				otp: value
 			});
-		} 
+		}
 	}
 
 	hideModal() {
@@ -93,6 +99,7 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 
 	render() {
 		return (
+			this.props.otp.valid ? null : 
 			<Modal size='small' shown={this.props.shown} onClose={this.onVerificationClose} >
 				<Modal.Header>
 					<p>Verifikasi No Handphone</p>
@@ -108,15 +115,15 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 									</InputGroup>
 									<InputGroup>
 										{/* { renderIf(process.env.GOOGLE_CAPTCHA_SITE_KEY)( */}
-										<Recaptcha
-											sitekey={process.env.GOOGLE_CAPTCHA_SITE_KEY}
-										/>
+										{/*<Recaptcha*/}
+											{/*sitekey={process.env.GOOGLE_CAPTCHA_SITE_KEY}*/}
+										{/*/>*/}
 										{/* ) } */}
 									</InputGroup>
 								</div>
 							:
 								<InputGroup>
-									<Input name='otp' number placeholder='OTP dari no handphone anda (contoh: 123123)' onChange={this.validateOtp} />
+									<Input name='otp' value={this.state.otp} number placeholder='OTP dari no handphone anda (contoh: 123123)' onChange={this.validateOtp} message={this.props.otp.message} color={this.props.otp.message ? 'red' : null} />
 								</InputGroup>
 						}
 					</form>
@@ -133,9 +140,9 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 						) }
 					</InputGroup>
 					<InputGroup>
-						{ renderIf(this.state.buttonSubmitOtp)(
+						{ renderIf(this.state.buttonResendOtp)(
 							<div>
-								<Button type='button' block={!this.state.enableButtonOtp} content={this.state.contentOtp} color='dark' onClick={this.onResendOtp} />
+								<Button type='button' disabled={!this.state.enableButtonOtp} content={this.state.contentOtp} color='dark' onClick={this.onResendOtp} />
 							</div>
 						) }
 					</InputGroup>

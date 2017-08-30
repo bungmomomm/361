@@ -5,13 +5,19 @@ import {
 	CP_DELETED_COUPON,
 	CP_INVALID_COUPON,
 	CP_RESET_COUPON,
-	CP_FAILED_COUPON
+	CP_FAILED_COUPON,
+	CP_REQUEST_OTP,
+	CP_RESULT_OTP,
 } from './constants';
 
 const initialState = {
 	loading: false,
 	validCoupon: null,
-	errorMessage: ''
+	errorMessage: '',
+	otp: {
+		valid: false,
+		message: null,
+	}
 };
 
 export default (state = initialState, action) => {
@@ -72,6 +78,22 @@ export default (state = initialState, action) => {
 	case CP_FAILED_COUPON: {
 		return {
 			...state,
+			loading: false
+		};
+	}
+	case CP_REQUEST_OTP: {
+		return {
+			...state,
+			loading: true
+		};
+	}
+	case CP_RESULT_OTP: {
+		return {
+			...state,
+			otp: {
+				valid: action.payload.validOtp,
+				message: action.payload.messageOtp,  
+			},
 			loading: false
 		};
 	}

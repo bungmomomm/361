@@ -46,6 +46,23 @@ const couponRequestFailed = () => ({
 	type: constants.CP_FAILED_COUPON
 });
 
+const couponRequestOTP = (token) => ({
+	type: constants.CP_REQUEST_OTP,
+	status: 0,
+	payload: {
+		token
+	}
+});
+
+const couponReceiveOTP = (validOtp) => ({
+	type: constants.CP_RESULT_OTP,
+	status: 1,
+	payload: {
+		validOtp,
+		messageOtp: validOtp ? null : 'Kode otp salah'
+	}
+});
+
 const addCoupon = (token, orderId, coupon) => dispatch => {
 	dispatch(couponAdd(coupon));
 	if (coupon === 'a') {
@@ -94,6 +111,49 @@ const removeCoupon = (token, orderId) => dispatch => {
 	});
 };
 
+const resendOtp = (token, phone) => dispatch => {
+	dispatch(couponRequestOTP());
+	return request({
+		token,
+		path: 'me/phone/resendotp',
+		method: 'POST',
+		body: {
+			data: {
+				attributes: {
+					new_phone: phone,
+					action: 'resend'
+				}
+			}
+		}
+	}).then((response) => {
+		
+	}).catch((error) => {
+		console.log(error);
+	});
+};
+
+const verifyOtp = (token, phone, otp, props) => dispatch => {
+	dispatch(couponRequestOTP());
+	return request({
+		token,
+		path: 'me/phone/verifyphone',
+		method: 'POST',
+		body: {
+			data: {
+				attributes: {
+					otp_code: otp,
+					new_phone: phone
+				}
+			}
+		}
+	}).then((response) => {
+		dispatch(couponReceiveOTP(true));
+		dispatch(addCoupon(token, props.soNumber, props.coupon.coupon));
+	}).catch((error) => {
+		dispatch(couponReceiveOTP(false));
+	});
+};
+
 const resetCoupon = () => dispatch => {
 	dispatch(couponReset());
 };
@@ -102,5 +162,7 @@ const resetCoupon = () => dispatch => {
 export default {
 	addCoupon,
 	removeCoupon,
-	resetCoupon
+	resetCoupon,
+	resendOtp,
+	verifyOtp,
 };

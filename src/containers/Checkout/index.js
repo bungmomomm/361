@@ -25,7 +25,7 @@ import CardPengiriman from './components/CardPengiriman';
 
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
-import { addCoupon, removeCoupon, resetCoupon } from '@/state/Coupon/actions';
+import { addCoupon, removeCoupon, resetCoupon, resendOtp, verifyOtp } from '@/state/Coupon/actions';
 import { 
 	getAddresses, 
 	getO2OList, 
@@ -106,6 +106,7 @@ class Checkout extends Component {
 			loadingCardPengiriman: false,
 			tahun: [],
 			showModalOtp: false,
+			phoneNumber: null,
 		};
 		
 		this.onAddCoupon = this.onAddCoupon.bind(this);
@@ -690,12 +691,17 @@ class Checkout extends Component {
 		this.props.dispatch(paymentSuccess(false));
 	}
 
-	onSubmitPhoneNumber(event) {
-		console.log(this.state.test);
+	onSubmitPhoneNumber(phone) {
+		const { dispatch } = this.props;
+		dispatch(resendOtp(this.state.token, phone));
+		this.setState({
+			phoneNumber: phone
+		});
 	}
 
-	onSubmitOtp(event) {
-		console.log(this.state.test);
+	onSubmitOtp(otp) {
+		const { dispatch } = this.props;
+		dispatch(verifyOtp(this.state.token, this.state.phoneNumber, otp, this.props));
 	}
 
 	onVerificationClose(event) {
@@ -705,7 +711,8 @@ class Checkout extends Component {
 	}
 
 	onResendOtp(event) {
-		console.log(this.state.test);
+		const { dispatch } = this.props;
+		dispatch(resendOtp(this.state.token, this.state.phoneNumber));
 	}
 
 	onVerity(response) {
@@ -961,7 +968,7 @@ class Checkout extends Component {
 						onSubmitOtp={this.onSubmitOtp} 
 						onResendOtp={this.onResendOtp}
 						onVerificationClose={this.onVerificationClose}
-						onVerity={this.onVerity}
+						otp={coupon.otp}
 					/>
 					<Vt3dsModalBox
 						shown={this.props.payments.show3ds}
