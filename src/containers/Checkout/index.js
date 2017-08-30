@@ -592,6 +592,7 @@ class Checkout extends Component {
 
 	onTermChange(term) {
 		const { dispatch } = this.props;
+		this.props.payments.selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
 		dispatch(termChange(term));
 	}
 
