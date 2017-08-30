@@ -110,3 +110,42 @@
 	max-width: 373px;
 	text-align: center;
 }
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(359deg);
+	}
+}
+
+.loading .wrapper{
+    // position: relative;
+    &:before {
+        content: "";
+        display: block;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 0;
+        background: rgba(255,255,255,0.7);
+        z-index: 2;
+		position: absolute;
+    }
+    &:after {
+        content: "";
+		animation: spin 500ms infinite linear;
+		border: 3px solid color(yellow);
+		border-radius: 50%;
+		border-right-color: transparent;
+		border-top-color: transparent;
+		display: block;
+		height: rem(30px);
+		width: rem(30px);
+		left: calc(50% - (30px / 2));
+        top: calc(50% - (30px / 2));
+        z-index: 2;
+		position: absolute;
+    }
+}

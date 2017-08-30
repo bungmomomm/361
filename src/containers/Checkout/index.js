@@ -48,6 +48,7 @@ import {
 	vtModalBoxOpen,
 	ecashModalBoxOpen,
 	paymentError,
+	paymentSuccess,
 	pay,
 	bankNameChange,
 	applyBin,
@@ -143,6 +144,12 @@ class Checkout extends Component {
 		this.onInstallmentCCMonthChange = this.onInstallmentCCMonthChange.bind(this);
 		this.onInstallmentCCYearChange = this.onInstallmentCCYearChange.bind(this);
 		this.onInstallmentCCCvvChange = this.onInstallmentCCCvvChange.bind(this);
+		this.onCloseSuccessBox = this.onCloseSuccessBox.bind(this);
+		this.onCloseErrorBox = this.onCloseErrorBox.bind(this);
+		this.onSubmitPhoneNumber = this.onSubmitPhoneNumber.bind(this);
+		this.onSubmitOtp = this.onSubmitOtp.bind(this);
+		this.onVerificationClose = this.onVerificationClose.bind(this);
+		this.onResendOtp = this.onResendOtp.bind(this);
 	}
 
 	componentWillMount() {
@@ -436,7 +443,9 @@ class Checkout extends Component {
 								value: response.token_id,
 								bank: bankName,
 								detail: this.props.payments.selectedCardDetail
-							}
+							},
+							ovoPhoneNumber: this.props.payments.ovoNumber,
+							billingPhoneNumber: this.props.billingAddress.phone
 						}
 					)
 				);
@@ -468,7 +477,9 @@ class Checkout extends Component {
 								bank: this.props.payments.selectedBank.value,
 								detail: this.props.payments.selectedCardDetail
 							},
-							term: this.props.payments.term
+							term: this.props.payments.term,
+							ovoPhoneNumber: this.props.payments.ovoNumber,
+							billingPhoneNumber: this.props.billingAddress.phone
 						}
 					)
 				);
@@ -486,7 +497,9 @@ class Checkout extends Component {
 					amount: this.props.payments.total,
 					card: {
 						value: this.props.payments.selectedCard.value
-					}
+					},
+					ovoPhoneNumber: this.props.payments.ovoNumber,
+					billingPhoneNumber: this.props.billingAddress.phone
 				},
 				'cc',
 				card,
@@ -537,7 +550,10 @@ class Checkout extends Component {
 						this.state.token, 
 						this.props.soNumber, 
 						this.props.payments.selectedPaymentOption,
-						false,
+						{
+							ovoPhoneNumber: this.props.payments.ovoNumber,
+							billingPhoneNumber: this.props.billingAddress.phone
+						},
 						mode
 					)
 				);
@@ -600,7 +616,31 @@ class Checkout extends Component {
 		console.log(event, this.state.test);
 		this.props.dispatch(changeInstallmentCCCvv(event.target.value));
 	}
+
+	onCloseErrorBox() {
+		this.props.dispatch(paymentError(false));
+	}
 	
+	onCloseSuccessBox() {
+		this.props.dispatch(paymentSuccess(false));
+	}
+
+	onSubmitPhoneNumber(event) {
+		console.log(this.state.test);
+	}
+
+	onSubmitOtp(event) {
+		console.log(this.state.test);
+	}
+
+	onVerificationClose(event) {
+		console.log(this.state.test);
+	}
+
+	onResendOtp(event) {
+		console.log(this.state.test);
+	}
+
 	getDistricts(cityAndProvince) {
 		const { dispatch } = this.props;
 		dispatch(getDistrict(this.state.token, cityAndProvince));
@@ -835,9 +875,18 @@ class Checkout extends Component {
 						)
 					}
 					<ElockerModalbox closeModalElocker={this.closeModalElocker} shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} o2oProvinces={!o2oProvinces ? null : o2oProvinces} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
-					<PaymentSuccessModalbox shown={this.props.payments.paymentSuccess} />
-					<PaymentErrorModalbox shown={this.props.payments.paymentError} />
-					<VerifikasiNoHandponeModalbox />
+					<PaymentSuccessModalbox shown={this.props.payments.paymentSuccess} onClose={this.onCloseSuccessBox} />
+					<PaymentErrorModalbox 
+						shown={this.props.payments.paymentError} 
+						paymentErrorMessage={this.props.paymentErrorMessage}
+						onClose={this.onCloseErrorBox} 
+					/>
+					<VerifikasiNoHandponeModalbox 
+						onSubmitPhoneNumber={this.onSubmitPhoneNumber} 
+						onSubmitOtp={this.onSubmitOtp} 
+						onResendOtp={this.onResendOtp}
+						onVerificationClose={this.onVerificationClose} 
+					/>
 					<Vt3dsModalBox
 						shown={this.props.payments.show3ds}
 						src={this.props.payments.vtRedirectUrl}

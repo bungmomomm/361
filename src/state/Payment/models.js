@@ -32,7 +32,7 @@ const paymentMethodItem = payment => {
 		label: payment.attributes.title,
 		name: payment.attributes.unique_constant,
 		info: payment.attributes.title,
-		disabled: payment.attributes.fg_enable ? 0 : 1,
+		disabled: !parseInt(payment.attributes.fg_enable, 10),
 		message: payment.attributes.description,
 		disable_message: payment.attributes.disable_message,
 		settings: payment.attributes.settings[0]
@@ -48,8 +48,7 @@ const paymentMethod = method => {
 		id: method.id,
 		value: method.id,
 		label: method.attributes.title,
-		info: info ? info.info[0] : '',
-		sprites: method.id
+		info: info ? info.info[0] : ''
 	};
 };
 
@@ -95,6 +94,7 @@ const getListAvailablePaymentMethod = (response) => {
 						return installment;
 					});
 					bank.info = bank.name;
+					bank.sprites = bank.name.replace(' ', '_').toLowerCase();
 					bank.label = bank.name;
 					bank.value = bank.name;
 					return bank;
@@ -125,14 +125,12 @@ const getListAvailablePaymentMethod = (response) => {
 };
 
 const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
-	console.log('ORDERID: ', orderId);
-	console.log('PAYMENT: ', payment);
-	console.log('PAYMENT-DETAIL: ', paymentDetail);
-	console.log('MODE: ', mode);
 	const paymentPayload = {
 		type: 'payment',
 		attributes: {
 			payment_method: payment.paymentMethod,
+			ovo_phone_number: paymentDetail.ovoPhoneNumber,
+			billing_phone_number: paymentDetail.billingPhoneNumber
 		},
 		relationships: {
 			order: {
@@ -180,7 +178,6 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
 	default:
 		break;
 	}
-	console.log(paymentPayload);
 	return paymentPayload;
 };
 
