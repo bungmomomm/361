@@ -53,6 +53,7 @@ import {
 	bankNameChange,
 	applyBin,
 	changeOvoNumber,
+	changeBillingNumber,
 	termChange,
 	changeInstallmentCCNumber,
 	changeInstallmentCCMonth,
@@ -150,6 +151,7 @@ class Checkout extends Component {
 		this.onSubmitOtp = this.onSubmitOtp.bind(this);
 		this.onVerificationClose = this.onVerificationClose.bind(this);
 		this.onResendOtp = this.onResendOtp.bind(this);
+		this.onVerity = this.onVerity.bind(this);
 	}
 
 	componentWillMount() {
@@ -580,6 +582,7 @@ class Checkout extends Component {
 			this.props.dispatch(applyBin(this.state.token, selectedPaymentOption.value, event, ''));
 		}
 	}
+
 	onCardMonthChange(monthData) {
 		console.log(event, this.state.test);
 		this.props.dispatch(changeCreditCardMonth(monthData.value));
@@ -641,6 +644,10 @@ class Checkout extends Component {
 
 	onResendOtp(event) {
 		console.log(this.state.test);
+	}
+
+	onVerity(response) {
+		console.log(this.state, response);
 	}
 
 	getDistricts(cityAndProvince) {
@@ -779,7 +786,8 @@ class Checkout extends Component {
             listo2o,
 			latesto2o,
 			o2oProvinces,
-			isPickupable		
+			isPickupable,
+			dispatch	
 		} = this.props;
 		
 		return (
@@ -853,6 +861,7 @@ class Checkout extends Component {
 										tahun={this.state.tahun}
 										onBankChange={this.onBankChange}
 										onOvoNumberChange={this.onOvoNumberChange}
+										onBillingNumberChange={(event) => dispatch(changeBillingNumber(event.target.value))}
 										onTermChange={this.onTermChange}
 										onInstallmentCCNumberChange={this.onInstallmentCCNumberChange}
 										onInstallmentCCMonthChange={this.onInstallmentCCMonthChange}
@@ -883,11 +892,12 @@ class Checkout extends Component {
 						paymentErrorMessage={this.props.paymentErrorMessage}
 						onClose={this.onCloseErrorBox} 
 					/>
-					<VerifikasiNoHandponeModalbox 
+					<VerifikasiNoHandponeModalbox 	
 						onSubmitPhoneNumber={this.onSubmitPhoneNumber} 
 						onSubmitOtp={this.onSubmitOtp} 
 						onResendOtp={this.onResendOtp}
-						onVerificationClose={this.onVerificationClose} 
+						onVerificationClose={this.onVerificationClose}
+						onVerity={this.onVerity}
 					/>
 					<Vt3dsModalBox
 						shown={this.props.payments.show3ds}

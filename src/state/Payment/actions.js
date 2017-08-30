@@ -162,6 +162,13 @@ const ovoNumberChange = (ovoNumber) => ({
 	}
 });
 
+const billingNumberChange = (billingNumber) => ({
+	type: constants.PAY_CHANGE_BILLING_NUMBER,
+	payload: {
+		billingNumber
+	}
+});
+
 // installment
 const changeBankName = (token, bank, selectedPaymentOption) => ({
 	type: constants.PAY_CHANGE_BANK,
@@ -321,7 +328,11 @@ const termChange = (term) => dispatch => new Promise((resolve, reject) => {
 });
 
 const changeOvoNumber = (ovoNumber) => dispatch => {
-	ovoNumberChange(ovoNumber);
+	dispatch(ovoNumberChange(ovoNumber));
+};
+
+const changeBillingNumber = (billingNumber) => dispatch => {
+	dispatch(billingNumberChange(billingNumber));
 };
 
 const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete', card = false, callback = false) => dispatch => new Promise((resolve, reject) => {
@@ -441,6 +452,7 @@ export default {
 	changeInstallmentCCMonth,
 	changeInstallmentCCYear,
 	changeInstallmentCCCvv,
+	changeBillingNumber,
 	ecashModalBoxOpen,
 	changeOvoNumber,
 	payError,

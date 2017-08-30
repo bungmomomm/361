@@ -65,7 +65,8 @@ const addCoupon = (token, orderId, coupon) => dispatch => {
 		dispatch(paymentInfoUpdated(getCartPaymentData(response.data.data.attributes.total_price, 'order')));
 		dispatch(couponAdded({}));
 	}).catch((error) => {
-		dispatch(couponInvalid(error.errorMessage));
+		console.log('asd', error);
+		dispatch(couponInvalid(error.response));
 	});
 };
 
@@ -85,6 +86,7 @@ const removeCoupon = (token, orderId) => dispatch => {
 		dispatch(paymentInfoUpdated(getCartPaymentData(response.data.data.attributes.total_price, 'order')));
 		dispatch(couponDeleted({}));
 	}).catch((error) => {
+		console.log(error);
 		dispatch(couponRequestFailed());
 	});
 };

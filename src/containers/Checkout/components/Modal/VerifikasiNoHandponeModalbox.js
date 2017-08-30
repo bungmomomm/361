@@ -11,29 +11,11 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 		this.state = {
 			shown: this.props.shown || false
 		};
-		this.hideModal = this.hideModal.bind(this);
-		this.onSubmitPhoneNumber = this.onSubmitPhoneNumber.bind(this);
-		this.onSubmitOtp = this.onSubmitOtp.bind(this);
-		this.onResendOtp = this.onResendOtp.bind(this);
 		this.onVerificationClose = this.onVerificationClose.bind(this);
-	}
-
-	onSubmitPhoneNumber(event) {
-		this.props.onSubmitPhoneNumber(event);
-	}
-	onSubmitOtp(event) {
-		this.props.onSubmitOtp(event);
-	}
-	
-	onResendOtp(event) {
-		this.props.onResendOtp(event);
 	}
 	
 	onVerificationClose(event) {
 		this.props.onVerificationClose(event);
-	}
-	hideModal() {
-		this.props.onVerificationClose({});
 	}
 
 	render() {
@@ -46,11 +28,12 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 				<Modal.Body>
 					<form>
 						<InputGroup>
-							<Input number placeholder='No Handphone anda (contoh: 08219823982189)' />
+							<Input number placeholder='No Handphone anda (contoh: 08219823982189)' onChange={(event) => this.props.onChange(event)} />
 						</InputGroup>
 						<InputGroup>
 							<Recaptcha
 								sitekey='xxxxxxxxxxxxxxxxxxxx'
+								verifyCallback={(event) => this.props.onVerify}
 							/>
 						</InputGroup>
 					</form>
@@ -58,17 +41,17 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 				<Modal.Footer>
 					<InputGroup>
 						{ renderIf(this.props.state === 0)(
-							<Button type='button' content='Kirim' block color='dark' onClick={this.onSubmitPhoneNumber} />
+							<Button type='button' content='Kirim' block color='dark' onClick={(event) => this.props.onSubmitPhoneNumber(event)} />
 						) }
-						{ renderIf(this.props.state === 0)(
-							<Button type='button' content='Konfirmasi' block color='dark' onClick={this.onSubmitOtp} />
+						{ renderIf(this.props.state === 1)(
+							<Button type='button' content='Konfirmasi' block color='dark' onClick={(event) => this.props.onSubmitOtp(event)} />
 						) }
-						{ renderIf(this.props.state === 0)(
-							<Button type='button' content='Resend' block color='dark' onClick={this.onResendOtp} />
+						{ renderIf(this.props.state === 1)(
+							<Button type='button' content='Resend' block color='dark' onClick={(event) => this.props.onResendOtp(event)} />
 						) }
 					</InputGroup>
 					<InputGroup>
-						<Button onClick={this.hideModal} type='button' size='medium' content='Nanti aja' block className='font-orange' />
+						<Button onClick={this.onVerificationClose} type='button' size='medium' content='Nanti aja' block className='font-orange' />
 					</InputGroup>
 				</Modal.Footer>
 			</Modal>
