@@ -219,7 +219,7 @@ const getCityProvince = (token) => dispatch => {
 	dispatch(cityProvinceRequest(token));
 	const req = {
 		token, 
-		path: 'provinces_and_cities?terms=&page=1&per_page=25',
+		path: 'provinces_and_cities?terms=&page=1&per_page=500',
 		method: 'GET'
 	};
 	request(req)

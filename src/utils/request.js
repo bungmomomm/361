@@ -50,6 +50,12 @@ const request = (props) => {
 		}
 		return axios.put(url, props.body, { headers });
 	}
+	case 'PATCH': {
+		if (!props.body) {
+			throw new Error('post should send the data');
+		}
+		return axios.patch(url, props.body, { headers });
+	}
 	default: 
 		if (!props.body) {
 			throw new Error('post should send the data');

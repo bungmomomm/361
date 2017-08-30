@@ -132,30 +132,38 @@ const deleteCart = (token, productId, props) => dispatch => {
 	
 	request(req)
 	.then((response) => {
-		if (props.cart.length > 0) {
-			props.cart.forEach((element, index) => {
-				const prodIndex = element.store.products.findIndex(e => e.id === productId);
-				const prod = element.store.products.find(e => e.id === productId);
-			
-				if (prodIndex !== -1) {
-					props.cart[index].store.products.splice(prodIndex, 1);
-					props.cart[index].store.price.sub_total -= prod.price;
-					props.cart[index].store.price.total -= prod.price;
+		dispatch(getCart(token));
+	})
+	.catch((error) => {
+		console.log(error);
+	});
 
-					props.payments.subTotal = parseFloat(props.payments.subTotal) - prod.price;
-					props.payments.total = parseFloat(props.payments.total) - prod.price;
-					dispatch(paymentInfoUpdated(props.payments));
+};
+
+
+const updateCartWithoutSO = (token, productQty, productId) => dispatch => {
+	dispatch(gettingCart(token));
+
+	const req = {
+		method: 'PATCH',
+		path: `me/carts/${productId}`,
+		token,
+		body: {
+			data: [
+				{
+					type: 'cart_items',
+					id: productId,
+					attributes: {
+						quantity: productQty
+					}
 				}
-			
-			}, this);
-		
-			const storeWithEmptyProduct = props.cart.findIndex(e => e.store.products.length < 1);
-			if (storeWithEmptyProduct !== -1) {
-				props.cart.splice(storeWithEmptyProduct, 1);
-			}
-			dispatch(cartReceived(props.cart, props.isPickupable, props.totalItems));
-			dispatch(getAvailablePaymentMethod(token));
+			]
 		}
+	};
+	
+	request(req)
+	.then((response) => {
+		dispatch(getCart(token));
 	})
 	.catch((error) => {
 		console.log(error);
@@ -240,5 +248,6 @@ export default {
 	getCart,
 	deleteCart,
 	updateQtyCart,
+	updateCartWithoutSO,
 	updateGosend,
 };

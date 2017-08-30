@@ -29,7 +29,8 @@ export default class CardPengiriman extends Component {
 			o2o: [],
 			selectedAddress: null,
 			closeSelect: true,
-			latLngExist: false
+			latLngExist: false,
+			loading: false
 		};
 		this.onChoisedAddress = this.onChoisedAddress.bind(this);
 		this.onChangeAddress = this.onChangeAddress.bind(this);
@@ -37,8 +38,6 @@ export default class CardPengiriman extends Component {
 		this.onChosenLocker = this.onChosenLocker.bind(this);
 		this.openModal = this.openModal.bind(this);
 	}
-
-	componentWillMount() {}
 
 	componentWillReceiveProps(nextProps) {
 		const shipping = nextProps.addresses;
@@ -49,6 +48,12 @@ export default class CardPengiriman extends Component {
 			this.setState({
 				selectedAddress,
 				latLngExist
+			});
+		}
+
+		if (this.state.loading !== nextProps.loading) {
+			this.setState({
+				loading: nextProps.loading
 			});
 		}
 		
@@ -75,7 +80,7 @@ export default class CardPengiriman extends Component {
 	}
 
 	onChangeAddress(e) {
-		console.log(this.state.selectedAddress);
+
 		this.props.onChangeAddress(this.state.selectedAddress, e);
 	}
 
@@ -135,7 +140,7 @@ export default class CardPengiriman extends Component {
 		const { latLngExist } = this.state;
 		
 		return (
-			<Tabs tabActive={0} stretch onAfterChange={this.onGetListO2o} >
+			<Tabs tabActive={0} loading={this.state.loading} stretch onAfterChange={this.onGetListO2o} >
 				<Tabs.Panel title='Kirim ke Alamat' sprites='truck-off' spritesActive='truck-on'>
 					<Alert align='center' color='yellow'>
 						Gratis ongkos kirim hingga Rp 15,000 untuk minimal pembelian sebesar Rp 100,000

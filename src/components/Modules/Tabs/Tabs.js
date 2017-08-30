@@ -46,6 +46,11 @@ export default class Tabs extends Component {
 			panel: true,
 			stretch: !!this.props.stretch
 		});
+		
+		const classTabContent = cx({
+			tabContent: true,
+			loading: !!this.props.loading
+		});
 
 		const $Items = this.props.children.map(($panel) => {
 			return typeof $panel === 'function' ? $panel() : $panel;
@@ -107,7 +112,7 @@ export default class Tabs extends Component {
 						})
 					}
 				</div>
-				<div className={styles.tabContent}>
+				<div className={classTabContent}>
 					{
 						$menu.map((tabContent, i) => {
 							return this.state.tabActive !== i ? null : (

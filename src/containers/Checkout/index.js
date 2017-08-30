@@ -34,7 +34,7 @@ import {
 	getDistrict, 
 	saveAddress 
 } from '@/state/Adresses/actions';
-import { getPlaceOrderCart, getCart, updateQtyCart, updateGosend } from '@/state/Cart/actions';
+import { getPlaceOrderCart, getCart, updateQtyCart, updateCartWithoutSO, deleteCart, updateGosend } from '@/state/Cart/actions';
 import {
 	getAvailablePaymentMethod,
 	changePaymentMethod,
@@ -103,7 +103,9 @@ class Checkout extends Component {
 			loadingUpdateCart: false,
 			addressTabActive: true,
 			isValidPayment: false,
-			tahun: []
+			loadingCardPengiriman: false,
+			tahun: [],
+			showModalOtp: false,
 		};
 		
 		this.onAddCoupon = this.onAddCoupon.bind(this);
@@ -223,6 +225,11 @@ class Checkout extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
+		if (this.state.cityProv !== nextProps.cityProv) {
+			this.setState({
+				loadingCardPengiriman: false
+			});
+		}
 		this.setState({
 			cart: nextProps.cart,
 			loadingUpdateCart: nextProps.loadingUpdateCart
@@ -234,6 +241,12 @@ class Checkout extends Component {
 		} else {
 			this.setState({
 				restrictO2o: false
+			});
+		}
+
+		if (!nextProps.coupon.validCoupon && nextProps.coupon.code === 403) {
+			this.setState({
+				showModalOtp: true
 			});
 		}
 	}
@@ -256,9 +269,9 @@ class Checkout extends Component {
 	}
 
 	onChoisedAddress(address) {
-		console.log(this.state);
 		const { dispatch } = this.props;
 		const billing = this.props.billing.length > 0 ? this.props.billing[0] : false;
+		console.log('masuk');
 		if (!!address.type && address.type !== 'pickup') {
 			this.setState({
 				selectedAddress: address
@@ -268,6 +281,15 @@ class Checkout extends Component {
 			enablePesananPengiriman: true,
 			enablePembayaran: true,
 		});
+		// dispatch(getAddresses(this.state.token)).then(defaultAddress => {
+		// 	if (typeof defaultAddress.type !== 'undefined') {
+		// 		this.setState({
+		// 			selectedAddress: defaultAddress,
+		// 			enablePesananPengiriman: true,
+		// 			enablePembayaran: true
+		// 		});
+		// 	}
+		// });
 		return dispatch(getPlaceOrderCart(this.state.token, address, billing));
 	}
 
@@ -300,13 +322,18 @@ class Checkout extends Component {
 		
 		this.setState({
 			enableNewAddress: true,
+			loadingCardPengiriman: true,
 			formDataAddress
 		});
 	}
 
 	onDeleteCart(cart) {
 		const { dispatch } = this.props;
-		dispatch(updateQtyCart(this.state.token, 0, cart.data.id, this.props));
+		if (this.props.soNumber) {
+			dispatch(updateQtyCart(this.state.token, 0, cart.data.id, this.props));
+		} else {
+			dispatch(deleteCart(this.state.token, cart.data.id, this.props));
+		}		
 
 		this.setState({
 			cart: this.props.cart,
@@ -317,7 +344,11 @@ class Checkout extends Component {
 
 	onUpdateQty(qty, id) {
 		const { dispatch } = this.props;
-		dispatch(updateQtyCart(this.state.token, qty, id, this.props));
+		if (this.props.soNumber) {
+			dispatch(updateQtyCart(this.state.token, qty, id, this.props));
+		} else {
+			dispatch(updateCartWithoutSO(this.state.token, qty, id));
+		}
 
 		this.setState({
 			cart: this.props.cart,
@@ -396,8 +427,8 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 		dispatch(
 			pay(
-				this.state.token, 
-				this.props.soNumber, 
+				this.state.token,
+				this.props.soNumber,
 				this.props.payments.selectedPaymentOption,
 				{
 					card: {
@@ -406,7 +437,7 @@ class Checkout extends Component {
 						detail: this.props.payments.selectedCardDetail
 					},
 					term: this.props.payments.term,
-					cardNumber: this.props.payments.selectedCard.value, 
+					cardNumber: this.props.payments.selectedCard.value,
 					cardCVV: this.props.payments.selectedCardDetail.cvv,
 					cardMonth: this.props.payments.selectedCardDetail.month,
 					cardYear: this.props.payments.selectedCardDetail.year
@@ -668,7 +699,9 @@ class Checkout extends Component {
 	}
 
 	onVerificationClose(event) {
-		console.log(this.state.test);
+		this.setState({
+			showModalOtp: false
+		});
 	}
 
 	onResendOtp(event) {
@@ -816,7 +849,7 @@ class Checkout extends Component {
 			latesto2o,
 			o2oProvinces,
 			isPickupable,
-			dispatch	
+			dispatch
 		} = this.props;
 		
 		return (
@@ -848,6 +881,7 @@ class Checkout extends Component {
 										checkDropship={this.checkDropship} 
 										errorDropship={this.state.errorDropship} 
 										activeShippingTab={this.activeShippingTab} 
+										loading={this.state.loadingCardPengiriman}
 									/>
 								</Col>
 								<Col flex grid={4} className={enablePesananPengiriman || this.state.restrictO2o ? '' : styles.disabled}>
@@ -921,8 +955,9 @@ class Checkout extends Component {
 						paymentErrorMessage={this.props.paymentErrorMessage}
 						onClose={this.onCloseErrorBox} 
 					/>
-					<VerifikasiNoHandponeModalbox 	
-						onSubmitPhoneNumber={this.onSubmitPhoneNumber} 
+					<VerifikasiNoHandponeModalbox
+						shown={this.state.showModalOtp}
+						onSubmitPhoneNumber={this.onSubmitPhoneNumber}
 						onSubmitOtp={this.onSubmitOtp} 
 						onResendOtp={this.onResendOtp}
 						onVerificationClose={this.onVerificationClose}

@@ -20,7 +20,7 @@ import kemayoran from './kemayoran.js';
 import kembangan from './kembangan.js';
 import koja from './koja.js';
 import kramatJati from './kramat_jati.js';
-import makasar from './makasar.js';
+import makassar from './makassar';
 import mampangPrapatan from './mampang_prapatan.js';
 import matraman from './matraman.js';
 import menteng from './menteng.js';
@@ -87,7 +87,7 @@ export const Polygon = [
 	}, {
 		kramatJati
 	}, {
-		makasar
+		makassar
 	}, {
 		mampangPrapatan
 	}, {
