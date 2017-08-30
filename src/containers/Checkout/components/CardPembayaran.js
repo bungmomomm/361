@@ -194,6 +194,7 @@ export default class CardPembayaran extends Component {
 			paymentMethods, 
 			loading,
 			selectedPayment,
+			selectedPaymentOption,
 			twoClickEnabled,
 			selectedCard 
 		} = this.props.payments;
@@ -225,7 +226,7 @@ export default class CardPembayaran extends Component {
 					<Level.Left className={styles.voucherLabel}>Kode Voucher</Level.Left>
 					<Level.Right>
 						<InputGroup addons addonsAttached>
-							<Input size='small' name='voucherCode' color='red' message='kode voucher salah' onChange={this.onChange} onKeyPress={this.onChange} value={this.props.coupon} />
+							<Input size='small' name='voucherCode' color='red' message={this.props.coupon.errorMessage} onChange={this.onChange} onKeyPress={this.onChange} value={this.props.coupon} />
 							<Button type='button' className='font-red' size='small' icon='times' iconPosition='right' onClick={this.props.onResetCoupon} />
 						</InputGroup>
 					</Level.Right>
@@ -250,15 +251,22 @@ export default class CardPembayaran extends Component {
 
 		let paymentOptions = false; 
 		let installmentPayment = false;
+		let info;
 		if (selectedPayment) {
 			switch (selectedPayment.value) {
 			case paymentGroupName.BANK_TRANSFER:
 			case paymentGroupName.CONVENIENCE_STORE:
 			case paymentGroupName.E_MONEY:
 			case paymentGroupName.INTERNET_BANKING:
+				info = typeof selectedPaymentOption.settings !== 'undefined' ? selectedPaymentOption.settings.info.join(' ') : '';
 				paymentOptions = (
 					<InputGroup>
 						<Select emptyFilter={false} name={`payment-${selectedPayment.value}`} selectedLabel='-- Tambah Baru' options={selectedPayment.paymentItems} onChange={this.onPaymentOptionChange} />
+						{ renderIf(selectedPaymentOption && typeof selectedPaymentOption.settings !== 'undefined' && selectedPaymentOption.settings.info.length > 0)(
+							<Tooltip position='right' content='Info' color='white'>
+								{info}
+							</Tooltip>
+						)}
 					</InputGroup>
 				);
 				break;
@@ -368,18 +376,6 @@ export default class CardPembayaran extends Component {
 						<p>Pilih Metode Pembayaran</p>
 						<InputGroup>
 							<Select selectedLabel='-- Pilih Metode Lain' name='paymentMethods' options={paymentMethods.methods} onChange={this.onPaymentMethodChange} />
-							<Tooltip position='right' content='Info' color='white'>
-								<p><Sprites name='uob' /></p>
-								<p>Gunakan Kartu Kredit UOB Indonesia dan dapatkan Diskon Tambahan Rp100.000* dengan minimum transaksi Rp2.500.000</p>
-								<p>*kuota terbatas</p>
-								<hr />
-								<p>Syarat dan Ketentuan Cicilan 0% Regular:</p>
-								<ol>
-									<li>Cicilan tenor 3 bulan dengan minimum transaksi Rp 990.000 </li>
-									<li>Cicilan tenor 6 bulan dengan minimum transaksi Rp1.500.000 </li>
-									<li>Cicilan tenor 12 bulan dengan minimum transaksi Rp2.000.000</li>
-								</ol>
-							</Tooltip>
 						</InputGroup>
 						{ renderIf(installmentPayment)(installmentPayment) }
 						{ renderIf(paymentOptions)(paymentOptions) }
@@ -422,8 +418,12 @@ export default class CardPembayaran extends Component {
 								</Tooltip>
 							</InputGroup>
 						)}
+						<p>SMS konfirmasi pembayaran &amp; pengambilan barang (khusus O2O) akan dikirimkan ke :</p>
 						<InputGroup>
-							<Input label='Masukkan OVO ID' type='number' placeholder='OVO ID' onChange={this.onOvoNumberChange} />
+							<Input type='number' value={this.props.billingAddress ? this.props.billingAddress.phone : ''} placeholder='Billing Phone Number' onChange={(event) => this.props.onBillingNumberChange(event)} />
+						</InputGroup>
+						<InputGroup>
+							<Input label='Masukkan OVO ID' type='number' placeholder='OVO ID' onChange={(event) => this.props.onOvoNumberChange(event)} />
 						</InputGroup>
 						<div className={styles.checkOutAction}>
 							<Checkbox checked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />

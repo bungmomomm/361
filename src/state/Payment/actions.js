@@ -162,6 +162,13 @@ const ovoNumberChange = (ovoNumber) => ({
 	}
 });
 
+const billingNumberChange = (billingNumber) => ({
+	type: constants.PAY_CHANGE_BILLING_NUMBER,
+	payload: {
+		billingNumber
+	}
+});
+
 // installment
 const changeBankName = (token, bank, selectedPaymentOption) => ({
 	type: constants.PAY_CHANGE_BANK,
@@ -230,7 +237,7 @@ const changePaymentOption = (selectedPaymentOption) => dispatch => {
 const changePaymentMethod = (paymentMethod, data) => dispatch => {
 	const selectedPayment = data.payments[paymentMethod];
 	dispatch(paymentMethodChanged(selectedPayment));
-	if (selectedPayment.value === 'cod') {
+	if (selectedPayment.value === 'cod' || selectedPayment.value === 'gratis') {
 		const selectedPaymentOption = selectedPayment.paymentItems[0];
 		dispatch(changePaymentOption(selectedPaymentOption));
 	} else {
@@ -321,14 +328,18 @@ const termChange = (term) => dispatch => new Promise((resolve, reject) => {
 });
 
 const changeOvoNumber = (ovoNumber) => dispatch => {
-	ovoNumberChange(ovoNumber);
+	dispatch(ovoNumberChange(ovoNumber));
+};
+
+const changeBillingNumber = (billingNumber) => dispatch => {
+	dispatch(billingNumberChange(billingNumber));
 };
 
 const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete', card = false, callback = false) => dispatch => new Promise((resolve, reject) => {
 	dispatch(payRequest());
 	if (
-		payment.paymentMethod === 'commerce_veritrans_installment'
-		|| payment.paymentMethod === 'commerce_veritrans'
+		(payment.paymentMethod === 'commerce_veritrans_installment'
+		|| payment.paymentMethod === 'commerce_veritrans')
 	) {
 		// prepare cc
 		request({
@@ -344,7 +355,7 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 				}
 			}
 		}).then((prep) => {
-			if (prep.data.data.attributes.channel === 'migs') {
+			if (payment.paymentMethod === 'commerce_veritrans' && prep.data.data.attributes.channel === 'migs' && mode !== 'complete') {
 				paymentDetail.card.bank = 'bca';
 			}
 			request({
@@ -441,6 +452,7 @@ export default {
 	changeInstallmentCCMonth,
 	changeInstallmentCCYear,
 	changeInstallmentCCCvv,
+	changeBillingNumber,
 	ecashModalBoxOpen,
 	changeOvoNumber,
 	payError,

@@ -112,14 +112,19 @@ const getListAvailablePaymentMethod = (response) => {
 	});
 	const paymentList = [];
 	const paymentData = {};
+	const availableMethods = {};
 	payments.forEach((item) => {
 		paymentData[item.id] = humps(item);
 		paymentList.push(humps(item));
+		item.payment_items.forEach((method) => {
+			availableMethods[method.value] = humps(method);
+		});
 	});
 	
 	const returnData = {
 		methods: paymentList,
-		payments: paymentData
+		payments: paymentData,
+		availableMethods
 	};
 	return returnData;
 };
@@ -163,7 +168,7 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
 		break;
 	case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 		paymentPayload.attributes.amount = paymentDetail.amount;
-		if (mode === 'cc') {
+		if (mode !== 'cc') {
 			paymentPayload.attributes.credit_card = {
 				bank: paymentDetail.card.bank,
 				token_id: paymentDetail.card.value,
@@ -171,6 +176,13 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
 				site_id: payment.term.siteid,
 				provider: payment.term.provider
 			};		
+		} else {
+			paymentPayload.attributes.af_track_id = '';
+			paymentPayload.attributes.af_trx_click = '';
+			paymentPayload.attributes.af_trx_id = '';
+			paymentPayload.attributes.card_number = '';
+			paymentPayload.attributes.payment_installment_provider = payment.term.provider;
+			paymentPayload.attributes.product_type = '';
 		}
 		break;
 	case paymentMethodName.POS_PAY:
