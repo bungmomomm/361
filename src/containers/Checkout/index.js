@@ -58,7 +58,8 @@ import {
 	changeInstallmentCCNumber,
 	changeInstallmentCCMonth,
 	changeInstallmentCCYear,
-	changeInstallmentCCCvv
+	changeInstallmentCCCvv,
+	saveCC
 } from '@/state/Payment/actions';
 import { 
 	paymentMethodName
@@ -155,6 +156,7 @@ class Checkout extends Component {
 		this.onResendOtp = this.onResendOtp.bind(this);
 		this.onVerity = this.onVerity.bind(this);
 		this.onRequestSprintInstallment = this.onRequestSprintInstallment.bind(this);
+		this.onSaveCcOption = this.onSaveCcOption.bind(this);
 	}
 
 	componentWillMount() {
@@ -356,7 +358,6 @@ class Checkout extends Component {
 	}
 
 	onPaymentMethodChange(event) {
-		console.log('asdasdasdasd', event);
 		this.props.dispatch(changePaymentMethod(event.value, this.props.payments.paymentMethods));
 	}
 
@@ -506,6 +507,7 @@ class Checkout extends Component {
 								bank: bankName,
 								detail: this.props.payments.selectedCardDetail
 							},
+							saveCC: this.props.payments.saveCC,
 							ovoPhoneNumber: this.props.payments.ovoNumber,
 							billingPhoneNumber: this.props.payments.billingPhoneNumber
 						}
@@ -539,6 +541,7 @@ class Checkout extends Component {
 								bank: bankName,
 								detail: this.props.payments.selectedCardDetail
 							},
+							saveCC: this.props.payments.saveCC,
 							term: this.props.payments.term,
 							ovoPhoneNumber: this.props.payments.ovoNumber,
 							billingPhoneNumber: this.props.payments.billingPhoneNumber
@@ -683,6 +686,10 @@ class Checkout extends Component {
 	onInstallmentCCCvvChange(event) {
 		console.log(event, this.state.test);
 		this.props.dispatch(changeInstallmentCCCvv(event.target.value));
+	}
+
+	onSaveCcOption(event) {
+		this.props.dispatch(saveCC(event));
 	}
 
 	onCloseErrorBox() {
@@ -933,6 +940,7 @@ class Checkout extends Component {
 										onInstallmentCCMonthChange={this.onInstallmentCCMonthChange}
 										onInstallmentCCYearChange={this.onInstallmentCCYearChange}
 										onInstallmentCCCvvChange={this.onInstallmentCCCvvChange}
+										onSaveCcOption={this.onSaveCcOption}
 									/>
 								</Col>
 							</Row>

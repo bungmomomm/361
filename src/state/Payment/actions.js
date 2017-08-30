@@ -93,6 +93,11 @@ const creditCardSelected = (card) => ({
 	}
 });
 
+const ccSaved = (state) => ({
+	type: constants.PAY_SAVE_CC,
+	status: state
+});
+
 const creditCardDeselect = () => ({
 	type: constants.PAY_CREDIT_CARD_SELECTED,
 	status: false
@@ -358,7 +363,13 @@ const changeBillingNumber = (billingNumber) => dispatch => {
 	dispatch(billingNumberChange(billingNumber));
 };
 
+const saveCC = (event) => dispatch => {
+
+	dispatch(ccSaved(false));
+};
+
 const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete', card = false, callback = false) => dispatch => new Promise((resolve, reject) => {
+	const isSaveCC = paymentDetail.saveCC !== 'undefined' ? paymentDetail.saveCC : false;
 	dispatch(payRequest());
 	if (
 		(payment.paymentMethod === 'commerce_veritrans_installment'
@@ -386,7 +397,7 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 				path: 'payments',
 				method: 'POST',
 				body: {
-					data: getPaymentPayload(soNumber, payment, paymentDetail, mode)
+					data: getPaymentPayload(soNumber, payment, paymentDetail, mode, isSaveCC)
 				}
 			}).then((response) => {
 				if (typeof response.data.data[0] !== 'undefined' && typeof response.data.data[0].id !== 'undefined') {
@@ -497,6 +508,7 @@ export default {
 	changeBillingNumber,
 	ecashModalBoxOpen,
 	changeOvoNumber,
+	saveCC,
 	payError,
 	pay,
 	applyBin

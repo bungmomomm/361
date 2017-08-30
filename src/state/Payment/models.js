@@ -160,7 +160,7 @@ const getSprintPayload = (orderId, payment, paymentDetail) => {
 	};
 };
 
-const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
+const getPaymentPayload = (orderId, payment, paymentDetail, mode, saveCC = false) => {
 	const paymentPayload = {
 		type: 'payment',
 		attributes: {
@@ -193,7 +193,7 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode) => {
 			paymentPayload.attributes.credit_card = {
 				bank: paymentDetail.card.bank,
 				token_id: paymentDetail.card.value,
-				save_cc: 1
+				save_cc: saveCC
 			};		
 		}
 		break;

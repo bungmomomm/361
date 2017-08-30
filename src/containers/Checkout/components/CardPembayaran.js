@@ -427,6 +427,9 @@ export default class CardPembayaran extends Component {
 										<Sprites name='cvv' />
 									</Level.Item>
 								</Level>
+								<InputGroup>
+									<Checkbox checked content='Simpan kartu untuk transaksi selanjutnya' onChange={(event) => this.props.onSaveCcOption} />
+								</InputGroup>
 							</div>
 						)}
 						{ renderIf(selectedPayment.value === paymentGroupName.INTERNET_BANKING)(

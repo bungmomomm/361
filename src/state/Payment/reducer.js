@@ -236,6 +236,13 @@ export default (state = initialState, action) => {
 			billingNumber: action.payload.billingNumber
 		};
 	}
+
+	case constants.PAY_SAVE_CC: {
+		return {
+			...state,
+			saveCC: action.state
+		};
+	}
 	case constants.PAY_ERROR: {
 		return {
 			...state,
