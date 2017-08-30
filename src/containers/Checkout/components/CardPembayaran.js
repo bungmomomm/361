@@ -108,7 +108,6 @@ export default class CardPembayaran extends Component {
 	}
 
 	onNewCreditCard(event) {
-		console.log(event, this);
 		this.props.onNewCreditCard(event);
 	}
 
@@ -132,7 +131,6 @@ export default class CardPembayaran extends Component {
 		this.props.onCardCvvChange(data);
 	}
 	onInstallmentBankChange(data) {
-		console.log(data);
 		this.setState({
 			paymentMethodChanged: true
 		});
@@ -343,6 +341,8 @@ export default class CardPembayaran extends Component {
 				break;	
 			} 
 		}
+
+		console.log((this.props.payments.selectedPaymentOption === null));
 		return (
 			<Card>
 				<div className={styles.overflow}>
@@ -445,7 +445,7 @@ export default class CardPembayaran extends Component {
 						
 						<div className={styles.checkOutAction}>
 							<Checkbox checked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />
-							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' loading={loading} />
+							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' loading={loading} disabled={(this.props.payments.selectedPaymentOption === null || !this.props.payments.selectedPaymentOption)} />
 						</div>
 					</div>
 				</div>
