@@ -117,10 +117,12 @@ const getPlaceOrderCart = (token, address, billing = false, updatePaymentMethodL
 			resolve(setCartModel(res.data));
 		})
 		.catch((error) => {
+			dispatch(placeOrderReceived(false));
 			reject(error);
 		});
 	})
 	.catch((error) => {
+		dispatch(placeOrderReceived(false));
 		reject(error);
 	});
 });

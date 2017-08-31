@@ -178,6 +178,11 @@ class Checkout extends Component {
 				this.props.cookies.set('user.token', newToken.userToken, { domain: '.mataharimall.com' });
 
 				this.onReload(dispatch);
+			}).catch((error) => {
+				this.setState({
+					notifInfo: false, 
+					notifMessage: error.response.data.errorMessage
+				});
 			});
 		} else {
 			this.onReload(dispatch);
@@ -279,7 +284,7 @@ class Checkout extends Component {
 					});
 				}).catch((error) => {
 					this.setState({
-						notifInfo: false, 
+						notifInfo: true, 
 						notifMessage: error.response.data.errorMessage
 					});
 				});
@@ -321,7 +326,7 @@ class Checkout extends Component {
 
 		return dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), address, billing, updatePaymentMethodList)).then(() => {
 			this.setState({
-				notifInfo: false
+				notifInfo: true
 			});
 		}).catch((error) => {
 			this.setState({
@@ -334,8 +339,6 @@ class Checkout extends Component {
 	onChangeAddress(address, flagAdd) {
 		const { dispatch } = this.props;
 		
-		
-		console.log(this.props.cityProv);
 		if (typeof this.props.cityProv === 'undefined') {
 			
 			dispatch(getCityProvince(this.props.cookies.get('user.token')));
