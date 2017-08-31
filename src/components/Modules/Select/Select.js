@@ -17,7 +17,7 @@ export default class Select extends Component {
 		this.state = {
 			options: [],
 			showOption: false,
-			selected: this.props.options[0] || {},
+			selected: {},
 			emptyFilter: false,
 		};
 		this.getFilter = this.getFilter.bind(this);
@@ -208,7 +208,7 @@ export default class Select extends Component {
 					>	
 						<span className={styles.flex}>
 							<span className={styles.text}>
-								{this.state.selected.label}
+								{this.state.selected.label ? this.state.selected.label : this.props.options[0].label}
 								{ImageElement} 
 								{SpritesElement}
 							</span>
