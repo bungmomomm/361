@@ -17,10 +17,8 @@ const setPayloadPlaceOrder = (address, billing = false) => {
 			province: address.attributes.province,
 			zipcode: address.attributes.zipcode
 		};
-		console.log('add', attributes);
 	}
 
-	console.log(id);
 	return {
 		attributes: {
 			delivery_method: address.type,

@@ -344,6 +344,26 @@ const selectCreditCard = (card) => dispatch => {
 
 // installment
 
+const getError = (error) => {
+	if (typeof error === 'undefined') {
+		return 'Terjadi kesalahan, silahkan ulangin kembali';
+	}
+
+	if (typeof error.response === 'undefined') {
+		return 'Terjadi kesalahan, silahkan ulangin kembali';
+	}
+
+	if (typeof error.response.data === 'undefined') {
+		return 'Terjadi kesalahan, silahkan ulangin kembali';
+	}
+
+	if (typeof error.response.data.errorMessage === 'undefined') {
+		return 'Terjadi kesalahan, silahkan ulangin kembali';
+	}
+
+	return error.response.data.errorMessage;
+};
+
 const bankNameChange = (token, bank, selectedPaymentOption) => dispatch => new Promise((resolve, reject) => {
 	
 	if (bank.value.provider === 'sprint') {
@@ -384,7 +404,6 @@ const saveCC = (state, value) => dispatch => {
 const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete', card = false, callback = false) => dispatch => new Promise((resolve, reject) => {
 	const isSaveCC = paymentDetail.saveCC !== 'undefined' ? paymentDetail.saveCC : false;
 	dispatch(payRequest());
-	console.log(payment);
 	if (
 		(payment.paymentMethod === 'commerce_veritrans_installment'
 		|| payment.paymentMethod === 'commerce_veritrans')
@@ -421,10 +440,11 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 				resolve(soNumber, response.data, mode, card, callback);
 			}).catch((error) => {
 				// showError
-				dispatch(payError(error));
+				dispatch(payError(getError(error)));
 				reject(error);
 			});
 		}).catch((error) => {
+			dispatch(payError(getError(error)));
 			reject(error);
 		});
 	} else {
@@ -453,9 +473,10 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 						}
 					}
 				}).then((res) => {
-					console.log(res.data);
 					window.document.write(res.data);
 					window.document.getElementById('sprint_form').submit();
+				}).catch((error) => {
+					dispatch(payError(getError(error)));
 				});
 			}
 
@@ -463,25 +484,26 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 			resolve(soNumber, response.data, mode, card, callback);
 		}).catch((error) => {
 			// showError
-			dispatch(payError(error));
+			dispatch(payError(getError(error)));
 			reject(error);
 		});
 	}
 });
 
 const applyBin = (token, paymentMethodId, cardNumber, bankName) => dispatch => {
+	const data = {
+		attributes: {
+			payment_method: paymentMethodId,
+			card_number: cardNumber,
+			bank: bankName
+		}
+	};
 	return request({
 		token,
 		path: 'payments/apply_discount',
 		method: 'POST',
 		body: {
-			data: {
-				attributes: {
-					payment_method: paymentMethodId,
-					card_number: cardNumber,
-					bank: bankName
-				}
-			}
+			data
 		}
 	}).then((response) => {
 		if (typeof response.data.data.relationships.carts.data[0] !== 'undefined') {

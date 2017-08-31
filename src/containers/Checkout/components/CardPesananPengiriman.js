@@ -61,9 +61,6 @@ export default class CardPesananPengiriman extends Component {
 	}
 	
 	render() {
-		// || (storeData.store.id.indexOf(this.state.cartJabodetabek) === -1)
-		console.log('cartnya', this.props.cart);
-		console.log('aaa', this.state.cartJabodetabek);
 		
 		return (
 			<Card stretch loading={this.props.loading} >

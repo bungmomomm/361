@@ -194,6 +194,7 @@ export default class CardPembayaran extends Component {
 		const { 
 			coupon, 
 			subTotal, 
+			discount,
 			total, 
 			deliveryCostDiscount, 
 			deliveryCost, 
@@ -351,6 +352,19 @@ export default class CardPembayaran extends Component {
 			} 
 		}
 
+		const discountHtml = (!discount) ? false : discount.map((discountItem, index) => {
+			return (
+				<Level>
+					<Level.Left>
+						<div>{discountItem.discountName}</div>
+					</Level.Left>
+					<Level.Right>
+						<div className='text-right'>{currency(-discountItem.totalDiscount)}</div>
+					</Level.Right>
+				</Level>
+			);
+		});
+
 		const ovoReadOnly = (this.props.payments.ovoInfo && parseInt(this.props.payments.ovoInfo.ovoFlag, 10) === 1);
 		const disabledPayment = ((this.props.payments.selectedPaymentOption === null || !this.props.payments.selectedPaymentOption) || (this.props.payments.billingPhoneNumber === null || this.props.payments.billingPhoneNumber === ''));
 		return (
@@ -368,6 +382,7 @@ export default class CardPembayaran extends Component {
 							</Level>
 						)
 					}
+					{ renderIf(discountHtml)(discountHtml) }
 					<Level>
 						<Level.Left>Total Biaya Pengiriman</Level.Left>
 						<Level.Right className='text-right'>{currency(deliveryCost)}</Level.Right>

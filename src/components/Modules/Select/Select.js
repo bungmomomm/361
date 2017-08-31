@@ -236,9 +236,7 @@ export default class Select extends Component {
 													}
 												</span>
 												{
-													option.settings ? (
-														<div className={styles.info}>{option.settings.info.toString()}</div>
-													) : renderIf(option.info)(
+													renderIf(option.info)(
 														<div className={styles.info}>{option.info}</div>
 													)
 												}
