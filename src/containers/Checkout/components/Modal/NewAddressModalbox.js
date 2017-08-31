@@ -294,7 +294,6 @@ export default class NewAddressModalbox extends Component {
 								label='Kota, Provinsi *'
 								filter
 								name='provinsi'
-								selectedLabel={this.state.formData.provinsi || '-- Silakan Pilih'} 
 								onChange={this.onChangeSelect}
 								color={errors.has('provinsi') ? 'red' : null}
 								message={errors.has('provinsi') ? 'Provinsi field is required.' : ''}
@@ -302,14 +301,13 @@ export default class NewAddressModalbox extends Component {
 							/>
 						</InputGroup>
 						{
-							renderIf(this.props.district)(
+							renderIf(this.props.district && !this.state.loading)(
 								<InputGroup>
 									<Select 
 										horizontal
 										label='Kecamatan *'
 										name='kecamatan' 
 										filter
-										selectedLabel={this.state.formData.kecamatan || '-- Silakan Pilih'} 
 										onChange={this.onChangeSelect}
 										color={errors.has('kecamatan') ? 'red' : null}
 										message={errors.has('kecamatan') ? 'Kecamatan field is required.' : ''}

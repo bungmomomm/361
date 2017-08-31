@@ -23,6 +23,7 @@ export default class Select extends Component {
 		this.getFilter = this.getFilter.bind(this);
 		this.setOptions = this.setOptions.bind(this);
 		this.hideDropdown = this.hideDropdown.bind(this);
+		this.defaultSelected = this.props.options[0];
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -89,18 +90,6 @@ export default class Select extends Component {
 			};
 			this.props.onChange(withName);
 		}
-	}
-
-	getSelectedOption(options) {
-		console.log(this.state.selected);
-		// const selected = options.map((option) => {
-		// 	console.log(this.state.selected);
-		// 	return this.state.selected ? option.label : null;
-		// }).filter((option) => {
-		// 	return option;
-		// });
-		// const defaultSelected = options[0] ? options[0].label : 'Pilih...';
-		// return selected.length > 0 ? selected[0] : defaultSelected;
 	}
 
 // ----------------------------------------
