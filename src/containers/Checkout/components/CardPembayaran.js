@@ -114,7 +114,11 @@ export default class CardPembayaran extends Component {
 
 	onSelectCard(event) {
 		if (typeof event.value !== 'undefined') {
-			this.props.onSelectCard(event.value);
+			if (event.value !== null) {
+				this.props.onSelectCard(event.value);
+			} else {
+				this.props.onSelectCard(false);
+			}
 		} else {
 			this.props.onSelectCard(event);
 		}
