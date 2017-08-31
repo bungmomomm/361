@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-// import Recaptcha from 'react-recaptcha';
+import Recaptcha from 'react-recaptcha';
 import { renderIf } from '@/utils';
 // component load
 import { Modal, Input, Button, InputGroup } from '@/components';
@@ -17,6 +17,7 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 			phone: null,
 			otp: null,
 			buttonResendOtp: false,
+			verifiedRecaptcha: false,
 		};
 		this.hideModal = this.hideModal.bind(this);
 		this.onSubmitPhoneNumber = this.onSubmitPhoneNumber.bind(this);
@@ -26,12 +27,14 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 		this.validatePhone = this.validatePhone.bind(this);
 		this.validateOtp = this.validateOtp.bind(this);
 		this.setIntervalButton = this.setIntervalButton.bind(this);
+		this.verifyCallback = this.verifyCallback.bind(this);
 	}
 
 	onSubmitPhoneNumber(event) {
 		this.setState({
 			alreadySubmitPhone: true,
 			buttonResendOtp: true,
+			verifiedRecaptcha: false
 		});
 		this.props.onSubmitPhoneNumber(this.state.phone);
 		this.setIntervalButton();
@@ -47,6 +50,14 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 	
 	onVerificationClose(event) {
 		this.props.onVerificationClose(event);
+		this.setState({
+			buttonSubmitPhone: false,
+			alreadySubmitPhone: false,
+			phone: null,
+			otp: null,
+			buttonResendOtp: false,
+			verifiedRecaptcha: false,
+		});
 	}
 
 	setIntervalButton() {
@@ -97,6 +108,12 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 		this.props.onVerificationClose({});
 	}
 
+	verifyCallback(response) {
+		this.setState({
+			verifiedRecaptcha: true
+		});
+	}
+
 	render() {
 		return (
 			this.props.otp.valid ? null : 
@@ -114,11 +131,14 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 										<Input disabled={this.state.alreadySubmitPhone} name='phone' number placeholder='No Handphone anda (contoh: 08219823982189)' onChange={this.validatePhone} />
 									</InputGroup>
 									<InputGroup>
-										{/* { renderIf(process.env.GOOGLE_CAPTCHA_SITE_KEY)(
-											<Recaptcha
-												sitekey={process.env.GOOGLE_CAPTCHA_SITE_KEY}
-											/>
-										 ) } */}
+										{ 
+											renderIf(process.env.GOOGLE_CAPTCHA_SITE_KEY)(
+												<Recaptcha
+													sitekey={process.env.GOOGLE_CAPTCHA_SITE_KEY}
+													verifyCallback={this.verifyCallback}
+												/>
+											) 
+										}
 									</InputGroup>
 								</div>
 							:
@@ -130,7 +150,7 @@ export default class VerifikasiNoHandponeModalbox extends Component {
 				</Modal.Body>
 				<Modal.Footer>
 					<InputGroup>
-						{ renderIf(this.state.buttonSubmitPhone && !this.state.alreadySubmitPhone)(
+						{ renderIf(this.state.buttonSubmitPhone && !this.state.alreadySubmitPhone && this.state.verifiedRecaptcha)(
 							<Button type='button' content='Kirim' block color='dark' onClick={this.onSubmitPhoneNumber} />
 						) }
 						{ renderIf(this.state.buttonSubmitOtp)(

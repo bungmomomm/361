@@ -88,7 +88,6 @@ const addCoupon = (token, orderId, coupon) => dispatch => {
 			dispatch(couponInvalid(response.data.errorMessage, response.data.code));
 		}
 	}).catch((error) => {
-		console.log('asd', error);
 		dispatch(couponInvalid(error.errorMessage, error.code));
 	});
 };
