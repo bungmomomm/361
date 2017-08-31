@@ -275,11 +275,11 @@ class Checkout extends Component {
 				});
 				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress)).then(() => {
 					this.setState({
-						notifInfo: false,
+						notifInfo: true,
 					});
 				}).catch((error) => {
 					this.setState({
-						notifInfo: true, 
+						notifInfo: false, 
 						notifMessage: error.response.data.errorMessage
 					});
 				});
@@ -1042,7 +1042,12 @@ class Checkout extends Component {
 						onClose={this.onVt3dsModalBoxClose}
 					/>
 					<EcashModalBox shown={this.props.payments.showEcash} src={this.props.payments.mandiriRedirectUrl} onClose={this.onMandiriEcashClose} />
-					<Notification shown={this.state.notifInfo || false} content={this.state.notifMessage} />
+					{
+						renderIf(!this.state.notifInfo)(
+							<Notification shown={this.state.notifInfo || false} content={this.state.notifMessage} />
+						)
+					}
+					
 				</div>
 			)
 		);
