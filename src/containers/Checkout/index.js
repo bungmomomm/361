@@ -1028,7 +1028,7 @@ class Checkout extends Component {
 					<PaymentSuccessModalbox shown={this.props.payments.paymentSuccess} onClose={this.onCloseSuccessBox} />
 					<PaymentErrorModalbox 
 						shown={this.props.payments.paymentError} 
-						paymentErrorMessage={this.props.paymentErrorMessage}
+						paymentErrorMessage={this.props.payments.paymentErrorMessage}
 						onClose={this.onCloseErrorBox} 
 					/>
 					<VerifikasiNoHandponeModalbox

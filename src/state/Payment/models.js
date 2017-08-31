@@ -31,7 +31,7 @@ const paymentMethodItem = payment => {
 		value: payment.id,
 		label: payment.attributes.title,
 		name: payment.attributes.unique_constant,
-		info: payment.attributes.title,
+		info: '', // payment.attributes.title,
 		disabled: !parseInt(payment.attributes.fg_enable, 10),
 		message: payment.attributes.disable_message,
 		settings: payment.attributes.settings[0]
