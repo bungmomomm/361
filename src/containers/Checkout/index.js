@@ -75,7 +75,12 @@ class Checkout extends Component {
 		this.props = props;
 		this.validator = new Validator({
 			dropship_name: 'required|max:100',
-			dropship_phone: 'required|numeric|min:6|max:14',
+			dropship_phone: 'required|numeric|min:6|max:14'
+		});
+		this.cardValidator = new Validator({
+			year: 'required|min_value:10|min:1',
+			month: 'required|min_value:1',
+			cvv: 'required|min_value:1'
 		});
 		this.state = {
 			enableAlamatPengiriman: true,
@@ -192,7 +197,10 @@ class Checkout extends Component {
 		const t = new Date();
 		const thisYear = t.getFullYear();
 		let year = 0;
-		const tahun = [];
+		const tahun = [{
+			value: null,
+			label: '-- pilih tahun --'
+		}];
 		for (year = thisYear; year < (thisYear + 10); year++) {
 			tahun.push({
 				value: year,
@@ -653,7 +661,21 @@ class Checkout extends Component {
 			switch (this.props.payments.paymentMethod) {
 			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 			case paymentMethodName.COMMERCE_VERITRANS:
-				this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
+				if (!this.props.payments.twoClickEnabled) {
+					this.cardValidator.validateAll({
+						year: this.props.payments.selectedCardDetail.year,
+						month: this.props.payments.selectedCardDetail.month,
+						cvv: this.props.payments.selectedCardDetail.cvv
+					}).then(success => {
+						if (success) {
+							this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
+						} else {
+							dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
+						}
+					});
+				} else {
+					this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
+				}
 				break;
 			case paymentMethodName.COMMERCE_SPRINT_ASIA:
 				mode = 'sprint';
