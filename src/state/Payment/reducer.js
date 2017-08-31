@@ -8,6 +8,8 @@ const initialState = {
 	loading: false,
 	twoClickEnabled: true,
 	selectedPaymentOption: null,
+	billingPhoneNumber: null,
+	selectedPaymentLabel: '-- Pilih Metode Lain',
 	paymentMethods: {
 		methods: [],
 		payments: {}
@@ -41,6 +43,11 @@ export default (state = initialState, action) => {
 		return resultState;
 	}
 	case constants.PAY_PAYMENT_METHOD_CHANGED: {
+		if (!action.payload.selectedPayment) {
+			state.selectedPaymentLabel = initialState.selectedPaymentLabel;
+		} else {
+			state.selectedPaymentLabel = false;
+		}
 		return {
 			...state,
 			selectedPayment: action.payload.selectedPayment,
@@ -144,7 +151,7 @@ export default (state = initialState, action) => {
 			...state,
 			selectedCard,
 			selectedCardDetail,
-			selectedPaymentOption: state.selectedPaymentOption ? state.selectedPaymentOption : state.paymentMethods.payments.credit_card.paymentItems[0]
+			selectedPaymentOption: state.selectedPaymentOption ? state.selectedPaymentOption : state.paymentMethods.payments.credit_card.paymentItems[1]
 		};
 	}
 	case constants.PAY_INSTALLMENT_CREDIT_CARD_ADD: {
@@ -179,7 +186,7 @@ export default (state = initialState, action) => {
 		default:
 			break;
 		}
-		const selectedPaymentOption = state.selectedPaymentOption ? state.selectedPaymentOption : state.selectedPayment.paymentItems[0];
+		const selectedPaymentOption = state.selectedPaymentOption ? state.selectedPaymentOption : state.selectedPayment.paymentItems[1];
 		selectedPaymentOption.term = state.term;
 		return {
 			...state,
@@ -217,7 +224,7 @@ export default (state = initialState, action) => {
 		};
 	}
 	case constants.PAY_TERM_CHANGE: {
-		const selectedPaymentOption = state.selectedPaymentOption ? state.selectedPaymentOption : state.selectedPayment.paymentItems[0];
+		const selectedPaymentOption = state.selectedPaymentOption ? state.selectedPaymentOption : state.selectedPayment.paymentItems[1];
 		selectedPaymentOption.term = action.payload.term;
 		return {
 			...state,
@@ -233,7 +240,7 @@ export default (state = initialState, action) => {
 	case constants.PAY_CHANGE_BILLING_NUMBER: {
 		return {
 			...state,
-			billingNumber: action.payload.billingNumber
+			billingPhoneNumber: action.payload.billingPhoneNumber
 		};
 	}
 

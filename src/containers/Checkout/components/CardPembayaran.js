@@ -359,8 +359,9 @@ export default class CardPembayaran extends Component {
 		}
 
 		const ovoEnabledEdit = !(this.props.payments.ovoInfo && this.props.payments.ovoInfo.ovoFlag < 1);
+		const disabledPayment = ((this.props.payments.selectedPaymentOption === null || !this.props.payments.selectedPaymentOption) || (this.props.payments.billingPhoneNumber === null || this.props.payments.billingPhoneNumber === ''));
 		return (
-			<Card>
+			<Card stretch loading={this.props.loading} >
 				<div className={styles.overflow}>
 					<Level>
 						<Level.Left><strong>Subtotal</strong></Level.Left>
@@ -398,7 +399,7 @@ export default class CardPembayaran extends Component {
 					<div className={styles.hasCheckoutAction}>
 						<p>Pilih Metode Pembayaran</p>
 						<InputGroup>
-							<Select selectedLabel='-- Pilih Metode Lain' name='paymentMethods' options={paymentMethods.methods} onChange={this.onPaymentMethodChange} />
+							<Select name='paymentMethods' options={paymentMethods.methods} onChange={this.onPaymentMethodChange} />
 							{ renderIf(
 								selectedPaymentOption &&
 								(selectedPayment.value === 'cod' || selectedPayment.value === 'gratis') &&
@@ -464,7 +465,7 @@ export default class CardPembayaran extends Component {
 						
 						<div className={styles.checkOutAction}>
 							<Checkbox checked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />
-							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' loading={loading} disabled={(this.props.payments.selectedPaymentOption === null || !this.props.payments.selectedPaymentOption)} />
+							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' loading={loading} disabled={disabledPayment} />
 						</div>
 					</div>
 				</div>

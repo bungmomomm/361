@@ -44,6 +44,12 @@ export default class Select extends Component {
 				emptyFilter: false,
 			});
 		}
+
+		if (nextProps.selectedLabel && this.state.selectedLabel !== nextProps.selectedLabel) {
+			this.setState({
+				selectedLabel: nextProps.selectedLabel
+			});
+		}
 	}
 
 // ----------------------------------------
@@ -247,7 +253,8 @@ export default class Select extends Component {
 													) : renderIf(option.info)(
 														<div className={styles.info}>{option.info}</div>
 													)
-												}{
+												}
+												{
 													renderIf(option.message)(
 														<div className={styles.optionMessage}>{option.message}</div>
 													)
