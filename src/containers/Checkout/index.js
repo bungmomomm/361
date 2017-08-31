@@ -722,8 +722,8 @@ class Checkout extends Component {
 		this.props.dispatch(changeInstallmentCCCvv(event.target.value));
 	}
 
-	onSaveCcOption(event) {
-		this.props.dispatch(saveCC(event));
+	onSaveCcOption(state, value) {
+		this.props.dispatch(saveCC(state, value));
 	}
 
 	onCloseErrorBox() {
@@ -887,6 +887,7 @@ class Checkout extends Component {
 	}
 
 	render() {
+		console.log('selected', this.state.cart);
 		const {
 			enableAlamatPengiriman,
 			enablePesananPengiriman,
@@ -918,6 +919,7 @@ class Checkout extends Component {
 									<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
 									<CardPengiriman 
 										selectedAddress={this.state.selectedAddress}
+										cart={this.state.cart}
 										addresses={addresses} 
 										onChoisedAddress={this.onChoisedAddress} 
 										onChangeAddress={this.onChangeAddress} 
@@ -959,6 +961,7 @@ class Checkout extends Component {
 									<div className={styles.title}>3. Pembayaran</div>
 									<CardPembayaran
 										loading={payments.loading || this.state.loadingUpdateCart || this.state.loadingCardPengiriman}
+										saveCC={payments.saveCC}
 										loadingButtonCoupon={coupon.loading}
 										coupon={coupon.coupon}
 										validCoupon={coupon.validCoupon}

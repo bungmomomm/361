@@ -115,6 +115,7 @@ const getListAvailablePaymentMethod = (response) => {
 					label: '-- Pilih Bank',
 					value: null,
 					info: '',
+					hidden: true,
 					installment: [],
 					listCicilan: []
 				});
@@ -145,6 +146,7 @@ const getListAvailablePaymentMethod = (response) => {
 			methodData.payment_items.unshift({
 				label: '-- Pilih Bank',
 				value: null,
+				hidden: true,
 				info: ''
 			});
 			break;
@@ -160,7 +162,8 @@ const getListAvailablePaymentMethod = (response) => {
 			methodData.payment_items.unshift({
 				label: '-- Pilih Tempat pembayaran',
 				value: null,
-				info: ''
+				info: '',
+				hidden: true
 			});
 			break;
 		case paymentGroupName.E_MONEY:
@@ -175,7 +178,8 @@ const getListAvailablePaymentMethod = (response) => {
 			methodData.payment_items.unshift({
 				label: '-- Pilih Tipe pembayaran',
 				value: null,
-				info: ''
+				info: '',
+				hidden: true
 			});
 			break;
 		case paymentGroupName.INTERNET_BANKING:
@@ -190,7 +194,8 @@ const getListAvailablePaymentMethod = (response) => {
 			methodData.payment_items.unshift({
 				label: '-- Pilih Tipe pembayaran',
 				value: null,
-				info: ''
+				info: '',
+				hidden: true
 			});
 			break;
 		default:
@@ -209,7 +214,8 @@ const getListAvailablePaymentMethod = (response) => {
 	const paymentList = [{
 		label: '-- Pilih Metode Lain',
 		value: null,
-		info: ''
+		info: '',
+		hidden: true
 	}];
 	const paymentData = {};
 	const availableMethods = {};

@@ -278,22 +278,27 @@ export default class CardPembayaran extends Component {
 							selectedPayment.paymentItems.map((option, index) => {
 								if (option.cards.length < 3) {
 									return option.cards.map((card, cardIndex) => {
+										if (card.value !== null) {
+											return (
+												<div>
+													<InputGroup>
+														<CreditCardRadio key={cardIndex} name='cc' variant='list' creditCard value={card.value} content={card.label} onClick={this.onSelectCard} checked={card.selected} sprites={card.sprites} />
+													</InputGroup>
+													{ renderIf(card.selected)(
+														<Row>
+															<Col grid={4}>
+																<Input type='password' placeholder='cvv' onBlur={this.onCardCvvChange} />
+															</Col>
+															<Col grid={4}>
+																<Sprites name='cvv' />
+															</Col>
+														</Row>
+													) }
+												</div>
+											);
+										}
 										return (
-											<div>
-												<InputGroup>
-													<CreditCardRadio key={cardIndex} name='cc' variant='list' creditCard value={card.value} content={card.label} onClick={this.onSelectCard} checked={card.selected} sprites={card.sprites} />
-												</InputGroup>
-												{ renderIf(card.selected)(
-													<Row>
-														<Col grid={4}>
-															<Input type='password' placeholder='cvv' onBlur={this.onCardCvvChange} />
-														</Col>
-														<Col grid={4}>
-															<Sprites name='cvv' />
-														</Col>
-													</Row>
-												) }
-											</div>
+											<div />
 										);
 									});
 								}
@@ -370,7 +375,7 @@ export default class CardPembayaran extends Component {
 			} 
 		}
 
-		const ovoEnabledEdit = !(this.props.payments.ovoInfo && this.props.payments.ovoInfo.ovoFlag < 1);
+		const ovoReadOnly = (this.props.payments.ovoInfo && this.props.payments.ovoInfo.ovoFlag !== 1) && true;
 		const disabledPayment = ((this.props.payments.selectedPaymentOption === null || !this.props.payments.selectedPaymentOption) || (this.props.payments.billingPhoneNumber === null || this.props.payments.billingPhoneNumber === ''));
 		return (
 			<Card stretch loading={this.props.loading} >
@@ -450,7 +455,7 @@ export default class CardPembayaran extends Component {
 									</Level.Item>
 								</Level>
 								<InputGroup>
-									<Checkbox checked content='Simpan kartu untuk transaksi selanjutnya' onChange={(event) => this.props.onSaveCcOption} />
+									<Checkbox checked={this.props.saveCC} content='Simpan kartu untuk transaksi selanjutnya' onClick={(state, value) => this.props.onSaveCcOption(state, value)} />
 								</InputGroup>
 							</div>
 						)}
@@ -472,7 +477,7 @@ export default class CardPembayaran extends Component {
 							<Input label='SMS Konfirmasi pembayaran' type='number' value={this.props.payments.billingPhoneNumber ? this.props.payments.billingPhoneNumber : ''} placeholder='No Telp Penagihan' onChange={(event) => this.props.onBillingNumberChange(event)} />
 						</InputGroup>
 						<InputGroup>
-							<Input value={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' type='number' placeholder='Masukkan nomor Hp yang terdaftar di OVO' onChange={(event) => this.props.onOvoNumberChange(event)} readonly={ovoEnabledEdit} />
+							<Input value={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' type='number' placeholder='Masukkan nomor Hp yang terdaftar di OVO' onChange={(event) => this.props.onOvoNumberChange(event)} readonly={ovoReadOnly} />
 						</InputGroup>
 						
 						<div className={styles.checkOutAction}>

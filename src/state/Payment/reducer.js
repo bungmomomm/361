@@ -8,6 +8,7 @@ const initialState = {
 	loading: false,
 	twoClickEnabled: true,
 	selectedPaymentOption: null,
+	saveCC: true,
 	billingPhoneNumber: null,
 	selectedPaymentLabel: '-- Pilih Metode Lain',
 	paymentMethods: {
@@ -247,7 +248,7 @@ export default (state = initialState, action) => {
 	case constants.PAY_SAVE_CC: {
 		return {
 			...state,
-			saveCC: action.state
+			saveCC: action.status
 		};
 	}
 	case constants.PAY_ERROR: {
