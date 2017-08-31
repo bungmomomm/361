@@ -11,6 +11,7 @@
     "component": "babel-node ./tools/component/index.js",
     "build-client": "better-npm-run build-client",
     "build-static": "better-npm-run build-static",
+    "build-static-staging": "better-npm-run build-static-staging",
     "build-server": "better-npm-run build-server",
     "build-start": "yarn run build && yarn start",
     "build": "better-npm-run build",
@@ -44,6 +45,13 @@
       "command": "yarn run clean && webpack -p --progress --hide-modules --config tools/webpack-config/client.babel.js",
       "env": {
         "NODE_ENV": "production",
+        "STATIC": true
+      }
+    },
+    "build-static-staging": {
+      "command": "yarn run clean && webpack -p --progress --hide-modules --config tools/webpack-config/client.babel.js",
+      "env": {
+        "NODE_ENV": "staging",
         "STATIC": true
       }
     },
