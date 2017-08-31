@@ -701,7 +701,8 @@ class Checkout extends Component {
 		if (event.valid) {
 			this.props.dispatch(changeInstallmentCCNumber(event.ccNumber));
 			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
-			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event, ''));
+			const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
+			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event, bank));
 		}
 	}
 	onInstallmentCCMonthChange(monthData) {

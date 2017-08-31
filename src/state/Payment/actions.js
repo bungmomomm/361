@@ -478,7 +478,7 @@ const applyBin = (token, paymentMethodId, cardNumber, bankName) => dispatch => {
 			data: {
 				attributes: {
 					payment_method: paymentMethodId,
-					card_number: cardNumber,
+					card_number: cardNumber.ccNumber,
 					bank: bankName
 				}
 			}
