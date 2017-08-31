@@ -1045,17 +1045,10 @@ class Checkout extends Component {
 					}
 					<ElockerModalbox closeModalElocker={this.closeModalElocker} shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} o2oProvinces={!o2oProvinces ? null : o2oProvinces} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
 					<PaymentSuccessModalbox shown={this.props.payments.paymentSuccess} onClose={this.onCloseSuccessBox} />
-<<<<<<< Updated upstream
 					<PaymentErrorModalbox 
 						shown={this.props.payments.paymentError} 
 						paymentErrorMessage={this.props.payments.paymentErrorMessage}
 						onClose={this.onCloseErrorBox} 
-=======
-					<PaymentErrorModalbox
-						shown={this.props.payments.paymentError}
-						paymentErrorMessage={this.props.paymentErrorMessage}
-						onClose={this.onCloseErrorBox}
->>>>>>> Stashed changes
 					/>
 					<VerifikasiNoHandponeModalbox
 						shown={this.state.showModalOtp}
