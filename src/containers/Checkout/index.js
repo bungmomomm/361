@@ -61,6 +61,9 @@ import {
 	changeInstallmentCCCvv,
 	saveCC
 } from '@/state/Payment/actions';
+
+import { getRefreshToken } from '@/state/Auth/actions';
+
 import { 
 	paymentMethodName
 } from '@/state/Payment/constants';
@@ -80,6 +83,7 @@ class Checkout extends Component {
 			enableNewAddress: false,
 			token: this.props.cookies.get('user.token'),
 			refreshToken: this.props.cookies.get('user.rf.token'),
+			expToken: this.props.cookies.get('user.exp'),
 			addresses: {},
 			soNumber: null,
 			cart: this.props.cart,
@@ -158,22 +162,33 @@ class Checkout extends Component {
 		this.onVerity = this.onVerity.bind(this);
 		this.onRequestSprintInstallment = this.onRequestSprintInstallment.bind(this);
 		this.onSaveCcOption = this.onSaveCcOption.bind(this);
+		this.onReload = this.onReload.bind(this);
 	}
 
 	componentWillMount() {
 		const { dispatch } = this.props;
-		dispatch(getAddresses(this.state.token)).then(defaultAddress => {
-			if (typeof defaultAddress.type !== 'undefined') {
+		
+		if (this.state.expToken < new Date().getTime()) {
+			dispatch(getRefreshToken({
+				userToken: this.state.token,
+				userRFToken: this.state.refreshToken
+			})).then((newToken) => {
+				this.props.cookies.set('user.exp', newToken.expToken);
+				this.props.cookies.set('user.rf.token', newToken.userRFToken);
+				this.props.cookies.set('user.token', newToken.userToken);
+
 				this.setState({
-					selectedAddress: defaultAddress,
-					enablePesananPengiriman: true, 
-					enablePembayaran: true
+					token: newToken.userToken,
+					refreshToken: newToken.userRFToken,
+					expToken: newToken.expToken,
 				});
-				dispatch(getPlaceOrderCart(this.state.token, defaultAddress));
-			}
-		});
-		dispatch(getCart(this.state.token));
-		dispatch(getAvailablePaymentMethod(this.state.token));
+				this.onReload(dispatch);
+			});
+		} else {
+			this.onReload(dispatch);
+		}
+		
+		
 		const t = new Date();
 		const thisYear = t.getFullYear();
 		let year = 0;
@@ -253,6 +268,21 @@ class Checkout extends Component {
 				showModalOtp: true
 			});
 		}
+	}
+
+	onReload(dispatch) {
+		dispatch(getAddresses(this.state.token)).then(defaultAddress => {
+			if (typeof defaultAddress.type !== 'undefined') {
+				this.setState({
+					selectedAddress: defaultAddress,
+					enablePesananPengiriman: true, 
+					enablePembayaran: true
+				});
+				dispatch(getPlaceOrderCart(this.state.token, defaultAddress));
+			}
+		});
+		dispatch(getCart(this.state.token));
+		dispatch(getAvailablePaymentMethod(this.state.token));
 	}
 
 	onAddCoupon(coupon) {
