@@ -27,7 +27,7 @@ const CheckoutResult = (props) => {
 							<div className={styles.deliveryInfo}>
 								{
 									!props.gosendInfo ? null :
-									<Tooltip position='right' content='Info' color='white'>
+									<Tooltip position='right' content='Info' color='white' disabled>
 										{props.gosendInfo.length > 1 ? props.gosendInfo[1] : props.gosendInfo}
 									</Tooltip>
 								}

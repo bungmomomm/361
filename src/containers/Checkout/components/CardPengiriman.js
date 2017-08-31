@@ -30,7 +30,8 @@ export default class CardPengiriman extends Component {
 			selectedAddress: null,
 			closeSelect: true,
 			latLngExist: false,
-			loading: false
+			loading: false,
+			isJabodetabekArea: false
 		};
 		this.onChoisedAddress = this.onChoisedAddress.bind(this);
 		this.onChangeAddress = this.onChangeAddress.bind(this);
@@ -43,11 +44,27 @@ export default class CardPengiriman extends Component {
 		const shipping = nextProps.addresses;
 		const address = [];
 		const selectedAddress = nextProps.selectedAddress;
+		const cart = nextProps.cart;
+		
 		if (selectedAddress) {
 			const latLngExist = selectedAddress.attributes.longitude !== '' && selectedAddress.attributes.latitude !== '';
 			this.setState({
 				selectedAddress,
 				latLngExist
+			});
+		}
+
+		let isJabodetabek = false;
+		if (cart.length > 0 && selectedAddress) {
+			cart.forEach((value, index) => {
+				value.store.products.forEach((x, y) => {
+					if (x.fgLocation === '1' && selectedAddress.attributes.isJabodetabekArea === '1') {
+						isJabodetabek = true;
+					}
+				});
+			});
+			this.setState({
+				isJabodetabekArea: isJabodetabek
 			});
 		}
 
@@ -197,6 +214,12 @@ export default class CardPengiriman extends Component {
 							<Button content='Masukan Alamat Pengiriman' color='dark' block size='large' iconPosition='right' icon='angle-right' onClick={() => this.onChangeAddress('add')} />
 						)
 					}
+					{
+						renderIf(this.state.isJabodetabekArea)(
+							<div className='font-red'>Terdapat satu atau lebih produk yang tidak dapat dikirimkan ke alamat Anda karena tidak sesuai dengan persyaratan pengiriman</div>
+						)
+					}
+					
 					
 				</Tabs.Panel>
 				<Tabs.Panel title='Ambil Di Toko/E-locker (O2O)' sprites='o2o-off' spritesActive='o2o-on' >

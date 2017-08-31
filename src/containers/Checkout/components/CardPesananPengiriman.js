@@ -14,10 +14,34 @@ export default class CardPesananPengiriman extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.state = {
+			cartJabodetabek: [],
+		};
 		this.onDeleteCart = this.onDeleteCart.bind(this);
 		this.onUpdateQty = this.onUpdateQty.bind(this);
 		this.checkGosendMethod = this.checkGosendMethod.bind(this);
 		this.onPinPointAddress = this.onPinPointAddress.bind(this);
+	}
+	componentWillReceiveProps(nextProps) {
+		const selectedAddress = nextProps.selectedAddress;
+		const cart = nextProps.cart;
+		const cartJabodetabek = [];
+		if (cart.length > 0 && selectedAddress) {
+			cart.forEach((value, index) => {
+				
+				value.store.products.forEach((x, y) => {
+					if (x.fgLocation === '1' && selectedAddress.attributes.isJabodetabekArea === '1') {
+						cartJabodetabek.push(
+							value.store.id
+						);
+					}
+				});
+			});
+			
+			this.setState({
+				cartJabodetabek
+			});
+		}
 	}
 
 	onDeleteCart(cart) {
@@ -37,6 +61,10 @@ export default class CardPesananPengiriman extends Component {
 	}
 	
 	render() {
+		// || (storeData.store.id.indexOf(this.state.cartJabodetabek) === -1)
+		console.log('cartnya', this.props.cart);
+		console.log('aaa', this.state.cartJabodetabek);
+		
 		return (
 			<Card stretch loading={this.props.loading} >
 				<div className={styles.overflow}>
@@ -45,7 +73,7 @@ export default class CardPesananPengiriman extends Component {
 						this.props.cart.map((storeData, i) => (
 							<StoreBox 
 								loading={this.props.loadingUpdateCart} 
-								color={this.props.restrictO2o && !storeData.store.shipping.o2oSupported ? 'red' : ''} 
+								color={(this.props.restrictO2o && !storeData.store.shipping.o2oSupported) || (this.state.cartJabodetabek.indexOf(storeData.store.id) !== -1) ? 'red' : ''} 
 								key={i} 
 								name={storeData.store.name} 
 								location={storeData.store.location}

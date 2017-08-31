@@ -13,7 +13,6 @@ import {
 const initialState = {
 	loading: false,
 	validCoupon: null,
-	errorMessage: '',
 	otp: {
 		valid: false,
 		message: null,
