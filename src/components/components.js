@@ -26,6 +26,7 @@ import Checkbox from './Modules/Checkbox/Checkbox';
 import CreditCardInput from './Modules/CreditCardInput/CreditCardInput';
 import CreditCardRadio from './Modules/CreditCardRadio/CreditCardRadio';
 import Modal from './Modules/Modal/Modal';
+import Notification from './Modules/Notification/Notification';
 import Radio from './Modules/Radio/Radio';
 import Select from './Modules/Select/Select';
 import Stepper from './Modules/Stepper/Stepper';
@@ -64,5 +65,6 @@ export default {
 	Tabs,
 	Tooltip,
 	Elocker,
-	Gosend
+	Gosend,
+	Notification
 };

@@ -4,7 +4,7 @@ import Helmet from 'react-helmet';
 import styles from './Checkout.scss';
 
 // component load
-import { Container, Row, Col, Loading, CheckoutHeader } from '@/components';
+import { Container, Row, Col, Loading, CheckoutHeader, Notification } from '@/components';
 import { renderIf } from '@/utils';
 
 import { Validator } from 'ree-validate';
@@ -1025,6 +1025,7 @@ class Checkout extends Component {
 						onClose={this.onVt3dsModalBoxClose}
 					/>
 					<EcashModalBox shown={this.props.payments.showEcash} src={this.props.payments.mandiriRedirectUrl} onClose={this.onMandiriEcashClose} />
+					<Notification shown={false} content='masa' />
 				</div>
 			)
 		);
