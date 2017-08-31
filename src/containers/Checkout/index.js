@@ -173,9 +173,9 @@ class Checkout extends Component {
 				userToken: this.props.cookies.get('user.token'),
 				userRFToken: this.props.cookies.get('user.rf.token')
 			})).then((newToken) => {
-				this.props.cookies.set('user.exp', newToken.expToken);
-				this.props.cookies.set('user.rf.token', newToken.userRFToken);
-				this.props.cookies.set('user.token', newToken.userToken);
+				this.props.cookies.set('user.exp', newToken.expToken, { domain: '.mataharimall.com' });
+				this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: '.mataharimall.com' });
+				this.props.cookies.set('user.token', newToken.userToken, { domain: '.mataharimall.com' });
 
 				this.onReload(dispatch);
 			});
