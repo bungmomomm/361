@@ -122,9 +122,8 @@ export default class CardPengiriman extends Component {
 			});
 			this.props.activeShippingTab(true);
 		}
-		console.log(this.props.latesto2o);
 		if (this.props.latesto2o.length > 0) {
-			this.props.onSelectedLocker(this.props.latesto2o[0]);	
+			this.props.onSelectedLocker(this.props.latesto2o[1]);	
 		}
 	}
 
@@ -230,7 +229,7 @@ export default class CardPengiriman extends Component {
 						this.props.isPickupable === '0' ? null :
 						!this.props.selectedLocker ? <Button onClick={this.openModal} content='Pilih Lokasi Toko / E-locker' color='dark' block size='large' iconPosition='right' icon='angle-right' /> :
 						<div>
-							<Segment>
+							<Segment className='customSelectO2OWrapper'>
 								<InputGroup>
 									<Select
 										selectedLabel={this.props.selectO2oFromModal ? '-- Pilih Lokasi / Toko E-Locker Lainnya' : this.props.selectedLocker.attributes.address_label}
@@ -241,6 +240,7 @@ export default class CardPengiriman extends Component {
 										shown={!this.state.closeSelect}
 									/>
 								</InputGroup>
+								<span className='customSelectO2O'>{this.props.selectO2oFromModal ? '-- Pilih Lokasi / Toko E-Locker Lainnya' : this.props.selectedLocker.attributes.address_label}</span>
 								<p>
 									<strong>{this.props.selectedLocker.attributes.address_label} &nbsp; </strong>
 								</p>

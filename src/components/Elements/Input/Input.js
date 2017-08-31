@@ -96,7 +96,7 @@ export default class Input extends Component {
 				name={name}
 				readOnly={readOnly}
 				placeholder={placeholder}
-				value={value}
+				defaultValue={value}
 				onClick={onClick}
 				onKeyPress={onKeyPress}
 				onBlur={onBlur}

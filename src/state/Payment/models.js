@@ -31,7 +31,7 @@ const paymentMethodItem = payment => {
 		value: payment.id,
 		label: payment.attributes.title,
 		name: payment.attributes.unique_constant,
-		info: payment.attributes.title,
+		info: '',
 		disabled: !parseInt(payment.attributes.fg_enable, 10),
 		message: payment.attributes.disable_message,
 		settings: payment.attributes.settings[0]
@@ -39,15 +39,15 @@ const paymentMethodItem = payment => {
 };
 
 const paymentMethod = method => {
-	let info = false;
-	if (typeof (method.attributes.settings[0]) !== 'undefined') {
-		info = method.attributes.settings[0];
-	}
+	// let info = false;
+	// if (typeof (method.attributes.settings[0]) !== 'undefined') {
+	// 	info = 'method.attributes.settings[0]';
+	// }
 	return {
 		id: method.id,
 		value: method.id,
 		label: method.attributes.title,
-		info: info ? info.info[0] : ''
+		info: ''
 	};
 };
 
