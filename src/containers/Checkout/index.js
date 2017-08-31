@@ -325,7 +325,10 @@ class Checkout extends Component {
 	onChangeAddress(address, flagAdd) {
 		const { dispatch } = this.props;
 		
-		dispatch(getCityProvince(this.props.cookies.get('user.token')));
+		if (this.props.cityProv) {
+			dispatch(getCityProvince(this.props.cookies.get('user.token')));
+		}
+		
 		let formDataAddress = {
 			isEdit: false
 		};
@@ -938,7 +941,7 @@ class Checkout extends Component {
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>({this.props.totalItems} items)</span></div>
 									{
 										<CardPesananPengiriman 
-											loading={this.state.loadingUpdateCart} 
+											loading={this.state.loadingUpdateCart || !this.state.notifInfo} 
 											cart={!this.state.cart ? [] : this.state.cart} 
 											onDeleteCart={this.onDeleteCart} 
 											onUpdateQty={this.onUpdateQty} 
@@ -954,7 +957,7 @@ class Checkout extends Component {
 								<Col flex grid={4} className={enablePembayaran && !this.state.restrictO2o ? '' : styles.disabled}>
 									<div className={styles.title}>3. Pembayaran</div>
 									<CardPembayaran
-										loading={payments.loading || this.state.loadingUpdateCart || this.state.loadingCardPengiriman}
+										loading={payments.loading || this.state.loadingUpdateCart || this.state.loadingCardPengiriman || !this.state.notifInfo}
 										loadingUpdateCart={this.state.loadingUpdateCart}
 										loadingCardPengiriman={this.state.loadingCardPengiriman}
 										saveCC={payments.saveCC}
