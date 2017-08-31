@@ -274,7 +274,6 @@ class Checkout extends Component {
 	onChoisedAddress(address) {
 		const { dispatch } = this.props;
 		const billing = this.props.billing.length > 0 ? this.props.billing[0] : false;
-		console.log('masuk');
 		if (!!address.type && address.type !== 'pickup') {
 			this.setState({
 				selectedAddress: address
@@ -298,6 +297,7 @@ class Checkout extends Component {
 
 	onChangeAddress(address, flagAdd) {
 		const { dispatch } = this.props;
+		console.log(this.props);
 		dispatch(getCityProvince(this.state.token));
 		let formDataAddress = {
 			isEdit: false

@@ -16,9 +16,9 @@ export default class Select extends Component {
 		this.props = props;
 		this.state = {
 			options: [],
-			selectedLabel: this.props.selectedLabel || 'Please Select...',
 			showOption: false,
 			selected: this.props.selected || {},
+			selectedLabel: 'Pilih ...',
 			emptyFilter: false,
 		};
 		this.getFilter = this.getFilter.bind(this);
@@ -29,8 +29,7 @@ export default class Select extends Component {
 	componentWillReceiveProps(nextProps) {
 		if (this.props.selected !== nextProps.selected) {
 			this.setState({
-				selected: nextProps.selected,
-				selectedLabel: nextProps.selectedLabel
+				selected: nextProps.selected
 			});
 		}
 		if (this.state.showOption !== nextProps.shown) {
@@ -86,8 +85,7 @@ export default class Select extends Component {
 	setSelectOption(selected) {
 		this.setOptions();
 		this.setState({
-			selected,
-			selectedLabel: selected.label
+			selected
 		});
 		if (this.props.onChange) {
 			const withName = {
@@ -204,7 +202,11 @@ export default class Select extends Component {
 					>	
 						<span className={styles.flex}>
 							<span className={styles.text}>
-								{this.state.selectedLabel} 
+								{
+									options.map((option, i) => (
+										option.value === this.state.selected.value ? option.label : null
+									))
+								}
 								{ImageElement} 
 								{SpritesElement}
 							</span>
@@ -268,8 +270,6 @@ export default class Select extends Component {
 };
 
 Select.propTypes = {
-	/** Default select text. */
-	selectedLabel: PropTypes.string,
 	/** List Data. */
 	options: PropTypes.array,
 	/** Attribute name. */
