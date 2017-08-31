@@ -961,6 +961,8 @@ class Checkout extends Component {
 									<div className={styles.title}>3. Pembayaran</div>
 									<CardPembayaran
 										loading={payments.loading || this.state.loadingUpdateCart || this.state.loadingCardPengiriman}
+										loadingUpdateCart={this.state.loadingUpdateCart}
+										loadingCardPengiriman={this.state.loadingCardPengiriman}
 										saveCC={payments.saveCC}
 										loadingButtonCoupon={coupon.loading}
 										coupon={coupon.coupon}
@@ -1085,7 +1087,10 @@ const mapStateToProps = (state) => {
 		state.payments.billingPhoneNumber = billingAddress ? billingAddress.attributes.phone : null;
 	}
 	state.payments.ovoInfo = getOvoInfo();
-	state.payments.ovoPhoneNumber = state.payments.ovoInfo ? state.payments.ovoInfo.ovoId : null;
+	if (state.payments.ovoPhoneNumber === null) {
+		state.payments.ovoPhoneNumber = state.payments.ovoInfo ? state.payments.ovoInfo.ovoId : null;
+	}
+	
 	return {
 		billingAddress: getBillingAddress(state),
 		soNumber: state.cart.soNumber,

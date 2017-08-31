@@ -58,7 +58,7 @@ export default class CardPengiriman extends Component {
 		if (cart.length > 0 && selectedAddress) {
 			cart.forEach((value, index) => {
 				value.store.products.forEach((x, y) => {
-					if (x.fgLocation === '1' && selectedAddress.attributes.isJabodetabekArea === '1') {
+					if (x.fgLocation === '1' && selectedAddress.attributes.isJabodetabekArea === '0') {
 						isJabodetabek = true;
 					}
 				});
@@ -216,7 +216,7 @@ export default class CardPengiriman extends Component {
 					}
 					{
 						renderIf(this.state.isJabodetabekArea)(
-							<div className='font-red'>Terdapat satu atau lebih produk yang tidak dapat dikirimkan ke alamat Anda karena tidak sesuai dengan persyaratan pengiriman</div>
+							<div className='font-red'>Mohon maaf, kami tidak dapat mengirimkan item berikut ke alamat pengiriman Anda</div>
 						)
 					}
 					

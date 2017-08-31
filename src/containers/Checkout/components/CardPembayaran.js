@@ -391,33 +391,35 @@ export default class CardPembayaran extends Component {
 					</div>
 					<div className={styles.hasCheckoutAction}>
 						<p>Pilih Metode Pembayaran</p>
-						<InputGroup>
-							<Select name='paymentMethods' options={paymentMethods.methods} onChange={this.onPaymentMethodChange} />
-							{ renderIf(
-								selectedPaymentOption &&
-								(selectedPayment.value === 'cod' || selectedPayment.value === 'gratis') &&
-								typeof selectedPaymentOption.settings !== 'undefined' && 
-								selectedPaymentOption.settings.info.length > 0)(
-									<Tooltip position='right' content='Info'>
-										{info}
-									</Tooltip>
-							)}
-							{ renderIf(selectedPayment.value === paymentGroupName.INSTALLMENT)(
-								<InputGroup>
-									<Tooltip position='right' content='Info'>
-										<p>Syarat dan Ketentuan Cicilan 0% Regular:</p>
-										<ul>
-											<li>Cicilan tenor 3 bulan dengan minimum transaksi Rp990.000 
-											(sembilan ratus sembilan puluh ribu rupiah)</li>
-											<li>Cicilan tenor 6 bulan dengan minimum transaksi Rp1.500.000 
-											(satu juta lima ratus ribu rupiah)</li>
-											<li>Cicilan tenor 12 bulan dengan minimum transaksi Rp2.000.000 
-											(dua juta rupiah)</li>
-										</ul>
-									</Tooltip>
-								</InputGroup>
-							)}
-						</InputGroup>
+						{ renderIf((!this.props.loadingUpdateCart) && (!this.state.loadingCardPengiriman))(
+							<InputGroup>
+								<Select name='paymentMethods' options={paymentMethods.methods} onChange={this.onPaymentMethodChange} />
+								{ renderIf(
+									selectedPaymentOption &&
+									(selectedPayment.value === 'cod' || selectedPayment.value === 'gratis') &&
+									typeof selectedPaymentOption.settings !== 'undefined' && 
+									selectedPaymentOption.settings.info.length > 0)(
+										<Tooltip position='right' content='Info'>
+											{info}
+										</Tooltip>
+								)}
+								{ renderIf(selectedPayment.value === paymentGroupName.INSTALLMENT)(
+									<InputGroup>
+										<Tooltip position='right' content='Info'>
+											<p>Syarat dan Ketentuan Cicilan 0% Regular:</p>
+											<ul>
+												<li>Cicilan tenor 3 bulan dengan minimum transaksi Rp990.000 
+												(sembilan ratus sembilan puluh ribu rupiah)</li>
+												<li>Cicilan tenor 6 bulan dengan minimum transaksi Rp1.500.000 
+												(satu juta lima ratus ribu rupiah)</li>
+												<li>Cicilan tenor 12 bulan dengan minimum transaksi Rp2.000.000 
+												(dua juta rupiah)</li>
+											</ul>
+										</Tooltip>
+									</InputGroup>
+								)}
+							</InputGroup>
+						) }
 						{ renderIf(installmentPayment)(installmentPayment) }
 						{ renderIf(paymentOptions)(paymentOptions) }
 						{ renderIf(selectedPayment.value === paymentGroupName.CREDIT_CARD && twoClickEnabled)(
