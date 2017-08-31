@@ -173,11 +173,16 @@ class Checkout extends Component {
 				userToken: this.props.cookies.get('user.token'),
 				userRFToken: this.props.cookies.get('user.rf.token')
 			})).then((newToken) => {
-				this.props.cookies.set('user.exp', newToken.expToken);
-				this.props.cookies.set('user.rf.token', newToken.userRFToken);
-				this.props.cookies.set('user.token', newToken.userToken);
+				this.props.cookies.set('user.exp', newToken.expToken, { domain: '.mataharimall.com' });
+				this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: '.mataharimall.com' });
+				this.props.cookies.set('user.token', newToken.userToken, { domain: '.mataharimall.com' });
 
 				this.onReload(dispatch);
+			}).catch((error) => {
+				this.setState({
+					notifInfo: false, 
+					notifMessage: error.response.data.errorMessage
+				});
 			});
 		} else {
 			this.onReload(dispatch);
@@ -275,7 +280,7 @@ class Checkout extends Component {
 				});
 				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress)).then(() => {
 					this.setState({
-						notifInfo: false,
+						notifInfo: true,
 					});
 				}).catch((error) => {
 					this.setState({
@@ -321,7 +326,7 @@ class Checkout extends Component {
 
 		return dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), address, billing, updatePaymentMethodList)).then(() => {
 			this.setState({
-				notifInfo: false
+				notifInfo: true
 			});
 		}).catch((error) => {
 			this.setState({
@@ -334,8 +339,6 @@ class Checkout extends Component {
 	onChangeAddress(address, flagAdd) {
 		const { dispatch } = this.props;
 		
-		
-		console.log(this.props.cityProv);
 		if (typeof this.props.cityProv === 'undefined') {
 			
 			dispatch(getCityProvince(this.props.cookies.get('user.token')));
@@ -1042,7 +1045,12 @@ class Checkout extends Component {
 						onClose={this.onVt3dsModalBoxClose}
 					/>
 					<EcashModalBox shown={this.props.payments.showEcash} src={this.props.payments.mandiriRedirectUrl} onClose={this.onMandiriEcashClose} />
-					<Notification shown={this.state.notifInfo || false} content={this.state.notifMessage} />
+					{
+						renderIf(!this.state.notifInfo)(
+							<Notification shown={this.state.notifInfo || false} content={this.state.notifMessage} />
+						)
+					}
+					
 				</div>
 			)
 		);
