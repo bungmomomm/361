@@ -272,7 +272,12 @@ class Checkout extends Component {
 					enablePesananPengiriman: true, 
 					enablePembayaran: true
 				});
-				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress));
+				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress)).catch((error) => {
+					this.setState({
+						notifInfo: true, 
+						notifMessage: error.response.data.errorMessage
+					});
+				});
 			}
 		});
 		dispatch(getCart(this.props.cookies.get('user.token')));
@@ -308,21 +313,18 @@ class Checkout extends Component {
 			enablePesananPengiriman: true,
 			enablePembayaran: true,
 		});
-		// dispatch(getAddresses(this.props.cookies.get('user.token'))).then(defaultAddress => {
-		// 	if (typeof defaultAddress.type !== 'undefined') {
-		// 		this.setState({
-		// 			selectedAddress: defaultAddress,
-		// 			enablePesananPengiriman: true,
-		// 			enablePembayaran: true
-		// 		});
-		// 	}
-		// });
-		return dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), address, billing, updatePaymentMethodList));
+
+		return dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), address, billing, updatePaymentMethodList)).catch((error) => {
+			this.setState({
+				notifInfo: true, 
+				notifMessage: error.response.data.errorMessage
+			});
+		});
 	}
 
 	onChangeAddress(address, flagAdd) {
 		const { dispatch } = this.props;
-		console.log(this.props);
+		
 		dispatch(getCityProvince(this.props.cookies.get('user.token')));
 		let formDataAddress = {
 			isEdit: false
@@ -391,7 +393,7 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 		const option = event.value;
 		if (option) {
-			console.log('option ', option);
+			
 			const selectedPaymentOption = this.props.payments.paymentMethods.payments[paymentMethod.id].paymentItems.filter((item) => parseInt(item.value, 10) === parseInt(option, 10))[0];
 			let cardNumber = '';
 			let bankName = '';
@@ -665,7 +667,7 @@ class Checkout extends Component {
 
 	onSubmitAddress(formData) {
 		const { dispatch } = this.props;
-		console.log(formData);
+		
 		dispatch(saveAddress(this.props.cookies.get('user.token'), formData));
 		this.setState({
 			enableNewAddress: false
@@ -880,7 +882,6 @@ class Checkout extends Component {
 	}
 
 	render() {
-		console.log('selected', this.state.cart);
 		const {
 			enableAlamatPengiriman,
 			enablePesananPengiriman,
@@ -1026,7 +1027,7 @@ class Checkout extends Component {
 						onClose={this.onVt3dsModalBoxClose}
 					/>
 					<EcashModalBox shown={this.props.payments.showEcash} src={this.props.payments.mandiriRedirectUrl} onClose={this.onMandiriEcashClose} />
-					<Notification shown={false} content='masa' />
+					<Notification shown={this.state.notifInfo || false} content={this.state.notifMessage} />
 				</div>
 			)
 		);

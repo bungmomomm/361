@@ -87,7 +87,7 @@ const getPlaceOrderCart = (token, address, billing = false, updatePaymentMethodL
 	dispatch(placeOrderRequest(token, address));
 	
 	const data = setPayloadPlaceOrder(address, billing);
-	console.log('placeOrder', data);
+	
 	const req = {
 		token, 
 		path: 'orders',
@@ -117,12 +117,10 @@ const getPlaceOrderCart = (token, address, billing = false, updatePaymentMethodL
 			resolve(setCartModel(res.data));
 		})
 		.catch((error) => {
-			console.log(error);
 			reject(error);
 		});
 	})
 	.catch((error) => {
-		console.log(error);
 		reject(error);
 	});
 });
