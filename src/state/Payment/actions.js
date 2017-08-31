@@ -384,6 +384,7 @@ const saveCC = (state, value) => dispatch => {
 const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete', card = false, callback = false) => dispatch => new Promise((resolve, reject) => {
 	const isSaveCC = paymentDetail.saveCC !== 'undefined' ? paymentDetail.saveCC : false;
 	dispatch(payRequest());
+	console.log(payment);
 	if (
 		(payment.paymentMethod === 'commerce_veritrans_installment'
 		|| payment.paymentMethod === 'commerce_veritrans')
@@ -454,6 +455,7 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 				}).then((res) => {
 					console.log(res.data);
 					window.document.write(res.data);
+					window.document.getElementById('sprint_form').submit();
 				});
 			}
 

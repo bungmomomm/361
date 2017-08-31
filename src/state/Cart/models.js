@@ -2,13 +2,14 @@ import humps from 'lodash-humps';
 
 const setPayloadPlaceOrder = (address, billing = false) => {
 	let attributes;
+	
 	let id;
 	if (billing) {
 		id = billing.id;
 	} else {
 		attributes = {
 			address: address.attributes.address,
-			address_label: address.attributes.address_label,
+			address_label: address.attributes.addressLabel,
 			city: address.attributes.city,
 			district: address.attributes.district,
 			fullname: address.attributes.fullname,
@@ -16,8 +17,10 @@ const setPayloadPlaceOrder = (address, billing = false) => {
 			province: address.attributes.province,
 			zipcode: address.attributes.zipcode
 		};
+		console.log('add', attributes);
 	}
 
+	console.log(id);
 	return {
 		attributes: {
 			delivery_method: address.type,
@@ -68,6 +71,7 @@ const setCartModel = (jsoApiResponse) => {
 				maxQty: parseInt(prods.attributes.max_quantity, 10),
 				image: prods.attributes.thumbnail_url,
 				id: parseInt(prodRel.id, 10),
+				fgLocation: prods.attributes.fg_location,
 				attribute: [],
 			};
 		});

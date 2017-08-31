@@ -887,6 +887,7 @@ class Checkout extends Component {
 	}
 
 	render() {
+		console.log('selected', this.state.cart);
 		const {
 			enableAlamatPengiriman,
 			enablePesananPengiriman,
@@ -918,6 +919,7 @@ class Checkout extends Component {
 									<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
 									<CardPengiriman 
 										selectedAddress={this.state.selectedAddress}
+										cart={this.state.cart}
 										addresses={addresses} 
 										onChoisedAddress={this.onChoisedAddress} 
 										onChangeAddress={this.onChangeAddress} 
