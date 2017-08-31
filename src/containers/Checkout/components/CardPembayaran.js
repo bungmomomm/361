@@ -294,10 +294,10 @@ export default class CardPembayaran extends Component {
 								</InputGroup>
 							) : null
 						)) : 
-						<InputGroup key={index}>
-							<Select emptyFilter={false} name='cc' selectedLabel='-- Tambah Baru' options={option.cards} onChange={this.onSelectCard} />
-							{ renderIf((selectedCard && twoClickEnabled))(CvvElement) }
-						</InputGroup>
+							<InputGroup key={index}>
+								<Select emptyFilter={false} name='cc' selectedLabel='-- Tambah Baru' options={option.cards} onChange={this.onSelectCard} />
+								{ renderIf((selectedCard && twoClickEnabled))(CvvElement) }
+							</InputGroup>
 						)
 					)
 				);
