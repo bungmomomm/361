@@ -9,7 +9,6 @@ const config = {
 	module: {
 		
 		rules: [
-
 			{
 				enforce: 'pre',
 				exclude: /node_modules/,
@@ -21,7 +20,6 @@ const config = {
 				test: /\.(jpe?g|png|gif|svg|ico)$/i,
 				include: path.resolve(__dirname, '..', '..', 'src', 'assets', 'images'),
 				loaders: [
-
 					files({
 						outputPath: 'assets/images/'
 					}),
@@ -41,7 +39,6 @@ const config = {
 				test: /\.(svg)$/i,
 				include: path.resolve(__dirname, '..', '..', 'src', 'assets', 'svg-inline'),
 				loaders: [
-
 					'raw-loader',
 					{
 						loader: 'image-webpack-loader',

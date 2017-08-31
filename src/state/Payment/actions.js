@@ -167,10 +167,10 @@ const ovoNumberChange = (ovoNumber) => ({
 	}
 });
 
-const billingNumberChange = (billingNumber) => ({
+const billingNumberChange = (billingPhoneNumber) => ({
 	type: constants.PAY_CHANGE_BILLING_NUMBER,
 	payload: {
-		billingNumber
+		billingPhoneNumber
 	}
 });
 
@@ -359,8 +359,8 @@ const changeOvoNumber = (ovoNumber) => dispatch => {
 	dispatch(ovoNumberChange(ovoNumber));
 };
 
-const changeBillingNumber = (billingNumber) => dispatch => {
-	dispatch(billingNumberChange(billingNumber));
+const changeBillingNumber = (billingPhoneNumber) => dispatch => {
+	dispatch(billingNumberChange(billingPhoneNumber));
 };
 
 const saveCC = (event) => dispatch => {
@@ -431,7 +431,7 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 				// console.log(sprintBody);
 				request({
 					token, 
-					path: 'payments/sprintinstallmentnew',
+					path: 'payments/websprintinstallment',
 					method: 'POST',
 					body: {
 						data: {

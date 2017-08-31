@@ -1,11 +1,13 @@
 import { 
-	PROCESS_GET_CART,
-	PROCESS_GET_ADDRESS,
-	PROCESS_GET_O2O 
+	AUTH,
+	AUTH_GET_TOKEN,
+	AUTH_REFRESH_TOKEN 
 } from './constants';
 
 const initialState = {
-	tracking: []
+	userToken: '',
+	userExp: '',
+	userRFToken: ''
 };
 
 export default (state = initialState, action) => {
@@ -16,25 +18,25 @@ export default (state = initialState, action) => {
 	
 	switch (action.type) {
 
-	case PROCESS_GET_ADDRESS: {
+	case AUTH_GET_TOKEN: {
 		return {
 			...state, 
-			data: action.payload.data,
+			token: action.payload.token,
 		};
 
 	}
 
-	case PROCESS_GET_CART: {
+	case AUTH: {
 		return {
 			...state, 
-			data: action.payload.data,
+			token: action.payload.token,
 		};
 	}
 
-	case PROCESS_GET_O2O: {
+	case AUTH_REFRESH_TOKEN: {
 		return {
 			...state, 
-			data: action.payload.data,
+			token: action.payload.token,
 		};
 	}
 	default: 

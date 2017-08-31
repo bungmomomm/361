@@ -48,15 +48,11 @@ const scss = {
 };
 
 if (process.env.NODE_ENV === 'development') {
-
 	scss.options.sourceMap = true;
-
 };
 
 export default [
-
 	css,
 	postcss,
 	scss
-
 ];

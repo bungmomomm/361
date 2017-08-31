@@ -132,7 +132,7 @@ const getAddresses = (token) => dispatch => new Promise((resolve, reject) => {
 								.filter(e => e.attributes.fgDefault === '1' || 
 										Date.parse(e.attributes.createdTime) === minimumDateISO
 								)[0];
-			dispatch(getPlaceOrderCart(token, defaultAddress));
+			// dispatch(getPlaceOrderCart(token, defaultAddress));
 		}
 		dispatch(addressesReceived(address, billing, latesto2o));
 		dispatch(getAvailablePaymentMethod(token));

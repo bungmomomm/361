@@ -36,9 +36,9 @@ import {
 } from '@/state/Adresses/actions';
 import { getPlaceOrderCart, getCart, updateQtyCart, updateCartWithoutSO, deleteCart, updateGosend } from '@/state/Cart/actions';
 import {
-	getAvailablePaymentMethod,
 	changePaymentMethod,
 	changePaymentOption,
+	getAvailablePaymentMethod,
 	openNewCreditCard,
 	selectCreditCard,
 	changeCreditCardNumber,
@@ -61,6 +61,9 @@ import {
 	changeInstallmentCCCvv,
 	saveCC
 } from '@/state/Payment/actions';
+
+import { getRefreshToken } from '@/state/Auth/actions';
+
 import { 
 	paymentMethodName
 } from '@/state/Payment/constants';
@@ -80,6 +83,7 @@ class Checkout extends Component {
 			enableNewAddress: false,
 			token: this.props.cookies.get('user.token'),
 			refreshToken: this.props.cookies.get('user.rf.token'),
+			expToken: this.props.cookies.get('user.exp'),
 			addresses: {},
 			soNumber: null,
 			cart: this.props.cart,
@@ -158,21 +162,34 @@ class Checkout extends Component {
 		this.onVerity = this.onVerity.bind(this);
 		this.onRequestSprintInstallment = this.onRequestSprintInstallment.bind(this);
 		this.onSaveCcOption = this.onSaveCcOption.bind(this);
+		this.onReload = this.onReload.bind(this);
+		this.onBillingNumberChange = this.onBillingNumberChange.bind(this);
 	}
 
 	componentWillMount() {
 		const { dispatch } = this.props;
-		dispatch(getAddresses(this.state.token)).then(defaultAddress => {
-			if (typeof defaultAddress.type !== 'undefined') {
+		
+		if (this.state.expToken < new Date().getTime()) {
+			dispatch(getRefreshToken({
+				userToken: this.state.token,
+				userRFToken: this.state.refreshToken
+			})).then((newToken) => {
+				this.props.cookies.set('user.exp', newToken.expToken);
+				this.props.cookies.set('user.rf.token', newToken.userRFToken);
+				this.props.cookies.set('user.token', newToken.userToken);
+
 				this.setState({
-					selectedAddress: defaultAddress,
-					enablePesananPengiriman: true, 
-					enablePembayaran: true
+					token: newToken.userToken,
+					refreshToken: newToken.userRFToken,
+					expToken: newToken.expToken,
 				});
-			}
-		});
-		dispatch(getCart(this.state.token));
-		dispatch(getAvailablePaymentMethod(this.state.token));
+				this.onReload(dispatch);
+			});
+		} else {
+			this.onReload(dispatch);
+		}
+		
+		
 		const t = new Date();
 		const thisYear = t.getFullYear();
 		let year = 0;
@@ -254,6 +271,21 @@ class Checkout extends Component {
 		}
 	}
 
+	onReload(dispatch) {
+		dispatch(getAddresses(this.state.token)).then(defaultAddress => {
+			if (typeof defaultAddress.type !== 'undefined') {
+				this.setState({
+					selectedAddress: defaultAddress,
+					enablePesananPengiriman: true, 
+					enablePembayaran: true
+				});
+				dispatch(getPlaceOrderCart(this.state.token, defaultAddress));
+			}
+		});
+		dispatch(getCart(this.state.token));
+		dispatch(getAvailablePaymentMethod(this.state.token));
+	}
+
 	onAddCoupon(coupon) {
 		const { dispatch, soNumber } = this.props;
 		if (coupon) {
@@ -271,10 +303,10 @@ class Checkout extends Component {
 		dispatch(resetCoupon());
 	}
 
-	onChoisedAddress(address) {
+	onChoisedAddress(address, updatePaymentMethodList = true) {
 		const { dispatch } = this.props;
 		const billing = this.props.billing.length > 0 ? this.props.billing[0] : false;
-		console.log('masuk');
+		
 		if (!!address.type && address.type !== 'pickup') {
 			this.setState({
 				selectedAddress: address
@@ -293,7 +325,7 @@ class Checkout extends Component {
 		// 		});
 		// 	}
 		// });
-		return dispatch(getPlaceOrderCart(this.state.token, address, billing));
+		return dispatch(getPlaceOrderCart(this.state.token, address, billing, updatePaymentMethodList));
 	}
 
 	onChangeAddress(address, flagAdd) {
@@ -303,7 +335,7 @@ class Checkout extends Component {
 			isEdit: false
 		};
 		if (flagAdd !== 'add') {
-			console.log(address);
+			
 			const editAddress = address.attributes;
 			formDataAddress = {
 				id: address.id,
@@ -366,6 +398,7 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 		const option = event.value;
 		if (option) {
+			console.log('option ', option);
 			const selectedPaymentOption = this.props.payments.paymentMethods.payments[paymentMethod.id].paymentItems.filter((item) => parseInt(item.value, 10) === parseInt(option, 10))[0];
 			let cardNumber = '';
 			let bankName = '';
@@ -389,7 +422,7 @@ class Checkout extends Component {
 
 	onSelectCard(event) {
 		this.props.dispatch(selectCreditCard(event));
-		const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
+		const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[1];
 		this.props.dispatch(applyBin(this.state.token, selectedPaymentOption.value, event, ''));
 	}
 
@@ -591,6 +624,7 @@ class Checkout extends Component {
 
 	onTermChange(term) {
 		const { dispatch } = this.props;
+		this.props.payments.selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[1];
 		dispatch(termChange(term));
 	}
 
@@ -634,15 +668,17 @@ class Checkout extends Component {
 
 	onSubmitAddress(formData) {
 		const { dispatch } = this.props;
+		console.log(formData);
 		dispatch(saveAddress(this.state.token, formData));
 		this.setState({
 			enableNewAddress: false
 		});
 	}
 	onCardNumberChange(event) {
+		
 		if (event.valid) {
 			this.props.dispatch(changeCreditCardNumber(event.ccNumber));
-			const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
+			const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[1];
 			this.props.dispatch(applyBin(this.state.token, selectedPaymentOption.value, event, ''));
 		}
 	}
@@ -659,13 +695,13 @@ class Checkout extends Component {
 
 	onBankChange(bank) {
 		const { dispatch } = this.props;
-		const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
+		const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[1];
 		dispatch(bankNameChange(this.state.token, bank, selectedPaymentOption));
 	}
 	onInstallmentCCNumberChange(event) {
 		if (event.valid) {
 			this.props.dispatch(changeInstallmentCCNumber(event.ccNumber));
-			const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[0];
+			const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[1];
 			this.props.dispatch(applyBin(this.state.token, selectedPaymentOption.value, event, ''));
 		}
 	}
@@ -697,6 +733,11 @@ class Checkout extends Component {
 		this.setState({
 			phoneNumber: phone
 		});
+	}
+
+	onBillingNumberChange(event) {
+		const { dispatch } = this.props;
+		dispatch(changeBillingNumber(event.target.value));
 	}
 
 	onSubmitOtp(otp) {
@@ -784,7 +825,7 @@ class Checkout extends Component {
 			tempSelectedAddress.attributes.is_dropshipper = this.state.dropshipper;
 			tempSelectedAddress.attributes.dropship_name = this.state.formDropshipper.dropship_name;
 			tempSelectedAddress.attributes.dropship_phone = this.state.formDropshipper.dropship_phone;
-			this.onChoisedAddress(tempSelectedAddress).then(() => {
+			this.onChoisedAddress(tempSelectedAddress, false).then(() => {
 				this.setState({
 					isValidPayment: true,
 				});
@@ -855,8 +896,7 @@ class Checkout extends Component {
             listo2o,
 			latesto2o,
 			o2oProvinces,
-			isPickupable,
-			dispatch
+			isPickupable
 		} = this.props;
 		
 		return (
@@ -911,6 +951,7 @@ class Checkout extends Component {
 								<Col flex grid={4} className={enablePembayaran && !this.state.restrictO2o ? '' : styles.disabled}>
 									<div className={styles.title}>3. Pembayaran</div>
 									<CardPembayaran
+										loading={payments.loading || this.state.loadingUpdateCart || this.state.loadingCardPengiriman}
 										loadingButtonCoupon={coupon.loading}
 										coupon={coupon.coupon}
 										validCoupon={coupon.validCoupon}
@@ -933,7 +974,7 @@ class Checkout extends Component {
 										tahun={this.state.tahun}
 										onBankChange={this.onBankChange}
 										onOvoNumberChange={this.onOvoNumberChange}
-										onBillingNumberChange={(event) => dispatch(changeBillingNumber(event.target.value))}
+										onBillingNumberChange={this.onBillingNumberChange}
 										onTermChange={this.onTermChange}
 										onInstallmentCCNumberChange={this.onInstallmentCCNumberChange}
 										onInstallmentCCMonthChange={this.onInstallmentCCMonthChange}
@@ -1029,7 +1070,9 @@ const getOvoInfo = (state) => {
 
 const mapStateToProps = (state) => {
 	const billingAddress = getBillingAddress(state);
-	state.payments.billingPhoneNumber = billingAddress ? billingAddress.attributes.phone : null;
+	if (state.payments.billingPhoneNumber === null) {
+		state.payments.billingPhoneNumber = billingAddress ? billingAddress.attributes.phone : null;
+	}
 	state.payments.ovoInfo = getOvoInfo();
 	state.payments.ovoPhoneNumber = state.payments.ovoInfo ? state.payments.ovoInfo.ovoId : null;
 	return {

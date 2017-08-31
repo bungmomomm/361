@@ -44,6 +44,12 @@ export default class Select extends Component {
 				emptyFilter: false,
 			});
 		}
+
+		if (nextProps.selectedLabel && this.state.selectedLabel !== nextProps.selectedLabel) {
+			this.setState({
+				selectedLabel: nextProps.selectedLabel
+			});
+		}
 	}
 
 // ----------------------------------------
@@ -234,16 +240,21 @@ export default class Select extends Component {
 															<img src={option.imagePath} alt='logo' />
 														)
 													}{
+														option.settings ? <img src={option.settings.image} alt='' /> : null
+													}{
 														renderIf(option.sprites)(
 															<Sprites name={option.sprites} />
 														)
 													}
 												</span>
 												{
-													renderIf(option.info)(
+													option.settings ? (
+														<div className={styles.info}>{option.settings.info.toString()}</div>
+													) : renderIf(option.info)(
 														<div className={styles.info}>{option.info}</div>
 													)
-												}{
+												}
+												{
 													renderIf(option.message)(
 														<div className={styles.optionMessage}>{option.message}</div>
 													)

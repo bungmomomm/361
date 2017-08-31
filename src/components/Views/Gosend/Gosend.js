@@ -70,7 +70,7 @@ class Gosend extends Component {
 			const latLng = new google.maps.LatLng(lat, lng);
 			geo.geocode({ latLng }, (results, status) => {
 				if (status === google.maps.GeocoderStatus.OK) {
-					this.setAddress(results[0].formatted_address);
+					// this.setAddress(results[0].formatted_address);
 					this.props.onGeoLoad(
 						lat, 
 						lng,
@@ -165,7 +165,7 @@ class Gosend extends Component {
 		const gosendClass = cx({
 			Gosend: true
 		});
-		
+		// console.log('asdasd', this.props);
 
 		return (
 			<div className={gosendClass}>
