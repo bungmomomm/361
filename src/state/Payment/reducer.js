@@ -1,7 +1,7 @@
 import * as constants from './constants';
 import { getBaseUrl } from '@/utils';
 import { Veritrans } from '@/utils/vt';
-import { applyBin } from './actions';
+import { applyBin, getAvailabelPaymentSelection } from './actions';
 
 const initialState = {
 	selectedPayment: false,
@@ -151,7 +151,7 @@ export default (state = initialState, action) => {
 			...state,
 			selectedCard,
 			selectedCardDetail,
-			selectedPaymentOption: state.selectedPaymentOption ? state.selectedPaymentOption : state.paymentMethods.payments.credit_card.paymentItems[1]
+			selectedPaymentOption: state.selectedPaymentOption ? state.selectedPaymentOption : getAvailabelPaymentSelection(state.paymentMethods.payments.credit_card)
 		};
 	}
 	case constants.PAY_INSTALLMENT_CREDIT_CARD_ADD: {
@@ -186,7 +186,7 @@ export default (state = initialState, action) => {
 		default:
 			break;
 		}
-		const selectedPaymentOption = state.selectedPaymentOption ? state.selectedPaymentOption : state.selectedPayment.paymentItems[1];
+		const selectedPaymentOption = state.selectedPaymentOption ? state.selectedPaymentOption : getAvailabelPaymentSelection(state.selectedPayment);
 		selectedPaymentOption.term = state.term;
 		return {
 			...state,
@@ -224,7 +224,7 @@ export default (state = initialState, action) => {
 		};
 	}
 	case constants.PAY_TERM_CHANGE: {
-		const selectedPaymentOption = state.selectedPaymentOption ? state.selectedPaymentOption : state.selectedPayment.paymentItems[1];
+		const selectedPaymentOption = state.selectedPaymentOption ? state.selectedPaymentOption : getAvailabelPaymentSelection(state.selectedPayment);
 		selectedPaymentOption.term = action.payload.term;
 		return {
 			...state,

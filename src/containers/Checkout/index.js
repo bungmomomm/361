@@ -59,7 +59,8 @@ import {
 	changeInstallmentCCMonth,
 	changeInstallmentCCYear,
 	changeInstallmentCCCvv,
-	saveCC
+	saveCC,
+	getAvailabelPaymentSelection
 } from '@/state/Payment/actions';
 
 import { getRefreshToken } from '@/state/Auth/actions';
@@ -421,9 +422,13 @@ class Checkout extends Component {
 	}
 
 	onSelectCard(event) {
-		this.props.dispatch(selectCreditCard(event));
-		const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[1];
-		this.props.dispatch(applyBin(this.state.token, selectedPaymentOption.value, event, ''));
+		if (event) {
+			this.props.dispatch(selectCreditCard(event));
+			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
+			this.props.dispatch(applyBin(this.state.token, selectedPaymentOption.value, event, ''));
+		} else {
+			this.props.dispatch(selectCreditCard(false));
+		}
 	}
 
 	onGetListO2o(provinceId) {
@@ -624,7 +629,7 @@ class Checkout extends Component {
 
 	onTermChange(term) {
 		const { dispatch } = this.props;
-		this.props.payments.selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[1];
+		this.props.payments.selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 		dispatch(termChange(term));
 	}
 
@@ -678,7 +683,7 @@ class Checkout extends Component {
 		
 		if (event.valid) {
 			this.props.dispatch(changeCreditCardNumber(event.ccNumber));
-			const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[1];
+			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 			this.props.dispatch(applyBin(this.state.token, selectedPaymentOption.value, event, ''));
 		}
 	}
@@ -694,14 +699,16 @@ class Checkout extends Component {
 	}
 
 	onBankChange(bank) {
-		const { dispatch } = this.props;
-		const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[1];
-		dispatch(bankNameChange(this.state.token, bank, selectedPaymentOption));
+		if (bank.value !== null) { 
+			const { dispatch } = this.props;
+			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
+			dispatch(bankNameChange(this.state.token, bank, selectedPaymentOption));
+		}
 	}
 	onInstallmentCCNumberChange(event) {
 		if (event.valid) {
 			this.props.dispatch(changeInstallmentCCNumber(event.ccNumber));
-			const selectedPaymentOption = this.props.payments.selectedPayment.paymentItems[1];
+			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 			this.props.dispatch(applyBin(this.state.token, selectedPaymentOption.value, event, ''));
 		}
 	}

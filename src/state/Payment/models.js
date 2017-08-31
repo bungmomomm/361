@@ -72,13 +72,13 @@ const getListAvailablePaymentMethod = (response) => {
 				if (parseInt(paymentData.fg_default, 10) === 1) {
 					methodData.selected = true;
 				}
+				paymentData.cards.unshift({
+					label: '-- Pilih Kartu',
+					value: null,
+					info: '',
+					hidden: true
+				});
 				return paymentData;
-			});
-			methodData.payment_items.unshift({
-				label: '-- Pilih Kartu',
-				value: null,
-				info: '',
-				cards: []
 			});
 			break;
 		case paymentGroupName.INSTALLMENT:
@@ -115,6 +115,15 @@ const getListAvailablePaymentMethod = (response) => {
 					label: '-- Pilih Bank',
 					value: null,
 					info: '',
+					installment: [],
+					listCicilan: []
+				});
+
+				paymentData.cards.unshift({
+					label: '-- Pilih Kartu',
+					value: null,
+					info: '',
+					hidden: true
 				});
 				
 				if (parseInt(paymentData.fg_default, 10) === 1) {
@@ -122,12 +131,6 @@ const getListAvailablePaymentMethod = (response) => {
 				}
 
 				return paymentData;
-			});
-			methodData.payment_items.unshift({
-				label: '-- Pilih Kartu',
-				value: null,
-				info: '',
-				cards: []
 			});
 			break;
 		case paymentGroupName.BANK_TRANSFER: 
@@ -141,6 +144,51 @@ const getListAvailablePaymentMethod = (response) => {
 			});
 			methodData.payment_items.unshift({
 				label: '-- Pilih Bank',
+				value: null,
+				info: ''
+			});
+			break;
+		case paymentGroupName.CONVENIENCE_STORE:
+			methodData.payment_items = methodData.payment_items.map((payment, paymentIndex) => {
+				const paymentData = paymentMethodItem(payment);
+				if (parseInt(paymentData.fg_default, 10) === 1) {
+					methodData.selected = true;
+				}
+
+				return paymentData;
+			});
+			methodData.payment_items.unshift({
+				label: '-- Pilih Tempat pembayaran',
+				value: null,
+				info: ''
+			});
+			break;
+		case paymentGroupName.E_MONEY:
+			methodData.payment_items = methodData.payment_items.map((payment, paymentIndex) => {
+				const paymentData = paymentMethodItem(payment);
+				if (parseInt(paymentData.fg_default, 10) === 1) {
+					methodData.selected = true;
+				}
+
+				return paymentData;
+			});
+			methodData.payment_items.unshift({
+				label: '-- Pilih Tipe pembayaran',
+				value: null,
+				info: ''
+			});
+			break;
+		case paymentGroupName.INTERNET_BANKING:
+			methodData.payment_items = methodData.payment_items.map((payment, paymentIndex) => {
+				const paymentData = paymentMethodItem(payment);
+				if (parseInt(paymentData.fg_default, 10) === 1) {
+					methodData.selected = true;
+				}
+
+				return paymentData;
+			});
+			methodData.payment_items.unshift({
+				label: '-- Pilih Tipe pembayaran',
 				value: null,
 				info: ''
 			});

@@ -221,6 +221,17 @@ const InstallmentCCCvvChange = (cvv) => ({
 	}
 });
 
+const getAvailabelPaymentSelection = (selectedPayment) => {
+	let index = 0;
+	let selectedPaymentOption = selectedPayment.paymentItems[index];
+	while (selectedPaymentOption.hidden) {
+		index++;
+		selectedPaymentOption = selectedPayment.paymentItems[index];
+	}
+
+	return selectedPaymentOption;
+};
+
 // action
 const changePaymentOption = (selectedPaymentOption) => dispatch => new Promise((resolve, reject) => {
 	
@@ -236,7 +247,7 @@ const changePaymentMethod = (paymentMethod, data) => dispatch => {
 		const selectedPayment = data.payments[paymentMethod];
 		dispatch(paymentMethodChanged(selectedPayment));
 		if (selectedPayment.value === 'cod' || selectedPayment.value === 'gratis') {
-			const selectedPaymentOption = selectedPayment.paymentItems[0];
+			const selectedPaymentOption = getAvailabelPaymentSelection(selectedPayment);
 			dispatch(changePaymentOption(selectedPaymentOption));
 		} else {
 			dispatch(changePaymentOption(false));
@@ -511,5 +522,6 @@ export default {
 	saveCC,
 	payError,
 	pay,
-	applyBin
+	applyBin,
+	getAvailabelPaymentSelection
 };

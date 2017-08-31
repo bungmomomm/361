@@ -44,12 +44,6 @@ export default class Select extends Component {
 				emptyFilter: false,
 			});
 		}
-
-		if (nextProps.selectedLabel && this.state.selectedLabel !== nextProps.selectedLabel) {
-			this.setState({
-				selectedLabel: nextProps.selectedLabel
-			});
-		}
 	}
 
 // ----------------------------------------
