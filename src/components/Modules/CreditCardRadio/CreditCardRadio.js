@@ -21,11 +21,11 @@ class CreditCardRadio extends Component {
 	}
 
 	componentWillMount() {
-		const cc = this.props.content;
-		const ccNumber = () => {
-			return (!cc || !cc.length) ? cc.slice(0, 2) : null;
-		};
-		this.creditCardValidation(ccNumber);
+		// const cc = this.props.content;
+		// const ccNumber = () => {
+		// 	return (!cc || !cc.length) ? cc.slice(0, 2) : null;
+		// };
+		// this.creditCardValidation(ccNumber);
 	}
 
 	creditCardValidation(ccNumber) {
@@ -47,6 +47,7 @@ class CreditCardRadio extends Component {
 		onClick,
 		value,
 		disabled,
+		sprites,
 		content
 	}) {
 		const CreditCardRadioClass = cx({
@@ -75,9 +76,9 @@ class CreditCardRadio extends Component {
 				</span>
 				<div className={styles.blockList} />
 				{
-					renderIf(this.state.sprites)(
+					renderIf(sprites)(
 						<span className={styles.sprites}>
-							<Sprites name={this.state.sprites} />
+							<Sprites name={sprites} />
 						</span>
 					)
 				} 

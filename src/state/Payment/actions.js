@@ -167,10 +167,10 @@ const ovoNumberChange = (ovoNumber) => ({
 	}
 });
 
-const billingNumberChange = (billingNumber) => ({
+const billingNumberChange = (billingPhoneNumber) => ({
 	type: constants.PAY_CHANGE_BILLING_NUMBER,
 	payload: {
-		billingNumber
+		billingPhoneNumber
 	}
 });
 
@@ -221,6 +221,17 @@ const InstallmentCCCvvChange = (cvv) => ({
 	}
 });
 
+const getAvailabelPaymentSelection = (selectedPayment) => {
+	let index = 0;
+	let selectedPaymentOption = selectedPayment.paymentItems[index];
+	while (selectedPaymentOption.hidden) {
+		index++;
+		selectedPaymentOption = selectedPayment.paymentItems[index];
+	}
+
+	return selectedPaymentOption;
+};
+
 // action
 const changePaymentOption = (selectedPaymentOption) => dispatch => new Promise((resolve, reject) => {
 	
@@ -236,7 +247,7 @@ const changePaymentMethod = (paymentMethod, data) => dispatch => {
 		const selectedPayment = data.payments[paymentMethod];
 		dispatch(paymentMethodChanged(selectedPayment));
 		if (selectedPayment.value === 'cod' || selectedPayment.value === 'gratis') {
-			const selectedPaymentOption = selectedPayment.paymentItems[0];
+			const selectedPaymentOption = getAvailabelPaymentSelection(selectedPayment);
 			dispatch(changePaymentOption(selectedPaymentOption));
 		} else {
 			dispatch(changePaymentOption(false));
@@ -359,8 +370,8 @@ const changeOvoNumber = (ovoNumber) => dispatch => {
 	dispatch(ovoNumberChange(ovoNumber));
 };
 
-const changeBillingNumber = (billingNumber) => dispatch => {
-	dispatch(billingNumberChange(billingNumber));
+const changeBillingNumber = (billingPhoneNumber) => dispatch => {
+	dispatch(billingNumberChange(billingPhoneNumber));
 };
 
 const saveCC = (event) => dispatch => {
@@ -431,7 +442,7 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 				// console.log(sprintBody);
 				request({
 					token, 
-					path: 'payments/sprintinstallmentnew',
+					path: 'payments/websprintinstallment',
 					method: 'POST',
 					body: {
 						data: {
@@ -511,5 +522,6 @@ export default {
 	saveCC,
 	payError,
 	pay,
-	applyBin
+	applyBin,
+	getAvailabelPaymentSelection
 };

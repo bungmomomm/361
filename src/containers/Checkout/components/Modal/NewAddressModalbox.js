@@ -156,17 +156,20 @@ export default class NewAddressModalbox extends Component {
 	}
 
 	onChangePoint() {
+		
 		const kecamatan = this.state.formData.kecamatan;
 		const PolygonResult = this.constructor.getPolygonData(kecamatan.toLowerCase());
 		const gosendData = this.state.gosendData;
 		const center = PolygonResult.center;
 		const locationCoords = PolygonResult.location_coords;
+		
 		this.setState({
 			gosendData: {
 				...gosendData,
 				center,
 				location_coords: locationCoords,
-				stepPoint: pointStep.pinPoint
+				stepPoint: pointStep.pinPoint,
+				enableGosend: false
 			}
 		});
 	}
@@ -238,6 +241,7 @@ export default class NewAddressModalbox extends Component {
 			gosendData,
 			isCustomerData
 		} = this.state;
+		console.log(gosendData);
 		return (
 			<Modal size='medium' loading={this.state.loading} shown={this.props.shown} onClose={this.onClose} >
 				<Modal.Header>
@@ -359,7 +363,7 @@ export default class NewAddressModalbox extends Component {
 							)
 						}
 						{
-							renderIf(gosendData.stepPoint === pointStep.showPointAddress || gosendData.stepPoint === pointStep.pinPoined)(
+							renderIf(this.state.enableGosend && (gosendData.stepPoint === pointStep.showPointAddress || gosendData.stepPoint === pointStep.pinPoined))(
 								<div>
 									<Segment row>
 										<Level padded>
