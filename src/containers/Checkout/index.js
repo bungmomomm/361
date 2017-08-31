@@ -330,7 +330,6 @@ class Checkout extends Component {
 
 	onChangeAddress(address, flagAdd) {
 		const { dispatch } = this.props;
-		console.log(this.props);
 		dispatch(getCityProvince(this.state.token));
 		let formDataAddress = {
 			isEdit: false
@@ -1086,11 +1085,10 @@ const mapStateToProps = (state) => {
 	if (state.payments.billingPhoneNumber === null) {
 		state.payments.billingPhoneNumber = billingAddress ? billingAddress.attributes.phone : null;
 	}
-	state.payments.ovoInfo = getOvoInfo();
+	state.payments.ovoInfo = getOvoInfo(state);
 	if (state.payments.ovoPhoneNumber === null) {
 		state.payments.ovoPhoneNumber = state.payments.ovoInfo ? state.payments.ovoInfo.ovoId : null;
 	}
-	
 	return {
 		billingAddress: getBillingAddress(state),
 		soNumber: state.cart.soNumber,

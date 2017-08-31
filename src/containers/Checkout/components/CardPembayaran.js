@@ -351,7 +351,7 @@ export default class CardPembayaran extends Component {
 			} 
 		}
 
-		const ovoReadOnly = (this.props.payments.ovoInfo && this.props.payments.ovoInfo.ovoFlag === 1);
+		const ovoReadOnly = (this.props.payments.ovoInfo && parseInt(this.props.payments.ovoInfo.ovoFlag, 10) === 1);
 		const disabledPayment = ((this.props.payments.selectedPaymentOption === null || !this.props.payments.selectedPaymentOption) || (this.props.payments.billingPhoneNumber === null || this.props.payments.billingPhoneNumber === ''));
 		return (
 			<Card stretch loading={this.props.loading} >
@@ -454,7 +454,7 @@ export default class CardPembayaran extends Component {
 							<Input label='SMS Konfirmasi pembayaran' type='number' value={this.props.payments.billingPhoneNumber ? this.props.payments.billingPhoneNumber : ''} placeholder='No Telp Penagihan' onChange={(event) => this.props.onBillingNumberChange(event)} />
 						</InputGroup>
 						<InputGroup>
-							<Input value={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' type='number' placeholder='Masukkan nomor Hp yang terdaftar di OVO' onChange={(event) => this.props.onOvoNumberChange(event)} readonly={ovoReadOnly} />
+							<Input value={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' type='number' placeholder='Masukkan nomor Hp yang terdaftar di OVO' onChange={(event) => this.props.onOvoNumberChange(event)} readonly={ovoReadOnly} disabled={ovoReadOnly} />
 						</InputGroup>
 						<div className={styles.checkOutAction}>
 							<Checkbox checked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />

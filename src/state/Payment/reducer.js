@@ -10,6 +10,7 @@ const initialState = {
 	selectedPaymentOption: null,
 	saveCC: true,
 	billingPhoneNumber: null,
+	ovoPhoneNumber: null,
 	selectedPaymentLabel: '-- Pilih Metode Lain',
 	paymentMethods: {
 		methods: [],
@@ -235,7 +236,7 @@ export default (state = initialState, action) => {
 	case constants.PAY_CHANGE_OVO_NUMBER: {
 		return {
 			...state,
-			ovoNumber: action.payload.ovoNumber
+			ovoPhoneNumber: action.payload.ovoPhoneNumber
 		};
 	}
 	case constants.PAY_CHANGE_BILLING_NUMBER: {

@@ -163,10 +163,10 @@ const applyBinReceived = (data) => ({
 	}
 });
 
-const ovoNumberChange = (ovoNumber) => ({
+const ovoNumberChange = (ovoPhoneNumber) => ({
 	type: constants.PAY_CHANGE_OVO_NUMBER,
 	payload: {
-		ovoNumber
+		ovoPhoneNumber
 	}
 });
 
@@ -369,8 +369,8 @@ const termChange = (term) => dispatch => new Promise((resolve, reject) => {
 	resolve(term);
 });
 
-const changeOvoNumber = (ovoNumber) => dispatch => {
-	dispatch(ovoNumberChange(ovoNumber));
+const changeOvoNumber = (ovoPhoneNumber) => dispatch => {
+	dispatch(ovoNumberChange(ovoPhoneNumber));
 };
 
 const changeBillingNumber = (billingPhoneNumber) => dispatch => {
