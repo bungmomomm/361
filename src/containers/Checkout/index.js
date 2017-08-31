@@ -82,9 +82,6 @@ class Checkout extends Component {
 			enablePesananPengiriman: false,
 			enablePembayaran: false,
 			enableNewAddress: false,
-			token: this.props.cookies.get('user.token'),
-			refreshToken: this.props.cookies.get('user.rf.token'),
-			expToken: this.props.cookies.get('user.exp'),
 			addresses: {},
 			soNumber: null,
 			cart: this.props.cart,
@@ -170,20 +167,15 @@ class Checkout extends Component {
 	componentWillMount() {
 		const { dispatch } = this.props;
 		
-		if (this.state.expToken < new Date().getTime()) {
+		if (this.props.cookies.get('user.exp') < new Date().getTime()) {
 			dispatch(getRefreshToken({
-				userToken: this.state.token,
-				userRFToken: this.state.refreshToken
+				userToken: this.props.cookies.get('user.token'),
+				userRFToken: this.props.cookies.get('user.rf.token')
 			})).then((newToken) => {
 				this.props.cookies.set('user.exp', newToken.expToken);
 				this.props.cookies.set('user.rf.token', newToken.userRFToken);
 				this.props.cookies.set('user.token', newToken.userToken);
 
-				this.setState({
-					token: newToken.userToken,
-					refreshToken: newToken.userRFToken,
-					expToken: newToken.expToken,
-				});
 				this.onReload(dispatch);
 			});
 		} else {
@@ -242,7 +234,7 @@ class Checkout extends Component {
 		// const { dispatch } = this.props;
 		// dispatch(addCoupon('test'));
 		// const { dispatch } = this.props;
-		// dispatch(getAddresses(this.state.token));
+		// dispatch(getAddresses(this.props.cookies.get('user.token')));
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -273,30 +265,30 @@ class Checkout extends Component {
 	}
 
 	onReload(dispatch) {
-		dispatch(getAddresses(this.state.token)).then(defaultAddress => {
+		dispatch(getAddresses(this.props.cookies.get('user.token'))).then(defaultAddress => {
 			if (typeof defaultAddress.type !== 'undefined') {
 				this.setState({
 					selectedAddress: defaultAddress,
 					enablePesananPengiriman: true, 
 					enablePembayaran: true
 				});
-				dispatch(getPlaceOrderCart(this.state.token, defaultAddress));
+				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress));
 			}
 		});
-		dispatch(getCart(this.state.token));
-		dispatch(getAvailablePaymentMethod(this.state.token));
+		dispatch(getCart(this.props.cookies.get('user.token')));
+		dispatch(getAvailablePaymentMethod(this.props.cookies.get('user.token')));
 	}
 
 	onAddCoupon(coupon) {
 		const { dispatch, soNumber } = this.props;
 		if (coupon) {
-			dispatch(addCoupon(this.state.token, soNumber, coupon));
+			dispatch(addCoupon(this.props.cookies.get('user.token'), soNumber, coupon));
 		}
 	}
 
 	onRemoveCoupon(event) {
 		const { dispatch, soNumber } = this.props;
-		dispatch(removeCoupon(this.state.token, soNumber));
+		dispatch(removeCoupon(this.props.cookies.get('user.token'), soNumber));
 	}
 
 	onResetCoupon(event) {
@@ -316,7 +308,7 @@ class Checkout extends Component {
 			enablePesananPengiriman: true,
 			enablePembayaran: true,
 		});
-		// dispatch(getAddresses(this.state.token)).then(defaultAddress => {
+		// dispatch(getAddresses(this.props.cookies.get('user.token'))).then(defaultAddress => {
 		// 	if (typeof defaultAddress.type !== 'undefined') {
 		// 		this.setState({
 		// 			selectedAddress: defaultAddress,
@@ -325,13 +317,13 @@ class Checkout extends Component {
 		// 		});
 		// 	}
 		// });
-		return dispatch(getPlaceOrderCart(this.state.token, address, billing, updatePaymentMethodList));
+		return dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), address, billing, updatePaymentMethodList));
 	}
 
 	onChangeAddress(address, flagAdd) {
 		const { dispatch } = this.props;
 		console.log(this.props);
-		dispatch(getCityProvince(this.state.token));
+		dispatch(getCityProvince(this.props.cookies.get('user.token')));
 		let formDataAddress = {
 			isEdit: false
 		};
@@ -366,9 +358,9 @@ class Checkout extends Component {
 	onDeleteCart(cart) {
 		const { dispatch } = this.props;
 		if (this.props.soNumber) {
-			dispatch(updateQtyCart(this.state.token, 0, cart.data.id, this.props));
+			dispatch(updateQtyCart(this.props.cookies.get('user.token'), 0, cart.data.id, this.props));
 		} else {
-			dispatch(deleteCart(this.state.token, cart.data.id, this.props));
+			dispatch(deleteCart(this.props.cookies.get('user.token'), cart.data.id, this.props));
 		}		
 
 		this.setState({
@@ -381,9 +373,9 @@ class Checkout extends Component {
 	onUpdateQty(qty, id) {
 		const { dispatch } = this.props;
 		if (this.props.soNumber) {
-			dispatch(updateQtyCart(this.state.token, qty, id, this.props));
+			dispatch(updateQtyCart(this.props.cookies.get('user.token'), qty, id, this.props));
 		} else {
-			dispatch(updateCartWithoutSO(this.state.token, qty, id));
+			dispatch(updateCartWithoutSO(this.props.cookies.get('user.token'), qty, id));
 		}
 
 		this.setState({
@@ -413,7 +405,7 @@ class Checkout extends Component {
 				break;
 			}
 			dispatch(changePaymentOption(selectedPaymentOption));
-			dispatch(applyBin(this.state.token, selectedPaymentOption.value, cardNumber, bankName));
+			dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, cardNumber, bankName));
 		}
 	}
 
@@ -425,7 +417,7 @@ class Checkout extends Component {
 		if (event) {
 			this.props.dispatch(selectCreditCard(event));
 			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
-			this.props.dispatch(applyBin(this.state.token, selectedPaymentOption.value, event, ''));
+			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event, ''));
 		} else {
 			this.props.dispatch(selectCreditCard(false));
 		}
@@ -433,12 +425,12 @@ class Checkout extends Component {
 
 	onGetListO2o(provinceId) {
 		const { dispatch } = this.props;
-		dispatch(getO2OList(this.state.token, provinceId));
+		dispatch(getO2OList(this.props.cookies.get('user.token'), provinceId));
 	}
 	
 	onGetO2oProvinces() {
 		const { dispatch } = this.props;
-		dispatch(getO2OProvinces(this.state.token));
+		dispatch(getO2OProvinces(this.props.cookies.get('user.token')));
 	}
 
 	onOpenModalO2o() {
@@ -467,7 +459,7 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 		dispatch(
 			pay(
-				this.state.token,
+				this.props.cookies.get('user.token'),
 				this.props.soNumber,
 				this.props.payments.selectedPaymentOption,
 				{
@@ -532,7 +524,7 @@ class Checkout extends Component {
 				dispatch(vtModalBoxOpen(false));
 				dispatch(
 					pay(
-						this.state.token, 
+						this.props.cookies.get('user.token'), 
 						this.props.soNumber, 
 						this.props.payments.selectedPaymentOption,
 						{
@@ -571,7 +563,7 @@ class Checkout extends Component {
 				dispatch(vtModalBoxOpen(false));
 				dispatch(
 					pay(
-						this.state.token, 
+						this.props.cookies.get('user.token'), 
 						this.props.soNumber, 
 						this.props.payments.selectedPaymentOption,
 						{
@@ -594,7 +586,7 @@ class Checkout extends Component {
 		};
 		dispatch(
 			pay(
-				this.state.token,
+				this.props.cookies.get('user.token'),
 				this.props.soNumber,
 				this.props.payments.selectedPaymentOption,
 				{
@@ -656,7 +648,7 @@ class Checkout extends Component {
 				}
 				dispatch(
 					pay(
-						this.state.token, 
+						this.props.cookies.get('user.token'), 
 						this.props.soNumber, 
 						this.props.payments.selectedPaymentOption,
 						{
@@ -674,7 +666,7 @@ class Checkout extends Component {
 	onSubmitAddress(formData) {
 		const { dispatch } = this.props;
 		console.log(formData);
-		dispatch(saveAddress(this.state.token, formData));
+		dispatch(saveAddress(this.props.cookies.get('user.token'), formData));
 		this.setState({
 			enableNewAddress: false
 		});
@@ -684,7 +676,7 @@ class Checkout extends Component {
 		if (event.valid) {
 			this.props.dispatch(changeCreditCardNumber(event.ccNumber));
 			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
-			this.props.dispatch(applyBin(this.state.token, selectedPaymentOption.value, event, ''));
+			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event, ''));
 		}
 	}
 
@@ -702,14 +694,14 @@ class Checkout extends Component {
 		if (bank.value !== null) { 
 			const { dispatch } = this.props;
 			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
-			dispatch(bankNameChange(this.state.token, bank, selectedPaymentOption));
+			dispatch(bankNameChange(this.props.cookies.get('user.token'), bank, selectedPaymentOption));
 		}
 	}
 	onInstallmentCCNumberChange(event) {
 		if (event.valid) {
 			this.props.dispatch(changeInstallmentCCNumber(event.ccNumber));
 			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
-			this.props.dispatch(applyBin(this.state.token, selectedPaymentOption.value, event, ''));
+			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event, ''));
 		}
 	}
 	onInstallmentCCMonthChange(monthData) {
@@ -736,7 +728,7 @@ class Checkout extends Component {
 
 	onSubmitPhoneNumber(phone) {
 		const { dispatch } = this.props;
-		dispatch(resendOtp(this.state.token, phone));
+		dispatch(resendOtp(this.props.cookies.get('user.token'), phone));
 		this.setState({
 			phoneNumber: phone
 		});
@@ -749,7 +741,7 @@ class Checkout extends Component {
 
 	onSubmitOtp(otp) {
 		const { dispatch } = this.props;
-		dispatch(verifyOtp(this.state.token, this.state.phoneNumber, otp, this.props));
+		dispatch(verifyOtp(this.props.cookies.get('user.token'), this.state.phoneNumber, otp, this.props));
 	}
 
 	onVerificationClose(event) {
@@ -760,7 +752,7 @@ class Checkout extends Component {
 
 	onResendOtp(event) {
 		const { dispatch } = this.props;
-		dispatch(resendOtp(this.state.token, this.state.phoneNumber));
+		dispatch(resendOtp(this.props.cookies.get('user.token'), this.state.phoneNumber));
 	}
 
 	onVerity(response) {
@@ -769,7 +761,7 @@ class Checkout extends Component {
 
 	getDistricts(cityAndProvince) {
 		const { dispatch } = this.props;
-		dispatch(getDistrict(this.state.token, cityAndProvince));
+		dispatch(getDistrict(this.props.cookies.get('user.token'), cityAndProvince));
 	}
 	
 	setDropship(checked, dropshipName = 'dropship_name', value = '', onClick = false) {
@@ -883,7 +875,7 @@ class Checkout extends Component {
 
 	shippingMethodGosend(methodId, storeId) {
 		const { dispatch } = this.props;
-		dispatch(updateGosend(this.state.token, storeId, methodId, this.props));
+		dispatch(updateGosend(this.props.cookies.get('user.token'), storeId, methodId, this.props));
 	}
 
 	render() {
