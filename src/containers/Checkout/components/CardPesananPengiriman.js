@@ -17,6 +17,7 @@ export default class CardPesananPengiriman extends Component {
 		this.onDeleteCart = this.onDeleteCart.bind(this);
 		this.onUpdateQty = this.onUpdateQty.bind(this);
 		this.checkGosendMethod = this.checkGosendMethod.bind(this);
+		this.onPinPointAddress = this.onPinPointAddress.bind(this);
 	}
 
 	onDeleteCart(cart) {
@@ -25,6 +26,10 @@ export default class CardPesananPengiriman extends Component {
 
 	onUpdateQty(qty, id) {
 		this.props.onUpdateQty(qty, id);
+	}
+	
+	onPinPointAddress() {
+		this.props.onChangeAddress(this.props.selectedAddress, 'edit');
 	}
 
 	checkGosendMethod(checked, value) {
@@ -50,7 +55,7 @@ export default class CardPesananPengiriman extends Component {
 										<CheckoutProduct showBtnDelete={this.props.cart.length < 2 && storeData.store.products.length < 2 ? 0 : 1} restrictO2o={this.props.restrictO2o && !storeData.store.shipping.o2oSupported} key={index} data={product} onDeleteCart={this.onDeleteCart} onUpdateQty={this.onUpdateQty} />
 									))
 								}
-								<CheckoutResult addressTabActive={this.props.addressTabActive} key={i} shipping={storeData.store.shipping} price={storeData.store.price} checkGosendMethod={this.checkGosendMethod} store={storeData.store.id} selectedAddress={this.props.selectedAddress} />
+								<CheckoutResult onChangeAddress={this.onPinPointAddress} gosendInfo={this.props.gosendInfo} addressTabActive={this.props.addressTabActive} key={i} shipping={storeData.store.shipping} price={storeData.store.price} checkGosendMethod={this.checkGosendMethod} store={storeData.store.id} selectedAddress={this.props.selectedAddress} />
 							</StoreBox>
 						))
 					}
