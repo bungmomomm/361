@@ -16,9 +16,8 @@ export default class Select extends Component {
 		this.props = props;
 		this.state = {
 			options: [],
-			selectedLabel: this.props.selectedLabel || 'Please Select...',
 			showOption: false,
-			selected: this.props.selected || {},
+			selected: {},
 			emptyFilter: false,
 		};
 		this.getFilter = this.getFilter.bind(this);
@@ -27,12 +26,6 @@ export default class Select extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (this.props.selected !== nextProps.selected) {
-			this.setState({
-				selected: nextProps.selected,
-				selectedLabel: nextProps.selectedLabel
-			});
-		}
 		if (this.state.showOption !== nextProps.shown) {
 			this.setState({
 				showOption: nextProps.shown
@@ -84,11 +77,10 @@ export default class Select extends Component {
 	}
 
 	setSelectOption(selected) {
-		this.setOptions();
 		this.setState({
-			selected,
-			selectedLabel: selected.label
+			selected
 		});
+		this.setOptions();
 		if (this.props.onChange) {
 			const withName = {
 				name: this.props.name,
@@ -97,6 +89,18 @@ export default class Select extends Component {
 			};
 			this.props.onChange(withName);
 		}
+	}
+
+	getSelectedOption(options) {
+		console.log(this.state.selected);
+		// const selected = options.map((option) => {
+		// 	console.log(this.state.selected);
+		// 	return this.state.selected ? option.label : null;
+		// }).filter((option) => {
+		// 	return option;
+		// });
+		// const defaultSelected = options[0] ? options[0].label : 'Pilih...';
+		// return selected.length > 0 ? selected[0] : defaultSelected;
 	}
 
 // ----------------------------------------
@@ -116,7 +120,6 @@ export default class Select extends Component {
 		top,
 		label,
 		filter,
-		selected,
 		message,
 		addButton
 	}) {
@@ -147,18 +150,7 @@ export default class Select extends Component {
 			)
 		);
 
-		const ImageElement = (
-			renderIf(this.state.selected.imagePath)(
-				<img src={this.state.selected.imagePath} alt='logo' />
-			)	
-		);
-		
-		const SpritesElement = (
-			renderIf(this.state.selected.sprites)(
-				<Sprites name={this.state.selected.sprites} />
-			)
-		);
-
+	
 		const FilterElement = (
 			renderIf(filter)(
 				<div className={styles.quickFilter}>
@@ -169,6 +161,18 @@ export default class Select extends Component {
 						placeholder='Quick Search'
 					/>
 				</div>
+			)
+		);
+
+		const ImageElement = (
+			renderIf(this.state.selected.imagePath)(
+				<img src={this.state.selected.imagePath} alt='logo' />
+			)	
+		);
+		
+		const SpritesElement = (
+			renderIf(this.state.selected.sprites)(
+				<Sprites name={this.state.selected.sprites} />
 			)
 		);
 
@@ -204,7 +208,7 @@ export default class Select extends Component {
 					>	
 						<span className={styles.flex}>
 							<span className={styles.text}>
-								{this.state.selectedLabel} 
+								{this.state.selected.label ? this.state.selected.label : this.props.options[0].label}
 								{ImageElement} 
 								{SpritesElement}
 							</span>
@@ -220,9 +224,7 @@ export default class Select extends Component {
 										<button 
 											key={i}
 											type='button'
-											className={
-												option.value !== this.state.selected.value ? null : styles.selected
-											} 
+											className={this.state.selected.value === option.value ? styles.selected : null} 
 											onClick={() => this.setSelectOption(option)} 
 											disabled={!!option.disabled}
 										>
@@ -269,8 +271,6 @@ export default class Select extends Component {
 };
 
 Select.propTypes = {
-	/** Default select text. */
-	selectedLabel: PropTypes.string,
 	/** List Data. */
 	options: PropTypes.array,
 	/** Attribute name. */
