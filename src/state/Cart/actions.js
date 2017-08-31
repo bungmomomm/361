@@ -85,10 +85,7 @@ const getCart = token => dispatch => {
 
 const getPlaceOrderCart = (token, address, billing = false, updatePaymentMethodList = true) => dispatch => new Promise((resolve, reject) => {
 	dispatch(placeOrderRequest(token, address));
-<<<<<<< Updated upstream
-=======
 	
->>>>>>> Stashed changes
 	const data = setPayloadPlaceOrder(address, billing);
 	console.log('placeOrder', data);
 	const req = {
