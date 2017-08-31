@@ -6,7 +6,9 @@ import {
 	CRT_PLACE_ORDER,
     // CRT_UPDATE_QTY,
     CRT_DELETE_CART,
-    // CRT_GO_SEND_ELIGIBLE
+	// CRT_GO_SEND_ELIGIBLE
+	O2O_SELECTION,
+	O2O_SELECTED
 } from './constants';
 
 import { 
@@ -20,6 +22,17 @@ const deleteRequest = (productId) => ({
 	status: 0,
 	payload: {
 		productId
+	}
+});
+
+const o2oSelection = () => ({
+	type: O2O_SELECTION
+});
+
+const o2oSelected = (cart) => ({
+	type: O2O_SELECTED,
+	payload: {
+		cart
 	}
 });
 
@@ -59,6 +72,20 @@ const cartReceived = (cart, isPickupable = 0, totalItems = 0, gosendInfo = null,
 		ovoInfo
 	}
 });
+
+const o2oChoise = cart => dispatch => {
+	
+	if (cart.length > 0) {
+		dispatch(o2oSelection());
+		cart.forEach((value, index) => {
+			cart[index].store.price.final_delivery_cost = 0;
+		});
+		console.log(cart);
+		dispatch(o2oSelected(cart));
+	}
+	
+
+};
 
 const getCart = token => dispatch => {
 	dispatch(gettingCart(token));
@@ -256,4 +283,5 @@ export default {
 	updateQtyCart,
 	updateCartWithoutSO,
 	updateGosend,
+	o2oChoise
 };

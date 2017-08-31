@@ -26,15 +26,15 @@ import CardPengiriman from './components/CardPengiriman';
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { addCoupon, removeCoupon, resetCoupon, resendOtp, verifyOtp } from '@/state/Coupon/actions';
-import { 
-	getAddresses, 
-	getO2OList, 
-	getO2OProvinces, 
-	getCityProvince, 
-	getDistrict, 
-	saveAddress 
+import {
+	getAddresses,
+	getO2OList,
+	getO2OProvinces,
+	getCityProvince,
+	getDistrict,
+	saveAddress
 } from '@/state/Adresses/actions';
-import { getPlaceOrderCart, getCart, updateQtyCart, updateCartWithoutSO, deleteCart, updateGosend } from '@/state/Cart/actions';
+import { getPlaceOrderCart, getCart, updateQtyCart, updateCartWithoutSO, deleteCart, updateGosend, o2oChoise } from '@/state/Cart/actions';
 import {
 	changePaymentMethod,
 	changePaymentOption,
@@ -65,7 +65,7 @@ import {
 
 import { getRefreshToken } from '@/state/Auth/actions';
 
-import { 
+import {
 	paymentMethodName
 } from '@/state/Payment/constants';
 
@@ -100,7 +100,7 @@ class Checkout extends Component {
 			errorDropship: null,
 			isValidDropshipper: true,
 			formDataAddress: {},
-			cityProv: this.props.cityProv, 
+			cityProv: this.props.cityProv,
 			district: this.props.district,
 			restrictO2o: false,
 			loadingUpdateCart: false,
@@ -112,7 +112,7 @@ class Checkout extends Component {
 			phoneNumber: null,
 			notifInfo: true
 		};
-		
+
 		this.onAddCoupon = this.onAddCoupon.bind(this);
 		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
 		this.onResetCoupon = this.onResetCoupon.bind(this);
@@ -167,7 +167,7 @@ class Checkout extends Component {
 
 	componentWillMount() {
 		const { dispatch } = this.props;
-		
+
 		if (this.props.cookies.get('user.exp') < new Date().getTime()) {
 			dispatch(getRefreshToken({
 				userToken: this.props.cookies.get('user.token'),
@@ -180,15 +180,15 @@ class Checkout extends Component {
 				this.onReload(dispatch);
 			}).catch((error) => {
 				this.setState({
-					notifInfo: false, 
+					notifInfo: false,
 					notifMessage: error.response.data.errorMessage
 				});
 			});
 		} else {
 			this.onReload(dispatch);
 		}
-		
-		
+
+
 		const t = new Date();
 		const thisYear = t.getFullYear();
 		let year = 0;
@@ -206,14 +206,14 @@ class Checkout extends Component {
 			event: 'checkout',
 			userID: '10c53c28efe87fe0c27262ba36f11d5d',
 			emailaddress: '8b5fb124f94a8f1185af1794a9524703',
-			ecommerce: {  
-				checkout: {  
-					actionField: {  
-						step: 1, 
+			ecommerce: {
+				checkout: {
+					actionField: {
+						step: 1,
 						option: 'Login Email'
 					},
 					products: [
-						{  
+						{
 							id: '839783',
 							name: 'Samsung B109E Keystone 3 - Hitam',
 							price: '270000',
@@ -234,7 +234,7 @@ class Checkout extends Component {
 				}
 			}
 		});
-	} 
+	}
 
 	componentDidMount() {
 		// const { dispatch } = this.props;
@@ -275,7 +275,7 @@ class Checkout extends Component {
 			if (typeof defaultAddress.type !== 'undefined') {
 				this.setState({
 					selectedAddress: defaultAddress,
-					enablePesananPengiriman: true, 
+					enablePesananPengiriman: true,
 					enablePembayaran: true
 				});
 				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress)).then(() => {
@@ -284,8 +284,9 @@ class Checkout extends Component {
 					});
 				}).catch((error) => {
 					this.setState({
-						notifInfo: true, 
-						notifMessage: error.response.data.errorMessage
+						notifInfo: true,
+						notifMessage: error.response.data.errorMessage,
+						enablePembayaran: false
 					});
 				});
 			}
@@ -330,7 +331,7 @@ class Checkout extends Component {
 			});
 		}).catch((error) => {
 			this.setState({
-				notifInfo: true, 
+				notifInfo: true,
 				notifMessage: error.response.data.errorMessage
 			});
 		});
@@ -338,17 +339,17 @@ class Checkout extends Component {
 
 	onChangeAddress(address, flagAdd) {
 		const { dispatch } = this.props;
-		
+
 		if (typeof this.props.cityProv === 'undefined') {
-			
+
 			dispatch(getCityProvince(this.props.cookies.get('user.token')));
 		}
-		
+
 		let formDataAddress = {
 			isEdit: false
 		};
 		if (flagAdd !== 'add') {
-			
+
 			const editAddress = address.attributes;
 			formDataAddress = {
 				id: address.id,
@@ -367,7 +368,7 @@ class Checkout extends Component {
 			};
 			this.getDistricts(`${editAddress.city}, ${editAddress.province}`);
 		}
-		
+
 		this.setState({
 			enableNewAddress: true,
 			loadingCardPengiriman: true,
@@ -381,7 +382,7 @@ class Checkout extends Component {
 			dispatch(updateQtyCart(this.props.cookies.get('user.token'), 0, cart.data.id, this.props));
 		} else {
 			dispatch(deleteCart(this.props.cookies.get('user.token'), cart.data.id, this.props));
-		}		
+		}
 
 		this.setState({
 			cart: this.props.cart,
@@ -411,7 +412,7 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 		const option = event.value;
 		if (option) {
-			
+
 			const selectedPaymentOption = this.props.payments.paymentMethods.payments[paymentMethod.id].paymentItems.filter((item) => parseInt(item.value, 10) === parseInt(option, 10))[0];
 			let cardNumber = '';
 			let bankName = '';
@@ -447,7 +448,7 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 		dispatch(getO2OList(this.props.cookies.get('user.token'), provinceId));
 	}
-	
+
 	onGetO2oProvinces() {
 		const { dispatch } = this.props;
 		dispatch(getO2OProvinces(this.props.cookies.get('user.token')));
@@ -533,7 +534,7 @@ class Checkout extends Component {
 
 		const card = () => (cardDetail);
 
-		
+
 		const onVtCreditCardCallback = (response) => {
 			if (response.redirect_url) {
 				if (response.bank) {
@@ -544,8 +545,8 @@ class Checkout extends Component {
 				dispatch(vtModalBoxOpen(false));
 				dispatch(
 					pay(
-						this.props.cookies.get('user.token'), 
-						this.props.soNumber, 
+						this.props.cookies.get('user.token'),
+						this.props.soNumber,
 						this.props.payments.selectedPaymentOption,
 						{
 							amount: this.props.payments.total,
@@ -569,7 +570,7 @@ class Checkout extends Component {
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
 			}
 		};
-		
+
 		const onVtInstallmentCallback = (response) => {
 			if (response.redirect_url) {
 				// const payment = {
@@ -583,8 +584,8 @@ class Checkout extends Component {
 				dispatch(vtModalBoxOpen(false));
 				dispatch(
 					pay(
-						this.props.cookies.get('user.token'), 
-						this.props.soNumber, 
+						this.props.cookies.get('user.token'),
+						this.props.soNumber,
 						this.props.payments.selectedPaymentOption,
 						{
 							card: {
@@ -602,7 +603,7 @@ class Checkout extends Component {
 			} else {
 				dispatch(vtModalBoxOpen(false));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
-			}	
+			}
 		};
 		dispatch(
 			pay(
@@ -648,7 +649,7 @@ class Checkout extends Component {
 	onDoPayment() {
 		const { dispatch } = this.props;
 		if (typeof this.props.payments.paymentMethod !== 'undefined') {
-			let mode = 'complete';		
+			let mode = 'complete';
 			switch (this.props.payments.paymentMethod) {
 			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 			case paymentMethodName.COMMERCE_VERITRANS:
@@ -667,17 +668,17 @@ class Checkout extends Component {
 					}
 				}
 				dispatch(
-					pay(
-						this.props.cookies.get('user.token'), 
-						this.props.soNumber, 
-						this.props.payments.selectedPaymentOption,
-						{
-							ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
-							billingPhoneNumber: this.props.payments.billingPhoneNumber
-						},
-						mode
-					)
-				);
+						pay(
+							this.props.cookies.get('user.token'),
+							this.props.soNumber,
+							this.props.payments.selectedPaymentOption,
+							{
+								ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
+								billingPhoneNumber: this.props.payments.billingPhoneNumber
+							},
+							mode
+						)
+					);
 				break;
 			}
 		}
@@ -685,7 +686,7 @@ class Checkout extends Component {
 
 	onSubmitAddress(formData) {
 		const { dispatch } = this.props;
-		
+
 		dispatch(saveAddress(this.props.cookies.get('user.token'), formData));
 		this.setState({
 			enableNewAddress: false
@@ -710,7 +711,7 @@ class Checkout extends Component {
 	}
 
 	onBankChange(bank) {
-		if (bank.value !== null) { 
+		if (bank.value !== null) {
 			const { dispatch } = this.props;
 			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 			dispatch(bankNameChange(this.props.cookies.get('user.token'), bank, selectedPaymentOption));
@@ -741,7 +742,7 @@ class Checkout extends Component {
 	onCloseErrorBox() {
 		this.props.dispatch(paymentError(false));
 	}
-	
+
 	onCloseSuccessBox() {
 		this.props.dispatch(paymentSuccess(false));
 	}
@@ -783,7 +784,7 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 		dispatch(getDistrict(this.props.cookies.get('user.token'), cityAndProvince));
 	}
-	
+
 	setDropship(checked, dropshipName = 'dropship_name', value = '', onClick = false) {
 		let formDropshipper = this.state.formDropshipper;
 		if (dropshipName) {
@@ -817,19 +818,19 @@ class Checkout extends Component {
 				formDropshipper = this.state.formDropshipper;
 			}
 			this.validator.validateAll(formDropshipper)
-			.then(success => {
-				if (success) {
-					this.setState({
-						isValidDropshipper: field !== 'all' ? this.state.isValidDropshipper : true
-					});
-				} else {
-					const { errorBag } = this.validator;
-					this.setState({
-						isValidDropshipper: false,
-						errorDropship: errorBag
-					});
-				}
-			});
+				.then(success => {
+					if (success) {
+						this.setState({
+							isValidDropshipper: field !== 'all' ? this.state.isValidDropshipper : true
+						});
+					} else {
+						const { errorBag } = this.validator;
+						this.setState({
+							isValidDropshipper: false,
+							errorDropship: errorBag
+						});
+					}
+				});
 		} else {
 			this.setState({
 				isValidDropshipper: true
@@ -855,8 +856,26 @@ class Checkout extends Component {
 		}
 	}
 
-	activeShippingTab(active) {
-		if ((!this.props.isPickupable || this.props.isPickupable === '0') && !active) {
+	activeShippingTab(addressTabActive) {
+		const { dispatch } = this.props;
+		if (!addressTabActive) {
+			dispatch(o2oChoise(this.props.cart));
+		} else {
+			dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress)).then(() => {
+				this.setState({
+					notifInfo: true,
+				});
+			}).catch((error) => {
+				this.setState({
+					notifInfo: true,
+					notifMessage: error.response.data.errorMessage,
+					enablePembayaran: false
+				});
+			});
+		}
+		
+		
+		if ((!this.props.isPickupable || this.props.isPickupable === '0') && !addressTabActive) {
 			this.setState({
 				restrictO2o: true
 			});
@@ -866,14 +885,14 @@ class Checkout extends Component {
 			});
 		}
 		this.setState({
-			addressTabActive: active
+			addressTabActive
 		});
-		if ((!this.state.selectedLocker && !active) || (!this.state.selectedAddress && active)) {
+		if ((!this.state.selectedLocker && !addressTabActive) || (!this.state.selectedAddress && addressTabActive)) {
 			this.setState({
-				enablePesananPengiriman: !active,
+				enablePesananPengiriman: !addressTabActive,
 				enablePembayaran: false,
 			});
-		} else if ((this.state.selectedAddress && active) || (this.state.selectedLocker && !active)) {
+		} else if ((this.state.selectedAddress && addressTabActive) || (this.state.selectedLocker && !addressTabActive)) {
 			this.setState({
 				enablePesananPengiriman: true,
 				enablePembayaran: true,
@@ -912,12 +931,12 @@ class Checkout extends Component {
 			payments,
 			user,
 			addresses,
-            listo2o,
+			listo2o,
 			latesto2o,
 			o2oProvinces,
 			isPickupable
 		} = this.props;
-		
+
 		return (
 			this.props.loading ? <Loading /> : (
 				<div className='page'>
@@ -928,38 +947,38 @@ class Checkout extends Component {
 							<Row className={styles.fullHeight}>
 								<Col flex grid={4} className={enableAlamatPengiriman ? '' : styles.disabled}>
 									<div className={styles.title}>1. Pilih Metode & Alamat Pengiriman</div>
-									<CardPengiriman 
+									<CardPengiriman
 										selectedAddress={this.state.selectedAddress}
 										cart={this.state.cart}
-										addresses={addresses} 
-										onChoisedAddress={this.onChoisedAddress} 
-										onChangeAddress={this.onChangeAddress} 
-										onGetO2oProvinces={this.onGetO2oProvinces} 
-										onGetListO2o={this.onGetListO2o} 
-										listo2o={listo2o} 
-										onOpenModalO2o={this.onOpenModalO2o} 
-										latesto2o={latesto2o} 
-										selectedLocker={this.state.selectedLocker ? this.state.selectedLocker : (latesto2o ? latesto2o[0] : null)} 
-										onSelectedLocker={this.onSelectedLocker} 
-										selectO2oFromModal={this.state.selectO2oFromModal} 
-										isPickupable={isPickupable} 
-										dropshipper={this.state.dropshipper} 
-										setDropship={this.setDropship} 
-										checkDropship={this.checkDropship} 
-										errorDropship={this.state.errorDropship} 
-										activeShippingTab={this.activeShippingTab} 
+										addresses={addresses}
+										onChoisedAddress={this.onChoisedAddress}
+										onChangeAddress={this.onChangeAddress}
+										onGetO2oProvinces={this.onGetO2oProvinces}
+										onGetListO2o={this.onGetListO2o}
+										listo2o={listo2o}
+										onOpenModalO2o={this.onOpenModalO2o}
+										latesto2o={latesto2o}
+										selectedLocker={this.state.selectedLocker ? this.state.selectedLocker : (latesto2o ? latesto2o[0] : null)}
+										onSelectedLocker={this.onSelectedLocker}
+										selectO2oFromModal={this.state.selectO2oFromModal}
+										isPickupable={isPickupable}
+										dropshipper={this.state.dropshipper}
+										setDropship={this.setDropship}
+										checkDropship={this.checkDropship}
+										errorDropship={this.state.errorDropship}
+										activeShippingTab={this.activeShippingTab}
 										loading={this.state.loadingCardPengiriman}
 									/>
 								</Col>
 								<Col flex grid={4} className={enablePesananPengiriman || this.state.restrictO2o ? '' : styles.disabled}>
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>({this.props.totalItems} items)</span></div>
 									{
-										<CardPesananPengiriman 
-											loading={this.state.loadingUpdateCart || !this.state.notifInfo} 
-											cart={!this.state.cart ? [] : this.state.cart} 
-											onDeleteCart={this.onDeleteCart} 
-											onUpdateQty={this.onUpdateQty} 
-											restrictO2o={this.state.restrictO2o} 
+										<CardPesananPengiriman
+											loading={this.state.loadingUpdateCart || !this.state.notifInfo}
+											cart={!this.state.cart ? [] : this.state.cart}
+											onDeleteCart={this.onDeleteCart}
+											onUpdateQty={this.onUpdateQty}
+											restrictO2o={this.state.restrictO2o}
 											shippingMethodGosend={this.shippingMethodGosend}
 											selectedAddress={this.state.selectedAddress}
 											addressTabActive={this.state.addressTabActive}
@@ -1010,15 +1029,15 @@ class Checkout extends Component {
 							</Row>
 						</Container>
 					</div>
-					{ 
+					{
 						renderIf(this.props.cityProv)(
-							<NewAddressModalbox 
-								shown={this.state.enableNewAddress} 
-								formDataAddress={formDataAddress} 
-								cityProv={this.props.cityProv} 
-								district={this.props.district} 
-								getDistricts={this.getDistricts} 
-								onSubmitAddress={this.onSubmitAddress} 
+							<NewAddressModalbox
+								shown={this.state.enableNewAddress}
+								formDataAddress={formDataAddress}
+								cityProv={this.props.cityProv}
+								district={this.props.district}
+								getDistricts={this.getDistricts}
+								onSubmitAddress={this.onSubmitAddress}
 								closeModalShippingAddress={this.closeModalShippingAddress}
 							/>
 						)
@@ -1033,7 +1052,7 @@ class Checkout extends Component {
 					<VerifikasiNoHandponeModalbox
 						shown={this.state.showModalOtp}
 						onSubmitPhoneNumber={this.onSubmitPhoneNumber}
-						onSubmitOtp={this.onSubmitOtp} 
+						onSubmitOtp={this.onSubmitOtp}
 						onResendOtp={this.onResendOtp}
 						onVerificationClose={this.onVerificationClose}
 						otp={coupon.otp}
@@ -1049,7 +1068,7 @@ class Checkout extends Component {
 							<Notification shown={this.state.notifInfo || false} content={this.state.notifMessage} />
 						)
 					}
-					
+
 				</div>
 			)
 		);
@@ -1120,7 +1139,7 @@ const mapStateToProps = (state) => {
 		latesto2o: state.addresses.latesto2o,
 		o2oProvinces: state.addresses.o2oProvinces,
 		isPickupable: state.cart.isPickupable,
-		cityProv: state.addresses.cityProv, 
+		cityProv: state.addresses.cityProv,
 		district: state.addresses.district,
 		totalItems: state.cart.totalItems,
 		gosendInfo: state.cart.gosendInfo,
