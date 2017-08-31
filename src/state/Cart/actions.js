@@ -87,7 +87,7 @@ const o2oChoise = cart => dispatch => {
 
 };
 
-const getCart = token => dispatch => {
+const getCart = token => dispatch => new Promise((resolve, reject) => {
 	dispatch(gettingCart(token));
 
 	const req = {
@@ -102,13 +102,14 @@ const getCart = token => dispatch => {
 			return value;
 		}).filter(e => e.id === 'pickup');
 		dispatch(paymentInfoUpdated(getCartPaymentData(response.data.data.attributes.total_pricing, 'cart')));
-		dispatch(cartReceived(setCartModel(response.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, response.data.data.attributes.total_cart));
+		resolve(dispatch(cartReceived(setCartModel(response.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, response.data.data.attributes.total_cart)));
 		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
 		console.log(error);
+		reject(error);
 	});
-};
+});
 
 const getPlaceOrderCart = (token, address, billing = false, updatePaymentMethodList = true) => dispatch => new Promise((resolve, reject) => {
 	dispatch(placeOrderRequest(token, address));
@@ -149,12 +150,13 @@ const getPlaceOrderCart = (token, address, billing = false, updatePaymentMethodL
 		});
 	})
 	.catch((error) => {
+		
 		dispatch(placeOrderReceived(false));
 		reject(error);
 	});
 });
 
-const deleteCart = (token, productId, props) => dispatch => {
+const deleteCart = (token, productId, props) => dispatch => new Promise((resolve, reject) => {
 	dispatch(deleteRequest(productId));
 
 	const req = {
@@ -165,13 +167,14 @@ const deleteCart = (token, productId, props) => dispatch => {
 	
 	request(req)
 	.then((response) => {
-		dispatch(getCart(token));
+		resolve(dispatch(getCart(token)));
 	})
 	.catch((error) => {
+		reject(error);
 		console.log(error);
 	});
 
-};
+});
 
 
 const updateCartWithoutSO = (token, productQty, productId) => dispatch => {
@@ -204,7 +207,7 @@ const updateCartWithoutSO = (token, productQty, productId) => dispatch => {
 
 };
 
-const updateQtyCart = (token, productQty, productId, props) => dispatch => {
+const updateQtyCart = (token, productQty, productId, props) => dispatch => new Promise((resolve, reject) => {
 	dispatch(gettingCart(token));
 
 	const req = {
@@ -230,17 +233,19 @@ const updateQtyCart = (token, productQty, productId, props) => dispatch => {
 			return value;
 		}).filter(e => e.id === 'pickup');
 		dispatch(paymentInfoUpdated(getCartPaymentData(res.data.data.attributes.total_price, 'order')));
-		dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, res.data.data.attributes.total_price.count, res.data.data.attributes.gosend_description));
+
+		resolve(dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, res.data.data.attributes.total_price.count, res.data.data.attributes.gosend_description)));
+
 		dispatch(getAvailablePaymentMethod(token));
 		if (props.coupon.coupon && !res.data.data.attributes.total_price.coupon_id) {
 			dispatch(removeCoupon(token, props.soNumber));
 		}
 	})
 	.catch((error) => {
-		console.log(error);
+		reject(error);
 	});
 
-};
+});
 
 
 const updateGosend = (token, storeId, shippingMethodId, props) => dispatch => {

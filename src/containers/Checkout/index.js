@@ -168,6 +168,7 @@ class Checkout extends Component {
 		this.onSaveCcOption = this.onSaveCcOption.bind(this);
 		this.onReload = this.onReload.bind(this);
 		this.onBillingNumberChange = this.onBillingNumberChange.bind(this);
+		this.onCheckProductJabodetabek = this.onCheckProductJabodetabek.bind(this);
 	}
 
 	componentWillMount() {
@@ -186,7 +187,8 @@ class Checkout extends Component {
 			}).catch((error) => {
 				this.setState({
 					notifInfo: false,
-					notifMessage: error.response.data.errorMessage
+					notifMessage: error.response.data.errorMessage,
+					enablePembayaran: false
 				});
 			});
 		} else {
@@ -340,7 +342,8 @@ class Checkout extends Component {
 		}).catch((error) => {
 			this.setState({
 				notifInfo: true,
-				notifMessage: error.response.data.errorMessage
+				notifMessage: error.response.data.errorMessage,
+				enablePembayaran: false
 			});
 		});
 	}
@@ -384,14 +387,41 @@ class Checkout extends Component {
 		});
 	}
 
+	onCheckProductJabodetabek(newCart) {
+		let enablePembayaran = true;
+		if (this.state.selectedAddress.attributes.isJabodetabekArea === '0' && newCart.payload.cart.length > 0) {
+			
+			newCart.payload.cart.forEach((value, index) => {
+				
+				value.store.products.forEach((v, i) => {
+					if (v.fgLocation !== '0') {
+						enablePembayaran = false;
+					}
+				});
+			});
+			this.setState({
+				enablePembayaran
+			});
+		}
+	}
+
 	onDeleteCart(cart) {
 		const { dispatch } = this.props;
 		if (this.props.soNumber) {
-			dispatch(updateQtyCart(this.props.cookies.get('user.token'), 0, cart.data.id, this.props));
+			dispatch(updateQtyCart(this.props.cookies.get('user.token'), 0, cart.data.id, this.props)).then(newCart => {
+				this.onCheckProductJabodetabek(newCart);
+			}).catch((error) => {
+				console.log(error);
+			});
 		} else {
-			dispatch(deleteCart(this.props.cookies.get('user.token'), cart.data.id, this.props));
+			dispatch(deleteCart(this.props.cookies.get('user.token'), cart.data.id, this.props)).then(newCart => {
+				
+				this.onCheckProductJabodetabek(newCart);
+			}).catch((error) => {
+				console.log(error);
+			});
 		}
-
+		
 		this.setState({
 			cart: this.props.cart,
 			loadingUpdateCart: true,
