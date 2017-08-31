@@ -111,15 +111,6 @@ const getListAvailablePaymentMethod = (response) => {
 					return bank;
 				});
 
-				paymentData.banks.unshift({
-					label: '-- Pilih Bank',
-					value: null,
-					info: '',
-					hidden: true,
-					installment: [],
-					listCicilan: []
-				});
-
 				paymentData.cards.unshift({
 					label: '-- Pilih Kartu',
 					value: null,
@@ -280,6 +271,7 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode, saveCC = false
 	case paymentMethodName.COMMERCE_VERITRANS:
 		paymentPayload.attributes.amount = parseInt(paymentDetail.amount, 10);
 		paymentPayload.attributes.product_type = '';
+		paymentPayload.attributes.card_number = paymentDetail.card.value;
 		if (mode !== 'cc') {
 			paymentPayload.attributes.credit_card = {
 				bank: paymentDetail.card.bank,
@@ -290,6 +282,7 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode, saveCC = false
 		break;
 	case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 		paymentPayload.attributes.amount = paymentDetail.amount;
+		paymentPayload.attributes.card_number = paymentDetail.card.value;
 		if (mode !== 'cc') {
 			paymentPayload.attributes.credit_card = {
 				bank: paymentDetail.card.bank,
