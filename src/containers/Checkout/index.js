@@ -692,11 +692,10 @@ class Checkout extends Component {
 		});
 	}
 	onCardNumberChange(event) {
-		
 		if (event.valid) {
 			this.props.dispatch(changeCreditCardNumber(event.ccNumber));
 			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
-			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event, ''));
+			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event.ccNumber, ''));
 		}
 	}
 

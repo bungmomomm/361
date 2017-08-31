@@ -491,18 +491,19 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 });
 
 const applyBin = (token, paymentMethodId, cardNumber, bankName) => dispatch => {
+	const data = {
+		attributes: {
+			payment_method: paymentMethodId,
+			card_number: cardNumber,
+			bank: bankName
+		}
+	};
 	return request({
 		token,
 		path: 'payments/apply_discount',
 		method: 'POST',
 		body: {
-			data: {
-				attributes: {
-					payment_method: paymentMethodId,
-					card_number: cardNumber.ccNumber,
-					bank: bankName
-				}
-			}
+			data
 		}
 	}).then((response) => {
 		if (typeof response.data.data.relationships.carts.data[0] !== 'undefined') {
