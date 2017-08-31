@@ -110,6 +110,7 @@ class Checkout extends Component {
 			tahun: [],
 			showModalOtp: false,
 			phoneNumber: null,
+			notifInfo: true
 		};
 		
 		this.onAddCoupon = this.onAddCoupon.bind(this);
@@ -272,7 +273,11 @@ class Checkout extends Component {
 					enablePesananPengiriman: true, 
 					enablePembayaran: true
 				});
-				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress)).catch((error) => {
+				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress)).then(() => {
+					this.setState({
+						notifInfo: false,
+					});
+				}).catch((error) => {
 					this.setState({
 						notifInfo: true, 
 						notifMessage: error.response.data.errorMessage
@@ -314,7 +319,11 @@ class Checkout extends Component {
 			enablePembayaran: true,
 		});
 
-		return dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), address, billing, updatePaymentMethodList)).catch((error) => {
+		return dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), address, billing, updatePaymentMethodList)).then(() => {
+			this.setState({
+				notifInfo: false
+			});
+		}).catch((error) => {
 			this.setState({
 				notifInfo: true, 
 				notifMessage: error.response.data.errorMessage
@@ -325,7 +334,10 @@ class Checkout extends Component {
 	onChangeAddress(address, flagAdd) {
 		const { dispatch } = this.props;
 		
-		if (this.props.cityProv) {
+		
+		console.log(this.props.cityProv);
+		if (typeof this.props.cityProv === 'undefined') {
+			
 			dispatch(getCityProvince(this.props.cookies.get('user.token')));
 		}
 		
