@@ -208,7 +208,9 @@ export default class Select extends Component {
 					>	
 						<span className={styles.flex}>
 							<span className={styles.text}>
-								{this.state.selected.label ? this.state.selected.label : this.props.options[0].label}
+								{
+									this.props.options.length > 0 ? (this.state.selected.label || this.props.options[0].label) : this.state.selected.label
+								}
 								{ImageElement} 
 								{SpritesElement}
 							</span>
