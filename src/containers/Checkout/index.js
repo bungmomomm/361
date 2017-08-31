@@ -539,7 +539,7 @@ class Checkout extends Component {
 								detail: this.props.payments.selectedCardDetail
 							},
 							saveCC: this.props.payments.saveCC,
-							ovoPhoneNumber: this.props.payments.ovoNumber,
+							ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
 							billingPhoneNumber: this.props.payments.billingPhoneNumber
 						}
 					)
@@ -574,7 +574,7 @@ class Checkout extends Component {
 							},
 							saveCC: this.props.payments.saveCC,
 							term: this.props.payments.term,
-							ovoPhoneNumber: this.props.payments.ovoNumber,
+							ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
 							billingPhoneNumber: this.props.payments.billingPhoneNumber
 						}
 					)
@@ -594,7 +594,7 @@ class Checkout extends Component {
 					card: {
 						value: this.props.payments.selectedCard.value
 					},
-					ovoPhoneNumber: this.props.payments.ovoNumber,
+					ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
 					billingPhoneNumber: this.props.payments.billingPhoneNumber
 				},
 				'cc',
@@ -652,8 +652,8 @@ class Checkout extends Component {
 						this.props.soNumber, 
 						this.props.payments.selectedPaymentOption,
 						{
-							ovoPhoneNumber: this.props.payments.ovoNumber,
-							billingPhoneNumber: this.props.billingAddress.phone
+							ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
+							billingPhoneNumber: this.props.payments.billingPhoneNumber
 						},
 						mode
 					)
