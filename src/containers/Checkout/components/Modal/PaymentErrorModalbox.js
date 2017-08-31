@@ -23,9 +23,7 @@ export default class PaymentErrorModalbox extends Component {
 				<Modal.Body>
 					<p>
 						<strong>
-						Pembayaran Anda tidak <br />
-						berhasil coba lagi atau gunakan <br />
-						metode pembayaran lainnya <br />
+							{this.props.paymentErrorMessage}
 						</strong>
 					</p>
 				</Modal.Body>
