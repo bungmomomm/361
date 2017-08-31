@@ -221,15 +221,23 @@ export default class CardPembayaran extends Component {
 			);
 		} else if (this.props.validCoupon !== null && !this.props.validCoupon && this.props.coupon !== '') {
 			voucherBox = (
-				<Level>
-					<Level.Left className={styles.voucherLabel}>Kode Voucher</Level.Left>
-					<Level.Right>
-						<InputGroup addons addonsAttached>
-							<Input size='small' name='voucherCode' color='red' message='kode voucher salah' onChange={this.onChange} onKeyPress={this.onChange} value={this.props.coupon} />
-							<Button type='button' className='font-red' size='small' icon='times' iconPosition='right' onClick={this.props.onResetCoupon} />
-						</InputGroup>
-					</Level.Right>
-				</Level>
+				<div>
+					<Level>
+						<Level.Left className={styles.voucherLabel}>Kode Voucher</Level.Left>
+						<Level.Right>
+							<InputGroup addons addonsAttached>
+								<Input size='small' name='voucherCode' color='red' onChange={this.onChange} onKeyPress={this.onChange} value={this.props.coupon} />
+								<Button type='button' className='font-red' size='small' icon='times' iconPosition='right' onClick={this.props.onResetCoupon} />
+							</InputGroup>
+						</Level.Right>
+					</Level>
+					<Level>
+						<Level.Left>&nbsp;</Level.Left>
+						<Level.Right>
+							<div className='font-red'>{this.props.messageCoupon}</div>
+						</Level.Right>
+					</Level>
+				</div>
 			);			
 		}
 		let paymentOptions = false; 

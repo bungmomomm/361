@@ -80,9 +80,13 @@ const addCoupon = (token, orderId, coupon) => dispatch => {
 			}
 		}
 	}).then((response) => {
-		dispatch(paymentInfoUpdated(getCartPaymentData(response.data.data.attributes.total_price, 'order')));
-		dispatch(couponAdded({}));
-		dispatch(getAvailablePaymentMethod(token));
+		if (response.data.data) {
+			dispatch(paymentInfoUpdated(getCartPaymentData(response.data.data.attributes.total_price, 'order')));
+			dispatch(couponAdded({}));
+			dispatch(getAvailablePaymentMethod(token));
+		} else {
+			dispatch(couponInvalid(response.data.errorMessage, response.data.code));
+		}
 	}).catch((error) => {
 		console.log('asd', error);
 		dispatch(couponInvalid(error.errorMessage, error.code));

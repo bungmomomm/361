@@ -955,6 +955,7 @@ class Checkout extends Component {
 										loadingButtonCoupon={coupon.loading}
 										coupon={coupon.coupon}
 										validCoupon={coupon.validCoupon}
+										messageCoupon={coupon.message}
 										onAddCoupon={this.onAddCoupon}
 										onRemoveCoupon={this.onRemoveCoupon}
 										onResetCoupon={this.onResetCoupon}
