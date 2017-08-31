@@ -351,7 +351,7 @@ export default class CardPembayaran extends Component {
 			} 
 		}
 
-		const ovoReadOnly = (this.props.payments.ovoInfo && this.props.payments.ovoInfo.ovoFlag !== 1) && true;
+		const ovoReadOnly = (this.props.payments.ovoInfo && this.props.payments.ovoInfo.ovoFlag === 1);
 		const disabledPayment = ((this.props.payments.selectedPaymentOption === null || !this.props.payments.selectedPaymentOption) || (this.props.payments.billingPhoneNumber === null || this.props.payments.billingPhoneNumber === ''));
 		return (
 			<Card stretch loading={this.props.loading} >
