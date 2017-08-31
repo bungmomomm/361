@@ -48,13 +48,14 @@ const gettingCart = (token) => ({
 	}
 });
 
-const cartReceived = (cart, isPickupable = 0, totalItems = 0, ovoInfo = false) => ({
+const cartReceived = (cart, isPickupable = 0, totalItems = 0, gosendInfo = null, ovoInfo = false) => ({
 	type: CRT_GET_CART,
 	status: 1,
 	payload: {
 		cart,
 		isPickupable,
 		totalItems,
+		gosendInfo,
 		ovoInfo
 	}
 });
@@ -84,7 +85,6 @@ const getCart = token => dispatch => {
 
 const getPlaceOrderCart = (token, address, billing = false, updatePaymentMethodList = true) => dispatch => new Promise((resolve, reject) => {
 	dispatch(placeOrderRequest(token, address));
-	console.log('masuk');
 	const data = setPayloadPlaceOrder(address, billing);
 	const req = {
 		token, 
@@ -108,7 +108,7 @@ const getPlaceOrderCart = (token, address, billing = false, updatePaymentMethodL
 				return value;
 			}).filter(e => e.id === 'pickup');
 			dispatch(paymentInfoUpdated(getCartPaymentData(res.data.data.attributes.total_price, 'order')));
-			dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, response.data.data.attributes.total_price.count, { ovoId: res.data.data.attributes.ovo_id, ovoFlag: res.data.data.attributes.ovo_verified_flag }));
+			dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, response.data.data.attributes.total_price.count, res.data.data.attributes.gosend_description, { ovoId: res.data.data.attributes.ovo_id, ovoFlag: res.data.data.attributes.ovo_verified_flag }));
 			if (updatePaymentMethodList) {
 				dispatch(getAvailablePaymentMethod(token));
 			}
@@ -201,7 +201,7 @@ const updateQtyCart = (token, productQty, productId, props) => dispatch => {
 			return value;
 		}).filter(e => e.id === 'pickup');
 		dispatch(paymentInfoUpdated(getCartPaymentData(res.data.data.attributes.total_price, 'order')));
-		dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, res.data.data.attributes.total_price.count));
+		dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, res.data.data.attributes.total_price.count, res.data.data.attributes.gosend_description));
 		dispatch(getAvailablePaymentMethod(token));
 		if (props.coupon.coupon && !res.data.data.attributes.total_price.coupon_id) {
 			dispatch(removeCoupon(token, props.soNumber));
@@ -238,7 +238,7 @@ const updateGosend = (token, storeId, shippingMethodId, props) => dispatch => {
 			return value;
 		}).filter(e => e.id === 'pickup');
 		dispatch(paymentInfoUpdated(getCartPaymentData(res.data.data.attributes.total_price, 'order')));
-		dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, res.data.data.attributes.total_price.count));
+		dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, res.data.data.attributes.total_price.count, res.data.data.attributes.gosend_description));
 		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {

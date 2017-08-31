@@ -7,6 +7,7 @@ import {
 
 const initialState = {
 	loading: false,
+	gosendInfo: null,
 	data: [
 		{
 			store: {
@@ -70,7 +71,8 @@ export default (state = initialState, action) => {
 			isPickupable: action.payload.isPickupable,
 			totalItems: action.payload.totalItems,
 			loading: !action.status,
-			ovoInfo: action.payload.ovoInfo
+			ovoInfo: action.payload.ovoInfo,
+			gosendInfo: action.payload.gosendInfo
 		};
 	}
 

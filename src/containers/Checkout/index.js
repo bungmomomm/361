@@ -950,6 +950,8 @@ class Checkout extends Component {
 											shippingMethodGosend={this.shippingMethodGosend}
 											selectedAddress={this.state.selectedAddress}
 											addressTabActive={this.state.addressTabActive}
+											gosendInfo={this.props.gosendInfo}
+											onChangeAddress={this.onChangeAddress}
 										/>
 									}
 								</Col>
@@ -1096,6 +1098,7 @@ const mapStateToProps = (state) => {
 		cityProv: state.addresses.cityProv, 
 		district: state.addresses.district,
 		totalItems: state.cart.totalItems,
+		gosendInfo: state.cart.gosendInfo,
 	};
 };
 
