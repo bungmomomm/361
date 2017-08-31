@@ -722,8 +722,8 @@ class Checkout extends Component {
 		this.props.dispatch(changeInstallmentCCCvv(event.target.value));
 	}
 
-	onSaveCcOption(event) {
-		this.props.dispatch(saveCC(event));
+	onSaveCcOption(state, value) {
+		this.props.dispatch(saveCC(state, value));
 	}
 
 	onCloseErrorBox() {
@@ -959,6 +959,7 @@ class Checkout extends Component {
 									<div className={styles.title}>3. Pembayaran</div>
 									<CardPembayaran
 										loading={payments.loading || this.state.loadingUpdateCart || this.state.loadingCardPengiriman}
+										saveCC={payments.saveCC}
 										loadingButtonCoupon={coupon.loading}
 										coupon={coupon.coupon}
 										validCoupon={coupon.validCoupon}

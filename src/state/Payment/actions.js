@@ -93,9 +93,12 @@ const creditCardSelected = (card) => ({
 	}
 });
 
-const ccSaved = (state) => ({
+const ccSaved = (state, value) => ({
 	type: constants.PAY_SAVE_CC,
-	status: state
+	status: state,
+	payload: {
+		value
+	}
 });
 
 const creditCardDeselect = () => ({
@@ -374,9 +377,8 @@ const changeBillingNumber = (billingPhoneNumber) => dispatch => {
 	dispatch(billingNumberChange(billingPhoneNumber));
 };
 
-const saveCC = (event) => dispatch => {
-
-	dispatch(ccSaved(false));
+const saveCC = (state, value) => dispatch => {
+	dispatch(ccSaved(state, value));
 };
 
 const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete', card = false, callback = false) => dispatch => new Promise((resolve, reject) => {
