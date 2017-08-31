@@ -17,7 +17,7 @@ export default class Select extends Component {
 		this.state = {
 			options: [],
 			showOption: false,
-			selected: {},
+			selected: this.props.selected || {},
 			emptyFilter: false,
 		};
 		this.getFilter = this.getFilter.bind(this);
@@ -33,6 +33,7 @@ export default class Select extends Component {
 			});
 		}
 		if (this.state.options !== nextProps.options) {
+			console.log(nextProps);
 			this.setState({
 				options: nextProps.options,
 				emptyFilter: false,
@@ -235,9 +236,7 @@ export default class Select extends Component {
 													}
 												</span>
 												{
-													option.settings ? (
-														<div className={styles.info}>{option.settings.info.toString()}</div>
-													) : renderIf(option.info)(
+													renderIf(option.info)(
 														<div className={styles.info}>{option.info}</div>
 													)
 												}

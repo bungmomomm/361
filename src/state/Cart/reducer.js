@@ -51,6 +51,12 @@ export default (state = initialState, action) => {
 
 	switch (action.type) {
 	case CRT_PLACE_ORDER: {
+		if (!action.payload.soNumber) { 
+			return {
+				...state, 
+				loading: false,
+			};
+		}
 		return {
 			...state, 
 			soNumber: action.payload.soNumber,

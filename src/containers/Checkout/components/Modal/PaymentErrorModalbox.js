@@ -15,6 +15,18 @@ export default class PaymentErrorModalbox extends Component {
 	}
 
 	render() {
+		let message = (
+			<strong>
+				Pembayaran Anda tidak <br />
+				berhasil coba lagi atau gunakan <br />
+				metode pembayaran lainnya <br />
+			</strong>
+		);
+		if (this.props.paymentErrorMessage && this.props.paymentErrorMessage !== '') {
+			message = (
+				<strong>{this.props.paymentErrorMessage}</strong>
+			);
+		}
 		return (
 			<Modal size='small' shown={this.props.shown} onClose={this.onClose} >
 				<Modal.Header>
@@ -22,11 +34,7 @@ export default class PaymentErrorModalbox extends Component {
 				</Modal.Header>
 				<Modal.Body>
 					<p>
-						<strong>
-						Pembayaran Anda tidak <br />
-						berhasil coba lagi atau gunakan <br />
-						metode pembayaran lainnya <br />
-						</strong>
+						{message}
 					</p>
 				</Modal.Body>
 			</Modal>

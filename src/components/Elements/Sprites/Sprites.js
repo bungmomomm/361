@@ -10,7 +10,7 @@ const Background = require('@/assets/images/sprites@2x.png');
 const Sprites = (props) => {
 	const classSprites = cx({
 		sprites: true,
-		[`${props.name}`]: !!props.name,
+		[`Sprites__${props.name}`]: !!props.name,
 	});
 	return (
 		<i style={{ backgroundImage: `url(${Background})`, backgroundSize: '839px' }} className={classSprites} />
