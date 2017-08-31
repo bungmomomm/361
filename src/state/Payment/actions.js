@@ -235,23 +235,50 @@ const getAvailabelPaymentSelection = (selectedPayment) => {
 	return selectedPaymentOption;
 };
 
+const getSelectedVTInstallmentTerm = (selectedPaymentOption) => {
+	let defBank = false;
+	let installment = false;
+
+	if (selectedPaymentOption.banks.length >= 0) {
+		defBank = selectedPaymentOption.banks[0];
+		installment = (defBank.installments.length >= 0) ? defBank.installments[0] : installment;
+		if (installment) {
+			selectedPaymentOption.term = installment.value;
+		}
+		return selectedPaymentOption;
+	}
+	return selectedPaymentOption;
+};
+
 // action
-const changePaymentOption = (selectedPaymentOption) => dispatch => new Promise((resolve, reject) => {
-	
+const changePaymentOption = (selectedPaymentOption, token) => dispatch => new Promise((resolve, reject) => {
+	/**
+	 *	SET DEFAUL TERM PROPS ON INSTALLMENT VT
+	 */
+	if (selectedPaymentOption && selectedPaymentOption.name === 'commerce_veritrans_installment') {
+		selectedPaymentOption = getSelectedVTInstallmentTerm(selectedPaymentOption, token);
+		const selectedBank = {
+			label: selectedPaymentOption.banks[0].label,
+			name: selectedPaymentOption.banks[0].name,
+			value: selectedPaymentOption.banks[0].value
+		};
+		dispatch(changeBankName(token, selectedBank, selectedPaymentOption));
+		dispatch(changeInstallment(selectedPaymentOption.term));
+	}
 	dispatch(paymentOptionChanged(selectedPaymentOption));
 
 	resolve(selectedPaymentOption);
 });
 
-const changePaymentMethod = (paymentMethod, data) => dispatch => {
+const changePaymentMethod = (paymentMethod, data, token) => dispatch => {
 	if (!paymentMethod) {
 		dispatch(paymentMethodChanged(false));
 	} else {
 		const selectedPayment = data.payments[paymentMethod];
 		dispatch(paymentMethodChanged(selectedPayment));
-		if (selectedPayment.value === 'cod' || selectedPayment.value === 'gratis') {
+		if (selectedPayment.value === 'cod' || selectedPayment.value === 'gratis' || 'installment') {
 			const selectedPaymentOption = getAvailabelPaymentSelection(selectedPayment);
-			dispatch(changePaymentOption(selectedPaymentOption));
+			dispatch(changePaymentOption(selectedPaymentOption, token));
 		} else {
 			dispatch(changePaymentOption(false));
 		}

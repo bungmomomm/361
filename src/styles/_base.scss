@@ -165,4 +165,21 @@ label{
 	.pull-right{
 		float: right;
 	}
+	.customSelectO2OWrapper{
+		position: relative;
+	}
+	
+	.customSelectO2O{
+		position: absolute;
+		top: 26px;
+		left: 30px;
+		width: 79%;
+		background: #fff;
+		z-index: 12;
+		pointer-events: none;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		padding-right: 10px;
+	}
 }

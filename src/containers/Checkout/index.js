@@ -413,7 +413,7 @@ class Checkout extends Component {
 	}
 
 	onPaymentMethodChange(event) {
-		this.props.dispatch(changePaymentMethod(event.value, this.props.payments.paymentMethods));
+		this.props.dispatch(changePaymentMethod(event.value, this.props.payments.paymentMethods, this.props.cookies.get('user.token')));
 	}
 
 	onPaymentOptionChange(event, paymentMethod) {
