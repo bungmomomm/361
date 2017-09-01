@@ -13,6 +13,16 @@ const getCurrentSelectedMethod = (state) => {
 	return selectedPayment;
 };
 
+const getStatePaymentMethod = (value, payments) => {
+	let result = false;
+	payments.forEach((r) => {
+		if (r.id === value.id) {
+			result = r;
+		}
+	});
+	return result;
+};
+
 const initialState = {
 	selectedPayment: false,
 	loading: false,
@@ -41,10 +51,18 @@ export default (state = initialState, action) => {
 	case constants.PAY_LIST_PAYMENT_METHOD: {
 		let resultState = '';
 		if (action.status) {
+			const paymentMethods = action.payload.data;
+			paymentMethods.methods.map((method, index) => {
+				const lastMethod = getStatePaymentMethod(method, state.paymentMethods.methods);
+				if (lastMethod && lastMethod.selected) {
+					method.selected = true;
+				}
+				return method;
+			});
 			resultState = {
 				...state, 
 				loading: false,
-				paymentMethods: action.payload.data
+				paymentMethods
 			};
 		} else {
 			resultState = {
