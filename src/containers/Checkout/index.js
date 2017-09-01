@@ -909,6 +909,7 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 		if (!addressTabActive) {
 			dispatch(o2oChoise(this.props.cart));
+
 		} else {
 			dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress)).then(() => {
 				this.setState({
@@ -1023,7 +1024,7 @@ class Checkout extends Component {
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>({this.props.totalItems} items)</span></div>
 									{
 										<CardPesananPengiriman
-											loading={this.state.loadingUpdateCart || !this.state.notifInfo}
+											loading={this.state.loadingUpdateCart}
 											cart={!this.state.cart ? [] : this.state.cart}
 											onDeleteCart={this.onDeleteCart}
 											onUpdateQty={this.onUpdateQty}
@@ -1039,7 +1040,7 @@ class Checkout extends Component {
 								<Col flex grid={4} className={enablePembayaran && !this.state.restrictO2o ? '' : styles.disabled}>
 									<div className={styles.title}>3. Pembayaran</div>
 									<CardPembayaran
-										loading={payments.loading || this.state.loadingUpdateCart || this.state.loadingCardPengiriman || !this.state.notifInfo}
+										loading={payments.loading || this.state.loadingUpdateCart || this.state.loadingCardPengiriman}
 										loadingUpdateCart={this.state.loadingUpdateCart}
 										loadingCardPengiriman={this.state.loadingCardPengiriman}
 										saveCC={payments.saveCC}
