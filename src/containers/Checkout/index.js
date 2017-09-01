@@ -1189,6 +1189,25 @@ const getBillingAddress = (state) => {
 	return state.addresses.billing[0];
 };
 
+const getCurrentShippingAddress = (state) => {
+	if (
+		typeof state === 'undefined'
+	) {
+		return false;
+	}
+	if (
+		typeof state.addresses === 'undefined'
+	) {
+		return false;
+	}
+	if (
+		typeof state.addresses.addresses === 'undefined'
+	) {
+		return false;
+	}
+	return state.addresses.addresses[0];
+};
+
 const getOvoInfo = (state) => {
 	if (
 		typeof state === 'undefined'
@@ -1208,16 +1227,30 @@ const getOvoInfo = (state) => {
 	return state.cart.ovoInfo;
 };
 
+const getBillingNumber = (state) => {
+	const billingAddress = false; // getBillingAddress(state);
+	const shippingAddress = getCurrentShippingAddress(state);
+
+	if (billingAddress && state.payments.billingPhoneNumber === null) {
+		return billingAddress.attributes.phone;
+	}
+	if (shippingAddress && state.payments.billingPhoneNumber === null) {
+		return shippingAddress.attributes.phone;
+	}
+	return null;
+};
+
 const mapStateToProps = (state) => {
-	const billingAddress = getBillingAddress(state);
+	const billingPhoneNumber = getBillingNumber(state);
 	if (state.payments.billingPhoneNumber === null) {
-		state.payments.billingPhoneNumber = billingAddress ? billingAddress.attributes.phone : null;
+		state.payments.billingPhoneNumber = billingPhoneNumber;
 	}
 	state.payments.ovoInfo = getOvoInfo(state);
 	if (state.payments.ovoPhoneNumber === null) {
 		state.payments.ovoPhoneNumber = state.payments.ovoInfo ? state.payments.ovoInfo.ovoId : null;
 	}
 	return {
+		propsAddresses: state.addresses,
 		billingAddress: getBillingAddress(state),
 		soNumber: state.cart.soNumber,
 		coupon: state.coupon,
