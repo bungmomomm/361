@@ -155,7 +155,8 @@ export default class NewAddressModalbox extends Component {
 
 	onChangePoint() {
 		this.setState({
-			displayMap: true
+			displayMap: true,
+			pinPoint: 'showToggleButton'
 		});
 		// const kecamatan = this.state.formData.kecamatan;
 		// const PolygonResult = this.constructor.getPolygonData(kecamatan.toLowerCase());

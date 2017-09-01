@@ -35,15 +35,15 @@ class Gosend extends Component {
 		this.autocomplete = '';
 		this.insidePolygon = '';
 	}
+	
+	componentWillMount() {
+		this.setState({
+			center: this.props.center,
+			polygonArea: this.props.polygonArea
+		});
+	}
 
 	componentWillReceiveProps(nextProps) {
-		if (this.state.center !== nextProps.center) {
-			this.setState({
-				center: nextProps.center,
-				polygonArea: nextProps.polygonArea
-			});
-		}
-
 		if (this.state.displayMap !== nextProps.displayMap) {
 			this.setState({
 				displayMap: nextProps.displayMap
@@ -79,6 +79,7 @@ class Gosend extends Component {
 						lng,
 						results[0].formatted_address
 					);
+					this.setAddress(results[0].formatted_address);
 				}
 			});
 		}
@@ -91,9 +92,7 @@ class Gosend extends Component {
 				lng: e.latLng.lng()
 			}
 		});
-
 		this.onGeoLoad(e.latLng.lat(), e.latLng.lng());
-
 	}
 	
 	onMouseoverPolygon(props, polygon, e) {
