@@ -15,15 +15,13 @@ import { pointStep } from '@/data';
 export default class NewAddressModalbox extends Component {
 	static getPolygonData(kecamatan) {
 		const district = kecamatan.toLowerCase().replace(/\W+(.)/g, (match, chr) => chr.toUpperCase());
-			
+		console.log(Polygon);
 		const data = Polygon.map((option) => {
 			return option[district] ? option : null;
 		}).filter((option) => {
 			return option;
 		});
-		
-		return data[0][district];
-		
+		return data[0][district] || null;
 	}
 	
 	constructor(props) {
@@ -158,21 +156,6 @@ export default class NewAddressModalbox extends Component {
 			displayMap: true,
 			pinPoint: 'showToggleButton'
 		});
-		// const kecamatan = this.state.formData.kecamatan;
-		// const PolygonResult = this.constructor.getPolygonData(kecamatan.toLowerCase());
-		// const gosendData = this.state.gosendData;
-		// const center = PolygonResult.center;
-		// const locationCoords = PolygonResult.location_coords;
-		
-		// this.setState({
-		// 	gosendData: {
-		// 		...gosendData,
-		// 		center,
-		// 		location_coords: locationCoords,
-		// 		stepPoint: pointStep.pinPoint,
-		// 		enableGosend: true
-		// 	}
-		// });
 	}
 
 	onClose(event) {
@@ -247,30 +230,32 @@ export default class NewAddressModalbox extends Component {
 	gosendCheck(e) {
 		if (e.name === 'provinsi') {
 			this.getDistricts(e.value);
-			const isJakarta = e.label.toLowerCase().includes('jakarta');
+			const isJakarta = e.value.toLowerCase().includes('jakarta');
 			this.setState({
 				isJakarta,
 			});
 		}
 
-		if (e.name === 'kecamatan' && this.state.isJakarta) {
+		if (e.name === 'kecamatan') {
 			this.setState({
 				resetMap: true
 			});
 			const kecamatan = this.state.formData.kecamatan || e.value;
-			const PolygonResult = this.constructor.getPolygonData(kecamatan.toLowerCase());
 			const gosendData = this.state.gosendData;
-			setTimeout(() => {
-				this.setState({
-					resetMap: false,
-					pinPoint: 'showToggleButton',
-					gosendData: {
-						...gosendData,
-						center: PolygonResult.center,
-						location_coords: PolygonResult.location_coords
-					}
-				});
-			}, 20);
+			const PolygonResult = this.constructor.getPolygonData(kecamatan.toLowerCase());
+			if (PolygonResult) {
+				setTimeout(() => {
+					this.setState({
+						resetMap: false,
+						pinPoint: 'showToggleButton',
+						gosendData: {
+							...gosendData,
+							center: PolygonResult.center,
+							location_coords: PolygonResult.location_coords
+						}
+					});
+				}, 20);	
+			}
 		}
 	}
 
@@ -419,7 +404,7 @@ export default class NewAddressModalbox extends Component {
 							</small>
 						</Alert>
 						{
-							renderIf((!this.props.formDataAddress.latitude && !this.props.formDataAddress.longitude) && this.state.pinPoint === 'showToggleButton')([
+							renderIf((!this.props.formDataAddress.latitude && !this.props.formDataAddress.longitude) && this.state.pinPoint === 'showToggleButton' && this.state.isJakarta)(
 								<div className={styles.header}>
 									<Button 
 										type='button' 
@@ -436,9 +421,8 @@ export default class NewAddressModalbox extends Component {
 									<div className={styles.desc}>
 										Lokasi peta harus sesuai dengan alamat pengiriman. Lokasi diperlukan jika ingin menggunakan jasa pengiriman GO-SEND.
 									</div>
-								</div>,
-								<div><small><em>(Optional)</em></small></div>
-							])
+								</div>
+							)
 						}
 						
 						{
