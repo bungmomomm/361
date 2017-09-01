@@ -33,7 +33,6 @@ export default class Select extends Component {
 			});
 		}
 		if (this.state.options !== nextProps.options) {
-			console.log(nextProps);
 			this.setState({
 				options: nextProps.options,
 				emptyFilter: false,
