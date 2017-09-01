@@ -335,6 +335,10 @@ class Checkout extends Component {
 			enablePembayaran: true,
 		});
 
+		// set shipping cost to 0 before selected address
+		// prevent product jabodetabek ship to outside
+		dispatch(o2oChoise(this.props.cart));
+
 		return dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), address, billing, updatePaymentMethodList)).then(() => {
 			this.setState({
 				notifInfo: true

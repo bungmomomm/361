@@ -80,7 +80,6 @@ const o2oChoise = cart => dispatch => {
 		cart.forEach((value, index) => {
 			cart[index].store.price.final_delivery_cost = 0;
 		});
-		console.log(cart);
 		dispatch(o2oSelected(cart));
 	}
 	
