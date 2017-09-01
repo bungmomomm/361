@@ -115,7 +115,8 @@ class Checkout extends Component {
 			tahun: [],
 			showModalOtp: false,
 			phoneNumber: null,
-			notifInfo: true
+			notifInfo: true,
+			appliedBin: null,
 		};
 
 		this.onAddCoupon = this.onAddCoupon.bind(this);
@@ -469,6 +470,13 @@ class Checkout extends Component {
 			}
 			dispatch(changePaymentOption(selectedPaymentOption));
 			dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, cardNumber, bankName));
+			this.setState({
+				appliedBin: {
+					selectedPaymentOption,
+					cardNumber,
+					bankName
+				}
+			});
 		}
 	}
 
@@ -481,6 +489,13 @@ class Checkout extends Component {
 			this.props.dispatch(selectCreditCard(event));
 			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event, ''));
+			this.setState({
+				appliedBin: {
+					selectedPaymentOption,
+					cardNumber: event,
+					bankName: ''
+				}
+			});
 		} else {
 			this.props.dispatch(selectCreditCard(false));
 		}
@@ -753,6 +768,13 @@ class Checkout extends Component {
 			this.props.dispatch(changeCreditCardNumber(event.ccNumber));
 			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event.ccNumber, ''));
+			this.setState({
+				appliedBin: {
+					selectedPaymentOption,
+					cardNumber: event.ccNumber,
+					bankName: ''
+				}
+			});
 		}
 	}
 
@@ -779,6 +801,13 @@ class Checkout extends Component {
 			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 			const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
 			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event, bank));
+			this.setState({
+				appliedBin: {
+					selectedPaymentOption,
+					cardNumber: event,
+					bankName: bank
+				}
+			});
 		}
 	}
 	onInstallmentCCMonthChange(monthData) {
@@ -896,16 +925,24 @@ class Checkout extends Component {
 	}
 
 	submitDropship() {
+		const { dispatch } = this.props;		
 		if (this.state.isValidDropshipper) {
 			const tempSelectedAddress = this.state.selectedAddress;
 			tempSelectedAddress.attributes.is_dropshipper = this.state.dropshipper;
 			tempSelectedAddress.attributes.dropship_name = this.state.formDropshipper.dropship_name;
 			tempSelectedAddress.attributes.dropship_phone = this.state.formDropshipper.dropship_phone;
 			this.onChoisedAddress(tempSelectedAddress, false).then(() => {
+				if (this.state.appliedBin) {
+					const selectedPaymentOption = this.state.appliedBin.selectedPaymentOption;
+					dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, this.state.appliedBin.cardNumber, this.state.appliedBin.bankName)).then(() => {
+						this.onDoPayment(); 
+					}).catch((error) => {
+
+					});
+				}
 				this.setState({
 					isValidPayment: true,
 				});
-				this.onDoPayment();
 			});
 		} else {
 			this.checkDropship();
