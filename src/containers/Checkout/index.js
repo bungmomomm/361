@@ -75,7 +75,12 @@ class Checkout extends Component {
 		this.props = props;
 		this.validator = new Validator({
 			dropship_name: 'required|max:100',
-			dropship_phone: 'required|numeric|min:6|max:14',
+			dropship_phone: 'required|numeric|min:6|max:14'
+		});
+		this.cardValidator = new Validator({
+			year: 'required|min_value:10|min:1',
+			month: 'required|min_value:1',
+			cvv: 'required|min_value:1'
 		});
 		this.state = {
 			enableAlamatPengiriman: true,
@@ -163,6 +168,7 @@ class Checkout extends Component {
 		this.onSaveCcOption = this.onSaveCcOption.bind(this);
 		this.onReload = this.onReload.bind(this);
 		this.onBillingNumberChange = this.onBillingNumberChange.bind(this);
+		this.onCheckProductJabodetabek = this.onCheckProductJabodetabek.bind(this);
 	}
 
 	componentWillMount() {
@@ -181,7 +187,8 @@ class Checkout extends Component {
 			}).catch((error) => {
 				this.setState({
 					notifInfo: false,
-					notifMessage: error.response.data.errorMessage
+					notifMessage: error.response.data.errorMessage,
+					enablePembayaran: false
 				});
 			});
 		} else {
@@ -192,7 +199,10 @@ class Checkout extends Component {
 		const t = new Date();
 		const thisYear = t.getFullYear();
 		let year = 0;
-		const tahun = [];
+		const tahun = [{
+			value: null,
+			label: '-- pilih tahun --'
+		}];
 		for (year = thisYear; year < (thisYear + 10); year++) {
 			tahun.push({
 				value: year,
@@ -325,6 +335,10 @@ class Checkout extends Component {
 			enablePembayaran: true,
 		});
 
+		// set shipping cost to 0 before selected address
+		// prevent product jabodetabek ship to outside
+		dispatch(o2oChoise(this.props.cart));
+
 		return dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), address, billing, updatePaymentMethodList)).then(() => {
 			this.setState({
 				notifInfo: true
@@ -332,7 +346,8 @@ class Checkout extends Component {
 		}).catch((error) => {
 			this.setState({
 				notifInfo: true,
-				notifMessage: error.response.data.errorMessage
+				notifMessage: error.response.data.errorMessage,
+				enablePembayaran: false
 			});
 		});
 	}
@@ -369,14 +384,41 @@ class Checkout extends Component {
 		});
 	}
 
+	onCheckProductJabodetabek(newCart) {
+		let enablePembayaran = true;
+		if (this.state.selectedAddress.attributes.isJabodetabekArea === '0' && newCart.payload.cart.length > 0) {
+			
+			newCart.payload.cart.forEach((value, index) => {
+				
+				value.store.products.forEach((v, i) => {
+					if (v.fgLocation !== '0') {
+						enablePembayaran = false;
+					}
+				});
+			});
+			this.setState({
+				enablePembayaran
+			});
+		}
+	}
+
 	onDeleteCart(cart) {
 		const { dispatch } = this.props;
 		if (this.props.soNumber) {
-			dispatch(updateQtyCart(this.props.cookies.get('user.token'), 0, cart.data.id, this.props));
+			dispatch(updateQtyCart(this.props.cookies.get('user.token'), 0, cart.data.id, this.props)).then(newCart => {
+				this.onCheckProductJabodetabek(newCart);
+			}).catch((error) => {
+				console.log(error);
+			});
 		} else {
-			dispatch(deleteCart(this.props.cookies.get('user.token'), cart.data.id, this.props));
+			dispatch(deleteCart(this.props.cookies.get('user.token'), cart.data.id, this.props)).then(newCart => {
+				
+				this.onCheckProductJabodetabek(newCart);
+			}).catch((error) => {
+				console.log(error);
+			});
 		}
-
+		
 		this.setState({
 			cart: this.props.cart,
 			loadingUpdateCart: true,
@@ -398,7 +440,7 @@ class Checkout extends Component {
 	}
 
 	onPaymentMethodChange(event) {
-		this.props.dispatch(changePaymentMethod(event.value, this.props.payments.paymentMethods));
+		this.props.dispatch(changePaymentMethod(event.value, this.props.payments.paymentMethods, this.props.cookies.get('user.token')));
 	}
 
 	onPaymentOptionChange(event, paymentMethod) {
@@ -646,7 +688,21 @@ class Checkout extends Component {
 			switch (this.props.payments.paymentMethod) {
 			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 			case paymentMethodName.COMMERCE_VERITRANS:
-				this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
+				if (!this.props.payments.twoClickEnabled) {
+					this.cardValidator.validateAll({
+						year: this.props.payments.selectedCardDetail.year,
+						month: this.props.payments.selectedCardDetail.month,
+						cvv: this.props.payments.selectedCardDetail.cvv
+					}).then(success => {
+						if (success) {
+							this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
+						} else {
+							dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
+						}
+					});
+				} else {
+					this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
+				}
 				break;
 			case paymentMethodName.COMMERCE_SPRINT_ASIA:
 				mode = 'sprint';
