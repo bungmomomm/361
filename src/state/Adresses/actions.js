@@ -197,6 +197,12 @@ const getDistrict = (token, label) => dispatch => {
 	request(req)
 	.then((response) => {
 		const district = [];
+		district.push({
+			label: '-- Pilih Kecamatan',
+			value: null,
+			info: '',
+			hidden: true
+		});
 		// if (response.data.data.length > 0) {
 		response.data.data.forEach((value, index) => {
 			const dvalue = {
@@ -225,6 +231,12 @@ const getCityProvince = (token) => dispatch => {
 	request(req)
 	.then((response) => {
 		const cityProvince = [];
+		cityProvince.push({
+			label: '-- Pilih Provinsi',
+			value: null,
+			info: '',
+			hidden: true
+		});
 		response.data.included.map((value, index) => {
 			return humps(value);
 		}).filter(e => e.type === 'locations').forEach((data, index) => {
