@@ -97,7 +97,6 @@ export default class CardPengiriman extends Component {
 	}
 
 	onChangeAddress(e) {
-
 		this.props.onChangeAddress(this.state.selectedAddress, e);
 	}
 
@@ -157,7 +156,7 @@ export default class CardPengiriman extends Component {
 		const { latLngExist } = this.state;
 		
 		return (
-			<Tabs tabActive={0} loading={this.state.loading} stretch onAfterChange={this.onGetListO2o} >
+			<Tabs tabActive={0} stretch onAfterChange={this.onGetListO2o} >
 				<Tabs.Panel title='Kirim ke Alamat' sprites='truck-off' spritesActive='truck-on'>
 					<Alert align='center' color='yellow'>
 						Gratis ongkos kirim hingga Rp 9,000 untuk minimal pembelian sebesar Rp 100,000
@@ -197,7 +196,7 @@ export default class CardPengiriman extends Component {
 									{this.state.selectedAddress.attributes.district}, {this.state.selectedAddress.attributes.city}, {this.state.selectedAddress.attributes.province}, {this.state.selectedAddress.attributes.zipcode} <br />
 									P: {this.state.selectedAddress.attributes.phone}
 								</p> 
-								<Button type='button' icon='pencil' iconPosition='left' className='font-orange' content='Ubah Alamat ini' onClick={this.onChangeAddress} />
+								<Button type='button' icon='pencil' iconPosition='left' className='font-orange' content='Ubah Alamat ini' onClick={() => this.onChangeAddress('edit')} />
 							</div>
 						}
 							</Segment>

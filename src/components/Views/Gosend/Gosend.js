@@ -4,7 +4,6 @@ import styles from './Gosend.scss';
 import classNames from 'classnames/bind';
 import Icon from '../../Elements/Icon/Icon';
 import Input from '../../Elements/Input/Input';
-import Button from '../../Elements/Button/Button';
 // import Alert from '../../Modules/Alert/Alert';
 import { Map, Marker, Polygon, GoogleApiWrapper } from 'google-maps-react';
 import { renderIf } from '@/utils';
@@ -28,7 +27,7 @@ class Gosend extends Component {
 				lng: null
 			}
 		};
-		this.showGoogleMap = this.showGoogleMap.bind(this);
+		this.toggleGoogleMap = this.toggleGoogleMap.bind(this);
 		this.onMouseoverPolygon = this.onMouseoverPolygon.bind(this);
 		this.onGeoLoad = this.onGeoLoad.bind(this);
 		this.onSetPoint = this.onSetPoint.bind(this);
@@ -41,8 +40,13 @@ class Gosend extends Component {
 		if (this.state.center !== nextProps.center) {
 			this.setState({
 				center: nextProps.center,
-				polygonArea: nextProps.polygonArea,
-				displayMap: false
+				polygonArea: nextProps.polygonArea
+			});
+		}
+
+		if (this.state.displayMap !== nextProps.displayMap) {
+			this.setState({
+				displayMap: nextProps.displayMap
 			});
 		}
 	}
@@ -70,13 +74,11 @@ class Gosend extends Component {
 			const latLng = new google.maps.LatLng(lat, lng);
 			geo.geocode({ latLng }, (results, status) => {
 				if (status === google.maps.GeocoderStatus.OK) {
-					// this.setAddress(results[0].formatted_address);
 					this.props.onGeoLoad(
 						lat, 
 						lng,
 						results[0].formatted_address
 					);
-					// this.hideGoogleMap();
 				}
 			});
 		}
@@ -102,11 +104,6 @@ class Gosend extends Component {
 		this.onGeoLoad(e.latLng.lat(), e.latLng.lng());
 	}
 
-	onMapClicked(props) {
-		console.log(props);
-		console.log(this);
-	}
-
 	setCenter(location) {
 		this.setState({
 			center: location,
@@ -124,18 +121,9 @@ class Gosend extends Component {
 		return require(`@/assets/images/${this.state.icon}`);
 	}
 
-	showGoogleMap() {
+	toggleGoogleMap() {
 		this.setState({
-			displayMap: true,
-			// center: this.props.center,
-			// polygonArea: this.props.polygonArea
-		});
-	}
-
-	hideGoogleMap() {
-		// console.log(this);
-		this.setState({
-			displayMap: false
+			displayMap: !this.state.displayMap
 		});
 	}
 
@@ -169,21 +157,6 @@ class Gosend extends Component {
 
 		return (
 			<div className={gosendClass}>
-				<div className={styles.header}>
-					<Button 
-						type='button' 
-						onClick={this.showGoogleMap} 
-						content='Tunjukan Dalam Peta' 
-						size='small' 
-						color='grey' 
-						icon='map-marker' 
-						iconPosition='left' 
-					/>
-					<div className={styles.desc}>
-						Lokasi peta harus sesuai dengan alamat pengiriman. Lokasi diperlukan jika ingin menggunakan jasa pengiriman GO-SEND.
-					</div>
-				</div>
-				<div><small><em>(Optional)</em></small></div>
 				{
 					renderIf(this.state.displayMap)(
 						<div className={styles.googleMap}>
@@ -201,7 +174,7 @@ class Gosend extends Component {
 								renderIf(this.props.google)(
 									<Map 
 										google={this.props.google} 
-										zoom={12}
+										zoom={15}
 										className={styles.googleMapArea}
 										scrollwheel={false}
 										initialCenter={this.state.center}
