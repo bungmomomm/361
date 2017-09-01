@@ -39,15 +39,16 @@ const paymentMethodItem = payment => {
 };
 
 const paymentMethod = method => {
-	// let info = false;
-	// if (typeof (method.attributes.settings[0]) !== 'undefined') {
-	// 	info = 'method.attributes.settings[0]';
-	// }
+	let info = '';
+	// console.log
+	if (typeof (method.attributes.settings[0]) !== 'undefined') {
+		info = method.attributes.settings[0].info.join('\\n');
+	}
 	return {
 		id: method.id,
 		value: method.id,
 		label: method.attributes.title,
-		info: ''
+		info
 	};
 };
 
@@ -309,6 +310,7 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode, saveCC = false
 	default:
 		break;
 	}
+
 	return paymentPayload;
 };
 

@@ -3,6 +3,26 @@ import { getBaseUrl } from '@/utils';
 import { Veritrans } from '@/utils/vt';
 import { applyBin, getAvailabelPaymentSelection } from './actions';
 
+const getCurrentSelectedMethod = (state) => {
+	let selectedPayment = false;
+	state.paymentMethods.methods.forEach((currentPayment, index) => {
+		if (currentPayment.selected) {
+			selectedPayment = currentPayment;
+		}		
+	});
+	return selectedPayment;
+};
+
+const getStatePaymentMethod = (value, payments) => {
+	let result = false;
+	payments.forEach((r) => {
+		if (r.id === value.id) {
+			result = r;
+		}
+	});
+	return result;
+};
+
 const initialState = {
 	selectedPayment: false,
 	loading: false,
@@ -31,10 +51,18 @@ export default (state = initialState, action) => {
 	case constants.PAY_LIST_PAYMENT_METHOD: {
 		let resultState = '';
 		if (action.status) {
+			const paymentMethods = action.payload.data;
+			paymentMethods.methods.map((method, index) => {
+				const lastMethod = getStatePaymentMethod(method, state.paymentMethods.methods);
+				if (lastMethod && lastMethod.selected) {
+					method.selected = true;
+				}
+				return method;
+			});
 			resultState = {
 				...state, 
 				loading: false,
-				paymentMethods: action.payload.data
+				paymentMethods
 			};
 		} else {
 			resultState = {
@@ -45,13 +73,24 @@ export default (state = initialState, action) => {
 		return resultState;
 	}
 	case constants.PAY_PAYMENT_METHOD_CHANGED: {
+		let selectedPayment = false;
 		if (!action.payload.selectedPayment) {
 			state.selectedPaymentLabel = initialState.selectedPaymentLabel;
 		} else {
+			selectedPayment = action.payload.selectedPayment;
 			state.selectedPaymentLabel = false;
 		}
+		const paymentMethods = state.paymentMethods;
+		paymentMethods.methods = state.paymentMethods.methods.map((currentPayment, index) => {
+			currentPayment.selected = false;
+			if (selectedPayment && selectedPayment.value === currentPayment.value) {
+				currentPayment.selected = true;
+			}
+			return currentPayment;
+		});
 		return {
 			...state,
+			paymentMethods,
 			selectedPayment: action.payload.selectedPayment,
 			selectedPaymentOption: null,
 			paymentMethod: null
@@ -59,8 +98,33 @@ export default (state = initialState, action) => {
 	}
 
 	case constants.PAY_PAYMENT_OPTION_CHANGED: {
+		const selectedPayment = getCurrentSelectedMethod(state);
+		let selectedPaymentOption = false;
+		if (!action.payload.selectedPaymentOption && selectedPayment) {
+			selectedPaymentOption = action.payload.selectedPaymentOption;
+		} else {
+			state.selectedPaymentLabel = false;
+		}
+		let paymentMethods = state.paymentMethods;
+		if (selectedPayment) {
+			paymentMethods = state.paymentMethods;
+			paymentMethods.methods = state.paymentMethods.methods.map((currentPayment, index) => {
+				currentPayment.selected = false;
+				if (selectedPayment && selectedPayment.value === currentPayment.value) {
+					currentPayment.paymentItems = currentPayment.paymentItems.map((option) => {
+						option.selected = false;
+						if (selectedPaymentOption && option.uniqueConstant === selectedPaymentOption.value) {
+							option.selected = true;
+						}
+						return option;
+					});
+				}
+				return currentPayment;
+			});
+		}
 		return {
 			...state,
+			paymentMethods,
 			selectedPaymentOption: action.payload.selectedPaymentOption,
 			paymentMethod: action.payload.selectedPaymentOption.paymentMethod
 		};
