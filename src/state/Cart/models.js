@@ -12,7 +12,7 @@ const setPayloadPlaceOrder = (address, billing = false) => {
 			address_label: address.attributes.addressLabel ? address.attributes.addressLabel : address.attributes.address_label,
 			city: address.attributes.city,
 			district: address.attributes.district,
-			fullname: !address.attributes.fullname ? '-' : address.attributes.fullname,
+			fullname: !address.attributes.fullname ? '' : address.attributes.fullname,
 			phone: address.attributes.phone,
 			province: address.attributes.province,
 			zipcode: address.attributes.zipcode
