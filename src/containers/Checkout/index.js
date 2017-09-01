@@ -920,10 +920,15 @@ class Checkout extends Component {
 	submitDropship() {
 		const { dispatch } = this.props;		
 		if (this.state.isValidDropshipper) {
-			const tempSelectedAddress = this.state.selectedAddress;
-			tempSelectedAddress.attributes.is_dropshipper = this.state.dropshipper;
-			tempSelectedAddress.attributes.dropship_name = this.state.formDropshipper.dropship_name;
-			tempSelectedAddress.attributes.dropship_phone = this.state.formDropshipper.dropship_phone;
+			let tempSelectedAddress;
+			if (this.state.addressTabActive) {
+				tempSelectedAddress = this.state.selectedAddress;
+				tempSelectedAddress.attributes.is_dropshipper = this.state.dropshipper;
+				tempSelectedAddress.attributes.dropship_name = this.state.formDropshipper.dropship_name;
+				tempSelectedAddress.attributes.dropship_phone = this.state.formDropshipper.dropship_phone;
+			} else {
+				tempSelectedAddress = this.state.selectedLocker;
+			}
 			this.onChoisedAddress(tempSelectedAddress, false).then(() => {
 				if (this.state.appliedBin) {
 					const selectedPaymentOption = this.state.appliedBin.selectedPaymentOption;
@@ -946,7 +951,6 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 		if (!addressTabActive) {
 			dispatch(o2oChoise(this.props.cart));
-
 		} else {
 			dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress)).then(() => {
 				this.setState({
