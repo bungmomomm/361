@@ -357,37 +357,30 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 
 		if (typeof this.props.cityProv === 'undefined') {
-
 			dispatch(getCityProvince(this.props.cookies.get('user.token')));
 		}
-
-		let formDataAddress = {
-			isEdit: false
+		const editAddress = address.attributes;
+		const edit = flagAdd !== 'add';
+		const formDataAddress = {
+			id: edit ? address.id : '',
+			label: edit ? editAddress.addressLabel : '',
+			nama: edit ? editAddress.fullname : '',
+			noHP: edit ? editAddress.phone : '',
+			kota: edit ? editAddress.city : '',
+			provinsi: edit ? editAddress.province : '',
+			kotProv: edit ? `${editAddress.city}, ${editAddress.province}` : '',
+			kecamatan: edit ? editAddress.district : '',
+			kodepos: edit ? editAddress.zipcode : '',
+			address: edit ? editAddress.address : '',
+			latitude: edit ? editAddress.latitude : '',
+			longitude: edit ? editAddress.longitude : '',
+			isEdit: edit
 		};
-		if (flagAdd !== 'add') {
-
-			const editAddress = address.attributes;
-			formDataAddress = {
-				id: address.id,
-				label: editAddress.addressLabel,
-				nama: editAddress.fullname,
-				noHP: editAddress.phone,
-				kota: editAddress.city,
-				provinsi: editAddress.province,
-				kotProv: `${editAddress.city}, ${editAddress.province}`,
-				kecamatan: editAddress.district,
-				kodepos: editAddress.zipcode,
-				address: editAddress.address,
-				latitude: editAddress.latitude,
-				longitude: editAddress.longitude,
-				isEdit: true
-			};
-			this.getDistricts(`${editAddress.city}, ${editAddress.province}`);
-		}
+		this.getDistricts(`${editAddress.city}, ${editAddress.province}`);
 
 		this.setState({
 			enableNewAddress: true,
-			loadingCardPengiriman: true,
+			loadingCardPengiriman: false,
 			formDataAddress
 		});
 	}
@@ -953,6 +946,7 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 		if (!addressTabActive) {
 			dispatch(o2oChoise(this.props.cart));
+
 		} else {
 			dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress)).then(() => {
 				this.setState({
@@ -1067,7 +1061,7 @@ class Checkout extends Component {
 									<div className={styles.title}>2. Rincian Pesanan & Pengiriman <span>({this.props.totalItems} items)</span></div>
 									{
 										<CardPesananPengiriman
-											loading={this.state.loadingUpdateCart || !this.state.notifInfo}
+											loading={this.state.loadingUpdateCart}
 											cart={!this.state.cart ? [] : this.state.cart}
 											onDeleteCart={this.onDeleteCart}
 											onUpdateQty={this.onUpdateQty}
@@ -1083,7 +1077,7 @@ class Checkout extends Component {
 								<Col flex grid={4} className={enablePembayaran && !this.state.restrictO2o ? '' : styles.disabled}>
 									<div className={styles.title}>3. Pembayaran</div>
 									<CardPembayaran
-										loading={payments.loading || this.state.loadingUpdateCart || this.state.loadingCardPengiriman || !this.state.notifInfo}
+										loading={payments.loading || this.state.loadingUpdateCart || this.state.loadingCardPengiriman}
 										loadingUpdateCart={this.state.loadingUpdateCart}
 										loadingCardPengiriman={this.state.loadingCardPengiriman}
 										saveCC={payments.saveCC}

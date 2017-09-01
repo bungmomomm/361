@@ -2,7 +2,9 @@ import {
 	CRT_GET_CART,
 	CRT_UPDATE_QTY,
 	CRT_DELETE_CART,
-	CRT_PLACE_ORDER
+	CRT_PLACE_ORDER,
+	O2O_SELECTION,
+	O2O_SELECTED
 } from './constants';
 
 const initialState = {
@@ -50,6 +52,21 @@ export default (state = initialState, action) => {
 	}
 
 	switch (action.type) {
+	case O2O_SELECTION: {
+		return {
+			...state,
+			loading: true
+		};	
+	}	
+	
+	case O2O_SELECTED: {
+		return {
+			...state,
+			cart: action.payload.cart,
+			loading: false
+		};	
+	}	
+	
 	case CRT_PLACE_ORDER: {
 		if (!action.payload.soNumber) { 
 			return {

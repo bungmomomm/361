@@ -22,10 +22,14 @@ export default class CardPesananPengiriman extends Component {
 		this.checkGosendMethod = this.checkGosendMethod.bind(this);
 		this.onPinPointAddress = this.onPinPointAddress.bind(this);
 	}
+	
 	componentWillReceiveProps(nextProps) {
 		const selectedAddress = nextProps.selectedAddress;
 		const cart = nextProps.cart;
 		const cartJabodetabek = [];
+		this.setState({
+			cartJabodetabek
+		}, this.findRoutes);
 		if (cart.length > 0 && selectedAddress) {
 			cart.forEach((value, index) => {
 				
@@ -61,7 +65,6 @@ export default class CardPesananPengiriman extends Component {
 	}
 	
 	render() {
-		
 		return (
 			<Card stretch loading={this.props.loading} >
 				<div className={styles.overflow}>
@@ -70,17 +73,35 @@ export default class CardPesananPengiriman extends Component {
 						this.props.cart.map((storeData, i) => (
 							<StoreBox 
 								loading={this.props.loadingUpdateCart} 
-								color={(this.props.restrictO2o && !storeData.store.shipping.o2oSupported) || (this.state.cartJabodetabek.indexOf(storeData.store.id) !== -1) ? 'red' : ''} 
+								color={(this.props.restrictO2o && !storeData.store.shipping.o2oSupported) 
+									|| (this.state.cartJabodetabek.indexOf(storeData.store.id) !== -1 && !this.props.restrictO2o) ? 'red' : ''} 
 								key={i} 
 								name={storeData.store.name} 
 								location={storeData.store.location}
 							>
 								{
 									storeData.store.products.map((product, index) => (
-										<CheckoutProduct showBtnDelete={this.props.cart.length < 2 && storeData.store.products.length < 2 ? 0 : 1} restrictO2o={this.props.restrictO2o && !storeData.store.shipping.o2oSupported} key={index} data={product} onDeleteCart={this.onDeleteCart} onUpdateQty={this.onUpdateQty} />
+										<CheckoutProduct 
+											showBtnDelete={this.props.cart.length < 2 && storeData.store.products.length < 2 ? 0 : 1} 
+											restrictO2o={this.props.restrictO2o && !storeData.store.shipping.o2oSupported} 
+											key={index} 
+											data={product} 
+											onDeleteCart={this.onDeleteCart} 
+											onUpdateQty={this.onUpdateQty} 
+										/>
 									))
 								}
-								<CheckoutResult onChangeAddress={this.onPinPointAddress} gosendInfo={this.props.gosendInfo} addressTabActive={this.props.addressTabActive} key={i} shipping={storeData.store.shipping} price={storeData.store.price} checkGosendMethod={this.checkGosendMethod} store={storeData.store.id} selectedAddress={this.props.selectedAddress} />
+								<CheckoutResult 
+									onChangeAddress={this.onPinPointAddress} 
+									gosendInfo={this.props.gosendInfo} 
+									addressTabActive={this.props.addressTabActive} 
+									key={i} 
+									shipping={storeData.store.shipping} 
+									price={storeData.store.price} 
+									checkGosendMethod={this.checkGosendMethod} 
+									store={storeData.store.id} 
+									selectedAddress={this.props.selectedAddress} 
+								/>
 							</StoreBox>
 						))
 					}
