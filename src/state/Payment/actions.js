@@ -431,7 +431,7 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 	dispatch(payRequest());
 	if (
 		(payment.paymentMethod === 'commerce_veritrans_installment'
-		|| payment.paymentMethod === 'commerce_veritrans')
+		|| payment.paymentMethod === 'commerce_veritrans') && (typeof paymentDetail.paymentMethod === 'undefined')
 	) {
 		// prepare cc
 		request({

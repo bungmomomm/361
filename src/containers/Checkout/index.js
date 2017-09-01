@@ -545,6 +545,7 @@ class Checkout extends Component {
 					cardMonth: this.props.payments.selectedCardDetail.month,
 					cardYear: this.props.payments.selectedCardDetail.year,
 					amount: this.props.payments.total,
+					paymentMethod: this.props.payments.paymentMethod
 				},
 				mode
 			)
@@ -1137,7 +1138,7 @@ class Checkout extends Component {
 					<PaymentSuccessModalbox shown={this.props.payments.paymentSuccess} onClose={this.onCloseSuccessBox} />
 					<PaymentErrorModalbox 
 						shown={this.props.payments.paymentError} 
-						paymentErrorMessage={this.props.payments.paymentErrorMessage}
+						paymentErrorMessage={this.props.payments.error}
 						onClose={this.onCloseErrorBox} 
 					/>
 					<VerifikasiNoHandponeModalbox
