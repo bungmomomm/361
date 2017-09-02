@@ -928,6 +928,7 @@ class Checkout extends Component {
 				tempSelectedAddress.attributes.dropship_phone = this.state.formDropshipper.dropship_phone;
 			} else {
 				tempSelectedAddress = this.state.selectedLocker;
+				tempSelectedAddress.type = 'pickup';
 			}
 			this.onChoisedAddress(tempSelectedAddress, false).then(() => {
 				if (this.state.appliedBin) {
