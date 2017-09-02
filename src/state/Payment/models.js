@@ -42,7 +42,7 @@ const paymentMethod = method => {
 	let info = '';
 	// console.log
 	if (typeof (method.attributes.settings[0]) !== 'undefined') {
-		info = method.attributes.settings[0].info.join('\\n');
+		info = method.attributes.settings[0].info;
 	}
 	return {
 		id: method.id,

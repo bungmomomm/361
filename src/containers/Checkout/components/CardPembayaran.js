@@ -263,7 +263,11 @@ export default class CardPembayaran extends Component {
 		if (selectedPaymentOption) {
 			if (typeof selectedPaymentOption.settings !== 'undefined') {
 				if (typeof selectedPaymentOption.settings.info !== 'undefined') {
-					info = selectedPaymentOption.settings.info.join(' ');	
+					info = selectedPaymentOption.settings.info.map((infoText, indexInfo) => {
+						return (
+							<div key={indexInfo}><br />{infoText}</div>
+						);
+					});
 				}
 			}
 		}	

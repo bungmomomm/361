@@ -426,6 +426,19 @@ const saveCC = (state, value) => dispatch => {
 	dispatch(ccSaved(state, value));
 };
 
+const getSoNumberFromResponse = (soNumber, response) => {
+	const urlReturn = decodeURIComponent(response.data);
+	const queryString = urlReturn.split('&');
+	let orderString = queryString.find((queryStr) => {
+		return queryStr.indexOf('order') > -1;
+	});
+	if (orderString && orderString !== '') {
+		orderString = orderString.split('=');
+		return (typeof orderString[1] !== 'undefined') ? orderString[1] : soNumber;
+	}
+	return soNumber;
+};
+
 const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete', card = false, callback = false) => dispatch => new Promise((resolve, reject) => {
 	const isSaveCC = paymentDetail.saveCC !== 'undefined' ? paymentDetail.saveCC : false;
 	dispatch(payRequest());
@@ -460,6 +473,9 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 			}).then((response) => {
 				if (typeof response.data.data[0] !== 'undefined' && typeof response.data.data[0].id !== 'undefined') {
 					soNumber = response.data.data[0].id;
+				}
+				if (mode === 'complete') {
+					soNumber = getSoNumberFromResponse(soNumber, response.data);
 				}
 				dispatch(payReceived(soNumber, response.data, mode, card, callback));
 				resolve(soNumber, response.data, mode, card, callback);
@@ -503,6 +519,10 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 				}).catch((error) => {
 					dispatch(payError(getError(error)));
 				});
+			}
+
+			if (mode === 'complete') {
+				soNumber = getSoNumberFromResponse(soNumber, response.data);
 			}
 
 			dispatch(payReceived(soNumber, response.data, mode, card, callback));
