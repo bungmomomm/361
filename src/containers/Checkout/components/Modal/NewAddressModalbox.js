@@ -15,7 +15,6 @@ import { pointStep } from '@/data';
 export default class NewAddressModalbox extends Component {
 	static getPolygonData(kecamatan) {
 		const district = kecamatan.toLowerCase().replace(/\W+(.)/g, (match, chr) => chr.toUpperCase());
-		console.log(Polygon);
 		const data = Polygon.map((option) => {
 			return option[district] ? option : null;
 		}).filter((option) => {
@@ -235,6 +234,7 @@ export default class NewAddressModalbox extends Component {
 			const isJakarta = e.value.toLowerCase().includes('jakarta');
 			this.setState({
 				isJakarta,
+				loading: false,
 				formattedAddress: '',
 				pinPoint: 'showToggleButton'
 			});
@@ -250,6 +250,7 @@ export default class NewAddressModalbox extends Component {
 				setTimeout(() => {
 					this.setState({
 						resetMap: false,
+						loading: false,
 						pinPoint: 'showToggleButton',
 						gosendData: {
 							...gosendData,
@@ -262,6 +263,7 @@ export default class NewAddressModalbox extends Component {
 		} else {
 			this.setState({
 				resetMap: false,
+				loading: false,
 				pinPoint: 'showToggleButton',
 				gosendData: {
 					...gosendData,
@@ -352,6 +354,7 @@ export default class NewAddressModalbox extends Component {
 										filter
 										name='provinsi'
 										onChange={this.onChangeSelect}
+										ref={(input) => { this.selectProvince = input; }}
 										color={errors.has('provinsi') ? 'red' : null}
 										message={errors.has('provinsi') ? 'Provinsi field is required.' : ''}
 										options={this.props.cityProv || []} 
@@ -405,7 +408,7 @@ export default class NewAddressModalbox extends Component {
 								onChange={this.onChange}
 								color={errors.has('address') ? 'red' : null}
 								message={errors.has('address') ? 'Address field is required.' : ''}
-								value={this.props.formDataAddress.noHP || ''}
+								value={this.props.formDataAddress.address || ''}
 							/>
 						</InputGroup>
 						<Alert color='yellow'>

@@ -359,7 +359,8 @@ class Checkout extends Component {
 		if (typeof this.props.cityProv === 'undefined') {
 			dispatch(getCityProvince(this.props.cookies.get('user.token')));
 		}
-		const editAddress = address.attributes;
+		// const editAddress = address.attributes;
+		const editAddress = this.props.addresses[0].attributes;
 		const edit = flagAdd !== 'add';
 		const formDataAddress = {
 			id: edit ? address.id : '',
@@ -376,6 +377,7 @@ class Checkout extends Component {
 			longitude: edit ? editAddress.longitude : '',
 			isEdit: edit
 		};
+		console.log(formDataAddress);
 		this.getDistricts(`${editAddress.city}, ${editAddress.province}`);
 
 		this.setState({
