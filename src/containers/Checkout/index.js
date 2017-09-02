@@ -545,6 +545,7 @@ class Checkout extends Component {
 					cardMonth: this.props.payments.selectedCardDetail.month,
 					cardYear: this.props.payments.selectedCardDetail.year,
 					amount: this.props.payments.total,
+					paymentMethod: this.props.payments.paymentMethod
 				},
 				mode
 			)
@@ -1138,7 +1139,7 @@ class Checkout extends Component {
 					<PaymentSuccessModalbox shown={this.props.payments.paymentSuccess} onClose={this.onCloseSuccessBox} />
 					<PaymentErrorModalbox 
 						shown={this.props.payments.paymentError} 
-						paymentErrorMessage={this.props.payments.paymentErrorMessage}
+						paymentErrorMessage={this.props.payments.error}
 						onClose={this.onCloseErrorBox} 
 					/>
 					<VerifikasiNoHandponeModalbox
@@ -1241,6 +1242,13 @@ const getBillingNumber = (state) => {
 	return null;
 };
 
+const getCreditCardNumber = (state) => {
+	if (state.payments.selectedPaymentOption && typeof state.payments.selectedPaymentOption.cards !== 'undefined') {
+		return state.payments.selectedPaymentOption.cards.length;
+	}
+	return 0;
+};
+
 const mapStateToProps = (state) => {
 	const billingPhoneNumber = getBillingNumber(state);
 	if (state.payments.billingPhoneNumber === null) {
@@ -1249,6 +1257,10 @@ const mapStateToProps = (state) => {
 	state.payments.ovoInfo = getOvoInfo(state);
 	if (state.payments.ovoPhoneNumber === null) {
 		state.payments.ovoPhoneNumber = state.payments.ovoInfo ? state.payments.ovoInfo.ovoId : null;
+	}
+
+	if (typeof state.payments.openNewCreditCard === 'undefined') {
+		state.payments.openNewCreditCard = (getCreditCardNumber(state) < 1);
 	}
 	return {
 		propsAddresses: state.addresses,

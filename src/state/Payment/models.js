@@ -42,7 +42,7 @@ const paymentMethod = method => {
 	let info = '';
 	// console.log
 	if (typeof (method.attributes.settings[0]) !== 'undefined') {
-		info = method.attributes.settings[0].info.join('\\n');
+		info = method.attributes.settings[0].info;
 	}
 	return {
 		id: method.id,
@@ -304,6 +304,8 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode, saveCC = false
 	case paymentMethodName.COMMERCE_SPRINT_ASIA: 
 		paymentPayload.attributes.payment_installment_provider = paymentMethodName.COMMERCE_SPRINT_ASIA;
 		paymentPayload.attributes.payment_method = paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT;
+		paymentPayload.attributes.card_number = paymentDetail.card.value;
+		paymentPayload.attributes.amount = paymentDetail.amount;
 		break;
 	case paymentMethodName.POS_PAY:
 		break;
