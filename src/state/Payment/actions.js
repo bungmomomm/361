@@ -512,7 +512,6 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 			reject(error);
 		});
 	} else {
-
 		if ((typeof paymentDetail.paymentMethod !== 'undefined') 
 				&& paymentDetail.paymentMethod === constants.paymentMethodName.COMMERCE_SPRINT_ASIA) {
 			payment.paymentMethod = constants.paymentMethodName.COMMERCE_SPRINT_ASIA;
