@@ -25,9 +25,11 @@ const getStatePaymentMethod = (value, payments) => {
 
 const initialState = {
 	selectedPayment: false,
+	resetPaymentOption: false,
 	loading: false,
 	twoClickEnabled: true,
 	selectedPaymentOption: null,
+	termsAndConditionChecked: true,
 	saveCC: true,
 	billingPhoneNumber: null,
 	ovoPhoneNumber: null,
@@ -72,6 +74,19 @@ export default (state = initialState, action) => {
 		}
 		return resultState;
 	}
+	case constants.PAY_RESET_PAYMENT_OPTION: {
+		return {
+			...state,
+			resetPaymentOption: action.status
+		};
+	}
+
+	case constants.PAY_TERMS_AND_CONDITION_CHANGE: {
+		return {
+			...state,
+			termsAndConditionChecked: action.status
+		};
+	}
 	case constants.PAY_PAYMENT_METHOD_CHANGED: {
 		let selectedPayment = false;
 		if (!action.payload.selectedPayment) {
@@ -91,6 +106,7 @@ export default (state = initialState, action) => {
 		return {
 			...state,
 			paymentMethods,
+			resetPaymentOption: true,
 			selectedPayment: action.payload.selectedPayment,
 			selectedPaymentOption: null,
 			paymentMethod: null

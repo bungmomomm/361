@@ -15,6 +15,7 @@ export default class Select extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
+			name: this.props.name || 'select',
 			options: [],
 			showOption: false,
 			selected: this.props.selected || {},
@@ -38,6 +39,13 @@ export default class Select extends Component {
 				emptyFilter: false,
 			});
 		}
+		if (this.props.reset) {
+			this.setState({
+				selected: {}
+			});
+		}
+
+		this.forceUpdate();
 	}
 
 // ----------------------------------------
