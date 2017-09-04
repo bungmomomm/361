@@ -90,16 +90,19 @@ export default class NewAddressModalbox extends Component {
 		if (la !== '' && lo !== '') {
 			const gosendData = this.state.gosendData;
 			const PolygonResult = this.constructor.getPolygonData(this.props.formDataAddress.kecamatan.toLowerCase());
-			const locationCoords = PolygonResult.location_coords;
-			this.setState({
-				enableGosend: true,
-				isJakarta: true,
-				gosendData: {
-					...gosendData,
-					location_coords: locationCoords
-				}, 
-				isCustomerData: true
-			});
+			if (PolygonResult) {
+				const locationCoords = PolygonResult.location_coords;
+				this.setState({
+					enableGosend: true,
+					isJakarta: true,
+					gosendData: {
+						...gosendData,
+						location_coords: locationCoords
+					}, 
+					isCustomerData: true
+				});
+			}
+			
 		}
 		this.formAddressIsEdit(this.props.formDataAddress.isEdit);
 	}
