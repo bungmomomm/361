@@ -199,12 +199,14 @@ class Checkout extends Component {
 			});
 		} else {
 			this.onReload(dispatch);
-			if (this.props.location.search.includes('failed')) {
-				this.setState({
-					notifInfo: false,
-					notifMessage: 'Transaksi gagal, silahkan mencoba kembali.',
-				});
-			}
+		}
+
+		if (this.props.location.search.includes('failed')) {
+			this.setState({
+				enablePembayaran: true,
+				notifInfo: false,
+				notifMessage: 'Transaksi gagal, silahkan mencoba kembali.',
+			});
 		}
 
 
@@ -764,8 +766,17 @@ class Checkout extends Component {
 
 	onSetStateAddress(formData) {
 		const { dispatch } = this.props;
-		console.log(this.state.selectedAddress);
-		dispatch(saveAddress(this.props.cookies.get('user.token'), formData, this.state.selectedAddress));
+		dispatch(saveAddress(this.props.cookies.get('user.token'), formData, this.state.selectedAddress))
+		.then(selectedAdd => {
+			this.setState({
+				enablePembayaran: true
+			});
+		})
+		.catch(error => {
+			this.setState({
+				enablePembayaran: false
+			});
+		});
 	}
 
 	onSubmitAddress(formData) {
@@ -779,21 +790,23 @@ class Checkout extends Component {
 				isJabo = true;
 			}
 		});
+		const attributes = selectedAddress.attributes;
 		this.setState({
-			...selectedAddress,
+			
 			selectedAddress: {
+				...selectedAddress,
 				attributes: {
-					// ...selectedAddress.attributes,
-					address: formData.address,
-					district: formData.kecamatan,
-					city: citProv[0],
-					province: citProv[1],
-					addressLabel: formData.name,
-					phone: formData.no_hp,
-					zipcode: formData.kodepos,
-					latitude: formData.latitude,
-					longitude: formData.longitude,
-					fullname: formData.penerima,
+					...attributes,
+					address: formData.address.trim(),
+					district: formData.kecamatan.trim(),
+					city: citProv[0].trim(),
+					province: citProv[1].trim(),
+					addressLabel: formData.name.trim(),
+					phone: formData.no_hp.trim(),
+					zipcode: formData.kodepos.trim(),
+					latitude: formData.latitude.trim(),
+					longitude: formData.longitude.trim(),
+					fullname: formData.penerima.trim(),
 					isJabodetabekArea: isJabo ? '1' : '0'
 				}
 			}

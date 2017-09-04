@@ -144,7 +144,7 @@ const getAddresses = (token) => dispatch => new Promise((resolve, reject) => {
 	});
 });
 
-const saveAddress = (token, formData, selectedAddress) => dispatch => {
+const saveAddress = (token, formData, selectedAddress) => dispatch => new Promise((resolve, reject) => {
 	const cityProvince = formData.provinsi.split(',');
 	const req = {
 		token, 
@@ -174,16 +174,17 @@ const saveAddress = (token, formData, selectedAddress) => dispatch => {
 	request(req)
 	.then((response) => {
 		if (formData.isEdit) {
-			dispatch(getPlaceOrderCart(token, selectedAddress));
+			resolve(dispatch(getPlaceOrderCart(token, selectedAddress)));
 		}
 		
-		dispatch(getAddresses(token));
+		resolve(dispatch(getAddresses(token)));
 	})
 	.catch((error) => {
 		console.log(error);
+		error(error);
 	});
 
-};
+});
 
 const getDistrict = (token, label) => dispatch => {
 	// dispatch(districtRequest(token));
