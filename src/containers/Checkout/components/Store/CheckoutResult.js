@@ -19,7 +19,7 @@ const CheckoutResult = (props) => {
 								{props.gosendInfo.length > 1 ? props.gosendInfo[1] : props.gosendInfo}
 							</Tooltip>
 						}
-						<Checkbox name='gojek' content='Pengiriman:' checked={props.shipping.gosend.gosendActivated} value={props.store} onClick={props.checkGosendMethod} sprites='gosend' /> 
+						<Checkbox name='gojek' content='Pengiriman:' defaultChecked={false} checked={props.shipping.gosend.gosendActivated} value={props.store} onClick={props.checkGosendMethod} sprites='gosend' />
 					</div>
 					:
 					(
@@ -31,7 +31,7 @@ const CheckoutResult = (props) => {
 										{props.gosendInfo.length > 1 ? props.gosendInfo[1] : props.gosendInfo}
 									</Tooltip>
 								}
-								<Checkbox name='gojek' content='Pengiriman:' disabled checked={false} sprites='gosend' />
+								<Checkbox name='gojek' content='Pengiriman:' disabled defaultChecked={false} checked={false} sprites='gosend' />
 								<a role='link' tabIndex='0' onClick={props.onChangeAddress} className='font-orange'>Mohon pilih titik lokasi pengiriman anda</a>
 							</div>
 						:

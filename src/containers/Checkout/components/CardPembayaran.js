@@ -288,7 +288,7 @@ export default class CardPembayaran extends Component {
 			case paymentGroupName.INTERNET_BANKING:
 				paymentOptions = (
 					<InputGroup>
-						<Select selected={selectedPaymentOption || {}} emptyFilter={false} name={`payment-${selectedPayment.value}`} options={selectedPayment.paymentItems} onChange={this.onPaymentOptionChange} reset={resetPaymentOption} />
+						<Select selected={selectedPaymentOption} emptyFilter={false} name={`payment-${selectedPayment.value}`} options={selectedPayment.paymentItems} onChange={this.onPaymentOptionChange} reset={resetPaymentOption} />
 						{ renderIf(selectedPaymentOption && typeof selectedPaymentOption.settings !== 'undefined' && selectedPaymentOption.settings.info.length > 0)(
 							<Tooltip position='right' content='Info'>
 								{info}
@@ -303,7 +303,7 @@ export default class CardPembayaran extends Component {
 						option.cards.length < 3 ? option.cards.map((card, cardIndex) => (
 							card.value ? (
 								<InputGroup key={cardIndex}>
-									<CreditCardRadio name='cc' variant='list' creditCard value={card.value} content={card.label} onClick={this.onSelectCard} checked={card.selected} sprites={card.sprites} />
+									<CreditCardRadio name='cc' variant='list' creditCard value={card.value} content={card.label} onClick={this.onSelectCard} defaultChecked={card.selected} checked={card.selected} sprites={card.sprites} />
 									{ renderIf(card.selected)(CvvElement) }
 								</InputGroup>
 							) : null
@@ -377,7 +377,9 @@ export default class CardPembayaran extends Component {
 				</Level>
 			);
 		});
-
+		let numberOfCard = 0;
+		const minNumberOfCard = 0;
+		numberOfCard = (selectedPayment.value === paymentGroupName.CREDIT_CARD) ? selectedPayment.cards : 0;
 		const ovoReadOnly = (this.props.payments.ovoInfo && parseInt(this.props.payments.ovoInfo.ovoFlag, 10) === 1);
 		const disabledPayment = ((this.props.payments.selectedPaymentOption === null || !this.props.payments.selectedPaymentOption) || (this.props.payments.billingPhoneNumber === null || this.props.payments.billingPhoneNumber === '') || !this.props.payments.termsAndConditionChecked);
 		return (
@@ -450,12 +452,12 @@ export default class CardPembayaran extends Component {
 						) }
 						{ renderIf(installmentPayment)(installmentPayment) }
 						{ renderIf(paymentOptions && (!this.props.loadingUpdateCart) && (!this.state.loadingCardPengiriman))(paymentOptions) }
-						{ renderIf(selectedPayment.value === paymentGroupName.CREDIT_CARD && twoClickEnabled)(
+						{ renderIf(selectedPayment.value === paymentGroupName.CREDIT_CARD && twoClickEnabled && numberOfCard > minNumberOfCard)(
 							<InputGroup>
 								<Button clean icon='plus-circle' iconPosition='left' content='Tambah Kartu' onClick={this.onNewCreditCard} />
 							</InputGroup>
 						)}
-						{ renderIf(this.props.payments.openNewCreditCard && selectedPayment.value === paymentGroupName.CREDIT_CARD && !twoClickEnabled)([
+						{ renderIf((this.props.payments.openNewCreditCard && selectedPayment.value === paymentGroupName.CREDIT_CARD && !twoClickEnabled) || (selectedPayment.value === paymentGroupName.CREDIT_CARD && numberOfCard < (minNumberOfCard + 1)))([
 							<InputGroup>
 								<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onChange={this.onCardNumberChange} />
 							</InputGroup>,
@@ -475,7 +477,7 @@ export default class CardPembayaran extends Component {
 								</Level.Item>
 							</Level>,
 							<InputGroup>
-								<Checkbox checked content='Simpan kartu untuk transaksi selanjutnya' onChange={(state, value) => this.props.onSaveCcOption(state, value)} />
+								<Checkbox checked defaultChecked content='Simpan kartu untuk transaksi selanjutnya' onChange={(state, value) => this.props.onSaveCcOption(state, value)} />
 							</InputGroup>
 						])}
 						<InputGroup>
@@ -485,7 +487,7 @@ export default class CardPembayaran extends Component {
 							<Input value={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''} placeholder={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : 'Masukkan nomor Hp yang terdaftar di OVO'} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' type='number' onChange={(event) => this.props.onOvoNumberChange(event)} readOnly={ovoReadOnly} disabled={ovoReadOnly} />
 						</InputGroup>
 						<div className={styles.checkOutAction}>
-							<Checkbox checked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' onClick={(state, value) => this.props.onTermsAndConditionChange(state, value)} />
+							<Checkbox checked defaultChecked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' onClick={(state, value) => this.props.onTermsAndConditionChange(state, value)} />
 							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' loading={loading} disabled={disabledPayment} />
 						</div>
 					</div>

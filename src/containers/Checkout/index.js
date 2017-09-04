@@ -327,7 +327,7 @@ class Checkout extends Component {
 
 	onChoisedAddress(address, updatePaymentMethodList = true) {
 		const { dispatch } = this.props;
-		const billing = this.props.billing.length > 0 ? this.props.billing[0] : false;
+		let billing = this.props.billing.length > 0 ? this.props.billing[0] : false;
 		if (!!address.type && address.type !== 'pickup') {
 			this.setState({
 				selectedAddress: address
@@ -346,6 +346,10 @@ class Checkout extends Component {
 			this.setState({
 				notifInfo: true
 			});
+			if (!this.props.payments.billingPhoneNumberEdited) {
+				billing = this.props.billing[0];
+				dispatch(changeBillingNumber(billing.attributes.phone));
+			}
 		}).catch((error) => {
 			this.setState({
 				notifInfo: true,
