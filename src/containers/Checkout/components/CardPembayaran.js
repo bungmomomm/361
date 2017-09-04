@@ -85,6 +85,7 @@ export default class CardPembayaran extends Component {
 		this.onInstallmentCCMonthChange = this.onInstallmentCCMonthChange.bind(this);
 		this.onInstallmentCCYearChange = this.onInstallmentCCYearChange.bind(this);
 		this.onInstallmentCCCvvChange = this.onInstallmentCCCvvChange.bind(this);
+		this.onResetCoupon = this.onResetCoupon.bind(this);
 	}
 	onChange(event) {
 		this.setState({
@@ -94,6 +95,13 @@ export default class CardPembayaran extends Component {
 
 	onAddCoupon(event) {
 		this.props.onAddCoupon(this.state.voucherCode);
+	}
+
+	onResetCoupon(event) {
+		this.setState({
+			voucherCode: null
+		});
+		this.props.onResetCoupon();
 	}
 
 	onPaymentMethodChange(event) {
@@ -233,7 +241,7 @@ export default class CardPembayaran extends Component {
 						<Level.Right>
 							<InputGroup addons addonsAttached>
 								<Input size='small' name='voucherCode' color='red' onChange={this.onChange} onKeyPress={this.onChange} value={this.props.coupon} />
-								<Button type='button' className='font-red' size='small' icon='times' iconPosition='right' onClick={this.props.onResetCoupon} />
+								<Button type='button' className='font-red' size='small' icon='times' iconPosition='right' onClick={this.onResetCoupon} />
 							</InputGroup>
 						</Level.Right>
 					</Level>
@@ -279,14 +287,14 @@ export default class CardPembayaran extends Component {
 			case paymentGroupName.E_MONEY:
 			case paymentGroupName.INTERNET_BANKING:
 				paymentOptions = (
-					renderIf(selectedPaymentOption && typeof selectedPaymentOption.settings !== 'undefined' && selectedPaymentOption.settings.info.length > 0)(
-						<InputGroup>
-							<Select emptyFilter={false} name={`payment-${selectedPayment.value}`} options={selectedPayment.paymentItems} onChange={this.onPaymentOptionChange} reset={resetPaymentOption} />
+					<InputGroup>
+						<Select emptyFilter={false} name={`payment-${selectedPayment.value}`} options={selectedPayment.paymentItems} onChange={this.onPaymentOptionChange} reset={resetPaymentOption} />
+						{ renderIf(selectedPaymentOption && typeof selectedPaymentOption.settings !== 'undefined' && selectedPaymentOption.settings.info.length > 0)(
 							<Tooltip position='right' content='Info'>
 								{info}
 							</Tooltip>
-						</InputGroup>
-					)
+						)}
+					</InputGroup>
 				);
 				break;
 			case paymentGroupName.CREDIT_CARD:

@@ -298,7 +298,7 @@ const changePaymentMethod = (paymentMethod, data, token) => dispatch => {
 		setTimeout(() => {
 			dispatch(paymentOptionReset(false));
 		}, 10);
-		if (selectedPayment.value === 'cod' || selectedPayment.value === 'gratis' || 'installment') {
+		if (selectedPayment.value === 'cod' || selectedPayment.value === 'gratis' || selectedPayment.value === 'installment') {
 			const selectedPaymentOption = getAvailabelPaymentSelection(selectedPayment);
 			dispatch(changePaymentOption(selectedPaymentOption, token));
 		} else {
@@ -315,7 +315,8 @@ const getAvailablePaymentMethod = (token) => (dispatch) => {
 		method: 'GET'
 	}).then((response) => {
 		dispatch(availablePaymentMethodReceived(getListAvailablePaymentMethod(response.data)));
-		
+		dispatch(paymentMethodChanged(false));
+		dispatch(changePaymentOption(false));
 	}).catch((error) => {
 	});
 };

@@ -159,6 +159,7 @@ const verifyOtp = (token, phone, otp, props) => dispatch => {
 
 const resetCoupon = () => dispatch => {
 	dispatch(couponReset());
+	dispatch(couponDeleted({}));
 };
 
 
