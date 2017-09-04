@@ -316,9 +316,11 @@ const getAvailablePaymentMethod = (token) => (dispatch) => {
 		path: 'payment_methods',
 		method: 'GET'
 	}).then((response) => {
-		dispatch(availablePaymentMethodReceived(getListAvailablePaymentMethod(response.data)));
-		dispatch(paymentMethodChanged(false));
-		dispatch(changePaymentOption(false));
+		const dataPayment = getListAvailablePaymentMethod(response.data);
+		dispatch(availablePaymentMethodReceived(dataPayment));
+		const selectedVA = dataPayment.payments.bank_transfer ? dataPayment.payments.bank_transfer : false;
+		dispatch(paymentMethodChanged(selectedVA));
+		dispatch(changePaymentOption(getAvailabelPaymentSelection(selectedVA || false)));
 	}).catch((error) => {
 	});
 };
