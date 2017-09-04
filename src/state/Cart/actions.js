@@ -112,7 +112,12 @@ const getCart = token => dispatch => new Promise((resolve, reject) => {
 
 const getPlaceOrderCart = (token, address, billing = false, updatePaymentMethodList = true) => dispatch => new Promise((resolve, reject) => {
 	dispatch(placeOrderRequest(token, address));
-	
+	if (typeof address === 'undefined') {
+		reject({
+			message: 'Address undefined'
+		});
+		return;
+	}
 	const data = setPayloadPlaceOrder(address, billing);
 	
 	const req = {

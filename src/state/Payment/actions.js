@@ -396,19 +396,19 @@ const selectCreditCard = (card) => dispatch => {
 
 const getError = (error) => {
 	if (typeof error === 'undefined') {
-		return 'Terjadi kesalahan, silahkan ulangin kembali';
+		return 'Terjadi kesalahan, silahkan ulangi kembali';
 	}
 
 	if (typeof error.response === 'undefined') {
-		return 'Terjadi kesalahan, silahkan ulangin kembali';
+		return 'Terjadi kesalahan, silahkan ulangi kembali';
 	}
 
 	if (typeof error.response.data === 'undefined') {
-		return 'Terjadi kesalahan, silahkan ulangin kembali';
+		return 'Terjadi kesalahan, silahkan ulangi kembali';
 	}
 
 	if (typeof error.response.data.errorMessage === 'undefined') {
-		return 'Terjadi kesalahan, silahkan ulangin kembali';
+		return 'Terjadi kesalahan, silahkan ulangi kembali';
 	}
 
 	return error.response.data.errorMessage;
