@@ -183,7 +183,7 @@ export default class NewAddressModalbox extends Component {
 		const gosendData = this.state.gosendData;
 		if (isEdit) {
 			const isJakarta = formDataAddress.kotProv.toLowerCase().includes('jakarta');
-            const isCityNotJakarta = this.props.formDataAddress.kecamatan.toLowerCase() !== 'jakarta';
+			const isCityNotJakarta = this.props.formDataAddress.kecamatan.toLowerCase() !== 'jakarta';
 			if (isJakarta && isCityNotJakarta) {
 				const PolygonResult = this.constructor.getPolygonData(this.props.formDataAddress.kecamatan.toLowerCase());
 				const locationCoords = PolygonResult.location_coords;
