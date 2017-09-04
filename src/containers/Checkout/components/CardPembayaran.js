@@ -482,7 +482,7 @@ export default class CardPembayaran extends Component {
 							<Input label='SMS Konfirmasi pembayaran' type='number' value={this.props.payments.billingPhoneNumber ? this.props.payments.billingPhoneNumber : ''} placeholder={this.props.payments.billingPhoneNumber ? this.props.payments.billingPhoneNumber : 'No Telp Penagihan'} onChange={(event) => this.props.onBillingNumberChange(event)} />
 						</InputGroup>
 						<InputGroup>
-							<Input value={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''} placeholder={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : 'Masukkan nomor Hp yang terdaftar di OVO'} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' type='number' onChange={(event) => this.props.onOvoNumberChange(event)} readonly={ovoReadOnly} disabled={ovoReadOnly} />
+							<Input value={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''} placeholder={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : 'Masukkan nomor Hp yang terdaftar di OVO'} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' type='number' onChange={(event) => this.props.onOvoNumberChange(event)} readOnly={ovoReadOnly} disabled={ovoReadOnly} />
 						</InputGroup>
 						<div className={styles.checkOutAction}>
 							<Checkbox checked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' onClick={(state, value) => this.props.onTermsAndConditionChange(state, value)} />

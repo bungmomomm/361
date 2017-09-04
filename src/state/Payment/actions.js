@@ -203,11 +203,12 @@ const changeInstallment = (term) => ({
 	}
 });
 
-const installmentCCNumberChanged = (cardNumber) => ({
+const installmentCCNumberChanged = (cardNumber, cardType) => ({
 	type: constants.PAY_INSTALLMENT_CREDIT_CARD_ADD,
 	mode: 'card_number',
 	payload: {
-		cardNumber
+		cardNumber,
+		cardType
 	}
 });
 const InstallmentCCMonthChange = (month) => ({
@@ -355,8 +356,8 @@ const changeCreditCardCvv = (cvv) => dispatch => {
 	dispatch(creditCardCvvChange(cvv));
 };
 
-const changeInstallmentCCNumber = (cardNumber) => dispatch => {
-	dispatch(installmentCCNumberChanged(cardNumber));
+const changeInstallmentCCNumber = (cardNumber, cardType) => dispatch => {
+	dispatch(installmentCCNumberChanged(cardNumber, cardType));
 };
 const changeInstallmentCCMonth = (month) => dispatch => {
 	dispatch(InstallmentCCMonthChange(month));

@@ -238,7 +238,8 @@ export default (state = initialState, action) => {
 	}
 	case constants.PAY_INSTALLMENT_CREDIT_CARD_ADD: {
 		let selectedCard = {
-			value: 0
+			value: 0,
+			type: ''
 		};
 		selectedCard = {
 			...selectedCard,
@@ -252,6 +253,7 @@ export default (state = initialState, action) => {
 		switch (action.mode) {
 		case 'card_number':
 			selectedCard.value = action.payload.cardNumber;	
+			selectedCard.type = action.payload.cardType;
 			break;
 		case 'month':
 			selectedCardDetail.month = action.payload.month;
