@@ -83,6 +83,7 @@ export default class NewAddressModalbox extends Component {
 		this.onChangePoint = this.onChangePoint.bind(this);
 		this.onClose = this.onClose.bind(this);
 		this.gosendCheck = this.gosendCheck.bind(this);
+		this.showGoogleMap = this.showGoogleMap.bind(this);
 	}
 
 	componentWillMount() {
@@ -164,7 +165,6 @@ export default class NewAddressModalbox extends Component {
 	}
 
 	getDistricts(cityProv) {
-		console.log(cityProv);
 		this.props.getDistricts(cityProv);
 	}
 
@@ -188,30 +188,19 @@ export default class NewAddressModalbox extends Component {
 			if (isJakarta && isCityNotJakarta) {
 				const PolygonResult = this.constructor.getPolygonData(this.props.formDataAddress.kecamatan.toLowerCase());
 				const locationCoords = PolygonResult.location_coords;
-				if (formDataAddress.latitude && formDataAddress.longitude) {
+				if (locationCoords) {
 					this.setState({
-						gosendData: {
-							...gosendData,
-							center: {
-								lat: formDataAddress.latitude,
-								lng: formDataAddress.longitude
-							},
-							location_coords: locationCoords
-						},
 						isJakarta,
+						center: {
+							lat: formDataAddress.latitude,
+							lng: formDataAddress.longitude
+						},
+						location_coords: locationCoords,
 						pinPoint: 'showAddress',
 						isCustomerData: true,
 					});
 				} else {
 					this.setState({
-						gosendData: {
-							...gosendData,
-							center: {
-								lat: PolygonResult.center.lat,
-								lng: PolygonResult.center.lng
-							},
-							location_coords: locationCoords
-						},
 						isJakarta,
 						pinPoint: 'showToggleButton',
 						isCustomerData: true,
@@ -221,9 +210,7 @@ export default class NewAddressModalbox extends Component {
 				this.setState({
 					formattedAddress: '',
 					gosendData: {
-						...gosendData,
-						center: {},
-						location_coords: []
+						...gosendData
 					},
 					isJakarta,
 					pinPoint: 'showToggleButton',
@@ -320,6 +307,18 @@ export default class NewAddressModalbox extends Component {
 		});
 	}
 
+	showGoogleMap() {
+		const PolygonResult = this.constructor.getPolygonData(this.selectKecamatan.state.selected.value.toLowerCase());
+		this.setState({
+			resetMap: false,
+			displayMap: true,
+			gosendData: {
+				center: PolygonResult ? PolygonResult.center : {},
+				location_coords: PolygonResult ? PolygonResult.location_coords : []
+			}
+		});
+	}
+
 	render() {
 		const { 
 			errors,
@@ -402,6 +401,7 @@ export default class NewAddressModalbox extends Component {
 										label='Kecamatan *'
 										name='kecamatan' 
 										filter
+										ref={(input) => { this.selectKecamatan = input; }}
 										onChange={this.onChangeSelect}
 										color={errors.has('kecamatan') ? 'red' : null}
 										message={errors.has('kecamatan') ? 'Kecamatan field is required.' : ''}
@@ -452,10 +452,7 @@ export default class NewAddressModalbox extends Component {
 								<div className={styles.header}>
 									<Button 
 										type='button' 
-										onClick={() => this.setState({
-											resetMap: false,
-											displayMap: true
-										})} 
+										onClick={this.showGoogleMap} 
 										content='Tunjukan Dalam Peta' 
 										size='small' 
 										color='grey' 

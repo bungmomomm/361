@@ -91,9 +91,13 @@ class Gosend extends Component {
 			point: {
 				lat: e.latLng.lat(),
 				lng: e.latLng.lng(),
-			},
-			displayMap: false
+			}
 		});
+		setTimeout(() => {
+			this.setState({
+				displayMap: false
+			});
+		}, 10);
 	}
 	
 	onMouseoverPolygon(props, polygon, e) {
