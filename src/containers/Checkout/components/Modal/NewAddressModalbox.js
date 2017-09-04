@@ -61,6 +61,7 @@ export default class NewAddressModalbox extends Component {
 			loading: false,
 			pinPoint: '',
 			enableGosend: false,
+			renderDistrict: true,
 			gosendData: {
 				center: {
 					lat: this.props.formDataAddress.latitude,
@@ -222,14 +223,15 @@ export default class NewAddressModalbox extends Component {
 
 	gosendCheck(e) {
 		const gosendData = this.state.gosendData;
-		const isJakarta = this.selectProvince.state.selected.value.toLowerCase().includes('jakarta');
+		let isJakarta = false;
+		if (this.selectProvince.state.selected.value) {
+			isJakarta = this.selectProvince.state.selected.value.toLowerCase().includes('jakarta');
+		}
 		this.setState({
-			loading: true
+			loading: true,
 		});
 		if (e.name === 'provinsi' && e.value !== null) {
-			if (isJakarta) {
-				this.getDistricts(e.value);
-			}
+			this.getDistricts(e.value);
 			this.setState({
 				isJakarta,
 				loading: false,
@@ -364,7 +366,7 @@ export default class NewAddressModalbox extends Component {
 							)
 						}
 						{
-							renderIf(this.props.district && !errors.has('provinsi'))(
+							renderIf(this.props.district && this.state.renderDistrict && !errors.has('provinsi'))(
 								<InputGroup>
 									<Select 
 										horizontal
