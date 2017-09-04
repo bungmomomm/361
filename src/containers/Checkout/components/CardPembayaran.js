@@ -377,7 +377,9 @@ export default class CardPembayaran extends Component {
 				</Level>
 			);
 		});
-
+		let numberOfCard = 0;
+		const minNumberOfCard = 0;
+		numberOfCard = (selectedPayment.value === paymentGroupName.CREDIT_CARD) ? selectedPayment.cards : 0;
 		const ovoReadOnly = (this.props.payments.ovoInfo && parseInt(this.props.payments.ovoInfo.ovoFlag, 10) === 1);
 		const disabledPayment = ((this.props.payments.selectedPaymentOption === null || !this.props.payments.selectedPaymentOption) || (this.props.payments.billingPhoneNumber === null || this.props.payments.billingPhoneNumber === '') || !this.props.payments.termsAndConditionChecked);
 		return (
@@ -450,12 +452,12 @@ export default class CardPembayaran extends Component {
 						) }
 						{ renderIf(installmentPayment)(installmentPayment) }
 						{ renderIf(paymentOptions && (!this.props.loadingUpdateCart) && (!this.state.loadingCardPengiriman))(paymentOptions) }
-						{ renderIf(selectedPayment.value === paymentGroupName.CREDIT_CARD && twoClickEnabled)(
+						{ renderIf(selectedPayment.value === paymentGroupName.CREDIT_CARD && twoClickEnabled && numberOfCard > minNumberOfCard)(
 							<InputGroup>
 								<Button clean icon='plus-circle' iconPosition='left' content='Tambah Kartu' onClick={this.onNewCreditCard} />
 							</InputGroup>
 						)}
-						{ renderIf(this.props.payments.openNewCreditCard && selectedPayment.value === paymentGroupName.CREDIT_CARD && !twoClickEnabled)([
+						{ renderIf((this.props.payments.openNewCreditCard && selectedPayment.value === paymentGroupName.CREDIT_CARD && !twoClickEnabled) || (selectedPayment.value === paymentGroupName.CREDIT_CARD && numberOfCard < (minNumberOfCard + 1)))([
 							<InputGroup>
 								<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onChange={this.onCardNumberChange} />
 							</InputGroup>,
