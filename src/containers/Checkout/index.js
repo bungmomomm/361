@@ -59,6 +59,7 @@ import {
 	changeInstallmentCCMonth,
 	changeInstallmentCCYear,
 	changeInstallmentCCCvv,
+	termsAndConditionChange,
 	saveCC,
 	getAvailabelPaymentSelection
 } from '@/state/Payment/actions';
@@ -170,6 +171,7 @@ class Checkout extends Component {
 		this.onReload = this.onReload.bind(this);
 		this.onBillingNumberChange = this.onBillingNumberChange.bind(this);
 		this.onCheckProductJabodetabek = this.onCheckProductJabodetabek.bind(this);
+		this.onTermsAndConditionChange = this.onTermsAndConditionChange.bind(this);
 	}
 
 	componentWillMount() {
@@ -359,7 +361,8 @@ class Checkout extends Component {
 		if (typeof this.props.cityProv === 'undefined') {
 			dispatch(getCityProvince(this.props.cookies.get('user.token')));
 		}
-		const editAddress = address.attributes;
+		// const editAddress = address.attributes;
+		const editAddress = this.props.addresses[0].attributes;
 		const edit = flagAdd !== 'add';
 		const formDataAddress = {
 			id: edit ? address.id : '',
@@ -376,6 +379,7 @@ class Checkout extends Component {
 			longitude: edit ? editAddress.longitude : '',
 			isEdit: edit
 		};
+		console.log(formDataAddress);
 		this.getDistricts(`${editAddress.city}, ${editAddress.province}`);
 
 		this.setState({
@@ -524,6 +528,10 @@ class Checkout extends Component {
 		});
 		selectedLocker.type = 'pickup';
 		this.onChoisedAddress(selectedLocker);
+	}
+
+	onTermsAndConditionChange(state, value) {
+		this.props.dispatch(termsAndConditionChange(state, value));
 	}
 
 	onRequestSprintInstallment(mode) {
@@ -1117,6 +1125,8 @@ class Checkout extends Component {
 										onInstallmentCCYearChange={this.onInstallmentCCYearChange}
 										onInstallmentCCCvvChange={this.onInstallmentCCCvvChange}
 										onSaveCcOption={this.onSaveCcOption}
+										resetPaymentOption={this.props.resetPaymentOption}
+										onTermsAndConditionChange={this.onTermsAndConditionChange}
 									/>
 								</Col>
 							</Row>

@@ -177,6 +177,14 @@ const billingNumberChange = (billingPhoneNumber) => ({
 	}
 });
 
+const termsAndConditionChangeAction = (state, value) => ({
+	type: constants.PAY_TERMS_AND_CONDITION_CHANGE,
+	status: state,
+	payload: {
+		value
+	}
+});
+
 // installment
 const changeBankName = (token, bank, selectedPaymentOption) => ({
 	type: constants.PAY_CHANGE_BANK,
@@ -270,12 +278,26 @@ const changePaymentOption = (selectedPaymentOption, token) => dispatch => new Pr
 	resolve(selectedPaymentOption);
 });
 
+
+const paymentOptionResetAction = (status) => ({
+	type: constants.PAY_RESET_PAYMENT_OPTION,
+	status
+});
+
+const paymentOptionReset = (status) => dispatch => {
+	dispatch(paymentOptionResetAction(status));
+};
+
 const changePaymentMethod = (paymentMethod, data, token) => dispatch => {
 	if (!paymentMethod) {
 		dispatch(paymentMethodChanged(false));
 	} else {
 		const selectedPayment = data.payments[paymentMethod];
 		dispatch(paymentMethodChanged(selectedPayment));
+		dispatch(paymentOptionReset(true));
+		setTimeout(() => {
+			dispatch(paymentOptionReset(false));
+		}, 10);
 		if (selectedPayment.value === 'cod' || selectedPayment.value === 'gratis' || 'installment') {
 			const selectedPaymentOption = getAvailabelPaymentSelection(selectedPayment);
 			dispatch(changePaymentOption(selectedPaymentOption, token));
@@ -293,6 +315,8 @@ const getAvailablePaymentMethod = (token) => (dispatch) => {
 		method: 'GET'
 	}).then((response) => {
 		dispatch(availablePaymentMethodReceived(getListAvailablePaymentMethod(response.data)));
+		dispatch(paymentMethodChanged(false));
+		dispatch(changePaymentOption(false));
 	}).catch((error) => {
 	});
 };
@@ -489,6 +513,10 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 			reject(error);
 		});
 	} else {
+		if ((typeof paymentDetail.paymentMethod !== 'undefined') 
+				&& paymentDetail.paymentMethod === constants.paymentMethodName.COMMERCE_SPRINT_ASIA) {
+			payment.paymentMethod = constants.paymentMethodName.COMMERCE_SPRINT_ASIA;
+		}
 		request({
 			token,
 			path: 'payments',
@@ -564,6 +592,10 @@ const applyBin = (token, paymentMethodId, cardNumber, bankName) => dispatch => {
 	});
 };
 
+const termsAndConditionChange = (state, value) => dispatch => {
+	dispatch(termsAndConditionChangeAction(state, value));
+};
+
 export default {
 	paymentInfoUpdated,
 	getAvailablePaymentMethod,
@@ -592,6 +624,8 @@ export default {
 	changeOvoNumber,
 	saveCC,
 	payError,
+	paymentOptionReset,
+	termsAndConditionChange,
 	pay,
 	applyBin,
 	getAvailabelPaymentSelection

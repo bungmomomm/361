@@ -78,7 +78,7 @@ export default class CardPengiriman extends Component {
 			shipping.forEach((value, index) => {
 				address.push({
 					value: value.id,
-					label: !value.attributes.addressLabel ? 'Default Address' : value.attributes.addressLabel,
+					label: !value.attributes.addressLabel ? value.attributes.fullname : value.attributes.addressLabel,
 					info: `${value.attributes.address}, ${value.attributes.district}, ${value.attributes.city}, ${value.attributes.province}`
 				});
 			});

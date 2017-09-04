@@ -211,6 +211,7 @@ export default class CardPembayaran extends Component {
 			selectedPayment,
 			selectedPaymentOption,
 			twoClickEnabled,
+			resetPaymentOption,
 			selectedCard 
 		} = this.props.payments;
 		let couponId = false;
@@ -286,14 +287,14 @@ export default class CardPembayaran extends Component {
 			case paymentGroupName.E_MONEY:
 			case paymentGroupName.INTERNET_BANKING:
 				paymentOptions = (
-					<InputGroup>
-						<Select emptyFilter={false} name={`payment-${selectedPayment.value}`} selectedLabel='-- Tambah Baru' options={selectedPayment.paymentItems} onChange={this.onPaymentOptionChange} />
-						{ renderIf(selectedPaymentOption && typeof selectedPaymentOption.settings !== 'undefined' && selectedPaymentOption.settings.info.length > 0)(
+					renderIf(selectedPaymentOption && typeof selectedPaymentOption.settings !== 'undefined' && selectedPaymentOption.settings.info.length > 0)(
+						<InputGroup>
+							<Select emptyFilter={false} name={`payment-${selectedPayment.value}`} options={selectedPayment.paymentItems} onChange={this.onPaymentOptionChange} reset={resetPaymentOption} />
 							<Tooltip position='right' content='Info'>
 								{info}
 							</Tooltip>
-						)}
-					</InputGroup>
+						</InputGroup>
+					)
 				);
 				break;
 			case paymentGroupName.CREDIT_CARD:
@@ -378,7 +379,7 @@ export default class CardPembayaran extends Component {
 		});
 
 		const ovoReadOnly = (this.props.payments.ovoInfo && parseInt(this.props.payments.ovoInfo.ovoFlag, 10) === 1);
-		const disabledPayment = ((this.props.payments.selectedPaymentOption === null || !this.props.payments.selectedPaymentOption) || (this.props.payments.billingPhoneNumber === null || this.props.payments.billingPhoneNumber === ''));
+		const disabledPayment = ((this.props.payments.selectedPaymentOption === null || !this.props.payments.selectedPaymentOption) || (this.props.payments.billingPhoneNumber === null || this.props.payments.billingPhoneNumber === '') || !this.props.payments.termsAndConditionChecked);
 		return (
 			<Card stretch loading={this.props.loading} >
 				<div className={styles.overflow}>
@@ -448,7 +449,7 @@ export default class CardPembayaran extends Component {
 							</InputGroup>
 						) }
 						{ renderIf(installmentPayment)(installmentPayment) }
-						{ renderIf(paymentOptions)(paymentOptions) }
+						{ renderIf(paymentOptions && (!this.props.loadingUpdateCart) && (!this.state.loadingCardPengiriman))(paymentOptions) }
 						{ renderIf(selectedPayment.value === paymentGroupName.CREDIT_CARD && twoClickEnabled)(
 							<InputGroup>
 								<Button clean icon='plus-circle' iconPosition='left' content='Tambah Kartu' onClick={this.onNewCreditCard} />
@@ -474,7 +475,7 @@ export default class CardPembayaran extends Component {
 								</Level.Item>
 							</Level>,
 							<InputGroup>
-								<Checkbox checked content='Simpan kartu untuk transaksi selanjutnya' onChange={(event) => this.props.onSaveCcOption} />
+								<Checkbox checked content='Simpan kartu untuk transaksi selanjutnya' onChange={(state, value) => this.props.onSaveCcOption(state, value)} />
 							</InputGroup>
 						])}
 						<InputGroup>
@@ -484,7 +485,7 @@ export default class CardPembayaran extends Component {
 							<Input value={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''} placeholder={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : 'Masukkan nomor Hp yang terdaftar di OVO'} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' type='number' onChange={(event) => this.props.onOvoNumberChange(event)} readonly={ovoReadOnly} disabled={ovoReadOnly} />
 						</InputGroup>
 						<div className={styles.checkOutAction}>
-							<Checkbox checked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />
+							<Checkbox checked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' onClick={(state, value) => this.props.onTermsAndConditionChange(state, value)} />
 							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' loading={loading} disabled={disabledPayment} />
 						</div>
 					</div>

@@ -10,18 +10,17 @@ import { Polygon } from '@/data/polygons';
 import { renderIf } from '@/utils';
 
 // step point 
-import { pointStep } from '@/data';
+// import { pointStep } from '@/data';
 
 export default class NewAddressModalbox extends Component {
 	static getPolygonData(kecamatan) {
 		const district = kecamatan.toLowerCase().replace(/\W+(.)/g, (match, chr) => chr.toUpperCase());
-		console.log(Polygon);
 		const data = Polygon.map((option) => {
 			return option[district] ? option : null;
 		}).filter((option) => {
 			return option;
 		});
-		return data[0][district] || null;
+		return data.length > 0 ? data[0][district] : null;
 	}
 	
 	constructor(props) {
@@ -67,8 +66,7 @@ export default class NewAddressModalbox extends Component {
 					lat: this.props.formDataAddress.latitude,
 					lng: this.props.formDataAddress.longitude,
 				},
-				location_coords: null,
-				stepPoint: pointStep.pointHide
+				location_coords: null
 			}, 
 			formattedAddress: '',
 			isCustomerData: false
@@ -96,7 +94,6 @@ export default class NewAddressModalbox extends Component {
 				isJakarta: true,
 				gosendData: {
 					...gosendData,
-					stepPoint: pointStep.showPointAddress,
 					location_coords: locationCoords
 				}, 
 				isCustomerData: true
@@ -147,8 +144,7 @@ export default class NewAddressModalbox extends Component {
 				latitude: lat.toString()
 			},
 			gosendData: {
-				...gosendData,
-				stepPoint: pointStep.pinPoined
+				...gosendData
 			}
 		});
 	}
@@ -183,7 +179,7 @@ export default class NewAddressModalbox extends Component {
 		const { formDataAddress } = this.props;
 		const gosendData = this.state.gosendData;
 		if (isEdit) {
-			if (formDataAddress.provinsi.toLowerCase().includes('jakarta')) {
+			if (this.props.formDataAddress.kotProv.toLowerCase().includes('jakarta')) {
 				const PolygonResult = this.constructor.getPolygonData(this.props.formDataAddress.kecamatan.toLowerCase());
 				const locationCoords = PolygonResult.location_coords;
 				const lat = formDataAddress.latitude || PolygonResult.center.lat;
@@ -232,44 +228,46 @@ export default class NewAddressModalbox extends Component {
 		});
 		if (e.name === 'provinsi') {
 			this.getDistricts(e.value);
-			const isJakarta = e.value.toLowerCase().includes('jakarta');
+			const isJakarta = this.selectProvince.state.selected.value.toLowerCase().includes('jakarta');
 			this.setState({
 				isJakarta,
+				loading: false,
 				formattedAddress: '',
 				pinPoint: 'showToggleButton'
 			});
 		}
-
-		if (e.name === 'kecamatan' && this.state.isJakarta) {
-			this.setState({
-				resetMap: true
-			});
-			const kecamatan = this.state.formData.kecamatan || e.value;
-			const PolygonResult = this.constructor.getPolygonData(kecamatan.toLowerCase());
-			if (PolygonResult) {
-				setTimeout(() => {
-					this.setState({
-						resetMap: false,
-						pinPoint: 'showToggleButton',
-						gosendData: {
-							...gosendData,
-							center: PolygonResult.center,
-							location_coords: PolygonResult.location_coords
-						}
-					});
-				}, 20);
+		setTimeout(() => {
+			if (e.name === 'kecamatan' && this.selectProvince.state.selected.value) {
+				this.setState({
+					resetMap: true
+				});
+				const kecamatan = e.value;
+				const PolygonResult = this.constructor.getPolygonData(kecamatan.toLowerCase());
+				this.setState({
+					resetMap: false,
+					isJakarta: !!PolygonResult,
+					loading: false,
+					pinPoint: PolygonResult ? 'showToggleButton' : 'hideAll',
+					gosendData: {
+						...gosendData,
+						center: PolygonResult ? PolygonResult.center : {},
+						location_coords: PolygonResult ? PolygonResult.location_coords : []
+					}
+				});
+			} else {
+				this.setState({
+					resetMap: false,
+					loading: false,
+					isJakarta: false,
+					pinPoint: 'hideAll',
+					gosendData: {
+						...gosendData,
+						center: {},
+						location_coords: []
+					}
+				});
 			}
-		} else {
-			this.setState({
-				resetMap: false,
-				pinPoint: 'showToggleButton',
-				gosendData: {
-					...gosendData,
-					center: {},
-					location_coords: []
-				}
-			});
-		}
+		}, 20);
 	}
 
 	submit(formData) {
@@ -352,6 +350,7 @@ export default class NewAddressModalbox extends Component {
 										filter
 										name='provinsi'
 										onChange={this.onChangeSelect}
+										ref={(input) => { this.selectProvince = input; }}
 										color={errors.has('provinsi') ? 'red' : null}
 										message={errors.has('provinsi') ? 'Provinsi field is required.' : ''}
 										options={this.props.cityProv || []} 
@@ -364,7 +363,7 @@ export default class NewAddressModalbox extends Component {
 							)
 						}
 						{
-							renderIf(this.props.district && !this.state.loading)(
+							renderIf(this.props.district)(
 								<InputGroup>
 									<Select 
 										horizontal
@@ -405,7 +404,7 @@ export default class NewAddressModalbox extends Component {
 								onChange={this.onChange}
 								color={errors.has('address') ? 'red' : null}
 								message={errors.has('address') ? 'Address field is required.' : ''}
-								value={this.props.formDataAddress.noHP || ''}
+								value={this.props.formDataAddress.address || ''}
 							/>
 						</InputGroup>
 						<Alert color='yellow'>
