@@ -132,7 +132,6 @@ export default class NewAddressModalbox extends Component {
 	}
 
 	onGeoLoad(lat, long, formattedAddress) {
-		console.log(formattedAddress);
 		const formData = this.state.formData;
 		const gosendData = this.state.gosendData;
 		this.setState({
@@ -142,8 +141,6 @@ export default class NewAddressModalbox extends Component {
 				longitude: long.toString(), 
 				latitude: lat.toString()
 			},
-			pinPoint: 'showAddress',
-			displayMap: false,
 			gosendData: {
 				...gosendData
 			}
@@ -227,7 +224,7 @@ export default class NewAddressModalbox extends Component {
 		this.setState({
 			loading: true
 		});
-		if (e.name === 'provinsi') {
+		if (e.name === 'provinsi' && e.value !== null && e.value > 0) {
 			this.getDistricts(e.value);
 			const isJakarta = this.selectProvince.state.selected.value.toLowerCase().includes('jakarta');
 			this.setState({
@@ -238,7 +235,7 @@ export default class NewAddressModalbox extends Component {
 			});
 		}
 		setTimeout(() => {
-			if (e.name === 'kecamatan' && this.selectProvince.state.selected.value) {
+			if (e.name === 'kecamatan' && this.selectProvince.state.selected.value && e.value !== null && e.value > 0) {
 				this.setState({
 					resetMap: true
 				});
@@ -255,6 +252,7 @@ export default class NewAddressModalbox extends Component {
 						location_coords: PolygonResult ? PolygonResult.location_coords : []
 					}
 				});
+				
 			} else {
 				this.setState({
 					resetMap: false,

@@ -199,7 +199,7 @@ const getDistrict = (token, label) => dispatch => {
 		const district = [];
 		district.push({
 			label: '-- Pilih Kecamatan',
-			value: null,
+			value: 0,
 			info: '',
 			hidden: true
 		});
@@ -233,7 +233,7 @@ const getCityProvince = (token) => dispatch => {
 		const cityProvince = [];
 		cityProvince.push({
 			label: '-- Pilih Provinsi',
-			value: null,
+			value: 0,
 			info: '',
 			hidden: true
 		});

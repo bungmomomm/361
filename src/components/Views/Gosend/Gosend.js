@@ -90,7 +90,7 @@ class Gosend extends Component {
 		this.setState({
 			point: {
 				lat: e.latLng.lat(),
-				lng: e.latLng.lng()
+				lng: e.latLng.lng(),
 			}
 		});
 	}
