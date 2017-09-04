@@ -763,8 +763,10 @@ class Checkout extends Component {
 		if (typeof this.props.billing[0] === 'undefined') {
 			dispatch(changeBillingNumber(formData.no_hp));
 		} else {
-			const billing = this.props.billing[0];
-			dispatch(changeBillingNumber(billing.attributes.phone));
+			if (!this.props.payments.billingPhoneNumberEdited) {
+				const billing = this.props.billing[0];
+				dispatch(changeBillingNumber(billing.attributes.phone));
+			}
 		}
 		this.setState({
 			enableNewAddress: false,
@@ -849,7 +851,7 @@ class Checkout extends Component {
 
 	onBillingNumberChange(event) {
 		const { dispatch } = this.props;
-		dispatch(changeBillingNumber(event.target.value));
+		dispatch(changeBillingNumber(event.target.value, true));
 	}
 
 	onSubmitOtp(otp) {

@@ -170,10 +170,11 @@ const ovoNumberChange = (ovoPhoneNumber) => ({
 	}
 });
 
-const billingNumberChange = (billingPhoneNumber) => ({
+const billingNumberChange = (billingPhoneNumber, billingPhoneNumberEdited) => ({
 	type: constants.PAY_CHANGE_BILLING_NUMBER,
 	payload: {
-		billingPhoneNumber
+		billingPhoneNumber,
+		billingPhoneNumberEdited
 	}
 });
 
@@ -443,8 +444,8 @@ const changeOvoNumber = (ovoPhoneNumber) => dispatch => {
 	dispatch(ovoNumberChange(ovoPhoneNumber));
 };
 
-const changeBillingNumber = (billingPhoneNumber) => dispatch => {
-	dispatch(billingNumberChange(billingPhoneNumber));
+const changeBillingNumber = (billingPhoneNumber, billingPhoneNumberEdited = false) => dispatch => {
+	dispatch(billingNumberChange(billingPhoneNumber, billingPhoneNumberEdited));
 };
 
 const saveCC = (state, value) => dispatch => {
