@@ -185,24 +185,23 @@ export default class CardPengiriman extends Component {
 		const addressPreview = () => {
 			let data = {};
 			if (this.state.dataChoised === 0) {
-				data = this.props.addresses[0];
+				data = Array.isArray(this.props.addresses) ? this.props.addresses[0] : this.props.addresses;
 			} else {
-				console.log(this.props.addresses);
 				data = this.props.addresses.map((option) => {
 					return (option.id === this.state.dataChoised) ? option : null;
 				}).filter((option) => {
 					return option;
 				});
-				data = data[0];
+				data = Array.isArray(data) ? data[0] : data;
 			}
 			return (
 				data ? (
 					<p>
-						<strong>{data.attributes.addressLabel}</strong> <br />
-						{data.attributes.fullname} <br />
-						{data.attributes.address} <br />
-						{data.attributes.district}, {data.attributes.city}, {data.attributes.province}, {data.attributes.zipcode} <br />
-						P: {data.attributes.phone}
+						<strong>{!data.attributes ? data.addressLabel : data.attributes.addressLabel}</strong> <br />
+						{!data.attributes ? data.fullname : data.attributes.fullname} <br />
+						{!data.attributes ? data.address : data.attributes.address} <br />
+						{!data.attributes ? data.district : data.attributes.district}, {!data.attributes ? data.city : data.attributes.city}, {!data.attributes ? data.province : data.attributes.province}, {!data.attributes ? data.zipcode : data.attributes.zipcode} <br />
+						P: {!data.attributes ? data.phone : data.attributes.phone}
 					</p> 
 				) : <p>loading...</p>
 			);
