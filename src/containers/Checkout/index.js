@@ -174,6 +174,7 @@ class Checkout extends Component {
 		this.onBillingNumberChange = this.onBillingNumberChange.bind(this);
 		this.onCheckProductJabodetabek = this.onCheckProductJabodetabek.bind(this);
 		this.onTermsAndConditionChange = this.onTermsAndConditionChange.bind(this);
+		this.onSetStateAddress = this.onSetStateAddress.bind(this);
 	}
 
 	componentWillMount() {
@@ -761,10 +762,45 @@ class Checkout extends Component {
 		}
 	}
 
+	onSetStateAddress(formData) {
+		const { dispatch } = this.props;
+		console.log(this.state.selectedAddress);
+		dispatch(saveAddress(this.props.cookies.get('user.token'), formData, this.state.selectedAddress));
+	}
+
 	onSubmitAddress(formData) {
 		const { dispatch } = this.props;
+		const selectedAddress = this.state.selectedAddress;
+		const citProv = formData.provinsi.split(',');
+		let isJabo = false;
+		const jabodetabek = ['jakarta', 'bogor', 'tanggerang', 'bekasi', 'depok'];
+		jabodetabek.forEach((value, index) => {
+			if (formData.provinsi.toLowerCase().includes(value)) {
+				isJabo = true;
+			}
+		});
+		this.setState({
+			...selectedAddress,
+			selectedAddress: {
+				attributes: {
+					...selectedAddress.attributes,
+					address: formData.address,
+					district: formData.kecamatan,
+					city: citProv[0],
+					province: citProv[1],
+					addressLabel: formData.name,
+					phone: formData.no_hp,
+					zipcode: formData.kodepos,
+					latitude: formData.latitude,
+					longitude: formData.longitude,
+					fullname: formData.penerima,
+					isJabodetabekArea: isJabo ? '1' : '0'
+				}
+			}
+				
+		}, this.onSetStateAddress(formData));
 
-		dispatch(saveAddress(this.props.cookies.get('user.token'), formData));
+		// dispatch(saveAddress(this.props.cookies.get('user.token'), formData));
 		if (typeof this.props.billing[0] === 'undefined') {
 			dispatch(changeBillingNumber(formData.no_hp));
 		} else if (!this.props.payments.billingPhoneNumberEdited) {
