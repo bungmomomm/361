@@ -9,7 +9,7 @@ const setPayloadPlaceOrder = (address, billing = false) => {
 	} else {
 		attributes = {
 			address: address.attributes.address,
-			address_label: address.attributes.addressLabel ? address.attributes.addressLabel : address.attributes.address_label,
+			address_label: address.attributes.addressLabel ? address.attributes.addressLabel : (address.attributes.address_label ? address.attributes.address_label : ''),
 			city: address.attributes.city,
 			district: !address.attributes.district ? '' : address.attributes.district,
 			fullname: !address.attributes.fullname ? '' : address.attributes.fullname,
