@@ -812,7 +812,7 @@ class Checkout extends Component {
 			this.props.dispatch(changeInstallmentCCNumber(event.ccNumber, event.ccType));
 			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 			const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
-			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event, bank));
+			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event.ccNumber, bank));
 			this.setState({
 				appliedBin: {
 					selectedPaymentOption,
