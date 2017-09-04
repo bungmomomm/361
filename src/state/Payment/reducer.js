@@ -30,6 +30,7 @@ const initialState = {
 	twoClickEnabled: true,
 	selectedPaymentOption: null,
 	termsAndConditionChecked: true,
+	billingPhoneNumberEdited: false,
 	saveCC: true,
 	billingPhoneNumber: null,
 	ovoPhoneNumber: null,
@@ -324,7 +325,8 @@ export default (state = initialState, action) => {
 	case constants.PAY_CHANGE_BILLING_NUMBER: {
 		return {
 			...state,
-			billingPhoneNumber: action.payload.billingPhoneNumber
+			billingPhoneNumber: action.payload.billingPhoneNumber,
+			billingPhoneNumberEdited: action.payload.billingPhoneNumberEdited
 		};
 	}
 

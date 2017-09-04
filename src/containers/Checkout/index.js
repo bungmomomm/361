@@ -762,6 +762,9 @@ class Checkout extends Component {
 		dispatch(saveAddress(this.props.cookies.get('user.token'), formData));
 		if (typeof this.props.billing[0] === 'undefined') {
 			dispatch(changeBillingNumber(formData.no_hp));
+		} else if (!this.props.payments.billingPhoneNumberEdited) {
+			const billing = this.props.billing[0];
+			dispatch(changeBillingNumber(billing.attributes.phone));
 		}
 		this.setState({
 			enableNewAddress: false,
@@ -846,7 +849,7 @@ class Checkout extends Component {
 
 	onBillingNumberChange(event) {
 		const { dispatch } = this.props;
-		dispatch(changeBillingNumber(event.target.value));
+		dispatch(changeBillingNumber(event.target.value, true));
 	}
 
 	onSubmitOtp(otp) {
@@ -979,8 +982,9 @@ class Checkout extends Component {
 		
 		
 		if ((!this.props.isPickupable || this.props.isPickupable === '0') && !addressTabActive) {
+			this.state.restrictO2o = true;
 			this.setState({
-				restrictO2o: true
+				restrictO2o: this.state.restrictO2o
 			});
 		} else {
 			this.setState({
