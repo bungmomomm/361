@@ -242,7 +242,7 @@ export default class Select extends Component {
 												</span>
 												{
 													renderIf(option.info)(
-														<div className={styles.info}>{option.info}</div>
+														<div className={styles.info} dangerouslySetInnerHTML={{ __html: option.info }} />
 													)
 												}
 												{

@@ -107,7 +107,6 @@ const getCart = token => dispatch => new Promise((resolve, reject) => {
 		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
-		console.log(error);
 		reject(error);
 	});
 });

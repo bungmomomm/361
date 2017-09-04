@@ -120,6 +120,8 @@ class Checkout extends Component {
 			appliedBin: null,
 		};
 
+		this.restrictO2oFlag = false;
+
 		this.onAddCoupon = this.onAddCoupon.bind(this);
 		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
 		this.onResetCoupon = this.onResetCoupon.bind(this);
@@ -172,6 +174,7 @@ class Checkout extends Component {
 		this.onBillingNumberChange = this.onBillingNumberChange.bind(this);
 		this.onCheckProductJabodetabek = this.onCheckProductJabodetabek.bind(this);
 		this.onTermsAndConditionChange = this.onTermsAndConditionChange.bind(this);
+		this.onSetStateAddress = this.onSetStateAddress.bind(this);
 	}
 
 	componentWillMount() {
@@ -196,6 +199,12 @@ class Checkout extends Component {
 			});
 		} else {
 			this.onReload(dispatch);
+			if (this.props.location.search.includes('failed')) {
+				this.setState({
+					notifInfo: false,
+					notifMessage: 'Transaksi gagal, silahkan mencoba kembali.',
+				});
+			}
 		}
 
 
@@ -292,13 +301,9 @@ class Checkout extends Component {
 					enablePembayaran: true
 				});
 				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress)).then(() => {
-					this.setState({
-						notifInfo: true,
-					});
+					
 				}).catch((error) => {
 					this.setState({
-						notifInfo: true,
-						notifMessage: error.response.data.errorMessage,
 						enablePembayaran: false
 					});
 				});
@@ -306,6 +311,7 @@ class Checkout extends Component {
 		});
 		dispatch(getCart(this.props.cookies.get('user.token')));
 		dispatch(getAvailablePaymentMethod(this.props.cookies.get('user.token')));
+		
 	}
 
 	onAddCoupon(coupon) {
@@ -343,16 +349,11 @@ class Checkout extends Component {
 		dispatch(o2oChoise(this.props.cart));
 
 		return dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), address, billing, updatePaymentMethodList)).then(() => {
-			this.setState({
-				notifInfo: true
-			});
 			if (!this.props.payments.billingPhoneNumberEdited) {
 				dispatch(changeBillingNumber(address.attributes.phone));
 			}
 		}).catch((error) => {
 			this.setState({
-				notifInfo: true,
-				notifMessage: error.response.data.errorMessage,
 				enablePembayaran: false
 			});
 		});
@@ -761,10 +762,45 @@ class Checkout extends Component {
 		}
 	}
 
+	onSetStateAddress(formData) {
+		const { dispatch } = this.props;
+		console.log(this.state.selectedAddress);
+		dispatch(saveAddress(this.props.cookies.get('user.token'), formData, this.state.selectedAddress));
+	}
+
 	onSubmitAddress(formData) {
 		const { dispatch } = this.props;
+		const selectedAddress = this.state.selectedAddress;
+		const citProv = formData.provinsi.split(',');
+		let isJabo = false;
+		const jabodetabek = ['jakarta', 'bogor', 'tanggerang', 'bekasi', 'depok'];
+		jabodetabek.forEach((value, index) => {
+			if (formData.provinsi.toLowerCase().includes(value)) {
+				isJabo = true;
+			}
+		});
+		this.setState({
+			...selectedAddress,
+			selectedAddress: {
+				attributes: {
+					...selectedAddress.attributes,
+					address: formData.address,
+					district: formData.kecamatan,
+					city: citProv[0],
+					province: citProv[1],
+					addressLabel: formData.name,
+					phone: formData.no_hp,
+					zipcode: formData.kodepos,
+					latitude: formData.latitude,
+					longitude: formData.longitude,
+					fullname: formData.penerima,
+					isJabodetabekArea: isJabo ? '1' : '0'
+				}
+			}
+				
+		}, this.onSetStateAddress(formData));
 
-		dispatch(saveAddress(this.props.cookies.get('user.token'), formData));
+		// dispatch(saveAddress(this.props.cookies.get('user.token'), formData));
 		if (typeof this.props.billing[0] === 'undefined') {
 			dispatch(changeBillingNumber(formData.no_hp));
 		} else if (!this.props.payments.billingPhoneNumberEdited) {
@@ -812,7 +848,7 @@ class Checkout extends Component {
 			this.props.dispatch(changeInstallmentCCNumber(event.ccNumber, event.ccType));
 			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 			const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
-			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event, bank));
+			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event.ccNumber, bank));
 			this.setState({
 				appliedBin: {
 					selectedPaymentOption,
@@ -973,13 +1009,10 @@ class Checkout extends Component {
 			dispatch(o2oChoise(this.props.cart));
 		} else {
 			dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress)).then(() => {
-				this.setState({
-					notifInfo: true,
-				});
+				
 			}).catch((error) => {
 				this.setState({
-					// notifInfo: true,
-					// notifMessage: error.response.data.errorMessage,
+					
 					enablePembayaran: false,
 					enablePesananPengiriman: false
 				});
@@ -992,10 +1025,12 @@ class Checkout extends Component {
 			this.setState({
 				restrictO2o: this.state.restrictO2o
 			});
+			this.restrictO2oFlag = true;
 		} else {
 			this.setState({
 				restrictO2o: false
 			});
+			this.restrictO2oFlag = false;
 		}
 		this.setState({
 			addressTabActive
@@ -1092,7 +1127,7 @@ class Checkout extends Component {
 											cart={!this.state.cart ? [] : this.state.cart}
 											onDeleteCart={this.onDeleteCart}
 											onUpdateQty={this.onUpdateQty}
-											restrictO2o={this.state.restrictO2o}
+											restrictO2o={this.restrictO2oFlag}
 											shippingMethodGosend={this.shippingMethodGosend}
 											selectedAddress={this.state.selectedAddress}
 											addressTabActive={this.state.addressTabActive}
@@ -1181,7 +1216,7 @@ class Checkout extends Component {
 					<EcashModalBox shown={this.props.payments.showEcash} src={this.props.payments.mandiriRedirectUrl} onClose={this.onMandiriEcashClose} />
 					{
 						renderIf(!this.state.notifInfo)(
-							<Notification shown={this.state.notifInfo || false} content={this.state.notifMessage} />
+							<Notification shown={!this.state.notifInfo} content={this.state.notifMessage} />
 						)
 					}
 

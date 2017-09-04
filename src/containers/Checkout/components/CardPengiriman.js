@@ -87,10 +87,11 @@ export default class CardPengiriman extends Component {
 		
 		if (typeof shipping !== 'undefined') {
 			shipping.forEach((value, index) => {
+				console.log(value);
 				address.push({
 					value: value.id,
 					label: !value.attributes.addressLabel ? value.attributes.fullname : value.attributes.addressLabel,
-					info: `${value.attributes.address}, ${value.attributes.district}, ${value.attributes.city}, ${value.attributes.province}`
+					info: `<strong>${value.attributes.fullname}</strong> <br />${value.attributes.address}, ${value.attributes.district}, ${value.attributes.city}, ${value.attributes.province}`
 				});
 			});
 			this.setState({
@@ -181,7 +182,19 @@ export default class CardPengiriman extends Component {
 		);
 		const { latLngExist } = this.state;
 
-		const addressPreview = (data) => {
+		const addressPreview = () => {
+			let data = {};
+			if (this.state.dataChoised === 0) {
+				data = this.props.addresses[0];
+			} else {
+				console.log(this.props.addresses);
+				data = this.props.addresses.map((option) => {
+					return (option.id === this.state.dataChoised) ? option : null;
+				}).filter((option) => {
+					return option;
+				});
+				data = data[0];
+			}
 			return (
 				data ? (
 					<p>
@@ -194,6 +207,7 @@ export default class CardPengiriman extends Component {
 				) : <p>loading...</p>
 			);
 		};
+		
 		
 		return (
 			<Tabs tabActive={0} loading={this.state.loading} stretch onAfterChange={this.onGetListO2o} >
@@ -230,8 +244,8 @@ export default class CardPengiriman extends Component {
 									</Level.Right>
 								</Level>
 								{
-									renderIf(this.state.selectedAddress)(
-										addressPreview(this.state.selectedAddress)
+									renderIf(this.props.addresses)(
+										addressPreview()
 									)
 								}
 								<Button type='button' icon='pencil' iconPosition='left' className='font-orange' content='Ubah Alamat ini' onClick={() => this.onChangeAddress('edit')} />
