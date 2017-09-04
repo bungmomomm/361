@@ -783,7 +783,7 @@ class Checkout extends Component {
 			...selectedAddress,
 			selectedAddress: {
 				attributes: {
-					...selectedAddress.attributes,
+					// ...selectedAddress.attributes,
 					address: formData.address,
 					district: formData.kecamatan,
 					city: citProv[0],
