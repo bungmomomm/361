@@ -121,7 +121,6 @@ export default class CardPengiriman extends Component {
 		this.setState({
 			loading: true
 		});
-		console.log(this.state.selectedAddress);
 		this.props.onChangeAddress(this.state.selectedAddress, e);
 	}
 
