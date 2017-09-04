@@ -762,6 +762,9 @@ class Checkout extends Component {
 		dispatch(saveAddress(this.props.cookies.get('user.token'), formData));
 		if (typeof this.props.billing[0] === 'undefined') {
 			dispatch(changeBillingNumber(formData.no_hp));
+		} else {
+			const billing = this.props.billing[0];
+			dispatch(changeBillingNumber(billing.attributes.phone));
 		}
 		this.setState({
 			enableNewAddress: false,
