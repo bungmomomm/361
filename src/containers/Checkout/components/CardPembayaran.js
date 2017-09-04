@@ -287,14 +287,14 @@ export default class CardPembayaran extends Component {
 			case paymentGroupName.E_MONEY:
 			case paymentGroupName.INTERNET_BANKING:
 				paymentOptions = (
-					renderIf(selectedPaymentOption && typeof selectedPaymentOption.settings !== 'undefined' && selectedPaymentOption.settings.info.length > 0)(
-						<InputGroup>
-							<Select emptyFilter={false} name={`payment-${selectedPayment.value}`} options={selectedPayment.paymentItems} onChange={this.onPaymentOptionChange} reset={resetPaymentOption} />
+					<InputGroup>
+						<Select emptyFilter={false} name={`payment-${selectedPayment.value}`} options={selectedPayment.paymentItems} onChange={this.onPaymentOptionChange} reset={resetPaymentOption} />
+						{ renderIf(selectedPaymentOption && typeof selectedPaymentOption.settings !== 'undefined' && selectedPaymentOption.settings.info.length > 0)(
 							<Tooltip position='right' content='Info'>
 								{info}
 							</Tooltip>
-						</InputGroup>
-					)
+						)}
+					</InputGroup>
 				);
 				break;
 			case paymentGroupName.CREDIT_CARD:

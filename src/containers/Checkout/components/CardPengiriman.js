@@ -22,7 +22,6 @@ export default class CardPengiriman extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-
 		this.state = {
 			elockerTab: false,
 			shipping: [],
@@ -31,7 +30,8 @@ export default class CardPengiriman extends Component {
 			closeSelect: true,
 			latLngExist: false,
 			loading: false,
-			isJabodetabekArea: false
+			isJabodetabekArea: false,
+			dataChoised: 0
 		};
 		this.onChoisedAddress = this.onChoisedAddress.bind(this);
 		this.onChangeAddress = this.onChangeAddress.bind(this);
@@ -39,6 +39,17 @@ export default class CardPengiriman extends Component {
 		this.onChosenLocker = this.onChosenLocker.bind(this);
 		this.openModal = this.openModal.bind(this);
 	}
+
+	// componentWillMount() {
+	// 	const data = this.props.addresses.map((option) => {
+	// 		const id = option.id;
+	// 		return id === this.state.shipping[0].value ? option : null;
+	// 	}).filter((option) => {
+	// 		return option;
+	// 	});
+	// 	console.log(data);
+	// 	return data;
+	// }
 
 	componentWillReceiveProps(nextProps) {
 		const shipping = nextProps.addresses;
@@ -86,12 +97,19 @@ export default class CardPengiriman extends Component {
 				shipping: address
 			});
 		}
+
+		if (shipping) {
+			this.setState({
+				selectedAddress: shipping[this.state.dataChoised]
+			});
+		}
 	}
 
 	onChoisedAddress(dataChoised) {
 		const selectedAddress = this.props.addresses.find(e => e.id === dataChoised.value);
 		this.setState({
-			selectedAddress
+			selectedAddress,
+			dataChoised: dataChoised.value
 		});
 		this.props.onChoisedAddress(selectedAddress);
 	}
@@ -160,20 +178,14 @@ export default class CardPengiriman extends Component {
 		);
 		const { latLngExist } = this.state;
 
-		const addressPreview = () => {
-			const data = this.props.addresses.map((option) => {
-				const id = option.id;
-				return id === this.state.shipping[0].value ? option : null;
-			}).filter((option) => {
-				return option;
-			});
+		const addressPreview = (data) => {
 			return (
 				<p>
-					<strong>{data[0].attributes.addressLabel}</strong> <br />
-					{data[0].attributes.fullname} <br />
-					{data[0].attributes.address} <br />
-					{data[0].attributes.district}, {data[0].attributes.city}, {data[0].attributes.province}, {data[0].attributes.zipcode} <br />
-					P: {data[0].attributes.phone}
+					<strong>{data.attributes.addressLabel}</strong> <br />
+					{data.attributes.fullname} <br />
+					{data.attributes.address} <br />
+					{data.attributes.district}, {data.attributes.city}, {data.attributes.province}, {data.attributes.zipcode} <br />
+					P: {data.attributes.phone}
 				</p> 
 			);
 		};
@@ -212,7 +224,7 @@ export default class CardPengiriman extends Component {
 										}
 									</Level.Right>
 								</Level>
-								{addressPreview()}
+								{addressPreview(this.state.selectedAddress)}
 								<Button type='button' icon='pencil' iconPosition='left' className='font-orange' content='Ubah Alamat ini' onClick={() => this.onChangeAddress('edit')} />
 							</div>
 						}
