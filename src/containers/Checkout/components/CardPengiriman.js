@@ -269,6 +269,12 @@ export default class CardPengiriman extends Component {
 						)
 					}
 					
+					{
+						renderIf(this.props.errorPlaceOrder && this.props.errorPlaceOrder.message === 'Address is not valid. Please update your address.')(
+							<div className='font-red'>Alamat anda tidak valid, mohon untuk melakukan perubahan Alamat</div>
+						)
+					}
+					
 					
 				</Tabs.Panel>
 				<Tabs.Panel title='Ambil Di Toko/E-locker (O2O)' sprites='o2o-off' spritesActive='o2o-on' >

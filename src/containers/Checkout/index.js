@@ -374,8 +374,8 @@ class Checkout extends Component {
 			noHP: edit && editAddress ? editAddress.phone : '',
 			kota: edit && editAddress ? editAddress.city : '',
 			provinsi: edit && editAddress ? editAddress.province : '',
-			kotProv: edit && editAddress ? `${editAddress.city}, ${editAddress.province}` : '',
-			kecamatan: edit && editAddress ? editAddress.district : '',
+			kotProv: edit && editAddress && editAddress.city.toLowerCase() !== 'dki jakarta' ? `${editAddress.city}, ${editAddress.province}` : '',
+			kecamatan: edit && editAddress && editAddress.district.toLowerCase() !== 'jakarta' ? editAddress.district : '',
 			kodepos: edit && editAddress ? editAddress.zipcode : '',
 			address: edit && editAddress ? editAddress.address : '',
 			latitude: edit && editAddress ? editAddress.latitude : '',
@@ -1116,6 +1116,7 @@ class Checkout extends Component {
 										errorDropship={this.state.errorDropship}
 										activeShippingTab={this.activeShippingTab}
 										loading={this.state.loadingCardPengiriman}
+										errorPlaceOrder={this.props.errorPlaceOrder}
 									/>
 								</Col>
 								<Col flex grid={4} className={enablePesananPengiriman || this.state.restrictO2o ? '' : styles.disabled}>
@@ -1337,6 +1338,7 @@ const mapStateToProps = (state) => {
 		district: state.addresses.district,
 		totalItems: state.cart.totalItems,
 		gosendInfo: state.cart.gosendInfo,
+		errorPlaceOrder: state.cart.error,
 	};
 };
 
