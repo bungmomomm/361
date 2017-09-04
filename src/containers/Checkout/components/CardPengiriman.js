@@ -98,7 +98,7 @@ export default class CardPengiriman extends Component {
 			});
 		}
 
-		if (shipping) {
+		if (shipping[this.state.dataChoised]) {
 			this.setState({
 				selectedAddress: shipping[this.state.dataChoised]
 			});
@@ -118,6 +118,7 @@ export default class CardPengiriman extends Component {
 		this.setState({
 			loading: true
 		});
+		console.log(this.state.selectedAddress);
 		this.props.onChangeAddress(this.state.selectedAddress, e);
 	}
 
@@ -180,13 +181,15 @@ export default class CardPengiriman extends Component {
 
 		const addressPreview = (data) => {
 			return (
-				<p>
-					<strong>{data.attributes.addressLabel}</strong> <br />
-					{data.attributes.fullname} <br />
-					{data.attributes.address} <br />
-					{data.attributes.district}, {data.attributes.city}, {data.attributes.province}, {data.attributes.zipcode} <br />
-					P: {data.attributes.phone}
-				</p> 
+				data ? (
+					<p>
+						<strong>{data.attributes.addressLabel}</strong> <br />
+						{data.attributes.fullname} <br />
+						{data.attributes.address} <br />
+						{data.attributes.district}, {data.attributes.city}, {data.attributes.province}, {data.attributes.zipcode} <br />
+						P: {data.attributes.phone}
+					</p> 
+				) : <p>loading...</p>
 			);
 		};
 		
@@ -224,7 +227,11 @@ export default class CardPengiriman extends Component {
 										}
 									</Level.Right>
 								</Level>
-								{addressPreview(this.state.selectedAddress)}
+								{
+									renderIf(this.state.selectedAddress)(
+										addressPreview(this.state.selectedAddress)
+									)
+								}
 								<Button type='button' icon='pencil' iconPosition='left' className='font-orange' content='Ubah Alamat ini' onClick={() => this.onChangeAddress('edit')} />
 							</div>
 						}

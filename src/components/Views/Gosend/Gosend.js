@@ -86,13 +86,14 @@ class Gosend extends Component {
 	}
 
 	onSetPoint(props, marker, e) {
+		this.onGeoLoad(e.latLng.lat(), e.latLng.lng());
 		this.setState({
 			point: {
 				lat: e.latLng.lat(),
 				lng: e.latLng.lng()
-			}
+			},
+			displayMap: false
 		});
-		this.onGeoLoad(e.latLng.lat(), e.latLng.lng());
 	}
 	
 	onMouseoverPolygon(props, polygon, e) {

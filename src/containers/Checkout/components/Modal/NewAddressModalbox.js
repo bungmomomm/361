@@ -132,6 +132,7 @@ export default class NewAddressModalbox extends Component {
 	}
 
 	onGeoLoad(lat, long, formattedAddress) {
+		console.log(formattedAddress);
 		const formData = this.state.formData;
 		const gosendData = this.state.gosendData;
 		this.setState({
