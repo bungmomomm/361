@@ -327,7 +327,7 @@ class Checkout extends Component {
 
 	onChoisedAddress(address, updatePaymentMethodList = true) {
 		const { dispatch } = this.props;
-		let billing = this.props.billing.length > 0 ? this.props.billing[0] : false;
+		const billing = this.props.billing.length > 0 ? this.props.billing[0] : false;
 		if (!!address.type && address.type !== 'pickup') {
 			this.setState({
 				selectedAddress: address
@@ -347,8 +347,7 @@ class Checkout extends Component {
 				notifInfo: true
 			});
 			if (!this.props.payments.billingPhoneNumberEdited) {
-				billing = this.props.billing[0];
-				dispatch(changeBillingNumber(billing.attributes.phone));
+				dispatch(changeBillingNumber(address.attributes.phone));
 			}
 		}).catch((error) => {
 			this.setState({
@@ -365,24 +364,26 @@ class Checkout extends Component {
 		if (typeof this.props.cityProv === 'undefined') {
 			dispatch(getCityProvince(this.props.cookies.get('user.token')));
 		}
-		const editAddress = address.attributes;
+		const editAddress = address ? address.attributes : null;
 		const edit = flagAdd !== 'add';
 		const formDataAddress = {
-			id: edit ? address.id : '',
-			label: edit ? editAddress.addressLabel : '',
-			nama: edit ? editAddress.fullname : '',
-			noHP: edit ? editAddress.phone : '',
-			kota: edit ? editAddress.city : '',
-			provinsi: edit ? editAddress.province : '',
-			kotProv: edit ? `${editAddress.city}, ${editAddress.province}` : '',
-			kecamatan: edit ? editAddress.district : '',
-			kodepos: edit ? editAddress.zipcode : '',
-			address: edit ? editAddress.address : '',
-			latitude: edit ? editAddress.latitude : '',
-			longitude: edit ? editAddress.longitude : '',
-			isEdit: edit
+			id: edit && editAddress ? address.id : '',
+			label: edit && editAddress ? editAddress.addressLabel : '',
+			nama: edit && editAddress ? editAddress.fullname : '',
+			noHP: edit && editAddress ? editAddress.phone : '',
+			kota: edit && editAddress ? editAddress.city : '',
+			provinsi: edit && editAddress ? editAddress.province : '',
+			kotProv: edit && editAddress ? `${editAddress.city}, ${editAddress.province}` : '',
+			kecamatan: edit && editAddress ? editAddress.district : '',
+			kodepos: edit && editAddress ? editAddress.zipcode : '',
+			address: edit && editAddress ? editAddress.address : '',
+			latitude: edit && editAddress ? editAddress.latitude : '',
+			longitude: edit && editAddress ? editAddress.longitude : '',
+			isEdit: flagAdd !== 'add'
 		};
-		this.getDistricts(`${editAddress.city}, ${editAddress.province}`);
+		if (editAddress) {
+			this.getDistricts(`${editAddress.city}, ${editAddress.province}`);
+		}
 
 		this.setState({
 			enableNewAddress: true,

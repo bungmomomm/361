@@ -222,11 +222,11 @@ export default class NewAddressModalbox extends Component {
 
 	gosendCheck(e) {
 		const gosendData = this.state.gosendData;
+		const isJakarta = this.selectProvince.state.selected.value.toLowerCase().includes('jakarta');
 		this.setState({
 			loading: true
 		});
 		if (e.name === 'provinsi' && e.value !== null) {
-			const isJakarta = e.value.toLowerCase().includes('jakarta');
 			if (isJakarta) {
 				this.getDistricts(e.value);
 			}
@@ -238,7 +238,7 @@ export default class NewAddressModalbox extends Component {
 			});
 		}
 		setTimeout(() => {
-			if (e.name === 'kecamatan' && this.selectProvince.state.selected.value && e.value !== null) {
+			if (e.name === 'kecamatan' && isJakarta && e.value !== null) {
 				this.setState({
 					resetMap: true
 				});
@@ -255,7 +255,6 @@ export default class NewAddressModalbox extends Component {
 						location_coords: PolygonResult ? PolygonResult.location_coords : []
 					}
 				});
-				
 			} else {
 				this.setState({
 					resetMap: false,
