@@ -120,6 +120,8 @@ class Checkout extends Component {
 			appliedBin: null,
 		};
 
+		this.restrictO2oFlag = false;
+
 		this.onAddCoupon = this.onAddCoupon.bind(this);
 		this.onRemoveCoupon = this.onRemoveCoupon.bind(this);
 		this.onResetCoupon = this.onResetCoupon.bind(this);
@@ -992,10 +994,12 @@ class Checkout extends Component {
 			this.setState({
 				restrictO2o: this.state.restrictO2o
 			});
+			this.restrictO2oFlag = true;
 		} else {
 			this.setState({
 				restrictO2o: false
 			});
+			this.restrictO2oFlag = false;
 		}
 		this.setState({
 			addressTabActive
@@ -1091,7 +1095,7 @@ class Checkout extends Component {
 											cart={!this.state.cart ? [] : this.state.cart}
 											onDeleteCart={this.onDeleteCart}
 											onUpdateQty={this.onUpdateQty}
-											restrictO2o={this.state.restrictO2o}
+											restrictO2o={this.restrictO2oFlag}
 											shippingMethodGosend={this.shippingMethodGosend}
 											selectedAddress={this.state.selectedAddress}
 											addressTabActive={this.state.addressTabActive}
