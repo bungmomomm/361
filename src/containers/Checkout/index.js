@@ -67,7 +67,8 @@ import {
 import { getRefreshToken } from '@/state/Auth/actions';
 
 import {
-	paymentMethodName
+	paymentMethodName,
+	paymentGroupName
 } from '@/state/Payment/constants';
 
 class Checkout extends Component {
@@ -1334,6 +1335,12 @@ const mapStateToProps = (state) => {
 
 	if (typeof state.payments.openNewCreditCard === 'undefined') {
 		state.payments.openNewCreditCard = (getCreditCardNumber(state) < 1);
+	}
+
+	if (state.payments.selectedPayment.value === paymentGroupName.CREDIT_CARD) {
+		if (state.payments.selectedPayment.cards < 1) {
+			state.payments.twoClickEnabled = false;
+		}
 	}
 	return {
 		propsAddresses: state.addresses,
