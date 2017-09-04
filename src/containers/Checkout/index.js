@@ -543,7 +543,8 @@ class Checkout extends Component {
 					card: {
 						value: this.props.payments.selectedCard.value,
 						bank: this.props.payments.selectedBank.value,
-						detail: this.props.payments.selectedCardDetail
+						detail: this.props.payments.selectedCardDetail,
+						type: this.props.payments.selectedCard.type,
 					},
 					term: this.props.payments.term,
 					cardNumber: this.props.payments.selectedCard.value,
@@ -797,7 +798,7 @@ class Checkout extends Component {
 	}
 	onInstallmentCCNumberChange(event) {
 		if (event.valid) {
-			this.props.dispatch(changeInstallmentCCNumber(event.ccNumber));
+			this.props.dispatch(changeInstallmentCCNumber(event.ccNumber, event.ccType));
 			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 			const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
 			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event, bank));

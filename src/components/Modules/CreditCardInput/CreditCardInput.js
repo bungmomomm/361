@@ -56,9 +56,11 @@ export default class CreditCardInput extends Component {
 	}
 
 	luhnCCValidation(cc) {
+		const validCard = creditCardType(cc);
 		this.props.onChange({
 			ccNumber: cc,
 			valid: luhnCC.isValid(cc),
+			ccType: validCard[0] ? validCard[0].type : ''
 		});
 		return luhnCC.isValid(cc) ? this.setValidInput('green') : this.setValidInput('red');
 	}

@@ -236,7 +236,7 @@ const getSprintPayload = (orderId, payment, paymentDetail) => {
 			card_number: paymentDetail.cardNumber,
 			card_expiration_month: paymentDetail.cardMonth,
 			card_expiration_year: paymentDetail.cardYear,
-			card_type: '',
+			card_type: paymentDetail.card.type,
 			card_cvv: paymentDetail.cardCVV,
 			amount: paymentDetail.amount
 		}
