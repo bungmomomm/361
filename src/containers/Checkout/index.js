@@ -982,8 +982,9 @@ class Checkout extends Component {
 		
 		
 		if ((!this.props.isPickupable || this.props.isPickupable === '0') && !addressTabActive) {
+			this.state.restrictO2o = true;
 			this.setState({
-				restrictO2o: true
+				restrictO2o: this.state.restrictO2o
 			});
 		} else {
 			this.setState({
