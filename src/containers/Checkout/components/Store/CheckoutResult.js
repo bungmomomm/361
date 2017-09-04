@@ -11,7 +11,7 @@ const CheckoutResult = (props) => {
 	return (
 		<div className={styles.footer}>
 			{
-				props.shipping.gosend.gosendSupported && props.shipping.gosend.gosendApplicable && props.addressTabActive ? 
+				props.shipping.gosend.gosendSupported && props.shipping.gosend.gosendApplicable && props.addressTabActive && !props.isJabodetabekArea ? 
 					<div className={styles.deliveryInfo}>
 						{
 							!props.gosendInfo ? null :
@@ -23,7 +23,7 @@ const CheckoutResult = (props) => {
 					</div>
 					:
 					(
-						props.shipping.gosend.gosendSupported && !latLng && props.addressTabActive ? 
+						props.shipping.gosend.gosendSupported && !latLng && props.addressTabActive && !props.isJabodetabekArea ? 
 							<div className={styles.deliveryInfo}>
 								{
 									!props.gosendInfo ? null :
@@ -35,7 +35,7 @@ const CheckoutResult = (props) => {
 								<a role='link' tabIndex='0' onClick={props.onChangeAddress} className='font-orange'>Mohon pilih titik lokasi pengiriman anda</a>
 							</div>
 						:
-						!props.shipping.note ? null : <div className={styles.deliveryInfo}>{props.shipping.note}</div>
+						!props.shipping.note || props.isJabodetabekArea ? null : <div className={styles.deliveryInfo}>{props.shipping.note}</div>
 					)
 			}
 			
