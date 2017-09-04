@@ -1,4 +1,4 @@
-import { request } from '@/utils';
+import { request, getBaseUrl } from '@/utils';
 import { paymentInfoUpdated, getAvailablePaymentMethod } from '@/state/Payment/actions';
 import { removeCoupon } from '@/state/Coupon/actions';
 import { 
@@ -45,13 +45,11 @@ const placeOrderRequest = (token, address) => ({
 	}
 });
 
-const placeOrderReceived = (soNumber, code = null, message = null) => ({
+const placeOrderReceived = (soNumber) => ({
 	type: CRT_PLACE_ORDER, 
 	status: 1, 
 	payload: {
-		soNumber,
-		code,
-		message,
+		soNumber
 	}
 });
 
@@ -99,11 +97,15 @@ const getCart = token => dispatch => new Promise((resolve, reject) => {
 
 	request(req)
 	.then((response) => {
-		const isPickupable = response.data.data.attributes.delivery_method.map((value, index) => {
+		const cartResponse = response.data;
+		if (cartResponse.data.attributes.total_cart < 1) { 
+			top.location.href = getBaseUrl();
+		}
+		const isPickupable = cartResponse.data.attributes.delivery_method.map((value, index) => {
 			return value;
 		}).filter(e => e.id === 'pickup');
-		dispatch(paymentInfoUpdated(getCartPaymentData(response.data.data.attributes.total_pricing, 'cart')));
-		resolve(dispatch(cartReceived(setCartModel(response.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, response.data.data.attributes.total_cart)));
+		dispatch(paymentInfoUpdated(getCartPaymentData(cartResponse.data.attributes.total_pricing, 'cart')));
+		resolve(dispatch(cartReceived(setCartModel(response.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, cartResponse.data.attributes.total_cart)));
 		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
@@ -113,52 +115,49 @@ const getCart = token => dispatch => new Promise((resolve, reject) => {
 
 const getPlaceOrderCart = (token, address, billing = false, updatePaymentMethodList = true) => dispatch => new Promise((resolve, reject) => {
 	dispatch(placeOrderRequest(token, address));
-	if (typeof address === 'undefined') {
-		reject({
-			message: 'Address undefined'
-		});
-		return;
-	}
-	const data = setPayloadPlaceOrder(address, billing);
-	
-	const req = {
-		token, 
-		path: 'orders',
-		method: 'POST',
-		body: {
-			data
-		}
-	};
-	request(req)
-	.then((response) => {
-		const dataResponse = response.data;
-		dispatch(placeOrderReceived(dataResponse.data.id));
-		request({
+	if (typeof address !== 'undefined') {
+		const data = setPayloadPlaceOrder(address, billing);
+		
+		const req = {
 			token, 
-			path: `orders/${dataResponse.data.id}?get_cart=1`,
-			method: 'GET'
-		})
-		.then((res) => {
-			const isPickupable = res.data.data.attributes.delivery_method_provided.map((value, index) => {
-				return value;
-			}).filter(e => e.id === 'pickup');
-			dispatch(paymentInfoUpdated(getCartPaymentData(res.data.data.attributes.total_price, 'order')));
-			dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, response.data.data.attributes.total_price.count, res.data.data.attributes.gosend_description, { ovoId: res.data.data.attributes.ovo_id, ovoFlag: res.data.data.attributes.ovo_verified_flag }));
-			if (updatePaymentMethodList) {
-				dispatch(getAvailablePaymentMethod(token));
+			path: 'orders',
+			method: 'POST',
+			body: {
+				data
 			}
-			resolve(setCartModel(res.data));
+		};
+		request(req)
+		.then((response) => {
+			const dataResponse = response.data;
+			dispatch(placeOrderReceived(dataResponse.data.id));
+			request({
+				token, 
+				path: `orders/${dataResponse.data.id}?get_cart=1`,
+				method: 'GET'
+			})
+			.then((res) => {
+				const isPickupable = res.data.data.attributes.delivery_method_provided.map((value, index) => {
+					return value;
+				}).filter(e => e.id === 'pickup');
+				dispatch(paymentInfoUpdated(getCartPaymentData(res.data.data.attributes.total_price, 'order')));
+				dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, response.data.data.attributes.total_price.count, res.data.data.attributes.gosend_description, { ovoId: res.data.data.attributes.ovo_id, ovoFlag: res.data.data.attributes.ovo_verified_flag }));
+				if (updatePaymentMethodList) {
+					dispatch(getAvailablePaymentMethod(token));
+				}
+				resolve(setCartModel(res.data));
+			})
+			.catch((error) => {
+				dispatch(placeOrderReceived(false));
+				reject(error);
+			});
 		})
 		.catch((error) => {
-			dispatch(placeOrderReceived(false, error.response.data.code, error.response.data.errorMessage));
+			dispatch(placeOrderReceived(false));
 			reject(error);
 		});
-	})
-	.catch((error) => {
-		
-		dispatch(placeOrderReceived(false, error.response.data.code, error.response.data.errorMessage));
-		reject(error);
-	});
+	} else {
+		dispatch(placeOrderReceived(false));
+	}
 });
 
 const deleteCart = (token, productId, props) => dispatch => new Promise((resolve, reject) => {
