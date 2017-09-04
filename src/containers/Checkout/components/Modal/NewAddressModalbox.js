@@ -159,6 +159,7 @@ export default class NewAddressModalbox extends Component {
 	}
 
 	getDistricts(cityProv) {
+		console.log(cityProv);
 		this.props.getDistricts(cityProv);
 	}
 
@@ -224,9 +225,11 @@ export default class NewAddressModalbox extends Component {
 		this.setState({
 			loading: true
 		});
-		if (e.name === 'provinsi' && e.value !== null && e.value > 0) {
-			this.getDistricts(e.value);
-			const isJakarta = this.selectProvince.state.selected.value.toLowerCase().includes('jakarta');
+		if (e.name === 'provinsi' && e.value !== null) {
+			const isJakarta = e.value.toLowerCase().includes('jakarta');
+			if (isJakarta) {
+				this.getDistricts(e.value);
+			}
 			this.setState({
 				isJakarta,
 				loading: false,
@@ -235,7 +238,7 @@ export default class NewAddressModalbox extends Component {
 			});
 		}
 		setTimeout(() => {
-			if (e.name === 'kecamatan' && this.selectProvince.state.selected.value && e.value !== null && e.value > 0) {
+			if (e.name === 'kecamatan' && this.selectProvince.state.selected.value && e.value !== null) {
 				this.setState({
 					resetMap: true
 				});
@@ -362,7 +365,7 @@ export default class NewAddressModalbox extends Component {
 							)
 						}
 						{
-							renderIf(this.props.district)(
+							renderIf(this.props.district && !errors.has('provinsi'))(
 								<InputGroup>
 									<Select 
 										horizontal

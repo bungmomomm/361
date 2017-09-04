@@ -73,6 +73,7 @@ const getListAvailablePaymentMethod = (response) => {
 				if (parseInt(paymentData.fg_default, 10) === 1) {
 					methodData.selected = true;
 				}
+				methodData.cards = paymentData.cards.length;
 				paymentData.cards.unshift({
 					label: '-- Pilih Kartu',
 					value: null,

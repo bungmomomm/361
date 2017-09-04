@@ -137,7 +137,9 @@ class Gosend extends Component {
 				this.autocomplete.addListener('place_changed', () => {
 					const place = this.autocomplete.getPlace();
 					if (place.geometry) {
-						this.setAddress(place.formatted_address);
+						if (place.formatted_address) {
+							this.setAddress(place.formatted_address);
+						}
 						this.setCenter({
 							lat: place.geometry.location.lat(), 
 							lng: place.geometry.location.lng()
