@@ -60,6 +60,7 @@ export default class NewAddressModalbox extends Component {
 			district: {},
 			loading: false,
 			pinPoint: '',
+			isJakarta: false,
 			enableGosend: false,
 			renderDistrict: true,
 			gosendData: {
@@ -108,7 +109,6 @@ export default class NewAddressModalbox extends Component {
 			this.setState({
 				loading: false
 			});
-			// this.onChangePoint();
 		}
 		if (nextProps.shown) {
 			this.setState({
@@ -179,23 +179,39 @@ export default class NewAddressModalbox extends Component {
 		const { formDataAddress } = this.props;
 		const gosendData = this.state.gosendData;
 		if (isEdit) {
-			if (this.props.formDataAddress.kotProv.toLowerCase().includes('jakarta')) {
+			const isJakarta = formDataAddress.kotProv.toLowerCase().includes('jakarta');
+			if (isJakarta) {
 				const PolygonResult = this.constructor.getPolygonData(this.props.formDataAddress.kecamatan.toLowerCase());
 				const locationCoords = PolygonResult.location_coords;
-				const lat = formDataAddress.latitude || PolygonResult.center.lat;
-				const lng = formDataAddress.longitude || PolygonResult.center.lng;
-				this.setState({
-					gosendData: {
-						...gosendData,
-						center: {
-							lat, 
-							lng,
+				if (formDataAddress.latitude && formDataAddress.longitude) {
+					this.setState({
+						gosendData: {
+							...gosendData,
+							center: {
+								lat: formDataAddress.latitude,
+								lng: formDataAddress.longitude
+							},
+							location_coords: locationCoords
 						},
-						location_coords: locationCoords
-					},
-					pinPoint: 'showAddress',
-					isCustomerData: true,
-				});
+						isJakarta,
+						pinPoint: 'showAddress',
+						isCustomerData: true,
+					});
+				} else {
+					this.setState({
+						gosendData: {
+							...gosendData,
+							center: {
+								lat: PolygonResult.center.lat, 
+								lng: PolygonResult.center.lng
+							},
+							location_coords: locationCoords
+						},
+						isJakarta,
+						pinPoint: 'showToggleButton',
+						isCustomerData: true,
+					});
+				}
 			} else {
 				this.setState({
 					formattedAddress: '',
@@ -204,6 +220,7 @@ export default class NewAddressModalbox extends Component {
 						center: {},
 						location_coords: []
 					},
+					isJakarta,
 					pinPoint: 'showToggleButton',
 					isCustomerData: true
 				});

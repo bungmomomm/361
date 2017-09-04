@@ -44,7 +44,7 @@ class Gosend extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (this.state.displayMap !== nextProps.displayMap) {
+		if (nextProps.displayMap) {
 			this.setState({
 				displayMap: nextProps.displayMap
 			});
@@ -91,7 +91,8 @@ class Gosend extends Component {
 			point: {
 				lat: e.latLng.lat(),
 				lng: e.latLng.lng(),
-			}
+			},
+			displayMap: false
 		});
 	}
 	
