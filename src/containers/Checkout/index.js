@@ -790,7 +790,7 @@ class Checkout extends Component {
 				isJabo = true;
 			}
 		});
-		const attributes = selectedAddress.attributes;
+		const attributes = selectedAddress ? selectedAddress.attributes : null;
 		this.setState({
 			
 			selectedAddress: {
@@ -804,8 +804,8 @@ class Checkout extends Component {
 					addressLabel: formData.name.trim(),
 					phone: formData.no_hp.trim(),
 					zipcode: formData.kodepos.trim(),
-					latitude: formData.latitude.trim(),
-					longitude: formData.longitude.trim(),
+					latitude: formData.latitude ? formData.latitude.trim() : '',
+					longitude: formData.latitude ? formData.longitude.trim() : '',
 					fullname: formData.penerima.trim(),
 					isJabodetabekArea: isJabo ? '1' : '0'
 				}
