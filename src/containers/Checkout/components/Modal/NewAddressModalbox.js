@@ -62,6 +62,7 @@ export default class NewAddressModalbox extends Component {
 			pinPoint: '',
 			isJakarta: false,
 			enableGosend: false,
+			kecamatanReset: false,
 			renderDistrict: true,
 			gosendData: {
 				center: {
@@ -249,16 +250,23 @@ export default class NewAddressModalbox extends Component {
 			isJakarta = this.selectProvince.state.selected.value.toLowerCase().includes('jakarta');
 		}
 		this.setState({
-			loading: true,
+			loading: true
 		});
 		if (e.name === 'provinsi' && e.value !== null) {
 			this.getDistricts(e.value);
 			this.setState({
 				isJakarta,
+				kecamatanReset: true,
 				loading: false,
 				formattedAddress: '',
-				pinPoint: 'showToggleButton'
+				pinPoint: 'showToggleButton',
+				renderDistrict: false
 			});
+			setTimeout(() => {
+				this.setState({
+					renderDistrict: true
+				});
+			}, 20);
 		}
 		setTimeout(() => {
 			if (e.name === 'kecamatan' && isJakarta && e.value !== null) {
@@ -399,8 +407,8 @@ export default class NewAddressModalbox extends Component {
 										message={errors.has('kecamatan') ? 'Kecamatan field is required.' : ''}
 										options={this.props.district || []}
 										selected={{
-											label: this.props.formDataAddress.kecamatan || '',
-											value: this.props.formDataAddress.kecamatan || ''
+											label: this.state.kecamatanReset ? '' : this.props.formDataAddress.kecamatan,
+											value: this.state.kecamatanReset ? '' : this.props.formDataAddress.kecamatan
 										}} 
 									/>
 								</InputGroup>

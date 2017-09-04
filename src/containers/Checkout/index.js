@@ -764,7 +764,6 @@ class Checkout extends Component {
 
 	onSetStateAddress(formData) {
 		const { dispatch } = this.props;
-		console.log(this.state.selectedAddress);
 		dispatch(saveAddress(this.props.cookies.get('user.token'), formData, this.state.selectedAddress));
 	}
 
@@ -796,7 +795,9 @@ class Checkout extends Component {
 					fullname: formData.penerima,
 					isJabodetabekArea: isJabo ? '1' : '0'
 				}
-			}
+			},
+			enablePesananPengiriman: true,
+			enablePembayaran: true
 				
 		}, this.onSetStateAddress(formData));
 
