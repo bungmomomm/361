@@ -288,7 +288,7 @@ export default class CardPembayaran extends Component {
 			case paymentGroupName.INTERNET_BANKING:
 				paymentOptions = (
 					<InputGroup>
-						<Select selected={selectedPaymentOption} emptyFilter={false} name={`payment-${selectedPayment.value}`} options={selectedPayment.paymentItems} onChange={this.onPaymentOptionChange} reset={resetPaymentOption} />
+						<Select emptyFilter={false} name={`payment-${selectedPayment.value}`} options={selectedPayment.paymentItems} onChange={this.onPaymentOptionChange} reset={resetPaymentOption} />
 						{ renderIf(selectedPaymentOption && typeof selectedPaymentOption.settings !== 'undefined' && selectedPaymentOption.settings.info.length > 0)(
 							<Tooltip position='right' content='Info'>
 								{info}
@@ -423,7 +423,7 @@ export default class CardPembayaran extends Component {
 						<p>Pilih Metode Pembayaran</p>
 						{ renderIf((!this.props.loadingUpdateCart) && (!this.state.loadingCardPengiriman))(
 							<InputGroup>
-								<Select selected={selectedPayment || {}} name='paymentMethods' options={paymentMethods.methods} onChange={this.onPaymentMethodChange} />
+								<Select name='paymentMethods' options={paymentMethods.methods} onChange={this.onPaymentMethodChange} />
 								{ renderIf(
 									selectedPaymentOption &&
 									(selectedPayment.value === 'cod' || selectedPayment.value === 'gratis') &&

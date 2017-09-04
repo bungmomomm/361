@@ -103,7 +103,7 @@ const getListAvailablePaymentMethod = (response) => {
 						};
 						return installment;
 					});
-					bank.info = bank.name;
+					bank.info = '';
 					bank.sprites = bank.name.replace(' ', '_').toLowerCase();
 					bank.label = bank.name;
 					bank.value = {
