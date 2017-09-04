@@ -92,6 +92,7 @@ export default class CardPesananPengiriman extends Component {
 									))
 								}
 								<CheckoutResult 
+									isJabodetabekArea={(this.state.cartJabodetabek.indexOf(storeData.store.id) !== -1 && !this.props.restrictO2o)}
 									onChangeAddress={this.onPinPointAddress} 
 									gosendInfo={this.props.gosendInfo} 
 									addressTabActive={this.props.addressTabActive} 
