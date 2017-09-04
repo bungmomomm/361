@@ -196,6 +196,12 @@ class Checkout extends Component {
 			});
 		} else {
 			this.onReload(dispatch);
+			if (this.props.location.search.includes('failed')) {
+				this.setState({
+					notifInfo: false,
+					notifMessage: 'Transaksi gagal, silahkan mencoba kembali.',
+				});
+			}
 		}
 
 
@@ -292,13 +298,9 @@ class Checkout extends Component {
 					enablePembayaran: true
 				});
 				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress)).then(() => {
-					this.setState({
-						notifInfo: true,
-					});
+					
 				}).catch((error) => {
 					this.setState({
-						notifInfo: true,
-						notifMessage: error.response.data.errorMessage,
 						enablePembayaran: false
 					});
 				});
@@ -306,6 +308,7 @@ class Checkout extends Component {
 		});
 		dispatch(getCart(this.props.cookies.get('user.token')));
 		dispatch(getAvailablePaymentMethod(this.props.cookies.get('user.token')));
+		
 	}
 
 	onAddCoupon(coupon) {
@@ -343,16 +346,11 @@ class Checkout extends Component {
 		dispatch(o2oChoise(this.props.cart));
 
 		return dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), address, billing, updatePaymentMethodList)).then(() => {
-			this.setState({
-				notifInfo: true
-			});
 			if (!this.props.payments.billingPhoneNumberEdited) {
 				dispatch(changeBillingNumber(address.attributes.phone));
 			}
 		}).catch((error) => {
 			this.setState({
-				notifInfo: true,
-				notifMessage: error.response.data.errorMessage,
 				enablePembayaran: false
 			});
 		});
@@ -973,13 +971,10 @@ class Checkout extends Component {
 			dispatch(o2oChoise(this.props.cart));
 		} else {
 			dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress)).then(() => {
-				this.setState({
-					notifInfo: true,
-				});
+				
 			}).catch((error) => {
 				this.setState({
-					// notifInfo: true,
-					// notifMessage: error.response.data.errorMessage,
+					
 					enablePembayaran: false,
 					enablePesananPengiriman: false
 				});
@@ -1180,7 +1175,7 @@ class Checkout extends Component {
 					<EcashModalBox shown={this.props.payments.showEcash} src={this.props.payments.mandiriRedirectUrl} onClose={this.onMandiriEcashClose} />
 					{
 						renderIf(!this.state.notifInfo)(
-							<Notification shown={this.state.notifInfo || false} content={this.state.notifMessage} />
+							<Notification shown={!this.state.notifInfo} content={this.state.notifMessage} />
 						)
 					}
 
