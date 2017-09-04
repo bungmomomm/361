@@ -10,6 +10,7 @@ import {
 const initialState = {
 	loading: false,
 	gosendInfo: null,
+	error: null,
 	data: [
 		{
 			store: {
@@ -72,11 +73,16 @@ export default (state = initialState, action) => {
 			return {
 				...state, 
 				loading: false,
+				error: {
+					code: action.payload.code,
+					message: action.payload.message 
+				}
 			};
 		}
 		return {
 			...state, 
 			soNumber: action.payload.soNumber,
+			error: null,
 			loading: true,
 		};
 	}

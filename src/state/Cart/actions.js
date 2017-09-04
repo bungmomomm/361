@@ -45,11 +45,13 @@ const placeOrderRequest = (token, address) => ({
 	}
 });
 
-const placeOrderReceived = (soNumber) => ({
+const placeOrderReceived = (soNumber, code = null, message = null) => ({
 	type: CRT_PLACE_ORDER, 
 	status: 1, 
 	payload: {
-		soNumber
+		soNumber,
+		code,
+		message,
 	}
 });
 
@@ -149,13 +151,13 @@ const getPlaceOrderCart = (token, address, billing = false, updatePaymentMethodL
 			resolve(setCartModel(res.data));
 		})
 		.catch((error) => {
-			dispatch(placeOrderReceived(false));
+			dispatch(placeOrderReceived(false, error.response.data.code, error.response.data.errorMessage));
 			reject(error);
 		});
 	})
 	.catch((error) => {
 		
-		dispatch(placeOrderReceived(false));
+		dispatch(placeOrderReceived(false, error.response.data.code, error.response.data.errorMessage));
 		reject(error);
 	});
 });

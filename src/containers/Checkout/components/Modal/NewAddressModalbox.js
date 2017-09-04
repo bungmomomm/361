@@ -95,7 +95,7 @@ export default class NewAddressModalbox extends Component {
 				gosendData: {
 					...gosendData,
 					location_coords: locationCoords
-				}, 
+				},
 				isCustomerData: true
 			});
 		}
@@ -178,7 +178,7 @@ export default class NewAddressModalbox extends Component {
 		const { formDataAddress } = this.props;
 		const gosendData = this.state.gosendData;
 		if (isEdit) {
-			if (this.props.formDataAddress.kotProv.toLowerCase().includes('jakarta')) {
+			if (this.props.formDataAddress.kotProv.toLowerCase().includes('jakarta') && this.props.formDataAddress.kecamatan.toLowerCase() !== 'jakarta') {
 				const PolygonResult = this.constructor.getPolygonData(this.props.formDataAddress.kecamatan.toLowerCase());
 				const locationCoords = PolygonResult.location_coords;
 				const lat = formDataAddress.latitude || PolygonResult.center.lat;
