@@ -315,7 +315,8 @@ const getAvailablePaymentMethod = (token) => (dispatch) => {
 		method: 'GET'
 	}).then((response) => {
 		dispatch(availablePaymentMethodReceived(getListAvailablePaymentMethod(response.data)));
-		
+		dispatch(paymentMethodChanged(false));
+		dispatch(changePaymentOption(false));
 	}).catch((error) => {
 	});
 };

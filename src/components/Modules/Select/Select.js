@@ -36,7 +36,7 @@ export default class Select extends Component {
 		if (this.state.options !== nextProps.options) {
 			this.setState({
 				options: nextProps.options,
-				emptyFilter: false,
+				emptyFilter: false
 			});
 		}
 		if (this.props.reset) {
@@ -44,8 +44,6 @@ export default class Select extends Component {
 				selected: {}
 			});
 		}
-
-		this.forceUpdate();
 	}
 
 // ----------------------------------------
