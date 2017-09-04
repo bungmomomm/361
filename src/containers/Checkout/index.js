@@ -975,9 +975,10 @@ class Checkout extends Component {
 				});
 			}).catch((error) => {
 				this.setState({
-					notifInfo: true,
-					notifMessage: error.response.data.errorMessage,
-					enablePembayaran: false
+					// notifInfo: true,
+					// notifMessage: error.response.data.errorMessage,
+					enablePembayaran: false,
+					enablePesananPengiriman: false
 				});
 			});
 		}
