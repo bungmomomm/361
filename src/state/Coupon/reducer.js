@@ -71,7 +71,8 @@ export default (state = initialState, action) => {
 	case CP_RESET_COUPON: {
 		return {
 			...state,
-			validCoupon: null
+			validCoupon: null,
+			code: 200,			
 		};
 	}
 	case CP_FAILED_COUPON: {

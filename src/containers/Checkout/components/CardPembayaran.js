@@ -85,6 +85,7 @@ export default class CardPembayaran extends Component {
 		this.onInstallmentCCMonthChange = this.onInstallmentCCMonthChange.bind(this);
 		this.onInstallmentCCYearChange = this.onInstallmentCCYearChange.bind(this);
 		this.onInstallmentCCCvvChange = this.onInstallmentCCCvvChange.bind(this);
+		this.onResetCoupon = this.onResetCoupon.bind(this);
 	}
 	onChange(event) {
 		this.setState({
@@ -94,6 +95,13 @@ export default class CardPembayaran extends Component {
 
 	onAddCoupon(event) {
 		this.props.onAddCoupon(this.state.voucherCode);
+	}
+
+	onResetCoupon(event) {
+		this.setState({
+			voucherCode: null
+		});
+		this.props.onResetCoupon();
 	}
 
 	onPaymentMethodChange(event) {
@@ -232,7 +240,7 @@ export default class CardPembayaran extends Component {
 						<Level.Right>
 							<InputGroup addons addonsAttached>
 								<Input size='small' name='voucherCode' color='red' onChange={this.onChange} onKeyPress={this.onChange} value={this.props.coupon} />
-								<Button type='button' className='font-red' size='small' icon='times' iconPosition='right' onClick={this.props.onResetCoupon} />
+								<Button type='button' className='font-red' size='small' icon='times' iconPosition='right' onClick={this.onResetCoupon} />
 							</InputGroup>
 						</Level.Right>
 					</Level>
