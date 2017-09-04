@@ -136,14 +136,14 @@ export default class NewAddressModalbox extends Component {
 		const formData = this.state.formData;
 		const gosendData = this.state.gosendData;
 		this.setState({
-			formattedAddress, 
-			cityProvGosend: false, 
-			districtGosend: true,
+			formattedAddress,
 			formData: {
 				...formData,
 				longitude: long.toString(), 
 				latitude: lat.toString()
 			},
+			pinPoint: 'showAddress',
+			displayMap: false,
 			gosendData: {
 				...gosendData
 			}

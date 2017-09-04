@@ -98,10 +98,13 @@ export default class CardPengiriman extends Component {
 			});
 		}
 
-		if (shipping[this.state.dataChoised]) {
-			this.setState({
-				selectedAddress: shipping[this.state.dataChoised]
-			});
+		if (shipping) {
+			if (shipping[this.state.dataChoised]) {
+				this.setState({
+					selectedAddress: shipping[this.state.dataChoised]
+				});
+			}
+
 		}
 	}
 

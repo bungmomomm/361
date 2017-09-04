@@ -91,8 +91,7 @@ class Gosend extends Component {
 			point: {
 				lat: e.latLng.lat(),
 				lng: e.latLng.lng()
-			},
-			displayMap: false
+			}
 		});
 	}
 	
@@ -193,7 +192,7 @@ class Gosend extends Component {
 											title={'The marker`s title will appear as a tooltip.'}
 											name={'Current location'} 
 											position={this.state.center}
-											clickable={false}
+											clickable
 											icon={{
 												url: this.markerIcon
 											}}
