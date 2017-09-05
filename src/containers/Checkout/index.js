@@ -171,6 +171,7 @@ class Checkout extends Component {
 		this.onVerity = this.onVerity.bind(this);
 		this.onRequestSprintInstallment = this.onRequestSprintInstallment.bind(this);
 		this.onSaveCcOption = this.onSaveCcOption.bind(this);
+		this.onRefreshToken = this.onRefreshToken.bind(this);
 		this.onReload = this.onReload.bind(this);
 		this.onBillingNumberChange = this.onBillingNumberChange.bind(this);
 		this.onCheckProductJabodetabek = this.onCheckProductJabodetabek.bind(this);
@@ -182,22 +183,7 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 
 		if (this.props.cookies.get('user.exp') < new Date().getTime()) {
-			dispatch(getRefreshToken({
-				userToken: this.props.cookies.get('user.token'),
-				userRFToken: this.props.cookies.get('user.rf.token')
-			})).then((newToken) => {
-				this.props.cookies.set('user.exp', newToken.expToken, { domain: '.mataharimall.com' });
-				this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: '.mataharimall.com' });
-				this.props.cookies.set('user.token', newToken.userToken, { domain: '.mataharimall.com' });
-
-				this.onReload(dispatch);
-			}).catch((error) => {
-				this.setState({
-					notifInfo: false,
-					notifMessage: error.response.data.errorMessage,
-					enablePembayaran: false
-				});
-			});
+			this.onRefreshToken(dispatch, this.onReload);
 		} else {
 			this.onReload(dispatch);
 		}
@@ -295,6 +281,27 @@ class Checkout extends Component {
 		}
 	}
 
+	onRefreshToken(dispatch, callback = null) {
+		dispatch(getRefreshToken({
+			userToken: this.props.cookies.get('user.token'),
+			userRFToken: this.props.cookies.get('user.rf.token')
+		})).then((newToken) => {
+			this.props.cookies.set('user.exp', newToken.expToken, { domain: process.env.SESSION_DOMAIN });
+			this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: process.env.SESSION_DOMAIN });
+			this.props.cookies.set('user.token', newToken.userToken, { domain: process.env.SESSION_DOMAIN });
+
+			callback(dispatch);
+
+			// this.onReload(dispatch);
+		}).catch((error) => {
+			this.setState({
+				notifInfo: false,
+				notifMessage: error.response.data.errorMessage,
+				enablePembayaran: false
+			});
+		});
+	}
+
 	onReload(dispatch) {
 		dispatch(getAddresses(this.props.cookies.get('user.token'))).then(defaultAddress => {
 			if (typeof defaultAddress.type !== 'undefined') {
@@ -304,17 +311,17 @@ class Checkout extends Component {
 					enablePembayaran: true
 				});
 				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress)).then(() => {
-					
+					dispatch(getAvailablePaymentMethod(this.props.cookies.get('user.token')));			
 				}).catch((error) => {
 					this.setState({
 						enablePembayaran: false
 					});
 				});
 			}
+		}).catch(error => {
+			this.onRefreshToken(dispatch, this.onReload);
 		});
 		dispatch(getCart(this.props.cookies.get('user.token')));
-		dispatch(getAvailablePaymentMethod(this.props.cookies.get('user.token')));
-		
 	}
 
 	onAddCoupon(coupon) {
