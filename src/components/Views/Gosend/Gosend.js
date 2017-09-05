@@ -4,7 +4,7 @@ import styles from './Gosend.scss';
 import classNames from 'classnames/bind';
 import Icon from '../../Elements/Icon/Icon';
 import Input from '../../Elements/Input/Input';
-// import Alert from '../../Modules/Alert/Alert';
+import Alert from '../../Modules/Alert/Alert';
 import { Map, Marker, Polygon, GoogleApiWrapper } from 'google-maps-react';
 import { renderIf } from '@/utils';
 
@@ -17,8 +17,10 @@ class Gosend extends Component {
 		this.state = {
 			displayMap: false,
 			center: this.props.center,
+			centerMap: {},
 			formattedAddress: '',
 			icon: 'gosend-marker.png',
+			outSideMap: 'in',
 			autocomplete: false,
 			markerInPolygon: false,
 			polygonArea: this.props.polygonArea || [],
@@ -91,10 +93,13 @@ class Gosend extends Component {
 				lng: e.latLng.lng(),
 			}
 		});
-		this.props.onSetPoint(true, this.state.formattedAddress, {
-			lat: e.latLng.lat(),
-			lng: e.latLng.lng(),
-		});
+		console.log(this.state.outSideMap);
+		if (this.state.outSideMap === 'in') {
+			this.props.onSetPoint(true, this.state.formattedAddress, {
+				lat: e.latLng.lat(),
+				lng: e.latLng.lng(),
+			});
+		}
 	}
 	
 	onMouseoverPolygon(props, polygon, e) {
@@ -142,13 +147,17 @@ class Gosend extends Component {
 						const latLng = new google.maps.LatLng(place.geometry.location.lat(), place.geometry.location.lng());
 						const polygonArea = new google.maps.Polygon({ paths: this.state.polygonArea });
 						const isInPolygon = google.maps.geometry.poly.containsLocation(latLng, polygonArea) ? 'in' : 'out';
-						console.log(isInPolygon);
 						if (place.formatted_address) {
 							this.setAddress(place.formatted_address);
 						}
-						this.setCenter({
+						const center = {
 							lat: place.geometry.location.lat(), 
 							lng: place.geometry.location.lng()
+						};
+						this.setState({
+							center,
+							centerMap: center,
+							outSideMap: isInPolygon
 						});
 					}
 				});
@@ -185,6 +194,7 @@ class Gosend extends Component {
 										className={styles.googleMapArea}
 										scrollwheel={false}
 										initialCenter={this.state.center}
+										center={this.state.centerMap}
 										centerAroundCurrentLocation={false}
 									>
 										<Polygon
@@ -213,9 +223,9 @@ class Gosend extends Component {
 								<Icon name='map-marker' /> 
 								<span>{this.state.formattedAddress}</span>
 							</div>
-							{/* <Alert align='center' color='red' close>
+							<Alert align='center' color='red' show={this.state.outSideMap === 'out' || false}>
 								<em>Lokasi tidak sesuai dengan alamat pengiriman</em>
-							</Alert> */}
+							</Alert>
 						</div>
 					)
 				}
