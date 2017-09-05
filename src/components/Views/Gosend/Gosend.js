@@ -86,18 +86,21 @@ class Gosend extends Component {
 	}
 
 	onSetPoint(props, marker, e) {
-		this.onGeoLoad(e.latLng.lat(), e.latLng.lng());
-		this.setState({
-			point: {
-				lat: e.latLng.lat(),
-				lng: e.latLng.lng(),
-			}
-		});
-		console.log(this.state.outSideMap);
 		if (this.state.outSideMap === 'in') {
+			this.onGeoLoad(e.latLng.lat(), e.latLng.lng());
+			this.setState({
+				point: {
+					lat: e.latLng.lat(),
+					lng: e.latLng.lng(),
+				}
+			});
 			this.props.onSetPoint(true, this.state.formattedAddress, {
 				lat: e.latLng.lat(),
 				lng: e.latLng.lng(),
+			});
+		} else {
+			this.setState({
+				outSideMap: 'out'
 			});
 		}
 	}
@@ -169,8 +172,6 @@ class Gosend extends Component {
 		const gosendClass = cx({
 			Gosend: true
 		});
-		// console.log('asdasd', this.props);
-
 		return (
 			<div className={gosendClass}>
 				{

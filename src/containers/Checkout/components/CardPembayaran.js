@@ -420,7 +420,7 @@ export default class CardPembayaran extends Component {
 						</Level>
 					</div>
 					<div className={styles.hasCheckoutAction}>
-						<p>Pilih Metode Pembayaran</p>
+						<p>Metode Pembayaran</p>
 						{ renderIf((!this.props.loadingUpdateCart) && (!this.state.loadingCardPengiriman))(
 							<InputGroup>
 								<Select name='paymentMethods' options={paymentMethods.methods} onChange={this.onPaymentMethodChange} />

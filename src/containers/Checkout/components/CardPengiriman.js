@@ -212,7 +212,7 @@ export default class CardPengiriman extends Component {
 			<Tabs tabActive={0} loading={this.state.loading} stretch onAfterChange={this.onGetListO2o} >
 				<Tabs.Panel title='Kirim ke Alamat' sprites='truck-off' spritesActive='truck-on'>
 					<Alert align='center' color='yellow' show={!this.state.elockerTab}>
-						Gratis ongkos kirim hingga Rp 9,000 untuk minimal pembelian sebesar Rp 100,000
+						GRATIS ongkos kirim hingga Rp 15,000 untuk pembelian produk MatahariStore.com
 					</Alert>
 					{
 						renderIf(this.state.shipping.length > 0)(
@@ -279,7 +279,7 @@ export default class CardPengiriman extends Component {
 				</Tabs.Panel>
 				<Tabs.Panel title='Ambil Di Toko/E-locker (O2O)' sprites='o2o-off' spritesActive='o2o-on' >
 					<Alert align='center' color='yellow' show={this.state.elockerTab} >
-						Maksimum 5 kg per order untuk Ambil Di Toko / Elocker (020). Pesanan diatas 5 kg akan dikirimkan langsung ke alamat Anda.
+						Maksimum 5 kg per order untuk Ambil Di Toko / Elocker (020). Pesanan diatas 5 kg akan dikirimkan langsung ke alamat Anda. <br /> GRATIS ongkos kirim hingga Rp 15,000 untuk minimal pembelian sebesar Rp 100,000
 					</Alert>
 					{
 						this.props.isPickupable === '0' ? null :

@@ -205,7 +205,7 @@ const getListAvailablePaymentMethod = (response) => {
 		return methodData;
 	});
 	const paymentList = [{
-		label: '-- Pilih Metode Lain',
+		label: 'Pilih Metode Pembayaran',
 		value: null,
 		info: '',
 		hidden: true

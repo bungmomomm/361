@@ -143,17 +143,17 @@ export default class NewAddressModalbox extends Component {
 	onGeoLoad(lat, long, formattedAddress) {
 		const formData = this.state.formData;
 		const gosendData = this.state.gosendData;
-		this.setState({
-			formattedAddress,
-			formData: {
-				...formData,
-				longitude: long.toString(), 
-				latitude: lat.toString()
-			},
-			gosendData: {
-				...gosendData
-			}
-		});
+		if (this.state.formData.kecamatan !== '') {
+			this.setState({
+				formattedAddress,
+				formData: {
+					...formData
+				},
+				gosendData: {
+					...gosendData
+				}
+			});
+		}
 	}
 
 	onChangePoint() {
@@ -268,7 +268,6 @@ export default class NewAddressModalbox extends Component {
 				isJakarta,
 				kecamatanReset: true,
 				loading: false,
-				formattedAddress: '',
 				pinPoint: 'showToggleButton',
 				renderDistrict: false
 			});
@@ -277,8 +276,11 @@ export default class NewAddressModalbox extends Component {
 					renderDistrict: true,
 					formData: {
 						...this.state.formData,
-						kecamatan: ''
-					}
+						kecamatan: '',
+						latitude: null,
+						longitude: null
+					},
+					formattedAddress: '',
 				});
 			}, 20);
 		}
@@ -289,7 +291,12 @@ export default class NewAddressModalbox extends Component {
 				this.setState({
 					isJakarta: !!PolygonResult,
 					loading: false,
-					pinPoint: PolygonResult ? 'showToggleButton' : 'hideAll'
+					pinPoint: PolygonResult ? 'showToggleButton' : 'hideAll',
+					formData: {
+						...this.state.formData,
+						latitude: null,
+						longitude: null
+					},
 				});
 			} else {
 				this.setState({

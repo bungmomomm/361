@@ -8,10 +8,10 @@ const CheckoutHeader = (props) => {
 	return (
 		<div className={styles.header}>
 			<Container flex> 
-				<div className={styles.left}>
+				<a href={'https://www.mataharimall.com'} className={styles.left}>
 					<Image width={47} src='logo-mataharimall.png' alt='MatahariMall.com Logo' />
 					<span className={styles.logo}>CHECKOUT</span>
-				</div>
+				</a>
 				<div className={styles.right}>
 					<Image width={49} src='norton-logo.png' alt='Norton Logo' />
 					<Image width={51} src='logo-ssl.png' alt='SSL Logo' />
