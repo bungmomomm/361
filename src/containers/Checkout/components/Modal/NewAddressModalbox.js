@@ -239,7 +239,7 @@ export default class NewAddressModalbox extends Component {
 		this.setState({
 			loading: true
 		});
-		if (e.name === 'provinsi' && e.value !== null) {
+		if (e.name === 'provinsi' && e.value !== null && e.value !== 0) {
 			this.getDistricts(e.value);
 			this.setState({
 				isJakarta,
@@ -256,7 +256,7 @@ export default class NewAddressModalbox extends Component {
 			}, 20);
 		}
 		setTimeout(() => {
-			if (e.name === 'kecamatan' && isJakarta && e.value !== null) {
+			if (e.name === 'kecamatan' && isJakarta && e.value !== null && e.value !== 0) {
 				this.setState({
 					resetMap: true
 				});
