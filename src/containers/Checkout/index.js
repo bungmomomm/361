@@ -1198,6 +1198,7 @@ class Checkout extends Component {
 										onSaveCcOption={this.onSaveCcOption}
 										resetPaymentOption={this.props.resetPaymentOption}
 										onTermsAndConditionChange={this.onTermsAndConditionChange}
+										addressTabActive={this.state.addressTabActive}
 									/>
 								</Col>
 							</Row>
