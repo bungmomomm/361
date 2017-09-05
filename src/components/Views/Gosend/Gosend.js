@@ -231,6 +231,6 @@ Gosend.propTypes = {
 };
 
 export default GoogleApiWrapper({
-	apiKey: ('AIzaSyChjpQSbwKaJOCJy_06GAwU9dNMwVq_rg4')
+	apiKey: (process.env.GOOGLE_MAP_API_KEY)
 })(Gosend);
 

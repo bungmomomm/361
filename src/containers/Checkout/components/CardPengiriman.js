@@ -87,7 +87,7 @@ export default class CardPengiriman extends Component {
 		
 		if (typeof shipping !== 'undefined') {
 			shipping.forEach((value, index) => {
-				console.log(value);
+				
 				address.push({
 					value: value.id,
 					label: !value.attributes.addressLabel ? value.attributes.fullname : value.attributes.addressLabel,
