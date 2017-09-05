@@ -655,6 +655,7 @@ class Checkout extends Component {
 						this.props.soNumber,
 						this.props.payments.selectedPaymentOption,
 						{
+							amount: this.props.payments.total,
 							card: {
 								value: response.token_id,
 								bank: bankName,

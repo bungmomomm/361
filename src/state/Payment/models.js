@@ -283,7 +283,7 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode, saveCC = false
 		}
 		break;
 	case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
-		paymentPayload.attributes.amount = paymentDetail.amount;
+		paymentPayload.attributes.amount = parseInt(paymentDetail.amount, 10);
 		paymentPayload.attributes.card_number = paymentDetail.card.value;
 		if (mode !== 'cc') {
 			paymentPayload.attributes.credit_card = {
