@@ -285,7 +285,7 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode, saveCC = false
 			paymentPayload.attributes.credit_card = {
 				bank: paymentDetail.card.bank.value,
 				token_id: paymentDetail.card.value,
-				save_cc: saveCC
+				save_cc: saveCC ? 1 : 0
 			};		
 		}
 		break;

@@ -333,7 +333,7 @@ export default (state = initialState, action) => {
 	case constants.PAY_SAVE_CC: {
 		return {
 			...state,
-			saveCC: action.status ? 1 : 0
+			saveCC: action.status
 		};
 	}
 	case constants.PAY_ERROR: {
