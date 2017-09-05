@@ -1158,7 +1158,6 @@ class Checkout extends Component {
 										loading={payments.loading || this.state.loadingUpdateCart || this.state.loadingCardPengiriman}
 										loadingUpdateCart={this.state.loadingUpdateCart}
 										loadingCardPengiriman={this.state.loadingCardPengiriman}
-										saveCC={payments.saveCC}
 										loadingButtonCoupon={coupon.loading}
 										coupon={coupon.coupon}
 										validCoupon={coupon.validCoupon}

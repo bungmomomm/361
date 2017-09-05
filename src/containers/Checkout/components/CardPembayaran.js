@@ -477,7 +477,7 @@ export default class CardPembayaran extends Component {
 								</Level.Item>
 							</Level>,
 							<InputGroup>
-								<Checkbox checked defaultChecked content='Simpan kartu untuk transaksi selanjutnya' onChange={(state, value) => this.props.onSaveCcOption(state, value)} />
+								<Checkbox defaultChecked content='Simpan kartu untuk transaksi selanjutnya' onClick={(state, value) => this.props.onSaveCcOption(state, value)} />
 							</InputGroup>
 						])}
 						<InputGroup>
@@ -487,7 +487,7 @@ export default class CardPembayaran extends Component {
 							<Input value={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''} placeholder={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : 'Masukkan nomor Hp yang terdaftar di OVO'} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' type='number' onChange={(event) => this.props.onOvoNumberChange(event)} readOnly={ovoReadOnly} disabled={ovoReadOnly} />
 						</InputGroup>
 						<div className={styles.checkOutAction}>
-							<Checkbox checked defaultChecked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' onClick={(state, value) => this.props.onTermsAndConditionChange(state, value)} />
+							<Checkbox defaultChecked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' onClick={(state, value) => this.props.onTermsAndConditionChange(state, value)} />
 							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' loading={loading} disabled={disabledPayment} />
 						</div>
 					</div>
