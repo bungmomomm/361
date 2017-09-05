@@ -44,11 +44,9 @@ class Gosend extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.displayMap) {
-			this.setState({
-				displayMap: nextProps.displayMap
-			});
-		}
+		this.setState({
+			displayMap: nextProps.displayMap
+		});
 	}
 
 	componentDidUpdate(prevProps) {
@@ -75,8 +73,8 @@ class Gosend extends Component {
 			geo.geocode({ latLng }, (results, status) => {
 				if (status === google.maps.GeocoderStatus.OK) {
 					this.props.onGeoLoad(
-						lat, 
-						lng,
+						latLng.lat(), 
+						latLng.lng(),
 						results[0].formatted_address
 					);
 					this.setAddress(results[0].formatted_address);
@@ -93,11 +91,10 @@ class Gosend extends Component {
 				lng: e.latLng.lng(),
 			}
 		});
-		setTimeout(() => {
-			this.setState({
-				displayMap: false
-			});
-		}, 10);
+		this.props.onSetPoint(true, this.state.formattedAddress, {
+			lat: e.latLng.lat(),
+			lng: e.latLng.lng(),
+		});
 	}
 	
 	onMouseoverPolygon(props, polygon, e) {

@@ -54,7 +54,7 @@ export default class NewAddressModalbox extends Component {
 				latitude: this.props.formDataAddress.latitude || null,
 				longitude: this.props.formDataAddress.longitude || null,
 			},
-			resetMap: false,
+			
 			displayMap: false,
 			errors: this.validator.errorBag,
 			district: {},
@@ -84,6 +84,8 @@ export default class NewAddressModalbox extends Component {
 		this.onClose = this.onClose.bind(this);
 		this.gosendCheck = this.gosendCheck.bind(this);
 		this.showGoogleMap = this.showGoogleMap.bind(this);
+		this.hideGoogleMap = this.hideGoogleMap.bind(this);
+		this.onSetPoint = this.onSetPoint.bind(this);
 	}
 
 	componentWillMount() {
@@ -97,6 +99,7 @@ export default class NewAddressModalbox extends Component {
 				this.setState({
 					enableGosend: true,
 					isJakarta: true,
+					
 					gosendData: {
 						...gosendData,
 						location_coords: locationCoords
@@ -163,6 +166,20 @@ export default class NewAddressModalbox extends Component {
 	onClose(event) {
 		this.props.closeModalShippingAddress(event);
 	}
+	
+	onSetPoint(modalStatus, formattedAddress, location) {
+		const formData = this.state.formData;
+		this.setState({
+			displayMap: !modalStatus,
+			pinPoint: 'showAddress',
+			formattedAddress,
+			formData: {
+				...formData,
+				longitude: location.lng.toString(), 
+				latitude: location.lat.toString()
+			}
+		});
+	}
 
 	getDistricts(cityProv) {
 		this.props.getDistricts(cityProv);
@@ -182,26 +199,32 @@ export default class NewAddressModalbox extends Component {
 	formAddressIsEdit(isEdit) {
 		const { formDataAddress } = this.props;
 		const gosendData = this.state.gosendData;
+		this.setState({
+			displayMap: false
+		});
 		if (isEdit) {
 			const isJakarta = formDataAddress.kotProv.toLowerCase().includes('jakarta');
-			const isCityNotJakarta = this.props.formDataAddress.kecamatan.toLowerCase() !== 'jakarta';
+			const isCityNotJakarta = formDataAddress.kecamatan.toLowerCase() !== 'jakarta';
 			if (isJakarta && isCityNotJakarta) {
-				const PolygonResult = this.constructor.getPolygonData(this.props.formDataAddress.kecamatan.toLowerCase());
-				const locationCoords = PolygonResult.location_coords;
-				if (locationCoords) {
+				if (formDataAddress.latitude && formDataAddress.longitude) {
+					const PolygonResult = this.constructor.getPolygonData(formDataAddress.kecamatan.toLowerCase());
+					const locationCoords = PolygonResult.location_coords;
 					this.setState({
-						isJakarta,
-						center: {
-							lat: formDataAddress.latitude,
-							lng: formDataAddress.longitude
+						isJakarta: true,
+						gosendData: {
+							...gosendData,
+							center: {
+								lat: formDataAddress.latitude,
+								lng: formDataAddress.longitude
+							},
+							location_coords: locationCoords,
 						},
-						location_coords: locationCoords,
 						pinPoint: 'showAddress',
 						isCustomerData: true,
 					});
 				} else {
 					this.setState({
-						isJakarta,
+						isJakarta: true,
 						pinPoint: 'showToggleButton',
 						isCustomerData: true,
 					});
@@ -209,10 +232,7 @@ export default class NewAddressModalbox extends Component {
 			} else {
 				this.setState({
 					formattedAddress: '',
-					gosendData: {
-						...gosendData
-					},
-					isJakarta,
+					isJakarta: false,
 					pinPoint: 'showToggleButton',
 					isCustomerData: true
 				});
@@ -220,6 +240,7 @@ export default class NewAddressModalbox extends Component {
 		} else {
 			this.setState({
 				formattedAddress: '',
+				isJakarta: false,
 				gosendData: {
 					...gosendData,
 					center: {},
@@ -231,7 +252,6 @@ export default class NewAddressModalbox extends Component {
 	}
 
 	gosendCheck(e) {
-		const gosendData = this.state.gosendData;
 		let isJakarta = false;
 		if (this.selectProvince.state.selected.value) {
 			isJakarta = this.selectProvince.state.selected.value.toLowerCase().includes('jakarta');
@@ -258,32 +278,21 @@ export default class NewAddressModalbox extends Component {
 		setTimeout(() => {
 			if (e.name === 'kecamatan' && isJakarta && e.value !== null && e.value !== 0) {
 				this.setState({
-					resetMap: true
+					
 				});
 				const kecamatan = e.value;
 				const PolygonResult = this.constructor.getPolygonData(kecamatan.toLowerCase());
 				this.setState({
-					resetMap: false,
+					
 					isJakarta: !!PolygonResult,
 					loading: false,
-					pinPoint: PolygonResult ? 'showToggleButton' : 'hideAll',
-					gosendData: {
-						...gosendData,
-						center: PolygonResult ? PolygonResult.center : {},
-						location_coords: PolygonResult ? PolygonResult.location_coords : []
-					}
+					pinPoint: PolygonResult ? 'showToggleButton' : 'hideAll'
 				});
 			} else {
 				this.setState({
-					resetMap: false,
 					loading: false,
 					isJakarta: false,
-					pinPoint: 'hideAll',
-					gosendData: {
-						...gosendData,
-						center: {},
-						location_coords: []
-					}
+					pinPoint: 'hideAll'
 				});
 			}
 		}, 20);
@@ -310,11 +319,21 @@ export default class NewAddressModalbox extends Component {
 	showGoogleMap() {
 		const PolygonResult = this.constructor.getPolygonData(this.selectKecamatan.state.selected.value.toLowerCase());
 		this.setState({
-			resetMap: false,
 			displayMap: true,
 			gosendData: {
-				center: PolygonResult ? PolygonResult.center : {},
-				location_coords: PolygonResult ? PolygonResult.location_coords : []
+				center: PolygonResult.center,
+				location_coords: PolygonResult.location_coords
+			}
+		});
+	}
+	
+	hideGoogleMap() {
+		this.setState({
+			
+			displayMap: false,
+			gosendData: {
+				center: {},
+				location_coords: []
 			}
 		});
 	}
@@ -448,7 +467,7 @@ export default class NewAddressModalbox extends Component {
 							</small>
 						</Alert>
 						{
-							renderIf(this.state.pinPoint === 'showToggleButton' && this.state.isJakarta)(
+							renderIf(this.state.pinPoint === 'showToggleButton' && this.state.isJakarta && !this.state.displayMap)(
 								<div className={styles.header}>
 									<Button 
 										type='button' 
@@ -464,25 +483,41 @@ export default class NewAddressModalbox extends Component {
 									</div>
 								</div>
 							)
+						}{
+							renderIf(this.state.pinPoint === 'showToggleButton' && this.state.isJakarta && this.state.displayMap)(
+								<div className={styles.header}>
+									<Button 
+										type='button' 
+										onClick={this.hideGoogleMap} 
+										content='Batal' 
+										size='small' 
+										color='grey' 
+										icon='times' 
+										iconPosition='right' 
+									/>
+									<div className={styles.desc}>
+										Lokasi peta harus sesuai dengan alamat pengiriman. Lokasi diperlukan jika ingin menggunakan jasa pengiriman GO-SEND.
+									</div>
+								</div>
+							)
 						}
 						
 						{
 							renderIf((gosendData.location_coords && gosendData.center) && this.state.isJakarta)(
 								<div>
 									{
-										renderIf(!this.state.resetMap)(
-											<Gosend
-												zoom={15} 
-												center={gosendData.center} 
-												polygonArea={gosendData.location_coords} 
-												onGeoLoad={this.onGeoLoad}
-												isCustomerData={isCustomerData}
-												displayMap={this.state.displayMap}
-											/>
-										)
+										<Gosend
+											zoom={15} 
+											center={gosendData.center} 
+											polygonArea={gosendData.location_coords} 
+											onGeoLoad={this.onGeoLoad}
+											isCustomerData={isCustomerData}
+											displayMap={this.state.displayMap}
+											onSetPoint={this.onSetPoint}
+										/>
 									}
 									{
-										renderIf((this.state.formattedAddress && this.props.formDataAddress.latitude && this.props.formDataAddress.longitude) && this.state.pinPoint === 'showAddress')(
+										renderIf(this.state.formattedAddress && this.state.pinPoint === 'showAddress')(
 											<div>
 												<Segment row>
 													<Level padded>
