@@ -202,7 +202,8 @@ export default class NewAddressModalbox extends Component {
 		const { formDataAddress } = this.props;
 		const gosendData = this.state.gosendData;
 		this.setState({
-			displayMap: false
+			displayMap: false,
+			kecamatanReset: false
 		});
 		if (isEdit) {
 			const isJakarta = formDataAddress.kotProv.toLowerCase().includes('jakarta');
@@ -229,6 +230,12 @@ export default class NewAddressModalbox extends Component {
 						isJakarta: true,
 						pinPoint: 'showToggleButton',
 						isCustomerData: true,
+						formData: {
+							...this.state.formData,
+							kecamatan: this.props.formDataAddress.kecamatan,
+							latitude: this.props.formDataAddress.latitude || null,
+							longitude: this.props.formDataAddress.longitude || null
+						},
 					});
 				}
 			} else {

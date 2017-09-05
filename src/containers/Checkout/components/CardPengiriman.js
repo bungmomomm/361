@@ -184,15 +184,17 @@ export default class CardPengiriman extends Component {
 
 		const addressPreview = () => {
 			let data = {};
-			if (this.state.dataChoised === 0) {
-				data = Array.isArray(this.props.addresses) ? this.props.addresses[0] : this.props.addresses;
-			} else {
-				data = this.props.addresses.map((option) => {
-					return (option.id === this.state.dataChoised) ? option : null;
-				}).filter((option) => {
-					return option;
-				});
-				data = Array.isArray(data) ? data[0] : data;
+			if (this.props.addresses) {
+				if (this.state.dataChoised === 0) {
+					data = Array.isArray(this.props.addresses) ? this.props.addresses[0] : this.props.addresses;
+				} else {
+					data = this.props.addresses.map((option) => {
+						return (option.id === this.state.dataChoised) ? option : null;
+					}).filter((option) => {
+						return option;
+					});
+					data = Array.isArray(data) ? data[0] : data;
+				}
 			}
 			return (
 				data ? (
