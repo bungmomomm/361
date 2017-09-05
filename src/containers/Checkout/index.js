@@ -868,7 +868,7 @@ class Checkout extends Component {
 			this.setState({
 				appliedBin: {
 					selectedPaymentOption,
-					cardNumber: event,
+					cardNumber: event.ccNumber,
 					bankName: bank
 				}
 			});
