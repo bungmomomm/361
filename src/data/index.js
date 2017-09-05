@@ -1,7 +1,7 @@
 export const Bulan = [
 	{
 		value: null,
-		label: '-- pilih bulan --'
+		label: '-- bulan'
 	},
 	{
 		value: 1,

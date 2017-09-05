@@ -216,7 +216,7 @@ class Checkout extends Component {
 		let year = 0;
 		const tahun = [{
 			value: null,
-			label: '-- pilih tahun --'
+			label: '-- tahun'
 		}];
 		for (year = thisYear; year < (thisYear + 10); year++) {
 			tahun.push({
