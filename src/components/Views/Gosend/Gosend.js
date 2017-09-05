@@ -139,6 +139,10 @@ class Gosend extends Component {
 				this.autocomplete.addListener('place_changed', () => {
 					const place = this.autocomplete.getPlace();
 					if (place.geometry) {
+						const latLng = new google.maps.LatLng(place.geometry.location.lat(), place.geometry.location.lng());
+						const polygonArea = new google.maps.Polygon({ paths: this.state.polygonArea });
+						const isInPolygon = google.maps.geometry.poly.containsLocation(latLng, polygonArea) ? 'in' : 'out';
+						console.log(isInPolygon);
 						if (place.formatted_address) {
 							this.setAddress(place.formatted_address);
 						}
@@ -164,7 +168,7 @@ class Gosend extends Component {
 					renderIf(this.state.displayMap)(
 						<div className={styles.googleMap}>
 							{
-								renderIf(false)(
+								renderIf(true)(
 									<div className={styles.mapInput}>
 										<Input 
 											onClick={this.renderAutocomplete} 
