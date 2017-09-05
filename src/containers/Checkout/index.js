@@ -177,6 +177,7 @@ class Checkout extends Component {
 		this.onCheckProductJabodetabek = this.onCheckProductJabodetabek.bind(this);
 		this.onTermsAndConditionChange = this.onTermsAndConditionChange.bind(this);
 		this.onSetStateAddress = this.onSetStateAddress.bind(this);
+		this.getAffTracking = this.getAffTracking.bind(this);
 	}
 
 	componentWillMount() {
@@ -474,7 +475,7 @@ class Checkout extends Component {
 			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 			case paymentMethodName.COMMERCE_VERITRANS:
 				cardNumber = this.props.payments.selectedCard ? this.props.payments.selectedCard.value : '';
-				bankName = this.props.payments.selectedBank ? this.props.payments.selectedBank.value : '';
+				bankName = this.props.payments.selectedBank ? this.props.payments.selectedBank.value.value : '';
 				break;
 			default:
 				break;
@@ -570,7 +571,10 @@ class Checkout extends Component {
 					amount: this.props.payments.total,
 					paymentMethod: this.props.payments.paymentMethod
 				},
-				mode
+				mode,
+				false,
+				false,
+				this.getAffTracking()
 			)
 		);
 	}
@@ -586,7 +590,7 @@ class Checkout extends Component {
 
 		if (installment) {
 			cardDetail.card_number = this.props.payments.selectedCard.value;
-			cardDetail.bank = this.props.payments.selectedBank.value;
+			cardDetail.bank = this.props.payments.selectedBank.value.value;
 			cardDetail.installment = true;
 			cardDetail.installment_term = this.props.payments.term.term;
 			cardDetail.card_exp_month = this.props.payments.selectedCardDetail.month;
@@ -601,7 +605,7 @@ class Checkout extends Component {
 				cardDetail.card_exp_year = this.props.payments.selectedCardDetail.year;
 			}
 
-			if (typeof this.props.payments.selectedBank !== 'undefined' && this.props.payments.selectedBank.value.toLowerCase() === 'bca') {
+			if (typeof this.props.payments.selectedBank !== 'undefined' && this.props.payments.selectedBank.value.value.toLowerCase() === 'bca') {
 				cardDetail.channel = 'migs';
 			}
 		}
@@ -630,13 +634,19 @@ class Checkout extends Component {
 							card: {
 								masked: this.props.payments.selectedCard.label,
 								value: response.token_id,
-								bank: bankName,
+								bank: {
+									value: bankName
+								},
 								detail: this.props.payments.selectedCardDetail
 							},
 							saveCC: this.props.payments.saveCC,
 							ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
 							billingPhoneNumber: this.props.payments.billingPhoneNumber
-						}
+						},
+						'complete',
+						false,
+						false,
+						this.getAffTracking()						
 					)
 				);
 			} else {
@@ -665,14 +675,20 @@ class Checkout extends Component {
 							amount: this.props.payments.total,
 							card: {
 								value: response.token_id,
-								bank: bankName,
+								bank: {
+									value: bankName
+								},
 								detail: this.props.payments.selectedCardDetail
 							},
 							saveCC: this.props.payments.saveCC,
 							term: this.props.payments.term,
 							ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
 							billingPhoneNumber: this.props.payments.billingPhoneNumber
-						}
+						},
+						'complete',
+						false,
+						false,
+						this.getAffTracking()
 					)
 				);
 			} else {
@@ -695,7 +711,8 @@ class Checkout extends Component {
 				},
 				'cc',
 				card,
-				installment ? onVtInstallmentCallback : onVtCreditCardCallback
+				installment ? onVtInstallmentCallback : onVtCreditCardCallback,
+				this.getAffTracking()
 			)
 		);
 	}
@@ -765,7 +782,10 @@ class Checkout extends Component {
 								ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
 								billingPhoneNumber: this.props.payments.billingPhoneNumber
 							},
-							mode
+							mode,
+							false,
+							false,
+							this.getAffTracking()
 						)
 					);
 				break;
@@ -861,6 +881,7 @@ class Checkout extends Component {
 	}
 
 	onBankChange(bank) {
+		console.log(bank);
 		if (bank.value !== null) {
 			const { dispatch } = this.props;
 			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
@@ -935,6 +956,13 @@ class Checkout extends Component {
 
 	onVerity(response) {
 		console.log(this.state, response);
+	}
+
+	getAffTracking() {
+		return {
+			af_track_id: this.props.cookies.get('afftrackid'),
+			af_trx_id: this.props.cookies.get('afftrxid')
+		};		
 	}
 
 	getDistricts(cityAndProvince) {

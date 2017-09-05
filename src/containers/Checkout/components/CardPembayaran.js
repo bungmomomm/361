@@ -303,7 +303,7 @@ export default class CardPembayaran extends Component {
 						option.cards.length < 3 ? option.cards.map((card, cardIndex) => (
 							card.value ? (
 								<InputGroup key={cardIndex}>
-									<CreditCardRadio name='cc' variant='list' creditCard value={card.value} content={card.label} onClick={this.onSelectCard} defaultChecked={card.selected} checked={card.selected} sprites={card.sprites} />
+									<CreditCardRadio name='cc' variant='list' creditCard value={card.value} content={card.label} onClick={this.onSelectCard} defaultChecked={card.selected} sprites={card.sprites} />
 									{ renderIf(card.selected)(CvvElement) }
 								</InputGroup>
 							) : null
@@ -321,15 +321,16 @@ export default class CardPembayaran extends Component {
 					<InputGroup>
 						{ 
 							selectedPayment.paymentItems.map((installment, index) => {
+								
 								return (
 									<div key={index}>
 										<InputGroup>
 											<p>Pilih Bank</p>
-											<Select emptyFilter={false} name='bank' selectedLabel='---' options={installment.banks} onChange={this.onInstallmentBankChange} />
+											<Select key={index} emptyFilter={false} name='bank' selectedLabel='---' options={installment.banks} onChange={this.onInstallmentBankChange} />
 										</InputGroup>
 										<InputGroup>
 											<p>Pilih Lama Cicilan</p>
-											<Select emptyFilter={false} name='bank' selectedLabel='---' options={installment.banks[index].listCicilan} onChange={this.onTermChange} />
+											<Select key={index} emptyFilter={false} name='bank' selectedLabel='---' options={installment.banks[index].listCicilan} onChange={this.onTermChange} />
 										</InputGroup>
 									</div>
 								);
@@ -367,7 +368,7 @@ export default class CardPembayaran extends Component {
 
 		const discountHtml = (!discount) ? false : discount.map((discountItem, index) => {
 			return (
-				<Level>
+				<Level key={index}>
 					<Level.Left>
 						<div>{discountItem.discountName}</div>
 					</Level.Left>
@@ -435,7 +436,7 @@ export default class CardPembayaran extends Component {
 										</Tooltip>
 								)}
 								{ renderIf(selectedPayment.value === paymentGroupName.INSTALLMENT)(
-									<InputGroup>
+									<InputGroup key='installment_info'>
 										<Tooltip position='right' content='Info'>
 											<p>Syarat dan Ketentuan Cicilan 0% Regular:</p>
 											<ul>

@@ -244,7 +244,10 @@ const getSprintPayload = (orderId, payment, paymentDetail) => {
 	};
 };
 
-const getPaymentPayload = (orderId, payment, paymentDetail, mode, saveCC = false) => {
+const getPaymentPayload = (orderId, payment, paymentDetail, mode, saveCC = false, aff = {
+	af_track_id: '',
+	af_trx_id: ''
+}) => {
 	const paymentPayload = {
 		type: 'payment',
 		attributes: {
@@ -261,6 +264,10 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode, saveCC = false
 			}
 		}
 	};
+
+	paymentPayload.attributes.af_track_id = aff.af_track_id;
+	paymentPayload.attributes.af_trx_click = aff.af_trx_click;
+	paymentPayload.attributes.af_trx_id = aff.af_trx_id;
 	
 	switch (payment.paymentMethod) {
 	case paymentMethodName.VIRTUAL_ACCOUNT:
@@ -276,7 +283,7 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode, saveCC = false
 		paymentPayload.attributes.card_number = paymentDetail.card.value;
 		if (mode !== 'cc') {
 			paymentPayload.attributes.credit_card = {
-				bank: paymentDetail.card.bank,
+				bank: paymentDetail.card.bank.value,
 				token_id: paymentDetail.card.value,
 				save_cc: saveCC
 			};		
@@ -287,17 +294,13 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode, saveCC = false
 		paymentPayload.attributes.card_number = paymentDetail.card.value;
 		if (mode !== 'cc') {
 			paymentPayload.attributes.credit_card = {
-				bank: paymentDetail.card.bank,
+				bank: paymentDetail.card.bank.value,
 				token_id: paymentDetail.card.value,
 				term: payment.term.term,
 				site_id: payment.term.siteid,
 				provider: payment.term.provider
 			};		
 		} else {
-			paymentPayload.attributes.af_track_id = '';
-			paymentPayload.attributes.af_trx_click = '';
-			paymentPayload.attributes.af_trx_id = '';
-			paymentPayload.attributes.card_number = '';
 			paymentPayload.attributes.payment_installment_provider = payment.term.provider;
 			paymentPayload.attributes.product_type = '';
 		}

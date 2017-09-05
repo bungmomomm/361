@@ -1,4 +1,4 @@
-import { request, getBaseUrl } from '@/utils';
+import { request } from '@/utils';
 import { paymentInfoUpdated, getAvailablePaymentMethod } from '@/state/Payment/actions';
 import { removeCoupon } from '@/state/Coupon/actions';
 import { 
@@ -101,7 +101,7 @@ const getCart = token => dispatch => new Promise((resolve, reject) => {
 	.then((response) => {
 		const cartResponse = response.data;
 		if (cartResponse.data.attributes.total_cart < 1) { 
-			top.location.href = getBaseUrl();
+			// top.location.href = getBaseUrl();
 		}
 		const isPickupable = cartResponse.data.attributes.delivery_method.map((value, index) => {
 			return value;

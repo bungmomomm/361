@@ -466,7 +466,10 @@ const getSoNumberFromResponse = (soNumber, response) => {
 	return soNumber;
 };
 
-const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete', card = false, callback = false) => dispatch => new Promise((resolve, reject) => {
+const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete', card = false, callback = false, aff = {
+	af_track_id: '',
+	af_trx_id: ''
+}) => dispatch => new Promise((resolve, reject) => {
 	const isSaveCC = paymentDetail.saveCC !== 'undefined' ? paymentDetail.saveCC : false;
 	dispatch(payRequest());
 	if (
@@ -488,14 +491,20 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 			}
 		}).then((prep) => {
 			if (payment.paymentMethod === 'commerce_veritrans' && prep.data.data.attributes.channel === 'migs' && mode !== 'complete') {
-				paymentDetail.card.bank = 'bca';
+				if (typeof paymentDetail.card.bank !== 'undefined') {
+					paymentDetail.card.bank.value = 'bca';
+				} else {
+					paymentDetail.card.bank = {
+						value: 'bca'
+					};
+				}
 			}
 			request({
 				token,
 				path: 'payments',
 				method: 'POST',
 				body: {
-					data: getPaymentPayload(soNumber, payment, paymentDetail, mode, isSaveCC)
+					data: getPaymentPayload(soNumber, payment, paymentDetail, mode, isSaveCC, aff)
 				}
 			}).then((response) => {
 				if (typeof response.data.data[0] !== 'undefined' && typeof response.data.data[0].id !== 'undefined') {
@@ -525,7 +534,7 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 			path: 'payments',
 			method: 'POST',
 			body: {
-				data: getPaymentPayload(soNumber, payment, paymentDetail, mode)
+				data: getPaymentPayload(soNumber, payment, paymentDetail, mode, false, aff)
 			}
 		}).then((response) => {
 			if (typeof response.data.data[0] !== 'undefined' && typeof response.data.data[0].id !== 'undefined') {
