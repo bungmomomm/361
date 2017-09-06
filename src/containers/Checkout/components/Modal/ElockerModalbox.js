@@ -7,14 +7,15 @@ export default class ElockerModalBox extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.defaultProvice = {
+			label: 'DKI JAKARTA',
+			value: 6
+		};
 		this.state = {
 			listo2o: null,
 			filtero2o: null,
 			selected: this.props.selected || null,
-			province: {
-				label: 'DKI JAKARTA',
-				value: 6
-			}
+			province: this.defaultProvice
 		};
 		this.onSelectedLocker = this.onSelectedLocker.bind(this);
 		this.setFilterLocker = this.setFilterLocker.bind(this);
@@ -41,7 +42,9 @@ export default class ElockerModalBox extends Component {
 		this.props.closeModalElocker(event);
 		this.setState({	
 			filtero2o: null,
+			province: this.defaultProvice
 		});
+		this.onGetListO2o(this.defaultProvice.value);
 	}
 
 	setFilterLocker(listo2o) {
