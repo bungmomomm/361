@@ -1068,10 +1068,9 @@ class Checkout extends Component {
 			dispatch(o2oChoise(this.props.cart));
 		} else {
 			dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress)).then(() => {
-				
+				dispatch(changeBillingNumber(this.state.selectedAddress.attributes.phone));
 			}).catch((error) => {
 				this.setState({
-					
 					enablePembayaran: false,
 					enablePesananPengiriman: this.state.enablePesananPengiriman
 				});
