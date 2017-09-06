@@ -1066,7 +1066,7 @@ class Checkout extends Component {
 				this.setState({
 					
 					enablePembayaran: false,
-					enablePesananPengiriman: false
+					enablePesananPengiriman: this.state.enablePesananPengiriman
 				});
 			});
 		}
