@@ -83,6 +83,9 @@ class Checkout extends Component {
 			month: 'required|min_value:1',
 			cvv: 'required|min_value:1'
 		});
+		this.cvvValidator = new Validator({
+			cvv: 'required|min_value:1'
+		});
 		this.state = {
 			enableAlamatPengiriman: true,
 			enablePesananPengiriman: false,
@@ -740,26 +743,30 @@ class Checkout extends Component {
 
 	onDoPayment() {
 		const { dispatch } = this.props;
+		let validator = false;
+		let mode = 'complete';
 		if (typeof this.props.payments.paymentMethod !== 'undefined') {
-			let mode = 'complete';
 			switch (this.props.payments.paymentMethod) {
 			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 			case paymentMethodName.COMMERCE_VERITRANS:
-				if (!this.props.payments.twoClickEnabled) {
-					this.cardValidator.validateAll({
+				if (this.props.payments.twoClickEnabled) {
+					validator = this.cvvValidator.validateAll({
+						cvv: this.props.payments.selectedCardDetail.cvv
+					});
+				} else {
+					validator = this.cardValidator.validateAll({
 						year: this.props.payments.selectedCardDetail.year,
 						month: this.props.payments.selectedCardDetail.month,
 						cvv: this.props.payments.selectedCardDetail.cvv
-					}).then(success => {
-						if (success) {
-							this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
-						} else {
-							dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
-						}
 					});
-				} else {
-					this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
 				}
+				validator.then(success => {
+					if (success) {
+						this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
+					} else {
+						dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
+					}
+				});
 				break;
 			case paymentMethodName.COMMERCE_SPRINT_ASIA:
 				mode = 'sprint';
@@ -1061,10 +1068,9 @@ class Checkout extends Component {
 			dispatch(o2oChoise(this.props.cart));
 		} else {
 			dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress)).then(() => {
-				
+				dispatch(changeBillingNumber(this.state.selectedAddress.attributes.phone));
 			}).catch((error) => {
 				this.setState({
-					
 					enablePembayaran: false,
 					enablePesananPengiriman: this.state.enablePesananPengiriman
 				});
@@ -1134,7 +1140,9 @@ class Checkout extends Component {
 			listo2o,
 			latesto2o,
 			o2oProvinces,
-			isPickupable
+			isPickupable,
+			dispatch,
+			cookies
 		} = this.props;
 
 		return (
@@ -1191,6 +1199,9 @@ class Checkout extends Component {
 								<Col flex grid={4} className={enablePembayaran && !this.state.restrictO2o ? '' : styles.disabled}>
 									<div className={styles.title}>3. Pembayaran</div>
 									<CardPembayaran
+										dispatch={dispatch}
+										cookies={cookies}
+										soNumber={this.props.soNumber}
 										loading={payments.loading || this.state.loadingUpdateCart || this.state.loadingCardPengiriman}
 										loadingUpdateCart={this.state.loadingUpdateCart}
 										loadingCardPengiriman={this.state.loadingCardPengiriman}

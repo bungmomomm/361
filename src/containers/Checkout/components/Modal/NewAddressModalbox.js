@@ -201,6 +201,7 @@ export default class NewAddressModalbox extends Component {
 	formAddressIsEdit(isEdit) {
 		const { formDataAddress } = this.props;
 		const gosendData = this.state.gosendData;
+		this.state.errors.clear();
 		this.setState({
 			displayMap: false,
 			kecamatanReset: false
@@ -232,7 +233,6 @@ export default class NewAddressModalbox extends Component {
 						isCustomerData: true,
 						formData: {
 							...this.state.formData,
-							kecamatan: this.props.formDataAddress.kecamatan,
 							latitude: this.props.formDataAddress.latitude || null,
 							longitude: this.props.formDataAddress.longitude || null
 						},
@@ -322,6 +322,7 @@ export default class NewAddressModalbox extends Component {
 	validateAndSubmit(e) {
 		e.preventDefault();
 		const { formData } = this.state;
+		console.log(formData);
 		this.validator.validateAll(formData).then(success => {
 			if (success) {
 				this.submit(formData);

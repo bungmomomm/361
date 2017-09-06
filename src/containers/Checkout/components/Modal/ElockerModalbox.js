@@ -39,6 +39,9 @@ export default class ElockerModalBox extends Component {
 
 	onClose(event) {
 		this.props.closeModalElocker(event);
+		this.setState({	
+			filtero2o: null,
+		});
 	}
 
 	setFilterLocker(listo2o) {
