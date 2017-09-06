@@ -57,8 +57,11 @@ export default class CardPengiriman extends Component {
 		const selectedAddress = nextProps.selectedAddress;
 		const cart = nextProps.cart;
 		
-		if (selectedAddress) {
-			const latLngExist = selectedAddress.attributes.longitude !== '' && selectedAddress.attributes.latitude !== '';
+		if (selectedAddress !== this.state.selectedAddress) {
+			let latLngExist = null;
+			if (selectedAddress) {
+				latLngExist = selectedAddress.attributes.longitude !== '' && selectedAddress.attributes.latitude !== '';
+			}
 			this.setState({
 				selectedAddress,
 				latLngExist
@@ -180,7 +183,6 @@ export default class CardPengiriman extends Component {
 				iconPosition='left'
 			/>
 		);
-		const { latLngExist } = this.state;
 
 		const addressPreview = () => {
 			let data = {};
@@ -236,7 +238,7 @@ export default class CardPengiriman extends Component {
 									<Level.Left><strong>{this.props.selectedAddress.attributes.address_label}</strong></Level.Left>
 									<Level.Right className='text-right'>
 										{
-											renderIf(latLngExist)(
+											renderIf(this.props.selectedAddress.attributes.latitude && this.props.selectedAddress.attributes.longitude)(
 												<div>	
 													<Icon name='map-marker' /> &nbsp; Lokasi Sudah Ditandai
 												</div>
