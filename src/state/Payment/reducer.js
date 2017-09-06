@@ -34,6 +34,11 @@ const initialState = {
 	saveCC: true,
 	billingPhoneNumber: null,
 	ovoPhoneNumber: null,
+	selectedCardDetail: {
+		cvv: 0,
+		month: 0,
+		year: 0
+	},
 	selectedPaymentLabel: '-- Pilih Metode Lain',
 	paymentMethods: {
 		methods: [],
