@@ -135,7 +135,6 @@ const getAddresses = (token) => dispatch => new Promise((resolve, reject) => {
 			// dispatch(getPlaceOrderCart(token, defaultAddress));
 		}
 		dispatch(addressesReceived(address, billing, latesto2o));
-		dispatch(getAvailablePaymentMethod(token));
 		resolve(defaultAddress);
 	})
 	

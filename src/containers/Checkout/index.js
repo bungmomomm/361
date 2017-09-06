@@ -38,7 +38,6 @@ import { getPlaceOrderCart, getCart, updateQtyCart, updateCartWithoutSO, deleteC
 import {
 	changePaymentMethod,
 	changePaymentOption,
-	getAvailablePaymentMethod,
 	openNewCreditCard,
 	selectCreditCard,
 	changeCreditCardNumber,
@@ -304,25 +303,26 @@ class Checkout extends Component {
 	}
 
 	onReload(dispatch) {
-		dispatch(getAddresses(this.props.cookies.get('user.token'))).then(defaultAddress => {
-			if (typeof defaultAddress.type !== 'undefined') {
-				this.setState({
-					selectedAddress: defaultAddress,
-					enablePesananPengiriman: true,
-					enablePembayaran: true
-				});
-				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress)).then(() => {
-					dispatch(getAvailablePaymentMethod(this.props.cookies.get('user.token')));			
-				}).catch((error) => {
+		dispatch(getCart(this.props.cookies.get('user.token'))).then(() => {
+			dispatch(getAddresses(this.props.cookies.get('user.token'))).then(defaultAddress => {
+				if (typeof defaultAddress.type !== 'undefined') {
 					this.setState({
-						enablePembayaran: false
+						selectedAddress: defaultAddress,
+						enablePesananPengiriman: true,
+						enablePembayaran: true
 					});
-				});
-			}
-		}).catch(error => {
-			this.onRefreshToken(dispatch, this.onReload);
+					dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress)).then(() => {
+
+					}).catch((error) => {
+						this.setState({
+							enablePembayaran: false
+						});
+					});
+				}
+			}).catch(error => {
+				this.onRefreshToken(dispatch, this.onReload);
+			});
 		});
-		dispatch(getCart(this.props.cookies.get('user.token')));
 	}
 
 	onAddCoupon(coupon) {
