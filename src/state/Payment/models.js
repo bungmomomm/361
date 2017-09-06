@@ -280,18 +280,19 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode, saveCC = false
 	case paymentMethodName.COMMERCE_VERITRANS:
 		paymentPayload.attributes.amount = parseInt(paymentDetail.amount, 10);
 		paymentPayload.attributes.product_type = '';
-		paymentPayload.attributes.card_number = paymentDetail.card.value;
 		if (mode !== 'cc') {
 			paymentPayload.attributes.credit_card = {
 				bank: paymentDetail.card.bank.value,
 				token_id: paymentDetail.card.value,
 				save_cc: saveCC ? '1' : '0'
 			};		
+		} else {
+			paymentPayload.attributes.card_number = paymentDetail.card.value;
 		}
 		break;
 	case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 		paymentPayload.attributes.amount = parseInt(paymentDetail.amount, 10);
-		paymentPayload.attributes.card_number = paymentDetail.card.value;
+		paymentPayload.attributes.product_type = '';
 		if (mode !== 'cc') {
 			paymentPayload.attributes.credit_card = {
 				bank: paymentDetail.card.bank.value,
@@ -301,8 +302,8 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode, saveCC = false
 				provider: payment.term.provider
 			};		
 		} else {
+			paymentPayload.attributes.card_number = paymentDetail.card.value;
 			paymentPayload.attributes.payment_installment_provider = payment.term.provider;
-			paymentPayload.attributes.product_type = '';
 		}
 		break;
 	case paymentMethodName.COMMERCE_SPRINT_ASIA: 
