@@ -38,7 +38,6 @@ import { getPlaceOrderCart, getCart, updateQtyCart, updateCartWithoutSO, deleteC
 import {
 	changePaymentMethod,
 	changePaymentOption,
-	getAvailablePaymentMethod,
 	openNewCreditCard,
 	selectCreditCard,
 	changeCreditCardNumber,
@@ -82,6 +81,9 @@ class Checkout extends Component {
 		this.cardValidator = new Validator({
 			year: 'required|min_value:10|min:1',
 			month: 'required|min_value:1',
+			cvv: 'required|min_value:1'
+		});
+		this.cvvValidator = new Validator({
 			cvv: 'required|min_value:1'
 		});
 		this.state = {
@@ -304,25 +306,26 @@ class Checkout extends Component {
 	}
 
 	onReload(dispatch) {
-		dispatch(getAddresses(this.props.cookies.get('user.token'))).then(defaultAddress => {
-			if (typeof defaultAddress.type !== 'undefined') {
-				this.setState({
-					selectedAddress: defaultAddress,
-					enablePesananPengiriman: true,
-					enablePembayaran: true
-				});
-				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress)).then(() => {
-					dispatch(getAvailablePaymentMethod(this.props.cookies.get('user.token')));			
-				}).catch((error) => {
+		dispatch(getCart(this.props.cookies.get('user.token'))).then(() => {
+			dispatch(getAddresses(this.props.cookies.get('user.token'))).then(defaultAddress => {
+				if (typeof defaultAddress.type !== 'undefined') {
 					this.setState({
-						enablePembayaran: false
+						selectedAddress: defaultAddress,
+						enablePesananPengiriman: true,
+						enablePembayaran: true
 					});
-				});
-			}
-		}).catch(error => {
-			this.onRefreshToken(dispatch, this.onReload);
+					dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress)).then(() => {
+
+					}).catch((error) => {
+						this.setState({
+							enablePembayaran: false
+						});
+					});
+				}
+			}).catch(error => {
+				this.onRefreshToken(dispatch, this.onReload);
+			});
 		});
-		dispatch(getCart(this.props.cookies.get('user.token')));
 	}
 
 	onAddCoupon(coupon) {
@@ -740,26 +743,30 @@ class Checkout extends Component {
 
 	onDoPayment() {
 		const { dispatch } = this.props;
+		let validator = false;
+		let mode = 'complete';
 		if (typeof this.props.payments.paymentMethod !== 'undefined') {
-			let mode = 'complete';
 			switch (this.props.payments.paymentMethod) {
 			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 			case paymentMethodName.COMMERCE_VERITRANS:
-				if (!this.props.payments.twoClickEnabled) {
-					this.cardValidator.validateAll({
+				if (this.props.payments.twoClickEnabled) {
+					validator = this.cvvValidator.validateAll({
+						cvv: this.props.payments.selectedCardDetail.cvv
+					});
+				} else {
+					validator = this.cardValidator.validateAll({
 						year: this.props.payments.selectedCardDetail.year,
 						month: this.props.payments.selectedCardDetail.month,
 						cvv: this.props.payments.selectedCardDetail.cvv
-					}).then(success => {
-						if (success) {
-							this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
-						} else {
-							dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
-						}
 					});
-				} else {
-					this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
 				}
+				validator.then(success => {
+					if (success) {
+						this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
+					} else {
+						dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
+					}
+				});
 				break;
 			case paymentMethodName.COMMERCE_SPRINT_ASIA:
 				mode = 'sprint';
@@ -1061,10 +1068,9 @@ class Checkout extends Component {
 			dispatch(o2oChoise(this.props.cart));
 		} else {
 			dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress)).then(() => {
-				
+				dispatch(changeBillingNumber(this.state.selectedAddress.attributes.phone));
 			}).catch((error) => {
 				this.setState({
-					
 					enablePembayaran: false,
 					enablePesananPengiriman: this.state.enablePesananPengiriman
 				});
@@ -1134,7 +1140,9 @@ class Checkout extends Component {
 			listo2o,
 			latesto2o,
 			o2oProvinces,
-			isPickupable
+			isPickupable,
+			dispatch,
+			cookies
 		} = this.props;
 
 		return (
@@ -1191,6 +1199,9 @@ class Checkout extends Component {
 								<Col flex grid={4} className={enablePembayaran && !this.state.restrictO2o ? '' : styles.disabled}>
 									<div className={styles.title}>3. Pembayaran</div>
 									<CardPembayaran
+										dispatch={dispatch}
+										cookies={cookies}
+										soNumber={this.props.soNumber}
 										loading={payments.loading || this.state.loadingUpdateCart || this.state.loadingCardPengiriman}
 										loadingUpdateCart={this.state.loadingUpdateCart}
 										loadingCardPengiriman={this.state.loadingCardPengiriman}
