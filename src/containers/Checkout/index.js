@@ -1134,7 +1134,9 @@ class Checkout extends Component {
 			listo2o,
 			latesto2o,
 			o2oProvinces,
-			isPickupable
+			isPickupable,
+			dispatch,
+			cookies
 		} = this.props;
 
 		return (
@@ -1191,6 +1193,9 @@ class Checkout extends Component {
 								<Col flex grid={4} className={enablePembayaran && !this.state.restrictO2o ? '' : styles.disabled}>
 									<div className={styles.title}>3. Pembayaran</div>
 									<CardPembayaran
+										dispatch={dispatch}
+										cookies={cookies}
+										soNumber={this.props.soNumber}
 										loading={payments.loading || this.state.loadingUpdateCart || this.state.loadingCardPengiriman}
 										loadingUpdateCart={this.state.loadingUpdateCart}
 										loadingCardPengiriman={this.state.loadingCardPengiriman}

@@ -305,7 +305,7 @@ export default (state = initialState, action) => {
 			...state,
 			loading: false,
 			paymentError: (action.payload.message !== false),
-			paymentErrorMessage: action.payload.message
+			error: action.payload.message
 		};
 	}
 	case constants.PAY_TERM_CHANGE: {
