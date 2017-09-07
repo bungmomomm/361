@@ -325,6 +325,8 @@ class Checkout extends Component {
 			}).catch(error => {
 				this.onRefreshToken(dispatch, this.onReload);
 			});
+		}).catch(error => {
+			this.onRefreshToken(dispatch, this.onReload);
 		});
 	}
 
@@ -828,7 +830,6 @@ class Checkout extends Component {
 		});
 		const attributes = selectedAddress ? selectedAddress.attributes : null;
 		this.setState({
-			
 			selectedAddress: {
 				...selectedAddress,
 				attributes: {
@@ -860,6 +861,16 @@ class Checkout extends Component {
 		}
 		this.setState({
 			enableNewAddress: false,
+		});
+		
+		// this.onChoisedAddress(selectedAddress);
+		dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), selectedAddress)).then(() => {
+			dispatch(changeBillingNumber(selectedAddress.attributes.phone));
+		}).catch((error) => {
+			this.setState({
+				enablePembayaran: false,
+				enablePesananPengiriman: this.state.enablePesananPengiriman
+			});
 		});
 	}
 	onCardNumberChange(event) {

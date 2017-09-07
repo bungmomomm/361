@@ -125,7 +125,9 @@ export default class CardPengiriman extends Component {
 		this.setState({
 			loading: true
 		});
-		this.props.onChangeAddress(this.state.selectedAddress, e);
+		const selectedAddress = this.getSelectedAddress();
+		console.log(selectedAddress);
+		this.props.onChangeAddress(selectedAddress, e);
 	}
 
 	onChosenLocker(dataChosen) {
@@ -156,6 +158,21 @@ export default class CardPengiriman extends Component {
 		}
 	}
 
+	getSelectedAddress() {
+		let data = {};
+		if (this.state.dataChoised === 0) {
+			data = Array.isArray(this.props.addresses) ? this.props.addresses[0] : this.props.addresses;
+		} else {
+			data = this.props.addresses.map((option) => {
+				return (option.id === this.state.dataChoised) ? option : null;
+			}).filter((option) => {
+				return option;
+			});
+			data = Array.isArray(data) ? data[0] : data;
+		}
+		return data;
+	}
+	
 	openModal(even) {
 		this.props.onOpenModalO2o();
 		this.setState({
@@ -187,19 +204,21 @@ export default class CardPengiriman extends Component {
 		const addressPreview = () => {
 			let data = {};
 			if (this.props.addresses) {
-				if (this.state.dataChoised === 0) {
-					data = Array.isArray(this.props.addresses) ? this.props.addresses[0] : this.props.addresses;
-				} else {
-					data = this.props.addresses.map((option) => {
-						return (option.id === this.state.dataChoised) ? option : null;
-					}).filter((option) => {
-						return option;
-					});
-					data = Array.isArray(data) ? data[0] : data;
-				}
+				data = this.getSelectedAddress();
 			}
 			return (
-				data ? (
+				data.attributes ? ([
+					<Level>
+						<Level.Item className='text-right'>
+							{
+								renderIf(data.attributes.latitude && data.attributes.longitude)(
+									<div>	
+										<Icon name='map-marker' /> &nbsp; Lokasi Sudah Ditandai
+									</div>
+								)
+							}
+						</Level.Item>
+					</Level>,
 					<p>
 						<strong>{!data.attributes ? data.addressLabel : data.attributes.addressLabel}</strong> <br />
 						{!data.attributes ? data.fullname : data.attributes.fullname} <br />
@@ -207,7 +226,7 @@ export default class CardPengiriman extends Component {
 						{!data.attributes ? data.district : data.attributes.district}, {!data.attributes ? data.city : data.attributes.city}, {!data.attributes ? data.province : data.attributes.province}, {!data.attributes ? data.zipcode : data.attributes.zipcode} <br />
 						P: {!data.attributes ? data.phone : data.attributes.phone}
 					</p> 
-				) : <p>loading...</p>
+				]) : <p>loading...</p>
 			);
 		};
 		
@@ -234,18 +253,6 @@ export default class CardPengiriman extends Component {
 								{
 							!this.props.selectedAddress ? null : 
 							<div>
-								<Level>
-									<Level.Left><strong>{this.props.selectedAddress.attributes.address_label}</strong></Level.Left>
-									<Level.Right className='text-right'>
-										{
-											renderIf(this.props.selectedAddress.attributes.latitude && this.props.selectedAddress.attributes.longitude)(
-												<div>	
-													<Icon name='map-marker' /> &nbsp; Lokasi Sudah Ditandai
-												</div>
-											)
-										}
-									</Level.Right>
-								</Level>
 								{
 									renderIf(this.props.addresses)(
 										addressPreview()

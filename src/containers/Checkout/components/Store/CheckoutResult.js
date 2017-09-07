@@ -11,7 +11,11 @@ const CheckoutResult = (props) => {
 	return (
 		<div className={styles.footer}>
 			{
-				props.shipping.gosend.gosendSupported && props.shipping.gosend.gosendApplicable && props.addressTabActive && !props.isJabodetabekArea ? 
+				props.shipping.gosend.gosendSupported 
+				&& props.shipping.gosend.gosendApplicable 
+				&& latLng
+				&& props.addressTabActive 
+				&& !props.isJabodetabekArea ? 
 					<div className={styles.deliveryInfo}>
 						{
 							!props.gosendInfo ? null :
@@ -23,7 +27,10 @@ const CheckoutResult = (props) => {
 					</div>
 					:
 					(
-						props.shipping.gosend.gosendSupported && !latLng && props.addressTabActive && !props.isJabodetabekArea ? 
+						props.shipping.gosend.gosendSupported 
+						&& !latLng 
+						&& props.addressTabActive 
+						&& !props.isJabodetabekArea ? 
 							<div className={styles.deliveryInfo}>
 								{
 									!props.gosendInfo ? null :
