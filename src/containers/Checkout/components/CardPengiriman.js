@@ -31,7 +31,8 @@ export default class CardPengiriman extends Component {
 			latLngExist: false,
 			loading: false,
 			isJabodetabekArea: false,
-			dataChoised: 0
+			dataChoised: 0,
+			selectedLabel: {}
 		};
 		this.onChoisedAddress = this.onChoisedAddress.bind(this);
 		this.onChangeAddress = this.onChangeAddress.bind(this);
@@ -84,13 +85,12 @@ export default class CardPengiriman extends Component {
 
 		if (this.state.loading !== nextProps.loading) {
 			this.setState({
-				loading: nextProps.loading
+				loading: nextProps.loading,
 			});
 		}
 		
 		if (typeof shipping !== 'undefined') {
 			shipping.forEach((value, index) => {
-				
 				address.push({
 					value: value.id,
 					label: !value.attributes.addressLabel ? value.attributes.fullname : value.attributes.addressLabel,
@@ -100,6 +100,17 @@ export default class CardPengiriman extends Component {
 			this.setState({
 				shipping: address
 			});
+			if (this.state.shipping.length !== shipping.length) {
+				this.props.onChoisedAddress(shipping[0]);
+				this.setState({
+					dataChoised: shipping[0].id,
+					selectedLabel: {
+						info: '',
+						label: shipping[0].attributes.addressLabel,
+						value: shipping[0].id
+					}
+				});
+			}
 		}
 
 		if (shipping) {
@@ -126,7 +137,6 @@ export default class CardPengiriman extends Component {
 			loading: true
 		});
 		const selectedAddress = this.getSelectedAddress();
-		console.log(selectedAddress);
 		this.props.onChangeAddress(selectedAddress, e);
 	}
 
@@ -170,6 +180,7 @@ export default class CardPengiriman extends Component {
 			});
 			data = Array.isArray(data) ? data[0] : data;
 		}
+		console.log(this.state.dataChoised);
 		return data;
 	}
 	
@@ -208,6 +219,15 @@ export default class CardPengiriman extends Component {
 			}
 			return (
 				data.attributes ? ([
+					<InputGroup>
+						<Select 
+							name='alamat' 
+							selectedLabel='-- Pilih Alamat Lainnya' 
+							options={this.state.shipping} 
+							onChange={this.onChoisedAddress}
+							addButton={addMoreAddress}
+						/>
+					</InputGroup>,
 					<Level>
 						<Level.Item className='text-right'>
 							{
@@ -240,15 +260,6 @@ export default class CardPengiriman extends Component {
 					{
 						renderIf(this.state.shipping.length > 0)(
 							<Segment>
-								<InputGroup>
-									<Select 
-										name='alamat' 
-										selectedLabel='-- Pilih Alamat Lainnya' 
-										options={this.state.shipping} 
-										onChange={this.onChoisedAddress}
-										addButton={addMoreAddress}
-									/>
-								</InputGroup>
 						
 								{
 							!this.props.selectedAddress ? null : 

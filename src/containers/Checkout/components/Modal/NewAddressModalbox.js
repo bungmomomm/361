@@ -322,7 +322,6 @@ export default class NewAddressModalbox extends Component {
 	validateAndSubmit(e) {
 		e.preventDefault();
 		const { formData } = this.state;
-		console.log(formData);
 		this.validator.validateAll(formData).then(success => {
 			if (success) {
 				this.submit(formData);
