@@ -489,7 +489,7 @@ export default class NewAddressModalbox extends Component {
 							</small>
 						</Alert>
 						{
-							renderIf(this.state.pinPoint === 'showToggleButton' && this.state.isJakarta && !this.state.displayMap)(
+							renderIf(this.state.pinPoint === 'showToggleButton' && this.state.formData.kecamatan && this.state.isJakarta && !this.state.displayMap)(
 								<div className={styles.header}>
 									<Button 
 										type='button' 
@@ -506,7 +506,7 @@ export default class NewAddressModalbox extends Component {
 								</div>
 							)
 						}{
-							renderIf(this.state.pinPoint === 'showToggleButton' && this.state.isJakarta && this.state.displayMap)(
+							renderIf(this.state.pinPoint === 'showToggleButton' && this.state.formData.kecamatan && this.state.isJakarta && this.state.displayMap)(
 								<div className={styles.header}>
 									<Button 
 										type='button' 
