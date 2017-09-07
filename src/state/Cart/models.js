@@ -105,6 +105,9 @@ const setCartModel = (jsoApiResponse) => {
 	})
 	.sort((a, b) => {
 		return a.store.shipping.o2oSupported - b.store.shipping.o2oSupported;
+	})
+	.sort((a, b) => {
+		return b.store.products[0].fgLocation - a.store.products[0].fgLocation;
 	});
 };
 

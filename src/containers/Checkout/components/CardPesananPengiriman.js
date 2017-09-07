@@ -76,7 +76,7 @@ export default class CardPesananPengiriman extends Component {
 							<StoreBox 
 								loading={this.props.loadingUpdateCart} 
 								color={(this.props.restrictO2o && !storeData.store.shipping.o2oSupported) 
-									|| (this.state.cartJabodetabek.indexOf(storeData.store.id) !== -1) ? 'red' : ''} 
+									|| (this.state.cartJabodetabek.indexOf(storeData.store.id) !== -1 && !this.props.restrictO2o) ? 'red' : ''} 
 								key={i} 
 								name={storeData.store.name} 
 								location={storeData.store.location}
