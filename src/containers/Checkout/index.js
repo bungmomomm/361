@@ -828,7 +828,6 @@ class Checkout extends Component {
 		});
 		const attributes = selectedAddress ? selectedAddress.attributes : null;
 		this.setState({
-			
 			selectedAddress: {
 				...selectedAddress,
 				attributes: {
@@ -861,6 +860,8 @@ class Checkout extends Component {
 		this.setState({
 			enableNewAddress: false,
 		});
+		
+		this.onChoisedAddress(selectedAddress);
 	}
 	onCardNumberChange(event) {
 		if (event.valid) {
