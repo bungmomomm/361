@@ -13,6 +13,7 @@ const CheckoutResult = (props) => {
 			{
 				props.shipping.gosend.gosendSupported 
 				&& props.shipping.gosend.gosendApplicable 
+				&& latLng
 				&& props.addressTabActive 
 				&& !props.isJabodetabekArea ? 
 					<div className={styles.deliveryInfo}>

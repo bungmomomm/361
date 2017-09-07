@@ -207,7 +207,7 @@ export default class CardPengiriman extends Component {
 				data = this.getSelectedAddress();
 			}
 			return (
-				data ? ([
+				data.attributes ? ([
 					<Level>
 						<Level.Item className='text-right'>
 							{

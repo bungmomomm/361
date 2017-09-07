@@ -863,7 +863,15 @@ class Checkout extends Component {
 			enableNewAddress: false,
 		});
 		
-		this.onChoisedAddress(selectedAddress);
+		// this.onChoisedAddress(selectedAddress);
+		dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), selectedAddress)).then(() => {
+			dispatch(changeBillingNumber(selectedAddress.attributes.phone));
+		}).catch((error) => {
+			this.setState({
+				enablePembayaran: false,
+				enablePesananPengiriman: this.state.enablePesananPengiriman
+			});
+		});
 	}
 	onCardNumberChange(event) {
 		if (event.valid) {
