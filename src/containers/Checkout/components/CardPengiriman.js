@@ -180,7 +180,6 @@ export default class CardPengiriman extends Component {
 			});
 			data = Array.isArray(data) ? data[0] : data;
 		}
-		console.log(this.state.dataChoised);
 		return data;
 	}
 	
@@ -227,6 +226,7 @@ export default class CardPengiriman extends Component {
 							onChange={this.onChoisedAddress}
 							addButton={addMoreAddress}
 						/>
+						<span className='customSelectO2O'>{data.attributes.addressLabel}</span>
 					</InputGroup>,
 					<Level>
 						<Level.Item className='text-right'>
@@ -259,7 +259,7 @@ export default class CardPengiriman extends Component {
 					</Alert>
 					{
 						renderIf(this.state.shipping.length > 0)(
-							<Segment>
+							<Segment className='customSelectO2OWrapper'>
 						
 								{
 							!this.props.selectedAddress ? null : 
