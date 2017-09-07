@@ -15,17 +15,12 @@ export default class Vt3dsModalBox extends Component {
 	}
 
 	render() {
+		const modal = true;
 		return (
-			<Modal size='medium' shown={this.props.shown} onClose={this.onClose} >
-				<Modal.Header>
-					3DS Challenge
-				</Modal.Header>
+			<Modal size='medium' shown={this.props.shown} onClose={this.onClose} modal={modal}>
 				<Modal.Body>
-					<iframe title='vtToken' src={this.props.src} frameBorder={0} height={300} width={470} />
-				</Modal.Body>
-				<Modal.Footer>
-					3DS Footer
-				</Modal.Footer>				
+					<iframe title='vtToken' src={this.props.src} frameBorder={0} height={470} width={470} />
+				</Modal.Body>				
 			</Modal>
 		);
 	}
