@@ -155,16 +155,16 @@ export default class CardPengiriman extends Component {
 				this.props.onGetListO2o();
 				this.props.onGetO2oProvinces();
 			}
+			if (this.props.selectedLocker) {
+				this.props.onSelectedLocker(this.props.selectedLocker, this.props.selectO2oFromModal);	
+			} else if (this.props.latesto2o.length > 0) {
+				this.props.onSelectedLocker(this.props.latesto2o[0]);	
+			}
 		} else {
 			this.setState({
 				elockerTab: false
 			});
 			this.props.activeShippingTab(true);
-		}
-		if (this.props.selectedLocker) {
-			this.props.onSelectedLocker(this.props.selectedLocker, this.props.selectO2oFromModal);	
-		} else if (this.props.latesto2o.length > 0) {
-			this.props.onSelectedLocker(this.props.latesto2o[0]);	
 		}
 	}
 
