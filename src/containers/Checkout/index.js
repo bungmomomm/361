@@ -290,7 +290,7 @@ class Checkout extends Component {
 			userRFToken: this.props.cookies.get('user.rf.token')
 		})).then((newToken) => {
 			console.log(newToken);
-			this.props.cookies.set('user.exp', newToken.expToken, { domain: process.env.SESSION_DOMAIN });
+			this.props.cookies.set('user.exp', Number(newToken.expToken), { domain: process.env.SESSION_DOMAIN });
 			this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: process.env.SESSION_DOMAIN });
 			this.props.cookies.set('user.token', newToken.userToken, { domain: process.env.SESSION_DOMAIN });
 
@@ -324,10 +324,10 @@ class Checkout extends Component {
 					});
 				}
 			}).catch(error => {
-				this.onRefreshToken(dispatch, this.onReload);
+				// this.onRefreshToken(dispatch, this.onReload);
 			});
 		}).catch(error => {
-			this.onRefreshToken(dispatch, this.onReload);
+			// this.onRefreshToken(dispatch, this.onReload);
 		});
 	}
 
