@@ -75,6 +75,7 @@
     "compression": "^1.7.0",
     "credit-card-type": "^5.0.3",
     "dotenv-webpack": "^1.5.4",
+    "es6-promise": "^4.1.1",
     "express": "4.15.3",
     "google-maps-react": "^1.1.0",
     "html-minifier": "3.5.2",
