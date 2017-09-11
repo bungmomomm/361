@@ -123,15 +123,8 @@ const getAddresses = (token) => dispatch => new Promise((resolve, reject) => {
 		}
 		let defaultAddress = [];
 		if (address.length > 0) {
-
-			const minimumDateISO = Math.max(...address.map((value, index) => {
-				return Date.parse(value.attributes.createdTime);
-			}));
-
 			defaultAddress = address
-				.filter(e => e.attributes.fgDefault === '1' ||
-					Date.parse(e.attributes.createdTime) === minimumDateISO
-				)[0];
+				.filter(e => parseInt(e.attributes.fgDefault, 10) === 1)[0];
 			if ((defaultAddress === null || !defaultAddress) && typeof address[0] !== 'undefined') {
 				defaultAddress = address[0];
 			}
