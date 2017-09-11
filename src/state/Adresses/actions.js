@@ -124,7 +124,7 @@ const getAddresses = (token) => dispatch => new Promise((resolve, reject) => {
 		let defaultAddress = [];	
 		if (address.length > 0) {
 
-			const minimumDateISO = Math.min(...address.map((value, index) => {
+			const minimumDateISO = Math.max(...address.map((value, index) => {
 				return Date.parse(value.attributes.createdTime);
 			}));
 			
