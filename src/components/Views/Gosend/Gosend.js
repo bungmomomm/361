@@ -188,37 +188,39 @@ class Gosend extends Component {
 								)
 							}
 							{
-								renderIf(this.props.google && this.state.center && this.state.polygonArea)(
-									<Map 
-										google={this.props.google} 
-										zoom={15}
-										className={styles.googleMapArea}
-										scrollwheel={false}
-										initialCenter={this.state.center}
-										center={this.state.centerMap}
-										centerAroundCurrentLocation={false}
-									>
-										<Polygon
-											paths={this.state.polygonArea}
-											strokeColor='#0000FF'
-											strokeOpacity={0.8}
-											strokeWeight={2}
-											fillColor='#0000FF'
-											onClick={this.onMouseoverPolygon}
-											fillOpacity={0.35} 
-										/>
-										<Marker
-											title={'The marker`s title will appear as a tooltip.'}
-											name={'Current location'} 
-											position={this.state.center}
-											clickable
-											icon={{
-												url: this.markerIcon
-											}}
-											onClick={this.onSetPoint}
-										/>
-									</Map>
-								)
+								setTimeout(() => {
+									renderIf(this.props.google && this.state.center && this.state.polygonArea)(
+										<Map 
+											google={this.props.google} 
+											zoom={15}
+											className={styles.googleMapArea}
+											scrollwheel={false}
+											initialCenter={this.state.center}
+											center={this.state.centerMap}
+											centerAroundCurrentLocation={false}
+										>
+											<Polygon
+												paths={this.state.polygonArea}
+												strokeColor='#0000FF'
+												strokeOpacity={0.8}
+												strokeWeight={2}
+												fillColor='#0000FF'
+												onClick={this.onMouseoverPolygon}
+												fillOpacity={0.35} 
+											/>
+											<Marker
+												title={'The marker`s title will appear as a tooltip.'}
+												name={'Current location'} 
+												position={this.state.center}
+												clickable
+												icon={{
+													url: this.markerIcon
+												}}
+												onClick={this.onSetPoint}
+											/>
+										</Map>
+									);
+								}, 50)
 							}
 							<div className={styles.mapLocationName}>
 								<Icon name='map-marker' /> 
