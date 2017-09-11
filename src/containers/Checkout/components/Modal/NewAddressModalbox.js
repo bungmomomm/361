@@ -347,7 +347,7 @@ export default class NewAddressModalbox extends Component {
 					location_coords: PolygonResult.location_coords
 				}
 			});
-		}, 20);
+		}, 500);
 	}
 	
 	hideGoogleMap() {
