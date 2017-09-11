@@ -4,7 +4,7 @@ import { getPlaceOrderCart } from '@/state/Cart/actions';
 import {
 	getAvailablePaymentMethod
 } from '@/state/Payment/actions';
-import { 
+import {
 	ADDR_GET_ADDRESS,
 	ADDR_O2O_LIST,
 	ADDR_O2O_PROVINCE,
@@ -12,12 +12,12 @@ import {
 	ADDR_GET_CITY_PROVINCE,
 	// ADDR_SAVE_ADDRESS,
 	// ADDR_DROP_SHIPPER,
-	// ADDR_O2O_LIST 
+	// ADDR_O2O_LIST
 } from './constants';
 
 const districtReceived = (district) => ({
 	type: ADDR_GET_DISTRICT,
-	status: 1, 
+	status: 1,
 	payload: {
 		district
 	}
@@ -26,7 +26,7 @@ const districtReceived = (district) => ({
 
 const cityProvinceRequest = (token) => ({
 	type: ADDR_GET_CITY_PROVINCE,
-	status: 0, 
+	status: 0,
 	payload: {
 		token
 	}
@@ -34,7 +34,7 @@ const cityProvinceRequest = (token) => ({
 
 const cityProvinceReceived = (cityProv) => ({
 	type: ADDR_GET_CITY_PROVINCE,
-	status: 1, 
+	status: 1,
 	payload: {
 		cityProv
 	}
@@ -94,7 +94,7 @@ const o2oProvinceReceived = (o2oProvinces) => ({
 const getAddresses = (token) => dispatch => new Promise((resolve, reject) => {
 	dispatch(addressesRequest(token));
 	const req = {
-		token, 
+		token,
 		path: 'me/addresses',
 		method: 'GET'
 	};
@@ -121,23 +121,25 @@ const getAddresses = (token) => dispatch => new Promise((resolve, reject) => {
 				attributes: latesto2o[0].attributes
 			}];
 		}
-		let defaultAddress = [];	
+		let defaultAddress = [];
 		if (address.length > 0) {
 
 			const minimumDateISO = Math.min(...address.map((value, index) => {
 				return Date.parse(value.attributes.createdTime);
 			}));
-			
+
 			defaultAddress = address
-								.filter(e => e.attributes.fgDefault === '1' || 
-										Date.parse(e.attributes.createdTime) === minimumDateISO
-								)[0];
-			// dispatch(getPlaceOrderCart(token, defaultAddress));
+				.filter(e => e.attributes.fgDefault === '1' ||
+					Date.parse(e.attributes.createdTime) === minimumDateISO
+				)[0];
+			if ((defaultAddress === null || !defaultAddress) && typeof address[0] !== 'undefined') {
+				defaultAddress = address[0];
+			}
 		}
 		dispatch(addressesReceived(address, billing, latesto2o));
 		resolve(defaultAddress);
 	})
-	
+
 	.catch((error) => {
 		console.log(error);
 	});
@@ -146,9 +148,9 @@ const getAddresses = (token) => dispatch => new Promise((resolve, reject) => {
 const saveAddress = (token, formData, selectedAddress) => dispatch => new Promise((resolve, reject) => {
 	const cityProvince = formData.provinsi.split(',');
 	const req = {
-		token, 
+		token,
 		path: `me/addresses/${formData.isEdit ? formData.id : ''}`,
-		method: formData.isEdit ? 'PUT' : 'POST', 
+		method: formData.isEdit ? 'PUT' : 'POST',
 		body: {
 			data: {
 				type: 'shipping',
@@ -168,14 +170,14 @@ const saveAddress = (token, formData, selectedAddress) => dispatch => new Promis
 				}
 			}
 		}
-	}; 
+	};
 
 	request(req)
 	.then((response) => {
 		if (formData.isEdit) {
 			resolve(dispatch(getPlaceOrderCart(token, selectedAddress)));
 		}
-		
+
 		resolve(dispatch(getAddresses(token)));
 	})
 	.catch((error) => {
@@ -190,7 +192,7 @@ const getDistrict = (token, label) => dispatch => {
 	const cityProvince = label.split(',');
 
 	const req = {
-		token, 
+		token,
 		path: `districts?province=${cityProvince[1].trim().replace(/ /g, '+')}&city=${cityProvince[0].trim().replace(/ /g, '+')}`,
 		method: 'GET'
 	};
@@ -206,7 +208,7 @@ const getDistrict = (token, label) => dispatch => {
 		// if (response.data.data.length > 0) {
 		response.data.data.forEach((value, index) => {
 			const dvalue = {
-				value: value.attributes.name, 
+				value: value.attributes.name,
 				label: value.attributes.name,
 				isSupportedPinPoint: value.attributes.is_supported_pin_point
 			};
@@ -224,7 +226,7 @@ const getDistrict = (token, label) => dispatch => {
 const getCityProvince = (token) => dispatch => {
 	dispatch(cityProvinceRequest(token));
 	const req = {
-		token, 
+		token,
 		path: 'provinces_and_cities?terms=&page=1&per_page=500',
 		method: 'GET'
 	};
