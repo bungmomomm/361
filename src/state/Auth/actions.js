@@ -31,7 +31,7 @@ const getRefreshToken = (token) => dispatch => new Promise((resolve, reject) => 
 		token = {
 			userToken: response.data.data.token,
 			userRFToken: response.data.data.refresh_token,
-			expToken: new Date(response.data.data.info.expired_time).getTime()
+			expToken: new Date(Number(response.data.data.info.expired_time)).getTime()
 		};
 		$dis(requestToken(token));
 		
