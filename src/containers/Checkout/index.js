@@ -191,7 +191,7 @@ class Checkout extends Component {
 			this.onReload(dispatch);
 		}
 
-		if (this.props.location.search.includes('failed')) {
+		if (this.props.location.search.indexOf('failed') > 0) {
 			this.setState({
 				enablePembayaran: true,
 				notifInfo: false,
