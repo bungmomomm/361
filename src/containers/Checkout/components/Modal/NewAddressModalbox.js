@@ -93,9 +93,13 @@ export default class NewAddressModalbox extends Component {
 		const la = this.props.formDataAddress.latitude || '';
 		const lo = this.props.formDataAddress.longitude || '';
 		if (la !== '' && lo !== '') {
-			const gosendData = this.state.gosendData;
+			let gosendData = this.state.gosendData;
 			const PolygonResult = this.constructor.getPolygonData(this.props.formDataAddress.kecamatan.toLowerCase());
 			if (PolygonResult) {
+				gosendData = {
+					...gosendData,
+					...PolygonResult
+				};
 				const locationCoords = PolygonResult.location_coords;
 				this.setState({
 					enableGosend: true,

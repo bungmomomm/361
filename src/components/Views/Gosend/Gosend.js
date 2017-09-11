@@ -49,6 +49,18 @@ class Gosend extends Component {
 		this.setState({
 			displayMap: nextProps.displayMap
 		});
+		if (typeof nextProps.center.lat !== 'undefined' && nextProps.center.lat !== null) {
+			this.setState({
+				center: nextProps.center
+			});
+		}
+
+		if (typeof nextProps.polygonArea !== 'undefined' && nextProps.polygonArea !== null) {
+			this.setState({
+				polygonArea: nextProps.polygonArea
+			});
+		}
+
 	}
 
 	componentDidUpdate(prevProps) {
@@ -188,9 +200,9 @@ class Gosend extends Component {
 								)
 							}
 							{
-								renderIf(this.props.google && this.state.center && this.state.polygonArea)(
-									<Map 
-										google={this.props.google} 
+								renderIf(this.props.google && this.state.polygonArea)(
+									<Map
+										google={this.props.google}
 										zoom={15}
 										className={styles.googleMapArea}
 										scrollwheel={false}
