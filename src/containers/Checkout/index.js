@@ -324,10 +324,10 @@ class Checkout extends Component {
 					});
 				}
 			}).catch(error => {
-				this.onRefreshToken(dispatch, this.onReload);
+				// this.onRefreshToken(dispatch, this.onReload);
 			});
 		}).catch(error => {
-			this.onRefreshToken(dispatch, this.onReload);
+			// this.onRefreshToken(dispatch, this.onReload);
 		});
 	}
 
