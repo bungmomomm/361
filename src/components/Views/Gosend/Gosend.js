@@ -188,7 +188,7 @@ class Gosend extends Component {
 								)
 							}
 							{
-								renderIf(this.props.google)(
+								renderIf(this.props.google && this.state.center && this.state.polygonArea)(
 									<Map 
 										google={this.props.google} 
 										zoom={15}
