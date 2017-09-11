@@ -324,9 +324,11 @@ class Checkout extends Component {
 					});
 				}
 			}).catch(error => {
+				console.log(error);
 				// this.onRefreshToken(dispatch, this.onReload);
 			});
 		}).catch(error => {
+			console.log(error);
 			// this.onRefreshToken(dispatch, this.onReload);
 		});
 	}
