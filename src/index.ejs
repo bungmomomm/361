@@ -44,7 +44,7 @@
     </head>
     <body <% if (params.helmet.htmlAttributes) { %><%= params.helmet.bodyAttributes.toString() %><% } %>>
         <!-- Google Tag Manager (noscript) -->
-        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5P6ZB6H"
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=<%= process.env.GTM_KEY %>"
         height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <!-- End Google Tag Manager (noscript) -->
         <!--[if lt IE 9]>
