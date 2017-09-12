@@ -109,13 +109,16 @@
 
 .medium{
 	max-width: 540px;
+	.body{
+		min-height: 400px;
+	}
 }
 
 .small{
 	max-width: 373px;
 	text-align: center;
 	.body{
-		min-height: 220px;
+		min-height: 100px;
 	}
 }
 
