@@ -4,29 +4,29 @@ import { Validator } from 'ree-validate';
 import { paymentGroupName } from '@/state/Payment/constants';
 
 // component load
-import { 
+import {
 	Col,
 	CreditCardInput,
 	CreditCardRadio,
 	Row,
-	Tooltip, 
-	Level, 
-	Input, 
-	InputGroup, 
-	Select, 
-	Card, 
-	Button, 
+	Tooltip,
+	Level,
+	Input,
+	InputGroup,
+	Select,
+	Card,
+	Button,
 	Checkbox,
 	// Radio,
 	Sprites
 } from '@/components';
 
 // Dummy Data
-import { 
-// 	UangElektronik, 
-// 	GeraiTunai, 
-// 	InternetBanking, 
-// 	Bank, 
+import {
+// 	UangElektronik,
+// 	GeraiTunai,
+// 	InternetBanking,
+// 	Bank,
 	Bulan
 } from '@/data';
 
@@ -199,20 +199,20 @@ export default class CardPembayaran extends Component {
 	}
 
 	render() {
-		const { 
-			coupon, 
-			subTotal, 
+		const {
+			coupon,
+			subTotal,
 			discount,
-			total, 
-			deliveryCostDiscount, 
-			deliveryCost, 
-			paymentMethods, 
+			total,
+			deliveryCostDiscount,
+			deliveryCost,
+			paymentMethods,
 			loading,
 			selectedPayment,
 			selectedPaymentOption,
 			twoClickEnabled,
 			resetPaymentOption,
-			selectedCard 
+			selectedCard
 		} = this.props.payments;
 		let couponId = false;
 		if (this.props.validCoupon && this.props.coupon !== '') {
@@ -221,7 +221,7 @@ export default class CardPembayaran extends Component {
 			couponId = this.props.payments.couponId;
 		}
 		let voucherBox = '';
-		if (this.props.validCoupon === null && !couponId) { 
+		if (this.props.validCoupon === null && !couponId) {
 			voucherBox = (
 				<Level>
 					<Level.Left className={styles.voucherLabel}>Kode Voucher</Level.Left>
@@ -252,7 +252,7 @@ export default class CardPembayaran extends Component {
 						</Level.Right>
 					</Level>
 				</div>
-			);			
+			);
 		}
 
 		const CvvElement = (
@@ -266,7 +266,7 @@ export default class CardPembayaran extends Component {
 			</Row>
 		);
 
-		let paymentOptions = false; 
+		let paymentOptions = false;
 		let installmentPayment = false;
 		let info = '';
 		if (selectedPaymentOption) {
@@ -279,7 +279,7 @@ export default class CardPembayaran extends Component {
 					});
 				}
 			}
-		}	
+		}
 		if (selectedPayment) {
 			switch (selectedPayment.value) {
 			case paymentGroupName.BANK_TRANSFER:
@@ -307,7 +307,7 @@ export default class CardPembayaran extends Component {
 									{ renderIf(card.selected)(CvvElement) }
 								</InputGroup>
 							) : null
-						)) : 
+						)) :
 							<InputGroup key={index}>
 								<Select emptyFilter={false} name='cc' selectedLabel='-- Tambah Baru' options={option.cards} onChange={this.onSelectCard} />
 								{ renderIf((selectedCard && twoClickEnabled))(CvvElement) }
@@ -319,9 +319,9 @@ export default class CardPembayaran extends Component {
 			case paymentGroupName.INSTALLMENT:
 				installmentPayment = (
 					<InputGroup>
-						{ 
+						{
 							selectedPayment.paymentItems.map((installment, index) => {
-								
+
 								return (
 									<div key={index}>
 										<InputGroup>
@@ -362,11 +362,14 @@ export default class CardPembayaran extends Component {
 				break;
 			default:
 				paymentOptions = false;
-				break;	
-			} 
+				break;
+			}
 		}
 
 		const discountHtml = (!discount) ? false : discount.map((discountItem, index) => {
+			if (couponId && discountItem.discountName.toLowerCase() === couponId.toLowerCase()) {
+				return (<span />);
+			}
 			return (
 				<Level key={index}>
 					<Level.Left>
@@ -429,7 +432,7 @@ export default class CardPembayaran extends Component {
 								{ renderIf(
 									selectedPaymentOption &&
 									(selectedPayment.value === 'cod' || selectedPayment.value === 'gratis') &&
-									typeof selectedPaymentOption.settings !== 'undefined' && 
+									typeof selectedPaymentOption.settings !== 'undefined' &&
 									selectedPaymentOption.settings.info.length > 0)(
 										<Tooltip position='right' content='Info'>
 											{info}
@@ -440,11 +443,11 @@ export default class CardPembayaran extends Component {
 										<Tooltip position='right' content='Info'>
 											<p>Syarat dan Ketentuan Cicilan 0% Regular:</p>
 											<ul>
-												<li>Cicilan tenor 3 bulan dengan minimum transaksi Rp990.000 
+												<li>Cicilan tenor 3 bulan dengan minimum transaksi Rp990.000
 												(sembilan ratus sembilan puluh ribu rupiah)</li>
-												<li>Cicilan tenor 6 bulan dengan minimum transaksi Rp1.500.000 
+												<li>Cicilan tenor 6 bulan dengan minimum transaksi Rp1.500.000
 												(satu juta lima ratus ribu rupiah)</li>
-												<li>Cicilan tenor 12 bulan dengan minimum transaksi Rp2.000.000 
+												<li>Cicilan tenor 12 bulan dengan minimum transaksi Rp2.000.000
 												(dua juta rupiah)</li>
 											</ul>
 										</Tooltip>
