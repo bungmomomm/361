@@ -88,7 +88,8 @@ const addCoupon = (token, orderId, coupon) => dispatch => {
 			dispatch(couponInvalid(response.data.errorMessage, response.data.code));
 		}
 	}).catch((error) => {
-		dispatch(couponInvalid(error.response.data.errorMessage, error.response.data.code));
+		const errorMessage = error.response.data.code === 405 ? '' : error.response.data.errorMessage;
+		dispatch(couponInvalid(errorMessage, error.response.data.code));
 	});
 };
 
@@ -159,7 +160,6 @@ const verifyOtp = (token, phone, otp, props) => dispatch => {
 
 const resetCoupon = () => dispatch => {
 	dispatch(couponReset());
-	dispatch(couponDeleted({}));
 };
 
 
