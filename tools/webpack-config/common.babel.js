@@ -119,7 +119,7 @@ if (
 				comparisons: true,
 				sequences: true,
 				dead_code: true,
-				drop_console: false,
+				drop_console: true,
 				evaluate: true,
 				join_vars: true,
 				if_return: true
