@@ -67,7 +67,8 @@ import { getRefreshToken } from '@/state/Auth/actions';
 
 import {
 	paymentMethodName,
-	paymentGroupName
+	paymentGroupName,
+	RESET_PAYMENT_METHOD
 } from '@/state/Payment/constants';
 
 class Checkout extends Component {
@@ -306,18 +307,32 @@ class Checkout extends Component {
 	onAddCoupon(coupon) {
 		const { dispatch, soNumber } = this.props;
 		if (coupon) {
-			dispatch(addCoupon(this.props.cookies.get('user.token'), soNumber, coupon));
+			dispatch(addCoupon(this.props.cookies.get('user.token'), soNumber, coupon)).then(() => {
+				const paymentMethodId = RESET_PAYMENT_METHOD;
+				dispatch(applyBin(this.props.cookies.get('user.token'), paymentMethodId)).then(() => {
+					changePaymentMethod(false);
+				});
+			});
 		}
 	}
 
 	onRemoveCoupon(event) {
 		const { dispatch, soNumber } = this.props;
-		dispatch(removeCoupon(this.props.cookies.get('user.token'), soNumber));
+		dispatch(removeCoupon(this.props.cookies.get('user.token'), soNumber)).then(() => {
+			const paymentMethodId = RESET_PAYMENT_METHOD;
+			dispatch(applyBin(this.props.cookies.get('user.token'), paymentMethodId)).then(() => {
+				changePaymentMethod(false);
+			});
+		});
 	}
 
 	onResetCoupon(event) {
 		const { dispatch } = this.props;
 		dispatch(resetCoupon());
+		const paymentMethodId = RESET_PAYMENT_METHOD;
+		dispatch(applyBin(this.props.cookies.get('user.token'), paymentMethodId)).then(() => {
+			changePaymentMethod(false);
+		});
 	}
 
 	onChoisedAddress(address, updatePaymentMethodList = true) {

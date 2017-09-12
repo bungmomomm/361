@@ -63,7 +63,7 @@ const couponReceiveOTP = (validOtp) => ({
 	}
 });
 
-const addCoupon = (token, orderId, coupon) => dispatch => {
+const addCoupon = (token, orderId, coupon) => dispatch => new Promise((resolve, reject) => {
 	dispatch(couponAdd(coupon));
 	if (coupon === 'a') {
 		// dispatch(couponInvalid({}));
@@ -84,15 +84,18 @@ const addCoupon = (token, orderId, coupon) => dispatch => {
 			dispatch(paymentInfoUpdated(getCartPaymentData(response.data.data.attributes.total_price, 'order')));
 			dispatch(couponAdded({}));
 			dispatch(getAvailablePaymentMethod(token));
+			resolve(response.data);
 		} else {
 			dispatch(couponInvalid(response.data.errorMessage, response.data.code));
+			reject(response.data);
 		}
 	}).catch((error) => {
 		dispatch(couponInvalid(error.response.data.errorMessage, error.response.data.code));
+		reject(error);
 	});
-};
+});
 
-const removeCoupon = (token, orderId) => dispatch => {
+const removeCoupon = (token, orderId) => dispatch => new Promise((resolve, reject) => {
 	dispatch(couponDelete());
 	return request({
 		token,
@@ -108,11 +111,13 @@ const removeCoupon = (token, orderId) => dispatch => {
 		dispatch(paymentInfoUpdated(getCartPaymentData(response.data.data.attributes.total_price, 'order')));
 		dispatch(couponDeleted({}));
 		dispatch(getAvailablePaymentMethod(token));
+		resolve(response.data);
 	}).catch((error) => {
 		console.log(error);
 		dispatch(couponRequestFailed());
+		reject(error);
 	});
-};
+});
 
 const resendOtp = (token, phone) => dispatch => {
 	dispatch(couponRequestOTP());
@@ -129,7 +134,7 @@ const resendOtp = (token, phone) => dispatch => {
 			}
 		}
 	}).then((response) => {
-		
+
 	}).catch((error) => {
 		console.log(error);
 	});
@@ -157,10 +162,11 @@ const verifyOtp = (token, phone, otp, props) => dispatch => {
 	});
 };
 
-const resetCoupon = () => dispatch => {
+const resetCoupon = () => dispatch => new Promise((resolve, reject) => {
 	dispatch(couponReset());
 	dispatch(couponDeleted({}));
-};
+	resolve(true);
+});
 
 
 export default {

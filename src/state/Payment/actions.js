@@ -260,7 +260,7 @@ const getSelectedVTInstallmentTerm = (selectedPaymentOption) => {
 	return selectedPaymentOption;
 };
 
-const applyBin = (token, paymentMethodId, cardNumber, bankName) => dispatch => {
+const applyBin = (token, paymentMethodId, cardNumber = '', bankName = '') => dispatch => new Promise((resolve, reject) => {
 	const data = {
 		attributes: {
 			payment_method: paymentMethodId,
@@ -281,13 +281,15 @@ const applyBin = (token, paymentMethodId, cardNumber, bankName) => dispatch => {
 			const totalPrice = response.data.included.filter(itemLookup => itemLookup.type === item.type && itemLookup.id === item.id)[0];
 			dispatch(paymentInfoUpdated(getCartPaymentData(totalPrice.attributes.total_price, 'order')));
 			dispatch(applyBinReceived(response.data));
+			resolve(response.data);
 		}
 	}).catch((error) => {
 		console.log(error);
 		// showError
 		dispatch(applyBinReceived({}));
+		reject(error);
 	});
-};
+});
 
 // action
 const changePaymentOption = (selectedPaymentOption, token, cardNumber = '', bankName = '') => dispatch => new Promise((resolve, reject) => {
@@ -306,7 +308,11 @@ const changePaymentOption = (selectedPaymentOption, token, cardNumber = '', bank
 		bankName = selectedPaymentOption.banks[0].name;
 	}
 	dispatch(paymentOptionChanged(selectedPaymentOption));
-	dispatch(applyBin(token, selectedPaymentOption.value, cardNumber, bankName));
+	if (selectedPaymentOption) {
+		dispatch(applyBin(token, selectedPaymentOption.value, cardNumber, bankName));
+	} else {
+		dispatch(applyBin(token, constants.RESET_PAYMENT_METHOD));
+	}
 	resolve(selectedPaymentOption);
 });
 

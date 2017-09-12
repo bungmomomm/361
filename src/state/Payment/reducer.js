@@ -8,7 +8,7 @@ const getCurrentSelectedMethod = (state) => {
 	state.paymentMethods.methods.forEach((currentPayment, index) => {
 		if (currentPayment.selected) {
 			selectedPayment = currentPayment;
-		}		
+		}
 	});
 	return selectedPayment;
 };
@@ -27,6 +27,7 @@ const initialState = {
 	selectedPayment: false,
 	resetPaymentOption: false,
 	loading: false,
+	paymentMethodLoading: false,
 	twoClickEnabled: true,
 	selectedPaymentOption: null,
 	termsAndConditionChecked: true,
@@ -53,7 +54,7 @@ export default (state = initialState, action) => {
 			...state
 		};
 	}
-	
+
 	switch (action.type) {
 
 	case constants.PAY_LIST_PAYMENT_METHOD: {
@@ -68,13 +69,15 @@ export default (state = initialState, action) => {
 				return method;
 			});
 			resultState = {
-				...state, 
+				...state,
 				loading: false,
+				paymentMethodLoading: false,
 				paymentMethods
 			};
 		} else {
 			resultState = {
-				...state, 
+				...state,
+				paymentMethodLoading: true,
 				loading: true
 			};
 		}
@@ -218,7 +221,7 @@ export default (state = initialState, action) => {
 		switch (action.mode) {
 		case 'card_number':
 			selectedCard.value = action.payload.cardNumber;
-			state.paymentMethod = 'commerce_veritrans';			
+			state.paymentMethod = 'commerce_veritrans';
 			break;
 		case 'month':
 			selectedCardDetail.month = action.payload.month;
@@ -258,7 +261,7 @@ export default (state = initialState, action) => {
 		};
 		switch (action.mode) {
 		case 'card_number':
-			selectedCard.value = action.payload.cardNumber;	
+			selectedCard.value = action.payload.cardNumber;
 			selectedCard.type = action.payload.cardType;
 			break;
 		case 'month':
@@ -373,13 +376,13 @@ export default (state = initialState, action) => {
 				...state,
 				...result
 			};
-		}		
+		}
 		return {
 			...state,
 			loading: !action.status
 		};
 	}
-	default: 
+	default:
 		return {
 			...state
 		};
