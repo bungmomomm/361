@@ -16,7 +16,7 @@ export default class Alert extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			show: this.props.show || true
+			show: this.props.show || false
 		};
 		this.handleClose = this.handleClose.bind(this);
 	}
@@ -26,11 +26,11 @@ export default class Alert extends Component {
 			this.setState({ show: nextProps.show });
 		}
 	}
-	
+
 	handleClose() {
 		this.setState({ show: false });
 	}
-	
+
 	@injectProps
 	render({
 		icon,
@@ -54,7 +54,7 @@ export default class Alert extends Component {
 
 		const ButtonClose = (
 			renderIf(close)(
-				<button 
+				<button
 					type='button'
 					className={styles.close}
 					onClick={this.handleClose}
@@ -84,7 +84,7 @@ Alert.propTypes = {
 
 	/** Formats content to be aligned. */
 	align: PropTypes.oneOf(['left', 'center', 'right']),
-	
+
 	/** A segment may be formatted to close. */
 	close: PropTypes.bool,
 

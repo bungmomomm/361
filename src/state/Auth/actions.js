@@ -1,4 +1,4 @@
-import { request } from '@/utils';
+import { request, getBaseUrl } from '@/utils';
 // import humps from 'lodash-humps';
 import { 
 	AUTH_REFRESH_TOKEN
@@ -31,14 +31,15 @@ const getRefreshToken = (token) => dispatch => new Promise((resolve, reject) => 
 		token = {
 			userToken: response.data.data.token,
 			userRFToken: response.data.data.refresh_token,
-			expToken: new Date(response.data.data.info.expired_time).getTime()
+			expToken: new Date(Number(response.data.data.info.expired_time)).getTime()
 		};
 		$dis(requestToken(token));
 		
 		resolve(token);
 	})
 	.catch((error) => {
-		console.log(error);
+		// redirect back to main or home page if an user-customer has not logged in yet
+		top.location.href = getBaseUrl();
 	});
 	
     

@@ -17,7 +17,7 @@
         <% if (params.helmet.title) { %><%= params.helmet.title.toString() %><% } %>
         <% if (params.helmet.meta) { %><%= params.helmet.meta.toString() %><% } %>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        
+
         <% if (params.manifest['main.css']) { %>
             <link rel="stylesheet" href="<%= params.manifest['main.css'] %>" />
         <% } %>
@@ -35,18 +35,21 @@
         new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
         j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-        })(window,document,'script','dataLayer','GTM-5P6ZB6H');var dataLayer=[];</script>
+        })(window,document,'script','dataLayer','<%= process.env.GTM_KEY %>');var dataLayer=[];</script>
         <!-- End Google Tag Manager -->
         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
         <script type="text/javascript" src="https://api.sandbox.veritrans.co.id/v2/assets/js/veritrans.js"></script>
         <!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChjpQSbwKaJOCJy_06GAwU9dNMwVq_rg4&libraries=places&region=id&language=id"></script> -->
-        
+
     </head>
     <body <% if (params.helmet.htmlAttributes) { %><%= params.helmet.bodyAttributes.toString() %><% } %>>
         <!-- Google Tag Manager (noscript) -->
         <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5P6ZB6H"
         height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <!-- End Google Tag Manager (noscript) -->
+        <!--[if lt IE 9]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
         <div id="root"><%= params.markup %></div>
         <% if (params.state) { %>
             <script>window.__REDUX_STATE__ = <%= JSON.stringify(params.state) %></script>

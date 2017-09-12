@@ -17,7 +17,8 @@ export default class Modal extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			displayModal: this.props.shown || false
+			displayModal: this.props.shown || false,
+			modal: this.props.modal || false
 		};
 		this.handleClose = this.handleClose.bind(this);
 	}
@@ -32,13 +33,15 @@ export default class Modal extends Component {
 	}
 
 	handleClose() {
-		this.setState({
-			displayModal: false
-		});
-		if (this.props.onClose) {
-			this.props.onClose(true);
+		if (!this.state.modal) {
+			this.setState({
+				displayModal: false
+			});
+			if (this.props.onClose) {
+				this.props.onClose(true);
+			}
+			document.body.style.overflow = '';
 		}
-		document.body.style.overflow = '';
 	}
 
 	@injectProps
@@ -61,12 +64,14 @@ export default class Modal extends Component {
 				<div className={ModalClass}>
 					<div className={ModalWrapperClass}>
 						{children}
-						<button 
-							onClick={this.handleClose} 
-							className={styles.close}
-						>
-							<Icon name='times' />
-						</button>
+						{renderIf(!this.state.modal)(
+							<button 
+								onClick={this.handleClose} 
+								className={styles.close}
+							>
+								<Icon name='times' />
+							</button>
+						)}
 					</div>
 					<div 
 						onClick={this.handleClose} 

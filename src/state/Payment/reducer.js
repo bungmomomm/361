@@ -34,6 +34,11 @@ const initialState = {
 	saveCC: true,
 	billingPhoneNumber: null,
 	ovoPhoneNumber: null,
+	selectedCardDetail: {
+		cvv: 0,
+		month: 0,
+		year: 0
+	},
 	selectedPaymentLabel: '-- Pilih Metode Lain',
 	paymentMethods: {
 		methods: [],
@@ -305,7 +310,7 @@ export default (state = initialState, action) => {
 			...state,
 			loading: false,
 			paymentError: (action.payload.message !== false),
-			paymentErrorMessage: action.payload.message
+			error: action.payload.message
 		};
 	}
 	case constants.PAY_TERM_CHANGE: {

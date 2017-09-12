@@ -31,7 +31,8 @@ export default class CardPengiriman extends Component {
 			latLngExist: false,
 			loading: false,
 			isJabodetabekArea: false,
-			dataChoised: 0
+			dataChoised: 0,
+			selectedLabel: {}
 		};
 		this.onChoisedAddress = this.onChoisedAddress.bind(this);
 		this.onChangeAddress = this.onChangeAddress.bind(this);
@@ -57,8 +58,11 @@ export default class CardPengiriman extends Component {
 		const selectedAddress = nextProps.selectedAddress;
 		const cart = nextProps.cart;
 		
-		if (selectedAddress) {
-			const latLngExist = selectedAddress.attributes.longitude !== '' && selectedAddress.attributes.latitude !== '';
+		if (selectedAddress !== this.state.selectedAddress) {
+			let latLngExist = null;
+			if (selectedAddress) {
+				latLngExist = selectedAddress.attributes.longitude !== '' && selectedAddress.attributes.latitude !== '';
+			}
 			this.setState({
 				selectedAddress,
 				latLngExist
@@ -81,13 +85,12 @@ export default class CardPengiriman extends Component {
 
 		if (this.state.loading !== nextProps.loading) {
 			this.setState({
-				loading: nextProps.loading
+				loading: nextProps.loading,
 			});
 		}
 		
 		if (typeof shipping !== 'undefined') {
 			shipping.forEach((value, index) => {
-				
 				address.push({
 					value: value.id,
 					label: !value.attributes.addressLabel ? value.attributes.fullname : value.attributes.addressLabel,
@@ -97,6 +100,17 @@ export default class CardPengiriman extends Component {
 			this.setState({
 				shipping: address
 			});
+			if (this.state.shipping.length !== shipping.length) {
+				this.props.onChoisedAddress(shipping[0]);
+				this.setState({
+					dataChoised: shipping[0].id,
+					selectedLabel: {
+						info: '',
+						label: shipping[0].attributes.addressLabel,
+						value: shipping[0].id
+					}
+				});
+			}
 		}
 
 		if (shipping) {
@@ -122,7 +136,8 @@ export default class CardPengiriman extends Component {
 		this.setState({
 			loading: true
 		});
-		this.props.onChangeAddress(this.state.selectedAddress, e);
+		const selectedAddress = this.getSelectedAddress();
+		this.props.onChangeAddress(selectedAddress, e);
 	}
 
 	onChosenLocker(dataChosen) {
@@ -140,19 +155,34 @@ export default class CardPengiriman extends Component {
 				this.props.onGetListO2o();
 				this.props.onGetO2oProvinces();
 			}
+			if (this.props.selectedLocker) {
+				this.props.onSelectedLocker(this.props.selectedLocker, this.props.selectO2oFromModal);	
+			} else if (this.props.latesto2o.length > 0) {
+				this.props.onSelectedLocker(this.props.latesto2o[0]);	
+			}
 		} else {
 			this.setState({
 				elockerTab: false
 			});
 			this.props.activeShippingTab(true);
 		}
-		if (this.props.selectedLocker) {
-			this.props.onSelectedLocker(this.props.selectedLocker, this.props.selectO2oFromModal);	
-		} else if (this.props.latesto2o.length > 0) {
-			this.props.onSelectedLocker(this.props.latesto2o[0]);	
-		}
 	}
 
+	getSelectedAddress() {
+		let data = {};
+		if (this.state.dataChoised === 0) {
+			data = Array.isArray(this.props.addresses) ? this.props.addresses[0] : this.props.addresses;
+		} else {
+			data = this.props.addresses.map((option) => {
+				return (option.id === this.state.dataChoised) ? option : null;
+			}).filter((option) => {
+				return option;
+			});
+			data = Array.isArray(data) ? data[0] : data;
+		}
+		return data;
+	}
+	
 	openModal(even) {
 		this.props.onOpenModalO2o();
 		this.setState({
@@ -180,24 +210,35 @@ export default class CardPengiriman extends Component {
 				iconPosition='left'
 			/>
 		);
-		const { latLngExist } = this.state;
 
 		const addressPreview = () => {
 			let data = {};
 			if (this.props.addresses) {
-				if (this.state.dataChoised === 0) {
-					data = Array.isArray(this.props.addresses) ? this.props.addresses[0] : this.props.addresses;
-				} else {
-					data = this.props.addresses.map((option) => {
-						return (option.id === this.state.dataChoised) ? option : null;
-					}).filter((option) => {
-						return option;
-					});
-					data = Array.isArray(data) ? data[0] : data;
-				}
+				data = this.getSelectedAddress();
 			}
 			return (
-				data ? (
+				data.attributes ? ([
+					<InputGroup>
+						<Select 
+							name='alamat' 
+							selectedLabel='-- Pilih Alamat Lainnya' 
+							options={this.state.shipping} 
+							onChange={this.onChoisedAddress}
+							addButton={addMoreAddress}
+						/>
+						<span className='customSelectO2O'>{data.attributes.addressLabel}</span>
+					</InputGroup>,
+					<Level>
+						<Level.Item className='text-right'>
+							{
+								renderIf(data.attributes.latitude && data.attributes.longitude)(
+									<div>	
+										<Icon name='map-marker' /> &nbsp; Lokasi Sudah Ditandai
+									</div>
+								)
+							}
+						</Level.Item>
+					</Level>,
 					<p>
 						<strong>{!data.attributes ? data.addressLabel : data.attributes.addressLabel}</strong> <br />
 						{!data.attributes ? data.fullname : data.attributes.fullname} <br />
@@ -205,7 +246,7 @@ export default class CardPengiriman extends Component {
 						{!data.attributes ? data.district : data.attributes.district}, {!data.attributes ? data.city : data.attributes.city}, {!data.attributes ? data.province : data.attributes.province}, {!data.attributes ? data.zipcode : data.attributes.zipcode} <br />
 						P: {!data.attributes ? data.phone : data.attributes.phone}
 					</p> 
-				) : <p>loading...</p>
+				]) : <p>loading...</p>
 			);
 		};
 		
@@ -218,32 +259,11 @@ export default class CardPengiriman extends Component {
 					</Alert>
 					{
 						renderIf(this.state.shipping.length > 0)(
-							<Segment>
-								<InputGroup>
-									<Select 
-										name='alamat' 
-										selectedLabel='-- Pilih Alamat Lainnya' 
-										options={this.state.shipping} 
-										onChange={this.onChoisedAddress}
-										addButton={addMoreAddress}
-									/>
-								</InputGroup>
+							<Segment className='customSelectO2OWrapper'>
 						
 								{
 							!this.props.selectedAddress ? null : 
 							<div>
-								<Level>
-									<Level.Left><strong>{this.props.selectedAddress.attributes.address_label}</strong></Level.Left>
-									<Level.Right className='text-right'>
-										{
-											renderIf(latLngExist)(
-												<div>	
-													<Icon name='map-marker' /> &nbsp; Lokasi Sudah Ditandai
-												</div>
-											)
-										}
-									</Level.Right>
-								</Level>
 								{
 									renderIf(this.props.addresses)(
 										addressPreview()

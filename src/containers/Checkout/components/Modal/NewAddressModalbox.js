@@ -93,9 +93,13 @@ export default class NewAddressModalbox extends Component {
 		const la = this.props.formDataAddress.latitude || '';
 		const lo = this.props.formDataAddress.longitude || '';
 		if (la !== '' && lo !== '') {
-			const gosendData = this.state.gosendData;
+			let gosendData = this.state.gosendData;
 			const PolygonResult = this.constructor.getPolygonData(this.props.formDataAddress.kecamatan.toLowerCase());
 			if (PolygonResult) {
+				gosendData = {
+					...gosendData,
+					...PolygonResult
+				};
 				const locationCoords = PolygonResult.location_coords;
 				this.setState({
 					enableGosend: true,
@@ -201,6 +205,7 @@ export default class NewAddressModalbox extends Component {
 	formAddressIsEdit(isEdit) {
 		const { formDataAddress } = this.props;
 		const gosendData = this.state.gosendData;
+		this.state.errors.clear();
 		this.setState({
 			displayMap: false,
 			kecamatanReset: false
@@ -232,7 +237,6 @@ export default class NewAddressModalbox extends Component {
 						isCustomerData: true,
 						formData: {
 							...this.state.formData,
-							kecamatan: this.props.formDataAddress.kecamatan,
 							latitude: this.props.formDataAddress.latitude || null,
 							longitude: this.props.formDataAddress.longitude || null
 						},
@@ -347,7 +351,7 @@ export default class NewAddressModalbox extends Component {
 					location_coords: PolygonResult.location_coords
 				}
 			});
-		}, 20);
+		}, 500);
 	}
 	
 	hideGoogleMap() {
@@ -489,7 +493,7 @@ export default class NewAddressModalbox extends Component {
 							</small>
 						</Alert>
 						{
-							renderIf(this.state.pinPoint === 'showToggleButton' && this.state.isJakarta && !this.state.displayMap)(
+							renderIf(this.state.pinPoint === 'showToggleButton' && this.state.formData.kecamatan && this.state.isJakarta && !this.state.displayMap)(
 								<div className={styles.header}>
 									<Button 
 										type='button' 
@@ -506,7 +510,7 @@ export default class NewAddressModalbox extends Component {
 								</div>
 							)
 						}{
-							renderIf(this.state.pinPoint === 'showToggleButton' && this.state.isJakarta && this.state.displayMap)(
+							renderIf(this.state.pinPoint === 'showToggleButton' && this.state.formData.kecamatan && this.state.isJakarta && this.state.displayMap)(
 								<div className={styles.header}>
 									<Button 
 										type='button' 

@@ -108,7 +108,6 @@ const getCart = token => dispatch => new Promise((resolve, reject) => {
 		}).filter(e => e.id === 'pickup');
 		dispatch(paymentInfoUpdated(getCartPaymentData(cartResponse.data.attributes.total_pricing, 'cart')));
 		resolve(dispatch(cartReceived(setCartModel(response.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, cartResponse.data.attributes.total_cart)));
-		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {
 		reject(error);

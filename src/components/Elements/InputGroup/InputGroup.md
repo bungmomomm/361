@@ -15,7 +15,7 @@ Input Group with addons
         <Button color='grey' content='cek'/>
     </InputGroup>
     <InputGroup addons>
-        <Button color='green' content='show all category' icon='angle-down' iconPosition='right'/>
+        <Button color='green' content='show all category' icon='arrow-right' iconPosition='right'/>
         <Input color='green' placeholder='Placeholder'/>
         <Button color='green' content='search' icon='search' iconPosition='left'/>
     </InputGroup>

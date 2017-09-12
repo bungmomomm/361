@@ -38,7 +38,6 @@ import { getPlaceOrderCart, getCart, updateQtyCart, updateCartWithoutSO, deleteC
 import {
 	changePaymentMethod,
 	changePaymentOption,
-	getAvailablePaymentMethod,
 	openNewCreditCard,
 	selectCreditCard,
 	changeCreditCardNumber,
@@ -82,6 +81,9 @@ class Checkout extends Component {
 		this.cardValidator = new Validator({
 			year: 'required|min_value:10|min:1',
 			month: 'required|min_value:1',
+			cvv: 'required|min_value:1'
+		});
+		this.cvvValidator = new Validator({
 			cvv: 'required|min_value:1'
 		});
 		this.state = {
@@ -189,7 +191,7 @@ class Checkout extends Component {
 			this.onReload(dispatch);
 		}
 
-		if (this.props.location.search.includes('failed')) {
+		if (this.props.location.search.indexOf('failed') > 0) {
 			this.setState({
 				enablePembayaran: true,
 				notifInfo: false,
@@ -213,38 +215,6 @@ class Checkout extends Component {
 		}
 		this.setState({
 			tahun
-		});
-		window.dataLayer.push({
-			event: 'checkout',
-			userID: '10c53c28efe87fe0c27262ba36f11d5d',
-			emailaddress: '8b5fb124f94a8f1185af1794a9524703',
-			ecommerce: {
-				checkout: {
-					actionField: {
-						step: 1,
-						option: 'Login Email'
-					},
-					products: [
-						{
-							id: '839783',
-							name: 'Samsung B109E Keystone 3 - Hitam',
-							price: '270000',
-							brand: 'Samsung',
-							category: 'Handphone & Tablet Handphone Handphone Basic',
-							variant: '',
-							quantity: '1'
-						}, {
-							id: '4630647',
-							name: 'Hydrowhey 3.5Lbs - Hero - Khusus O2O',
-							price: '2300000',
-							brand: 'Optimum Nutrition',
-							category: 'Kesehatan & Kecantikan Kesehatan Suplemen Kesehatan dan Pelangsing Nutrisi Olahraga',
-							variant: '',
-							quantity: '1'
-						}
-					]
-				}
-			}
 		});
 	}
 
@@ -287,7 +257,8 @@ class Checkout extends Component {
 			userToken: this.props.cookies.get('user.token'),
 			userRFToken: this.props.cookies.get('user.rf.token')
 		})).then((newToken) => {
-			this.props.cookies.set('user.exp', newToken.expToken, { domain: process.env.SESSION_DOMAIN });
+			console.log(newToken);
+			this.props.cookies.set('user.exp', Number(newToken.expToken), { domain: process.env.SESSION_DOMAIN });
 			this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: process.env.SESSION_DOMAIN });
 			this.props.cookies.set('user.token', newToken.userToken, { domain: process.env.SESSION_DOMAIN });
 
@@ -304,25 +275,32 @@ class Checkout extends Component {
 	}
 
 	onReload(dispatch) {
-		dispatch(getAddresses(this.props.cookies.get('user.token'))).then(defaultAddress => {
-			if (typeof defaultAddress.type !== 'undefined') {
-				this.setState({
-					selectedAddress: defaultAddress,
-					enablePesananPengiriman: true,
-					enablePembayaran: true
-				});
-				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress)).then(() => {
-					dispatch(getAvailablePaymentMethod(this.props.cookies.get('user.token')));			
-				}).catch((error) => {
+		dispatch(getCart(this.props.cookies.get('user.token'))).then(() => {
+			dispatch(getAddresses(this.props.cookies.get('user.token'))).then(defaultAddress => {
+				if (typeof defaultAddress.type !== 'undefined') {
 					this.setState({
-						enablePembayaran: false
+						selectedAddress: defaultAddress,
+						enablePesananPengiriman: true,
+						enablePembayaran: true
 					});
-				});
-			}
+					dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress)).then(() => {
+
+					}).catch((error) => {
+						this.setState({
+							enablePembayaran: false
+						});
+					});
+				}
+			}).catch(error => {
+				// console.log('getAddresses');
+				// console.log(error);
+				this.onRefreshToken(dispatch, this.onReload);
+			});
 		}).catch(error => {
+			// console.log('getCart');
+			// console.log(error);
 			this.onRefreshToken(dispatch, this.onReload);
 		});
-		dispatch(getCart(this.props.cookies.get('user.token')));
 	}
 
 	onAddCoupon(coupon) {
@@ -407,9 +385,9 @@ class Checkout extends Component {
 	onCheckProductJabodetabek(newCart) {
 		let enablePembayaran = true;
 		if (this.state.selectedAddress.attributes.isJabodetabekArea === '0' && newCart.payload.cart.length > 0) {
-			
+
 			newCart.payload.cart.forEach((value, index) => {
-				
+
 				value.store.products.forEach((v, i) => {
 					if (v.fgLocation !== '0') {
 						enablePembayaran = false;
@@ -432,13 +410,13 @@ class Checkout extends Component {
 			});
 		} else {
 			dispatch(deleteCart(this.props.cookies.get('user.token'), cart.data.id, this.props)).then(newCart => {
-				
+
 				this.onCheckProductJabodetabek(newCart);
 			}).catch((error) => {
 				console.log(error);
 			});
 		}
-		
+
 		this.setState({
 			cart: this.props.cart,
 			loadingUpdateCart: true,
@@ -646,7 +624,7 @@ class Checkout extends Component {
 						'complete',
 						false,
 						false,
-						this.getAffTracking()						
+						this.getAffTracking()
 					)
 				);
 			} else {
@@ -740,26 +718,30 @@ class Checkout extends Component {
 
 	onDoPayment() {
 		const { dispatch } = this.props;
+		let validator = false;
+		let mode = 'complete';
 		if (typeof this.props.payments.paymentMethod !== 'undefined') {
-			let mode = 'complete';
 			switch (this.props.payments.paymentMethod) {
 			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 			case paymentMethodName.COMMERCE_VERITRANS:
-				if (!this.props.payments.twoClickEnabled) {
-					this.cardValidator.validateAll({
+				if (this.props.payments.twoClickEnabled) {
+					validator = this.cvvValidator.validateAll({
+						cvv: this.props.payments.selectedCardDetail.cvv
+					});
+				} else {
+					validator = this.cardValidator.validateAll({
 						year: this.props.payments.selectedCardDetail.year,
 						month: this.props.payments.selectedCardDetail.month,
 						cvv: this.props.payments.selectedCardDetail.cvv
-					}).then(success => {
-						if (success) {
-							this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
-						} else {
-							dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
-						}
 					});
-				} else {
-					this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
 				}
+				validator.then(success => {
+					if (success) {
+						this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
+					} else {
+						dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
+					}
+				});
 				break;
 			case paymentMethodName.COMMERCE_SPRINT_ASIA:
 				mode = 'sprint';
@@ -821,7 +803,6 @@ class Checkout extends Component {
 		});
 		const attributes = selectedAddress ? selectedAddress.attributes : null;
 		this.setState({
-			
 			selectedAddress: {
 				...selectedAddress,
 				attributes: {
@@ -841,7 +822,7 @@ class Checkout extends Component {
 			},
 			enablePesananPengiriman: true,
 			enablePembayaran: true
-				
+
 		}, this.onSetStateAddress(formData));
 
 		// dispatch(saveAddress(this.props.cookies.get('user.token'), formData));
@@ -962,7 +943,7 @@ class Checkout extends Component {
 		return {
 			af_track_id: this.props.cookies.get('afftrackid'),
 			af_trx_id: this.props.cookies.get('afftrxid')
-		};		
+		};
 	}
 
 	getDistricts(cityAndProvince) {
@@ -1025,7 +1006,7 @@ class Checkout extends Component {
 	}
 
 	submitDropship() {
-		const { dispatch } = this.props;		
+		const { dispatch } = this.props;
 		if (this.state.isValidDropshipper) {
 			let tempSelectedAddress;
 			if (this.state.addressTabActive) {
@@ -1041,7 +1022,7 @@ class Checkout extends Component {
 				if (this.state.appliedBin) {
 					const selectedPaymentOption = this.state.appliedBin.selectedPaymentOption;
 					dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, this.state.appliedBin.cardNumber, this.state.appliedBin.bankName)).then(() => {
-						this.onDoPayment(); 
+						this.onDoPayment();
 					}).catch((error) => {
 
 					});
@@ -1061,17 +1042,16 @@ class Checkout extends Component {
 			dispatch(o2oChoise(this.props.cart));
 		} else {
 			dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress)).then(() => {
-				
+				dispatch(changeBillingNumber(this.state.selectedAddress.attributes.phone));
 			}).catch((error) => {
 				this.setState({
-					
 					enablePembayaran: false,
-					enablePesananPengiriman: false
+					enablePesananPengiriman: this.state.enablePesananPengiriman
 				});
 			});
 		}
-		
-		
+
+
 		if ((!this.props.isPickupable || this.props.isPickupable === '0') && !addressTabActive) {
 			this.state.restrictO2o = true;
 			this.setState({
@@ -1134,7 +1114,9 @@ class Checkout extends Component {
 			listo2o,
 			latesto2o,
 			o2oProvinces,
-			isPickupable
+			isPickupable,
+			dispatch,
+			cookies
 		} = this.props;
 
 		return (
@@ -1191,6 +1173,9 @@ class Checkout extends Component {
 								<Col flex grid={4} className={enablePembayaran && !this.state.restrictO2o ? '' : styles.disabled}>
 									<div className={styles.title}>3. Pembayaran</div>
 									<CardPembayaran
+										dispatch={dispatch}
+										cookies={cookies}
+										soNumber={this.props.soNumber}
 										loading={payments.loading || this.state.loadingUpdateCart || this.state.loadingCardPengiriman}
 										loadingUpdateCart={this.state.loadingUpdateCart}
 										loadingCardPengiriman={this.state.loadingCardPengiriman}
@@ -1247,10 +1232,10 @@ class Checkout extends Component {
 					}
 					<ElockerModalbox closeModalElocker={this.closeModalElocker} shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} o2oProvinces={!o2oProvinces ? null : o2oProvinces} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
 					<PaymentSuccessModalbox shown={this.props.payments.paymentSuccess} onClose={this.onCloseSuccessBox} />
-					<PaymentErrorModalbox 
-						shown={this.props.payments.paymentError} 
+					<PaymentErrorModalbox
+						shown={this.props.payments.paymentError}
 						paymentErrorMessage={this.props.payments.error}
-						onClose={this.onCloseErrorBox} 
+						onClose={this.onCloseErrorBox}
 					/>
 					<VerifikasiNoHandponeModalbox
 						shown={this.state.showModalOtp}

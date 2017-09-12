@@ -34,7 +34,9 @@ export default class CardPesananPengiriman extends Component {
 			cart.forEach((value, index) => {
 				
 				value.store.products.forEach((x, y) => {
-					if (x.fgLocation === '1' && selectedAddress.attributes.isJabodetabekArea === '0') {
+					if (x.fgLocation === '1' 
+						&& selectedAddress.attributes.isJabodetabekArea === '0'
+						&& this.props.addressTabActive) {
 						cartJabodetabek.push(
 							value.store.id
 						);

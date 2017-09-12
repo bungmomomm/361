@@ -74,6 +74,8 @@
 	flex-direction: column;
 	flex-grow: 1;
 	max-height: 450px;
+	min-height: 420px;
+	height: 100%;
 }
 
 .close{
@@ -100,15 +102,24 @@
 
 .large{
 	max-width: 970px;
+	.body{
+		min-height: 500px;
+	}
 }
 
 .medium{
 	max-width: 540px;
+	.body{
+		min-height: 400px;
+	}
 }
 
 .small{
 	max-width: 373px;
 	text-align: center;
+	.body{
+		min-height: 100px;
+	}
 }
 
 @keyframes spin {
