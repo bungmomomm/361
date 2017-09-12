@@ -90,7 +90,8 @@ const addCoupon = (token, orderId, coupon) => dispatch => new Promise((resolve, 
 			reject(response.data);
 		}
 	}).catch((error) => {
-		dispatch(couponInvalid(error.response.data.errorMessage, error.response.data.code));
+		const errorMessage = error.response.data.code === 405 ? '' : error.response.data.errorMessage;
+		dispatch(couponInvalid(errorMessage, error.response.data.code));
 		reject(error);
 	});
 });
