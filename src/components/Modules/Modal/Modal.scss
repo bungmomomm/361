@@ -102,6 +102,9 @@
 
 .large{
 	max-width: 970px;
+	.body{
+		min-height: 500px;
+	}
 }
 
 .medium{
@@ -111,6 +114,9 @@
 .small{
 	max-width: 373px;
 	text-align: center;
+	.body{
+		min-height: 220px;
+	}
 }
 
 @keyframes spin {
