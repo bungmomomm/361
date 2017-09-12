@@ -35,6 +35,7 @@ import {
 	saveAddress
 } from '@/state/Adresses/actions';
 import { getPlaceOrderCart, getCart, updateQtyCart, updateCartWithoutSO, deleteCart, updateGosend, o2oChoise } from '@/state/Cart/actions';
+import { getUser } from '@/state/User/actions';
 import {
 	changePaymentMethod,
 	changePaymentOption,
@@ -64,6 +65,7 @@ import {
 } from '@/state/Payment/actions';
 
 import { getRefreshToken } from '@/state/Auth/actions';
+import { setUserGTM } from '@/utils/gtm';
 
 import {
 	paymentMethodName,
@@ -251,6 +253,9 @@ class Checkout extends Component {
 				showModalOtp: true
 			});
 		}
+		if (this.props.userGTM !== nextProps.userGTM) {
+			setUserGTM(nextProps.userGTM);
+		}
 	}
 
 	onRefreshToken(dispatch, callback = null) {
@@ -276,6 +281,7 @@ class Checkout extends Component {
 	}
 
 	onReload(dispatch) {
+		dispatch(getUser(this.props.cookies.get('user.token')));
 		dispatch(getCart(this.props.cookies.get('user.token'))).then(() => {
 			dispatch(getAddresses(this.props.cookies.get('user.token'))).then(defaultAddress => {
 				if (typeof defaultAddress.type !== 'undefined') {
@@ -1396,6 +1402,7 @@ const mapStateToProps = (state) => {
 		totalItems: state.cart.totalItems,
 		gosendInfo: state.cart.gosendInfo,
 		errorPlaceOrder: state.cart.error,
+		userGTM: state.user.userGTM,
 	};
 };
 

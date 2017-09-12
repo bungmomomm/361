@@ -6,6 +6,7 @@ import { Card } from '@/components';
 import StoreBox from './Store/StoreBox';
 import CheckoutResult from './Store/CheckoutResult';
 import CheckoutProduct from './Product/CheckoutProduct';
+import { pushDataLayer } from '@/utils/gtm';
 
 // Dummy Data
 // import { CheckoutList } from '@/data';
@@ -64,6 +65,10 @@ export default class CardPesananPengiriman extends Component {
 
 	checkGosendMethod(checked, value) {
 		this.props.shippingMethodGosend(checked ? '19' : '', value);
+		const storeItems = this.props.cart.filter(e => e.store.id === value);
+		if (storeItems[0]) {
+			pushDataLayer('checkout', 'checkout', { step: 4, option: checked ? 'Gosend' : 'Regular Delivery' }, storeItems[0].store.products);
+		} 
 	}
 	
 	render() {

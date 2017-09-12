@@ -365,7 +365,7 @@ export default class CardPembayaran extends Component {
 			}
 		}
 
-		const discountHtml = (!discount) ? false : discount.map((discountItem, index) => {
+		const discountHtml = (!discount) ? false : discount.filter(e => e.discountName.toLowerCase() !== couponId.toLowerCase()).map((discountItem, index) => {
 			return (
 				<Level key={index}>
 					<Level.Left className={styles.discountName}>
