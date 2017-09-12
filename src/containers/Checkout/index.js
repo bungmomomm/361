@@ -216,38 +216,6 @@ class Checkout extends Component {
 		this.setState({
 			tahun
 		});
-		window.dataLayer.push({
-			event: 'checkout',
-			userID: '10c53c28efe87fe0c27262ba36f11d5d',
-			emailaddress: '8b5fb124f94a8f1185af1794a9524703',
-			ecommerce: {
-				checkout: {
-					actionField: {
-						step: 1,
-						option: 'Login Email'
-					},
-					products: [
-						{
-							id: '839783',
-							name: 'Samsung B109E Keystone 3 - Hitam',
-							price: '270000',
-							brand: 'Samsung',
-							category: 'Handphone & Tablet Handphone Handphone Basic',
-							variant: '',
-							quantity: '1'
-						}, {
-							id: '4630647',
-							name: 'Hydrowhey 3.5Lbs - Hero - Khusus O2O',
-							price: '2300000',
-							brand: 'Optimum Nutrition',
-							category: 'Kesehatan & Kecantikan Kesehatan Suplemen Kesehatan dan Pelangsing Nutrisi Olahraga',
-							variant: '',
-							quantity: '1'
-						}
-					]
-				}
-			}
-		});
 	}
 
 	componentDidMount() {
@@ -413,9 +381,9 @@ class Checkout extends Component {
 	onCheckProductJabodetabek(newCart) {
 		let enablePembayaran = true;
 		if (this.state.selectedAddress.attributes.isJabodetabekArea === '0' && newCart.payload.cart.length > 0) {
-			
+
 			newCart.payload.cart.forEach((value, index) => {
-				
+
 				value.store.products.forEach((v, i) => {
 					if (v.fgLocation !== '0') {
 						enablePembayaran = false;
@@ -438,13 +406,13 @@ class Checkout extends Component {
 			});
 		} else {
 			dispatch(deleteCart(this.props.cookies.get('user.token'), cart.data.id, this.props)).then(newCart => {
-				
+
 				this.onCheckProductJabodetabek(newCart);
 			}).catch((error) => {
 				console.log(error);
 			});
 		}
-		
+
 		this.setState({
 			cart: this.props.cart,
 			loadingUpdateCart: true,
@@ -652,7 +620,7 @@ class Checkout extends Component {
 						'complete',
 						false,
 						false,
-						this.getAffTracking()						
+						this.getAffTracking()
 					)
 				);
 			} else {
@@ -850,7 +818,7 @@ class Checkout extends Component {
 			},
 			enablePesananPengiriman: true,
 			enablePembayaran: true
-				
+
 		}, this.onSetStateAddress(formData));
 
 		// dispatch(saveAddress(this.props.cookies.get('user.token'), formData));
@@ -971,7 +939,7 @@ class Checkout extends Component {
 		return {
 			af_track_id: this.props.cookies.get('afftrackid'),
 			af_trx_id: this.props.cookies.get('afftrxid')
-		};		
+		};
 	}
 
 	getDistricts(cityAndProvince) {
@@ -1034,7 +1002,7 @@ class Checkout extends Component {
 	}
 
 	submitDropship() {
-		const { dispatch } = this.props;		
+		const { dispatch } = this.props;
 		if (this.state.isValidDropshipper) {
 			let tempSelectedAddress;
 			if (this.state.addressTabActive) {
@@ -1050,7 +1018,7 @@ class Checkout extends Component {
 				if (this.state.appliedBin) {
 					const selectedPaymentOption = this.state.appliedBin.selectedPaymentOption;
 					dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, this.state.appliedBin.cardNumber, this.state.appliedBin.bankName)).then(() => {
-						this.onDoPayment(); 
+						this.onDoPayment();
 					}).catch((error) => {
 
 					});
@@ -1078,8 +1046,8 @@ class Checkout extends Component {
 				});
 			});
 		}
-		
-		
+
+
 		if ((!this.props.isPickupable || this.props.isPickupable === '0') && !addressTabActive) {
 			this.state.restrictO2o = true;
 			this.setState({
@@ -1260,10 +1228,10 @@ class Checkout extends Component {
 					}
 					<ElockerModalbox closeModalElocker={this.closeModalElocker} shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} o2oProvinces={!o2oProvinces ? null : o2oProvinces} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
 					<PaymentSuccessModalbox shown={this.props.payments.paymentSuccess} onClose={this.onCloseSuccessBox} />
-					<PaymentErrorModalbox 
-						shown={this.props.payments.paymentError} 
+					<PaymentErrorModalbox
+						shown={this.props.payments.paymentError}
 						paymentErrorMessage={this.props.payments.error}
-						onClose={this.onCloseErrorBox} 
+						onClose={this.onCloseErrorBox}
 					/>
 					<VerifikasiNoHandponeModalbox
 						shown={this.state.showModalOtp}
