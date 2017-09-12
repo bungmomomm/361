@@ -405,6 +405,7 @@ class Checkout extends Component {
 		if (this.props.soNumber) {
 			dispatch(updateQtyCart(this.props.cookies.get('user.token'), 0, cart.data.id, this.props)).then(newCart => {
 				this.onCheckProductJabodetabek(newCart);
+				this.onReload(dispatch);
 			}).catch((error) => {
 				console.log(error);
 			});
@@ -412,6 +413,7 @@ class Checkout extends Component {
 			dispatch(deleteCart(this.props.cookies.get('user.token'), cart.data.id, this.props)).then(newCart => {
 
 				this.onCheckProductJabodetabek(newCart);
+				this.onReload(dispatch);
 			}).catch((error) => {
 				console.log(error);
 			});
