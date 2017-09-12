@@ -70,6 +70,8 @@ const setCartModel = (jsoApiResponse) => {
 				image: prods.attributes.thumbnail_url,
 				id: parseInt(prodRel.id, 10),
 				fgLocation: prods.attributes.fg_location,
+				brand: prods.attributes.brand_name,
+				category: prods.attributes.category,
 				attribute: [],
 			};
 		});
