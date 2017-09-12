@@ -260,8 +260,37 @@ const getSelectedVTInstallmentTerm = (selectedPaymentOption) => {
 	return selectedPaymentOption;
 };
 
+const applyBin = (token, paymentMethodId, cardNumber, bankName) => dispatch => {
+	const data = {
+		attributes: {
+			payment_method: paymentMethodId,
+			card_number: cardNumber,
+			bank: bankName
+		}
+	};
+	return request({
+		token,
+		path: 'payments/apply_discount',
+		method: 'POST',
+		body: {
+			data
+		}
+	}).then((response) => {
+		if (typeof response.data.data.relationships.carts.data[0] !== 'undefined') {
+			const item = response.data.data.relationships.carts.data[0];
+			const totalPrice = response.data.included.filter(itemLookup => itemLookup.type === item.type && itemLookup.id === item.id)[0];
+			dispatch(paymentInfoUpdated(getCartPaymentData(totalPrice.attributes.total_price, 'order')));
+			dispatch(applyBinReceived(response.data));
+		}
+	}).catch((error) => {
+		console.log(error);
+		// showError
+		dispatch(applyBinReceived({}));
+	});
+};
+
 // action
-const changePaymentOption = (selectedPaymentOption, token) => dispatch => new Promise((resolve, reject) => {
+const changePaymentOption = (selectedPaymentOption, token, cardNumber = '', bankName = '') => dispatch => new Promise((resolve, reject) => {
 	/**
 	 *	SET DEFAUL TERM PROPS ON INSTALLMENT VT
 	 */
@@ -274,9 +303,10 @@ const changePaymentOption = (selectedPaymentOption, token) => dispatch => new Pr
 		};
 		dispatch(changeBankName(token, selectedBank, selectedPaymentOption));
 		dispatch(changeInstallment(selectedPaymentOption.term));
+		bankName = selectedPaymentOption.banks[0].name;
 	}
 	dispatch(paymentOptionChanged(selectedPaymentOption));
-
+	dispatch(applyBin(token, selectedPaymentOption.value, cardNumber, bankName));
 	resolve(selectedPaymentOption);
 });
 
@@ -338,7 +368,7 @@ const closeNewCreditCard = () => dispatch => {
 };
 
 const changeCreditCardNumberAndApplyBin = (token, cardNumber) => dispatch => {
-	
+
 	dispatch(creditCardNumberChangeAndApplyBin(token, cardNumber));
 };
 
@@ -417,7 +447,7 @@ const getError = (error) => {
 };
 
 const bankNameChange = (token, bank, selectedPaymentOption) => dispatch => new Promise((resolve, reject) => {
-	
+
 	if (bank.value.provider === 'sprint') {
 		selectedPaymentOption = {
 			...selectedPaymentOption,
@@ -427,12 +457,12 @@ const bankNameChange = (token, bank, selectedPaymentOption) => dispatch => new P
 
 		};
 		dispatch(changePaymentOption(selectedPaymentOption)).then((bankSelected) => {
-			dispatch(changeBankName(token, bank, selectedPaymentOption));	
+			dispatch(changeBankName(token, bank, selectedPaymentOption));
 		});
 	} else {
-		dispatch(changeBankName(token, bank, selectedPaymentOption));	
+		dispatch(changeBankName(token, bank, selectedPaymentOption));
 	}
-	
+
 	resolve(bank);
 });
 
@@ -525,7 +555,7 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 			reject(error);
 		});
 	} else {
-		if ((typeof paymentDetail.paymentMethod !== 'undefined') 
+		if ((typeof paymentDetail.paymentMethod !== 'undefined')
 				&& paymentDetail.paymentMethod === constants.paymentMethodName.COMMERCE_SPRINT_ASIA) {
 			payment.paymentMethod = constants.paymentMethodName.COMMERCE_SPRINT_ASIA;
 		}
@@ -545,7 +575,7 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 				const attributes = getSprintPayload(soNumber, payment, paymentDetail);
 				// console.log(sprintBody);
 				request({
-					token, 
+					token,
 					path: 'payments/websprintinstallment',
 					method: 'POST',
 					body: {
@@ -574,35 +604,6 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 		});
 	}
 });
-
-const applyBin = (token, paymentMethodId, cardNumber, bankName) => dispatch => {
-	const data = {
-		attributes: {
-			payment_method: paymentMethodId,
-			card_number: cardNumber,
-			bank: bankName
-		}
-	};
-	return request({
-		token,
-		path: 'payments/apply_discount',
-		method: 'POST',
-		body: {
-			data
-		}
-	}).then((response) => {
-		if (typeof response.data.data.relationships.carts.data[0] !== 'undefined') {
-			const item = response.data.data.relationships.carts.data[0];
-			const totalPrice = response.data.included.filter(itemLookup => itemLookup.type === item.type && itemLookup.id === item.id)[0];
-			dispatch(paymentInfoUpdated(getCartPaymentData(totalPrice.attributes.total_price, 'order')));
-			dispatch(applyBinReceived(response.data));
-		}
-	}).catch((error) => {
-		console.log(error);
-		// showError
-		dispatch(applyBinReceived({}));
-	});
-};
 
 const termsAndConditionChange = (state, value) => dispatch => {
 	dispatch(termsAndConditionChangeAction(state, value));

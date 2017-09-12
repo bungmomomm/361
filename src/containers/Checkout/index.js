@@ -458,8 +458,7 @@ class Checkout extends Component {
 			default:
 				break;
 			}
-			dispatch(changePaymentOption(selectedPaymentOption));
-			dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, cardNumber, bankName));
+			dispatch(changePaymentOption(selectedPaymentOption, this.props.cookies.get('user.token'), cardNumber, bankName));
 			this.setState({
 				appliedBin: {
 					selectedPaymentOption,
