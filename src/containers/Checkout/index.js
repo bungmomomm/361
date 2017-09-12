@@ -324,14 +324,14 @@ class Checkout extends Component {
 					});
 				}
 			}).catch(error => {
-				console.log('getAddresses');
-				console.log(error);
-				// this.onRefreshToken(dispatch, this.onReload);
+				// console.log('getAddresses');
+				// console.log(error);
+				this.onRefreshToken(dispatch, this.onReload);
 			});
 		}).catch(error => {
-			console.log('getCart');
-			console.log(error);
-			// this.onRefreshToken(dispatch, this.onReload);
+			// console.log('getCart');
+			// console.log(error);
+			this.onRefreshToken(dispatch, this.onReload);
 		});
 	}
 
