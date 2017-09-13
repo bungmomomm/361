@@ -308,6 +308,7 @@ const changePaymentOption = (selectedPaymentOption, token, cardNumber = '', bank
 		bankName = selectedPaymentOption.banks[0].name;
 	}
 	dispatch(paymentOptionChanged(selectedPaymentOption));
+	
 	if (selectedPaymentOption) {
 		dispatch(applyBin(token, selectedPaymentOption.value, cardNumber, bankName));
 	} else {
@@ -340,7 +341,7 @@ const changePaymentMethod = (paymentMethod, data, token) => dispatch => {
 			const selectedPaymentOption = getAvailabelPaymentSelection(selectedPayment);
 			dispatch(changePaymentOption(selectedPaymentOption, token));
 		} else {
-			dispatch(changePaymentOption(false));
+			dispatch(changePaymentOption(false, token));
 		}
 	}
 };
@@ -355,7 +356,7 @@ const getAvailablePaymentMethod = (token) => (dispatch) => {
 		const dataPayment = getListAvailablePaymentMethod(response.data);
 		dispatch(availablePaymentMethodReceived(dataPayment));
 		dispatch(paymentMethodChanged(false));
-		dispatch(changePaymentOption(false));
+		dispatch(changePaymentOption(false, token));
 	}).catch((error) => {
 	});
 };
@@ -462,7 +463,7 @@ const bankNameChange = (token, bank, selectedPaymentOption) => dispatch => new P
 			uniqueConstant: constants.paymentMethodName.COMMERCE_SPRINT_ASIA,
 
 		};
-		dispatch(changePaymentOption(selectedPaymentOption)).then((bankSelected) => {
+		dispatch(changePaymentOption(selectedPaymentOption, token)).then((bankSelected) => {
 			dispatch(changeBankName(token, bank, selectedPaymentOption));
 		});
 	} else {
