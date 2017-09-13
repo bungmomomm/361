@@ -368,7 +368,7 @@ export default class CardPembayaran extends Component {
 		const discountHtml = (!discount) ? false : discount.map((discountItem, index) => {
 			return (
 				<Level key={index}>
-					<Level.Left>
+					<Level.Left className='discountName'>
 						<div className='text-elipsis'> - { discountItem.discountName }</div>
 					</Level.Left>
 					<Level.Right>
