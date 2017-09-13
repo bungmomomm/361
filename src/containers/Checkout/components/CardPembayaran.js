@@ -369,7 +369,7 @@ export default class CardPembayaran extends Component {
 			return (
 				<Level key={index}>
 					<Level.Left>
-						<div>{ discountItem.discountName }</div>
+						<div className='text-elipsis'> - { discountItem.discountName }</div>
 					</Level.Left>
 					<Level.Right>
 						<div className='text-right'>{currency(-discountItem.totalDiscount)}</div>

@@ -168,7 +168,6 @@ label{
 	.customSelectO2OWrapper{
 		position: relative;
 	}
-	
 	.customSelectO2O{
 		position: absolute;
 		top: 25px;
@@ -180,5 +179,11 @@ label{
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+	}
+	.text-elipsis{
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
+		width: 100%;
 	}
 }
