@@ -486,10 +486,10 @@ export default class CardPembayaran extends Component {
 							</InputGroup>
 						])}
 						<InputGroup>
-							<Input label='SMS Konfirmasi pembayaran' type='number' value={billingPhoneNumber || ''} placeholder={billingPhoneNumber || 'No Telp Penagihan'} onChange={(event) => this.props.onBillingNumberChange(event)} />
+							<Input label='SMS Konfirmasi pembayaran' min={0} type='number' value={billingPhoneNumber || ''} placeholder={billingPhoneNumber || 'No Telp Penagihan'} onChange={(event) => this.props.onBillingNumberChange(event)} />
 						</InputGroup>
 						<InputGroup>
-							<Input value={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''} placeholder={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : 'Masukkan nomor Hp yang terdaftar di OVO'} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' type='number' onChange={(event) => this.props.onOvoNumberChange(event)} readOnly={ovoReadOnly} disabled={ovoReadOnly} />
+							<Input value={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''} placeholder={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : 'Masukkan nomor Hp yang terdaftar di OVO'} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' type='number' min={0} onChange={(event) => this.props.onOvoNumberChange(event)} readOnly={ovoReadOnly} disabled={ovoReadOnly} />
 						</InputGroup>
 						<div className={styles.checkOutAction}>
 							<Checkbox defaultChecked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' onClick={(state, value) => this.props.onTermsAndConditionChange(state, value)} />

@@ -48,6 +48,7 @@ export default class Dropshipper extends Component {
 						<InputGroup>
 							<Input 
 								type='number' 
+								min={0}
 								name='dropship_phone' 
 								placeholder='No Handphone'
 								onBlur={this.onChange}

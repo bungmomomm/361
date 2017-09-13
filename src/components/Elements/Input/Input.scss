@@ -32,6 +32,9 @@
 		outline: 0px;
 		border: 1px solid border(color, hover);
 	}
+	&[type="number"]{
+		overflow: hidden;
+	}
 }
 
 .sprites, .icon{

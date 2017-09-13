@@ -411,6 +411,7 @@ export default class NewAddressModalbox extends Component {
 								onChange={this.onChange}
 								placeholder='Contoh : 08123456789'
 								name='no_hp'
+								min={0}
 								color={errors.has('no_hp') ? 'red' : null}
 								message={errors.first('no_hp')}
 								type='number'
@@ -466,6 +467,7 @@ export default class NewAddressModalbox extends Component {
 								placeholder='Contoh : 12345'
 								name='kodepos'
 								type='number'
+								min={0}
 								onChange={this.onChange}
 								color={errors.has('kodepos') ? 'red' : null}
 								message={errors.first('kodepos')}
