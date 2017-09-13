@@ -203,7 +203,7 @@ class Checkout extends Component {
 
 		const t = new Date();
 		const thisYear = t.getFullYear();
-		let year = 0;
+		let year = thisYear;
 		const tahun = [{
 			value: null,
 			label: '-- tahun'
@@ -309,9 +309,7 @@ class Checkout extends Component {
 		if (coupon) {
 			dispatch(addCoupon(this.props.cookies.get('user.token'), soNumber, coupon)).then(() => {
 				const paymentMethodId = RESET_PAYMENT_METHOD;
-				dispatch(applyBin(this.props.cookies.get('user.token'), paymentMethodId)).then(() => {
-					changePaymentMethod(false);
-				});
+				dispatch(applyBin(this.props.cookies.get('user.token'), paymentMethodId));
 			});
 		}
 	}

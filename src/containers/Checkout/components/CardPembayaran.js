@@ -200,7 +200,6 @@ export default class CardPembayaran extends Component {
 
 	render() {
 		const {
-			coupon,
 			subTotal,
 			discount,
 			total,
@@ -367,13 +366,14 @@ export default class CardPembayaran extends Component {
 		}
 
 		const discountHtml = (!discount) ? false : discount.map((discountItem, index) => {
-			if (couponId && discountItem.discountName.toLowerCase() === couponId.toLowerCase()) {
-				return (<span />);
-			}
 			return (
 				<Level key={index}>
 					<Level.Left>
-						<div>{discountItem.discountName}</div>
+						<div>{this.props.loadingButtonCoupon ? 'loading...' : discountItem.discountName }
+							{ renderIf(couponId && discountItem.discountName.toLowerCase() === couponId.toLowerCase())(
+								<Button icon='times-circle' iconPosition='right' onClick={this.props.onRemoveCoupon} />
+							)}
+						</div>
 					</Level.Left>
 					<Level.Right>
 						<div className='text-right'>{currency(-discountItem.totalDiscount)}</div>
@@ -397,8 +397,8 @@ export default class CardPembayaran extends Component {
 					{
 						renderIf(couponId)(
 							<Level>
-								<Level.Left>Voucher : <strong>{this.props.loadingButtonCoupon ? 'loading...' : couponId }</strong> <Button icon='times-circle' iconPosition='right' onClick={this.props.onRemoveCoupon} /></Level.Left>
-								<Level.Right className='text-right'>{currency(-coupon)}</Level.Right>
+								<Level.Left>Voucher : <strong>{couponId}</strong></Level.Left>
+								<Level.Right className='text-right'>&nbsp;</Level.Right>
 							</Level>
 						)
 					}
