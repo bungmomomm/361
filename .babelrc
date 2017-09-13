@@ -10,5 +10,21 @@
 		"transform-object-rest-spread",
 		"add-module-exports",
 		"transform-decorators-legacy"
-	]
+	],
+	"stage": 0,
+	"env": {
+		"production": { //only applies when NODE_ENV is set to 'production' 
+			"plugins": [
+				"react-transform"
+			],
+			"extra": {
+				"react-transform": {
+					"transforms": [{
+						"transform" : "react-transform-sentry",
+						"imports" : ["react"]
+					}]
+				}
+			}
+		}
+	}
 }
