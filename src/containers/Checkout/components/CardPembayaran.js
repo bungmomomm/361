@@ -239,7 +239,7 @@ export default class CardPembayaran extends Component {
 						<Level.Left className={styles.voucherLabel}>Kode Voucher</Level.Left>
 						<Level.Right>
 							<InputGroup addons addonsAttached>
-								<Input size='small' name='voucherCode' color='red' onChange={this.onChange} onKeyPress={this.onChange} value={this.props.coupon} />
+								<Input size='small' className='voucherCode' name='voucherCode' color='red' onChange={this.onChange} onKeyPress={this.onChange} value={this.props.coupon} />
 								<Button type='button' className='font-red' size='small' icon='times' iconPosition='right' onClick={this.onResetCoupon} />
 							</InputGroup>
 						</Level.Right>
