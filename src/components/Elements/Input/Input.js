@@ -38,6 +38,7 @@ export default class Input extends Component {
 		onBlur,
 		onFocus,
 		message,
+		className,
 		color
 	}) {
 		const inputWrapper = cx({
@@ -52,6 +53,7 @@ export default class Input extends Component {
 
 		const inputClass = cx({
 			input: true,
+			[`${className}`]: !!className,
 			[`${size}`]: !!size,
 			[`${color}`]: !!color
 		});
