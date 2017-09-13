@@ -809,7 +809,7 @@ class Checkout extends Component {
 		const selectedAddress = this.state.selectedAddress;
 		const citProv = formData.provinsi.split(',');
 		let isJabo = false;
-		const jabodetabek = ['jakarta', 'bogor', 'tanggerang', 'bekasi', 'depok'];
+		const jabodetabek = ['jakarta', 'bogor', 'tangerang', 'bekasi', 'depok'];
 		jabodetabek.forEach((value, index) => {
 			if (formData.provinsi.toLowerCase().includes(value)) {
 				isJabo = true;
