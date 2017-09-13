@@ -393,8 +393,8 @@ export default class CardPembayaran extends Component {
 					{
 						renderIf(couponId)(
 							<Level>
-								<Level.Left>Voucher : <strong>{this.props.loadingButtonCoupon ? 'loading...' : couponId}</strong></Level.Left>
-								<Level.Right className='text-right'><Button icon='times-circle' iconPosition='right' onClick={this.props.onRemoveCoupon} /></Level.Right>
+								<Level.Left>Voucher : <strong>{this.props.loadingButtonCoupon ? 'loading...' : couponId}</strong> &nbsp; <Button icon='times-circle' iconPosition='right' onClick={this.props.onRemoveCoupon} /></Level.Left>
+								<Level.Right className='text-right'>&nbsp;</Level.Right>
 							</Level>
 						)
 					}
