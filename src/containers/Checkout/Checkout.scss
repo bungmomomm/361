@@ -82,16 +82,17 @@
     }
 }
 
-
-
 .header{
 	display: flex;
 	margin-bottom: 10px;
 }
 
-
 .desc{
 	font-size: 10px;
 	padding-left: 7px;
 	color: color(orange);
+}
+
+.discountName{
+	width: 210px;
 }
