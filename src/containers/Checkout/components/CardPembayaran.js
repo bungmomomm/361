@@ -369,11 +369,7 @@ export default class CardPembayaran extends Component {
 			return (
 				<Level key={index}>
 					<Level.Left>
-						<div>{this.props.loadingButtonCoupon ? 'loading...' : discountItem.discountName }
-							{ renderIf(couponId && discountItem.discountName.toLowerCase() === couponId.toLowerCase())(
-								<Button icon='times-circle' iconPosition='right' onClick={this.props.onRemoveCoupon} />
-							)}
-						</div>
+						<div>{ discountItem.discountName }</div>
 					</Level.Left>
 					<Level.Right>
 						<div className='text-right'>{currency(-discountItem.totalDiscount)}</div>
@@ -397,8 +393,8 @@ export default class CardPembayaran extends Component {
 					{
 						renderIf(couponId)(
 							<Level>
-								<Level.Left>Voucher : <strong>{couponId}</strong></Level.Left>
-								<Level.Right className='text-right'>&nbsp;</Level.Right>
+								<Level.Left>Voucher : <strong>{this.props.loadingButtonCoupon ? 'loading...' : couponId}</strong></Level.Left>
+								<Level.Right className='text-right'><Button icon='times-circle' iconPosition='right' onClick={this.props.onRemoveCoupon} /></Level.Right>
 							</Level>
 						)
 					}
