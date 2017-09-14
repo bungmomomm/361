@@ -13,7 +13,7 @@ const pushDataLayer = (event, ecommerceEvent, actionField, listProducts) => {
 			name: prod.name,
 			price: prod.price,
 			brand: prod.brand,
-			category: prod.category,
+			category: prod.category.join('/'),
 			variant: '',
 			quantity: prod.qty,
 		};
