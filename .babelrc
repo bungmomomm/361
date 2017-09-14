@@ -11,7 +11,6 @@
 		"add-module-exports",
 		"transform-decorators-legacy"
 	],
-	"stage": 0,
 	"env": {
 		"production": { //only applies when NODE_ENV is set to 'production' 
 			"plugins": [
