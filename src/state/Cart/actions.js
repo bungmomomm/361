@@ -253,7 +253,7 @@ const updateQtyCart = (token, productQty, productId, props) => dispatch => new P
 });
 
 
-const updateGosend = (token, storeId, shippingMethodId, props) => dispatch => {
+const updateGosend = (token, storeId, shippingMethodId, props) => dispatch => new Promise((resolve, reject) => {
 	dispatch(gettingCart(token));
 
 	const req = {
@@ -279,12 +279,13 @@ const updateGosend = (token, storeId, shippingMethodId, props) => dispatch => {
 		dispatch(paymentInfoUpdated(getCartPaymentData(res.data.data.attributes.total_price, 'order')));
 		dispatch(cartReceived(setCartModel(res.data), !isPickupable[0].is_pickupable ? 0 : isPickupable[0].is_pickupable, res.data.data.attributes.total_price.count, res.data.data.attributes.gosend_description, { ovoId: res.data.data.attributes.ovo_id, ovoFlag: res.data.data.attributes.ovo_verified_flag }));
 		dispatch(getAvailablePaymentMethod(token));
+		resolve(storeId);
 	})
 	.catch((error) => {
 		console.log(error);
 	});
 
-};
+});
 
 export default {
 	getPlaceOrderCart,
