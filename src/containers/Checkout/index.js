@@ -65,7 +65,7 @@ import {
 } from '@/state/Payment/actions';
 
 import { getRefreshToken } from '@/state/Auth/actions';
-import { setUserGTM } from '@/utils/gtm';
+import { setUserGTM, pushDataLayer } from '@/utils/gtm';
 
 import {
 	paymentMethodName,
@@ -314,6 +314,7 @@ class Checkout extends Component {
 		const { dispatch, soNumber } = this.props;
 		if (coupon) {
 			dispatch(addCoupon(this.props.cookies.get('user.token'), soNumber, coupon)).then(() => {
+				pushDataLayer('checkout', 'checkout_option', { step: 5, option: 'Voucher' });
 				const paymentMethodId = RESET_PAYMENT_METHOD;
 				dispatch(applyBin(this.props.cookies.get('user.token'), paymentMethodId));
 			});
@@ -328,6 +329,7 @@ class Checkout extends Component {
 				changePaymentMethod(false);
 			});
 		});
+		pushDataLayer('checkout', 'checkout_option', { step: 5, option: 'Non Voucher' });
 	}
 
 	onResetCoupon(event) {
@@ -740,6 +742,7 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 		let validator = false;
 		let mode = 'complete';
+		pushDataLayer('checkout', 'checkout_option', { step: 8 });
 		if (typeof this.props.payments.paymentMethod !== 'undefined') {
 			switch (this.props.payments.paymentMethod) {
 			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:

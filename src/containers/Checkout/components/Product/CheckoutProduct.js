@@ -23,13 +23,13 @@ export default class CheckoutProduct extends Component {
 		if (parseInt(state.value, 10) > 0 && parseInt(state.value, 10) !== this.props.data.qty) {
 			this.props.onUpdateQty(state.value, this.props.data.id);
 			if (state.value > this.props.data.qty) {
-				this.pushDataLayer('addToCart', 'add', state.value - this.props.data.qty);
+				this.pushDataLayer('addToCart', 'add', state.value - this.props.data.qty, 'IDR');
 			} else {
 				this.pushDataLayer('removeFromCart', 'remove', this.props.data.qty - state.value);
 			}
 		}
 	}
-	pushDataLayer(event, ecommerceEvent, qty) {
+	pushDataLayer(event, ecommerceEvent, qty, currencyCode = null) {
 		const products = [
 			{
 				id: this.props.data.id,
@@ -41,7 +41,7 @@ export default class CheckoutProduct extends Component {
 				qty
 			}
 		];
-		pushDataLayer(event, ecommerceEvent, null, products);
+		pushDataLayer(event, ecommerceEvent, null, products, currencyCode);
 	}
 	render() {
 		return (
