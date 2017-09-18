@@ -97,6 +97,7 @@ export default (state = initialState, action) => {
 		return {
 			...state, 
 			data: action.payload.cart,
+			products: action.payload.products,
 			isPickupable: action.payload.isPickupable,
 			totalItems: action.payload.totalItems,
 			loading: !action.status,

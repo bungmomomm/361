@@ -290,6 +290,9 @@ class Checkout extends Component {
 						enablePesananPengiriman: true,
 						enablePembayaran: true
 					});
+					const source = this.props.cookies.get('user.source');
+					pushDataLayer('checkout', 'checkout', { step: 1, option: source ? source.split('+').join(' ') : '' }, this.props.products);
+					pushDataLayer('checkout', 'checkout_option', { step: 1, option: source ? source.split('+').join(' ') : '' });
 					dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress)).then(() => {
 
 					}).catch((error) => {
@@ -395,6 +398,11 @@ class Checkout extends Component {
 		if (editAddress) {
 			this.getDistricts(`${editAddress.city}, ${editAddress.province}`);
 		}
+		if (flagAdd === 'add') {
+			const source = this.props.cookies.get('user.source');	
+			pushDataLayer('checkout', 'checkout', { step: 1, option: source ? source.split('+').join(' ') : '' }, this.props.products);
+			pushDataLayer('checkout', 'checkout_option', { step: 1, option: source ? source.split('+').join(' ') : '' });
+		} 
 
 		this.setState({
 			enableNewAddress: true,
@@ -995,6 +1003,8 @@ class Checkout extends Component {
 			const tempSelectedAddress = this.state.selectedAddress;
 			tempSelectedAddress.attributes.is_dropshipper = checked;
 			this.onChoisedAddress(tempSelectedAddress);
+			pushDataLayer('checkout', 'checkout', { step: 3, option: checked ? 'Dropship' : 'Not Dropship' }, this.props.products);
+			pushDataLayer('checkoutOption', 'checkout_option', { step: 3, option: checked ? 'Dropship' : 'Not Dropship' });
 		}
 	}
 
@@ -1062,8 +1072,12 @@ class Checkout extends Component {
 	activeShippingTab(addressTabActive) {
 		const { dispatch } = this.props;
 		if (!addressTabActive) {
+			pushDataLayer('checkout', 'checkout', { step: 2, option: 'Pickup' }, this.props.products);
+			pushDataLayer('checkoutOption', 'checkout_option', { step: 2, option: 'Pickup' });
 			dispatch(o2oChoise(this.props.cart));
 		} else {
+			pushDataLayer('checkout', 'checkout', { step: 2, option: 'Delivery' }, this.props.products);
+			pushDataLayer('checkoutOption', 'checkout_option', { step: 2, option: 'Delivery' });
 			dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress)).then(() => {
 				dispatch(changeBillingNumber(this.state.selectedAddress.attributes.phone));
 			}).catch((error) => {
@@ -1406,6 +1420,7 @@ const mapStateToProps = (state) => {
 		gosendInfo: state.cart.gosendInfo,
 		errorPlaceOrder: state.cart.error,
 		userGTM: state.user.userGTM,
+		products: state.cart.products,
 	};
 };
 
