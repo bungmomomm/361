@@ -103,7 +103,7 @@ export default class CardPembayaran extends Component {
 			voucherCode: null
 		});
 		this.props.onResetCoupon();
-		pushDataLayer('checkout', 'checkout_option', { step: 5, option: 'Non Voucher' });
+		pushDataLayer('checkout', 'checkout', { step: 5, option: 'Non Voucher' });
 	}
 
 	onPaymentMethodChange(event) {
@@ -112,14 +112,14 @@ export default class CardPembayaran extends Component {
 		});
 		this.props.onPaymentMethodChange(event);
 		if (event.value) {
-			pushDataLayer('checkout', 'checkout_option', { step: 6, option: event.label });
+			pushDataLayer('checkout', 'checkout', { step: 6, option: event.label });
 		}
 	}
 
 	onPaymentOptionChange(event) {
 		this.props.onPaymentOptionChange(event, this.props.payments.selectedPayment);
 		if (event.value) {
-			pushDataLayer('checkout', 'checkout_option', { step: 7, option: event.label });
+			pushDataLayer('checkout', 'checkout', { step: 7, option: event.label });
 		}
 	}
 

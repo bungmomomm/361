@@ -292,7 +292,7 @@ class Checkout extends Component {
 					});
 					const source = this.props.cookies.get('user.source');
 					pushDataLayer('checkout', 'checkout', { step: 1, option: source ? source.split('+').join(' ') : '' }, this.props.products);
-					pushDataLayer('checkout', 'checkout_option', { step: 1, option: source ? source.split('+').join(' ') : '' });
+					// pushDataLayer('checkout', 'checkout_option', { step: 1, option: source ? source.split('+').join(' ') : '' });
 					dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress)).then(() => {
 
 					}).catch((error) => {
@@ -317,7 +317,7 @@ class Checkout extends Component {
 		const { dispatch, soNumber } = this.props;
 		if (coupon) {
 			dispatch(addCoupon(this.props.cookies.get('user.token'), soNumber, coupon)).then(() => {
-				pushDataLayer('checkout', 'checkout_option', { step: 5, option: 'Voucher' });
+				pushDataLayer('checkout', 'checkout', { step: 5, option: 'Voucher' });
 				const paymentMethodId = RESET_PAYMENT_METHOD;
 				dispatch(applyBin(this.props.cookies.get('user.token'), paymentMethodId));
 			});
@@ -332,7 +332,7 @@ class Checkout extends Component {
 				changePaymentMethod(false);
 			});
 		});
-		pushDataLayer('checkout', 'checkout_option', { step: 5, option: 'Non Voucher' });
+		pushDataLayer('checkout', 'checkout', { step: 5, option: 'Non Voucher' });
 	}
 
 	onResetCoupon(event) {
@@ -401,7 +401,7 @@ class Checkout extends Component {
 		if (flagAdd === 'add') {
 			const source = this.props.cookies.get('user.source');	
 			pushDataLayer('checkout', 'checkout', { step: 1, option: source ? source.split('+').join(' ') : '' }, this.props.products);
-			pushDataLayer('checkout', 'checkout_option', { step: 1, option: source ? source.split('+').join(' ') : '' });
+			// pushDataLayer('checkout', 'checkout_option', { step: 1, option: source ? source.split('+').join(' ') : '' });
 		} 
 
 		this.setState({
@@ -750,7 +750,7 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 		let validator = false;
 		let mode = 'complete';
-		pushDataLayer('checkout', 'checkout_option', { step: 8 });
+		pushDataLayer('checkout', 'checkout', { step: 8 });
 		if (typeof this.props.payments.paymentMethod !== 'undefined') {
 			switch (this.props.payments.paymentMethod) {
 			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
@@ -1004,7 +1004,7 @@ class Checkout extends Component {
 			tempSelectedAddress.attributes.is_dropshipper = checked;
 			this.onChoisedAddress(tempSelectedAddress);
 			pushDataLayer('checkout', 'checkout', { step: 3, option: checked ? 'Dropship' : 'Not Dropship' }, this.props.products);
-			pushDataLayer('checkoutOption', 'checkout_option', { step: 3, option: checked ? 'Dropship' : 'Not Dropship' });
+			// pushDataLayer('checkoutOption', 'checkout_option', { step: 3, option: checked ? 'Dropship' : 'Not Dropship' });
 		}
 	}
 
@@ -1073,11 +1073,11 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 		if (!addressTabActive) {
 			pushDataLayer('checkout', 'checkout', { step: 2, option: 'Pickup' }, this.props.products);
-			pushDataLayer('checkoutOption', 'checkout_option', { step: 2, option: 'Pickup' });
+			// pushDataLayer('checkoutOption', 'checkout_option', { step: 2, option: 'Pickup' });
 			dispatch(o2oChoise(this.props.cart));
 		} else {
 			pushDataLayer('checkout', 'checkout', { step: 2, option: 'Delivery' }, this.props.products);
-			pushDataLayer('checkoutOption', 'checkout_option', { step: 2, option: 'Delivery' });
+			// pushDataLayer('checkoutOption', 'checkout_option', { step: 2, option: 'Delivery' });
 			dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress)).then(() => {
 				dispatch(changeBillingNumber(this.state.selectedAddress.attributes.phone));
 			}).catch((error) => {
