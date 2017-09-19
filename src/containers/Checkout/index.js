@@ -1051,11 +1051,35 @@ class Checkout extends Component {
 				tempSelectedAddress = this.state.selectedLocker;
 				tempSelectedAddress.type = 'pickup';
 			}
+			const gosendChecked = [];
+			this.props.cart.forEach((value, index) => {
+				if (value.store.shipping.gosend.gosendActivated) {
+					gosendChecked.push(parseInt(value.store.id, 10));
+				}
+			});
+
 			this.onChoisedAddress(tempSelectedAddress, false).then(() => {
 				if (this.state.appliedBin) {
 					const selectedPaymentOption = this.state.appliedBin.selectedPaymentOption;
 					dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, this.state.appliedBin.cardNumber, this.state.appliedBin.bankName)).then(() => {
-						this.onDoPayment();
+						if (gosendChecked.length > 0) { 
+							this.props.cart.forEach((value, index) => {
+								const indexStore = gosendChecked.indexOf(parseInt(value.store.id, 10));
+								if (indexStore !== -1) {
+									dispatch(updateGosend(this.props.cookies.get('user.token'), parseInt(value.store.id, 10), 19, this.props))
+									.then(storeId => {
+										gosendChecked.splice(indexStore, 1);
+										if (gosendChecked.length === 0) {
+											this.onDoPayment();
+										}
+									});
+								}
+							});
+						} else {
+							this.onDoPayment();
+						}
+						
+						
 					}).catch((error) => {
 
 					});
@@ -1063,6 +1087,8 @@ class Checkout extends Component {
 				this.setState({
 					isValidPayment: true,
 				});
+
+				
 			});
 		} else {
 			this.checkDropship();
