@@ -181,6 +181,7 @@ class Checkout extends Component {
 		this.onTermsAndConditionChange = this.onTermsAndConditionChange.bind(this);
 		this.onSetStateAddress = this.onSetStateAddress.bind(this);
 		this.getAffTracking = this.getAffTracking.bind(this);
+		this.okeoce = this.okeoce.bind(this);
 	}
 
 	componentWillMount() {
@@ -1064,6 +1065,8 @@ class Checkout extends Component {
 					}).catch((error) => {
 
 					});
+				} else {
+					this.onDoPayment();
 				}
 				this.setState({
 					isValidPayment: true,
@@ -1117,6 +1120,14 @@ class Checkout extends Component {
 				enablePesananPengiriman: true,
 				enablePembayaran: true,
 			});
+		}
+	}
+
+	okeoce(param) {
+		if (param === 'ok') {
+			this.onDoPayment();
+		} else {
+			location.reload();
 		}
 	}
 
@@ -1276,6 +1287,8 @@ class Checkout extends Component {
 						shown={this.props.payments.paymentError}
 						paymentErrorMessage={this.props.payments.error}
 						onClose={this.onCloseErrorBox}
+						isConfirm={this.props.payments.isConfirm}
+						okeoce={this.okeoce}
 					/>
 					<VerifikasiNoHandponeModalbox
 						shown={this.state.showModalOtp}
