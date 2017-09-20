@@ -70,6 +70,8 @@ const setCartModel = (jsoApiResponse) => {
 				image: prods.attributes.thumbnail_url,
 				id: parseInt(prodRel.id, 10),
 				fgLocation: prods.attributes.fg_location,
+				brand: prods.attributes.brand_name,
+				category: prods.attributes.product_category_names,
 				attribute: [],
 			};
 		});
@@ -111,6 +113,23 @@ const setCartModel = (jsoApiResponse) => {
 	});
 };
 
+const setProductModel = (jsoApiResponse) => {
+	return jsoApiResponse.included.filter(e => e.type === 'products').map((value, index) => {
+		const attr = value.attributes;
+		const cartItem = jsoApiResponse.included.filter(e => e.type === 'cart_items' && e.id === value.id)[0];
+		return {
+			name: attr.title,
+			price: parseInt(cartItem.attributes.purchase_price.unit, 10),
+			qty: parseInt(cartItem.attributes.quantity, 10),
+			id: parseInt(value.id, 10),
+			brand: attr.brand_name,
+			category: attr.product_category_names,
+		};
+	}).sort((a, b) => {
+		return b.price - a.price;
+	});
+};
+
 const getCartPaymentData = (data, type) => {
 	let defaultData = {
 		count: 0,
@@ -147,5 +166,6 @@ const getCartPaymentData = (data, type) => {
 export default{
 	setPayloadPlaceOrder,
 	setCartModel,
-	getCartPaymentData
+	getCartPaymentData,
+	setProductModel,
 };
