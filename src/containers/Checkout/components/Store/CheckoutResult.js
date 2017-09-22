@@ -60,9 +60,9 @@ const CheckoutResult = (props) => {
 	);
 };
 
-export default CheckoutResult;
-
 CheckoutResult.propTypes = {
 	shipping: PropTypes.object,
 	price: PropTypes.object
 };
+
+export default CheckoutResult;

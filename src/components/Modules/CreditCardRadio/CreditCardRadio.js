@@ -4,7 +4,6 @@ import creditCardType from 'credit-card-type';
 
 import Sprites from '@/components/Elements/Sprites';
 import { newId, renderIf } from '@/utils';
-import { injectProps } from '@/decorators';
 
 import classNames from 'classnames/bind';
 import styles from './CreditCardRadio.scss';
@@ -40,30 +39,24 @@ class CreditCardRadio extends Component {
 		}
 	}
 
-	@injectProps	
-	render({
-		checked,
-		name,
-		onClick,
-		value,
-		disabled,
-		sprites,
-		content
-	}) {
+	render() {
 		const CreditCardRadioClass = cx({
 			CreditCardRadioWrapper: true
 		});
+
+		const {
+			sprites,
+			content,
+			...rest
+		} = this.props;
+
 		const idFor = newId();
 		const input = (
 			<input
 				id={idFor}
 				type='radio'
-				checked={checked}
 				className={styles.creditCardRadio} 
-				name={name} 
-				onClick={() => onClick(value)}
-				value={value} 
-				disabled={disabled}
+				{...rest}
 			/>
 		);
 

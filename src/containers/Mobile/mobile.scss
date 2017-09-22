@@ -1,0 +1,50 @@
+@import 'mixins';
+@import 'variables';
+
+:global{
+    html {
+        touch-action: manipulation;
+    }
+    * {
+        cursor: pointer;
+        -webkit-text-size-adjust: none;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+    }
+    
+    :not(input):not(textarea):not(button) {
+        user-select: none;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+    body{
+        background-color: #EBEBEB;
+    }
+}
+
+.header{
+    background: #DA1818;
+    height: 47px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.CheckoutTitle{
+    background: #F5F5F5;
+    @include font(bold);
+    font-size: 14px;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    .price{
+        color: color(red);
+    }
+}
+
+
+.voucherLabel{
+	align-self: flex-start;
+	padding-top: 10px;
+}

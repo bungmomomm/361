@@ -10,6 +10,7 @@ const cx = classNames.bind(styles);
 import { newId, renderIf } from '@/utils';
 
 const Checkbox = (props) => {
+
 	const CheckboxClass = cx({
 		CheckboxWrapper: true,
 		disabled: props.disabled
@@ -27,13 +28,9 @@ const Checkbox = (props) => {
 		<input
 			id={idFor}
 			type='checkbox'
-			defaultChecked={props.defaultChecked}
-			checked={props.checked}
 			className={styles.Checkbox} 
-			name={props.name} 
 			onClick={onClick}
-			value={props.value} 
-			disabled={props.disabled}
+			{...props}
 		/>
 	);
 
@@ -52,6 +49,7 @@ const Checkbox = (props) => {
 			</span>
 		)
 	);
+	
 
 	return (
 		<label className={CheckboxClass} htmlFor={idFor}>

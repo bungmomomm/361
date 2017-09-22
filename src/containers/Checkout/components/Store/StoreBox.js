@@ -33,10 +33,10 @@ const StoreBox = (props) => {
 	);
 };
 
-export default StoreBox;
-
 StoreBox.propTypes = {
 	name: PropTypes.string,
 	location: PropTypes.string,
 	loading: PropTypes.bool
 };
+
+export default StoreBox;
