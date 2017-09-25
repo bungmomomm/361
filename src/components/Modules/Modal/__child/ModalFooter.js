@@ -8,6 +8,7 @@ const Footer = (props) => {
 	const FooterClass = cx({
 		Footer: true,
 		[`${props.className}`]: !!props.className,
+		[`${props.variant}`]: !!props.variant,
 		mobile: isMobile()
 	});
 	return (

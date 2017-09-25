@@ -37,9 +37,11 @@ class stepOne extends Component {
 			showModalAddress: false,
 			showModalo2o: false,
 			selectedAddress: {},
-			shipping: []
+			shipping: [],
+			toggleSelectAddress: true
 		};
 		this.currentAddresses = [];
+		this.toggleModalAddress = this.toggleModalAddress.bind(this);
 		this.cookies = this.props.cookies.get('user.token');
 	}
 
@@ -104,7 +106,11 @@ class stepOne extends Component {
 			shipping
 		} = this.state;
 
-		return !selectedAddress.attributes ? null : (
+		if (!selectedAddress.attributes) {
+			return null;
+		}
+
+		return (
 			<Card>
 				<p><strong>1. Pilih Metode &amp; Alamat Pengiriman</strong></p>
 				<Tabs tabActive={0} stretch onAfterChange={(event) => this.afterChangeTab(event)}>
@@ -118,22 +124,16 @@ class stepOne extends Component {
 									filter 
 									options={shipping}
 									onChange={(id) => this.setSelectedAddress(id)}
-									selected={shipping[0]}
-									addButton={<Button size='large' color='grey' block>Tambah Alamat</Button>} 
 								/>
+							</InputGroup>
+							<InputGroup>
+								<Button onClick={() => this.toggleModalAddress('add')} type='button' icon='plus' iconPosition='left' className='font-orange' content='Tambah Alamat' />
 							</InputGroup>
 							<Level>
 								<Level.Item className='text-right'>
-									{
-										(
-											selectedAddress.attributes.latitude && 
-											selectedAddress.attributes.longitude
-										) && (
-											<div>	
-												<Icon name='map-marker' /> &nbsp; Lokasi Sudah Ditandai
-											</div>
-										)
-									}
+									<div>	
+										<Icon name='map-marker' /> &nbsp; Lokasi Sudah Ditandai
+									</div>
 								</Level.Item>
 							</Level>
 							{
@@ -142,21 +142,24 @@ class stepOne extends Component {
 							<Button onClick={() => this.toggleModalAddress('edit')} type='button' icon='pencil' iconPosition='left' className='font-orange' content='Ubah Alamat ini' />
 						</Segment>
 						<Dropshipper />
+						<Button onClick={() => this.toggleModalAddress('add')} type='button' block color='orange' outline content='Masukan Alamat Pengiriman' />
 					</Tabs.Panel>
 					<Tabs.Panel title='Ambil di Toko/ E-locker (O2O)'>
-						<Alert align='center' color='yellow' >
+						<Alert align='center' color='yellow' show >
 							Maksimum 5 kg per order untuk Ambil Di Toko / Elocker (020). Pesanan diatas 5 kg akan dikirimkan langsung ke alamat Anda. <br /> GRATIS ongkos kirim hingga Rp 15,000 untuk minimal pembelian sebesar Rp 100,000
 						</Alert>
-						<InputGroup>
-							<Button onClick={() => this.showModalo2o()} content='Pilih Lokasi Toko / E-locker' color='dark' block size='large' iconPosition='right' icon='angle-right' />
-						</InputGroup>
+						<Alert close icon='ban' align='left' color='red' show >
+							Satu atau lebih produk dalam keranjang belanja anda tidak menyediakan layanan Ambil di Toko / Elocker (O2O)
+						</Alert>
 						<Segment className='customSelectO2OWrapper'>
 							<InputGroup>
 								<Select 
 									options={Address} 
-									selected={Address[0]}
-									addButton={<Button>Tambah Alamat</Button>} 
+									selected={Address[0]} 
 								/>
+							</InputGroup>
+							<InputGroup>
+								<Button onClick={() => this.toggleModalAddress('add')} type='button' icon='plus' iconPosition='left' className='font-orange' content='Tambah Alamat' />
 							</InputGroup>
 							<p><strong>Aufar Syahdan</strong> </p>
 							<p>
@@ -166,6 +169,9 @@ class stepOne extends Component {
 								Telepon: 08568052187
 							</p>
 						</Segment>
+						<InputGroup>
+							<Button onClick={() => this.showModalo2o()} type='button' block color='orange' outline content='Pilih Lokasi Toko / E-locker' />
+						</InputGroup>
 						<p className='font-red'>Satu atau lebih produk dalam keranjang belanja anda tidak menyediakan layanan Ambil di Toko / Elocker (O2O)</p>
 					</Tabs.Panel>
 				</Tabs>

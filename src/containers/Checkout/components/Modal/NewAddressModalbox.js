@@ -432,8 +432,8 @@ export default class NewAddressModalbox extends Component {
 										message={errors.has('provinsi') ? 'Provinsi field is required.' : ''}
 										options={this.props.cityProv || []} 
 										selected={{
-											label: this.props.formDataAddress.kotProv || '',
-											value: this.props.formDataAddress.kotProv || ''
+											label: this.props.formDataAddress.kotProv || this.props.cityProv[0].label,
+											value: this.props.formDataAddress.kotProv || this.props.cityProv[0].value
 										}}
 									/>
 								</InputGroup>

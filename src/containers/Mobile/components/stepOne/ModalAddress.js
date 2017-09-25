@@ -1,4 +1,5 @@
 import { connect } from 'react-redux';
+import _ from 'lodash';
 import { actions } from '@/state/Adresses';
 import { withCookies } from 'react-cookie';
 import React, { Component } from 'react';
@@ -52,12 +53,15 @@ class ModalAddress extends Component {
 				district: {}
 			},
 			formData: {},
-			show: false
+			show: false,
+			errors: this.validator.errorBag,
+			overflow: false
 		};
 		this.onChangeProvince = this.onChangeProvince.bind(this);
 		this.translateProvince = this.translateProvince.bind(this);
 		this.setFormData = this.setFormData.bind(this);
 		this.cookies = this.props.cookies.get('user.token');
+		this.isEdit = !!this.props.formData;
 	}
 
 	componentWillMount() {
@@ -66,14 +70,17 @@ class ModalAddress extends Component {
 		}
 		setTimeout(() => { this.toggleShow(); }, 20);
 	}
+
+	componentDidMount() {
+		if (this.isEdit) this.translateProvince(this.props.formData.attributes);
+	}
 	
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.formData && (this.props.formData !== nextProps.formData)) {
-			const { city, district, province } = nextProps.formData.attributes;
-			if (city && district) {
-				this.translateProvince(city, province, district);
+			this.translateProvince(nextProps.formData.attributes);
+			if (this.isEdit) {
 				this.setFormData(nextProps.formData);
-			};
+			}
 		}
 	}
 
@@ -99,19 +106,22 @@ class ModalAddress extends Component {
 		this.setState({ formData });
 	}
 
-	translateProvince(city, province, district) {
-		const stateProvince = {
-			province: {
-				label: `${city}, ${province}`,
-				value: `${city}, ${province}`
-			},
-			district: {
-				label: `${district}`,
-				value: `${district}`
-			}
-		};
-		this.setState({ selected: stateProvince });
-		this.constructor.fetchGetDistric(this.cookies, stateProvince.province.value, this.props.dispatch);
+	translateProvince(formDataAttributes) {
+		const { city, district, province } = formDataAttributes;
+		if (city && district) {
+			const stateProvince = {
+				province: {
+					label: `${city}, ${province}`,
+					value: `${city}, ${province}`
+				},
+				district: {
+					label: `${district}`,
+					value: `${district}`
+				}
+			};
+			this.setState({ selected: stateProvince });
+			this.constructor.fetchGetDistric(this.cookies, stateProvince.province.value, this.props.dispatch);
+		}
 	}
 
 	hideModalAddress() {
@@ -122,6 +132,26 @@ class ModalAddress extends Component {
 	toggleShow() {
 		this.setState({ show: !this.state.show });
 	}
+
+	validateAndSubmit(e) {
+		e.preventDefault();
+		const { formData } = this.state;
+		this.validator.validateAll(formData).then(success => {
+			if (success) {
+				// this.submit(formData);
+				console.log(success);
+			} else {
+				Object.keys(formData).forEach((key) => {
+					this.setErrors(key, this.state.formData[key]);
+				});
+			}
+		});
+	}
+
+	toggleOverflowModal(e) {
+		document.querySelectorAll('.modalAddress')[0].scrollTop = 0;
+		this.setState({ overflow: e });
+	}
 	
 	render() {
 		const { 
@@ -129,8 +159,19 @@ class ModalAddress extends Component {
 			address
 		} = this.props;
 
+		const {
+			errors,
+			selected,
+			show,
+			overflow
+		} = this.state;
+
+		const defaultSelected = (selectedData, defaultOption) => {
+			return 	_.isEmpty(selectedData) ? defaultOption : selectedData;
+		};
+
 		return (
-			<Modal handleClose={() => this.hideModalAddress()} size='medium' show={this.state.show} close>
+			<Modal ref={(e) => { this.el = e; }} className='modalAddress' handleClose={() => this.hideModalAddress()} size='medium' show={show} disableOverflow={overflow} close>
 				<Modal.Header>
 					<div>{'Buat Alamat Baru'}</div>
 				</Modal.Header>
@@ -141,6 +182,8 @@ class ModalAddress extends Component {
 							placeholder='Contoh: rumah, kantor, rumah pacar'
 							name='name'
 							type='text'
+							color={errors.has('name') ? 'red' : ''}
+							message={errors.has('name') ? 'Name field is required.' : ''}
 							value={formData ? formData.attributes.addressLabel : ''}
 						/>
 					</InputGroup>
@@ -150,6 +193,8 @@ class ModalAddress extends Component {
 							placeholder='Masukan nama lengkap penerima'
 							name='penerima'
 							type='text'
+							color={errors.has('penerima') ? 'red' : ''}
+							message={errors.has('penerima') ? 'Penerima field is required.' : ''}
 							value={formData ? formData.attributes.fullname : ''}
 						/>
 					</InputGroup>
@@ -160,6 +205,8 @@ class ModalAddress extends Component {
 							name='no_hp'
 							min={0}
 							type='number'
+							color={errors.has('no_hp') ? 'red' : ''}
+							message={errors.first('no_hp')}
 							value={formData ? formData.attributes.phone : ''}
 						/>
 					</InputGroup>
@@ -170,21 +217,27 @@ class ModalAddress extends Component {
 									label='Kota, Provinsi *'
 									filter
 									name='provinsi'
-									onChange={(selected) => this.onChangeProvince(selected)}
+									onClick={(e) => this.toggleOverflowModal(e)}
+									onChange={(e) => this.onChangeProvince(e)}
 									options={address.cityProv}
-									selected={this.state.selected.province}
+									color={errors.has('provinsi') ? 'red' : ''}
+									message={errors.has('provinsi') ? 'Provinsi field is required.' : ''}
+									selected={defaultSelected(selected.province, address.cityProv[0])}
 								/>
 							</InputGroup>
 						)
 					}
 					{
-						address.district && (
+						(address.cityProv && address.district) && (
 							<InputGroup>
 								<Select 
 									label='Kecamatan *'
+									onClick={(e) => this.toggleOverflowModal(e)}
 									name='kecamatan' 
 									options={address.district}
-									selected={this.state.selected.district}
+									color={errors.has('kecamatan') ? 'red' : ''}
+									message={errors.has('kecamatan') ? 'Kecamatan field is required.' : ''}
+									selected={defaultSelected(selected.district, address.district[0])}
 								/>
 							</InputGroup>
 						)
@@ -261,7 +314,7 @@ class ModalAddress extends Component {
 						<em>* wajib diisi</em>
 					</InputGroup>
 					<InputGroup>
-						<Button block size='large' type='button' content='Simpan Alamat' color='dark' />
+						<Button onClick={() => this.validateAndSubmit()} block size='large' type='button' content='Simpan Alamat' color='dark' />
 					</InputGroup>
 				</Modal.Body>
 			</Modal>

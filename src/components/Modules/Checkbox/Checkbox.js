@@ -15,10 +15,12 @@ const Checkbox = (props) => {
 		CheckboxWrapper: true,
 		disabled: props.disabled
 	});
+	
+	const { icon, sprites, onClick, ...rest } = props;
 
-	const onClick = (event) => {
-		if (props.onClick) {
-			return props.onClick(event.target.checked, event.target.value);
+	const thisClick = (event) => {
+		if (onClick) {
+			return onClick(event.target.checked, event.target.value);
 		}
 		return null;
 	};
@@ -29,23 +31,23 @@ const Checkbox = (props) => {
 			id={idFor}
 			type='checkbox'
 			className={styles.Checkbox} 
-			onClick={onClick}
-			{...props}
+			onClick={thisClick}
+			{...rest}
 		/>
 	);
 
 	const SpritesElement = (
-		renderIf(props.sprites)(
+		renderIf(sprites)(
 			<span className={styles.sprites}>
-				<Sprites name={props.sprites} />
+				<Sprites name={sprites} />
 			</span>
 		)
 	);
 
 	const IconElement = (
-		renderIf(props.icon)(
+		renderIf(icon)(
 			<span className={styles.icon}>
-				<Icon name={props.icon} />
+				<Icon name={icon} />
 			</span>
 		)
 	);

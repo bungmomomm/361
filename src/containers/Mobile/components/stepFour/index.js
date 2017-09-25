@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Recaptcha from 'react-recaptcha';
 import { 
 	Card,
 	InputGroup,
@@ -6,7 +7,8 @@ import {
 	CreditCardRadio,
 	Checkbox,
 	Button,
-	Input
+	Input,
+	Modal
 } from '@/components';
 
 import styles from '../../../Mobile/mobile.scss';
@@ -24,17 +26,14 @@ export default class StepFour extends Component {
 			<Card>
 				<p><strong>4. Informasi Pembayaran</strong></p>
 				<div>
-					<p>Metode Pembayaran</p>
 					<InputGroup>
-						<Select name='paymentMethods' options={PaymentOptions} />
+						<Select label='Metode Pembayaran' name='paymentMethods' options={PaymentOptions} />
 					</InputGroup>
 					<InputGroup>
-						<p>Pilih Bank</p>
-						<Select name='bank' options={PaymentOptions} />
+						<Select label='Pilih Bank' name='bank' options={PaymentOptions} />
 					</InputGroup>
 					<InputGroup>
-						<p>Pilih Lama Cicilan</p>
-						<Select name='bank' options={PaymentOptions} />
+						<Select label='Pilih Lama Cicilan' name='bank' options={PaymentOptions} />
 					</InputGroup>
 					<InputGroup>
 						<CreditCardRadio name='cc' content={'BCA Virtual Account'} sprites='visa' />
@@ -49,13 +48,49 @@ export default class StepFour extends Component {
 						<Input label='SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke : ' min={0} type='number' placeholder={'No Telp Penagihan'} />
 					</InputGroup>
 					<InputGroup>
-						<Input placeholder={'Masukkan nomor Hp yang terdaftar di OVO'} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' type='number' min={0} />
+						<Input label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' placeholder={'Masukkan nomor Hp yang terdaftar di OVO'} type='number' min={0} />
 					</InputGroup>
 					<div className={styles.checkOutAction}>
 						<Checkbox defaultChecked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />
-						<Button block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' />
+						<Button block size='large' color='red' content='Bayar Sekarang' />
 					</div>
 				</div>
+				<Modal size='small' variant='clean' show={false} >
+					<Modal.Header>
+						<p>Verifikasi No Handphone</p>
+						<p className='font-grey'><small>Mohon masukan no Handphone anda untuk verifikasi data</small></p>
+					</Modal.Header>
+					<Modal.Body>
+						<form>
+							<InputGroup>
+								<Input name='phone' number placeholder='No Handphone anda (contoh: 08219823982189)' />
+							</InputGroup>
+							<InputGroup>
+								{ 
+									process.env.GOOGLE_CAPTCHA_SITE_KEY && (
+										<Recaptcha
+											sitekey={process.env.GOOGLE_CAPTCHA_SITE_KEY}
+										/>
+									) 
+								}
+							</InputGroup>
+							<InputGroup>
+								<Input name='otp' value='1' number placeholder='OTP dari no handphone anda (contoh: 123123)' />
+							</InputGroup>
+						</form>
+					</Modal.Body>
+					<Modal.Footer>
+						<InputGroup>
+							<Button size='large' type='button' className='text-uppercase' block content='Kirim' color='dark' />
+						</InputGroup>
+						<InputGroup>
+							<Button size='large' type='button' className='text-uppercase' block disabled content='verifikasi' color='dark' />
+						</InputGroup>
+						<InputGroup>
+							<Button size='medium' type='button' className='text-uppercase font-dark' block content='ubah no handphone' />
+						</InputGroup>
+					</Modal.Footer>
+				</Modal>
 			</Card>
 		);
 	}

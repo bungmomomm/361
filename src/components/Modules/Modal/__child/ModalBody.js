@@ -8,6 +8,7 @@ const Body = (props) => {
 	const BodyClass = cx({
 		body: true,
 		[`${props.className}`]: !!props.className,
+		[`${props.variant}`]: !!props.variant,
 		mobile: isMobile()
 	});
 	return (

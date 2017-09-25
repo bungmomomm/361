@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { injectProps } from '@/decorators';
 import Icon from '../Icon/Icon';
 import { renderIf } from '@/utils';
 
@@ -15,24 +14,22 @@ export default class Button extends Component {
 		this.props = props;
 	};
 
-	@injectProps
-	render({
-		className,
-		block,
-		color,
-		outline,
-		loading,
-		size,
-		type,
-		circular,
-		onClick,
-		disabled,
-		iconPosition,
-		content,
-		children,
-		icon,
-		tabIndex
-	}) {
+	render() {
+		const { 
+			color, 
+			outline, 
+			block, 
+			loading, 
+			circular, 
+			size, 
+			iconPosition, 
+			className,
+			icon,
+			content,
+			children,
+			...rest
+		} = this.props;
+
 		const classButton = cx({
 			button: true,
 			[`${color}`]: !!color,
@@ -41,17 +38,14 @@ export default class Button extends Component {
 			loading: !!loading,
 			circular: !!circular,
 			[`${size}`]: !!size,
-			[`iconPosition_${iconPosition}`]: !!iconPosition,
+			[`${iconPosition}`]: !!iconPosition,
 			[`${className}`]: !!className
 		});
 
 		return (
 			<button 
-				type={type} 
 				className={classButton} 
-				onClick={onClick} 
-				disabled={disabled}
-				tabIndex={tabIndex}
+				{...rest}
 			>
 				{
 					renderIf(iconPosition === 'left' || circular)(
@@ -77,9 +71,6 @@ Button.propTypes = {
 	loading: PropTypes.bool,
 	block: PropTypes.bool,
 	size: PropTypes.oneOf(['small', 'medium', 'large']),
-	type: PropTypes.string,
-	onClick: PropTypes.func,
-	disabled: PropTypes.bool,
 	circular: PropTypes.bool,
 	className: PropTypes.string,
 	attached: PropTypes.oneOf(['left', 'center', 'right']),

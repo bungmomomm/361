@@ -12,10 +12,15 @@ class SelectMobile extends Component {
 		this.idFor = newId();
 		this.setFilterOption = this.setFilterOption.bind(this);
 		this.state = {
-			options: this.props.options || [],
-			showModalSelect: false,
-			selected: this.props.selected || this.props.options[0]
+			showModalSelect: false
 		};
+	}
+
+	componentWillMount() {
+		this.setState({
+			selected: this.props.selected || this.props.options[0],
+			options: this.props.options || [],
+		});
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -29,6 +34,12 @@ class SelectMobile extends Component {
 		if (this.props.selected !== nextProps.selected) {
 			this.setState({
 				selected: nextProps.selected
+			});
+		}
+
+		if (this.props.show !== nextProps.show) {
+			this.setState({
+				showModalSelect: nextProps.show
 			});
 		}
 	}
@@ -52,6 +63,7 @@ class SelectMobile extends Component {
 	}
 
 	toggleModalAddress() {
+		if (this.props.onClick) this.props.onClick(!this.state.showModalSelect); 
 		this.setState({ 
 			options: this.props.options,
 			showModalSelect: !this.state.showModalSelect 
@@ -82,7 +94,11 @@ class SelectMobile extends Component {
 			)
 		);
 
-		return !this.state.selected ? null : (
+		if (!this.state.selected) {
+			return null;
+		}
+		
+		return (
 			<div className={styles.selectWrapper}>
 				{LabelElement}
 				<button 

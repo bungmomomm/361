@@ -9,6 +9,7 @@ const Header = (props) => {
 	const ItemClass = cx({
 		Header: true,
 		[`${props.className}`]: !!props.className,
+		[`${props.variant}`]: !!props.variant,
 		mobile: isMobile()
 	});
 	return (

@@ -12,6 +12,11 @@ export default class ModalMobile extends Component {
 		this.handleClose = this.handleClose.bind(this);
 	}
 
+	componentWillMount() {
+		window.scrollTo(0, 0);
+		if (this.props.ref) this.props.ref(this.container);
+	}
+
 	componentWillEnter(callback) {
 		const el = this.container;
 		TweenMax.fromTo(el, 0.5, { 
@@ -42,6 +47,8 @@ export default class ModalMobile extends Component {
 		const ModalClass = cx({
 			modalWrapper: true,
 			[`${this.props.className}`]: !!this.props.className,
+			[`${this.props.variant}`]: !!this.props.variant,
+			disableOverflow: this.props.disableOverflow,
 		});
 
 		return (
