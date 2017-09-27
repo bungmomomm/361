@@ -974,7 +974,8 @@ class Checkout extends Component {
 	getAffTracking() {
 		return {
 			af_track_id: this.props.cookies.get('afftrackid'),
-			af_trx_id: this.props.cookies.get('afftrxid')
+			af_trx_id: this.props.cookies.get('afftrxid'),
+			af_trx_click: Date.now()
 		};
 	}
 
