@@ -349,7 +349,8 @@ export default (state = initialState, action) => {
 			...state,
 			loading: false,
 			paymentError: (action.payload.error !== false),
-			error: action.payload.error
+			error: action.payload.error,
+			isConfirm: false
 		};
 	}
 	case constants.PAY: {
@@ -369,7 +370,8 @@ export default (state = initialState, action) => {
 			let result = {};
 			if (typeof action.payload.soNumber !== 'undefined') {
 				result = {
-					soNumber: action.payload.soNumber
+					soNumber: action.payload.soNumber,
+					isConfirm: false,
 				};
 			}
 			return {
@@ -380,6 +382,17 @@ export default (state = initialState, action) => {
 		return {
 			...state,
 			loading: !action.status
+		};
+	}
+	case constants.PAY_TOTAL_CHANGE: {
+		
+		return {
+			...state, 
+			total: action.payload.totalActual, 
+			error: action.payload.msg,
+			paymentError: true,
+			isConfirm: true,
+			totalRequest: action.payload.totalRequest
 		};
 	}
 	default:

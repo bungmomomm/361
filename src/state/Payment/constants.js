@@ -22,6 +22,7 @@ const PAY_TERMS_AND_CONDITION_CHANGE = 'PAY_TERMS_AND_CONDITION_CHANGE';
 const PAY = 'PAY';
 const PAY_SAVE_CC = 'PAY_SAVE_CC';
 const PAY_INSTALLMENT_CREDIT_CARD_ADD = 'PAY_INSTALLMENT_CREDIT_CARD_ADD';
+const PAY_TOTAL_CHANGE = 'PAY_TOTAL_CHANGE';
 const RESET_PAYMENT_METHOD = -1;
 const paymentGroupName = {
 	BANK_TRANSFER: 'bank_transfer',
@@ -71,5 +72,6 @@ export default {
 	PAY_APPLY_BIN,
 	RESET_PAYMENT_METHOD,
 	paymentGroupName,
-	paymentMethodName
+	paymentMethodName,
+	PAY_TOTAL_CHANGE
 };

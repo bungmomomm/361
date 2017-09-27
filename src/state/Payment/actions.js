@@ -111,6 +111,15 @@ const payRequest = () => ({
 	status: false
 });
 
+const payTotalChanged = (totalActual, totalRequest, msg) => ({
+	type: constants.PAY_TOTAL_CHANGE, 
+	payload: {
+		totalActual, 
+		totalRequest, 
+		msg
+	}
+});
+
 const payReceived = (soNumber, payment, mode, card, callback) => ({
 	type: constants.PAY,
 	status: true,
@@ -550,7 +559,16 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 				if (mode === 'complete') {
 					soNumber = getSoNumberFromResponse(soNumber, response.data);
 				}
-				dispatch(payReceived(soNumber, response.data, mode, card, callback));
+				
+				if (response.data.meta !== 'undefined' && 
+					response.data.meta.info.amount_actual !== response.data.meta.info.amount_request) {
+					dispatch(payTotalChanged(response.data.meta.info.amount_actual, response.data.meta.info.amount_request, response.data.meta.info.msg));
+					// const msg = 'Terjadi perubahan harga, Apakah Anda ingin melanjutkan pembelian?';
+					// dispatch(payTotalChanged(response.data.meta.info.amount_actual, response.data.meta.info.amount_request, msg));
+				} else {
+					dispatch(payReceived(soNumber, response.data, mode, card, callback));
+				}
+				
 				resolve(soNumber, response.data, mode, card, callback);
 			}).catch((error) => {
 				// showError

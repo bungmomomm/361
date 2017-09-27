@@ -307,7 +307,7 @@ export default class CardPembayaran extends Component {
 			case paymentGroupName.CREDIT_CARD:
 				paymentOptions = (
 					selectedPayment.paymentItems.map((option, index) => (
-						option.cards.length < 3 ? option.cards.map((card, cardIndex) => (
+						option.cards.length <= 3 ? option.cards.map((card, cardIndex) => (
 							card.value ? (
 								<InputGroup key={cardIndex}>
 									<CreditCardRadio name='cc' variant='list' creditCard value={card.value} content={card.label} onClick={this.onSelectCard} defaultChecked={card.selected} sprites={card.sprites} />
