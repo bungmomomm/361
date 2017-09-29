@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import Icon from '../../Elements/Icon/Icon';
-import { renderIf } from '@/utils';
+import { renderIf, isMobile } from '@/utils';
 
 import styles from './Stepper.scss';
 import classNames from 'classnames/bind';
@@ -78,7 +78,8 @@ export default class Stepper extends Component {
 	render() {
 		const stepperWrapper = cx({
 			Stepper: true,
-			[`${this.props.size}`]: !!this.props.size
+			[`${this.props.size}`]: !!this.props.size,
+			mobile: isMobile()
 		});
 
 		return (

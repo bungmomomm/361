@@ -76,7 +76,7 @@ class ModalAddress extends Component {
 	}
 	
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.formData && (this.props.formData !== nextProps.formData)) {
+		if (this.state.formData !== nextProps.formData) {
 			this.translateProvince(nextProps.formData.attributes);
 			if (this.isEdit) {
 				this.setFormData(nextProps.formData);
@@ -93,13 +93,13 @@ class ModalAddress extends Component {
 	setFormData(data) {
 		const formData = {
 			id: data.id,
-			addressLabel: data.attributes.addressLabel,
-			fullname: data.attributes.fullname,
-			phone: data.attributes.phone,
-			province: data.attributes.province,
-			kecamatan: data.attributes.kecamatan,
-			zipcode: data.attributes.zipcode,
+			name: data.attributes.addressLabel,
+			penerima: data.attributes.fullname,
+			no_hp: data.attributes.phone,
 			address: data.attributes.address,
+			provinsi: data.attributes.province,
+			kecamatan: data.attributes.kecamatan,
+			kodepos: data.attributes.zipcode,
 			latitude: data.attributes.latitude || null,
 			longitude: data.attributes.longitude || null,
 		};
@@ -136,9 +136,9 @@ class ModalAddress extends Component {
 	validateAndSubmit(e) {
 		e.preventDefault();
 		const { formData } = this.state;
+		console.log(formData);
 		this.validator.validateAll(formData).then(success => {
 			if (success) {
-				// this.submit(formData);
 				console.log(success);
 			} else {
 				Object.keys(formData).forEach((key) => {
@@ -314,7 +314,7 @@ class ModalAddress extends Component {
 						<em>* wajib diisi</em>
 					</InputGroup>
 					<InputGroup>
-						<Button onClick={() => this.validateAndSubmit()} block size='large' type='button' content='Simpan Alamat' color='dark' />
+						<Button onClick={(e) => this.validateAndSubmit(e)} block size='large' type='button' content='Simpan Alamat' color='dark' />
 					</InputGroup>
 				</Modal.Body>
 			</Modal>

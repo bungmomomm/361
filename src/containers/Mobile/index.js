@@ -15,6 +15,30 @@ class Mobile extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.state = {
+			stepOne: {
+				disable: false,
+				activeTab: 0,
+				selectedAddress: {
+					attributes: {
+						isJabodetabekArea: false
+					}
+				}
+			},
+			stepTwo: {
+				disable: false
+			},
+			stepThree: {
+				disable: false
+			},
+			stepFour: {
+				disable: false
+			}
+		};
+	}
+
+	applyState(data) {
+		this.setState({ ...data });
 	}
 
 	render() {
@@ -25,10 +49,22 @@ class Mobile extends Component {
 						<Image src='mobile/logo-mm.png' alt='logo mataharimall' />
 					</a>
 				</div>
-				<StepOne />
-				<StepTwo />
-				<StepThree />
-				<StepFour />
+				<StepOne 
+					applyState={(e) => this.applyState(e)} 
+					stepState={this.state} 
+				/>
+				<StepTwo 
+					applyState={(e) => this.applyState(e)} 
+					stepState={this.state} 
+				/>
+				<StepThree 
+					applyState={(e) => this.applyState(e)} 
+					stepState={this.state} 
+				/>
+				<StepFour 
+					applyState={(e) => this.applyState(e)} 
+					stepState={this.state} 
+				/>
 			</div>
 		);
 	}

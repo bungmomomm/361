@@ -1,6 +1,7 @@
 import webpack from 'webpack';
 import path from 'path';
 import Dotenv from 'dotenv-webpack';
+import SWPrecacheWebpackPlugin from 'sw-precache-webpack-plugin';
 import { mozjpeg, pngquant, svgo } from '../loaders/images';
 import files from '../loaders/files';
 
@@ -109,7 +110,6 @@ if (
 ) {
 
 	config.plugins.push(
-	
 		new webpack.optimize.UglifyJsPlugin({
 			compress: {
 				warnings: false,
@@ -128,7 +128,19 @@ if (
 				comments: false
 			}
 		})
-
+	);
+	
+	config.plugins.push(
+		new SWPrecacheWebpackPlugin({
+			verbose: true,
+			staticFileGlobsIgnorePatterns: [/dist\//],
+			runtimeCaching: [
+				{
+					handler: 'networkFirst',
+					urlPattern: /^https?.*/
+				}
+			]
+		})
 	);
 
 };

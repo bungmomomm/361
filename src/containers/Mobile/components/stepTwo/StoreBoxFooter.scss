@@ -1,0 +1,54 @@
+@import 'mixins';
+@import 'variables';
+
+.footer{
+    .price{
+        padding: 10px 20px;
+        border-top: 1px solid #DEDEDE;
+        font-size: 12px;
+    }
+}
+
+
+.deliveryInfo{
+    font-family: HelveticaNeueLTStd-Md;
+    font-size: 11px;
+    color: color(black);
+    letter-spacing: 0;
+    padding: 10px 20px;
+    border-top: 1px solid #DEDEDE;
+}
+
+
+.priceList{
+    display: flex;
+    justify-content: space-between;
+    font-family: HelveticaNeueLTStd-Roman;
+    font-size: 11px;
+    color: color(black);
+    letter-spacing: 0;
+    line-height: 14px;
+    margin-bottom: 5px;
+    font-size: 12px;
+    &:last-child{
+        margin-bottom: 0px;
+    }
+}
+
+.priceListBold{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-family: HelveticaNeueLTStd-Bd;
+    font-size: 12px;
+    color: color(black);
+    letter-spacing: 0;
+    &:last-child{
+        margin-bottom: 0px;
+    }
+}
+
+.footer{
+    position: relative;
+    top: -1px;
+}

@@ -1,0 +1,79 @@
+@import 'mixins';
+@import 'variables';
+
+.box{
+    position: relative;
+    background: #fff;
+    border:1px solid border(color);
+    border-top-left-radius: border(radius);
+    border-top-right-radius: border(radius);
+    flex:1;
+    margin-bottom: 10px;
+    &:last-child{
+        margin-bottom: 0;
+    }
+}
+
+.red{
+    border-color: color(red);
+}
+
+.header{
+    display: flex;
+    background: #FAFAFA;
+    border-top-left-radius: border(radius);
+    border-top-right-radius: border(radius);
+    justify-content: space-between;
+    padding: 8px 20px;
+    align-items: center;
+    border-bottom:1px solid border(color);
+}
+
+.name{
+    color: #7F7F7F;
+    flex:1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.location{
+    color: color(black);
+    font-size: 11px;
+    flex:1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    i{
+        margin-right: 5px;
+    }
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(359deg);
+	}
+}
+
+.loading{
+    pointer-events: none;
+	color: transparent;
+	opacity: 0.8;
+	&:after {
+		content: "";
+		animation: spin 500ms infinite linear;
+		border: 2px solid #7F7F7F;
+		border-radius: 50%;
+		border-right-color: transparent;
+		border-top-color: transparent;
+		display: block;
+		height: rem(12px);
+		width: rem(12px);
+		left: calc(50% - (14px / 2));
+		top: calc(50% - (14px / 2));
+		position: absolute;
+	}
+}

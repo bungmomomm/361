@@ -1,7 +1,10 @@
 <%
     var params = typeof(locals) !== 'undefined' ? locals : {};
     params = Object.assign({
-        helmet                  : {},
+        helmet                  : {
+            title: 'Belanja Online Aman, Nyaman, Terpercaya | MatahariMall.com',
+            meta: 'Situs belanja online terbesar yang menyediakan ratusan ribu pilihan produk dengan harga paling murah. Belanja online aman, nyaman, dan lengkap tanpa ongkir disini',
+        },
         state                   : null,
         markup                  : '',
         manifest                : '',
@@ -10,29 +13,31 @@
 %>
 
 <!DOCTYPE html>
-<html <% if (params.helmet.htmlAttributes) { %><%= params.helmet.htmlAttributes.toString() %><% } %>>
+<html lang="id" <% if (params.helmet.htmlAttributes) { %><%= params.helmet.htmlAttributes.toString() %><% } %>>
     <head>
         <!-- we're looking for more people to join at MatahariMall.com. Interested? https://www.mataharimall.com/static/4/karir -->
         <meta name="google-site-verification" content="bVdL10GtDccBSiuntKghg8GHQ85nozeqhdYrCB4tPHg" />
-        <% if (params.helmet.title) { %><%= params.helmet.title.toString() %><% } %>
-        <% if (params.helmet.meta) { %><%= params.helmet.meta.toString() %><% } %>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
-        <meta name="theme-color" content="#DA1818" id="themeColor">
-        <meta name="full-screen" content="yes">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="#DA1818">
-        <meta name="apple-mobile-web-app-title" content="MatahariMall">
-
+        <link rel="manifest" href="https://assets.mataharimall.co/manifest.json" />
+        <meta name="robots" content="NOINDEX, NOFOLLOW, NOODP, NOYDIR">
+        <% if (params.helmet.title) { %><title><%= params.helmet.title.toString() %></title><% } %>
+        <% if (params.helmet.meta) { %><meta name="description" content="<%= params.helmet.meta.toString() %>" /><% } %>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="theme-color" content="#DA1818" id="themeColor" />
+        <meta name="full-screen" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="#DA1818" />
+        <meta name="apple-mobile-web-app-title" content="MatahariMall" /> 
         <% if (params.manifest['main.css']) { %>
             <link rel="stylesheet" href="<%= params.manifest['main.css'] %>" />
         <% } %>
-        <link rel="canonical" href="https://www.mataharimall.com">
-        <link rel="alternate" media="only screen and (max-width: 640px)" href="https://m.mataharimall.com">
-        <link rel="shortcut icon" href="https://assets.mataharimall.co/images/favicon.ico" type="image/vnd.microsoft.icon">
-        <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
-        <link rel="icon" href="https://assets.mataharimall.co/images/favicon.ico" type="image/x-icon">
+        <link rel="canonical" href="https://www.mataharimall.com" />
+        <link rel="alternate" media="only screen and (max-width: 640px)" href="https://m.mataharimall.com" />
+        <link rel="shortcut icon" href="https://assets.mataharimall.co/images/favicon.ico" type="image/vnd.microsoft.icon" />
+        <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
+        <link rel="icon" href="https://assets.mataharimall.co/images/favicon.ico" type="image/x-icon" />
+        <meta name="theme-color" content="#DA1818" />
 
         <!-- Load Jquery for GTM, and Partners who using JQuery -->
         <script src="https://assets.mataharimall.co/desktop/js/min/jquery.min.js"></script>
@@ -54,6 +59,11 @@
 
     </head>
     <body <% if (params.helmet.htmlAttributes) { %><%= params.helmet.bodyAttributes.toString() %><% } %>>
+        <noscript>
+            <!-- display some content when JavaScript is disabled -->
+            <h1>You don’t have javascript enabled.</h1>
+            <p>Please enable it to get the full experience.</p>
+        </noscript>
         <!-- Google Tag Manager (noscript) -->
         <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=<%= process.env.GTM_KEY %>"
         height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>

@@ -56,7 +56,6 @@ export default class CheckoutProduct extends Component {
 						}
 					</div>
 					<div className={styles.bodyRight}>
-						{/* <div><strong>Keterangan:</strong></div> */}
 						{
 							this.props.data.attribute.map((list, i) => (
 								<div key={i}><em>{list}</em></div>

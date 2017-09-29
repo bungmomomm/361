@@ -1,3 +1,6 @@
+import { connect } from 'react-redux';
+import { actions } from '@/state/Adresses';
+import { withCookies } from 'react-cookie';
 import React, { Component } from 'react';
 import { 
 	Modal, 
@@ -6,15 +9,27 @@ import {
 	Select
 } from '@/components';
 
-import { Address, Provinsi } from '@/data';
+import { Address } from '@/data';
 
 class Modalo2o extends Component {
+	
+	static fetchDataO2OProvinces(token, dispatch) {
+		dispatch(new actions.getO2OProvinces(token));
+	}
+
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
 			selected: ''
 		};
+		this.cookies = this.props.cookies.get('user.token');
+	}
+
+	componentWillMount() {
+		if (this.props.o2oProvinces === undefined) {
+			this.constructor.fetchDataO2OProvinces(this.cookies, this.props.dispatch);
+		}
 	}
 
 	handleChooseElocker(elockerId) {
@@ -30,8 +45,7 @@ class Modalo2o extends Component {
 					<Select
 						filter
 						name='provinsi'
-						options={Provinsi} 
-						selected={Provinsi[0]} 
+						options={this.props.o2oProvinces} 
 					/>
 				</Modal.Header>
 				<Modal.Header>
@@ -54,4 +68,11 @@ class Modalo2o extends Component {
 	}
 }
 
-export default Modalo2o;
+const mapStateToProps = (state) => {
+	return {
+		o2oProvinces: state.addresses.o2oProvinces,
+		listo2o: state.addresses.o2o
+	};
+};
+
+export default withCookies(connect(mapStateToProps)(Modalo2o));

@@ -1,101 +1,124 @@
 import React, { Component } from 'react';
-import { 
-	Card,
-	Checkbox,
-	Tooltip,
-	Level
-} from '@/components';
+import { connect } from 'react-redux';
+import { actions } from '@/state/Cart';
+import { withCookies } from 'react-cookie';
+import { Card } from '@/components';
 
-import StoreBox from '@/containers/Checkout/components/Store/StoreBox';
-import CheckoutProduct from '@/containers/Checkout/components/Product/CheckoutProduct';
-import s from '@/containers/Checkout/components/Store/CheckoutResult.scss';
+import StoreBox from './StoreBox';
+import StoreBoxBody from './StoreBoxBody';
+import StoreBoxFooter from './StoreBoxFooter';
+class StepTwo extends Component {
+	
+	static fetchDataCart(token, dispatch) {
+		dispatch(new actions.getCart(token));
+	}
 
+	static fetchPlaceOrderCart(token, dispatch, selectedAddress, billing, updatePaymentMethodList = true) {
+		dispatch(new actions.getPlaceOrderCart(token, selectedAddress, billing, updatePaymentMethodList));
+	}
 
-import { CheckoutList } from '@/data';
-
-export default class StepTwo extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.cookies = this.props.cookies.get('user.token');
 	}
+
+	componentWillMount() {
+		if (this.props.cart === undefined) {
+			// get initial cart data
+			this.constructor.fetchDataCart(this.cookies, this.props.dispatch);
+		}
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (this.props.stepState.stepOne.selectedAddress.id === 'undefined') {
+			// fetch data cart when empty
+			this.constructor.fetchDataCart(
+				this.cookies, 
+				this.props.dispatch
+			);
+		}
+
+		if (this.props.stepState.stepOne.selectedAddress !== nextProps.stepState.stepOne.selectedAddress) {
+			// fetch data cart when selectedAddress change
+			const billing = this.props.billing ? this.props.billing[0] : false;
+			this.constructor.fetchPlaceOrderCart(this.cookies, this.props.dispatch, nextProps.stepState.stepOne.selectedAddress, billing, true);
+		}
+	}
+	
+	checkRestrictO2o(o2oSupported) {
+		const { isPickupable, stepState } = this.props;
+		return isPickupable === '0' && o2oSupported && stepState.stepOne.activeTab === 1;
+	}
+
+	updateShippingMethodGosend(checked, store) {
+		const methodId = checked ? '19' : '';
+		this.props.dispatch(new actions.updateGosend(this.cookies, store.id, methodId, { soNumber: this.props.soNumber }));
+	}
+
+	updateQty(qty, productId) {
+		if (this.props.soNumber.soNumber) {
+			this.props.dispatch(new actions.updateQtyCart(this.cookies, qty.value, productId, { soNumber: this.props.soNumber }));
+		} else {
+			this.props.dispatch(new actions.updateCartWithoutSO(this.cookies, qty.value, productId));
+		}
+	}
+	
+	deleteProduct(productId) {
+		this.props.dispatch(new actions.deleteCart(this.cookies, productId));
+	}
+
 	render() {
+		const selectedAddress = this.props.stepState.stepOne.selectedAddress;
 		return (
-			<Card>
+			<Card loading={this.props.loading}>
 				<p><strong>2. Rincian Pesanan & Pengiriman</strong></p>
 				{
-					CheckoutList.map((checkout, index) => (
-						<StoreBox
-							name={checkout.store.name} 
-							key={index}
-							location={checkout.store.location}
-						>
-							{
-								checkout.store.products.map((product, indexProduct) => (
-									<CheckoutProduct 
-										onUpdateQty={(data) => console.log(data)} 
-										data={product} 
-										key={indexProduct} 
-									/>
-								))
-							}
-							<div className={s.footer}>
-								<div className={s.deliveryInfo}>
-									*Pengiriman non Go-Send akan dilakukan 3-5 hari kerja
-								</div>
-								<div className={s.deliveryInfo}>
-									<Level noMargin>
-										<Level.Item>
-											<Checkbox name='gojek' content='Pengiriman:' disabled sprites='gosend' />
-										</Level.Item>
-										<Level.Item>
-											<Tooltip position='right' content='Info' color='white'>
-												Mohon tidak memberikan biaya tambahan ke driver Go-Jek saat terima barang
-											</Tooltip>
-										</Level.Item>
-									</Level>
-									<a role='link' tabIndex='0' className='font-orange'>Mohon pilih titik lokasi pengiriman anda</a>
-								</div>
-								<div className={s.deliveryInfo}>
-									<Level noMargin>
-										<Level.Item>
-											<Checkbox name='gojek' content='Pengiriman:' disabled sprites='gosend' />
-										</Level.Item>
-										<Level.Item>
-											<Tooltip position='right' content='Info' color='white'>
-												Mohon tidak memberikan biaya tambahan ke driver Go-Jek saat terima barang
-											</Tooltip>
-										</Level.Item>
-									</Level>
-									<div className='font-red'>Total berat barang melebihi batas maximal 7kg. Berat sekarang X kg</div>
-								</div>
-								<div className={s.deliveryInfo}>
-									<Level noMargin>
-										<Level.Item>
-											<Checkbox name='gojek' content='Pengiriman:' sprites='gosend' />
-										</Level.Item>
-										<Level.Item>
-											<Tooltip position='right' content='Info' color='white'>
-												Mohon tidak memberikan biaya tambahan ke driver Go-Jek saat terima barang
-											</Tooltip>
-										</Level.Item>
-									</Level>
-								</div>
-								<div className={s.price}>
-									<div className={s.priceList}>
-										<div>Biaya Pengiriman</div>
-										<div>Rp 360.000</div>
-									</div>
-									<div className={s.priceListBold}>
-										<div>Total</div>
-										<div>Rp 915.000</div>
-									</div>
-								</div>
-							</div>
-						</StoreBox>
-					))
+					this.props.cart.map((storeData, indexStoreBox) => {
+						const restrictO2o = this.checkRestrictO2o(!storeData.store.shipping.o2oSupported);
+						return (
+							<StoreBox
+								key={indexStoreBox}
+								name={storeData.store.name} 
+								color={restrictO2o ? 'red' : ''}
+								location={storeData.store.location}
+							>
+								{
+									storeData.store.products.map((product, indexProduct) => (
+										<StoreBoxBody 
+											key={indexProduct} 
+											onUpdateQty={(e) => this.updateQty(e, product.id)} 
+											data={product} 
+											deleteProduct={() => this.deleteProduct(product.id)} 
+											restrictO2o={restrictO2o}
+										/>
+									))
+								}
+								<StoreBoxFooter 
+									stepOneActiveTab={this.props.stepState.stepOne.activeTab}
+									selectedAddress={selectedAddress}
+									checkGosendMethod={(checked, store) => this.updateShippingMethodGosend(checked, store)}
+									data={storeData} 
+								/>
+							</StoreBox>
+						);
+					})
 				}
-				
 			</Card>
 		);
 	}
 }
+
+const mapStateToProps = (state) => {
+	return {
+		addresses: state.addresses.addresses,
+		billing: state.addresses.billing,
+		cart: state.cart.data,
+		soNumber: state.cart.soNumber,
+		isPickupable: state.cart.isPickupable,
+		loading: state.cart.loading
+	};
+};
+
+export default withCookies(connect(mapStateToProps)(StepTwo));
+
