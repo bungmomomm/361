@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import Recaptcha from 'react-recaptcha';
+import { connect } from 'react-redux';
+import { actions } from '@/state/Payment';
+import { withCookies } from 'react-cookie';
 import { 
 	Card,
 	InputGroup,
@@ -7,91 +9,103 @@ import {
 	CreditCardRadio,
 	Checkbox,
 	Button,
-	Input,
-	Modal
+	Input
 } from '@/components';
 
 import styles from '../../../Mobile/mobile.scss';
 
 import { PaymentOptions } from '@/data';
 
-export default class StepFour extends Component {
+class StepFour extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.state = {
+			selectedPaymentMethod: null
+		};
+		this.cookies = this.props.cookies.get('user.token');
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (this.props.payments !== nextProps.payments)	{
+			console.log(nextProps.payments);
+		}
+	}
+
+	paymentMethodChange(e) {
+		const { payments, dispatch } = this.props;
+		dispatch(new actions.changePaymentMethod(e.value, payments.paymentMethods, this.cookies));
 	}
 	
 	render() {
+		const {
+			payments
+		} = this.props;
+
 		return (
 			<Card>
 				<p><strong>4. Informasi Pembayaran</strong></p>
 				<div>
 					<InputGroup>
-						<Select label='Metode Pembayaran' name='paymentMethods' options={PaymentOptions} />
+						<Select 
+							label='Metode Pembayaran' 
+							name='paymentMethods' 
+							options={payments.paymentMethods.methods} 
+							onChange={(e) => this.paymentMethodChange(e)}
+						/>
 					</InputGroup>
-					<InputGroup>
-						<Select label='Pilih Bank' name='bank' options={PaymentOptions} />
-					</InputGroup>
-					<InputGroup>
-						<Select label='Pilih Lama Cicilan' name='bank' options={PaymentOptions} />
-					</InputGroup>
-					<InputGroup>
-						<CreditCardRadio name='cc' content={'BCA Virtual Account'} sprites='visa' />
-					</InputGroup>
-					<InputGroup>
-						<CreditCardRadio name='cc' content={'Bank Lainnya Virtual Account'} sprites='mastercard' />
-					</InputGroup>
-					<InputGroup>
-						<CreditCardRadio name='cc' content={'Manual Transfer'} />
-					</InputGroup>
-					<InputGroup>
-						<Input label='SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke : ' min={0} type='number' placeholder={'No Telp Penagihan'} />
-					</InputGroup>
-					<InputGroup>
-						<Input label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' placeholder={'Masukkan nomor Hp yang terdaftar di OVO'} type='number' min={0} />
-					</InputGroup>
+					{
+						payments.selectedPayment && (
+							<InputGroup>
+								<Select
+									name={`payment-${payments.selectedPayment.value}`}
+									options={payments.selectedPayment.paymentItems}
+								/>
+							</InputGroup>
+						)
+					}
+					{
+						false && (
+							<div>
+								<InputGroup>
+									<Select label='Pilih Bank' name='bank' options={PaymentOptions} />
+								</InputGroup>
+								<InputGroup>
+									<Select label='Pilih Lama Cicilan' name='bank' options={PaymentOptions} />
+								</InputGroup>
+								<InputGroup>
+									<CreditCardRadio name='cc' content={'BCA Virtual Account'} sprites='visa' />
+								</InputGroup>
+								<InputGroup>
+									<CreditCardRadio name='cc' content={'Bank Lainnya Virtual Account'} sprites='mastercard' />
+								</InputGroup>
+								<InputGroup>
+									<CreditCardRadio name='cc' content={'Manual Transfer'} />
+								</InputGroup>
+								<InputGroup>
+									<Input label='SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke : ' min={0} type='number' placeholder={'No Telp Penagihan'} />
+								</InputGroup>
+								<InputGroup>
+									<Input label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' placeholder={'Masukkan nomor Hp yang terdaftar di OVO'} type='number' min={0} />
+								</InputGroup>
+							</div>
+						)
+					}
 					<div className={styles.checkOutAction}>
 						<Checkbox defaultChecked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />
 						<Button block size='large' color='red' content='Bayar Sekarang' />
 					</div>
 				</div>
-				<Modal size='small' variant='clean' show={false} >
-					<Modal.Header>
-						<p>Verifikasi No Handphone</p>
-						<p className='font-grey'><small>Mohon masukan no Handphone anda untuk verifikasi data</small></p>
-					</Modal.Header>
-					<Modal.Body>
-						<form>
-							<InputGroup>
-								<Input name='phone' number placeholder='No Handphone anda (contoh: 08219823982189)' />
-							</InputGroup>
-							<InputGroup>
-								{ 
-									process.env.GOOGLE_CAPTCHA_SITE_KEY && (
-										<Recaptcha
-											sitekey={process.env.GOOGLE_CAPTCHA_SITE_KEY}
-										/>
-									) 
-								}
-							</InputGroup>
-							<InputGroup>
-								<Input name='otp' value='1' number placeholder='OTP dari no handphone anda (contoh: 123123)' />
-							</InputGroup>
-						</form>
-					</Modal.Body>
-					<Modal.Footer>
-						<InputGroup>
-							<Button size='large' type='button' className='text-uppercase' block content='Kirim' color='dark' />
-						</InputGroup>
-						<InputGroup>
-							<Button size='large' type='button' className='text-uppercase' block disabled content='verifikasi' color='dark' />
-						</InputGroup>
-						<InputGroup>
-							<Button size='medium' type='button' className='text-uppercase font-dark' block content='ubah no handphone' />
-						</InputGroup>
-					</Modal.Footer>
-				</Modal>
 			</Card>
 		);
 	}
 }
+
+const mapStateToProps = (state) => {
+	return {
+		payments: state.payments
+	};
+};
+
+export default withCookies(connect(mapStateToProps)(StepFour));
+
