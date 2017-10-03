@@ -1,7 +1,5 @@
-import elocker from './elocker';
-import address from './address';
+import checkout from './checkout';
 
 export const T = {
-	elocker,
-	address
+	checkout
 };

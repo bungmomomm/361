@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styles from './StoreBoxBody.scss';
 import { Button, Figure, Stepper } from '@/components';
-
+import { T } from '@/data/translations';
 import { currency } from '@/utils';
 
 
@@ -67,7 +67,7 @@ export default class StoreBoxBody extends Component {
 				{
 					this.props.restrictO2o && (
 						<div className={styles.body}>
-							<p className='font-red'>Penjual tidak menyediakan layanan o2o</p>
+							<p className='font-red'>{T.checkout.RESTRICT_O2O}</p>
 						</div>
 					)
 				}

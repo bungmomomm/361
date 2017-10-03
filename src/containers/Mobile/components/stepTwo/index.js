@@ -3,10 +3,12 @@ import { connect } from 'react-redux';
 import { actions } from '@/state/Cart';
 import { withCookies } from 'react-cookie';
 import { Card } from '@/components';
+import { T } from '@/data/translations';
 
 import StoreBox from './StoreBox';
 import StoreBoxBody from './StoreBoxBody';
 import StoreBoxFooter from './StoreBoxFooter';
+
 class StepTwo extends Component {
 	
 	static fetchDataCart(token, dispatch) {
@@ -32,7 +34,7 @@ class StepTwo extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		if (this.props.stepState.stepOne.selectedAddress.id === 'undefined') {
-			// fetch data cart when empty
+			// fetch data cart when selected address empty
 			this.constructor.fetchDataCart(
 				this.cookies, 
 				this.props.dispatch
@@ -72,7 +74,7 @@ class StepTwo extends Component {
 		const selectedAddress = this.props.stepState.stepOne.selectedAddress;
 		return (
 			<Card loading={this.props.loading}>
-				<p><strong>2. Rincian Pesanan & Pengiriman</strong></p>
+				<p><strong>{T.checkout.STEP_TWO_LABEL}</strong></p>
 				{
 					this.props.cart.map((storeData, indexStoreBox) => {
 						const restrictO2o = this.checkRestrictO2o(!storeData.store.shipping.o2oSupported);

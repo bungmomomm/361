@@ -5,6 +5,7 @@ import {
 	Input, 
 	InputGroup, 
 } from '@/components';
+import { T } from '@/data/translations';
 
 class Dropshipper extends Component {
 	constructor(props) {
@@ -24,7 +25,7 @@ class Dropshipper extends Component {
 	render() {
 		return (
 			<Segment>
-				<Checkbox content='Kirim sebagai Dropshipper' onClick={(event) => this.onClick(event)} value='dropdshipper-on' />
+				<Checkbox content={T.checkout.SEND_AS_DROPSHIPPER} onClick={(event) => this.onClick(event)} value='dropdshipper-on' />
 				{
 					this.state.showForm && (
 						<div>
@@ -32,7 +33,7 @@ class Dropshipper extends Component {
 								<Input 
 									type='text' 
 									name='dropship_name' 
-									placeholder='Nama Dropshipper' 
+									placeholder={T.checkout.DROPSHIPPER_NAME}
 								/>
 							</InputGroup>
 							<InputGroup>
@@ -40,7 +41,7 @@ class Dropshipper extends Component {
 									type='number' 
 									min={0}
 									name='dropship_phone' 
-									placeholder='No Handphone'
+									placeholder={T.checkout.PHONE_NUMBER}
 								/>
 							</InputGroup>
 						</div>

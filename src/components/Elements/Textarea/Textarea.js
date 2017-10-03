@@ -114,7 +114,7 @@ export default class Textarea extends Component {
 Textarea.propTypes = {
 	/** make horinzontal layout. */
 	horizontal: PropTypes.bool,
-	color: PropTypes.oneOf(['red', 'yellow', 'orange', 'green']),
+	color: PropTypes.oneOf(['red', 'yellow', 'orange', 'green', '']),
 	size: PropTypes.oneOf(['small', 'medium', 'large']),
 	/** label content. */
 	label: PropTypes.string,

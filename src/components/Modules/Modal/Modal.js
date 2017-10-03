@@ -14,11 +14,13 @@ export default class Modal extends Component {
 		super(props);
 		this.props = props;
 	}
+	
 	componentWillReceiveProps(nextProps) {
 		if (this.props.show !== nextProps.show) {
 			document.body.style.overflow = nextProps.show ? 'hidden' : '';
 		}
 	}
+	
 	render() {
 		return (
 			isMobile() ? (

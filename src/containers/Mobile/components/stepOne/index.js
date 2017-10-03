@@ -52,39 +52,44 @@ class stepOne extends Component {
 			toggleSelectAddress: true
 		};
 		this.currentAddresses = [];
-		this.toggleModalAddress = this.toggleModalAddress.bind(this);
+		this.showModalAddress = this.showModalAddress.bind(this);
 		this.cookies = this.props.cookies.get('user.token');
-		console.log(T);
 	}
 
 	componentDidMount() {
-		console.log('masuk');
 		if (this.props.addresses === undefined) {
 			this.constructor.fetchDataAddress(this.cookies, this.props.dispatch);
 		}
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (this.props.addresses !== nextProps.addresses) {
-			this.currentAddresses = nextProps.addresses;
-			const shipping = [];
-			this.currentAddresses.map((value, index) => (
-				shipping.push({
-					value: value.id,
-					label: !value.attributes.addressLabel ? value.attributes.fullname : value.attributes.addressLabel,
-					info: `<strong>${value.attributes.fullname}</strong> <br />${
-							value.attributes.address 
-							}${value.attributes.district  
-							}${value.attributes.city 
-							}${value.attributes.province}`
-				})
-			));
-			this.saveSelectedAddress(this.currentAddresses[0]);
-			this.setState({
-				shipping,
-				selectedAddress: this.currentAddresses[0]
-			});
+		if (this.state.shipping.length < 1 || this.props.addresses !== nextProps.addresses) {
+			if (!_.isEmpty(nextProps.addresses)) {
+				this.setShipping(nextProps.addresses);
+			}
 		}
+	}
+
+	setShipping(addresses) {
+		this.currentAddresses = addresses;
+		const shipping = [];
+		addresses.map((value, index) => (
+			shipping.push({
+				value: value.id,
+				label: !value.attributes.addressLabel ? value.attributes.fullname : value.attributes.addressLabel,
+				info: `<strong>${value.attributes.fullname}</strong> <br />${
+						value.attributes.address 
+						}${value.attributes.district  
+						}${value.attributes.city 
+						}${value.attributes.province}`
+			})
+		));
+		this.saveSelectedAddress(this.currentAddresses[0]);
+		this.setState({
+			shipping,
+			showModalAddress: false,
+			selectedAddress: this.currentAddresses[0]
+		});
 	}
 	
 	setSelectedAddress(selected) {
@@ -95,9 +100,9 @@ class stepOne extends Component {
 		});
 	}
 
-	toggleModalAddress(type) {
+	showModalAddress(type) {
 		this.flagModalAddress = type;
-		this.setState({ showModalAddress: !this.state.showModalAddress });
+		this.setState({ showModalAddress: true });
 	}
 
 	hideModalAddress() {
@@ -142,17 +147,17 @@ class stepOne extends Component {
 			shipping
 		} = this.state;
 
-		if (!selectedAddress.attributes) {
+		if (!this.props.addresses) {
 			return null;
 		}
 
 		return (
 			<Card>
-				<p><strong>1. Pilih Metode &amp; Alamat Pengiriman</strong></p>
+				<p><strong>{T.checkout.STEP_ONE_LABEL}</strong></p>
 				<Tabs tabActive={0} stretch onAfterChange={(e) => this.afterChangeTab(e)}>
-					<Tabs.Panel title='Kirim ke Alamat'>
+					<Tabs.Panel title={T.checkout.TAB_ADDRESS_LABEL}>
 						<Alert align='center' color='yellow' show >
-							{T.address.FREE_ONGKIR_REGULATION}
+							{T.checkout.FREE_ONGKIR_REGULATION}
 						</Alert>
 						{
 							shipping.length > 0 ? (
@@ -172,7 +177,7 @@ class stepOne extends Component {
 												<Level>
 													<Level.Item className='text-right'>
 														<div>	
-															<Icon name='map-marker' /> &nbsp; {T.address.LOCATION_MARKED}
+															<Icon name='map-marker' /> &nbsp; {T.checkout.LOCATION_MARKED}
 														</div>
 													</Level.Item>
 												</Level>
@@ -183,29 +188,50 @@ class stepOne extends Component {
 										}
 										<Level>
 											<Level.Item>
-												<Button onClick={() => this.toggleModalAddress('edit')} type='button' icon='pencil' iconPosition='left' className='font-orange' content={T.address.CHANGE_ADDRESS} />
+												<Button 
+													type='button' 
+													icon='pencil' 
+													iconPosition='left' 
+													className='font-orange' 
+													content={T.checkout.CHANGE_ADDRESS} 
+													onClick={() => this.showModalAddress('edit')} 
+												/>
 											</Level.Item>
 											<Level.Item className='text-right'>
-												<Button onClick={() => this.toggleModalAddress('add')} type='button' icon='plus' iconPosition='left' className='font-orange' content={T.address.ADD_ADDRESS} />
+												<Button 
+													type='button' 
+													icon='plus' 
+													iconPosition='left' 
+													className='font-orange' 
+													content={T.checkout.ADD_ADDRESS}
+													onClick={() => this.showModalAddress('add')} 
+												/>
 											</Level.Item>
 										</Level>
 									</Segment>
 									<Dropshipper />
 								</div>		
 							) : (
-								<Button onClick={() => this.toggleModalAddress('add')} type='button' block color='orange' outline content={T.address.INPUT_DELIVERY_ADDRESS} />
+								<Button 
+									block 
+									outline 
+									type='button' 
+									color='orange' 
+									content={T.checkout.INPUT_DELIVERY_ADDRESS} 
+									onClick={() => this.showModalAddress('add')} 
+								/>
 							)
 						}
 					</Tabs.Panel>
-					<Tabs.Panel title='Ambil di Toko/ E-locker (O2O)'>
+					<Tabs.Panel title={T.checkout.TAB_ELOCKER_LABEL}>
 						<Alert align='center' color='yellow' show >
-							{T.elocker.REGULATION}
+							{T.checkout.REGULATION}
 						</Alert>
 						{
 							this.props.latesto2o.length > 0 && (
 								<div>
 									<Alert close icon='ban' align='left' color='red' show >
-										{T.elocker.ONE_OR_MORE_PRODUCT_NOT_SUPPORTED}
+										{T.checkout.ONE_OR_MORE_PRODUCT_NOT_SUPPORTED}
 									</Alert>
 									<Segment className='customSelectO2OWrapper'>
 										<InputGroup>
@@ -220,7 +246,14 @@ class stepOne extends Component {
 										</p>
 										<Level>
 											<Level.Item className='text-right'>
-												<Button onClick={() => this.showModalo2o()} type='button' icon='plus' iconPosition='left' className='font-orange' content='Tambah Alamat' />
+												<Button 
+													type='button' 
+													icon='plus' 
+													iconPosition='left' 
+													className='font-orange' 
+													content={T.checkout.ADD_ADDRESS} 
+													onClick={() => this.showModalo2o()} 
+												/>
 											</Level.Item>
 										</Level>
 									</Segment>
@@ -228,15 +261,22 @@ class stepOne extends Component {
 							)
 						}
 						{
-							this.props.latesto2o.length > 0 && this.props.isPickupable !== '0' && (
+							this.props.latesto2o.length < 1 && this.props.isPickupable === '1' && (
 								<InputGroup>
-									<Button onClick={() => this.showModalo2o()} type='button' block color='orange' outline content={T.elocker.CHOOSE_STORE} />
+									<Button 
+										block 
+										outline 
+										type='button' 
+										color='orange' 
+										content={T.checkout.CHOOSE_STORE} 
+										onClick={() => this.showModalo2o()} 
+									/>
 								</InputGroup>
 							)
 						}
 						{
 							this.props.isPickupable === '0' && (
-								<p className='font-red'>{T.elocker.ONE_OR_MORE_PRODUCT_NOT_SUPPORTED}</p>
+								<p className='font-red'>{T.checkout.ONE_OR_MORE_PRODUCT_NOT_SUPPORTED}</p>
 							)
 						}
 					</Tabs.Panel>
@@ -250,7 +290,14 @@ class stepOne extends Component {
 						/>
 					)
 				}
-				<Modalo2o show={showModalo2o} handleClose={() => this.showModalo2o()} />
+				{
+					showModalo2o && (
+						<Modalo2o 
+							show={showModalo2o} 
+							handleClose={() => this.showModalo2o()} 
+						/>
+					)
+				}
 			</Card>
 		);
 	}

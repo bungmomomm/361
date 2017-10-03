@@ -5,6 +5,7 @@ import {
 	Tooltip,
 	Level
 } from '@/components';
+import { T } from '@/data/translations';
 import { currency } from '@/utils';
 
 
@@ -58,7 +59,7 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 						</Level>
 						{
 							!hasLangLat() && (
-								<a role='link' tabIndex='0' className='font-orange'>Mohon pilih titik lokasi pengiriman anda</a>
+								<a role='link' tabIndex='0' className='font-orange'>{T.checkout.CHOOSE_SHIPPING_LOCATION}</a>
 							)
 						}
 					</div>
@@ -66,11 +67,11 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 			}
 			<div className={s.price}>
 				<div className={s.priceList}>
-					<div>Biaya Pengiriman</div>
+					<div>{T.checkout.SHIPPING_COST}</div>
 					<div>{currency(store.price.final_delivery_cost)}</div>
 				</div>
 				<div className={s.priceListBold}>
-					<div>Total</div>
+					<div>{T.checkout.TOTAL}</div>
 					<div>{currency(store.price.total)}</div>
 				</div>
 			</div>

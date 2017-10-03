@@ -17,6 +17,7 @@ import {
 	Icon, 
 	Button 
 } from '@/components';
+import { T } from '@/data/translations';
 import { Polygon } from '@/data/polygons';
 
 class ModalAddress extends Component {
@@ -33,12 +34,12 @@ class ModalAddress extends Component {
 		super(props);
 		this.props = props;
 		this.validator = new Validator({
-			name: 'required',
-			penerima: 'required',
-			no_hp: 'required|min:6|max:14|regex:^([0-9]+)$',
-			provinsi: 'required',
+			address_label: 'required',
+			fullname: 'required',
+			phone: 'required|min:6|max:14|regex:^([0-9]+)$',
+			province: 'required',
 			kecamatan: 'required',
-			kodepos: 'required|min:5',
+			zipcode: 'required|min:5',
 			address: 'required',
 			id: 'min:1',
 			isEdit: 'min:1',
@@ -58,6 +59,7 @@ class ModalAddress extends Component {
 			overflow: false
 		};
 		this.onChangeProvince = this.onChangeProvince.bind(this);
+		this.onChangeInput = this.onChangeInput.bind(this);
 		this.translateProvince = this.translateProvince.bind(this);
 		this.setFormData = this.setFormData.bind(this);
 		this.cookies = this.props.cookies.get('user.token');
@@ -72,11 +74,14 @@ class ModalAddress extends Component {
 	}
 
 	componentDidMount() {
-		if (this.isEdit) this.translateProvince(this.props.formData.attributes);
+		if (this.isEdit) {
+			this.translateProvince(this.props.formData.attributes);
+			this.setFormData(this.props.formData);
+		}
 	}
 	
 	componentWillReceiveProps(nextProps) {
-		if (this.state.formData !== nextProps.formData) {
+		if (this.props.formData !== nextProps.formData) {
 			this.translateProvince(nextProps.formData.attributes);
 			if (this.isEdit) {
 				this.setFormData(nextProps.formData);
@@ -84,26 +89,56 @@ class ModalAddress extends Component {
 		}
 	}
 
-	onChangeProvince(selected) {
-		this.constructor.fetchGetDistric(this.cookies, selected.value, this.props.dispatch);
-		const isJakarta = selected.value.toLowerCase().includes('jakarta');
-		this.setState({ isJakarta });
+	onChangeProvince(e) {
+		if (e.name === 'province') {
+			this.constructor.fetchGetDistric(this.cookies, e.value, this.props.dispatch);
+			const isJakarta = e.value.toLowerCase().includes('jakarta');
+			this.setState({ isJakarta });
+			this.setStateFormData(e.name, e.value);
+			this.setStateFormData('kecamatan', null);
+		} else {
+			this.setStateFormData(e.name, e.value);
+		}
+	}
+
+	onChangeInput(e) {
+		this.setStateFormData(e.target.name, e.target.value);
+	}
+
+	setStateFormData(name, value) {
+		const formData = {
+			...this.state.formData,
+			[name]: value
+		};
+		this.setState({ formData });
 	}
 	
 	setFormData(data) {
 		const formData = {
 			id: data.id,
-			name: data.attributes.addressLabel,
-			penerima: data.attributes.fullname,
-			no_hp: data.attributes.phone,
+			address_label: data.attributes.addressLabel,
+			fullname: data.attributes.fullname,
 			address: data.attributes.address,
-			provinsi: data.attributes.province,
-			kecamatan: data.attributes.kecamatan,
-			kodepos: data.attributes.zipcode,
+			province: `${data.attributes.city}, ${data.attributes.province}`,
+			kecamatan: data.attributes.district,
+			zipcode: data.attributes.zipcode,
+			phone: data.attributes.phone,
 			latitude: data.attributes.latitude || null,
 			longitude: data.attributes.longitude || null,
+			isEdit: this.isEdit
 		};
 		this.setState({ formData });
+	}
+	
+	setErrors(name, value) {
+		const { formData } = this.state;
+		formData[name] = value;
+		this.validator.validate(name, value).then(() => {
+			const { errorBag } = this.validator;
+			this.setState({ 
+				errors: errorBag, formData 
+			});
+		});
 	}
 
 	translateProvince(formDataAttributes) {
@@ -125,21 +160,31 @@ class ModalAddress extends Component {
 	}
 
 	hideModalAddress() {
-		this.toggleShow();
-		setTimeout(() => { this.props.handleClose(); }, 310);
-	}
-
-	toggleShow() {
-		this.setState({ show: !this.state.show });
+		this.setState({ 
+			show: false 
+		});
+		this.props.handleClose(false);
 	}
 
 	validateAndSubmit(e) {
 		e.preventDefault();
 		const { formData } = this.state;
-		console.log(formData);
 		this.validator.validateAll(formData).then(success => {
 			if (success) {
-				console.log(success);
+				const mappingData = {
+					id: formData.id,
+					name: formData.address_label,
+					penerima: formData.fullname,
+					address: formData.address,
+					provinsi: formData.province,
+					kecamatan: formData.kecamatan,
+					kodepos: formData.zipcode,
+					no_hp: formData.phone,
+					longitude: formData.longitude,
+					latitude: formData.latitude,
+					isEdit: this.isEdit
+				};
+				this.props.dispatch(new actions.saveAddress(this.cookies, mappingData, this.props.formData));
 			} else {
 				Object.keys(formData).forEach((key) => {
 					this.setErrors(key, this.state.formData[key]);
@@ -150,19 +195,23 @@ class ModalAddress extends Component {
 
 	toggleOverflowModal(e) {
 		document.querySelectorAll('.modalAddress')[0].scrollTop = 0;
-		this.setState({ overflow: e });
+		setTimeout(() => { this.setState({ overflow: e }); }, 50);
+	}
+	
+	toggleShow() {
+		this.setState({ show: !this.state.show });
 	}
 	
 	render() {
 		const { 
 			formData,
-			address
+			address,
+			show
 		} = this.props;
 
 		const {
 			errors,
 			selected,
-			show,
 			overflow
 		} = this.state;
 
@@ -171,19 +220,29 @@ class ModalAddress extends Component {
 		};
 
 		return (
-			<Modal ref={(e) => { this.el = e; }} className='modalAddress' handleClose={() => this.hideModalAddress()} size='medium' show={show} disableOverflow={overflow} close>
+			<Modal 
+				close
+				size='medium'
+				show={show}
+				className='modalAddress'
+				loading
+				disableOverflow={overflow} 
+				ref={(e) => { this.el = e; }} 
+				handleClose={() => this.hideModalAddress()} 
+			>
 				<Modal.Header>
-					<div>{'Buat Alamat Baru'}</div>
+					<div>{T.checkout.CREATE_NEW_ADDRESS}</div>
 				</Modal.Header>
 				<Modal.Body>
 					<InputGroup>
 						<Input 
 							label='Simpan Sebagai *' 
 							placeholder='Contoh: rumah, kantor, rumah pacar'
-							name='name'
+							name='address_label'
 							type='text'
-							color={errors.has('name') ? 'red' : ''}
-							message={errors.has('name') ? 'Name field is required.' : ''}
+							onChange={this.onChangeInput}
+							color={errors.has('address_label') ? 'red' : ''}
+							message={errors.has('address_label') ? 'Name is required.' : ''}
 							value={formData ? formData.attributes.addressLabel : ''}
 						/>
 					</InputGroup>
@@ -191,10 +250,11 @@ class ModalAddress extends Component {
 						<Input 
 							label='Nama Penerima *'
 							placeholder='Masukan nama lengkap penerima'
-							name='penerima'
+							name='fullname'
 							type='text'
-							color={errors.has('penerima') ? 'red' : ''}
-							message={errors.has('penerima') ? 'Penerima field is required.' : ''}
+							onChange={this.onChangeInput}
+							color={errors.has('fullname') ? 'red' : ''}
+							message={errors.has('fullname') ? 'Penerima is required.' : ''}
 							value={formData ? formData.attributes.fullname : ''}
 						/>
 					</InputGroup>
@@ -202,11 +262,12 @@ class ModalAddress extends Component {
 						<Input 
 							label='No Handphone *'
 							placeholder='Contoh : 08123456789'
-							name='no_hp'
+							name='phone'
 							min={0}
 							type='number'
-							color={errors.has('no_hp') ? 'red' : ''}
-							message={errors.first('no_hp')}
+							onChange={this.onChangeInput}
+							color={errors.has('phone') ? 'red' : ''}
+							message={errors.first('phone')}
 							value={formData ? formData.attributes.phone : ''}
 						/>
 					</InputGroup>
@@ -216,12 +277,12 @@ class ModalAddress extends Component {
 								<Select 
 									label='Kota, Provinsi *'
 									filter
-									name='provinsi'
+									name='province'
+									options={address.cityProv}
 									onClick={(e) => this.toggleOverflowModal(e)}
 									onChange={(e) => this.onChangeProvince(e)}
-									options={address.cityProv}
-									color={errors.has('provinsi') ? 'red' : ''}
-									message={errors.has('provinsi') ? 'Provinsi field is required.' : ''}
+									color={errors.has('province') ? 'red' : ''}
+									message={errors.has('province') ? 'Provinsi is required.' : ''}
 									selected={defaultSelected(selected.province, address.cityProv[0])}
 								/>
 							</InputGroup>
@@ -232,11 +293,12 @@ class ModalAddress extends Component {
 							<InputGroup>
 								<Select 
 									label='Kecamatan *'
-									onClick={(e) => this.toggleOverflowModal(e)}
 									name='kecamatan' 
 									options={address.district}
+									onClick={(e) => this.toggleOverflowModal(e)}
+									onChange={(e) => this.onChangeProvince(e)}
 									color={errors.has('kecamatan') ? 'red' : ''}
-									message={errors.has('kecamatan') ? 'Kecamatan field is required.' : ''}
+									message={errors.has('kecamatan') ? 'Kecamatan is required.' : ''}
 									selected={defaultSelected(selected.district, address.district[0])}
 								/>
 							</InputGroup>
@@ -246,9 +308,12 @@ class ModalAddress extends Component {
 						<Input 
 							label='Kode Pos *'
 							placeholder='Contoh : 12345'
-							name='kodepos'
+							name='zipcode'
 							type='number'
 							min={0}
+							onChange={this.onChangeInput}
+							color={errors.has('zipcode') ? 'red' : ''}
+							message={errors.has('zipcode') ? 'Kode Pos is required.' : ''}
 							value={formData ? formData.attributes.zipcode : ''}
 						/>
 					</InputGroup>
@@ -257,6 +322,9 @@ class ModalAddress extends Component {
 							label='Alamat *'
 							placeholder='Masukkan Alamat Lengkap'
 							name='address'
+							onChange={this.onChangeInput}
+							color={errors.has('address') ? 'red' : ''}
+							message={errors.has('address') ? 'Alamat is required.' : ''}
 							value={formData ? formData.attributes.address : ''}
 						/>
 					</InputGroup>

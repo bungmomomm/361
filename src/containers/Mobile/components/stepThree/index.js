@@ -6,6 +6,7 @@ import {
 	Button,
 	Input
 } from '@/components';
+import { T } from '@/data/translations';
 import styles from '../../../Mobile/mobile.scss';
 
 import { currency } from '@/utils';
@@ -19,39 +20,39 @@ export default class StepThree extends Component {
 	render() {
 		return (
 			<Card>
-				<p><strong>3. Rincian Pembayaran</strong></p>
+				<p><strong>{T.checkout.STEP_THREE_LABEL}</strong></p>
 				<Level>
-					<Level.Left><strong>Subtotal</strong></Level.Left>
+					<Level.Left><strong>{T.checkout.SUB_TOTAL}</strong></Level.Left>
 					<Level.Right className='text-right'><strong>{currency(100000)}</strong></Level.Right>
 				</Level>
 				<Level>
-					<Level.Left>Voucher : <strong>MM20HM</strong> &nbsp; <Button icon='times-circle' iconPosition='right' /></Level.Left>
+					<Level.Left>{T.checkout.VOUCHER} : <strong>MM20HM</strong> &nbsp; <Button icon='times-circle' iconPosition='right' /></Level.Left>
 					<Level.Right className='text-right'>&nbsp;</Level.Right>
 				</Level>
 				<Level>
-					<Level.Left>Total Biaya Pengiriman</Level.Left>
+					<Level.Left>{T.checkout.TOTAL_SHIPPING_COST}</Level.Left>
 					<Level.Right className='text-right'>{currency(15000)}</Level.Right>
 				</Level>
 				<Level>
 					<Level.Left>
-						<div className='font-green'>Discount Biaya Pengiriman</div>
+						<div className='font-green'>{T.checkout.DISCOUNT_SHPPING_COST}</div>
 					</Level.Left>
 					<Level.Right>
 						<div className='font-green text-right'>{currency(-10000)}</div>
 					</Level.Right>
 				</Level>
 				<Level>
-					<Level.Left className={styles.voucherLabel}>Kode Voucher</Level.Left>
+					<Level.Left className={styles.voucherLabel}>{T.checkout.VOUCHER_CODET}</Level.Left>
 					<Level.Right>
 						<InputGroup addons>
 							<Input size='small' name='voucherCode' color='green' />
-							<Button type='submit' size='small' color='green' content='CEK' />
+							<Button type='submit' size='small' color='green' content={T.checkout.CHECK} />
 						</InputGroup>
 					</Level.Right>
 				</Level>
 				<div className={styles.CheckoutTitle}>
 					<Level noMargin>
-						<Level.Left>Total Pembayaran</Level.Left>
+						<Level.Left>{T.checkout.TOTAL_PAYMENT}</Level.Left>
 						<Level.Right>
 							<div className={`${styles.price} text-right`}>{currency(1500000)}</div>
 						</Level.Right>
