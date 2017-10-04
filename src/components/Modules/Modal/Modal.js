@@ -15,19 +15,11 @@ export default class Modal extends Component {
 		this.props = props;
 	}
 	
-	componentWillReceiveProps(nextProps) {
-		if (this.props.show !== nextProps.show) {
-			document.body.style.overflow = nextProps.show ? 'hidden' : '';
-		}
-	}
-	
 	render() {
 		return (
 			isMobile() ? (
 				<TransitionGroup>
-					{
-						this.props.show && <ModalMobile {...this.props} />
-					}
+					<ModalMobile {...this.props} />
 				</TransitionGroup>
 			) : (
 				<ModalDesktop {...this.props} />

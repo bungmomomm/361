@@ -13,8 +13,12 @@ export default class ModalMobile extends Component {
 	}
 
 	componentWillMount() {
-		window.scrollTo(0, 0);
+		document.body.style.overflow = 'hidden';
 		if (this.props.ref) this.props.ref(this.container);
+	}
+
+	componentWillUnmount() {
+		document.body.style.overflow = '';
 	}
 
 	componentWillEnter(callback) {

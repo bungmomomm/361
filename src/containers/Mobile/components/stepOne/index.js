@@ -285,17 +285,13 @@ class stepOne extends Component {
 					showModalAddress && (
 						<ModalAddress 
 							formData={this.flagModalAddress === 'edit' ? selectedAddress : null}
-							show={showModalAddress}
 							handleClose={() => this.hideModalAddress()} 
 						/>
 					)
 				}
 				{
 					showModalo2o && (
-						<Modalo2o 
-							show={showModalo2o} 
-							handleClose={() => this.showModalo2o()} 
-						/>
+						<Modalo2o handleClose={() => this.showModalo2o()} />
 					)
 				}
 			</Card>

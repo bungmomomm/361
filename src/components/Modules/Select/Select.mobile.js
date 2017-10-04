@@ -107,43 +107,46 @@ class SelectMobile extends Component {
 				>
 					<span>{this.state.selected.label}</span>
 				</button>
-				<Modal 
-					close
-					className={styles.modal} 
-					show={this.state.showModalSelect} 
-					handleClose={() => this.toggleModalAddress()}
-				>
-					<Modal.Header className={styles.headerFilter}>
-						{
-							!filter ? label : (
-								<Input onChange={(event) => this.getFilter(event)} placeholder='Cari Kecamatan' icon='search' iconPosition='left' />
-							)
-						}
-					</Modal.Header>
-					<Modal.Body className={styles.bodyFilter}>
-						{
-							this.state.options.map((option, i) => (
-								<button 
-									key={i}
-									type='button'
-									onClick={() => this.selectOption(option)}
-									className={this.state.selected.value === option.value ? styles.selectedOption : ''}
-								>
-									<span className={styles.text}>
-										{ option.label} 
-									</span>
-								</button>
-							))
-						}
-					</Modal.Body>
-					{
-						addButton && (
-							<Modal.Footer>
-								{addButton}
-							</Modal.Footer>
-						)
-					}
-				</Modal>
+				{
+					this.state.showModalSelect && (
+						<Modal 
+							close
+							className={styles.modal} 
+							handleClose={() => this.toggleModalAddress()}
+						>
+							<Modal.Header className={styles.headerFilter}>
+								{
+									!filter ? label : (
+										<Input onChange={(event) => this.getFilter(event)} placeholder='Cari Kecamatan' icon='search' iconPosition='left' />
+									)
+								}
+							</Modal.Header>
+							<Modal.Body className={styles.bodyFilter}>
+								{
+									this.state.options.map((option, i) => (
+										<button 
+											key={i}
+											type='button'
+											onClick={() => this.selectOption(option)}
+											className={this.state.selected.value === option.value ? styles.selectedOption : ''}
+										>
+											<span className={styles.text}>
+												{ option.label} 
+											</span>
+										</button>
+									))
+								}
+							</Modal.Body>
+							{
+								addButton && (
+									<Modal.Footer>
+										{addButton}
+									</Modal.Footer>
+								)
+							}
+						</Modal>
+					)
+				}
 			</div>
 		);
 	}
