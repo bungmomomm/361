@@ -52,10 +52,22 @@ export default class ModalVerifyPhoneNumber extends Component {
 						}
 					</InputGroup>
 					<InputGroup>
-						<Button type='button' content='Konfirmasi' block color='dark' />
+						<Button 
+							block
+							type='button'
+							content='Konfirmasi'
+							color='dark'
+						/>
 					</InputGroup>
 					<InputGroup>
-						<Button type='button' size='medium' content='Nanti aja' block className='font-orange' />
+						<Button 
+							block
+							type='button'
+							size='medium'
+							content='Nanti aja'
+							className='font-orange'
+							onClick={() => this.props.handleClose()}
+						/>
 					</InputGroup>
 				</Modal.Body>
 			</Modal>

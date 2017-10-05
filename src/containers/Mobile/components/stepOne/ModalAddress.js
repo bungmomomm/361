@@ -4,8 +4,8 @@ import { actions } from '@/state/Adresses';
 import { withCookies } from 'react-cookie';
 import React, { Component } from 'react';
 import { Validator } from 'ree-validate';
+import Gosend from '@/components/Views/Gosend/Gosend.Mobile.js';
 import { 
-	Gosend, 
 	Modal, 
 	Textarea, 
 	Segment,
@@ -56,7 +56,8 @@ class ModalAddress extends Component {
 			formData: {},
 			show: false,
 			errors: this.validator.errorBag,
-			overflow: false
+			overflow: false,
+			formattedAddress: null
 		};
 		this.onChangeProvince = this.onChangeProvince.bind(this);
 		this.onChangeInput = this.onChangeInput.bind(this);
@@ -193,6 +194,13 @@ class ModalAddress extends Component {
 		});
 	}
 
+	selectedPinPoint(data) {
+		this.setState({
+			formattedAddress: data.formattedAddress,
+			showMap: false
+		});
+	}
+
 	toggleOverflowModal(e) {
 		document.querySelectorAll('.modalAddress')[0].scrollTop = 0;
 		setTimeout(() => { this.setState({ overflow: e }); }, 50);
@@ -200,6 +208,10 @@ class ModalAddress extends Component {
 	
 	toggleShow() {
 		this.setState({ show: !this.state.show });
+	}
+
+	toggleMap() {
+		this.setState({ showMap: !this.state.showMap });
 	}
 	
 	render() {
@@ -328,61 +340,82 @@ class ModalAddress extends Component {
 							value={formData ? formData.attributes.address : ''}
 						/>
 					</InputGroup>
-					<InputGroup>
-						<Alert color='yellow' show>
-							<small>
-								<em>
-									Harap tidak mengisi alamat pickup point O2O tanpa melalui pilihan menu Ambil di Toko
-									(O2O). Kami tidak bertanggung jawab bila terjadi kehirlangan
-								</em>
-							</small>
-						</Alert>
-					</InputGroup>
-					<InputGroup>
-						<Button 
-							content='Tunjukan Dalam Peta'
-							color='grey' 
-							block
-							icon='map-marker' 
-							iconPosition='left' 
-						/>
-					</InputGroup>
-					<InputGroup>
-						<span><em>(Optional)</em></span>
-					</InputGroup>
-					<Segment row>
-						<Level padded>
-							<Level.Item>
-								<Icon name='map-marker' />
-							</Level.Item>
-							<Level.Item>
-								Jalan Bangka II No.20, Pela Mampang, 
-								Mampang Prapatan, Kota Jakarta Selatan, 
-								DKI jakarta 12720
-							</Level.Item>
-							<Level.Item>
-								<button className='font-small font-orange'>Ganti Lokasi</button>
-							</Level.Item>
-						</Level>
-					</Segment>
-					<InputGroup>
-						<p className='font-small font-orange'>Lokasi peta harus sesuai dengan alamat pengiriman. Lokasi diperlukan jika ingin menggunakan jasa pengiriman GO-SEND.</p>
-					</InputGroup>
 					{
-						false && (
-							<Gosend
-								zoom={15} 
-								center={Polygon[0].cakung.center} 
-								polygonArea={Polygon[0].cakung.location_coords}
-								displayMap
-							/>
-						)  
+						(this.state.isJakarta && this.state.formData.kecamatan) && (
+							<div>
+								{
+									(!this.state.formattedAddress || this.state.showMap) && (
+										<div>
+											<InputGroup>
+												<Alert color='yellow' show>
+													<small><em>{T.checkout.O2O_ADDRESS_RULE}</em></small>
+												</Alert>
+											</InputGroup>
+											<InputGroup>
+												<Button 
+													content={!this.state.showMap ? T.checkout.SHOW_IN_MAP : T.checkout.CANCEL}
+													color='grey' 
+													block
+													icon={!this.state.showMap ? 'map-marker' : 'times'} 
+													iconPosition='left'
+													onClick={() => this.toggleMap()}
+												/>
+											</InputGroup>
+											<InputGroup><em>(Optional)</em></InputGroup>
+										</div>	
+									)
+								}
+								{
+									(this.state.formattedAddress && !this.state.showMap) && (
+										<div>
+											<Segment row>
+												<Level padded>
+													<Level.Item>
+														<Icon name='map-marker' />
+													</Level.Item>
+													<Level.Item>
+														{this.state.formattedAddress}
+													</Level.Item>
+													<Level.Item>
+														<button 
+															className='font-small font-orange' 
+															onClick={() => this.toggleMap()}
+														>
+															{T.checkout.CHANGE_LOCATION}
+														</button>
+													</Level.Item>
+												</Level>
+											</Segment>
+											<InputGroup>
+												<p className='font-small font-orange'>{T.checkout.GOSEND_ADDRESS_RULE}</p>
+											</InputGroup>
+										</div>
+									)
+								}
+								{
+									this.state.showMap && (
+										<Gosend
+											zoom={15} 
+											center={Polygon[0].cakung.center} 
+											kecamatan={this.state.formData.kecamatan}
+											polygonArea={Polygon[0].cakung.location_coords}
+											onSelectedPinPoint={(data) => this.selectedPinPoint(data)}
+										/>
+									)
+								}
+								<InputGroup><em>* {T.checkout.MUST_FILLED}</em></InputGroup>
+							</div>
+						)
 					}
 					<InputGroup>
-						<em>* wajib diisi</em>
-					</InputGroup>
-					<InputGroup>
-						<Button onClick={(e) => this.validateAndSubmit(e)} block size='large' type='button' content='Simpan Alamat' color='dark' />
+						<Button 
+							block
+							size='large'
+							type='button'
+							content='Simpan Alamat'
+							color='dark'
+							onClick={(e) => this.validateAndSubmit(e)}
+						/>
 					</InputGroup>
 				</Modal.Body>
 			</Modal>

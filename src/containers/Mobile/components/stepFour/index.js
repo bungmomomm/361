@@ -51,10 +51,13 @@ class StepFour extends Component {
 		}
 	}
 
-	paymentMethodChange(e) {
+	paymentMethodChange(stateSelectedPayment) {
 		const { payments, dispatch } = this.props;
-		dispatch(new actions.changePaymentMethod(e.value, payments.paymentMethods, this.cookies));
-		this.setState({ showPaymentInfo: null });
+		dispatch(new actions.changePaymentMethod(stateSelectedPayment.value, payments.paymentMethods, this.cookies));
+		this.setState({ 
+			showPaymentInfo: null,
+			stateSelectedPayment
+		});
 	}
 	
 	render() {
@@ -172,6 +175,7 @@ class StepFour extends Component {
 							name='paymentMethods' 
 							options={payments.paymentMethods.methods} 
 							onChange={(e) => this.paymentMethodChange(e)}
+							selected={this.state.stateSelectedPayment}
 						/>
 					</InputGroup>
 					{ payments.selectedPayment && switchPaymentElement()}
