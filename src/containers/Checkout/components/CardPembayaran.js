@@ -63,7 +63,8 @@ export default class CardPembayaran extends Component {
 			errors: this.validator.errorBag,
 			voucherCode: null,
 			validVoucher: false,
-			reset: null
+			reset: null,
+			validInstallmentBin: true,
 		};
 		this.submitPayment = this.submitPayment.bind(this);
 		this.handleCekVoucher = this.handleCekVoucher.bind(this);
@@ -112,6 +113,9 @@ export default class CardPembayaran extends Component {
 		});
 		this.props.onPaymentMethodChange(event);
 		if (event.value) {
+			this.setState({
+				validInstallmentBin: (event.value === 'installment') ? this.state.validInstallmentBin : false
+			});
 			pushDataLayer('checkout', 'checkout', { step: 6, option: event.label });
 		}
 	}
@@ -167,7 +171,29 @@ export default class CardPembayaran extends Component {
 	}
 
 	onInstallmentCCNumberChange(event) {
-		this.props.onInstallmentCCNumberChange(event);
+		if (event.ccNumber.length < 1) {
+			this.setState({
+				validInstallmentBin: true
+			});
+		} else {
+			const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
+			const installmentBin = this.props.blockContent.filter(e => parseInt(e.id, 10) === 660)[0] || null;
+			if (installmentBin) {
+				const installmentBinBank = JSON.parse(installmentBin.attributes.block)[`${bank.toUpperCase()}`];
+				const checkingBin = installmentBinBank.filter(e => event.ccNumber.startsWith(e));
+				
+				if (checkingBin.length > 0) {
+					this.props.onInstallmentCCNumberChange(event);
+					this.setState({
+						validInstallmentBin: true
+					});
+				} else {
+					this.setState({
+						validInstallmentBin: false
+					});
+				}
+			}
+		}
 	}
 	onInstallmentCCMonthChange(data) {
 		this.props.onInstallmentCCMonthChange(data);
@@ -348,7 +374,7 @@ export default class CardPembayaran extends Component {
 
 				paymentOptions = ([
 					<InputGroup>
-						<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onChange={this.onInstallmentCCNumberChange} />
+						<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' message={this.state.validInstallmentBin ? null : 'Masukan no kartu kredit yang sesuai'} color={this.state.validInstallmentBin ? null : 'red'} onChange={this.onInstallmentCCNumberChange} />
 					</InputGroup>,
 					<label htmlFor='masa-berlaku'>Masa Berlaku</label>,
 					<Level padded>
@@ -389,7 +415,7 @@ export default class CardPembayaran extends Component {
 		const minNumberOfCard = 0;
 		numberOfCard = (selectedPayment.value === paymentGroupName.CREDIT_CARD) ? selectedPayment.cards : 0;
 		const ovoReadOnly = (this.props.payments.ovoInfo && parseInt(this.props.payments.ovoInfo.ovoFlag, 10) === 1);
-		const disabledPayment = ((this.props.payments.selectedPaymentOption === null || !this.props.payments.selectedPaymentOption) || (this.props.payments.billingPhoneNumber === null || this.props.payments.billingPhoneNumber === '') || !this.props.payments.termsAndConditionChecked);
+		const disabledPayment = ((this.props.payments.selectedPaymentOption === null || !this.props.payments.selectedPaymentOption) || (this.props.payments.billingPhoneNumber === null || this.props.payments.billingPhoneNumber === '') || !this.props.payments.termsAndConditionChecked || !this.state.validInstallmentBin);
 		const billingPhoneNumber = this.props.addressTabActive && this.props.payments.billingPhoneNumber ? this.props.payments.billingPhoneNumber : null;
 		return (
 			<Card stretch loading={this.props.loading} >

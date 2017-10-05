@@ -26,6 +26,7 @@ import CardPengiriman from './components/CardPengiriman';
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { addCoupon, removeCoupon, resetCoupon, resendOtp, verifyOtp } from '@/state/Coupon/actions';
+import { getBlockContents } from '@/state/Global/actions';
 import {
 	getAddresses,
 	getO2OList,
@@ -284,6 +285,7 @@ class Checkout extends Component {
 	onReload(dispatch) {
 		dispatch(getUser(this.props.cookies.get('user.token')));
 		dispatch(getCart(this.props.cookies.get('user.token'))).then(() => {
+			dispatch(getBlockContents(this.props.cookies.get('user.token'), ['660']));
 			dispatch(getAddresses(this.props.cookies.get('user.token'))).then(defaultAddress => {
 				if (typeof defaultAddress.type !== 'undefined') {
 					this.setState({
@@ -1287,6 +1289,7 @@ class Checkout extends Component {
 										resetPaymentOption={this.props.resetPaymentOption}
 										onTermsAndConditionChange={this.onTermsAndConditionChange}
 										addressTabActive={this.state.addressTabActive}
+										blockContent={this.props.blockContent}
 									/>
 								</Col>
 							</Row>
@@ -1461,6 +1464,7 @@ const mapStateToProps = (state) => {
 		errorPlaceOrder: state.cart.error,
 		userGTM: state.user.userGTM,
 		products: state.cart.products,
+		blockContent: state.global.blockContent,
 	};
 };
 
