@@ -41,12 +41,14 @@ class CreditCardRadio extends Component {
 
 	render() {
 		const CreditCardRadioClass = cx({
-			CreditCardRadioWrapper: true
+			CreditCardRadioWrapper: true,
+			[`size--${this.props.size}`]: !!this.props.size
 		});
 
 		const {
 			sprites,
 			content,
+			image,
 			...rest
 		} = this.props;
 
@@ -72,6 +74,13 @@ class CreditCardRadio extends Component {
 					renderIf(sprites)(
 						<span className={styles.sprites}>
 							<Sprites name={sprites} />
+						</span>
+					)
+				} 
+				{
+					renderIf(image)(
+						<span className={styles.sprites}>
+							<img src={image} alt='credit cart' />
 						</span>
 					)
 				} 

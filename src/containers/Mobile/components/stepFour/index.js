@@ -10,8 +10,8 @@ import {
 	Card,
 	InputGroup,
 	Select,
-	CreditCardRadio,
 	CreditCardInput,
+	CreditCardRadio,
 	Checkbox,
 	Button,
 	Level,
@@ -65,34 +65,45 @@ class StepFour extends Component {
 			payments
 		} = this.props;
 
-		const {
-			showPaymentInfo,
-			selectedPaymentItem
-		} = this.state;
-
 		const switchPaymentElement = () => {
 			// PAYMENT MENTHOD LIST
 			switch (payments.selectedPayment.value) {
 			case paymentGroupName.BANK_TRANSFER:
-			case paymentGroupName.CONVENIENCE_STORE:
 			case paymentGroupName.E_MONEY:
 			case paymentGroupName.INTERNET_BANKING:
-				return (
-					<InputGroup>
-						<Select 
-							name={`payment-${payments.selectedPayment.value}`} 
-							options={payments.selectedPayment.paymentItems}
-							onChange={(e) => this.onSelectedPaymentItem(e)}
+			case paymentGroupName.CONVENIENCE_STORE: {
+				const enabledPaymentItems = _.filter(payments.selectedPayment.paymentItems, ['disabled', false]);
+				const listPayment = enabledPaymentItems.map((option, index) => (
+					<InputGroup key={index}>
+						<CreditCardRadio 
+							name={`payment-${payments.selectedPayment.value}`}
+							value={option.value}
+							size='large'
+							content={option.label}
+							image={option.settings.image}
 						/>
 						{
-							showPaymentInfo && (showPaymentInfo.id === selectedPaymentItem.value) && (
-								<Tooltip position='right' content='Info'>
-									{showPaymentInfo.notes}
-								</Tooltip>
+							option.settings.info && (
+								<div className={styles.btInfo}>
+									<Tooltip position='right'>
+										{option.settings.info.join(' ')}
+									</Tooltip>
+								</div>
 							)
 						}
 					</InputGroup>
+				));	
+
+				return (
+					<InputGroup>
+						<InputGroup>
+							<hr />
+						</InputGroup>
+						<label htmlFor='masa-berlaku'>Pilih Opsi Pembayaran</label>
+						{listPayment}
+					</InputGroup>
 				);
+			}
 			case paymentGroupName.CREDIT_CARD:
 				return payments.selectedPayment.paymentItems.map((option, index) => (
 					option.cards.length < 3 ? (
@@ -173,6 +184,7 @@ class StepFour extends Component {
 						<Select 
 							label='Metode Pembayaran' 
 							name='paymentMethods' 
+							moreDetail
 							options={payments.paymentMethods.methods} 
 							onChange={(e) => this.paymentMethodChange(e)}
 							selected={this.state.stateSelectedPayment}
@@ -197,15 +209,15 @@ class StepFour extends Component {
 								<InputGroup>
 									<CreditCardRadio name='cc' content={'Manual Transfer'} />
 								</InputGroup>
-								<InputGroup>
-									<Input label='SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke : ' min={0} type='number' placeholder={'No Telp Penagihan'} />
-								</InputGroup>
-								<InputGroup>
-									<Input label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' placeholder={'Masukkan nomor Hp yang terdaftar di OVO'} type='number' min={0} />
-								</InputGroup>
 							</div>
 						)
 					}
+					<InputGroup>
+						<Input label='SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke : ' min={0} type='number' placeholder={'No Telp Penagihan'} />
+					</InputGroup>
+					<InputGroup>
+						<Input label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' placeholder={'Masukkan nomor Hp yang terdaftar di OVO'} type='number' min={0} />
+					</InputGroup>
 					<div className={styles.checkOutAction}>
 						<Checkbox defaultChecked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />
 						<Button block size='large' color='red' content='Bayar Sekarang' />

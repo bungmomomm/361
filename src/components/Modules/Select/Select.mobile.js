@@ -83,6 +83,42 @@ class SelectMobile extends Component {
 		this.toggleModalAddress();
 	}
 
+	renderOption() {
+		if (this.props.moreDetail) {
+			const template = this.state.options.map((option, i) => (
+				<div className={styles.moreDetail} key={i}>
+					<button 
+						type='button'
+						disabled={option.disabled}
+						onClick={() => this.selectOption(option)}
+						className={this.state.selected.value === option.value ? styles.selectedOption : ''}
+					>
+						<span className={styles.text}>
+							{ option.label}
+						</span>
+						<span className={styles.info}>
+							{ option.info}
+						</span>
+					</button>
+				</div>
+			));
+			return template;
+		}
+		const template = this.state.options.map((option, i) => (
+			<button 
+				key={i}
+				type='button'
+				onClick={() => this.selectOption(option)}
+				className={this.state.selected.value === option.value ? styles.selectedOption : ''}
+			>
+				<span className={styles.text}>
+					{ option.label}
+				</span>
+			</button>
+		));
+		return template;
+	}
+
 	render() {
 		const { label, filter, addButton } = this.props;
 		
@@ -122,20 +158,7 @@ class SelectMobile extends Component {
 								}
 							</Modal.Header>
 							<Modal.Body className={styles.bodyFilter}>
-								{
-									this.state.options.map((option, i) => (
-										<button 
-											key={i}
-											type='button'
-											onClick={() => this.selectOption(option)}
-											className={this.state.selected.value === option.value ? styles.selectedOption : ''}
-										>
-											<span className={styles.text}>
-												{ option.label} 
-											</span>
-										</button>
-									))
-								}
+								{this.renderOption()}
 							</Modal.Body>
 							{
 								addButton && (

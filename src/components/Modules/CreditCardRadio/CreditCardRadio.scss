@@ -7,14 +7,10 @@
 	display: flex;
     align-items: center;
 	line-height: 1;
-	margin-bottom: rem(15px);
 	background: #FAFAFA;
     height: 35px;
 	padding: 0px 15px;
 	position: relative;
-	&:last-child{
-		margin-bottom: 0;
-	}
 }
 
 .creditCardRadio{
@@ -79,5 +75,15 @@
 
 .sprites{
 	position: absolute;
-    right: 15px;
+	right: 15px;
+	img{
+		max-height: 20px;
+		margin-right: 20px;
+	}
+}
+
+.size{
+	&--large{
+		height: 51px;
+	}
 }
