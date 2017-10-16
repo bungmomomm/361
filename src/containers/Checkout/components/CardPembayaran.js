@@ -467,12 +467,12 @@ export default class CardPembayaran extends Component {
 							</InputGroup>
 						)}
 						{ renderIf((this.props.payments.openNewCreditCard && selectedPayment.value === paymentGroupName.CREDIT_CARD && !twoClickEnabled) || (selectedPayment.value === paymentGroupName.CREDIT_CARD && numberOfCard < (minNumberOfCard + 1)))([
-							<InputGroup>
+							<InputGroup key={1}>
 								<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onChange={this.onCardNumberChange} />
 							</InputGroup>,
-							<label htmlFor='masa-berlaku'>Masa Berlaku</label>,
-							<Level padded>
-								<Level.Item>
+							<label htmlFor='masa-berlaku'key={2}>Masa Berlaku</label>,
+							<Level padded key={3}>
+								<Level.Item id='masa-berlaku'>
 									<Select top selectedLabel='-- Bulan' options={Bulan} onChange={this.onCardMonthChange} />
 								</Level.Item>
 								<Level.Item>
@@ -485,12 +485,27 @@ export default class CardPembayaran extends Component {
 									<Sprites name='cvv' />
 								</Level.Item>
 							</Level>,
-							<InputGroup>
+							<InputGroup key={4}>
 								<Checkbox defaultChecked content='Simpan kartu untuk transaksi selanjutnya' onClick={(state, value) => this.props.onSaveCcOption(state, value)} />
 							</InputGroup>
 						])}
 						<InputGroup>
 							<Input label='SMS Konfirmasi pembayaran' min={0} type='number' value={billingPhoneNumber || ''} placeholder={billingPhoneNumber || 'No Telp Penagihan'} onChange={(event) => this.props.onBillingNumberChange(event)} />
+						</InputGroup>
+						<InputGroup>
+							<CreditCardRadio name='cc' variant='list' value={'082113982173'} content={'082113982173'} sprites='ovo' />
+						</InputGroup>
+						<InputGroup>
+							<Input min={0} type='number' placeholder={'Masukan No Hp yang terdaftar di OVO'} />
+						</InputGroup>
+						<InputGroup>
+							<Checkbox content='Simpan untuk transaksi berikutnya & otomatis terhubung ke akun OVO' />
+						</InputGroup>
+						<InputGroup>
+							<Input variant='ovo' label='Hubungkan ke akun OVO' min={0} type='number' placeholder={billingPhoneNumber || 'Nomor Hp / MCC-ID / HiCard-ID'} onChange={(event) => this.props.onBillingNumberChange(event)} />
+						</InputGroup>
+						<InputGroup>
+							<Input variant='ovo' disabled color='purple' icon='check' label='Hubungkan ke akun OVO' min={0} type='number' placeholder={billingPhoneNumber || 'Nomor Hp / MCC-ID / HiCard-ID'} onChange={(event) => this.props.onBillingNumberChange(event)} />
 						</InputGroup>
 						<InputGroup>
 							<Input value={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''} placeholder={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : 'Masukkan nomor Hp yang terdaftar di OVO'} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' type='number' min={0} onChange={(event) => this.props.onOvoNumberChange(event)} readOnly={ovoReadOnly} disabled={ovoReadOnly} />

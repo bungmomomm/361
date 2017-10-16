@@ -209,6 +209,11 @@ const getListAvailablePaymentMethod = (response) => {
 		value: null,
 		info: '',
 		hidden: true
+	}, {
+		label: 'OVO',
+		value: 0,
+		info: 'Pembayaran melalui aplikasi OVO',
+		sprites: 'ovo'
 	}];
 	const paymentData = {};
 	const availableMethods = {};
@@ -219,12 +224,13 @@ const getListAvailablePaymentMethod = (response) => {
 			availableMethods[method.value] = humps(method);
 		});
 	});
-	
+		
 	const returnData = {
 		methods: paymentList,
 		payments: paymentData,
 		availableMethods
 	};
+	console.log(availableMethods);
 	return returnData;
 };
 

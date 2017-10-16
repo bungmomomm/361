@@ -65,6 +65,7 @@
 .checkboxText{
 	opacity: 0.7;
 	cursor: pointer;
+	flex: 1;
 }
 
 .Checkbox:checked ~ .checkboxText{

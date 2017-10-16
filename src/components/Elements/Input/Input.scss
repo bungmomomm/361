@@ -49,22 +49,33 @@
 // VARIANT
 .green{
 	@include inputStyle(green);
-	+ .message{
+	+ .message, + .icon{
 		color: color(green);
 	}
 }
 
 .yellow{
 	@include inputStyle(yellow);
-	+ .message{
+	+ .message, + .icon{
 		color: color(yellow);
 	}
 }
 
 .red{
 	@include inputStyle(red);
-	+ .message{
+	+ .message, + .icon{
 		color: color(red);
+	}
+}
+
+.purple{
+	@include inputStyle(purple);
+	+ .message, + .icon{
+		color: color(purple);
+	}
+	&:disabled{
+		background: #F5F5F5;
+		opacity: 1;
 	}
 }
 
@@ -138,4 +149,13 @@ label{
 	flex-shrink: 1;
 	flex-direction: column;
 	position: relative;
+}
+
+.ovo{
+	position: relative;
+	> i {
+		position: absolute;
+		right: 0px;
+		top: 3px;
+	}
 }
