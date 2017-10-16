@@ -635,7 +635,7 @@ class Checkout extends Component {
 					pay(
 						this.props.cookies.get('user.token'),
 						this.props.soNumber,
-						this.props.payments.selectedPaymentOption,
+						this.props.payments.selectedPaymentOption === false ? this.state.selectedPayment : this.props.payments.selectedPaymentOption,
 						{
 							amount: this.props.payments.total,
 							status: 'success',
@@ -680,7 +680,7 @@ class Checkout extends Component {
 					pay(
 						this.props.cookies.get('user.token'),
 						this.props.soNumber,
-						this.props.payments.selectedPaymentOption,
+						this.props.payments.selectedPaymentOption === false ? this.state.selectedPayment : this.props.payments.selectedPaymentOption,
 						{
 							amount: this.props.payments.total,
 							card: {
