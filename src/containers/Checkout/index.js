@@ -124,6 +124,7 @@ class Checkout extends Component {
 			phoneNumber: null,
 			notifInfo: true,
 			appliedBin: null,
+			selectedPayment: false
 		};
 
 		this.restrictO2oFlag = false;
@@ -756,6 +757,12 @@ class Checkout extends Component {
 			switch (this.props.payments.paymentMethod) {
 			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 			case paymentMethodName.COMMERCE_VERITRANS:
+				if (this.props.payments.selectedPaymentOption !== false) {
+					this.setState({
+						selectedPayment: this.props.payments.selectedPaymentOption
+					});
+				}
+				
 				if (this.props.payments.twoClickEnabled) {
 					validator = this.cvvValidator.validateAll({
 						cvv: this.props.payments.selectedCardDetail.cvv
@@ -791,7 +798,7 @@ class Checkout extends Component {
 						pay(
 							this.props.cookies.get('user.token'),
 							this.props.soNumber,
-							this.props.payments.selectedPaymentOption,
+							this.props.payments.selectedPaymentOption === false ? this.state.selectedPayment : this.props.payments.selectedPaymentOption,
 							{
 								ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
 								billingPhoneNumber: this.props.payments.billingPhoneNumber
