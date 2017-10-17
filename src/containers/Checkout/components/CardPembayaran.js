@@ -496,7 +496,7 @@ export default class CardPembayaran extends Component {
 							<CreditCardRadio name='cc' variant='list' value={'082113982173'} content={'082113982173'} sprites='ovo' />
 						</InputGroup>
 						<InputGroup>
-							<Input min={0} type='number' placeholder={'Masukan No Hp yang terdaftar di OVO'} />
+							<Input color='green' icon='check' message='Poin OVO akan ditambahkan di no ini' min={0} type='number' placeholder={'Masukan No Hp yang terdaftar di OVO'} />
 						</InputGroup>
 						<InputGroup>
 							<Checkbox content='Simpan untuk transaksi berikutnya & otomatis terhubung ke akun OVO' />

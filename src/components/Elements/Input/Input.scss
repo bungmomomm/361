@@ -35,6 +35,10 @@
 	&[type="number"]{
 		overflow: hidden;
 	}
+	&:disabled{
+		background: #F5F5F5;
+		opacity: 1;
+	}
 }
 
 .sprites, .icon{
@@ -49,33 +53,29 @@
 // VARIANT
 .green{
 	@include inputStyle(green);
-	+ .message, + .icon{
+	~ .message, ~ .icon{
 		color: color(green);
 	}
 }
 
 .yellow{
 	@include inputStyle(yellow);
-	+ .message, + .icon{
+	~ .message, ~ .icon{
 		color: color(yellow);
 	}
 }
 
 .red{
 	@include inputStyle(red);
-	+ .message, + .icon{
+	~ .message, ~ .icon{
 		color: color(red);
 	}
 }
 
 .purple{
 	@include inputStyle(purple);
-	+ .message, + .icon{
+	~ .message, ~ .icon{
 		color: color(purple);
-	}
-	&:disabled{
-		background: #F5F5F5;
-		opacity: 1;
 	}
 }
 

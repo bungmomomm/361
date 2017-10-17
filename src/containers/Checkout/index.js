@@ -18,6 +18,7 @@ import VerifikasiNoHandponeModalbox from './components/Modal/VerifikasiNoHandpon
 import Vt3dsModalBox from './components/Modal/Vt3dsModalBox';
 import EcashModalBox from './components/Modal/EcashModalBox';
 import OvoCountDownModal from './components/Modal/OvoCountDownModal';
+import OvoErrorPaymentModal from './components/Modal/OvoErrorPaymentModal';
 
 // Section Component
 import CardPesananPengiriman from './components/CardPesananPengiriman';
@@ -1328,11 +1329,19 @@ class Checkout extends Component {
 						src={this.props.payments.vtRedirectUrl}
 						onClose={this.onVt3dsModalBoxClose}
 					/>
-					<OvoCountDownModal
-						shown
-						secondsRemaining={30}
-						finishCountdown={() => console.log('finish')}
-					/>
+					{
+						false && (
+							<OvoCountDownModal
+								secondsRemaining={30}
+								finishCountdown={() => console.log('finish')}
+							/>
+						)
+					}
+					{
+						false && (
+							<OvoErrorPaymentModal shown />
+						)
+					}
 					<EcashModalBox shown={this.props.payments.showEcash} src={this.props.payments.mandiriRedirectUrl} onClose={this.onMandiriEcashClose} />
 					{
 						renderIf(!this.state.notifInfo)(
