@@ -112,10 +112,10 @@ const payRequest = () => ({
 });
 
 const payTotalChanged = (totalActual, totalRequest, msg) => ({
-	type: constants.PAY_TOTAL_CHANGE, 
+	type: constants.PAY_TOTAL_CHANGE,
 	payload: {
-		totalActual, 
-		totalRequest, 
+		totalActual,
+		totalRequest,
 		msg
 	}
 });
@@ -269,12 +269,13 @@ const getSelectedVTInstallmentTerm = (selectedPaymentOption) => {
 	return selectedPaymentOption;
 };
 
-const applyBin = (token, paymentMethodId, cardNumber = '', bankName = '') => dispatch => new Promise((resolve, reject) => {
+const applyBin = (token, paymentMethodId, cardNumber = '', bankName = '', installmentTerm = '') => dispatch => new Promise((resolve, reject) => {
 	const data = {
 		attributes: {
 			payment_method: paymentMethodId,
 			card_number: cardNumber,
-			bank: bankName
+			bank: bankName,
+			installment_term: installmentTerm
 		}
 	};
 	return request({
@@ -317,7 +318,7 @@ const changePaymentOption = (selectedPaymentOption, token, cardNumber = '', bank
 		bankName = selectedPaymentOption.banks[0].name;
 	}
 	dispatch(paymentOptionChanged(selectedPaymentOption));
-	
+
 	if (selectedPaymentOption) {
 		dispatch(applyBin(token, selectedPaymentOption.value, cardNumber, bankName));
 	} else {
@@ -559,8 +560,8 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 				if (mode === 'complete') {
 					soNumber = getSoNumberFromResponse(soNumber, response.data);
 				}
-				
-				if (response.data.meta !== 'undefined' && 
+
+				if (response.data.meta !== 'undefined' &&
 					response.data.meta.info.amount_actual !== response.data.meta.info.amount_request) {
 					dispatch(payTotalChanged(response.data.meta.info.amount_actual, response.data.meta.info.amount_request, response.data.meta.info.msg));
 					// const msg = 'Terjadi perubahan harga, Apakah Anda ingin melanjutkan pembelian?';
@@ -568,7 +569,7 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 				} else {
 					dispatch(payReceived(soNumber, response.data, mode, card, callback));
 				}
-				
+
 				resolve(soNumber, response.data, mode, card, callback);
 			}).catch((error) => {
 				// showError

@@ -391,6 +391,7 @@ export default class CardPembayaran extends Component {
 		const ovoReadOnly = (this.props.payments.ovoInfo && parseInt(this.props.payments.ovoInfo.ovoFlag, 10) === 1);
 		const disabledPayment = ((this.props.payments.selectedPaymentOption === null || !this.props.payments.selectedPaymentOption) || (this.props.payments.billingPhoneNumber === null || this.props.payments.billingPhoneNumber === '') || !this.props.payments.termsAndConditionChecked);
 		const billingPhoneNumber = this.props.addressTabActive && this.props.payments.billingPhoneNumber ? this.props.payments.billingPhoneNumber : null;
+		const adminFeeIdr = (this.props.payments.adminFee && this.props.payments.adminFee.feeInIdr) ? this.props.payments.adminFee.feeInIdr : null;
 		return (
 			<Card stretch loading={this.props.loading} >
 				<div className={styles.overflow}>
@@ -420,6 +421,12 @@ export default class CardPembayaran extends Component {
 						</Level.Right>
 					</Level>
 					{voucherBox}
+					{ renderIf(adminFeeIdr)(
+						<Level>
+							<Level.Left><strong>Biaya Administrasi</strong></Level.Left>
+							<Level.Right className='text-right'><strong>{currency(adminFeeIdr)}</strong></Level.Right>
+						</Level>
+					)}
 					<div className={styles.CheckoutTitle}>
 						<Level noMargin>
 							<Level.Left>Total Pembayaran</Level.Left>
