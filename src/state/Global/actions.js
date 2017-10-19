@@ -25,11 +25,15 @@ const getBlockContents = (token, ids) => dispatch => {
 		path: 'block-content',
 		method: 'POST',
 		body: {
-			id: ids
+			data: {
+				attributes: {
+					block_id: ids
+				}
+			}
 		}
 	}).then((response) => {
 		if (response.data.data) {
-			dispatch(receivedBlockContent(response.data.data));	
+			dispatch(receivedBlockContent(response.data.included));
 		} else {
 			dispatch(receivedBlockContent([]));	
 		}
