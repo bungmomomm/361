@@ -561,7 +561,7 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 					soNumber = getSoNumberFromResponse(soNumber, response.data);
 				}
 
-				if (response.data.meta !== 'undefined' &&
+				if (typeof response.data.meta.info !== 'undefined' &&
 					response.data.meta.info.amount_actual !== response.data.meta.info.amount_request) {
 					dispatch(payTotalChanged(response.data.meta.info.amount_actual, response.data.meta.info.amount_request, response.data.meta.info.msg));
 					// const msg = 'Terjadi perubahan harga, Apakah Anda ingin melanjutkan pembelian?';
