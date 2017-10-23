@@ -114,7 +114,7 @@ export default class CardPembayaran extends Component {
 		this.props.onPaymentMethodChange(event);
 		if (event.value) {
 			this.setState({
-				validInstallmentBin: (event.value === 'installment') ? this.state.validInstallmentBin : false
+				validInstallmentBin: event.value !== 'installment'
 			});
 			pushDataLayer('checkout', 'checkout', { step: 6, option: event.label });
 		}
@@ -247,6 +247,7 @@ export default class CardPembayaran extends Component {
 			resetPaymentOption,
 			selectedCard
 		} = this.props.payments;
+		console.log(this.state.validInstallmentBin);
 		let couponId = false;
 		if (this.props.validCoupon && this.props.coupon !== '') {
 			couponId = this.props.coupon;
