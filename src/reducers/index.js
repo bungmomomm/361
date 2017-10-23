@@ -17,4 +17,5 @@ export default combineReducers({
 	cart,
 	payments,
 	user,
+	global,
 });

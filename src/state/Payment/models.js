@@ -15,7 +15,8 @@ const getCardRelations = (data, lookup) => {
 	return data.data.map((item, index) => {
 		const card = lookup.filter(itemLookup => itemLookup.type === item.type && itemLookup.id === item.id)[0];
 		return {
-			value: card.id,
+			id: card.id,
+			value: card.attributes.saved_token_id,
 			label: card.attributes.credit_card_number_with_separator,
 			sprites: card.attributes.credit_card_type,
 			cvv_length: card.attributes.cvv_length,

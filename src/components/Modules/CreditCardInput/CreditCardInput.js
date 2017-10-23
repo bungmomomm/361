@@ -35,6 +35,11 @@ export default class CreditCardInput extends Component {
 		const trimCCLength = trimCC.length;
 		this.setValidInput(null);
 		if (trimCCLength < 1) {
+			this.props.onChange({
+				ccNumber: trimCC,
+				valid: null,
+				ccType: ''
+			});
 			this.setSprites();
 		} else if (trimCCLength < 3) {
 			this.creditCardValidation(trimCC);
