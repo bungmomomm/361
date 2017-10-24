@@ -581,7 +581,9 @@ class Checkout extends Component {
 					cardMonth: this.props.payments.selectedCardDetail.month,
 					cardYear: this.props.payments.selectedCardDetail.year,
 					amount: this.props.payments.total,
-					paymentMethod: this.props.payments.paymentMethod
+					paymentMethod: this.props.payments.paymentMethod,
+					ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
+					billingPhoneNumber: this.props.payments.billingPhoneNumber
 				},
 				mode,
 				false,
