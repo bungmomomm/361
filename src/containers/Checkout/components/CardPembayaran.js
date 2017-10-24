@@ -176,10 +176,11 @@ export default class CardPembayaran extends Component {
 				validInstallmentBin: true
 			});
 		} else {
-			const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
+			const bank = (!this.props.payments.selectedBank) ? 'mandiri' : this.props.payments.selectedBank.value.value;
 			const installmentBin = this.props.blockContent.filter(e => parseInt(e.id, 10) === 660)[0] || null;
+			
 			if (installmentBin) {
-				const installmentBinBank = JSON.parse(installmentBin.attributes.block)[`${bank.toUpperCase()}`];
+				const installmentBinBank = JSON.parse(installmentBin.attributes.block)[`${bank.replace(' ', '_').toUpperCase()}`];
 				const checkingBin = installmentBinBank.filter(e => event.ccNumber.startsWith(e));
 				
 				if (checkingBin.length > 0) {
@@ -247,7 +248,7 @@ export default class CardPembayaran extends Component {
 			resetPaymentOption,
 			selectedCard
 		} = this.props.payments;
-		console.log(this.state.validInstallmentBin);
+		
 		let couponId = false;
 		if (this.props.validCoupon && this.props.coupon !== '') {
 			couponId = this.props.coupon;
