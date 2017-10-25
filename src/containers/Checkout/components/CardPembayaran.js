@@ -156,7 +156,6 @@ export default class CardPembayaran extends Component {
 		this.props.onCardCvvChange(data);
 	}
 	onInstallmentBankChange(data) {
-		console.log(data);
 		this.setState({
 			paymentMethodChanged: true
 		});
@@ -246,7 +245,8 @@ export default class CardPembayaran extends Component {
 			selectedPaymentOption,
 			twoClickEnabled,
 			resetPaymentOption,
-			selectedCard
+			selectedCard,
+			selectedBank
 		} = this.props.payments;
 		
 		let couponId = false;
@@ -356,7 +356,8 @@ export default class CardPembayaran extends Component {
 					<InputGroup>
 						{
 							selectedPayment.paymentItems.map((installment, index) => {
-
+								const bankIndex = installment.banks.filter(e => e.name.toUpperCase() === selectedBank.label.toUpperCase())[0];
+								const ix = bankIndex.id ? bankIndex.id : 0;
 								return (
 									<div key={index}>
 										<InputGroup>
@@ -365,7 +366,7 @@ export default class CardPembayaran extends Component {
 										</InputGroup>
 										<InputGroup>
 											<p>Pilih Lama Cicilan</p>
-											<Select key={index} emptyFilter={false} name='bank' selectedLabel='---' options={installment.banks[index].listCicilan} onChange={this.onTermChange} />
+											<Select key={index} emptyFilter={false} name='bank' selectedLabel='---' options={installment.banks[ix].listCicilan} onChange={this.onTermChange} />
 										</InputGroup>
 									</div>
 								);
