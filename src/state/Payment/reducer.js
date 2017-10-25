@@ -330,6 +330,12 @@ export default (state = initialState, action) => {
 			ovoPhoneNumber: action.payload.ovoPhoneNumber
 		};
 	}
+	case constants.PAY_CHANGE_OVO_PAYMENT_NUMBER: {
+		return {
+			...state,
+			ovoPaymentNumber: action.payload.ovoPaymentNumber
+		};
+	}
 	case constants.PAY_CHANGE_BILLING_NUMBER: {
 		return {
 			...state,

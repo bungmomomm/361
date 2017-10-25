@@ -55,6 +55,7 @@ import {
 	bankNameChange,
 	applyBin,
 	changeOvoNumber,
+	changeOvoPaymentNumber,
 	changeBillingNumber,
 	termChange,
 	changeInstallmentCCNumber,
@@ -63,7 +64,8 @@ import {
 	changeInstallmentCCCvv,
 	termsAndConditionChange,
 	saveCC,
-	getAvailabelPaymentSelection
+	getAvailabelPaymentSelection,
+	checkStatusOvoPayment
 } from '@/state/Payment/actions';
 
 import { getRefreshToken } from '@/state/Auth/actions';
@@ -123,6 +125,7 @@ class Checkout extends Component {
 			loadingCardPengiriman: false,
 			tahun: [],
 			showModalOtp: false,
+			showModalOvo: false,
 			phoneNumber: null,
 			notifInfo: true,
 			appliedBin: null,
@@ -164,6 +167,7 @@ class Checkout extends Component {
 		this.shippingMethodGosend = this.shippingMethodGosend.bind(this);
 		this.onBankChange = this.onBankChange.bind(this);
 		this.onOvoNumberChange = this.onOvoNumberChange.bind(this);
+		this.onOvoPaymentNumberChange = this.onOvoPaymentNumberChange.bind(this);
 		this.closeModalShippingAddress = this.closeModalShippingAddress.bind(this);
 		this.onTermChange = this.onTermChange.bind(this);
 		this.onInstallmentCCNumberChange = this.onInstallmentCCNumberChange.bind(this);
@@ -187,6 +191,7 @@ class Checkout extends Component {
 		this.onSetStateAddress = this.onSetStateAddress.bind(this);
 		this.getAffTracking = this.getAffTracking.bind(this);
 		this.okeoce = this.okeoce.bind(this);
+		this.checkOvoStatus = this.checkOvoStatus.bind(this);
 	}
 
 	componentWillMount() {
@@ -474,6 +479,10 @@ class Checkout extends Component {
 
 	onPaymentMethodChange(event) {
 		this.props.dispatch(changePaymentMethod(event.value, this.props.payments.paymentMethods, this.props.cookies.get('user.token')));
+		// set ovo payment number
+		if (event.value === 'e_wallet' && this.props.payments.ovoPhoneNumber) {
+			this.props.dispatch(changeOvoPaymentNumber(this.props.payments.ovoPhoneNumber));
+		}
 	}
 
 	onPaymentOptionChange(event, paymentMethod) {
@@ -739,9 +748,16 @@ class Checkout extends Component {
 		dispatch(ecashModalBoxOpen(false));
 	}
 
-	onOvoNumberChange(event) {
+	// for linkage
+	onOvoNumberChange(ovoNumber) {
 		const { dispatch } = this.props;
-		dispatch(changeOvoNumber(event.target.value));
+		dispatch(changeOvoNumber(ovoNumber));
+	}
+
+	// for pay order
+	onOvoPaymentNumberChange(phoneNumber) {
+		const { dispatch } = this.props;
+		dispatch(changeOvoPaymentNumber(phoneNumber));
 	}
 
 	onTermChange(term) {
@@ -787,6 +803,37 @@ class Checkout extends Component {
 			case paymentMethodName.COMMERCE_SPRINT_ASIA:
 				mode = 'sprint';
 				this.onRequestSprintInstallment(mode);
+				break;
+			case paymentMethodName.E_WALLET:
+				if (this.props.payments.ovoPaymentNumber) {
+					dispatch(
+						pay(
+							this.props.cookies.get('user.token'),
+							this.props.soNumber,
+							this.props.payments.selectedPaymentOption === false ? this.state.selectedPayment : this.props.payments.selectedPaymentOption,
+							{
+								e_wallet: {
+									id: this.props.payments.ovoPaymentNumber
+								},
+								ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
+								billingPhoneNumber: this.props.payments.billingPhoneNumber
+							},
+							this.props.payments.selectedPaymentOption.uniqueConstant,
+							false,
+							false,
+							this.getAffTracking()
+						)
+					).then(() => {
+						this.setState({
+							showModalOvo: true
+						});
+					})
+					.catch(() => {
+						this.setState({
+							showModalOvo: true
+						});
+					});
+				}
 				break;
 			default:
 				if (this.props.payments.selectedPaymentOption) {
@@ -1181,6 +1228,18 @@ class Checkout extends Component {
 		dispatch(updateGosend(this.props.cookies.get('user.token'), storeId, methodId, this.props));
 	}
 
+	checkOvoStatus(tick) {
+		const { dispatch } = this.props;
+		if (tick % 5 === 0) {
+			dispatch(checkStatusOvoPayment(this.props.cookies.get('user.token'), this.props.soNumber, this.props.payments.ovoPaymentNumber, tick < 1));
+		}
+		if (tick === 0) {
+			this.setState({
+				showModalOvo: false
+			});
+		} 
+	}
+
 	render() {
 		const {
 			enableAlamatPengiriman,
@@ -1286,6 +1345,7 @@ class Checkout extends Component {
 										tahun={this.state.tahun}
 										onBankChange={this.onBankChange}
 										onOvoNumberChange={this.onOvoNumberChange}
+										onOvoPaymentNumberChange={this.onOvoPaymentNumberChange}
 										onBillingNumberChange={this.onBillingNumberChange}
 										onTermChange={this.onTermChange}
 										onInstallmentCCNumberChange={this.onInstallmentCCNumberChange}
@@ -1337,9 +1397,11 @@ class Checkout extends Component {
 						onClose={this.onVt3dsModalBoxClose}
 					/>
 					{
-						false && (
+						this.state.showModalOvo && (
 							<OvoCountDownModal
+								shown={this.state.showModalOvo}
 								secondsRemaining={30}
+								tick={(e) => this.checkOvoStatus(e)}
 								finishCountdown={() => console.log('finish')}
 							/>
 						)

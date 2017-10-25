@@ -179,6 +179,13 @@ const ovoNumberChange = (ovoPhoneNumber) => ({
 	}
 });
 
+const ovoPaymentNumberChange = (ovoPaymentNumber) => ({
+	type: constants.PAY_CHANGE_OVO_PAYMENT_NUMBER,
+	payload: {
+		ovoPaymentNumber
+	}
+});
+
 const billingNumberChange = (billingPhoneNumber, billingPhoneNumberEdited) => ({
 	type: constants.PAY_CHANGE_BILLING_NUMBER,
 	payload: {
@@ -346,7 +353,7 @@ const changePaymentMethod = (paymentMethod, data, token) => dispatch => {
 		setTimeout(() => {
 			dispatch(paymentOptionReset(false));
 		}, 10);
-		if (selectedPayment.value === 'cod' || selectedPayment.value === 'gratis' || selectedPayment.value === 'installment') {
+		if (selectedPayment.value === 'cod' || selectedPayment.value === 'gratis' || selectedPayment.value === 'installment' || selectedPayment.value === 'e_wallet') {
 			const selectedPaymentOption = getAvailabelPaymentSelection(selectedPayment);
 			dispatch(changePaymentOption(selectedPaymentOption, token));
 		} else {
@@ -491,6 +498,10 @@ const changeOvoNumber = (ovoPhoneNumber) => dispatch => {
 	dispatch(ovoNumberChange(ovoPhoneNumber));
 };
 
+const changeOvoPaymentNumber = (ovoPaymentNumber) => dispatch => {
+	dispatch(ovoPaymentNumberChange(ovoPaymentNumber));
+};
+
 const changeBillingNumber = (billingPhoneNumber, billingPhoneNumberEdited = false) => dispatch => {
 	dispatch(billingNumberChange(billingPhoneNumber, billingPhoneNumberEdited));
 };
@@ -510,6 +521,29 @@ const getSoNumberFromResponse = (soNumber, response) => {
 		return (typeof orderString[1] !== 'undefined') ? orderString[1] : soNumber;
 	}
 	return soNumber;
+};
+
+const checkStatusOvoPayment = (token, soNumber, ovoPaymentNumber, isShowInvalidPayment = false) => (dispatch) => {
+	return request({
+		token,
+		path: `payments/status?order_number=${soNumber}`,
+		method: 'GET',
+	}).then((response) => {
+		console.log(response);
+		const res = response.data;
+		if (response.status === 200) {
+			const statusPayment = res.data.status_code;
+			if (statusPayment === 'success') {
+				dispatch(payReceived(soNumber, response.data, 'complete', false, 'www.123.com'));	
+			} else if (statusPayment === 'waiting') {
+				if (isShowInvalidPayment) {
+					dispatch(payError(isShowInvalidPayment));
+				}
+			}
+		}
+	}).catch((error) => {
+		dispatch(payError(getError(error)));
+	});
 };
 
 const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete', card = false, callback = false, aff = {
@@ -660,11 +694,13 @@ export default {
 	changeBillingNumber,
 	ecashModalBoxOpen,
 	changeOvoNumber,
+	changeOvoPaymentNumber,
 	saveCC,
 	payError,
 	paymentOptionReset,
 	termsAndConditionChange,
 	pay,
 	applyBin,
-	getAvailabelPaymentSelection
+	getAvailabelPaymentSelection,
+	checkStatusOvoPayment
 };

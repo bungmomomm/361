@@ -29,6 +29,7 @@ export default class OvoCountDownModal extends Component {
 			this.props.finishCountdown();
 		} else {
 			const time = this.state.countdown - 1;
+			this.props.tick(time);
 			this.setState({ countdown: time });
 		}
 	}
