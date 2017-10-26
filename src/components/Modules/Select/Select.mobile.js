@@ -129,9 +129,7 @@ class SelectMobile extends Component {
 				onClick={() => this.selectOption(option)}
 				className={this.state.selected.value === option.value ? styles.selectedOption : ''}
 			>
-				<span className={styles.text}>
-					{ option.label}
-				</span>
+				<span className={styles.text}>{option.label}</span>
 			</button>
 		));
 		return template;

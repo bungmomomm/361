@@ -59,6 +59,8 @@ class stepOne extends Component {
 	componentDidMount() {
 		if (this.props.addresses === undefined) {
 			this.constructor.fetchDataAddress(this.cookies, this.props.dispatch);
+		} else {
+			this.setShipping(this.props.addresses);
 		}
 	}
 

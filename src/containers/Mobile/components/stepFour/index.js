@@ -220,7 +220,7 @@ class StepFour extends Component {
 					</InputGroup>
 					<div className={styles.checkOutAction}>
 						<Checkbox defaultChecked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />
-						<Button block size='large' color='red' content='Bayar Sekarang' />
+						<Button disabled block size='large' color='red' content='Bayar Sekarang' />
 					</div>
 				</div>
 			</Card>

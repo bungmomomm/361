@@ -136,6 +136,38 @@
 	}
 }
 
+.isMobile{
+	.area{
+		position: fixed;
+		transform: none;
+		left: 0px;
+		top: 0px;
+		height: 100%;
+		width: 100%;
+		background: rgba(0,0,0,0.7);
+		justify-content: center;
+		display: none;
+		opacity: 0;
+		transition: all 0.3s ease;
+		&:hover{
+			display: flex;
+			opacity: 1;
+		}
+		&:active{
+			display: none;
+			opacity: 0;
+		}
+		span{
+			background: #fff;
+			padding: 20px;
+			border-radius: 4px;
+			color: #000;
+			width: 80%;
+			align-self: center;
+		}
+	}
+}
+
 .tooltipContainer{
 	&:after {
 		display: block;

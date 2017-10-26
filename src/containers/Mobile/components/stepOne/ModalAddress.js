@@ -348,7 +348,7 @@ class ModalAddress extends Component {
 										<div>
 											<InputGroup>
 												<Alert color='yellow' show>
-													<small><em>{`${T.checkout.O2O_ADDRESS_RULE}`}</em></small>
+													<small><em>{T.checkout.O2O_ADDRESS_RULE}</em></small>
 												</Alert>
 											</InputGroup>
 											<InputGroup>
