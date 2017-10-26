@@ -830,7 +830,7 @@ class Checkout extends Component {
 					})
 					.catch(() => {
 						this.setState({
-							showModalOvo: true
+							showModalOvo: false
 						});
 					});
 				}
@@ -1231,7 +1231,7 @@ class Checkout extends Component {
 	checkOvoStatus(tick) {
 		const { dispatch } = this.props;
 		if (tick % 5 === 0) {
-			dispatch(checkStatusOvoPayment(this.props.cookies.get('user.token'), this.props.soNumber, this.props.payments.ovoPaymentNumber, tick < 1));
+			dispatch(checkStatusOvoPayment(this.props.cookies.get('user.token'), this.props.soNumber, this.props.payments.ovoPaymentNumber, tick < 1, this.state.selectedAddress));
 		}
 		if (tick === 0) {
 			this.setState({

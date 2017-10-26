@@ -1,6 +1,7 @@
 import * as constants from './constants';
 import { getListAvailablePaymentMethod, getPaymentPayload, getSprintPayload } from './models';
 import { request } from '@/utils';
+import { getPlaceOrderCart } from '@/state/Payment/actions';
 import { getCartPaymentData } from '@/state/Cart/models';
 
 const availablePaymentMethodRequest = () => ({
@@ -523,7 +524,7 @@ const getSoNumberFromResponse = (soNumber, response) => {
 	return soNumber;
 };
 
-const checkStatusOvoPayment = (token, soNumber, ovoPaymentNumber, isShowInvalidPayment = false) => (dispatch) => {
+const checkStatusOvoPayment = (token, soNumber, ovoPaymentNumber, isShowInvalidPayment = false, selectedAddress) => (dispatch) => {
 	return request({
 		token,
 		path: `payments/status?order_number=${soNumber}`,
@@ -537,7 +538,8 @@ const checkStatusOvoPayment = (token, soNumber, ovoPaymentNumber, isShowInvalidP
 				dispatch(payReceived(soNumber, response.data, 'complete', false, 'www.123.com'));	
 			} else if (statusPayment === 'waiting') {
 				if (isShowInvalidPayment) {
-					dispatch(payError(isShowInvalidPayment));
+					dispatch(payError('Pembayaran Anda belum berhasil coba lagi atau gunakan metode pembayaran lainnya'));
+					dispatch(getPlaceOrderCart(token, selectedAddress));
 				}
 			}
 		}
