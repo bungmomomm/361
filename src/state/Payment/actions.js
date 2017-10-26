@@ -142,7 +142,7 @@ const payError = (error) => ({
 const paymentOvoFailed = (status) => ({
 	type: constants.PAY_OVO_FAILED,
 	payload: {
-		paymentOvoFailed: true
+		paymentOvoFailed: status
 	}
 });
 
@@ -550,12 +550,9 @@ const checkStatusOvoPayment = (checkStatusUrl, token, soNumber, ovoPaymentNumber
 					dispatch(payError('Pembayaran Anda belum berhasil coba lagi atau gunakan metode pembayaran lainnya'));
 				}
 				break;
-			case 'failed':
+			default: 
 				dispatch(payError('Pembayaran Anda belum berhasil coba lagi atau gunakan metode pembayaran lainnya'));
 				dispatch(paymentOvoFailed(statusPayment));
-				break;
-			default: 
-				dispatch(payError(getError(response)));
 			}
 		}
 	}).catch((error) => {
