@@ -482,8 +482,9 @@ class Checkout extends Component {
 	onPaymentMethodChange(event) {
 		this.props.dispatch(changePaymentMethod(event.value, this.props.payments.paymentMethods, this.props.cookies.get('user.token')));
 		// set ovo payment number
-		if (event.value === 'e_wallet' && this.props.payments.ovoInfo.ovoFlag === '1') {
-			this.props.dispatch(changeOvoPaymentNumber(this.props.payments.ovoPhoneNumber));
+		if (event.value === 'e_wallet') {
+			const phonePayment = this.props.payments.ovoInfo.ovoFlag === '1' ? this.props.payments.ovoPhoneNumber : '';
+			this.props.dispatch(changeOvoPaymentNumber(phonePayment));
 		}
 	}
 

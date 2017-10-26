@@ -528,7 +528,7 @@ export default class CardPembayaran extends Component {
 		let numberOfCard = 0;
 		const minNumberOfCard = 0;
 		numberOfCard = (selectedPayment.value === paymentGroupName.CREDIT_CARD) ? selectedPayment.cards : 0;
-		const isOvoPayemnt = this.props.payments.paymentMethod === 'e_wallet';
+		const isOvoPayemnt = this.props.payments.paymentMethod === 'e_wallet_ovo';
 		const validOvo = isOvoPayemnt ? this.state.ovo.ovoPhonePaymentValid : true;
 		const ovoReadOnly = (this.props.payments.ovoInfo && parseInt(this.props.payments.ovoInfo.ovoFlag, 10) === 1);
 		const disabledPayment = ((this.props.payments.selectedPaymentOption === null || !this.props.payments.selectedPaymentOption) || (this.props.payments.billingPhoneNumber === null || this.props.payments.billingPhoneNumber === '') || !this.props.payments.termsAndConditionChecked || !this.state.validInstallmentBin || !validOvo);
