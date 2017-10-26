@@ -25,8 +25,9 @@ const PAY_SAVE_CC = 'PAY_SAVE_CC';
 const PAY_INSTALLMENT_CREDIT_CARD_ADD = 'PAY_INSTALLMENT_CREDIT_CARD_ADD';
 const PAY_TOTAL_CHANGE = 'PAY_TOTAL_CHANGE';
 const RESET_PAYMENT_METHOD = -1;
+const PAY_OVO_FAILED = 'PAY_OVO_FAILED';
 const paymentGroupName = {
-	E_WALLET: 'e_wallet',
+	OVO: 'e_wallet',
 	BANK_TRANSFER: 'bank_transfer',
 	CREDIT_CARD: 'credit_card',
 	INSTALLMENT: 'installment',
@@ -37,7 +38,7 @@ const paymentGroupName = {
 };
 
 const paymentMethodName = {
-	E_WALLET: 'e_wallet',
+	OVO: 'e_wallet_ovo',
 	VIRTUAL_ACCOUNT: 'virtual_account',
 	BANK_TRANSFER: 'bank_transfer',
 	COMMERCE_VERITRANS: 'commerce_veritrans',
@@ -77,5 +78,6 @@ export default {
 	RESET_PAYMENT_METHOD,
 	paymentGroupName,
 	paymentMethodName,
-	PAY_TOTAL_CHANGE
+	PAY_TOTAL_CHANGE,
+	PAY_OVO_FAILED
 };

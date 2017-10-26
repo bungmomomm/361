@@ -44,7 +44,8 @@ const initialState = {
 	paymentMethods: {
 		methods: [],
 		payments: {}
-	}
+	},
+	paymentOvoFailed: false
 };
 
 export default (state = initialState, action) => {
@@ -399,6 +400,12 @@ export default (state = initialState, action) => {
 			paymentError: true,
 			isConfirm: true,
 			totalRequest: action.payload.totalRequest
+		};
+	}	
+	case constants.PAY_OVO_FAILED: {
+		return {
+			...state,
+			paymentOvoFailed: action.payload.paymentOvoFailed
 		};
 	}
 	default:

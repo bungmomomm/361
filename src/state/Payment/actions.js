@@ -139,6 +139,13 @@ const payError = (error) => ({
 	}
 });
 
+const paymentOvoFailed = (status) => ({
+	type: constants.PAY_OVO_FAILED,
+	payload: {
+		paymentOvoFailed: true
+	}
+});
+
 const toggleVtModalBox = (state, url) => ({
 	type: constants.PAY_VT_MODAL_BOX_TOGGLE,
 	status: state,
@@ -344,6 +351,7 @@ const paymentOptionReset = (status) => dispatch => {
 };
 
 const changePaymentMethod = (paymentMethod, data, token) => dispatch => {
+	dispatch(paymentOvoFailed(false));
 	if (!paymentMethod) {
 		dispatch(paymentMethodChanged(false));
 	} else {
@@ -530,16 +538,24 @@ const checkStatusOvoPayment = (checkStatusUrl, token, soNumber, ovoPaymentNumber
 		fullpath: true,
 		method: 'GET',
 	}).then((response) => {
-		console.log(response);
 		const res = response.data;
 		if (response.status === 200) {
 			const statusPayment = res.data.status_code;
-			if (statusPayment === 'success') {
-				dispatch(payReceived(soNumber, response.data, 'complete', false, 'www.123.com'));	
-			} else if (statusPayment === 'waiting') {
+			switch (statusPayment) {
+			case 'success':
+				dispatch(payReceived(soNumber, response.data, 'complete'));		
+				break;
+			case 'waiting':
 				if (isShowInvalidPayment) {
 					dispatch(payError('Pembayaran Anda belum berhasil coba lagi atau gunakan metode pembayaran lainnya'));
 				}
+				break;
+			case 'failed':
+				dispatch(payError('Pembayaran Anda belum berhasil coba lagi atau gunakan metode pembayaran lainnya'));
+				dispatch(paymentOvoFailed(statusPayment));
+				break;
+			default: 
+				dispatch(payError(getError(response)));
 			}
 		}
 	}).catch((error) => {

@@ -474,7 +474,7 @@ export default class CardPembayaran extends Component {
 					</Level>
 				]);
 				break;
-			case paymentGroupName.E_WALLET:
+			case paymentGroupName.OVO:
 				paymentOptions = (
 					<InputGroup>
 						{

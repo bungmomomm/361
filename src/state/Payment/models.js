@@ -193,7 +193,7 @@ const getListAvailablePaymentMethod = (response) => {
 			});
 			break;
 
-		case paymentGroupName.E_WALLET:
+		case paymentGroupName.OVO:
 			methodData = 
 			{
 				...methodData,
@@ -339,7 +339,7 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode, saveCC = false
 		break;
 	case paymentMethodName.POS_PAY:
 		break;
-	case paymentMethodName.E_WALLET:
+	case paymentMethodName.OVO:
 		paymentPayload.attributes.payment_method = mode;
 		paymentPayload.attributes.e_wallet = paymentDetail.e_wallet;
 		break;

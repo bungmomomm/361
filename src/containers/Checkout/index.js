@@ -482,7 +482,7 @@ class Checkout extends Component {
 	onPaymentMethodChange(event) {
 		this.props.dispatch(changePaymentMethod(event.value, this.props.payments.paymentMethods, this.props.cookies.get('user.token')));
 		// set ovo payment number
-		if (event.value === 'e_wallet' && this.props.payments.ovoPhoneNumber) {
+		if (event.value === 'e_wallet' && this.props.payments.ovoInfo.ovoFlag === '1') {
 			this.props.dispatch(changeOvoPaymentNumber(this.props.payments.ovoPhoneNumber));
 		}
 	}
@@ -808,7 +808,7 @@ class Checkout extends Component {
 				mode = 'sprint';
 				this.onRequestSprintInstallment(mode);
 				break;
-			case paymentMethodName.E_WALLET:
+			case paymentMethodName.OVO:
 				if (this.props.payments.ovoPaymentNumber) {
 					dispatch(
 						pay(
@@ -1236,11 +1236,18 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 		const params = this.props.payments.selectedPaymentOption.settings.checkParams.join('&');
 		const checkStatusUrl = this.props.payments.selectedPaymentOption.settings.checkUrl;
+		if (this.props.payments.paymentOvoFailed) {
+			this.setState({
+				showModalOvo: false
+			});
+			dispatch(changeOvoPaymentNumber());
+		} 
 		if (tick % 5 === 0) {
 			dispatch(checkStatusOvoPayment(`${checkStatusUrl}${params}`, this.props.cookies.get('user.token'), this.props.soNumber, this.props.payments.ovoPaymentNumber, tick < 1, this.state.selectedAddress))
 			.then(() => {
 				if (tick === 0 && this.state.selectedAddress) {
 					dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
+					dispatch(changeOvoPaymentNumber());
 				}
 			})
 			.catch(() => {});
