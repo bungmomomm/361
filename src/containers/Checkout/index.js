@@ -1234,8 +1234,16 @@ class Checkout extends Component {
 
 	checkOvoStatus(tick) {
 		const { dispatch } = this.props;
+		const params = this.props.payments.selectedPaymentOption.settings.checkParams.join('&');
+		const checkStatusUrl = this.props.payments.selectedPaymentOption.settings.checkUrl;
 		if (tick % 5 === 0) {
-			dispatch(checkStatusOvoPayment(this.props.cookies.get('user.token'), this.props.soNumber, this.props.payments.ovoPaymentNumber, tick < 1, this.state.selectedAddress));
+			dispatch(checkStatusOvoPayment(`${checkStatusUrl}${params}`, this.props.cookies.get('user.token'), this.props.soNumber, this.props.payments.ovoPaymentNumber, tick < 1, this.state.selectedAddress))
+			.then(() => {
+				if (tick === 0 && this.state.selectedAddress) {
+					dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
+				}
+			})
+			.catch(() => {});
 		}
 		if (tick === 0) {
 			this.setState({
