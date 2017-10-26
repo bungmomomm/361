@@ -634,18 +634,21 @@ export default class CardPembayaran extends Component {
 						<InputGroup>
 							<Input label='SMS Konfirmasi pembayaran' min={0} type='number' value={billingPhoneNumber || ''} placeholder={billingPhoneNumber || 'No Telp Penagihan'} onChange={(event) => this.props.onBillingNumberChange(event)} />
 						</InputGroup>
-                        {
-                            !isOvoPayemnt || (!this.state.ovo.autoLinkage && isOvoPayemnt) ?
-
-                                <InputGroup>
-                                    <Input
-                                        value={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''}
-                                        placeholder={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''}
-                                        label='Masukkan no HP yang terdaftar di OVO / OVO ID / No Matahari Rewards / HiCard ID untuk mendapatkan point rewards.'
-                                        type='number' min={0} onChange={(event) => this.props.onOvoNumberChange(event)}
-                                        readOnly={ovoReadOnly} disabled={ovoReadOnly}/>
-                                </InputGroup> : ''
-                        }
+						{
+							!isOvoPayemnt || (!this.state.ovo.autoLinkage && isOvoPayemnt) ?
+								<InputGroup>
+									<Input
+										value={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''}
+										placeholder={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''}
+										label='Masukkan no HP yang terdaftar di OVO / OVO ID / No Matahari Rewards / HiCard ID untuk mendapatkan point rewards.'
+										type='number' 
+										min={0} 
+										onChange={(event) => this.props.onOvoNumberChange(event)}
+										readOnly={ovoReadOnly} 
+										disabled={ovoReadOnly} 
+									/>
+								</InputGroup> : ''
+						}
 						<div className={styles.checkOutAction}>
 							<Checkbox defaultChecked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' onClick={(state, value) => this.props.onTermsAndConditionChange(state, value)} />
 							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' loading={loading} disabled={disabledPayment} />
