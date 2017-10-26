@@ -25,8 +25,10 @@ export default class Select extends Component {
 		this.setOptions = this.setOptions.bind(this);
 		this.hideDropdown = this.hideDropdown.bind(this);
 		this.defaultSelected = this.props.options[0];
-	}
 
+		this.handleOutsideClick = this.handleOutsideClick.bind(this);
+	}
+	
 	componentWillReceiveProps(nextProps) {
 		if (this.state.showOption !== nextProps.shown) {
 			this.setState({
@@ -81,6 +83,11 @@ export default class Select extends Component {
 			options: this.props.options,
 			showOption: !this.state.showOption
 		});
+		if (!this.state.showOption) {
+			document.addEventListener('click', this.handleOutsideClick, false);
+		} else {
+			document.removeEventListener('click', this.handleOutsideClick, false);
+		}
 	}
 
 	setSelectOption(selected) {
@@ -95,6 +102,14 @@ export default class Select extends Component {
 				value: selected.value
 			};
 			this.props.onChange(withName);
+		}
+	}
+	
+	handleOutsideClick(e) {
+		if (this.node) {
+			if (!this.node.contains(e.target)) {
+				this.setState({ showOption: false });
+			}
 		}
 	}
 
@@ -186,13 +201,7 @@ export default class Select extends Component {
 		);
 
 		return (
-			<div className={SelectWrapper}>
-				<div 
-					role='button' 
-					tabIndex={0} 
-					onClick={this.hideDropdown} 
-					className={styles.overlay}
-				/>
+			<div className={SelectWrapper} ref={node => { this.node = node; }}>
 				{LabelElement} 
 				<div className={styles.selectedContainer}>
 					<button 
