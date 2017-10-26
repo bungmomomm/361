@@ -64,6 +64,7 @@ export default class CardPembayaran extends Component {
 			voucherCode: null,
 			validVoucher: false,
 			reset: null,
+			validInstallmentBin: true,
 			ovo: {
 				useDefault: true,
 				ovoPhonePayment: null,
@@ -133,6 +134,9 @@ export default class CardPembayaran extends Component {
 		});
 		this.props.onPaymentMethodChange(event);
 		if (event.value) {
+			this.setState({
+				validInstallmentBin: event.value !== 'installment'
+			});
 			pushDataLayer('checkout', 'checkout', { step: 6, option: event.label });
 		}
 		this.onResetOvoPayment(event.value);
@@ -174,7 +178,6 @@ export default class CardPembayaran extends Component {
 		this.props.onCardCvvChange(data);
 	}
 	onInstallmentBankChange(data) {
-		console.log(data);
 		this.setState({
 			paymentMethodChanged: true
 		});
@@ -189,7 +192,30 @@ export default class CardPembayaran extends Component {
 	}
 
 	onInstallmentCCNumberChange(event) {
-		this.props.onInstallmentCCNumberChange(event);
+		if (event.ccNumber.length < 1) {
+			this.setState({
+				validInstallmentBin: true
+			});
+		} else {
+			const bank = (!this.props.payments.selectedBank) ? 'mandiri' : this.props.payments.selectedBank.value.value;
+			const installmentBin = this.props.blockContent.filter(e => parseInt(e.id, 10) === 660)[0] || null;
+
+			if (installmentBin) {
+				const installmentBinBank = JSON.parse(installmentBin.attributes.block)[`${bank.replace(' ', '_').toUpperCase()}`];
+				const checkingBin = installmentBinBank.filter(e => event.ccNumber.startsWith(e));
+
+				if (checkingBin.length > 0) {
+					this.props.onInstallmentCCNumberChange(event);
+					this.setState({
+						validInstallmentBin: true
+					});
+				} else {
+					this.setState({
+						validInstallmentBin: false
+					});
+				}
+			}
+		}
 	}
 	onInstallmentCCMonthChange(data) {
 		this.props.onInstallmentCCMonthChange(data);
@@ -297,8 +323,10 @@ export default class CardPembayaran extends Component {
 			selectedPaymentOption,
 			twoClickEnabled,
 			resetPaymentOption,
-			selectedCard
+			selectedCard,
+			selectedBank
 		} = this.props.payments;
+
 		let couponId = false;
 		if (this.props.validCoupon && this.props.coupon !== '') {
 			couponId = this.props.coupon;
@@ -406,7 +434,8 @@ export default class CardPembayaran extends Component {
 					<InputGroup>
 						{
 							selectedPayment.paymentItems.map((installment, index) => {
-
+								const bankIndex = installment.banks.filter(e => e.name.toUpperCase() === selectedBank.label.toUpperCase())[0];
+								const ix = bankIndex.id ? bankIndex.id : 0;
 								return (
 									<div key={index}>
 										<InputGroup>
@@ -415,7 +444,7 @@ export default class CardPembayaran extends Component {
 										</InputGroup>
 										<InputGroup>
 											<p>Pilih Lama Cicilan</p>
-											<Select key={index} emptyFilter={false} name='bank' selectedLabel='---' options={installment.banks[index].listCicilan} onChange={this.onTermChange} />
+											<Select key={index} emptyFilter={false} name='bank' selectedLabel='---' options={installment.banks[ix].listCicilan} onChange={this.onTermChange} />
 										</InputGroup>
 									</div>
 								);
@@ -426,7 +455,7 @@ export default class CardPembayaran extends Component {
 
 				paymentOptions = ([
 					<InputGroup>
-						<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onChange={this.onInstallmentCCNumberChange} />
+						<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' message={this.state.validInstallmentBin ? null : 'Masukan no kartu kredit yang sesuai'} color={this.state.validInstallmentBin ? null : 'red'} onChange={this.onInstallmentCCNumberChange} />
 					</InputGroup>,
 					<label htmlFor='masa-berlaku'>Masa Berlaku</label>,
 					<Level padded>
@@ -449,7 +478,7 @@ export default class CardPembayaran extends Component {
 				paymentOptions = (
 					<InputGroup>
 						{
-							(this.props.payments.ovoInfo && parseInt(this.props.payments.ovoInfo.ovoFlag, 10) === 1) ? 
+							(this.props.payments.ovoInfo && parseInt(this.props.payments.ovoInfo.ovoFlag, 10) === 1) ?
 								<div>
 									<InputGroup>
 										<CreditCardRadio name='cc' variant='list' value={this.props.payments.ovoPhoneNumber} checked={this.state.ovo.useDefault} content={this.props.payments.ovoPhoneNumber} sprites='ovo' onClick={this.setDefaultOvo} />
@@ -465,7 +494,7 @@ export default class CardPembayaran extends Component {
 											</InputGroup>
 									}
 								</div>
-							: 
+							:
 								<div>
 									<InputGroup>
 										<Input color={this.state.ovo.ovoPhonePaymentValid ? 'green' : null} value={this.props.payments.ovoPaymentNumber} name='ovo_phone_payment' icon={this.state.ovo.ovoPhonePaymentValid ? 'check' : null} min={0} max={16} type='number' placeholder={'Masukan No Hp yang terdaftar di OVO'} onChange={this.onOvoPaymentNumberChange} />
@@ -474,7 +503,7 @@ export default class CardPembayaran extends Component {
 										<Checkbox defaultChecked={this.state.ovo.autoLinkage} content='Simpan untuk transaksi berikutnya & otomatis terhubung ke akun OVO' onClick={this.setAutoLinkage} />
 									</InputGroup>
 								</div>
-						}	
+						}
 					</InputGroup>
 				);
 				break;
@@ -502,7 +531,7 @@ export default class CardPembayaran extends Component {
 		const isOvoPayemnt = this.props.payments.paymentMethod === 'e_wallet';
 		const validOvo = isOvoPayemnt ? this.state.ovo.ovoPhonePaymentValid : true;
 		const ovoReadOnly = (this.props.payments.ovoInfo && parseInt(this.props.payments.ovoInfo.ovoFlag, 10) === 1);
-		const disabledPayment = ((this.props.payments.selectedPaymentOption === null || !this.props.payments.selectedPaymentOption) || (this.props.payments.billingPhoneNumber === null || this.props.payments.billingPhoneNumber === '') || !this.props.payments.termsAndConditionChecked || !validOvo);
+		const disabledPayment = ((this.props.payments.selectedPaymentOption === null || !this.props.payments.selectedPaymentOption) || (this.props.payments.billingPhoneNumber === null || this.props.payments.billingPhoneNumber === '') || !this.props.payments.termsAndConditionChecked || !this.state.validInstallmentBin || !validOvo);
 		const billingPhoneNumber = this.props.addressTabActive && this.props.payments.billingPhoneNumber ? this.props.payments.billingPhoneNumber : null;
 		return (
 			<Card stretch loading={this.props.loading} >
@@ -605,12 +634,18 @@ export default class CardPembayaran extends Component {
 						<InputGroup>
 							<Input label='SMS Konfirmasi pembayaran' min={0} type='number' value={billingPhoneNumber || ''} placeholder={billingPhoneNumber || 'No Telp Penagihan'} onChange={(event) => this.props.onBillingNumberChange(event)} />
 						</InputGroup>
-						{
-							!isOvoPayemnt || (!this.state.ovo.autoLinkage && isOvoPayemnt) ? 
-								<InputGroup>
-									<Input value={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''} placeholder={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : 'Masukkan nomor Hp yang terdaftar di OVO'} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' type='number' min={0} onChange={(event) => this.props.onOvoNumberChange(event.target.value)} readOnly={ovoReadOnly} disabled={ovoReadOnly} />
-								</InputGroup> : ''
-						}
+                        {
+                            !isOvoPayemnt || (!this.state.ovo.autoLinkage && isOvoPayemnt) ?
+
+                                <InputGroup>
+                                    <Input
+                                        value={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''}
+                                        placeholder={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''}
+                                        label='Masukkan no HP yang terdaftar di OVO / OVO ID / No Matahari Rewards / HiCard ID untuk mendapatkan point rewards.'
+                                        type='number' min={0} onChange={(event) => this.props.onOvoNumberChange(event)}
+                                        readOnly={ovoReadOnly} disabled={ovoReadOnly}/>
+                                </InputGroup> : ''
+                        }
 						<div className={styles.checkOutAction}>
 							<Checkbox defaultChecked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' onClick={(state, value) => this.props.onTermsAndConditionChange(state, value)} />
 							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' loading={loading} disabled={disabledPayment} />

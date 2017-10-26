@@ -1,7 +1,8 @@
 import * as constants from './constants';
 
 const initialState = {
-	showDialog: false
+	showDialog: false,
+	blockContents: null,
 };
 
 export default (state = initialState, action) => {
@@ -17,6 +18,13 @@ export default (state = initialState, action) => {
 			...initialState,
 			...state,
 			showDialog: action.payload.opened
+		};
+	}
+	case constants.GLOBAL_BLOCK_CONTENT: {
+		return {
+			...initialState,
+			...state,
+			blockContent: action.payload.blockContent
 		};
 	}
 	default: 

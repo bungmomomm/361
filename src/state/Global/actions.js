@@ -1,3 +1,4 @@
+import { request } from '@/utils';
 import * as constants from './constants';
 
 const toggleDialog = (state) => ({
@@ -7,10 +8,41 @@ const toggleDialog = (state) => ({
 	}
 });
 
+const receivedBlockContent = (data) => ({
+	type: constants.GLOBAL_BLOCK_CONTENT,
+	payload: {
+		blockContent: data
+	}
+});
+
 const dialogOpen = (state) => dispatch => {
 	dispatch(toggleDialog(state));
 };
 
+const getBlockContents = (token, ids) => dispatch => {
+	request({
+		token,
+		path: 'block-content',
+		method: 'POST',
+		body: {
+			data: {
+				attributes: {
+					block_id: ids
+				}
+			}
+		}
+	}).then((response) => {
+		if (response.data.data) {
+			dispatch(receivedBlockContent(response.data.included));
+		} else {
+			dispatch(receivedBlockContent([]));	
+		}
+	}).catch((error) => {
+		dispatch(receivedBlockContent([]));
+	});
+};
+
 export default {
-	dialogOpen
+	dialogOpen,
+	getBlockContents
 };
