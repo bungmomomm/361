@@ -77,11 +77,12 @@ class stepOne extends Component {
 			shipping.push({
 				value: value.id,
 				label: !value.attributes.addressLabel ? value.attributes.fullname : value.attributes.addressLabel,
-				info: `<strong>${value.attributes.fullname}</strong> <br />${
-						value.attributes.address 
-						}${value.attributes.district  
-						}${value.attributes.city 
-						}${value.attributes.province}`
+				info:	`<p><strong>${value.attributes.fullname}</strong></p>
+						<p>${value.attributes.address}</p>
+						<p>${value.attributes.district}</p>
+						<p>${value.attributes.city}</p>
+						<p>${value.attributes.province}</p>
+						`
 			})
 		));
 		this.saveSelectedAddress(this.currentAddresses[0]);
@@ -165,7 +166,7 @@ class stepOne extends Component {
 									<Segment>
 										<InputGroup>
 											<Select 
-												filter 
+												addressDetail
 												options={shipping}
 												onChange={(id) => this.setSelectedAddress(id)}
 												selected={this.constructor.mapSelectedAddress(this.state.selectedAddress)}
@@ -284,7 +285,7 @@ class stepOne extends Component {
 				{
 					showModalAddress && (
 						<ModalAddress 
-							formData={this.flagModalAddress === 'edit' ? selectedAddress : null}
+							formData={this.flagModalAddress === 'edit' && selectedAddress}
 							handleClose={() => this.hideModalAddress()} 
 						/>
 					)

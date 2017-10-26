@@ -100,7 +100,7 @@ class Gosend extends Component {
 						<span>{this.state.formattedAddress}</span>
 					</div>
 					<Alert align='center' color='red' show>
-						<em>Lokasi tidak sesuai dengan alamat pengiriman</em>
+						<em>`${'Lokasi tidak sesuai dengan alamat pengiriman'}`</em>
 					</Alert>
 				</div>
 			</div>

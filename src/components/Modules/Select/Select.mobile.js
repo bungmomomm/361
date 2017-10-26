@@ -104,6 +104,24 @@ class SelectMobile extends Component {
 			));
 			return template;
 		}
+		
+		if (this.props.addressDetail) {
+			const template = this.state.options.map((option, i) => (
+				<div className={`${styles.addressDetail}`} key={i}>
+					<button 
+						type='button'
+						disabled={option.disabled}
+						onClick={() => this.selectOption(option)}
+						className={this.state.selected.value === option.value ? styles.selectedOption : ''}
+					>
+						<span className={styles.header}>{this.state.selected.value === option.value ? 'Alamat Utama' : 'Gunakan Alamat ini'}</span>
+						<span className={styles.text}>{ option.label}</span>
+						<span className={styles.info} dangerouslySetInnerHTML={{ __html: option.info }} />
+					</button>
+				</div>
+			));
+			return template;
+		}
 		const template = this.state.options.map((option, i) => (
 			<button 
 				key={i}
