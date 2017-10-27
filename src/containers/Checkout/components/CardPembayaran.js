@@ -326,11 +326,6 @@ export default class CardPembayaran extends Component {
 			selectedCard,
 			selectedBank
 		} = this.props.payments;
-<<<<<<< HEAD
-
-=======
-		console.log(this.state.validInstallmentBin);
->>>>>>> feature/MAP-5
 		let couponId = false;
 		if (this.props.validCoupon && this.props.coupon !== '') {
 			couponId = this.props.coupon;
