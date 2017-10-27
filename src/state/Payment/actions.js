@@ -540,13 +540,6 @@ const expirePayment = (token, soNumber) => (dispatch) => {
 		body: {
 			order_number: soNumber
 		}
-	}).then((response) => {
-		const res = response.data;
-		if (response.status === 200) {
-			console.log(res);
-		}
-	}).catch((error) => {
-		dispatch(payError(getError(error)));
 	});
 };
 
