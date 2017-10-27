@@ -130,7 +130,9 @@ class Checkout extends Component {
 			phoneNumber: null,
 			notifInfo: true,
 			appliedBin: null,
-			selectedPayment: false
+			selectedPayment: false,
+			ovoTimer: 30,
+			ovoInterval: 5
 		};
 
 		this.restrictO2oFlag = false;
@@ -485,6 +487,14 @@ class Checkout extends Component {
 		if (event.value === 'e_wallet') {
 			const phonePayment = this.props.payments.ovoInfo.ovoFlag === '1' ? this.props.payments.ovoPhoneNumber : '';
 			this.props.dispatch(changeOvoPaymentNumber(phonePayment));
+			const ovoMethod = this.props.payments.paymentMethods.availableMethods[18];
+
+			if (ovoMethod) {
+				this.setState({
+					ovoTimer: ovoMethod.settings.countdown,
+					ovoInterval: ovoMethod.settings.interval,
+				});
+			}
 		}
 	}
 
@@ -1268,7 +1278,7 @@ class Checkout extends Component {
 			dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
 			dispatch(changeOvoPaymentNumber());
 		} 
-		if (tick % 5 === 0) {
+		if (tick % this.state.ovoInterval === 0) {
 			dispatch(checkStatusOvoPayment(`${checkStatusUrl}${params}`, this.props.cookies.get('user.token'), this.props.soNumber, this.props.payments.ovoPaymentNumber, tick < 1))
 			.then(() => {
 				if (tick === 0 && this.state.selectedAddress) {
@@ -1445,7 +1455,7 @@ class Checkout extends Component {
 						this.state.showModalOvo && (
 							<OvoCountDownModal
 								shown={this.state.showModalOvo}
-								secondsRemaining={30}
+								secondsRemaining={this.state.ovoTimer}
 								tick={(e) => this.checkOvoStatus(e)}
 							/>
 						)

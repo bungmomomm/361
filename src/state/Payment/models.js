@@ -206,6 +206,8 @@ const getListAvailablePaymentMethod = (response) => {
 				if (parseInt(paymentData.fg_default, 10) === 1) {
 					methodData.selected = true;
 				}
+				methodData.disabled = !parseInt(payment.attributes.fg_enable, 10);
+				methodData.message = payment.attributes.disable_message;
 
 				return paymentData;
 			});

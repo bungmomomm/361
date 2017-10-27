@@ -541,12 +541,11 @@ export default class CardPembayaran extends Component {
 			<InputGroup>
 				<Input
 					value={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''}
-					variant='ovo'
 					placeholder={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''}
 					label='Masukkan no HP yang terdaftar di OVO / OVO ID / No Matahari Rewards / HiCard ID untuk mendapatkan point rewards.'
 					type='number'
 					min={0}
-					onChange={(event) => this.props.onOvoNumberChange(event)}
+					onChange={(event) => this.props.onOvoNumberChange(event.target.value)}
 					readOnly={ovoReadOnly}
 					disabled={ovoReadOnly}
 					color={ovoReadOnly ? 'purple' : null}
