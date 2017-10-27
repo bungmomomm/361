@@ -201,7 +201,7 @@ const getListAvailablePaymentMethod = (response) => {
 				info: 'Pembayaran melalui aplikasi OVO',
 				sprites: 'ovo'
 			};
-			methodData.payment_items = methodData.payment_items.map((payment, paymentIndex) => {
+			methodData.payment_items = methodData.payment_items.map((payment) => {
 				const paymentData = paymentMethodItem(payment);
 				if (parseInt(paymentData.fg_default, 10) === 1) {
 					methodData.selected = true;
@@ -249,7 +249,6 @@ const getListAvailablePaymentMethod = (response) => {
 		payments: paymentData,
 		availableMethods
 	};
-	console.log(availableMethods);
 	return returnData;
 };
 

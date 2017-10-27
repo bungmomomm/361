@@ -9,7 +9,12 @@ const isKongActive = () => {
 
 const buildRequestURL = (props) => {
 	const fullpath = props.fullpath;
-	const baseUrl = fullpath ? '' : isKongActive() ? process.env.KONG_API_URL : process.env.API_URL;
+	let baseUrl;
+	if (fullpath) {
+		baseUrl = '';
+	} else {
+		baseUrl = isKongActive() ? process.env.KONG_API_URL : process.env.API_URL;
+	}
 	return `${baseUrl}${props.path}`;
 };
 

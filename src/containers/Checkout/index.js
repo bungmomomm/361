@@ -1241,17 +1241,17 @@ class Checkout extends Component {
 			this.setState({
 				showModalOvo: false
 			});
+			dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
 			dispatch(changeOvoPaymentNumber());
 		} 
 		if (tick % 5 === 0) {
-			dispatch(checkStatusOvoPayment(`${checkStatusUrl}${params}`, this.props.cookies.get('user.token'), this.props.soNumber, this.props.payments.ovoPaymentNumber, tick < 1, this.state.selectedAddress))
+			dispatch(checkStatusOvoPayment(`${checkStatusUrl}${params}`, this.props.cookies.get('user.token'), this.props.soNumber, this.props.payments.ovoPaymentNumber, tick < 1))
 			.then(() => {
 				if (tick === 0 && this.state.selectedAddress) {
 					dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
 					dispatch(changeOvoPaymentNumber());
 				}
-			})
-			.catch(() => {});
+			});
 		}
 		if (tick === 0) {
 			this.setState({
@@ -1423,7 +1423,6 @@ class Checkout extends Component {
 								shown={this.state.showModalOvo}
 								secondsRemaining={30}
 								tick={(e) => this.checkOvoStatus(e)}
-								finishCountdown={() => console.log('finish')}
 							/>
 						)
 					}

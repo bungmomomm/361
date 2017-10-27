@@ -371,6 +371,8 @@ export default (state = initialState, action) => {
 				top.location.href = action.payload.payment.data;
 				return state;
 			} else if (action.mode === 'complete') {
+				top.beforeunload = false;
+				top.onbeforeunload = false;
 				top.location.href = `${getBaseUrl()}/checkout/${action.payload.soNumber}/complete`;
 				return state;
 			}

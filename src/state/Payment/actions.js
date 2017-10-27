@@ -531,7 +531,7 @@ const getSoNumberFromResponse = (soNumber, response) => {
 	return soNumber;
 };
 
-const checkStatusOvoPayment = (checkStatusUrl, token, soNumber, ovoPaymentNumber, isShowInvalidPayment = false, selectedAddress) => (dispatch) => {
+const checkStatusOvoPayment = (checkStatusUrl, token, soNumber, ovoPaymentNumber, isShowInvalidPayment = false) => (dispatch) => {
 	return request({
 		token,
 		path: `${checkStatusUrl}=${soNumber}`,
