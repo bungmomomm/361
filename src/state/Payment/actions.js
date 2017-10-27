@@ -532,6 +532,24 @@ const getSoNumberFromResponse = (soNumber, response) => {
 	return soNumber;
 };
 
+const expirePayment = (token, soNumber) => (dispatch) => {
+	return request({
+		token,
+		path: 'payments/expire',
+		method: 'POST',
+		body: {
+			order_number: soNumber
+		}
+	}).then((response) => {
+		const res = response.data;
+		if (response.status === 200) {
+			console.log(res);
+		}
+	}).catch((error) => {
+		dispatch(payError(getError(error)));
+	});
+};
+
 const checkStatusOvoPayment = (checkStatusUrl, token, soNumber, ovoPaymentNumber, isShowInvalidPayment = false) => (dispatch) => {
 	return request({
 		token,
@@ -541,7 +559,7 @@ const checkStatusOvoPayment = (checkStatusUrl, token, soNumber, ovoPaymentNumber
 	}).then((response) => {
 		const res = response.data;
 		if (response.status === 200) {
-			const statusPayment = res.data.status_code;
+			const statusPayment = res.data.attributes.status_code;
 			switch (statusPayment) {
 			case 'success':
 				dispatch(payReceived(soNumber, response.data, 'complete'));		
@@ -549,6 +567,7 @@ const checkStatusOvoPayment = (checkStatusUrl, token, soNumber, ovoPaymentNumber
 			case 'waiting':
 				if (isShowInvalidPayment) {
 					dispatch(payError('Pembayaran Anda belum berhasil coba lagi atau gunakan metode pembayaran lainnya'));
+					dispatch(expirePayment(token, soNumber)); 				
 				}
 				break;
 			default: 
@@ -717,5 +736,6 @@ export default {
 	pay,
 	applyBin,
 	getAvailabelPaymentSelection,
-	checkStatusOvoPayment
+	checkStatusOvoPayment,
+	expirePayment
 };
