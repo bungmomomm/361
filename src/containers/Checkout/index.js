@@ -410,10 +410,10 @@ class Checkout extends Component {
 			this.getDistricts(`${editAddress.city}, ${editAddress.province}`);
 		}
 		if (flagAdd === 'add') {
-			const source = this.props.cookies.get('user.source');	
+			const source = this.props.cookies.get('user.source');
 			pushDataLayer('checkout', 'checkout', { step: 1, option: source ? source.split('+').join(' ') : '' }, this.props.products);
 			// pushDataLayer('checkout', 'checkout_option', { step: 1, option: source ? source.split('+').join(' ') : '' });
-		} 
+		}
 
 		this.setState({
 			enableNewAddress: true,
@@ -768,6 +768,9 @@ class Checkout extends Component {
 	onTermChange(term) {
 		const { dispatch } = this.props;
 		this.props.payments.selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
+		const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
+		const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
+		this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, this.state.appliedBin.cardNumber, bank, term.term));
 		dispatch(termChange(term));
 	}
 
@@ -930,14 +933,23 @@ class Checkout extends Component {
 		});
 	}
 	onCardNumberChange(event) {
+		const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 		if (event.valid) {
 			this.props.dispatch(changeCreditCardNumber(event.ccNumber));
-			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event.ccNumber, ''));
 			this.setState({
 				appliedBin: {
 					selectedPaymentOption,
 					cardNumber: event.ccNumber,
+					bankName: ''
+				}
+			});
+		} else {
+			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), -1, event.ccNumber, ''));
+			this.setState({
+				appliedBin: {
+					selectedPaymentOption,
+					cardNumber: '',
 					bankName: ''
 				}
 			});
@@ -963,16 +975,28 @@ class Checkout extends Component {
 		}
 	}
 	onInstallmentCCNumberChange(event) {
+		this.props.dispatch(changeInstallmentCCNumber(event.ccNumber, event.ccType));
+		const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
+		const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
+		const term = (this.props.payments.term && this.props.payments.term.term) ? this.props.payments.term.term : '';
 		if (event.valid) {
-			this.props.dispatch(changeInstallmentCCNumber(event.ccNumber, event.ccType));
-			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
-			const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
-			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event.ccNumber, bank));
+			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event.ccNumber, bank, term));
 			this.setState({
 				appliedBin: {
 					selectedPaymentOption,
 					cardNumber: event.ccNumber,
-					bankName: bank
+					bankName: bank,
+					installment_term: term
+				}
+			});
+		} else {
+			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), -1, event.ccNumber, bank, term));
+			this.setState({
+				appliedBin: {
+					selectedPaymentOption,
+					cardNumber: '',
+					bankName: bank,
+					installment_term: term
 				}
 			});
 		}
@@ -1125,7 +1149,7 @@ class Checkout extends Component {
 				if (this.state.appliedBin) {
 					const selectedPaymentOption = this.state.appliedBin.selectedPaymentOption;
 					dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, this.state.appliedBin.cardNumber, this.state.appliedBin.bankName)).then(() => {
-						if (gosendChecked.length > 0) { 
+						if (gosendChecked.length > 0) {
 							this.props.cart.forEach((value, index) => {
 								const indexStore = gosendChecked.indexOf(parseInt(value.store.id, 10));
 								if (indexStore !== -1) {
@@ -1141,8 +1165,8 @@ class Checkout extends Component {
 						} else {
 							this.onDoPayment();
 						}
-						
-						
+
+
 					}).catch((error) => {
 
 					});
@@ -1153,7 +1177,7 @@ class Checkout extends Component {
 					isValidPayment: true,
 				});
 
-				
+
 			});
 		} else {
 			this.checkDropship();

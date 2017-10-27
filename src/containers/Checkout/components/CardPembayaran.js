@@ -326,7 +326,6 @@ export default class CardPembayaran extends Component {
 			selectedCard,
 			selectedBank
 		} = this.props.payments;
-
 		let couponId = false;
 		if (this.props.validCoupon && this.props.coupon !== '') {
 			couponId = this.props.coupon;
@@ -486,7 +485,7 @@ export default class CardPembayaran extends Component {
 					<InputGroup>
 						<Button icon='plus-circle' iconPosition='left' clean content='Gunakan OVO Lain' onClick={this.setDefaultOvo} />
 					</InputGroup>
-				: ovoPaymentInput]); 
+				: ovoPaymentInput]);
 
 				paymentOptions = (
 					<InputGroup>
@@ -536,6 +535,7 @@ export default class CardPembayaran extends Component {
 		const ovoReadOnly = (this.props.payments.ovoInfo && parseInt(this.props.payments.ovoInfo.ovoFlag, 10) === 1);
 		const disabledPayment = ((this.props.payments.selectedPaymentOption === null || !this.props.payments.selectedPaymentOption) || (this.props.payments.billingPhoneNumber === null || this.props.payments.billingPhoneNumber === '') || !this.props.payments.termsAndConditionChecked || !this.state.validInstallmentBin || !validOvo);
 		const billingPhoneNumber = this.props.addressTabActive && this.props.payments.billingPhoneNumber ? this.props.payments.billingPhoneNumber : null;
+		const adminFeeIdr = (this.props.payments.adminFee && this.props.payments.adminFee.feeInIdr) ? this.props.payments.adminFee.feeInIdr : null;
 
 		const ovoPhone = (
 			<InputGroup>
@@ -544,10 +544,10 @@ export default class CardPembayaran extends Component {
 					variant='ovo'
 					placeholder={this.props.payments.ovoPhoneNumber ? this.props.payments.ovoPhoneNumber : ''}
 					label='Masukkan no HP yang terdaftar di OVO / OVO ID / No Matahari Rewards / HiCard ID untuk mendapatkan point rewards.'
-					type='number' 
-					min={0} 
+					type='number'
+					min={0}
 					onChange={(event) => this.props.onOvoNumberChange(event)}
-					readOnly={ovoReadOnly} 
+					readOnly={ovoReadOnly}
 					disabled={ovoReadOnly}
 					color={ovoReadOnly ? 'purple' : null}
 					icon={ovoReadOnly ? 'purple' : null}
@@ -584,6 +584,12 @@ export default class CardPembayaran extends Component {
 						</Level.Right>
 					</Level>
 					{voucherBox}
+					{ renderIf(adminFeeIdr)(
+						<Level>
+							<Level.Left><strong>Biaya Administrasi</strong></Level.Left>
+							<Level.Right className='text-right'><strong>{currency(adminFeeIdr)}</strong></Level.Right>
+						</Level>
+					)}
 					<div className={styles.CheckoutTitle}>
 						<Level noMargin>
 							<Level.Left>Total Pembayaran</Level.Left>
