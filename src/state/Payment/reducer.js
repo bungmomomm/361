@@ -320,8 +320,8 @@ export default (state = initialState, action) => {
 	case constants.TERM_UPDATED: {
 		let bang = state.selectedPayment.paymentItems[0].banks;
 		bang = bang.map((data, index) => {
-			if (data.attributes.name.toLowerCase() === action.payload.data.attributes.name.toLowerCase()) {
-				return action.payload.data;
+			if (data.attributes.name.toLowerCase() === action.payload.attributes.name.toLowerCase()) {
+				return action.payload;
 			}
 			return data;
 		});

@@ -238,7 +238,7 @@ export default class CardPembayaran extends Component {
 	onOvoPaymentNumberChange(event) {
 		const ovo = this.state.ovo;
 		const ovoPhonePayment = event.target.value;
-		const regexPhone = /^0[0-9]{8,16}/;
+		const regexPhone = /^[0-9]{5,30}/;
 		let ovoPhonePaymentValid;
 		if (regexPhone.test(ovoPhonePayment)) {
 			ovoPhonePaymentValid = true;
@@ -477,7 +477,7 @@ export default class CardPembayaran extends Component {
 			case paymentGroupName.OVO:
 				ovoPaymentInput = (
 					<InputGroup>
-						<Input color={this.state.ovo.ovoPhonePaymentValid ? 'green' : null} name='ovo_phone_payment' icon={this.state.ovo.ovoPhonePaymentValid ? 'check' : null} value={this.props.payments.ovoPaymentNumber} message={this.state.ovo.ovoPhonePaymentValid ? 'Poin OVO akan ditambahkan di no ini' : ''} min={0} max={16} type='number' placeholder={'Masukan No Hp yang terdaftar di OVO'} onChange={this.onOvoPaymentNumberChange} />
+						<Input color={this.state.ovo.ovoPhonePaymentValid ? 'green' : null} name='ovo_phone_payment' icon={this.state.ovo.ovoPhonePaymentValid ? 'check' : null} value={this.props.payments.ovoPaymentNumber} message={this.state.ovo.ovoPhonePaymentValid ? 'Poin OVO akan ditambahkan di no ini' : ''} min={0} max={30} type='number' placeholder={'Masukan No Hp yang terdaftar di OVO'} onChange={this.onOvoPaymentNumberChange} />
 					</InputGroup>
 				);
 
