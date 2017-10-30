@@ -318,14 +318,14 @@ export default (state = initialState, action) => {
 		};
 	}
 	case constants.TERM_UPDATED: {
-		let bang = state.selectedPayment.payentItems[0].banks;
+		let bang = state.selectedPayment.paymentItems[0].banks;
 		bang = bang.map((data, index) => {
 			if (data.attributes.name.toLowerCase() === action.payload.data.attributes.name.toLowerCase()) {
 				return action.payload.data;
 			}
 			return data;
 		});
-		state.selectedPayment.payentItems[0].banks = bang;
+		state.selectedPayment.paymentItems[0].banks = bang;
 		return {
 			...state
 		};
