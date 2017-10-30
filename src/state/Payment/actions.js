@@ -540,6 +540,10 @@ const expirePayment = (token, soNumber) => (dispatch) => {
 		body: {
 			order_number: soNumber
 		}
+	}).then((response) => {
+		// since return 422, error message on catch
+	}).catch((error) => {
+		dispatch(payError(getError(error)));
 	});
 };
 
@@ -560,7 +564,6 @@ const checkStatusOvoPayment = (checkStatusUrl, token, soNumber, ovoPaymentNumber
 				break;
 			case 'waiting':
 				if (isShowInvalidPayment) {
-					dispatch(payError(statusMessage));
 					dispatch(expirePayment(token, soNumber)); 				
 				}
 				break;
