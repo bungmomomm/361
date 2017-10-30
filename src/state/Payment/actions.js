@@ -553,18 +553,19 @@ const checkStatusOvoPayment = (checkStatusUrl, token, soNumber, ovoPaymentNumber
 		const res = response.data;
 		if (response.status === 200) {
 			const statusPayment = res.data.attributes.status_code;
+			const statusMessage = res.data.attributes.status_message || '';
 			switch (statusPayment) {
 			case 'success':
 				dispatch(payReceived(soNumber, response.data, 'complete'));		
 				break;
 			case 'waiting':
 				if (isShowInvalidPayment) {
-					dispatch(payError('Pembayaran Anda belum berhasil coba lagi atau gunakan metode pembayaran lainnya'));
+					dispatch(payError(statusMessage));
 					dispatch(expirePayment(token, soNumber)); 				
 				}
 				break;
 			default: 
-				dispatch(payError('Pembayaran Anda belum berhasil coba lagi atau gunakan metode pembayaran lainnya'));
+				dispatch(payError(statusMessage));
 				dispatch(paymentOvoFailed(statusPayment));
 			}
 		}
