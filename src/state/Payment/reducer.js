@@ -317,6 +317,19 @@ export default (state = initialState, action) => {
 			error: action.payload.message
 		};
 	}
+	case constants.TERM_UPDATED: {
+		let bang = state.selectedPayment.payentItems[0].banks;
+		bang = bang.map((data, index) => {
+			if (data.attributes.name.toLowerCase() === action.payload.data.attributes.name.toLowerCase()) {
+				return action.payload.data;
+			}
+			return data;
+		});
+		state.selectedPayment.payentItems[0].banks = bang;
+		return {
+			...state
+		};
+	}
 	case constants.PAY_TERM_CHANGE: {
 		const selectedPaymentOption = state.selectedPaymentOption ? state.selectedPaymentOption : getAvailabelPaymentSelection(state.selectedPayment);
 		selectedPaymentOption.term = action.payload.term;

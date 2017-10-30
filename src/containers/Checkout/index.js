@@ -66,7 +66,8 @@ import {
 	termsAndConditionChange,
 	saveCC,
 	getAvailabelPaymentSelection,
-	checkStatusOvoPayment
+	checkStatusOvoPayment,
+	refreshInstallmentTerm
 } from '@/state/Payment/actions';
 
 import { getRefreshToken } from '@/state/Auth/actions';
@@ -990,7 +991,10 @@ class Checkout extends Component {
 		const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
 		const term = (this.props.payments.term && this.props.payments.term.term) ? this.props.payments.term.term : '';
 		if (event.valid) {
-			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event.ccNumber, bank, term));
+			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event.ccNumber, bank, term))
+			.then(success => {
+				this.props.dispatch(refreshInstallmentTerm(this.props.payments.selectedPayment, success));
+			});
 			this.setState({
 				appliedBin: {
 					selectedPaymentOption,

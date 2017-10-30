@@ -44,6 +44,13 @@ const paymentInfoUpdated = (data) => ({
 	}
 });
 
+const onTermUpdated = (data) => ({
+	type: constants.TERM_UPDATED, 
+	payload: {
+		...data
+	}
+});
+
 const creditCardNumberChangeAndApplyBin = (token, cardNumber) => ({
 	type: constants.PAY_CREDIT_CARD_ADD,
 	mode: 'card_number_apply',
@@ -303,6 +310,7 @@ const applyBin = (token, paymentMethodId, cardNumber = '', bankName = '', instal
 		if (typeof response.data.data.relationships.carts.data[0] !== 'undefined') {
 			const item = response.data.data.relationships.carts.data[0];
 			const totalPrice = response.data.included.filter(itemLookup => itemLookup.type === item.type && itemLookup.id === item.id)[0];
+			
 			dispatch(paymentInfoUpdated(getCartPaymentData(totalPrice.attributes.total_price, 'order')));
 			dispatch(applyBinReceived(response.data));
 			resolve(response.data);
@@ -699,6 +707,36 @@ const termsAndConditionChange = (state, value) => dispatch => {
 	dispatch(termsAndConditionChangeAction(state, value));
 };
 
+const refreshInstallmentTerm = (selectedPayment, applybinResponse) => dispatch => {
+	if (typeof selectedPayment.paymentItems[0] !== 'undefined') {
+		const currentBank = selectedPayment.paymentItems[0]
+							.banks.filter(e => e.attributes.name.toLowerCase() 
+										=== applybinResponse.data.attributes.bank.toLowerCase())[0];
+		let inst = currentBank.installments;
+		let flag = 0;
+		inst = inst.map((data, idx) => {
+			if (flag !== data.term) {	
+				const attr = applybinResponse.included.filter(e => e.type === 'installment').filter(e => e.attributes.term === data.term)[0];
+				
+				inst[idx].attributes = attr.attributes;
+				inst[idx].amount = attr.attributes.amount;
+				inst[idx].description = attr.attributes.description;
+				inst[idx].info = attr.attributes.description;
+				inst[idx].label = attr.attributes.description;
+				inst[idx].siteid = attr.attributes.siteid;
+				inst[idx].id = attr.attributes.siteid;
+				flag = data.term;
+			}
+
+			return inst;
+		});
+		currentBank.installments = inst[0];
+		currentBank.listCicilan = inst[0];
+		
+		dispatch(onTermUpdated(currentBank));
+	}
+};
+
 export default {
 	paymentInfoUpdated,
 	getAvailablePaymentMethod,
@@ -734,5 +772,6 @@ export default {
 	applyBin,
 	getAvailabelPaymentSelection,
 	checkStatusOvoPayment,
-	expirePayment
+	expirePayment,
+	refreshInstallmentTerm
 };

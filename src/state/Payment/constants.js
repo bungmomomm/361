@@ -26,6 +26,7 @@ const PAY_INSTALLMENT_CREDIT_CARD_ADD = 'PAY_INSTALLMENT_CREDIT_CARD_ADD';
 const PAY_TOTAL_CHANGE = 'PAY_TOTAL_CHANGE';
 const RESET_PAYMENT_METHOD = -1;
 const PAY_OVO_FAILED = 'PAY_OVO_FAILED';
+const TERM_UPDATED = 'TERM_UPDATED';
 const paymentGroupName = {
 	OVO: 'e_wallet',
 	BANK_TRANSFER: 'bank_transfer',
@@ -79,5 +80,6 @@ export default {
 	paymentGroupName,
 	paymentMethodName,
 	PAY_TOTAL_CHANGE,
-	PAY_OVO_FAILED
+	PAY_OVO_FAILED,
+	TERM_UPDATED
 };
