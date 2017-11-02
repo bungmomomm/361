@@ -781,7 +781,8 @@ class Checkout extends Component {
 		this.props.payments.selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 		const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 		const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
-		this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, this.state.appliedBin.cardNumber, bank, term.term));
+		const cardNumber = this.state.appliedBin ? this.state.appliedBin.cardNumber : '';
+		this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, cardNumber, bank, term));
 		dispatch(termChange(term));
 	}
 
@@ -978,7 +979,6 @@ class Checkout extends Component {
 	}
 
 	onBankChange(bank) {
-		console.log(bank);
 		if (bank.value !== null) {
 			const { dispatch } = this.props;
 			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
