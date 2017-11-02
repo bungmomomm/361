@@ -549,7 +549,7 @@ export default class CardPembayaran extends Component {
 					readOnly={ovoReadOnly}
 					disabled={ovoReadOnly}
 					color={ovoReadOnly ? 'purple' : null}
-					icon={ovoReadOnly ? 'purple' : null}
+					icon={ovoReadOnly ? 'check' : null}
 				/>
 			</InputGroup>
 		);
