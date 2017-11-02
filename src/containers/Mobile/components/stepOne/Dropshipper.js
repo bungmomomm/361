@@ -18,7 +18,7 @@ class Dropshipper extends Component {
 
 	onClick(event) {
 		this.setState({
-			showForm: event.target.checked
+			showForm: event
 		});
 	}
 	
