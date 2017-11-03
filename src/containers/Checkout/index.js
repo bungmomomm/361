@@ -782,7 +782,7 @@ class Checkout extends Component {
 		const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 		const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
 		const cardNumber = this.state.appliedBin ? this.state.appliedBin.cardNumber : '';
-		this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, cardNumber, bank, term));
+		this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, cardNumber, bank, term.term));
 		dispatch(termChange(term));
 	}
 
