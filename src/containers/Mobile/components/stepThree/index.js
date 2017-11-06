@@ -8,12 +8,11 @@ import { RESET_PAYMENT_METHOD } from '@/state/Payment/constants';
 import { currency } from '@/utils';
 import { T } from '@/data/translations';
 import { 
-	Card,
 	Level,
-	InputGroup,
+	Group,
 	Button,
 	Input
-} from '@/components';
+} from 'mm-ui';
 
 import styles from '../../../Mobile/mobile.scss';
 import ModalVerifyPhoneNumber from './ModalVerifyPhoneNumber';
@@ -71,26 +70,33 @@ class StepThree extends Component {
 			payments,
 			coupon
 		} = this.props;
+
+		const inlineStyle = {
+			mb5: {
+				marginBottom: '5px'
+			}
+		};
+
 		return (
-			<Card>
+			<div className={styles.card}>
 				<p><strong>{T.checkout.STEP_THREE_LABEL}</strong></p>
-				<Level>
+				<Level style={inlineStyle.mb5}>
 					<Level.Left><strong>{T.checkout.SUB_TOTAL}</strong></Level.Left>
 					<Level.Right className='text-right'><strong>{currency(payments.subTotal)}</strong></Level.Right>
 				</Level>
 				{
 					coupon.validCoupon && (
-						<Level>
-							<Level.Left>{T.checkout.VOUCHER} : <strong>MM20HM</strong> &nbsp; <Button icon='times-circle' iconPosition='right' /></Level.Left>
+						<Level style={inlineStyle.mb5}>
+							<Level.Left>{T.checkout.VOUCHER} : <strong>MM20HM</strong> &nbsp; <Button icon='times-circle' iconRight /></Level.Left>
 							<Level.Right className='text-right'>&nbsp;</Level.Right>
 						</Level>
 					)
 				}
-				<Level>
+				<Level style={inlineStyle.mb5}>
 					<Level.Left>{T.checkout.TOTAL_SHIPPING_COST}</Level.Left>
 					<Level.Right className='text-right'>{currency(payments.deliveryCost)}</Level.Right>
 				</Level>
-				<Level>
+				<Level style={inlineStyle.mb5}>
 					<Level.Left>
 						<div className='font-green'>{T.checkout.DISCOUNT_SHPPING_COST}</div>
 					</Level.Left>
@@ -101,10 +107,10 @@ class StepThree extends Component {
 				{
 					(coupon.code === 403 && coupon.message) ? (
 						<div>
-							<Level>
+							<Level style={inlineStyle.mb5}>
 								<Level.Left className={styles.voucherLabel}>{T.checkout.VOUCHER_CODE}</Level.Left>
 								<Level.Right>
-									<InputGroup addons addonsAttached>
+									<Group addons addonsAttached>
 										<Input 
 											size='small'
 											name='voucherCode'
@@ -117,13 +123,13 @@ class StepThree extends Component {
 											className='font-red'
 											size='small'
 											icon='times'
-											iconPosition='right'
+											iconRight
 											onClick={() => this.resetCoupon()}
 										/>
-									</InputGroup>
+									</Group>
 								</Level.Right>
 							</Level>
-							<Level>
+							<Level style={inlineStyle.mb5}>
 								<Level.Left>&nbsp;</Level.Left>
 								<Level.Right>
 									<div className='font-red'>{coupon.message}</div>
@@ -131,10 +137,10 @@ class StepThree extends Component {
 							</Level>
 						</div>
 					) : (
-						<Level>
+						<Level style={inlineStyle.mb5}>
 							<Level.Left className={styles.voucherLabel}>{T.checkout.VOUCHER_CODE}</Level.Left>
 							<Level.Right>
-								<InputGroup addons>
+								<Group attached grouped>
 									<Input 
 										size='small'
 										name='voucherCode'
@@ -145,16 +151,15 @@ class StepThree extends Component {
 										type='submit'
 										size='small'
 										color='green'
-										content={T.checkout.CHECK}
 										onClick={() => this.onAddCoupon()}
-									/>
-								</InputGroup>
+									>{T.checkout.CHECK}</Button>
+								</Group>
 							</Level.Right>
 						</Level>
 					)
 				}
 				<div className={styles.CheckoutTitle}>
-					<Level noMargin>
+					<Level>
 						<Level.Left>{T.checkout.TOTAL_PAYMENT}</Level.Left>
 						<Level.Right>
 							<div className={`${styles.price} text-right`}>{currency(payments.total)}</div>
@@ -169,7 +174,7 @@ class StepThree extends Component {
 						/>
 					)
 				}
-			</Card>
+			</div>
 		);
 	}
 }

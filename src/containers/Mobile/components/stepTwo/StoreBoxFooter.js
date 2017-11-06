@@ -4,7 +4,7 @@ import {
 	Checkbox,
 	Tooltip,
 	Level
-} from '@/components';
+} from 'mm-ui';
 import { T } from '@/data/translations';
 import { currency } from '@/utils';
 
@@ -36,7 +36,7 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 			{
 				isGosendSupported() && (
 					<div className={s.deliveryInfo}>
-						<Level noMargin>
+						<Level>
 							<Level.Item>
 								<Checkbox 
 									disabled={!hasLangLat()}
@@ -71,8 +71,8 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 					<div>{currency(store.price.final_delivery_cost)}</div>
 				</div>
 				<div className={s.priceListBold}>
-					<div>{T.checkout.TOTAL}</div>
-					<div>{currency(store.price.total)}</div>
+					<div><strong>{T.checkout.TOTAL}</strong></div>
+					<div><strong>{currency(store.price.total)}</strong></div>
 				</div>
 			</div>
 		</div>

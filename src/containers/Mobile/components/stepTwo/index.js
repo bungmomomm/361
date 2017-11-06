@@ -2,12 +2,19 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { actions } from '@/state/Cart';
 import { withCookies } from 'react-cookie';
-import { Card } from '@/components';
 import { T } from '@/data/translations';
 
-import StoreBox from './StoreBox';
+import {
+	Message,
+	Level,
+	Icon,
+} from 'mm-ui';
+
+// import StoreBox from './StoreBox';
 import StoreBoxBody from './StoreBoxBody';
 import StoreBoxFooter from './StoreBoxFooter';
+
+import styles from '../../mobile.scss';
 
 class StepTwo extends Component {
 	
@@ -61,9 +68,9 @@ class StepTwo extends Component {
 	updateQty(qty, productId) {
 		const { soNumber, dispatch } = this.props;
 		if (soNumber.soNumber) {
-			dispatch(new actions.updateQtyCart(this.cookies, qty.value, productId, { soNumber }));
+			dispatch(new actions.updateQtyCart(this.cookies, qty, productId, { soNumber }));
 		} else {
-			dispatch(new actions.updateCartWithoutSO(this.cookies, qty.value, productId));
+			dispatch(new actions.updateCartWithoutSO(this.cookies, qty, productId));
 		}
 	}
 	
@@ -72,42 +79,39 @@ class StepTwo extends Component {
 	}
 
 	render() {
-		const selectedAddress = this.props.stepState.stepOne.selectedAddress;
 		return (
-			<Card loading={this.props.loading}>
+			<div className={styles.card}>
 				<p><strong>{T.checkout.STEP_TWO_LABEL}</strong></p>
 				{
 					this.props.cart.map((storeData, indexStoreBox) => {
-						const restrictO2o = this.checkRestrictO2o(!storeData.store.shipping.o2oSupported);
+						const isRestrictO2O = this.checkRestrictO2o(!storeData.store.shipping.o2oSupported);
 						return (
-							<StoreBox
+							<Message
 								key={indexStoreBox}
-								name={storeData.store.name} 
-								color={restrictO2o ? 'red' : ''}
-								location={storeData.store.location}
-							>
-								{
-									storeData.store.products.map((product, indexProduct) => (
-										<StoreBoxBody 
-											key={indexProduct} 
-											onUpdateQty={(e) => this.updateQty(e, product.id)} 
-											data={product} 
-											deleteProduct={() => this.deleteProduct(product.id)} 
-											restrictO2o={restrictO2o}
-										/>
-									))
+								color={isRestrictO2O ? 'red' : 'grey'}
+								header={
+									<Level>
+										<Level.Left>{storeData.store.name}</Level.Left>
+										<Level.Right><Icon name='map-marker' /> {storeData.store.location}</Level.Right>
+									</Level>
 								}
+							>
+								<StoreBoxBody 
+									products={storeData.store.products}
+									onUpdateQty={(e, productId) => this.updateQty(e, productId)}
+									isRestrictO2O={isRestrictO2O}
+								/>
 								<StoreBoxFooter 
 									stepOneActiveTab={this.props.stepState.stepOne.activeTab}
-									selectedAddress={selectedAddress}
+									selectedAddress={this.props.stepState.stepOne.selectedAddress}
 									checkGosendMethod={(checked, store) => this.updateShippingMethodGosend(checked, store)}
 									data={storeData} 
 								/>
-							</StoreBox>
+							</Message>
 						);
 					})
 				}
-			</Card>
+			</div>
 		);
 	}
 }

@@ -2,49 +2,39 @@
 @import 'variables';
 
 .footer{
+    margin: 0px rem(-15px) rem(-10px) rem(-15px);
     .price{
-        padding: 10px 20px;
-        border-top: 1px solid #DEDEDE;
-        font-size: 12px;
+        padding: rem(10px) rem(15px);
+        border-top: 1px solid border(color);
     }
 }
 
-
 .deliveryInfo{
-    font-family: HelveticaNeueLTStd-Md;
-    font-size: 11px;
-    color: color(black);
-    letter-spacing: 0;
-    padding: 10px 20px;
-    border-top: 1px solid #DEDEDE;
+    padding: rem(10px) rem(15px);
+    border-top: 1px solid border(color);
 }
 
 
 .priceList{
     display: flex;
     justify-content: space-between;
-    font-family: HelveticaNeueLTStd-Roman;
-    font-size: 11px;
-    color: color(black);
     letter-spacing: 0;
-    line-height: 14px;
-    margin-bottom: 5px;
-    font-size: 12px;
-    &:last-child{
-        margin-bottom: 0px;
+    &:not(:last-child){
+        margin-bottom: rem(5px);
     }
+}
+
+.price{
+    background-color: #FAFAFA;
+
 }
 
 .priceListBold{
     display: flex;
     justify-content: space-between;
-    margin-bottom: 5px;
-    font-family: HelveticaNeueLTStd-Bd;
-    font-size: 12px;
-    color: color(black);
     letter-spacing: 0;
-    &:last-child{
-        margin-bottom: 0px;
+    &:not(:last-child){
+        margin-bottom: rem(5px);
     }
 }
 

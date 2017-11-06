@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import styles from './mobile.scss';
 
-import { 
-	Image
-} from '@/components';
+import { Image } from '@/components';
 
 // step
 import StepOne from './components/stepOne';

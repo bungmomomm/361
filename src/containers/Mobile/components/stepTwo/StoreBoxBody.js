@@ -1,77 +1,46 @@
-import React, { Component } from 'react';
-import styles from './StoreBoxBody.scss';
-import { Button, Figure, Stepper } from '@/components';
-import { T } from '@/data/translations';
+import React from 'react';
 import { currency } from '@/utils';
+import {
+	Level,
+	Stepper
+} from 'mm-ui';
+import { T } from '@/data/translations';
 
-
-export default class StoreBoxBody extends Component {
-	constructor(props) {
-		super(props);
-		this.props = props;
-	}
-
-	render() {
-		const { data, onUpdateQty } = this.props;
-
-		return (
-			<div className={styles.list}>
-				<div className={styles.body}>
-					<div className={styles.bodyLeft}>
-						<Figure 
-							src={data.image}
-							width={50}
-							height={50}
-							alt={data.name}
-						/>
-					</div>
-					<div className={styles.bodyRight}>
-						<div className={styles.title}>{data.name}</div>
-						<div className={styles.option}>
-							<div className={styles.price}>{currency(data.price)}</div>
-							<div className={styles.qty}>
-								{
-									data.qty && <Stepper 
-										size='small' 
-										value={data.qty} 
-										maxValue={data.maxQty} 
-										onChange={onUpdateQty} 
-									/>
-								}
-							</div>
-						</div>
-					</div>
-				</div>
-				<div className={styles.body}>
-					<div className={styles.bodyLeft}>
+const StoreBoxBody = ({ products, isRestrictO2O, onUpdateQty }) => {
+	return (
+		<div>
+			{
+				products.map((product, idx) => (
+					<div key={idx}>
+						<Level>
+							<Level.Left><img src={product.image} width={50} height={50} alt={product.name} /></Level.Left>
+							<Level.Right style={{ paddingLeft: '20px' }}>
+								<div style={{ marginBottom: '10px' }}>{product.name}</div>
+								<Level style={{ marginBottom: '10px' }}>
+									<Level.Left><strong>{currency(product.price)}</strong></Level.Left>
+									<Level.Right>
+										<Stepper max={product.maxQty} min={1} start={product.qty} onChange={(e) => onUpdateQty(e, product.id)} />
+									</Level.Right>
+								</Level>
+								<div>
+									{product.attribute.map((list, iList) => (
+										<div key={iList}><em>{list}</em></div>
+									))}
+								</div>
+							</Level.Right>
+						</Level>
 						{
-							(data.maxQty >= 1) ? (
-								<Button 
-									size='small' 
-									icon='trash-o' 
-									iconPosition='left' 
-									content='Hapus' 
-									onClick={this.props.deleteProduct} 
-								/>
-							) : <Button />
+							isRestrictO2O && (
+								<Level>
+									<Level.Item className='font-red'><p>{T.checkout.RESTRICT_O2O}</p></Level.Item>
+								</Level>
+							)
 						}
 					</div>
-					<div className={styles.bodyRight}>
-						{
-							data.attribute.map((list, iList) => (
-								<div key={iList}><em>{list}</em></div>
-							))
-						}
-					</div>
-				</div>
-				{
-					this.props.restrictO2o && (
-						<div className={styles.body}>
-							<p className='font-red'>{T.checkout.RESTRICT_O2O}</p>
-						</div>
-					)
-				}
-			</div>
-		);
-	}
+				))
+			}
+		</div>
+	);
 };
+
+export default StoreBoxBody;

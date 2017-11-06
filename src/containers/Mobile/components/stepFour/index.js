@@ -6,22 +6,36 @@ import _ from 'lodash';
 import { actions } from '@/state/Payment';
 import { paymentGroupName } from '@/state/Payment/constants';
 import { 
-	Tooltip,
-	Card,
-	InputGroup,
-	Select,
+	// Tooltip,
+	// Card,
+	// Group,
+	// Select,
 	CreditCardInput,
 	CreditCardRadio,
-	Checkbox,
-	Button,
-	Level,
-	Input,
+	// Checkbox,
+	// Button,
+	// Level,
+	// Input,
 	Sprites
 } from '@/components';
 
+import { 
+	// Tooltip,
+	// Group,
+	Radio,
+	Select,
+	Checkbox,
+	Button,
+	Level,
+	Input
+} from 'mm-ui';
+
 import styles from '../../../Mobile/mobile.scss';
 
-import { PaymentOptions, Bulan } from '@/data';
+import { 
+	PaymentOptions, 
+	Bulan 
+} from '@/data';
 
 class StepFour extends Component {
 	constructor(props) {
@@ -73,93 +87,68 @@ class StepFour extends Component {
 			case paymentGroupName.INTERNET_BANKING:
 			case paymentGroupName.CONVENIENCE_STORE: {
 				const enabledPaymentItems = _.filter(payments.selectedPayment.paymentItems, ['disabled', false]);
-				const listPayment = enabledPaymentItems.map((option, index) => (
-					<InputGroup key={index}>
-						<CreditCardRadio 
-							name={`payment-${payments.selectedPayment.value}`}
-							value={option.value}
-							size='large'
-							content={option.label}
-							image={option.settings.image}
-						/>
-						{
-							option.settings.info && (
-								<div className={styles.btInfo}>
-									<Tooltip position='right'>
-										{option.settings.info.join(' ')}
-									</Tooltip>
-								</div>
-							)
+				const listPayment = [];
+				enabledPaymentItems.map((option, index) => {
+					const RadioLabel = (
+						<Level>
+							<Level.Left>{option.label}</Level.Left>
+							<Level.Right>{option.settings.image && <img src={option.settings.image} alt={option.label} height='15px' />}</Level.Right>
+						</Level>
+					);
+					return listPayment.push({
+						label: RadioLabel, 
+						inputProps: { 
+							name: 'payment-CONVENIENCE_STORE', 
+							onChange: () => console.log(index)
 						}
-					</InputGroup>
-				));	
-
-				return (
-					<InputGroup>
-						<InputGroup>
-							<hr />
-						</InputGroup>
-						<label htmlFor='masa-berlaku'>Pilih Opsi Pembayaran</label>
-						{listPayment}
-					</InputGroup>
-				);
+					});
+				});
+				return <Radio inputStyle='blocklist' data={listPayment} />;
 			}
 			case paymentGroupName.CREDIT_CARD:
 				return payments.selectedPayment.paymentItems.map((option, index) => (
 					option.cards.length < 3 ? (
 						option.cards.map((card, cardIndex) => (
 							card.value && (
-								<InputGroup key={cardIndex}>
-									<CreditCardRadio 
-										name='cc'
-										variant='list'
-										value={card.value}
-										content={card.label}
-										defaultChecked={card.selected}
-										sprites={card.sprites}
-									/>
-								</InputGroup>
+								<CreditCardRadio 
+									key={cardIndex}
+									name='cc'
+									variant='list'
+									value={card.value}
+									content={card.label}
+									defaultChecked={card.selected}
+									sprites={card.sprites}
+								/>
 							)
 						))
 					) : (
-						<InputGroup key={index}>
-							<Select name='cc' options={option.cards} />
-						</InputGroup>
+						<Select key={index} options={option.cards} />
 					)
 				));
 			case paymentGroupName.INSTALLMENT:
 				return (
 					<div>
-						<InputGroup>
-							{
-								payments.selectedPayment.paymentItems.map((installment, index) => {
-									return (
-										<div key={index}>
-											<InputGroup>
-												<Select name='bank' options={installment.banks} />
-											</InputGroup>
-											<InputGroup>
-												<Select name='bank' options={installment.banks[index].listCicilan} />
-											</InputGroup>
-										</div>
-									);
-								})
-							}
-						</InputGroup>	
-						<InputGroup>
-							<CreditCardInput 
-								placeholder='Masukkan Nomor Kartu'
-								sprites='payment-option'
-								onChange={this.onInstallmentCCNumberChange}
-							/>
-						</InputGroup>,
-						<label htmlFor='masa-berlaku'>Masa Berlaku</label>,
-						<Level padded>
+						{
+							payments.selectedPayment.paymentItems.map((installment, index) => {
+								return (
+									<div key={index}>
+										<Select options={installment.banks} />
+										<Select options={installment.banks[index].listCicilan} />
+									</div>
+								);
+							})
+						}
+						<CreditCardInput 
+							placeholder='Masukkan Nomor Kartu'
+							sprites='payment-option'
+							onChange={this.onInstallmentCCNumberChange}
+						/>
+						<Level>
 							<Level.Item>
-								<Select top options={Bulan} />
+								<Select options={Bulan} />
 							</Level.Item>
 							<Level.Item>
-								<Select top options={this.props.tahun} />
+								<Select options={this.props.tahun} />
 							</Level.Item>
 							<Level.Item>
 								<Input type='password' placeholder='cvv' />
@@ -177,53 +166,55 @@ class StepFour extends Component {
 		};
 
 		return (
-			<Card>
+			<div className={styles.card}>
 				<p><strong>4. Informasi Pembayaran</strong></p>
 				<div>
-					<InputGroup>
-						<Select 
-							label='Metode Pembayaran' 
-							name='paymentMethods' 
-							moreDetail
-							options={payments.paymentMethods.methods} 
-							onChange={(e) => this.paymentMethodChange(e)}
-							selected={this.state.stateSelectedPayment}
-						/>
-					</InputGroup>
+					<Select 
+						label='Metode Pembayaran'
+						options={payments.paymentMethods.methods} 
+						onChange={(e) => this.paymentMethodChange(e)}
+					/>
 					{ payments.selectedPayment && switchPaymentElement()}
 					{
 						false && (
 							<div>
-								<InputGroup>
-									<Select label='Pilih Bank' name='bank' options={PaymentOptions} />
-								</InputGroup>
-								<InputGroup>
-									<Select label='Pilih Lama Cicilan' name='bank' options={PaymentOptions} />
-								</InputGroup>
-								<InputGroup>
-									<CreditCardRadio name='cc' content={'BCA Virtual Account'} sprites='visa' />
-								</InputGroup>
-								<InputGroup>
-									<CreditCardRadio name='cc' content={'Bank Lainnya Virtual Account'} sprites='mastercard' />
-								</InputGroup>
-								<InputGroup>
-									<CreditCardRadio name='cc' content={'Manual Transfer'} />
-								</InputGroup>
+								<Select label='Pilih Bank' options={PaymentOptions} />
+								<Select label='Pilih Lama Cicilan' options={PaymentOptions} />
+								<Radio 
+									inputStyle='blocklist' 
+									data={[
+										{
+											label: 'BCA Virtual Account', 
+											inputProps: { 
+												name: 'cc', 
+												onChange: () => console.log('index')
+											}
+										}, {
+											label: 'Bank Lainnya Virtual Account', 
+											inputProps: { 
+												name: 'cc', 
+												onChange: () => console.log('index')
+											}
+										}, {
+											label: 'Manual Transfer', 
+											inputProps: { 
+												name: 'cc', 
+												onChange: () => console.log('index')
+											}
+										}
+									]} 
+								/>
 							</div>
 						)
 					}
-					<InputGroup>
-						<Input label='SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke : ' min={0} type='number' placeholder={'No Telp Penagihan'} />
-					</InputGroup>
-					<InputGroup>
-						<Input label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' placeholder={'Masukkan nomor Hp yang terdaftar di OVO'} type='number' min={0} />
-					</InputGroup>
+					<Input label='SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke : ' min={0} type='number' placeholder={'No Telp Penagihan'} />
+					<Input label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' placeholder={'Masukkan nomor Hp yang terdaftar di OVO'} type='number' min={0} />
 					<div className={styles.checkOutAction}>
-						<Checkbox defaultChecked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' />
-						<Button disabled block size='large' color='red' content='Bayar Sekarang' />
+						<Checkbox>Saya setuju dengan syarat dan ketentuan MatahariMall.com</Checkbox>
+						<Button block size='large' color='red'>Bayar Sekarang</Button>
 					</div>
 				</div>
-			</Card>
+			</div>
 		);
 	}
 }
