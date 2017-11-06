@@ -1,3 +1,5 @@
+
+
 *,
 *::before,
 *::after {
@@ -50,12 +52,6 @@
 		-moz-appearance:textfield;
 	}
 	
-	#root, 
-	#root > main,
-	.page{
-		height: 100%;
-	}
-
 	.font-red{
 		@include colorStyle(color(red));
 	}

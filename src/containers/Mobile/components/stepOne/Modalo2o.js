@@ -5,9 +5,10 @@ import React, { Component } from 'react';
 import { 
 	Modal, 
 	Input,
-	Card,
+	Message,
+	Radio,
 	Select
-} from '@/components';
+} from 'mm-ui';
 
 import { Address } from '@/data';
 
@@ -40,27 +41,49 @@ class Modalo2o extends Component {
 	
 	render() {
 		return (
-			<Modal size='medium' close {...this.props}>
+			<Modal 
+				size='medium' 
+				showOverlayCloseButton
+				show={this.props.open}
+				onCloseRequest={this.props.handleClose}
+			>
 				<Modal.Header>
-					<Select
-						filter
-						name='provinsi'
-						options={this.props.o2oProvinces} 
-					/>
-				</Modal.Header>
-				<Modal.Header>
-					<Input placeholder='Cari Lokasi Toko / E-Locker (O2O) lainnya' />
+					<Select options={this.props.o2oProvinces} style={{ paddingRight: '30px' }} />
+					<Input block placeholder='Cari Lokasi Toko / E-Locker (O2O) lainnya' />
 				</Modal.Header>
 				<Modal.Body>
 					{
-						Address.map((elocker, index) => (
-							<Card key={index} radius selected={this.state.selected === elocker.value} onClick={() => this.handleChooseElocker(elocker.value)}>
-								<Card.Title>E-Locker Family Mart Panglima Polim</Card.Title>
-								<p>Jl. Panglima Polim Raya No.86
-								Kenayoran Baru, Jakarta Selatan 12160
-								Telp: </p>
-							</Card>
-						))
+						Address.map((address, index) => {
+							const isChecked = false;
+							return (
+								<Message 
+									key={index} 
+									color={isChecked ? 'yellow' : 'grey'}
+									onClick={() => this.props.onChange(address)}
+									header={
+										<Radio 
+											inverted={isChecked}
+											data={[
+												{ 
+													label: isChecked ? 'Alamat Utama' : 'Gunakan Alamat ini', 
+													inputProps: { 
+														readOnly: true,
+														checked: isChecked
+													} 
+												}
+											]} 
+										/>
+									}
+								>
+									<div>
+										<p><strong>E-Locker Family Mart Panglima Polim</strong></p>
+										<p>Jl. Panglima Polim Raya No.86
+										Kenayoran Baru, Jakarta Selatan 12160
+										Telp: </p>
+									</div>
+								</Message>
+							);
+						})
 					}
 				</Modal.Body>
 			</Modal>

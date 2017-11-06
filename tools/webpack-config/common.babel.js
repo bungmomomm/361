@@ -84,6 +84,7 @@ const config = {
 			'.js',
 			'.jsx',
 			'.json',
+			'.css',
 			'.scss'
 		],
 

@@ -4,25 +4,27 @@ import _ from 'lodash';
 import { withCookies } from 'react-cookie';
 import React, { Component } from 'react';
 import { 
-	Segment,
-	Alert, 
-	Select, 
-	InputGroup, 
-	Level, 
+	Button,
+	Level,
 	Tabs,
-	Card,
-	Icon, 
-	Button 
-} from '@/components';
+	Icon,
+	Group,
+	Alert,
+	Message
+} from 'mm-ui';
+
 
 // modal
 import ModalAddress from './ModalAddress';
+import ModalChooseAddress from './ModalChooseAddress';
 import Modalo2o from './Modalo2o';
-import Dropshipper from './Dropshipper';
+// import Dropshipper from './Dropshipper';
 import ViewSelectedAddress from './ViewSelectedAddress';
 
 
-import { Address } from '@/data';
+import styles from '../../mobile.scss';
+
+// import { Address } from '@/data';
 import { T } from '@/data/translations';
 
 class stepOne extends Component {
@@ -47,12 +49,12 @@ class stepOne extends Component {
 		this.state = {
 			showModalAddress: false,
 			showModalo2o: false,
+			showModalChooseAddress: false,
 			selectedAddress: {},
 			shipping: [],
 			toggleSelectAddress: true
 		};
 		this.currentAddresses = [];
-		this.showModalAddress = this.showModalAddress.bind(this);
 		this.cookies = this.props.cookies.get('user.token');
 	}
 
@@ -80,10 +82,10 @@ class stepOne extends Component {
 				value: value.id,
 				label: !value.attributes.addressLabel ? value.attributes.fullname : value.attributes.addressLabel,
 				info:	`<p><strong>${value.attributes.fullname}</strong></p>
-						<p>${value.attributes.address}</p>
-						<p>${value.attributes.district}</p>
-						<p>${value.attributes.city}</p>
-						<p>${value.attributes.province}</p>
+						<div>${value.attributes.address}</div>
+						<div>${value.attributes.district}</div>
+						<div>${value.attributes.city}</div>
+						<div>${value.attributes.province}</div>
 						`
 			})
 		));
@@ -97,10 +99,12 @@ class stepOne extends Component {
 	
 	setSelectedAddress(selected) {
 		const newSelectedAddress = _.find(this.currentAddresses, { id: selected.value });
+		console.log(newSelectedAddress);
 		this.saveSelectedAddress(newSelectedAddress);
 		this.setState({
 			selectedAddress: newSelectedAddress
 		});
+		this.toggleChooseAddressModal();
 	}
 
 	showModalAddress(type) {
@@ -138,8 +142,14 @@ class stepOne extends Component {
 	}
 
 
-	showModalo2o() {
+	toggleModalo2o() {
 		this.setState({ showModalo2o: !this.state.showModalo2o });
+	}
+
+	toggleChooseAddressModal() {
+		this.setState({
+			showModalChooseAddress: !this.state.showModalChooseAddress
+		});
 	}
 	
 	render() {
@@ -147,6 +157,7 @@ class stepOne extends Component {
 			selectedAddress,
 			showModalAddress,
 			showModalo2o,
+			showModalChooseAddress,
 			shipping
 		} = this.state;
 
@@ -155,149 +166,144 @@ class stepOne extends Component {
 		}
 
 		return (
-			<Card>
+			<div className={styles.card}>
 				<p><strong>{T.checkout.STEP_ONE_LABEL}</strong></p>
-				<Tabs tabActive={0} stretch onAfterChange={(e) => this.afterChangeTab(e)}>
-					<Tabs.Panel title={T.checkout.TAB_ADDRESS_LABEL}>
-						<Alert align='center' color='yellow' show >
-							{T.checkout.FREE_ONGKIR_REGULATION}
-						</Alert>
-						{
-							shipping.length > 0 ? (
-								<div>
-									<Segment>
-										<InputGroup>
-											<Select 
-												addressDetail
-												options={shipping}
-												onChange={(id) => this.setSelectedAddress(id)}
-												selected={this.constructor.mapSelectedAddress(this.state.selectedAddress)}
-											/>
-										</InputGroup>
-										{
-											selectedAddress.attributes.latitude 
-											&& selectedAddress.attributes.longitude && (
-												<Level>
-													<Level.Item className='text-right'>
-														<div>	
-															<Icon name='map-marker' /> &nbsp; {T.checkout.LOCATION_MARKED}
-														</div>
-													</Level.Item>
-												</Level>
-											)
-										}
-										{
+				<Tabs onAfterChange={(e) => this.afterChangeTab(e)}> 
+					<Tabs.Tab>
+						<Tabs.Title>{T.checkout.TAB_ADDRESS_LABEL}</Tabs.Title>
+						<Tabs.Content>
+							<Alert color='yellow' style={{ marginBottom: '15px' }}>
+								{T.checkout.FREE_ONGKIR_REGULATION}
+							</Alert>
+							{
+								shipping.length > 0 ? (
+									<div>
+										<Message color='grey'>
+											<Group>
+												<Button onClick={() => this.toggleChooseAddressModal()} block>
+													<Level>
+														<Level.Left>{selectedAddress.attributes.addressLabel}</Level.Left>
+														<Level.Right><Icon name='angle-down' /></Level.Right>
+													</Level>
+												</Button>
+											</Group>
+											{
+												selectedAddress.attributes.latitude 
+												&& selectedAddress.attributes.longitude && (
+													<Level>
+														<Level.Item className='text-right'>
+															<div>	
+																<Icon name='map-marker' /> &nbsp; {T.checkout.LOCATION_MARKED}
+															</div>
+														</Level.Item>
+													</Level>
+												)
+											}
 											<ViewSelectedAddress {...selectedAddress.attributes} />
-										}
-										<Level>
-											<Level.Item>
-												<Button 
-													type='button' 
-													icon='pencil' 
-													iconPosition='left' 
-													className='font-orange' 
-													content={T.checkout.CHANGE_ADDRESS} 
-													onClick={() => this.showModalAddress('edit')} 
-												/>
-											</Level.Item>
-											<Level.Item className='text-right'>
-												<Button 
-													type='button' 
-													icon='plus' 
-													iconPosition='left' 
-													className='font-orange' 
-													content={T.checkout.ADD_ADDRESS}
-													onClick={() => this.showModalAddress('add')} 
-												/>
-											</Level.Item>
-										</Level>
-									</Segment>
-									<Dropshipper />
-								</div>		
-							) : (
-								<Button 
-									block 
-									outline 
-									type='button' 
-									color='orange' 
-									content={T.checkout.INPUT_DELIVERY_ADDRESS} 
-									onClick={() => this.showModalAddress('add')} 
-								/>
-							)
-						}
-					</Tabs.Panel>
-					<Tabs.Panel title={T.checkout.TAB_ELOCKER_LABEL}>
-						<Alert align='center' color='yellow' show >
-							{T.checkout.REGULATION}
-						</Alert>
-						{
-							this.props.latesto2o.length > 0 && (
-								<div>
-									<Alert close icon='ban' align='left' color='red' show >
-										{T.checkout.ONE_OR_MORE_PRODUCT_NOT_SUPPORTED}
-									</Alert>
-									<Segment className='customSelectO2OWrapper'>
-										<InputGroup>
-											<Select options={Address} />
-										</InputGroup>
-										<p><strong>Aufar Syahdan</strong> </p>
-										<p>
-											Jl. Bangka II No.20 Rt.10/05 <br />
-											Mampang Prapatan <br />
-											Jakarta Selatan, DKI Jakarta, 12720 <br />
-											Telepon: 08568052187
-										</p>
-										<Level>
-											<Level.Item className='text-right'>
-												<Button 
-													type='button' 
-													icon='plus' 
-													iconPosition='left' 
-													className='font-orange' 
-													content={T.checkout.ADD_ADDRESS} 
-													onClick={() => this.showModalo2o()} 
-												/>
-											</Level.Item>
-										</Level>
-									</Segment>
-								</div>
-							)
-						}
-						{
-							this.props.latesto2o.length < 1 && this.props.isPickupable === '1' && (
-								<InputGroup>
+											<Level>
+												<Level.Item>
+													<div 
+														role='button'
+														tabIndex={-1}
+														className='font-orange'
+														onClick={() => this.showModalAddress('edit')} 
+													>
+														<Icon name='pencil' /> {T.checkout.CHANGE_ADDRESS} 
+													</div>
+												</Level.Item>
+												<Level.Item className='text-right'>
+													<div
+														role='button'
+														tabIndex={-1}
+														className='font-orange'
+														onClick={() => this.showModalAddress('add')} 
+													>
+														<Icon name='plus' /> {T.checkout.ADD_ADDRESS}
+													</div>
+												</Level.Item>
+											</Level>
+										</Message>
+									</div>
+								) : (
+									<Button 
+										block
+										color='orange' 
+										onClick={() => this.showModalAddress('add')} 
+									>{T.checkout.INPUT_DELIVERY_ADDRESS} </Button>
+								)
+							}
+						</Tabs.Content>
+					</Tabs.Tab>
+					<Tabs.Tab>
+						<Tabs.Title>{T.checkout.TAB_ELOCKER_LABEL}</Tabs.Title>
+						<Tabs.Content>
+							<Alert color='yellow' style={{ marginBottom: '15px' }}>{T.checkout.REGULATION}</Alert>
+							<Alert close icon='ban' color='red' style={{ marginBottom: '15px' }}>{T.checkout.ONE_OR_MORE_PRODUCT_NOT_SUPPORTED}</Alert>
+							<Message className='customSelectO2OWrapper'>
+								<Group>
 									<Button 
 										block 
-										outline 
-										type='button' 
-										color='orange' 
-										content={T.checkout.CHOOSE_STORE} 
-										onClick={() => this.showModalo2o()} 
-									/>
-								</InputGroup>
-							)
-						}
-						{
-							this.props.isPickupable === '0' && (
-								<p className='font-red'>{T.checkout.ONE_OR_MORE_PRODUCT_NOT_SUPPORTED}</p>
-							)
-						}
-					</Tabs.Panel>
+										onClick={() => this.toggleModalo2o()}
+									>
+										<Level>
+											<Level.Left>o2o</Level.Left>
+											<Level.Right><Icon name='angle-down' /></Level.Right>
+										</Level>
+									</Button>
+								</Group>
+								<p><strong>Aufar Syahdan</strong> </p>
+								<p>
+									Jl. Bangka II No.20 Rt.10/05 <br />
+									Mampang Prapatan <br />
+									Jakarta Selatan, DKI Jakarta, 12720 <br />
+									Telepon: 08568052187
+								</p>
+								<Level>
+									<Level.Item className='text-right'>
+										<div
+											role='button'
+											tabIndex={-1}
+											className='font-orange'
+											onClick={() => this.toggleModalo2o()} 
+										>
+											<Icon name='plus' /> {T.checkout.ADD_ADDRESS} 
+										</div>
+									</Level.Item>
+								</Level>
+							</Message>
+						</Tabs.Content>
+					</Tabs.Tab>
 				</Tabs>
 				{
-					showModalAddress && (
-						<ModalAddress 
-							formData={this.flagModalAddress === 'edit' && selectedAddress}
-							handleClose={() => this.hideModalAddress()} 
-						/>
-					)
+					showModalAddress && 
+					<ModalAddress 
+						open
+						formData={this.flagModalAddress === 'edit' && selectedAddress}
+						handleClose={() => this.hideModalAddress()} 
+					/>
 				}
 				{
-					showModalo2o && (
-						<Modalo2o handleClose={() => this.showModalo2o()} />
-					)
+					showModalChooseAddress && 
+					<ModalChooseAddress 
+						open
+						address={this.state.shipping}
+						selectedAddress={selectedAddress}
+						handleClose={() => this.toggleChooseAddressModal()} 
+						onChange={(e) => this.setSelectedAddress(e)}
+					/>
 				}
-			</Card>
+
+				{
+					showModalo2o && 
+					<Modalo2o 
+						open
+						o2oProvinces={this.props.o2oProvinces}
+						handleClose={() => this.toggleModalo2o()} 
+						selectedAddressO2O={selectedAddress}
+						onChange={(e) => console.log(e)}
+					/>
+				}
+			</div>
 		);
 	}
 }
