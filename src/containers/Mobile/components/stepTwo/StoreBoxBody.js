@@ -4,17 +4,17 @@ import {
 	Level,
 	Stepper
 } from 'mm-ui';
-import { T } from '@/data/translations';
+import styles from './StoreBoxBody.scss';
 
-const StoreBoxBody = ({ products, isRestrictO2O, onUpdateQty }) => {
+const StoreBoxBody = ({ products, onUpdateQty }) => {
 	return (
 		<div>
 			{
 				products.map((product, idx) => (
-					<div key={idx}>
+					<div key={idx} className={styles.productList}>
 						<Level>
 							<Level.Left><img src={product.image} width={50} height={50} alt={product.name} /></Level.Left>
-							<Level.Right style={{ paddingLeft: '20px' }}>
+							<Level.Item style={{ paddingLeft: '20px' }}>
 								<div style={{ marginBottom: '10px' }}>{product.name}</div>
 								<Level style={{ marginBottom: '10px' }}>
 									<Level.Left><strong>{currency(product.price)}</strong></Level.Left>
@@ -27,15 +27,8 @@ const StoreBoxBody = ({ products, isRestrictO2O, onUpdateQty }) => {
 										<div key={iList}><em>{list}</em></div>
 									))}
 								</div>
-							</Level.Right>
+							</Level.Item>
 						</Level>
-						{
-							isRestrictO2O && (
-								<Level>
-									<Level.Item className='font-red'><p>{T.checkout.RESTRICT_O2O}</p></Level.Item>
-								</Level>
-							)
-						}
 					</div>
 				))
 			}

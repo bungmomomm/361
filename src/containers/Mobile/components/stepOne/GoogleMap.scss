@@ -1,0 +1,13 @@
+.control {
+	width: 100%;
+	position: relative;
+}
+
+.searchLocationInput {
+	position: absolute;
+	top: 0px;
+	width: 100%;
+	left: 0px;
+	z-index: 2;
+	padding: 11px 10px 0px 10px;
+}

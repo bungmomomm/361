@@ -9,8 +9,6 @@ import {
 	Level,
 	Icon,
 } from 'mm-ui';
-
-// import StoreBox from './StoreBox';
 import StoreBoxBody from './StoreBoxBody';
 import StoreBoxFooter from './StoreBoxFooter';
 

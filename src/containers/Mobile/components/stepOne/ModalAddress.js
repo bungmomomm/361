@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { actions } from '@/state/Adresses';
 import { withCookies } from 'react-cookie';
 import React, { Component } from 'react';
-import Gosend from '@/components/Views/Gosend/Gosend.Mobile.js';
+// import Gosend from '@/components/Views/Gosend/Gosend.Mobile.js';
 // import { 
 // 	Modal, 
 // 	Textarea, 
@@ -28,6 +28,7 @@ import {
 	Modal,
 	Message
 } from 'mm-ui';
+import GoogleMap from './GoogleMap';
 import { T } from '@/data/translations';
 import { Polygon } from '@/data/polygons';
 
@@ -317,21 +318,61 @@ class ModalAddress extends Component {
 										</div>
 									)
 								}
-								{
-									this.state.showMap && (
-										<Gosend
-											zoom={15} 
-											center={Polygon[0].cakung.center} 
-											kecamatan={this.state.formData.kecamatan}
-											polygonArea={Polygon[0].cakung.location_coords}
-											onSelectedPinPoint={(data) => this.selectedPinPoint(data)}
-										/>
-									)
-								}
 								<div><em>* {T.checkout.MUST_FILLED}</em></div>
 							</div>
 						)
 					}
+					<Alert color='yellow'>Harap tidak mengisi alamat pickup point O2O tanpa melalui pilihan menu Ambil di Toko (O2O). Kami tidak bertanggung jawab bila terjadi kehirlangan</Alert>
+					<Message>
+						<Level>
+							<Level.Left><Icon name='map-marker' /></Level.Left>
+							<Level.Item style={{ paddingLeft: '15px' }}>
+									Jalan Bangka II No.20, Pela Mampang, 
+									Mampang Prapatan, Kota Jakarta Selatan, 
+									DKI jakarta 12720
+							</Level.Item>
+							<Level.Right>
+								<div className='font-orange'>Ubah</div>
+							</Level.Right>
+						</Level>
+					</Message>
+					<Button block color='grey'>
+						<Icon name='map-marker' /> Tunjukan Dalam Peta
+					</Button>
+					<div className='font-orange'>Lokasi peta harus sesuai dengan alamat pengiriman. Lokasi diperlukan jika ingin menggunakan jasa pengiriman GO-SEND.</div>
+					<GoogleMap
+						apiKey='YOUR_API_KEY'
+						zoom={15}
+						hasAutocomplete
+						onChangeAutoComplete={(e) => console.log(e)}
+						style={{
+							width: '100%',
+							height: '250px'
+						}}
+						defaultCenter={Polygon[0].cakung.center}
+						updateCenter={Polygon[0].cakung.center}
+						marker={{
+							icon: 'https://www.google.com/intl/en_us/mapfiles/marker.png',
+							onClick: (e) => console.log('from marker:', e),
+							defaultCenter: Polygon[0].cakung.center,
+							updateCenter: Polygon[0].cakung.center
+						}}
+						polygon={{
+							area: Polygon[0].cakung.location_coords,
+							stroke: {
+								color: '#0000FF',
+								opacity: 0.8,
+								weight: 2
+							},
+							fill: {
+								color: '#0000FF',
+								opacity: 0.35
+							},
+							onClick: (data) => this.selectedPinPoint(data)
+						}}
+					/>
+					<Message><Icon name='map-marker' /> Jalan Bangka II No.20</Message>
+					<div><em>* Wajib Diisi</em></div>
 					<Group>
 						<Button 
 							block
