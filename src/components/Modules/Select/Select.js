@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { injectProps } from '@/decorators';
 import styles from './Select.scss';
 import classNames from 'classnames/bind';
