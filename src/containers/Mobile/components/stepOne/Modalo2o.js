@@ -10,7 +10,7 @@ import {
 	Select
 } from 'mm-ui';
 
-import { Address } from '@/data';
+// import { Address } from '@/data';
 
 class Modalo2o extends Component {
 	
@@ -18,19 +18,67 @@ class Modalo2o extends Component {
 		dispatch(new actions.getO2OProvinces(token));
 	}
 
+	static fetchDataO2OList(token, dispatch, provinceId) {
+		dispatch(new actions.getO2OList(token, provinceId));
+	}
+
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
-			selected: ''
+			selectedProvince: this.props.selectedProvinceO2O || '6',
+			listo2o: this.props.listo2o			
 		};
 		this.cookies = this.props.cookies.get('user.token');
+		this.onSelectProvince = this.onSelectProvince.bind(this);
+		this.onChangeFilterText = this.onChangeFilterText.bind(this);
+		this.onLoadData = this.onLoadData.bind(this);
 	}
 
 	componentWillMount() {
 		if (this.props.o2oProvinces === undefined) {
-			this.constructor.fetchDataO2OProvinces(this.cookies, this.props.dispatch);
+			this.constructor.fetchDataO2OProvinces(this.cookies, this.props.dispatch);		
 		}
+		this.onLoadData(this.props.selectedProvinceO2O || this.state.selectedProvince);
+		
+		if (this.props.selectedAddressO2O) {
+			// this.onLoadData(this.props.selectedAddressO2O.attributes.province_id);	
+		} 
+	}
+	
+	componentWillReceiveProps(nextProps) {
+		if (this.props.listo2o !== nextProps.listo2o) {
+			this.setState({
+				listo2o: nextProps.listo2o
+			});
+		}
+	}
+
+	onLoadData(provinceId) {
+		this.constructor.fetchDataO2OList(this.cookies, this.props.dispatch, provinceId);
+	}
+
+	onSelectProvince(event) {
+		this.onLoadData(event.value);
+		this.setState({
+			selectedProvince: event.value
+		});
+	}
+
+	onChangeFilterText(event) {
+		const filter = event.target.value;
+		const listo2o = this.props.listo2o.map((item) => {
+			const filterLabel = item.attributes.address_label;
+			const isFilteredByLabel = filterLabel && (filterLabel.toUpperCase().indexOf(filter.toUpperCase()) > -1);
+			const filterAddress = item.attributes.address;
+			const isFilteredByAddress = filterAddress && (filterAddress.toLowerCase().indexOf(filter.toLowerCase()) > -1);
+			return (isFilteredByLabel || isFilteredByAddress) ? item : null;
+		}).filter((item) => {
+			return item;
+		});
+		this.setState({
+			listo2o
+		});
 	}
 
 	handleChooseElocker(elockerId) {
@@ -48,18 +96,18 @@ class Modalo2o extends Component {
 				onCloseRequest={this.props.handleClose}
 			>
 				<Modal.Header>
-					<Select options={this.props.o2oProvinces} style={{ paddingRight: '30px' }} />
-					<Input block placeholder='Cari Lokasi Toko / E-Locker (O2O) lainnya' />
+					<Select hasFilter options={this.props.o2oProvinces} onChange={this.onSelectProvince} defaultValue={this.state.selectedProvince} style={{ paddingRight: '30px' }} />
+					<Input block placeholder='Cari Lokasi Toko / E-Locker (O2O) lainnya' onChange={this.onChangeFilterText} />
 				</Modal.Header>
 				<Modal.Body>
 					{
-						Address.map((address, index) => {
-							const isChecked = false;
+						this.state.listo2o && this.state.listo2o.map((address, index) => {
+							const isChecked = this.props.selectedAddressO2O && this.props.selectedAddressO2O.id === address.id;
 							return (
 								<Message 
 									key={index} 
 									color={isChecked ? 'yellow' : 'grey'}
-									onClick={() => this.props.onChange(address)}
+									onClick={() => this.props.onChange(address, this.state.selectedProvince)}
 									header={
 										<Radio 
 											inverted={isChecked}
@@ -76,10 +124,8 @@ class Modalo2o extends Component {
 									}
 								>
 									<div>
-										<p><strong>E-Locker Family Mart Panglima Polim</strong></p>
-										<p>Jl. Panglima Polim Raya No.86
-										Kenayoran Baru, Jakarta Selatan 12160
-										Telp: </p>
+										<p><strong>{address.attributes.address_label}</strong></p>
+										<p>{address.attributes.address}</p>
 									</div>
 								</Message>
 							);
@@ -94,7 +140,7 @@ class Modalo2o extends Component {
 const mapStateToProps = (state) => {
 	return {
 		o2oProvinces: state.addresses.o2oProvinces,
-		listo2o: state.addresses.o2o
+		listo2o: state.addresses.o2o,
 	};
 };
 

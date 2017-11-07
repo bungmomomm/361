@@ -91,6 +91,7 @@ class ModalAddress extends Component {
 	}
 
 	onChangeProvince(e) {
+		this.constructor.fetchGetDistric(this.cookies, e.value, this.props.dispatch);		
 		const isJakarta = e.value.toLowerCase().includes('jakarta');
 		this.setState({ 
 			isJakarta,
@@ -103,7 +104,6 @@ class ModalAddress extends Component {
 			},
 			renderDistrict: false
 		});
-		this.constructor.fetchGetDistric(this.cookies, e.value, this.props.dispatch);
 	}
 
 	onChangeDistrict(e) {
@@ -124,9 +124,6 @@ class ModalAddress extends Component {
 			...this.state.formData,
 			[name]: value
 		};
-		if (name === 'province') {
-			formData.kecamatan = null;
-		}
 		this.setState({ formData });
 	}
 	
@@ -164,6 +161,7 @@ class ModalAddress extends Component {
 				}
 			};
 			this.setState({ selected: stateProvince, isJakarta });
+			this.constructor.fetchGetDistric(this.cookies, stateProvince.province.value, this.props.dispatch);
 		}
 	}
 
