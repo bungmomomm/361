@@ -56,6 +56,8 @@
         <script type="text/javascript" src="https://api.sandbox.veritrans.co.id/v2/assets/js/veritrans.js"></script>
 		<script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
         <!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChjpQSbwKaJOCJy_06GAwU9dNMwVq_rg4&libraries=places&region=id&language=id"></script> -->
+        <script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
+        <script>Raven.config('https://af6e3248ca6f4d8d8c3e669f6fd6e4e4@sentry.io/215821').install();</script>
 
     </head>
     <body <% if (params.helmet.htmlAttributes) { %><%= params.helmet.bodyAttributes.toString() %><% } %>>
@@ -82,4 +84,11 @@
         <% } %>
 
     </body>
+    <script type="text/javascript">
+        function confirmExit() {
+            return "Are you sure want to exit?";
+        }
+        window.beforeunload = confirmExit;
+        window.onbeforeunload = confirmExit;
+    </script>
 </html>

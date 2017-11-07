@@ -35,15 +35,18 @@ export default class Input extends Component {
 		onKeyPress,
 		onChange,
 		icon,
+		disabled,
 		onBlur,
 		onFocus,
 		message,
 		className,
+		variant,
 		color
 	}) {
 		const inputWrapper = cx({
 			inputWrapper: true,
-			horizontal: !!horizontal
+			horizontal: !!horizontal,
+			[`${variant}`]: !!variant,
 		});
 
 		const inputBodyClass = cx({
@@ -93,6 +96,7 @@ export default class Input extends Component {
 		const InputElement = (
 			<input
 				id={idFor}
+				disabled={!!disabled}
 				className={inputClass} 
 				type={type}
 				name={name}
@@ -110,6 +114,7 @@ export default class Input extends Component {
 		return (
 			<div className={inputWrapper}>
 				{LabelElement}
+				{variant === 'ovo' && <Sprites className={styles.ovoIcon} name='ovo' />}
 				<div className={inputBodyClass}>
 					{InputElement}
 					{MessageElement}

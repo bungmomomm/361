@@ -5,6 +5,7 @@ import { reducer as addresses } from '@/state/Adresses/';
 import { reducer as api } from '@/state/Api/';
 import { reducer as cart } from '@/state/Cart/';
 import { reducer as payments } from '@/state/Payment/';
+import { reducer as user } from '@/state/User/';
 import { reducer as global } from '@/state/Global';
 
 export default combineReducers({
@@ -14,5 +15,7 @@ export default combineReducers({
 	addresses,
 	api,
 	cart,
-	payments
+	payments,
+	user,
+	global,
 });

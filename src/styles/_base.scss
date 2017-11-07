@@ -66,6 +66,9 @@
 	.font-grey{
 		@include colorStyle(color(grey));
 	}
+	.font-purple{
+		@include colorStyle(color(purple));
+	}
 	.font-small{
 		font-size: 10px;
 	}

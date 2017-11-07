@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 
 // component load
-import { Modal, Icon } from '@/components';
+import { Level, Button, Modal, Icon } from '@/components';
+import { renderIf } from '@/utils';
 
 export default class PaymentErrorModalbox extends Component {
 	constructor(props) {
@@ -37,6 +38,20 @@ export default class PaymentErrorModalbox extends Component {
 						{message}
 					</p>
 				</Modal.Body>
+				{
+					renderIf(this.props.isConfirm)(
+						<Modal.Footer>
+							<Level padded>
+								<Level.Item>
+									<Button block content='close' color='red' onClick={e => this.props.okeoce('close')} />
+								</Level.Item>
+								<Level.Item>
+									<Button block content='ok' color='green' onClick={e => this.props.okeoce('ok')} />
+								</Level.Item>
+							</Level>
+						</Modal.Footer>
+					)
+				}
 			</Modal>
 		);
 	}

@@ -17,6 +17,8 @@ import PaymentErrorModalbox from './components/Modal/PaymentErrorModalbox';
 import VerifikasiNoHandponeModalbox from './components/Modal/VerifikasiNoHandponeModalbox';
 import Vt3dsModalBox from './components/Modal/Vt3dsModalBox';
 import EcashModalBox from './components/Modal/EcashModalBox';
+import OvoCountDownModal from './components/Modal/OvoCountDownModal';
+import OvoErrorPaymentModal from './components/Modal/OvoErrorPaymentModal';
 
 // Section Component
 import CardPesananPengiriman from './components/CardPesananPengiriman';
@@ -26,6 +28,7 @@ import CardPengiriman from './components/CardPengiriman';
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { addCoupon, removeCoupon, resetCoupon, resendOtp, verifyOtp } from '@/state/Coupon/actions';
+import { getBlockContents } from '@/state/Global/actions';
 import {
 	getAddresses,
 	getO2OList,
@@ -35,6 +38,7 @@ import {
 	saveAddress
 } from '@/state/Adresses/actions';
 import { getPlaceOrderCart, getCart, updateQtyCart, updateCartWithoutSO, deleteCart, updateGosend, o2oChoise } from '@/state/Cart/actions';
+import { getUser } from '@/state/User/actions';
 import {
 	changePaymentMethod,
 	changePaymentOption,
@@ -52,6 +56,7 @@ import {
 	bankNameChange,
 	applyBin,
 	changeOvoNumber,
+	changeOvoPaymentNumber,
 	changeBillingNumber,
 	termChange,
 	changeInstallmentCCNumber,
@@ -60,10 +65,13 @@ import {
 	changeInstallmentCCCvv,
 	termsAndConditionChange,
 	saveCC,
-	getAvailabelPaymentSelection
+	getAvailabelPaymentSelection,
+	checkStatusOvoPayment,
+	refreshInstallmentTerm
 } from '@/state/Payment/actions';
 
 import { getRefreshToken } from '@/state/Auth/actions';
+import { setUserGTM, pushDataLayer } from '@/utils/gtm';
 
 import {
 	paymentMethodName,
@@ -119,9 +127,13 @@ class Checkout extends Component {
 			loadingCardPengiriman: false,
 			tahun: [],
 			showModalOtp: false,
+			showModalOvo: false,
 			phoneNumber: null,
 			notifInfo: true,
 			appliedBin: null,
+			selectedPayment: false,
+			ovoTimer: 30,
+			ovoInterval: 5
 		};
 
 		this.restrictO2oFlag = false;
@@ -159,6 +171,7 @@ class Checkout extends Component {
 		this.shippingMethodGosend = this.shippingMethodGosend.bind(this);
 		this.onBankChange = this.onBankChange.bind(this);
 		this.onOvoNumberChange = this.onOvoNumberChange.bind(this);
+		this.onOvoPaymentNumberChange = this.onOvoPaymentNumberChange.bind(this);
 		this.closeModalShippingAddress = this.closeModalShippingAddress.bind(this);
 		this.onTermChange = this.onTermChange.bind(this);
 		this.onInstallmentCCNumberChange = this.onInstallmentCCNumberChange.bind(this);
@@ -181,6 +194,8 @@ class Checkout extends Component {
 		this.onTermsAndConditionChange = this.onTermsAndConditionChange.bind(this);
 		this.onSetStateAddress = this.onSetStateAddress.bind(this);
 		this.getAffTracking = this.getAffTracking.bind(this);
+		this.okeoce = this.okeoce.bind(this);
+		this.checkOvoStatus = this.checkOvoStatus.bind(this);
 	}
 
 	componentWillMount() {
@@ -251,6 +266,9 @@ class Checkout extends Component {
 				showModalOtp: true
 			});
 		}
+		if (this.props.userGTM !== nextProps.userGTM) {
+			setUserGTM(nextProps.userGTM);
+		}
 	}
 
 	onRefreshToken(dispatch, callback = null) {
@@ -276,7 +294,9 @@ class Checkout extends Component {
 	}
 
 	onReload(dispatch) {
+		dispatch(getUser(this.props.cookies.get('user.token')));
 		dispatch(getCart(this.props.cookies.get('user.token'))).then(() => {
+			dispatch(getBlockContents(this.props.cookies.get('user.token'), ['660']));
 			dispatch(getAddresses(this.props.cookies.get('user.token'))).then(defaultAddress => {
 				if (typeof defaultAddress.type !== 'undefined') {
 					this.setState({
@@ -284,6 +304,9 @@ class Checkout extends Component {
 						enablePesananPengiriman: true,
 						enablePembayaran: true
 					});
+					const source = this.props.cookies.get('user.source');
+					pushDataLayer('checkout', 'checkout', { step: 1, option: source ? source.split('+').join(' ') : '' }, this.props.products);
+					// pushDataLayer('checkout', 'checkout_option', { step: 1, option: source ? source.split('+').join(' ') : '' });
 					dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress)).then(() => {
 
 					}).catch((error) => {
@@ -308,6 +331,7 @@ class Checkout extends Component {
 		const { dispatch, soNumber } = this.props;
 		if (coupon) {
 			dispatch(addCoupon(this.props.cookies.get('user.token'), soNumber, coupon)).then(() => {
+				pushDataLayer('checkout', 'checkout', { step: 5, option: 'Voucher' });
 				const paymentMethodId = RESET_PAYMENT_METHOD;
 				dispatch(applyBin(this.props.cookies.get('user.token'), paymentMethodId));
 			});
@@ -322,6 +346,7 @@ class Checkout extends Component {
 				changePaymentMethod(false);
 			});
 		});
+		pushDataLayer('checkout', 'checkout', { step: 5, option: 'Non Voucher' });
 	}
 
 	onResetCoupon(event) {
@@ -386,6 +411,11 @@ class Checkout extends Component {
 		};
 		if (editAddress) {
 			this.getDistricts(`${editAddress.city}, ${editAddress.province}`);
+		}
+		if (flagAdd === 'add') {
+			const source = this.props.cookies.get('user.source');
+			pushDataLayer('checkout', 'checkout', { step: 1, option: source ? source.split('+').join(' ') : '' }, this.props.products);
+			// pushDataLayer('checkout', 'checkout_option', { step: 1, option: source ? source.split('+').join(' ') : '' });
 		}
 
 		this.setState({
@@ -454,6 +484,19 @@ class Checkout extends Component {
 
 	onPaymentMethodChange(event) {
 		this.props.dispatch(changePaymentMethod(event.value, this.props.payments.paymentMethods, this.props.cookies.get('user.token')));
+		// set ovo payment number
+		if (event.value === 'e_wallet') {
+			const phonePayment = this.props.payments.ovoInfo.ovoFlag === '1' ? this.props.payments.ovoPhoneNumber : '';
+			this.props.dispatch(changeOvoPaymentNumber(phonePayment));
+			const ovoMethod = this.props.payments.paymentMethods.availableMethods[18];
+
+			if (ovoMethod) {
+				this.setState({
+					ovoTimer: ovoMethod.settings.countdown,
+					ovoInterval: ovoMethod.settings.interval,
+				});
+			}
+		}
 	}
 
 	onPaymentOptionChange(event, paymentMethod) {
@@ -561,7 +604,9 @@ class Checkout extends Component {
 					cardMonth: this.props.payments.selectedCardDetail.month,
 					cardYear: this.props.payments.selectedCardDetail.year,
 					amount: this.props.payments.total,
-					paymentMethod: this.props.payments.paymentMethod
+					paymentMethod: this.props.payments.paymentMethod,
+					ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
+					billingPhoneNumber: this.props.payments.billingPhoneNumber
 				},
 				mode,
 				false,
@@ -617,7 +662,7 @@ class Checkout extends Component {
 					pay(
 						this.props.cookies.get('user.token'),
 						this.props.soNumber,
-						this.props.payments.selectedPaymentOption,
+						this.props.payments.selectedPaymentOption === false ? this.state.selectedPayment : this.props.payments.selectedPaymentOption,
 						{
 							amount: this.props.payments.total,
 							status: 'success',
@@ -662,7 +707,7 @@ class Checkout extends Component {
 					pay(
 						this.props.cookies.get('user.token'),
 						this.props.soNumber,
-						this.props.payments.selectedPaymentOption,
+						this.props.payments.selectedPaymentOption === false ? this.state.selectedPayment : this.props.payments.selectedPaymentOption,
 						{
 							amount: this.props.payments.total,
 							card: {
@@ -719,14 +764,25 @@ class Checkout extends Component {
 		dispatch(ecashModalBoxOpen(false));
 	}
 
-	onOvoNumberChange(event) {
+	// for linkage
+	onOvoNumberChange(ovoNumber) {
 		const { dispatch } = this.props;
-		dispatch(changeOvoNumber(event.target.value));
+		dispatch(changeOvoNumber(ovoNumber));
+	}
+
+	// for pay order
+	onOvoPaymentNumberChange(phoneNumber) {
+		const { dispatch } = this.props;
+		dispatch(changeOvoPaymentNumber(phoneNumber));
 	}
 
 	onTermChange(term) {
 		const { dispatch } = this.props;
 		this.props.payments.selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
+		const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
+		const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
+		const cardNumber = this.state.appliedBin ? this.state.appliedBin.cardNumber : '';
+		this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, cardNumber, bank, term.term));
 		dispatch(termChange(term));
 	}
 
@@ -734,10 +790,17 @@ class Checkout extends Component {
 		const { dispatch } = this.props;
 		let validator = false;
 		let mode = 'complete';
+		pushDataLayer('checkout', 'checkout', { step: 8 });
 		if (typeof this.props.payments.paymentMethod !== 'undefined') {
 			switch (this.props.payments.paymentMethod) {
 			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
 			case paymentMethodName.COMMERCE_VERITRANS:
+				if (this.props.payments.selectedPaymentOption !== false) {
+					this.setState({
+						selectedPayment: this.props.payments.selectedPaymentOption
+					});
+				}
+				
 				if (this.props.payments.twoClickEnabled) {
 					validator = this.cvvValidator.validateAll({
 						cvv: this.props.payments.selectedCardDetail.cvv
@@ -761,6 +824,37 @@ class Checkout extends Component {
 				mode = 'sprint';
 				this.onRequestSprintInstallment(mode);
 				break;
+			case paymentMethodName.OVO:
+				if (this.props.payments.ovoPaymentNumber) {
+					dispatch(
+						pay(
+							this.props.cookies.get('user.token'),
+							this.props.soNumber,
+							this.props.payments.selectedPaymentOption === false ? this.state.selectedPayment : this.props.payments.selectedPaymentOption,
+							{
+								e_wallet: {
+									id: this.props.payments.ovoPaymentNumber
+								},
+								ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
+								billingPhoneNumber: this.props.payments.billingPhoneNumber
+							},
+							this.props.payments.selectedPaymentOption.uniqueConstant,
+							false,
+							false,
+							this.getAffTracking()
+						)
+					).then(() => {
+						this.setState({
+							showModalOvo: true
+						});
+					})
+					.catch(() => {
+						this.setState({
+							showModalOvo: false
+						});
+					});
+				}
+				break;
 			default:
 				if (this.props.payments.selectedPaymentOption) {
 					if (this.props.payments.selectedPaymentOption.uniqueConstant === 'mandiri_ecash') {
@@ -773,7 +867,7 @@ class Checkout extends Component {
 						pay(
 							this.props.cookies.get('user.token'),
 							this.props.soNumber,
-							this.props.payments.selectedPaymentOption,
+							this.props.payments.selectedPaymentOption === false ? this.state.selectedPayment : this.props.payments.selectedPaymentOption,
 							{
 								ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
 								billingPhoneNumber: this.props.payments.billingPhoneNumber
@@ -851,14 +945,23 @@ class Checkout extends Component {
 		});
 	}
 	onCardNumberChange(event) {
+		const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 		if (event.valid) {
 			this.props.dispatch(changeCreditCardNumber(event.ccNumber));
-			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event.ccNumber, ''));
 			this.setState({
 				appliedBin: {
 					selectedPaymentOption,
 					cardNumber: event.ccNumber,
+					bankName: ''
+				}
+			});
+		} else {
+			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), -1, event.ccNumber, ''));
+			this.setState({
+				appliedBin: {
+					selectedPaymentOption,
+					cardNumber: '',
 					bankName: ''
 				}
 			});
@@ -876,7 +979,6 @@ class Checkout extends Component {
 	}
 
 	onBankChange(bank) {
-		console.log(bank);
 		if (bank.value !== null) {
 			const { dispatch } = this.props;
 			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
@@ -884,16 +986,31 @@ class Checkout extends Component {
 		}
 	}
 	onInstallmentCCNumberChange(event) {
+		this.props.dispatch(changeInstallmentCCNumber(event.ccNumber, event.ccType));
+		const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
+		const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
+		const term = (this.props.payments.term && this.props.payments.term.term) ? this.props.payments.term.term : '';
 		if (event.valid) {
-			this.props.dispatch(changeInstallmentCCNumber(event.ccNumber, event.ccType));
-			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
-			const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
-			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event.ccNumber, bank));
+			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event.ccNumber, bank, term))
+			.then(success => {
+				this.props.dispatch(refreshInstallmentTerm(this.props.payments.selectedPayment, success));
+			});
 			this.setState({
 				appliedBin: {
 					selectedPaymentOption,
 					cardNumber: event.ccNumber,
-					bankName: bank
+					bankName: bank,
+					installment_term: term
+				}
+			});
+		} else {
+			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), -1, event.ccNumber, bank, term));
+			this.setState({
+				appliedBin: {
+					selectedPaymentOption,
+					cardNumber: '',
+					bankName: bank,
+					installment_term: term
 				}
 			});
 		}
@@ -956,7 +1073,8 @@ class Checkout extends Component {
 	getAffTracking() {
 		return {
 			af_track_id: this.props.cookies.get('afftrackid'),
-			af_trx_id: this.props.cookies.get('afftrxid')
+			af_trx_id: this.props.cookies.get('afftrxid'),
+			af_trx_click: Date.now()
 		};
 	}
 
@@ -986,6 +1104,8 @@ class Checkout extends Component {
 			const tempSelectedAddress = this.state.selectedAddress;
 			tempSelectedAddress.attributes.is_dropshipper = checked;
 			this.onChoisedAddress(tempSelectedAddress);
+			pushDataLayer('checkout', 'checkout', { step: 3, option: checked ? 'Dropship' : 'Not Dropship' }, this.props.products);
+			// pushDataLayer('checkoutOption', 'checkout_option', { step: 3, option: checked ? 'Dropship' : 'Not Dropship' });
 		}
 	}
 
@@ -1032,18 +1152,46 @@ class Checkout extends Component {
 				tempSelectedAddress = this.state.selectedLocker;
 				tempSelectedAddress.type = 'pickup';
 			}
+			const gosendChecked = [];
+			this.props.cart.forEach((value, index) => {
+				if (value.store.shipping.gosend.gosendActivated) {
+					gosendChecked.push(parseInt(value.store.id, 10));
+				}
+			});
+
 			this.onChoisedAddress(tempSelectedAddress, false).then(() => {
 				if (this.state.appliedBin) {
 					const selectedPaymentOption = this.state.appliedBin.selectedPaymentOption;
 					dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, this.state.appliedBin.cardNumber, this.state.appliedBin.bankName)).then(() => {
-						this.onDoPayment();
+						if (gosendChecked.length > 0) {
+							this.props.cart.forEach((value, index) => {
+								const indexStore = gosendChecked.indexOf(parseInt(value.store.id, 10));
+								if (indexStore !== -1) {
+									dispatch(updateGosend(this.props.cookies.get('user.token'), parseInt(value.store.id, 10), 19, this.props))
+									.then(storeId => {
+										gosendChecked.splice(indexStore, 1);
+										if (gosendChecked.length === 0) {
+											this.onDoPayment();
+										}
+									});
+								}
+							});
+						} else {
+							this.onDoPayment();
+						}
+
+
 					}).catch((error) => {
 
 					});
+				} else {
+					this.onDoPayment();
 				}
 				this.setState({
 					isValidPayment: true,
 				});
+
+
 			});
 		} else {
 			this.checkDropship();
@@ -1053,8 +1201,12 @@ class Checkout extends Component {
 	activeShippingTab(addressTabActive) {
 		const { dispatch } = this.props;
 		if (!addressTabActive) {
+			pushDataLayer('checkout', 'checkout', { step: 2, option: 'Pickup' }, this.props.products);
+			// pushDataLayer('checkoutOption', 'checkout_option', { step: 2, option: 'Pickup' });
 			dispatch(o2oChoise(this.props.cart));
 		} else {
+			pushDataLayer('checkout', 'checkout', { step: 2, option: 'Delivery' }, this.props.products);
+			// pushDataLayer('checkoutOption', 'checkout_option', { step: 2, option: 'Delivery' });
 			dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress)).then(() => {
 				dispatch(changeBillingNumber(this.state.selectedAddress.attributes.phone));
 			}).catch((error) => {
@@ -1094,6 +1246,14 @@ class Checkout extends Component {
 		}
 	}
 
+	okeoce(param) {
+		if (param === 'ok') {
+			this.onDoPayment();
+		} else {
+			location.reload();
+		}
+	}
+
 	closeModalElocker() {
 		this.setState({
 			showModalO2o: false
@@ -1109,6 +1269,33 @@ class Checkout extends Component {
 	shippingMethodGosend(methodId, storeId) {
 		const { dispatch } = this.props;
 		dispatch(updateGosend(this.props.cookies.get('user.token'), storeId, methodId, this.props));
+	}
+
+	checkOvoStatus(tick) {
+		const { dispatch } = this.props;
+		const params = this.props.payments.selectedPaymentOption.settings.checkParams.join('&');
+		const checkStatusUrl = this.props.payments.selectedPaymentOption.settings.checkUrl;
+		if (this.props.payments.paymentOvoFailed) {
+			this.setState({
+				showModalOvo: false
+			});
+			dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
+			dispatch(changeOvoPaymentNumber());
+		} 
+		if (tick % this.state.ovoInterval === 0) {
+			dispatch(checkStatusOvoPayment(`${checkStatusUrl}${params}`, this.props.cookies.get('user.token'), this.props.soNumber, this.props.payments.ovoPaymentNumber, tick < 1))
+			.then(() => {
+				if (tick === 0 && this.state.selectedAddress) {
+					dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
+					dispatch(changeOvoPaymentNumber());
+				}
+			});
+		}
+		if (tick === 0) {
+			this.setState({
+				showModalOvo: false
+			});
+		} 
 	}
 
 	render() {
@@ -1216,6 +1403,7 @@ class Checkout extends Component {
 										tahun={this.state.tahun}
 										onBankChange={this.onBankChange}
 										onOvoNumberChange={this.onOvoNumberChange}
+										onOvoPaymentNumberChange={this.onOvoPaymentNumberChange}
 										onBillingNumberChange={this.onBillingNumberChange}
 										onTermChange={this.onTermChange}
 										onInstallmentCCNumberChange={this.onInstallmentCCNumberChange}
@@ -1226,6 +1414,7 @@ class Checkout extends Component {
 										resetPaymentOption={this.props.resetPaymentOption}
 										onTermsAndConditionChange={this.onTermsAndConditionChange}
 										addressTabActive={this.state.addressTabActive}
+										blockContent={this.props.blockContent}
 									/>
 								</Col>
 							</Row>
@@ -1250,6 +1439,8 @@ class Checkout extends Component {
 						shown={this.props.payments.paymentError}
 						paymentErrorMessage={this.props.payments.error}
 						onClose={this.onCloseErrorBox}
+						isConfirm={this.props.payments.isConfirm}
+						okeoce={this.okeoce}
 					/>
 					<VerifikasiNoHandponeModalbox
 						shown={this.state.showModalOtp}
@@ -1264,6 +1455,20 @@ class Checkout extends Component {
 						src={this.props.payments.vtRedirectUrl}
 						onClose={this.onVt3dsModalBoxClose}
 					/>
+					{
+						this.state.showModalOvo && (
+							<OvoCountDownModal
+								shown={this.state.showModalOvo}
+								secondsRemaining={this.state.ovoTimer}
+								tick={(e) => this.checkOvoStatus(e)}
+							/>
+						)
+					}
+					{
+						false && (
+							<OvoErrorPaymentModal shown />
+						)
+					}
 					<EcashModalBox shown={this.props.payments.showEcash} src={this.props.payments.mandiriRedirectUrl} onClose={this.onMandiriEcashClose} />
 					{
 						renderIf(!this.state.notifInfo)(
@@ -1396,6 +1601,9 @@ const mapStateToProps = (state) => {
 		totalItems: state.cart.totalItems,
 		gosendInfo: state.cart.gosendInfo,
 		errorPlaceOrder: state.cart.error,
+		userGTM: state.user.userGTM,
+		products: state.cart.products,
+		blockContent: state.global.blockContent,
 	};
 };
 
