@@ -435,7 +435,6 @@ export default class CardPembayaran extends Component {
 						{
 							selectedPayment.paymentItems.map((installment, index) => {
 								const bankIndex = installment.banks.filter(e => e.name.toUpperCase() === selectedBank.label.toUpperCase())[0];
-								const ix = bankIndex.id ? bankIndex.id : 0;
 								return (
 									<div key={index}>
 										<InputGroup>
@@ -444,7 +443,7 @@ export default class CardPembayaran extends Component {
 										</InputGroup>
 										<InputGroup>
 											<p>Pilih Lama Cicilan</p>
-											<Select key={index} emptyFilter={false} name='bank' selectedLabel='---' options={installment.banks[ix].listCicilan} onChange={this.onTermChange} />
+											<Select key={index} emptyFilter={false} name='bank' selectedLabel='---' options={bankIndex.listCicilan} onChange={this.onTermChange} />
 										</InputGroup>
 									</div>
 								);
