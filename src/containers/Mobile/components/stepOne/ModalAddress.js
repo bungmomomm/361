@@ -124,6 +124,9 @@ class ModalAddress extends Component {
 			...this.state.formData,
 			[name]: value
 		};
+		if (name === 'province') {
+			formData.kecamatan = null;
+		}
 		this.setState({ formData });
 	}
 	
@@ -147,18 +150,20 @@ class ModalAddress extends Component {
 	translateProvince(formDataAttributes) {
 		const { city, district, province } = formDataAttributes;
 		if (city && district) {
+			const isJakarta = province.toLowerCase().includes('jakarta');
+			const constProv = `${city}, ${province}`;
+			this.constructor.fetchGetDistric(this.cookies, constProv, this.props.dispatch);			
 			const stateProvince = {
 				province: {
-					label: `${city}, ${province}`,
-					value: `${city}, ${province}`
+					label: constProv,
+					value: constProv
 				},
 				district: {
 					label: `${district}`,
 					value: `${district}`
 				}
 			};
-			this.setState({ selected: stateProvince });
-			this.constructor.fetchGetDistric(this.cookies, stateProvince.province.value, this.props.dispatch);
+			this.setState({ selected: stateProvince, isJakarta });
 		}
 	}
 
@@ -276,7 +281,7 @@ class ModalAddress extends Component {
 										<div>
 											<Group>
 												<Alert color='yellow' show>
-													<small><em>{T.checkout.O2O_ADDRESS_RULE}</em></small>
+													{T.checkout.O2O_ADDRESS_RULE}
 												</Alert>
 											</Group>
 											<Group>

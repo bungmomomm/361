@@ -65,8 +65,8 @@ class StepTwo extends Component {
 
 	updateQty(qty, productId) {
 		const { soNumber, dispatch } = this.props;
-		if (soNumber.soNumber) {
-			dispatch(new actions.updateQtyCart(this.cookies, qty, productId, { soNumber }));
+		if (soNumber) {
+			dispatch(new actions.updateQtyCart(this.cookies, qty.value, productId, { soNumber }));
 		} else {
 			dispatch(new actions.updateCartWithoutSO(this.cookies, qty, productId));
 		}
