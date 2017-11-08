@@ -56,6 +56,25 @@
 	padding-right: 25px;
 }
 
+.Header{
+	@include font(medium);
+	line-height: 1.2;
+	font-size: 14px;
+	color: color(black);
+	padding: 20px 0px;
+}
+
+.Footer{
+	padding-top: 15px;
+}
+
+.body{
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	height: 100%;
+}
+
 .close{
 	position: absolute;
 	top: -10px;
@@ -137,13 +156,4 @@
         z-index: 2;
 		position: absolute;
     }
-}
-
-.mobile{
-	.wrapper{
-		height: 100%;
-		left: 0px;
-		top: 0px;
-		width: 100%;
-	}
 }

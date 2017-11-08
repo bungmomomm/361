@@ -20,7 +20,6 @@
     flex-grow: 1;
     outline: 0px;
     display: flex;
-    flex-direction: column;
 }
 
 .radius{
@@ -91,14 +90,4 @@
         right: rem(3px);
         top: rem(1px);
     }
-}
-
-.mobile{
-    margin-top: 10px;
-    padding: 15px;
-}
-
-.mobile{
-    flex-grow: 0;
-    min-height: 125px;
 }

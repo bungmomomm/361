@@ -10,17 +10,14 @@ const cx = classNames.bind(styles);
 import { newId, renderIf } from '@/utils';
 
 const Checkbox = (props) => {
-
 	const CheckboxClass = cx({
 		CheckboxWrapper: true,
 		disabled: props.disabled
 	});
-	
-	const { icon, sprites, onClick, ...rest } = props;
 
-	const thisClick = (event) => {
-		if (onClick) {
-			return onClick(event.target.checked, event.target.value);
+	const onClick = (event) => {
+		if (props.onClick) {
+			return props.onClick(event.target.checked, event.target.value);
 		}
 		return null;
 	};
@@ -30,28 +27,31 @@ const Checkbox = (props) => {
 		<input
 			id={idFor}
 			type='checkbox'
+			defaultChecked={props.defaultChecked}
+			checked={props.checked}
 			className={styles.Checkbox} 
-			onClick={thisClick}
-			{...rest}
+			name={props.name} 
+			onClick={onClick}
+			value={props.value} 
+			disabled={props.disabled}
 		/>
 	);
 
 	const SpritesElement = (
-		renderIf(sprites)(
+		renderIf(props.sprites)(
 			<span className={styles.sprites}>
-				<Sprites name={sprites} />
+				<Sprites name={props.sprites} />
 			</span>
 		)
 	);
 
 	const IconElement = (
-		renderIf(icon)(
+		renderIf(props.icon)(
 			<span className={styles.icon}>
-				<Icon name={icon} />
+				<Icon name={props.icon} />
 			</span>
 		)
 	);
-	
 
 	return (
 		<label className={CheckboxClass} htmlFor={idFor}>

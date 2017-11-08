@@ -5,19 +5,16 @@ import Icon from '../../Elements/Icon/Icon';
 import styles from './Tooltip.scss';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
-import { isMobile } from '@/utils';
 
 export default class Tooltip extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.isMobile = isMobile();
 	}
 
 	render() {
 		const TooltipWrapper = cx({
 			TooltipWrapper: true,
-			isMobile: this.isMobile,
 			[`${this.props.position}`]: !!this.props.position,
 			[`${this.props.color}`]: !!this.props.color
 		});
@@ -34,7 +31,7 @@ export default class Tooltip extends Component {
 						</span>
 						<Icon name='info-circle' />
 					</div>
-					<div className={styles.area}><span>{this.props.children}</span></div>
+					<div className={styles.area}>{this.props.children}</div>
 				</div>
 			</div>
 		);

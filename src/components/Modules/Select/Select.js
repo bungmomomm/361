@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { injectProps } from '@/decorators';
 import styles from './Select.scss';
 import classNames from 'classnames/bind';
@@ -271,4 +272,26 @@ export default class Select extends Component {
 			</div>
 		);
 	}
+};
+
+Select.propTypes = {
+	/** List Data. */
+	options: PropTypes.array,
+	/** Attribute name. */
+	name: PropTypes.string,
+	color: PropTypes.oneOf(['red', 'yellow', 'orange', 'green']),
+	/** make horinzontal layout. */
+	horizontal: PropTypes.bool,
+	/** List data Position. */
+	top: PropTypes.bool,
+	/** selected Value. */
+	selected: PropTypes.object,
+	/** Label. */
+	label: PropTypes.string,
+	/** Enable Filter module. */
+	filter: PropTypes.bool,
+	/** Add custom component or custom action button. */
+	addButton: PropTypes.node,
+	/** info or message. */
+	message: PropTypes.string
 };

@@ -15,6 +15,7 @@ class Gosend extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
+			displayMap: false,
 			center: this.props.center,
 			centerMap: {},
 			formattedAddress: '',
@@ -28,6 +29,7 @@ class Gosend extends Component {
 				lng: null
 			}
 		};
+		this.toggleGoogleMap = this.toggleGoogleMap.bind(this);
 		this.onMouseoverPolygon = this.onMouseoverPolygon.bind(this);
 		this.onGeoLoad = this.onGeoLoad.bind(this);
 		this.onSetPoint = this.onSetPoint.bind(this);
@@ -44,6 +46,9 @@ class Gosend extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
+		this.setState({
+			displayMap: nextProps.displayMap
+		});
 		if (typeof nextProps.center.lat !== 'undefined' && nextProps.center.lat !== null) {
 			this.setState({
 				center: nextProps.center
@@ -137,6 +142,12 @@ class Gosend extends Component {
 		return require(`@/assets/images/${this.state.icon}`);
 	}
 
+	toggleGoogleMap() {
+		this.setState({
+			displayMap: !this.state.displayMap
+		});
+	}
+
 	renderAutocomplete(event) {
 		if (!this.state.autocomplete) {
 			const { google, map } = this.props;
@@ -175,58 +186,62 @@ class Gosend extends Component {
 		});
 		return (
 			<div className={gosendClass}>
-				<div className={styles.googleMap}>
-					{
-						renderIf(true)(
-							<div className={styles.mapInput}>
-								<Input 
-									onClick={this.renderAutocomplete} 
-									placeholder='Search Address'
-								/>
+				{
+					renderIf(this.state.displayMap)(
+						<div className={styles.googleMap}>
+							{
+								renderIf(true)(
+									<div className={styles.mapInput}>
+										<Input 
+											onClick={this.renderAutocomplete} 
+											placeholder='Search Address'
+										/>
+									</div>
+								)
+							}
+							{
+								renderIf(this.props.google && this.state.polygonArea)(
+									<Map
+										google={this.props.google}
+										zoom={15}
+										className={styles.googleMapArea}
+										scrollwheel={false}
+										initialCenter={this.state.center}
+										center={this.state.centerMap}
+										centerAroundCurrentLocation={false}
+									>
+										<Polygon
+											paths={this.state.polygonArea}
+											strokeColor='#0000FF'
+											strokeOpacity={0.8}
+											strokeWeight={2}
+											fillColor='#0000FF'
+											onClick={this.onMouseoverPolygon}
+											fillOpacity={0.35} 
+										/>
+										<Marker
+											title={'The marker`s title will appear as a tooltip.'}
+											name={'Current location'} 
+											position={this.state.center}
+											clickable
+											icon={{
+												url: this.markerIcon
+											}}
+											onClick={this.onSetPoint}
+										/>
+									</Map>
+								)
+							}
+							<div className={styles.mapLocationName}>
+								<Icon name='map-marker' /> 
+								<span>{this.state.formattedAddress}</span>
 							</div>
-						)
-					}
-					{
-						renderIf(this.props.google && this.state.polygonArea)(
-							<Map
-								google={this.props.google}
-								zoom={15}
-								className={styles.googleMapArea}
-								scrollwheel={false}
-								initialCenter={this.state.center}
-								center={this.state.centerMap}
-								centerAroundCurrentLocation={false}
-							>
-								<Polygon
-									paths={this.state.polygonArea}
-									strokeColor='#0000FF'
-									strokeOpacity={0.8}
-									strokeWeight={2}
-									fillColor='#0000FF'
-									onClick={this.onMouseoverPolygon}
-									fillOpacity={0.35} 
-								/>
-								<Marker
-									title={'The marker`s title will appear as a tooltip.'}
-									name={'Current location'} 
-									position={this.state.center}
-									clickable
-									icon={{
-										url: this.markerIcon
-									}}
-									onClick={this.onSetPoint}
-								/>
-							</Map>
-						)
-					}
-					<div className={styles.mapLocationName}>
-						<Icon name='map-marker' /> 
-						<span>{this.state.formattedAddress}</span>
-					</div>
-					<Alert align='center' color='red' show={this.state.outSideMap === 'out' || false}>
-						<em>Lokasi tidak sesuai dengan alamat pengiriman</em>
-					</Alert>
-				</div>
+							<Alert align='center' color='red' show={this.state.outSideMap === 'out' || false}>
+								<em>Lokasi tidak sesuai dengan alamat pengiriman</em>
+							</Alert>
+						</div>
+					)
+				}
 			</div>
 		);
 	}

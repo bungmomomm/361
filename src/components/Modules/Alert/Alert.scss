@@ -15,7 +15,6 @@
 	padding: rem(10px);
 	margin-bottom: rem(15px);
 	justify-content: space-between;
-	align-items: flex-start;
 	i{
 		margin: 0px 5px;
 	}
@@ -31,9 +30,7 @@
 }
 
 .red{
-	background: #F2DEDF;
-	border: 1px solid #DFA4A4;
-	color: #BE5959;
+	@include alertStyle(red);
 }
 
 .green{

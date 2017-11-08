@@ -1,16 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
-import { isMobile } from '@/utils';
-import styles from './ModalHeader.scss';
+import styles from '../Modal.scss';
 const cx = classNames.bind(styles);
 
 const Header = (props) => {
 	const ItemClass = cx({
-		Header: true,
-		[`${props.className}`]: !!props.className,
-		[`${props.variant}`]: !!props.variant,
-		mobile: isMobile()
+		Header: true
 	});
 	return (
 		<div className={ItemClass}>
