@@ -14,7 +14,7 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 	const isGosendSupported = () => {
 		return (
 			store.shipping.gosend.gosendSupported
-			&& store.shipping.gosend.gosendApplicable
+			// && store.shipping.gosend.gosendApplicable
 			&& stepOneActiveTab === 0
 		);
 	};
@@ -29,7 +29,7 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 	return (
 		<div className={s.footer}>
 			{
-				(!isGosendSupported() && !store.isJabodetabekArea) && (
+				(!isGosendSupported() || !store.isJabodetabekArea) && (
 					<div className={s.deliveryInfo}>{store.shipping.note}</div>
 				)
 			}
@@ -38,14 +38,17 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 					<div className={s.deliveryInfo}>
 						<Level>
 							<Level.Item>
-								<Checkbox 
-									disabled={!hasLangLat()}
-									name='gojek' 
-									content='Pengiriman:'
-									sprites='gosend'
-									defaultChecked={store.shipping.gosend.gosendActivated}
-									onClick={() => checkGosendMethod(!store.shipping.gosend.gosendActivated, store)}
-								/>
+								{
+									store.shipping.gosend.gosendApplicable &&
+									(<Checkbox 
+										disabled={!hasLangLat()}
+										name='gojek' 
+										content='Pengiriman:'
+										sprites='gosend'
+										defaultChecked={store.shipping.gosend.gosendActivated}
+										onClick={() => checkGosendMethod(!store.shipping.gosend.gosendActivated, store)}
+									/>)
+								}
 							</Level.Item>
 							<Level.Item>
 								{
@@ -59,7 +62,16 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 						</Level>
 						{
 							!hasLangLat() && (
-								<a role='link' tabIndex='0' className='font-orange'>{T.checkout.CHOOSE_SHIPPING_LOCATION}</a>
+								<div>
+									<Checkbox 
+										disabled={!hasLangLat()}
+										name='gojek' 
+										content='Pengiriman:'
+										sprites='gosend'
+										defaultChecked={false}
+									/>
+									<a role='link' tabIndex='0' className='font-orange'>{T.checkout.CHOOSE_SHIPPING_LOCATION}</a>
+								</div>
 							)
 						}
 					</div>
