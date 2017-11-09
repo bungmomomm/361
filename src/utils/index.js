@@ -3,6 +3,7 @@ import newId from './newId';
 import renderIf from './renderIf';
 import modalController from './modalController';
 import isMobile from './isMobile';
+import componentState from './componentState';
 import { request } from './request';
 
 const getBaseUrl = () => {
@@ -16,5 +17,6 @@ export default {
 	request,
 	getBaseUrl,
 	isMobile,
-	modalController
+	modalController,
+	componentState
 };

@@ -5,7 +5,8 @@ import { withCookies } from 'react-cookie';
 import { actions as couponActions } from '@/state/Coupon';
 import { actions as paymentActions } from '@/state/Payment';
 import { RESET_PAYMENT_METHOD } from '@/state/Payment/constants';
-import { currency } from '@/utils';
+// import { index as utils } from '@/utils';
+import { currency, componentState, renderIf, pushDataLayer } from '@/utils';
 import { T } from '@/data/translations';
 import { 
 	Level,
@@ -24,7 +25,9 @@ class StepThree extends Component {
 		this.props = props;
 		this.state = {
 			voucherCode: null,
-			showModalOtp: false
+			showModalOtp: false,
+			applyCouponStep: componentState.button.active, 
+			removeCouponStep: componentState.button.active
 		};
 		this.cookies = this.props.cookies.get('user.token');
 	}
@@ -42,10 +45,32 @@ class StepThree extends Component {
 	}
 
 	onAddCoupon() {
-		const { dispatch, soNumber } = this.props;
-		dispatch(new couponActions.addCoupon(this.cookies, soNumber, this.state.voucherCode)).then(() => {
-			dispatch(new paymentActions.applyBin(this.cookies, RESET_PAYMENT_METHOD));
+		const me = this;
+		me.setState({ applyCouponStep: componentState.button.loading });
+		const { dispatch, soNumber } = me.props;
+		dispatch(new couponActions.addCoupon(me.cookies, soNumber, me.state.voucherCode)).then(() => {
+			dispatch(new paymentActions.applyBin(me.cookies, RESET_PAYMENT_METHOD));
+			me.setState({ applyCouponStep: componentState.button.active });
+			pushDataLayer('checkout', 'checkout', { step: 5, option: 'Voucher' });
+		}).catch((error) => {
+			me.setState({ applyCouponStep: componentState.button.active });
 		});
+	}
+
+	onRemoveCoupon(event) {
+		const { dispatch, soNumber } = this.props;
+		this.setState({ removeCouponStep: componentState.button.loading });
+		dispatch(new couponActions.removeCoupon(this.props.cookies.get('user.token'), soNumber)).then(() => {
+			const paymentMethodId = RESET_PAYMENT_METHOD;
+			this.setState({ removeCouponStep: componentState.button.active });
+			dispatch(new paymentActions.applyBin(this.props.cookies.get('user.token'), paymentMethodId)).then(() => {
+				paymentActions.changePaymentMethod(false);
+			});
+		}).catch((error) => {
+			this.setState({ removeCouponStep: componentState.button.active });
+		});
+		pushDataLayer('checkout', 'checkout', { step: 5, option: 'Non Voucher' });
+
 	}
 
 	showOTPmodal(bool = null) {
@@ -54,7 +79,7 @@ class StepThree extends Component {
 	}
 
 	resetCoupon() {
-		this.setState({ voucherCode: null });
+		this.setState({ voucherCode: null, applyCouponStep: componentState.button.active });
 		const { dispatch } = this.props;
 		dispatch(new couponActions.resetCoupon()).then(() => {
 			dispatch(new paymentActions.applyBin(this.cookies, RESET_PAYMENT_METHOD));
@@ -68,14 +93,35 @@ class StepThree extends Component {
 
 		const {
 			payments,
-			coupon
+			coupon,
 		} = this.props;
+		
 
 		const inlineStyle = {
 			mb5: {
 				marginBottom: '5px'
 			}
 		};
+		const invalidVoucher = (typeof coupon.coupon !== 'undefined' && coupon.coupon !== '' && typeof coupon.code !== 'undefined' && coupon.code !== 200);
+		let couponId = false;
+		if (coupon.validCoupon && coupon.coupon !== '') {
+			couponId = coupon.coupon;
+		} else if (payments.couponId) {
+			couponId = payments.couponId;
+		}
+
+		const htmlDisc = (!payments.discount) ? false : payments.discount.map((discountItem, index) => {
+			return (
+				<Level key={index}>
+					<Level.Left className={styles.discountName}>
+						<div className='text-elipsis'> - {discountItem.discountName}</div>
+					</Level.Left>
+					<Level.Right>
+						<div className='text-right'>{currency(-discountItem.totalDiscount)}</div>
+					</Level.Right>
+				</Level>
+			);
+		});
 
 		return (
 			<div className={styles.card}>
@@ -85,12 +131,15 @@ class StepThree extends Component {
 					<Level.Right className='text-right'><strong>{currency(payments.subTotal)}</strong></Level.Right>
 				</Level>
 				{
-					coupon.validCoupon && (
+					renderIf(couponId)(
 						<Level style={inlineStyle.mb5}>
-							<Level.Left>{T.checkout.VOUCHER} : <strong>MM20HM</strong> &nbsp; <Button icon='times-circle' iconRight /></Level.Left>
+							<Level.Left>{T.checkout.VOUCHER} : <strong>{couponId}</strong> &nbsp; <Button icon='times-circle' iconRight onClick={(e) => this.onRemoveCoupon(e)} state={this.state.removeCouponStep} /></Level.Left>
 							<Level.Right className='text-right'>&nbsp;</Level.Right>
 						</Level>
 					)
+				}
+				{
+					renderIf(htmlDisc)(htmlDisc)
 				}
 				<Level style={inlineStyle.mb5}>
 					<Level.Left>{T.checkout.TOTAL_SHIPPING_COST}</Level.Left>
@@ -98,45 +147,14 @@ class StepThree extends Component {
 				</Level>
 				<Level style={inlineStyle.mb5}>
 					<Level.Left>
-						<div className='font-green'>{T.checkout.DISCOUNT_SHPPING_COST}</div>
+						<div className='font-green'>{T.checkout.DISCOUNT_SHIPPING_COST}</div>
 					</Level.Left>
 					<Level.Right>
 						<div className='font-green text-right'>{currency(-payments.deliveryCostDiscount)}</div>
 					</Level.Right>
 				</Level>
 				{
-					(coupon.code === 403 && coupon.message) ? (
-						<div>
-							<Level style={inlineStyle.mb5}>
-								<Level.Left className={styles.voucherLabel}>{T.checkout.VOUCHER_CODE}</Level.Left>
-								<Level.Right>
-									<Group addons addonsAttached>
-										<Input 
-											size='small'
-											name='voucherCode'
-											color='red'
-											value={coupon.coupon}
-											onChange={(e) => this.onChangeVoucher(e)}
-										/>
-										<Button 
-											type='button'
-											className='font-red'
-											size='small'
-											icon='times'
-											iconRight
-											onClick={() => this.resetCoupon()}
-										/>
-									</Group>
-								</Level.Right>
-							</Level>
-							<Level style={inlineStyle.mb5}>
-								<Level.Left>&nbsp;</Level.Left>
-								<Level.Right>
-									<div className='font-red'>{coupon.message}</div>
-								</Level.Right>
-							</Level>
-						</div>
-					) : (
+					renderIf(!couponId)(
 						<Level style={inlineStyle.mb5}>
 							<Level.Left className={styles.voucherLabel}>{T.checkout.VOUCHER_CODE}</Level.Left>
 							<Level.Right>
@@ -144,20 +162,34 @@ class StepThree extends Component {
 									<Input 
 										size='small'
 										name='voucherCode'
-										color='green'
+										color={invalidVoucher ? 'red' : 'green'}
+										defaultValue={coupon.coupon}
 										onChange={(e) => this.onChangeVoucher(e)}
 									/>
 									<Button 
-										type='submit'
+										type={invalidVoucher ? 'button' : 'submit'}
+										icon={invalidVoucher ? 'times' : ''}
 										size='small'
-										color='green'
-										onClick={() => this.onAddCoupon()}
-									>{T.checkout.CHECK}</Button>
+										color={invalidVoucher ? 'red' : 'green'}
+										onClick={() => (invalidVoucher ? this.resetCoupon() : this.onAddCoupon())}
+										state={this.state.applyCouponStep}
+									>{invalidVoucher ? '' : T.checkout.CHECK}</Button>
 								</Group>
 							</Level.Right>
 						</Level>
 					)
 				}
+				{
+					renderIf(typeof coupon.code !== 'undefined' && coupon.code !== 200)(
+						<Level style={inlineStyle.mb5}>
+							<Level.Left>&nbsp;</Level.Left>
+							<Level.Right>
+								<div className='font-red'>{coupon.message}</div>
+							</Level.Right>
+						</Level>
+					)
+				}
+				
 				<div className={styles.CheckoutTitle}>
 					<Level>
 						<Level.Left>{T.checkout.TOTAL_PAYMENT}</Level.Left>
@@ -183,7 +215,8 @@ const mapStateToProps = (state) => {
 	return {
 		coupon: state.coupon,
 		soNumber: state.cart.soNumber,
-		payments: state.payments
+		payments: state.payments,
+		carts: state.cart.data
 	};
 };
 
