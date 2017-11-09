@@ -2,15 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styles from './Card.scss';
 
-import { isMobile } from '@/utils';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
-
 
 const Card = (props) => {
 	const cardClass = cx({
 		card: true,
-		mobile: isMobile(),
 		radius: !!props.radius,
 		loading: !!props.loading,
 		selected: !!props.selected

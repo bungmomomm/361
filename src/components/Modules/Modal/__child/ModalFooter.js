@@ -1,15 +1,11 @@
 import React from 'react';
 import classNames from 'classnames/bind';
-import { isMobile } from '@/utils';
-import styles from './ModalFooter.scss';
+import styles from '../Modal.scss';
 const cx = classNames.bind(styles);
 
 const Footer = (props) => {
 	const FooterClass = cx({
-		Footer: true,
-		[`${props.className}`]: !!props.className,
-		[`${props.variant}`]: !!props.variant,
-		mobile: isMobile()
+		Footer: true
 	});
 	return (
 		<div className={FooterClass}>

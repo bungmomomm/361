@@ -68,7 +68,9 @@ export default class Alert extends Component {
 			renderIf(this.state.show)(
 				<div className={classAlert}>
 					{IconElement}
-					<span dangerouslySetInnerHTML={{ __html: children }} />
+					<span>
+						{children}
+					</span>
 					{ButtonClose}
 				</div>
 			)
