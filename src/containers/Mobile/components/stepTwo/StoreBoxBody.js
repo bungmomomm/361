@@ -18,14 +18,14 @@ const StoreBoxBody = ({ products, onUpdateQty, showBtnDelete }) => {
 								<img src={product.image} width={50} height={50} alt={product.name} />
 								{
 									showBtnDelete && 
-									(<div 
+									<div 
 										role='button'
 										tabIndex={-1}
 										className='font-grey'
 										onClick={() => onUpdateQty(0, product.id)} 
 									>
 										<Icon name='trash-o' /> Hapus
-									</div>)
+									</div>
 								}
 							</Level.Left>
 							<Level.Item style={{ paddingLeft: '20px' }}>
