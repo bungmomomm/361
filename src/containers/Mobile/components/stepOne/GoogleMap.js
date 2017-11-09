@@ -4,9 +4,11 @@ import { Input } from 'mm-ui';
 import styles from './GoogleMap.scss';
 
 class GoogleMap extends Component {
+
 	createControlClassName() {
 		return [styles.control, this.props.className].join(' ').trim();
 	}
+	
 
 	autoComplete(event) {
 		const { google, map } = this.props;
@@ -54,7 +56,8 @@ class GoogleMap extends Component {
 			defaultCenter,
 			style,
 			marker,
-			polygon
+			polygon,
+			onDragend
 		} = this.props;
 		return (
 			<div className={this.createControlClassName()} style={this.props.style}>
@@ -64,6 +67,7 @@ class GoogleMap extends Component {
 						onClick={(e) => this.autoComplete(e)}
 						className={styles.searchLocationInput}
 						placeholder='Cari Alamat'
+						size='large'
 						icon='search'
 					/>
 				}
@@ -74,6 +78,7 @@ class GoogleMap extends Component {
 					initialCenter={defaultCenter}
 					centerAroundCurrentLocation={false}
 					style={style}
+					onDragen={onDragend}
 				>
 					{polygon && this.renderPolygon()}
 					{marker && this.renderMarker()}

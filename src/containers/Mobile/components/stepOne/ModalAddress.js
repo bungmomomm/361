@@ -4,25 +4,14 @@ import { actions } from '@/state/Adresses';
 import { withCookies } from 'react-cookie';
 import React, { Component } from 'react';
 // import Gosend from '@/components/Views/Gosend/Gosend.Mobile.js';
-// import { 
-// 	Modal, 
-// 	Textarea, 
-// 	Message,
-// 	Input, 
-// 	Alert, 
-// 	Select, 
-// 	Group, 
-// 	Level, 
-// 	Icon, 
-// 	Button 
-// } from '@/components';
+import { GoogleApiWrapper } from 'google-maps-react';
 import {
 	Button,
 	Level,
 	Icon,
 	Select,
 	Group,
-	Alert,
+	// Alert,
 	Input,
 	Textarea,
 	Modal,
@@ -37,11 +26,12 @@ class ModalAddress extends Component {
 	static fetchGetCityProvince(token, dispatch) {
 		dispatch(new actions.getCityProvince(token));
 	}
-	
+
 	static fetchGetDistric(token, province, dispatch) {
 		dispatch(new actions.getDistrict(token, province));
 	}
 
+	
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -51,15 +41,15 @@ class ModalAddress extends Component {
 				province: {},
 				district: {}
 			},
-			renderDistrict: true,
+			renderDistrict: false,
 			formData: {},
 			formattedAddress: null
 		};
 		this.onChangeInput = this.onChangeInput.bind(this);
 		this.translateProvince = this.translateProvince.bind(this);
-		this.setFormData = this.setFormData.bind(this);
 		this.cookies = this.props.cookies.get('user.token');
 		this.isEdit = false;
+		this.mapIcon = 'gosend-marker.png';
 	}
 
 	componentWillMount() {
@@ -74,44 +64,49 @@ class ModalAddress extends Component {
 	}
 
 	componentDidMount() {
-		if (this.props.formData) {
-			this.isEdit = true;
-			this.translateProvince(this.props.formData.attributes);
-		} else {
-			this.isEdit = false;
+		const { formData } = this.props;
+		if (formData.attributes.latitude && formData.attributes.longitude) {
+			this.getPinPointAddress();
 		}
 	}
 
 	componentWillReceiveProps(nextProps) {
 		if (this.props.address.district !== nextProps.address.district) {
-			this.setState({
-				renderDistrict: true
-			});
+			setTimeout(() => {
+				this.setState({ renderDistrict: true });
+			}, 20);
 		}
 	}
-
+	
 	onChangeProvince(e) {
-		this.constructor.fetchGetDistric(this.cookies, e.value, this.props.dispatch);		
 		const isJakarta = e.value.toLowerCase().includes('jakarta');
-		this.setState({ 
+		this.setState({
 			isJakarta,
 			selected: {
-				province: e.value,
+				province: {
+					label: e.value,
+					value: e.value,
+				},
 				district: {
 					label: '-- Pilih Kecamatan',
 					value: ''
 				}
 			},
+			formattedAddress: null,
 			renderDistrict: false
 		});
+		this.constructor.fetchGetDistric(this.cookies, e.value, this.props.dispatch);
 	}
 
 	onChangeDistrict(e) {
-		this.setState({ 
-			formData: {
-				...this.state.formData,
-				kecamatan: e.value
-			}
+		this.setState({
+			selected: {
+				...this.state.selected,
+				district: {
+					label: e.value,
+					value: e.value
+				}
+			},
 		});
 	}
 
@@ -119,28 +114,34 @@ class ModalAddress extends Component {
 		this.setStateFormData(e.target.name, e.target.value);
 	}
 
+	get markerIcon() {
+		return require(`@/assets/images/${this.mapIcon}`);
+	}
+
+
+	getPinPointAddress() {
+		const { google, formData } = this.props;
+		if (google) {
+			const geo = new google.maps.Geocoder();
+			const latLng = new google.maps.LatLng(formData.attributes.latitude, formData.attributes.longitude);
+			geo.geocode({ latLng }, (results, status) => (
+				status === google.maps.GeocoderStatus.OK && this.setAddress(results[0].formatted_address)
+			));
+		}
+	}
+
+	setAddress(formattedAddress) {
+		this.setState({ formattedAddress });
+	}
+
 	setStateFormData(name, value) {
 		const formData = {
 			...this.state.formData,
 			[name]: value
 		};
-		this.setState({ formData });
-	}
-	
-	setFormData(data) {
-		const formData = {
-			id: data.id,
-			address_label: data.attributes.addressLabel,
-			fullname: data.attributes.fullname,
-			address: data.attributes.address,
-			province: `${data.attributes.city}, ${data.attributes.province}`,
-			kecamatan: data.attributes.district,
-			zipcode: data.attributes.zipcode,
-			phone: data.attributes.phone,
-			latitude: data.attributes.latitude || null,
-			longitude: data.attributes.longitude || null,
-			isEdit: this.isEdit
-		};
+		if (name === 'province') {
+			formData.kecamatan = null;
+		}
 		this.setState({ formData });
 	}
 
@@ -149,7 +150,7 @@ class ModalAddress extends Component {
 		if (city && district) {
 			const isJakarta = province.toLowerCase().includes('jakarta');
 			const constProv = `${city}, ${province}`;
-			this.constructor.fetchGetDistric(this.cookies, constProv, this.props.dispatch);			
+			this.constructor.fetchGetDistric(this.cookies, constProv, this.props.dispatch);
 			const stateProvince = {
 				province: {
 					label: constProv,
@@ -160,76 +161,196 @@ class ModalAddress extends Component {
 					value: `${district}`
 				}
 			};
-			this.setState({ selected: stateProvince, isJakarta });
-			this.constructor.fetchGetDistric(this.cookies, stateProvince.province.value, this.props.dispatch);
+			this.setState({ 
+				selected: stateProvince, 
+				isJakarta
+			});
 		}
 	}
 
+	// setFormData(data) {
+	// 	const formData = {
+	// 		id: data.id,
+	// 		address_label: data.attributes.addressLabel,
+	// 		fullname: data.attributes.fullname,
+	// 		address: data.attributes.address,
+	// 		province: `${data.attributes.city}, ${data.attributes.province}`,
+	// 		kecamatan: data.attributes.district,
+	// 		zipcode: data.attributes.zipcode,
+	// 		phone: data.attributes.phone,
+	// 		latitude: data.attributes.latitude || null,
+	// 		longitude: data.attributes.longitude || null,
+	// 		isEdit: this.isEdit
+	// 	};
+	// 	this.setState({ formData });
+	// }
+
 	validateAndSubmit(e) {
 		e.preventDefault();
-		console.log(this);
+		if (
+			(this.elAddressLabel.checkValid().count() +
+				this.elFullname.checkValid().count() +
+				this.elPhone.checkValid().count() +
+				this.elAddress.checkValid().count() +
+				this.elZipcode.checkValid().count()) < 1
+		) {
+			console.log('valid');
+		} else {
+			console.log('error');
+		}
 	}
 
-	selectedPinPoint(data) {
-		this.setState({
-			formattedAddress: data.formattedAddress,
-			showMap: false
-		});
-	}
-
-	toggleMap() {
+	toggleGoogleMap() {
 		this.setState({ showMap: !this.state.showMap });
 	}
-	
-	render() {
 
-		const { 
+	mapMoved(e) {
+		const google = {
+			...this.state.google,
+			marker: {
+				center: e.mapCenter
+			}
+		};
+		this.setState({ google });
+	}
+
+	renderButtonMap() {
+		return this.state.isJakarta && this.state.selected.district.value && (
+			<div>
+				<Button
+					block
+					color='grey'
+					onClick={() => this.toggleGoogleMap()}
+					icon={this.state.showMap ? 'times' : 'map-marker'}
+				>
+					{this.state.showMap ? T.checkout.CANCEL : T.checkout.SHOW_IN_MAP}
+				</Button>
+				<p className='font-small font-orange'>{T.checkout.GOSEND_ADDRESS_RULE}</p>
+			</div>
+		);
+	}
+
+	renderFormattedAddress() {
+		return (
+			<div>
+				<Message>
+					<Level>
+						<Level.Left><Icon name='map-marker' /></Level.Left>
+						<Level.Item style={{ paddingLeft: '15px' }}>{this.state.formattedAddress}</Level.Item>
+						<Level.Right>
+							<div role='button' tabIndex='-1' onClick={() => this.toggleGoogleMap()} className='font-orange'>Ubah</div>
+						</Level.Right>
+					</Level>
+				</Message>
+				<p className='font-small font-orange'>{T.checkout.GOSEND_ADDRESS_RULE}</p>
+			</div>
+		);
+	}
+
+	renderGoogleMap() {
+		const { google } = this.state;
+		return (
+			<div style={{ marginBottom: '15px' }}>
+				<GoogleMap
+					apiKey='YOUR_API_KEY'
+					zoom={15}
+					hasAutocomplete
+					onChangeAutoComplete={(e) => console.log(this.state)}
+					style={{
+						width: '100%',
+						height: '250px'
+					}}
+					defaultCenter={Polygon[0].cakung.center}
+					onDragend={(e) => this.mapMoved(e)}
+					marker={{
+						icon: this.markerIcon,
+						onClick: (e) => console.log('from marker:', e),
+						defaultCenter: google ? google.marker.center : Polygon[0].cakung.center
+					}}
+					polygon={{
+						area: Polygon[0].cakung.location_coords,
+						stroke: {
+							color: '#0000FF',
+							opacity: 0.8,
+							weight: 2
+						},
+						fill: {
+							color: '#0000FF',
+							opacity: 0.35
+						},
+						onClick: (data) => console.log(data)
+					}}
+				/>
+				<Message><Icon name='map-marker' /> Jalan Bangka II No.20</Message>
+			</div>
+		);
+	}
+
+	render() {
+		const {
 			address,
 			open,
 			formData,
 		} = this.props;
 
+		if (!address) return null;
+
 		return (
-			<Modal 
+			<Modal
 				size='medium'
 				show={open}
 				showOverlayCloseButton
-				onCloseRequest={this.props.handleClose} 
+				onCloseRequest={this.props.handleClose}
 			>
 				<Modal.Header>{T.checkout.CREATE_NEW_ADDRESS}</Modal.Header>
 				<Modal.Body>
 					<Group>
-						<Input 
-							label='Simpan Sebagai *' 
+						<Input
+							label='Simpan Sebagai *'
 							placeholder='Contoh: rumah, kantor, rumah pacar'
 							name='address_label'
 							type='text'
 							defaultValue={formData.attributes.addressLabel}
+							ref={(c) => { this.elAddressLabel = c; }}
+							validation={{
+								rules: 'required',
+								name: 'address label'
+							}}
 						/>
 					</Group>
 					<Group>
-						<Input 
+						<Input
 							label='Nama Penerima *'
 							placeholder='Masukan nama lengkap penerima'
 							name='fullname'
 							type='text'
+							ref={(c) => { this.elFullname = c; }}
 							defaultValue={formData.attributes.fullname}
+							validation={{
+								rules: 'required',
+								name: 'fullname'
+							}}
 						/>
 					</Group>
 					<Group>
-						<Input 
+						<Input
 							label='No Handphone *'
 							placeholder='Contoh : 08123456789'
 							name='phone'
 							min={0}
 							type='number'
 							defaultValue={formData.attributes.phone}
+							ref={(c) => { this.elPhone = c; }}
+							validation={{
+								rules: 'required',
+								name: 'phone'
+							}}
 						/>
 					</Group>
 					{
 						address.cityProv && (
 							<Group>
-								<Select 
+								<Select
 									label='Kota, Provinsi *'
 									hasFilter
 									name='province'
@@ -241,143 +362,55 @@ class ModalAddress extends Component {
 						)
 					}
 					{
-						(address.cityProv && address.district && this.state.renderDistrict) && (
+						
+						(address.district && address.district.length > 0 && this.state.renderDistrict) && (
 							<Group>
-								<Select 
+								<Select
 									label='Kecamatan *'
 									hasFilter
 									name='kecamatan'
 									defaultValue={this.state.selected.district.value}
 									options={address.district}
+									onChange={(e) => this.onChangeDistrict(e)}
 								/>
 							</Group>
 						)
 					}
 					<Group>
-						<Input 
+						<Input
 							label='Kode Pos *'
 							placeholder='Contoh : 12345'
 							name='zipcode'
 							type='number'
 							min={0}
 							defaultValue={formData.attributes.zipcode}
+							ref={(c) => { this.elZipcode = c; }}
+							validation={{
+								rules: 'required',
+								name: 'zipcode'
+							}}
 						/>
 					</Group>
 					<Group>
-						<Textarea 
+						<Textarea
 							label='Alamat *'
 							placeholder='Masukkan Alamat Lengkap'
 							name='address'
 							defaultValue={formData.attributes.address}
+							ref={(c) => { this.elAddress = c; }}
+							validation={{
+								rules: 'required',
+								name: 'address'
+							}}
 						>address</Textarea>
 					</Group>
 					{
-						(this.state.isJakarta && this.state.formData.kecamatan) && (
-							<div>
-								{
-									(!this.state.formattedAddress || this.state.showMap) && (
-										<div>
-											<Group>
-												<Alert color='yellow' show>
-													{T.checkout.O2O_ADDRESS_RULE}
-												</Alert>
-											</Group>
-											<Group>
-												<Button 
-													color='grey' 
-													block
-													icon={!this.state.showMap ? 'map-marker' : 'times'} 
-													onClick={() => this.toggleMap()}
-												>{!this.state.showMap ? T.checkout.SHOW_IN_MAP : T.checkout.CANCEL}</Button>
-											</Group>
-											<div><em>(Optional)</em></div>
-										</div>	
-									)
-								}
-								{
-									(this.state.formattedAddress && !this.state.showMap) && (
-										<div>
-											<Message>
-												<Level padded>
-													<Level.Item>
-														<Icon name='map-marker' />
-													</Level.Item>
-													<Level.Item>
-														{this.state.formattedAddress}
-													</Level.Item>
-													<Level.Item>
-														<button 
-															className='font-small font-orange' 
-															onClick={() => this.toggleMap()}
-														>
-															{T.checkout.CHANGE_LOCATION}
-														</button>
-													</Level.Item>
-												</Level>
-											</Message>
-											<Group>
-												<p className='font-small font-orange'>{T.checkout.GOSEND_ADDRESS_RULE}</p>
-											</Group>
-										</div>
-									)
-								}
-								<div><em>* {T.checkout.MUST_FILLED}</em></div>
-							</div>
-						)
+						this.state.formattedAddress && !this.state.showMap ? this.renderFormattedAddress() : this.renderButtonMap()
 					}
-					<Alert color='yellow'>Harap tidak mengisi alamat pickup point O2O tanpa melalui pilihan menu Ambil di Toko (O2O). Kami tidak bertanggung jawab bila terjadi kehirlangan</Alert>
-					<Message>
-						<Level>
-							<Level.Left><Icon name='map-marker' /></Level.Left>
-							<Level.Item style={{ paddingLeft: '15px' }}>
-									Jalan Bangka II No.20, Pela Mampang, 
-									Mampang Prapatan, Kota Jakarta Selatan, 
-									DKI jakarta 12720
-							</Level.Item>
-							<Level.Right>
-								<div className='font-orange'>Ubah</div>
-							</Level.Right>
-						</Level>
-					</Message>
-					<Button block color='grey'>
-						<Icon name='map-marker' /> Tunjukan Dalam Peta
-					</Button>
-					<div className='font-orange'>Lokasi peta harus sesuai dengan alamat pengiriman. Lokasi diperlukan jika ingin menggunakan jasa pengiriman GO-SEND.</div>
-					<GoogleMap
-						apiKey='YOUR_API_KEY'
-						zoom={15}
-						hasAutocomplete
-						onChangeAutoComplete={(e) => console.log(e)}
-						style={{
-							width: '100%',
-							height: '250px'
-						}}
-						defaultCenter={Polygon[0].cakung.center}
-						updateCenter={Polygon[0].cakung.center}
-						marker={{
-							icon: 'https://www.google.com/intl/en_us/mapfiles/marker.png',
-							onClick: (e) => console.log('from marker:', e),
-							defaultCenter: Polygon[0].cakung.center,
-							updateCenter: Polygon[0].cakung.center
-						}}
-						polygon={{
-							area: Polygon[0].cakung.location_coords,
-							stroke: {
-								color: '#0000FF',
-								opacity: 0.8,
-								weight: 2
-							},
-							fill: {
-								color: '#0000FF',
-								opacity: 0.35
-							},
-							onClick: (data) => this.selectedPinPoint(data)
-						}}
-					/>
-					<Message><Icon name='map-marker' /> Jalan Bangka II No.20</Message>
-					<div><em>* Wajib Diisi</em></div>
+					{this.state.showMap && this.renderGoogleMap()}
+					<p><em>* {T.checkout.MUST_FILLED}</em></p>
 					<Group>
-						<Button 
+						<Button
 							block
 							size='large'
 							color='dark'
@@ -396,5 +429,6 @@ const mapStateToProps = (state) => {
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(ModalAddress));
-
+export default GoogleApiWrapper({
+	apiKey: ('AIzaSyBRfxjnu9S1OmoMslu7fb3uUdf3O2BNNYE')
+})(withCookies(connect(mapStateToProps)(ModalAddress)));
