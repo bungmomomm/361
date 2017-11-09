@@ -66,7 +66,7 @@ class StepTwo extends Component {
 	updateQty(qty, productId) {
 		const { soNumber, dispatch } = this.props;
 		if (soNumber) {
-			dispatch(new actions.updateQtyCart(this.cookies, qty.value, productId, { soNumber }));
+			dispatch(new actions.updateQtyCart(this.cookies, qty, productId, { soNumber }));
 		} else {
 			dispatch(new actions.updateCartWithoutSO(this.cookies, qty, productId));
 		}
@@ -98,6 +98,7 @@ class StepTwo extends Component {
 									products={storeData.store.products}
 									onUpdateQty={(e, productId) => this.updateQty(e, productId)}
 									isRestrictO2O={isRestrictO2O}
+									showBtnDelete={!(this.props.cart.length < 2 && storeData.store.products.length < 2)}
 								/>
 								<StoreBoxFooter 
 									stepOneActiveTab={this.props.stepState.stepOne.activeTab}
