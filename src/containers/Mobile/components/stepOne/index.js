@@ -90,7 +90,7 @@ class stepOne extends Component {
 		}
 		if (nextProps.latesto2o !== this.state.latesto2o) {
 			this.setState({
-				selectedAddressO2O: nextProps.latesto2o[0]
+				selectedAddressO2O: nextProps.latesto2o[0] || {}
 			});
 		}
 	}
@@ -264,7 +264,7 @@ class stepOne extends Component {
 								) : (
 									<Button 
 										block
-										color='orange' 
+										color='orange'
 										onClick={() => this.showModalAddress('add')} 
 									>{T.checkout.INPUT_DELIVERY_ADDRESS} </Button>
 								)

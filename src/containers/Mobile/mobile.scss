@@ -2,7 +2,14 @@
 @import 'variables';
 
 :global{
-	// @import '~mm-ui/dist/style';
+	@media only screen
+	and (-webkit-min-device-pixel-ratio: 2)
+	and (max-device-width: 736px)
+	and (min-device-width: 320px)
+	and (orientation: portrait){
+		@import '~mm-ui/dist/style';
+	}
+
 	html {
 		touch-action: manipulation;
 	}
@@ -66,6 +73,7 @@
 	right: 12px;
 	top: 12px;
 }
+
 
 .card{
 	color: #4A4A4A;
