@@ -58,6 +58,12 @@ class StepTwo extends Component {
 		return isPickupable === '0' && o2oSupported && stepState.stepOne.activeTab === 1;
 	}
 
+	checkJabotabekItem(fgLocation) {
+		const { stepState } = this.props;
+		const isCurrentAddressJabotabek = stepState.stepOne.selectedAddress && stepState.stepOne.selectedAddress.attributes.isJabodetabekArea === '1';
+		return fgLocation === '1' && stepState.stepOne.activeTab === 0 && !isCurrentAddressJabotabek;
+	}
+
 	updateShippingMethodGosend(checked, store) {
 		const methodId = checked ? '19' : '';
 		this.props.dispatch(new actions.updateGosend(this.cookies, store.id, methodId, { soNumber: this.props.soNumber }));
@@ -83,10 +89,11 @@ class StepTwo extends Component {
 				{
 					this.props.cart.map((storeData, indexStoreBox) => {
 						const isRestrictO2O = this.checkRestrictO2o(!storeData.store.shipping.o2oSupported);
+						const isJabotabekItem = this.checkJabotabekItem(storeData.store.products[0].fgLocation);
 						return (
 							<Message
 								key={indexStoreBox}
-								color={isRestrictO2O ? 'red' : 'grey'}
+								color={isRestrictO2O || isJabotabekItem ? 'red' : 'grey'}
 								header={
 									<Level>
 										<Level.Left>{storeData.store.name}</Level.Left>
