@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Modal, Message, Radio } from 'mm-ui';
+import { Modal, Panel, Radio } from 'mm-ui';
 
 export default class ModalChooseAddress extends Component {
 	constructor(props) {
@@ -23,7 +23,7 @@ export default class ModalChooseAddress extends Component {
 						this.props.address.map((address, index) => {
 							const isChecked = this.checkSelected(address);
 							return (
-								<Message 
+								<Panel 
 									key={index} 
 									color={isChecked ? 'yellow' : 'grey'}
 									onClick={() => this.props.onChange(address)}
@@ -43,7 +43,7 @@ export default class ModalChooseAddress extends Component {
 									}
 								>
 									<div dangerouslySetInnerHTML={{ __html: address.info }} />
-								</Message>
+								</Panel>
 							);
 						})
 					}

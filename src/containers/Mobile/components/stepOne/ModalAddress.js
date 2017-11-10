@@ -15,7 +15,7 @@ import {
 	Input,
 	Textarea,
 	Modal,
-	Message
+	Panel
 } from 'mm-ui';
 import GoogleMap from './GoogleMap';
 import { T } from '@/data/translations';
@@ -57,7 +57,6 @@ class ModalAddress extends Component {
 			this.constructor.fetchGetCityProvince(this.cookies, this.props.dispatch);
 		} else if (this.props.formData) {
 			this.isEdit = true;
-			this.translateProvince(this.props.formData.attributes);
 		} else {
 			this.isEdit = false;
 		}
@@ -68,6 +67,7 @@ class ModalAddress extends Component {
 		if (formData.attributes.latitude && formData.attributes.longitude) {
 			this.getPinPointAddress();
 		}
+		this.translateProvince(this.props.formData.attributes);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -147,7 +147,7 @@ class ModalAddress extends Component {
 
 	translateProvince(formDataAttributes) {
 		const { city, district, province } = formDataAttributes;
-		if (city && district) {
+		if (city && district && province) {
 			const isJakarta = province.toLowerCase().includes('jakarta');
 			const constProv = `${city}, ${province}`;
 			this.constructor.fetchGetDistric(this.cookies, constProv, this.props.dispatch);
@@ -233,7 +233,7 @@ class ModalAddress extends Component {
 	renderFormattedAddress() {
 		return (
 			<div>
-				<Message>
+				<Panel>
 					<Level>
 						<Level.Left><Icon name='map-marker' /></Level.Left>
 						<Level.Item style={{ paddingLeft: '15px' }}>{this.state.formattedAddress}</Level.Item>
@@ -241,7 +241,7 @@ class ModalAddress extends Component {
 							<div role='button' tabIndex='-1' onClick={() => this.toggleGoogleMap()} className='font-orange'>Ubah</div>
 						</Level.Right>
 					</Level>
-				</Message>
+				</Panel>
 				<p className='font-small font-orange'>{T.checkout.GOSEND_ADDRESS_RULE}</p>
 			</div>
 		);
@@ -281,7 +281,7 @@ class ModalAddress extends Component {
 						onClick: (data) => console.log(data)
 					}}
 				/>
-				<Message><Icon name='map-marker' /> Jalan Bangka II No.20</Message>
+				<Panel><Icon name='map-marker' /> Jalan Bangka II No.20</Panel>
 			</div>
 		);
 	}
@@ -292,9 +292,6 @@ class ModalAddress extends Component {
 			open,
 			formData,
 		} = this.props;
-
-		if (!address) return null;
-
 		return (
 			<Modal
 				size='medium'
@@ -347,20 +344,19 @@ class ModalAddress extends Component {
 							}}
 						/>
 					</Group>
-					{
-						address.cityProv && (
-							<Group>
-								<Select
-									label='Kota, Provinsi *'
-									hasFilter
-									name='province'
-									defaultValue={this.state.selected.province.value}
-									options={address.cityProv}
-									onChange={(e) => this.onChangeProvince(e)}
-								/>
-							</Group>
-						)
-					}
+					<Group>
+						{
+							address.cityProv &&
+							<Select
+								label='Kota, Provinsi *'
+								hasFilter
+								name='province'
+								defaultValue={this.state.selected.province.value}
+								options={address.cityProv}
+								onChange={(e) => this.onChangeProvince(e)}
+							/>
+						}
+					</Group>
 					{
 						
 						(address.district && address.district.length > 0 && this.state.renderDistrict) && (

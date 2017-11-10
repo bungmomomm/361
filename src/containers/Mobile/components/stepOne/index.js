@@ -11,7 +11,7 @@ import {
 	Icon,
 	Group,
 	Alert,
-	Message
+	Panel
 } from 'mm-ui';
 
 
@@ -215,7 +215,7 @@ class stepOne extends Component {
 							{
 								shipping.length > 0 ? (
 									<div>
-										<Message color='grey'>
+										<Panel color='grey'>
 											<Group>
 												<Button onClick={() => this.toggleChooseAddressModal()} block>
 													<Level>
@@ -259,7 +259,7 @@ class stepOne extends Component {
 													</div>
 												</Level.Item>
 											</Level>
-										</Message>
+										</Panel>
 									</div>
 								) : (
 									<Button 
@@ -280,7 +280,7 @@ class stepOne extends Component {
 							}
 							{
 								(selectedAddressO2O.attributes && this.props.isPickupable === '1') && (
-								<Message className='customSelectO2OWrapper'>
+								<Panel className='customSelectO2OWrapper'>
 									<Group>
 										<Button 
 											block 
@@ -306,11 +306,11 @@ class stepOne extends Component {
 											</div>
 										</Level.Item>
 									</Level>
-								</Message>)
+								</Panel>)
 							}
 							{
 								this.props.latesto2o.length < 1 && this.props.isPickupable === '1' && !selectedAddressO2O.attributes && (
-									<Message className='customSelectO2OWrapper'>
+									<Panel className='customSelectO2OWrapper'>
 										<Group>
 											<Button 
 												block 
@@ -322,7 +322,7 @@ class stepOne extends Component {
 												</Level>
 											</Button>
 										</Group>
-									</Message>
+									</Panel>
 								)
 							}
 						</Tabs.Content>

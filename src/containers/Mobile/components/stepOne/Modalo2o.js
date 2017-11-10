@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { 
 	Modal, 
 	Input,
-	Message,
+	Panel,
 	Radio,
 	Select
 } from 'mm-ui';
@@ -104,7 +104,7 @@ class Modalo2o extends Component {
 						this.state.listo2o && this.state.listo2o.map((address, index) => {
 							const isChecked = this.props.selectedAddressO2O && this.props.selectedAddressO2O.id === address.id;
 							return (
-								<Message 
+								<Panel 
 									key={index} 
 									color={isChecked ? 'yellow' : 'grey'}
 									onClick={() => this.props.onChange(address, this.state.selectedProvince)}
@@ -127,7 +127,7 @@ class Modalo2o extends Component {
 										<p><strong>{address.attributes.address_label}</strong></p>
 										<p>{address.attributes.address}</p>
 									</div>
-								</Message>
+								</Panel>
 							);
 						})
 					}

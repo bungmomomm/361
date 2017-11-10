@@ -5,7 +5,7 @@ import { withCookies } from 'react-cookie';
 import { T } from '@/data/translations';
 
 import {
-	Message,
+	Panel,
 	Level,
 	Icon,
 } from 'mm-ui';
@@ -91,7 +91,7 @@ class StepTwo extends Component {
 						const isRestrictO2O = this.checkRestrictO2o(!storeData.store.shipping.o2oSupported);
 						const isJabotabekItem = this.checkJabotabekItem(storeData.store.products[0].fgLocation);
 						return (
-							<Message
+							<Panel
 								key={indexStoreBox}
 								color={isRestrictO2O || isJabotabekItem ? 'red' : 'grey'}
 								header={
@@ -113,7 +113,7 @@ class StepTwo extends Component {
 									checkGosendMethod={(checked, store) => this.updateShippingMethodGosend(checked, store)}
 									data={storeData} 
 								/>
-							</Message>
+							</Panel>
 						);
 					})
 				}
