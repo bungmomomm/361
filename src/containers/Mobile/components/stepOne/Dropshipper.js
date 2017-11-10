@@ -12,20 +12,27 @@ class Dropshipper extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			showForm: false
+			showForm: false,
+			dropshipName: '',
+			dropshipPhone: '',
 		};
 	}
 
-	onClick(event) {
+	onChange(event, dropshipName, dropshipPhone) {
+		dropshipName = event ? dropshipName : '';
+		dropshipPhone = event ? dropshipPhone : '';
 		this.setState({
-			showForm: event
+			showForm: event,
+			dropshipName,
+			dropshipPhone
 		});
+		this.props.onChange(event, dropshipName, dropshipPhone);
 	}
-	
+
 	render() {
 		return (
 			<Segment>
-				<Checkbox content={T.checkout.SEND_AS_DROPSHIPPER} onClick={(event) => this.onClick(event)} value='dropdshipper-on' />
+				<Checkbox content={T.checkout.SEND_AS_DROPSHIPPER} onClick={(event) => this.onChange(event, this.state.dropshipName, this.state.dropshipPhone)} value='dropdshipper-on' />
 				{
 					this.state.showForm && (
 						<div>
@@ -34,6 +41,12 @@ class Dropshipper extends Component {
 									type='text' 
 									name='dropship_name' 
 									placeholder={T.checkout.DROPSHIPPER_NAME}
+									validation={{
+										rules: 'required',
+										name: 'dropship name'
+									}}
+									ref={(c) => { this.elDropshipName = c; }}
+									onChange={(event) => this.onChange(this.state.showForm, event.target.value, this.state.dropshipPhone)}
 								/>
 							</InputGroup>
 							<InputGroup>
@@ -42,6 +55,12 @@ class Dropshipper extends Component {
 									min={0}
 									name='dropship_phone' 
 									placeholder={T.checkout.PHONE_NUMBER}
+									validation={{
+										rules: 'required',
+										name: 'dropship phone'
+									}}
+									ref={(c) => { this.elDropshipPhone = c; }}
+									onChange={(event) => this.onChange(this.state.showForm, this.state.dropshipName, event.target.value)}
 								/>
 							</InputGroup>
 						</div>

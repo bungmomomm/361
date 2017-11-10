@@ -21,6 +21,11 @@ class Mobile extends Component {
 					attributes: {
 						isJabodetabekArea: false
 					}
+				},
+				isDropshipper: false,
+				dropshipper: {
+					dropshipName: '',
+					dropshipPhone: ''
 				}
 			},
 			stepTwo: {
