@@ -4,7 +4,7 @@ import { actions as cartActions } from '@/state/Cart';
 import _ from 'lodash';
 import { withCookies } from 'react-cookie';
 import React, { Component } from 'react';
-import { 
+import {
 	Button,
 	Level,
 	Tabs,
@@ -19,7 +19,7 @@ import {
 import ModalAddress from './ModalAddress';
 import ModalChooseAddress from './ModalChooseAddress';
 import Modalo2o from './Modalo2o';
-// import Dropshipper from './Dropshipper';
+import Dropshipper from './Dropshipper';
 import ViewSelectedAddress from './ViewSelectedAddress';
 
 
@@ -43,10 +43,10 @@ class stepOne extends Component {
 			// set type pickup for O2O
 			selectedAddress.type = 'pickup';
 		}
-		billing = billing.length > 0 ? billing[0] : false;		
+		billing = billing.length > 0 ? billing[0] : false;
 		dispatch(new cartActions.getPlaceOrderCart(token, selectedAddress, billing));
 	}
-	
+
 	static mapSelectedAddress(selectedAddress) {
 		if (selectedAddress) {
 			return {
@@ -117,7 +117,7 @@ class stepOne extends Component {
 			selectedAddress: this.currentAddresses[0]
 		});
 	}
-	
+
 	setSelectedAddress(selected) {
 		const newSelectedAddress = _.find(this.currentAddresses, { id: selected.value });
 		console.log(newSelectedAddress);
@@ -177,6 +177,22 @@ class stepOne extends Component {
 		this.props.applyState(checkoutState);
 	}
 
+	saveDropshipper(isDropshipper, dropshipName, dropshipPhone) {
+		const { stepState } = this.props;
+		const checkoutState = {
+			...stepState,
+			stepOne: {
+				...stepState.stepOne,
+				isDropshipper,
+				dropshipper: {
+					dropshipName,
+					dropshipPhone
+				}
+			}
+		};
+		this.props.applyState(checkoutState);
+	}
+
 	toggleModalo2o() {
 		this.setState({ showModalo2o: !this.state.showModalo2o });
 	}
@@ -186,9 +202,9 @@ class stepOne extends Component {
 			showModalChooseAddress: !this.state.showModalChooseAddress
 		});
 	}
-	
+
 	render() {
-		const { 
+		const {
 			selectedAddress,
 			selectedAddressO2O,
 			selectedProvinceO2O,
@@ -205,7 +221,7 @@ class stepOne extends Component {
 		return (
 			<div className={styles.card}>
 				<p><strong>{T.checkout.STEP_ONE_LABEL}</strong></p>
-				<Tabs onAfterChange={(e) => this.afterChangeTab(e)}> 
+				<Tabs onAfterChange={(e) => this.afterChangeTab(e)}>
 					<Tabs.Tab>
 						<Tabs.Title>{T.checkout.TAB_ADDRESS_LABEL}</Tabs.Title>
 						<Tabs.Content>
@@ -225,11 +241,11 @@ class stepOne extends Component {
 												</Button>
 											</Group>
 											{
-												selectedAddress.attributes.latitude 
+												selectedAddress.attributes.latitude
 												&& selectedAddress.attributes.longitude && (
 													<Level>
 														<Level.Item className='text-right'>
-															<div>	
+															<div>
 																<Icon name='map-marker' /> &nbsp; {T.checkout.LOCATION_MARKED}
 															</div>
 														</Level.Item>
@@ -239,13 +255,13 @@ class stepOne extends Component {
 											<ViewSelectedAddress {...selectedAddress.attributes} />
 											<Level>
 												<Level.Item>
-													<div 
+													<div
 														role='button'
 														tabIndex={-1}
 														className='font-orange'
-														onClick={() => this.showModalAddress('edit')} 
+														onClick={() => this.showModalAddress('edit')}
 													>
-														<Icon name='pencil' /> {T.checkout.CHANGE_ADDRESS} 
+														<Icon name='pencil' /> {T.checkout.CHANGE_ADDRESS}
 													</div>
 												</Level.Item>
 												<Level.Item className='text-right'>
@@ -253,21 +269,22 @@ class stepOne extends Component {
 														role='button'
 														tabIndex={-1}
 														className='font-orange'
-														onClick={() => this.showModalAddress('add')} 
+														onClick={() => this.showModalAddress('add')}
 													>
 														<Icon name='plus' /> {T.checkout.ADD_ADDRESS}
 													</div>
 												</Level.Item>
 											</Level>
 										</Message>
+										<Dropshipper onChange={(i, n, p) => this.saveDropshipper(i, n, p)} />
 									</div>
 								) : (
-									<Button 
+									<Button
 										block
 										color='orange'
-										onClick={() => this.showModalAddress('add')} 
+										onClick={() => this.showModalAddress('add')}
 									>{T.checkout.INPUT_DELIVERY_ADDRESS} </Button>
-								)
+									)
 							}
 						</Tabs.Content>
 					</Tabs.Tab>
@@ -280,40 +297,40 @@ class stepOne extends Component {
 							}
 							{
 								(selectedAddressO2O.attributes && this.props.isPickupable === '1') && (
-								<Message className='customSelectO2OWrapper'>
-									<Group>
-										<Button 
-											block 
-											onClick={() => this.toggleModalo2o()}
-										>
-											<Level>
-												<Level.Left>{selectedAddressO2O.attributes.address_label}</Level.Left>
-												<Level.Right><Icon name='angle-down' /></Level.Right>
-											</Level>
-										</Button>
-									</Group>
-									<p><strong>{selectedAddressO2O.attributes.address_label}</strong> </p>
-									<p>{selectedAddressO2O.attributes.address}</p>
-									<Level>
-										<Level.Item className='text-right'>
-											<div
-												role='button'
-												tabIndex={-1}
-												className='font-orange'
-												onClick={() => this.toggleModalo2o()} 
+									<Message className='customSelectO2OWrapper'>
+										<Group>
+											<Button
+												block
+												onClick={() => this.toggleModalo2o()}
 											>
-												{/* <Icon name='plus' /> {T.checkout.ADD_ADDRESS}  */}
-											</div>
-										</Level.Item>
-									</Level>
-								</Message>)
+												<Level>
+													<Level.Left>{selectedAddressO2O.attributes.address_label}</Level.Left>
+													<Level.Right><Icon name='angle-down' /></Level.Right>
+												</Level>
+											</Button>
+										</Group>
+										<p><strong>{selectedAddressO2O.attributes.address_label}</strong> </p>
+										<p>{selectedAddressO2O.attributes.address}</p>
+										<Level>
+											<Level.Item className='text-right'>
+												<div
+													role='button'
+													tabIndex={-1}
+													className='font-orange'
+													onClick={() => this.toggleModalo2o()}
+												>
+													{/* <Icon name='plus' /> {T.checkout.ADD_ADDRESS}  */}
+												</div>
+											</Level.Item>
+										</Level>
+									</Message>)
 							}
 							{
 								this.props.latesto2o.length < 1 && this.props.isPickupable === '1' && !selectedAddressO2O.attributes && (
 									<Message className='customSelectO2OWrapper'>
 										<Group>
-											<Button 
-												block 
+											<Button
+												block
 												onClick={() => this.toggleModalo2o()}
 											>
 												<Level>
@@ -329,30 +346,30 @@ class stepOne extends Component {
 					</Tabs.Tab>
 				</Tabs>
 				{
-					showModalAddress && 
-					<ModalAddress 
+					showModalAddress &&
+					<ModalAddress
 						open
 						formData={this.flagModalAddress === 'edit' && selectedAddress}
-						handleClose={() => this.hideModalAddress()} 
+						handleClose={() => this.hideModalAddress()}
 					/>
 				}
 				{
-					showModalChooseAddress && 
-					<ModalChooseAddress 
+					showModalChooseAddress &&
+					<ModalChooseAddress
 						open
 						address={this.state.shipping}
 						selectedAddress={selectedAddress}
-						handleClose={() => this.toggleChooseAddressModal()} 
+						handleClose={() => this.toggleChooseAddressModal()}
 						onChange={(e) => this.setSelectedAddress(e)}
 					/>
 				}
 
 				{
-					showModalo2o && 
-					<Modalo2o 
+					showModalo2o &&
+					<Modalo2o
 						open
 						o2oProvinces={this.props.o2oProvinces}
-						handleClose={() => this.toggleModalo2o()} 
+						handleClose={() => this.toggleModalo2o()}
 						selectedAddressO2O={selectedAddressO2O}
 						selectedProvinceO2O={selectedProvinceO2O}
 						onChange={(e, p) => this.setSelectedAddressO2O(e, p)}

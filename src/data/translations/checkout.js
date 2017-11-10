@@ -20,6 +20,8 @@ export default {
 	CANCEL: 'Batal',
 	SHOW_IN_MAP: 'Tunjukan Dalam Peta',
 	CHANGE_LOCATION: 'Ganti Lokasi',
+	JABODETABEK_LABEL: 'Mohon maaf, kami tidak dapat mengirimkan item berikut ke alamat pengiriman Anda',
+	O2O_SELLER_NOT_SUPPORT: 'Penjual tidak menyediakan layanan o2o',
 
 	STEP_TWO_LABEL: '2. Rincian Pesanan & Pengiriman',
 	RESTRICT_O2O: 'Penjual tidak menyediakan layanan o2o',

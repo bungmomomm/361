@@ -8,6 +8,7 @@ import {
 	Message,
 	Level,
 	Icon,
+	Alert,
 } from 'mm-ui';
 import StoreBoxBody from './StoreBoxBody';
 import StoreBoxFooter from './StoreBoxFooter';
@@ -82,9 +83,28 @@ class StepTwo extends Component {
 		this.props.dispatch(new actions.deleteCart(this.cookies, productId));
 	}
 
+	saveLoading(loading) {
+		const { stepState } = this.props;
+		const checkoutState = {
+			...stepState,
+			stepTwo: {
+				...stepState.stepTwo,
+				loading
+			}
+		};
+		this.props.applyState(checkoutState);
+	}
+
+	createClassCard() {
+		return [
+			styles.card, 
+			this.props.loading ? styles.loading : ''
+		].join(' ').trim();
+	}
+
 	render() {
 		return (
-			<div className={styles.card}>
+			<div className={this.createClassCard()}>
 				<p><strong>{T.checkout.STEP_TWO_LABEL}</strong></p>
 				{
 					this.props.cart.map((storeData, indexStoreBox) => {
@@ -101,6 +121,17 @@ class StepTwo extends Component {
 									</Level>
 								}
 							>
+								{
+									isJabotabekItem && (<Alert color='red' style={{ marginBottom: '15px' }}>
+										{T.checkout.JABODETABEK_LABEL}
+									</Alert>)
+								}
+								{
+									isRestrictO2O && (<div className='font-red' style={{ marginBottom: '15px' }}>
+										{T.checkout.O2O_SELLER_NOT_SUPPORT}
+										</div>
+									)
+								}
 								<StoreBoxBody 
 									products={storeData.store.products}
 									onUpdateQty={(e, productId) => this.updateQty(e, productId)}
