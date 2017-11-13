@@ -291,9 +291,11 @@ class stepOne extends Component {
 					<Tabs.Tab>
 						<Tabs.Title>{T.checkout.TAB_ELOCKER_LABEL}</Tabs.Title>
 						<Tabs.Content>
-							<Alert color='yellow' style={{ marginBottom: '15px' }}>{T.checkout.REGULATION}</Alert>
+							<Alert color='yellow' style={{ marginBottom: '15px' }} safeHtml={T.checkout.REGULATION} />
 							{
-								this.props.isPickupable !== '1' && (<Alert close icon='ban' color='red' style={{ marginBottom: '15px' }}>{T.checkout.ONE_OR_MORE_PRODUCT_NOT_SUPPORTED}</Alert>)
+								this.props.isPickupable !== '1' && (
+									<Alert close icon='ban' color='red' style={{ marginBottom: '15px' }} safeHtml={T.checkout.ONE_OR_MORE_PRODUCT_NOT_SUPPORTED} />
+								)
 							}
 							{
 								(selectedAddressO2O.attributes && this.props.isPickupable === '1') && (

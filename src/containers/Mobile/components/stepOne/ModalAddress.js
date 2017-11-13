@@ -9,8 +9,6 @@ import {
 	Level,
 	Icon,
 	Select,
-	// Group,
-	// Form,
 	Alert,
 	Input,
 	Textarea,
@@ -191,7 +189,7 @@ class ModalAddress extends Component {
 			});
 		}
 	}
-	
+
 	validateAndSubmit(e) {
 		e.preventDefault();
 		const elAddressLabel = this.elAddressLabel.validation.checkValid();
@@ -203,7 +201,6 @@ class ModalAddress extends Component {
 		const elDistrict = this.elDistrict && this.elDistrict.validation.checkValid();
 
 		if (elAddressLabel && elFullname && elPhone && elAddress && elZipcode && elProvince && elDistrict) {
-			console.log(this.elFullname);
 			const formData = {
 				name: this.elAddressLabel.validation.state.formData.addresslabel,
 				penerima: this.elFullname.validation.state.formData.fullname,

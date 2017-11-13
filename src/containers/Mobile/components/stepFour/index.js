@@ -239,7 +239,7 @@ class StepFour extends Component {
 							)
 						))
 					) : (
-						<Select key={index} options={option.cards} />
+						<Select block key={index} options={option.cards} />
 					)
 				));
 			case paymentGroupName.INSTALLMENT:
@@ -249,8 +249,8 @@ class StepFour extends Component {
 							payments.selectedPayment.paymentItems.map((installment, index) => {
 								return (
 									<div key={index}>
-										<Select options={installment.banks} />
-										<Select options={installment.banks[index].listCicilan} />
+										<Select block options={installment.banks} />
+										<Select block options={installment.banks[index].listCicilan} />
 									</div>
 								);
 							})
@@ -262,10 +262,10 @@ class StepFour extends Component {
 						/>
 						<Level>
 							<Level.Item>
-								<Select options={Bulan} />
+								<Select block options={Bulan} />
 							</Level.Item>
 							<Level.Item>
-								<Select options={this.props.tahun} />
+								<Select block options={this.props.tahun} />
 							</Level.Item>
 							<Level.Item>
 								<Input type='password' placeholder='cvv' />
@@ -287,6 +287,7 @@ class StepFour extends Component {
 				<p><strong>4. Informasi Pembayaran</strong></p>
 				<div>
 					<Select 
+						block 
 						label='Metode Pembayaran'
 						options={payments.paymentMethods.methods} 
 						onChange={(e) => this.paymentMethodChange(e)}
@@ -295,8 +296,8 @@ class StepFour extends Component {
 					{
 						false && (
 							<div>
-								<Select label='Pilih Bank' options={PaymentOptions} />
-								<Select label='Pilih Lama Cicilan' options={PaymentOptions} />
+								<Select block label='Pilih Bank' options={PaymentOptions} />
+								<Select block label='Pilih Lama Cicilan' options={PaymentOptions} />
 								<Radio 
 									inputStyle='blocklist' 
 									data={[
