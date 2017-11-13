@@ -214,7 +214,7 @@ class StepFour extends Component {
 					);
 					return listPayment.push({
 						label: RadioLabel, 
-						inputProps: { 
+						dataProps: { 
 							name: `payment-${payments.selectedPayment.value}`, 
 							onChange: () => this.onSelectedPaymentItem(option)
 						}
