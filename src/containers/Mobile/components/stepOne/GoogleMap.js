@@ -3,20 +3,23 @@ import { Map, Marker, Polygon, GoogleApiWrapper } from 'google-maps-react';
 import { Input } from 'mm-ui';
 import styles from './GoogleMap.scss';
 
+
 class GoogleMap extends Component {
 
 	createControlClassName() {
 		return [styles.control, this.props.className].join(' ').trim();
 	}
-	
 
 	autoComplete(event) {
 		const { google, map } = this.props;
-		if (google || map) {
-			this.autocomplete = new google.maps.places.Autocomplete(event.target);
-			this.autocomplete.addListener('place_changed', () => {
-				this.props.onChangeAutoComplete(this.autocomplete.getPlace());
-			});
+		if (!this.renderAutoComplete) {
+			this.renderAutoComplete = true;
+			if (google || map) {
+				this.autocomplete = new google.maps.places.Autocomplete(event.target);
+				this.autocomplete.addListener('place_changed', () => {
+					this.props.onChangeAutoComplete(this.autocomplete.getPlace());
+				});
+			}
 		}
 	}
 
@@ -39,11 +42,11 @@ class GoogleMap extends Component {
 		return (
 			<Polygon
 				paths={polygon.area}
-				strokeColor={polygon.stroke.color}
-				strokeOpacity={polygon.stroke.opacity}
-				strokeWeight={polygon.stroke.weight}
-				fillColor={polygon.fill.color}
-				fillOpacity={polygon.fill.opacity}
+				strokeColor='#0000FF'
+				strokeOpacity={0.8}
+				strokeWeight={2}
+				fillColor='#0000FF'
+				fillOpacity={0.35}
 				onClick={polygon.onClick}
 			/>
 		);
@@ -52,32 +55,29 @@ class GoogleMap extends Component {
 	render() {
 		const {
 			google,
-			zoom,
 			defaultCenter,
-			style,
 			marker,
 			polygon,
-			onDragend
+			onDragend,
+			centerMap
 		} = this.props;
 		return (
-			<div className={this.createControlClassName()} style={this.props.style}>
-				{
-					this.props.hasAutocomplete && 
-					<Input
-						onClick={(e) => this.autoComplete(e)}
-						className={styles.searchLocationInput}
-						placeholder='Cari Alamat'
-						size='large'
-						icon='search'
-					/>
-				}
+			<div className={this.createControlClassName()} style={{ width: '100%', height: '250px' }}>
+				<Input
+					onClick={(e) => this.autoComplete(e)}
+					className={styles.searchLocationInput}
+					placeholder='Cari Alamat'
+					size='large'
+					icon='search'
+				/>
 				<Map
 					google={google}
-					zoom={zoom}
+					zoom={15}
 					scrollwheel={false}
 					initialCenter={defaultCenter}
+					center={centerMap}
 					centerAroundCurrentLocation={false}
-					style={style}
+					style={{ width: '100%', height: '250px' }}
 					onDragen={onDragend}
 				>
 					{polygon && this.renderPolygon()}

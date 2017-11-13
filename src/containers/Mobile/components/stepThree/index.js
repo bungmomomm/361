@@ -96,12 +96,13 @@ class StepThree extends Component {
 			coupon,
 		} = this.props;
 		
-
 		const inlineStyle = {
 			mb5: {
 				marginBottom: '5px'
 			}
 		};
+
+
 		const invalidVoucher = (typeof coupon.coupon !== 'undefined' && coupon.coupon !== '' && typeof coupon.code !== 'undefined' && coupon.code !== 200);
 		let couponId = false;
 		if (coupon.validCoupon && coupon.coupon !== '') {
@@ -112,7 +113,7 @@ class StepThree extends Component {
 
 		const htmlDisc = (!payments.discount) ? false : payments.discount.map((discountItem, index) => {
 			return (
-				<Level key={index}>
+				<Level style={inlineStyle.mb5} key={index}>
 					<Level.Left className={styles.discountName}>
 						<div className='text-elipsis'> - {discountItem.discountName}</div>
 					</Level.Left>

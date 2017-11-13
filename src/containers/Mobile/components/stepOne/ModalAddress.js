@@ -1,17 +1,17 @@
 import { connect } from 'react-redux';
-// import _ from 'lodash';
+import _ from 'lodash';
 import { actions } from '@/state/Adresses';
 import { withCookies } from 'react-cookie';
 import React, { Component } from 'react';
-// import Gosend from '@/components/Views/Gosend/Gosend.Mobile.js';
 import { GoogleApiWrapper } from 'google-maps-react';
 import {
 	Button,
 	Level,
 	Icon,
 	Select,
-	Group,
-	// Alert,
+	// Group,
+	// Form,
+	Alert,
 	Input,
 	Textarea,
 	Modal,
@@ -22,6 +22,9 @@ import { T } from '@/data/translations';
 import { Polygon } from '@/data/polygons';
 
 class ModalAddress extends Component {
+	static saveAddress(token, dispatch, formData, selectedAddress) {
+		dispatch(new actions.saveAddress(token, formData, selectedAddress));
+	}
 
 	static fetchGetCityProvince(token, dispatch) {
 		dispatch(new actions.getCityProvince(token));
@@ -43,13 +46,16 @@ class ModalAddress extends Component {
 			},
 			renderDistrict: false,
 			formData: {},
-			formattedAddress: null
+			showMap: false,
+			formattedAddress: null,
+			mapMarkerCenter: null,
+			isValidMarkerPosition: true
 		};
-		this.onChangeInput = this.onChangeInput.bind(this);
 		this.translateProvince = this.translateProvince.bind(this);
 		this.cookies = this.props.cookies.get('user.token');
 		this.isEdit = false;
 		this.mapIcon = 'gosend-marker.png';
+		this.selectedPolygon = {};
 	}
 
 	componentWillMount() {
@@ -64,85 +70,103 @@ class ModalAddress extends Component {
 
 	componentDidMount() {
 		const { formData } = this.props;
-		if (formData.attributes.latitude && formData.attributes.longitude) {
-			this.getPinPointAddress();
+		if (this.isEdit) {
+			if (formData.attributes.latitude && formData.attributes.longitude) {
+				this.getPinPointAddress();
+			}
+			this.translateProvince(this.props.formData.attributes);
 		}
-		this.translateProvince(this.props.formData.attributes);
 	}
 
 	componentWillReceiveProps(nextProps) {
 		if (this.props.address.district !== nextProps.address.district) {
-			setTimeout(() => {
-				this.setState({ renderDistrict: true });
-			}, 20);
+			setTimeout(() => { this.setState({ renderDistrict: true }); }, 20);
 		}
 	}
 	
 	onChangeProvince(e) {
-		const isJakarta = e.value.toLowerCase().includes('jakarta');
-		this.setState({
-			isJakarta,
-			selected: {
-				province: {
-					label: e.value,
-					value: e.value,
+		const value = e.value;
+		if (value) {
+			const isJakarta = value.toLowerCase().includes('jakarta');
+			this.setState({
+				isJakarta,
+				selected: {
+					province: {
+						label: value,
+						value,
+					},
+					district: {
+						label: '-- Pilih Kecamatan',
+						value: ''
+					}
 				},
-				district: {
-					label: '-- Pilih Kecamatan',
-					value: ''
-				}
-			},
-			formattedAddress: null,
-			renderDistrict: false
-		});
-		this.constructor.fetchGetDistric(this.cookies, e.value, this.props.dispatch);
+				showMap: false,
+				formattedAddress: null,
+				renderDistrict: false
+			});
+			this.constructor.fetchGetDistric(this.cookies, value, this.props.dispatch);
+		}
 	}
 
 	onChangeDistrict(e) {
-		this.setState({
-			selected: {
-				...this.state.selected,
-				district: {
-					label: e.value,
-					value: e.value
-				}
-			},
-		});
-	}
-
-	onChangeInput(e) {
-		this.setStateFormData(e.target.name, e.target.value);
+		const value = e.value;
+		if (value) {
+			this.setState({
+				selected: {
+					...this.state.selected,
+					district: {
+						label: value,
+						value
+					}
+				},
+			});
+		}
 	}
 
 	get markerIcon() {
 		return require(`@/assets/images/${this.mapIcon}`);
 	}
 
-
-	getPinPointAddress() {
-		const { google, formData } = this.props;
-		if (google) {
+	getPinPointAddress(lat = this.props.formData.attributes.latitude, lng = this.props.formData.attributes.longitude) {
+		const { google } = this.props;
+		if (google && this.state.isValidMarkerPosition) {
 			const geo = new google.maps.Geocoder();
-			const latLng = new google.maps.LatLng(formData.attributes.latitude, formData.attributes.longitude);
+			const latLng = new google.maps.LatLng(lat, lng);
 			geo.geocode({ latLng }, (results, status) => (
-				status === google.maps.GeocoderStatus.OK && this.setAddress(results[0].formatted_address)
+				status === google.maps.GeocoderStatus.OK && (
+					this.setState({
+						formattedAddress: results[0].formatted_address,
+						showMap: false
+					})
+				)
 			));
 		}
 	}
 
-	setAddress(formattedAddress) {
-		this.setState({ formattedAddress });
+	setPinPoint(e) {
+		if (this.state.isValidMarkerPosition) {
+			if (!this.state.formattedAddress) {
+				this.FormLongitude = e.position.lng;
+				this.FormLatitude = e.position.lat;
+				this.getPinPointAddress(e.position.lat, e.position.lng);
+			} else {
+				this.setState({ showMap: false });
+			}
+		}
 	}
 
-	setStateFormData(name, value) {
-		const formData = {
-			...this.state.formData,
-			[name]: value
-		};
-		if (name === 'province') {
-			formData.kecamatan = null;
+	validatePositionMarker(e) {
+		const { google } = this.props;
+		if (e.geometry) {
+			const latLng = new google.maps.LatLng(e.geometry.location.lat(), e.geometry.location.lng());
+			const polygonArea = new google.maps.Polygon({ paths: this.selectedPolygon.location_coords });
+			const isValidMarkerPosition = !!google.maps.geometry.poly.containsLocation(latLng, polygonArea);
+			this.setState({ 
+				isValidMarkerPosition,
+				mapMarkerCenter: e.geometry.location,
+				formattedAddress: e.formatted_address || this.state.formattedAddress
+			});
 		}
-		this.setState({ formData });
 	}
 
 	translateProvince(formDataAttributes) {
@@ -167,41 +191,46 @@ class ModalAddress extends Component {
 			});
 		}
 	}
-
-	// setFormData(data) {
-	// 	const formData = {
-	// 		id: data.id,
-	// 		address_label: data.attributes.addressLabel,
-	// 		fullname: data.attributes.fullname,
-	// 		address: data.attributes.address,
-	// 		province: `${data.attributes.city}, ${data.attributes.province}`,
-	// 		kecamatan: data.attributes.district,
-	// 		zipcode: data.attributes.zipcode,
-	// 		phone: data.attributes.phone,
-	// 		latitude: data.attributes.latitude || null,
-	// 		longitude: data.attributes.longitude || null,
-	// 		isEdit: this.isEdit
-	// 	};
-	// 	this.setState({ formData });
-	// }
-
+	
 	validateAndSubmit(e) {
 		e.preventDefault();
-		if (
-			(this.elAddressLabel.checkValid().count() +
-				this.elFullname.checkValid().count() +
-				this.elPhone.checkValid().count() +
-				this.elAddress.checkValid().count() +
-				this.elZipcode.checkValid().count()) < 1
-		) {
-			console.log('valid');
-		} else {
-			console.log('error');
+		const elAddressLabel = this.elAddressLabel.validation.checkValid();
+		const elFullname = this.elFullname.validation.checkValid();
+		const elPhone = this.elPhone.validation.checkValid();
+		const elAddress = this.elAddress.validation.checkValid();
+		const elZipcode = this.elZipcode.validation.checkValid();
+		const elProvince = this.elProvince && this.elProvince.validation.checkValid();
+		const elDistrict = this.elDistrict && this.elDistrict.validation.checkValid();
+
+		if (elAddressLabel && elFullname && elPhone && elAddress && elZipcode && elProvince && elDistrict) {
+			console.log(this.elFullname);
+			const formData = {
+				name: this.elAddressLabel.validation.state.formData.addresslabel,
+				penerima: this.elFullname.validation.state.formData.fullname,
+				address: this.elAddress.validation.state.formData.address,
+				cityProvince: this.state.selected.province.value,
+				kecamatan: this.state.selected.district.value,
+				kodepos: this.elZipcode.validation.state.formData.zipcode,
+				no_hp: this.elPhone.validation.state.formData.phone,
+				isEdit: this.isEdit,
+				longitude: this.FormLongitude || '',
+				latitude: this.FormLatitude || '',
+			};	
+			console.log(formData);
+			// 	// this.constructor.saveAddress(this.cookies, this.props.dispatch, formData, this.props.formData);
 		}
 	}
 
 	toggleGoogleMap() {
-		this.setState({ showMap: !this.state.showMap });
+		const showMap = !this.state.showMap;
+		if (showMap) {
+			const district = this.state.selected.district.value.toLowerCase().replace(/\W+(.)/g, (match, chr) => chr.toUpperCase());
+			const selectedPolygon = _.find(Polygon, district);
+			this.selectedPolygon = selectedPolygon[district];
+		}
+		this.setState({ 
+			showMap
+		});
 	}
 
 	mapMoved(e) {
@@ -248,40 +277,30 @@ class ModalAddress extends Component {
 	}
 
 	renderGoogleMap() {
-		const { google } = this.state;
+		const { mapMarkerCenter } = this.state;
+		const centerMap = mapMarkerCenter || this.selectedPolygon.center;
 		return (
 			<div style={{ marginBottom: '15px' }}>
 				<GoogleMap
-					apiKey='YOUR_API_KEY'
-					zoom={15}
-					hasAutocomplete
-					onChangeAutoComplete={(e) => console.log(this.state)}
-					style={{
-						width: '100%',
-						height: '250px'
-					}}
-					defaultCenter={Polygon[0].cakung.center}
+					onChangeAutoComplete={(e) => this.validatePositionMarker(e)}
+					defaultCenter={centerMap}
+					centerMap={mapMarkerCenter}
 					onDragend={(e) => this.mapMoved(e)}
 					marker={{
 						icon: this.markerIcon,
-						onClick: (e) => console.log('from marker:', e),
-						defaultCenter: google ? google.marker.center : Polygon[0].cakung.center
+						onClick: (e) => this.setPinPoint(e),
+						center: centerMap
 					}}
 					polygon={{
-						area: Polygon[0].cakung.location_coords,
-						stroke: {
-							color: '#0000FF',
-							opacity: 0.8,
-							weight: 2
-						},
-						fill: {
-							color: '#0000FF',
-							opacity: 0.35
-						},
+						area: this.selectedPolygon.location_coords,
 						onClick: (data) => console.log(data)
 					}}
 				/>
-				<Panel><Icon name='map-marker' /> Jalan Bangka II No.20</Panel>
+				{
+					!this.state.isValidMarkerPosition ? 
+						<Alert color='red'>Lokasi tidak sesuai dengan alamat pengiriman</Alert> :
+						<Panel><Icon name='map-marker' /> {this.state.formattedAddress}</Panel>
+				}
 			</div>
 		);
 	}
@@ -292,6 +311,7 @@ class ModalAddress extends Component {
 			open,
 			formData,
 		} = this.props;
+
 		return (
 			<Modal
 				size='medium'
@@ -301,118 +321,91 @@ class ModalAddress extends Component {
 			>
 				<Modal.Header>{T.checkout.CREATE_NEW_ADDRESS}</Modal.Header>
 				<Modal.Body>
-					<Group>
-						<Input
-							label='Simpan Sebagai *'
-							placeholder='Contoh: rumah, kantor, rumah pacar'
-							name='address_label'
-							type='text'
-							defaultValue={formData.attributes.addressLabel}
-							ref={(c) => { this.elAddressLabel = c; }}
-							validation={{
-								rules: 'required',
-								name: 'address label'
-							}}
+					<Input
+						label='Simpan Sebagai *'
+						placeholder='Contoh: rumah, kantor, rumah pacar'
+						name='address_label'
+						type='text'
+						defaultValue={this.isEdit ? formData.attributes.addressLabel : ''}
+						ref={(c) => { this.elAddressLabel = c; }}
+						validation={{ rules: 'required', name: 'address label' }}
+					/>
+					<Input
+						label='Nama Penerima *'
+						placeholder='Masukan nama lengkap penerima'
+						name='fullname'
+						type='text'
+						ref={(c) => { this.elFullname = c; }}
+						defaultValue={this.isEdit ? formData.attributes.fullname : ''}
+						validation={{ rules: 'required', name: 'fullname' }}
+					/>
+					<Input
+						label='No Handphone *'
+						placeholder='Contoh : 08123456789'
+						name='phone'
+						min={0}
+						type='number'
+						defaultValue={this.isEdit ? formData.attributes.phone : ''}
+						ref={(c) => { this.elPhone = c; }}
+						validation={{ rules: 'required', name: 'phone' }}
+					/>
+					{
+						address.cityProv &&
+						<Select
+							block
+							label='Kota, Provinsi *'
+							hasFilter
+							name='province'
+							defaultValue={this.isEdit ? this.state.selected.province.value : ''}
+							options={address.cityProv}
+							onChange={(e) => this.onChangeProvince(e)}
+							ref={(c) => { this.elProvince = c; }}
+							validation={{ rules: 'required', name: 'province' }}
 						/>
-					</Group>
-					<Group>
-						<Input
-							label='Nama Penerima *'
-							placeholder='Masukan nama lengkap penerima'
-							name='fullname'
-							type='text'
-							ref={(c) => { this.elFullname = c; }}
-							defaultValue={formData.attributes.fullname}
-							validation={{
-								rules: 'required',
-								name: 'fullname'
-							}}
-						/>
-					</Group>
-					<Group>
-						<Input
-							label='No Handphone *'
-							placeholder='Contoh : 08123456789'
-							name='phone'
-							min={0}
-							type='number'
-							defaultValue={formData.attributes.phone}
-							ref={(c) => { this.elPhone = c; }}
-							validation={{
-								rules: 'required',
-								name: 'phone'
-							}}
-						/>
-					</Group>
-					<Group>
-						{
-							address.cityProv &&
-							<Select
-								label='Kota, Provinsi *'
-								hasFilter
-								name='province'
-								defaultValue={this.state.selected.province.value}
-								options={address.cityProv}
-								onChange={(e) => this.onChangeProvince(e)}
-							/>
-						}
-					</Group>
+					}
 					{
 						
 						(address.district && address.district.length > 0 && this.state.renderDistrict) && (
-							<Group>
-								<Select
-									label='Kecamatan *'
-									hasFilter
-									name='kecamatan'
-									defaultValue={this.state.selected.district.value}
-									options={address.district}
-									onChange={(e) => this.onChangeDistrict(e)}
-								/>
-							</Group>
+							<Select
+								block
+								label='Kecamatan *'
+								hasFilter
+								name='kecamatan'
+								defaultValue={this.isEdit ? this.state.selected.district.value : ''}
+								options={address.district}
+								onChange={(e) => this.onChangeDistrict(e)}
+								ref={(c) => { this.elDistrict = c; }}
+								validation={{ rules: 'required', name: 'district' }}
+							/>
 						)
 					}
-					<Group>
-						<Input
-							label='Kode Pos *'
-							placeholder='Contoh : 12345'
-							name='zipcode'
-							type='number'
-							min={0}
-							defaultValue={formData.attributes.zipcode}
-							ref={(c) => { this.elZipcode = c; }}
-							validation={{
-								rules: 'required',
-								name: 'zipcode'
-							}}
-						/>
-					</Group>
-					<Group>
-						<Textarea
-							label='Alamat *'
-							placeholder='Masukkan Alamat Lengkap'
-							name='address'
-							defaultValue={formData.attributes.address}
-							ref={(c) => { this.elAddress = c; }}
-							validation={{
-								rules: 'required',
-								name: 'address'
-							}}
-						>address</Textarea>
-					</Group>
-					{
-						this.state.formattedAddress && !this.state.showMap ? this.renderFormattedAddress() : this.renderButtonMap()
-					}
+					<Input
+						label='Kode Pos *'
+						placeholder='Contoh : 12345'
+						name='zipcode'
+						type='number'
+						min={0}
+						defaultValue={this.isEdit ? formData.attributes.zipcode : ''}
+						ref={(c) => { this.elZipcode = c; }}
+						validation={{ rules: 'required', name: 'zipcode' }}
+					/>
+					<Textarea
+						label='Alamat *'
+						placeholder='Masukkan Alamat Lengkap'
+						name='address'
+						defaultValue={this.isEdit ? formData.attributes.address : ''}
+						ref={(c) => { this.elAddress = c; }}
+						validation={{ rules: 'required', name: 'address' }}
+					>address</Textarea>
+					{this.state.formattedAddress && !this.state.showMap ? this.renderFormattedAddress() : this.renderButtonMap()}
 					{this.state.showMap && this.renderGoogleMap()}
 					<p><em>* {T.checkout.MUST_FILLED}</em></p>
-					<Group>
-						<Button
-							block
-							size='large'
-							color='dark'
-							onClick={(e) => this.validateAndSubmit(e)}
-						>Simpan Alamat</Button>
-					</Group>
+					<Button
+						block
+						size='large'
+						color='dark'
+						onClick={(e) => this.validateAndSubmit(e)}
+					>Simpan Alamat</Button>
 				</Modal.Body>
 			</Modal>
 		);
