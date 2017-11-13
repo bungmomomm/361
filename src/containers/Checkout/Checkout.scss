@@ -44,14 +44,13 @@
 	padding-top: 10px;
 }
 
-.overflow{
-    display: block;
-    overflow-y:auto;
-    -webkit-overflow-scrolling: auto;
-    flex:1;
-    margin-right: -15px;
-    padding-right: 15px;
+.overflow {
+	display: block;
+	flex: 1;
+	margin-right: -15px;
+	padding-right: 15px;
 }
+
 
 .fullHeight{
     height: 100%;
