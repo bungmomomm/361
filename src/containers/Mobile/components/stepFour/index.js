@@ -4,7 +4,7 @@ import { withCookies } from 'react-cookie';
 import _ from 'lodash';
 
 import { actions } from '@/state/Payment';
-import { paymentGroupName } from '@/state/Payment/constants';
+import { paymentGroupName, paymentMethodName } from '@/state/Payment/constants';
 import { 
 	// Tooltip,
 	// Card,
@@ -30,6 +30,8 @@ import {
 	Input
 } from 'mm-ui';
 
+import { pushDataLayer } from '@/utils/gtm';
+
 import styles from '../../../Mobile/mobile.scss';
 
 import { 
@@ -42,17 +44,19 @@ class StepFour extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			selectedPaymentMethod: null
+			selectedPaymentMethod: null,
+			selectedPaymentOption: null
 		};
 		this.cookies = this.props.cookies.get('user.token');
 	}
 	
 	onSelectedPaymentItem(selectedPaymentItem) {
-		const { payments } = this.props;
+		const { payments, dispatch } = this.props;
+		dispatch(new actions.changePaymentOption(selectedPaymentItem, this.cookies));
 		this.selectedData = _.find(payments.selectedPayment.paymentItems, ['value', selectedPaymentItem.value]);
 		if (this.selectedData) {
 			this.setState({
-				selectedPaymentItem,
+				selectedPaymentOption: selectedPaymentItem,
 				showPaymentInfo: {
 					id: selectedPaymentItem.value,
 					notes: this.selectedData.settings.info.join(' ')
@@ -65,6 +69,14 @@ class StepFour extends Component {
 		}
 	}
 
+	getAffTracking() {
+		return {
+			af_track_id: this.props.cookies.get('afftrackid'),
+			af_trx_id: this.props.cookies.get('afftrxid'),
+			af_trx_click: Date.now()
+		};
+	}
+
 	paymentMethodChange(stateSelectedPayment) {
 		const { payments, dispatch } = this.props;
 		dispatch(new actions.changePaymentMethod(stateSelectedPayment.value, payments.paymentMethods, this.cookies));
@@ -72,6 +84,111 @@ class StepFour extends Component {
 			showPaymentInfo: null,
 			stateSelectedPayment
 		});
+	}
+
+	submitPayment() {
+		const { dispatch } = this.props;
+		let validator = false;
+		let mode = 'complete';
+		pushDataLayer('checkout', 'checkout', { step: 8 });
+		if (typeof this.props.payments.paymentMethod !== 'undefined') {
+			switch (this.props.payments.paymentMethod) {
+			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
+			case paymentMethodName.COMMERCE_VERITRANS:
+				if (this.props.payments.selectedPaymentOption !== false) {
+					this.setState({
+						selectedPayment: this.props.payments.selectedPaymentOption
+					});
+				}
+				
+				if (this.props.payments.twoClickEnabled) {
+					validator = this.cvvValidator.validateAll({
+						cvv: this.props.payments.selectedCardDetail.cvv
+					});
+				} else {
+					validator = this.cardValidator.validateAll({
+						year: this.props.payments.selectedCardDetail.year,
+						month: this.props.payments.selectedCardDetail.month,
+						cvv: this.props.payments.selectedCardDetail.cvv
+					});
+				}
+				validator.then(success => {
+					if (success) {
+						this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
+					} else {
+						dispatch(new actions.paymentError('Silahkan periksa data kartu kredit Anda.'));
+					}
+				});
+				break;
+			case paymentMethodName.COMMERCE_SPRINT_ASIA:
+				mode = 'sprint';
+				this.onRequestSprintInstallment(mode);
+				break;
+			case paymentMethodName.OVO:
+				if (this.props.payments.ovoPaymentNumber) {
+					dispatch(
+						new actions.pay(
+							this.cookies,
+							this.props.soNumber,
+							this.props.payments.selectedPaymentOption === false ? this.state.selectedPayment : this.props.payments.selectedPaymentOption,
+							{
+								e_wallet: {
+									id: this.props.payments.ovoPaymentNumber
+								},
+								ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
+								billingPhoneNumber: this.props.payments.billingPhoneNumber
+							},
+							this.props.payments.selectedPaymentOption.uniqueConstant,
+							false,
+							false,
+							this.getAffTracking()
+						)
+					).then(() => {
+						this.setState({
+							showModalOvo: true
+						});
+					})
+					.catch(() => {
+						this.setState({
+							showModalOvo: false
+						});
+					});
+				}
+				break;
+			default:
+				if (this.props.payments.selectedPaymentOption) {
+					if (this.props.payments.selectedPaymentOption.uniqueConstant === 'mandiri_ecash') {
+						mode = 'mandiri_ecash';
+					} else if (this.props.payments.selectedPaymentOption.uniqueConstant === 'bca_klikpay') {
+						mode = 'bca_klikpay';
+					}
+				}
+				dispatch(
+					new actions.pay(
+						this.cookies,
+						this.props.soNumber,
+						this.props.payments.selectedPaymentOption === false ? this.state.selectedPayment : this.props.payments.selectedPaymentOption,
+						{
+							ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
+							billingPhoneNumber: this.props.payments.billingPhoneNumber
+						},
+						mode,
+						false,
+						false,
+						this.getAffTracking()
+					)
+				);
+				break;
+			}
+		}
+	
+	}
+	
+	checkActiveBtnSubmit() {
+		if (this.props.payments.selectedPayment && this.props.payments.selectedPaymentOption) {
+			return 'active';
+		}
+		return 'disabled';
 	}
 	
 	render() {
@@ -98,8 +215,8 @@ class StepFour extends Component {
 					return listPayment.push({
 						label: RadioLabel, 
 						inputProps: { 
-							name: 'payment-CONVENIENCE_STORE', 
-							onChange: () => console.log(index)
+							name: `payment-${payments.selectedPayment.value}`, 
+							onChange: () => this.onSelectedPaymentItem(option)
 						}
 					});
 				});
@@ -211,7 +328,7 @@ class StepFour extends Component {
 					<Input label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' placeholder={'Masukkan nomor Hp yang terdaftar di OVO'} type='number' min={0} />
 					<div className={styles.checkOutAction}>
 						<Checkbox>Saya setuju dengan syarat dan ketentuan MatahariMall.com</Checkbox>
-						<Button block size='large' color='red'>Bayar Sekarang</Button>
+						<Button block size='large' color='red' state={this.checkActiveBtnSubmit()} onClick={(e) => this.submitPayment(e)}>Bayar Sekarang</Button>
 					</div>
 				</div>
 			</div>
@@ -221,7 +338,8 @@ class StepFour extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		payments: state.payments
+		payments: state.payments,
+		soNumber: state.cart.soNumber,
 	};
 };
 
