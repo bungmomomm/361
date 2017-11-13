@@ -78,10 +78,6 @@ class StepTwo extends Component {
 			dispatch(new actions.updateCartWithoutSO(this.cookies, qty, productId));
 		}
 	}
-	
-	deleteProduct(productId) {
-		this.props.dispatch(new actions.deleteCart(this.cookies, productId));
-	}
 
 	saveLoading(loading) {
 		const { stepState } = this.props;
