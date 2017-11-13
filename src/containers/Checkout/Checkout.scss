@@ -48,7 +48,9 @@
 	display: block;
 	flex: 1;
 	margin-right: -15px;
-	padding-right: 15px;
+    padding-right: 15px;
+    overflow-y:auto;
+    -webkit-overflow-scrolling: auto;
 }
 
 
