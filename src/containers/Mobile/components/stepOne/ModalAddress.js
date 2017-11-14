@@ -9,8 +9,6 @@ import {
 	Level,
 	Icon,
 	Select,
-	// Group,
-	// Form,
 	Alert,
 	Input,
 	Textarea,
@@ -34,7 +32,6 @@ class ModalAddress extends Component {
 		dispatch(new actions.getDistrict(token, province));
 	}
 
-	
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -53,24 +50,28 @@ class ModalAddress extends Component {
 		};
 		this.translateProvince = this.translateProvince.bind(this);
 		this.cookies = this.props.cookies.get('user.token');
-		this.isEdit = false;
 		this.mapIcon = 'gosend-marker.png';
 		this.selectedPolygon = {};
 	}
 
 	componentWillMount() {
-		if (this.props.address.cityProv === undefined) {
-			this.constructor.fetchGetCityProvince(this.cookies, this.props.dispatch);
-		} else if (this.props.formData) {
-			this.isEdit = true;
-		} else {
-			this.isEdit = false;
+		const { isEdit, formData, address, dispatch } = this.props;
+		if (address.cityProv === undefined) {
+			this.constructor.fetchGetCityProvince(this.cookies, dispatch);
+		}
+		if (isEdit && formData.attributes) {
+			this.setState({
+				mapMarkerCenter: {
+					lat: formData.attributes.latitude,
+					lng: formData.attributes.longitude
+				}
+			});
 		}
 	}
 
 	componentDidMount() {
 		const { formData } = this.props;
-		if (this.isEdit) {
+		if (this.props.isEdit && formData.attributes) {
 			if (formData.attributes.latitude && formData.attributes.longitude) {
 				this.getPinPointAddress();
 			}
@@ -102,7 +103,8 @@ class ModalAddress extends Component {
 				},
 				showMap: false,
 				formattedAddress: null,
-				renderDistrict: false
+				renderDistrict: false,
+				mapMarkerCenter: null
 			});
 			this.constructor.fetchGetDistric(this.cookies, value, this.props.dispatch);
 		}
@@ -135,8 +137,7 @@ class ModalAddress extends Component {
 			geo.geocode({ latLng }, (results, status) => (
 				status === google.maps.GeocoderStatus.OK && (
 					this.setState({
-						formattedAddress: results[0].formatted_address,
-						showMap: false
+						formattedAddress: results[0].formatted_address
 					})
 				)
 			));
@@ -149,9 +150,8 @@ class ModalAddress extends Component {
 				this.FormLongitude = e.position.lng;
 				this.FormLatitude = e.position.lat;
 				this.getPinPointAddress(e.position.lat, e.position.lng);
-			} else {
-				this.setState({ showMap: false });
 			}
+			this.setState({ showMap: false });
 		}
 	}
 
@@ -191,7 +191,7 @@ class ModalAddress extends Component {
 			});
 		}
 	}
-	
+
 	validateAndSubmit(e) {
 		e.preventDefault();
 		const elAddressLabel = this.elAddressLabel.validation.checkValid();
@@ -201,23 +201,21 @@ class ModalAddress extends Component {
 		const elZipcode = this.elZipcode.validation.checkValid();
 		const elProvince = this.elProvince && this.elProvince.validation.checkValid();
 		const elDistrict = this.elDistrict && this.elDistrict.validation.checkValid();
-
 		if (elAddressLabel && elFullname && elPhone && elAddress && elZipcode && elProvince && elDistrict) {
-			console.log(this.elFullname);
 			const formData = {
+				id: this.props.isEdit && this.props.formData.id,
 				name: this.elAddressLabel.validation.state.formData.addresslabel,
 				penerima: this.elFullname.validation.state.formData.fullname,
 				address: this.elAddress.validation.state.formData.address,
-				cityProvince: this.state.selected.province.value,
+				provinsi: this.state.selected.province.value,
 				kecamatan: this.state.selected.district.value,
 				kodepos: this.elZipcode.validation.state.formData.zipcode,
 				no_hp: this.elPhone.validation.state.formData.phone,
-				isEdit: this.isEdit,
+				isEdit: this.props.isEdit,
 				longitude: this.FormLongitude || '',
 				latitude: this.FormLatitude || '',
-			};	
-			console.log(formData);
-			// 	// this.constructor.saveAddress(this.cookies, this.props.dispatch, formData, this.props.formData);
+			};
+			this.constructor.saveAddress(this.cookies, this.props.dispatch, formData, this.props.formData);
 		}
 	}
 
@@ -233,14 +231,16 @@ class ModalAddress extends Component {
 		});
 	}
 
-	mapMoved(e) {
-		const google = {
-			...this.state.google,
-			marker: {
-				center: e.mapCenter
-			}
-		};
-		this.setState({ google });
+	mapMoved(mapProps, map) {
+		this.FormLatitude = map.getCenter().lat();
+		this.FormLongitude = map.getCenter().lng();
+		this.getPinPointAddress(this.FormLatitude, this.FormLongitude);
+		this.setState({ 
+			mapMarkerCenter: {
+				lat: this.FormLatitude, 
+				lng: this.FormLongitude
+			} 
+		});
 	}
 
 	renderButtonMap() {
@@ -285,15 +285,14 @@ class ModalAddress extends Component {
 					onChangeAutoComplete={(e) => this.validatePositionMarker(e)}
 					defaultCenter={centerMap}
 					centerMap={mapMarkerCenter}
-					onDragend={(e) => this.mapMoved(e)}
+					onDragend={(mapProps, map) => this.mapMoved(mapProps, map)}
 					marker={{
 						icon: this.markerIcon,
 						onClick: (e) => this.setPinPoint(e),
 						center: centerMap
 					}}
 					polygon={{
-						area: this.selectedPolygon.location_coords,
-						onClick: (data) => console.log(data)
+						area: this.selectedPolygon.location_coords
 					}}
 				/>
 				{
@@ -312,6 +311,8 @@ class ModalAddress extends Component {
 			formData,
 		} = this.props;
 
+		if (this.props.isEdit && !formData) return null;
+
 		return (
 			<Modal
 				size='medium'
@@ -326,7 +327,7 @@ class ModalAddress extends Component {
 						placeholder='Contoh: rumah, kantor, rumah pacar'
 						name='address_label'
 						type='text'
-						defaultValue={this.isEdit ? formData.attributes.addressLabel : ''}
+						defaultValue={this.props.isEdit ? formData.attributes.addressLabel : ''}
 						ref={(c) => { this.elAddressLabel = c; }}
 						validation={{ rules: 'required', name: 'address label' }}
 					/>
@@ -336,18 +337,18 @@ class ModalAddress extends Component {
 						name='fullname'
 						type='text'
 						ref={(c) => { this.elFullname = c; }}
-						defaultValue={this.isEdit ? formData.attributes.fullname : ''}
+						defaultValue={this.props.isEdit ? formData.attributes.fullname : ''}
 						validation={{ rules: 'required', name: 'fullname' }}
 					/>
 					<Input
 						label='No Handphone *'
 						placeholder='Contoh : 08123456789'
-						name='phone'
+						name='phone'	
 						min={0}
 						type='number'
-						defaultValue={this.isEdit ? formData.attributes.phone : ''}
+						defaultValue={this.props.isEdit ? formData.attributes.phone : ''}
 						ref={(c) => { this.elPhone = c; }}
-						validation={{ rules: 'required', name: 'phone' }}
+						validation={{ rules: 'required|min:7|max:14', name: 'phone' }}
 					/>
 					{
 						address.cityProv &&
@@ -356,7 +357,7 @@ class ModalAddress extends Component {
 							label='Kota, Provinsi *'
 							hasFilter
 							name='province'
-							defaultValue={this.isEdit ? this.state.selected.province.value : ''}
+							defaultValue={this.props.isEdit ? this.state.selected.province.value : ''}
 							options={address.cityProv}
 							onChange={(e) => this.onChangeProvince(e)}
 							ref={(c) => { this.elProvince = c; }}
@@ -371,7 +372,7 @@ class ModalAddress extends Component {
 								label='Kecamatan *'
 								hasFilter
 								name='kecamatan'
-								defaultValue={this.isEdit ? this.state.selected.district.value : ''}
+								defaultValue={this.props.isEdit ? this.state.selected.district.value : ''}
 								options={address.district}
 								onChange={(e) => this.onChangeDistrict(e)}
 								ref={(c) => { this.elDistrict = c; }}
@@ -385,15 +386,15 @@ class ModalAddress extends Component {
 						name='zipcode'
 						type='number'
 						min={0}
-						defaultValue={this.isEdit ? formData.attributes.zipcode : ''}
+						defaultValue={this.props.isEdit ? formData.attributes.zipcode : ''}
 						ref={(c) => { this.elZipcode = c; }}
-						validation={{ rules: 'required', name: 'zipcode' }}
+						validation={{ rules: 'required|digits:5', name: 'zipcode' }}
 					/>
 					<Textarea
 						label='Alamat *'
 						placeholder='Masukkan Alamat Lengkap'
 						name='address'
-						defaultValue={this.isEdit ? formData.attributes.address : ''}
+						defaultValue={this.props.isEdit ? formData.attributes.address : ''}
 						ref={(c) => { this.elAddress = c; }}
 						validation={{ rules: 'required', name: 'address' }}
 					>address</Textarea>
