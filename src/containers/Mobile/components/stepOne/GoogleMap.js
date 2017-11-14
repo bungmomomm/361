@@ -78,7 +78,7 @@ class GoogleMap extends Component {
 					center={centerMap}
 					centerAroundCurrentLocation={false}
 					style={{ width: '100%', height: '250px' }}
-					onDragen={onDragend}
+					onDragend={onDragend}
 				>
 					{polygon && this.renderPolygon()}
 					{marker && this.renderMarker()}

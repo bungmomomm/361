@@ -351,6 +351,7 @@ class stepOne extends Component {
 					showModalAddress &&
 					<ModalAddress
 						open
+						isEdit={this.flagModalAddress === 'edit'}
 						formData={this.flagModalAddress === 'edit' && selectedAddress}
 						handleClose={() => this.hideModalAddress()}
 					/>
