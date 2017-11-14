@@ -33,7 +33,7 @@ const StoreBoxBody = ({ products, onUpdateQty, showBtnDelete }) => {
 								<Level style={{ marginBottom: '10px' }}>
 									<Level.Left><strong>{currency(product.price)}</strong></Level.Left>
 									<Level.Right>
-										<Stepper max={product.maxQty} min={1} start={product.qty} defaultValue={product.qty} onChange={(e) => onUpdateQty(e, product.id)} />
+										<Stepper max={product.maxQty} min={1} start={product.qty} defaultValue={product.qty} value={product.qty} onChange={(e) => onUpdateQty(e, product.id)} />
 									</Level.Right>
 								</Level>
 								<div>
