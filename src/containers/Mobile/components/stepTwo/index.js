@@ -52,8 +52,39 @@ class StepTwo extends Component {
 			const billing = this.props.billing ? this.props.billing[0] : false;
 			this.constructor.fetchPlaceOrderCart(this.cookies, this.props.dispatch, nextProps.stepState.stepOne.selectedAddress, billing, true);
 		}
+
+		const changeTab = this.props.stepState.stepOne !== nextProps.stepState.stepOne;
+		if (this.props.cart !== nextProps.cart || this.props.error !== nextProps.error || changeTab) {
+			this.checkAllowedPayment(nextProps.stepState.stepOne.selectedAddress, nextProps);
+		}
 	}
 	
+	checkAllowedPayment(selectedAddress, nextProps) {
+		const { cart, stepState, isPickupable } = nextProps;
+		
+		// for jabodetabek item only 
+		const jabotabekRestrictedCart = cart.filter((e) => {
+			return e.store.products[0].fgLocation === '1';
+		});
+		const isAlowedShipping = (jabotabekRestrictedCart.length > 0 && selectedAddress.attributes.isJabodetabekArea === '0');
+
+		// for o2o item only 
+		const o2oRestrictedCart = cart.filter((e) => {
+			return isPickupable === '0' && !e.store.shipping.o2oSupported && stepState.stepOne.activeTab === 1;
+		});
+		const isAllowedO2o = isPickupable === '0' && o2oRestrictedCart.length > 0 && stepState.stepOne.activeTab === 1;
+
+		// set disabled payment
+		const checkoutState = {
+			...stepState,
+			stepFour: {
+				...stepState.stepFour,
+				disable: isAlowedShipping || isAllowedO2o
+			}
+		};
+		this.props.applyState(checkoutState);
+	}
+
 	checkRestrictO2o(o2oSupported) {
 		const { isPickupable, stepState } = this.props;
 		return isPickupable === '0' && o2oSupported && stepState.stepOne.activeTab === 1;
@@ -77,6 +108,18 @@ class StepTwo extends Component {
 		} else {
 			dispatch(new actions.updateCartWithoutSO(this.cookies, qty, productId));
 		}
+	}
+
+	saveDisabledPayment(disable) {
+		const { stepState } = this.props;
+		const checkoutState = {
+			...stepState,
+			stepFour: {
+				...stepState.stepFour,
+				disable
+			}
+		};
+		this.props.applyState(checkoutState);
 	}
 
 	saveLoading(loading) {
@@ -156,7 +199,8 @@ const mapStateToProps = (state) => {
 		cart: state.cart.data,
 		soNumber: state.cart.soNumber,
 		isPickupable: state.cart.isPickupable,
-		loading: state.cart.loading
+		loading: state.cart.loading,
+		error: state.cart.error,
 	};
 };
 

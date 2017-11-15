@@ -16,7 +16,8 @@ import {
 	// Button,
 	// Level,
 	// Input,
-	Sprites
+	Sprites,
+	Icon
 } from '@/components';
 
 import { 
@@ -45,8 +46,16 @@ class StepFour extends Component {
 		this.props = props;
 		this.state = {
 			selectedPaymentMethod: null,
-			selectedPaymentOption: null
+			selectedPaymentOption: null,
+			termCondition: true,
+			ovo: {
+				useDefault: true,
+				ovoPhonePayment: this.props.payments.ovoPhonePayment || this.props.payments.ovoPhoneNumber,
+				ovoPhonePaymentValid: this.props.payments.ovoPhoneNumber,
+				autoLinkage: true,
+			},
 		};
+		this.isOvoPayment = this.props.payments.paymentMethod === 'e_wallet_ovo';
 		this.cookies = this.props.cookies.get('user.token');
 	}
 
@@ -59,6 +68,38 @@ class StepFour extends Component {
 			tahun.push({ value: year, label: year });
 		}
 		this.setState({ tahun });
+	}
+	
+	componentWillReceiveProps(nextProps) {
+		if (this.props.payments !== nextProps.payments) {
+			this.isOvoPayment = this.props.payments.paymentMethod === 'e_wallet_ovo';
+			this.setState({
+				ovo: {
+					...this.state.ovo,
+					ovoPhonePaymentValid: this.props.payments.ovoPhoneNumber,
+					autoLinkage: (this.props.payments.ovoInfo.ovoFlag === '0'),
+				}
+			});
+		}
+	}
+
+	onOvoPaymentNumberChange(event) {
+		const ovo = this.state.ovo;
+		const ovoPhonePayment = event.target.value;
+		const regexPhone = /^[0-9]{5,30}/;
+		let ovoPhonePaymentValid;
+		if (regexPhone.test(ovoPhonePayment)) {
+			ovoPhonePaymentValid = true;
+		} else {
+			ovoPhonePaymentValid = false;
+		}
+		this.setState({
+			ovo: {
+				...ovo,
+				ovoPhonePayment,
+				ovoPhonePaymentValid,
+			}
+		});
 	}
 	
 	onSelectedPaymentItem(selectedPaymentItem) {
@@ -78,6 +119,20 @@ class StepFour extends Component {
 				selectedPaymentItem 
 			});
 		}
+	}	
+
+	setDefaultOvo() {
+		const ovo = this.state.ovo;
+		const useDefault = !this.state.ovo.useDefault;
+		const ovoPhonePayment = useDefault ? this.props.payments.ovoPaymentNumber : '';
+		this.setState({
+			ovo: {
+				...ovo,
+				useDefault,
+				ovoPhonePayment,
+				ovoPhonePaymentValid: useDefault
+			}
+		});
 	}
 
 	getAffTracking() {
@@ -136,7 +191,7 @@ class StepFour extends Component {
 				this.onRequestSprintInstallment(mode);
 				break;
 			case paymentMethodName.OVO:
-				if (this.props.payments.ovoPaymentNumber) {
+				if (this.state.ovo.ovoPhonePayment) {
 					dispatch(
 						new actions.pay(
 							this.cookies,
@@ -144,7 +199,7 @@ class StepFour extends Component {
 							this.props.payments.selectedPaymentOption === false ? this.state.selectedPayment : this.props.payments.selectedPaymentOption,
 							{
 								e_wallet: {
-									id: this.props.payments.ovoPaymentNumber
+									id: this.state.ovo.ovoPhonePayment
 								},
 								ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
 								billingPhoneNumber: this.props.payments.billingPhoneNumber
@@ -196,10 +251,15 @@ class StepFour extends Component {
 	}
 	
 	checkActiveBtnSubmit() {
-		if (this.props.payments.selectedPayment && this.props.payments.selectedPaymentOption) {
+		const validOvo = this.isOvoPayment ? this.state.ovo.ovoPhonePaymentValid : true;
+		if (validOvo && this.state.termCondition && this.props.payments.selectedPayment && this.props.payments.selectedPaymentOption) {
 			return 'active';
 		}
 		return 'disabled';
+	}
+	
+	checkShowingOvoPhone() {
+		return (!this.isOvoPayment || (!this.state.ovo.autoLinkage && this.isOvoPayment));
 	}
 	
 	render() {
@@ -208,26 +268,31 @@ class StepFour extends Component {
 		} = this.props;
 
 		const switchPaymentElement = () => {
+			let { ovoDefault, ovoPaymentInput } = '';
 			// PAYMENT MENTHOD LIST
 			switch (payments.selectedPayment.value) {
 			case paymentGroupName.BANK_TRANSFER:
 			case paymentGroupName.E_MONEY:
 			case paymentGroupName.INTERNET_BANKING:
 			case paymentGroupName.CONVENIENCE_STORE: {
-				const enabledPaymentItems = _.filter(payments.selectedPayment.paymentItems, ['disabled', false]);
+				const enabledPaymentItems = _.filter(payments.selectedPayment.paymentItems, (e) => { return e.value !== null; });
 				const listPayment = [];
 				enabledPaymentItems.map((option, index) => {
 					const RadioLabel = (
 						<Level>
 							<Level.Left>{option.label}</Level.Left>
-							<Level.Right>{option.settings.image && <img src={option.settings.image} alt={option.label} height='15px' />}</Level.Right>
+							<Level.Right className='font-red'>
+								{ option.disabled && option.disableMessage }
+								{option.settings.image && <img src={option.settings.image} alt={option.label} height='15px' />}
+							</Level.Right>
 						</Level>
 					);
 					return listPayment.push({
 						label: RadioLabel, 
 						dataProps: { 
 							name: `payment-${payments.selectedPayment.value}`, 
-							onChange: () => this.onSelectedPaymentItem(option)
+							onChange: () => this.onSelectedPaymentItem(option),
+							disabled: option.disabled
 						}
 					});
 				});
@@ -281,11 +346,68 @@ class StepFour extends Component {
 						</Group>
 					</Group>
 				);
+			case paymentGroupName.OVO: 
+				ovoPaymentInput = (
+					<div>
+						<Input min={0} max={30} defaultValue={this.state.ovo.ovoPhonePayment} type='number' placeholder={'Masukan No Hp yang terdaftar di OVO'} onChange={(e) => this.onOvoPaymentNumberChange(e)} />
+					</div>
+				);
+
+				ovoDefault = ([this.state.ovo.useDefault ?
+					<div 
+						role='button'
+						tabIndex={-1}
+						className='font-grey'
+						onClick={() => this.setDefaultOvo()} 
+					>
+						<Icon name='plus-circle' /> Gunakan OVO Lain
+					</div>
+				: ovoPaymentInput]);
+
+				return (
+					<div>
+						{
+							(payments.ovoInfo && parseInt(payments.ovoInfo.ovoFlag, 10) === 1) ?
+								<div>
+									<Radio 
+										inputStyle='blocklist' 
+										data={[
+											{
+												label: (
+													<Level>
+														<Level.Left>
+															{payments.ovoPhoneNumber}
+														</Level.Left>
+														<Level.Right>
+															<Icon name='ovo' sprites='ovo' />
+														</Level.Right>
+													</Level>
+												),
+												dataProps: {
+													name: 'ovo-phone-payment',
+													onChange: () => this.setDefaultOvo(),
+													checked: this.state.ovo.useDefault
+												}
+											}
+										]} 
+									/>
+									{ovoDefault}
+								</div>
+							:
+								<div>
+									{ovoPaymentInput}
+									<Checkbox defaultChecked={this.state.ovo.autoLinkage} onClick={() => this.setState({ ovo: { ...this.state.ovo, autoLinkage: !this.state.ovo.autoLinkage } })}>Simpan untuk transaksi berikutnya & otomatis terhubung ke akun OVO</Checkbox>
+								</div>
+						}
+					</div>
+				);
 			default:
 				return null;
 			}
 			
 		};
+
+		const ovoReadOnly = (payments.ovoInfo && parseInt(payments.ovoInfo.ovoFlag, 10) === 1) ? 'disabled' : 'active';
 
 		return (
 			<div className={styles.card}>
@@ -296,6 +418,7 @@ class StepFour extends Component {
 						label='Metode Pembayaran'
 						options={payments.paymentMethods.methods} 
 						onChange={(e) => this.paymentMethodChange(e)}
+						defaultValue={payments.selectedPayment ? payments.selectedPayment.id : null}
 					/>
 					{ payments.selectedPayment && switchPaymentElement()}
 					{
@@ -330,10 +453,20 @@ class StepFour extends Component {
 							</div>
 						)
 					}
-					<Input label='SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke : ' min={0} type='number' placeholder={'No Telp Penagihan'} />
-					<Input label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' placeholder={'Masukkan nomor Hp yang terdaftar di OVO'} type='number' min={0} />
+					<Input 
+						value={payments.billingPhoneNumber || ''} 
+						label='SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke : ' 
+						min={0} 
+						type='number' 
+						placeholder={payments.billingPhoneNumber || 'No Telp Penagihan'} 
+						onChange={(event) => this.props.onBillingNumberChange(event)} 
+					/>
+					{
+						this.checkShowingOvoPhone() && payments.ovoPhoneNumber && 
+						<Input state={ovoReadOnly} color={ovoReadOnly ? 'green' : null} icon={ovoReadOnly ? 'check' : null} defaultValue={payments.ovoPhoneNumber} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' placeholder={'Masukkan nomor Hp yang terdaftar di OVO'} type='number' min={0} />
+					}
 					<div className={styles.checkOutAction}>
-						<Checkbox>Saya setuju dengan syarat dan ketentuan MatahariMall.com</Checkbox>
+						<Checkbox defaultChecked={this.state.termCondition} onClick={() => this.setState({ termCondition: !this.state.termCondition })}>Saya setuju dengan syarat dan ketentuan MatahariMall.com</Checkbox>
 						<Button block size='large' color='red' state={this.checkActiveBtnSubmit()} onClick={(e) => this.submitPayment(e)}>Bayar Sekarang</Button>
 					</div>
 				</div>
@@ -343,6 +476,15 @@ class StepFour extends Component {
 }
 
 const mapStateToProps = (state) => {
+	const shippingAddress = (state.addresses.addresses && state.addresses.addresses[0]) || false;
+	const billingPhoneNumber = (shippingAddress) ? shippingAddress.attributes.phone : null;
+	if (state.payments.billingPhoneNumber === null) {
+		state.payments.billingPhoneNumber = billingPhoneNumber;
+	}
+	state.payments.ovoInfo = state.cart.ovoInfo || false;
+	if (state.payments.ovoPhoneNumber === null) {
+		state.payments.ovoPhoneNumber = state.payments.ovoInfo ? state.payments.ovoInfo.ovoId : null;
+	}
 	return {
 		payments: state.payments,
 		soNumber: state.cart.soNumber,
