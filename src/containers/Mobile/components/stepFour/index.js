@@ -21,7 +21,7 @@ import {
 
 import { 
 	// Tooltip,
-	// Group,
+	Group,
 	Radio,
 	Select,
 	Checkbox,
@@ -48,6 +48,17 @@ class StepFour extends Component {
 			selectedPaymentOption: null
 		};
 		this.cookies = this.props.cookies.get('user.token');
+	}
+
+	componentWillMount() {
+		const date = new Date();
+		const thisYear = date.getFullYear();
+		let year = thisYear;
+		const tahun = [{ value: null, label: 'Tahun' }];
+		for (year = thisYear; year < (thisYear + 10); year++) {
+			tahun.push({ value: year, label: year });
+		}
+		this.setState({ tahun });
 	}
 	
 	onSelectedPaymentItem(selectedPaymentItem) {
@@ -244,37 +255,31 @@ class StepFour extends Component {
 				));
 			case paymentGroupName.INSTALLMENT:
 				return (
-					<div>
+					<Group>
 						{
 							payments.selectedPayment.paymentItems.map((installment, index) => {
 								return (
-									<div key={index}>
+									<Group key={index}>
 										<Select block options={installment.banks} />
 										<Select block options={installment.banks[index].listCicilan} />
-									</div>
+									</Group>
 								);
 							})
 						}
-						<CreditCardInput 
-							placeholder='Masukkan Nomor Kartu'
-							sprites='payment-option'
-							onChange={this.onInstallmentCCNumberChange}
-						/>
-						<Level>
-							<Level.Item>
-								<Select block options={Bulan} />
-							</Level.Item>
-							<Level.Item>
-								<Select block options={this.props.tahun} />
-							</Level.Item>
-							<Level.Item>
-								<Input type='password' placeholder='cvv' />
-							</Level.Item>
-							<Level.Item>
-								<Sprites name='cvv' />
-							</Level.Item>
-						</Level>
-					</div>
+						<Group>
+							<CreditCardInput
+								placeholder='Masukkan Nomor Kartu'
+								sprites='payment-option'
+								onChange={this.onInstallmentCCNumberChange}
+							/>
+						</Group>
+						<Group grouped>
+							<Select block options={Bulan} />
+							<Select block options={this.state.tahun} />
+							<Input dataProps={{ minLength: 0, maxLength: 4 }} type='password' placeholder='cvv' />
+							<div style={{ paddingRight: '30px' }} ><Sprites name='cvv' /></div>
+						</Group>
+					</Group>
 				);
 			default:
 				return null;
