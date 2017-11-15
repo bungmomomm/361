@@ -67,7 +67,8 @@ import {
 	saveCC,
 	getAvailabelPaymentSelection,
 	checkStatusOvoPayment,
-	refreshInstallmentTerm
+	refreshInstallmentTerm,
+	failAuthTokenCC
 } from '@/state/Payment/actions';
 
 import { getRefreshToken } from '@/state/Auth/actions';

@@ -788,5 +788,6 @@ export default {
 	getAvailabelPaymentSelection,
 	checkStatusOvoPayment,
 	expirePayment,
-	refreshInstallmentTerm
+	refreshInstallmentTerm,
+	failAuthTokenCC
 };
