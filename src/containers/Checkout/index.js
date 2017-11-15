@@ -688,14 +688,14 @@ class Checkout extends Component {
 					)
 				);
 			} else {
+				dispatch(vtModalBoxOpen(false));
+				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
 				dispatch(
 					failAuthTokenCC(
 						this.props.cookies.get('user.token'),
 						this.props.soNumber
 					)
 				);
-				dispatch(vtModalBoxOpen(false));
-				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
 				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
 			}
 		};
@@ -737,14 +737,14 @@ class Checkout extends Component {
 					)
 				);
 			} else {
+				dispatch(vtModalBoxOpen(false));
+				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
 				dispatch(
 					failAuthTokenCC(
 						this.props.cookies.get('user.token'),
 						this.props.soNumber
 					)
 				);
-				dispatch(vtModalBoxOpen(false));
-				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
 				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
 			}
 		};
