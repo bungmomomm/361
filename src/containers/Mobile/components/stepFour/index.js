@@ -5,40 +5,30 @@ import _ from 'lodash';
 
 import { actions } from '@/state/Payment';
 import { paymentGroupName, paymentMethodName } from '@/state/Payment/constants';
-import { 
-	// Tooltip,
-	// Card,
-	// Group,
-	// Select,
+import {
 	CreditCardInput,
 	CreditCardRadio,
-	// Checkbox,
-	// Button,
-	// Level,
-	// Input,
-	Sprites,
-	Icon
+	Sprites
 } from '@/components';
 
 import { 
-	// Tooltip,
 	Group,
 	Radio,
 	Select,
 	Checkbox,
 	Button,
 	Level,
-	Input
+	Input,
+	Icon
 } from 'mm-ui';
 
 import { pushDataLayer } from '@/utils/gtm';
+import { Bulan } from '@/data';
+
+import ModalOVOCountdown from './components/ModalOVOCountdown';
+import ModalErrorPayment from './components/ModalErrorPayment';
 
 import styles from '../../../Mobile/mobile.scss';
-
-import { 
-	PaymentOptions, 
-	Bulan 
-} from '@/data';
 
 class StepFour extends Component {
 	constructor(props) {
@@ -348,9 +338,13 @@ class StepFour extends Component {
 				);
 			case paymentGroupName.OVO: 
 				ovoPaymentInput = (
-					<div>
-						<Input min={0} max={30} defaultValue={this.state.ovo.ovoPhonePayment} type='number' placeholder={'Masukan No Hp yang terdaftar di OVO'} onChange={(e) => this.onOvoPaymentNumberChange(e)} />
-					</div>
+					<Input
+						dataProps={{ minLength: 0, maxLength: 30 }}
+						defaultValue={this.state.ovo.ovoPhonePayment}
+						type='number'
+						placeholder={'Masukan No Hp yang terdaftar di OVO'}
+						onChange={(e) => this.onOvoPaymentNumberChange(e)}
+					/>
 				);
 
 				ovoDefault = ([this.state.ovo.useDefault ?
@@ -371,25 +365,23 @@ class StepFour extends Component {
 								<div>
 									<Radio 
 										inputStyle='blocklist' 
-										data={[
-											{
-												label: (
-													<Level>
-														<Level.Left>
-															{payments.ovoPhoneNumber}
-														</Level.Left>
-														<Level.Right>
-															<Icon name='ovo' sprites='ovo' />
-														</Level.Right>
-													</Level>
-												),
-												dataProps: {
-													name: 'ovo-phone-payment',
-													onChange: () => this.setDefaultOvo(),
-													checked: this.state.ovo.useDefault
-												}
+										data={[{
+											label: (
+												<Level>
+													<Level.Left>
+														{payments.ovoPhoneNumber}
+													</Level.Left>
+													<Level.Right>
+														<Icon name='ovo' sprites='ovo' />
+													</Level.Right>
+												</Level>
+											),
+											dataProps: {
+												name: 'ovo-phone-payment',
+												onChange: () => this.setDefaultOvo(),
+												checked: this.state.ovo.useDefault
 											}
-										]} 
+										}]} 
 									/>
 									{ovoDefault}
 								</div>
@@ -421,38 +413,6 @@ class StepFour extends Component {
 						defaultValue={payments.selectedPayment ? payments.selectedPayment.id : null}
 					/>
 					{ payments.selectedPayment && switchPaymentElement()}
-					{
-						false && (
-							<div>
-								<Select block label='Pilih Bank' options={PaymentOptions} />
-								<Select block label='Pilih Lama Cicilan' options={PaymentOptions} />
-								<Radio 
-									inputStyle='blocklist' 
-									data={[
-										{
-											label: 'BCA Virtual Account', 
-											inputProps: { 
-												name: 'cc', 
-												onChange: () => console.log('index')
-											}
-										}, {
-											label: 'Bank Lainnya Virtual Account', 
-											inputProps: { 
-												name: 'cc', 
-												onChange: () => console.log('index')
-											}
-										}, {
-											label: 'Manual Transfer', 
-											inputProps: { 
-												name: 'cc', 
-												onChange: () => console.log('index')
-											}
-										}
-									]} 
-								/>
-							</div>
-						)
-					}
 					<Input 
 						value={payments.billingPhoneNumber || ''} 
 						label='SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke : ' 
@@ -470,6 +430,25 @@ class StepFour extends Component {
 						<Button block size='large' color='red' state={this.checkActiveBtnSubmit()} onClick={(e) => this.submitPayment(e)}>Bayar Sekarang</Button>
 					</div>
 				</div>
+				{
+					false && (
+						<ModalOVOCountdown
+							show
+							secondsRemaining={50}
+							tick={(e) => console.log(e)}
+						/>
+					)
+				}
+				{
+					false && (
+						<ModalErrorPayment
+							show
+							onClose={(e) => console.log(e)}
+							okeoce={(e) => console.log(e)}
+							isConfirm={(e) => console.log(e)}
+						/>
+					)
+				}
 			</div>
 		);
 	}
