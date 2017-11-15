@@ -264,20 +264,24 @@ class StepFour extends Component {
 			case paymentGroupName.E_MONEY:
 			case paymentGroupName.INTERNET_BANKING:
 			case paymentGroupName.CONVENIENCE_STORE: {
-				const enabledPaymentItems = _.filter(payments.selectedPayment.paymentItems, ['disabled', false]);
+				const enabledPaymentItems = _.filter(payments.selectedPayment.paymentItems, (e) => { return e.value !== null; });
 				const listPayment = [];
 				enabledPaymentItems.map((option, index) => {
 					const RadioLabel = (
 						<Level>
 							<Level.Left>{option.label}</Level.Left>
-							<Level.Right>{option.settings.image && <img src={option.settings.image} alt={option.label} height='15px' />}</Level.Right>
+							<Level.Right className='font-red'>
+								{ option.disabled && option.disableMessage }
+								{option.settings.image && <img src={option.settings.image} alt={option.label} height='15px' />}
+							</Level.Right>
 						</Level>
 					);
 					return listPayment.push({
 						label: RadioLabel, 
 						dataProps: { 
 							name: `payment-${payments.selectedPayment.value}`, 
-							onChange: () => this.onSelectedPaymentItem(option)
+							onChange: () => this.onSelectedPaymentItem(option),
+							disabled: option.disabled
 						}
 					});
 				});
