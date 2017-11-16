@@ -17,6 +17,8 @@ import PaymentErrorModalbox from './components/Modal/PaymentErrorModalbox';
 import VerifikasiNoHandponeModalbox from './components/Modal/VerifikasiNoHandponeModalbox';
 import Vt3dsModalBox from './components/Modal/Vt3dsModalBox';
 import EcashModalBox from './components/Modal/EcashModalBox';
+import OvoCountDownModal from './components/Modal/OvoCountDownModal';
+import OvoErrorPaymentModal from './components/Modal/OvoErrorPaymentModal';
 
 // Section Component
 import CardPesananPengiriman from './components/CardPesananPengiriman';
@@ -54,6 +56,7 @@ import {
 	bankNameChange,
 	applyBin,
 	changeOvoNumber,
+	changeOvoPaymentNumber,
 	changeBillingNumber,
 	termChange,
 	changeInstallmentCCNumber,
@@ -62,7 +65,9 @@ import {
 	changeInstallmentCCCvv,
 	termsAndConditionChange,
 	saveCC,
-	getAvailabelPaymentSelection
+	getAvailabelPaymentSelection,
+	checkStatusOvoPayment,
+	refreshInstallmentTerm
 } from '@/state/Payment/actions';
 
 import { getRefreshToken } from '@/state/Auth/actions';
@@ -122,10 +127,13 @@ class Checkout extends Component {
 			loadingCardPengiriman: false,
 			tahun: [],
 			showModalOtp: false,
+			showModalOvo: false,
 			phoneNumber: null,
 			notifInfo: true,
 			appliedBin: null,
-			selectedPayment: false
+			selectedPayment: false,
+			ovoTimer: 30,
+			ovoInterval: 5
 		};
 
 		this.restrictO2oFlag = false;
@@ -163,6 +171,7 @@ class Checkout extends Component {
 		this.shippingMethodGosend = this.shippingMethodGosend.bind(this);
 		this.onBankChange = this.onBankChange.bind(this);
 		this.onOvoNumberChange = this.onOvoNumberChange.bind(this);
+		this.onOvoPaymentNumberChange = this.onOvoPaymentNumberChange.bind(this);
 		this.closeModalShippingAddress = this.closeModalShippingAddress.bind(this);
 		this.onTermChange = this.onTermChange.bind(this);
 		this.onInstallmentCCNumberChange = this.onInstallmentCCNumberChange.bind(this);
@@ -186,6 +195,7 @@ class Checkout extends Component {
 		this.onSetStateAddress = this.onSetStateAddress.bind(this);
 		this.getAffTracking = this.getAffTracking.bind(this);
 		this.okeoce = this.okeoce.bind(this);
+		this.checkOvoStatus = this.checkOvoStatus.bind(this);
 	}
 
 	componentWillMount() {
@@ -403,10 +413,10 @@ class Checkout extends Component {
 			this.getDistricts(`${editAddress.city}, ${editAddress.province}`);
 		}
 		if (flagAdd === 'add') {
-			const source = this.props.cookies.get('user.source');	
+			const source = this.props.cookies.get('user.source');
 			pushDataLayer('checkout', 'checkout', { step: 1, option: source ? source.split('+').join(' ') : '' }, this.props.products);
 			// pushDataLayer('checkout', 'checkout_option', { step: 1, option: source ? source.split('+').join(' ') : '' });
-		} 
+		}
 
 		this.setState({
 			enableNewAddress: true,
@@ -474,6 +484,19 @@ class Checkout extends Component {
 
 	onPaymentMethodChange(event) {
 		this.props.dispatch(changePaymentMethod(event.value, this.props.payments.paymentMethods, this.props.cookies.get('user.token')));
+		// set ovo payment number
+		if (event.value === 'e_wallet') {
+			const phonePayment = this.props.payments.ovoInfo.ovoFlag === '1' ? this.props.payments.ovoPhoneNumber : '';
+			this.props.dispatch(changeOvoPaymentNumber(phonePayment));
+			const ovoMethod = this.props.payments.paymentMethods.availableMethods[18];
+
+			if (ovoMethod) {
+				this.setState({
+					ovoTimer: ovoMethod.settings.countdown,
+					ovoInterval: ovoMethod.settings.interval,
+				});
+			}
+		}
 	}
 
 	onPaymentOptionChange(event, paymentMethod) {
@@ -581,7 +604,9 @@ class Checkout extends Component {
 					cardMonth: this.props.payments.selectedCardDetail.month,
 					cardYear: this.props.payments.selectedCardDetail.year,
 					amount: this.props.payments.total,
-					paymentMethod: this.props.payments.paymentMethod
+					paymentMethod: this.props.payments.paymentMethod,
+					ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
+					billingPhoneNumber: this.props.payments.billingPhoneNumber
 				},
 				mode,
 				false,
@@ -739,14 +764,25 @@ class Checkout extends Component {
 		dispatch(ecashModalBoxOpen(false));
 	}
 
-	onOvoNumberChange(event) {
+	// for linkage
+	onOvoNumberChange(ovoNumber) {
 		const { dispatch } = this.props;
-		dispatch(changeOvoNumber(event.target.value));
+		dispatch(changeOvoNumber(ovoNumber));
+	}
+
+	// for pay order
+	onOvoPaymentNumberChange(phoneNumber) {
+		const { dispatch } = this.props;
+		dispatch(changeOvoPaymentNumber(phoneNumber));
 	}
 
 	onTermChange(term) {
 		const { dispatch } = this.props;
 		this.props.payments.selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
+		const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
+		const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
+		const cardNumber = this.state.appliedBin ? this.state.appliedBin.cardNumber : '';
+		this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, cardNumber, bank, term.term));
 		dispatch(termChange(term));
 	}
 
@@ -787,6 +823,37 @@ class Checkout extends Component {
 			case paymentMethodName.COMMERCE_SPRINT_ASIA:
 				mode = 'sprint';
 				this.onRequestSprintInstallment(mode);
+				break;
+			case paymentMethodName.OVO:
+				if (this.props.payments.ovoPaymentNumber) {
+					dispatch(
+						pay(
+							this.props.cookies.get('user.token'),
+							this.props.soNumber,
+							this.props.payments.selectedPaymentOption === false ? this.state.selectedPayment : this.props.payments.selectedPaymentOption,
+							{
+								e_wallet: {
+									id: this.props.payments.ovoPaymentNumber
+								},
+								ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
+								billingPhoneNumber: this.props.payments.billingPhoneNumber
+							},
+							this.props.payments.selectedPaymentOption.uniqueConstant,
+							false,
+							false,
+							this.getAffTracking()
+						)
+					).then(() => {
+						this.setState({
+							showModalOvo: true
+						});
+					})
+					.catch(() => {
+						this.setState({
+							showModalOvo: false
+						});
+					});
+				}
 				break;
 			default:
 				if (this.props.payments.selectedPaymentOption) {
@@ -878,14 +945,23 @@ class Checkout extends Component {
 		});
 	}
 	onCardNumberChange(event) {
+		const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 		if (event.valid) {
 			this.props.dispatch(changeCreditCardNumber(event.ccNumber));
-			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event.ccNumber, ''));
 			this.setState({
 				appliedBin: {
 					selectedPaymentOption,
 					cardNumber: event.ccNumber,
+					bankName: ''
+				}
+			});
+		} else {
+			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), -1, event.ccNumber, ''));
+			this.setState({
+				appliedBin: {
+					selectedPaymentOption,
+					cardNumber: '',
 					bankName: ''
 				}
 			});
@@ -903,7 +979,6 @@ class Checkout extends Component {
 	}
 
 	onBankChange(bank) {
-		console.log(bank);
 		if (bank.value !== null) {
 			const { dispatch } = this.props;
 			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
@@ -911,16 +986,31 @@ class Checkout extends Component {
 		}
 	}
 	onInstallmentCCNumberChange(event) {
+		this.props.dispatch(changeInstallmentCCNumber(event.ccNumber, event.ccType));
+		const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
+		const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
+		const term = (this.props.payments.term && this.props.payments.term.term) ? this.props.payments.term.term : '';
 		if (event.valid) {
-			this.props.dispatch(changeInstallmentCCNumber(event.ccNumber, event.ccType));
-			const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
-			const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
-			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event.ccNumber, bank));
+			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event.ccNumber, bank, term))
+			.then(success => {
+				this.props.dispatch(refreshInstallmentTerm(this.props.payments.selectedPayment, success));
+			});
 			this.setState({
 				appliedBin: {
 					selectedPaymentOption,
 					cardNumber: event.ccNumber,
-					bankName: bank
+					bankName: bank,
+					installment_term: term
+				}
+			});
+		} else {
+			this.props.dispatch(applyBin(this.props.cookies.get('user.token'), -1, event.ccNumber, bank, term));
+			this.setState({
+				appliedBin: {
+					selectedPaymentOption,
+					cardNumber: '',
+					bankName: bank,
+					installment_term: term
 				}
 			});
 		}
@@ -1073,7 +1163,7 @@ class Checkout extends Component {
 				if (this.state.appliedBin) {
 					const selectedPaymentOption = this.state.appliedBin.selectedPaymentOption;
 					dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, this.state.appliedBin.cardNumber, this.state.appliedBin.bankName)).then(() => {
-						if (gosendChecked.length > 0) { 
+						if (gosendChecked.length > 0) {
 							this.props.cart.forEach((value, index) => {
 								const indexStore = gosendChecked.indexOf(parseInt(value.store.id, 10));
 								if (indexStore !== -1) {
@@ -1089,8 +1179,8 @@ class Checkout extends Component {
 						} else {
 							this.onDoPayment();
 						}
-						
-						
+
+
 					}).catch((error) => {
 
 					});
@@ -1101,7 +1191,7 @@ class Checkout extends Component {
 					isValidPayment: true,
 				});
 
-				
+
 			});
 		} else {
 			this.checkDropship();
@@ -1179,6 +1269,33 @@ class Checkout extends Component {
 	shippingMethodGosend(methodId, storeId) {
 		const { dispatch } = this.props;
 		dispatch(updateGosend(this.props.cookies.get('user.token'), storeId, methodId, this.props));
+	}
+
+	checkOvoStatus(tick) {
+		const { dispatch } = this.props;
+		const params = this.props.payments.selectedPaymentOption.settings.checkParams.join('&');
+		const checkStatusUrl = this.props.payments.selectedPaymentOption.settings.checkUrl;
+		if (this.props.payments.paymentOvoFailed) {
+			this.setState({
+				showModalOvo: false
+			});
+			dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
+			dispatch(changeOvoPaymentNumber());
+		} 
+		if (tick % this.state.ovoInterval === 0) {
+			dispatch(checkStatusOvoPayment(`${checkStatusUrl}${params}`, this.props.cookies.get('user.token'), this.props.soNumber, this.props.payments.ovoPaymentNumber, tick < 1))
+			.then(() => {
+				if (tick === 0 && this.state.selectedAddress) {
+					dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
+					dispatch(changeOvoPaymentNumber());
+				}
+			});
+		}
+		if (tick === 0) {
+			this.setState({
+				showModalOvo: false
+			});
+		} 
 	}
 
 	render() {
@@ -1286,6 +1403,7 @@ class Checkout extends Component {
 										tahun={this.state.tahun}
 										onBankChange={this.onBankChange}
 										onOvoNumberChange={this.onOvoNumberChange}
+										onOvoPaymentNumberChange={this.onOvoPaymentNumberChange}
 										onBillingNumberChange={this.onBillingNumberChange}
 										onTermChange={this.onTermChange}
 										onInstallmentCCNumberChange={this.onInstallmentCCNumberChange}
@@ -1337,6 +1455,20 @@ class Checkout extends Component {
 						src={this.props.payments.vtRedirectUrl}
 						onClose={this.onVt3dsModalBoxClose}
 					/>
+					{
+						this.state.showModalOvo && (
+							<OvoCountDownModal
+								shown={this.state.showModalOvo}
+								secondsRemaining={this.state.ovoTimer}
+								tick={(e) => this.checkOvoStatus(e)}
+							/>
+						)
+					}
+					{
+						false && (
+							<OvoErrorPaymentModal shown />
+						)
+					}
 					<EcashModalBox shown={this.props.payments.showEcash} src={this.props.payments.mandiriRedirectUrl} onClose={this.onMandiriEcashClose} />
 					{
 						renderIf(!this.state.notifInfo)(

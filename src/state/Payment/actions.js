@@ -44,6 +44,13 @@ const paymentInfoUpdated = (data) => ({
 	}
 });
 
+const onTermUpdated = (data) => ({
+	type: constants.TERM_UPDATED, 
+	payload: {
+		...data
+	}
+});
+
 const creditCardNumberChangeAndApplyBin = (token, cardNumber) => ({
 	type: constants.PAY_CREDIT_CARD_ADD,
 	mode: 'card_number_apply',
@@ -112,10 +119,10 @@ const payRequest = () => ({
 });
 
 const payTotalChanged = (totalActual, totalRequest, msg) => ({
-	type: constants.PAY_TOTAL_CHANGE, 
+	type: constants.PAY_TOTAL_CHANGE,
 	payload: {
-		totalActual, 
-		totalRequest, 
+		totalActual,
+		totalRequest,
 		msg
 	}
 });
@@ -136,6 +143,13 @@ const payError = (error) => ({
 	type: constants.PAY_ERROR,
 	payload: {
 		error
+	}
+});
+
+const paymentOvoFailed = (status) => ({
+	type: constants.PAY_OVO_FAILED,
+	payload: {
+		paymentOvoFailed: status
 	}
 });
 
@@ -176,6 +190,13 @@ const ovoNumberChange = (ovoPhoneNumber) => ({
 	type: constants.PAY_CHANGE_OVO_NUMBER,
 	payload: {
 		ovoPhoneNumber
+	}
+});
+
+const ovoPaymentNumberChange = (ovoPaymentNumber) => ({
+	type: constants.PAY_CHANGE_OVO_PAYMENT_NUMBER,
+	payload: {
+		ovoPaymentNumber
 	}
 });
 
@@ -269,12 +290,13 @@ const getSelectedVTInstallmentTerm = (selectedPaymentOption) => {
 	return selectedPaymentOption;
 };
 
-const applyBin = (token, paymentMethodId, cardNumber = '', bankName = '') => dispatch => new Promise((resolve, reject) => {
+const applyBin = (token, paymentMethodId, cardNumber = '', bankName = '', installmentTerm = '') => dispatch => new Promise((resolve, reject) => {
 	const data = {
 		attributes: {
 			payment_method: paymentMethodId,
 			card_number: cardNumber,
-			bank: bankName
+			bank: bankName,
+			installment_term: installmentTerm
 		}
 	};
 	return request({
@@ -288,6 +310,7 @@ const applyBin = (token, paymentMethodId, cardNumber = '', bankName = '') => dis
 		if (typeof response.data.data.relationships.carts.data[0] !== 'undefined') {
 			const item = response.data.data.relationships.carts.data[0];
 			const totalPrice = response.data.included.filter(itemLookup => itemLookup.type === item.type && itemLookup.id === item.id)[0];
+			
 			dispatch(paymentInfoUpdated(getCartPaymentData(totalPrice.attributes.total_price, 'order')));
 			dispatch(applyBinReceived(response.data));
 			resolve(response.data);
@@ -317,7 +340,7 @@ const changePaymentOption = (selectedPaymentOption, token, cardNumber = '', bank
 		bankName = selectedPaymentOption.banks[0].name;
 	}
 	dispatch(paymentOptionChanged(selectedPaymentOption));
-	
+
 	if (selectedPaymentOption) {
 		dispatch(applyBin(token, selectedPaymentOption.value, cardNumber, bankName));
 	} else {
@@ -337,6 +360,7 @@ const paymentOptionReset = (status) => dispatch => {
 };
 
 const changePaymentMethod = (paymentMethod, data, token) => dispatch => {
+	dispatch(paymentOvoFailed(false));
 	if (!paymentMethod) {
 		dispatch(paymentMethodChanged(false));
 	} else {
@@ -346,7 +370,7 @@ const changePaymentMethod = (paymentMethod, data, token) => dispatch => {
 		setTimeout(() => {
 			dispatch(paymentOptionReset(false));
 		}, 10);
-		if (selectedPayment.value === 'cod' || selectedPayment.value === 'gratis' || selectedPayment.value === 'installment') {
+		if (selectedPayment.value === 'cod' || selectedPayment.value === 'gratis' || selectedPayment.value === 'installment' || selectedPayment.value === 'e_wallet') {
 			const selectedPaymentOption = getAvailabelPaymentSelection(selectedPayment);
 			dispatch(changePaymentOption(selectedPaymentOption, token));
 		} else {
@@ -491,6 +515,10 @@ const changeOvoNumber = (ovoPhoneNumber) => dispatch => {
 	dispatch(ovoNumberChange(ovoPhoneNumber));
 };
 
+const changeOvoPaymentNumber = (ovoPaymentNumber) => dispatch => {
+	dispatch(ovoPaymentNumberChange(ovoPaymentNumber));
+};
+
 const changeBillingNumber = (billingPhoneNumber, billingPhoneNumberEdited = false) => dispatch => {
 	dispatch(billingNumberChange(billingPhoneNumber, billingPhoneNumberEdited));
 };
@@ -510,6 +538,51 @@ const getSoNumberFromResponse = (soNumber, response) => {
 		return (typeof orderString[1] !== 'undefined') ? orderString[1] : soNumber;
 	}
 	return soNumber;
+};
+
+const expirePayment = (token, soNumber) => (dispatch) => {
+	return request({
+		token,
+		path: 'payments/expire',
+		method: 'POST',
+		body: {
+			order_number: soNumber
+		}
+	}).then((response) => {
+		// since return 422, error message on catch
+	}).catch((error) => {
+		dispatch(payError(getError(error)));
+	});
+};
+
+const checkStatusOvoPayment = (checkStatusUrl, token, soNumber, ovoPaymentNumber, isShowInvalidPayment = false) => (dispatch) => {
+	return request({
+		token,
+		path: `${checkStatusUrl}=${soNumber}`,
+		fullpath: true,
+		method: 'GET',
+	}).then((response) => {
+		const res = response.data;
+		if (response.status === 200) {
+			const statusPayment = res.data.attributes.status_code;
+			const statusMessage = res.data.attributes.status_message || '';
+			switch (statusPayment) {
+			case 'success':
+				dispatch(payReceived(soNumber, response.data, 'complete'));		
+				break;
+			case 'waiting':
+				if (isShowInvalidPayment) {
+					dispatch(expirePayment(token, soNumber)); 				
+				}
+				break;
+			default: 
+				dispatch(payError(statusMessage));
+				dispatch(paymentOvoFailed(statusPayment));
+			}
+		}
+	}).catch((error) => {
+		dispatch(payError(getError(error)));
+	});
 };
 
 const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete', card = false, callback = false, aff = {
@@ -559,8 +632,8 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 				if (mode === 'complete') {
 					soNumber = getSoNumberFromResponse(soNumber, response.data);
 				}
-				
-				if (typeof response.data.meta.info !== 'undefined' && 
+
+				if (typeof response.data.meta.info !== 'undefined' &&
 					response.data.meta.info.amount_actual !== response.data.meta.info.amount_request) {
 					dispatch(payTotalChanged(response.data.meta.info.amount_actual, response.data.meta.info.amount_request, response.data.meta.info.msg));
 					// const msg = 'Terjadi perubahan harga, Apakah Anda ingin melanjutkan pembelian?';
@@ -568,7 +641,7 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 				} else {
 					dispatch(payReceived(soNumber, response.data, mode, card, callback));
 				}
-				
+
 				resolve(soNumber, response.data, mode, card, callback);
 			}).catch((error) => {
 				// showError
@@ -634,6 +707,36 @@ const termsAndConditionChange = (state, value) => dispatch => {
 	dispatch(termsAndConditionChangeAction(state, value));
 };
 
+const refreshInstallmentTerm = (selectedPayment, applybinResponse) => dispatch => {
+	if (typeof selectedPayment.paymentItems[0] !== 'undefined') {
+		const currentBank = selectedPayment.paymentItems[0]
+							.banks.filter(e => e.attributes.name.toLowerCase() 
+										=== applybinResponse.data.attributes.bank.toLowerCase())[0];
+		let inst = currentBank.installments;
+		let flag = 0;
+		inst = inst.map((data, idx) => {
+			if (flag !== data.term) {	
+				const attr = applybinResponse.included.filter(e => e.type === 'installment').filter(e => e.attributes.term === data.term)[0];
+				
+				inst[idx].attributes = attr.attributes;
+				inst[idx].amount = attr.attributes.amount;
+				inst[idx].description = attr.attributes.description;
+				inst[idx].info = attr.attributes.description;
+				inst[idx].label = attr.attributes.description;
+				inst[idx].siteid = attr.attributes.siteid;
+				inst[idx].id = attr.attributes.siteid;
+				flag = data.term;
+			}
+
+			return inst;
+		});
+		currentBank.installments = inst[0];
+		currentBank.listCicilan = inst[0];
+		
+		dispatch(onTermUpdated(currentBank));
+	}
+};
+
 export default {
 	paymentInfoUpdated,
 	getAvailablePaymentMethod,
@@ -660,11 +763,15 @@ export default {
 	changeBillingNumber,
 	ecashModalBoxOpen,
 	changeOvoNumber,
+	changeOvoPaymentNumber,
 	saveCC,
 	payError,
 	paymentOptionReset,
 	termsAndConditionChange,
 	pay,
 	applyBin,
-	getAvailabelPaymentSelection
+	getAvailabelPaymentSelection,
+	checkStatusOvoPayment,
+	expirePayment,
+	refreshInstallmentTerm
 };

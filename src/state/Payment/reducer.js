@@ -44,7 +44,8 @@ const initialState = {
 	paymentMethods: {
 		methods: [],
 		payments: {}
-	}
+	},
+	paymentOvoFailed: false
 };
 
 export default (state = initialState, action) => {
@@ -316,6 +317,19 @@ export default (state = initialState, action) => {
 			error: action.payload.message
 		};
 	}
+	case constants.TERM_UPDATED: {
+		let bang = state.selectedPayment.paymentItems[0].banks;
+		bang = bang.map((data, index) => {
+			if (data.attributes.name.toLowerCase() === action.payload.attributes.name.toLowerCase()) {
+				return action.payload;
+			}
+			return data;
+		});
+		state.selectedPayment.paymentItems[0].banks = bang;
+		return {
+			...state
+		};
+	}
 	case constants.PAY_TERM_CHANGE: {
 		const selectedPaymentOption = state.selectedPaymentOption ? state.selectedPaymentOption : getAvailabelPaymentSelection(state.selectedPayment);
 		selectedPaymentOption.term = action.payload.term;
@@ -328,6 +342,12 @@ export default (state = initialState, action) => {
 		return {
 			...state,
 			ovoPhoneNumber: action.payload.ovoPhoneNumber
+		};
+	}
+	case constants.PAY_CHANGE_OVO_PAYMENT_NUMBER: {
+		return {
+			...state,
+			ovoPaymentNumber: action.payload.ovoPaymentNumber
 		};
 	}
 	case constants.PAY_CHANGE_BILLING_NUMBER: {
@@ -364,6 +384,8 @@ export default (state = initialState, action) => {
 				top.location.href = action.payload.payment.data;
 				return state;
 			} else if (action.mode === 'complete') {
+				top.beforeunload = false;
+				top.onbeforeunload = false;
 				top.location.href = `${getBaseUrl()}/checkout/${action.payload.soNumber}/complete`;
 				return state;
 			}
@@ -393,6 +415,12 @@ export default (state = initialState, action) => {
 			paymentError: true,
 			isConfirm: true,
 			totalRequest: action.payload.totalRequest
+		};
+	}	
+	case constants.PAY_OVO_FAILED: {
+		return {
+			...state,
+			paymentOvoFailed: action.payload.paymentOvoFailed
 		};
 	}
 	default:

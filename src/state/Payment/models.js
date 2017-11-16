@@ -59,7 +59,7 @@ const getListAvailablePaymentMethod = (response) => {
 	});
 	
 	payments = payments.map((method, index) => {
-		const methodData = {
+		let methodData = {
 			...paymentMethod(method),
 			payment_items: getRelations(method.relationships.payment_items, response.included)
 		};
@@ -192,6 +192,26 @@ const getListAvailablePaymentMethod = (response) => {
 				hidden: true
 			});
 			break;
+
+		case paymentGroupName.OVO:
+			methodData = 
+			{
+				...methodData,
+				label: 'OVO',
+				info: 'Pembayaran melalui aplikasi OVO',
+				sprites: 'ovo'
+			};
+			methodData.payment_items = methodData.payment_items.map((payment) => {
+				const paymentData = paymentMethodItem(payment);
+				if (parseInt(paymentData.fg_default, 10) === 1) {
+					methodData.selected = true;
+				}
+				methodData.disabled = !parseInt(payment.attributes.fg_enable, 10);
+				methodData.message = payment.attributes.disable_message;
+
+				return paymentData;
+			});
+			break;
 		default:
 			methodData.payment_items = methodData.payment_items.map((payment, paymentIndex) => {
 				const paymentData = paymentMethodItem(payment);
@@ -205,22 +225,27 @@ const getListAvailablePaymentMethod = (response) => {
 		}
 		return methodData;
 	});
-	const paymentList = [{
-		label: 'Pilih Metode Pembayaran',
-		value: null,
-		info: '',
-		hidden: true
-	}];
+	const paymentList = [];
 	const paymentData = {};
 	const availableMethods = {};
 	payments.forEach((item) => {
 		paymentData[item.id] = humps(item);
-		paymentList.push(humps(item));
+		if (item.id === 'e_wallet') {
+			paymentList.unshift(humps(item));
+		} else {
+			paymentList.push(humps(item));			
+		}
 		item.payment_items.forEach((method) => {
 			availableMethods[method.value] = humps(method);
 		});
 	});
-	
+	paymentList.unshift({
+		label: 'Pilih Metode Pembayaran',
+		value: null,
+		info: '',
+		hidden: true
+	});
+		
 	const returnData = {
 		methods: paymentList,
 		payments: paymentData,
@@ -314,6 +339,10 @@ const getPaymentPayload = (orderId, payment, paymentDetail, mode, saveCC = false
 		paymentPayload.attributes.amount = paymentDetail.amount;
 		break;
 	case paymentMethodName.POS_PAY:
+		break;
+	case paymentMethodName.OVO:
+		paymentPayload.attributes.payment_method = mode;
+		paymentPayload.attributes.e_wallet = paymentDetail.e_wallet;
 		break;
 	default:
 		break;
