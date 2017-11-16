@@ -317,6 +317,7 @@ class ModalAddress extends Component {
 			<Modal
 				size='medium'
 				show={open}
+				loading={address.cityProv.length < 1 || false}
 				showOverlayCloseButton
 				onCloseRequest={this.props.handleClose}
 			>
