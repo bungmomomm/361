@@ -42,14 +42,11 @@ export default class OvoCountDownModal extends Component {
 						<Level.Item className={styles.borderRight}>
 							<Image src='loading-momo.png' />
 						</Level.Item>
-						<Level.Item>
-							<div className={styles.countdown}>{this.state.countdown}</div>
-						</Level.Item>
 					</Level>
 				</Modal.Header>
 				<Modal.Body>
 					<p className='font-purple'><strong>OVO Payment</strong></p>
-					<p>Silakan buka aplikasi OVO Anda untuk konfirmasi pembayaran. Pembayaran Anda akan kadaluarsa dalam waktu <strong>{this.props.secondsRemaining} detik</strong>. Terima Kasih</p>
+					<p>Mohon lakukan konfirmasi pembayaran dalam <strong>{this.props.secondsRemaining} detik</strong>.</p>
 				</Modal.Body>
 			</Modal>
 		);

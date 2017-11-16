@@ -496,7 +496,7 @@ class Checkout extends Component {
 
 			if (ovoMethod) {
 				this.setState({
-					ovoTimer: ovoMethod.settings.countdown,
+					// ovoTimer: ovoMethod.settings.countdown,
 					ovoInterval: ovoMethod.settings.interval,
 				});
 			}
