@@ -1299,6 +1299,8 @@ class Checkout extends Component {
 			this.setState({
 				showModalOvo: false
 			});
+			// refresh page
+			location.reload();
 		} 
 	}
 
