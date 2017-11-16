@@ -56,6 +56,8 @@ export default class Elocker extends Component {
 // ----------------------------------------
 
 	computeFilter(filter, List, field) {
+		// filter data just pickup location
+		List = List.filter(e => e.type === 'pickup_location');
 		const filterData = List.map((item) => {
 			const filterLabel = item.attributes[`${field}`].toUpperCase();
 			const isFilteredByLabel = (filterLabel.toUpperCase().indexOf(filter.toUpperCase()) > -1);
