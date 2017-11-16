@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 // component load
 import { Modal, Level, Image } from '@/components';
-import styles from './OvoCountDownModal.scss';
 
 export default class OvoCountDownModal extends Component {
 	constructor(props) {
