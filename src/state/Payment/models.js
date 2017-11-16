@@ -198,7 +198,7 @@ const getListAvailablePaymentMethod = (response) => {
 			{
 				...methodData,
 				label: 'OVO',
-				info: 'Pembayaran melalui aplikasi OVO',
+				info: 'Siapkan Aplikasi OVO untuk melakukan konfirmasi pembayaran',
 				sprites: 'ovo'
 			};
 			methodData.payment_items = methodData.payment_items.map((payment) => {
