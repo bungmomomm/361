@@ -22,11 +22,13 @@ class Mobile extends Component {
 						isJabodetabekArea: false
 					}
 				},
-				isDropshipper: false,
 				dropshipper: {
-					dropshipName: '',
-					dropshipPhone: ''
-				}
+					validateDropshipper: false,
+					validDropshipper: true,
+					name: '',
+					phone: '',
+					checked: false,
+				},
 			},
 			stepTwo: {
 				disable: false
@@ -54,7 +56,7 @@ class Mobile extends Component {
 				</div>
 				<StepOne 
 					applyState={(e) => this.applyState(e)} 
-					stepState={this.state} 
+					stepState={this.state}
 				/>
 				<StepTwo 
 					applyState={(e) => this.applyState(e)} 

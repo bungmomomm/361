@@ -4,6 +4,7 @@ import { withCookies } from 'react-cookie';
 import _ from 'lodash';
 
 import { actions } from '@/state/Payment';
+import { actions as cartActions } from '@/state/Cart';
 import { paymentGroupName, paymentMethodName } from '@/state/Payment/constants';
 import {
 	CreditCardInput,
@@ -31,6 +32,15 @@ import ModalErrorPayment from './components/ModalErrorPayment';
 import styles from '../../../Mobile/mobile.scss';
 
 class StepFour extends Component {
+	static placeOrder(token, dispatch, selectedAddress, billing) {
+		if (selectedAddress.type !== 'shipping') {
+			// set type pickup for O2O
+			selectedAddress.type = 'pickup';
+		}
+		billing = billing.length > 0 ? billing[0] : false;
+		dispatch(new cartActions.getPlaceOrderCart(token, selectedAddress, billing));
+	}
+
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -39,11 +49,13 @@ class StepFour extends Component {
 			selectedPaymentOption: null,
 			termCondition: true,
 			ovo: {
+				ovoTimer: 30, 
 				useDefault: true,
 				ovoPhonePayment: this.props.payments.ovoPhonePayment || this.props.payments.ovoPhoneNumber,
 				ovoPhonePaymentValid: this.props.payments.ovoPhoneNumber,
 				autoLinkage: true,
 			},
+			appliedBin: null
 		};
 		this.isOvoPayment = this.props.payments.paymentMethod === 'e_wallet_ovo';
 		this.cookies = this.props.cookies.get('user.token');
@@ -62,10 +74,21 @@ class StepFour extends Component {
 	
 	componentWillReceiveProps(nextProps) {
 		if (this.props.payments !== nextProps.payments) {
-			this.isOvoPayment = this.props.payments.paymentMethod === 'e_wallet_ovo';
+			this.isOvoPayment = nextProps.payments.paymentMethod === paymentMethodName.OVO;
+			let ovo = this.state.ovo;
+			
+			if (this.isOvoPayment) {
+				const ovoPay = nextProps.payments.selectedPayment.paymentItems[0];		
+				ovo = {
+					...ovo,
+					ovoTimer: ovoPay.settings.countdown,
+					ovoInterval: ovoPay.settings.interval
+				};
+			}
 			this.setState({
 				ovo: {
-					...this.state.ovo,
+					...ovo,
+					ovoPhonePayment: this.props.payments.ovoPhoneNumber,
 					ovoPhonePaymentValid: this.props.payments.ovoPhoneNumber,
 					autoLinkage: (this.props.payments.ovoInfo.ovoFlag === '0'),
 				}
@@ -111,38 +134,7 @@ class StepFour extends Component {
 		}
 	}	
 
-	setDefaultOvo() {
-		const ovo = this.state.ovo;
-		const useDefault = !this.state.ovo.useDefault;
-		const ovoPhonePayment = useDefault ? this.props.payments.ovoPaymentNumber : '';
-		this.setState({
-			ovo: {
-				...ovo,
-				useDefault,
-				ovoPhonePayment,
-				ovoPhonePaymentValid: useDefault
-			}
-		});
-	}
-
-	getAffTracking() {
-		return {
-			af_track_id: this.props.cookies.get('afftrackid'),
-			af_trx_id: this.props.cookies.get('afftrxid'),
-			af_trx_click: Date.now()
-		};
-	}
-
-	paymentMethodChange(stateSelectedPayment) {
-		const { payments, dispatch } = this.props;
-		dispatch(new actions.changePaymentMethod(stateSelectedPayment.value, payments.paymentMethods, this.cookies));
-		this.setState({ 
-			showPaymentInfo: null,
-			stateSelectedPayment
-		});
-	}
-
-	submitPayment() {
+	onDoPayment() {	
 		const { dispatch } = this.props;
 		let validator = false;
 		let mode = 'complete';
@@ -237,7 +229,153 @@ class StepFour extends Component {
 				break;
 			}
 		}
+	}
+
+	onCloseErrorBox() {
+		const { dispatch } = this.props;
+		dispatch(new actions.paymentError(false));
+	}
+
+	onCloseSuccessBox() {
+		const { dispatch } = this.props;
+		dispatch(new actions.paymentSuccess(false));
+	}
+
+	setDefaultOvo() {
+		const ovo = this.state.ovo;
+		const useDefault = !this.state.ovo.useDefault;
+		const ovoPhonePayment = useDefault ? this.props.payments.ovoPaymentNumber : '';
+		this.setState({
+			ovo: {
+				...ovo,
+				useDefault,
+				ovoPhonePayment,
+				ovoPhonePaymentValid: useDefault
+			}
+		});
+	}
+
+	getAffTracking() {
+		return {
+			af_track_id: this.props.cookies.get('afftrackid'),
+			af_trx_id: this.props.cookies.get('afftrxid'),
+			af_trx_click: Date.now()
+		};
+	}
+
+	okeoce(param) {
+		if (param === 'ok') {
+			this.onDoPayment();
+		} else {
+			location.reload();
+		}
+	}
+
+	paymentMethodChange(stateSelectedPayment) {
+		const { payments, dispatch } = this.props;
+		dispatch(new actions.changePaymentMethod(stateSelectedPayment.value, payments.paymentMethods, this.cookies));
+		this.setState({ 
+			showPaymentInfo: null,
+			stateSelectedPayment,
+		});
+	}
+
+	submitPayment(e) {
+		e.preventDefault();
+		const { stepState, carts, billing, dispatch } = this.props;
+		// check validation dropshipper
+		if (!stepState.stepOne.dropshipper.validDropshipper) {
+			const checkoutState = {
+				...stepState,
+				stepOne: {
+					...stepState.stepOne,
+					dropshipper: {
+						...stepState.stepOne.dropshipper,
+						validateDropshipper: true						
+					}
+				}
+			};
+			this.props.applyState(checkoutState);
+			window.scrollTo(0, 0);
+		} else if (stepState.stepOne.dropshipper.checked && stepState.stepOne.activeTab === 0) {
+			const tempSelectedAddress = stepState.stepOne.selectedAddress;
+			tempSelectedAddress.attributes.is_dropshipper = stepState.stepOne.dropshipper.checked;
+			tempSelectedAddress.attributes.dropship_name = stepState.stepOne.dropshipper.name;
+			tempSelectedAddress.attributes.dropship_phone = stepState.stepOne.dropshipper.phone;
+
+			const gosendChecked = [];
+			carts.forEach((value, index) => {
+				if (value.store.shipping.gosend.gosendActivated) {
+					gosendChecked.push(parseInt(value.store.id, 10));
+				}
+			});
+
+			const billingPlaceOrder = billing.length > 0 ? billing[0] : false;
+			dispatch(new cartActions.getPlaceOrderCart(this.cookies, tempSelectedAddress, billingPlaceOrder))
+			.then(() => {
+				if (this.state.appliedBin) {
+					const selectedPaymentOption = this.state.appliedBin.selectedPaymentOption;
+					dispatch(new actions.applyBin(this.cookies, selectedPaymentOption.value, this.state.appliedBin.cardNumber, this.state.appliedBin.bankName)).then(() => {
+						if (gosendChecked.length > 0) {
+							carts.forEach((value, index) => {
+								const indexStore = gosendChecked.indexOf(parseInt(value.store.id, 10));
+								if (indexStore !== -1) {
+									dispatch(new cartActions.updateGosend(this.cookies, parseInt(value.store.id, 10), 19, this.props))
+									.then(storeId => {
+										gosendChecked.splice(indexStore, 1);
+										if (gosendChecked.length === 0) {
+											this.onDoPayment();
+										}
+									});
+								}
+							});
+						} else {
+							this.onDoPayment();
+						}
+					}).catch((error) => {
+						// error apply bin 
+					});
+				} else {
+					this.onDoPayment();
+				}
+			});
+		} else {
+			this.onDoPayment();
+		}
 	
+	}
+	
+	checkOvoStatus(tick) {
+		const { dispatch, soNumber, payments, stepState, billing } = this.props;
+		const params = payments.selectedPaymentOption.settings.checkParams.join('&');
+		const checkStatusUrl = payments.selectedPaymentOption.settings.checkUrl;
+		const selected = stepState.stepOne.tabIndex > 0 ? stepState.stepOne.selectedAddressO2O : stepState.stepOne.selectedAddress;
+		
+		if (this.props.payments.paymentOvoFailed) {
+			this.setState({
+				showModalOvo: false
+			});
+			// Event 0 = shipping, 1 = O2O
+			if (selected.id) {
+				this.constructor.placeOrder(this.cookies, dispatch, selected, billing);
+			}
+		} 
+		if (tick % this.state.ovo.ovoInterval === 0) {
+			dispatch(new actions.checkStatusOvoPayment(`${checkStatusUrl}${params}`, this.cookies, soNumber, this.state.ovo.ovoPhonePayment, tick < 1))
+			.then(() => {
+				if (tick === 0 && this.state.selectedAddress) {
+					// Event 0 = shipping, 1 = O2O
+					if (selected.id) {
+						this.constructor.placeOrder(this.cookies, dispatch, selected, billing);
+					}
+				}
+			});
+		}
+		if (tick === 0) {
+			this.setState({
+				showModalOvo: false
+			});
+		} 
 	}
 	
 	checkActiveBtnSubmit() {
@@ -399,7 +537,7 @@ class StepFour extends Component {
 			
 		};
 
-		const ovoReadOnly = (payments.ovoInfo && parseInt(payments.ovoInfo.ovoFlag, 10) === 1) ? 'disabled' : 'active';
+		const ovoReadOnly = (payments.ovoInfo && parseInt(payments.ovoInfo.ovoFlag, 10) === 1);
 
 		return (
 			<div className={styles.card}>
@@ -422,8 +560,8 @@ class StepFour extends Component {
 						onChange={(event) => this.props.onBillingNumberChange(event)} 
 					/>
 					{
-						this.checkShowingOvoPhone() && payments.ovoPhoneNumber && 
-						<Input state={ovoReadOnly} color={ovoReadOnly ? 'green' : null} icon={ovoReadOnly ? 'check' : null} defaultValue={payments.ovoPhoneNumber} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' placeholder={'Masukkan nomor Hp yang terdaftar di OVO'} type='number' min={0} />
+						this.checkShowingOvoPhone() &&
+						<Input state={ovoReadOnly ? 'disabled' : 'active'} color={ovoReadOnly ? 'green' : null} icon={ovoReadOnly ? 'check' : null} defaultValue={payments.ovoPhoneNumber} value={payments.ovoPhoneNumber} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' placeholder={'Masukkan nomor Hp yang terdaftar di OVO'} type='number' min={0} />
 					}
 					<div className={styles.checkOutAction}>
 						<Checkbox defaultChecked={this.state.termCondition} onClick={() => this.setState({ termCondition: !this.state.termCondition })}>Saya setuju dengan syarat dan ketentuan MatahariMall.com</Checkbox>
@@ -431,21 +569,21 @@ class StepFour extends Component {
 					</div>
 				</div>
 				{
-					false && (
+					this.state.showModalOvo && (
 						<ModalOVOCountdown
 							show
-							secondsRemaining={50}
-							tick={(e) => console.log(e)}
+							secondsRemaining={parseInt(this.state.ovo.ovoTimer, 10)}
+							tick={(e) => this.checkOvoStatus(e)}
 						/>
 					)
 				}
 				{
-					false && (
+					payments.paymentError && (
 						<ModalErrorPayment
-							show
-							onClose={(e) => console.log(e)}
-							okeoce={(e) => console.log(e)}
-							isConfirm={(e) => console.log(e)}
+							show={payments.paymentError}
+							onClose={() => this.onCloseErrorBox()}
+							isConfirm={payments.isConfirm}
+							okeoce={() => this.okeoce()}
 						/>
 					)
 				}
@@ -467,6 +605,8 @@ const mapStateToProps = (state) => {
 	return {
 		payments: state.payments,
 		soNumber: state.cart.soNumber,
+		billing: state.addresses.billing,
+		carts: state.cart.data,
 	};
 };
 

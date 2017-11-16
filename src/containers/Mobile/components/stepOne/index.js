@@ -39,11 +39,6 @@ class stepOne extends Component {
 	}
 
 	static placeOrder(token, dispatch, selectedAddress, billing) {
-		if (selectedAddress.type !== 'shipping') {
-			// set type pickup for O2O
-			selectedAddress.type = 'pickup';
-		}
-		billing = billing.length > 0 ? billing[0] : false;
 		dispatch(new cartActions.getPlaceOrderCart(token, selectedAddress, billing));
 	}
 
@@ -93,6 +88,31 @@ class stepOne extends Component {
 				selectedAddressO2O: nextProps.latesto2o[0] || {}
 			});
 		}
+		if (this.props.stepState.stepOne.dropshipper.checked !== nextProps.stepState.stepOne.dropshipper.checked) {
+			this.onPlaceOrder(nextProps.stepState.stepOne.selectedAddress, nextProps.stepState.stepOne.dropshipper);
+		}
+	}
+
+	onPlaceOrder(address, dropshipper = null) {
+		// handle dropshipper
+		if (!dropshipper) {
+			dropshipper = this.props.stepState.stepOne.dropshipper;
+		}
+		address.attributes.is_dropshipper = dropshipper.checked;
+		if (dropshipper.checked) {
+			address.attributes.dropship_name = dropshipper.name;
+			address.attributes.dropship_phone = dropshipper.phone;
+		}
+		
+		// handle o2o
+		if (address.type !== 'shipping') {
+			// set type pickup for O2O
+			address.type = 'pickup';
+			address.attributes.is_dropshipper = false;
+		}
+		const billing = this.props.billing.length > 0 ? this.props.billing[0] : false;
+		
+		this.constructor.placeOrder(this.cookies, this.props.dispatch, address, billing);
 	}
 
 	setShipping(addresses) {
@@ -135,7 +155,7 @@ class stepOne extends Component {
 			selectedProvinceO2O
 		});
 		this.toggleModalo2o();
-		this.constructor.placeOrder(this.cookies, this.props.dispatch, selectedAddressO2O, this.props.billing);
+		this.onPlaceOrder(selectedAddressO2O);
 	}
 
 	showModalAddress(type) {
@@ -161,7 +181,7 @@ class stepOne extends Component {
 		// Event 0 = shipping, 1 = O2O
 		const selected = event > 0 ? this.state.selectedAddressO2O : this.state.selectedAddress;
 		if (selected.id) {
-			this.constructor.placeOrder(this.cookies, this.props.dispatch, selected, this.props.billing);
+			this.onPlaceOrder(selected);
 		}
 	}
 
@@ -172,22 +192,6 @@ class stepOne extends Component {
 			stepOne: {
 				...stepState.stepOne,
 				[selectedAddressType]: selectedAddress
-			}
-		};
-		this.props.applyState(checkoutState);
-	}
-
-	saveDropshipper(isDropshipper, dropshipName, dropshipPhone) {
-		const { stepState } = this.props;
-		const checkoutState = {
-			...stepState,
-			stepOne: {
-				...stepState.stepOne,
-				isDropshipper,
-				dropshipper: {
-					dropshipName,
-					dropshipPhone
-				}
 			}
 		};
 		this.props.applyState(checkoutState);
@@ -276,7 +280,7 @@ class stepOne extends Component {
 												</Level.Item>
 											</Level>
 										</Panel>
-										<Dropshipper onChange={(i, n, p) => this.saveDropshipper(i, n, p)} />
+										<Dropshipper stepState={this.props.stepState} onPlaceOrder={(e) => this.onPlaceOrder(e)} applyState={(e) => this.props.applyState(e)} />
 									</div>
 								) : (
 									<Button
