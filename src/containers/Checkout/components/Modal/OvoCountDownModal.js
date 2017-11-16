@@ -36,10 +36,10 @@ export default class OvoCountDownModal extends Component {
 
 	render() {
 		return (
-			<Modal size='small' shown disableCloseButton disableCloseBackground>
+			<Modal size='medium' shown disableCloseButton disableCloseBackground>
 				<Modal.Header>
 					<Level>
-						<Level.Item className={styles.borderRight}>
+						<Level.Item>
 							<Image src='loading-momo.png' />
 						</Level.Item>
 					</Level>
