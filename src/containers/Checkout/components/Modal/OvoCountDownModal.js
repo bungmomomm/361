@@ -35,7 +35,7 @@ export default class OvoCountDownModal extends Component {
 
 	render() {
 		return (
-			<Modal size='small' shown disableCloseButton disableCloseBackground>
+			<Modal size='small' shown disableCloseButton disableCloseBackground style={{ maxWidth: '410px' }} >
 				<Modal.Header>
 					<Level>
 						<Level.Item>
@@ -43,9 +43,9 @@ export default class OvoCountDownModal extends Component {
 						</Level.Item>
 					</Level>
 				</Modal.Header>
-				<Modal.Body>
+				<Modal.Body >
 					<p className='font-purple'><strong>OVO Payment</strong></p>
-					<p>Mohon lakukan konfirmasi pembayaran dalam <strong>30 detik</strong>.</p>
+					<p>Mohon lakukan konfirmasi pembayaran dalam waktu <strong>30 detik</strong>.</p>
 				</Modal.Body>
 			</Modal>
 		);
