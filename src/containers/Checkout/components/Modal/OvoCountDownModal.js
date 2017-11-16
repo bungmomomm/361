@@ -35,7 +35,7 @@ export default class OvoCountDownModal extends Component {
 
 	render() {
 		return (
-			<Modal size='medium' shown disableCloseButton disableCloseBackground>
+			<Modal size='small' shown disableCloseButton disableCloseBackground>
 				<Modal.Header>
 					<Level>
 						<Level.Item>
