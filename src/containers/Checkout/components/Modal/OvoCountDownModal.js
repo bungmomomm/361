@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 // component load
 import { Modal, Level, Image } from '@/components';
-import styles from './OvoCountDownModal.scss';
 
 export default class OvoCountDownModal extends Component {
 	constructor(props) {
@@ -36,20 +35,17 @@ export default class OvoCountDownModal extends Component {
 
 	render() {
 		return (
-			<Modal size='small' shown disableCloseButton disableCloseBackground>
+			<Modal size='small' shown disableCloseButton disableCloseBackground style={{ maxWidth: '410px' }} >
 				<Modal.Header>
 					<Level>
-						<Level.Item className={styles.borderRight}>
-							<Image src='loading-momo.png' />
-						</Level.Item>
 						<Level.Item>
-							<div className={styles.countdown}>{this.state.countdown}</div>
+							<Image src='loading-momo.png' />
 						</Level.Item>
 					</Level>
 				</Modal.Header>
-				<Modal.Body>
+				<Modal.Body >
 					<p className='font-purple'><strong>OVO Payment</strong></p>
-					<p>Silakan buka aplikasi OVO Anda untuk konfirmasi pembayaran. Pembayaran Anda akan kadaluarsa dalam waktu <strong>{this.props.secondsRemaining} detik</strong>. Terima Kasih</p>
+					<p>Mohon lakukan konfirmasi pembayaran dalam waktu <strong>30 detik</strong>.</p>
 				</Modal.Body>
 			</Modal>
 		);

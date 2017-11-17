@@ -62,7 +62,7 @@ export default class Modal extends Component {
 		return (
 			renderIf(this.state.displayModal)(
 				<div className={ModalClass}>
-					<div className={ModalWrapperClass}>
+					<div className={ModalWrapperClass} style={this.props.style}>
 						{children}
 						{renderIf(!this.state.modal && !this.props.disableCloseButton)(
 							<button 

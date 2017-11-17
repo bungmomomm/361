@@ -1254,7 +1254,7 @@ class Checkout extends Component {
 		if (param === 'ok') {
 			this.onDoPayment();
 		} else {
-			location.reload();
+			window.location = window.location.href;
 		}
 	}
 
@@ -1299,6 +1299,8 @@ class Checkout extends Component {
 			this.setState({
 				showModalOvo: false
 			});
+			// refresh page
+			window.location = window.location.href;
 		} 
 	}
 
