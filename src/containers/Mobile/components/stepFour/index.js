@@ -76,12 +76,11 @@ class StepFour extends Component {
 	componentWillMount() {
 		const t = new Date();
 		const thisYear = t.getFullYear();
-		let year = thisYear;
 		const tahun = [{
 			value: null,
 			label: '-- tahun'
 		}];
-		for (year = thisYear; year < (thisYear + 10); year++) {
+		for (let year = thisYear; year < (thisYear + 10); year++) {
 			tahun.push({
 				value: year,
 				label: year
