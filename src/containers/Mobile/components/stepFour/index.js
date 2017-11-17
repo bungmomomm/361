@@ -525,7 +525,8 @@ class StepFour extends Component {
 						dataProps: { 
 							name: `payment-${payments.selectedPayment.value}`, 
 							onChange: () => this.onSelectedPaymentItem(option),
-							disabled: option.disabled
+							disabled: option.disabled,
+							checked: this.state.selectedPaymentOption === option || false
 						}
 					});
 				});
@@ -697,8 +698,8 @@ class StepFour extends Component {
 						</div>
 					])}
 					{
-						this.checkShowingOvoPhone() &&
-						<Input state={ovoReadOnly ? 'disabled' : 'active'} color={ovoReadOnly ? 'green' : null} icon={ovoReadOnly ? 'check' : null} defaultValue={payments.ovoPhoneNumber} value={payments.ovoPhoneNumber} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' placeholder={'Masukkan nomor Hp yang terdaftar di OVO'} type='number' min={0} />
+						this.checkShowingOvoPhone() && payments.ovoPhoneNumber &&
+						<Input state={ovoReadOnly ? 'disabled' : ''} color={ovoReadOnly ? 'green' : null} icon={ovoReadOnly ? 'check' : null} defaultValue={payments.ovoPhoneNumber} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' placeholder={'Masukkan nomor Hp yang terdaftar di OVO'} type='number' min={0} />
 					}
 					<div className={styles.checkOutAction}>
 						<Checkbox defaultChecked={this.state.termCondition} onClick={() => this.setState({ termCondition: !this.state.termCondition })}>Saya setuju dengan syarat dan ketentuan MatahariMall.com</Checkbox>

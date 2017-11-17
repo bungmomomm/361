@@ -20,7 +20,7 @@ class Dropshipper extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.stepState.stepOne.dropshipper.validateDropshipper) {
-			this.checkValidation(nextProps);
+			this.checkValidation();
 		}
 	}
 
