@@ -36,5 +36,6 @@ export default {
 	DISCOUNT_SHIPPING_COST: 'Discount Biaya Pengiriman',
 	VOUCHER_CODE: 'Kode Voucher',
 	TOTAL_PAYMENT: 'Total Pembayaran',
-	CHECK: 'CEK'
+	CHECK: 'CEK',
+	ADD_NEW_CARD: 'Tambah Kartu Baru'
 };

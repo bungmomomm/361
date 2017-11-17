@@ -55,7 +55,7 @@ export default (state = initialState, action) => {
 			...state
 		};
 	}
-
+	
 	switch (action.type) {
 
 	case constants.PAY_LIST_PAYMENT_METHOD: {

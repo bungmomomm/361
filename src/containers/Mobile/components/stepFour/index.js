@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import _ from 'lodash';
+import { T } from '@/data/translations';
 
-import { actions } from '@/state/Payment';
 import { actions as cartActions } from '@/state/Cart';
+import { actions as paymentAction } from '@/state/Payment';
 import { paymentGroupName, paymentMethodName } from '@/state/Payment/constants';
 import {
 	CreditCardInput,
@@ -20,11 +21,15 @@ import {
 	Button,
 	Level,
 	Input,
-	Icon
+	Icon,
+	Row,
+	Col
 } from 'mm-ui';
 
 import { pushDataLayer } from '@/utils/gtm';
 import { Bulan } from '@/data';
+
+import { renderIf } from '@/utils';
 
 import ModalOVOCountdown from './components/ModalOVOCountdown';
 import ModalErrorPayment from './components/ModalErrorPayment';
@@ -55,21 +60,36 @@ class StepFour extends Component {
 				ovoPhonePaymentValid: this.props.payments.ovoPhoneNumber,
 				autoLinkage: true,
 			},
-			appliedBin: null
+			appliedBin: null,
+			tahun: []
 		};
 		this.isOvoPayment = this.props.payments.paymentMethod === 'e_wallet_ovo';
 		this.cookies = this.props.cookies.get('user.token');
+		this.onNewCreditCard = this.onNewCreditCard.bind(this);
+		this.onCardNumberChange = this.onCardNumberChange.bind(this);
+		this.onCardMonthChange = this.onCardMonthChange.bind(this);
+		this.onCardYearChange = this.onCardYearChange.bind(this);
+		this.onCardCvvChange = this.onCardCvvChange.bind(this);
+		this.onSelectCard = this.onSelectCard.bind(this);
 	}
 
 	componentWillMount() {
-		const date = new Date();
-		const thisYear = date.getFullYear();
+		const t = new Date();
+		const thisYear = t.getFullYear();
 		let year = thisYear;
-		const tahun = [{ value: null, label: 'Tahun' }];
+		const tahun = [{
+			value: null,
+			label: '-- tahun'
+		}];
 		for (year = thisYear; year < (thisYear + 10); year++) {
-			tahun.push({ value: year, label: year });
+			tahun.push({
+				value: year,
+				label: year
+			});
 		}
-		this.setState({ tahun });
+		this.setState({
+			tahun
+		});
 	}
 	
 	componentWillReceiveProps(nextProps) {
@@ -117,7 +137,7 @@ class StepFour extends Component {
 	
 	onSelectedPaymentItem(selectedPaymentItem) {
 		const { payments, dispatch } = this.props;
-		dispatch(new actions.changePaymentOption(selectedPaymentItem, this.cookies));
+		dispatch(new paymentAction.changePaymentOption(selectedPaymentItem, this.cookies));
 		this.selectedData = _.find(payments.selectedPayment.paymentItems, ['value', selectedPaymentItem.value]);
 		if (this.selectedData) {
 			this.setState({
@@ -164,7 +184,7 @@ class StepFour extends Component {
 					if (success) {
 						this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
 					} else {
-						dispatch(new actions.paymentError('Silahkan periksa data kartu kredit Anda.'));
+						dispatch(new paymentAction.paymentError('Silahkan periksa data kartu kredit Anda.'));
 					}
 				});
 				break;
@@ -175,7 +195,7 @@ class StepFour extends Component {
 			case paymentMethodName.OVO:
 				if (this.state.ovo.ovoPhonePayment) {
 					dispatch(
-						new actions.pay(
+						new paymentAction.pay(
 							this.cookies,
 							this.props.soNumber,
 							this.props.payments.selectedPaymentOption === false ? this.state.selectedPayment : this.props.payments.selectedPaymentOption,
@@ -212,7 +232,7 @@ class StepFour extends Component {
 					}
 				}
 				dispatch(
-					new actions.pay(
+					new paymentAction.pay(
 						this.cookies,
 						this.props.soNumber,
 						this.props.payments.selectedPaymentOption === false ? this.state.selectedPayment : this.props.payments.selectedPaymentOption,
@@ -231,14 +251,90 @@ class StepFour extends Component {
 		}
 	}
 
+	onNewCreditCard(event) {
+		const { dispatch } = this.props;
+		dispatch(new paymentAction.openNewCreditCard());
+		console.log(event, this);
+	}
+
+	onCardNumberChange(event) {
+		const pay = new paymentAction();
+		const selectedPaymentOption = pay.getAvailabelPaymentSelection(this.props.payments.selectedPayment);
+		if (event.valid) {
+			this.props.dispatch(pay.changeCreditCardNumber(event.ccNumber));
+			this.props.dispatch(pay.applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event.ccNumber, ''));
+			this.setState({
+				appliedBin: {
+					selectedPaymentOption,
+					cardNumber: event.ccNumber,
+					bankName: ''
+				}
+			});
+		} else {
+			this.props.dispatch(pay.applyBin(this.props.cookies.get('user.token'), -1, event.ccNumber, ''));
+			this.setState({
+				appliedBin: {
+					selectedPaymentOption,
+					cardNumber: '',
+					bankName: ''
+				}
+			});
+		}
+	}
+
+	onCardMonthChange(monthData) {
+		this.props.dispatch(new paymentAction.changeCreditCardMonth(monthData.value));
+	}
+
+	onCardYearChange(yearData) {
+		this.props.dispatch(new paymentAction.changeCreditCardYear(yearData.value));
+	}
+	onCardCvvChange(event) {
+		this.props.dispatch(new paymentAction.changeCreditCardCvv(event.target.value));
+	}
+
+	onSelectCard(event) {
+		let value = false;
+		if (typeof event.value !== 'undefined') {
+			if (event.value !== null) {
+				value = event.value;
+			}
+		} else {
+			value = event;
+		}
+		const pay = new paymentAction();
+		if (value) {
+			this.props.dispatch(pay.selectCreditCard(value));
+			const selectedPaymentOption = pay.getAvailabelPaymentSelection(this.props.payments.selectedPayment);
+			this.props.dispatch(pay.applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, value, ''));
+			this.setState({
+				appliedBin: {
+					selectedPaymentOption,
+					cardNumber: value,
+					bankName: ''
+				}
+			});
+		} else {
+			this.props.dispatch(pay.selectCreditCard(false));
+		}
+	}
+
 	onCloseErrorBox() {
 		const { dispatch } = this.props;
-		dispatch(new actions.paymentError(false));
+		dispatch(new paymentAction.paymentError(false));
 	}
 
 	onCloseSuccessBox() {
 		const { dispatch } = this.props;
-		dispatch(new actions.paymentSuccess(false));
+		dispatch(new paymentAction.paymentSuccess(false));
+	}
+
+	getAffTracking() {
+		return {
+			af_track_id: this.props.cookies.get('afftrackid'),
+			af_trx_id: this.props.cookies.get('afftrxid'),
+			af_trx_click: Date.now()
+		};
 	}
 
 	setDefaultOvo() {
@@ -254,13 +350,15 @@ class StepFour extends Component {
 			}
 		});
 	}
+	
+	paymentMethodChange(stateSelectedPayment) {
+		const { payments, dispatch } = this.props;
+		dispatch(new paymentAction.changePaymentMethod(stateSelectedPayment.value, payments.paymentMethods, this.cookies));
+		this.setState({ 
+			showPaymentInfo: null,
+			stateSelectedPayment
+		});
 
-	getAffTracking() {
-		return {
-			af_track_id: this.props.cookies.get('afftrackid'),
-			af_trx_id: this.props.cookies.get('afftrxid'),
-			af_trx_click: Date.now()
-		};
 	}
 
 	okeoce(param) {
@@ -269,15 +367,6 @@ class StepFour extends Component {
 		} else {
 			location.reload();
 		}
-	}
-
-	paymentMethodChange(stateSelectedPayment) {
-		const { payments, dispatch } = this.props;
-		dispatch(new actions.changePaymentMethod(stateSelectedPayment.value, payments.paymentMethods, this.cookies));
-		this.setState({ 
-			showPaymentInfo: null,
-			stateSelectedPayment,
-		});
 	}
 
 	submitPayment(e) {
@@ -315,7 +404,7 @@ class StepFour extends Component {
 			.then(() => {
 				if (this.state.appliedBin) {
 					const selectedPaymentOption = this.state.appliedBin.selectedPaymentOption;
-					dispatch(new actions.applyBin(this.cookies, selectedPaymentOption.value, this.state.appliedBin.cardNumber, this.state.appliedBin.bankName)).then(() => {
+					dispatch(new paymentAction.applyBin(this.cookies, selectedPaymentOption.value, this.state.appliedBin.cardNumber, this.state.appliedBin.bankName)).then(() => {
 						if (gosendChecked.length > 0) {
 							carts.forEach((value, index) => {
 								const indexStore = gosendChecked.indexOf(parseInt(value.store.id, 10));
@@ -361,7 +450,7 @@ class StepFour extends Component {
 			}
 		} 
 		if (tick % this.state.ovo.ovoInterval === 0) {
-			dispatch(new actions.checkStatusOvoPayment(`${checkStatusUrl}${params}`, this.cookies, soNumber, this.state.ovo.ovoPhonePayment, tick < 1))
+			dispatch(new paymentAction.checkStatusOvoPayment(`${checkStatusUrl}${params}`, this.cookies, soNumber, this.state.ovo.ovoPhonePayment, tick < 1))
 			.then(() => {
 				if (tick === 0 && this.state.selectedAddress) {
 					// Event 0 = shipping, 1 = O2O
@@ -394,6 +483,22 @@ class StepFour extends Component {
 		const {
 			payments
 		} = this.props;
+
+		let numberOfCard = 0;
+		const minNumberOfCard = 0;
+		numberOfCard = (payments.selectedPayment.value === paymentGroupName.CREDIT_CARD) ? payments.selectedPayment.cards : 0;
+
+		const CvvElement = (
+			<Row>
+				<Col grid={4}>
+					<Input type='password' placeholder='cvv' onBlur={this.onCardCvvChange} />
+				</Col>
+				<Col grid={4}>
+					<Sprites name='cvv' />
+				</Col>
+			</Row>
+		);
+
 
 		const switchPaymentElement = () => {
 			let { ovoDefault, ovoPaymentInput } = '';
@@ -428,19 +533,24 @@ class StepFour extends Component {
 			}
 			case paymentGroupName.CREDIT_CARD:
 				return payments.selectedPayment.paymentItems.map((option, index) => (
-					option.cards.length < 3 ? (
+					option.cards.length <= 3 ? (
 						option.cards.map((card, cardIndex) => (
-							card.value && (
-								<CreditCardRadio 
-									key={cardIndex}
-									name='cc'
-									variant='list'
-									value={card.value}
-									content={card.label}
-									defaultChecked={card.selected}
-									sprites={card.sprites}
-								/>
-							)
+							card.value ? (
+								<div>
+									<CreditCardRadio 
+										key={cardIndex}
+										name='cc'
+										variant='list'
+										value={card.value}
+										content={card.label}
+										defaultChecked={card.selected}
+										sprites={card.sprites}
+										onClick={this.onSelectCard}
+									/>
+									{ renderIf(card.selected)(CvvElement) }
+								</div>
+								
+							) : null
 						))
 					) : (
 						<Select block key={index} options={option.cards} />
@@ -538,7 +648,6 @@ class StepFour extends Component {
 		};
 
 		const ovoReadOnly = (payments.ovoInfo && parseInt(payments.ovoInfo.ovoFlag, 10) === 1);
-
 		return (
 			<div className={styles.card}>
 				<p><strong>4. Informasi Pembayaran</strong></p>
@@ -559,6 +668,34 @@ class StepFour extends Component {
 						placeholder={payments.billingPhoneNumber || 'No Telp Penagihan'} 
 						onChange={(event) => this.props.onBillingNumberChange(event)} 
 					/>
+					{ renderIf(payments.selectedPayment.value === paymentGroupName.CREDIT_CARD 
+					&& payments.twoClickEnabled && numberOfCard > minNumberOfCard)(
+							
+						<Button clean color='grey' icon='plus-circle' iconPosition='left' onClick={this.onNewCreditCard}>{T.checkout.ADD_NEW_CARD}</Button>
+							
+					)}
+					{ renderIf((payments.openNewCreditCard && payments.selectedPayment.value === paymentGroupName.CREDIT_CARD 
+					&& !payments.twoClickEnabled) || (payments.selectedPayment.value === paymentGroupName.CREDIT_CARD && numberOfCard < (minNumberOfCard + 1)))([
+						<div>
+							<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onChange={this.onCardNumberChange} />
+							<label htmlFor='masa-berlaku'key={2}>Masa Berlaku</label>
+							<Level padded key={3}>
+								<Level.Item id='masa-berlaku'>
+									<Select top selectedLabel='-- Bulan' options={Bulan} onChange={this.onCardMonthChange} />
+								</Level.Item>
+								<Level.Item>
+									<Select top selectedLabel='-- Tahun' options={this.state.tahun} onChange={this.onCardYearChange} />
+								</Level.Item>
+								<Level.Item>
+									<Input type='password' placeholder='cvv' onBlur={this.onCardCvvChange} />
+								</Level.Item>
+								<Level.Item>
+									<Sprites name='cvv' />
+								</Level.Item>
+							</Level>
+							<Checkbox defaultChecked onClick={(state, value) => this.props.onSaveCcOption(state, value)}>Simpan kartu untuk transaksi selanjutnya</Checkbox>
+						</div>
+					])}
 					{
 						this.checkShowingOvoPhone() &&
 						<Input state={ovoReadOnly ? 'disabled' : 'active'} color={ovoReadOnly ? 'green' : null} icon={ovoReadOnly ? 'check' : null} defaultValue={payments.ovoPhoneNumber} value={payments.ovoPhoneNumber} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' placeholder={'Masukkan nomor Hp yang terdaftar di OVO'} type='number' min={0} />
