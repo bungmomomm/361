@@ -300,7 +300,7 @@ class ModalAddress extends Component {
 				/>
 				{
 					!this.state.isValidMarkerPosition ? 
-						<Alert color='red'>Lokasi tidak sesuai dengan alamat pengiriman</Alert> :
+						<Alert color='red'>{T.checkout.LOCATION_NOT_MATCH_WITH_SHIPPING_ADDRESS}</Alert> :
 						<Panel><Icon name='map-marker' /> {this.state.formattedAddress}</Panel>
 				}
 			</div>
@@ -410,7 +410,7 @@ class ModalAddress extends Component {
 						size='large'
 						color='dark'
 						onClick={(e) => this.validateAndSubmit(e)}
-					>Simpan Alamat</Button>
+					>{T.checkout.SAVE_ADDRESS}</Button>
 				</Modal.Body>
 			</Modal>
 		);

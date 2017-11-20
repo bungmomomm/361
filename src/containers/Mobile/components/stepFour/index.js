@@ -61,6 +61,7 @@ class StepFour extends Component {
 				autoLinkage: true,
 			},
 			appliedBin: null,
+			installmentList: [],
 			tahun: []
 		};
 		this.isOvoPayment = this.props.payments.paymentMethod === 'e_wallet_ovo';
@@ -141,6 +142,7 @@ class StepFour extends Component {
 		if (this.selectedData) {
 			this.setState({
 				selectedPaymentOption: selectedPaymentItem,
+				installmentList: [],
 				showPaymentInfo: {
 					id: selectedPaymentItem.value,
 					notes: this.selectedData.settings.info.join(' ')
@@ -253,7 +255,6 @@ class StepFour extends Component {
 	onNewCreditCard(event) {
 		const { dispatch } = this.props;
 		dispatch(new paymentAction.openNewCreditCard());
-		console.log(event, this);
 	}
 
 	onCardNumberChange(event) {
@@ -348,6 +349,17 @@ class StepFour extends Component {
 				ovoPhonePaymentValid: useDefault
 			}
 		});
+	}
+
+	setInstallmentList(list) {
+		const installmentList = [];
+		list.listCicilan.map((item, idx) => (
+			installmentList.push({
+				label: item.label,
+				value: item.label
+			})
+		));
+		this.setState({ installmentList });
 	}
 	
 	paymentMethodChange(stateSelectedPayment) {
@@ -511,7 +523,7 @@ class StepFour extends Component {
 				const listPayment = [];
 				enabledPaymentItems.map((option, index) => {
 					const RadioLabel = (
-						<Level>
+						<Level key={index}>
 							<Level.Left>{option.label}</Level.Left>
 							<Level.Right className='font-red'>
 								{ option.disabled && option.disableMessage }
@@ -536,9 +548,8 @@ class StepFour extends Component {
 					option.cards.length <= 3 ? (
 						option.cards.map((card, cardIndex) => (
 							card.value ? (
-								<div>
+								<div key={cardIndex} >
 									<CreditCardRadio 
-										key={cardIndex}
 										name='cc'
 										variant='list'
 										value={card.value}
@@ -556,26 +567,16 @@ class StepFour extends Component {
 						<Select block key={index} options={option.cards} />
 					)
 				));
-			case paymentGroupName.INSTALLMENT:
+			case paymentGroupName.INSTALLMENT: {
 				return (
 					<Group>
-						{
-							payments.selectedPayment.paymentItems.map((installment, index) => {
-								return (
-									<Group key={index}>
-										<Select block options={installment.banks} />
-										<Select block options={installment.banks[index].listCicilan} />
-									</Group>
-								);
-							})
-						}
-						<Group>
-							<CreditCardInput
-								placeholder='Masukkan Nomor Kartu'
-								sprites='payment-option'
-								onChange={this.onInstallmentCCNumberChange}
-							/>
-						</Group>
+						<Select block options={payments.selectedPayment.paymentItems[0].banks} onChange={(e) => this.setInstallmentList(e)} />
+						{this.state.installmentList.length > 0 && <Select block options={this.state.installmentList} />}
+						<CreditCardInput
+							placeholder='Masukkan Nomor Kartu'
+							sprites='payment-option'
+							onChange={this.onInstallmentCCNumberChange}
+						/>
 						<Group grouped>
 							<Select block options={Bulan} />
 							<Select block options={this.state.tahun} />
@@ -584,6 +585,7 @@ class StepFour extends Component {
 						</Group>
 					</Group>
 				);
+			}
 			case paymentGroupName.OVO: 
 				ovoPaymentInput = (
 					<Input
@@ -650,11 +652,11 @@ class StepFour extends Component {
 		const ovoReadOnly = (payments.ovoInfo && parseInt(payments.ovoInfo.ovoFlag, 10) === 1);
 		return (
 			<div className={styles.card}>
-				<p><strong>4. Informasi Pembayaran</strong></p>
+				<p><strong>{T.checkout.STEP_FOUR_LABEL}</strong></p>
 				<div>
 					<Select 
 						block 
-						label='Metode Pembayaran'
+						label={T.checkout.PAYMENT_METHOD}
 						options={payments.paymentMethods.methods} 
 						onChange={(e) => this.paymentMethodChange(e)}
 						defaultValue={payments.selectedPayment ? payments.selectedPayment.id : null}
@@ -662,10 +664,10 @@ class StepFour extends Component {
 					{ payments.selectedPayment && switchPaymentElement()}
 					<Input 
 						value={payments.billingPhoneNumber || ''} 
-						label='SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke : ' 
+						label={T.checkout.PHONE_NUMBER_O2O_CONFIRMATION} 
 						min={0} 
 						type='number' 
-						placeholder={payments.billingPhoneNumber || 'No Telp Penagihan'} 
+						placeholder={payments.billingPhoneNumber || T.checkout.BILLING_PHONE_NUMBER} 
 						onChange={(event) => this.props.onBillingNumberChange(event)} 
 					/>
 					{ renderIf(payments.selectedPayment.value === paymentGroupName.CREDIT_CARD 
@@ -677,32 +679,24 @@ class StepFour extends Component {
 					{ renderIf((payments.openNewCreditCard && payments.selectedPayment.value === paymentGroupName.CREDIT_CARD 
 					&& !payments.twoClickEnabled) || (payments.selectedPayment.value === paymentGroupName.CREDIT_CARD && numberOfCard < (minNumberOfCard + 1)))([
 						<div>
-							<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onChange={this.onCardNumberChange} />
+							<CreditCardInput placeholder={T.checkout.INPUT_CART_NUMBER} sprites='payment-option' onChange={this.onCardNumberChange} />
 							<label htmlFor='masa-berlaku'key={2}>Masa Berlaku</label>
-							<Level padded key={3}>
-								<Level.Item id='masa-berlaku'>
-									<Select top selectedLabel='-- Bulan' options={Bulan} onChange={this.onCardMonthChange} />
-								</Level.Item>
-								<Level.Item>
-									<Select top selectedLabel='-- Tahun' options={this.state.tahun} onChange={this.onCardYearChange} />
-								</Level.Item>
-								<Level.Item>
-									<Input type='password' placeholder='cvv' onBlur={this.onCardCvvChange} />
-								</Level.Item>
-								<Level.Item>
-									<Sprites name='cvv' />
-								</Level.Item>
-							</Level>
-							<Checkbox defaultChecked onClick={(state, value) => this.props.onSaveCcOption(state, value)}>Simpan kartu untuk transaksi selanjutnya</Checkbox>
+							<Group grouped id='masa-berlaku'>
+								<Select block options={Bulan} onChange={this.onCardMonthChange} />
+								<Select block options={this.state.tahun} onChange={this.onCardYearChange} />
+								<Input dataProps={{ minLength: 0, maxLength: 4 }} type='password' placeholder='cvv' onBlur={this.onCardCvvChange} />
+								<div style={{ paddingRight: '30px' }} ><Sprites name='cvv' /></div>
+							</Group>
+							<Checkbox defaultChecked onClick={(state, value) => this.props.onSaveCcOption(state, value)}>{T.checkout.SAVE_CARD_FOR_NEXT_TRANSACTION}</Checkbox>
 						</div>
 					])}
 					{
 						this.checkShowingOvoPhone() && payments.ovoPhoneNumber &&
-						<Input state={ovoReadOnly ? 'disabled' : ''} color={ovoReadOnly ? 'green' : null} icon={ovoReadOnly ? 'check' : null} defaultValue={payments.ovoPhoneNumber} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' placeholder={'Masukkan nomor Hp yang terdaftar di OVO'} type='number' min={0} />
+						<Input state={ovoReadOnly ? 'disabled' : ''} color={ovoReadOnly ? 'green' : null} icon={ovoReadOnly ? 'check' : null} defaultValue={payments.ovoPhoneNumber} label={T.checkout.OVO_PHONE_LABEL} placeholder={T.checkout.SAVED_OVO_PHONE} type='number' min={0} />
 					}
 					<div className={styles.checkOutAction}>
-						<Checkbox defaultChecked={this.state.termCondition} onClick={() => this.setState({ termCondition: !this.state.termCondition })}>Saya setuju dengan syarat dan ketentuan MatahariMall.com</Checkbox>
-						<Button block size='large' color='red' state={this.checkActiveBtnSubmit()} onClick={(e) => this.submitPayment(e)}>Bayar Sekarang</Button>
+						<Checkbox defaultChecked={this.state.termCondition} onClick={() => this.setState({ termCondition: !this.state.termCondition })}>{T.checkout.TERMS_PAYMENT}</Checkbox>
+						<Button block size='large' color='red' state={this.checkActiveBtnSubmit()} onClick={(e) => this.submitPayment(e)}>{T.checkout.BUY_NOW}</Button>
 					</div>
 				</div>
 				{
