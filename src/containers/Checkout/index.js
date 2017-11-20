@@ -66,7 +66,8 @@ import {
 	saveCC,
 	getAvailabelPaymentSelection,
 	checkStatusOvoPayment,
-	refreshInstallmentTerm
+	refreshInstallmentTerm,
+	failAuthTokenCC
 } from '@/state/Payment/actions';
 
 import { getRefreshToken } from '@/state/Auth/actions';
@@ -693,6 +694,13 @@ class Checkout extends Component {
 			} else {
 				dispatch(vtModalBoxOpen(false));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
+				dispatch(
+					failAuthTokenCC(
+						this.props.cookies.get('user.token'),
+						this.props.soNumber
+					)
+				);
+				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
 			}
 		};
 
@@ -735,6 +743,13 @@ class Checkout extends Component {
 			} else {
 				dispatch(vtModalBoxOpen(false));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
+				dispatch(
+					failAuthTokenCC(
+						this.props.cookies.get('user.token'),
+						this.props.soNumber
+					)
+				);
+				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
 			}
 		};
 		dispatch(
