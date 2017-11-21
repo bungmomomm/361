@@ -553,9 +553,9 @@ class Checkout extends Component {
 		}
 	}
 
-	onGetListO2o(provinceId) {
+	onGetListO2o(provinceId, rowsRequest = 1000) {
 		const { dispatch } = this.props;
-		dispatch(getO2OList(this.props.cookies.get('user.token'), provinceId));
+		dispatch(getO2OList(this.props.cookies.get('user.token'), rowsRequest, provinceId));
 	}
 
 	onGetO2oProvinces() {
@@ -1454,7 +1454,14 @@ class Checkout extends Component {
 							/>
 						)
 					}
-					<ElockerModalbox closeModalElocker={this.closeModalElocker} shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} o2oProvinces={!o2oProvinces ? null : o2oProvinces} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
+					<ElockerModalbox 
+						closeModalElocker={this.closeModalElocker} 
+						shown={this.state.showModalO2o} 
+						listo2o={!listo2o ? null : listo2o} 
+						o2oProvinces={!o2oProvinces ? null : o2oProvinces} 
+						onGetListO2o={this.onGetListO2o} 
+						onSelectedLocker={this.onSelectedLocker}
+					/>
 					<PaymentSuccessModalbox shown={this.props.payments.paymentSuccess} onClose={this.onCloseSuccessBox} />
 					<PaymentErrorModalbox
 						shown={this.props.payments.paymentError}

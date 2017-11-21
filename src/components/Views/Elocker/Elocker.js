@@ -16,13 +16,19 @@ export default class Elocker extends Component {
 		this.submitLocker = this.submitLocker.bind(this);
 		this.handleChooseElocker = this.handleChooseElocker.bind(this);
 		this.provinceFilterResult = this.props.listo2o;
-		console.log(this.props);
+		this.onO2OEmpty = this.onO2OEmpty.bind(this);
+		
 		this.state = {
 			ElockerList: this.props.listo2o,
 			selectedLocker: null,
 			selected: this.props.selected || null,
 			filter: '',
+			o2oProviceId: 6
 		};
+	}
+	
+	onO2OEmpty(rowsRequest, o2oProviceId) {
+		this.props.onO2OEmpty(rowsRequest, o2oProviceId);
 	}
 
 // ----------------------------------------
@@ -33,7 +39,8 @@ export default class Elocker extends Component {
 		this.props.onGetListO2o(event.value);
 		this.props.setCurrentProvince(event);
 		this.setState({
-			filter: ''
+			filter: '',
+			o2oProviceId: event.value
 		});
 		// const filterData = this.computeFilter(event.value, this.state.ElockerList, 'province');
 		// this.provinceFilterResult = filterData;
@@ -67,6 +74,10 @@ export default class Elocker extends Component {
 		}).filter((item) => {
 			return item;
 		});
+		if (filterData.length === 0) {
+			this.onO2OEmpty(List.length + 1000, this.state.o2oProviceId); 
+		}
+		
 		this.setFilterProvince(filterData);
 		this.setState({
 			filter
