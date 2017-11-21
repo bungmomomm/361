@@ -6,6 +6,8 @@ import { T } from '@/data/translations';
 
 import { actions as cartActions } from '@/state/Cart';
 import { actions as paymentAction } from '@/state/Payment';
+import { actions as globalAction } from '@/state/Global';
+
 import { paymentGroupName, paymentMethodName } from '@/state/Payment/constants';
 import {
 	CreditCardInput,
@@ -33,6 +35,7 @@ import { renderIf } from '@/utils';
 
 import ModalOVOCountdown from './components/ModalOVOCountdown';
 import ModalErrorPayment from './components/ModalErrorPayment';
+import Vt3dsModalBox from './components/Vt3dsModalBox';
 
 import styles from '../../../Mobile/mobile.scss';
 
@@ -113,6 +116,10 @@ class StepFour extends Component {
 				}
 			});
 		}
+		if (typeof this.props.blockContent === 'undefined') {
+			const { dispatch } = this.props;
+			dispatch(new globalAction.getBlockContents(this.props.cookies.get('user.token'), ['660']));
+		}
 	}
 
 	onOvoPaymentNumberChange(event) {
@@ -153,6 +160,143 @@ class StepFour extends Component {
 		}
 	}	
 
+	onRequestVtToken(installment = false) {
+		const { dispatch } = this.props;
+		let bankName = '';
+		const cardDetail = {
+			card_cvv: this.props.payments.selectedCardDetail.cvv,
+			secure: true,
+			gross_amount: this.props.payments.total,
+		};
+
+		if (installment) {
+			cardDetail.card_number = this.props.payments.selectedCard.value;
+			cardDetail.bank = this.props.payments.selectedBank.value.value;
+			cardDetail.installment = true;
+			cardDetail.installment_term = this.props.payments.term.term;
+			cardDetail.card_exp_month = this.props.payments.selectedCardDetail.month;
+			cardDetail.card_exp_year = this.props.payments.selectedCardDetail.year;
+		} else {
+			if (this.props.payments.twoClickEnabled) {
+				cardDetail.token_id = this.props.payments.selectedCard.value;
+				cardDetail.two_click = true;
+			} else {
+				cardDetail.card_number = this.props.payments.selectedCard.value;
+				cardDetail.card_exp_month = this.props.payments.selectedCardDetail.month;
+				cardDetail.card_exp_year = this.props.payments.selectedCardDetail.year;
+			}
+
+			if (typeof this.props.payments.selectedBank !== 'undefined' && this.props.payments.selectedBank.value.value.toLowerCase() === 'bca') {
+				cardDetail.channel = 'migs';
+			}
+		}
+
+		const card = () => (cardDetail);
+
+		const onVtCreditCardCallback = (response) => {
+			if (response.redirect_url) {
+				if (response.bank) {
+					bankName = response.bank;
+				}
+				dispatch(new paymentAction.vtModalBoxOpen(true, response.redirect_url));
+			} else if (parseInt(response.status_code, 10) === 200) {
+				dispatch(new paymentAction.vtModalBoxOpen(false));
+				dispatch(
+					new paymentAction.pay(
+						this.props.cookies.get('user.token'),
+						this.props.soNumber,
+						this.props.payments.selectedPaymentOption === false ? this.state.selectedPayment : this.props.payments.selectedPaymentOption,
+						{
+							amount: this.props.payments.total,
+							status: 'success',
+							status_code: response.status_code,
+							status_message: response.status_message,
+							card: {
+								masked: this.props.payments.selectedCard.label,
+								value: response.token_id,
+								bank: {
+									value: bankName
+								},
+								detail: this.props.payments.selectedCardDetail
+							},
+							saveCC: this.props.payments.saveCC,
+							ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
+							billingPhoneNumber: this.props.payments.billingPhoneNumber
+						},
+						'complete',
+						false,
+						false,
+						this.getAffTracking()
+					)
+				);
+			} else {
+				dispatch(new paymentAction.vtModalBoxOpen(false));
+				dispatch(new paymentAction.paymentError('Silahkan periksa data kartu kredit Anda.'));
+			}
+		};
+
+		const onVtInstallmentCallback = (response) => {
+			if (response.redirect_url) {
+				// const payment = {
+				// 	token_id: response.token_id
+				// };
+				if (response.bank) {
+					bankName = response.bank;
+				}
+				dispatch(new paymentAction.vtModalBoxOpen(true, response.redirect_url));
+			} else if (parseInt(response.status_code, 10) === 200) {
+				dispatch(new paymentAction.vtModalBoxOpen(false));
+				dispatch(
+					new paymentAction.pay(
+						this.props.cookies.get('user.token'),
+						this.props.soNumber,
+						this.props.payments.selectedPaymentOption === false ? this.state.selectedPayment : this.props.payments.selectedPaymentOption,
+						{
+							amount: this.props.payments.total,
+							card: {
+								value: response.token_id,
+								bank: {
+									value: bankName
+								},
+								detail: this.props.payments.selectedCardDetail
+							},
+							saveCC: this.props.payments.saveCC,
+							term: this.props.payments.term,
+							ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
+							billingPhoneNumber: this.props.payments.billingPhoneNumber
+						},
+						'complete',
+						false,
+						false,
+						this.getAffTracking()
+					)
+				);
+			} else {
+				dispatch(new paymentAction.vtModalBoxOpen(false));
+				dispatch(new paymentAction.paymentError('Silahkan periksa data kartu kredit Anda.'));
+			}
+		};
+		dispatch(
+			new paymentAction.pay(
+				this.props.cookies.get('user.token'),
+				this.props.soNumber,
+				this.props.payments.selectedPaymentOption,
+				{
+					amount: this.props.payments.total,
+					card: {
+						value: this.props.payments.selectedCard.value
+					},
+					ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
+					billingPhoneNumber: this.props.payments.billingPhoneNumber
+				},
+				'cc',
+				card,
+				installment ? onVtInstallmentCallback : onVtCreditCardCallback,
+				this.getAffTracking()
+			)
+		);
+	}
+
 	onDoPayment() {	
 		const { dispatch } = this.props;
 		let validator = false;
@@ -161,6 +305,24 @@ class StepFour extends Component {
 		if (typeof this.props.payments.paymentMethod !== 'undefined') {
 			switch (this.props.payments.paymentMethod) {
 			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
+				if (this.props.payments.selectedPaymentOption !== false) {
+					this.setState({
+						selectedPayment: this.props.payments.selectedPaymentOption
+					});
+				}
+				
+				if (this.props.payments.twoClickEnabled) {
+					validator = this.elCvvInstallment.validation.checkValid();
+				} else {
+					validator = this.elMonthInstallment.validation.checkValid() && this.elYearInstallment.validation.checkValid() && this.elCvvInstallment.validation.checkValid();
+				}
+			
+				if (validator) {
+					this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
+				} else {
+					dispatch(new paymentAction.paymentError('Silahkan periksa data kartu kredit Anda.'));
+				}
+				break;
 			case paymentMethodName.COMMERCE_VERITRANS:
 				if (this.props.payments.selectedPaymentOption !== false) {
 					this.setState({
@@ -169,23 +331,16 @@ class StepFour extends Component {
 				}
 				
 				if (this.props.payments.twoClickEnabled) {
-					validator = this.cvvValidator.validateAll({
-						cvv: this.props.payments.selectedCardDetail.cvv
-					});
+					validator = this.elCCCvv.validation.checkValid();
 				} else {
-					validator = this.cardValidator.validateAll({
-						year: this.props.payments.selectedCardDetail.year,
-						month: this.props.payments.selectedCardDetail.month,
-						cvv: this.props.payments.selectedCardDetail.cvv
-					});
+					validator = this.elCCMonth.validation.checkValid() && this.elCCYear.validation.checkValid() && this.elCCCvv.validation.checkValid();
 				}
-				validator.then(success => {
-					if (success) {
-						this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
-					} else {
-						dispatch(new paymentAction.paymentError('Silahkan periksa data kartu kredit Anda.'));
-					}
-				});
+			
+				if (validator) {
+					this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
+				} else {
+					dispatch(new paymentAction.paymentError('Silahkan periksa data kartu kredit Anda.'));
+				}
 				break;
 			case paymentMethodName.COMMERCE_SPRINT_ASIA:
 				mode = 'sprint';
@@ -257,11 +412,10 @@ class StepFour extends Component {
 	}
 
 	onCardNumberChange(event) {
-		const pay = new paymentAction();
-		const selectedPaymentOption = pay.getAvailabelPaymentSelection(this.props.payments.selectedPayment);
+		const selectedPaymentOption = new paymentAction.getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 		if (event.valid) {
-			this.props.dispatch(pay.changeCreditCardNumber(event.ccNumber));
-			this.props.dispatch(pay.applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, event.ccNumber, ''));
+			this.props.dispatch(new paymentAction.changeCreditCardNumber(event.ccNumber));
+			this.props.dispatch(new paymentAction.applyBin(this.cookies, selectedPaymentOption.value, event.ccNumber, ''));
 			this.setState({
 				appliedBin: {
 					selectedPaymentOption,
@@ -270,7 +424,7 @@ class StepFour extends Component {
 				}
 			});
 		} else {
-			this.props.dispatch(pay.applyBin(this.props.cookies.get('user.token'), -1, event.ccNumber, ''));
+			this.props.dispatch(new paymentAction.applyBin(this.cookies, -1, event.ccNumber, ''));
 			this.setState({
 				appliedBin: {
 					selectedPaymentOption,
@@ -301,11 +455,10 @@ class StepFour extends Component {
 		} else {
 			value = event;
 		}
-		const pay = new paymentAction();
 		if (value) {
-			this.props.dispatch(pay.selectCreditCard(value));
-			const selectedPaymentOption = pay.getAvailabelPaymentSelection(this.props.payments.selectedPayment);
-			this.props.dispatch(pay.applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, value, ''));
+			this.props.dispatch(new paymentAction.selectCreditCard(value));
+			const selectedPaymentOption = new paymentAction.getAvailabelPaymentSelection(this.props.payments.selectedPayment);
+			this.props.dispatch(new paymentAction.applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, value, ''));
 			this.setState({
 				appliedBin: {
 					selectedPaymentOption,
@@ -314,7 +467,7 @@ class StepFour extends Component {
 				}
 			});
 		} else {
-			this.props.dispatch(pay.selectCreditCard(false));
+			this.props.dispatch(new paymentAction.selectCreditCard(false));
 		}
 	}
 
@@ -326,6 +479,101 @@ class StepFour extends Component {
 	onCloseSuccessBox() {
 		const { dispatch } = this.props;
 		dispatch(new paymentAction.paymentSuccess(false));
+	}
+
+	onBankChange(bank) {
+		if (bank.value !== null) {
+			// this.checkValidInstallment();
+			const { dispatch } = this.props;
+			const selectedPaymentOption = new paymentAction.getAvailabelPaymentSelection(this.props.payments.selectedPayment);
+			dispatch(new paymentAction.bankNameChange(this.cookies, bank, selectedPaymentOption));
+		}
+	}
+
+	onTermChange(term) {
+		const { dispatch } = this.props;
+		const selectedPaymentOption = new paymentAction.getAvailabelPaymentSelection(this.props.payments.selectedPayment);
+		this.props.payments.selectedPaymentOption = selectedPaymentOption;
+		const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
+		const cardNumber = this.state.appliedBin ? this.state.appliedBin.cardNumber : '';
+		dispatch(new paymentAction.applyBin(this.cookies, selectedPaymentOption.value, cardNumber, bank, term.term));
+		dispatch(new paymentAction.termChange(term));
+	}
+
+	onInstallmentCCMonthChange(monthData) {
+		const { dispatch } = this.props;
+		dispatch(new paymentAction.changeInstallmentCCMonth(monthData.value));
+	}
+	onInstallmentCCYearChange(yearData) {
+		const { dispatch } = this.props;
+		dispatch(new paymentAction.changeInstallmentCCYear(yearData.value));
+	}
+	onInstallmentCCCvvChange(event) {
+		const { dispatch } = this.props;
+		dispatch(new paymentAction.changeInstallmentCCCvv(event.target.value));
+	}
+
+	onInstallmentCCNumberChange(event) {
+		this.props.dispatch(new paymentAction.changeInstallmentCCNumber(event.ccNumber, event.ccType));
+		const selectedPaymentOption = new paymentAction.getAvailabelPaymentSelection(this.props.payments.selectedPayment);
+		const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
+		const term = (this.props.payments.term && this.props.payments.term.term) ? this.props.payments.term.term : '';
+		if (event.valid) {
+			this.props.dispatch(new paymentAction.applyBin(this.cookies, selectedPaymentOption.value, event.ccNumber, bank, term))
+			.then(success => {
+				this.props.dispatch(new paymentAction.refreshInstallmentTerm(this.props.payments.selectedPayment, success));
+			});
+			this.setState({
+				appliedBin: {
+					selectedPaymentOption,
+					cardNumber: event.ccNumber,
+					bankName: bank,
+					installment_term: term
+				}
+			});
+		} else {
+			this.props.dispatch(new paymentAction.applyBin(this.cookies, -1, event.ccNumber, bank, term));
+			this.setState({
+				appliedBin: {
+					selectedPaymentOption,
+					cardNumber: '',
+					bankName: bank,
+					installment_term: term
+				}
+			});
+		}
+	}
+
+	onRequestSprintInstallment(mode) {
+		const { dispatch } = this.props;
+		dispatch(
+			new paymentAction.pay(
+				this.cookies,
+				this.props.soNumber,
+				this.props.payments.selectedPaymentOption,
+				{
+					card: {
+						value: this.props.payments.selectedCard.value,
+						bank: this.props.payments.selectedBank.value,
+						detail: this.props.payments.selectedCardDetail,
+						type: this.props.payments.selectedCard.type,
+					},
+					term: this.props.payments.term,
+					cardNumber: this.props.payments.selectedCard.value,
+					cardCVV: this.props.payments.selectedCardDetail.cvv,
+					cardMonth: this.props.payments.selectedCardDetail.month,
+					cardYear: this.props.payments.selectedCardDetail.year,
+					amount: this.props.payments.total,
+					paymentMethod: this.props.payments.paymentMethod,
+					ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
+					billingPhoneNumber: this.props.payments.billingPhoneNumber
+				},
+				mode,
+				false,
+				false,
+				this.getAffTracking()
+			)
+		);
 	}
 
 	getAffTracking() {
@@ -350,6 +598,33 @@ class StepFour extends Component {
 		});
 	}
 	
+	checkValidInstallment(event) {
+		if (event.ccNumber.length < 1) {
+			this.setState({
+				validInstallmentBin: true
+			});
+		} else {
+			const bank = (!this.props.payments.selectedBank) ? 'mandiri' : this.props.payments.selectedBank.value.value;
+			const installmentBin = this.props.blockContent.filter(e => parseInt(e.id, 10) === 660)[0] || null;
+
+			if (installmentBin) {
+				const installmentBinBank = JSON.parse(installmentBin.attributes.block)[`${bank.replace(' ', '_').toUpperCase()}`];
+				const checkingBin = installmentBinBank.filter(e => event.ccNumber.startsWith(e));
+
+				if (checkingBin.length > 0) {
+					this.onInstallmentCCNumberChange(event);
+					this.setState({
+						validInstallmentBin: true
+					});
+				} else {
+					this.setState({
+						validInstallmentBin: false
+					});
+				}
+			}
+		}
+	}
+
 	paymentMethodChange(stateSelectedPayment) {
 		const { payments, dispatch } = this.props;
 		dispatch(new paymentAction.changePaymentMethod(stateSelectedPayment.value, payments.paymentMethods, this.cookies));
@@ -490,7 +765,16 @@ class StepFour extends Component {
 		const CvvElement = (
 			<Row>
 				<Col grid={4}>
-					<Input type='password' placeholder='cvv' onBlur={this.onCardCvvChange} />
+					<Input 
+						type='password' 
+						placeholder='cvv' 
+						onBlur={this.onCardCvvChange} 
+						validation={{
+							rules: 'required|min_value:1',
+							name: 'cvv'
+						}}
+						ref={(c) => { this.elCCCvv = c; }}
+					/>
 				</Col>
 				<Col grid={4}>
 					<Sprites name='cvv' />
@@ -563,8 +847,14 @@ class StepFour extends Component {
 							payments.selectedPayment.paymentItems.map((installment, index) => {
 								return (
 									<Group key={index}>
-										<Select block options={installment.banks} />
-										<Select block options={installment.banks[index].listCicilan} />
+										<Select 
+											block 
+											options={installment.banks} 
+											onChange={(e) => this.onBankChange(e)} 
+											defaultValue={payments.selectedBank.value}
+											value={payments.selectedBank.value}
+										/>
+										<Select block options={installment.banks[index].listCicilan} onChange={(e) => this.onTermChange(e.value)} />
 									</Group>
 								);
 							})
@@ -573,13 +863,43 @@ class StepFour extends Component {
 							<CreditCardInput
 								placeholder='Masukkan Nomor Kartu'
 								sprites='payment-option'
-								onChange={this.onInstallmentCCNumberChange}
+								onChange={(e) => this.checkValidInstallment(e)}
+								message={this.state.validInstallmentBin ? null : 'Masukan no kartu kredit yang sesuai'} 
+								color={this.state.validInstallmentBin ? null : 'red'} 
 							/>
 						</Group>
 						<Group grouped>
-							<Select block options={Bulan} />
-							<Select block options={this.state.tahun} />
-							<Input dataProps={{ minLength: 0, maxLength: 4 }} type='password' placeholder='cvv' />
+							<Select 
+								block 
+								options={Bulan} 
+								onChange={(e) => this.onInstallmentCCMonthChange(e)}  
+								validation={{
+									rules: 'required|min_value:1',
+									name: 'month installment'
+								}}
+								ref={(c) => { this.elMonthInstallment = c; }}
+							/>
+							<Select 
+								block 
+								options={this.state.tahun} 
+								onChange={(e) => this.onInstallmentCCYearChange(e)} 
+								validation={{
+									rules: 'required|min_value:10|min:1',
+									name: 'year installment'
+								}}
+								ref={(c) => { this.elYearInstallment = c; }}
+							/>
+							<Input 
+								dataProps={{ minLength: 0, maxLength: 4 }} 
+								type='password' 
+								placeholder='cvv' 
+								onChange={(e) => this.onInstallmentCCCvvChange(e)} 
+								validation={{
+									rules: 'required|min_value:1',
+									name: 'cvv installment'
+								}}
+								ref={(c) => { this.elCvvInstallment = c; }}
+							/>
 							<div style={{ paddingRight: '30px' }} ><Sprites name='cvv' /></div>
 						</Group>
 					</Group>
@@ -660,14 +980,6 @@ class StepFour extends Component {
 						defaultValue={payments.selectedPayment ? payments.selectedPayment.id : null}
 					/>
 					{ payments.selectedPayment && switchPaymentElement()}
-					<Input 
-						value={payments.billingPhoneNumber || ''} 
-						label='SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke : ' 
-						min={0} 
-						type='number' 
-						placeholder={payments.billingPhoneNumber || 'No Telp Penagihan'} 
-						onChange={(event) => this.props.onBillingNumberChange(event)} 
-					/>
 					{ renderIf(payments.selectedPayment.value === paymentGroupName.CREDIT_CARD 
 					&& payments.twoClickEnabled && numberOfCard > minNumberOfCard)(
 							
@@ -681,13 +993,42 @@ class StepFour extends Component {
 							<label htmlFor='masa-berlaku'key={2}>Masa Berlaku</label>
 							<Level padded key={3}>
 								<Level.Item id='masa-berlaku'>
-									<Select top selectedLabel='-- Bulan' options={Bulan} onChange={this.onCardMonthChange} />
+									<Select 
+										top 
+										selectedLabel='-- Bulan' 
+										options={Bulan} 
+										onChange={this.onCardMonthChange}
+										validation={{
+											rules: 'required|min_value:1',
+											name: 'month'
+										}}
+										ref={(c) => { this.elCCMonth = c; }}
+									/>
 								</Level.Item>
 								<Level.Item>
-									<Select top selectedLabel='-- Tahun' options={this.state.tahun} onChange={this.onCardYearChange} />
+									<Select 
+										top 
+										selectedLabel='-- Tahun' 
+										options={this.state.tahun} 
+										onChange={this.onCardYearChange}
+										validation={{
+											rules: 'required|min_value:10|min:1',
+											name: 'year'
+										}}
+										ref={(c) => { this.elCCYear = c; }}
+									/>
 								</Level.Item>
 								<Level.Item>
-									<Input type='password' placeholder='cvv' onBlur={this.onCardCvvChange} />
+									<Input 
+										type='password' 
+										placeholder='cvv' 
+										onBlur={this.onCardCvvChange} 
+										validation={{
+											rules: 'required|min_value:1',
+											name: 'cvv'
+										}}
+										ref={(c) => { this.elCCCvv = c; }}
+									/>
 								</Level.Item>
 								<Level.Item>
 									<Sprites name='cvv' />
@@ -696,6 +1037,14 @@ class StepFour extends Component {
 							<Checkbox defaultChecked onClick={(state, value) => this.props.onSaveCcOption(state, value)}>Simpan kartu untuk transaksi selanjutnya</Checkbox>
 						</div>
 					])}
+					<Input 
+						value={payments.billingPhoneNumber || ''} 
+						label='SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke : ' 
+						min={0} 
+						type='number' 
+						placeholder={payments.billingPhoneNumber || 'No Telp Penagihan'} 
+						onChange={(event) => this.props.onBillingNumberChange(event)} 
+					/>
 					{
 						this.checkShowingOvoPhone() && payments.ovoPhoneNumber &&
 						<Input state={ovoReadOnly ? 'disabled' : ''} color={ovoReadOnly ? 'green' : null} icon={ovoReadOnly ? 'check' : null} defaultValue={payments.ovoPhoneNumber} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' placeholder={'Masukkan nomor Hp yang terdaftar di OVO'} type='number' min={0} />
@@ -721,8 +1070,16 @@ class StepFour extends Component {
 							onClose={() => this.onCloseErrorBox()}
 							isConfirm={payments.isConfirm}
 							okeoce={() => this.okeoce()}
+							paymentErrorMessage={payments.error}
 						/>
 					)
+				}
+				{
+					this.props.payments.show3ds && <Vt3dsModalBox
+						shown={this.props.payments.show3ds}
+						src={this.props.payments.vtRedirectUrl}
+						onClose={this.onVt3dsModalBoxClose}
+					/>
 				}
 			</div>
 		);
@@ -744,6 +1101,7 @@ const mapStateToProps = (state) => {
 		soNumber: state.cart.soNumber,
 		billing: state.addresses.billing,
 		carts: state.cart.data,
+		blockContent: state.global.blockContent,
 	};
 };
 
