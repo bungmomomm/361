@@ -64,6 +64,7 @@ class StepFour extends Component {
 				autoLinkage: true,
 			},
 			appliedBin: null,
+			installmentList: [],
 			tahun: []
 		};
 		this.isOvoPayment = this.props.payments.paymentMethod === 'e_wallet_ovo';
@@ -148,6 +149,7 @@ class StepFour extends Component {
 		if (this.selectedData) {
 			this.setState({
 				selectedPaymentOption: selectedPaymentItem,
+				installmentList: [],
 				showPaymentInfo: {
 					id: selectedPaymentItem.value,
 					notes: this.selectedData.settings.info.join(' ')
@@ -297,7 +299,7 @@ class StepFour extends Component {
 		);
 	}
 
-	onDoPayment() {	
+	onDoPayment() {
 		const { dispatch } = this.props;
 		let validator = false;
 		let mode = 'complete';
@@ -310,13 +312,13 @@ class StepFour extends Component {
 						selectedPayment: this.props.payments.selectedPaymentOption
 					});
 				}
-				
+
 				if (this.props.payments.twoClickEnabled) {
 					validator = this.elCvvInstallment.validation.checkValid();
 				} else {
 					validator = this.elMonthInstallment.validation.checkValid() && this.elYearInstallment.validation.checkValid() && this.elCvvInstallment.validation.checkValid();
 				}
-			
+
 				if (validator) {
 					this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
 				} else {
@@ -335,7 +337,7 @@ class StepFour extends Component {
 				} else {
 					validator = this.elCCMonth.validation.checkValid() && this.elCCYear.validation.checkValid() && this.elCCCvv.validation.checkValid();
 				}
-			
+
 				if (validator) {
 					this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
 				} else {
@@ -408,7 +410,6 @@ class StepFour extends Component {
 	onNewCreditCard(event) {
 		const { dispatch } = this.props;
 		dispatch(new paymentAction.openNewCreditCard());
-		console.log(event, this);
 	}
 
 	onCardNumberChange(event) {
@@ -597,7 +598,18 @@ class StepFour extends Component {
 			}
 		});
 	}
-	
+
+	setInstallmentList(list) {
+		const installmentList = [];
+		list.listCicilan.map((item, idx) => (
+			installmentList.push({
+				label: item.label,
+				value: item.label
+			})
+		));
+		this.setState({ installmentList });
+	}
+
 	checkValidInstallment(event) {
 		if (event.ccNumber.length < 1) {
 			this.setState({
@@ -765,10 +777,10 @@ class StepFour extends Component {
 		const CvvElement = (
 			<Row>
 				<Col grid={4}>
-					<Input 
-						type='password' 
-						placeholder='cvv' 
-						onBlur={this.onCardCvvChange} 
+					<Input
+						type='password'
+						placeholder='cvv'
+						onBlur={this.onCardCvvChange}
 						validation={{
 							rules: 'required|min_value:1',
 							name: 'cvv'
@@ -795,7 +807,7 @@ class StepFour extends Component {
 				const listPayment = [];
 				enabledPaymentItems.map((option, index) => {
 					const RadioLabel = (
-						<Level>
+						<Level key={index}>
 							<Level.Left>{option.label}</Level.Left>
 							<Level.Right className='font-red'>
 								{ option.disabled && option.disableMessage }
@@ -820,9 +832,8 @@ class StepFour extends Component {
 					option.cards.length <= 3 ? (
 						option.cards.map((card, cardIndex) => (
 							card.value ? (
-								<div>
-									<CreditCardRadio 
-										key={cardIndex}
+								<div key={cardIndex} >
+									<CreditCardRadio
 										name='cc'
 										variant='list'
 										value={card.value}
@@ -840,60 +851,44 @@ class StepFour extends Component {
 						<Select block key={index} options={option.cards} />
 					)
 				));
-			case paymentGroupName.INSTALLMENT:
+			case paymentGroupName.INSTALLMENT: {
 				return (
 					<Group>
-						{
-							payments.selectedPayment.paymentItems.map((installment, index) => {
-								return (
-									<Group key={index}>
-										<Select 
-											block 
-											options={installment.banks} 
-											onChange={(e) => this.onBankChange(e)} 
-											defaultValue={payments.selectedBank.value}
-											value={payments.selectedBank.value}
-										/>
-										<Select block options={installment.banks[index].listCicilan} onChange={(e) => this.onTermChange(e.value)} />
-									</Group>
-								);
-							})
-						}
-						<Group>
-							<CreditCardInput
-								placeholder='Masukkan Nomor Kartu'
-								sprites='payment-option'
-								onChange={(e) => this.checkValidInstallment(e)}
-								message={this.state.validInstallmentBin ? null : 'Masukan no kartu kredit yang sesuai'} 
-								color={this.state.validInstallmentBin ? null : 'red'} 
-							/>
-						</Group>
+						<Select block options={payments.selectedPayment.paymentItems[0].banks} onChange={(e) => this.onBankChange(e)} defaultValue={payments.selectedBank.value} value={payments.selectedBank.value} />
+						{this.state.installmentList.length > 0 && <Select block options={this.state.installmentList} onChange={(e) => this.onTermChange(e.value)} />}
+						<CreditCardInput
+							placeholder='Masukkan Nomor Kartu'
+							sprites='payment-option'
+							onChange={this.onInstallmentCCNumberChange}
+                            message={this.state.validInstallmentBin ? null : 'Masukan no kartu kredit yang sesuai'}
+                            color={this.state.validInstallmentBin ? null : 'red'}
+						/>
 						<Group grouped>
-							<Select 
-								block 
-								options={Bulan} 
-								onChange={(e) => this.onInstallmentCCMonthChange(e)}  
+							<Select
+								block
+								options={Bulan}
+								onChange={(e) => this.onInstallmentCCMonthChange(e)}
 								validation={{
 									rules: 'required|min_value:1',
 									name: 'month installment'
 								}}
 								ref={(c) => { this.elMonthInstallment = c; }}
 							/>
-							<Select 
-								block 
-								options={this.state.tahun} 
-								onChange={(e) => this.onInstallmentCCYearChange(e)} 
+							<Select
+								block
+								options={this.state.tahun}
+								onChange={(e) => this.onInstallmentCCYearChange(e)}
 								validation={{
 									rules: 'required|min_value:10|min:1',
 									name: 'year installment'
 								}}
 								ref={(c) => { this.elYearInstallment = c; }}
 							/>
-							<Input 
-								dataProps={{ minLength: 0, maxLength: 4 }} 
-								type='password' 
-								placeholder='cvv' 
-								onChange={(e) => this.onInstallmentCCCvvChange(e)} 
+							<Input
+								dataProps={{ minLength: 0, maxLength: 4 }}
+								type='password'
+								placeholder='cvv'
+								onChange={(e) => this.onInstallmentCCCvvChange(e)}
 								validation={{
 									rules: 'required|min_value:1',
 									name: 'cvv installment'
@@ -904,7 +899,8 @@ class StepFour extends Component {
 						</Group>
 					</Group>
 				);
-			case paymentGroupName.OVO: 
+			}
+			case paymentGroupName.OVO:
 				ovoPaymentInput = (
 					<Input
 						dataProps={{ minLength: 0, maxLength: 30 }}
@@ -970,11 +966,11 @@ class StepFour extends Component {
 		const ovoReadOnly = (payments.ovoInfo && parseInt(payments.ovoInfo.ovoFlag, 10) === 1);
 		return (
 			<div className={styles.card}>
-				<p><strong>4. Informasi Pembayaran</strong></p>
+				<p><strong>{T.checkout.STEP_FOUR_LABEL}</strong></p>
 				<div>
 					<Select 
 						block 
-						label='Metode Pembayaran'
+						label={T.checkout.PAYMENT_METHOD}
 						options={payments.paymentMethods.methods} 
 						onChange={(e) => this.paymentMethodChange(e)}
 						defaultValue={payments.selectedPayment ? payments.selectedPayment.id : null}
@@ -989,69 +985,60 @@ class StepFour extends Component {
 					{ renderIf((payments.openNewCreditCard && payments.selectedPayment.value === paymentGroupName.CREDIT_CARD 
 					&& !payments.twoClickEnabled) || (payments.selectedPayment.value === paymentGroupName.CREDIT_CARD && numberOfCard < (minNumberOfCard + 1)))([
 						<div>
-							<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onChange={this.onCardNumberChange} />
+							<CreditCardInput placeholder={T.checkout.INPUT_CART_NUMBER} sprites='payment-option' onChange={this.onCardNumberChange} />
 							<label htmlFor='masa-berlaku'key={2}>Masa Berlaku</label>
-							<Level padded key={3}>
-								<Level.Item id='masa-berlaku'>
-									<Select 
-										top 
-										selectedLabel='-- Bulan' 
-										options={Bulan} 
-										onChange={this.onCardMonthChange}
-										validation={{
-											rules: 'required|min_value:1',
-											name: 'month'
-										}}
-										ref={(c) => { this.elCCMonth = c; }}
-									/>
-								</Level.Item>
-								<Level.Item>
-									<Select 
-										top 
-										selectedLabel='-- Tahun' 
-										options={this.state.tahun} 
-										onChange={this.onCardYearChange}
-										validation={{
-											rules: 'required|min_value:10|min:1',
-											name: 'year'
-										}}
-										ref={(c) => { this.elCCYear = c; }}
-									/>
-								</Level.Item>
-								<Level.Item>
-									<Input 
-										type='password' 
-										placeholder='cvv' 
-										onBlur={this.onCardCvvChange} 
-										validation={{
-											rules: 'required|min_value:1',
-											name: 'cvv'
-										}}
-										ref={(c) => { this.elCCCvv = c; }}
-									/>
-								</Level.Item>
-								<Level.Item>
-									<Sprites name='cvv' />
-								</Level.Item>
-							</Level>
-							<Checkbox defaultChecked onClick={(state, value) => this.props.onSaveCcOption(state, value)}>Simpan kartu untuk transaksi selanjutnya</Checkbox>
+							<Group grouped id='masa-berlaku'>
+								<Select
+                                    block
+                                    options={Bulan}
+                                    onChange={this.onCardMonthChange}
+                                    validation={{
+                                        rules: 'required|min_value:1',
+                                        name: 'month'
+                                    }}
+                                    ref={(c) => { this.elCCMonth = c; }}
+                                />
+								<Select
+                                    block
+                                    options={this.state.tahun}
+                                    onChange={this.onCardYearChange}
+                                    validation={{
+                                        rules: 'required|min_value:10|min:1',
+                                        name: 'year'
+                                    }}
+                                    ref={(c) => { this.elCCYear = c; }}
+                                />
+								<Input
+                                    dataProps={{ minLength: 0, maxLength: 4 }}
+                                    type='password'
+                                    placeholder='cvv'
+                                    onBlur={this.onCardCvvChange}
+                                    validation={{
+                                        rules: 'required|min_value:1',
+                                        name: 'cvv'
+                                    }}
+                                    ref={(c) => { this.elCCCvv = c; }}
+                                />
+								<div style={{ paddingRight: '30px' }} ><Sprites name='cvv' /></div>
+							</Group>
+							<Checkbox defaultChecked onClick={(state, value) => this.props.onSaveCcOption(state, value)}>{T.checkout.SAVE_CARD_FOR_NEXT_TRANSACTION}</Checkbox>
 						</div>
 					])}
-					<Input 
-						value={payments.billingPhoneNumber || ''} 
-						label='SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke : ' 
-						min={0} 
-						type='number' 
-						placeholder={payments.billingPhoneNumber || 'No Telp Penagihan'} 
-						onChange={(event) => this.props.onBillingNumberChange(event)} 
+					<Input
+						value={payments.billingPhoneNumber || ''}
+                        label={T.checkout.PHONE_NUMBER_O2O_CONFIRMATION}
+						min={0}
+						type='number'
+						placeholder={payments.billingPhoneNumber || T.checkout.BILLING_PHONE_NUMBER}
+						onChange={(event) => this.props.onBillingNumberChange(event)}
 					/>
 					{
 						this.checkShowingOvoPhone() && payments.ovoPhoneNumber &&
-						<Input state={ovoReadOnly ? 'disabled' : ''} color={ovoReadOnly ? 'green' : null} icon={ovoReadOnly ? 'check' : null} defaultValue={payments.ovoPhoneNumber} label='No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID' placeholder={'Masukkan nomor Hp yang terdaftar di OVO'} type='number' min={0} />
+						<Input state={ovoReadOnly ? 'disabled' : ''} color={ovoReadOnly ? 'green' : null} icon={ovoReadOnly ? 'check' : null} defaultValue={payments.ovoPhoneNumber} label={T.checkout.OVO_PHONE_LABEL} placeholder={T.checkout.SAVED_OVO_PHONE} type='number' min={0} />
 					}
 					<div className={styles.checkOutAction}>
-						<Checkbox defaultChecked={this.state.termCondition} onClick={() => this.setState({ termCondition: !this.state.termCondition })}>Saya setuju dengan syarat dan ketentuan MatahariMall.com</Checkbox>
-						<Button block size='large' color='red' state={this.checkActiveBtnSubmit()} onClick={(e) => this.submitPayment(e)}>Bayar Sekarang</Button>
+						<Checkbox defaultChecked={this.state.termCondition} onClick={() => this.setState({ termCondition: !this.state.termCondition })}>{T.checkout.TERMS_PAYMENT}</Checkbox>
+						<Button block size='large' color='red' state={this.checkActiveBtnSubmit()} onClick={(e) => this.submitPayment(e)}>{T.checkout.BUY_NOW}</Button>
 					</div>
 				</div>
 				{

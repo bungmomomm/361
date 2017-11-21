@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Modal, Panel, Radio } from 'mm-ui';
+import { T } from '@/data/translations';
 
 export default class ModalChooseAddress extends Component {
 	constructor(props) {
@@ -17,7 +18,7 @@ export default class ModalChooseAddress extends Component {
 		}
 		return (
 			<Modal showOverlayCloseButton size='medium' show={this.props.open} onCloseRequest={this.props.handleClose}>
-				<Modal.Header>Daftar Alamat</Modal.Header>
+				<Modal.Header>{T.checkout.LIST_ADDRESS}</Modal.Header>
 				<Modal.Body>
 					{
 						this.props.address.map((address, index) => {
@@ -32,7 +33,7 @@ export default class ModalChooseAddress extends Component {
 											inverted={isChecked}
 											data={[
 												{ 
-													label: isChecked ? 'Alamat Utama' : 'Gunakan Alamat ini', 
+													label: isChecked ? T.checkout.MAIN_ADDRESS : T.checkout.USE_THIS_ADDRESS, 
 													inputProps: { 
 														readOnly: true,
 														checked: isChecked

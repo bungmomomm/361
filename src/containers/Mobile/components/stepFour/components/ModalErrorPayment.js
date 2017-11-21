@@ -3,17 +3,14 @@ import React, { Component } from 'react';
 // component load
 import { Icon } from '@/components';
 import { Group, Button, Modal } from 'mm-ui';
+import { T } from '@/data/translations';
 
 export default class ModalErrorPayment extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.message = (
-			<strong>
-				Pembayaran Anda tidak <br />
-				berhasil coba lagi atau gunakan <br />
-				metode pembayaran lainnya <br />
-			</strong>
+			<strong dangerouslySetInnerHTML={{ __html: T.checkout.PAYMENT_ERROR }} />
 		);
 	}
 	render() {

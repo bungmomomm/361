@@ -83,6 +83,9 @@ class ModalAddress extends Component {
 		if (this.props.address.district !== nextProps.address.district) {
 			setTimeout(() => { this.setState({ renderDistrict: true }); }, 20);
 		}
+		if (nextProps.formData) {
+			this.getPinPointAddress();
+		}
 	}
 	
 	onChangeProvince(e) {
@@ -265,7 +268,7 @@ class ModalAddress extends Component {
 				<Panel>
 					<Level>
 						<Level.Left><Icon name='map-marker' /></Level.Left>
-						<Level.Item style={{ paddingLeft: '15px' }}>{this.state.formattedAddress}</Level.Item>
+						<Level.Item style={{ padding: '0px 10px' }}>{this.state.formattedAddress}</Level.Item>
 						<Level.Right>
 							<div role='button' tabIndex='-1' onClick={() => this.toggleGoogleMap()} className='font-orange'>Ubah</div>
 						</Level.Right>
@@ -278,7 +281,7 @@ class ModalAddress extends Component {
 
 	renderGoogleMap() {
 		const { mapMarkerCenter } = this.state;
-		const centerMap = mapMarkerCenter || this.selectedPolygon.center;
+		const centerMap = (mapMarkerCenter.lat !== '' && mapMarkerCenter.lng !== '') ? mapMarkerCenter : this.selectedPolygon.center;
 		return (
 			<div style={{ marginBottom: '15px' }}>
 				<GoogleMap
@@ -297,7 +300,7 @@ class ModalAddress extends Component {
 				/>
 				{
 					!this.state.isValidMarkerPosition ? 
-						<Alert color='red'>Lokasi tidak sesuai dengan alamat pengiriman</Alert> :
+						<Alert color='red'>{T.checkout.LOCATION_NOT_MATCH_WITH_SHIPPING_ADDRESS}</Alert> :
 						<Panel><Icon name='map-marker' /> {this.state.formattedAddress}</Panel>
 				}
 			</div>
@@ -317,7 +320,7 @@ class ModalAddress extends Component {
 			<Modal
 				size='medium'
 				show={open}
-				loading={address.cityProv.length < 1 || false}
+				loading={(address.cityProv && address.cityProv.length < 1) || false}
 				showOverlayCloseButton
 				onCloseRequest={this.props.handleClose}
 			>
@@ -407,7 +410,7 @@ class ModalAddress extends Component {
 						size='large'
 						color='dark'
 						onClick={(e) => this.validateAndSubmit(e)}
-					>Simpan Alamat</Button>
+					>{T.checkout.SAVE_ADDRESS}</Button>
 				</Modal.Body>
 			</Modal>
 		);

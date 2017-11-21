@@ -9,8 +9,7 @@ import {
 	Radio,
 	Select
 } from 'mm-ui';
-
-// import { Address } from '@/data';
+import { T } from '@/data/translations';
 
 class Modalo2o extends Component {
 	
@@ -113,7 +112,7 @@ class Modalo2o extends Component {
 											inverted={isChecked}
 											data={[
 												{ 
-													label: isChecked ? 'Alamat Utama' : 'Gunakan Alamat ini', 
+													label: isChecked ? T.checkout.MAIN_ADDRESS : T.checkout.USE_THIS_ADDRESS, 
 													inputProps: { 
 														readOnly: true,
 														checked: isChecked

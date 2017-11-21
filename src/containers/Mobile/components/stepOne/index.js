@@ -140,7 +140,6 @@ class stepOne extends Component {
 
 	setSelectedAddress(selected) {
 		const newSelectedAddress = _.find(this.currentAddresses, { id: selected.value });
-		console.log(newSelectedAddress);
 		this.saveSelectedAddress(newSelectedAddress);
 		this.setState({
 			selectedAddress: newSelectedAddress
