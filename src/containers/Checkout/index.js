@@ -669,7 +669,7 @@ class Checkout extends Component {
 						"response": response,
 					  	"bank": response.bank
 					}
-				});
+				);
 				if (response.bank) {
 					bankName = response.bank;
 				}
@@ -682,7 +682,7 @@ class Checkout extends Component {
 						"response": response,
 					  	"token_id": response.token_id
 					}
-				});
+				);
 				dispatch(vtModalBoxOpen(false));
 				dispatch(
 					pay(
@@ -719,7 +719,7 @@ class Checkout extends Component {
 					data: {
 						"response": response
 					}
-				});
+				);
 				dispatch(vtModalBoxOpen(false));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
 			}
@@ -740,7 +740,7 @@ class Checkout extends Component {
 						"response": response,
 					  	"bank": response.bank
 					}
-				});
+				);
 				// const payment = {
 				// 	token_id: response.token_id
 				// };
@@ -756,7 +756,7 @@ class Checkout extends Component {
 						"response": response,
 					  	"token_id": response.token_id
 					}
-				});
+				);
 				dispatch(vtModalBoxOpen(false));
 				dispatch(
 					pay(
@@ -790,10 +790,12 @@ class Checkout extends Component {
 					data: {
 						"response": response
 					}
-				});
+				);
 				dispatch(vtModalBoxOpen(false));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
 			}
+
+
 		};
 		dispatch(
 			pay(
