@@ -75,6 +75,14 @@ class stepOne extends Component {
 		} else {
 			this.setShipping(this.props.addresses);
 		}
+		const checkoutState = {
+			...this.props.stepState,
+			stepOne: {
+				...this.props.stepState.stepOne,
+				funcShowModalAddress: (e) => this.showModalAddress(e)
+			}
+		};
+		this.props.applyState(checkoutState);
 	}
 
 	componentWillReceiveProps(nextProps) {

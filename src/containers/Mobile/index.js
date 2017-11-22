@@ -29,6 +29,7 @@ class Mobile extends Component {
 					phone: '',
 					checked: false,
 				},
+				funcShowEditAddress: this.funcShowEditAddress
 			},
 			stepTwo: {
 				disable: false

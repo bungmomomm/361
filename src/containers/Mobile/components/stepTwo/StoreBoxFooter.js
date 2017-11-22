@@ -9,7 +9,8 @@ import { T } from '@/data/translations';
 import { currency } from '@/utils';
 
 
-const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMethod }) => {
+const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMethod, showEditAddressModal }) => {
+	console.log(showEditAddressModal);
 	const store = data.store;
 	const isGosendSupported = () => {
 		return (
@@ -21,8 +22,8 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 
 	const hasLangLat = () => {
 		return (
-			selectedAddress.attributes.latitude
-			&& selectedAddress.attributes.longitude
+			selectedAddress.attributes.latitude !== ''
+			&& selectedAddress.attributes.longitude !== ''
 		);
 	};
 	
@@ -66,11 +67,9 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 									<Checkbox 
 										disabled={!hasLangLat()}
 										name='gojek' 
-										content='Pengiriman:'
 										sprites='gosend'
 										defaultChecked={false}
-									/>
-									<a role='link' tabIndex='0' className='font-orange'>{T.checkout.CHOOSE_SHIPPING_LOCATION}</a>
+									><div role='button' onClick={() => showEditAddressModal()} tabIndex='0' className='font-orange'>{T.checkout.CHOOSE_SHIPPING_LOCATION}</div></Checkbox>
 								</div>
 							)
 						}
