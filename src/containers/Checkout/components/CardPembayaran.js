@@ -180,6 +180,7 @@ export default class CardPembayaran extends Component {
 		this.setState({
 			isValidCreaditCard: event.valid
 		});
+		this.payNowButton.disabled = !event.valid;
 		this.props.onCardNumberChange(event);
 	}
 	onCardMonthChange(data) {
@@ -209,6 +210,7 @@ export default class CardPembayaran extends Component {
 		this.setState({
 			isValidCreaditCardInstallment: event.valid
 		});
+		this.payNowButton.disabled = !event.valid;
 		if (event.ccNumber.length < 1) {
 			this.setState({
 				validInstallmentBin: true
