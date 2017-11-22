@@ -65,6 +65,8 @@ export default class CardPembayaran extends Component {
 			validVoucher: false,
 			reset: null,
 			validInstallmentBin: true,
+			isValidCreaditCard: true,
+			isValidCreaditCardInstallment: true,
 			ovo: {
 				useDefault: true,
 				ovoPhonePayment: null,
@@ -175,6 +177,9 @@ export default class CardPembayaran extends Component {
 		}
 	}
 	onCardNumberChange(event) {
+		this.setState({
+			isValidCreaditCard: event.valid
+		});
 		this.props.onCardNumberChange(event);
 	}
 	onCardMonthChange(data) {
@@ -201,6 +206,9 @@ export default class CardPembayaran extends Component {
 	}
 
 	onInstallmentCCNumberChange(event) {
+		this.setState({
+			isValidCreaditCardInstallment: event.valid
+		});
 		if (event.ccNumber.length < 1) {
 			this.setState({
 				validInstallmentBin: true
@@ -381,7 +389,7 @@ export default class CardPembayaran extends Component {
 		const CvvElement = (
 			<Row>
 				<Col grid={4}>
-					<Input type='password' placeholder='cvv' onBlur={this.onCardCvvChange} />
+					<Input type='password' placeholder='cvv' minLength={0} maxLength={4} onBlur={this.onCardCvvChange} />
 				</Col>
 				<Col grid={4}>
 					<Sprites name='cvv' />
@@ -465,7 +473,7 @@ export default class CardPembayaran extends Component {
 
 				paymentOptions = ([
 					<InputGroup>
-						<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' message={this.state.validInstallmentBin ? null : 'Masukan no kartu kredit yang sesuai'} color={this.state.validInstallmentBin ? null : 'red'} onChange={this.onInstallmentCCNumberChange} />
+						<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' message={this.state.isValidCreaditCardInstallment ? null : 'Masukan no kartu kredit yang sesuai'} color={this.state.isValidCreaditCardInstallment ? null : 'red'} onChange={this.onInstallmentCCNumberChange} />
 					</InputGroup>,
 					<label htmlFor='masa-berlaku'>Masa Berlaku</label>,
 					<Level padded>
@@ -476,7 +484,7 @@ export default class CardPembayaran extends Component {
 							<Select top selectedLabel='-- Tahun' options={this.props.tahun} onChange={this.onInstallmentCCYearChange} />
 						</Level.Item>
 						<Level.Item>
-							<Input type='password' placeholder='cvv' onBlur={this.onInstallmentCCCvvChange} />
+							<Input type='password' minLength={0} maxLength={4} placeholder='cvv' onBlur={this.onInstallmentCCCvvChange} />
 						</Level.Item>
 						<Level.Item>
 							<Sprites name='cvv' />
@@ -647,9 +655,9 @@ export default class CardPembayaran extends Component {
 						)}
 						{ renderIf((this.props.payments.openNewCreditCard && selectedPayment.value === paymentGroupName.CREDIT_CARD && !twoClickEnabled) || (selectedPayment.value === paymentGroupName.CREDIT_CARD && numberOfCard < (minNumberOfCard + 1)))([
 							<InputGroup key={1}>
-								<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onChange={this.onCardNumberChange} />
+								<CreditCardInput message={this.state.isValidCreaditCard ? null : 'Masukan no kartu kredit yang sesuai'} color={this.state.isValidCreaditCard ? null : 'red'} placeholder='Masukkan Nomor Kartu' sprites='payment-option' onChange={this.onCardNumberChange} />
 							</InputGroup>,
-							<label htmlFor='masa-berlaku'key={2}>Masa Berlaku</label>,
+							<label htmlFor='masa-berlaku' key={2}>Masa Berlaku</label>,
 							<Level padded key={3}>
 								<Level.Item id='masa-berlaku'>
 									<Select top selectedLabel='-- Bulan' options={Bulan} onChange={this.onCardMonthChange} />
@@ -658,7 +666,7 @@ export default class CardPembayaran extends Component {
 									<Select top selectedLabel='-- Tahun' options={this.props.tahun} onChange={this.onCardYearChange} />
 								</Level.Item>
 								<Level.Item>
-									<Input type='password' placeholder='cvv' onBlur={this.onCardCvvChange} />
+									<Input type='password' minLength={0} maxLength={4} placeholder='cvv' onBlur={this.onCardCvvChange} />
 								</Level.Item>
 								<Level.Item>
 									<Sprites name='cvv' />

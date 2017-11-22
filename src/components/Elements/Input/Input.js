@@ -107,6 +107,8 @@ export default class Input extends Component {
 				onKeyPress={onKeyPress}
 				onBlur={onBlur}
 				onFocus={onFocus}
+				minLength={this.props.minLength} 
+				maxLength={this.props.maxLength}
 				onChange={onChange}
 			/>
 		);
