@@ -33,6 +33,7 @@ import { renderIf } from '@/utils';
 
 import ModalOVOCountdown from './components/ModalOVOCountdown';
 import ModalErrorPayment from './components/ModalErrorPayment';
+import Tooltip from './components/Tooltip';
 
 import styles from '../../../Mobile/mobile.scss';
 
@@ -62,7 +63,8 @@ class StepFour extends Component {
 			},
 			appliedBin: null,
 			installmentList: [],
-			tahun: []
+			tahun: [],
+			tooltips: null
 		};
 		this.isOvoPayment = this.props.payments.paymentMethod === 'e_wallet_ovo';
 		this.cookies = this.props.cookies.get('user.token');
@@ -489,6 +491,14 @@ class StepFour extends Component {
 	checkShowingOvoPhone() {
 		return (!this.isOvoPayment || (!this.state.ovo.autoLinkage && this.isOvoPayment));
 	}
+
+	showTooltip(content) {
+		let tooltip = '';
+		if (content.length) {
+			tooltip = content.join(' ');
+		}
+		this.setState({ tooltip });
+	}
 	
 	render() {
 		const {
@@ -525,9 +535,12 @@ class StepFour extends Component {
 					const RadioLabel = (
 						<Level key={index}>
 							<Level.Left>{option.label}</Level.Left>
-							<Level.Right className='font-red'>
-								{ option.disabled && option.disableMessage }
+							<Level.Right >
+								{option.disabled && <div className='font-red'>{option.disableMessage}</div>}
 								{option.settings.image && <img src={option.settings.image} alt={option.label} height='15px' />}
+								{option.settings.info && <span role='button' tabIndex='-1' onClick={() => this.showTooltip(option.settings.info)}>
+									<Icon name='exclamation-circle' className={styles.tooltipButton} />
+								</span>}
 							</Level.Right>
 						</Level>
 					);
@@ -541,7 +554,9 @@ class StepFour extends Component {
 						}
 					});
 				});
-				return <Radio inputStyle='blocklist' data={listPayment} />;
+				return [
+					<Radio inputStyle='blocklist' data={listPayment} />
+				];
 			}
 			case paymentGroupName.CREDIT_CARD:
 				return payments.selectedPayment.paymentItems.map((option, index) => (
@@ -715,6 +730,15 @@ class StepFour extends Component {
 							onClose={() => this.onCloseErrorBox()}
 							isConfirm={payments.isConfirm}
 							okeoce={() => this.okeoce()}
+						/>
+					)
+				}
+				{
+					!!this.state.tooltip && (
+						<Tooltip 
+							show 
+							content={this.state.tooltip} 
+							onClose={() => this.setState({ tooltip: '' })}
 						/>
 					)
 				}

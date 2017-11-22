@@ -51,6 +51,14 @@
 	}
 }
 
+.tooltipButton{
+	margin-left: '10px';
+	margin-top: '-5px';
+	position: 'relative';
+	z-index: 1;
+
+}
+
 .restrictO2oMessage{
 	color: color(red);
 	padding: rem(10px) 0px;
