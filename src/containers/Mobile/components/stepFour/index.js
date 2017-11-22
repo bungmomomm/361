@@ -314,13 +314,13 @@ class StepFour extends Component {
 						selectedPayment: this.props.payments.selectedPaymentOption
 					});
 				}
-
+				
 				if (this.props.payments.twoClickEnabled) {
 					validator = this.elCvvInstallment.validation.checkValid();
 				} else {
 					validator = this.elMonthInstallment.validation.checkValid() && this.elYearInstallment.validation.checkValid() && this.elCvvInstallment.validation.checkValid();
 				}
-
+			
 				if (validator) {
 					this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
 				} else {
@@ -339,7 +339,7 @@ class StepFour extends Component {
 				} else {
 					validator = this.elCCMonth.validation.checkValid() && this.elCCYear.validation.checkValid() && this.elCCCvv.validation.checkValid();
 				}
-
+			
 				if (validator) {
 					this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
 				} else {
@@ -874,7 +874,7 @@ class StepFour extends Component {
 						<CreditCardInput
 							placeholder='Masukkan Nomor Kartu'
 							sprites='payment-option'
-							onChange={(e) => this.onInstallmentCCNumberChange(e)}
+							onChange={(e) => this.checkValidInstallment(e)}
 							message={this.state.validInstallmentBin ? null : 'Masukan no kartu kredit yang sesuai'}
 							color={this.state.validInstallmentBin ? null : 'red'}
 						/>
@@ -1045,7 +1045,7 @@ class StepFour extends Component {
 						min={0}
 						type='number'
 						placeholder={payments.billingPhoneNumber || T.checkout.BILLING_PHONE_NUMBER}
-						onChange={(event) => this.props.onBillingNumberChange(event)}
+						onChange={(event) => this.props.onBillingNumberChange(event)} 
 					/>
 					{
 						this.checkShowingOvoPhone() && payments.ovoPhoneNumber &&

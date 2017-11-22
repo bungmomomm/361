@@ -39,7 +39,7 @@ class StepTwo extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (this.props.stepState.stepOne.selectedAddress.id === 'undefined') {
+		if (this.props.stepState.stepOne.selectedAddress.id === undefined && this.props.cart[0].store.id === 0) {
 			// fetch data cart when selected address empty
 			this.constructor.fetchDataCart(
 				this.cookies, 
@@ -72,13 +72,22 @@ class StepTwo extends Component {
 		const o2oRestrictedCart = cart.filter((e) => {
 			return isPickupable === '0' && !e.store.shipping.o2oSupported && stepState.stepOne.activeTab === 1;
 		});
-		const isAllowedO2o = isPickupable === '0' && o2oRestrictedCart.length > 0 && stepState.stepOne.activeTab === 1;
+		const isAllowedO2o = (isPickupable === '0' && o2oRestrictedCart.length > 0 && stepState.stepOne.activeTab === 1);
+
+		const selectedShipping = (nextProps.stepState.stepOne.selectedAddress.id && stepState.stepOne.activeTab === 0);
+		const selectedO2O = (nextProps.stepState.stepOne.selectedAddressO2O && stepState.stepOne.activeTab === 1);
+		console.log((selectedShipping || isAlowedShipping));
+		console.log((selectedO2O || isAllowedO2o));
 
 		// set disabled payment
 		const checkoutState = {
 			...stepState,
 			stepFour: {
 				...stepState.stepFour,
+				disable: isAlowedShipping || isAllowedO2o
+			},
+			stepThree: {
+				...stepState.stepThree,
 				disable: isAlowedShipping || isAllowedO2o
 			}
 		};
@@ -144,7 +153,7 @@ class StepTwo extends Component {
 	render() {
 		return (
 			<div className={this.createClassCard()}>
-				<p><strong>{T.checkout.STEP_TWO_LABEL}</strong></p>
+				<p><strong>{T.checkout.STEP_TWO_LABEL}</strong><span> ({this.props.totalItems} items)</span></p>
 				{
 					this.props.cart.map((storeData, indexStoreBox) => {
 						const isRestrictO2O = this.checkRestrictO2o(!storeData.store.shipping.o2oSupported);
@@ -201,6 +210,7 @@ const mapStateToProps = (state) => {
 		isPickupable: state.cart.isPickupable,
 		loading: state.cart.loading,
 		error: state.cart.error,
+		totalItems: state.cart.totalItems,
 	};
 };
 
