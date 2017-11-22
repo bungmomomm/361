@@ -657,16 +657,16 @@ class Checkout extends Component {
 
 		const onVtCreditCardCallback = (response) => {
 			window.Raven.captureMessage('VTCreditCard', {
-				level: 'info',
-				extra: {
-					response: response
+				"level": 'info',
+				"extra": {
+					"response": response
 				}
 			});
 			if (response.redirect_url) {
 				window.Raven.captureBreadcrumb(
-					message: 'VT token 1',
-					category: 'action',
-					data: {
+					"message": 'VT token 1',
+					"category": 'action',
+					"data": {
 						"response": response,
 					  	"bank": response.bank
 					}
@@ -677,9 +677,9 @@ class Checkout extends Component {
 				dispatch(vtModalBoxOpen(true, response.redirect_url));
 			} else if (parseInt(response.status_code, 10) === 200) {
 				window.Raven.captureBreadcrumb(
-					message: 'VT token 2',
-					category: 'action',
-					data: {
+					"message": 'VT token 2',
+					"category": 'action',
+					"data": {
 						"response": response,
 					  	"token_id": response.token_id
 					}
@@ -715,9 +715,9 @@ class Checkout extends Component {
 				);
 			} else {
 				window.Raven.captureBreadcrumb(
-					message: 'VT token error',
-					category: 'action',
-					data: {
+					"message": 'VT token error',
+					"category": 'action',
+					"data": {
 						"response": response
 					}
 				);
@@ -735,16 +735,16 @@ class Checkout extends Component {
 
 		const onVtInstallmentCallback = (response) => {
 			window.Raven.captureMessage('VTInstallment', {
-				level: 'info',
-				extra: {
-					response: response
+				"level": 'info',
+				"extra": {
+					"response": response
 				}
 			});
 			if (response.redirect_url) {
 				window.Raven.captureBreadcrumb(
-					message: 'VT token 1',
-					category: 'action',
-					data: {
+					"message": 'VT token 1',
+					"category": 'action',
+					"data": {
 						"response": response,
 					  	"bank": response.bank
 					}
@@ -758,9 +758,9 @@ class Checkout extends Component {
 				dispatch(vtModalBoxOpen(true, response.redirect_url));
 			} else if (parseInt(response.status_code, 10) === 200) {
 				window.Raven.captureBreadcrumb(
-					message: 'VT token 2',
-					category: 'action',
-					data: {
+					"message": 'VT token 2',
+					"category": 'action',
+					"data": {
 						"response": response,
 					  	"token_id": response.token_id
 					}
@@ -793,9 +793,9 @@ class Checkout extends Component {
 				);
 			} else {
 				window.Raven.captureBreadcrumb(
-					message: 'VT token error',
-					category: 'action',
-					data: {
+					"message": 'VT token error',
+					"category": 'action',
+					"data": {
 						"response": response
 					}
 				);
