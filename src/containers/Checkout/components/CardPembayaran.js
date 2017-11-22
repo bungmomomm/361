@@ -98,7 +98,13 @@ export default class CardPembayaran extends Component {
 		this.onOvoPaymentNumberChange = this.onOvoPaymentNumberChange.bind(this);
 		this.setAutoLinkage = this.setAutoLinkage.bind(this);
 		this.onResetOvoPayment = this.onResetOvoPayment.bind(this);
+		this.payNowButton = '';
 	}
+
+	componentDidMount() {
+		this.payNowButton = document.getElementById('pay-now');
+	}
+
 	onChange(event) {
 		this.setState({
 			[event.target.name]: event.target.value
@@ -145,7 +151,10 @@ export default class CardPembayaran extends Component {
 	onPaymentOptionChange(event) {
 		this.props.onPaymentOptionChange(event, this.props.payments.selectedPayment);
 		if (event.value) {
+			this.payNowButton.disabled = false;
 			pushDataLayer('checkout', 'checkout', { step: 7, option: event.label });
+		} else {
+			this.payNowButton.disabled = true;
 		}
 	}
 
@@ -228,6 +237,7 @@ export default class CardPembayaran extends Component {
 	}
 
 	onOvoNumberChange(event) {
+		this.payNowButton.disabled = false;
 		this.props.onOvoNumberChange(event.target.value);
 	}
 
@@ -236,6 +246,7 @@ export default class CardPembayaran extends Component {
 	}
 
 	onOvoPaymentNumberChange(event) {
+		this.payNowButton.disabled = false;
 		const ovo = this.state.ovo;
 		const ovoPhonePayment = event.target.value;
 		const regexPhone = /^[0-9]{5,30}/;
@@ -663,7 +674,7 @@ export default class CardPembayaran extends Component {
 						{ renderIf(!isOvoPayemnt || (!this.state.ovo.autoLinkage && isOvoPayemnt))(ovoPhone) }
 						<div className={styles.checkOutAction}>
 							<Checkbox defaultChecked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' onClick={(state, value) => this.props.onTermsAndConditionChange(state, value)} />
-							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' loading={loading} disabled={disabledPayment} />
+							<Button id='pay-now' onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' loading={loading} disabled={disabledPayment} />
 						</div>
 					</div>
 				</div>
