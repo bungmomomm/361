@@ -7,7 +7,8 @@ import { T } from '@/data/translations';
 import {
 	Panel,
 	Level,
-	Icon
+	Icon,
+	Alert,
 } from 'mm-ui';
 import StoreBoxBody from './StoreBoxBody';
 import StoreBoxFooter from './StoreBoxFooter';
@@ -68,7 +69,7 @@ class StepTwo extends Component {
 		const jabotabekRestrictedCart = cart.filter((e) => {
 			return e.store.products[0].fgLocation === '1';
 		});
-		const emptyShipping = activeTab === 0 && !(selectedAddress && selectedAddress.attributes.id);
+		const emptyShipping = activeTab === 0 && !selectedAddress.id;
 		const notAlowedShipping = (jabotabekRestrictedCart.length > 0 && selectedAddress.attributes.isJabodetabekArea === '0') || emptyShipping;
 
 		// for o2o item only 
@@ -157,7 +158,7 @@ class StepTwo extends Component {
 
 	render() {
 		return (
-			<div className={this.createClassCard()} hidden={this.props.disable}>
+			<div className={this.createClassCard()}>
 				<p><strong>{T.checkout.STEP_TWO_LABEL}</strong><span> ({this.props.totalItems} items)</span></p>
 				{
 					this.props.cart.map((storeData, indexStoreBox) => {
@@ -175,9 +176,9 @@ class StepTwo extends Component {
 								}
 							>
 								{
-									isJabotabekItem && (<div className='font-red' style={{ marginBottom: '15px' }}>
+									isJabotabekItem && (<Alert color='red' style={{ marginBottom: '15px' }}>
 										{T.checkout.JABODETABEK_LABEL}
-									</div>)
+									</Alert>)
 								}
 								{
 									isRestrictO2O && (<div className='font-red' style={{ marginBottom: '15px' }}>
@@ -194,7 +195,6 @@ class StepTwo extends Component {
 								<StoreBoxFooter 
 									stepOneActiveTab={this.props.stepState.stepOne.activeTab}
 									selectedAddress={this.props.stepState.stepOne.selectedAddress}
-									showEditAddressModal={() => this.props.stepState.stepOne.funcShowModalAddress('edit')}
 									checkGosendMethod={(checked, store) => this.updateShippingMethodGosend(checked, store)}
 									data={storeData} 
 								/>

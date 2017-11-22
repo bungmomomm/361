@@ -86,16 +86,18 @@ class stepOne extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
+		// set default elocker
+		if (!nextProps.stepState.stepOne.selectedAddressO2O && nextProps.latesto2o && nextProps.latesto2o.length > 0) {
+			const checkoutState = this.setStateDefaultElocker(nextProps.stepState, nextProps.latesto2o);
+			this.props.applyState(checkoutState);
+		}
+		
 		if (this.state.shipping.length < 1 || this.props.addresses !== nextProps.addresses) {
 			if (!_.isEmpty(nextProps.addresses)) {
 				this.setShipping(nextProps.addresses);
 			}
 		}
-		if (nextProps.latesto2o !== this.state.latesto2o) {
-			this.setState({
-				selectedAddressO2O: nextProps.latesto2o[0] || {}
-			});
-		}
+		
 		if (this.props.stepState.stepOne.dropshipper.checked !== nextProps.stepState.stepOne.dropshipper.checked) {
 			this.onPlaceOrder(nextProps.stepState.stepOne.selectedAddress, nextProps.stepState.stepOne.dropshipper);
 		}
@@ -164,6 +166,23 @@ class stepOne extends Component {
 		this.toggleModalo2o();
 		this.onPlaceOrder(selectedAddressO2O);
 	}
+	
+	setStateDefaultElocker(stepState, latesto2o) {
+		// set default elocker
+		if (!stepState.stepOne.selectedAddressO2O && latesto2o && latesto2o.length > 0) {
+			stepState = {
+				...stepState,
+				stepOne: {
+					...stepState.stepOne,
+					selectedAddressO2O: latesto2o[0]
+				}
+			};
+			this.setState({
+				selectedAddressO2O: latesto2o[0]
+			});
+		}
+		return stepState;
+	}
 
 	showModalAddress(type) {
 		this.flagModalAddress = type;
@@ -193,7 +212,9 @@ class stepOne extends Component {
 	}
 
 	saveSelectedAddress(selectedAddress, selectedAddressType = 'selectedAddress') {
-		const { stepState } = this.props;
+		let { stepState } = this.props;
+		stepState = this.setStateDefaultElocker(stepState, this.props.latesto2o);
+		
 		const checkoutState = {
 			...stepState,
 			stepOne: {
