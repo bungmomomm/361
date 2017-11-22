@@ -668,7 +668,7 @@ class Checkout extends Component {
 					"category": 'action',
 					"data": {
 						"response": response,
-					  	"bank": response.bank
+						"bank": response.bank
 					}
 				);
 				if (response.bank) {
@@ -681,7 +681,7 @@ class Checkout extends Component {
 					"category": 'action',
 					"data": {
 						"response": response,
-					  	"token_id": response.token_id
+						"token_id": response.token_id
 					}
 				);
 				dispatch(vtModalBoxOpen(false));
@@ -746,7 +746,7 @@ class Checkout extends Component {
 					"category": 'action',
 					"data": {
 						"response": response,
-					  	"bank": response.bank
+						"bank": response.bank
 					}
 				);
 				// const payment = {
@@ -762,7 +762,7 @@ class Checkout extends Component {
 					"category": 'action',
 					"data": {
 						"response": response,
-					  	"token_id": response.token_id
+						"token_id": response.token_id
 					}
 				);
 				dispatch(vtModalBoxOpen(false));
