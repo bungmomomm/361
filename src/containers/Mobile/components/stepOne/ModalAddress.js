@@ -281,7 +281,7 @@ class ModalAddress extends Component {
 
 	renderGoogleMap() {
 		const { mapMarkerCenter } = this.state;
-		const centerMap = (mapMarkerCenter.lat !== '' && mapMarkerCenter.lng !== '') ? mapMarkerCenter : this.selectedPolygon.center;
+		const centerMap = (mapMarkerCenter && (mapMarkerCenter.lat !== '' && mapMarkerCenter.lng !== '')) ? mapMarkerCenter : this.selectedPolygon.center;
 		return (
 			<div style={{ marginBottom: '15px' }}>
 				<GoogleMap
