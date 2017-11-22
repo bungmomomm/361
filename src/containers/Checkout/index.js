@@ -720,13 +720,6 @@ class Checkout extends Component {
 				});
 				dispatch(vtModalBoxOpen(false));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
-				dispatch(
-					failAuthTokenCC(
-						this.props.cookies.get('user.token'),
-						this.props.soNumber
-					)
-				);
-				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
 			}
 		};
 
@@ -796,13 +789,6 @@ class Checkout extends Component {
 				});
 				dispatch(vtModalBoxOpen(false));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
-				dispatch(
-					failAuthTokenCC(
-						this.props.cookies.get('user.token'),
-						this.props.soNumber
-					)
-				);
-				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
 			}
 
 
