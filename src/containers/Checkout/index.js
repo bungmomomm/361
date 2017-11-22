@@ -663,31 +663,27 @@ class Checkout extends Component {
 				}
 			});
 			if (response.redirect_url) {
-				if typeof(Raven) !== 'undefined' {
-					window.Raven.captureBreadcrumb(
-						message: 'VT token 1',
-						category: 'action',
-						data: {
-							"response": response,
-						  	"bank": response.bank
-						}
-					});
-				}
+				window.Raven.captureBreadcrumb(
+					message: 'VT token 1',
+					category: 'action',
+					data: {
+						"response": response,
+					  	"bank": response.bank
+					}
+				});
 				if (response.bank) {
 					bankName = response.bank;
 				}
 				dispatch(vtModalBoxOpen(true, response.redirect_url));
 			} else if (parseInt(response.status_code, 10) === 200) {
-				if typeof(Raven) !== 'undefined' {
-					window.Raven.captureBreadcrumb(
-						message: 'VT token 2',
-						category: 'action',
-						data: {
-							"response": response,
-						  	"token_id": response.token_id
-						}
-					});
-				}
+				window.Raven.captureBreadcrumb(
+					message: 'VT token 2',
+					category: 'action',
+					data: {
+						"response": response,
+					  	"token_id": response.token_id
+					}
+				});
 				dispatch(vtModalBoxOpen(false));
 				dispatch(
 					pay(
@@ -718,15 +714,13 @@ class Checkout extends Component {
 					)
 				);
 			} else {
-				if typeof(Raven) !== 'undefined' {
-					window.Raven.captureBreadcrumb(
-						message: 'VT token error',
-						category: 'action',
-						data: {
-							"response": response
-						}
-					});
-				}
+				window.Raven.captureBreadcrumb(
+					message: 'VT token error',
+					category: 'action',
+					data: {
+						"response": response
+					}
+				});
 				dispatch(vtModalBoxOpen(false));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
 				dispatch(
@@ -747,16 +741,14 @@ class Checkout extends Component {
 				}
 			});
 			if (response.redirect_url) {
-				if typeof(Raven) !== 'undefined' {
-					window.Raven.captureBreadcrumb(
-						message: 'VT token 1',
-						category: 'action',
-						data: {
-							"response": response,
-						  	"bank": response.bank
-						}
-					});
-				}
+				window.Raven.captureBreadcrumb(
+					message: 'VT token 1',
+					category: 'action',
+					data: {
+						"response": response,
+					  	"bank": response.bank
+					}
+				});
 				// const payment = {
 				// 	token_id: response.token_id
 				// };
@@ -765,16 +757,14 @@ class Checkout extends Component {
 				}
 				dispatch(vtModalBoxOpen(true, response.redirect_url));
 			} else if (parseInt(response.status_code, 10) === 200) {
-				if typeof(Raven) !== 'undefined' {
-					window.Raven.captureBreadcrumb(
-						message: 'VT token 2',
-						category: 'action',
-						data: {
-							"response": response,
-						  	"token_id": response.token_id
-						}
-					});
-				}
+				window.Raven.captureBreadcrumb(
+					message: 'VT token 2',
+					category: 'action',
+					data: {
+						"response": response,
+					  	"token_id": response.token_id
+					}
+				});
 				dispatch(vtModalBoxOpen(false));
 				dispatch(
 					pay(
@@ -802,15 +792,13 @@ class Checkout extends Component {
 					)
 				);
 			} else {
-				if typeof(Raven) !== 'undefined' {
-					window.Raven.captureBreadcrumb(
-						message: 'VT token error',
-						category: 'action',
-						data: {
-							"response": response
-						}
-					});
-				}
+				window.Raven.captureBreadcrumb(
+					message: 'VT token error',
+					category: 'action',
+					data: {
+						"response": response
+					}
+				});
 				dispatch(vtModalBoxOpen(false));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
 				dispatch(
