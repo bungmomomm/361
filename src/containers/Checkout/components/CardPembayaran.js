@@ -65,8 +65,8 @@ export default class CardPembayaran extends Component {
 			validVoucher: false,
 			reset: null,
 			validInstallmentBin: true,
-			isValidCreaditCard: true,
-			isValidCreaditCardInstallment: true,
+			isValidCreaditCard: false,
+			isValidCreaditCardInstallment: false,
 			ovo: {
 				useDefault: true,
 				ovoPhonePayment: null,
@@ -148,15 +148,23 @@ export default class CardPembayaran extends Component {
 			pushDataLayer('checkout', 'checkout', { step: 6, option: event.label });
 		}
 		this.onResetOvoPayment();
+
+		// clear CC information
+		this.props.onCardMonthChange({ value: 0 });
+		this.props.onCardYearChange({ value: 0 });
+		this.props.onCardCvvChange({ target: { value: 0 } });
+		
+		// clear installment CC information
+		this.props.onInstallmentCCMonthChange({ value: 0 });
+		this.props.onInstallmentCCYearChange({ value: 0 });
+		this.props.onInstallmentCCCvvChange({ target: { value: 0 } });
+
 	}
 
 	onPaymentOptionChange(event) {
 		this.props.onPaymentOptionChange(event, this.props.payments.selectedPayment);
 		if (event.value) {
-			this.payNowButton.disabled = false;
 			pushDataLayer('checkout', 'checkout', { step: 7, option: event.label });
-		} else {
-			this.payNowButton.disabled = true;
 		}
 	}
 
@@ -180,7 +188,6 @@ export default class CardPembayaran extends Component {
 		this.setState({
 			isValidCreaditCard: event.valid
 		});
-		this.payNowButton.disabled = !event.valid;
 		this.props.onCardNumberChange(event);
 	}
 	onCardMonthChange(data) {
@@ -210,7 +217,6 @@ export default class CardPembayaran extends Component {
 		this.setState({
 			isValidCreaditCardInstallment: event.valid
 		});
-		this.payNowButton.disabled = !event.valid;
 		if (event.ccNumber.length < 1) {
 			this.setState({
 				validInstallmentBin: true
@@ -312,6 +318,33 @@ export default class CardPembayaran extends Component {
 		}
 	}
 
+	isValidCCForm() {
+		const { selectedPayment, selectedCardDetail } = this.props.payments;
+		if (selectedPayment.value === paymentGroupName.CREDIT_CARD) {
+			this.payNowButton.disabled = true;
+			if (
+				this.state.isValidCreaditCard && 
+				(selectedCardDetail.cvv !== 0 && selectedCardDetail.cvv !== '' && selectedCardDetail.cvv.length > 2) && 
+				(selectedCardDetail.month !== 0 && selectedCardDetail.month !== null) && 
+				(selectedCardDetail.year !== 0 && selectedCardDetail.year !== null)
+			) {
+				this.payNowButton.disabled = false;
+			}
+		}
+		
+		if (selectedPayment.value === paymentGroupName.INSTALLMENT) {
+			this.payNowButton.disabled = true;
+			if (
+				this.state.isValidCreaditCardInstallment && 
+				(selectedCardDetail.cvv !== 0 && selectedCardDetail.cvv !== '' && selectedCardDetail.cvv.length > 2) && 
+				(selectedCardDetail.month !== 0 && selectedCardDetail.month !== null) && 
+				(selectedCardDetail.year !== 0 && selectedCardDetail.year !== null)
+			) {
+				this.payNowButton.disabled = false;
+			}
+		}
+	}
+
 	handleCekVoucher(event) {
 		event.preventDefault();
 		this.setState({
@@ -391,7 +424,7 @@ export default class CardPembayaran extends Component {
 		const CvvElement = (
 			<Row>
 				<Col grid={4}>
-					<Input type='password' placeholder='cvv' minLength={0} maxLength={4} onBlur={this.onCardCvvChange} />
+					<Input type='password' placeholder='cvv' minLength={0} maxLength={4} onChange={this.onCardCvvChange} />
 				</Col>
 				<Col grid={4}>
 					<Sprites name='cvv' />
@@ -423,7 +456,7 @@ export default class CardPembayaran extends Component {
 				paymentOptions = (
 					<InputGroup>
 						<Select emptyFilter={false} name={`payment-${selectedPayment.value}`} options={selectedPayment.paymentItems} onChange={this.onPaymentOptionChange} reset={resetPaymentOption} />
-						{ renderIf(selectedPaymentOption && typeof selectedPaymentOption.settings !== 'undefined' && selectedPaymentOption.settings.info.length > 0)(
+						{ renderIf(selectedPaymentOption && typeof selectedPaymentOption.settings !== 'undefined' && selectedPaymentOption.settings.info)(
 							<Tooltip position='right' content='Info'>
 								{info}
 							</Tooltip>
@@ -486,7 +519,7 @@ export default class CardPembayaran extends Component {
 							<Select top selectedLabel='-- Tahun' options={this.props.tahun} onChange={this.onInstallmentCCYearChange} />
 						</Level.Item>
 						<Level.Item>
-							<Input type='password' minLength={0} maxLength={4} placeholder='cvv' onBlur={this.onInstallmentCCCvvChange} />
+							<Input type='password' minLength={0} maxLength={4} placeholder='cvv' onChange={this.onInstallmentCCCvvChange} />
 						</Level.Item>
 						<Level.Item>
 							<Sprites name='cvv' />
@@ -573,7 +606,7 @@ export default class CardPembayaran extends Component {
 				/>
 			</InputGroup>
 		);
-
+		this.isValidCCForm();
 		return (
 			<Card stretch loading={this.props.loading} >
 				<div className={styles.overflow}>
@@ -626,7 +659,7 @@ export default class CardPembayaran extends Component {
 									selectedPaymentOption &&
 									(selectedPayment.value === 'cod' || selectedPayment.value === 'gratis') &&
 									typeof selectedPaymentOption.settings !== 'undefined' &&
-									selectedPaymentOption.settings.info.length > 0)(
+									selectedPaymentOption.settings && selectedPaymentOption.settings.info.length > 0)(
 										<Tooltip position='right' content='Info'>
 											{info}
 										</Tooltip>
@@ -668,7 +701,7 @@ export default class CardPembayaran extends Component {
 									<Select top selectedLabel='-- Tahun' options={this.props.tahun} onChange={this.onCardYearChange} />
 								</Level.Item>
 								<Level.Item>
-									<Input type='password' minLength={0} maxLength={4} placeholder='cvv' onBlur={this.onCardCvvChange} />
+									<Input type='password' minLength={0} maxLength={4} placeholder='cvv' onChange={this.onCardCvvChange} />
 								</Level.Item>
 								<Level.Item>
 									<Sprites name='cvv' />
