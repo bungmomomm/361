@@ -188,6 +188,7 @@ class StepTwo extends Component {
 								<StoreBoxFooter 
 									stepOneActiveTab={this.props.stepState.stepOne.activeTab}
 									selectedAddress={this.props.stepState.stepOne.selectedAddress}
+									showEditAddressModal={() => this.props.stepState.stepOne.funcShowModalAddress('edit')}
 									checkGosendMethod={(checked, store) => this.updateShippingMethodGosend(checked, store)}
 									data={storeData} 
 								/>
