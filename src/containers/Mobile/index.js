@@ -59,10 +59,10 @@ class Mobile extends Component {
 					stepState={this.state}
 				/>
 				{
-					!this.state.stepTwo.disable &&
 					<StepTwo 
 						applyState={(e) => this.applyState(e)} 
 						stepState={this.state} 
+						disable={this.state.stepThree.disable}
 					/>
 				}
 				{

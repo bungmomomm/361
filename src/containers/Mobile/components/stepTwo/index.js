@@ -29,6 +29,7 @@ class StepTwo extends Component {
 		super(props);
 		this.props = props;
 		this.cookies = this.props.cookies.get('user.token');
+		this.loadedCart = false;
 	}
 
 	componentWillMount() {
@@ -39,12 +40,13 @@ class StepTwo extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (this.props.stepState.stepOne.selectedAddress.id === undefined && this.props.cart[0].store.id === 0) {
+		if (!this.loadCart && this.props.stepState.stepOne.selectedAddress.id === undefined && this.props.cart[0].store.id === 0) {
 			// fetch data cart when selected address empty
 			this.constructor.fetchDataCart(
 				this.cookies, 
 				this.props.dispatch
 			);
+			this.loadCart = true;
 		}
 
 		if (this.props.stepState.stepOne.selectedAddress !== nextProps.stepState.stepOne.selectedAddress) {
@@ -61,35 +63,37 @@ class StepTwo extends Component {
 	
 	checkAllowedPayment(selectedAddress, nextProps) {
 		const { cart, stepState, isPickupable } = nextProps;
+		const activeTab = stepState.stepOne.activeTab;
 		
 		// for jabodetabek item only 
 		const jabotabekRestrictedCart = cart.filter((e) => {
 			return e.store.products[0].fgLocation === '1';
 		});
-		const isAlowedShipping = (jabotabekRestrictedCart.length > 0 && selectedAddress.attributes.isJabodetabekArea === '0');
+		const emptyShipping = activeTab === 0 && !(selectedAddress && selectedAddress.attributes.id);
+		const notAlowedShipping = (jabotabekRestrictedCart.length > 0 && selectedAddress.attributes.isJabodetabekArea === '0') || emptyShipping;
 
 		// for o2o item only 
 		const o2oRestrictedCart = cart.filter((e) => {
-			return isPickupable === '0' && !e.store.shipping.o2oSupported && stepState.stepOne.activeTab === 1;
+			return isPickupable === '0' && !e.store.shipping.o2oSupported && activeTab === 1;
 		});
-		const isAllowedO2o = (isPickupable === '0' && o2oRestrictedCart.length > 0 && stepState.stepOne.activeTab === 1);
-
-		const selectedShipping = (nextProps.stepState.stepOne.selectedAddress.id && stepState.stepOne.activeTab === 0);
-		const selectedO2O = (nextProps.stepState.stepOne.selectedAddressO2O && stepState.stepOne.activeTab === 1);
-		console.log((selectedShipping || isAlowedShipping));
-		console.log((selectedO2O || isAllowedO2o));
+		const emptyShippingO2o = activeTab === 1 && !nextProps.stepState.stepOne.selectedAddressO2O;
+		const notAllowedO2o = (isPickupable === '0' && o2oRestrictedCart.length > 0 && activeTab === 1) || emptyShippingO2o;
 
 		// set disabled payment
 		const checkoutState = {
 			...stepState,
 			stepFour: {
 				...stepState.stepFour,
-				disable: isAlowedShipping || isAllowedO2o
+				disable: notAlowedShipping || notAllowedO2o
 			},
 			stepThree: {
 				...stepState.stepThree,
-				disable: isAlowedShipping || isAllowedO2o
-			}
+				disable: notAlowedShipping || notAllowedO2o
+			},
+			stepTwo: {
+				...stepState.stepTwo,
+				disable: activeTab === 0 && emptyShipping
+			},
 		};
 		this.props.applyState(checkoutState);
 	}
@@ -111,11 +115,13 @@ class StepTwo extends Component {
 	}
 
 	updateQty(qty, productId) {
-		const { soNumber, dispatch } = this.props;
-		if (soNumber) {
-			dispatch(new actions.updateQtyCart(this.cookies, qty, productId, { soNumber }));
-		} else {
-			dispatch(new actions.updateCartWithoutSO(this.cookies, qty, productId));
+		if (qty !== '') {
+			const { soNumber, dispatch } = this.props;
+			if (soNumber) {
+				dispatch(new actions.updateQtyCart(this.cookies, qty, productId, { soNumber }));
+			} else {
+				dispatch(new actions.updateCartWithoutSO(this.cookies, qty, productId));
+			}
 		}
 	}
 
@@ -152,7 +158,7 @@ class StepTwo extends Component {
 
 	render() {
 		return (
-			<div className={this.createClassCard()}>
+			<div className={this.createClassCard()} hidden={this.props.disable}>
 				<p><strong>{T.checkout.STEP_TWO_LABEL}</strong><span> ({this.props.totalItems} items)</span></p>
 				{
 					this.props.cart.map((storeData, indexStoreBox) => {
