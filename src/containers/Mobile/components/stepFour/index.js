@@ -874,9 +874,9 @@ class StepFour extends Component {
 						<CreditCardInput
 							placeholder='Masukkan Nomor Kartu'
 							sprites='payment-option'
-							onChange={this.onInstallmentCCNumberChange}
-                            message={this.state.validInstallmentBin ? null : 'Masukan no kartu kredit yang sesuai'}
-                            color={this.state.validInstallmentBin ? null : 'red'}
+							onChange={(e) => this.onInstallmentCCNumberChange(e)}
+							message={this.state.validInstallmentBin ? null : 'Masukan no kartu kredit yang sesuai'}
+							color={this.state.validInstallmentBin ? null : 'red'}
 						/>
 						<Group grouped>
 							<Select
@@ -1004,36 +1004,36 @@ class StepFour extends Component {
 							<label htmlFor='masa-berlaku'key={2}>Masa Berlaku</label>
 							<Group grouped id='masa-berlaku'>
 								<Select
-                                    block
-                                    options={Bulan}
-                                    onChange={this.onCardMonthChange}
-                                    validation={{
-                                        rules: 'required|min_value:1',
-                                        name: 'month'
-                                    }}
-                                    ref={(c) => { this.elCCMonth = c; }}
-                                />
+									block
+									options={Bulan}
+									onChange={this.onCardMonthChange}
+									validation={{
+										rules: 'required|min_value:1',
+										name: 'month'
+									}}
+									ref={(c) => { this.elCCMonth = c; }}
+								/>
 								<Select
-                                    block
-                                    options={this.state.tahun}
-                                    onChange={this.onCardYearChange}
-                                    validation={{
-                                        rules: 'required|min_value:10|min:1',
-                                        name: 'year'
-                                    }}
-                                    ref={(c) => { this.elCCYear = c; }}
-                                />
+									block
+									options={this.state.tahun}
+									onChange={this.onCardYearChange}
+									validation={{
+										rules: 'required|min_value:10|min:1',
+										name: 'year'
+									}}
+									ref={(c) => { this.elCCYear = c; }}
+								/>
 								<Input
-                                    dataProps={{ minLength: 0, maxLength: 4 }}
-                                    type='password'
-                                    placeholder='cvv'
-                                    onBlur={this.onCardCvvChange}
-                                    validation={{
-                                        rules: 'required|min_value:1',
-                                        name: 'cvv'
-                                    }}
-                                    ref={(c) => { this.elCCCvv = c; }}
-                                />
+									dataProps={{ minLength: 0, maxLength: 4 }}
+									type='password'
+									placeholder='cvv'
+									onBlur={this.onCardCvvChange}
+									validation={{
+										rules: 'required|min_value:1',
+										name: 'cvv'
+									}}
+									ref={(c) => { this.elCCCvv = c; }}
+								/>
 								<div style={{ paddingRight: '30px' }} ><Sprites name='cvv' /></div>
 							</Group>
 							<Checkbox defaultChecked onClick={(state, value) => this.props.onSaveCcOption(state, value)}>{T.checkout.SAVE_CARD_FOR_NEXT_TRANSACTION}</Checkbox>
@@ -1041,7 +1041,7 @@ class StepFour extends Component {
 					])}
 					<Input
 						value={payments.billingPhoneNumber || ''}
-                        label={T.checkout.PHONE_NUMBER_O2O_CONFIRMATION}
+						label={T.checkout.PHONE_NUMBER_O2O_CONFIRMATION}
 						min={0}
 						type='number'
 						placeholder={payments.billingPhoneNumber || T.checkout.BILLING_PHONE_NUMBER}
@@ -1087,9 +1087,9 @@ class StepFour extends Component {
 				}
 				{
 					this.props.payments.show3ds && <Vt3dsModalBox
-						shown={this.props.payments.show3ds}
+						show
 						src={this.props.payments.vtRedirectUrl}
-						onClose={this.onVt3dsModalBoxClose}
+						onClose={() => this.onVt3dsModalBoxClose()}
 					/>
 				}
 			</div>

@@ -7,13 +7,8 @@ export default class Vt3dsModalBox extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.onClose = this.onClose.bind(this);
 	}
     
-	onClose(closed) {
-		this.props.onClose(closed);
-	}
-
 	render() {
 		return (
 			<Modal size='small' className='text-center' show={this.props.show} onCloseRequest={(e) => this.props.onClose(e)} >
