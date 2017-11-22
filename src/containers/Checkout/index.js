@@ -655,12 +655,32 @@ class Checkout extends Component {
 
 
 		const onVtCreditCardCallback = (response) => {
+			window.Raven.captureMessage('VTCreditCard', {
+				level: 'info',
+				extra: {
+					response
+				}
+			});
 			if (response.redirect_url) {
+				window.Raven.captureBreadcrumb({
+					message: 'VT token 1',
+					category: 'action',
+					data: {
+						response
+					}
+				});
 				if (response.bank) {
 					bankName = response.bank;
 				}
 				dispatch(vtModalBoxOpen(true, response.redirect_url));
 			} else if (parseInt(response.status_code, 10) === 200) {
+				window.Raven.captureBreadcrumb({
+					message: 'VT token 2',
+					category: 'action',
+					data: {
+						response
+					}
+				});
 				dispatch(vtModalBoxOpen(false));
 				dispatch(
 					pay(
@@ -691,13 +711,40 @@ class Checkout extends Component {
 					)
 				);
 			} else {
+				window.Raven.captureBreadcrumb({
+					message: 'VT token error',
+					category: 'action',
+					data: {
+						response
+					}
+				});
 				dispatch(vtModalBoxOpen(false));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
+				dispatch(
+					failAuthTokenCC(
+						this.props.cookies.get('user.token'),
+						this.props.soNumber
+					)
+				);
+				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
 			}
 		};
 
 		const onVtInstallmentCallback = (response) => {
+			window.Raven.captureMessage('VTInstallment', {
+				level: 'info',
+				extra: {
+					response
+				}
+			});
 			if (response.redirect_url) {
+				window.Raven.captureBreadcrumb({
+					message: 'VT token 1',
+					category: 'action',
+					data: {
+						response
+					}
+				});
 				// const payment = {
 				// 	token_id: response.token_id
 				// };
@@ -706,6 +753,13 @@ class Checkout extends Component {
 				}
 				dispatch(vtModalBoxOpen(true, response.redirect_url));
 			} else if (parseInt(response.status_code, 10) === 200) {
+				window.Raven.captureBreadcrumb({
+					message: 'VT token 2',
+					category: 'action',
+					data: {
+						response
+					}
+				});
 				dispatch(vtModalBoxOpen(false));
 				dispatch(
 					pay(
@@ -733,9 +787,25 @@ class Checkout extends Component {
 					)
 				);
 			} else {
+				window.Raven.captureBreadcrumb({
+					message: 'VT token error',
+					category: 'action',
+					data: {
+						response
+					}
+				});
 				dispatch(vtModalBoxOpen(false));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
+				dispatch(
+					failAuthTokenCC(
+						this.props.cookies.get('user.token'),
+						this.props.soNumber
+					)
+				);
+				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
 			}
+
+
 		};
 		dispatch(
 			pay(
