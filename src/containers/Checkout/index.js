@@ -655,30 +655,32 @@ class Checkout extends Component {
 
 
 		const onVtCreditCardCallback = (response) => {
-			window.Raven.captureMessage('VTCreditCard', {
-				level: 'info',
-				extra: {
-					response
-				}
-			});
 			if (response.redirect_url) {
-				window.Raven.captureBreadcrumb({
-					message: 'VT token 1',
-					category: 'action',
-					data: {
-						response
-					}
-				});
 				if (response.bank) {
 					bankName = response.bank;
 				}
+				window.Raven.captureMessage('VTCreditCard', {
+					level: 'info',
+					extra: {
+						response,
+						sonumber: this.props.payments.soNumber,
+						selectedcard: this.props.payments.selectedCard,
+						selectedpayment: this.props.payments.selectedPayment,
+						selectedpaymentoption: this.props.payments.selectedPaymentOption,
+						cart: this.props.cart
+					}
+				});
 				dispatch(vtModalBoxOpen(true, response.redirect_url));
 			} else if (parseInt(response.status_code, 10) === 200) {
-				window.Raven.captureBreadcrumb({
-					message: 'VT token 2',
-					category: 'action',
-					data: {
-						response
+				window.Raven.captureMessage('VTCreditCard', {
+					level: 'info',
+					extra: {
+						response,
+						sonumber: this.props.payments.soNumber,
+						selectedcard: this.props.payments.selectedCard,
+						selectedpayment: this.props.payments.selectedPayment,
+						selectedpaymentoption: this.props.payments.selectedPaymentOption,
+						cart: this.props.cart
 					}
 				});
 				dispatch(vtModalBoxOpen(false));
@@ -711,46 +713,52 @@ class Checkout extends Component {
 					)
 				);
 			} else {
-				window.Raven.captureBreadcrumb({
-					message: 'VT token error',
-					category: 'action',
-					data: {
-						response
+				window.Raven.captureMessage('VTCreditCard', {
+					level: 'info',
+					extra: {
+						response,
+						sonumber: this.props.payments.soNumber,
+						selectedcard: this.props.payments.selectedCard,
+						selectedpayment: this.props.payments.selectedPayment,
+						selectedpaymentoption: this.props.payments.selectedPaymentOption,
+						cart: this.props.cart
 					}
-				});
+				});				
 				dispatch(vtModalBoxOpen(false));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
 			}
 		};
 
 		const onVtInstallmentCallback = (response) => {
-			window.Raven.captureMessage('VTInstallment', {
-				level: 'info',
-				extra: {
-					response
-				}
-			});
 			if (response.redirect_url) {
-				window.Raven.captureBreadcrumb({
-					message: 'VT token 1',
-					category: 'action',
-					data: {
-						response
-					}
-				});
 				// const payment = {
 				// 	token_id: response.token_id
 				// };
 				if (response.bank) {
 					bankName = response.bank;
 				}
+				window.Raven.captureMessage('VTInstallment', {
+					level: 'info',
+					extra: {
+						response,
+						sonumber: this.props.payments.soNumber,
+						selectedcard: this.props.payments.selectedCard,
+						selectedpayment: this.props.payments.selectedPayment,
+						selectedpaymentoption: this.props.payments.selectedPaymentOption,
+						cart: this.props.cart
+					}
+				});
 				dispatch(vtModalBoxOpen(true, response.redirect_url));
 			} else if (parseInt(response.status_code, 10) === 200) {
-				window.Raven.captureBreadcrumb({
-					message: 'VT token 2',
-					category: 'action',
-					data: {
-						response
+				window.Raven.captureMessage('VTInstallment', {
+					level: 'info',
+					extra: {
+						response,
+						sonumber: this.props.payments.soNumber,
+						selectedcard: this.props.payments.selectedCard,
+						selectedpayment: this.props.payments.selectedPayment,
+						selectedpaymentoption: this.props.payments.selectedPaymentOption,
+						cart: this.props.cart
 					}
 				});
 				dispatch(vtModalBoxOpen(false));
@@ -780,11 +788,15 @@ class Checkout extends Component {
 					)
 				);
 			} else {
-				window.Raven.captureBreadcrumb({
-					message: 'VT token error',
-					category: 'action',
-					data: {
-						response
+				window.Raven.captureMessage('VTInstallment', {
+					level: 'info',
+					extra: {
+						response,
+						sonumber: this.props.payments.soNumber,
+						selectedcard: this.props.payments.selectedCard,
+						selectedpayment: this.props.payments.selectedPayment,
+						selectedpaymentoption: this.props.payments.selectedPaymentOption,
+						cart: this.props.cart
 					}
 				});
 				dispatch(vtModalBoxOpen(false));
