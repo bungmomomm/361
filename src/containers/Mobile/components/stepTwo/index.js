@@ -70,13 +70,13 @@ class StepTwo extends Component {
 		}
 	}
 
-	saveDisabledPayment(disable) {
+	saveDisabledPayment(disabled) {
 		const { stepState } = this.props;
 		const checkoutState = {
 			...stepState,
 			stepFour: {
 				...stepState.stepFour,
-				disable
+				disabled
 			}
 		};
 		this.props.applyState(checkoutState);

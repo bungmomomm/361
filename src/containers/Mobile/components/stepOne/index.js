@@ -228,15 +228,15 @@ class stepOne extends Component {
 			...stepState,
 			stepFour: {
 				...stepState.stepFour,
-				disable: notAlowedShipping || notAllowedO2o
+				disabled: notAlowedShipping || notAllowedO2o
 			},
 			stepThree: {
 				...stepState.stepThree,
-				disable: notAlowedShipping || notAllowedO2o
+				disabled: notAlowedShipping || notAllowedO2o
 			},
 			stepTwo: {
 				...stepState.stepTwo,
-				disable: emptyShipping || (restriction ? !restriction : emptyShippingO2o)
+				disabled: emptyShipping || (restriction ? !restriction : emptyShippingO2o)
 			},
 		};
 		this.props.applyState(checkoutState);
