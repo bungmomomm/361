@@ -189,13 +189,15 @@ class StepTwo extends Component {
 								<StoreBoxBody 
 									products={storeData.store.products}
 									onUpdateQty={(e, productId) => this.updateQty(e, productId)}
-									isRestrictO2O={isRestrictO2O}
 									showBtnDelete={!(this.props.cart.length < 2 && storeData.store.products.length < 2)}
 								/>
 								<StoreBoxFooter 
 									stepOneActiveTab={this.props.stepState.stepOne.activeTab}
 									selectedAddress={this.props.stepState.stepOne.selectedAddress}
+									showEditAddressModal={this.props.stepState.stepOne.funcShowModalAddress}
 									checkGosendMethod={(checked, store) => this.updateShippingMethodGosend(checked, store)}
+									isRestrictO2O={isRestrictO2O}
+									isJabotabekItem={isJabotabekItem}
 									data={storeData} 
 								/>
 							</Panel>

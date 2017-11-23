@@ -1,5 +1,6 @@
 import React from 'react';
 import s from './StoreBoxFooter.scss';
+import { Sprites } from '@/components';
 import { 
 	Checkbox,
 	Tooltip,
@@ -9,8 +10,7 @@ import { T } from '@/data/translations';
 import { currency } from '@/utils';
 
 
-const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMethod, showEditAddressModal }) => {
-	console.log(showEditAddressModal);
+const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMethod, showEditAddressModal, isRestrictO2O, isJabotabekItem }) => {
 	const store = data.store;
 	const isGosendSupported = () => {
 		return (
@@ -30,25 +30,26 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 	return (
 		<div className={s.footer}>
 			{
-				(!isGosendSupported() || !store.isJabodetabekArea) && (
+				(!isGosendSupported() || !store.isJabodetabekArea) && (!isRestrictO2O && !isJabotabekItem) && (
 					<div className={s.deliveryInfo}>{store.shipping.note}</div>
 				)
 			}
 			{
-				isGosendSupported() && (
+				isGosendSupported() && (!isRestrictO2O && !isJabotabekItem) && (
 					<div className={s.deliveryInfo}>
 						<Level>
 							<Level.Item>
 								{
-									store.shipping.gosend.gosendApplicable &&
-									(<Checkbox 
-										disabled={!hasLangLat()}
-										name='gojek' 
-										content='Pengiriman:'
-										sprites='gosend'
-										defaultChecked={store.shipping.gosend.gosendActivated}
-										onClick={() => checkGosendMethod(!store.shipping.gosend.gosendActivated, store)}
-									/>)
+									store.shipping.gosend.gosendApplicable && (
+										<Checkbox 
+											disabled={!hasLangLat()}
+											name='gojek'
+											defaultChecked={store.shipping.gosend.gosendActivated}
+											onClick={() => checkGosendMethod(!store.shipping.gosend.gosendActivated, store)}
+										>
+											Pengiriman: <Sprites name='gosend' />
+										</Checkbox>
+									)
 								}
 							</Level.Item>
 							<Level.Item>
@@ -64,12 +65,10 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 						{
 							!hasLangLat() && (
 								<div>
-									<Checkbox 
-										disabled={!hasLangLat()}
-										name='gojek' 
-										sprites='gosend'
-										defaultChecked={false}
-									><div role='button' onClick={() => showEditAddressModal()} tabIndex='0' className='font-orange'>{T.checkout.CHOOSE_SHIPPING_LOCATION}</div></Checkbox>
+									<Checkbox state={!hasLangLat() ? 'disabled' : ''} name='gojek' defaultChecked={false} >
+										Pengiriman: <Sprites name='gosend' />
+									</Checkbox>
+									<div role='button' onClick={() => showEditAddressModal()} tabIndex='0' className='font-orange'>{T.checkout.CHOOSE_SHIPPING_LOCATION}</div>
 								</div>
 							)
 						}
