@@ -85,6 +85,14 @@ class StepThree extends Component {
 		});
 	}
 
+	createClassCard() {
+		return [
+			styles.card,
+			this.props.loading ? styles.loading : '',
+			this.props.disabled ? styles.disabled : ''
+		].join(' ').trim();
+	}
+
 	render() {
 		const {
 			showModalOtp
@@ -122,9 +130,10 @@ class StepThree extends Component {
 				</Level>
 			);
 		});
+		
 
 		return (
-			<div className={styles.card}>
+			<div className={this.createClassCard()}>
 				<p><strong>{T.checkout.STEP_THREE_LABEL}</strong></p>
 				<Level style={inlineStyle.mb5}>
 					<Level.Left><strong>{T.checkout.SUB_TOTAL}</strong></Level.Left>

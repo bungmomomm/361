@@ -97,7 +97,8 @@ class StepTwo extends Component {
 	createClassCard() {
 		return [
 			styles.card, 
-			this.props.loading ? styles.loading : ''
+			this.props.loading ? styles.loading : '',
+			this.props.disabled ? styles.disabled : ''
 		].join(' ').trim();
 	}
 

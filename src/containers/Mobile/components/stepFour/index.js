@@ -782,6 +782,14 @@ class StepFour extends Component {
 		}
 		this.setState({ tooltip });
 	}
+
+	createClassCard() {
+		return [
+			styles.card,
+			this.props.loading ? styles.loading : '',
+			this.props.disabled ? styles.disabled : ''
+		].join(' ').trim();
+	}
 	
 	render() {
 		const {
@@ -987,7 +995,7 @@ class StepFour extends Component {
 
 		const ovoReadOnly = (payments.ovoInfo && parseInt(payments.ovoInfo.ovoFlag, 10) === 1);
 		return (
-			<div className={styles.card}>
+			<div className={this.createClassCard()}>
 				<p><strong>{T.checkout.STEP_FOUR_LABEL}</strong></p>
 				<div>
 					<Select 

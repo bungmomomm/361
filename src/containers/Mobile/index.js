@@ -31,13 +31,13 @@ class Mobile extends Component {
 				}
 			},
 			stepTwo: {
-				disable: false
+				disabled: false
 			},
 			stepThree: {
-				disable: false
+				disabled: false
 			},
 			stepFour: {
-				disable: false
+				disabled: false
 			}
 		};
 	}
@@ -58,27 +58,21 @@ class Mobile extends Component {
 					applyState={(e) => this.applyState(e)} 
 					stepState={this.state}
 				/>
-				{
-					!this.state.stepTwo.disable &&
-					<StepTwo 
-						applyState={(e) => this.applyState(e)} 
-						stepState={this.state} 
-					/>
-				}
-				{
-					!this.state.stepThree.disable &&
-					<StepThree 
-						applyState={(e) => this.applyState(e)} 
-						stepState={this.state} 
-					/>
-				}
-				{
-					!this.state.stepFour.disable &&
-					<StepFour 
-						applyState={(e) => this.applyState(e)} 
-						stepState={this.state} 
-					/>
-				}
+				<StepTwo 
+					applyState={(e) => this.applyState(e)} 
+					stepState={this.state} 
+					disabled={this.state.stepTwo.disabled}
+				/>
+				<StepThree 
+					applyState={(e) => this.applyState(e)} 
+					stepState={this.state} 
+					disabled={this.state.stepThree.disabled}
+				/>
+				<StepFour 
+					applyState={(e) => this.applyState(e)} 
+					stepState={this.state} 
+					disabled={this.state.stepFour.disabled}
+				/>
 			</div>
 		);
 	}
