@@ -316,9 +316,11 @@ class StepFour extends Component {
 				}
 				
 				if (this.props.payments.twoClickEnabled) {
-					validator = this.elCvvInstallment.validation.checkValid();
+					validator = typeof this.elCvvInstallment.validation !== 'undefined' && this.elCvvInstallment.validation.checkValid();
 				} else {
-					validator = this.elMonthInstallment.validation.checkValid() && this.elYearInstallment.validation.checkValid() && this.elCvvInstallment.validation.checkValid();
+					validator = typeof this.elMonthInstallment.validation !== 'undefined' && this.elMonthInstallment.validation.checkValid() &&
+								typeof this.elYearInstallment.validation !== 'undefined' && this.elYearInstallment.validation.checkValid() &&
+								typeof this.elCvvInstallment.validation !== 'undefined' && this.elCvvInstallment.validation.checkValid();
 				}
 			
 				if (validator) {

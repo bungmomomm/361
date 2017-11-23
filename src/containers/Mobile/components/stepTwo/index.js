@@ -24,24 +24,21 @@ class StepTwo extends Component {
 		super(props);
 		this.props = props;
 		this.cookies = this.props.cookies.get('user.token');
-		this.loadedCart = false;
 	}
 
 	componentWillMount() {
-		if (this.props.cart === undefined) {
+		if (typeof this.props.cart === 'undefined') {
 			// get initial cart data
 			this.constructor.fetchDataCart(this.cookies, this.props.dispatch);
 		}
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (!this.loadCart && this.props.stepState.stepOne.selectedAddress.id === undefined && this.props.cart[0].store.id === 0) {
-			// fetch data cart when selected address empty
-			this.constructor.fetchDataCart(
-				this.cookies, 
-				this.props.dispatch
-			);
-			this.loadCart = true;
+		if (
+			typeof nextProps.stepState.stepOne.selectedAddress.id === 'undefined' &&
+			nextProps.cart[0].store.id
+		) {
+			this.constructor.fetchDataCart(this.cookies, nextProps.dispatch);
 		}
 	}
 
@@ -51,9 +48,10 @@ class StepTwo extends Component {
 	}
 
 	checkJabotabekItem(fgLocation) {
-		const { stepState } = this.props;
-		const isCurrentAddressJabotabek = stepState.stepOne.selectedAddress && stepState.stepOne.selectedAddress.attributes.isJabodetabekArea === '1';
-		return fgLocation === '1' && stepState.stepOne.activeTab === 0 && !isCurrentAddressJabotabek;
+		const { stepOne } = this.props.stepState;
+		const { selectedAddress } = stepOne;
+		const isCurrentAddressJabotabek = selectedAddress && (typeof selectedAddress.attributes !== 'undefined' && selectedAddress.attributes.isJabodetabekArea === '1');
+		return fgLocation === '1' && stepOne.activeTab === 0 && !isCurrentAddressJabotabek;
 	}
 
 	updateShippingMethodGosend(checked, store) {
@@ -104,6 +102,7 @@ class StepTwo extends Component {
 	}
 
 	render() {
+		const { stepOne } = this.props.stepState;
 		return (
 			<div className={this.createClassCard()}>
 				<p><strong>{T.checkout.STEP_TWO_LABEL}</strong><span> ({this.props.totalItems} items)</span></p>
@@ -139,9 +138,9 @@ class StepTwo extends Component {
 									showBtnDelete={!(this.props.cart.length < 2 && storeData.store.products.length < 2)}
 								/>
 								<StoreBoxFooter 
-									stepOneActiveTab={this.props.stepState.stepOne.activeTab}
-									selectedAddress={this.props.stepState.stepOne.selectedAddress}
-									showEditAddressModal={this.props.stepState.stepOne.funcShowModalAddress}
+									stepOneActiveTab={stepOne.activeTab}
+									selectedAddress={stepOne.selectedAddress}
+									showEditAddressModal={typeof stepOne.funcShowModalAddress === 'function' && stepOne.funcShowModalAddress}
 									checkGosendMethod={(checked, store) => this.updateShippingMethodGosend(checked, store)}
 									isRestrictO2O={isRestrictO2O}
 									isJabotabekItem={isJabotabekItem}

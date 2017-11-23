@@ -56,10 +56,10 @@ class ModalAddress extends Component {
 
 	componentWillMount() {
 		const { isEdit, formData, address, dispatch } = this.props;
-		if (address.cityProv === undefined) {
+		if (typeof address.cityProv !== 'undefined') {
 			this.constructor.fetchGetCityProvince(this.cookies, dispatch);
 		}
-		if (isEdit && formData.attributes) {
+		if (isEdit && typeof formData.attributes.latitude !== 'undefined' && typeof formData.attributes.longitude !== 'undefined') {
 			this.setState({
 				mapMarkerCenter: {
 					lat: formData.attributes.latitude,
@@ -72,7 +72,7 @@ class ModalAddress extends Component {
 	componentDidMount() {
 		const { formData } = this.props;
 		if (this.props.isEdit && formData.attributes) {
-			if (formData.attributes.latitude && formData.attributes.longitude) {
+			if (typeof formData.attributes.latitude !== 'undefined' && typeof formData.attributes.longitude !== 'undefined') {
 				this.getPinPointAddress();
 			}
 			this.translateProvince(this.props.formData.attributes);
@@ -160,7 +160,7 @@ class ModalAddress extends Component {
 
 	validatePositionMarker(e) {
 		const { google } = this.props;
-		if (e.geometry) {
+		if (typeof e.geometry !== 'undefined') {
 			const latLng = new google.maps.LatLng(e.geometry.location.lat(), e.geometry.location.lng());
 			const polygonArea = new google.maps.Polygon({ paths: this.selectedPolygon.location_coords });
 			const isValidMarkerPosition = !!google.maps.geometry.poly.containsLocation(latLng, polygonArea);
@@ -246,6 +246,14 @@ class ModalAddress extends Component {
 		});
 	}
 
+	centerMap() {
+		const { mapMarkerCenter } = this.state;
+		if (mapMarkerCenter && typeof mapMarkerCenter.lat !== 'undefined' && mapMarkerCenter.lng !== 'undefined') {
+			return mapMarkerCenter;	
+		}
+		return this.selectedPolygon.center;
+	}
+
 	renderButtonMap() {
 		return this.state.isJakarta && this.state.selected.district.value && (
 			<div>
@@ -281,18 +289,17 @@ class ModalAddress extends Component {
 
 	renderGoogleMap() {
 		const { mapMarkerCenter } = this.state;
-		const centerMap = (mapMarkerCenter && (mapMarkerCenter.lat !== '' && mapMarkerCenter.lng !== '')) ? mapMarkerCenter : this.selectedPolygon.center;
 		return (
 			<div style={{ marginBottom: '15px' }}>
 				<GoogleMap
 					onChangeAutoComplete={(e) => this.validatePositionMarker(e)}
-					defaultCenter={centerMap}
+					defaultCenter={this.centerMap()}
 					centerMap={mapMarkerCenter}
 					onDragend={(mapProps, map) => this.mapMoved(mapProps, map)}
 					marker={{
 						icon: this.markerIcon,
 						onClick: (e) => this.setPinPoint(e),
-						center: centerMap
+						center: this.centerMap()
 					}}
 					polygon={{
 						area: this.selectedPolygon.location_coords

@@ -253,7 +253,7 @@ class stepOne extends Component {
 		this.props.applyState(checkoutState);
 		// Event 0 = shipping, 1 = O2O
 		const selected = event > 0 ? this.state.selectedAddressO2O : this.state.selectedAddress;
-		if (selected.id) {
+		if (typeof selected.id !== 'undefined') {
 			this.onPlaceOrder(selected);
 		}
 	}
