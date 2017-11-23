@@ -210,7 +210,8 @@ class stepOne extends Component {
 			return isPickupable === '0' && !e.store.shipping.o2oSupported && activeTab === 1;
 		});
 		const emptyShippingO2o = activeTab === 1 && !nextProps.stepState.stepOne.selectedAddressO2O;
-		const notAllowedO2o = (isPickupable === '0' && o2oRestrictedCart.length > 0 && activeTab === 1) || emptyShippingO2o;
+		const restriction = o2oRestrictedCart.length > 0 && activeTab === 1;
+		const notAllowedO2o = (isPickupable === '0' && restriction) || emptyShippingO2o;
 
 		// set disabled payment
 		const checkoutState = {
@@ -225,7 +226,7 @@ class stepOne extends Component {
 			},
 			stepTwo: {
 				...stepState.stepTwo,
-				disable: activeTab === 0 && emptyShipping
+				disable: emptyShipping || (restriction ? !restriction : emptyShippingO2o)
 			},
 		};
 		this.props.applyState(checkoutState);
