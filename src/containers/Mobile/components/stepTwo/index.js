@@ -21,10 +21,6 @@ class StepTwo extends Component {
 		dispatch(new actions.getCart(token));
 	}
 
-	static fetchPlaceOrderCart(token, dispatch, selectedAddress, billing, updatePaymentMethodList = true) {
-		dispatch(new actions.getPlaceOrderCart(token, selectedAddress, billing, updatePaymentMethodList));
-	}
-
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -47,12 +43,6 @@ class StepTwo extends Component {
 				this.props.dispatch
 			);
 			this.loadCart = true;
-		}
-
-		if (this.props.stepState.stepOne.selectedAddress !== nextProps.stepState.stepOne.selectedAddress) {
-			// fetch data cart when selectedAddress change
-			const billing = this.props.billing ? this.props.billing[0] : false;
-			this.constructor.fetchPlaceOrderCart(this.cookies, this.props.dispatch, nextProps.stepState.stepOne.selectedAddress, billing, true);
 		}
 	}
 

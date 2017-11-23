@@ -106,6 +106,11 @@ class stepOne extends Component {
 		if (this.props.cart !== nextProps.cart || this.props.error !== nextProps.error || changeTab) {
 			this.checkAllowedPayment(nextProps.stepState.stepOne.selectedAddress, nextProps);
 		}
+
+		if (this.props.stepState.stepOne.selectedAddress !== nextProps.stepState.stepOne.selectedAddress) {
+			// fetch data cart when selectedAddress change
+			this.onPlaceOrder(nextProps.stepState.stepOne.selectedAddress, nextProps.stepState.stepOne.dropshipper);
+		}
 	}
 
 	onPlaceOrder(address, dropshipper = null) {
@@ -125,7 +130,7 @@ class stepOne extends Component {
 			address.type = 'pickup';
 			address.attributes.is_dropshipper = false;
 		}
-		const billing = this.props.billing.length > 0 ? this.props.billing[0] : false;
+		const billing = this.props.billing && this.props.billing.length > 0 ? this.props.billing[0] : false;
 		
 		this.constructor.placeOrder(this.cookies, this.props.dispatch, address, billing);
 	}
