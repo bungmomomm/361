@@ -54,48 +54,6 @@ class StepTwo extends Component {
 			const billing = this.props.billing ? this.props.billing[0] : false;
 			this.constructor.fetchPlaceOrderCart(this.cookies, this.props.dispatch, nextProps.stepState.stepOne.selectedAddress, billing, true);
 		}
-
-		const changeTab = this.props.stepState.stepOne !== nextProps.stepState.stepOne;
-		if (this.props.cart !== nextProps.cart || this.props.error !== nextProps.error || changeTab) {
-			this.checkAllowedPayment(nextProps.stepState.stepOne.selectedAddress, nextProps);
-		}
-	}
-	
-	checkAllowedPayment(selectedAddress, nextProps) {
-		const { cart, stepState, isPickupable } = nextProps;
-		const activeTab = stepState.stepOne.activeTab;
-		
-		// for jabodetabek item only 
-		const jabotabekRestrictedCart = cart.filter((e) => {
-			return e.store.products[0].fgLocation === '1';
-		});
-		const emptyShipping = activeTab === 0 && !selectedAddress.id;
-		const notAlowedShipping = (jabotabekRestrictedCart.length > 0 && selectedAddress.attributes.isJabodetabekArea === '0') || emptyShipping;
-
-		// for o2o item only 
-		const o2oRestrictedCart = cart.filter((e) => {
-			return isPickupable === '0' && !e.store.shipping.o2oSupported && activeTab === 1;
-		});
-		const emptyShippingO2o = activeTab === 1 && !nextProps.stepState.stepOne.selectedAddressO2O;
-		const notAllowedO2o = (isPickupable === '0' && o2oRestrictedCart.length > 0 && activeTab === 1) || emptyShippingO2o;
-
-		// set disabled payment
-		const checkoutState = {
-			...stepState,
-			stepFour: {
-				...stepState.stepFour,
-				disable: notAlowedShipping || notAllowedO2o
-			},
-			stepThree: {
-				...stepState.stepThree,
-				disable: notAlowedShipping || notAllowedO2o
-			},
-			stepTwo: {
-				...stepState.stepTwo,
-				disable: activeTab === 0 && emptyShipping
-			},
-		};
-		this.props.applyState(checkoutState);
 	}
 
 	checkRestrictO2o(o2oSupported) {
@@ -215,7 +173,6 @@ const mapStateToProps = (state) => {
 		soNumber: state.cart.soNumber,
 		isPickupable: state.cart.isPickupable,
 		loading: state.cart.loading,
-		error: state.cart.error,
 		totalItems: state.cart.totalItems,
 	};
 };
