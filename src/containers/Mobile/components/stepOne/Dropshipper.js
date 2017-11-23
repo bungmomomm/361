@@ -33,7 +33,7 @@ class Dropshipper extends Component {
 			dropshipPhone
 		});
 
-		const valid = (checked && dropshipName.length > 0 && dropshipPhone.length > 0);
+		const valid = (checked && dropshipName.length > 0 && dropshipPhone.length > 0 && dropshipPhone.length < 14);
 		this.applyValidDropshipper(!checked || valid, checked, dropshipName, dropshipPhone);
 
 		if (this.state.showForm !== checked) {
