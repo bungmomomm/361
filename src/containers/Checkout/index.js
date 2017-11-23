@@ -276,7 +276,6 @@ class Checkout extends Component {
 			userToken: this.props.cookies.get('user.token'),
 			userRFToken: this.props.cookies.get('user.rf.token')
 		})).then((newToken) => {
-			console.log(newToken);
 			this.props.cookies.set('user.exp', Number(newToken.expToken), { domain: process.env.SESSION_DOMAIN });
 			this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: process.env.SESSION_DOMAIN });
 			this.props.cookies.set('user.token', newToken.userToken, { domain: process.env.SESSION_DOMAIN });
@@ -285,6 +284,7 @@ class Checkout extends Component {
 
 			// this.onReload(dispatch);
 		}).catch((error) => {
+			dispatch(paymentError(error.response.data.errorMessage));
 			this.setState({
 				notifInfo: false,
 				notifMessage: error.response.data.errorMessage,
@@ -310,19 +310,18 @@ class Checkout extends Component {
 					dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress)).then(() => {
 
 					}).catch((error) => {
+						dispatch(paymentError(error.response.data.errorMessage));
 						this.setState({
 							enablePembayaran: false
 						});
 					});
 				}
 			}).catch(error => {
-				// console.log('getAddresses');
-				// console.log(error);
+				dispatch(paymentError(error.response.data.errorMessage));
 				this.onRefreshToken(dispatch, this.onReload);
 			});
 		}).catch(error => {
-			// console.log('getCart');
-			// console.log(error);
+			dispatch(paymentError(error.response.data.errorMessage));
 			this.onRefreshToken(dispatch, this.onReload);
 		});
 	}
@@ -380,6 +379,7 @@ class Checkout extends Component {
 				dispatch(changeBillingNumber(address.attributes.phone));
 			}
 		}).catch((error) => {
+			dispatch(paymentError(error.response.data.errorMessage));
 			this.setState({
 				enablePembayaran: false
 			});
@@ -451,6 +451,7 @@ class Checkout extends Component {
 				this.onReload(dispatch);
 			}).catch((error) => {
 				console.log(error);
+				dispatch(paymentError(error.response.data.errorMessage));
 			});
 		} else {
 			dispatch(deleteCart(this.props.cookies.get('user.token'), cart.data.id, this.props)).then(newCart => {
@@ -458,6 +459,7 @@ class Checkout extends Component {
 				this.onCheckProductJabodetabek(newCart);
 				this.onReload(dispatch);
 			}).catch((error) => {
+				dispatch(paymentError(error.response.data.errorMessage));
 				console.log(error);
 			});
 		}
@@ -918,7 +920,8 @@ class Checkout extends Component {
 							showModalOvo: true
 						});
 					})
-					.catch(() => {
+					.catch((error) => {
+						dispatch(paymentError(error.response.data.errorMessage));
 						this.setState({
 							showModalOvo: false
 						});
@@ -962,6 +965,7 @@ class Checkout extends Component {
 			});
 		})
 		.catch(error => {
+			dispatch(paymentError(error.response.data.errorMessage));
 			this.setState({
 				enablePembayaran: false
 			});
@@ -1252,7 +1256,7 @@ class Checkout extends Component {
 
 
 					}).catch((error) => {
-
+						dispatch(paymentError(error.response.data.errorMessage));
 					});
 				} else {
 					this.onDoPayment();
@@ -1280,6 +1284,7 @@ class Checkout extends Component {
 			dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress)).then(() => {
 				dispatch(changeBillingNumber(this.state.selectedAddress.attributes.phone));
 			}).catch((error) => {
+				dispatch(paymentError(error.response.data.errorMessage));
 				this.setState({
 					enablePembayaran: false,
 					enablePesananPengiriman: this.state.enablePesananPengiriman
