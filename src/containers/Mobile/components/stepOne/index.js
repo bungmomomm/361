@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
 import { actions } from '@/state/Adresses';
 import { actions as cartActions } from '@/state/Cart';
+import { actions as paymentActions } from '@/state/Payment';
 import _ from 'lodash';
 import { withCookies } from 'react-cookie';
 import React, { Component } from 'react';
@@ -133,6 +134,15 @@ class stepOne extends Component {
 		const billing = this.props.billing && this.props.billing.length > 0 ? this.props.billing[0] : false;
 		
 		this.constructor.placeOrder(this.cookies, this.props.dispatch, address, billing);
+		this.setBillingNumber(address);
+	}
+	
+	setBillingNumber(address) {
+		const { payments, dispatch } = this.props;
+		if (payments && !payments.billingPhoneNumberEdited) {
+			const billing = this.props.stepState.stepOne.activeTab < 1 ? address.attributes.phone : '';
+			dispatch(new paymentActions.changeBillingNumber(billing));
+		}
 	}
 
 	setShipping(addresses) {
@@ -473,6 +483,7 @@ const mapStateToProps = (state) => {
 		o2oProvinces: state.addresses.o2oProvinces,
 		error: state.cart.error,
 		cart: state.cart.data,
+		payments: state.payments,
 	};
 };
 

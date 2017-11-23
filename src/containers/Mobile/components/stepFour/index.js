@@ -578,6 +578,11 @@ class StepFour extends Component {
 			)
 		);
 	}
+	
+	onBillingNumberChange(event) {
+		const { dispatch } = this.props;
+		dispatch(new paymentAction.changeBillingNumber(event.target.value, true));
+	}		
 
 	getAffTracking() {
 		return {
@@ -757,7 +762,8 @@ class StepFour extends Component {
 	
 	checkActiveBtnSubmit() {
 		const validOvo = this.isOvoPayment ? this.state.ovo.ovoPhonePaymentValid : true;
-		if (validOvo && this.state.termCondition && this.props.payments.selectedPayment && this.props.payments.selectedPaymentOption) {
+		const validBilling = this.props.payments.billingPhoneNumber && this.props.payments.billingPhoneNumber !== '';
+		if (validBilling && validOvo && this.state.termCondition && this.props.payments.selectedPayment && this.props.payments.selectedPaymentOption) {
 			return '';
 		}
 		return 'disabled';
@@ -1043,7 +1049,7 @@ class StepFour extends Component {
 						min={0}
 						type='number'
 						placeholder={payments.billingPhoneNumber || T.checkout.BILLING_PHONE_NUMBER}
-						onChange={(event) => this.props.onBillingNumberChange(event)} 
+						onChange={(event) => this.onBillingNumberChange(event)} 
 					/>
 					{
 						this.checkShowingOvoPhone() && payments.ovoPhoneNumber &&
