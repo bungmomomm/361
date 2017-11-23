@@ -758,7 +758,7 @@ class StepFour extends Component {
 	checkActiveBtnSubmit() {
 		const validOvo = this.isOvoPayment ? this.state.ovo.ovoPhonePaymentValid : true;
 		if (validOvo && this.state.termCondition && this.props.payments.selectedPayment && this.props.payments.selectedPaymentOption) {
-			return 'active';
+			return '';
 		}
 		return 'disabled';
 	}
@@ -846,7 +846,7 @@ class StepFour extends Component {
 				return payments.selectedPayment.paymentItems.map((option, index) => (
 					option.cards.length <= 3 ? (
 						option.cards.map((card, cardIndex) => (
-							card.value ? (
+							card.value && (
 								<div key={cardIndex} >
 									<CreditCardRadio
 										name='cc'
@@ -857,10 +857,9 @@ class StepFour extends Component {
 										sprites={card.sprites}
 										onClick={this.onSelectCard}
 									/>
-									{ renderIf(card.selected)(CvvElement) }
+									{ card.selected && CvvElement }
 								</div>
-								
-							) : null
+							)
 						))
 					) : (
 						<Select block key={index} options={option.cards} />
@@ -991,16 +990,15 @@ class StepFour extends Component {
 						defaultValue={payments.selectedPayment ? payments.selectedPayment.id : null}
 					/>
 					{ payments.selectedPayment && switchPaymentElement()}
-					{ renderIf(payments.selectedPayment.value === paymentGroupName.CREDIT_CARD 
-					&& payments.twoClickEnabled && numberOfCard > minNumberOfCard)(
+					{ renderIf(payments.selectedPayment.value === paymentGroupName.CREDIT_CARD && payments.twoClickEnabled && numberOfCard > minNumberOfCard)(
 							
 						<Button clean color='grey' icon='plus-circle' iconPosition='left' onClick={this.onNewCreditCard}>{T.checkout.ADD_NEW_CARD}</Button>
 							
 					)}
 					{ renderIf((payments.openNewCreditCard && payments.selectedPayment.value === paymentGroupName.CREDIT_CARD 
-					&& !payments.twoClickEnabled) || (payments.selectedPayment.value === paymentGroupName.CREDIT_CARD && numberOfCard < (minNumberOfCard + 1)))([
+					&& !payments.twoClickEnabled) || (payments.selectedPayment.value === paymentGroupName.CREDIT_CARD && numberOfCard < (minNumberOfCard + 1)))(
 						<div>
-							<CreditCardInput placeholder={T.checkout.INPUT_CART_NUMBER} sprites='payment-option' onChange={this.onCardNumberChange} />
+							<Group><CreditCardInput placeholder={T.checkout.INPUT_CART_NUMBER} sprites='payment-option' onChange={this.onCardNumberChange} /></Group>
 							<label htmlFor='masa-berlaku'key={2}>Masa Berlaku</label>
 							<Group grouped id='masa-berlaku'>
 								<Select
@@ -1038,7 +1036,7 @@ class StepFour extends Component {
 							</Group>
 							<Checkbox defaultChecked onClick={(state, value) => this.props.onSaveCcOption(state, value)}>{T.checkout.SAVE_CARD_FOR_NEXT_TRANSACTION}</Checkbox>
 						</div>
-					])}
+					)}
 					<Input
 						value={payments.billingPhoneNumber || ''}
 						label={T.checkout.PHONE_NUMBER_O2O_CONFIRMATION}

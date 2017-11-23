@@ -7,8 +7,7 @@ import { T } from '@/data/translations';
 import {
 	Panel,
 	Level,
-	Icon,
-	Alert,
+	Icon
 } from 'mm-ui';
 import StoreBoxBody from './StoreBoxBody';
 import StoreBoxFooter from './StoreBoxFooter';
@@ -119,14 +118,14 @@ class StepTwo extends Component {
 								header={
 									<Level>
 										<Level.Left>{storeData.store.name}</Level.Left>
-										<Level.Right><Icon name='map-marker' /> {storeData.store.location}</Level.Right>
+										<Level.Right>{storeData.store.location && <div><Icon name='map-marker' /> {storeData.store.location}</div>}</Level.Right>
 									</Level>
 								}
 							>
 								{
-									isJabotabekItem && (<Alert color='red' style={{ marginBottom: '15px' }}>
+									isJabotabekItem && (<div className='font-red' style={{ marginBottom: '15px' }}>
 										{T.checkout.JABODETABEK_LABEL}
-									</Alert>)
+									</div>)
 								}
 								{
 									isRestrictO2O && (<div className='font-red' style={{ marginBottom: '15px' }}>
@@ -137,13 +136,15 @@ class StepTwo extends Component {
 								<StoreBoxBody 
 									products={storeData.store.products}
 									onUpdateQty={(e, productId) => this.updateQty(e, productId)}
-									isRestrictO2O={isRestrictO2O}
 									showBtnDelete={!(this.props.cart.length < 2 && storeData.store.products.length < 2)}
 								/>
 								<StoreBoxFooter 
 									stepOneActiveTab={this.props.stepState.stepOne.activeTab}
 									selectedAddress={this.props.stepState.stepOne.selectedAddress}
+									showEditAddressModal={this.props.stepState.stepOne.funcShowModalAddress}
 									checkGosendMethod={(checked, store) => this.updateShippingMethodGosend(checked, store)}
+									isRestrictO2O={isRestrictO2O}
+									isJabotabekItem={isJabotabekItem}
 									data={storeData} 
 								/>
 							</Panel>
