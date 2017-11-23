@@ -7,8 +7,7 @@ import { T } from '@/data/translations';
 import {
 	Panel,
 	Level,
-	Icon,
-	Alert,
+	Icon
 } from 'mm-ui';
 import StoreBoxBody from './StoreBoxBody';
 import StoreBoxFooter from './StoreBoxFooter';
@@ -171,14 +170,14 @@ class StepTwo extends Component {
 								header={
 									<Level>
 										<Level.Left>{storeData.store.name}</Level.Left>
-										<Level.Right><Icon name='map-marker' /> {storeData.store.location}</Level.Right>
+										<Level.Right>{storeData.store.location && <div><Icon name='map-marker' /> {storeData.store.location}</div>}</Level.Right>
 									</Level>
 								}
 							>
 								{
-									isJabotabekItem && (<Alert color='red' style={{ marginBottom: '15px' }}>
+									isJabotabekItem && (<div className='font-red' style={{ marginBottom: '15px' }}>
 										{T.checkout.JABODETABEK_LABEL}
-									</Alert>)
+									</div>)
 								}
 								{
 									isRestrictO2O && (<div className='font-red' style={{ marginBottom: '15px' }}>

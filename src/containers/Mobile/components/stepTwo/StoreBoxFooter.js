@@ -29,11 +29,7 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 	
 	return (
 		<div className={s.footer}>
-			{
-				(!isGosendSupported() || !store.isJabodetabekArea) && (!isRestrictO2O && !isJabotabekItem) && (
-					<div className={s.deliveryInfo}>{store.shipping.note}</div>
-				)
-			}
+			{!isGosendSupported() && <div className={s.deliveryInfo}>{store.shipping.note}</div>}
 			{
 				isGosendSupported() && (!isRestrictO2O && !isJabotabekItem) && (
 					<div className={s.deliveryInfo}>
@@ -68,7 +64,7 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 									<Checkbox state={!hasLangLat() ? 'disabled' : ''} name='gojek' defaultChecked={false} >
 										Pengiriman: <Sprites name='gosend' />
 									</Checkbox>
-									<div role='button' onClick={() => showEditAddressModal()} tabIndex='0' className='font-orange'>{T.checkout.CHOOSE_SHIPPING_LOCATION}</div>
+									<div role='button' onClick={() => showEditAddressModal('edit')} tabIndex='0' className='font-orange'>{T.checkout.CHOOSE_SHIPPING_LOCATION}</div>
 								</div>
 							)
 						}
