@@ -103,7 +103,7 @@ class Dropshipper extends Component {
 								name='dropship_phone' 
 								placeholder={T.checkout.PHONE_NUMBER}
 								validation={{
-									rules: 'required',
+									rules: 'required|min:6|max:14',
 									name: 'dropship phone'
 								}}
 								ref={(c) => { this.elDropshipPhone = c; }}

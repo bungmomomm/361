@@ -39,10 +39,6 @@ class Modalo2o extends Component {
 			this.constructor.fetchDataO2OProvinces(this.cookies, this.props.dispatch);		
 		}
 		this.onLoadData(this.props.selectedProvinceO2O || this.state.selectedProvince);
-		
-		if (this.props.selectedAddressO2O) {
-			// this.onLoadData(this.props.selectedAddressO2O.attributes.province_id);	
-		} 
 	}
 	
 	componentWillReceiveProps(nextProps) {
@@ -95,7 +91,10 @@ class Modalo2o extends Component {
 				onCloseRequest={this.props.handleClose}
 			>
 				<Modal.Header>
-					<Select hasFilter options={this.props.o2oProvinces} onChange={this.onSelectProvince} defaultValue={this.state.selectedProvince} style={{ paddingRight: '30px' }} />
+					{
+						this.props.o2oProvinces &&
+						<Select hasFilter options={this.props.o2oProvinces} onChange={this.onSelectProvince} defaultValue={this.state.selectedProvince} style={{ paddingRight: '30px' }} />
+					}
 					<Input block placeholder='Cari Lokasi Toko / E-Locker (O2O) lainnya' onChange={this.onChangeFilterText} />
 				</Modal.Header>
 				<Modal.Body>
