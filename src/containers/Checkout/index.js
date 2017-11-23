@@ -269,11 +269,6 @@ class Checkout extends Component {
 		if (this.props.userGTM !== nextProps.userGTM) {
 			setUserGTM(nextProps.userGTM);
 		}
-		if (this.props.payments.paymentError !== nextProps.payments.paymentError) {
-			this.setState({
-				showModalOvo: false
-			});
-		}
 	}
 
 	onRefreshToken(dispatch, callback = null) {
@@ -1361,18 +1356,14 @@ class Checkout extends Component {
 			dispatch(checkStatusOvoPayment(`${checkStatusUrl}${params}`, this.props.cookies.get('user.token'), this.props.soNumber, this.props.payments.ovoPaymentNumber, tick < 1))
 			.then(() => {
 				if (tick === 0 && this.state.selectedAddress) {
+					this.setState({
+						showModalOvo: false
+					});
 					dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
 					dispatch(changeOvoPaymentNumber());
 				}
 			});
 		}
-		if (tick === 0) {
-			this.setState({
-				showModalOvo: false
-			});
-			// refresh page
-			window.location = window.location.href;
-		} 
 	}
 
 	render() {
