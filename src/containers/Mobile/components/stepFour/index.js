@@ -586,6 +586,11 @@ class StepFour extends Component {
 		dispatch(new paymentAction.changeBillingNumber(event.target.value, true));
 	}		
 
+	onOvoNumberChange(ovoNumber) {
+		const { dispatch } = this.props;
+		dispatch(new paymentAction.changeOvoNumber(ovoNumber));
+	}
+
 	getAffTracking() {
 		return {
 			af_track_id: this.props.cookies.get('afftrackid'),
@@ -1062,8 +1067,18 @@ class StepFour extends Component {
 						onChange={(event) => this.onBillingNumberChange(event)} 
 					/>
 					{
-						this.checkShowingOvoPhone() && payments.ovoPhoneNumber &&
-						<Input state={ovoReadOnly ? 'disabled' : ''} color={ovoReadOnly ? 'green' : null} icon={ovoReadOnly ? 'check' : null} defaultValue={payments.ovoPhoneNumber} label={T.checkout.OVO_PHONE_LABEL} placeholder={T.checkout.SAVED_OVO_PHONE} type='number' min={0} />
+						this.checkShowingOvoPhone() &&
+						<Input 
+							state={ovoReadOnly ? 'disabled' : ''} 
+							color={ovoReadOnly ? 'green' : null} 
+							icon={ovoReadOnly ? 'check' : null} 
+							value={payments.ovoPhoneNumber || ''} 
+							label={T.checkout.OVO_PHONE_LABEL} 
+							placeholder={T.checkout.SAVED_OVO_PHONE} 
+							type='number' 
+							min={0}
+							onChange={(event) => this.onOvoNumberChange(event.target.value)}
+						/>
 					}
 					<div className={styles.checkOutAction}>
 						<Checkbox defaultChecked={this.state.termCondition} onClick={() => this.setState({ termCondition: !this.state.termCondition })}>{T.checkout.TERMS_PAYMENT}</Checkbox>
