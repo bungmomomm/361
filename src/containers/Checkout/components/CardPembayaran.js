@@ -164,13 +164,18 @@ export default class CardPembayaran extends Component {
 		this.props.onInstallmentCCMonthChange({ value: 0 });
 		this.props.onInstallmentCCYearChange({ value: 0 });
 		this.props.onInstallmentCCCvvChange({ target: { value: 0 } });
-
+		setTimeout(() => {
+			this.payNowButton.disabled = true;
+		}, 50);
 	}
 
 	onPaymentOptionChange(event) {
 		this.props.onPaymentOptionChange(event, this.props.payments.selectedPayment);
 		if (event.value) {
+			this.payNowButton.disabled = false;
 			pushDataLayer('checkout', 'checkout', { step: 7, option: event.label });
+		} else {
+			this.payNowButton.disabled = true;
 		}
 	}
 
@@ -222,9 +227,20 @@ export default class CardPembayaran extends Component {
 	}
 
 	onInstallmentCCNumberChange(event) {
-		this.setState({
-			isValidCreaditCardInstallment: event.valid
-		});
+		this.setState({ isValidCreaditCardInstallment: event.valid });
+		const { selectedPayment, selectedCardDetail } = this.props.payments;
+		if (selectedPayment.value === paymentGroupName.INSTALLMENT) {
+			const isValidCVV = selectedCardDetail.cvv !== 0 && selectedCardDetail.cvv !== '' && selectedCardDetail.cvv.length > 2;
+			const isValidMonth = selectedCardDetail.month !== 0 && selectedCardDetail.month !== null;
+			const isValidYear = selectedCardDetail.year !== 0 && selectedCardDetail.year !== null;
+			setTimeout(() => {
+				if (!!event.valid && isValidCVV && isValidMonth && isValidYear) {
+					this.payNowButton.disabled = false;
+				} else {
+					this.payNowButton.disabled = true;
+				}
+			}, 100);
+		}
 		if (event.ccNumber.length < 1) {
 			this.setState({
 				validInstallmentBin: true
@@ -331,6 +347,13 @@ export default class CardPembayaran extends Component {
 		const isValidCVV = selectedCardDetail.cvv !== 0 && selectedCardDetail.cvv !== '' && selectedCardDetail.cvv.length > 2;
 		const isValidMonth = selectedCardDetail.month !== 0 && selectedCardDetail.month !== null;
 		const isValidYear = selectedCardDetail.year !== 0 && selectedCardDetail.year !== null;
+		if (selectedPayment.value === paymentGroupName.OVO) {
+			if (typeof this.props.payments.ovoPaymentNumber === 'undefined') {
+				this.payNowButton.disabled = true;
+			} else {
+				this.payNowButton.disabled = false;
+			}
+		}
 		if (selectedPayment.value === paymentGroupName.CREDIT_CARD) {
 			this.payNowButton.disabled = true;
 			let numberOfCard = 0;
@@ -346,9 +369,10 @@ export default class CardPembayaran extends Component {
 		}
 		
 		if (selectedPayment.value === paymentGroupName.INSTALLMENT) {
-			this.payNowButton.disabled = true;
 			if (this.state.isValidCreaditCardInstallment && isValidCVV && isValidMonth && isValidYear) {
 				this.payNowButton.disabled = false;
+			} else {
+				this.payNowButton.disabled = true;
 			}
 		}
 	}
