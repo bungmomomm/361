@@ -78,6 +78,7 @@ class StepFour extends Component {
 		this.onCardYearChange = this.onCardYearChange.bind(this);
 		this.onCardCvvChange = this.onCardCvvChange.bind(this);
 		this.onSelectCard = this.onSelectCard.bind(this);
+		this.loadBlockContent = false;
 	}
 
 	componentWillMount() {
@@ -120,9 +121,10 @@ class StepFour extends Component {
 				}
 			});
 		}
-		if (typeof this.props.blockContent === 'undefined') {
+		if (!this.loadBlockContent) {
 			const { dispatch } = this.props;
 			dispatch(new globalAction.getBlockContents(this.props.cookies.get('user.token'), ['660']));
+			this.loadBlockContent = true;
 		}
 		if (nextProps.payments.selectedPaymentOption && this.props.payments.paymentMethod !== nextProps.payments.paymentMethod && nextProps.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT) {
 			this.setInstallmentList(nextProps.payments.selectedPaymentOption.banks[0]);
@@ -786,9 +788,9 @@ class StepFour extends Component {
 			payments.selectedCardDetail.cvv !== '' &&
 			(payments.selectedCard.selected ||
 			(payments.selectedCardDetail.month !== 0 &&
-			payments.selectedCardDetail.year !== 0)) &&
-			payments.selectedCard.value !== '' && 
-			this.state.cardValidLuhn
+			payments.selectedCardDetail.year !== 0 &&
+			this.state.cardValidLuhn)) &&
+			payments.selectedCard.value !== ''
 		);
 	}
 	
