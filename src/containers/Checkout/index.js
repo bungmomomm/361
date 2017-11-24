@@ -683,13 +683,6 @@ class Checkout extends Component {
 				});
 				dispatch(vtModalBoxOpen(true, response.redirect_url));
 			} else if (parseInt(response.status_code, 10) === 200) {
-<<<<<<< HEAD
-				window.Raven.captureBreadcrumb({
-					message: 'VT token 2',
-					category: 'action',
-					data: {
-						response
-=======
 				window.Raven.captureMessage('VTCreditCard', {
 					level: 'info',
 					extra: {
@@ -699,7 +692,6 @@ class Checkout extends Component {
 						selectedpayment: this.props.payments.selectedPayment,
 						selectedpaymentoption: this.props.payments.selectedPaymentOption,
 						cart: this.props.cart
->>>>>>> master
 					}
 				});
 				dispatch(vtModalBoxOpen(false));
@@ -732,15 +724,6 @@ class Checkout extends Component {
 					)
 				);
 			} else {
-<<<<<<< HEAD
-				window.Raven.captureBreadcrumb({
-					message: 'VT token error',
-					category: 'action',
-					data: {
-						response
-					}
-				});
-=======
 				window.Raven.captureMessage('VTCreditCard', {
 					level: 'info',
 					extra: {
@@ -752,7 +735,6 @@ class Checkout extends Component {
 						cart: this.props.cart
 					}
 				});				
->>>>>>> master
 				dispatch(vtModalBoxOpen(false));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
 				dispatch(
@@ -799,13 +781,6 @@ class Checkout extends Component {
 				});
 				dispatch(vtModalBoxOpen(true, response.redirect_url));
 			} else if (parseInt(response.status_code, 10) === 200) {
-<<<<<<< HEAD
-				window.Raven.captureBreadcrumb({
-					message: 'VT token 2',
-					category: 'action',
-					data: {
-						response
-=======
 				window.Raven.captureMessage('VTInstallment', {
 					level: 'info',
 					extra: {
@@ -815,7 +790,6 @@ class Checkout extends Component {
 						selectedpayment: this.props.payments.selectedPayment,
 						selectedpaymentoption: this.props.payments.selectedPaymentOption,
 						cart: this.props.cart
->>>>>>> master
 					}
 				});
 				dispatch(vtModalBoxOpen(false));
@@ -845,13 +819,6 @@ class Checkout extends Component {
 					)
 				);
 			} else {
-<<<<<<< HEAD
-				window.Raven.captureBreadcrumb({
-					message: 'VT token error',
-					category: 'action',
-					data: {
-						response
-=======
 				window.Raven.captureMessage('VTInstallment', {
 					level: 'info',
 					extra: {
@@ -861,7 +828,6 @@ class Checkout extends Component {
 						selectedpayment: this.props.payments.selectedPayment,
 						selectedpaymentoption: this.props.payments.selectedPaymentOption,
 						cart: this.props.cart
->>>>>>> master
 					}
 				});
 				dispatch(vtModalBoxOpen(false));
