@@ -65,6 +65,8 @@ export default class CardPembayaran extends Component {
 			validVoucher: false,
 			reset: null,
 			validInstallmentBin: true,
+			isValidCreaditCard: false,
+			isValidCreaditCardInstallment: false,
 			ovo: {
 				useDefault: true,
 				ovoPhonePayment: null,
@@ -98,7 +100,19 @@ export default class CardPembayaran extends Component {
 		this.onOvoPaymentNumberChange = this.onOvoPaymentNumberChange.bind(this);
 		this.setAutoLinkage = this.setAutoLinkage.bind(this);
 		this.onResetOvoPayment = this.onResetOvoPayment.bind(this);
+		this.payNowButton = '';
 	}
+
+	componentDidMount() {
+		this.payNowButton = document.getElementById('pay-now');
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.payments !== this.props.payments) {
+			this.isValidCCForm();
+		}
+	}
+
 	onChange(event) {
 		this.setState({
 			[event.target.name]: event.target.value
@@ -140,12 +154,28 @@ export default class CardPembayaran extends Component {
 			pushDataLayer('checkout', 'checkout', { step: 6, option: event.label });
 		}
 		this.onResetOvoPayment();
+
+		// clear CC information
+		this.props.onCardMonthChange({ value: 0 });
+		this.props.onCardYearChange({ value: 0 });
+		this.props.onCardCvvChange({ target: { value: 0 } });
+		
+		// clear installment CC information
+		this.props.onInstallmentCCMonthChange({ value: 0 });
+		this.props.onInstallmentCCYearChange({ value: 0 });
+		this.props.onInstallmentCCCvvChange({ target: { value: 0 } });
+		setTimeout(() => {
+			this.payNowButton.disabled = true;
+		}, 50);
 	}
 
 	onPaymentOptionChange(event) {
 		this.props.onPaymentOptionChange(event, this.props.payments.selectedPayment);
 		if (event.value) {
+			this.payNowButton.disabled = false;
 			pushDataLayer('checkout', 'checkout', { step: 7, option: event.label });
+		} else {
+			this.payNowButton.disabled = true;
 		}
 	}
 
@@ -157,15 +187,20 @@ export default class CardPembayaran extends Component {
 	onSelectCard(event) {
 		if (typeof event.value !== 'undefined') {
 			if (event.value !== null) {
-				this.props.onSelectCard(event.value);
+				this.selectedCC = event.value;
 			} else {
-				this.props.onSelectCard(false);
+				this.selectedCC = false;
+				this.props.onCardCvvChange({ target: { value: 0 } });
 			}
 		} else {
-			this.props.onSelectCard(event);
+			this.selectedCC = event;
 		}
+		this.props.onSelectCard(this.selectedCC);
 	}
 	onCardNumberChange(event) {
+		this.setState({
+			isValidCreaditCard: event.valid
+		});
 		this.props.onCardNumberChange(event);
 	}
 	onCardMonthChange(data) {
@@ -192,6 +227,20 @@ export default class CardPembayaran extends Component {
 	}
 
 	onInstallmentCCNumberChange(event) {
+		this.setState({ isValidCreaditCardInstallment: event.valid });
+		const { selectedPayment, selectedCardDetail } = this.props.payments;
+		if (selectedPayment.value === paymentGroupName.INSTALLMENT) {
+			const isValidCVV = selectedCardDetail.cvv !== 0 && selectedCardDetail.cvv !== '' && selectedCardDetail.cvv.length > 2;
+			const isValidMonth = selectedCardDetail.month !== 0 && selectedCardDetail.month !== null;
+			const isValidYear = selectedCardDetail.year !== 0 && selectedCardDetail.year !== null;
+			setTimeout(() => {
+				if (!!event.valid && isValidCVV && isValidMonth && isValidYear) {
+					this.payNowButton.disabled = false;
+				} else {
+					this.payNowButton.disabled = true;
+				}
+			}, 100);
+		}
 		if (event.ccNumber.length < 1) {
 			this.setState({
 				validInstallmentBin: true
@@ -228,6 +277,7 @@ export default class CardPembayaran extends Component {
 	}
 
 	onOvoNumberChange(event) {
+		this.payNowButton.disabled = false;
 		this.props.onOvoNumberChange(event.target.value);
 	}
 
@@ -236,6 +286,7 @@ export default class CardPembayaran extends Component {
 	}
 
 	onOvoPaymentNumberChange(event) {
+		this.payNowButton.disabled = false;
 		const ovo = this.state.ovo;
 		const ovoPhonePayment = event.target.value;
 		const regexPhone = /^[0-9]{5,30}/;
@@ -288,6 +339,41 @@ export default class CardPembayaran extends Component {
 			this.props.onOvoNumberChange(this.props.payments.ovoPaymentNumber);
 		} else {
 			this.props.onOvoNumberChange('');
+		}
+	}
+
+	isValidCCForm() {
+		const { selectedPayment, selectedCardDetail } = this.props.payments;
+		const isValidCVV = selectedCardDetail.cvv !== 0 && selectedCardDetail.cvv !== '' && selectedCardDetail.cvv.length > 2;
+		const isValidMonth = selectedCardDetail.month !== 0 && selectedCardDetail.month !== null;
+		const isValidYear = selectedCardDetail.year !== 0 && selectedCardDetail.year !== null;
+		if (selectedPayment.value === paymentGroupName.OVO) {
+			if (typeof this.props.payments.ovoPaymentNumber === 'undefined') {
+				this.payNowButton.disabled = true;
+			} else {
+				this.payNowButton.disabled = false;
+			}
+		}
+		if (selectedPayment.value === paymentGroupName.CREDIT_CARD) {
+			this.payNowButton.disabled = true;
+			let numberOfCard = 0;
+			const minNumberOfCard = 0;
+			numberOfCard = selectedPayment.cards || 0;
+			if (this.props.payments.twoClickEnabled && numberOfCard > minNumberOfCard && isValidCVV && this.selectedCC) {
+				// if have card more than 1
+				this.payNowButton.disabled = false;
+			} else if (this.state.isValidCreaditCard && isValidCVV && isValidMonth && isValidYear) {
+				// if have card lesss than 1
+				this.payNowButton.disabled = false;
+			}
+		}
+		
+		if (selectedPayment.value === paymentGroupName.INSTALLMENT) {
+			if (this.state.isValidCreaditCardInstallment && isValidCVV && isValidMonth && isValidYear) {
+				this.payNowButton.disabled = false;
+			} else {
+				this.payNowButton.disabled = true;
+			}
 		}
 	}
 
@@ -370,7 +456,7 @@ export default class CardPembayaran extends Component {
 		const CvvElement = (
 			<Row>
 				<Col grid={4}>
-					<Input type='password' placeholder='cvv' onBlur={this.onCardCvvChange} />
+					<Input type='password' placeholder='cvv' minLength={0} maxLength={4} onChange={this.onCardCvvChange} />
 				</Col>
 				<Col grid={4}>
 					<Sprites name='cvv' />
@@ -402,7 +488,7 @@ export default class CardPembayaran extends Component {
 				paymentOptions = (
 					<InputGroup>
 						<Select emptyFilter={false} name={`payment-${selectedPayment.value}`} options={selectedPayment.paymentItems} onChange={this.onPaymentOptionChange} reset={resetPaymentOption} />
-						{ renderIf(selectedPaymentOption && typeof selectedPaymentOption.settings !== 'undefined' && selectedPaymentOption.settings.info.length > 0)(
+						{ renderIf(selectedPaymentOption && typeof selectedPaymentOption.settings !== 'undefined' && selectedPaymentOption.settings.info)(
 							<Tooltip position='right' content='Info'>
 								{info}
 							</Tooltip>
@@ -416,14 +502,22 @@ export default class CardPembayaran extends Component {
 						option.cards.length <= 3 ? option.cards.map((card, cardIndex) => (
 							card.value ? (
 								<InputGroup key={cardIndex}>
-									<CreditCardRadio name='cc' variant='list' creditCard value={card.value} content={card.label} onClick={this.onSelectCard} defaultChecked={card.selected} sprites={card.sprites} />
-									{ renderIf(card.selected)(CvvElement) }
+									<InputGroup>
+										<CreditCardRadio name='cc' variant='list' creditCard value={card.value} content={card.label} onClick={this.onSelectCard} defaultChecked={card.selected} sprites={card.sprites} />
+									</InputGroup>
+									<InputGroup>
+										{renderIf(card.selected)(CvvElement)}
+									</InputGroup>
 								</InputGroup>
 							) : null
 						)) :
 							<InputGroup key={index}>
-								<Select emptyFilter={false} name='cc' selectedLabel='-- Tambah Baru' options={option.cards} onChange={this.onSelectCard} />
-								{ renderIf((selectedCard && twoClickEnabled))(CvvElement) }
+								<InputGroup>
+									<Select emptyFilter={false} name='cc' selectedLabel='-- Tambah Baru' options={option.cards} onChange={this.onSelectCard} />
+								</InputGroup>
+								<InputGroup>
+									{ renderIf((selectedCard && twoClickEnabled))(CvvElement) }
+								</InputGroup>
 							</InputGroup>
 						)
 					)
@@ -454,7 +548,7 @@ export default class CardPembayaran extends Component {
 
 				paymentOptions = ([
 					<InputGroup>
-						<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' message={this.state.validInstallmentBin ? null : 'Masukan no kartu kredit yang sesuai'} color={this.state.validInstallmentBin ? null : 'red'} onChange={this.onInstallmentCCNumberChange} />
+						<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' message={this.state.isValidCreaditCardInstallment ? null : 'Masukan no kartu kredit yang sesuai'} color={this.state.isValidCreaditCardInstallment ? null : 'red'} onChange={this.onInstallmentCCNumberChange} />
 					</InputGroup>,
 					<label htmlFor='masa-berlaku'>Masa Berlaku</label>,
 					<Level padded>
@@ -465,7 +559,7 @@ export default class CardPembayaran extends Component {
 							<Select top selectedLabel='-- Tahun' options={this.props.tahun} onChange={this.onInstallmentCCYearChange} />
 						</Level.Item>
 						<Level.Item>
-							<Input type='password' placeholder='cvv' onBlur={this.onInstallmentCCCvvChange} />
+							<Input type='password' minLength={0} maxLength={4} placeholder='cvv' onChange={this.onInstallmentCCCvvChange} />
 						</Level.Item>
 						<Level.Item>
 							<Sprites name='cvv' />
@@ -552,7 +646,6 @@ export default class CardPembayaran extends Component {
 				/>
 			</InputGroup>
 		);
-
 		return (
 			<Card stretch loading={this.props.loading} >
 				<div className={styles.overflow}>
@@ -605,7 +698,7 @@ export default class CardPembayaran extends Component {
 									selectedPaymentOption &&
 									(selectedPayment.value === 'cod' || selectedPayment.value === 'gratis') &&
 									typeof selectedPaymentOption.settings !== 'undefined' &&
-									selectedPaymentOption.settings.info.length > 0)(
+									selectedPaymentOption.settings && selectedPaymentOption.settings.info.length > 0)(
 										<Tooltip position='right' content='Info'>
 											{info}
 										</Tooltip>
@@ -636,9 +729,9 @@ export default class CardPembayaran extends Component {
 						)}
 						{ renderIf((this.props.payments.openNewCreditCard && selectedPayment.value === paymentGroupName.CREDIT_CARD && !twoClickEnabled) || (selectedPayment.value === paymentGroupName.CREDIT_CARD && numberOfCard < (minNumberOfCard + 1)))([
 							<InputGroup key={1}>
-								<CreditCardInput placeholder='Masukkan Nomor Kartu' sprites='payment-option' onChange={this.onCardNumberChange} />
+								<CreditCardInput message={this.state.isValidCreaditCard ? null : 'Masukan no kartu kredit yang sesuai'} color={this.state.isValidCreaditCard ? null : 'red'} placeholder='Masukkan Nomor Kartu' sprites='payment-option' onChange={this.onCardNumberChange} />
 							</InputGroup>,
-							<label htmlFor='masa-berlaku'key={2}>Masa Berlaku</label>,
+							<label htmlFor='masa-berlaku' key={2}>Masa Berlaku</label>,
 							<Level padded key={3}>
 								<Level.Item id='masa-berlaku'>
 									<Select top selectedLabel='-- Bulan' options={Bulan} onChange={this.onCardMonthChange} />
@@ -647,7 +740,7 @@ export default class CardPembayaran extends Component {
 									<Select top selectedLabel='-- Tahun' options={this.props.tahun} onChange={this.onCardYearChange} />
 								</Level.Item>
 								<Level.Item>
-									<Input type='password' placeholder='cvv' onBlur={this.onCardCvvChange} />
+									<Input type='password' minLength={0} maxLength={4} placeholder='cvv' onChange={this.onCardCvvChange} />
 								</Level.Item>
 								<Level.Item>
 									<Sprites name='cvv' />
@@ -663,7 +756,7 @@ export default class CardPembayaran extends Component {
 						{ renderIf(!isOvoPayemnt || (!this.state.ovo.autoLinkage && isOvoPayemnt))(ovoPhone) }
 						<div className={styles.checkOutAction}>
 							<Checkbox defaultChecked content='Saya setuju dengan syarat dan ketentuan MatahariMall.com' onClick={(state, value) => this.props.onTermsAndConditionChange(state, value)} />
-							<Button onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' loading={loading} disabled={disabledPayment} />
+							<Button id='pay-now' onClick={this.submitPayment} block size='large' iconPosition='right' icon='angle-right' color='red' content='Bayar Sekarang' loading={loading} disabled={disabledPayment} />
 						</div>
 					</div>
 				</div>

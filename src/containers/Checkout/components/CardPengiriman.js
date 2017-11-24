@@ -39,6 +39,7 @@ export default class CardPengiriman extends Component {
 		this.onGetListO2o = this.onGetListO2o.bind(this);
 		this.onChosenLocker = this.onChosenLocker.bind(this);
 		this.openModal = this.openModal.bind(this);
+		this.onO2OEmpty = this.onO2OEmpty.bind(this);
 	}
 
 	// componentWillMount() {
@@ -143,6 +144,10 @@ export default class CardPengiriman extends Component {
 	onChosenLocker(dataChosen) {
 		const selectedLocker = this.props.latesto2o.find(e => e.value === dataChosen.value);
 		this.props.onSelectedLocker(selectedLocker);
+	}
+
+	onO2OEmpty(rowsRequest) {
+		this.props.onO2OEmpty(rowsRequest);
 	}
 
 	onGetListO2o(event) {

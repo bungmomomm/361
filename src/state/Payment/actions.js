@@ -738,6 +738,21 @@ const refreshInstallmentTerm = (selectedPayment, applybinResponse) => dispatch =
 	}
 };
 
+const failAuthTokenCC = (token, soNumber) => dispatch => {
+	return request({
+		token,
+		path: 'payments/fail_auth_token_cc',
+		method: 'POST',
+		body: {
+			order_number: soNumber
+		}
+	}).then((response) => {
+		// since return 422, error message on catch
+	}).catch((error) => {
+		dispatch(payError(getError(error)));
+	});
+};
+
 export default {
 	paymentInfoUpdated,
 	getAvailablePaymentMethod,
@@ -774,5 +789,6 @@ export default {
 	getAvailabelPaymentSelection,
 	checkStatusOvoPayment,
 	expirePayment,
-	refreshInstallmentTerm
+	refreshInstallmentTerm,
+	failAuthTokenCC
 };

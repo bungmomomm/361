@@ -66,7 +66,8 @@ import {
 	saveCC,
 	getAvailabelPaymentSelection,
 	checkStatusOvoPayment,
-	refreshInstallmentTerm
+	refreshInstallmentTerm,
+	failAuthTokenCC
 } from '@/state/Payment/actions';
 
 import { getRefreshToken } from '@/state/Auth/actions';
@@ -268,11 +269,6 @@ class Checkout extends Component {
 		if (this.props.userGTM !== nextProps.userGTM) {
 			setUserGTM(nextProps.userGTM);
 		}
-		if (this.props.payments.paymentError !== nextProps.payments.paymentError) {
-			this.setState({
-				showModalOvo: false
-			});
-		}
 	}
 
 	onRefreshToken(dispatch, callback = null) {
@@ -280,7 +276,6 @@ class Checkout extends Component {
 			userToken: this.props.cookies.get('user.token'),
 			userRFToken: this.props.cookies.get('user.rf.token')
 		})).then((newToken) => {
-			console.log(newToken);
 			this.props.cookies.set('user.exp', Number(newToken.expToken), { domain: process.env.SESSION_DOMAIN });
 			this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: process.env.SESSION_DOMAIN });
 			this.props.cookies.set('user.token', newToken.userToken, { domain: process.env.SESSION_DOMAIN });
@@ -289,6 +284,7 @@ class Checkout extends Component {
 
 			// this.onReload(dispatch);
 		}).catch((error) => {
+			dispatch(paymentError(error.response.data.errorMessage));
 			this.setState({
 				notifInfo: false,
 				notifMessage: error.response.data.errorMessage,
@@ -314,19 +310,18 @@ class Checkout extends Component {
 					dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress)).then(() => {
 
 					}).catch((error) => {
+						dispatch(paymentError(error.response.data.errorMessage));
 						this.setState({
 							enablePembayaran: false
 						});
 					});
 				}
 			}).catch(error => {
-				// console.log('getAddresses');
-				// console.log(error);
+				dispatch(paymentError(error.response.data.errorMessage));
 				this.onRefreshToken(dispatch, this.onReload);
 			});
 		}).catch(error => {
-			// console.log('getCart');
-			// console.log(error);
+			dispatch(paymentError(error.response.data.errorMessage));
 			this.onRefreshToken(dispatch, this.onReload);
 		});
 	}
@@ -384,6 +379,7 @@ class Checkout extends Component {
 				dispatch(changeBillingNumber(address.attributes.phone));
 			}
 		}).catch((error) => {
+			dispatch(paymentError(error.response.data.errorMessage));
 			this.setState({
 				enablePembayaran: false
 			});
@@ -455,6 +451,7 @@ class Checkout extends Component {
 				this.onReload(dispatch);
 			}).catch((error) => {
 				console.log(error);
+				dispatch(paymentError(error.response.data.errorMessage));
 			});
 		} else {
 			dispatch(deleteCart(this.props.cookies.get('user.token'), cart.data.id, this.props)).then(newCart => {
@@ -462,6 +459,7 @@ class Checkout extends Component {
 				this.onCheckProductJabodetabek(newCart);
 				this.onReload(dispatch);
 			}).catch((error) => {
+				dispatch(paymentError(error.response.data.errorMessage));
 				console.log(error);
 			});
 		}
@@ -552,9 +550,9 @@ class Checkout extends Component {
 		}
 	}
 
-	onGetListO2o(provinceId) {
+	onGetListO2o(provinceId, rowsRequest = 1000) {
 		const { dispatch } = this.props;
-		dispatch(getO2OList(this.props.cookies.get('user.token'), provinceId));
+		dispatch(getO2OList(this.props.cookies.get('user.token'), rowsRequest, provinceId));
 	}
 
 	onGetO2oProvinces() {
@@ -659,30 +657,9 @@ class Checkout extends Component {
 				if (response.bank) {
 					bankName = response.bank;
 				}
-				window.Raven.captureMessage('VTCreditCard', {
-					level: 'info',
-					extra: {
-						response,
-						sonumber: this.props.payments.soNumber,
-						selectedcard: this.props.payments.selectedCard,
-						selectedpayment: this.props.payments.selectedPayment,
-						selectedpaymentoption: this.props.payments.selectedPaymentOption,
-						cart: this.props.cart
-					}
-				});
 				dispatch(vtModalBoxOpen(true, response.redirect_url));
 			} else if (parseInt(response.status_code, 10) === 200) {
-				window.Raven.captureMessage('VTCreditCard', {
-					level: 'info',
-					extra: {
-						response,
-						sonumber: this.props.payments.soNumber,
-						selectedcard: this.props.payments.selectedCard,
-						selectedpayment: this.props.payments.selectedPayment,
-						selectedpaymentoption: this.props.payments.selectedPaymentOption,
-						cart: this.props.cart
-					}
-				});
+				
 				dispatch(vtModalBoxOpen(false));
 				dispatch(
 					pay(
@@ -726,6 +703,13 @@ class Checkout extends Component {
 				});				
 				dispatch(vtModalBoxOpen(false));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
+				dispatch(
+					failAuthTokenCC(
+						this.props.cookies.get('user.token'),
+						this.props.soNumber
+					)
+				);
+				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
 			}
 		};
 
@@ -737,30 +721,8 @@ class Checkout extends Component {
 				if (response.bank) {
 					bankName = response.bank;
 				}
-				window.Raven.captureMessage('VTInstallment', {
-					level: 'info',
-					extra: {
-						response,
-						sonumber: this.props.payments.soNumber,
-						selectedcard: this.props.payments.selectedCard,
-						selectedpayment: this.props.payments.selectedPayment,
-						selectedpaymentoption: this.props.payments.selectedPaymentOption,
-						cart: this.props.cart
-					}
-				});
 				dispatch(vtModalBoxOpen(true, response.redirect_url));
 			} else if (parseInt(response.status_code, 10) === 200) {
-				window.Raven.captureMessage('VTInstallment', {
-					level: 'info',
-					extra: {
-						response,
-						sonumber: this.props.payments.soNumber,
-						selectedcard: this.props.payments.selectedCard,
-						selectedpayment: this.props.payments.selectedPayment,
-						selectedpaymentoption: this.props.payments.selectedPaymentOption,
-						cart: this.props.cart
-					}
-				});
 				dispatch(vtModalBoxOpen(false));
 				dispatch(
 					pay(
@@ -801,6 +763,13 @@ class Checkout extends Component {
 				});
 				dispatch(vtModalBoxOpen(false));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
+				dispatch(
+					failAuthTokenCC(
+						this.props.cookies.get('user.token'),
+						this.props.soNumber
+					)
+				);
+				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
 			}
 
 
@@ -920,7 +889,8 @@ class Checkout extends Component {
 							showModalOvo: true
 						});
 					})
-					.catch(() => {
+					.catch((error) => {
+						dispatch(paymentError(error.response.data.errorMessage));
 						this.setState({
 							showModalOvo: false
 						});
@@ -964,6 +934,7 @@ class Checkout extends Component {
 			});
 		})
 		.catch(error => {
+			dispatch(paymentError(error.response.data.errorMessage));
 			this.setState({
 				enablePembayaran: false
 			});
@@ -1254,7 +1225,7 @@ class Checkout extends Component {
 
 
 					}).catch((error) => {
-
+						dispatch(paymentError(error.response.data.errorMessage));
 					});
 				} else {
 					this.onDoPayment();
@@ -1282,6 +1253,7 @@ class Checkout extends Component {
 			dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress)).then(() => {
 				dispatch(changeBillingNumber(this.state.selectedAddress.attributes.phone));
 			}).catch((error) => {
+				dispatch(paymentError(error.response.data.errorMessage));
 				this.setState({
 					enablePembayaran: false,
 					enablePesananPengiriman: this.state.enablePesananPengiriman
@@ -1358,18 +1330,14 @@ class Checkout extends Component {
 			dispatch(checkStatusOvoPayment(`${checkStatusUrl}${params}`, this.props.cookies.get('user.token'), this.props.soNumber, this.props.payments.ovoPaymentNumber, tick < 1))
 			.then(() => {
 				if (tick === 0 && this.state.selectedAddress) {
+					this.setState({
+						showModalOvo: false
+					});
 					dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
 					dispatch(changeOvoPaymentNumber());
 				}
 			});
 		}
-		if (tick === 0) {
-			this.setState({
-				showModalOvo: false
-			});
-			// refresh page
-			window.location = window.location.href;
-		} 
 	}
 
 	render() {
@@ -1507,7 +1475,14 @@ class Checkout extends Component {
 							/>
 						)
 					}
-					<ElockerModalbox closeModalElocker={this.closeModalElocker} shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} o2oProvinces={!o2oProvinces ? null : o2oProvinces} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
+					<ElockerModalbox 
+						closeModalElocker={this.closeModalElocker} 
+						shown={this.state.showModalO2o} 
+						listo2o={!listo2o ? null : listo2o} 
+						o2oProvinces={!o2oProvinces ? null : o2oProvinces} 
+						onGetListO2o={this.onGetListO2o} 
+						onSelectedLocker={this.onSelectedLocker}
+					/>
 					<PaymentSuccessModalbox shown={this.props.payments.paymentSuccess} onClose={this.onCloseSuccessBox} />
 					<PaymentErrorModalbox
 						shown={this.props.payments.paymentError}
