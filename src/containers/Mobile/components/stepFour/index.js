@@ -123,6 +123,9 @@ class StepFour extends Component {
 			const { dispatch } = this.props;
 			dispatch(new globalAction.getBlockContents(this.props.cookies.get('user.token'), ['660']));
 		}
+		if (nextProps.payments.selectedPaymentOption && this.props.payments.paymentMethod !== nextProps.payments.paymentMethod && nextProps.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT) {
+			this.setInstallmentList(nextProps.payments.selectedPaymentOption.banks[0]);
+		}
 	}
 
 	onOvoPaymentNumberChange(event) {
@@ -488,6 +491,7 @@ class StepFour extends Component {
 
 	onBankChange(bank) {
 		if (bank.value !== null) {
+			this.setInstallmentList(bank);
 			// this.checkValidInstallment();
 			const { dispatch } = this.props;
 			const selectedPaymentOption = new paymentAction.getAvailabelPaymentSelection(this.props.payments.selectedPayment);
@@ -890,7 +894,7 @@ class StepFour extends Component {
 				return (
 					<Group>
 						<Select block options={payments.selectedPayment.paymentItems[0].banks} onChange={(e) => this.onBankChange(e)} defaultValue={payments.selectedBank.value} value={payments.selectedBank.value} />
-						{this.state.installmentList.length > 0 && <Select block options={this.state.installmentList} onChange={(e) => this.onTermChange(e.value)} />}
+						{this.state.installmentList.length > 0 && <Select block options={this.state.installmentList} onChange={(e) => this.onTermChange(e)} />}
 						<CreditCardInput
 							placeholder='Masukkan Nomor Kartu'
 							sprites='payment-option'
