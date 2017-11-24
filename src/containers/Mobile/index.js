@@ -15,7 +15,7 @@ class Mobile extends Component {
 		this.props = props;
 		this.state = {
 			stepOne: {
-				disable: false,
+				disabled: false,
 				activeTab: 0,
 				selectedAddress: {
 					attributes: {
@@ -31,13 +31,13 @@ class Mobile extends Component {
 				}
 			},
 			stepTwo: {
-				disabled: false
+				disabled: false,
 			},
 			stepThree: {
-				disabled: false
+				disabled: false,
 			},
 			stepFour: {
-				disabled: false
+				disabled: false,
 			}
 		};
 	}
@@ -58,21 +58,27 @@ class Mobile extends Component {
 					applyState={(e) => this.applyState(e)} 
 					stepState={this.state}
 				/>
-				<StepTwo 
-					applyState={(e) => this.applyState(e)} 
-					stepState={this.state} 
-					disabled={this.state.stepTwo.disabled}
-				/>
-				<StepThree 
-					applyState={(e) => this.applyState(e)} 
-					stepState={this.state} 
-					disabled={this.state.stepThree.disabled}
-				/>
-				<StepFour 
-					applyState={(e) => this.applyState(e)} 
-					stepState={this.state} 
-					disabled={this.state.stepFour.disabled}
-				/>
+				{
+					<StepTwo 
+						applyState={(e) => this.applyState(e)} 
+						stepState={this.state} 
+						disabled={this.state.stepTwo.disabled}
+					/>
+				}
+				{
+					<StepThree 
+						applyState={(e) => this.applyState(e)} 
+						stepState={this.state} 
+						disabled={this.state.stepThree.disabled}
+					/>
+				}
+				{
+					<StepFour 
+						applyState={(e) => this.applyState(e)} 
+						stepState={this.state} 
+						disabled={this.state.stepFour.disabled}
+					/>
+				}
 			</div>
 		);
 	}

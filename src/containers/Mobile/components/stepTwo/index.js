@@ -24,6 +24,7 @@ class StepTwo extends Component {
 		super(props);
 		this.props = props;
 		this.cookies = this.props.cookies.get('user.token');
+		this.loadCart = false;
 	}
 
 	componentWillMount() {
@@ -35,10 +36,10 @@ class StepTwo extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		if (
-			typeof nextProps.stepState.stepOne.selectedAddress.id === 'undefined' &&
-			nextProps.cart[0].store.id
+			!this.loadCart
 		) {
 			this.constructor.fetchDataCart(this.cookies, nextProps.dispatch);
+			this.loadCart = true;
 		}
 	}
 
@@ -70,13 +71,13 @@ class StepTwo extends Component {
 		}
 	}
 
-	saveDisabledPayment(disable) {
+	saveDisabledPayment(disabled) {
 		const { stepState } = this.props;
 		const checkoutState = {
 			...stepState,
 			stepFour: {
 				...stepState.stepFour,
-				disable
+				disabled
 			}
 		};
 		this.props.applyState(checkoutState);

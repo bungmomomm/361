@@ -67,7 +67,8 @@ class StepFour extends Component {
 			appliedBin: null,
 			installmentList: [],
 			tahun: [],
-			tooltips: null
+			tooltips: null,
+			cardValidLuhn: false
 		};
 		this.isOvoPayment = this.props.payments.paymentMethod === 'e_wallet_ovo';
 		this.cookies = this.props.cookies.get('user.token');
@@ -122,6 +123,9 @@ class StepFour extends Component {
 		if (typeof this.props.blockContent === 'undefined') {
 			const { dispatch } = this.props;
 			dispatch(new globalAction.getBlockContents(this.props.cookies.get('user.token'), ['660']));
+		}
+		if (nextProps.payments.selectedPaymentOption && this.props.payments.paymentMethod !== nextProps.payments.paymentMethod && nextProps.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT) {
+			this.setInstallmentList(nextProps.payments.selectedPaymentOption.banks[0]);
 		}
 	}
 
@@ -426,7 +430,8 @@ class StepFour extends Component {
 					selectedPaymentOption,
 					cardNumber: event.ccNumber,
 					bankName: ''
-				}
+				},
+				cardValidLuhn: true
 			});
 		} else {
 			this.props.dispatch(new paymentAction.applyBin(this.cookies, -1, event.ccNumber, ''));
@@ -435,7 +440,8 @@ class StepFour extends Component {
 					selectedPaymentOption,
 					cardNumber: '',
 					bankName: ''
-				}
+				},
+				cardValidLuhn: false
 			});
 		}
 	}
@@ -488,6 +494,7 @@ class StepFour extends Component {
 
 	onBankChange(bank) {
 		if (bank.value !== null) {
+			this.setInstallmentList(bank);
 			// this.checkValidInstallment();
 			const { dispatch } = this.props;
 			const selectedPaymentOption = new paymentAction.getAvailabelPaymentSelection(this.props.payments.selectedPayment);
@@ -534,7 +541,8 @@ class StepFour extends Component {
 					cardNumber: event.ccNumber,
 					bankName: bank,
 					installment_term: term
-				}
+				},
+				cardValidLuhn: true
 			});
 		} else {
 			this.props.dispatch(new paymentAction.applyBin(this.cookies, -1, event.ccNumber, bank, term));
@@ -544,7 +552,8 @@ class StepFour extends Component {
 					cardNumber: '',
 					bankName: bank,
 					installment_term: term
-				}
+				},
+				cardValidLuhn: false
 			});
 		}
 	}
@@ -585,6 +594,11 @@ class StepFour extends Component {
 		const { dispatch } = this.props;
 		dispatch(new paymentAction.changeBillingNumber(event.target.value, true));
 	}		
+
+	onOvoNumberChange(ovoNumber) {
+		const { dispatch } = this.props;
+		dispatch(new paymentAction.changeOvoNumber(ovoNumber));
+	}
 
 	getAffTracking() {
 		return {
@@ -651,7 +665,8 @@ class StepFour extends Component {
 		dispatch(new paymentAction.changePaymentMethod(stateSelectedPayment.value, payments.paymentMethods, this.cookies));
 		this.setState({ 
 			showPaymentInfo: null,
-			stateSelectedPayment
+			stateSelectedPayment,
+			cardValidLuhn: false
 		});
 
 	}
@@ -761,11 +776,29 @@ class StepFour extends Component {
 			});
 		} 
 	}
+
+	checkCCField() {
+		const { payments } = this.props;
+		return (
+			typeof payments.selectedCardDetail !== 'undefined' && 
+			typeof payments.selectedCard !== 'undefined' && 
+			payments.selectedCardDetail.cvv !== 0 &&
+			payments.selectedCardDetail.cvv !== '' &&
+			payments.selectedCardDetail.month !== 0 &&
+			payments.selectedCardDetail.year !== 0 &&
+			payments.selectedCard.value !== '' && 
+			this.state.cardValidLuhn
+		);
+	}
 	
 	checkActiveBtnSubmit() {
 		const validOvo = this.isOvoPayment ? this.state.ovo.ovoPhonePaymentValid : true;
 		const validBilling = this.props.payments.billingPhoneNumber && this.props.payments.billingPhoneNumber !== '';
-		if (validBilling && validOvo && this.state.termCondition && this.props.payments.selectedPayment && this.props.payments.selectedPaymentOption) {
+		const checkCCField = (
+			(this.props.payments.selectedPayment && this.props.payments.selectedPayment.id === paymentGroupName.CREDIT_CARD) ||
+			(this.props.payments.selectedPayment && this.props.payments.selectedPayment.id === paymentGroupName.INSTALLMENT) 
+		) ? this.checkCCField() : true;
+		if (checkCCField && validBilling && validOvo && this.state.termCondition && this.props.payments.selectedPayment && this.props.payments.selectedPaymentOption) {
 			return '';
 		}
 		return 'disabled';
@@ -806,7 +839,7 @@ class StepFour extends Component {
 					<Input
 						type='password'
 						placeholder='cvv'
-						onBlur={this.onCardCvvChange}
+						onChange={this.onCardCvvChange}
 						validation={{
 							rules: 'required|min_value:1',
 							name: 'cvv'
@@ -885,7 +918,7 @@ class StepFour extends Component {
 				return (
 					<Group>
 						<Select block options={payments.selectedPayment.paymentItems[0].banks} onChange={(e) => this.onBankChange(e)} defaultValue={payments.selectedBank.value} value={payments.selectedBank.value} />
-						{this.state.installmentList.length > 0 && <Select block options={this.state.installmentList} onChange={(e) => this.onTermChange(e.value)} />}
+						{this.state.installmentList.length > 0 && <Select block options={this.state.installmentList} onChange={(e) => this.onTermChange(e)} />}
 						<CreditCardInput
 							placeholder='Masukkan Nomor Kartu'
 							sprites='payment-option'
@@ -1041,7 +1074,7 @@ class StepFour extends Component {
 									dataProps={{ minLength: 0, maxLength: 4 }}
 									type='password'
 									placeholder='cvv'
-									onBlur={this.onCardCvvChange}
+									onChange={this.onCardCvvChange}
 									validation={{
 										rules: 'required|min_value:1',
 										name: 'cvv'
@@ -1062,8 +1095,18 @@ class StepFour extends Component {
 						onChange={(event) => this.onBillingNumberChange(event)} 
 					/>
 					{
-						this.checkShowingOvoPhone() && payments.ovoPhoneNumber &&
-						<Input state={ovoReadOnly ? 'disabled' : ''} color={ovoReadOnly ? 'green' : null} icon={ovoReadOnly ? 'check' : null} defaultValue={payments.ovoPhoneNumber} label={T.checkout.OVO_PHONE_LABEL} placeholder={T.checkout.SAVED_OVO_PHONE} type='number' min={0} />
+						this.checkShowingOvoPhone() &&
+						<Input 
+							state={ovoReadOnly ? 'disabled' : ''} 
+							color={ovoReadOnly ? 'green' : null} 
+							icon={ovoReadOnly ? 'check' : null} 
+							value={payments.ovoPhoneNumber || ''} 
+							label={T.checkout.OVO_PHONE_LABEL} 
+							placeholder={T.checkout.SAVED_OVO_PHONE} 
+							type='number' 
+							min={0}
+							onChange={(event) => this.onOvoNumberChange(event.target.value)}
+						/>
 					}
 					<div className={styles.checkOutAction}>
 						<Checkbox defaultChecked={this.state.termCondition} onClick={() => this.setState({ termCondition: !this.state.termCondition })}>{T.checkout.TERMS_PAYMENT}</Checkbox>
