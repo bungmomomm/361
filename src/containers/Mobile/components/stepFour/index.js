@@ -784,8 +784,9 @@ class StepFour extends Component {
 			typeof payments.selectedCard !== 'undefined' && 
 			payments.selectedCardDetail.cvv !== 0 &&
 			payments.selectedCardDetail.cvv !== '' &&
-			payments.selectedCardDetail.month !== 0 &&
-			payments.selectedCardDetail.year !== 0 &&
+			(payments.selectedCard.selected ||
+			(payments.selectedCardDetail.month !== 0 &&
+			payments.selectedCardDetail.year !== 0)) &&
 			payments.selectedCard.value !== '' && 
 			this.state.cardValidLuhn
 		);
