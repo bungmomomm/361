@@ -56,7 +56,7 @@ class ModalAddress extends Component {
 
 	componentWillMount() {
 		const { isEdit, formData, address, dispatch } = this.props;
-		if (typeof address.cityProv !== 'undefined') {
+		if (typeof address.cityProv === 'undefined') {
 			this.constructor.fetchGetCityProvince(this.cookies, dispatch);
 		}
 		if (isEdit && typeof formData.attributes.latitude !== 'undefined' && typeof formData.attributes.longitude !== 'undefined') {
