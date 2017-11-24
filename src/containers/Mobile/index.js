@@ -32,15 +32,12 @@ class Mobile extends Component {
 			},
 			stepTwo: {
 				disabled: false,
-				hidden: false,
 			},
 			stepThree: {
 				disabled: false,
-				hidden: false,
 			},
 			stepFour: {
 				disabled: false,
-				hidden: false,
 			}
 		};
 	}
@@ -62,7 +59,6 @@ class Mobile extends Component {
 					stepState={this.state}
 				/>
 				{
-					!this.state.stepTwo.hidden && 
 					<StepTwo 
 						applyState={(e) => this.applyState(e)} 
 						stepState={this.state} 
@@ -70,7 +66,6 @@ class Mobile extends Component {
 					/>
 				}
 				{
-					!this.state.stepThree.hidden && 
 					<StepThree 
 						applyState={(e) => this.applyState(e)} 
 						stepState={this.state} 
@@ -78,7 +73,6 @@ class Mobile extends Component {
 					/>
 				}
 				{
-					!this.state.stepFour.hidden && 
 					<StepFour 
 						applyState={(e) => this.applyState(e)} 
 						stepState={this.state} 
