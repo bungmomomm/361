@@ -119,7 +119,13 @@ export default (state = initialState, action) => {
 			resetPaymentOption: true,
 			selectedPayment: action.payload.selectedPayment,
 			selectedPaymentOption: null,
-			paymentMethod: null
+			paymentMethod: null,
+			selectedCard: false,
+			selectedCardDetail: {
+				cvv: 0,
+				month: 0,
+				year: 0
+			}
 		};
 	}
 

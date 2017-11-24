@@ -67,7 +67,8 @@ class StepFour extends Component {
 			appliedBin: null,
 			installmentList: [],
 			tahun: [],
-			tooltips: null
+			tooltips: null,
+			cardValidLuhn: false
 		};
 		this.isOvoPayment = this.props.payments.paymentMethod === 'e_wallet_ovo';
 		this.cookies = this.props.cookies.get('user.token');
@@ -429,7 +430,8 @@ class StepFour extends Component {
 					selectedPaymentOption,
 					cardNumber: event.ccNumber,
 					bankName: ''
-				}
+				},
+				cardValidLuhn: true
 			});
 		} else {
 			this.props.dispatch(new paymentAction.applyBin(this.cookies, -1, event.ccNumber, ''));
@@ -438,7 +440,8 @@ class StepFour extends Component {
 					selectedPaymentOption,
 					cardNumber: '',
 					bankName: ''
-				}
+				},
+				cardValidLuhn: false
 			});
 		}
 	}
@@ -538,7 +541,8 @@ class StepFour extends Component {
 					cardNumber: event.ccNumber,
 					bankName: bank,
 					installment_term: term
-				}
+				},
+				cardValidLuhn: true
 			});
 		} else {
 			this.props.dispatch(new paymentAction.applyBin(this.cookies, -1, event.ccNumber, bank, term));
@@ -548,7 +552,8 @@ class StepFour extends Component {
 					cardNumber: '',
 					bankName: bank,
 					installment_term: term
-				}
+				},
+				cardValidLuhn: false
 			});
 		}
 	}
@@ -660,7 +665,8 @@ class StepFour extends Component {
 		dispatch(new paymentAction.changePaymentMethod(stateSelectedPayment.value, payments.paymentMethods, this.cookies));
 		this.setState({ 
 			showPaymentInfo: null,
-			stateSelectedPayment
+			stateSelectedPayment,
+			cardValidLuhn: false
 		});
 
 	}
@@ -770,11 +776,29 @@ class StepFour extends Component {
 			});
 		} 
 	}
+
+	checkCCField() {
+		const { payments } = this.props;
+		return (
+			typeof payments.selectedCardDetail !== 'undefined' && 
+			typeof payments.selectedCard !== 'undefined' && 
+			payments.selectedCardDetail.cvv !== 0 &&
+			payments.selectedCardDetail.cvv !== '' &&
+			payments.selectedCardDetail.month !== 0 &&
+			payments.selectedCardDetail.year !== 0 &&
+			payments.selectedCard.value !== '' && 
+			this.state.cardValidLuhn
+		);
+	}
 	
 	checkActiveBtnSubmit() {
 		const validOvo = this.isOvoPayment ? this.state.ovo.ovoPhonePaymentValid : true;
 		const validBilling = this.props.payments.billingPhoneNumber && this.props.payments.billingPhoneNumber !== '';
-		if (validBilling && validOvo && this.state.termCondition && this.props.payments.selectedPayment && this.props.payments.selectedPaymentOption) {
+		const checkCCField = (
+			(this.props.payments.selectedPayment && this.props.payments.selectedPayment.id === paymentGroupName.CREDIT_CARD) ||
+			(this.props.payments.selectedPayment && this.props.payments.selectedPayment.id === paymentGroupName.INSTALLMENT) 
+		) ? this.checkCCField() : true;
+		if (checkCCField && validBilling && validOvo && this.state.termCondition && this.props.payments.selectedPayment && this.props.payments.selectedPaymentOption) {
 			return '';
 		}
 		return 'disabled';
@@ -815,7 +839,7 @@ class StepFour extends Component {
 					<Input
 						type='password'
 						placeholder='cvv'
-						onBlur={this.onCardCvvChange}
+						onChange={this.onCardCvvChange}
 						validation={{
 							rules: 'required|min_value:1',
 							name: 'cvv'
@@ -1050,7 +1074,7 @@ class StepFour extends Component {
 									dataProps={{ minLength: 0, maxLength: 4 }}
 									type='password'
 									placeholder='cvv'
-									onBlur={this.onCardCvvChange}
+									onChange={this.onCardCvvChange}
 									validation={{
 										rules: 'required|min_value:1',
 										name: 'cvv'
