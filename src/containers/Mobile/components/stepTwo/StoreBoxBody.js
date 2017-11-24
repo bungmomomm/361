@@ -6,8 +6,9 @@ import {
 	Icon,
 } from 'mm-ui';
 import styles from './StoreBoxBody.scss';
+import { T } from '@/data/translations';
 
-const StoreBoxBody = ({ products, onUpdateQty, showBtnDelete }) => {
+const StoreBoxBody = ({ products, onUpdateQty, showBtnDelete, isRestrictO2O }) => {
 	return (
 		<div>
 			{
@@ -33,7 +34,7 @@ const StoreBoxBody = ({ products, onUpdateQty, showBtnDelete }) => {
 								<Level style={{ marginBottom: '10px' }}>
 									<Level.Left><strong>{currency(product.price)}</strong></Level.Left>
 									<Level.Right>
-										<Stepper max={product.maxQty} min={1} start={product.qty} defaultValue={product.qty} value={product.qty} onChange={(e) => onUpdateQty(e, product.id)} />
+										<Stepper max={product.maxQty} min={1} start={product.qty} value={product.qty} onChange={(e) => onUpdateQty(e, product.id)} />
 									</Level.Right>
 								</Level>
 								<div>
@@ -43,6 +44,9 @@ const StoreBoxBody = ({ products, onUpdateQty, showBtnDelete }) => {
 								</div>
 							</Level.Item>
 						</Level>
+						{
+							(product.o2o_supported === '0' && isRestrictO2O) && <div className='font-red' style={{ marginTop: '15px' }}>{T.checkout.O2O_PRODUCT_NOT_SUPPORT}</div>
+						}
 					</div>
 				))
 			}

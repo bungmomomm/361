@@ -70,12 +70,7 @@ class stepOne extends Component {
 		this.cookies = this.props.cookies.get('user.token');
 	}
 
-	componentDidMount() {
-		if (this.props.addresses === undefined) {
-			this.constructor.fetchDataAddress(this.cookies, this.props.dispatch);
-		} else {
-			this.setShipping(this.props.addresses);
-		}
+	componentWillMount() {
 		const checkoutState = {
 			...this.props.stepState,
 			stepOne: {
@@ -84,6 +79,14 @@ class stepOne extends Component {
 			}
 		};
 		this.props.applyState(checkoutState);
+	}
+
+	componentDidMount() {
+		if (typeof this.props.addresses === 'undefined') {
+			this.constructor.fetchDataAddress(this.cookies, this.props.dispatch);
+		} else {
+			this.setShipping(this.props.addresses);
+		}
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -228,15 +231,15 @@ class stepOne extends Component {
 			...stepState,
 			stepFour: {
 				...stepState.stepFour,
-				disabled: notAlowedShipping || notAllowedO2o,
+				disable: notAlowedShipping || notAllowedO2o
 			},
 			stepThree: {
 				...stepState.stepThree,
-				disabled: notAlowedShipping || notAllowedO2o,
+				disable: notAlowedShipping || notAllowedO2o
 			},
 			stepTwo: {
 				...stepState.stepTwo,
-				disabled: false
+				disable: emptyShipping || (restriction ? !restriction : emptyShippingO2o)
 			},
 		};
 		this.props.applyState(checkoutState);
@@ -411,7 +414,7 @@ class stepOne extends Component {
 												className='font-orange'
 												onClick={() => this.toggleModalo2o()} 
 											>
-												{/* <Icon name='plus' /> {T.checkout.ADD_ADDRESS}  */}
+												<Icon name='plus' /> {T.checkout.ADD_ADDRESS}
 											</div>
 										</Level.Item>
 									</Level>
@@ -421,10 +424,7 @@ class stepOne extends Component {
 								this.props.latesto2o.length < 1 && this.props.isPickupable === '1' && !selectedAddressO2O.attributes && (
 									<Panel className='customSelectO2OWrapper'>
 										<Group>
-											<Button
-												block
-												onClick={() => this.toggleModalo2o()}
-											>
+											<Button block onClick={() => this.toggleModalo2o()}>
 												<Level>
 													<Level.Left>{T.checkout.CHOOSE_STORE}</Level.Left>
 													<Level.Right><Icon name='angle-down' /></Level.Right>
@@ -456,7 +456,6 @@ class stepOne extends Component {
 						onChange={(e) => this.setSelectedAddress(e)}
 					/>
 				}
-
 				{
 					showModalo2o &&
 					<Modalo2o

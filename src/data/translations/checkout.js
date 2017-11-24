@@ -33,6 +33,7 @@ export default {
 	CHOOSE_SHIPPING_LOCATION: 'Mohon pilih titik lokasi pengiriman anda',
 	SHIPPING_COST: 'Biaya Pengiriman',
 	TOTAL: 'Total',
+	O2O_PRODUCT_NOT_SUPPORT: 'Product tidak mendukung layanan o2o',
 
 	STEP_THREE_LABEL: '3. Rincian Pembayaran',
 	SUB_TOTAL: 'Subtotal',
