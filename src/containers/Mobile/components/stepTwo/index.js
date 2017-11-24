@@ -127,14 +127,9 @@ class StepTwo extends Component {
 										{T.checkout.JABODETABEK_LABEL}
 									</div>)
 								}
-								{
-									isRestrictO2O && (<div className='font-red' style={{ marginBottom: '15px' }}>
-										{T.checkout.O2O_SELLER_NOT_SUPPORT}
-										</div>
-									)
-								}
 								<StoreBoxBody 
 									products={storeData.store.products}
+									isRestrictO2O={isRestrictO2O}
 									onUpdateQty={(e, productId) => this.updateQty(e, productId)}
 									showBtnDelete={!(this.props.cart.length < 2 && storeData.store.products.length < 2)}
 								/>

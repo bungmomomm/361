@@ -71,6 +71,7 @@ const setCartModel = (jsoApiResponse) => {
 				id: parseInt(prodRel.id, 10),
 				fgLocation: prods.attributes.fg_location,
 				brand: prods.attributes.brand_name,
+				o2o_supported: a.attributes.o2o_supported,
 				category: prods.attributes.product_category_names,
 				attribute: [],
 			};

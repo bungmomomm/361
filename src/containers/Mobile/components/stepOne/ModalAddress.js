@@ -41,7 +41,6 @@ class ModalAddress extends Component {
 				province: {},
 				district: {}
 			},
-			renderDistrict: false,
 			formData: {},
 			showMap: false,
 			formattedAddress: null,
@@ -55,10 +54,7 @@ class ModalAddress extends Component {
 	}
 
 	componentWillMount() {
-		const { isEdit, formData, address, dispatch } = this.props;
-		if (typeof address.cityProv !== 'undefined') {
-			this.constructor.fetchGetCityProvince(this.cookies, dispatch);
-		}
+		const { isEdit, formData } = this.props;
 		if (isEdit && typeof formData.attributes.latitude !== 'undefined' && typeof formData.attributes.longitude !== 'undefined') {
 			this.setState({
 				mapMarkerCenter: {
@@ -70,7 +66,10 @@ class ModalAddress extends Component {
 	}
 
 	componentDidMount() {
-		const { formData } = this.props;
+		const { formData, address, dispatch } = this.props;
+		if (typeof address.cityProv === 'undefined') {
+			this.constructor.fetchGetCityProvince(this.cookies, dispatch);
+		}
 		if (this.props.isEdit && formData.attributes) {
 			if (typeof formData.attributes.latitude !== 'undefined' && typeof formData.attributes.longitude !== 'undefined') {
 				this.getPinPointAddress();
@@ -80,10 +79,7 @@ class ModalAddress extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (this.props.address.district !== nextProps.address.district) {
-			setTimeout(() => { this.setState({ renderDistrict: true }); }, 20);
-		}
-		if (nextProps.formData) {
+		if (nextProps.formData !== this.props.formData) {
 			this.getPinPointAddress();
 		}
 	}
@@ -106,7 +102,6 @@ class ModalAddress extends Component {
 				},
 				showMap: false,
 				formattedAddress: null,
-				renderDistrict: false,
 				mapMarkerCenter: null
 			});
 			this.constructor.fetchGetDistric(this.cookies, value, this.props.dispatch);
@@ -142,6 +137,7 @@ class ModalAddress extends Component {
 					this.setState({
 						formattedAddress: results[0].formatted_address
 					})
+					
 				)
 			));
 		}
@@ -322,12 +318,11 @@ class ModalAddress extends Component {
 		} = this.props;
 
 		if (this.props.isEdit && !formData) return null;
-
 		return (
 			<Modal
 				size='medium'
 				show={open}
-				loading={(address.cityProv && address.cityProv.length < 1) || false}
+				loading={typeof address.cityProv === 'undefined'}
 				showOverlayCloseButton
 				onCloseRequest={this.props.handleClose}
 			>
@@ -362,7 +357,7 @@ class ModalAddress extends Component {
 						validation={{ rules: 'required|min:7|max:14', name: 'phone' }}
 					/>
 					{
-						address.cityProv &&
+						typeof address.cityProv !== 'undefined' &&
 						<Select
 							block
 							label='Kota, Provinsi *'
@@ -376,20 +371,18 @@ class ModalAddress extends Component {
 						/>
 					}
 					{
-						
-						(address.district && address.district.length > 0 && this.state.renderDistrict) && (
-							<Select
-								block
-								label='Kecamatan *'
-								hasFilter
-								name='kecamatan'
-								defaultValue={this.props.isEdit ? this.state.selected.district.value : ''}
-								options={address.district}
-								onChange={(e) => this.onChangeDistrict(e)}
-								ref={(c) => { this.elDistrict = c; }}
-								validation={{ rules: 'required', name: 'district' }}
-							/>
-						)
+						typeof address.cityProv === 'object' && typeof address.district === 'object' && 
+						<Select
+							block
+							label='Kecamatan *'
+							hasFilter
+							name='kecamatan'
+							defaultValue={this.props.isEdit ? this.state.selected.district.value : ''}
+							options={address.district}
+							onChange={(e) => this.onChangeDistrict(e)}
+							ref={(c) => { this.elDistrict = c; }}
+							validation={{ rules: 'required', name: 'district' }}
+						/>
 					}
 					<Input
 						label='Kode Pos *'
