@@ -40,6 +40,7 @@ import Vt3dsModalBox from './components/Vt3dsModalBox';
 
 // payment methods components
 import PaymentInstallment from './components/Payments/PaymentInstallment';
+// import PaymentCreditCard from './components/Payments/PaymentCreditCard';
 
 import styles from '../../../Mobile/mobile.scss';
 
@@ -759,6 +760,16 @@ class StepFour extends Component {
 			this.props.disabled ? styles.disabled : ''
 		].join(' ').trim();
 	}
+
+	enableButtonPayNow(e) {
+		this.props.applyState({
+			...this.props.stepState,
+			stepFour: {
+				...this.props.stepState.stepFour,
+				payNowButton: e
+			}
+		});
+	}
 	
 	render() {
 		const {
@@ -856,6 +867,7 @@ class StepFour extends Component {
 						payments={payments}
 						appliedBin={this.state.appliedBin}
 						installmentList={this.state.installmentList}
+						enableButtonPayNow={(e) => this.enableButtonPayNow(e)}
 					/>
 				);
 			}
@@ -1006,14 +1018,7 @@ class StepFour extends Component {
 					}
 					<div className={styles.checkOutAction}>
 						<Checkbox defaultChecked={this.state.termCondition} onClick={() => this.setState({ termCondition: !this.state.termCondition })}>{T.checkout.TERMS_PAYMENT}</Checkbox>
-						{
-							this.checkActiveBtnSubmit() && 
-							<Button block size='large' color='red' state={this.checkActiveBtnSubmit()} onClick={(e) => this.submitPayment(e)}>{T.checkout.BUY_NOW}</Button>
-						}
-						{
-							!this.checkActiveBtnSubmit() && 
-							<Button block size='large' color='red' state='disabled'>{T.checkout.BUY_NOW}</Button>
-						}
+						<Button block size='large' color='red' state={!this.props.stepState.stepFour.payNowButton ? 'disabled' : ''} onClick={(e) => this.submitPayment(e)}>{T.checkout.BUY_NOW}</Button>
 					</div>
 				</div>
 				{

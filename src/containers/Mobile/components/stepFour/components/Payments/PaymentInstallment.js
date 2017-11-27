@@ -18,9 +18,10 @@ class PaymentInstallment extends Component {
 		this.props = props;
 		this.state = {
 			installmentList: [],
-			validInstallmentBin: true
+			validInstallmentBin: null
 		};
-		this.tahun = [{ value: '', label: 'tahun' }];
+		this.ccvValue = '';
+		this.tahun = [{ value: null, label: 'tahun' }];
 		this.cookies = this.props.cookies.get('user.token');
 	}
 
@@ -34,7 +35,7 @@ class PaymentInstallment extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		if (this.props.payments !== nextProps.payments) {
-			this.validateInstallmentForm(nextProps);
+			this.validateInstallmentForm();
 		}
 	}
 
@@ -66,6 +67,11 @@ class PaymentInstallment extends Component {
 				term: term.value
 			}
 		});
+	}
+	
+	onChangeCVV(e) {
+		this.ccvValue = e.target.value;
+		this.props.dispatch(new actions.changeInstallmentCCCvv(e.target.value));
 	}
 
 	onInstallmentCCNumberChange(event) {
@@ -130,20 +136,24 @@ class PaymentInstallment extends Component {
 		} else {
 			this.setState({ validInstallmentBin: false });
 		}
+		this.validateInstallmentForm();
 	}
 
-	validateInstallmentForm(props) {
-		console.log(this.elYearInstallment);
-		if (
-			!!this.elBank.state.selected.value &&
-			!!this.elTerms.state.selected && 
-			this.elCreditCard.state.ccValid === 'green' &&
-			this.elMonthInstallment.validation.checkValid() && 
-			this.elYearInstallment.validation.checkValid() &&
-			this.elCvvInstallment.validation.checkValid()
-		) {
-			console.log('test');
-		}
+	validateInstallmentForm() {
+		setTimeout(() => {
+			if (
+				!!this.elBank.state.selected.value &&
+				!!this.elTerms.state.selected &&
+				this.elCreditCard.state.ccValid === 'green' &&
+				this.elMonthInstallment.state.selected !== null &&
+				this.elYearInstallment.state.selected !== null &&
+				this.ccvValue !== ''
+			) {
+				this.props.enableButtonPayNow(true);
+			} else {
+				this.props.enableButtonPayNow(false);
+			}
+		}, 100);
 	}
 
 	renderInstallmentList() {
@@ -169,43 +179,32 @@ class PaymentInstallment extends Component {
 				{this.renderInstallmentList()}
 				<CreditCardInput
 					placeholder={T.checkout.INPUT_CART_NUMBER}
+					color={!validInstallmentBin && validInstallmentBin !== null ? 'red' : ''}
 					sprites='payment-option'
 					onChange={(e) => this.checkValidInstallment(e)}
 					ref={(c) => { this.elCreditCard = c; }}
-					message={!validInstallmentBin ? T.checkout.INPUT_MATCHED_CART_NUMBER : ''}
+					message={!validInstallmentBin && validInstallmentBin !== null ? T.checkout.INPUT_MATCHED_CART_NUMBER : ''}
 				/>
 				<Group grouped>
 					<Select
 						options={Bulan}
 						onChange={(e) => dispatch(new actions.changeInstallmentCCMonth(e.value))}
-						validation={{
-							rules: 'required|min_value:1',
-							name: 'month'
-						}}
+						validation={{ rules: 'required|min_value:1', name: 'month' }}
 						ref={(c) => { this.elMonthInstallment = c; }}
 					/>
 					<Select
 						block
 						options={this.tahun}
 						onChange={(e) => dispatch(new actions.changeInstallmentCCYear(e.value))}
-						validation={{
-							rules: 'required|min_value:10|min:1',
-							name: 'year'
-						}}
+						validation={{ rules: 'required|min_value:10|min:1', name: 'year' }}
 						ref={(c) => { this.elYearInstallment = c; }}
 					/>
 					<Input
-						dataProps={{ 
-							minLength: 0, 
-							maxLength: 4 
-						}}
+						dataProps={{ minLength: 0, maxLength: 4 }}
 						type='password'
 						placeholder='cvv'
-						onChange={(e) => dispatch(new actions.changeInstallmentCCCvv(e.target.value))}
-						validation={{
-							rules: 'required|min_value:1',
-							name: 'cvv'
-						}}
+						onChange={(e) => this.onChangeCVV(e)}
+						validation={{ rules: 'required|min_value:1', name: 'cvv' }}
 						ref={(c) => { this.elCvvInstallment = c; }}
 					/>
 					<div style={{ paddingRight: '30px' }} ><Sprites name='cvv' /></div>

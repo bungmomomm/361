@@ -38,6 +38,7 @@ class Mobile extends Component {
 			},
 			stepFour: {
 				disabled: false,
+				payNowButton: false
 			}
 		};
 	}

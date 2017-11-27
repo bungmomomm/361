@@ -168,7 +168,7 @@ CreditCardInput.propTypes = {
 	error: PropTypes.bool,
 	creditCard: PropTypes.bool,
 	size: PropTypes.oneOf(['small', 'medium', 'large']),
-	color: PropTypes.oneOf(['red', 'yellow', 'orange', 'green']),
+	color: PropTypes.oneOf(['red', 'yellow', 'orange', 'green', '']),
 	/** make horinzontal layout. */
 	horizontal: PropTypes.bool,
 	/** label content. */
