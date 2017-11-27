@@ -802,9 +802,9 @@ class StepFour extends Component {
 			(this.props.payments.selectedPayment && this.props.payments.selectedPayment.id === paymentGroupName.INSTALLMENT) 
 		) ? this.checkCCField() : true;
 		if (checkCCField && validBilling && validOvo && this.state.termCondition && this.props.payments.selectedPayment && this.props.payments.selectedPaymentOption) {
-			return '';
+			return true;
 		}
-		return 'disabled';
+		return false;
 	}
 	
 	checkShowingOvoPhone() {
@@ -1113,7 +1113,14 @@ class StepFour extends Component {
 					}
 					<div className={styles.checkOutAction}>
 						<Checkbox defaultChecked={this.state.termCondition} onClick={() => this.setState({ termCondition: !this.state.termCondition })}>{T.checkout.TERMS_PAYMENT}</Checkbox>
-						<Button block size='large' color='red' state={this.checkActiveBtnSubmit()} onClick={(e) => this.submitPayment(e)}>{T.checkout.BUY_NOW}</Button>
+						{
+							this.checkActiveBtnSubmit() && 
+							<Button block size='large' color='red' state={this.checkActiveBtnSubmit()} onClick={(e) => this.submitPayment(e)}>{T.checkout.BUY_NOW}</Button>
+						}
+						{
+							!this.checkActiveBtnSubmit() && 
+							<Button block size='large' color='red' state='disabled'>{T.checkout.BUY_NOW}</Button>
+						}
 					</div>
 				</div>
 				{
