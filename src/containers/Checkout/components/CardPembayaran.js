@@ -470,7 +470,7 @@ export default class CardPembayaran extends Component {
 		let { ovoDefault, ovoPaymentInput } = '';
 		if (selectedPaymentOption) {
 			if (typeof selectedPaymentOption.settings !== 'undefined') {
-				if (typeof selectedPaymentOption.settings.info !== 'undefined') {
+				if (typeof selectedPaymentOption.settings.info !== 'undefined' && selectedPaymentOption.settings.info.length > 0) {
 					info = selectedPaymentOption.settings.info.map((infoText, indexInfo) => {
 						return (
 							<div key={indexInfo}><br />{infoText}</div>
