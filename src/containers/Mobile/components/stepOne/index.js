@@ -323,7 +323,7 @@ class stepOne extends Component {
 					<Tabs.Tab>
 						<Tabs.Title>{T.checkout.TAB_ADDRESS_LABEL}</Tabs.Title>
 						<Tabs.Content>
-							<Alert color='yellow' style={{ marginBottom: '15px' }}>
+							<Alert color='yellow' style={{ marginBottom: '15px', textAlign: 'center' }}>
 								{T.checkout.FREE_ONGKIR_REGULATION}
 							</Alert>
 							{
@@ -389,10 +389,10 @@ class stepOne extends Component {
 					<Tabs.Tab>
 						<Tabs.Title>{T.checkout.TAB_ELOCKER_LABEL}</Tabs.Title>
 						<Tabs.Content>
-							<Alert color='yellow' style={{ marginBottom: '15px' }} safeHtml={T.checkout.REGULATION} />
+							<Alert color='yellow' style={{ marginBottom: '15px', textAlign: 'center' }} safeHtml={T.checkout.REGULATION} />
 							{
 								this.props.isPickupable !== '1' && (
-									<Alert close icon='ban' color='red' style={{ marginBottom: '15px' }} safeHtml={T.checkout.ONE_OR_MORE_PRODUCT_NOT_SUPPORTED} />
+									<Alert close icon='ban' color='red' style={{ marginBottom: '15px', textAlign: 'center' }} safeHtml={T.checkout.ONE_OR_MORE_PRODUCT_NOT_SUPPORTED} />
 								)
 							}
 							{
