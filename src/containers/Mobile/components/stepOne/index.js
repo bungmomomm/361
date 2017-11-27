@@ -28,6 +28,7 @@ import styles from '../../mobile.scss';
 
 // import { Address } from '@/data';
 import { T } from '@/data/translations';
+import { setUserGTM, pushDataLayer } from '@/utils/gtm';
 
 class stepOne extends Component {
 
@@ -68,9 +69,15 @@ class stepOne extends Component {
 		};
 		this.currentAddresses = [];
 		this.cookies = this.props.cookies.get('user.token');
+		
 	}
 
-	componentWillMount() {
+	componentDidMount() {
+		if (this.props.addresses === undefined) {
+			this.constructor.fetchDataAddress(this.cookies, this.props.dispatch);
+		} else {
+			this.setShipping(this.props.addresses);
+		}
 		const checkoutState = {
 			...this.props.stepState,
 			stepOne: {
@@ -81,15 +88,10 @@ class stepOne extends Component {
 		this.props.applyState(checkoutState);
 	}
 
-	componentDidMount() {
-		if (typeof this.props.addresses === 'undefined') {
-			this.constructor.fetchDataAddress(this.cookies, this.props.dispatch);
-		} else {
-			this.setShipping(this.props.addresses);
-		}
-	}
-
 	componentWillReceiveProps(nextProps) {
+		if (this.props.userGTM !== nextProps.userGTM) {
+			setUserGTM(nextProps.userGTM);
+		}
 		// set default elocker
 		if (!nextProps.stepState.stepOne.selectedAddressO2O && nextProps.latesto2o && nextProps.latesto2o.length > 0) {
 			const checkoutState = this.setStateDefaultElocker(nextProps.stepState, nextProps.latesto2o);
@@ -133,6 +135,9 @@ class stepOne extends Component {
 			// set type pickup for O2O
 			address.type = 'pickup';
 			address.attributes.is_dropshipper = false;
+			pushDataLayer('checkout', 'checkout', { step: 2, option: 'Pickup' }, this.props.products);
+		} else {
+			pushDataLayer('checkout', 'checkout', { step: 2, option: 'Delivery' }, this.props.products);
 		}
 		const billing = this.props.billing && this.props.billing.length > 0 ? this.props.billing[0] : false;
 		
@@ -189,7 +194,7 @@ class stepOne extends Component {
 		this.toggleModalo2o();
 		this.onPlaceOrder(selectedAddressO2O);
 	}
-	
+
 	setStateDefaultElocker(stepState, latesto2o) {
 		// set default elocker
 		if (!stepState.stepOne.selectedAddressO2O && latesto2o && latesto2o.length > 0) {
@@ -231,15 +236,15 @@ class stepOne extends Component {
 			...stepState,
 			stepFour: {
 				...stepState.stepFour,
-				disable: notAlowedShipping || notAllowedO2o
+				disabled: notAlowedShipping || notAllowedO2o,
 			},
 			stepThree: {
 				...stepState.stepThree,
-				disable: notAlowedShipping || notAllowedO2o
+				disabled: notAlowedShipping || notAllowedO2o,
 			},
 			stepTwo: {
 				...stepState.stepTwo,
-				disable: emptyShipping || (restriction ? !restriction : emptyShippingO2o)
+				disabled: false
 			},
 		};
 		this.props.applyState(checkoutState);
@@ -414,7 +419,7 @@ class stepOne extends Component {
 												className='font-orange'
 												onClick={() => this.toggleModalo2o()} 
 											>
-												<Icon name='plus' /> {T.checkout.ADD_ADDRESS}
+												{/* <Icon name='plus' /> {T.checkout.ADD_ADDRESS}  */}
 											</div>
 										</Level.Item>
 									</Level>
@@ -424,7 +429,10 @@ class stepOne extends Component {
 								this.props.latesto2o.length < 1 && this.props.isPickupable === '1' && !selectedAddressO2O.attributes && (
 									<Panel className='customSelectO2OWrapper'>
 										<Group>
-											<Button block onClick={() => this.toggleModalo2o()}>
+											<Button
+												block
+												onClick={() => this.toggleModalo2o()}
+											>
 												<Level>
 													<Level.Left className={styles.elipsis}>{T.checkout.CHOOSE_STORE}</Level.Left>
 													<Level.Right><Icon name='angle-down' /></Level.Right>
@@ -456,6 +464,7 @@ class stepOne extends Component {
 						onChange={(e) => this.setSelectedAddress(e)}
 					/>
 				}
+
 				{
 					showModalo2o &&
 					<Modalo2o
@@ -483,6 +492,8 @@ const mapStateToProps = (state) => {
 		error: state.cart.error,
 		cart: state.cart.data,
 		payments: state.payments,
+		userGTM: state.user.userGTM,
+		products: state.cart.products,
 	};
 };
 

@@ -81,6 +81,7 @@ class StepFour extends Component {
 		this.onCardYearChange = this.onCardYearChange.bind(this);
 		this.onCardCvvChange = this.onCardCvvChange.bind(this);
 		this.onSelectCard = this.onSelectCard.bind(this);
+		this.loadBlockContent = false;
 	}
 
 	componentWillMount() {
@@ -123,9 +124,10 @@ class StepFour extends Component {
 				}
 			});
 		}
-		if (typeof this.props.blockContent === 'undefined') {
+		if (!this.loadBlockContent) {
 			const { dispatch } = this.props;
 			dispatch(new globalAction.getBlockContents(this.props.cookies.get('user.token'), ['660']));
+			this.loadBlockContent = true;
 		}
 		if (nextProps.payments.selectedPaymentOption && this.props.payments.paymentMethod !== nextProps.payments.paymentMethod && nextProps.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT) {
 			this.setInstallmentList(nextProps.payments.selectedPaymentOption.banks[0]);
@@ -717,10 +719,11 @@ class StepFour extends Component {
 			typeof payments.selectedCard !== 'undefined' && 
 			payments.selectedCardDetail.cvv !== 0 &&
 			payments.selectedCardDetail.cvv !== '' &&
-			payments.selectedCardDetail.month !== 0 &&
+			(payments.selectedCard.selected ||
+			(payments.selectedCardDetail.month !== 0 &&
 			payments.selectedCardDetail.year !== 0 &&
-			payments.selectedCard.value !== '' && 
-			this.state.cardValidLuhn
+			this.state.cardValidLuhn)) &&
+			payments.selectedCard.value !== ''
 		);
 	}
 	
@@ -732,9 +735,9 @@ class StepFour extends Component {
 			(this.props.payments.selectedPayment && this.props.payments.selectedPayment.id === paymentGroupName.INSTALLMENT) 
 		) ? this.checkCCField() : true;
 		if (checkCCField && validBilling && validOvo && this.state.termCondition && this.props.payments.selectedPayment && this.props.payments.selectedPaymentOption) {
-			return '';
+			return true;
 		}
-		return 'disabled';
+		return false;
 	}
 	
 	checkShowingOvoPhone() {
@@ -988,22 +991,29 @@ class StepFour extends Component {
 						onChange={(event) => this.onBillingNumberChange(event)} 
 					/>
 					{
-						this.checkShowingOvoPhone() &&
+						this.checkShowingOvoPhone() && payments.ovoPhoneNumber !== null &&
 						<Input 
 							state={ovoReadOnly ? 'disabled' : ''} 
 							color={ovoReadOnly ? 'green' : null} 
 							icon={ovoReadOnly ? 'check' : null} 
-							value={payments.ovoPhoneNumber || ''} 
+							defaultValue={payments.ovoPhoneNumber}
 							label={T.checkout.OVO_PHONE_LABEL} 
 							placeholder={T.checkout.SAVED_OVO_PHONE} 
-							type='number' 
+							type='number'
 							min={0}
 							onChange={(event) => this.onOvoNumberChange(event.target.value)}
 						/>
 					}
 					<div className={styles.checkOutAction}>
 						<Checkbox defaultChecked={this.state.termCondition} onClick={() => this.setState({ termCondition: !this.state.termCondition })}>{T.checkout.TERMS_PAYMENT}</Checkbox>
-						<Button block size='large' color='red' state={this.checkActiveBtnSubmit()} onClick={(e) => this.submitPayment(e)}>{T.checkout.BUY_NOW}</Button>
+						{
+							this.checkActiveBtnSubmit() && 
+							<Button block size='large' color='red' state={this.checkActiveBtnSubmit()} onClick={(e) => this.submitPayment(e)}>{T.checkout.BUY_NOW}</Button>
+						}
+						{
+							!this.checkActiveBtnSubmit() && 
+							<Button block size='large' color='red' state='disabled'>{T.checkout.BUY_NOW}</Button>
+						}
 					</div>
 				</div>
 				{
