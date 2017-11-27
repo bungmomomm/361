@@ -6,6 +6,7 @@ import styles from './Checkout.scss';
 // component load
 import { Container, Row, Col, Loading, CheckoutHeader, Notification } from '@/components';
 import { renderIf } from '@/utils';
+import { Raven } from '@/utils/raven';
 
 import { Validator } from 'ree-validate';
 
@@ -135,6 +136,8 @@ class Checkout extends Component {
 			ovoTimer: 30,
 			ovoInterval: 5
 		};
+		this.temot = 0;
+		this.idle = false;
 
 		this.restrictO2oFlag = false;
 
@@ -196,6 +199,7 @@ class Checkout extends Component {
 		this.getAffTracking = this.getAffTracking.bind(this);
 		this.okeoce = this.okeoce.bind(this);
 		this.checkOvoStatus = this.checkOvoStatus.bind(this);
+		this.resetTimer = this.resetTimer.bind(this);
 	}
 
 	componentWillMount() {
@@ -232,13 +236,6 @@ class Checkout extends Component {
 		this.setState({
 			tahun
 		});
-	}
-
-	componentDidMount() {
-		// const { dispatch } = this.props;
-		// dispatch(addCoupon('test'));
-		// const { dispatch } = this.props;
-		// dispatch(getAddresses(this.props.cookies.get('user.token')));
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -280,8 +277,9 @@ class Checkout extends Component {
 			this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: process.env.SESSION_DOMAIN });
 			this.props.cookies.set('user.token', newToken.userToken, { domain: process.env.SESSION_DOMAIN });
 
-			callback(dispatch);
-
+			if (callback !== null) {
+				callback(dispatch);
+			}
 			// this.onReload(dispatch);
 		}).catch((error) => {
 			dispatch(paymentError(error.response.data.errorMessage));
@@ -690,17 +688,17 @@ class Checkout extends Component {
 					)
 				);
 			} else {
-				window.Raven.captureMessage('VTCreditCard', {
-					level: 'info',
-					extra: {
+				if (process.env.NODE_ENV === 'production') {
+					Raven('VTCreditCard', 'info', {
 						response,
 						sonumber: this.props.payments.soNumber,
 						selectedcard: this.props.payments.selectedCard,
 						selectedpayment: this.props.payments.selectedPayment,
 						selectedpaymentoption: this.props.payments.selectedPaymentOption,
 						cart: this.props.cart
-					}
-				});				
+					});
+				}
+							
 				dispatch(vtModalBoxOpen(false));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
 				dispatch(
@@ -750,17 +748,16 @@ class Checkout extends Component {
 					)
 				);
 			} else {
-				window.Raven.captureMessage('VTInstallment', {
-					level: 'info',
-					extra: {
+				if (process.env.NODE_ENV === 'production') {
+					Raven('VTInstallment', 'info', {
 						response,
 						sonumber: this.props.payments.soNumber,
 						selectedcard: this.props.payments.selectedCard,
 						selectedpayment: this.props.payments.selectedPayment,
 						selectedpaymentoption: this.props.payments.selectedPaymentOption,
 						cart: this.props.cart
-					}
-				});
+					});
+				}
 				dispatch(vtModalBoxOpen(false));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
 				dispatch(
@@ -1152,6 +1149,21 @@ class Checkout extends Component {
 		}
 	}
 
+	resetTimer() {
+		const { dispatch } = this.props;
+		if (this.idle) {
+			this.idle = false;
+			this.onRefreshToken(dispatch);
+			return;
+		}
+		clearTimeout(this.temot);
+		const timeout = parseInt(process.env.MILISECOND, 10) * parseInt(process.env.SECOND, 10) * parseInt(process.env.MINUTES, 10);
+		this.temot = setTimeout(() => {
+			this.idle = true;	
+		}, timeout);  // time is in milliseconds
+	}
+	
+
 	checkDropship(field = 'all') {
 		if (this.state.dropshipper) {
 			let formDropshipper = {};
@@ -1361,10 +1373,12 @@ class Checkout extends Component {
 			dispatch,
 			cookies
 		} = this.props;
-
 		return (
 			this.props.loading ? <Loading /> : (
-				<div className='page'>
+				<div 
+					className='page' 
+					onMouseMove={() => { this.resetTimer(); }}
+				>
 					<Helmet title='Checkout' />
 					<CheckoutHeader user={user} />
 					<div className={styles.checkout}>

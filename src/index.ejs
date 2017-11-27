@@ -43,9 +43,12 @@
 		<script src="https://cdn.ravenjs.com/3.17.0/raven.min.js"
 				crossorigin="anonymous"></script>
         <!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChjpQSbwKaJOCJy_06GAwU9dNMwVq_rg4&libraries=places&region=id&language=id"></script> -->
-         <script type="text/javascript" src="<%= process.env.VT_JS %>"></script>
-        <script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
-        <script>Raven.config('https://af6e3248ca6f4d8d8c3e669f6fd6e4e4@sentry.io/215821').install();</script>
+        <script type="text/javascript" src="<%= process.env.VT_JS %>"></script>
+        <% if (process.env.APP_ENV === 'production') { %>
+            <script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
+            <script>Raven.config('https://af6e3248ca6f4d8d8c3e669f6fd6e4e4@sentry.io/215821').install();</script>
+        <% } %>
+
 
     </head>
     <body <% if (params.helmet.htmlAttributes) { %><%= params.helmet.bodyAttributes.toString() %><% } %>>

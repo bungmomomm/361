@@ -683,6 +683,8 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 						}
 					}
 				}).then((res) => {
+					window.beforeunload = false;
+					window.onbeforeunload = false;
 					window.document.write(res.data);
 					window.document.getElementById('sprint_form').submit();
 				}).catch((error) => {
