@@ -36,7 +36,7 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 						<Level>
 							<Level.Item>
 								{
-									store.shipping.gosend.gosendApplicable && (
+									store.shipping.gosend.gosendApplicable && hasLangLat() && (
 										<Checkbox 
 											disabled={!hasLangLat()}
 											name='gojek'
@@ -64,11 +64,7 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 									<Checkbox state={!hasLangLat() ? 'disabled' : ''} name='gojek' defaultChecked={false} >
 										Pengiriman: <Sprites name='gosend' />
 									</Checkbox>
-									{
-										typeof showEditAddressModal === 'function' && 
-										<div role='button' onClick={() => showEditAddressModal('edit')} tabIndex='0' className='font-orange'>{T.checkout.CHOOSE_SHIPPING_LOCATION}</div>
-									}
-									
+									<div role='button' onClick={() => showEditAddressModal('edit')} tabIndex='0' className='font-orange'>{T.checkout.CHOOSE_SHIPPING_LOCATION}</div>
 								</div>
 							)
 						}

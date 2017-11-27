@@ -53,6 +53,7 @@ export default {
 	PHONE_NUMBER_O2O_CONFIRMATION: 'SMS konfirmasi pembayaran & pengambilan barang (khusus O2O) akan dikirimkan ke : ',
 	BILLING_PHONE_NUMBER: 'No Telp Penagihan',
 	INPUT_CART_NUMBER: 'Masukkan Nomor Kartu',
+	INPUT_MATCHED_CART_NUMBER: 'Masukan no kartu kredit yang sesuai',
 	OVO_PHONE_LABEL: 'No Hp yang terdaftar di OVO / OVO-ID / MCC-ID / HiCard-ID',
 	SAVED_OVO_PHONE: 'Masukkan nomor Hp yang terdaftar di OVO',
 	SAVE_CARD_FOR_NEXT_TRANSACTION: 'Simpan kartu untuk transaksi selanjutnya',

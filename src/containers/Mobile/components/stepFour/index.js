@@ -38,6 +38,9 @@ import ModalErrorPayment from './components/ModalErrorPayment';
 import Tooltip from './components/Tooltip';
 import Vt3dsModalBox from './components/Vt3dsModalBox';
 
+// payment methods components
+import PaymentInstallment from './components/Payments/PaymentInstallment';
+
 import styles from '../../../Mobile/mobile.scss';
 
 class StepFour extends Component {
@@ -492,16 +495,6 @@ class StepFour extends Component {
 		dispatch(new paymentAction.paymentSuccess(false));
 	}
 
-	onBankChange(bank) {
-		if (bank.value !== null) {
-			this.setInstallmentList(bank);
-			// this.checkValidInstallment();
-			const { dispatch } = this.props;
-			const selectedPaymentOption = new paymentAction.getAvailabelPaymentSelection(this.props.payments.selectedPayment);
-			dispatch(new paymentAction.bankNameChange(this.cookies, bank, selectedPaymentOption));
-		}
-	}
-
 	onTermChange(term) {
 		const { dispatch } = this.props;
 		const selectedPaymentOption = new paymentAction.getAvailabelPaymentSelection(this.props.payments.selectedPayment);
@@ -523,39 +516,6 @@ class StepFour extends Component {
 	onInstallmentCCCvvChange(event) {
 		const { dispatch } = this.props;
 		dispatch(new paymentAction.changeInstallmentCCCvv(event.target.value));
-	}
-
-	onInstallmentCCNumberChange(event) {
-		this.props.dispatch(new paymentAction.changeInstallmentCCNumber(event.ccNumber, event.ccType));
-		const selectedPaymentOption = new paymentAction.getAvailabelPaymentSelection(this.props.payments.selectedPayment);
-		const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
-		const term = (this.props.payments.term && this.props.payments.term.term) ? this.props.payments.term.term : '';
-		if (event.valid) {
-			this.props.dispatch(new paymentAction.applyBin(this.cookies, selectedPaymentOption.value, event.ccNumber, bank, term))
-			.then(success => {
-				this.props.dispatch(new paymentAction.refreshInstallmentTerm(this.props.payments.selectedPayment, success));
-			});
-			this.setState({
-				appliedBin: {
-					selectedPaymentOption,
-					cardNumber: event.ccNumber,
-					bankName: bank,
-					installment_term: term
-				},
-				cardValidLuhn: true
-			});
-		} else {
-			this.props.dispatch(new paymentAction.applyBin(this.cookies, -1, event.ccNumber, bank, term));
-			this.setState({
-				appliedBin: {
-					selectedPaymentOption,
-					cardNumber: '',
-					bankName: bank,
-					installment_term: term
-				},
-				cardValidLuhn: false
-			});
-		}
 	}
 
 	onRequestSprintInstallment(mode) {
@@ -631,33 +591,6 @@ class StepFour extends Component {
 			})
 		));
 		this.setState({ installmentList });
-	}
-
-	checkValidInstallment(event) {
-		if (event.ccNumber.length < 1) {
-			this.setState({
-				validInstallmentBin: true
-			});
-		} else {
-			const bank = (!this.props.payments.selectedBank) ? 'mandiri' : this.props.payments.selectedBank.value.value;
-			const installmentBin = this.props.blockContent.filter(e => parseInt(e.id, 10) === 660)[0] || null;
-
-			if (installmentBin) {
-				const installmentBinBank = JSON.parse(installmentBin.attributes.block)[`${bank.replace(' ', '_').toUpperCase()}`];
-				const checkingBin = installmentBinBank.filter(e => event.ccNumber.startsWith(e));
-
-				if (checkingBin.length > 0) {
-					this.onInstallmentCCNumberChange(event);
-					this.setState({
-						validInstallmentBin: true
-					});
-				} else {
-					this.setState({
-						validInstallmentBin: false
-					});
-				}
-			}
-		}
 	}
 
 	paymentMethodChange(stateSelectedPayment) {
@@ -916,51 +849,11 @@ class StepFour extends Component {
 				));
 			case paymentGroupName.INSTALLMENT: {
 				return (
-					<Group>
-						<Select block options={payments.selectedPayment.paymentItems[0].banks} onChange={(e) => this.onBankChange(e)} defaultValue={payments.selectedBank.value} value={payments.selectedBank.value} />
-						{this.state.installmentList.length > 0 && <Select block options={this.state.installmentList} onChange={(e) => this.onTermChange(e)} />}
-						<CreditCardInput
-							placeholder='Masukkan Nomor Kartu'
-							sprites='payment-option'
-							onChange={(e) => this.checkValidInstallment(e)}
-							message={this.state.validInstallmentBin ? null : 'Masukan no kartu kredit yang sesuai'}
-							color={this.state.validInstallmentBin ? null : 'red'}
-						/>
-						<Group grouped>
-							<Select
-								block
-								options={Bulan}
-								onChange={(e) => this.onInstallmentCCMonthChange(e)}
-								validation={{
-									rules: 'required|min_value:1',
-									name: 'month installment'
-								}}
-								ref={(c) => { this.elMonthInstallment = c; }}
-							/>
-							<Select
-								block
-								options={this.state.tahun}
-								onChange={(e) => this.onInstallmentCCYearChange(e)}
-								validation={{
-									rules: 'required|min_value:10|min:1',
-									name: 'year installment'
-								}}
-								ref={(c) => { this.elYearInstallment = c; }}
-							/>
-							<Input
-								dataProps={{ minLength: 0, maxLength: 4 }}
-								type='password'
-								placeholder='cvv'
-								onChange={(e) => this.onInstallmentCCCvvChange(e)}
-								validation={{
-									rules: 'required|min_value:1',
-									name: 'cvv installment'
-								}}
-								ref={(c) => { this.elCvvInstallment = c; }}
-							/>
-							<div style={{ paddingRight: '30px' }} ><Sprites name='cvv' /></div>
-						</Group>
-					</Group>
+					<PaymentInstallment
+						payments={payments}
+						appliedBin={this.state.appliedBin}
+						installmentList={this.state.installmentList}
+					/>
 				);
 			}
 			case paymentGroupName.OVO:

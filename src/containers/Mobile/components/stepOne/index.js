@@ -328,7 +328,7 @@ class stepOne extends Component {
 											<Group>
 												<Button onClick={() => this.toggleChooseAddressModal()} block>
 													<Level>
-														<Level.Left>{selectedAddress.attributes.addressLabel}</Level.Left>
+														<Level.Left className={styles.elipsis}>{selectedAddress.attributes.addressLabel}</Level.Left>
 														<Level.Right><Icon name='angle-down' /></Level.Right>
 													</Level>
 												</Button>
@@ -399,7 +399,7 @@ class stepOne extends Component {
 											onClick={() => this.toggleModalo2o()}
 										>
 											<Level>
-												<Level.Left>{selectedAddressO2O.attributes.address_label}</Level.Left>
+												<Level.Left className={styles.elipsis}>{selectedAddressO2O.attributes.address_label}</Level.Left>
 												<Level.Right><Icon name='angle-down' /></Level.Right>
 											</Level>
 										</Button>
@@ -426,7 +426,7 @@ class stepOne extends Component {
 										<Group>
 											<Button block onClick={() => this.toggleModalo2o()}>
 												<Level>
-													<Level.Left>{T.checkout.CHOOSE_STORE}</Level.Left>
+													<Level.Left className={styles.elipsis}>{T.checkout.CHOOSE_STORE}</Level.Left>
 													<Level.Right><Icon name='angle-down' /></Level.Right>
 												</Level>
 											</Button>

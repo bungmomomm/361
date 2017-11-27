@@ -91,6 +91,12 @@
 	}
 }
 
+.elipsis{
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 90%;
+	text-align: left;
+}
 
 .card{
 	color: #4A4A4A;
