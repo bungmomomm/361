@@ -117,6 +117,11 @@ class stepOne extends Component {
 			// fetch data cart when selectedAddress change
 			this.onPlaceOrder(nextProps.stepState.stepOne.selectedAddress, nextProps.stepState.stepOne.dropshipper);
 		}
+
+		if (this.props.cart && nextProps.cart && nextProps.cart.length < this.props.cart.length) {
+			// fetch data cart when delete item
+			this.onPlaceOrder(nextProps.stepState.stepOne.selectedAddress, nextProps.stepState.stepOne.dropshipper);
+		}
 	}
 
 	onPlaceOrder(address, dropshipper = null) {
