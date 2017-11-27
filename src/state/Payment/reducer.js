@@ -381,6 +381,8 @@ export default (state = initialState, action) => {
 					action.payload.callback
 				);
 			} else if (action.mode === 'mandiri_ecash' ||	 action.mode === 'bca_klikpay') {
+				top.beforeunload = false;
+				top.onbeforeunload = false;
 				top.location.href = action.payload.payment.data;
 				return state;
 			} else if (action.mode === 'complete') {
