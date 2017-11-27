@@ -1098,15 +1098,15 @@ class StepFour extends Component {
 						onChange={(event) => this.onBillingNumberChange(event)} 
 					/>
 					{
-						this.checkShowingOvoPhone() &&
+						this.checkShowingOvoPhone() && payments.ovoPhoneNumber !== null &&
 						<Input 
 							state={ovoReadOnly ? 'disabled' : ''} 
 							color={ovoReadOnly ? 'green' : null} 
 							icon={ovoReadOnly ? 'check' : null} 
-							value={payments.ovoPhoneNumber || ''} 
+							defaultValue={payments.ovoPhoneNumber}
 							label={T.checkout.OVO_PHONE_LABEL} 
 							placeholder={T.checkout.SAVED_OVO_PHONE} 
-							type='number' 
+							type='number'
 							min={0}
 							onChange={(event) => this.onOvoNumberChange(event.target.value)}
 						/>
