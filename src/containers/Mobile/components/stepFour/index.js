@@ -648,7 +648,7 @@ class StepFour extends Component {
 		if (tick % this.state.ovo.ovoInterval === 0) {
 			dispatch(new paymentAction.checkStatusOvoPayment(`${checkStatusUrl}${params}`, this.cookies, soNumber, this.state.ovo.ovoPhonePayment, tick < 1))
 			.then(() => {
-				if (tick === 0 && this.state.selectedAddress) {
+				if (tick === 0 && selected) {
 					// Event 0 = shipping, 1 = O2O
 					if (selected.id) {
 						this.constructor.placeOrder(this.cookies, dispatch, selected, billing);

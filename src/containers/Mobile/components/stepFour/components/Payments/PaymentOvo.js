@@ -24,6 +24,9 @@ class PaymentOvo extends Component {
 
 	componentWillMount() {
 		this.isOvoPayment = true;
+		if (this.state.ovo.useDefault && this.props.payments.ovoPhoneNumber) {
+			this.props.dispatch(new actions.changeOvoPaymentNumber(this.props.payments.ovoPhoneNumber));	
+		}
 	}
 
 	componentWillReceiveProps(nextProps) {
