@@ -249,11 +249,11 @@ const getCityProvince = (token) => dispatch => {
 	});
 };
 
-const getO2OList = (token, province = 6) => dispatch => {
+const getO2OList = (token, rowsRequest, province = 6) => dispatch => {
 	dispatch(o2oListRequest(token));
 	const req = {
 		token,
-		path: `pickup_locations/search_o2o?page=1&per_page=1000&province_id=${province}`,
+		path: `pickup_locations/search_o2o?page=1&per_page=${rowsRequest}&province_id=${province}`,
 		method: 'GET'
 	};
 	request(req)

@@ -22,7 +22,6 @@ export default class Select extends Component {
 			emptyFilter: false,
 		};
 		this.getFilter = this.getFilter.bind(this);
-		this.setOptions = this.setOptions.bind(this);
 		this.hideDropdown = this.hideDropdown.bind(this);
 		this.defaultSelected = this.props.options[0];
 
@@ -30,11 +29,6 @@ export default class Select extends Component {
 	}
 	
 	componentWillReceiveProps(nextProps) {
-		if (this.state.showOption !== nextProps.shown) {
-			this.setState({
-				showOption: nextProps.shown
-			});
-		}
 		if (this.state.options !== nextProps.options) {
 			this.setState({
 				options: nextProps.options,
@@ -79,6 +73,7 @@ export default class Select extends Component {
 	}
 
 	setOptions(event) {
+		console.log('1');
 		this.setState({
 			options: this.props.options,
 			showOption: !this.state.showOption
@@ -207,7 +202,7 @@ export default class Select extends Component {
 					<button 
 						type='button'
 						id={idFor}
-						onClick={this.setOptions} 
+						onClick={() => this.setOptions()} 
 						className={styles.previewLabel}
 					>	
 						<span className={styles.flex}>

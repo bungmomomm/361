@@ -79,7 +79,7 @@ class StepThree extends Component {
 	}
 
 	resetCoupon() {
-		this.setState({ voucherCode: null, applyCouponStep: componentState.button.active });
+		this.setState({ voucherCode: '', applyCouponStep: componentState.button.active });
 		const { dispatch } = this.props;
 		dispatch(new couponActions.resetCoupon()).then(() => {
 			dispatch(new paymentActions.applyBin(this.cookies, RESET_PAYMENT_METHOD));
@@ -105,7 +105,7 @@ class StepThree extends Component {
 			}
 		};
 
-
+		const adminFeeIdr = (payments.adminFee && payments.adminFee.feeInIdr) ? payments.adminFee.feeInIdr : null;
 		const invalidVoucher = (typeof coupon.coupon !== 'undefined' && coupon.coupon !== '' && typeof coupon.code !== 'undefined' && coupon.code !== 200);
 		let couponId = false;
 		if (coupon.validCoupon && coupon.coupon !== '') {
@@ -172,7 +172,7 @@ class StepThree extends Component {
 										name='voucherCode'
 										color={invalidVoucher ? 'red' : 'green'}
 										dataProps={{
-											value: coupon.coupon
+											value: this.state.voucherCode
 										}}
 										onChange={(e) => this.onChangeVoucher(e)}
 									/>
@@ -189,6 +189,13 @@ class StepThree extends Component {
 						</Level>
 					)
 				}
+				{ 
+					renderIf(adminFeeIdr)(
+						<Level>
+							<Level.Left><strong>Biaya Administrasi</strong></Level.Left>
+							<Level.Right className='text-right'><strong>{currency(adminFeeIdr)}</strong></Level.Right>
+						</Level>
+					)}
 				{
 					renderIf(typeof coupon.code !== 'undefined' && coupon.code !== 200)(
 						<Level style={inlineStyle.mb5}>
