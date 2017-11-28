@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-// import { actions } from '@/state/Payment';
+import { actions } from '@/state/Payment';
 
 import { Icon, Radio, Checkbox, Level, Input } from 'mm-ui';
 // import { T } from '@/data/translations';
@@ -30,6 +30,10 @@ class PaymentOvo extends Component {
 		if (this.props.payments !== nextProps.payments) {
 			this.validateOvoForm();
 		}
+
+		if (this.state.ovo.useDefault && nextProps.payments.ovoPhoneNumber && !nextProps.payments.ovoPaymentNumber) {
+			this.props.dispatch(new actions.changeOvoPaymentNumber(nextProps.payments.ovoPhoneNumber));	
+		}
 	}
 
 	onOvoPaymentNumberChange(event) {
@@ -49,6 +53,23 @@ class PaymentOvo extends Component {
 				ovoPhonePaymentValid,
 			}
 		});
+		this.props.dispatch(new actions.changeOvoPaymentNumber(ovoPhonePayment));		
+		this.validateOvoForm();
+	}
+
+	setDefaultOvo() {
+		const ovo = this.state.ovo;
+		const useDefault = !this.state.ovo.useDefault;
+		const ovoPhonePayment = useDefault ? this.props.payments.ovoPaymentNumber : '';
+		this.setState({
+			ovo: {
+				...ovo,
+				useDefault,
+				ovoPhonePayment,
+				ovoPhonePaymentValid: useDefault
+			}
+		});
+		this.props.dispatch(new actions.changeOvoPaymentNumber(ovoPhonePayment));
 		this.validateOvoForm();
 	}
 

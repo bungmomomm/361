@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-import _ from 'lodash';
 import { T } from '@/data/translations';
 
 import { actions as cartActions } from '@/state/Cart';
@@ -125,6 +124,9 @@ class StepFour extends Component {
 				}
 			});
 		}
+		if (this.props.payments.selectedPayment !== nextProps.payments.selectedPayment) {
+			this.enableButtonPayNow(false);
+		}
 		if (!this.loadBlockContent) {
 			const { dispatch } = this.props;
 			dispatch(new globalAction.getBlockContents(this.props.cookies.get('user.token'), ['660']));
@@ -134,45 +136,6 @@ class StepFour extends Component {
 			this.setInstallmentList(nextProps.payments.selectedPaymentOption.banks[0]);
 		}
 	}
-
-	onOvoPaymentNumberChange(event) {
-		const ovo = this.state.ovo;
-		const ovoPhonePayment = event.target.value;
-		const regexPhone = /^[0-9]{5,30}/;
-		let ovoPhonePaymentValid;
-		if (regexPhone.test(ovoPhonePayment)) {
-			ovoPhonePaymentValid = true;
-		} else {
-			ovoPhonePaymentValid = false;
-		}
-		this.setState({
-			ovo: {
-				...ovo,
-				ovoPhonePayment,
-				ovoPhonePaymentValid,
-			}
-		});
-	}
-	
-	onSelectedPaymentItem(selectedPaymentItem) {
-		const { payments, dispatch } = this.props;
-		dispatch(new paymentAction.changePaymentOption(selectedPaymentItem, this.cookies));
-		this.selectedData = _.find(payments.selectedPayment.paymentItems, ['value', selectedPaymentItem.value]);
-		if (this.selectedData) {
-			this.setState({
-				selectedPaymentOption: selectedPaymentItem,
-				installmentList: [],
-				showPaymentInfo: {
-					id: selectedPaymentItem.value,
-					notes: this.selectedData.settings.info.join(' ')
-				}
-			});
-		} else {
-			this.setState({ 
-				selectedPaymentItem 
-			});
-		}
-	}	
 
 	onRequestVtToken(installment = false) {
 		const { dispatch } = this.props;
@@ -363,7 +326,8 @@ class StepFour extends Component {
 				this.onRequestSprintInstallment(mode);
 				break;
 			case paymentMethodName.OVO:
-				if (this.state.ovo.ovoPhonePayment) {
+				if (this.props.payments.ovoPaymentNumber) {
+					const ovoPhoneNumber = this.state.ovo.autoLinkage ? this.props.payments.ovoPaymentNumber : this.props.payments.ovoPhoneNumber;
 					dispatch(
 						new paymentAction.pay(
 							this.cookies,
@@ -371,9 +335,9 @@ class StepFour extends Component {
 							this.props.payments.selectedPaymentOption === false ? this.state.selectedPayment : this.props.payments.selectedPaymentOption,
 							{
 								e_wallet: {
-									id: this.state.ovo.ovoPhonePayment
+									id: this.props.payments.ovoPaymentNumber
 								},
-								ovoPhoneNumber: this.props.payments.ovoPhoneNumber,
+								ovoPhoneNumber,
 								billingPhoneNumber: this.props.payments.billingPhoneNumber
 							},
 							this.props.payments.selectedPaymentOption.uniqueConstant,
@@ -571,20 +535,6 @@ class StepFour extends Component {
 		};
 	}
 
-	setDefaultOvo() {
-		const ovo = this.state.ovo;
-		const useDefault = !this.state.ovo.useDefault;
-		const ovoPhonePayment = useDefault ? this.props.payments.ovoPaymentNumber : '';
-		this.setState({
-			ovo: {
-				...ovo,
-				useDefault,
-				ovoPhonePayment,
-				ovoPhonePaymentValid: useDefault
-			}
-		});
-	}
-
 	setInstallmentList(list) {
 		const installmentList = [];
 		list.listCicilan.map((item, idx) => (
@@ -728,29 +678,8 @@ class StepFour extends Component {
 		);
 	}
 	
-	checkActiveBtnSubmit() {
-		const validOvo = this.isOvoPayment ? this.state.ovo.ovoPhonePaymentValid : true;
-		const validBilling = this.props.payments.billingPhoneNumber && this.props.payments.billingPhoneNumber !== '';
-		const checkCCField = (
-			(this.props.payments.selectedPayment && this.props.payments.selectedPayment.id === paymentGroupName.CREDIT_CARD) ||
-			(this.props.payments.selectedPayment && this.props.payments.selectedPayment.id === paymentGroupName.INSTALLMENT) 
-		) ? this.checkCCField() : true;
-		if (checkCCField && validBilling && validOvo && this.state.termCondition && this.props.payments.selectedPayment && this.props.payments.selectedPaymentOption) {
-			return true;
-		}
-		return false;
-	}
-	
 	checkShowingOvoPhone() {
 		return (!this.isOvoPayment || (!this.state.ovo.autoLinkage && this.isOvoPayment));
-	}
-
-	showTooltip(content) {
-		let tooltip = '';
-		if (content.length) {
-			tooltip = content.join(' ');
-		}
-		this.setState({ tooltip });
 	}
 
 	createClassCard() {
@@ -762,11 +691,12 @@ class StepFour extends Component {
 	}
 
 	enableButtonPayNow(e) {
+		const validBilling = this.props.payments.billingPhoneNumber && this.props.payments.billingPhoneNumber !== '';
 		this.props.applyState({
 			...this.props.stepState,
 			stepFour: {
 				...this.props.stepState.stepFour,
-				payNowButton: e
+				payNowButton: e && validBilling
 			}
 		});
 	}
