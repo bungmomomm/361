@@ -590,6 +590,15 @@ export default class CardPembayaran extends Component {
 										<CreditCardRadio name='cc' variant='list' value={this.props.payments.ovoPhoneNumber} checked={this.state.ovo.useDefault} content={this.props.payments.ovoPhoneNumber} sprites='ovo' onClick={this.setDefaultOvo} />
 									</InputGroup>
 									{ovoDefault}
+									<Segment>
+										<p>Info Pembayaran dengan Aplikasi OVO</p>
+										<ol>
+											<li>Pastikan Anda sudah login ke aplikasi OVO</li>
+											<li>Pembayaran dengan OVO akan kadaluarsa dalam 30 detik setelah Anda klik “Bayar Sekarang”</li>
+											<li>Buka notifikasi OVO untuk melakukan pembayaran</li>
+											<li>Pilih cara pembayaran dengan “OVO Cash” atau “OVO Point” atau kombinasi keduanya, kemudian klik “Bayar”</li>
+										</ol>
+									</Segment>
 								</div>
 							:
 								<div>
