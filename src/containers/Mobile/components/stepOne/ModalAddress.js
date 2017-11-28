@@ -47,7 +47,6 @@ class ModalAddress extends Component {
 			mapMarkerCenter: null,
 			isValidMarkerPosition: true
 		};
-		this.translateProvince = this.translateProvince.bind(this);
 		this.cookies = this.props.cookies.get('user.token');
 		this.mapIcon = 'gosend-marker.png';
 		this.selectedPolygon = {};
@@ -223,6 +222,7 @@ class ModalAddress extends Component {
 		if (showMap) {
 			const district = this.state.selected.district.value.toLowerCase().replace(/\W+(.)/g, (match, chr) => chr.toUpperCase());
 			const selectedPolygon = _.find(Polygon, district);
+			console.log(selectedPolygon);
 			this.selectedPolygon = selectedPolygon[district];
 		}
 		this.setState({ 

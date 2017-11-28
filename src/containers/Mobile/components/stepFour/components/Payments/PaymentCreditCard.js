@@ -30,7 +30,9 @@ class PaymentCreditCard extends Component {
 		this.state = {
 			appliedBin: this.props.appliedBin,
 			cardValid: null,
-			fromRadio: false
+			fromRadio: false,
+			selectedCard: null,
+			cardList: this.props.payments.selectedPayment.paymentItems[0].cards
 		};
 	}
 
@@ -110,6 +112,7 @@ class PaymentCreditCard extends Component {
 					cardNumber: value,
 					bankName: ''
 				},
+				selectedCard: value,
 				fromRadio: true
 			});
 		} else {
@@ -139,6 +142,23 @@ class PaymentCreditCard extends Component {
 		}, 100);
 	}
 
+	renderCVVForm() {
+		return (
+			<Row>
+				<Col grid={4}>
+					<Input
+						dataProps={{ minLength: 0, maxLength: 4 }}
+						type='password'
+						placeholder='cvv'
+						onChange={(e) => this.onChangeCVVRadio(e)}
+						validation={{ rules: 'required|min_value:1', name: 'cvv' }}
+					/>
+				</Col>
+				<Col grid={4}><Sprites name='cvv' /></Col>
+			</Row>
+		);
+	}
+
 	renderCreditCardRadio(option, idx) {
 		return (
 			<div key={idx}>
@@ -160,19 +180,7 @@ class PaymentCreditCard extends Component {
 					))
 				}
 				{
-					this.state.fromRadio && !this.props.payments.openNewCreditCard &&
-					<Row>
-						<Col grid={4}>
-							<Input
-								dataProps={{ minLength: 0, maxLength: 4 }}
-								type='password'
-								placeholder='cvv'
-								onChange={(e) => this.onChangeCVVRadio(e)}
-								validation={{ rules: 'required|min_value:1', name: 'cvv' }}
-							/>
-						</Col>
-						<Col grid={4}><Sprites name='cvv' /></Col>
-					</Row>
+					this.state.fromRadio && !this.props.payments.openNewCreditCard && this.renderCVVForm()
 				}
 			</div>
 		);
@@ -188,6 +196,15 @@ class PaymentCreditCard extends Component {
 			);
 		}
 		return null;
+	}
+
+	renderCardSelectForm(option, index) {
+		return (
+			<div key={index}>
+				<Select block onChange={(e) => this.onSelectCard(e)} defaultValue={this.state.selectedCard} options={this.state.cardList} />
+				{this.state.fromRadio && !this.props.payments.openNewCreditCard && this.renderCVVForm()}
+			</div>
+		);
 	}
 
 	renderNewCardForm() {
@@ -248,7 +265,7 @@ class PaymentCreditCard extends Component {
 			<Group>
 				{
 					this.props.payments.selectedPayment.paymentItems.map((option, index) => (
-						option.cards.length <= 3 ? this.renderCreditCardRadio(option, index) : <Select key={index} block options={option.cards} />
+						option.cards.length <= 3 ? this.renderCreditCardRadio(option, index) : this.renderCardSelectForm(option, index)
 					))
 				}
 				{this.renderAddNewCard()}

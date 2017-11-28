@@ -172,7 +172,7 @@ class StepThree extends Component {
 										name='voucherCode'
 										color={invalidVoucher ? 'red' : 'green'}
 										dataProps={{
-											value: this.state.voucherCode
+											value: this.state.voucherCode || ''
 										}}
 										onChange={(e) => this.onChangeVoucher(e)}
 									/>
