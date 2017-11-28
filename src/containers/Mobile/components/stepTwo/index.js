@@ -142,6 +142,7 @@ class StepTwo extends Component {
 									isRestrictO2O={isRestrictO2O}
 									isJabotabekItem={isJabotabekItem}
 									data={storeData} 
+									shippingDefault={!this.props.stepState.stepFour.disabled}									
 								/>
 							</Panel>
 						);

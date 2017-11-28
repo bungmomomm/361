@@ -550,6 +550,7 @@ const expirePayment = (token, soNumber) => (dispatch) => {
 		}
 	}).then((response) => {
 		// since return 422, error message on catch
+		dispatch(payError(getError(response)));
 	}).catch((error) => {
 		dispatch(payError(getError(error)));
 	});
