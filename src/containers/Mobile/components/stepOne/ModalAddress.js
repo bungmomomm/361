@@ -222,7 +222,6 @@ class ModalAddress extends Component {
 		if (showMap) {
 			const district = this.state.selected.district.value.toLowerCase().replace(/\W+(.)/g, (match, chr) => chr.toUpperCase());
 			const selectedPolygon = _.find(Polygon, district);
-			console.log(selectedPolygon);
 			this.selectedPolygon = selectedPolygon[district];
 		}
 		this.setState({ 
@@ -244,7 +243,7 @@ class ModalAddress extends Component {
 
 	centerMap() {
 		const { mapMarkerCenter } = this.state;
-		if (mapMarkerCenter && typeof mapMarkerCenter.lat !== 'undefined' && mapMarkerCenter.lng !== 'undefined') {
+		if (mapMarkerCenter && mapMarkerCenter.lat !== '' && mapMarkerCenter.lng !== '') {
 			return mapMarkerCenter;	
 		}
 		return this.selectedPolygon.center;
@@ -371,7 +370,7 @@ class ModalAddress extends Component {
 						/>
 					}
 					{
-						typeof address.cityProv === 'object' && typeof address.district === 'object' && 
+						typeof address.cityProv === 'object' && address.district && 
 						<Select
 							block
 							label='Kecamatan *'
