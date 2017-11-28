@@ -17,13 +17,10 @@ import {
 
 import { 
 	Group,
-	Radio,
 	Select,
 	Checkbox,
 	Button,
-	Level,
 	Input,
-	Icon,
 	Row,
 	Col
 } from 'mm-ui';
@@ -40,6 +37,9 @@ import Vt3dsModalBox from './components/Vt3dsModalBox';
 
 // payment methods components
 import PaymentInstallment from './components/Payments/PaymentInstallment';
+import PaymentOvo from './components/Payments/PaymentOvo';
+import PaymentSelection from './components/Payments/PaymentSelection';
+
 // import PaymentCreditCard from './components/Payments/PaymentCreditCard';
 
 import styles from '../../../Mobile/mobile.scss';
@@ -802,41 +802,19 @@ class StepFour extends Component {
 
 
 		const switchPaymentElement = () => {
-			let { ovoDefault, ovoPaymentInput } = '';
 			// PAYMENT MENTHOD LIST
 			switch (payments.selectedPayment.value) {
 			case paymentGroupName.BANK_TRANSFER:
 			case paymentGroupName.E_MONEY:
 			case paymentGroupName.INTERNET_BANKING:
 			case paymentGroupName.CONVENIENCE_STORE: {
-				const enabledPaymentItems = _.filter(payments.selectedPayment.paymentItems, (e) => { return e.value !== null; });
-				const listPayment = [];
-				enabledPaymentItems.map((option, index) => {
-					const RadioLabel = (
-						<Level key={index}>
-							<Level.Left>{option.label}</Level.Left>
-							<Level.Right >
-								{option.disabled && <div className='font-red'>{option.disableMessage}</div>}
-								{option.settings.image && <img src={option.settings.image} alt={option.label} height='15px' />}
-								{option.settings.info && <span role='button' tabIndex='-1' onClick={() => this.showTooltip(option.settings.info)}>
-									<Icon name='exclamation-circle' className={styles.tooltipButton} />
-								</span>}
-							</Level.Right>
-						</Level>
-					);
-					return listPayment.push({
-						label: RadioLabel, 
-						dataProps: { 
-							name: `payment-${payments.selectedPayment.value}`, 
-							onChange: () => this.onSelectedPaymentItem(option),
-							disabled: option.disabled,
-							checked: this.state.selectedPaymentOption === option || false
-						}
-					});
-				});
-				return [
-					<Radio inputStyle='blocklist' data={listPayment} />
-				];
+				return (
+					<PaymentSelection
+						payments={payments}
+						enableButtonPayNow={(e) => this.enableButtonPayNow(e)}
+						styles={styles}
+					/>
+				);
 			}
 			case paymentGroupName.CREDIT_CARD:
 				return payments.selectedPayment.paymentItems.map((option, index) => (
@@ -872,61 +850,12 @@ class StepFour extends Component {
 				);
 			}
 			case paymentGroupName.OVO:
-				ovoPaymentInput = (
-					<Input
-						dataProps={{ minLength: 0, maxLength: 30 }}
-						defaultValue={this.state.ovo.ovoPhonePayment}
-						type='number'
-						placeholder={'Masukan No Hp yang terdaftar di OVO'}
-						onChange={(e) => this.onOvoPaymentNumberChange(e)}
-					/>
-				);
-
-				ovoDefault = ([this.state.ovo.useDefault ?
-					<div 
-						role='button'
-						tabIndex={-1}
-						className='font-grey'
-						onClick={() => this.setDefaultOvo()} 
-					>
-						<Icon name='plus-circle' /> Gunakan OVO Lain
-					</div>
-				: ovoPaymentInput]);
-
 				return (
-					<div>
-						{
-							(payments.ovoInfo && parseInt(payments.ovoInfo.ovoFlag, 10) === 1) ?
-								<div>
-									<Radio 
-										inputStyle='blocklist' 
-										data={[{
-											label: (
-												<Level>
-													<Level.Left>
-														{payments.ovoPhoneNumber}
-													</Level.Left>
-													<Level.Right>
-														<Icon name='ovo' sprites='ovo' />
-													</Level.Right>
-												</Level>
-											),
-											dataProps: {
-												name: 'ovo-phone-payment',
-												onChange: () => this.setDefaultOvo(),
-												checked: this.state.ovo.useDefault
-											}
-										}]} 
-									/>
-									{ovoDefault}
-								</div>
-							:
-								<div>
-									{ovoPaymentInput}
-									<Checkbox defaultChecked={this.state.ovo.autoLinkage} onClick={() => this.setState({ ovo: { ...this.state.ovo, autoLinkage: !this.state.ovo.autoLinkage } })}>Simpan untuk transaksi berikutnya & otomatis terhubung ke akun OVO</Checkbox>
-								</div>
-						}
-					</div>
+					<PaymentOvo
+						payments={payments}
+						enableButtonPayNow={(e) => this.enableButtonPayNow(e)}
+						autoLinkage={(e) => this.setState({ ovo: { ...this.state.ovo, autoLinkage: !this.state.ovo.autoLinkage } })}
+					/>
 				);
 			default:
 				return null;
