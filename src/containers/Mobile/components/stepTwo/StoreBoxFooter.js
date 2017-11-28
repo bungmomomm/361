@@ -10,7 +10,7 @@ import { T } from '@/data/translations';
 import { currency } from '@/utils';
 
 
-const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMethod, showEditAddressModal, isRestrictO2O, isJabotabekItem }) => {
+const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMethod, showEditAddressModal, isRestrictO2O, isJabotabekItem, shippingDefault }) => {
 	const store = data.store;
 	const isGosendSupported = () => {
 		return (
@@ -26,12 +26,12 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 			&& selectedAddress.attributes.longitude !== ''
 		);
 	};
-	
+
 	return (
 		<div className={s.footer}>
-			{!isGosendSupported() && store.shipping.note && <div className={s.deliveryInfo}>{store.shipping.note}</div>}
+			{!isGosendSupported() && store.shipping.note && shippingDefault && <div className={s.deliveryInfo}>{store.shipping.note}</div>}
 			{
-				isGosendSupported() && (!isRestrictO2O && !isJabotabekItem) && (
+				isGosendSupported() && shippingDefault && (!isRestrictO2O && !isJabotabekItem) && (
 					<div className={s.deliveryInfo}>
 						<Level>
 							<Level.Item>
