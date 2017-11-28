@@ -81,9 +81,9 @@ class PaymentInstallment extends Component {
 		const term = (this.props.payments.term && this.props.payments.term.term) ? this.props.payments.term.term : '';
 		if (event.valid) {
 			this.props.dispatch(new actions.applyBin(this.cookies, selectedPaymentOption.value, event.ccNumber, bank, term))
-				.then(success => {
-					this.props.dispatch(new actions.refreshInstallmentTerm(this.props.payments.selectedPayment, success));
-				});
+			.then(success => {
+				this.props.dispatch(new actions.refreshInstallmentTerm(this.props.payments.selectedPayment, success));
+			});
 			this.setState({
 				appliedBin: {
 					selectedPaymentOption,

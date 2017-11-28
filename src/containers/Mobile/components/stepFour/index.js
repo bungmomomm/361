@@ -75,11 +75,6 @@ class StepFour extends Component {
 		};
 		this.isOvoPayment = this.props.payments.paymentMethod === 'e_wallet_ovo';
 		this.cookies = this.props.cookies.get('user.token');
-		this.onNewCreditCard = this.onNewCreditCard.bind(this);
-		this.onCardNumberChange = this.onCardNumberChange.bind(this);
-		this.onCardMonthChange = this.onCardMonthChange.bind(this);
-		this.onCardYearChange = this.onCardYearChange.bind(this);
-		this.onCardCvvChange = this.onCardCvvChange.bind(this);
 		this.onSelectCard = this.onSelectCard.bind(this);
 		this.loadBlockContent = false;
 	}
@@ -279,50 +274,15 @@ class StepFour extends Component {
 
 	onDoPayment() {
 		const { dispatch } = this.props;
-		let validator = false;
 		let mode = 'complete';
 		pushDataLayer('checkout', 'checkout', { step: 8 });
 		if (typeof this.props.payments.paymentMethod !== 'undefined') {
 			switch (this.props.payments.paymentMethod) {
 			case paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT:
-				if (this.props.payments.selectedPaymentOption !== false) {
-					this.setState({
-						selectedPayment: this.props.payments.selectedPaymentOption
-					});
-				}
-				
-				if (this.props.payments.twoClickEnabled) {
-					validator = typeof this.elCvvInstallment.validation !== 'undefined' && this.elCvvInstallment.validation.checkValid();
-				} else {
-					validator = typeof this.elMonthInstallment.validation !== 'undefined' && this.elMonthInstallment.validation.checkValid() &&
-								typeof this.elYearInstallment.validation !== 'undefined' && this.elYearInstallment.validation.checkValid() &&
-								typeof this.elCvvInstallment.validation !== 'undefined' && this.elCvvInstallment.validation.checkValid();
-				}
-			
-				if (validator) {
-					this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
-				} else {
-					dispatch(new paymentAction.paymentError('Silahkan periksa data kartu kredit Anda.'));
-				}
+				this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
 				break;
 			case paymentMethodName.COMMERCE_VERITRANS:
-				if (this.props.payments.selectedPaymentOption !== false) {
-					this.setState({
-						selectedPayment: this.props.payments.selectedPaymentOption
-					});
-				}
-				
-				if (this.props.payments.twoClickEnabled) {
-					validator = this.elCCCvv.validation.checkValid();
-				} else {
-					validator = this.elCCMonth.validation.checkValid() && this.elCCYear.validation.checkValid() && this.elCCCvv.validation.checkValid();
-				}
-			
-				if (validator) {
-					this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
-				} else {
-					dispatch(new paymentAction.paymentError('Silahkan periksa data kartu kredit Anda.'));
-				}
+				this.onRequestVtToken((this.props.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT));
 				break;
 			case paymentMethodName.COMMERCE_SPRINT_ASIA:
 				mode = 'sprint';
@@ -388,11 +348,6 @@ class StepFour extends Component {
 		}
 	}
 
-	onNewCreditCard(event) {
-		const { dispatch } = this.props;
-		dispatch(new paymentAction.openNewCreditCard());
-	}
-
 	onCardNumberChange(event) {
 		const selectedPaymentOption = new paymentAction.getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 		if (event.valid) {
@@ -417,17 +372,6 @@ class StepFour extends Component {
 				cardValidLuhn: false
 			});
 		}
-	}
-
-	onCardMonthChange(monthData) {
-		this.props.dispatch(new paymentAction.changeCreditCardMonth(monthData.value));
-	}
-
-	onCardYearChange(yearData) {
-		this.props.dispatch(new paymentAction.changeCreditCardYear(yearData.value));
-	}
-	onCardCvvChange(event) {
-		this.props.dispatch(new paymentAction.changeCreditCardCvv(event.target.value));
 	}
 
 	onSelectCard(event) {
@@ -473,19 +417,6 @@ class StepFour extends Component {
 		const cardNumber = this.state.appliedBin ? this.state.appliedBin.cardNumber : '';
 		dispatch(new paymentAction.applyBin(this.cookies, selectedPaymentOption.value, cardNumber, bank, term.term));
 		dispatch(new paymentAction.termChange(term));
-	}
-
-	onInstallmentCCMonthChange(monthData) {
-		const { dispatch } = this.props;
-		dispatch(new paymentAction.changeInstallmentCCMonth(monthData.value));
-	}
-	onInstallmentCCYearChange(yearData) {
-		const { dispatch } = this.props;
-		dispatch(new paymentAction.changeInstallmentCCYear(yearData.value));
-	}
-	onInstallmentCCCvvChange(event) {
-		const { dispatch } = this.props;
-		dispatch(new paymentAction.changeInstallmentCCCvv(event.target.value));
 	}
 
 	onRequestSprintInstallment(mode) {
@@ -709,31 +640,6 @@ class StepFour extends Component {
 			payments
 		} = this.props;
 
-		// let numberOfCard = 0;
-		// const minNumberOfCard = 0;
-		// numberOfCard = (payments.selectedPayment.value === paymentGroupName.CREDIT_CARD) ? payments.selectedPayment.cards : 0;
-
-		// const CvvElement = (
-		// 	<Row>
-		// 		<Col grid={4}>
-		// 			<Input
-		// 				type='password'
-		// 				placeholder='cvv'
-		// 				onChange={this.onCardCvvChange}
-		// 				validation={{
-		// 					rules: 'required|min_value:1',
-		// 					name: 'cvv'
-		// 				}}
-		// 				ref={(c) => { this.elCCCvv = c; }}
-		// 			/>
-		// 		</Col>
-		// 		<Col grid={4}>
-		// 			<Sprites name='cvv' />
-		// 		</Col>
-		// 	</Row>
-		// );
-
-
 		const switchPaymentElement = () => {
 			// PAYMENT MENTHOD LIST
 			switch (payments.selectedPayment.value) {
@@ -756,28 +662,6 @@ class StepFour extends Component {
 						enableButtonPayNow={(e) => this.enableButtonPayNow(e)}
 					/>
 				);
-				// return payments.selectedPayment.paymentItems.map((option, index) => (
-				// 	option.cards.length <= 3 ? (
-				// 		option.cards.map((card, cardIndex) => (
-				// 			card.value && (
-				// 				<div key={cardIndex} >
-				// 					<CreditCardRadio
-				// 						name='cc'
-				// 						variant='list'
-				// 						value={card.value}
-				// 						content={card.label}
-				// 						defaultChecked={card.selected}
-				// 						sprites={card.sprites}
-				// 						onClick={this.onSelectCard}
-				// 					/>
-				// 					{ card.selected && CvvElement }
-				// 				</div>
-				// 			)
-				// 		))
-				// 	) : (
-				// 		<Select block key={index} options={option.cards} />
-				// 	)
-				// ));
 			case paymentGroupName.INSTALLMENT: {
 				return (
 					<PaymentInstallment
@@ -800,7 +684,6 @@ class StepFour extends Component {
 			default:
 				return null;
 			}
-			
 		};
 
 		const ovoReadOnly = (payments.ovoInfo && parseInt(payments.ovoInfo.ovoFlag, 10) === 1);
@@ -816,57 +699,6 @@ class StepFour extends Component {
 						defaultValue={payments.selectedPayment ? payments.selectedPayment.id : null}
 					/>
 					{ payments.selectedPayment && switchPaymentElement()}
-					{ 
-						// renderIf(payments.selectedPayment.value === paymentGroupName.CREDIT_CARD && payments.twoClickEnabled && numberOfCard > minNumberOfCard)(
-							
-						// <Button clean color='grey' icon='plus-circle' iconPosition='left' onClick={this.onNewCreditCard}>{T.checkout.ADD_NEW_CARD}</Button>
-							
-						// )
-					}
-					{ 
-					// 	renderIf((payments.openNewCreditCard && payments.selectedPayment.value === paymentGroupName.CREDIT_CARD 
-					// && !payments.twoClickEnabled) || (payments.selectedPayment.value === paymentGroupName.CREDIT_CARD && numberOfCard < (minNumberOfCard + 1)))(
-					// 	<div>
-					// 		<Group><CreditCardInput placeholder={T.checkout.INPUT_CART_NUMBER} sprites='payment-option' onChange={this.onCardNumberChange} /></Group>
-					// 		<label htmlFor='masa-berlaku'key={2}>Masa Berlaku</label>
-					// 		<Group grouped id='masa-berlaku'>
-					// 			<Select
-					// 				block
-					// 				options={Bulan}
-					// 				onChange={this.onCardMonthChange}
-					// 				validation={{
-					// 					rules: 'required|min_value:1',
-					// 					name: 'month'
-					// 				}}
-					// 				ref={(c) => { this.elCCMonth = c; }}
-					// 			/>
-					// 			<Select
-					// 				block
-					// 				options={this.state.tahun}
-					// 				onChange={this.onCardYearChange}
-					// 				validation={{
-					// 					rules: 'required|min_value:10|min:1',
-					// 					name: 'year'
-					// 				}}
-					// 				ref={(c) => { this.elCCYear = c; }}
-					// 			/>
-					// 			<Input
-					// 				dataProps={{ minLength: 0, maxLength: 4 }}
-					// 				type='password'
-					// 				placeholder='cvv'
-					// 				onChange={this.onCardCvvChange}
-					// 				validation={{
-					// 					rules: 'required|min_value:1',
-					// 					name: 'cvv'
-					// 				}}
-					// 				ref={(c) => { this.elCCCvv = c; }}
-					// 			/>
-					// 			<div style={{ paddingRight: '30px' }} ><Sprites name='cvv' /></div>
-					// 		</Group>
-					// 		<Checkbox defaultChecked onClick={(state, value) => this.props.onSaveCcOption(state, value)}>{T.checkout.SAVE_CARD_FOR_NEXT_TRANSACTION}</Checkbox>
-					// 	</div>
-					// )
-				}
 					<Input
 						value={payments.billingPhoneNumber || ''}
 						label={T.checkout.PHONE_NUMBER_O2O_CONFIRMATION}
