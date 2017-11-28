@@ -22,6 +22,7 @@ class ModalVerifyPhoneNumber extends Component {
 			phoneNumber: '',
 			otp: '',
 			resendOtpCountDown: this.defaultOtpCountDown,
+			showErrorOtp: false,
 		};
 		this.interval = null;
 		this.defaultOtpCountDown = 60;
@@ -48,7 +49,13 @@ class ModalVerifyPhoneNumber extends Component {
 					this.state.otp,
 					this.props,
 				)
-			);
+			).then(() => {
+				if (!this.props.coupon.otp.valid) {
+					this.setState({
+						showErrorOtp: true
+					});
+				}
+			});
 		}
 	}
 
@@ -94,6 +101,7 @@ class ModalVerifyPhoneNumber extends Component {
 
 		this.setState({
 			otp: value,
+			showErrorOtp: false,
 		});
 	}
 
@@ -204,7 +212,8 @@ class ModalVerifyPhoneNumber extends Component {
 								type='text'
 								value={this.state.otp}
 								onChange={(e) => this.onChangeOtp(e)}
-								message={this.props.coupon.otp.message}
+								color={this.props.coupon.otp.message !== null && this.state.showErrorOtp ? 'red' : 'dark'}
+								label={this.props.coupon.otp.message !== null && this.state.showErrorOtp ? this.props.coupon.otp.message : ''}
 							/>
 						)
 					}
