@@ -17,6 +17,7 @@ import {
 	Select,
 	Card,
 	Button,
+	Alert,
 	Checkbox,
 	// Radio,
 	Sprites
@@ -589,6 +590,15 @@ export default class CardPembayaran extends Component {
 										<CreditCardRadio name='cc' variant='list' value={this.props.payments.ovoPhoneNumber} checked={this.state.ovo.useDefault} content={this.props.payments.ovoPhoneNumber} sprites='ovo' onClick={this.setDefaultOvo} />
 									</InputGroup>
 									{ovoDefault}
+									<Alert show color='yellow'>
+										<p>Info Pembayaran dengan Aplikasi OVO</p>
+										<ol>
+											<li>Pastikan Anda sudah login ke aplikasi OVO</li>
+											<li>Pembayaran dengan OVO akan kadaluarsa dalam 30 detik setelah Anda klik “Bayar Sekarang”</li>
+											<li>Buka notifikasi OVO untuk melakukan pembayaran</li>
+											<li>Pilih cara pembayaran dengan “OVO Cash” atau “OVO Point” atau kombinasi keduanya, kemudian klik “Bayar”</li>
+										</ol>
+									</Alert>
 								</div>
 							:
 								<div>
@@ -596,6 +606,15 @@ export default class CardPembayaran extends Component {
 									<InputGroup>
 										<Checkbox defaultChecked={this.state.ovo.autoLinkage} content='Simpan untuk transaksi berikutnya & otomatis terhubung ke akun OVO' onClick={this.setAutoLinkage} />
 									</InputGroup>
+									<Alert show color='yellow'>
+										<p>Info Pembayaran dengan Aplikasi OVO</p>
+										<ol>
+											<li>Pastikan Anda sudah login ke aplikasi OVO</li>
+											<li>Pembayaran dengan OVO akan kadaluarsa dalam 30 detik setelah Anda klik “Bayar Sekarang”</li>
+											<li>Buka notifikasi OVO untuk melakukan pembayaran</li>
+											<li>Pilih cara pembayaran dengan “OVO Cash” atau “OVO Point” atau kombinasi keduanya, kemudian klik “Bayar”</li>
+										</ol>
+									</Alert>
 								</div>
 						}
 					</InputGroup>
