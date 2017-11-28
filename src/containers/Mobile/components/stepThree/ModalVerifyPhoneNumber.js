@@ -7,6 +7,7 @@ import {
 	Input, 
 	Button
 } from 'mm-ui';
+import { T } from '@/data/translations';
 import { componentState } from '@/utils';
 import { actions as CouponActions } from '@/state/Coupon';
 
