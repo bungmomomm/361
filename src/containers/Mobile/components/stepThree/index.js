@@ -9,6 +9,7 @@ import { currency, componentState, renderIf, pushDataLayer } from '@/utils';
 import { T } from '@/data/translations';
 import { 
 	Level,
+	Icon,
 	Group,
 	Button,
 	Input
@@ -142,7 +143,7 @@ class StepThree extends Component {
 				{
 					renderIf(couponId)(
 						<Level style={inlineStyle.mb5}>
-							<Level.Left>{T.checkout.VOUCHER} : <strong>{couponId}</strong> &nbsp; <Button icon='times-circle' iconRight onClick={(e) => this.onRemoveCoupon(e)} state={this.state.removeCouponStep} /></Level.Left>
+							<Level.Left>{T.checkout.VOUCHER} : <strong>{couponId}</strong> &nbsp; <div role='button' tabIndex='-1' onClick={(e) => this.onRemoveCoupon(e)} state={this.state.removeCouponStep}><Icon name='times-circle' /></div></Level.Left>
 							<Level.Right className='text-right'>&nbsp;</Level.Right>
 						</Level>
 					)
