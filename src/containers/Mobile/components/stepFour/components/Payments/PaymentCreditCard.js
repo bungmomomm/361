@@ -24,10 +24,13 @@ class PaymentCreditCard extends Component {
 		this.tahun = [{ value: null, label: 'tahun' }];
 		this.numberOfCard = 0;
 		this.minNumberOfCard = 0;
+		this.ccvValue = '';
+		this.ccvValueRadio = '';
 		this.cookies = this.props.cookies.get('user.token');
 		this.state = {
 			appliedBin: this.props.appliedBin,
-			cardValid: null
+			cardValid: null,
+			fromRadio: false
 		};
 	}
 
@@ -45,6 +48,9 @@ class PaymentCreditCard extends Component {
 	componentWillReceiveProps(nextProps) {
 		if (this.props.payments !== nextProps.payments) {
 			this.validateInstallmentForm();
+			if (nextProps.payments.openNewCreditCard) {
+				this.setState({ fromRadio: false });
+			}
 		}
 	}
 
@@ -82,58 +88,99 @@ class PaymentCreditCard extends Component {
 		this.props.dispatch(new actions.changeCreditCardCvv(e.target.value));
 	}
 
+	onChangeCVVRadio(e) {
+		this.ccvValueRadio = e.target.value;
+		this.props.dispatch(new actions.changeCreditCardCvv(e.target.value));
+	}
+
+	onSelectCard(event) {
+		let value = false;
+		if (typeof event.value !== 'undefined' && event.value !== null) {
+			value = event.value;
+		} else {
+			value = event;
+		}
+		if (value) {
+			this.props.dispatch(new actions.selectCreditCard(value));
+			const selectedPaymentOption = new actions.getAvailabelPaymentSelection(this.props.payments.selectedPayment);
+			this.props.dispatch(new actions.applyBin(this.cookies, selectedPaymentOption.value, value, ''));
+			this.setState({
+				appliedBin: {
+					selectedPaymentOption,
+					cardNumber: value,
+					bankName: ''
+				},
+				fromRadio: true
+			});
+		} else {
+			this.props.dispatch(new actions.selectCreditCard(false));
+			this.setState({
+				fromRadio: false
+			});
+		}
+		this.validateInstallmentForm();
+	}
+
 	validateInstallmentForm() {
 		setTimeout(() => {
+			this.props.enableButtonPayNow(false);
+			if (this.state.fromRadio && this.ccvValueRadio !== '') {
+				this.props.enableButtonPayNow(true);
+			}
 			if (
-				this.elCreditCard.state.ccValid === 'green' &&
+				!this.state.fromRadio &&
+				(typeof this.elCreditCard !== 'undefined' && this.elCreditCard.state.ccValid === 'green') &&
 				this.elMonth.state.selected !== null &&
 				this.elYear.state.selected !== null &&
 				this.ccvValue !== ''
 			) {
 				this.props.enableButtonPayNow(true);
-			} else {
-				this.props.enableButtonPayNow(false);
 			}
 		}, 100);
 	}
 
-	renderCreditCardRadio(option) {
-		return option.cards.map((card, cardIndex) => (
-			card.value && (
-				<div key={cardIndex} >
-					<CreditCardRadio
-						name='cc'
-						variant='list'
-						value={card.value}
-						content={card.label}
-						defaultChecked={card.selected}
-						sprites={card.sprites}
-					/>
+	renderCreditCardRadio(option, idx) {
+		return (
+			<div key={idx}>
+				{
+					option.cards.map((card, cardIndex) => (
+						card.value && (
+							<CreditCardRadio
+								name='cc'
+								key={cardIndex}
+								variant='list'
+								value={card.value}
+								content={card.label}
+								defaultChecked={card.selected}
+								sprites={card.sprites}
+								onClick={(e) => this.onSelectCard(e)}
+								ref={(e) => { this.creditCardRadio = e; }}
+							/>
+						)
+					))
+				}
+				{
+					this.state.fromRadio && !this.props.payments.openNewCreditCard &&
 					<Row>
 						<Col grid={4}>
 							<Input
+								dataProps={{ minLength: 0, maxLength: 4 }}
 								type='password'
 								placeholder='cvv'
-								onChange={this.onCardCvvChange}
-								validation={{
-									rules: 'required|min_value:1',
-									name: 'cvv'
-								}}
-								ref={(c) => { this.elCCCvv = c; }}
+								onChange={(e) => this.onChangeCVVRadio(e)}
+								validation={{ rules: 'required|min_value:1', name: 'cvv' }}
 							/>
 						</Col>
-						<Col grid={4}>
-							<Sprites name='cvv' />
-						</Col>
+						<Col grid={4}><Sprites name='cvv' /></Col>
 					</Row>
-				</div>
-			)
-		));
+				}
+			</div>
+		);
 	}
 
 	renderAddNewCard() {
-		const { dispatch } = this.props;
-		if (this.props.payments.twoClickEnabled && this.numberOfCard > this.minNumberOfCard) {
+		const { dispatch, payments } = this.props;
+		if (this.props.payments.twoClickEnabled && this.numberOfCard > this.minNumberOfCard && !payments.openNewCreditCard) {
 			return (
 				<Button clean color='grey' icon='plus-circle' iconPosition='left' onClick={() => dispatch(new actions.openNewCreditCard())}>
 					{T.checkout.ADD_NEW_CARD}
@@ -181,7 +228,6 @@ class PaymentCreditCard extends Component {
 							placeholder='cvv'
 							onChange={(e) => this.onChangeCVV(e)}
 							validation={{ rules: 'required|min_value:1', name: 'cvv' }}
-							ref={(c) => { this.elCvv = c; }}
 						/>
 						<div style={{ paddingRight: '30px' }} ><Sprites name='cvv' /></div>
 					</Group>
@@ -202,7 +248,7 @@ class PaymentCreditCard extends Component {
 			<Group>
 				{
 					this.props.payments.selectedPayment.paymentItems.map((option, index) => (
-						option.cards.length <= 3 ? this.renderCreditCardRadio(option) : <Select key={index} block options={option.cards} />
+						option.cards.length <= 3 ? this.renderCreditCardRadio(option, index) : <Select key={index} block options={option.cards} />
 					))
 				}
 				{this.renderAddNewCard()}

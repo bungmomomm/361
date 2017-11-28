@@ -95,14 +95,9 @@ class StepThree extends Component {
 	}
 
 	render() {
-		const {
-			showModalOtp
-		} = this.state;
+		const { showModalOtp } = this.state;
 
-		const {
-			payments,
-			coupon,
-		} = this.props;
+		const { payments, coupon } = this.props;
 		
 		const inlineStyle = {
 			mb5: {
@@ -141,17 +136,15 @@ class StepThree extends Component {
 					<Level.Right className='text-right'><strong>{currency(payments.subTotal)}</strong></Level.Right>
 				</Level>
 				{
-					renderIf(couponId)(
-						<Level style={inlineStyle.mb5}>
-							<Level.Left>
-								{T.checkout.VOUCHER} : <strong>{couponId}</strong> &nbsp;
-								<span role='button' tabIndex='-1' onClick={(e) => this.onRemoveCoupon(e)} >
-									<Icon name='times-circle' />
-								</span>
-							</Level.Left>
-							<Level.Right className='text-right'>&nbsp;</Level.Right>
-						</Level>
-					)
+					couponId && <Level style={inlineStyle.mb5}>
+						<Level.Left>
+							{T.checkout.VOUCHER} : <strong>{couponId}</strong> &nbsp;
+							<span role='button' tabIndex='-1' onClick={(e) => this.onRemoveCoupon(e)} >
+								<Icon name='times-circle' />
+							</span>
+						</Level.Left>
+						<Level.Right className='text-right'>&nbsp;</Level.Right>
+					</Level>
 				}
 				{
 					renderIf(htmlDisc)(htmlDisc)
@@ -178,7 +171,9 @@ class StepThree extends Component {
 										size='small'
 										name='voucherCode'
 										color={invalidVoucher ? 'red' : 'green'}
-										defaultValue={coupon.coupon}
+										dataProps={{
+											value: coupon.coupon
+										}}
 										onChange={(e) => this.onChangeVoucher(e)}
 									/>
 									<Button 
