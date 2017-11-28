@@ -62,9 +62,9 @@ export default class Modal extends Component {
 		return (
 			renderIf(this.state.displayModal)(
 				<div className={ModalClass}>
-					<div className={ModalWrapperClass}>
+					<div className={ModalWrapperClass} style={this.props.style}>
 						{children}
-						{renderIf(!this.state.modal)(
+						{renderIf(!this.state.modal && !this.props.disableCloseButton)(
 							<button 
 								onClick={this.handleClose} 
 								className={styles.close}
@@ -74,7 +74,7 @@ export default class Modal extends Component {
 						)}
 					</div>
 					<div 
-						onClick={this.handleClose} 
+						onClick={!this.props.disableCloseBackground && this.handleClose} 
 						aria-pressed='false' 
 						tabIndex='0' 
 						role='button' 

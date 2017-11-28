@@ -13,6 +13,7 @@ export default class PaymentErrorModalbox extends Component {
     
 	onClose(closed) {
 		this.props.onClose(closed);
+		document.getElementById('pay-now').disabled = true;
 	}
 
 	render() {
