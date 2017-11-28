@@ -57,10 +57,10 @@ class PaymentOvo extends Component {
 		this.validateOvoForm();
 	}
 
-	setDefaultOvo() {
+	setDefaultOvo(flag) {
 		const ovo = this.state.ovo;
-		const useDefault = !this.state.ovo.useDefault;
-		const ovoPhonePayment = useDefault ? this.props.payments.ovoPaymentNumber : '';
+		const useDefault = flag;
+		const ovoPhonePayment = useDefault ? this.props.payments.ovoPhoneNumber : '';
 		this.setState({
 			ovo: {
 				...ovo,
@@ -108,7 +108,7 @@ class PaymentOvo extends Component {
 				role='button'
 				tabIndex={-1}
 				className='font-grey'
-				onClick={() => this.setDefaultOvo()} 
+				onClick={() => this.setDefaultOvo(false)} 
 			>
 				<Icon name='plus-circle' /> Gunakan OVO Lain
 			</div>
@@ -134,7 +134,7 @@ class PaymentOvo extends Component {
 									),
 									dataProps: {
 										name: 'ovo-phone-payment',
-										onChange: () => this.setDefaultOvo(),
+										onChange: () => this.setDefaultOvo(true),
 										checked: this.state.ovo.useDefault
 									}
 								}]} 
