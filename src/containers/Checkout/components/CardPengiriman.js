@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 
 // component load
-import { 
-	Level, 
-	InputGroup, 
-	Select,  
+import {
+	Level,
+	InputGroup,
+	Select,
 	Icon,
-	Button, 
+	Button,
 	Tabs,
 	Alert,
 	Segment,
@@ -58,7 +58,7 @@ export default class CardPengiriman extends Component {
 		const address = [];
 		const selectedAddress = nextProps.selectedAddress;
 		const cart = nextProps.cart;
-		
+
 		if (selectedAddress !== this.state.selectedAddress) {
 			let latLngExist = null;
 			if (selectedAddress) {
@@ -89,7 +89,7 @@ export default class CardPengiriman extends Component {
 				loading: nextProps.loading,
 			});
 		}
-		
+
 		if (typeof shipping !== 'undefined') {
 			shipping.forEach((value, index) => {
 				address.push({
@@ -161,9 +161,9 @@ export default class CardPengiriman extends Component {
 				this.props.onGetO2oProvinces();
 			}
 			if (this.props.selectedLocker) {
-				this.props.onSelectedLocker(this.props.selectedLocker, this.props.selectO2oFromModal);	
+				this.props.onSelectedLocker(this.props.selectedLocker, this.props.selectO2oFromModal);
 			} else if (this.props.latesto2o.length > 0) {
-				this.props.onSelectedLocker(this.props.latesto2o[0]);	
+				this.props.onSelectedLocker(this.props.latesto2o[0]);
 			}
 		} else {
 			this.setState({
@@ -187,7 +187,7 @@ export default class CardPengiriman extends Component {
 		}
 		return data;
 	}
-	
+
 	openModal(even) {
 		this.props.onOpenModalO2o();
 		this.setState({
@@ -224,10 +224,10 @@ export default class CardPengiriman extends Component {
 			return (
 				data.attributes ? ([
 					<InputGroup>
-						<Select 
-							name='alamat' 
-							selectedLabel='-- Pilih Alamat Lainnya' 
-							options={this.state.shipping} 
+						<Select
+							name='alamat'
+							selectedLabel='-- Pilih Alamat Lainnya'
+							options={this.state.shipping}
 							onChange={this.onChoisedAddress}
 							addButton={addMoreAddress}
 						/>
@@ -237,7 +237,7 @@ export default class CardPengiriman extends Component {
 						<Level.Item className='text-right'>
 							{
 								renderIf(data.attributes.latitude && data.attributes.longitude)(
-									<div>	
+									<div>
 										<Icon name='map-marker' /> &nbsp; Lokasi Sudah Ditandai
 									</div>
 								)
@@ -250,24 +250,24 @@ export default class CardPengiriman extends Component {
 						{!data.attributes ? data.address : data.attributes.address} <br />
 						{!data.attributes ? data.district : data.attributes.district}, {!data.attributes ? data.city : data.attributes.city}, {!data.attributes ? data.province : data.attributes.province}, {!data.attributes ? data.zipcode : data.attributes.zipcode} <br />
 						P: {!data.attributes ? data.phone : data.attributes.phone}
-					</p> 
+					</p>
 				]) : <p>loading...</p>
 			);
 		};
-		
-		
+
+
 		return (
 			<Tabs tabActive={0} loading={this.state.loading} stretch onAfterChange={this.onGetListO2o} >
 				<Tabs.Panel title='Kirim ke Alamat' sprites='truck-off' spritesActive='truck-on'>
 					<Alert align='center' color='yellow' show={!this.state.elockerTab}>
-						GRATIS ongkos kirim hingga Rp 15,000 untuk pembelian produk MatahariStore.com
+						GRATIS ongkos kirim ke seluruh Indonesia untuk pembelian produk MatahariStore.com
 					</Alert>
 					{
 						renderIf(this.state.shipping.length > 0)(
 							<Segment className='customSelectO2OWrapper'>
-						
+
 								{
-							!this.props.selectedAddress ? null : 
+							!this.props.selectedAddress ? null :
 							<div>
 								{
 									renderIf(this.props.addresses)(
@@ -280,9 +280,9 @@ export default class CardPengiriman extends Component {
 							</Segment>
 						)
 					}
-					
+
 					{
-						!this.props.selectedAddress ? null : 
+						!this.props.selectedAddress ? null :
 						<Dropshipper setDropship={this.props.setDropship} errorDropship={this.props.errorDropship} checkDropship={this.props.checkDropship} />
 					}
 					{
@@ -295,14 +295,14 @@ export default class CardPengiriman extends Component {
 							<div className='font-red'>Mohon maaf, kami tidak dapat mengirimkan item berikut ke alamat pengiriman Anda</div>
 						)
 					}
-					
+
 					{
 						renderIf(this.props.errorPlaceOrder && this.props.errorPlaceOrder.message === 'Address is not valid. Please update your address.')(
 							<div className='font-red'>Alamat anda tidak valid, mohon untuk melakukan perubahan Alamat</div>
 						)
 					}
-					
-					
+
+
 				</Tabs.Panel>
 				<Tabs.Panel title='Ambil Di Toko/E-locker (O2O)' sprites='o2o-off' spritesActive='o2o-on' >
 					<Alert align='center' color='yellow' show={this.state.elockerTab} >
