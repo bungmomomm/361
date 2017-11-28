@@ -120,7 +120,10 @@ class StepFour extends Component {
 			});
 		}
 		if (this.props.payments.selectedPayment !== nextProps.payments.selectedPayment) {
-			this.enableButtonPayNow(false);
+			this.enableButtonPayNow(
+				nextProps.payments.paymentMethod === paymentMethodName.GRATIS ||
+				nextProps.payments.paymentMethod === paymentMethodName.COD
+			);
 		}
 		if (!this.loadBlockContent) {
 			const { dispatch } = this.props;
