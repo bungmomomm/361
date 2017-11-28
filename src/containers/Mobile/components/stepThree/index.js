@@ -89,7 +89,7 @@ class StepThree extends Component {
 	createClassCard() {
 		return [
 			styles.card,
-			this.props.loading ? styles.loading : '',
+			this.props.loading || this.state.removeCouponStep === 'loading' ? styles.loading : '',
 			this.props.disabled ? styles.disabled : ''
 		].join(' ').trim();
 	}
@@ -143,7 +143,12 @@ class StepThree extends Component {
 				{
 					renderIf(couponId)(
 						<Level style={inlineStyle.mb5}>
-							<Level.Left>{T.checkout.VOUCHER} : <strong>{couponId}</strong> &nbsp; <div role='button' tabIndex='-1' onClick={(e) => this.onRemoveCoupon(e)} state={this.state.removeCouponStep}><Icon name='times-circle' /></div></Level.Left>
+							<Level.Left>
+								{T.checkout.VOUCHER} : <strong>{couponId}</strong> &nbsp;
+								<span role='button' tabIndex='-1' onClick={(e) => this.onRemoveCoupon(e)} >
+									<Icon name='times-circle' />
+								</span>
+							</Level.Left>
 							<Level.Right className='text-right'>&nbsp;</Level.Right>
 						</Level>
 					)

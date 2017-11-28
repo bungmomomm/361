@@ -9,37 +9,37 @@ import { actions as globalAction } from '@/state/Global';
 
 import { paymentGroupName, paymentMethodName } from '@/state/Payment/constants';
 import {
-	CreditCardInput,
-	CreditCardRadio,
-	Sprites
+	// CreditCardInput,
+	// CreditCardRadio,
+	// Sprites
 } from '@/components';
 
 import { 
-	Group,
+	// Group,
 	Select,
 	Checkbox,
 	Button,
-	Input,
-	Row,
-	Col
+	Input
+	// Row,
+	// Col
 } from 'mm-ui';
 
 import { pushDataLayer } from '@/utils/gtm';
-import { Bulan } from '@/data';
+// import { Bulan } from '@/data';
 
-import { renderIf } from '@/utils';
+// import { renderIf } from '@/utils';
 
-import ModalOVOCountdown from './components/ModalOVOCountdown';
-import ModalErrorPayment from './components/ModalErrorPayment';
+import ModalOVOCountdown from './components/Modal/ModalOVOCountdown';
+import ModalErrorPayment from './components/Modal/ModalErrorPayment';
 import Tooltip from './components/Tooltip';
-import Vt3dsModalBox from './components/Vt3dsModalBox';
+import Vt3dsModalBox from './components/Modal/Vt3dsModalBox';
 
 // payment methods components
 import PaymentInstallment from './components/Payments/PaymentInstallment';
 import PaymentOvo from './components/Payments/PaymentOvo';
 import PaymentSelection from './components/Payments/PaymentSelection';
 
-// import PaymentCreditCard from './components/Payments/PaymentCreditCard';
+import PaymentCreditCard from './components/Payments/PaymentCreditCard';
 
 import styles from '../../../Mobile/mobile.scss';
 
@@ -706,29 +706,29 @@ class StepFour extends Component {
 			payments
 		} = this.props;
 
-		let numberOfCard = 0;
-		const minNumberOfCard = 0;
-		numberOfCard = (payments.selectedPayment.value === paymentGroupName.CREDIT_CARD) ? payments.selectedPayment.cards : 0;
+		// let numberOfCard = 0;
+		// const minNumberOfCard = 0;
+		// numberOfCard = (payments.selectedPayment.value === paymentGroupName.CREDIT_CARD) ? payments.selectedPayment.cards : 0;
 
-		const CvvElement = (
-			<Row>
-				<Col grid={4}>
-					<Input
-						type='password'
-						placeholder='cvv'
-						onChange={this.onCardCvvChange}
-						validation={{
-							rules: 'required|min_value:1',
-							name: 'cvv'
-						}}
-						ref={(c) => { this.elCCCvv = c; }}
-					/>
-				</Col>
-				<Col grid={4}>
-					<Sprites name='cvv' />
-				</Col>
-			</Row>
-		);
+		// const CvvElement = (
+		// 	<Row>
+		// 		<Col grid={4}>
+		// 			<Input
+		// 				type='password'
+		// 				placeholder='cvv'
+		// 				onChange={this.onCardCvvChange}
+		// 				validation={{
+		// 					rules: 'required|min_value:1',
+		// 					name: 'cvv'
+		// 				}}
+		// 				ref={(c) => { this.elCCCvv = c; }}
+		// 			/>
+		// 		</Col>
+		// 		<Col grid={4}>
+		// 			<Sprites name='cvv' />
+		// 		</Col>
+		// 	</Row>
+		// );
 
 
 		const switchPaymentElement = () => {
@@ -747,28 +747,34 @@ class StepFour extends Component {
 				);
 			}
 			case paymentGroupName.CREDIT_CARD:
-				return payments.selectedPayment.paymentItems.map((option, index) => (
-					option.cards.length <= 3 ? (
-						option.cards.map((card, cardIndex) => (
-							card.value && (
-								<div key={cardIndex} >
-									<CreditCardRadio
-										name='cc'
-										variant='list'
-										value={card.value}
-										content={card.label}
-										defaultChecked={card.selected}
-										sprites={card.sprites}
-										onClick={this.onSelectCard}
-									/>
-									{ card.selected && CvvElement }
-								</div>
-							)
-						))
-					) : (
-						<Select block key={index} options={option.cards} />
-					)
-				));
+				return (
+					<PaymentCreditCard 
+						payments={payments} 
+						enableButtonPayNow={(e) => this.enableButtonPayNow(e)}
+					/>
+				);
+				// return payments.selectedPayment.paymentItems.map((option, index) => (
+				// 	option.cards.length <= 3 ? (
+				// 		option.cards.map((card, cardIndex) => (
+				// 			card.value && (
+				// 				<div key={cardIndex} >
+				// 					<CreditCardRadio
+				// 						name='cc'
+				// 						variant='list'
+				// 						value={card.value}
+				// 						content={card.label}
+				// 						defaultChecked={card.selected}
+				// 						sprites={card.sprites}
+				// 						onClick={this.onSelectCard}
+				// 					/>
+				// 					{ card.selected && CvvElement }
+				// 				</div>
+				// 			)
+				// 		))
+				// 	) : (
+				// 		<Select block key={index} options={option.cards} />
+				// 	)
+				// ));
 			case paymentGroupName.INSTALLMENT: {
 				return (
 					<PaymentInstallment
@@ -783,6 +789,7 @@ class StepFour extends Component {
 				return (
 					<PaymentOvo
 						payments={payments}
+						appliedBin={this.state.appliedBin}
 						enableButtonPayNow={(e) => this.enableButtonPayNow(e)}
 						autoLinkage={(e) => this.setState({ ovo: { ...this.state.ovo, autoLinkage: !this.state.ovo.autoLinkage } })}
 					/>
@@ -806,53 +813,57 @@ class StepFour extends Component {
 						defaultValue={payments.selectedPayment ? payments.selectedPayment.id : null}
 					/>
 					{ payments.selectedPayment && switchPaymentElement()}
-					{ renderIf(payments.selectedPayment.value === paymentGroupName.CREDIT_CARD && payments.twoClickEnabled && numberOfCard > minNumberOfCard)(
+					{ 
+						// renderIf(payments.selectedPayment.value === paymentGroupName.CREDIT_CARD && payments.twoClickEnabled && numberOfCard > minNumberOfCard)(
 							
-						<Button clean color='grey' icon='plus-circle' iconPosition='left' onClick={this.onNewCreditCard}>{T.checkout.ADD_NEW_CARD}</Button>
+						// <Button clean color='grey' icon='plus-circle' iconPosition='left' onClick={this.onNewCreditCard}>{T.checkout.ADD_NEW_CARD}</Button>
 							
-					)}
-					{ renderIf((payments.openNewCreditCard && payments.selectedPayment.value === paymentGroupName.CREDIT_CARD 
-					&& !payments.twoClickEnabled) || (payments.selectedPayment.value === paymentGroupName.CREDIT_CARD && numberOfCard < (minNumberOfCard + 1)))(
-						<div>
-							<Group><CreditCardInput placeholder={T.checkout.INPUT_CART_NUMBER} sprites='payment-option' onChange={this.onCardNumberChange} /></Group>
-							<label htmlFor='masa-berlaku'key={2}>Masa Berlaku</label>
-							<Group grouped id='masa-berlaku'>
-								<Select
-									block
-									options={Bulan}
-									onChange={this.onCardMonthChange}
-									validation={{
-										rules: 'required|min_value:1',
-										name: 'month'
-									}}
-									ref={(c) => { this.elCCMonth = c; }}
-								/>
-								<Select
-									block
-									options={this.state.tahun}
-									onChange={this.onCardYearChange}
-									validation={{
-										rules: 'required|min_value:10|min:1',
-										name: 'year'
-									}}
-									ref={(c) => { this.elCCYear = c; }}
-								/>
-								<Input
-									dataProps={{ minLength: 0, maxLength: 4 }}
-									type='password'
-									placeholder='cvv'
-									onChange={this.onCardCvvChange}
-									validation={{
-										rules: 'required|min_value:1',
-										name: 'cvv'
-									}}
-									ref={(c) => { this.elCCCvv = c; }}
-								/>
-								<div style={{ paddingRight: '30px' }} ><Sprites name='cvv' /></div>
-							</Group>
-							<Checkbox defaultChecked onClick={(state, value) => this.props.onSaveCcOption(state, value)}>{T.checkout.SAVE_CARD_FOR_NEXT_TRANSACTION}</Checkbox>
-						</div>
-					)}
+						// )
+					}
+					{ 
+					// 	renderIf((payments.openNewCreditCard && payments.selectedPayment.value === paymentGroupName.CREDIT_CARD 
+					// && !payments.twoClickEnabled) || (payments.selectedPayment.value === paymentGroupName.CREDIT_CARD && numberOfCard < (minNumberOfCard + 1)))(
+					// 	<div>
+					// 		<Group><CreditCardInput placeholder={T.checkout.INPUT_CART_NUMBER} sprites='payment-option' onChange={this.onCardNumberChange} /></Group>
+					// 		<label htmlFor='masa-berlaku'key={2}>Masa Berlaku</label>
+					// 		<Group grouped id='masa-berlaku'>
+					// 			<Select
+					// 				block
+					// 				options={Bulan}
+					// 				onChange={this.onCardMonthChange}
+					// 				validation={{
+					// 					rules: 'required|min_value:1',
+					// 					name: 'month'
+					// 				}}
+					// 				ref={(c) => { this.elCCMonth = c; }}
+					// 			/>
+					// 			<Select
+					// 				block
+					// 				options={this.state.tahun}
+					// 				onChange={this.onCardYearChange}
+					// 				validation={{
+					// 					rules: 'required|min_value:10|min:1',
+					// 					name: 'year'
+					// 				}}
+					// 				ref={(c) => { this.elCCYear = c; }}
+					// 			/>
+					// 			<Input
+					// 				dataProps={{ minLength: 0, maxLength: 4 }}
+					// 				type='password'
+					// 				placeholder='cvv'
+					// 				onChange={this.onCardCvvChange}
+					// 				validation={{
+					// 					rules: 'required|min_value:1',
+					// 					name: 'cvv'
+					// 				}}
+					// 				ref={(c) => { this.elCCCvv = c; }}
+					// 			/>
+					// 			<div style={{ paddingRight: '30px' }} ><Sprites name='cvv' /></div>
+					// 		</Group>
+					// 		<Checkbox defaultChecked onClick={(state, value) => this.props.onSaveCcOption(state, value)}>{T.checkout.SAVE_CARD_FOR_NEXT_TRANSACTION}</Checkbox>
+					// 	</div>
+					// )
+				}
 					<Input
 						value={payments.billingPhoneNumber || ''}
 						label={T.checkout.PHONE_NUMBER_O2O_CONFIRMATION}
