@@ -696,6 +696,7 @@ class StepFour extends Component {
 				<div>
 					<Select 
 						block 
+						selectStyle='panel'
 						label={T.checkout.PAYMENT_METHOD}
 						options={payments.paymentMethods.methods} 
 						onChange={(e) => this.paymentMethodChange(e)}
