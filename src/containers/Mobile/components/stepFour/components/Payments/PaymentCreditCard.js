@@ -27,6 +27,7 @@ class PaymentCreditCard extends Component {
 		this.ccvValue = '';
 		this.ccvValueRadio = '';
 		this.cookies = this.props.cookies.get('user.token');
+		this.elCreditCard = null;
 		this.state = {
 			appliedBin: this.props.appliedBin,
 			cardValid: null,
@@ -59,7 +60,6 @@ class PaymentCreditCard extends Component {
 	onCardNumberChange(event) {
 		const { payments, dispatch } = this.props;
 		const selectedPaymentOption = new actions.getAvailabelPaymentSelection(payments.selectedPayment);
-		console.log(event);
 		if (event.valid) {
 			dispatch(new actions.changeCreditCardNumber(event.ccNumber));
 			dispatch(new actions.applyBin(this.cookies, selectedPaymentOption.value, event.ccNumber, ''));
@@ -96,30 +96,22 @@ class PaymentCreditCard extends Component {
 	}
 
 	onSelectCard(event) {
-		let value = false;
-		if (typeof event.value !== 'undefined' && event.value !== null) {
-			value = event.value;
-		} else {
-			value = event;
-		}
-		if (value) {
-			this.props.dispatch(new actions.selectCreditCard(value));
+		this.setState({ fromRadio: false });
+		if (event.value !== null) {
+			this.props.dispatch(new actions.selectCreditCard(event.value));
 			const selectedPaymentOption = new actions.getAvailabelPaymentSelection(this.props.payments.selectedPayment);
-			this.props.dispatch(new actions.applyBin(this.cookies, selectedPaymentOption.value, value, ''));
+			this.props.dispatch(new actions.applyBin(this.cookies, selectedPaymentOption.value, event.value, ''));
 			this.setState({
 				appliedBin: {
 					selectedPaymentOption,
-					cardNumber: value,
+					cardNumber: event.value,
 					bankName: ''
 				},
-				selectedCard: value,
+				selectedCard: event.value,
 				fromRadio: true
 			});
 		} else {
 			this.props.dispatch(new actions.selectCreditCard(false));
-			this.setState({
-				fromRadio: false
-			});
 		}
 		this.validateInstallmentForm();
 	}
@@ -132,7 +124,7 @@ class PaymentCreditCard extends Component {
 			}
 			if (
 				!this.state.fromRadio &&
-				(typeof this.elCreditCard !== 'undefined' && this.elCreditCard.state.ccValid === 'green') &&
+				(this.elCreditCard !== null && this.elCreditCard.state.ccValid === 'green') &&
 				this.elMonth.state.selected !== null &&
 				this.elYear.state.selected !== null &&
 				this.ccvValue !== ''
