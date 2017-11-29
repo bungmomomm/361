@@ -136,7 +136,7 @@ class StepFour extends Component {
 	}
 
 	onRequestVtToken(installment = false) {
-		const { dispatch } = this.props;
+		const { dispatch, soNumber, stepState, billing } = this.props;
 		let bankName = '';
 		const cardDetail = {
 			card_cvv: this.props.payments.selectedCardDetail.cvv,
@@ -205,8 +205,16 @@ class StepFour extends Component {
 					)
 				);
 			} else {
+				const selectedAddress = stepState.stepOne.tabIndex > 0 ? stepState.stepOne.selectedAddressO2O : stepState.stepOne.selectedAddress;
 				dispatch(new paymentAction.vtModalBoxOpen(false));
 				dispatch(new paymentAction.paymentError('Silahkan periksa data kartu kredit Anda.'));
+				dispatch(
+					new paymentAction.failAuthTokenCC(
+						this.cookies,
+						soNumber
+					)
+				);
+				this.constructor.placeOrder(this.cookies, dispatch, selectedAddress, billing);
 			}
 		};
 
@@ -247,8 +255,16 @@ class StepFour extends Component {
 					)
 				);
 			} else {
+				const selectedAddress = stepState.stepOne.tabIndex > 0 ? stepState.stepOne.selectedAddressO2O : stepState.stepOne.selectedAddress;
 				dispatch(new paymentAction.vtModalBoxOpen(false));
 				dispatch(new paymentAction.paymentError('Silahkan periksa data kartu kredit Anda.'));
+				dispatch(
+					new paymentAction.failAuthTokenCC(
+						this.cookies,
+						soNumber
+					)
+				);
+				this.constructor.placeOrder(this.cookies, dispatch, selectedAddress, billing);
 			}
 		};
 		dispatch(
