@@ -81,9 +81,11 @@ class PaymentSelection extends Component {
 		enabledPaymentItems.map((option, index) => {
 			const RadioLabel = (
 				<Level key={index}>
-					<Level.Left>{option.label}</Level.Left>
-					<Level.Right >
+					<Level.Left>
+						{option.label}
 						{option.disabled && <div className='font-red'>{option.disableMessage}</div>}
+					</Level.Left>
+					<Level.Right >	
 						{option.settings.image && <img src={option.settings.image} alt={option.label} height='15px' />}
 						{option.settings.info && <span role='button' tabIndex='-1' onClick={() => this.showTooltip(option.settings.info)}>
 							{/* <Icon name='exclamation-circle' className={styles.tooltipButton} /> */}
