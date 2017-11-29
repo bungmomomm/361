@@ -33,15 +33,12 @@ class StepThree extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (this.props.coupon !== nextProps.coupon) {
-			if (
-				(!nextProps.coupon.validCoupon && nextProps.coupon.code === 403) || 
-				(typeof nextProps.coupon.otp.valid !== 'undefined' && !nextProps.coupon.otp.valid)
-			) {
-				this.showOTPmodal(true);
-			} else {
-				this.showOTPmodal(false);	
-			}
+		if (
+			this.props.coupon !== nextProps.coupon &&
+			!nextProps.coupon.validCoupon &&
+			nextProps.coupon.code === 403
+		) {
+			this.showOTPmodal(true);
 		}
 	}
 
