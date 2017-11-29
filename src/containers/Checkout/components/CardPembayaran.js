@@ -111,6 +111,7 @@ export default class CardPembayaran extends Component {
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.payments !== this.props.payments) {
 			this.isValidCCForm();
+			
 		}
 	}
 
@@ -144,11 +145,12 @@ export default class CardPembayaran extends Component {
 	}
 
 	onPaymentMethodChange(event) {
+		console.log(event.label);
 		this.setState({
 			paymentMethodChanged: true
 		});
 		this.props.onPaymentMethodChange(event);
-		if (event.value) {
+		if (event) {
 			this.setState({
 				validInstallmentBin: event.value !== 'installment'
 			});
@@ -165,9 +167,16 @@ export default class CardPembayaran extends Component {
 		this.props.onInstallmentCCMonthChange({ value: 0 });
 		this.props.onInstallmentCCYearChange({ value: 0 });
 		this.props.onInstallmentCCCvvChange({ target: { value: 0 } });
-		setTimeout(() => {
-			this.payNowButton.disabled = true;
-		}, 50);
+
+		const paymentWithNoinput = ['COD', 'GRATIS'];
+		if (paymentWithNoinput.indexOf(event.value.toUpperCase()) === -1) {
+			setTimeout(() => {
+				this.payNowButton.disabled = true;
+			}, 50);
+		} else {
+			this.payNowButton.disabled = false;
+		}
+		
 	}
 
 	onPaymentOptionChange(event) {
