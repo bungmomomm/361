@@ -461,6 +461,11 @@ class StepFour extends Component {
 		dispatch(new paymentAction.changeOvoNumber(ovoNumber));
 	}
 
+	onVt3dsModalBoxClose() {
+		const { dispatch } = this.props;
+		dispatch(new paymentAction.vtModalBoxOpen(false));
+	}
+
 	getAffTracking() {
 		return {
 			af_track_id: this.props.cookies.get('afftrackid'),
