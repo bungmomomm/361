@@ -34,9 +34,9 @@ export default class ModalChooseAddress extends Component {
 											data={[
 												{ 
 													label: isChecked ? T.checkout.MAIN_ADDRESS : T.checkout.USE_THIS_ADDRESS, 
-													inputProps: { 
+													dataProps: { 
 														readOnly: true,
-														checked: isChecked
+														defaultChecked: isChecked
 													} 
 												}
 											]} 

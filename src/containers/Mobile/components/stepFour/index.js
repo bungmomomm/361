@@ -634,57 +634,60 @@ class StepFour extends Component {
 			}
 		});
 	}
+
+
+	renderSwitchPaymentElement() {
+		const { payments } = this.props;
+		// PAYMENT MENTHOD LIST
+		switch (payments.selectedPayment.value) {
+		case paymentGroupName.BANK_TRANSFER:
+		case paymentGroupName.E_MONEY:
+		case paymentGroupName.INTERNET_BANKING:
+		case paymentGroupName.CONVENIENCE_STORE: {
+			return (
+				<PaymentSelection
+					payments={payments}
+					enableButtonPayNow={(e) => this.enableButtonPayNow(e)}
+					styles={styles}
+				/>
+			);
+		}
+		case paymentGroupName.CREDIT_CARD:
+			return (
+				<PaymentCreditCard
+					payments={payments}
+					enableButtonPayNow={(e) => this.enableButtonPayNow(e)}
+				/>
+			);
+		case paymentGroupName.INSTALLMENT: {
+			return (
+				<PaymentInstallment
+					payments={payments}
+					appliedBin={this.state.appliedBin}
+					installmentList={this.state.installmentList}
+					enableButtonPayNow={(e) => this.enableButtonPayNow(e)}
+				/>
+			);
+		}
+		case paymentGroupName.OVO:
+			return (
+				<PaymentOvo
+					payments={payments}
+					appliedBin={this.state.appliedBin}
+					enableButtonPayNow={(e) => this.enableButtonPayNow(e)}
+					autoLinkage={(e) => this.setState({ ovo: { ...this.state.ovo, autoLinkage: !this.state.ovo.autoLinkage } })}
+				/>
+			);
+		default:
+			return null;
+		}
+	};
 	
 	render() {
 		const {
 			payments
 		} = this.props;
 
-		const switchPaymentElement = () => {
-			// PAYMENT MENTHOD LIST
-			switch (payments.selectedPayment.value) {
-			case paymentGroupName.BANK_TRANSFER:
-			case paymentGroupName.E_MONEY:
-			case paymentGroupName.INTERNET_BANKING:
-			case paymentGroupName.CONVENIENCE_STORE: {
-				return (
-					<PaymentSelection
-						payments={payments}
-						enableButtonPayNow={(e) => this.enableButtonPayNow(e)}
-						styles={styles}
-					/>
-				);
-			}
-			case paymentGroupName.CREDIT_CARD:
-				return (
-					<PaymentCreditCard 
-						payments={payments} 
-						enableButtonPayNow={(e) => this.enableButtonPayNow(e)}
-					/>
-				);
-			case paymentGroupName.INSTALLMENT: {
-				return (
-					<PaymentInstallment
-						payments={payments}
-						appliedBin={this.state.appliedBin}
-						installmentList={this.state.installmentList}
-						enableButtonPayNow={(e) => this.enableButtonPayNow(e)}
-					/>
-				);
-			}
-			case paymentGroupName.OVO:
-				return (
-					<PaymentOvo
-						payments={payments}
-						appliedBin={this.state.appliedBin}
-						enableButtonPayNow={(e) => this.enableButtonPayNow(e)}
-						autoLinkage={(e) => this.setState({ ovo: { ...this.state.ovo, autoLinkage: !this.state.ovo.autoLinkage } })}
-					/>
-				);
-			default:
-				return null;
-			}
-		};
 
 		const ovoReadOnly = (payments.ovoInfo && parseInt(payments.ovoInfo.ovoFlag, 10) === 1);
 		return (
@@ -698,7 +701,7 @@ class StepFour extends Component {
 						onChange={(e) => this.paymentMethodChange(e)}
 						defaultValue={payments.selectedPayment ? payments.selectedPayment.id : null}
 					/>
-					{ payments.selectedPayment && switchPaymentElement()}
+					{payments.selectedPayment && this.renderSwitchPaymentElement()}
 					<Input
 						value={payments.billingPhoneNumber || ''}
 						label={T.checkout.PHONE_NUMBER_O2O_CONFIRMATION}

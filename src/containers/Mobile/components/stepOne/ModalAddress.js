@@ -81,6 +81,7 @@ class ModalAddress extends Component {
 		if (nextProps.formData !== this.props.formData) {
 			this.getPinPointAddress();
 		}
+		console.log(nextProps.address.district);
 	}
 	
 	onChangeProvince(e) {
@@ -370,13 +371,14 @@ class ModalAddress extends Component {
 						/>
 					}
 					{
-						typeof address.cityProv === 'object' && address.district && 
+						typeof address.cityProv === 'object' && 
+						typeof address.district !== 'undefined' &&
 						<Select
 							block
 							label='Kecamatan *'
 							hasFilter
 							name='kecamatan'
-							defaultValue={this.props.isEdit ? this.state.selected.district.value : ''}
+							defaultValue={this.state.selected.district.value}
 							options={address.district}
 							onChange={(e) => this.onChangeDistrict(e)}
 							ref={(c) => { this.elDistrict = c; }}
