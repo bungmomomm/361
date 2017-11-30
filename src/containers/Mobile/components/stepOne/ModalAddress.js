@@ -203,13 +203,13 @@ class ModalAddress extends Component {
 		if (elAddressLabel && elFullname && elPhone && elAddress && elZipcode && elProvince && elDistrict) {
 			const formData = {
 				id: this.props.isEdit && this.props.formData.id,
-				name: this.elAddressLabel.validation.state.formData.addresslabel,
-				penerima: this.elFullname.validation.state.formData.fullname,
-				address: this.elAddress.validation.state.formData.address,
+				name: this.elAddressLabel.validation.state.formData.Nama_Alamat,
+				penerima: this.elFullname.validation.state.formData.Nama_Penerima,
+				address: this.elAddress.validation.state.formData.Alamat,
 				provinsi: this.state.selected.province.value,
 				kecamatan: this.state.selected.district.value,
-				kodepos: this.elZipcode.validation.state.formData.zipcode,
-				no_hp: this.elPhone.validation.state.formData.phone,
+				kodepos: this.elZipcode.validation.state.formData.Kode_Pos,
+				no_hp: this.elPhone.validation.state.formData.No_Handphone,
 				isEdit: this.props.isEdit,
 				longitude: this.FormLongitude || '',
 				latitude: this.FormLatitude || '',
