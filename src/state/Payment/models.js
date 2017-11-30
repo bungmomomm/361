@@ -1,9 +1,13 @@
 import humps from 'lodash-humps';
 import { paymentMethodName, paymentGroupName } from './constants';
+import _ from 'lodash';
 
 const getRelations = (data, lookup, format) => {
 	return data.data.map((item, index) => {
 		const obj = lookup.filter(itemLookup => itemLookup.type === item.type && itemLookup.id === item.id)[0];
+		if (typeof obj === 'undefined') {
+			return false;
+		} 
 		return {
 			...obj,
 			...obj.attributes
@@ -54,7 +58,7 @@ const paymentMethod = method => {
 };
 
 const getListAvailablePaymentMethod = (response) => {
-	let payments = response.data.filter(method => {
+	let payments = response.data.filter(method => { 
 		return method.type === 'payment_methods';
 	});
 	
@@ -91,6 +95,9 @@ const getListAvailablePaymentMethod = (response) => {
 					cards: !payment.relationships.card_number ? [] : getCardRelations(payment.relationships.card_number, response.included),
 					banks: getRelations(payment.relationships.banks, response.included)
 				};
+				paymentData.banks = _.remove(paymentData.banks, (e) => {
+					return e !== false;
+				});				
 				paymentData.banks = paymentData.banks.map((bank, bankIndex) => {
 					bank.installments = getRelations(bank.relationships.installment, response.included);
 					bank.listCicilan = bank.installments.map((installment, bankInstallmentIndex) => {
@@ -113,7 +120,7 @@ const getListAvailablePaymentMethod = (response) => {
 					};
 					return bank;
 				});
-
+				
 				paymentData.cards.unshift({
 					label: '-- Pilih Kartu',
 					value: null,
@@ -128,7 +135,7 @@ const getListAvailablePaymentMethod = (response) => {
 				return paymentData;
 			});
 			break;
-		case paymentGroupName.BANK_TRANSFER: 
+		case paymentGroupName.BANK_TRANSFER:
 			methodData.payment_items = methodData.payment_items.map((payment, paymentIndex) => {
 				const paymentData = paymentMethodItem(payment);
 				if (parseInt(paymentData.fg_default, 10) === 1) {
