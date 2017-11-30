@@ -335,7 +335,7 @@ class ModalAddress extends Component {
 						type='text'
 						defaultValue={this.props.isEdit ? formData.attributes.addressLabel : ''}
 						ref={(c) => { this.elAddressLabel = c; }}
-						validation={{ rules: 'required', name: 'address label' }}
+						validation={{ rules: 'required', name: 'Nama_Alamat' }}
 					/>
 					<Input
 						label='Nama Penerima *'
@@ -344,7 +344,7 @@ class ModalAddress extends Component {
 						type='text'
 						ref={(c) => { this.elFullname = c; }}
 						defaultValue={this.props.isEdit ? formData.attributes.fullname : ''}
-						validation={{ rules: 'required', name: 'fullname' }}
+						validation={{ rules: 'required', name: 'Nama_Penerima' }}
 					/>
 					<Input
 						label='No Handphone *'
@@ -354,7 +354,7 @@ class ModalAddress extends Component {
 						type='number'
 						defaultValue={this.props.isEdit ? formData.attributes.phone : ''}
 						ref={(c) => { this.elPhone = c; }}
-						validation={{ rules: 'required|min:7|max:14', name: 'phone' }}
+						validation={{ rules: 'required|min:7|max:14', name: 'No_Handphone' }}
 					/>
 					{
 						typeof address.cityProv !== 'undefined' &&
@@ -367,7 +367,7 @@ class ModalAddress extends Component {
 							options={address.cityProv}
 							onChange={(e) => this.onChangeProvince(e)}
 							ref={(c) => { this.elProvince = c; }}
-							validation={{ rules: 'required', name: 'province' }}
+							validation={{ rules: 'required', name: 'Provinsi' }}
 						/>
 					}
 					{
@@ -382,7 +382,7 @@ class ModalAddress extends Component {
 							options={address.district}
 							onChange={(e) => this.onChangeDistrict(e)}
 							ref={(c) => { this.elDistrict = c; }}
-							validation={{ rules: 'required', name: 'district' }}
+							validation={{ rules: 'required', name: 'Kecamatan' }}
 						/>
 					}
 					<Input
@@ -393,7 +393,7 @@ class ModalAddress extends Component {
 						min={0}
 						defaultValue={this.props.isEdit ? formData.attributes.zipcode : ''}
 						ref={(c) => { this.elZipcode = c; }}
-						validation={{ rules: 'required|digits:5', name: 'zipcode' }}
+						validation={{ rules: 'required|digits:5', name: 'Kode_Pos' }}
 					/>
 					<Textarea
 						label='Alamat *'
@@ -401,7 +401,7 @@ class ModalAddress extends Component {
 						name='address'
 						defaultValue={this.props.isEdit ? formData.attributes.address : ''}
 						ref={(c) => { this.elAddress = c; }}
-						validation={{ rules: 'required', name: 'address' }}
+						validation={{ rules: 'required', name: 'Alamat' }}
 					>address</Textarea>
 					{this.state.formattedAddress && !this.state.showMap ? this.renderFormattedAddress() : this.renderButtonMap()}
 					{this.state.showMap && this.renderGoogleMap()}
