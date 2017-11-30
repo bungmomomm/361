@@ -70,7 +70,6 @@ class ModalAddress extends Component {
 			this.constructor.fetchGetCityProvince(this.cookies, dispatch);
 		}
 		if (this.props.isEdit && formData.attributes) {
-			console.log(formData.attributes);
 			if (typeof formData.attributes.latitude !== 'undefined' && typeof formData.attributes.longitude !== 'undefined') {
 				this.getPinPointAddress();
 			}
@@ -129,7 +128,6 @@ class ModalAddress extends Component {
 
 	getPinPointAddress(lat = this.props.formData.attributes.latitude, lng = this.props.formData.attributes.longitude) {
 		const { google } = this.props;
-		console.log(this.state.isValidMarkerPosition);
 		if (google && this.state.isValidMarkerPosition) {
 			const geo = new google.maps.Geocoder();
 			const latLng = new google.maps.LatLng(lat, lng);

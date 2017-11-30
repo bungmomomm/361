@@ -29,9 +29,9 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 
 	return (
 		<div className={s.footer}>
-			{!isGosendSupported() && store.shipping.note && <div className={s.deliveryInfo}>{store.shipping.note}</div>}
+			{!isGosendSupported() && store.shipping.note && shippingDefault && <div className={s.deliveryInfo}>{store.shipping.note}</div>}
 			{
-				isGosendSupported() && (!isRestrictO2O && !isJabotabekItem) && (
+				isGosendSupported() && shippingDefault && (!isRestrictO2O && !isJabotabekItem) && (
 					<div className={s.deliveryInfo}>
 						<Level>
 							<Level.Item>
