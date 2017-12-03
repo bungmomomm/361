@@ -65,10 +65,10 @@ class ModalAddress extends Component {
 	}
 
 	componentDidMount() {
-		const { formData, address, dispatch } = this.props;
-		if (typeof address.cityProv === 'undefined') {
-			this.constructor.fetchGetCityProvince(this.cookies, dispatch);
-		}
+		const { formData, dispatch } = this.props;
+		
+		this.constructor.fetchGetCityProvince(this.cookies, dispatch);
+		
 		if (this.props.isEdit && formData.attributes) {
 			if (typeof formData.attributes.latitude !== 'undefined' && typeof formData.attributes.longitude !== 'undefined') {
 				this.getPinPointAddress();
