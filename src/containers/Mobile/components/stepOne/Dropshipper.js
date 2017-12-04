@@ -98,12 +98,11 @@ class Dropshipper extends Component {
 								onChange={(event) => this.onChange(this.state.showForm, event.target.value, this.state.dropshipPhone)}
 							/>
 							<Input 
-								type='number' 
-								min={0}
+								type='text' 
 								name='dropship_phone' 
 								placeholder={T.checkout.PHONE_NUMBER}
 								validation={{
-									rules: 'required|min:6|max:14',
+									rules: 'required|min:6|max:14|numeric',
 									name: 'dropship phone'
 								}}
 								ref={(c) => { this.elDropshipPhone = c; }}
