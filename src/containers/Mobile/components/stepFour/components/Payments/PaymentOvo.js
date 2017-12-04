@@ -45,7 +45,7 @@ class PaymentOvo extends Component {
 			ovo: {
 				...this.state.ovo,
 				ovoPhonePayment: event.target.value,
-				ovoPhonePaymentValid: this.input.validation.checkValid(event.target.value),
+				ovoPhonePaymentValid: this.input.validation.checkValid(event.target.value)
 			}
 		});
 		this.props.dispatch(new actions.changeOvoPaymentNumber(event.target.value));		
@@ -93,6 +93,9 @@ class PaymentOvo extends Component {
 				placeholder={'Masukan No Hp yang terdaftar di OVO'}
 				onChange={(e) => this.onOvoPaymentNumberChange(e)}
 				validation={{ rules: 'required|min:5|max:30|numeric', name: 'Phone_Number' }}
+				color={this.state.ovo.ovoPhonePaymentValid ? 'green' : null}
+				icon={this.state.ovo.ovoPhonePaymentValid ? 'check' : null}
+				message={this.state.ovo.ovoPhonePaymentValid ? 'Poin OVO akan ditambahkan di no ini' : ''}
 			/>
 		);
 	}
