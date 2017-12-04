@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Map, Marker, Polygon, GoogleApiWrapper } from 'google-maps-react';
+import { Map, Polygon, GoogleApiWrapper } from 'google-maps-react';
 import { Input } from 'mm-ui';
 import styles from './GoogleMap.scss';
 
@@ -26,14 +26,7 @@ class GoogleMap extends Component {
 	renderMarker() {
 		const { marker } = this.props;
 		return (
-			<Marker
-				position={marker.center}
-				clickable={!!marker.onClick}
-				onClick={marker.onClick && marker.onClick}
-				icon={{
-					url: marker.icon
-				}}
-			/>
+			<div role='button' tabIndex='-1' onClick={marker.onClick && marker.onClick} style={{ backgroundImage: `url(${marker.icon})` }} className={styles.centerMarker} />
 		);
 	}
 
@@ -56,7 +49,6 @@ class GoogleMap extends Component {
 		const {
 			google,
 			defaultCenter,
-			marker,
 			polygon,
 			onDragend,
 			centerMap
@@ -81,8 +73,8 @@ class GoogleMap extends Component {
 					onDragend={onDragend}
 				>
 					{polygon && this.renderPolygon()}
-					{marker && this.renderMarker()}
 				</Map>
+				{this.renderMarker()}
 			</div>
 		);
 	}
