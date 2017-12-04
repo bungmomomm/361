@@ -92,7 +92,7 @@ class Dropshipper extends Component {
 								placeholder={T.checkout.DROPSHIPPER_NAME}
 								validation={{
 									rules: 'required',
-									name: 'dropship name'
+									name: 'Nama_dropsipper'
 								}}
 								ref={(c) => { this.elDropshipName = c; }}
 								onChange={(event) => this.onChange(this.state.showForm, event.target.value, this.state.dropshipPhone)}
@@ -104,7 +104,7 @@ class Dropshipper extends Component {
 								placeholder={T.checkout.PHONE_NUMBER}
 								validation={{
 									rules: 'required|min:6|max:14',
-									name: 'dropship phone'
+									name: 'No._Telp'
 								}}
 								ref={(c) => { this.elDropshipPhone = c; }}
 								onChange={(event) => this.onChange(this.state.showForm, this.state.dropshipName, event.target.value)}
