@@ -33,7 +33,7 @@ export default class ModalChooseAddress extends Component {
 											inverted={isChecked}
 											data={[
 												{ 
-													label: isChecked ? T.checkout.MAIN_ADDRESS : T.checkout.USE_THIS_ADDRESS, 
+													label: address.label,
 													dataProps: { 
 														readOnly: true,
 														defaultChecked: isChecked

@@ -170,6 +170,7 @@ class stepOne extends Component {
 						<div>${value.attributes.district}</div>
 						<div>${value.attributes.city}</div>
 						<div>${value.attributes.province}</div>
+						<div>P: ${value.attributes.phone}</div>
 						`
 			})
 		));
