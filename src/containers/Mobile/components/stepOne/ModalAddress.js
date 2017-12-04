@@ -347,12 +347,11 @@ class ModalAddress extends Component {
 					<Input
 						label='No Handphone *'
 						placeholder='Contoh : 08123456789'
-						name='phone'	
-						min={0}
-						type='number'
+						name='phone'
+						type='text'
 						defaultValue={this.props.isEdit ? formData.attributes.phone : ''}
 						ref={(c) => { this.elPhone = c; }}
-						validation={{ rules: 'required|min:7|max:14', name: 'No_Handphone' }}
+						validation={{ rules: 'required|min:7|max:14|numeric', name: 'No_Handphone' }}
 					/>
 					{
 						typeof address.cityProv !== 'undefined' &&
@@ -387,17 +386,16 @@ class ModalAddress extends Component {
 						label='Kode Pos *'
 						placeholder='Contoh : 12345'
 						name='zipcode'
-						type='number'
-						min={0}
+						type='text'
 						defaultValue={this.props.isEdit ? formData.attributes.zipcode : ''}
 						ref={(c) => { this.elZipcode = c; }}
-						validation={{ rules: 'required|digits:5', name: 'Kode_Pos' }}
+						validation={{ rules: 'required|digits:5|numeric', name: 'Kode_Pos' }}
 					/>
 					<Textarea
 						label='Alamat *'
 						placeholder='Masukkan Alamat Lengkap'
 						name='address'
-						defaultValue={this.props.isEdit ? formData.attributes.address : ''}
+						defaultValue={this.props.isEdit ? formData.attributes.address : ' '}
 						ref={(c) => { this.elAddress = c; }}
 						validation={{ rules: 'required', name: 'Alamat' }}
 					>address</Textarea>
