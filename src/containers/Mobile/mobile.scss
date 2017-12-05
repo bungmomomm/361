@@ -18,6 +18,11 @@
 		@import '~mm-ui/dist/style';
 	}
 
+	body {
+		height: auto;
+	}
+
+
 	html {
 		touch-action: manipulation;
 	}
