@@ -33,7 +33,8 @@ class PaymentCreditCard extends Component {
 			cardValid: null,
 			fromRadio: false,
 			selectedCard: null,
-			cardList: this.props.payments.selectedPayment.paymentItems[0].cards
+			cardList: this.props.payments.selectedPayment.paymentItems[0].cards,
+			cvv: ''
 		};
 	}
 
@@ -88,11 +89,17 @@ class PaymentCreditCard extends Component {
 	onChangeCVV(e) {
 		this.ccvValue = e.target.value;
 		this.props.dispatch(new actions.changeCreditCardCvv(e.target.value));
+		this.setState({
+			cvv: this.ccvValue
+		});
 	}
 
 	onChangeCVVRadio(e) {
 		this.ccvValueRadio = e.target.value;
 		this.props.dispatch(new actions.changeCreditCardCvv(e.target.value));
+		this.setState({
+			cvv: this.ccvValueRadio
+		});
 	}
 
 	onSelectCard(event) {
@@ -110,6 +117,7 @@ class PaymentCreditCard extends Component {
 				selectedCard: event.value,
 				fromRadio: true
 			});
+			this.resetCVV();
 		} else {
 			this.props.dispatch(new actions.selectCreditCard(false));
 		}
@@ -134,16 +142,23 @@ class PaymentCreditCard extends Component {
 		}, 100);
 	}
 
+	resetCVV() {
+		this.setState({
+			cvv: ''
+		});
+	}
+
 	renderCVVForm() {
 		return (
 			<Row>
 				<Col grid={4}>
 					<Input
-						dataProps={{ minLength: 0, maxLength: 4 }}
+						dataProps={{ minLength: 0, maxLength: 4, value: this.state.cvv }}
 						type='password'
 						placeholder='cvv'
 						onChange={(e) => this.onChangeCVVRadio(e)}
 						validation={{ rules: 'required|min_value:1', name: 'cvv' }}
+						value={this.state.cvv}
 					/>
 				</Col>
 				<Col grid={4}><Sprites name='cvv' /></Col>
@@ -232,7 +247,7 @@ class PaymentCreditCard extends Component {
 							ref={(c) => { this.elYear = c; }}
 						/>
 						<Input
-							dataProps={{ minLength: 0, maxLength: 4 }}
+							dataProps={{ minLength: 0, maxLength: 4, value: this.state.cvv }}
 							type='password'
 							placeholder='cvv'
 							onChange={(e) => this.onChangeCVV(e)}
