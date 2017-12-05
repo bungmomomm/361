@@ -20,6 +20,8 @@ class PaymentInstallment extends Component {
 			installmentList: [],
 			validInstallmentBin: null
 		};
+		this.card = '';
+		this.bank = '';		
 		this.ccvValue = '';
 		this.tahun = [{ value: null, label: 'tahun' }];
 		this.cookies = this.props.cookies.get('user.token');
@@ -40,6 +42,7 @@ class PaymentInstallment extends Component {
 	}
 
 	onBankChange(bank) {
+		this.bank = bank.value;		
 		const { dispatch, payments } = this.props;
 		if (bank.value !== null) {
 			const selectedPaymentOption = new actions.getAvailabelPaymentSelection(payments.selectedPayment);
@@ -51,6 +54,10 @@ class PaymentInstallment extends Component {
 			});
 			dispatch(new actions.bankNameChange(this.cookies, bank, selectedPaymentOption));
 		}
+		this.checkValidInstallment({
+			valid: true,
+			ccNumber: this.card,
+		});
 	}
 
 	onTermChange(term) {
@@ -119,9 +126,10 @@ class PaymentInstallment extends Component {
 	}
 
 	checkValidInstallment(event) {
+		this.card = event.ccNumber || '';		
 		if (event.valid && event.valid !== null && event.ccNumber.length > 1) {
-			const { payments, blockContent } = this.props;
-			const bank = (!payments.selectedBank) ? 'mandiri' : payments.selectedBank.value.value;
+			const { blockContent } = this.props;
+			const bank = this.bank === '' ? 'mandiri' : this.bank.value;
 			const installmentBin = blockContent.filter(e => parseInt(e.id, 10) === 660)[0] || null;
 			if (typeof installmentBin === 'object') {
 				const installmentBinBank = JSON.parse(installmentBin.attributes.block)[`${bank.replace(' ', '_').toUpperCase()}`];
@@ -147,7 +155,8 @@ class PaymentInstallment extends Component {
 				this.elCreditCard.state.ccValid === 'green' &&
 				this.elMonthInstallment.state.selected !== null &&
 				this.elYearInstallment.state.selected !== null &&
-				this.ccvValue !== ''
+				this.ccvValue !== '' &&
+				this.state.validInstallmentBin
 			) {
 				this.props.enableButtonPayNow(true);
 			} else {
@@ -173,7 +182,7 @@ class PaymentInstallment extends Component {
 					block 
 					options={payments.selectedPayment.paymentItems[0].banks} 
 					onChange={(e) => this.onBankChange(e)} 
-					value={payments.selectedBank.value || ''} 
+					value={payments.selectedBank.value || ''}
 					ref={(c) => { this.elBank = c; }}
 				/>
 				{this.renderInstallmentList()}
