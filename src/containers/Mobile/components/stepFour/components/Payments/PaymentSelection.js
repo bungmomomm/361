@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { actions as paymentAction } from '@/state/Payment';
+import styles from '@/containers/Mobile/mobile.scss';
+import Tooltip from '../Tooltip';
 
-import { Radio, Level } from 'mm-ui';
+import { Radio, Level, Icon } from 'mm-ui';
 import _ from 'lodash';
 
 class PaymentSelection extends Component {
@@ -14,7 +16,6 @@ class PaymentSelection extends Component {
 			selectedPaymentOption: null
 		};
 		this.cookies = this.props.cookies.get('user.token');
-		console.log(this.props);
 	}
 
 	componentWillMount() {
@@ -57,7 +58,7 @@ class PaymentSelection extends Component {
 	showTooltip(content) {
 		let tooltip = '';
 		if (content.length) {
-			tooltip = content.join(' ');
+			tooltip = content.join('<br />');
 		}
 		this.setState({ tooltip });
 	}
@@ -87,9 +88,18 @@ class PaymentSelection extends Component {
 					</Level.Left>
 					<Level.Right >	
 						{option.settings.image && <img src={option.settings.image} alt={option.label} height='15px' />}
-						{option.settings.info && <span role='button' tabIndex='-1' onClick={() => this.showTooltip(option.settings.info)}>
-							{/* <Icon name='exclamation-circle' className={styles.tooltipButton} /> */}
+						{option.settings.info && <span className={styles.tooltipButton} role='button' tabIndex='-1' onClick={() => this.showTooltip(option.settings.info)}>
+							{<Icon name='exclamation-circle' />}
 						</span>}
+						{
+							this.state.tooltip && (
+								<Tooltip 
+									show 
+									content={this.state.tooltip} 
+									onClose={() => this.setState({ tooltip: '' })}
+								/>
+							)
+						}
 					</Level.Right>
 				</Level>
 			);

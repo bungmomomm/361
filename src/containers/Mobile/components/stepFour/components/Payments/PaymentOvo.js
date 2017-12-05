@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { actions } from '@/state/Payment';
 
-import { Icon, Radio, Checkbox, Level, Input, Button, Group } from 'mm-ui';
+import { Icon, Radio, Checkbox, Level, Input, Button, Group, Alert } from 'mm-ui';
 // import { T } from '@/data/translations';
 
 class PaymentOvo extends Component {
@@ -102,12 +102,23 @@ class PaymentOvo extends Component {
 
 	renderAddMore() {
 		return (
-			<Button
-				className='font-grey'
-				onClick={() => this.setDefaultOvo(false)}
-			>
-				<Icon name='plus-circle' /> Gunakan OVO Lain
-			</Button>
+			<div>
+				<Button
+					className='font-grey'
+					onClick={() => this.setDefaultOvo(false)}
+				>
+					<Icon name='plus-circle' /> Gunakan OVO Lain
+				</Button>
+				<Alert show color='yellow'>
+					<p>Info Pembayaran dengan Aplikasi OVO</p>
+					<ol>
+						<li>Pastikan Anda sudah login ke aplikasi OVO</li>
+						<li>Pembayaran dengan OVO akan kadaluarsa dalam 30 detik setelah Anda klik “Bayar Sekarang”</li>
+						<li>Buka notifikasi OVO untuk melakukan pembayaran</li>
+						<li>Pilih cara pembayaran dengan “OVO Cash” atau “OVO Point” atau kombinasi keduanya, kemudian klik “Bayar”</li>
+					</ol>
+				</Alert>
+			</div>
 		);
 	}
 
