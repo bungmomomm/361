@@ -357,7 +357,7 @@ class ModalAddress extends Component {
 						label='No Handphone *'
 						placeholder='Contoh : 08123456789'
 						name='phone'
-						type='text'
+						type='number'
 						defaultValue={this.props.isEdit ? formData.attributes.phone : ''}
 						ref={(c) => { this.elPhone = c; }}
 						validation={{ rules: 'required|min:7|max:14|numeric', name: 'No_Handphone' }}
