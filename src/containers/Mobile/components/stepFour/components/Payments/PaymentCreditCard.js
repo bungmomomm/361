@@ -226,6 +226,7 @@ class PaymentCreditCard extends Component {
 							color={!cardValid && cardValid !== null ? 'red' : ''}
 							sprites='payment-option' 
 							ref={(c) => { this.elCreditCard = c; }}
+							disableMaskInput
 							onChange={(e) => this.onCardNumberChange(e)} 
 							message={!cardValid && cardValid !== null ? T.checkout.INPUT_MATCHED_CART_NUMBER : ''}
 						/>
@@ -251,7 +252,7 @@ class PaymentCreditCard extends Component {
 							type='password'
 							placeholder='cvv'
 							onChange={(e) => this.onChangeCVV(e)}
-							validation={{ rules: 'required|min_value:1', name: 'cvv' }}
+							validation={{ rules: 'required|numeric|min_value:1', name: 'cvv' }}
 						/>
 						<div style={{ paddingRight: '30px' }} ><Sprites name='cvv' /></div>
 					</Group>

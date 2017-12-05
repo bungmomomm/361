@@ -88,7 +88,7 @@ class PaymentOvo extends Component {
 			<Input
 				dataProps={{ minLength: 0, maxLength: 30 }}
 				defaultValue={this.state.ovo.ovoPhonePayment || ''}
-				type='text'
+				type='number'
 				ref={(e) => { this.input = e; }}
 				placeholder={'Masukan No Hp yang terdaftar di OVO'}
 				onChange={(e) => this.onOvoPaymentNumberChange(e)}

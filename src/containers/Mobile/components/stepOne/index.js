@@ -36,10 +36,6 @@ class stepOne extends Component {
 		dispatch(new actions.getAddresses(token));
 	}
 
-	static fetchDataO2o(token, dispatch, provinceId) {
-		dispatch(new actions.getO2OList(token, provinceId));
-	}
-
 	static placeOrder(token, dispatch, selectedAddress, billing) {
 		dispatch(new cartActions.getPlaceOrderCart(token, selectedAddress, billing));
 	}
@@ -124,7 +120,9 @@ class stepOne extends Component {
 			if (nextProps.stepState.stepOne.activeTab === 1) {
 				selectedAddress = nextProps.stepState.stepOne.selectedAddressO2O;
 			}
-			this.onPlaceOrder(selectedAddress, nextProps.stepState.stepOne.dropshipper);
+			if (selectedAddress) {
+				this.onPlaceOrder(selectedAddress, nextProps.stepState.stepOne.dropshipper);
+			} 
 		}
 	}
 
