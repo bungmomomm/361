@@ -120,7 +120,11 @@ class stepOne extends Component {
 
 		if (this.props.cart && nextProps.cart && nextProps.cart.length < this.props.cart.length) {
 			// fetch data cart when delete item
-			this.onPlaceOrder(nextProps.stepState.stepOne.selectedAddress, nextProps.stepState.stepOne.dropshipper);
+			let selectedAddress = nextProps.stepState.stepOne.selectedAddress;
+			if (nextProps.stepState.stepOne.activeTab === 1) {
+				selectedAddress = nextProps.stepState.stepOne.selectedAddressO2O;
+			}
+			this.onPlaceOrder(selectedAddress, nextProps.stepState.stepOne.dropshipper);
 		}
 	}
 
@@ -168,8 +172,7 @@ class stepOne extends Component {
 				info:	`<p><strong>${value.attributes.fullname}</strong></p>
 						<div>${value.attributes.address}</div>
 						<div>${value.attributes.district}</div>
-						<div>${value.attributes.city}</div>
-						<div>${value.attributes.province}</div>
+						<div>${value.attributes.city}, ${value.attributes.province} ${value.attributes.zipcode}</div>
 						<div>P: ${value.attributes.phone}</div>
 						`
 			})
@@ -231,7 +234,8 @@ class stepOne extends Component {
 
 		// for o2o item only 
 		const o2oRestrictedCart = cart.filter((e) => {
-			return isPickupable === '0' && !e.store.shipping.o2oSupported && activeTab === 1;
+			const notSupportedProducts = e.store.products.filter(p => p.o2o_supported === '0');
+			return (isPickupable === '0' && !e.store.shipping.o2oSupported && activeTab === 1) || notSupportedProducts.length > 0;
 		});
 		const emptyShippingO2o = activeTab === 1 && !nextProps.stepState.stepOne.selectedAddressO2O;
 		const restriction = o2oRestrictedCart.length > 0 && activeTab === 1;
@@ -267,6 +271,7 @@ class stepOne extends Component {
 	}
 
 	afterChangeTab(event) {
+		// Event 0 = shipping, 1 = O2O
 		const { stepState } = this.props;
 		const checkoutState = {
 			...stepState,
@@ -276,7 +281,6 @@ class stepOne extends Component {
 			}
 		};
 		this.props.applyState(checkoutState);
-		// Event 0 = shipping, 1 = O2O
 		const selected = event > 0 ? this.state.selectedAddressO2O : this.state.selectedAddress;
 		if (typeof selected.id !== 'undefined') {
 			this.onPlaceOrder(selected);

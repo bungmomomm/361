@@ -130,7 +130,7 @@ class StepTwo extends Component {
 								}
 								<StoreBoxBody 
 									products={storeData.store.products}
-									isRestrictO2O={isRestrictO2O}
+									stepOneActiveTab={stepOne.activeTab}
 									onUpdateQty={(e, productId) => this.updateQty(e, productId)}
 									showBtnDelete={!(this.props.cart.length < 2 && storeData.store.products.length < 2)}
 								/>

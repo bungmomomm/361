@@ -118,6 +118,9 @@ class ModalAddress extends Component {
 						value
 					}
 				},
+				showMap: false,
+				formattedAddress: null,
+				mapMarkerCenter: null
 			});
 		}
 	}
