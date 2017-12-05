@@ -141,12 +141,12 @@ class ModalAddress extends Component {
 		}
 	}
 
-	setPinPoint(e) {
+	setPinPoint() {
 		if (this.state.isValidMarkerPosition) {
 			if (!this.state.formattedAddress) {
-				this.FormLongitude = e.position.lng;
-				this.FormLatitude = e.position.lat;
-				this.getPinPointAddress(e.position.lat, e.position.lng);
+				this.FormLongitude = this.state.mapMarkerCenter.lng;
+				this.FormLatitude = this.state.mapMarkerCenter.lat;
+				this.getPinPointAddress(this.FormLatitude, this.FormLongitude);
 			}
 			this.setState({ showMap: false });
 		}
@@ -156,14 +156,19 @@ class ModalAddress extends Component {
 		const { google } = this.props;
 		if (typeof e.geometry !== 'undefined') {
 			const latLng = new google.maps.LatLng(e.geometry.location.lat(), e.geometry.location.lng());
-			const polygonArea = new google.maps.Polygon({ paths: this.selectedPolygon.location_coords });
-			const isValidMarkerPosition = !!google.maps.geometry.poly.containsLocation(latLng, polygonArea);
+			const isValidMarkerPosition = this.isValidPosition(latLng);
 			this.setState({ 
 				isValidMarkerPosition,
 				mapMarkerCenter: e.geometry.location,
 				formattedAddress: e.formatted_address || this.state.formattedAddress
 			});
 		}
+	}
+
+	isValidPosition(e) {
+		const { google } = this.props;	
+		const polygonArea = new google.maps.Polygon({ paths: this.selectedPolygon.location_coords });
+		return !!google.maps.geometry.poly.containsLocation(e, polygonArea);
 	}
 
 	translateProvince(formDataAttributes) {
@@ -231,8 +236,9 @@ class ModalAddress extends Component {
 	mapMoved(mapProps, map) {
 		this.FormLatitude = map.getCenter().lat();
 		this.FormLongitude = map.getCenter().lng();
-		this.getPinPointAddress(this.FormLatitude, this.FormLongitude);
+		const isValidMarkerPosition = this.isValidPosition(map.center);
 		this.setState({ 
+			isValidMarkerPosition,
 			mapMarkerCenter: {
 				lat: this.FormLatitude, 
 				lng: this.FormLongitude
