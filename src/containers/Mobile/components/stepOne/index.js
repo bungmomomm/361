@@ -227,7 +227,7 @@ class stepOne extends Component {
 			return e.store.products[0].fgLocation === '1';
 		});
 		const emptyShipping = activeTab === 0 && !selectedAddress.id;
-		const notAlowedShipping = (jabotabekRestrictedCart.length > 0 && selectedAddress.attributes.isJabodetabekArea === '0') || emptyShipping;
+		const notAlowedShipping = (activeTab === 0 && jabotabekRestrictedCart.length > 0 && selectedAddress.attributes.isJabodetabekArea === '0') || emptyShipping;
 
 		// for o2o item only 
 		const o2oRestrictedCart = cart.filter((e) => {
@@ -235,7 +235,7 @@ class stepOne extends Component {
 		});
 		const emptyShippingO2o = activeTab === 1 && !nextProps.stepState.stepOne.selectedAddressO2O;
 		const restriction = o2oRestrictedCart.length > 0 && activeTab === 1;
-		const notAllowedO2o = (isPickupable === '0' && restriction) || emptyShippingO2o;
+		const notAllowedO2o = (activeTab === 1 && isPickupable === '0' && restriction) || emptyShippingO2o;
 
 		// set disabled payment
 		const checkoutState = {

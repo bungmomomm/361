@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { actions } from '@/state/Payment';
 
-import { Icon, Radio, Checkbox, Level, Input } from 'mm-ui';
+import { Icon, Radio, Checkbox, Level, Input, Button, Group } from 'mm-ui';
 // import { T } from '@/data/translations';
 
 class PaymentOvo extends Component {
@@ -19,6 +19,7 @@ class PaymentOvo extends Component {
 				autoLinkage: true,
 			},
 		};
+		this.input = '';
 		this.cookies = this.props.cookies.get('user.token');
 	}
 
@@ -40,23 +41,14 @@ class PaymentOvo extends Component {
 	}
 
 	onOvoPaymentNumberChange(event) {
-		const ovo = this.state.ovo;
-		const ovoPhonePayment = event.target.value;
-		const regexPhone = /^[0-9]{5,30}/;
-		let ovoPhonePaymentValid;
-		if (regexPhone.test(ovoPhonePayment)) {
-			ovoPhonePaymentValid = true;
-		} else {
-			ovoPhonePaymentValid = false;
-		}
 		this.setState({
 			ovo: {
-				...ovo,
-				ovoPhonePayment,
-				ovoPhonePaymentValid,
+				...this.state.ovo,
+				ovoPhonePayment: event.target.value,
+				ovoPhonePaymentValid: this.input.validation.checkValid(event.target.value)
 			}
 		});
-		this.props.dispatch(new actions.changeOvoPaymentNumber(ovoPhonePayment));		
+		this.props.dispatch(new actions.changeOvoPaymentNumber(event.target.value));		
 		this.validateOvoForm();
 	}
 
@@ -78,10 +70,7 @@ class PaymentOvo extends Component {
 
 	validateOvoForm() {
 		setTimeout(() => {
-			const validOvo = this.isOvoPayment ? this.state.ovo.ovoPhonePaymentValid : true;
-			if (
-				validOvo
-			) {
+			if (this.isOvoPayment ? this.state.ovo.ovoPhonePaymentValid : true) {
 				this.props.enableButtonPayNow(true);
 			} else {
 				this.props.enableButtonPayNow(false);
@@ -94,36 +83,44 @@ class PaymentOvo extends Component {
 		this.props.autoLinkage(!this.state.ovo.autoLinkage);
 	}
 
-	render() {
-		const { payments } = this.props;
-		const ovoPaymentInput = (
+	renderPaymentInput() {
+		return (
 			<Input
 				dataProps={{ minLength: 0, maxLength: 30 }}
-				defaultValue={this.state.ovo.ovoPhonePayment}
-				type='number'
+				defaultValue={this.state.ovo.ovoPhonePayment || ''}
+				type='text'
+				ref={(e) => { this.input = e; }}
 				placeholder={'Masukan No Hp yang terdaftar di OVO'}
 				onChange={(e) => this.onOvoPaymentNumberChange(e)}
+				validation={{ rules: 'required|min:5|max:30|numeric', name: 'Phone_Number' }}
+				color={this.state.ovo.ovoPhonePaymentValid ? 'green' : null}
+				icon={this.state.ovo.ovoPhonePaymentValid ? 'check' : null}
+				message={this.state.ovo.ovoPhonePaymentValid ? 'Poin OVO akan ditambahkan di no ini' : ''}
 			/>
 		);
+	}
 
-		const ovoDefault = ([this.state.ovo.useDefault ?
-			<div 
-				role='button'
-				tabIndex={-1}
+	renderAddMore() {
+		return (
+			<Button
 				className='font-grey'
-				onClick={() => this.setDefaultOvo(false)} 
+				onClick={() => this.setDefaultOvo(false)}
 			>
 				<Icon name='plus-circle' /> Gunakan OVO Lain
-			</div>
-		: ovoPaymentInput]);
+			</Button>
+		);
+	}
 
+	render() {
+		const { payments } = this.props;
 		return (
-			<div>
+			<Group>
 				{
 					(payments.ovoInfo && parseInt(payments.ovoInfo.ovoFlag, 10) === 1) ?
 						<div>
 							<Radio 
 								inputStyle='blocklist' 
+								block
 								data={[{
 									label: (
 										<Level>
@@ -142,15 +139,17 @@ class PaymentOvo extends Component {
 									}
 								}]} 
 							/>
-							{ovoDefault}
+							{this.state.ovo.useDefault ? this.renderAddMore() : this.renderPaymentInput()}
 						</div>
 					:
 						<div>
-							{ovoPaymentInput}
-							<Checkbox defaultChecked={this.state.ovo.autoLinkage} onClick={(e) => this.autoLinkage(e)}>Simpan untuk transaksi berikutnya & otomatis terhubung ke akun OVO</Checkbox>
+							{this.renderPaymentInput()}
+							<Checkbox defaultChecked={this.state.ovo.autoLinkage} onClick={(e) => this.autoLinkage(e)}>
+								Simpan untuk transaksi berikutnya & otomatis terhubung ke akun OVO
+							</Checkbox>
 						</div>
 				}
-			</div>
+			</Group>
 		);
 	}
 };

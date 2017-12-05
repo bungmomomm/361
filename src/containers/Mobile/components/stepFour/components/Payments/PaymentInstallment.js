@@ -173,7 +173,7 @@ class PaymentInstallment extends Component {
 					block 
 					options={payments.selectedPayment.paymentItems[0].banks} 
 					onChange={(e) => this.onBankChange(e)} 
-					value={payments.selectedBank.value} 
+					value={payments.selectedBank.value || ''} 
 					ref={(c) => { this.elBank = c; }}
 				/>
 				{this.renderInstallmentList()}
