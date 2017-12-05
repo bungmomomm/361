@@ -83,7 +83,7 @@ class PaymentSelection extends Component {
 				<Level key={index}>
 					<Level.Left>
 						{option.label}
-						{option.disabled && <div className='font-red'>{option.disableMessage}</div>}
+						{option.disabled && <div style={{ fontSize: '10px' }} className='font-red'>{option.disableMessage}</div>}
 					</Level.Left>
 					<Level.Right >	
 						{option.settings.image && <img src={option.settings.image} alt={option.label} height='15px' />}
@@ -104,7 +104,7 @@ class PaymentSelection extends Component {
 			});
 		});
 		return (
-			<Radio inputStyle='blocklist' data={listPayment} />
+			<Radio block inputStyle='blocklist' size='large' data={listPayment} />
 		);
 	}
 };
