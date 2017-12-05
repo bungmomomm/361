@@ -8,7 +8,7 @@ import {
 import styles from './StoreBoxBody.scss';
 import { T } from '@/data/translations';
 
-const StoreBoxBody = ({ products, onUpdateQty, showBtnDelete, isRestrictO2O }) => {
+const StoreBoxBody = ({ products, onUpdateQty, showBtnDelete, stepOneActiveTab }) => {
 	return (
 		<div>
 			{
@@ -45,7 +45,7 @@ const StoreBoxBody = ({ products, onUpdateQty, showBtnDelete, isRestrictO2O }) =
 							</Level.Item>
 						</Level>
 						{
-							(product.o2o_supported === '0' && isRestrictO2O) && <div className='font-red' style={{ marginTop: '15px' }}>{T.checkout.O2O_PRODUCT_NOT_SUPPORT}</div>
+							(product.o2o_supported === '0' && stepOneActiveTab > 0) && <div className='font-red' style={{ marginTop: '15px' }}>{T.checkout.O2O_PRODUCT_NOT_SUPPORT}</div>
 						}
 					</div>
 				))

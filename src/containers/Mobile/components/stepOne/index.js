@@ -234,7 +234,8 @@ class stepOne extends Component {
 
 		// for o2o item only 
 		const o2oRestrictedCart = cart.filter((e) => {
-			return isPickupable === '0' && !e.store.shipping.o2oSupported && activeTab === 1;
+			const notSupportedProducts = e.store.products.filter(p => p.o2o_supported === '0');
+			return (isPickupable === '0' && !e.store.shipping.o2oSupported && activeTab === 1) || notSupportedProducts.length > 0;
 		});
 		const emptyShippingO2o = activeTab === 1 && !nextProps.stepState.stepOne.selectedAddressO2O;
 		const restriction = o2oRestrictedCart.length > 0 && activeTab === 1;
