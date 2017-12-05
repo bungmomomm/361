@@ -54,10 +54,7 @@ class PaymentInstallment extends Component {
 			});
 			dispatch(new actions.bankNameChange(this.cookies, bank, selectedPaymentOption));
 		}
-		this.checkValidInstallment({
-			valid: true,
-			ccNumber: this.card,
-		});
+		this.checkValidInstallment(this.card);
 	}
 
 	onTermChange(term) {
@@ -126,7 +123,7 @@ class PaymentInstallment extends Component {
 	}
 
 	checkValidInstallment(event) {
-		this.card = event.ccNumber || '';		
+		this.card = event || '';		
 		if (event.valid && event.valid !== null && event.ccNumber.length > 1) {
 			const { blockContent } = this.props;
 			const bank = this.bank === '' ? 'mandiri' : this.bank.value;
@@ -182,7 +179,7 @@ class PaymentInstallment extends Component {
 					block 
 					options={payments.selectedPayment.paymentItems[0].banks} 
 					onChange={(e) => this.onBankChange(e)} 
-					value={payments.selectedBank.value || ''}
+					defaultValue={payments.selectedBank.value || ''}
 					ref={(c) => { this.elBank = c; }}
 				/>
 				{this.renderInstallmentList()}
