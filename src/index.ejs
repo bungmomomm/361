@@ -17,7 +17,7 @@
     <head>
         <!-- we're looking for more people to join at MatahariMall.com. Interested? https://www.mataharimall.com/static/4/karir -->
         <meta name="google-site-verification" content="bVdL10GtDccBSiuntKghg8GHQ85nozeqhdYrCB4tPHg" />
-        <link rel="manifest" href="https://assets.mataharimall.co/manifest.json" />
+        <link rel="manifest" href="./assets/manifest/manifest.json" />
         <meta name="robots" content="NOINDEX, NOFOLLOW, NOODP, NOYDIR">
         <% if (params.helmet.title) { %><title><%= params.helmet.title.toString() %></title><% } %>
         <% if (params.helmet.meta) { %><meta name="description" content="<%= params.helmet.meta.toString() %>" /><% } %>
@@ -86,7 +86,7 @@
             <script src="<%= params.manifest['vendors.js'] %>"></script>
             <script src="<%= params.manifest['main.js'] %>"></script>
         <% } %>
-
+        <script src="./service-worker.js"></script>
     </body>
     <script type="text/javascript">
         function confirmExit() {

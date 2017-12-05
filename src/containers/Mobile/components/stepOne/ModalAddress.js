@@ -206,7 +206,6 @@ class ModalAddress extends Component {
 		const elZipcode = this.elZipcode.validation.checkValid();
 		const elProvince = this.elProvince && this.elProvince.validation.checkValid();
 		const elDistrict = this.elDistrict && this.elDistrict.validation.checkValid();
-		console.log(elZipcode);
 		if (elAddressLabel && elFullname && elPhone && elAddress && elZipcode && elProvince && elDistrict) {
 			const formData = {
 				id: this.props.isEdit && this.props.formData.id,

@@ -53,7 +53,7 @@ new Express()
 	})
 
 	.get('*', (req, res) => {
-
+		console.log(req);
 		/**
 		 * Create empty Redux initial state
 		 */
