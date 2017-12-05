@@ -124,7 +124,9 @@ class stepOne extends Component {
 			if (nextProps.stepState.stepOne.activeTab === 1) {
 				selectedAddress = nextProps.stepState.stepOne.selectedAddressO2O;
 			}
-			this.onPlaceOrder(selectedAddress, nextProps.stepState.stepOne.dropshipper);
+			if (selectedAddress) {
+				this.onPlaceOrder(selectedAddress, nextProps.stepState.stepOne.dropshipper);
+			} 
 		}
 	}
 
