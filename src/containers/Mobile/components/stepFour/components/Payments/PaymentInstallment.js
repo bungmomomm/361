@@ -211,7 +211,7 @@ class PaymentInstallment extends Component {
 						type='password'
 						placeholder='cvv'
 						onChange={(e) => this.onChangeCVV(e)}
-						validation={{ rules: 'required|min_value:1', name: 'cvv' }}
+						validation={{ rules: 'required|numeric|min_value:1', name: 'cvv' }}
 						ref={(c) => { this.elCvvInstallment = c; }}
 					/>
 					<div style={{ paddingRight: '30px' }} ><Sprites name='cvv' /></div>
