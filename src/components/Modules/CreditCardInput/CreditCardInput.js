@@ -158,6 +158,7 @@ export default class CreditCardInput extends Component {
 				size={20}
 				value={value}
 				maxLength='16'
+				type='number'
 				onChange={this.onChange}
 			/>
 		);
