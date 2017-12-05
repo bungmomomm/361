@@ -120,7 +120,11 @@ class stepOne extends Component {
 
 		if (this.props.cart && nextProps.cart && nextProps.cart.length < this.props.cart.length) {
 			// fetch data cart when delete item
-			this.onPlaceOrder(nextProps.stepState.stepOne.selectedAddress, nextProps.stepState.stepOne.dropshipper);
+			let selectedAddress = nextProps.stepState.stepOne.selectedAddress;
+			if (nextProps.stepState.stepOne.activeTab === 1) {
+				selectedAddress = nextProps.stepState.stepOne.selectedAddressO2O;
+			}
+			this.onPlaceOrder(selectedAddress, nextProps.stepState.stepOne.dropshipper);
 		}
 	}
 
@@ -266,6 +270,7 @@ class stepOne extends Component {
 	}
 
 	afterChangeTab(event) {
+		// Event 0 = shipping, 1 = O2O
 		const { stepState } = this.props;
 		const checkoutState = {
 			...stepState,
@@ -275,7 +280,6 @@ class stepOne extends Component {
 			}
 		};
 		this.props.applyState(checkoutState);
-		// Event 0 = shipping, 1 = O2O
 		const selected = event > 0 ? this.state.selectedAddressO2O : this.state.selectedAddress;
 		if (typeof selected.id !== 'undefined') {
 			this.onPlaceOrder(selected);
