@@ -104,17 +104,17 @@ class PaymentCreditCard extends Component {
 
 	onSelectCard(event) {
 		this.setState({ fromRadio: false });
-		if (event.value !== null) {
-			this.props.dispatch(new actions.selectCreditCard(event.value));
+		if (event !== null) {
+			this.props.dispatch(new actions.selectCreditCard(event));
 			const selectedPaymentOption = new actions.getAvailabelPaymentSelection(this.props.payments.selectedPayment);
-			this.props.dispatch(new actions.applyBin(this.cookies, selectedPaymentOption.value, event.value, ''));
+			this.props.dispatch(new actions.applyBin(this.cookies, selectedPaymentOption.value, event, ''));
 			this.setState({
 				appliedBin: {
 					selectedPaymentOption,
-					cardNumber: event.value,
+					cardNumber: event,
 					bankName: ''
 				},
-				selectedCard: event.value,
+				selectedCard: event,
 				fromRadio: true
 			});
 			this.resetCVV();
@@ -178,7 +178,7 @@ class PaymentCreditCard extends Component {
 								variant='list'
 								value={card.value}
 								content={card.label}
-								defaultChecked={card.selected}
+								checked={card.selected}
 								sprites={card.sprites}
 								onClick={(e) => this.onSelectCard(e)}
 								ref={(e) => { this.creditCardRadio = e; }}

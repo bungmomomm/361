@@ -190,8 +190,10 @@ export default (state = initialState, action) => {
 					}
 					state.paymentMethod = item.paymentMethod;
 				} else {
+					card.selected = false;
 					state.selectedPaymentOption = false;
-					state.selectedCard = false;
+					state.selectedCard = null;
+					state.paymentMethod = null;
 				}
 				return card;
 			});
