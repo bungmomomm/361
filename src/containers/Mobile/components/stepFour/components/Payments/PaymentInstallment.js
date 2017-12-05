@@ -2,13 +2,15 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { actions } from '@/state/Payment';
+import styles from '@/containers/Mobile/mobile.scss';
+import Tooltip from '../Tooltip';
 
 // component load
 import {
 	CreditCardInput,
 	Sprites
 } from '@/components';
-import { Group, Select, Input } from 'mm-ui';
+import { Group, Select, Input, Icon, Level } from 'mm-ui';
 import { Bulan } from '@/data';
 import { T } from '@/data/translations';
 
@@ -18,7 +20,8 @@ class PaymentInstallment extends Component {
 		this.props = props;
 		this.state = {
 			installmentList: [],
-			validInstallmentBin: null
+			validInstallmentBin: null,
+			tooltip: ''
 		};
 		this.card = '';
 		this.bank = '';		
@@ -122,6 +125,14 @@ class PaymentInstallment extends Component {
 		this.setState({ installmentList });
 	}
 
+	showTooltip(content) {
+		let tooltip = '';
+		if (content.length) {
+			tooltip = content.join('<br />');
+		}
+		this.setState({ tooltip });
+	}
+
 	checkValidInstallment(event) {
 		this.card = event || '';		
 		if (event.valid && event.valid !== null && event.ccNumber.length > 1) {
@@ -173,8 +184,35 @@ class PaymentInstallment extends Component {
 	render() {
 		const { payments, dispatch } = this.props;
 		const { validInstallmentBin } = this.state;
+		const installmentTooltip = [`<p>Syarat dan Ketentuan Cicilan 0% Regular:</p>
+									<ul>
+										<li>Cicilan tenor 3 bulan dengan minimum transaksi Rp990.000
+										(sembilan ratus sembilan puluh ribu rupiah)</li>
+										<li>Cicilan tenor 6 bulan dengan minimum transaksi Rp1.500.000
+										(satu juta lima ratus ribu rupiah)</li>
+										<li>Cicilan tenor 12 bulan dengan minimum transaksi Rp2.000.000
+										(dua juta rupiah)</li>
+									</ul>`];
 		return (
 			<Group>
+				<Level>
+					<Level.Left>&nbsp;</Level.Left>
+					<Level.Right>
+						<span className={styles.tooltipButton} role='button' tabIndex='-1' onClick={() => this.showTooltip(installmentTooltip)}>
+							{<Icon name='exclamation-circle' />}
+						</span>
+						{
+							this.state.tooltip && (
+								<Tooltip 
+									show 
+									content={this.state.tooltip} 
+									onClose={() => this.setState({ tooltip: '' })}
+								/>
+							)
+						}
+					</Level.Right>
+				</Level>
+				
 				<Select 
 					block 
 					options={payments.selectedPayment.paymentItems[0].banks} 
