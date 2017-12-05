@@ -168,8 +168,7 @@ class stepOne extends Component {
 				info:	`<p><strong>${value.attributes.fullname}</strong></p>
 						<div>${value.attributes.address}</div>
 						<div>${value.attributes.district}</div>
-						<div>${value.attributes.city}</div>
-						<div>${value.attributes.province}</div>
+						<div>${value.attributes.city}, ${value.attributes.province} ${value.attributes.zipcode}</div>
 						<div>P: ${value.attributes.phone}</div>
 						`
 			})
