@@ -36,10 +36,6 @@ class stepOne extends Component {
 		dispatch(new actions.getAddresses(token));
 	}
 
-	static fetchDataO2o(token, dispatch, provinceId) {
-		dispatch(new actions.getO2OList(token, provinceId));
-	}
-
 	static placeOrder(token, dispatch, selectedAddress, billing) {
 		dispatch(new cartActions.getPlaceOrderCart(token, selectedAddress, billing));
 	}

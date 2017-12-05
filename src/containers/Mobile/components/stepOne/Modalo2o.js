@@ -18,7 +18,7 @@ class Modalo2o extends Component {
 	}
 
 	static fetchDataO2OList(token, dispatch, provinceId) {
-		dispatch(new actions.getO2OList(token, provinceId));
+		dispatch(new actions.getO2OList(token, 1000, provinceId));
 	}
 
 	constructor(props) {
