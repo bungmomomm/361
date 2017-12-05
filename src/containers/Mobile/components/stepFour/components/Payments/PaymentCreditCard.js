@@ -226,6 +226,7 @@ class PaymentCreditCard extends Component {
 							color={!cardValid && cardValid !== null ? 'red' : ''}
 							sprites='payment-option' 
 							ref={(c) => { this.elCreditCard = c; }}
+							disableMaskInput
 							onChange={(e) => this.onCardNumberChange(e)} 
 							message={!cardValid && cardValid !== null ? T.checkout.INPUT_MATCHED_CART_NUMBER : ''}
 						/>
