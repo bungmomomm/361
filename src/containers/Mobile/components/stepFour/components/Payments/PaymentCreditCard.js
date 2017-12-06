@@ -157,7 +157,7 @@ class PaymentCreditCard extends Component {
 						type='password'
 						placeholder='cvv'
 						onChange={(e) => this.onChangeCVVRadio(e)}
-						validation={{ rules: 'required|min_value:1', name: 'cvv' }}
+						validation={{ rules: 'required|numeric|min_value:1', name: 'cvv' }}
 						value={this.state.cvv}
 					/>
 				</Col>
