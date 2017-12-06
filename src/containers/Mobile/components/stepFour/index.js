@@ -725,7 +725,9 @@ class StepFour extends Component {
 					/>
 					{payments.selectedPayment && this.renderSwitchPaymentElement()}
 					<Input
-						value={payments.billingPhoneNumber || '0'}
+						dataProps={{
+							value: payments.billingPhoneNumber || ''
+						}}
 						label={T.checkout.PHONE_NUMBER_O2O_CONFIRMATION}
 						min={0}
 						type='number'

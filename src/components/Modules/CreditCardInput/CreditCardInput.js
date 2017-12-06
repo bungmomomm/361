@@ -150,23 +150,24 @@ export default class CreditCardInput extends Component {
 			/>
 		);
 
-		const inputClassDefault = (
-			<input
-				className={inputClass}
-				placeholder={placeholder}
-				name='card'
-				size={20}
-				value={value}
-				maxLength='16'
-				onChange={this.onChange}
-			/>
-		);
+		// const inputClassDefault = (
+		// 	<input
+		// 		className={inputClass}
+		// 		placeholder={placeholder}
+		// 		name='card'
+		// 		value={value}
+		// 		type='number'
+		// 		min='0'
+		// 		max='16'
+		// 		onChange={this.onChange}
+		// 	/>
+		// );
 		
 		return (
 			<div className={inputWrapper}>
 				{LabelElement} 
 				<div className={inputCreditCardClass}>
-					{this.props.disableMaskInput ? inputClassDefault : InputElement} 
+					{this.props.disableMaskInput ? InputElement : InputElement} 
 					{MessageElement}
 					{SpritesElement}
 				</div>

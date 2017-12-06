@@ -65,6 +65,7 @@ class stepOne extends Component {
 		};
 		this.currentAddresses = [];
 		this.cookies = this.props.cookies.get('user.token');
+		this.tabIndex = 0;
 		
 	}
 
@@ -155,7 +156,7 @@ class stepOne extends Component {
 	setBillingNumber(address) {
 		const { payments, dispatch } = this.props;
 		if (payments && !payments.billingPhoneNumberEdited) {
-			const billing = this.props.stepState.stepOne.activeTab < 1 ? address.attributes.phone : '';
+			const billing = this.tabIndex < 1 ? address.attributes.phone : '';
 			dispatch(new paymentActions.changeBillingNumber(billing));
 		}
 	}
@@ -270,6 +271,7 @@ class stepOne extends Component {
 
 	afterChangeTab(event) {
 		// Event 0 = shipping, 1 = O2O
+		this.tabIndex = event;		
 		const { stepState } = this.props;
 		const checkoutState = {
 			...stepState,

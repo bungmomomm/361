@@ -395,7 +395,7 @@ class ModalAddress extends Component {
 						label='Kode Pos *'
 						placeholder='Contoh : 12345'
 						name='zipcode'
-						type='text'
+						type='number'
 						defaultValue={this.props.isEdit ? formData.attributes.zipcode : ''}
 						ref={(c) => { this.elZipcode = c; }}
 						validation={{ rules: 'required|digits:5|numeric', name: 'Kode_Pos' }}

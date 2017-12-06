@@ -17,12 +17,12 @@
     <head>
         <!-- we're looking for more people to join at MatahariMall.com. Interested? https://www.mataharimall.com/static/4/karir -->
         <meta name="google-site-verification" content="bVdL10GtDccBSiuntKghg8GHQ85nozeqhdYrCB4tPHg" />
-        <link rel="manifest" href="https://assets.mataharimall.co/manifest.json" />
+        <link rel="manifest" href="./assets/manifest/manifest.json" />
         <meta name="robots" content="NOINDEX, NOFOLLOW, NOODP, NOYDIR">
         <% if (params.helmet.title) { %><title><%= params.helmet.title.toString() %></title><% } %>
         <% if (params.helmet.meta) { %><meta name="description" content="<%= params.helmet.meta.toString() %>" /><% } %>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="viewport" content="width=device-width" />
         <meta name="theme-color" content="#DA1818" id="themeColor" />
         <meta name="full-screen" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -86,7 +86,7 @@
             <script src="<%= params.manifest['vendors.js'] %>"></script>
             <script src="<%= params.manifest['main.js'] %>"></script>
         <% } %>
-
+        <script src="./service-worker.js"></script>
     </body>
     <script type="text/javascript">
         function confirmExit() {

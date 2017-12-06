@@ -17,8 +17,8 @@ class Modalo2o extends Component {
 		dispatch(new actions.getO2OProvinces(token));
 	}
 
-	static fetchDataO2OList(token, dispatch, provinceId) {
-		dispatch(new actions.getO2OList(token, 1000, provinceId));
+	static fetchDataO2OList(token, dispatch, provinceId, query = null) {
+		dispatch(new actions.getO2OList(token, 1000, provinceId, query));
 	}
 
 	constructor(props) {
@@ -71,6 +71,9 @@ class Modalo2o extends Component {
 		}).filter((item) => {
 			return item;
 		});
+		if (listo2o.length < 1) {
+			this.constructor.fetchDataO2OList(this.cookies, this.props.dispatch, 6, filter);
+		}
 		this.setState({
 			listo2o
 		});
@@ -99,7 +102,7 @@ class Modalo2o extends Component {
 				</Modal.Header>
 				<Modal.Body>
 					{
-						this.state.listo2o && this.state.listo2o.map((address, index) => {
+						this.state.listo2o && this.state.listo2o.filter(e => e.type === 'pickup_location').map((address, index) => {
 							const isChecked = this.props.selectedAddressO2O && this.props.selectedAddressO2O.id === address.id;
 							return (
 								<Panel 
