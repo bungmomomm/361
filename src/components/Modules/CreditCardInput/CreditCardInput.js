@@ -145,6 +145,7 @@ export default class CreditCardInput extends Component {
 				mask='1111 1111 1111 1111' 
 				name='card'
 				size={20}
+				type='tel'
 				value={value}
 				onChange={this.onChange}
 			/>

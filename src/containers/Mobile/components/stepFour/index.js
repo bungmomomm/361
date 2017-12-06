@@ -738,7 +738,7 @@ class StepFour extends Component {
 						this.checkShowingOvoPhone() && payments.ovoPhoneNumber !== null &&
 						<Input 
 							state={ovoReadOnly ? 'disabled' : ''} 
-							color={ovoReadOnly ? 'green' : null} 
+							color={ovoReadOnly ? 'purple' : null} 
 							icon={ovoReadOnly ? 'check' : null} 
 							defaultValue={payments.ovoPhoneNumber}
 							label={T.checkout.OVO_PHONE_LABEL} 
