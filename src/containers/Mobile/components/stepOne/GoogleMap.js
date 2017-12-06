@@ -11,10 +11,10 @@ class GoogleMap extends Component {
 	}
 
 	autoComplete(event) {
-		const { google, map } = this.props;
+		const { google } = this.props;
 		if (!this.renderAutoComplete) {
 			this.renderAutoComplete = true;
-			if (google || map) {
+			if (google) {
 				this.autocomplete = new google.maps.places.Autocomplete(event.target);
 				this.autocomplete.addListener('place_changed', () => {
 					this.props.onChangeAutoComplete(this.autocomplete.getPlace());

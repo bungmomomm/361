@@ -101,6 +101,7 @@ class ModalAddress extends Component {
 				},
 				showMap: false,
 				formattedAddress: null,
+				TempFormattedAddress: null,
 				mapMarkerCenter: null
 			});
 			this.constructor.fetchGetDistric(this.cookies, value, this.props.dispatch);
@@ -144,11 +145,16 @@ class ModalAddress extends Component {
 		}
 	}
 
-	setPinPoint() {
+	setPinPoint(e) {
 		if (this.state.isValidMarkerPosition) {
 			if (!this.state.formattedAddress) {
-				this.FormLongitude = this.state.mapMarkerCenter.lng;
-				this.FormLatitude = this.state.mapMarkerCenter.lat;
+				if (this.state.mapMarkerCenter === null) {
+					this.FormLongitude = this.selectedPolygon.center.lng;
+					this.FormLatitude = this.selectedPolygon.center.lat;
+				} else {
+					this.FormLongitude = this.state.mapMarkerCenter.lng;
+					this.FormLatitude = this.state.mapMarkerCenter.lat;
+				}
 				this.getPinPointAddress(this.FormLatitude, this.FormLongitude);
 			}
 			this.setState({ showMap: false });
@@ -251,6 +257,7 @@ class ModalAddress extends Component {
 
 	centerMap() {
 		const { mapMarkerCenter } = this.state;
+		console.log(mapMarkerCenter);
 		if (mapMarkerCenter && mapMarkerCenter.lat !== '' && mapMarkerCenter.lng !== '') {
 			return mapMarkerCenter;	
 		}
@@ -321,7 +328,7 @@ class ModalAddress extends Component {
 		const {
 			address,
 			open,
-			formData,
+			formData
 		} = this.props;
 
 		if (this.props.isEdit && !formData) return null;
