@@ -53,7 +53,7 @@ class PaymentSelection extends Component {
 				selectedPaymentItem 
 			});
 		}
-	}	
+	}
 
 	showTooltip(content) {
 		let tooltip = '';
@@ -92,8 +92,9 @@ class PaymentSelection extends Component {
 							{<Icon name='exclamation-circle' />}
 						</span>}
 						{
-							this.state.tooltip && (
-								<Tooltip 
+							this.state.tooltip && this.state.selectedPaymentOption === option && (
+								<Tooltip
+									id={option.uniqueConstant} 
 									show 
 									content={this.state.tooltip} 
 									onClose={() => this.setState({ tooltip: '' })}
@@ -106,7 +107,7 @@ class PaymentSelection extends Component {
 			return listPayment.push({
 				label: RadioLabel, 
 				dataProps: { 
-					name: `payment-${payments.selectedPayment.value}`, 
+					name: `payment-${option.uniqueConstant}`, 
 					onChange: () => this.onSelectedPaymentItem(option),
 					disabled: option.disabled,
 					checked: this.state.selectedPaymentOption === option || false
