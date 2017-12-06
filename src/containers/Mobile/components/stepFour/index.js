@@ -733,14 +733,17 @@ class StepFour extends Component {
 						onChange={(e) => this.paymentMethodChange(e)}
 						defaultValue={payments.selectedPayment ? payments.selectedPayment.id : null}
 					/>
-					<Level>
-						<Level.Left>&nbsp;</Level.Left>
-						<Level.Right>
-							{payments.selectedPaymentOption && payments.selectedPaymentOption.settings.info && <span className={styles.tooltipButton} role='button' tabIndex='-1' onClick={() => this.showTooltip(payments.selectedPaymentOption.settings.info)}>
-								{<Icon name='exclamation-circle' />}
-							</span>}
-						</Level.Right>
-					</Level>
+					{payments.selectedPaymentOption && payments.selectedPaymentOption.paymentMethod === 'commerce_cod' && 
+						<Level>
+							<Level.Left>&nbsp;</Level.Left>
+							<Level.Right>
+								{payments.selectedPaymentOption && payments.selectedPaymentOption.settings.info && <span className={styles.tooltipButton} role='button' tabIndex='-1' onClick={() => this.showTooltip(payments.selectedPaymentOption.settings.info)}>
+									{<Icon name='exclamation-circle' />}
+								</span>}
+							</Level.Right>
+						</Level>
+					}
+					
 					
 					{payments.selectedPayment && this.renderSwitchPaymentElement()}
 					<Input
