@@ -11,9 +11,9 @@ export default class Vt3dsModalBox extends Component {
     
 	render() {
 		return (
-			<Modal size='small' className='text-center' show={this.props.show} onCloseRequest={(e) => this.props.onClose(e)} >
-				<Modal.Body>
-					<iframe title='vtToken' src={this.props.src} frameBorder={0} height={300} width='100%' />
+			<Modal size='large' className='text-center' show={this.props.show} onCloseRequest={(e) => this.props.onClose(e)} >
+				<Modal.Body style={{ padding: '0px' }}>
+					<iframe title='vtToken' src={this.props.src} frameBorder={0} height={400} width='100%' />
 				</Modal.Body>				
 			</Modal>
 		);
