@@ -19,7 +19,9 @@ import {
 	Select,
 	Checkbox,
 	Button,
-	Input
+	Input,
+	Icon,
+	Level
 	// Row,
 	// Col
 } from 'mm-ui';
@@ -501,6 +503,14 @@ class StepFour extends Component {
 		this.setState({ installmentList });
 	}
 
+	showTooltip(content) {
+		let tooltip = '';
+		if (content.length) {
+			tooltip = content.join('<br />');
+		}
+		this.setState({ tooltip });
+	}
+
 	paymentMethodChange(stateSelectedPayment) {
 		const { payments, dispatch } = this.props;
 		dispatch(new paymentAction.changePaymentMethod(stateSelectedPayment.value, payments.paymentMethods, this.cookies));
@@ -723,6 +733,15 @@ class StepFour extends Component {
 						onChange={(e) => this.paymentMethodChange(e)}
 						defaultValue={payments.selectedPayment ? payments.selectedPayment.id : null}
 					/>
+					<Level>
+						<Level.Left>&nbsp;</Level.Left>
+						<Level.Right>
+							{payments.selectedPaymentOption && payments.selectedPaymentOption.settings.info && <span className={styles.tooltipButton} role='button' tabIndex='-1' onClick={() => this.showTooltip(payments.selectedPaymentOption.settings.info)}>
+								{<Icon name='exclamation-circle' />}
+							</span>}
+						</Level.Right>
+					</Level>
+					
 					{payments.selectedPayment && this.renderSwitchPaymentElement()}
 					<Input
 						dataProps={{
