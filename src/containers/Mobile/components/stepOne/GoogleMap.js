@@ -15,7 +15,10 @@ class GoogleMap extends Component {
 		if (!this.renderAutoComplete) {
 			this.renderAutoComplete = true;
 			if (google) {
-				this.autocomplete = new google.maps.places.Autocomplete(event.target);
+				this.autocomplete = new google.maps.places.Autocomplete(event.target, {
+					types: ['(cities)'],
+					componentRestrictions: { country: 'id' }
+				});
 				this.autocomplete.addListener('place_changed', () => {
 					this.props.onChangeAutoComplete(this.autocomplete.getPlace());
 				});

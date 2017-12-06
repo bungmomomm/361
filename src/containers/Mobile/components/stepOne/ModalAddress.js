@@ -50,6 +50,7 @@ class ModalAddress extends Component {
 		this.cookies = this.props.cookies.get('user.token');
 		this.mapIcon = 'gosend-marker.png';
 		this.selectedPolygon = {};
+		this.formattedAddress = '';
 	}
 
 	componentWillMount() {
@@ -62,19 +63,18 @@ class ModalAddress extends Component {
 				}
 			});
 		}
-	}
 
-	componentDidMount() {
-		const { formData, dispatch } = this.props;
-		
-		this.constructor.fetchGetCityProvince(this.cookies, dispatch);
-		
 		if (this.props.isEdit && formData.attributes) {
 			if (typeof formData.attributes.latitude !== 'undefined' && typeof formData.attributes.longitude !== 'undefined') {
-				this.getPinPointAddress();
+				this.getPinPointAddress(formData.attributes.latitude, formData.attributes.longitude);
 			}
 			this.translateProvince(this.props.formData.attributes);
 		}
+	}
+
+	componentDidMount() {
+		const { dispatch } = this.props;
+		this.constructor.fetchGetCityProvince(this.cookies, dispatch);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -101,7 +101,7 @@ class ModalAddress extends Component {
 				},
 				showMap: false,
 				formattedAddress: null,
-				TempFormattedAddress: null,
+				tempFormattedAddress: null,
 				mapMarkerCenter: null
 			});
 			this.constructor.fetchGetDistric(this.cookies, value, this.props.dispatch);
@@ -132,31 +132,40 @@ class ModalAddress extends Component {
 
 	getPinPointAddress(lat = this.props.formData.attributes.latitude, lng = this.props.formData.attributes.longitude) {
 		const { google } = this.props;
-		if (google && this.state.isValidMarkerPosition) {
+		if (google) {
 			const geo = new google.maps.Geocoder();
 			const latLng = new google.maps.LatLng(lat, lng);
-			geo.geocode({ latLng }, (results, status) => (
-				status === google.maps.GeocoderStatus.OK && (
-					this.setState({
-						formattedAddress: results[0].formatted_address
-					})
-				)
-			));
+			geo.geocode({ latLng }, (results, status) => {
+				if (status === google.maps.GeocoderStatus.OK) {
+					this.setState({ formattedAddress: results[0].formatted_address });
+				}
+			});
+		}
+	}
+	
+	getTemporaryPinPointAddress(lat, lng) {
+		const { google } = this.props;
+		if (google) {
+			const geo = new google.maps.Geocoder();
+			const latLng = new google.maps.LatLng(lat, lng);
+			geo.geocode({ latLng }, (results, status) => {
+				if (status === google.maps.GeocoderStatus.OK) {
+					this.setState({ tempFormattedAddress: results[0].formatted_address });
+				}
+			});
 		}
 	}
 
 	setPinPoint(e) {
 		if (this.state.isValidMarkerPosition) {
-			if (!this.state.formattedAddress) {
-				if (this.state.mapMarkerCenter === null) {
-					this.FormLongitude = this.selectedPolygon.center.lng;
-					this.FormLatitude = this.selectedPolygon.center.lat;
-				} else {
-					this.FormLongitude = this.state.mapMarkerCenter.lng;
-					this.FormLatitude = this.state.mapMarkerCenter.lat;
-				}
-				this.getPinPointAddress(this.FormLatitude, this.FormLongitude);
+			if (!this.state.formattedAddress && this.state.mapMarkerCenter === null) {
+				this.FormLongitude = this.selectedPolygon.center.lng;
+				this.FormLatitude = this.selectedPolygon.center.lat;
+			} else {
+				this.FormLongitude = this.state.mapMarkerCenter.lng;
+				this.FormLatitude = this.state.mapMarkerCenter.lat;
 			}
+			this.getPinPointAddress(this.FormLatitude, this.FormLongitude);
 			this.setState({ showMap: false });
 		}
 	}
@@ -168,8 +177,11 @@ class ModalAddress extends Component {
 			const isValidMarkerPosition = this.isValidPosition(latLng);
 			this.setState({ 
 				isValidMarkerPosition,
-				mapMarkerCenter: e.geometry.location,
-				formattedAddress: e.formatted_address || this.state.formattedAddress
+				mapMarkerCenter: {
+					lat: e.geometry.location.lat(),
+					lng: e.geometry.location.lng()
+				},
+				tempFormattedAddress: e.formatted_address || this.state.formattedAddress
 			});
 		}
 	}
@@ -223,8 +235,8 @@ class ModalAddress extends Component {
 				kodepos: this.elZipcode.validation.state.formData.Kode_Pos,
 				no_hp: this.elPhone.validation.state.formData.No_Handphone,
 				isEdit: this.props.isEdit,
-				longitude: this.FormLongitude || '',
-				latitude: this.FormLatitude || '',
+				longitude: this.state.isValidMarkerPosition ? this.FormLongitude : '',
+				latitude: this.state.isValidMarkerPosition ? this.FormLatitude : '',
 			};
 			this.constructor.saveAddress(this.cookies, this.props.dispatch, formData, this.props.formData);
 		}
@@ -246,6 +258,7 @@ class ModalAddress extends Component {
 		this.FormLatitude = map.getCenter().lat();
 		this.FormLongitude = map.getCenter().lng();
 		const isValidMarkerPosition = this.isValidPosition(map.center);
+		this.getTemporaryPinPointAddress(this.FormLatitude, this.FormLongitude);
 		this.setState({ 
 			isValidMarkerPosition,
 			mapMarkerCenter: {
@@ -257,7 +270,6 @@ class ModalAddress extends Component {
 
 	centerMap() {
 		const { mapMarkerCenter } = this.state;
-		console.log(mapMarkerCenter);
 		if (mapMarkerCenter && mapMarkerCenter.lat !== '' && mapMarkerCenter.lng !== '') {
 			return mapMarkerCenter;	
 		}
@@ -318,7 +330,7 @@ class ModalAddress extends Component {
 				{
 					!this.state.isValidMarkerPosition ? 
 						<Alert color='red'>{T.checkout.LOCATION_NOT_MATCH_WITH_SHIPPING_ADDRESS}</Alert> :
-						<Panel><Icon name='map-marker' /> {this.state.formattedAddress}</Panel>
+						<Panel><Icon name='map-marker' /> {this.state.tempFormattedAddress}</Panel>
 				}
 			</div>
 		);
