@@ -5,8 +5,7 @@ import {
 } from '@/components';
 import { 
 	Checkbox,
-	Level,
-
+	Icon
 } from 'mm-ui';
 import { T } from '@/data/translations';
 import { currency } from '@/utils';
@@ -35,29 +34,28 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 			{
 				isGosendSupported() && shippingDefault && (!isRestrictO2O && !isJabotabekItem) && (
 					<div className={s.deliveryInfo}>
-						<Level>
-							<Level.Item>
-								{
-									store.shipping.gosend.gosendApplicable && hasLangLat() && (
-										<Checkbox 
-											disabled={!hasLangLat()}
-											name='gojek'
-											defaultChecked={store.shipping.gosend.gosendActivated}
-											onClick={() => checkGosendMethod(!store.shipping.gosend.gosendActivated, store)}
-										>
-											Pengiriman: <Sprites name='gosend' />
-											{
-												typeof gosendInfo !== 'undefined' && gosendInfo.length > 0 && (
-													<span role='button' style={{ marginLeft: '10px' }} tabIndex='-1' onClick={() => onShowGosendTooltip()}>
-														{/* <Icon name='exclamation-circle' className={styles.tooltipButton} /> */}
-													</span>
-												)
-											}
-										</Checkbox>
-									)
-								}
-							</Level.Item>
-						</Level>
+						{
+							store.shipping.gosend.gosendApplicable && hasLangLat() && (
+								<div>
+									<Checkbox 
+										style={{ display: 'inline-block', verticalAlign: 'top' }}
+										disabled={!hasLangLat()}
+										name='gojek'
+										defaultChecked={store.shipping.gosend.gosendActivated}
+										onClick={() => checkGosendMethod(!store.shipping.gosend.gosendActivated, store)}
+									>
+										Pengiriman: <Sprites name='gosend' />
+									</Checkbox>
+									{
+										typeof gosendInfo !== 'undefined' && gosendInfo.length > 0 && (
+											<span role='button' style={{ marginLeft: '5px' }} tabIndex='-1' onClick={() => onShowGosendTooltip()}>
+												<Icon name='exclamation-circle' class='fa fa-info-circle' />
+											</span>
+										)
+									}
+								</div>
+							)
+						}
 						{
 							!hasLangLat() && (
 								<div>

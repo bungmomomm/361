@@ -55,13 +55,6 @@ class GoogleMap extends Component {
 		} = this.props;
 		return (
 			<div className={this.createControlClassName()} style={{ width: '100%', height: '250px' }}>
-				<Input
-					onClick={(e) => this.autoComplete(e)}
-					className={styles.searchLocationInput}
-					placeholder='Cari Alamat'
-					size='large'
-					icon='search'
-				/>
 				<Map
 					google={google}
 					zoom={15}
@@ -72,6 +65,16 @@ class GoogleMap extends Component {
 					style={{ width: '100%', height: '250px' }}
 					onDragend={onDragend}
 				>
+					<div id='pac-container'>	
+						<Input
+							id='pac-input'
+							onClick={(e) => this.autoComplete(e)}
+							className={styles.searchLocationInput}
+							placeholder='Cari Alamat'
+							size='large'
+							icon='search'
+						/>
+					</div>
 					{polygon && this.renderPolygon()}
 				</Map>
 				{this.renderMarker()}
