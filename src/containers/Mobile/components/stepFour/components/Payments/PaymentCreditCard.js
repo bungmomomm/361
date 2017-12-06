@@ -88,18 +88,22 @@ class PaymentCreditCard extends Component {
 
 	onChangeCVV(e) {
 		this.ccvValue = e.target.value;
-		this.props.dispatch(new actions.changeCreditCardCvv(e.target.value));
-		this.setState({
-			cvv: this.ccvValue
-		});
+		if (!this.ccvValue.match(/[^0-9]/i)) {
+			this.props.dispatch(new actions.changeCreditCardCvv(e.target.value));
+			this.setState({
+				cvv: this.ccvValue
+			});
+		}
 	}
 
 	onChangeCVVRadio(e) {
 		this.ccvValueRadio = e.target.value;
-		this.props.dispatch(new actions.changeCreditCardCvv(e.target.value));
-		this.setState({
-			cvv: this.ccvValueRadio
-		});
+		if (!this.ccvValueRadio.match(/[^0-9]/i)) {
+			this.props.dispatch(new actions.changeCreditCardCvv(e.target.value));
+			this.setState({
+				cvv: this.ccvValueRadio
+			});
+		}
 	}
 
 	onSelectCard(event) {
