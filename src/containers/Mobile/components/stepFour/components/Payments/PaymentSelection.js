@@ -14,7 +14,6 @@ class PaymentSelection extends Component {
 			selectedPaymentOption: null
 		};
 		this.cookies = this.props.cookies.get('user.token');
-		console.log(this.props);
 	}
 
 	componentWillMount() {

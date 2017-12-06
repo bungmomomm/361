@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { actions } from '@/state/Cart';
 import { withCookies } from 'react-cookie';
 import { T } from '@/data/translations';
-
+import Tooltip from '@/containers/Mobile/components/shared/Tooltip';
 import {
 	Panel,
 	Level,
@@ -25,6 +25,9 @@ class StepTwo extends Component {
 		this.props = props;
 		this.cookies = this.props.cookies.get('user.token');
 		this.loadCart = false;
+		this.state = {
+			showGosendTooltip: false
+		};
 	}
 
 	componentWillMount() {
@@ -41,6 +44,18 @@ class StepTwo extends Component {
 			this.constructor.fetchDataCart(this.cookies, nextProps.dispatch);
 			this.loadCart = true;
 		}
+	}
+
+	onCloseGosendTooltip() {
+		this.setState({
+			showGosendTooltip: false
+		});
+	}
+
+	onShowGosendTooltip() {
+		this.setState({
+			showGosendTooltip: true
+		});
 	}
 
 	checkRestrictO2o(o2oSupported) {
@@ -142,8 +157,19 @@ class StepTwo extends Component {
 									isRestrictO2O={isRestrictO2O}
 									isJabotabekItem={isJabotabekItem}
 									data={storeData} 
-									shippingDefault={!this.props.stepState.stepFour.disabled}									
+									shippingDefault={!this.props.stepState.stepFour.disabled}
+									gosendInfo={this.props.gosendInfo}
+									onShowGosendTooltip={(e) => this.onShowGosendTooltip()}
 								/>
+								{
+									this.state.showGosendTooltip && typeof this.props.gosendInfo !== 'undefined' && this.props.gosendInfo.length > 0 && (
+										<Tooltip 
+											show 
+											content={this.props.gosendInfo.length > 1 ? this.props.gosendInfo[1] : this.props.gosendInfo[0]} 
+											onClose={(e) => this.onCloseGosendTooltip()}
+										/>
+									)
+								}
 							</Panel>
 						);
 					})
@@ -162,6 +188,7 @@ const mapStateToProps = (state) => {
 		isPickupable: state.cart.isPickupable,
 		loading: state.cart.loading,
 		totalItems: state.cart.totalItems,
+		gosendInfo: state.cart.gosendInfo,
 	};
 };
 

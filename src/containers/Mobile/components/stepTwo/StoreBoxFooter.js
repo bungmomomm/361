@@ -1,16 +1,18 @@
 import React from 'react';
 import s from './StoreBoxFooter.scss';
-import { Sprites } from '@/components';
+import {
+	Sprites
+} from '@/components';
 import { 
 	Checkbox,
-	Tooltip,
-	Level
+	Level,
+
 } from 'mm-ui';
 import { T } from '@/data/translations';
 import { currency } from '@/utils';
 
 
-const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMethod, showEditAddressModal, isRestrictO2O, isJabotabekItem, shippingDefault }) => {
+const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMethod, showEditAddressModal, isRestrictO2O, isJabotabekItem, shippingDefault, gosendInfo, onShowGosendTooltip }) => {
 	const store = data.store;
 	const isGosendSupported = () => {
 		return (
@@ -44,16 +46,14 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 											onClick={() => checkGosendMethod(!store.shipping.gosend.gosendActivated, store)}
 										>
 											Pengiriman: <Sprites name='gosend' />
+											{
+												typeof gosendInfo !== 'undefined' && gosendInfo.length > 0 && (
+													<span role='button' style={{ marginLeft: '10px' }} tabIndex='-1' onClick={() => onShowGosendTooltip()}>
+														{/* <Icon name='exclamation-circle' className={styles.tooltipButton} /> */}
+													</span>
+												)
+											}
 										</Checkbox>
-									)
-								}
-							</Level.Item>
-							<Level.Item>
-								{
-									store.gosendInfo && (
-										<Tooltip position='right' content='Info' color='white'>
-											{store.gosendInfo.length > 1 ? store.gosendInfo[1] : store.gosendInfo}
-										</Tooltip>
 									)
 								}
 							</Level.Item>

@@ -31,7 +31,7 @@ import { pushDataLayer } from '@/utils/gtm';
 
 import ModalOVOCountdown from './components/Modal/ModalOVOCountdown';
 import ModalErrorPayment from './components/Modal/ModalErrorPayment';
-import Tooltip from './components/Tooltip';
+import Tooltip from '@/containers/Mobile/components/shared/Tooltip';
 import Vt3dsModalBox from './components/Modal/Vt3dsModalBox';
 
 // payment methods components
