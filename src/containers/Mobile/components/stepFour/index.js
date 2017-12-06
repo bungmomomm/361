@@ -736,17 +736,20 @@ class StepFour extends Component {
 					/>
 					{
 						this.checkShowingOvoPhone() && payments.ovoPhoneNumber !== null &&
-						<Input 
-							state={ovoReadOnly ? 'disabled' : ''} 
-							color={ovoReadOnly ? 'purple' : null} 
-							icon={ovoReadOnly ? 'check' : null} 
-							defaultValue={payments.ovoPhoneNumber}
-							label={T.checkout.OVO_PHONE_LABEL} 
-							placeholder={T.checkout.SAVED_OVO_PHONE} 
-							type='number'
-							min={0}
-							onChange={(event) => this.onOvoNumberChange(event.target.value)}
-						/>
+						<div>
+							<label htmlFor='ovo-phone'>{T.checkout.OVO_PHONE_LABEL}</label>
+							<Input 
+								id='ovo-phone'
+								state={ovoReadOnly ? 'disabled' : ''} 
+								color={ovoReadOnly ? 'purple' : null} 
+								icon={ovoReadOnly ? 'check' : null} 
+								defaultValue={payments.ovoPhoneNumber}
+								placeholder={T.checkout.SAVED_OVO_PHONE} 
+								type='number'
+								min={0}
+								onChange={(event) => this.onOvoNumberChange(event.target.value)}
+							/>
+						</div>
 					}
 					<div className={styles.checkOutAction}>
 						<Checkbox defaultChecked={this.state.termCondition} onClick={() => this.setState({ termCondition: !this.state.termCondition })}>{T.checkout.TERMS_PAYMENT}</Checkbox>

@@ -88,18 +88,22 @@ class PaymentCreditCard extends Component {
 
 	onChangeCVV(e) {
 		this.ccvValue = e.target.value;
-		this.props.dispatch(new actions.changeCreditCardCvv(e.target.value));
-		this.setState({
-			cvv: this.ccvValue
-		});
+		if (!this.ccvValue.match(/[^0-9]/i)) {
+			this.props.dispatch(new actions.changeCreditCardCvv(e.target.value));
+			this.setState({
+				cvv: this.ccvValue
+			});
+		}
 	}
 
 	onChangeCVVRadio(e) {
 		this.ccvValueRadio = e.target.value;
-		this.props.dispatch(new actions.changeCreditCardCvv(e.target.value));
-		this.setState({
-			cvv: this.ccvValueRadio
-		});
+		if (!this.ccvValueRadio.match(/[^0-9]/i)) {
+			this.props.dispatch(new actions.changeCreditCardCvv(e.target.value));
+			this.setState({
+				cvv: this.ccvValueRadio
+			});
+		}
 	}
 
 	onSelectCard(event) {
@@ -229,6 +233,7 @@ class PaymentCreditCard extends Component {
 							disableMaskInput
 							onChange={(e) => this.onCardNumberChange(e)} 
 							message={!cardValid && cardValid !== null ? T.checkout.INPUT_MATCHED_CART_NUMBER : ''}
+							validation={{ rules: 'required|max_value:16', name: 'cc' }}
 						/>
 					</Group>
 					<label htmlFor='masa-berlaku' key={2}>Masa Berlaku</label>
