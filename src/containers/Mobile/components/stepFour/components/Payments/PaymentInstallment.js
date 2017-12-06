@@ -21,7 +21,8 @@ class PaymentInstallment extends Component {
 		this.state = {
 			installmentList: [],
 			validInstallmentBin: null,
-			tooltip: ''
+			tooltip: '',
+			cvv: ''
 		};
 		this.card = '';
 		this.bank = '';		
@@ -77,8 +78,13 @@ class PaymentInstallment extends Component {
 	}
 	
 	onChangeCVV(e) {
-		this.ccvValue = e.target.value;
-		this.props.dispatch(new actions.changeInstallmentCCCvv(e.target.value));
+		if (!e.target.value.match(/[^0-9]/i)) {
+			this.ccvValue = e.target.value;
+			this.props.dispatch(new actions.changeInstallmentCCCvv(e.target.value));
+			this.setState({
+				cvv: this.ccvValue
+			});
+		}
 	}
 
 	onInstallmentCCNumberChange(event) {
@@ -246,7 +252,7 @@ class PaymentInstallment extends Component {
 						ref={(c) => { this.elYearInstallment = c; }}
 					/>
 					<Input
-						dataProps={{ minLength: 0, maxLength: 4 }}
+						dataProps={{ minLength: 0, maxLength: 4, value: this.state.cvv }}
 						type='password'
 						placeholder='cvv'
 						onChange={(e) => this.onChangeCVV(e)}

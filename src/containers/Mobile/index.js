@@ -50,7 +50,7 @@ class Mobile extends Component {
 	render() {
 		return (
 			<div>
-				<div className={styles.header}>
+				<div className={`${styles.header} hd-mobile`}>
 					<a href='/'>
 						<Image src='mobile/logo-mm.png' alt='logo mataharimall' />
 					</a>
