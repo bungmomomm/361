@@ -134,7 +134,7 @@ const getAddresses = (token) => dispatch => new Promise((resolve, reject) => {
 	})
 
 	.catch((error) => {
-		console.log(error);
+		reject(error);
 	});
 });
 

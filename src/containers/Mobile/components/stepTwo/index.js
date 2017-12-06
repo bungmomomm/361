@@ -13,17 +13,29 @@ import StoreBoxBody from './StoreBoxBody';
 import StoreBoxFooter from './StoreBoxFooter';
 
 import styles from '../../mobile.scss';
+import { getRefreshToken } from '@/state/Auth/actions';
 
 class StepTwo extends Component {
 	
-	static fetchDataCart(token, dispatch) {
-		dispatch(new actions.getCart(token));
+	static fetchDataCart(userToken, userRFToken, dispatch) {
+		dispatch(new actions.getCart(userToken))
+		.catch((error) => {
+			if (error.response.data.code === 405) {
+				dispatch(getRefreshToken({
+					userToken,
+					userRFToken
+				})).then((response) => {
+					dispatch(new actions.getCart(response.userToken));
+				});
+			}
+		});
 	}
 
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.cookies = this.props.cookies.get('user.token');
+		this.userCookies = this.props.cookies.get('user.token');
+		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.loadCart = false;
 		this.state = {
 			showGosendTooltip: false
@@ -33,7 +45,7 @@ class StepTwo extends Component {
 	componentWillMount() {
 		if (typeof this.props.cart === 'undefined') {
 			// get initial cart data
-			this.constructor.fetchDataCart(this.cookies, this.props.dispatch);
+			this.constructor.fetchDataCart(this.userCookies, this.userRFCookies, this.props.dispatch);
 		}
 	}
 
@@ -41,7 +53,7 @@ class StepTwo extends Component {
 		if (
 			!this.loadCart
 		) {
-			this.constructor.fetchDataCart(this.cookies, nextProps.dispatch);
+			this.constructor.fetchDataCart(this.userCookies, this.userRFCookies, nextProps.dispatch);
 			this.loadCart = true;
 		}
 	}
@@ -71,17 +83,48 @@ class StepTwo extends Component {
 	}
 
 	updateShippingMethodGosend(checked, store) {
+		const { dispatch } = this.props;
 		const methodId = checked ? '19' : '';
-		this.props.dispatch(new actions.updateGosend(this.cookies, store.id, methodId, { soNumber: this.props.soNumber }));
+		dispatch(new actions.updateGosend(this.userCookies, store.id, methodId, { soNumber: this.props.soNumber }))
+		.catch((error) => {
+			if (error.response.data.code === 405) {
+				dispatch(getRefreshToken({
+					userToken: this.userCookies,
+					userRFToken: this.userCookies
+				})).then((response) => {
+					dispatch(new actions.updateGosend(response.userToken, store.id, methodId, { soNumber: this.props.soNumber }));
+				});
+			}
+		});
 	}
 
 	updateQty(qty, productId) {
 		if (qty !== '') { 
 			const { soNumber, dispatch } = this.props;
 			if (soNumber) {
-				dispatch(new actions.updateQtyCart(this.cookies, qty, productId, { soNumber }));
+				dispatch(new actions.updateQtyCart(this.userCookies, qty, productId, { soNumber }))
+				.catch((error) => {
+					if (error.response.data.code === 405) {
+						dispatch(getRefreshToken({
+							userToken: this.userCookies,
+							userRFToken: this.userRFCookies
+						})).then((response) => {
+							dispatch(new actions.updateQtyCart(response.userToken, qty, productId, { soNumber }));
+						});
+					}
+				});
 			} else {
-				dispatch(new actions.updateCartWithoutSO(this.cookies, qty, productId));
+				dispatch(new actions.updateCartWithoutSO(this.userCookies, qty, productId))
+				.catch((error) => {
+					if (error.response.data.code === 405) {
+						dispatch(getRefreshToken({
+							userToken: this.userCookies,
+							userRFToken: this.userRFCookies
+						})).then((response) => {
+							dispatch(new actions.updateCartWithoutSO(response.userToken, qty, productId));
+						});
+					}
+				});
 			}
 		}
 	}
