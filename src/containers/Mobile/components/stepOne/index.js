@@ -154,11 +154,9 @@ class stepOne extends Component {
 	}
 	
 	setBillingNumber(address) {
-		const { payments, dispatch } = this.props;
-		if (payments && !payments.billingPhoneNumberEdited) {
-			const billing = this.tabIndex < 1 ? address.attributes.phone : '';
-			dispatch(new paymentActions.changeBillingNumber(billing));
-		}
+		const { dispatch } = this.props;
+		const billing = this.tabIndex < 1 ? address.attributes.phone : '';
+		dispatch(new paymentActions.changeBillingNumber(billing));
 	}
 
 	setShipping(addresses) {
