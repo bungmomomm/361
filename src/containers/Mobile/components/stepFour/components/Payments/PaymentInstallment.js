@@ -229,6 +229,7 @@ class PaymentInstallment extends Component {
 					onChange={(e) => this.checkValidInstallment(e)}
 					ref={(c) => { this.elCreditCard = c; }}
 					message={!validInstallmentBin && validInstallmentBin !== null ? T.checkout.INPUT_MATCHED_CART_NUMBER : ''}
+					validation={{ rules: 'required|max_value:16', name: 'cc' }}
 				/>
 				<Group grouped>
 					<Select
