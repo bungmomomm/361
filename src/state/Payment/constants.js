@@ -46,7 +46,9 @@ const paymentMethodName = {
 	COMMERCE_VERITRANS_INSTALLMENT: 'commerce_veritrans_installment',
 	POS_PAY: 'pos_pay',
 	COMMERCE_COD: 'commerce_cod',
-	COMMERCE_SPRINT_ASIA: 'sprint'
+	COMMERCE_SPRINT_ASIA: 'sprint',
+	GRATIS: 'commerce_gratis',
+	COD: 'commerce_cod'
 };
 
 

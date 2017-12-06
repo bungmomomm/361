@@ -21,6 +21,20 @@ class PaymentOvo extends Component {
 		};
 		this.input = '';
 		this.cookies = this.props.cookies.get('user.token');
+
+		this.ovoBlockContent = () => {
+			return (
+				<Alert show color='yellow'>
+					<p>Info Pembayaran dengan Aplikasi OVO</p>
+					<ol>
+						<li>Pastikan Anda sudah login ke aplikasi OVO</li>
+						<li>Pembayaran dengan OVO akan kadaluarsa dalam 30 detik setelah Anda klik “Bayar Sekarang”</li>
+						<li>Buka notifikasi OVO untuk melakukan pembayaran</li>
+						<li>Pilih cara pembayaran dengan “OVO Cash” atau “OVO Point” atau kombinasi keduanya, kemudian klik “Bayar”</li>
+					</ol>
+				</Alert>
+			);
+		};
 	}
 
 	componentWillMount() {
@@ -85,18 +99,23 @@ class PaymentOvo extends Component {
 
 	renderPaymentInput() {
 		return (
-			<Input
-				dataProps={{ minLength: 0, maxLength: 30 }}
-				defaultValue={this.state.ovo.ovoPhonePayment || ''}
-				type='number'
-				ref={(e) => { this.input = e; }}
-				placeholder={'Masukan No Hp yang terdaftar di OVO'}
-				onChange={(e) => this.onOvoPaymentNumberChange(e)}
-				validation={{ rules: 'required|min:5|max:30|numeric', name: 'Phone_Number' }}
-				color={this.state.ovo.ovoPhonePaymentValid ? 'green' : null}
-				icon={this.state.ovo.ovoPhonePaymentValid ? 'check' : null}
-				message={this.state.ovo.ovoPhonePaymentValid ? 'Poin OVO akan ditambahkan di no ini' : ''}
-			/>
+			<div>
+				<Input
+					dataProps={{ minLength: 0, maxLength: 30 }}
+					defaultValue={this.state.ovo.ovoPhonePayment || ''}
+					type='number'
+					ref={(e) => { this.input = e; }}
+					placeholder={'Masukan No Hp yang terdaftar di OVO'}
+					onChange={(e) => this.onOvoPaymentNumberChange(e)}
+					validation={{ rules: 'required|min:5|max:30|numeric', name: 'Phone_Number' }}
+					color={this.state.ovo.ovoPhonePaymentValid ? 'green' : null}
+					icon={this.state.ovo.ovoPhonePaymentValid ? 'check' : null}
+					message={this.state.ovo.ovoPhonePaymentValid ? 'Poin OVO akan ditambahkan di no ini' : ''}
+				/>
+				{
+					this.ovoBlockContent()
+				}
+			</div>
 		);
 	}
 
@@ -109,15 +128,9 @@ class PaymentOvo extends Component {
 				>
 					<Icon name='plus-circle' /> Gunakan OVO Lain
 				</Button>
-				<Alert show color='yellow'>
-					<p>Info Pembayaran dengan Aplikasi OVO</p>
-					<ol>
-						<li>Pastikan Anda sudah login ke aplikasi OVO</li>
-						<li>Pembayaran dengan OVO akan kadaluarsa dalam 30 detik setelah Anda klik “Bayar Sekarang”</li>
-						<li>Buka notifikasi OVO untuk melakukan pembayaran</li>
-						<li>Pilih cara pembayaran dengan “OVO Cash” atau “OVO Point” atau kombinasi keduanya, kemudian klik “Bayar”</li>
-					</ol>
-				</Alert>
+				{
+					this.ovoBlockContent()
+				}
 			</div>
 		);
 	}
