@@ -229,6 +229,7 @@ class PaymentCreditCard extends Component {
 							disableMaskInput
 							onChange={(e) => this.onCardNumberChange(e)} 
 							message={!cardValid && cardValid !== null ? T.checkout.INPUT_MATCHED_CART_NUMBER : ''}
+							validation={{ rules: 'required|max_value:16', name: 'cc' }}
 						/>
 					</Group>
 					<label htmlFor='masa-berlaku' key={2}>Masa Berlaku</label>
