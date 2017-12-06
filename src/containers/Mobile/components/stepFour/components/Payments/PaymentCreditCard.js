@@ -208,7 +208,7 @@ class PaymentCreditCard extends Component {
 	renderCardSelectForm(option, index) {
 		return (
 			<div key={index}>
-				<Select block onChange={(e) => this.onSelectCard(e)} defaultValue={this.state.selectedCard} options={this.state.cardList} />
+				<Select block onChange={(e) => this.onSelectCard(e.value)} defaultValue={this.state.selectedCard} options={this.state.cardList} />
 				{this.state.fromRadio && !this.props.payments.openNewCreditCard && this.renderCVVForm()}
 			</div>
 		);
