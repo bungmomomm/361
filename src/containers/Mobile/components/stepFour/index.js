@@ -730,7 +730,7 @@ class StepFour extends Component {
 						}}
 						label={T.checkout.PHONE_NUMBER_O2O_CONFIRMATION}
 						min={0}
-						type='number'
+						type='tel'
 						placeholder={payments.billingPhoneNumber || T.checkout.BILLING_PHONE_NUMBER}
 						onChange={(event) => this.onBillingNumberChange(event)} 
 					/>
@@ -745,7 +745,7 @@ class StepFour extends Component {
 								icon={ovoReadOnly ? 'check' : null} 
 								defaultValue={payments.ovoPhoneNumber}
 								placeholder={T.checkout.SAVED_OVO_PHONE} 
-								type='number'
+								type='tel'
 								min={0}
 								onChange={(event) => this.onOvoNumberChange(event.target.value)}
 							/>
