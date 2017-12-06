@@ -71,6 +71,7 @@ const setCartModel = (jsoApiResponse) => {
 				id: parseInt(prodRel.id, 10),
 				fgLocation: prods.attributes.fg_location,
 				brand: prods.attributes.brand_name,
+				o2o_supported: a.attributes.o2o_supported,
 				category: prods.attributes.product_category_names,
 				attribute: [],
 			};
@@ -85,6 +86,16 @@ const setCartModel = (jsoApiResponse) => {
 				gosendApplicable: attr.gosend_applicable === '1',
 			}
 		};
+
+		let isJabodetabekArea = false;
+		const jabodetabek = ['jakarta', 'bogor', 'tangerang', 'bekasi', 'depok'];
+		jabodetabek.forEach((city) => {
+			if (attr.store_location.toLowerCase().includes(city)) {
+				isJabodetabekArea = true;
+			}
+		});
+		
+
 		const x = {
 			store: {
 				id: value.id,
@@ -92,6 +103,7 @@ const setCartModel = (jsoApiResponse) => {
 				location: attr.store_location,
 				total_items: attr.total_items,
 				store_image: attr.store_image,
+				isJabodetabekArea,
 				price: {
 					final_delivery_cost: attr.total_price.final_delivery_cost === '' ? 0 : parseInt(attr.total_price.final_delivery_cost, 10),
 					sub_total: parseInt(attr.total_price.sub_total, 10),
