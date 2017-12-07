@@ -64,22 +64,24 @@ class Modalo2o extends Component {
 
 	onChangeFilterText(event) {
 		const filter = event.target.value;
-		const listo2o = this.props.listo2o.map((item) => {
-			const filterLabel = item.attributes.address_label;
-			const isFilteredByLabel = filterLabel && (filterLabel.toUpperCase().indexOf(filter.toUpperCase()) > -1);
-			const filterAddress = item.attributes.address;
-			const isFilteredByAddress = filterAddress && (filterAddress.toLowerCase().indexOf(filter.toLowerCase()) > -1);
-			return (isFilteredByLabel || isFilteredByAddress) ? item : null;
-		}).filter((item) => {
-			return item;
-		});
-		if (listo2o.length < 1) {
-			this.constructor.fetchDataO2OList(this.cookies, this.props.dispatch, this.state.selectedProvince, filter);
+		if (this.props.listo2o) {
+			const listo2o = this.props.listo2o.map((item) => {
+				const filterLabel = item.attributes.address_label;
+				const isFilteredByLabel = filterLabel && (filterLabel.toUpperCase().indexOf(filter.toUpperCase()) > -1);
+				const filterAddress = item.attributes.address;
+				const isFilteredByAddress = filterAddress && (filterAddress.toLowerCase().indexOf(filter.toLowerCase()) > -1);
+				return (isFilteredByLabel || isFilteredByAddress) ? item : null;
+			}).filter((item) => {
+				return item;
+			});
+			if (listo2o.length < 1) {
+				this.constructor.fetchDataO2OList(this.cookies, this.props.dispatch, this.state.selectedProvince, filter);
+			}
+			this.setState({
+				listo2o,
+				filter
+			});
 		}
-		this.setState({
-			listo2o,
-			filter
-		});
 	}
 
 	handleChooseElocker(elockerId) {

@@ -243,14 +243,26 @@ class ModalAddress extends Component {
 	}
 
 	toggleGoogleMap() {
+		const { isEdit, formData } = this.props;
 		const showMap = !this.state.showMap;
+		let mapMarkerCenter = this.state.mapMarkerCenter;
 		if (showMap) {
 			const district = this.state.selected.district.value.toLowerCase().replace(/\W+(.)/g, (match, chr) => chr.toUpperCase());
 			const selectedPolygon = _.find(Polygon, district);
 			this.selectedPolygon = selectedPolygon[district];
+		} else if (isEdit && typeof formData.attributes.latitude !== 'undefined' && typeof formData.attributes.longitude !== 'undefined') {
+			mapMarkerCenter = {
+				lat: formData.attributes.latitude,
+				lng: formData.attributes.longitude
+			};
+		} else {
+			mapMarkerCenter = null;
 		}
+		
 		this.setState({ 
-			showMap
+			showMap,
+			isValidMarkerPosition: true,
+			mapMarkerCenter,
 		});
 	}
 
