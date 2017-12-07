@@ -67,6 +67,9 @@ class StepThree extends Component {
 					this.props.cookies.set('user.exp', Number(newToken.expToken), { domain: process.env.SESSION_DOMAIN });
 					this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: process.env.SESSION_DOMAIN });
 					this.props.cookies.set('user.token', newToken.userToken, { domain: process.env.SESSION_DOMAIN });
+					this.userCookies = newToken.userToken;
+					this.userRFCookies = newToken.userRFToken;
+
 					this.onAddCoupon();
 				});
 			}
@@ -92,6 +95,8 @@ class StepThree extends Component {
 					this.props.cookies.set('user.exp', Number(newToken.expToken), { domain: process.env.SESSION_DOMAIN });
 					this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: process.env.SESSION_DOMAIN });
 					this.props.cookies.set('user.token', newToken.userToken, { domain: process.env.SESSION_DOMAIN });
+					this.userCookies = newToken.userToken;
+					this.userRFCookies = newToken.userRFToken;
 					this.onRemoveCoupon(event);
 				});
 			}
@@ -119,6 +124,8 @@ class StepThree extends Component {
 						this.props.cookies.set('user.exp', Number(newToken.expToken), { domain: process.env.SESSION_DOMAIN });
 						this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: process.env.SESSION_DOMAIN });
 						this.props.cookies.set('user.token', newToken.userToken, { domain: process.env.SESSION_DOMAIN });
+						this.userCookies = newToken.userToken;
+						this.userRFCookies = newToken.userRFToken;
 					});
 				}
 			});
