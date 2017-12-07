@@ -856,7 +856,9 @@ class StepFour extends Component {
 								state={ovoReadOnly ? 'disabled' : ''} 
 								color={ovoReadOnly ? 'purple' : null} 
 								icon={ovoReadOnly ? 'check' : null} 
-								defaultValue={payments.ovoPhoneNumber}
+								dataProps={{
+									value: payments.ovoPhoneNumber
+								}}
 								placeholder={T.checkout.SAVED_OVO_PHONE} 
 								type='tel'
 								min={0}
