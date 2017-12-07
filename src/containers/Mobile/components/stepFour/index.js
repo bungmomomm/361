@@ -159,7 +159,7 @@ class StepFour extends Component {
 		}
 	}
 
-	onRefreshToken(dispatch) {
+	onRefreshToken(dispatch, callback = false) {
 		dispatch(getRefreshToken({
 			userToken: this.userCookies,
 			userRFToken: this.userRFCookies
@@ -169,6 +169,10 @@ class StepFour extends Component {
 			this.props.cookies.set('user.token', newToken.userToken, { domain: process.env.SESSION_DOMAIN });
 			this.userCookies = newToken.userToken;
 			this.userRFCookies = newToken.userRFToken;
+
+			if (callback) {
+				this.callback();
+			}
 		});
 	}
 
@@ -242,8 +246,11 @@ class StepFour extends Component {
 					)
 				).catch((error) => {
 					if (error.response.data.code === 405) {
-						this.onRefreshToken(dispatch);
-						this.onVtCreditCardCallback(response);
+						const cvCall = () => {
+							this.onVtCreditCardCallback(response);
+						};
+						this.onRefreshToken(dispatch, cvCall);
+						
 					} else {
 						this.onPaymentFailed();
 					}
@@ -299,8 +306,11 @@ class StepFour extends Component {
 					)
 				).catch((error) => {
 					if (error.response.data.code === 405) {
-						this.onRefreshToken(dispatch);
-						this.onVtInstallmentCallback(response);
+						const vtCall = () => {
+							this.onVtInstallmentCallback(response);
+						};
+						this.onRefreshToken(dispatch, vtCall);
+						
 					} else {
 						this.onPaymentFailed();
 					}
@@ -394,8 +404,7 @@ class StepFour extends Component {
 					})
 					.catch((error) => {
 						if (error.response.data.code === 405) {
-							this.onRefreshToken(dispatch);
-							this.onDoPayment();
+							this.onRefreshToken(dispatch, this.onDoPayment());
 						} else {
 							this.onPaymentFailed();
 						}
@@ -429,8 +438,7 @@ class StepFour extends Component {
 					)
 				).catch((error) => {
 					if (error.response.data.code === 405) {
-						this.onRefreshToken(dispatch);
-						this.onDoPayment();
+						this.onRefreshToken(dispatch, this.onDoPayment());
 					} else {
 						this.onPaymentFailed();
 					}
@@ -542,8 +550,11 @@ class StepFour extends Component {
 			)
 		).catch((error) => {
 			if (error.response.data.code === 405) {
-				this.onRefreshToken(dispatch);
-				this.onRequestSprintInstallment(mode);
+				const sprintCall = () => {
+					this.onRequestSprintInstallment(mode);
+				};
+				this.onRefreshToken(dispatch, sprintCall);
+				
 			} else {
 				this.onPaymentFailed();
 			}
