@@ -921,6 +921,12 @@ const mapStateToProps = (state) => {
 	if (state.payments.ovoPhoneNumber === null) {
 		state.payments.ovoPhoneNumber = state.payments.ovoInfo ? state.payments.ovoInfo.ovoId : null;
 	}
+
+	if (state.payments.selectedPayment.value === paymentGroupName.CREDIT_CARD 
+		&& state.payments.selectedPayment.cards < 1) {
+		state.payments.twoClickEnabled = false;
+	}
+
 	return {
 		payments: state.payments,
 		soNumber: state.cart.soNumber,
