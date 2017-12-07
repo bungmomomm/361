@@ -244,6 +244,8 @@ class StepFour extends Component {
 					if (error.response.data.code === 405) {
 						this.onRefreshToken(dispatch);
 						this.onVtCreditCardCallback(response);
+					} else {
+						this.onPaymentFailed();
 					}
 				});
 			} else {
@@ -299,6 +301,8 @@ class StepFour extends Component {
 					if (error.response.data.code === 405) {
 						this.onRefreshToken(dispatch);
 						this.onVtInstallmentCallback(response);
+					} else {
+						this.onPaymentFailed();
 					}
 				});
 			} else {
@@ -335,8 +339,16 @@ class StepFour extends Component {
 		).catch((error) => {
 			if (error.response.data.code === 405) {
 				this.onRefreshToken(dispatch);
+			} else {
+				this.onPaymentFailed();
 			}
 		});
+	}
+
+	onPaymentFailed() {
+		const { dispatch, stepState, billing } = this.props;
+		const selectedAddress = stepState.stepOne.tabIndex > 0 ? stepState.stepOne.selectedAddressO2O : stepState.stepOne.selectedAddress;
+		this.constructor.placeOrder(this.userCookies, this.userRFCookies, dispatch, selectedAddress, billing);
 	}
 
 	onDoPayment() {
@@ -384,6 +396,8 @@ class StepFour extends Component {
 						if (error.response.data.code === 405) {
 							this.onRefreshToken(dispatch);
 							this.onDoPayment();
+						} else {
+							this.onPaymentFailed();
 						}
 						this.setState({
 							showModalOvo: false
@@ -417,6 +431,8 @@ class StepFour extends Component {
 					if (error.response.data.code === 405) {
 						this.onRefreshToken(dispatch);
 						this.onDoPayment();
+					} else {
+						this.onPaymentFailed();
 					}
 				});
 				break;
@@ -528,6 +544,8 @@ class StepFour extends Component {
 			if (error.response.data.code === 405) {
 				this.onRefreshToken(dispatch);
 				this.onRequestSprintInstallment(mode);
+			} else {
+				this.onPaymentFailed();
 			}
 		});
 	}
