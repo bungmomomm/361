@@ -26,7 +26,8 @@ class Modalo2o extends Component {
 		this.props = props;
 		this.state = {
 			selectedProvince: this.props.selectedProvinceO2O || '6',
-			listo2o: this.props.listo2o			
+			listo2o: this.props.listo2o,
+			filter: ''			
 		};
 		this.cookies = this.props.cookies.get('user.token');
 		this.onSelectProvince = this.onSelectProvince.bind(this);
@@ -56,7 +57,8 @@ class Modalo2o extends Component {
 	onSelectProvince(event) {
 		this.onLoadData(event.value);
 		this.setState({
-			selectedProvince: event.value
+			selectedProvince: event.value,
+			filter: ''
 		});
 	}
 
@@ -72,10 +74,11 @@ class Modalo2o extends Component {
 			return item;
 		});
 		if (listo2o.length < 1) {
-			this.constructor.fetchDataO2OList(this.cookies, this.props.dispatch, 6, filter);
+			this.constructor.fetchDataO2OList(this.cookies, this.props.dispatch, this.state.selectedProvince, filter);
 		}
 		this.setState({
-			listo2o
+			listo2o,
+			filter
 		});
 	}
 
@@ -98,7 +101,14 @@ class Modalo2o extends Component {
 						this.props.o2oProvinces &&
 						<Select hasFilter options={this.props.o2oProvinces} onChange={this.onSelectProvince} defaultValue={this.state.selectedProvince} style={{ paddingRight: '30px' }} />
 					}
-					<Input block placeholder='Cari Lokasi Toko / E-Locker (O2O) lainnya' onChange={this.onChangeFilterText} />
+					<Input 
+						block 
+						dataProps={{
+							value: this.state.filter
+						}}
+						placeholder='Cari Lokasi Toko / E-Locker (O2O) lainnya' 
+						onChange={this.onChangeFilterText} 
+					/>
 				</Modal.Header>
 				<Modal.Body>
 					{
