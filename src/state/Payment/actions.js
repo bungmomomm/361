@@ -645,12 +645,17 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 
 				resolve(soNumber, response.data, mode, card, callback);
 			}).catch((error) => {
-				// showError
-				dispatch(payError(getError(error)));
+				if (error.response.data.code !== 405) {
+					// showError
+					dispatch(payError(getError(error)));
+				}
 				reject(error);
 			});
 		}).catch((error) => {
-			dispatch(payError(getError(error)));
+			if (error.response.data.code !== 405) {
+				// showError
+				dispatch(payError(getError(error)));
+			}
 			reject(error);
 		});
 	} else {
@@ -699,8 +704,10 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 			dispatch(payReceived(soNumber, response.data, mode, card, callback));
 			resolve(soNumber, response.data, mode, card, callback);
 		}).catch((error) => {
-			// showError
-			dispatch(payError(getError(error)));
+			if (error.response.data.code !== 405) {
+				// showError
+				dispatch(payError(getError(error)));
+			}
 			reject(error);
 		});
 	}
