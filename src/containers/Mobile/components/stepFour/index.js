@@ -735,7 +735,9 @@ class StepFour extends Component {
 	}
 	
 	checkShowingOvoPhone() {
-		return (!this.isOvoPayment || (!this.state.ovo.autoLinkage && this.isOvoPayment));
+		const { payments } = this.props;
+		const ovoValidation = (payments.ovoInfo && payments.ovoInfo.ovoFlag === '1') ? true : !this.state.ovo.autoLinkage;
+		return (!this.isOvoPayment || (ovoValidation && this.isOvoPayment));
 	}
 
 	createClassCard() {
@@ -919,7 +921,7 @@ const mapStateToProps = (state) => {
 		state.payments.billingPhoneNumber = billingPhoneNumber;
 	}
 	state.payments.ovoInfo = state.cart.ovoInfo || false;
-	if (state.payments.ovoPhoneNumber === null) {
+	if (state.payments.ovoPhoneNumber === null || state.payments.ovoPhoneNumber === '') {
 		state.payments.ovoPhoneNumber = state.payments.ovoInfo ? state.payments.ovoInfo.ovoId : null;
 	}
 
