@@ -90,7 +90,7 @@ class StepTwo extends Component {
 			if (error.response.data.code === 405) {
 				dispatch(getRefreshToken({
 					userToken: this.userCookies,
-					userRFToken: this.userCookies
+					userRFToken: this.userRFCookies
 				})).then((response) => {
 					dispatch(new actions.updateGosend(response.userToken, store.id, methodId, { soNumber: this.props.soNumber }));
 				});
