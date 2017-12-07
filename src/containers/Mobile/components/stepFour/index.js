@@ -129,7 +129,6 @@ class StepFour extends Component {
 					...ovo,
 					ovoPhonePayment: this.props.payments.ovoPhoneNumber,
 					ovoPhonePaymentValid: this.props.payments.ovoPhoneNumber,
-					autoLinkage: (this.props.payments.ovoInfo.ovoFlag === '0'),
 				}
 			});
 		}
