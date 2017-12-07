@@ -159,6 +159,19 @@ class StepFour extends Component {
 		}
 	}
 
+	onRefreshToken(dispatch) {
+		dispatch(getRefreshToken({
+			userToken: this.userCookies,
+			userRFToken: this.userRFCookies
+		})).then((newToken) => {
+			this.props.cookies.set('user.exp', Number(newToken.expToken), { domain: process.env.SESSION_DOMAIN });
+			this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: process.env.SESSION_DOMAIN });
+			this.props.cookies.set('user.token', newToken.userToken, { domain: process.env.SESSION_DOMAIN });
+			this.userCookies = newToken.userToken;
+			this.userRFCookies = newToken.userRFToken;
+		});
+	}
+
 	onRequestVtToken(installment = false) {
 		const { dispatch, soNumber, stepState, billing } = this.props;
 		let bankName = '';
@@ -227,7 +240,12 @@ class StepFour extends Component {
 						false,
 						this.getAffTracking()
 					)
-				);
+				).catch((error) => {
+					if (error.response.data.code === 405) {
+						this.onRefreshToken(dispatch);
+						this.onVtCreditCardCallback(response);
+					}
+				});
 			} else {
 				const selectedAddress = stepState.stepOne.tabIndex > 0 ? stepState.stepOne.selectedAddressO2O : stepState.stepOne.selectedAddress;
 				dispatch(new paymentAction.vtModalBoxOpen(false));
@@ -277,7 +295,12 @@ class StepFour extends Component {
 						false,
 						this.getAffTracking()
 					)
-				);
+				).catch((error) => {
+					if (error.response.data.code === 405) {
+						this.onRefreshToken(dispatch);
+						this.onVtInstallmentCallback(response);
+					}
+				});
 			} else {
 				const selectedAddress = stepState.stepOne.tabIndex > 0 ? stepState.stepOne.selectedAddressO2O : stepState.stepOne.selectedAddress;
 				dispatch(new paymentAction.vtModalBoxOpen(false));
@@ -309,7 +332,11 @@ class StepFour extends Component {
 				installment ? onVtInstallmentCallback : onVtCreditCardCallback,
 				this.getAffTracking()
 			)
-		);
+		).catch((error) => {
+			if (error.response.data.code === 405) {
+				this.onRefreshToken(dispatch);
+			}
+		});
 	}
 
 	onDoPayment() {
@@ -353,7 +380,11 @@ class StepFour extends Component {
 							showModalOvo: true
 						});
 					})
-					.catch(() => {
+					.catch((error) => {
+						if (error.response.data.code === 405) {
+							this.onRefreshToken(dispatch);
+							this.onDoPayment();
+						}
 						this.setState({
 							showModalOvo: false
 						});
@@ -382,7 +413,12 @@ class StepFour extends Component {
 						false,
 						this.getAffTracking()
 					)
-				);
+				).catch((error) => {
+					if (error.response.data.code === 405) {
+						this.onRefreshToken(dispatch);
+						this.onDoPayment();
+					}
+				});
 				break;
 			}
 		}
@@ -488,7 +524,12 @@ class StepFour extends Component {
 				false,
 				this.getAffTracking()
 			)
-		);
+		).catch((error) => {
+			if (error.response.data.code === 405) {
+				this.onRefreshToken(dispatch);
+				this.onRequestSprintInstallment(mode);
+			}
+		});
 	}
 	
 	onBillingNumberChange(event) {
