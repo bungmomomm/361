@@ -29,15 +29,36 @@ import styles from '../../mobile.scss';
 // import { Address } from '@/data';
 import { T } from '@/data/translations';
 import { setUserGTM, pushDataLayer } from '@/utils/gtm';
+import { getRefreshToken } from '@/state/Auth/actions';
 
 class stepOne extends Component {
 
-	static fetchDataAddress(token, dispatch) {
-		dispatch(new actions.getAddresses(token));
+	static fetchDataAddress(userToken, userRFToken, dispatch) {
+		dispatch(new actions.getAddresses(userToken))
+		.catch(error => {
+			if (error.response.data.code === 405) {
+				dispatch(getRefreshToken({
+					userToken,
+					userRFToken
+				})).then((response) => {
+					dispatch(new actions.getAddresses(response.userToken));
+				});
+			}
+		});
 	}
 
-	static placeOrder(token, dispatch, selectedAddress, billing) {
-		dispatch(new cartActions.getPlaceOrderCart(token, selectedAddress, billing));
+	static placeOrder(userToken, userRFToken, dispatch, selectedAddress, billing) {
+		dispatch(new cartActions.getPlaceOrderCart(userToken, selectedAddress, billing))
+		.catch(error => {
+			if (error.response.data.code === 405) {
+				dispatch(getRefreshToken({
+					userToken,
+					userRFToken
+				})).then((response) => {
+					dispatch(new cartActions.getPlaceOrderCart(response.userToken, selectedAddress, billing));
+				});
+			}
+		});
 	}
 
 	static mapSelectedAddress(selectedAddress) {
@@ -64,14 +85,27 @@ class stepOne extends Component {
 			toggleSelectAddress: true
 		};
 		this.currentAddresses = [];
-		this.cookies = this.props.cookies.get('user.token');
+		this.userCookies = this.props.cookies.get('user.token');
+		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.tabIndex = 0;
 		
 	}
 
+	componentWillMount() {
+		const { dispatch } = this.props;
+		dispatch(getRefreshToken({
+			userToken: this.props.cookies.get('user.token'),
+			userRFToken: this.props.cookies.get('user.rf.token')
+		})).then((response) => {
+			this.props.cookies.set('user.exp', Number(response.expToken), { domain: process.env.SESSION_DOMAIN });
+			this.props.cookies.set('user.rf.token', response.userRFToken, { domain: process.env.SESSION_DOMAIN });
+			this.props.cookies.set('user.token', response.userToken, { domain: process.env.SESSION_DOMAIN });
+		});
+	}
+	
 	componentDidMount() {
 		if (this.props.addresses === undefined) {
-			this.constructor.fetchDataAddress(this.cookies, this.props.dispatch);
+			this.constructor.fetchDataAddress(this.userCookies, this.userRFCookies, this.props.dispatch);
 		} else {
 			this.setShipping(this.props.addresses);
 		}
@@ -149,7 +183,7 @@ class stepOne extends Component {
 		}
 		const billing = this.props.billing && this.props.billing.length > 0 ? this.props.billing[0] : false;
 		
-		this.constructor.placeOrder(this.cookies, this.props.dispatch, address, billing);
+		this.constructor.placeOrder(this.userCookies, this.userRFCookies, this.props.dispatch, address, billing);
 		this.setBillingNumber(address);
 	}
 	
@@ -251,7 +285,7 @@ class stepOne extends Component {
 			},
 			stepTwo: {
 				...stepState.stepTwo,
-				disabled: false
+				disabled: notAlowedShipping || false
 			},
 		};
 		this.props.applyState(checkoutState);

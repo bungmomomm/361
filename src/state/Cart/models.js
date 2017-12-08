@@ -75,6 +75,8 @@ const setCartModel = (jsoApiResponse) => {
 				category: prods.attributes.product_category_names,
 				attribute: [],
 			};
+		}).sort((a, b) => {
+			return b.price - a.price;
 		});
 		
 		const shipping = {

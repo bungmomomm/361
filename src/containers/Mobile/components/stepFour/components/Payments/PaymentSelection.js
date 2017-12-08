@@ -35,6 +35,10 @@ class PaymentSelection extends Component {
 		}
 	}
 
+	componentWillUnmount() {
+		this.props.enableButtonPayNow(false);
+	}
+
 	onSelectedPaymentItem(selectedPaymentItem) {
 		const { payments, dispatch } = this.props;
 		dispatch(new paymentAction.changePaymentOption(selectedPaymentItem, this.cookies));
@@ -64,15 +68,13 @@ class PaymentSelection extends Component {
 	}
 
 	validateSelection() {
-		setTimeout(() => {
-			if (
-				this.state.selectedPaymentOption
-			) {
-				this.props.enableButtonPayNow(true);
-			} else {
-				this.props.enableButtonPayNow(false);
-			}
-		}, 100);
+		if (
+			this.state.selectedPaymentOption
+		) {
+			this.props.enableButtonPayNow(true);
+		} else {
+			this.props.enableButtonPayNow(false);
+		}
 	}
 
 	render() {

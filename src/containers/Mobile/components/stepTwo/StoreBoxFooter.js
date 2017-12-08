@@ -41,7 +41,7 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 										style={{ display: 'inline-block', verticalAlign: 'top' }}
 										disabled={!hasLangLat()}
 										name='gojek'
-										defaultChecked={store.shipping.gosend.gosendActivated}
+										checked={store.shipping.gosend.gosendActivated}
 										onClick={() => checkGosendMethod(!store.shipping.gosend.gosendActivated, store)}
 									>
 										Pengiriman: <Sprites name='gosend' />

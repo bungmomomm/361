@@ -134,7 +134,7 @@ const getAddresses = (token) => dispatch => new Promise((resolve, reject) => {
 	})
 
 	.catch((error) => {
-		console.log(error);
+		reject(error);
 	});
 });
 
@@ -253,7 +253,7 @@ const getO2OList = (token, rowsRequest, province = 6, query = null) => dispatch 
 	dispatch(o2oListRequest(token));
 	let path = `pickup_locations/search_o2o?page=1&per_page=${rowsRequest}&province_id=${province}`;
 	if (query) {
-		path = `pickup_locations/search_o2o?page=1&per_page=${rowsRequest}&query=${query}`;
+		path = `pickup_locations/search_o2o?page=1&per_page=${rowsRequest}&query=${query}&province_id=${province}`;
 	}
 	const req = {
 		token,

@@ -54,12 +54,12 @@ const couponRequestOTP = (token) => ({
 	}
 });
 
-const couponReceiveOTP = (validOtp) => ({
+const couponReceiveOTP = (validOtp, message = 'Kode otp salah') => ({
 	type: constants.CP_RESULT_OTP,
 	status: 1,
 	payload: {
 		validOtp,
-		messageOtp: validOtp ? null : 'Kode otp salah'
+		messageOtp: validOtp ? null : message
 	}
 });
 
@@ -159,7 +159,7 @@ const verifyOtp = (token, phone, otp, props) => dispatch => {
 		dispatch(couponReceiveOTP(true));
 		dispatch(addCoupon(token, props.soNumber, props.coupon.coupon));
 	}).catch((error) => {
-		dispatch(couponReceiveOTP(false));
+		dispatch(couponReceiveOTP(false, error.response.data.errorMessage));
 	});
 };
 

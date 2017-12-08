@@ -54,6 +54,10 @@ class PaymentOvo extends Component {
 		}
 	}
 
+	componentWillUnmount() {
+		this.props.enableButtonPayNow(false);
+	}
+
 	onOvoPaymentNumberChange(event) {
 		this.setState({
 			ovo: {
@@ -83,13 +87,11 @@ class PaymentOvo extends Component {
 	}
 
 	validateOvoForm() {
-		setTimeout(() => {
-			if (this.isOvoPayment ? this.state.ovo.ovoPhonePaymentValid : true) {
-				this.props.enableButtonPayNow(true);
-			} else {
-				this.props.enableButtonPayNow(false);
-			}
-		}, 100);
+		if (this.isOvoPayment ? this.state.ovo.ovoPhonePaymentValid : true) {
+			this.props.enableButtonPayNow(true);
+		} else {
+			this.props.enableButtonPayNow(false);
+		}
 	}
 
 	autoLinkage(event) {

@@ -17,6 +17,7 @@ import {
 
 import styles from '../../../Mobile/mobile.scss';
 import ModalVerifyPhoneNumber from './ModalVerifyPhoneNumber';
+import { getRefreshToken } from '@/state/Auth/actions';
 
 
 class StepThree extends Component {
@@ -29,7 +30,8 @@ class StepThree extends Component {
 			applyCouponStep: componentState.button.active, 
 			removeCouponStep: componentState.button.active
 		};
-		this.cookies = this.props.cookies.get('user.token');
+		this.userCookies = this.props.cookies.get('user.token');
+		this.userRFCookies = this.props.cookies.get('user.rf.token');
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -50,12 +52,27 @@ class StepThree extends Component {
 		const me = this;
 		me.setState({ applyCouponStep: componentState.button.loading });
 		const { dispatch, soNumber } = me.props;
-		dispatch(new couponActions.addCoupon(me.cookies, soNumber, me.state.voucherCode)).then(() => {
-			dispatch(new paymentActions.applyBin(me.cookies, RESET_PAYMENT_METHOD));
+		dispatch(new couponActions.addCoupon(me.userCookies, soNumber, me.state.voucherCode)).then(() => {
+			dispatch(new paymentActions.applyBin(me.userCookies, RESET_PAYMENT_METHOD));
 			me.setState({ applyCouponStep: componentState.button.active });
 			pushDataLayer('checkout', 'checkout', { step: 5, option: 'Voucher' });
 		}).catch((error) => {
 			me.setState({ applyCouponStep: componentState.button.active });
+			
+			if (error.response.data.code === 405) {
+				dispatch(getRefreshToken({
+					userToken: this.userCookies,
+					userRFToken: this.userRFCookies
+				})).then((newToken) => {
+					this.props.cookies.set('user.exp', Number(newToken.expToken), { domain: process.env.SESSION_DOMAIN });
+					this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: process.env.SESSION_DOMAIN });
+					this.props.cookies.set('user.token', newToken.userToken, { domain: process.env.SESSION_DOMAIN });
+					this.userCookies = newToken.userToken;
+					this.userRFCookies = newToken.userRFToken;
+
+					this.onAddCoupon();
+				});
+			}
 		});
 	}
 
@@ -70,6 +87,19 @@ class StepThree extends Component {
 			});
 		}).catch((error) => {
 			this.setState({ removeCouponStep: componentState.button.active });
+			if (error.response.data.code === 405) {
+				dispatch(getRefreshToken({
+					userToken: this.userCookies,
+					userRFToken: this.userRFCookies
+				})).then((newToken) => {
+					this.props.cookies.set('user.exp', Number(newToken.expToken), { domain: process.env.SESSION_DOMAIN });
+					this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: process.env.SESSION_DOMAIN });
+					this.props.cookies.set('user.token', newToken.userToken, { domain: process.env.SESSION_DOMAIN });
+					this.userCookies = newToken.userToken;
+					this.userRFCookies = newToken.userRFToken;
+					this.onRemoveCoupon(event);
+				});
+			}
 		});
 		pushDataLayer('checkout', 'checkout', { step: 5, option: 'Non Voucher' });
 
@@ -84,7 +114,21 @@ class StepThree extends Component {
 		this.setState({ voucherCode: '', applyCouponStep: componentState.button.active });
 		const { dispatch } = this.props;
 		dispatch(new couponActions.resetCoupon()).then(() => {
-			dispatch(new paymentActions.applyBin(this.cookies, RESET_PAYMENT_METHOD));
+			dispatch(new paymentActions.applyBin(this.userCookies, RESET_PAYMENT_METHOD))
+			.catch((error) => {
+				if (error.response.data.code === 405) {
+					dispatch(getRefreshToken({
+						userToken: this.userCookies,
+						userRFToken: this.userRFCookies
+					})).then((newToken) => {
+						this.props.cookies.set('user.exp', Number(newToken.expToken), { domain: process.env.SESSION_DOMAIN });
+						this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: process.env.SESSION_DOMAIN });
+						this.props.cookies.set('user.token', newToken.userToken, { domain: process.env.SESSION_DOMAIN });
+						this.userCookies = newToken.userToken;
+						this.userRFCookies = newToken.userRFToken;
+					});
+				}
+			});
 		});
 	}
 

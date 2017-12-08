@@ -6,6 +6,7 @@ import { T } from '@/data/translations';
 import { actions as cartActions } from '@/state/Cart';
 import { actions as paymentAction } from '@/state/Payment';
 import { actions as globalAction } from '@/state/Global';
+import { componentState } from '@/utils';
 
 import { paymentGroupName, paymentMethodName } from '@/state/Payment/constants';
 import {
@@ -44,15 +45,26 @@ import PaymentSelection from './components/Payments/PaymentSelection';
 import PaymentCreditCard from './components/Payments/PaymentCreditCard';
 
 import styles from '../../../Mobile/mobile.scss';
+import { getRefreshToken } from '@/state/Auth/actions';
 
 class StepFour extends Component {
-	static placeOrder(token, dispatch, selectedAddress, billing) {
+	static placeOrder(userToken, userRFToken, dispatch, selectedAddress, billing) {
 		if (selectedAddress.type !== 'shipping') {
 			// set type pickup for O2O
 			selectedAddress.type = 'pickup';
 		}
 		billing = billing.length > 0 ? billing[0] : false;
-		dispatch(new cartActions.getPlaceOrderCart(token, selectedAddress, billing));
+		dispatch(new cartActions.getPlaceOrderCart(userToken, selectedAddress, billing))
+		.catch((error) => {
+			if (error.response.data.code === 405) {
+				dispatch(getRefreshToken({
+					userToken,
+					userRFToken
+				})).then((response) => {
+					dispatch(new cartActions.getPlaceOrderCart(response.userToken, selectedAddress, billing));
+				});
+			}
+		});
 	}
 
 	constructor(props) {
@@ -73,10 +85,13 @@ class StepFour extends Component {
 			installmentList: [],
 			tahun: [],
 			tooltips: null,
-			cardValidLuhn: false
+			cardValidLuhn: false,
+			alreadySubmitPay: false,
+
 		};
 		this.isOvoPayment = this.props.payments.paymentMethod === 'e_wallet_ovo';
-		this.cookies = this.props.cookies.get('user.token');
+		this.userCookies = this.props.cookies.get('user.token');
+		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.onSelectCard = this.onSelectCard.bind(this);
 		this.loadBlockContent = false;
 	}
@@ -117,7 +132,6 @@ class StepFour extends Component {
 					...ovo,
 					ovoPhonePayment: this.props.payments.ovoPhoneNumber,
 					ovoPhonePaymentValid: this.props.payments.ovoPhoneNumber,
-					autoLinkage: (this.props.payments.ovoInfo.ovoFlag === '0'),
 				}
 			});
 		}
@@ -129,7 +143,17 @@ class StepFour extends Component {
 		}
 		if (!this.loadBlockContent) {
 			const { dispatch } = this.props;
-			dispatch(new globalAction.getBlockContents(this.props.cookies.get('user.token'), ['660']));
+			dispatch(new globalAction.getBlockContents(this.props.cookies.get('user.token'), ['660']))
+			.catch((error) => {
+				if (error.response.data.code === 405) {
+					dispatch(getRefreshToken({
+						userToken: this.userCookies,
+						userRFToken: this.userRFCookies
+					})).then((response) => {
+						dispatch(new globalAction.getBlockContents(response.userToken, ['660']));
+					});
+				}
+			});
 			this.loadBlockContent = true;
 		}
 		if (nextProps.payments.selectedPaymentOption && this.props.payments.paymentMethod !== nextProps.payments.paymentMethod && nextProps.payments.paymentMethod === paymentMethodName.COMMERCE_VERITRANS_INSTALLMENT) {
@@ -137,8 +161,25 @@ class StepFour extends Component {
 		}
 	}
 
+	onRefreshToken(dispatch, callback = false) {
+		dispatch(getRefreshToken({
+			userToken: this.userCookies,
+			userRFToken: this.userRFCookies
+		})).then((newToken) => {
+			this.props.cookies.set('user.exp', Number(newToken.expToken), { domain: process.env.SESSION_DOMAIN });
+			this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: process.env.SESSION_DOMAIN });
+			this.props.cookies.set('user.token', newToken.userToken, { domain: process.env.SESSION_DOMAIN });
+			this.userCookies = newToken.userToken;
+			this.userRFCookies = newToken.userRFToken;
+
+			if (callback) {
+				this.callback();
+			}
+		});
+	}
+
 	onRequestVtToken(installment = false) {
-		const { dispatch, soNumber, stepState, billing } = this.props;
+		const { dispatch, soNumber } = this.props;
 		let bankName = '';
 		const cardDetail = {
 			card_cvv: this.props.payments.selectedCardDetail.cvv,
@@ -205,18 +246,27 @@ class StepFour extends Component {
 						false,
 						this.getAffTracking()
 					)
-				);
+				).catch((error) => {
+					if (error.response.data.code === 405) {
+						const cvCall = () => {
+							this.onVtCreditCardCallback(response);
+						};
+						this.onRefreshToken(dispatch, cvCall);
+						
+					} else {
+						this.onPaymentFailed();
+					}
+				});
 			} else {
-				const selectedAddress = stepState.stepOne.tabIndex > 0 ? stepState.stepOne.selectedAddressO2O : stepState.stepOne.selectedAddress;
 				dispatch(new paymentAction.vtModalBoxOpen(false));
 				dispatch(new paymentAction.paymentError('Silahkan periksa data kartu kredit Anda.'));
 				dispatch(
 					new paymentAction.failAuthTokenCC(
-						this.cookies,
+						this.userCookies,
 						soNumber
 					)
 				);
-				this.constructor.placeOrder(this.cookies, dispatch, selectedAddress, billing);
+				this.onPaymentFailed();
 			}
 		};
 
@@ -255,18 +305,27 @@ class StepFour extends Component {
 						false,
 						this.getAffTracking()
 					)
-				);
+				).catch((error) => {
+					if (error.response.data.code === 405) {
+						const vtCall = () => {
+							this.onVtInstallmentCallback(response);
+						};
+						this.onRefreshToken(dispatch, vtCall);
+						
+					} else {
+						this.onPaymentFailed();
+					}
+				});
 			} else {
-				const selectedAddress = stepState.stepOne.tabIndex > 0 ? stepState.stepOne.selectedAddressO2O : stepState.stepOne.selectedAddress;
 				dispatch(new paymentAction.vtModalBoxOpen(false));
 				dispatch(new paymentAction.paymentError('Silahkan periksa data kartu kredit Anda.'));
 				dispatch(
 					new paymentAction.failAuthTokenCC(
-						this.cookies,
+						this.userCookies,
 						soNumber
 					)
 				);
-				this.constructor.placeOrder(this.cookies, dispatch, selectedAddress, billing);
+				this.onPaymentFailed();
 			}
 		};
 		dispatch(
@@ -287,7 +346,22 @@ class StepFour extends Component {
 				installment ? onVtInstallmentCallback : onVtCreditCardCallback,
 				this.getAffTracking()
 			)
-		);
+		).catch((error) => {
+			if (error.response.data.code === 405) {
+				this.onRefreshToken(dispatch);
+			} else {
+				this.onPaymentFailed();
+			}
+		});
+	}
+
+	onPaymentFailed() {
+		const { dispatch, stepState, billing } = this.props;
+		const selectedAddress = stepState.stepOne.tabIndex > 0 ? stepState.stepOne.selectedAddressO2O : stepState.stepOne.selectedAddress;
+		this.constructor.placeOrder(this.userCookies, this.userRFCookies, dispatch, selectedAddress, billing);
+		this.setState({
+			alreadySubmitPay: false
+		});
 	}
 
 	onDoPayment() {
@@ -311,7 +385,7 @@ class StepFour extends Component {
 					const ovoPhoneNumber = this.state.ovo.autoLinkage ? this.props.payments.ovoPaymentNumber : this.props.payments.ovoPhoneNumber;
 					dispatch(
 						new paymentAction.pay(
-							this.cookies,
+							this.userCookies,
 							this.props.soNumber,
 							this.props.payments.selectedPaymentOption === false ? this.state.selectedPayment : this.props.payments.selectedPaymentOption,
 							{
@@ -331,7 +405,15 @@ class StepFour extends Component {
 							showModalOvo: true
 						});
 					})
-					.catch(() => {
+					.catch((error) => {
+						if (error.response.data.code === 405) {
+							const doPay = () => {
+								this.onDoPayment();
+							};
+							this.onRefreshToken(dispatch, doPay);
+						} else {
+							this.onPaymentFailed();
+						}
 						this.setState({
 							showModalOvo: false
 						});
@@ -348,7 +430,7 @@ class StepFour extends Component {
 				}
 				dispatch(
 					new paymentAction.pay(
-						this.cookies,
+						this.userCookies,
 						this.props.soNumber,
 						this.props.payments.selectedPaymentOption === false ? this.state.selectedPayment : this.props.payments.selectedPaymentOption,
 						{
@@ -360,7 +442,16 @@ class StepFour extends Component {
 						false,
 						this.getAffTracking()
 					)
-				);
+				).catch((error) => {
+					if (error.response.data.code === 405) {
+						const doPay = () => {
+							this.onDoPayment();
+						};
+						this.onRefreshToken(dispatch, doPay);
+					} else {
+						this.onPaymentFailed();
+					}
+				});
 				break;
 			}
 		}
@@ -370,7 +461,7 @@ class StepFour extends Component {
 		const selectedPaymentOption = new paymentAction.getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 		if (event.valid) {
 			this.props.dispatch(new paymentAction.changeCreditCardNumber(event.ccNumber));
-			this.props.dispatch(new paymentAction.applyBin(this.cookies, selectedPaymentOption.value, event.ccNumber, ''));
+			this.props.dispatch(new paymentAction.applyBin(this.userCookies, selectedPaymentOption.value, event.ccNumber, ''));
 			this.setState({
 				appliedBin: {
 					selectedPaymentOption,
@@ -380,7 +471,7 @@ class StepFour extends Component {
 				cardValidLuhn: true
 			});
 		} else {
-			this.props.dispatch(new paymentAction.applyBin(this.cookies, -1, event.ccNumber, ''));
+			this.props.dispatch(new paymentAction.applyBin(this.userCookies, -1, event.ccNumber, ''));
 			this.setState({
 				appliedBin: {
 					selectedPaymentOption,
@@ -433,7 +524,7 @@ class StepFour extends Component {
 		this.props.payments.selectedPaymentOption = selectedPaymentOption;
 		const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
 		const cardNumber = this.state.appliedBin ? this.state.appliedBin.cardNumber : '';
-		dispatch(new paymentAction.applyBin(this.cookies, selectedPaymentOption.value, cardNumber, bank, term.term));
+		dispatch(new paymentAction.applyBin(this.userCookies, selectedPaymentOption.value, cardNumber, bank, term.term));
 		dispatch(new paymentAction.termChange(term));
 	}
 
@@ -441,7 +532,7 @@ class StepFour extends Component {
 		const { dispatch } = this.props;
 		dispatch(
 			new paymentAction.pay(
-				this.cookies,
+				this.userCookies,
 				this.props.soNumber,
 				this.props.payments.selectedPaymentOption,
 				{
@@ -466,7 +557,17 @@ class StepFour extends Component {
 				false,
 				this.getAffTracking()
 			)
-		);
+		).catch((error) => {
+			if (error.response.data.code === 405) {
+				const sprintCall = () => {
+					this.onRequestSprintInstallment(mode);
+				};
+				this.onRefreshToken(dispatch, sprintCall);
+				
+			} else {
+				this.onPaymentFailed();
+			}
+		});
 	}
 	
 	onBillingNumberChange(event) {
@@ -480,8 +581,16 @@ class StepFour extends Component {
 	}
 
 	onVt3dsModalBoxClose() {
-		const { dispatch } = this.props;
+		const { dispatch, soNumber } = this.props;
 		dispatch(new paymentAction.vtModalBoxOpen(false));
+		dispatch(
+			new paymentAction.failAuthTokenCC(
+				this.userCookies,
+				soNumber
+			)
+		);
+		this.onPaymentFailed();
+
 	}
 
 	getAffTracking() {
@@ -513,7 +622,7 @@ class StepFour extends Component {
 
 	paymentMethodChange(stateSelectedPayment) {
 		const { payments, dispatch } = this.props;
-		dispatch(new paymentAction.changePaymentMethod(stateSelectedPayment.value, payments.paymentMethods, this.cookies));
+		dispatch(new paymentAction.changePaymentMethod(stateSelectedPayment.value, payments.paymentMethods, this.userCookies));
 		this.setState({ 
 			showPaymentInfo: null,
 			stateSelectedPayment,
@@ -532,6 +641,9 @@ class StepFour extends Component {
 
 	submitPayment(e) {
 		e.preventDefault();
+		this.setState({
+			alreadySubmitPay: true
+		});
 		const { stepState, carts, billing, dispatch } = this.props;
 		// check validation dropshipper
 		if (!stepState.stepOne.dropshipper.validDropshipper) {
@@ -561,16 +673,16 @@ class StepFour extends Component {
 			});
 
 			const billingPlaceOrder = billing.length > 0 ? billing[0] : false;
-			dispatch(new cartActions.getPlaceOrderCart(this.cookies, tempSelectedAddress, billingPlaceOrder))
+			dispatch(new cartActions.getPlaceOrderCart(this.userCookies, tempSelectedAddress, billingPlaceOrder))
 			.then(() => {
 				if (this.state.appliedBin) {
 					const selectedPaymentOption = this.state.appliedBin.selectedPaymentOption;
-					dispatch(new paymentAction.applyBin(this.cookies, selectedPaymentOption.value, this.state.appliedBin.cardNumber, this.state.appliedBin.bankName)).then(() => {
+					dispatch(new paymentAction.applyBin(this.userCookies, selectedPaymentOption.value, this.state.appliedBin.cardNumber, this.state.appliedBin.bankName)).then(() => {
 						if (gosendChecked.length > 0) {
 							carts.forEach((value, index) => {
 								const indexStore = gosendChecked.indexOf(parseInt(value.store.id, 10));
 								if (indexStore !== -1) {
-									dispatch(new cartActions.updateGosend(this.cookies, parseInt(value.store.id, 10), 19, this.props))
+									dispatch(new cartActions.updateGosend(this.userCookies, parseInt(value.store.id, 10), 19, this.props))
 									.then(storeId => {
 										gosendChecked.splice(indexStore, 1);
 										if (gosendChecked.length === 0) {
@@ -596,7 +708,7 @@ class StepFour extends Component {
 	}
 	
 	checkOvoStatus(tick) {
-		const { dispatch, soNumber, payments, stepState, billing } = this.props;
+		const { dispatch, soNumber, payments, stepState } = this.props;
 		const params = payments.selectedPaymentOption.settings.checkParams.join('&');
 		const checkStatusUrl = payments.selectedPaymentOption.settings.checkUrl;
 		const selected = stepState.stepOne.tabIndex > 0 ? stepState.stepOne.selectedAddressO2O : stepState.stepOne.selectedAddress;
@@ -607,16 +719,16 @@ class StepFour extends Component {
 			});
 			// Event 0 = shipping, 1 = O2O
 			if (selected.id) {
-				this.constructor.placeOrder(this.cookies, dispatch, selected, billing);
+				this.onPaymentFailed();
 			}
 		} 
 		if (tick % this.state.ovo.ovoInterval === 0) {
-			dispatch(new paymentAction.checkStatusOvoPayment(`${checkStatusUrl}${params}`, this.cookies, soNumber, this.state.ovo.ovoPhonePayment, tick < 1))
+			dispatch(new paymentAction.checkStatusOvoPayment(`${checkStatusUrl}${params}`, this.userCookies, soNumber, this.state.ovo.ovoPhonePayment, tick < 1))
 			.then(() => {
 				if (tick === 0 && selected) {
 					// Event 0 = shipping, 1 = O2O
 					if (selected.id) {
-						this.constructor.placeOrder(this.cookies, dispatch, selected, billing);
+						this.onPaymentFailed();
 					}
 				}
 			});
@@ -644,7 +756,9 @@ class StepFour extends Component {
 	}
 	
 	checkShowingOvoPhone() {
-		return (!this.isOvoPayment || (!this.state.ovo.autoLinkage && this.isOvoPayment));
+		const { payments } = this.props;
+		const ovoValidation = (payments.ovoInfo && payments.ovoInfo.ovoFlag === '1') ? true : !this.state.ovo.autoLinkage;
+		return (!this.isOvoPayment || (ovoValidation && this.isOvoPayment));
 	}
 
 	createClassCard() {
@@ -666,6 +780,17 @@ class StepFour extends Component {
 		});
 	}
 
+	payNowButtonState() {
+		if (!this.props.stepState.stepFour.payNowButton) {
+			return componentState.button.disabled;
+		}
+
+		if (this.state.alreadySubmitPay) {
+			return componentState.button.loading;
+		}
+
+		return componentState.button.active;
+	}
 
 	renderSwitchPaymentElement() {
 		const { payments } = this.props;
@@ -746,11 +871,12 @@ class StepFour extends Component {
 					
 					
 					{payments.selectedPayment && this.renderSwitchPaymentElement()}
+					<label htmlFor='ovo-phone'>{T.checkout.PHONE_NUMBER_O2O_CONFIRMATION}</label>
 					<Input
 						dataProps={{
 							value: payments.billingPhoneNumber || ''
 						}}
-						label={T.checkout.PHONE_NUMBER_O2O_CONFIRMATION}
+						color={!payments.billingPhoneNumber ? 'red' : null}
 						min={0}
 						type='tel'
 						placeholder={payments.billingPhoneNumber || T.checkout.BILLING_PHONE_NUMBER}
@@ -765,7 +891,9 @@ class StepFour extends Component {
 								state={ovoReadOnly ? 'disabled' : ''} 
 								color={ovoReadOnly ? 'purple' : null} 
 								icon={ovoReadOnly ? 'check' : null} 
-								defaultValue={payments.ovoPhoneNumber}
+								dataProps={{
+									value: payments.ovoPhoneNumber
+								}}
 								placeholder={T.checkout.SAVED_OVO_PHONE} 
 								type='tel'
 								min={0}
@@ -775,7 +903,7 @@ class StepFour extends Component {
 					}
 					<div className={styles.checkOutAction}>
 						<Checkbox defaultChecked={this.state.termCondition} onClick={() => this.setState({ termCondition: !this.state.termCondition })}>{T.checkout.TERMS_PAYMENT}</Checkbox>
-						<Button block size='large' color='red' state={!this.props.stepState.stepFour.payNowButton ? 'disabled' : ''} onClick={(e) => this.submitPayment(e)}>{T.checkout.BUY_NOW}</Button>
+						<Button block size='large' color='red' state={this.payNowButtonState()} onClick={(e) => this.submitPayment(e)}>{T.checkout.BUY_NOW}</Button>
 					</div>
 				</div>
 				{
@@ -826,9 +954,15 @@ const mapStateToProps = (state) => {
 		state.payments.billingPhoneNumber = billingPhoneNumber;
 	}
 	state.payments.ovoInfo = state.cart.ovoInfo || false;
-	if (state.payments.ovoPhoneNumber === null) {
+	if (state.payments.ovoPhoneNumber === null || state.payments.ovoPhoneNumber === '') {
 		state.payments.ovoPhoneNumber = state.payments.ovoInfo ? state.payments.ovoInfo.ovoId : null;
 	}
+
+	if (state.payments.selectedPayment.value === paymentGroupName.CREDIT_CARD 
+		&& state.payments.selectedPayment.cards < 1) {
+		state.payments.twoClickEnabled = false;
+	}
+
 	return {
 		payments: state.payments,
 		soNumber: state.cart.soNumber,

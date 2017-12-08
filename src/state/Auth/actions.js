@@ -15,7 +15,6 @@ const requestToken = (token) => ({
 
 
 const getRefreshToken = (token) => dispatch => new Promise((resolve, reject) => {
-	
 	const $dis = dispatch;
 	const req = {
 		token: token.userToken, 

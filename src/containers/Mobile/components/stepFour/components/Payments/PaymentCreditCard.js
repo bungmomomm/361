@@ -58,6 +58,10 @@ class PaymentCreditCard extends Component {
 		}
 	}
 
+	componentWillUnmount() {
+		this.props.enableButtonPayNow(false);
+	}
+
 	onCardNumberChange(event) {
 		const { payments, dispatch } = this.props;
 		const selectedPaymentOption = new actions.getAvailabelPaymentSelection(payments.selectedPayment);
@@ -129,21 +133,19 @@ class PaymentCreditCard extends Component {
 	}
 
 	validateInstallmentForm() {
-		setTimeout(() => {
-			this.props.enableButtonPayNow(false);
-			if (this.state.fromRadio && this.ccvValueRadio !== '') {
-				this.props.enableButtonPayNow(true);
-			}
-			if (
-				!this.state.fromRadio &&
-				(this.elCreditCard !== null && this.elCreditCard.state.ccValid === 'green') &&
-				this.elMonth.state.selected !== null &&
-				this.elYear.state.selected !== null &&
-				this.ccvValue !== ''
-			) {
-				this.props.enableButtonPayNow(true);
-			}
-		}, 100);
+		this.props.enableButtonPayNow(false);
+		if (this.state.fromRadio && this.ccvValueRadio !== '') {
+			this.props.enableButtonPayNow(true);
+		}
+		if (
+			!this.state.fromRadio &&
+			(this.elCreditCard !== null && this.elCreditCard.state.ccValid === 'green') &&
+			this.elMonth.state.selected !== null &&
+			this.elYear.state.selected !== null &&
+			this.ccvValue !== ''
+		) {
+			this.props.enableButtonPayNow(true);
+		}
 	}
 
 	resetCVV() {

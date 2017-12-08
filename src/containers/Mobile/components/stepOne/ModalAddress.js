@@ -256,6 +256,7 @@ class ModalAddress extends Component {
 				lat: this.FormLatitude === '' ? this.props.formData.attributes.latitude : this.FormLatitude
 			};
 		}
+		
 		this.setState({ 
 			showMap,
 			mapMarkerCenter,
