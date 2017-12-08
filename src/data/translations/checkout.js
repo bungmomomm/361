@@ -59,6 +59,6 @@ export default {
 	SAVE_CARD_FOR_NEXT_TRANSACTION: 'Simpan kartu untuk transaksi selanjutnya',
 	TERMS_PAYMENT: 'Saya setuju dengan syarat dan ketentuan MatahariMall.com',
 	BUY_NOW: 'Bayar Sekarang',
-	PAYMENT_ERROR: 'Pembayaran Anda tidak <br />berhasil coba lagi atau gunakan < br />metode pembayaran lainnya < br />',
+	PAYMENT_ERROR: 'Pembayaran Anda tidak <br />berhasil coba lagi atau gunakan <br />metode pembayaran lainnya <br />',
 	OVO_PAYMENT: 'OVO Payment',
 };
