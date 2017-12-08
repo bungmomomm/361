@@ -160,7 +160,7 @@ class StepFour extends Component {
 			this.setInstallmentList(nextProps.payments.selectedPaymentOption.banks[0]);
 		}
 	}
-
+	
 	onRefreshToken(dispatch, callback = false) {
 		dispatch(getRefreshToken({
 			userToken: this.userCookies,
@@ -519,12 +519,14 @@ class StepFour extends Component {
 	}
 
 	onTermChange(term) {
+		let termValue = typeof term.term !== 'undefined' ? term.term : 3;
+		termValue = typeof term.value !== 'undefined' ? term.value : termValue;
 		const { dispatch } = this.props;
 		const selectedPaymentOption = new paymentAction.getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 		this.props.payments.selectedPaymentOption = selectedPaymentOption;
 		const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
 		const cardNumber = this.state.appliedBin ? this.state.appliedBin.cardNumber : '';
-		dispatch(new paymentAction.applyBin(this.userCookies, selectedPaymentOption.value, cardNumber, bank, term.term));
+		dispatch(new paymentAction.applyBin(this.userCookies, selectedPaymentOption.value, cardNumber, bank, termValue));
 		dispatch(new paymentAction.termChange(term));
 	}
 
@@ -606,7 +608,7 @@ class StepFour extends Component {
 		list.listCicilan.map((item, idx) => (
 			installmentList.push({
 				label: item.label,
-				value: item.label
+				value: item.value.term
 			})
 		));
 		this.setState({ installmentList });
@@ -781,7 +783,7 @@ class StepFour extends Component {
 	}
 
 	payNowButtonState() {
-		if (!this.props.stepState.stepFour.payNowButton) {
+		if (!this.props.stepState.stepFour.payNowButton || !this.state.termCondition) {
 			return componentState.button.disabled;
 		}
 
