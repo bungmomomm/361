@@ -783,7 +783,7 @@ class StepFour extends Component {
 	}
 
 	payNowButtonState() {
-		if (!this.props.stepState.stepFour.payNowButton) {
+		if (!this.props.stepState.stepFour.payNowButton || !this.state.termCondition) {
 			return componentState.button.disabled;
 		}
 
