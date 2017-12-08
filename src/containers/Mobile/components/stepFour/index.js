@@ -708,7 +708,7 @@ class StepFour extends Component {
 	}
 	
 	checkOvoStatus(tick) {
-		const { dispatch, soNumber, payments, stepState, billing } = this.props;
+		const { dispatch, soNumber, payments, stepState } = this.props;
 		const params = payments.selectedPaymentOption.settings.checkParams.join('&');
 		const checkStatusUrl = payments.selectedPaymentOption.settings.checkUrl;
 		const selected = stepState.stepOne.tabIndex > 0 ? stepState.stepOne.selectedAddressO2O : stepState.stepOne.selectedAddress;
@@ -719,7 +719,7 @@ class StepFour extends Component {
 			});
 			// Event 0 = shipping, 1 = O2O
 			if (selected.id) {
-				this.constructor.placeOrder(this.userCookies, this.userRFCookies, dispatch, selected, billing);
+				this.onPaymentFailed();
 			}
 		} 
 		if (tick % this.state.ovo.ovoInterval === 0) {
@@ -728,7 +728,7 @@ class StepFour extends Component {
 				if (tick === 0 && selected) {
 					// Event 0 = shipping, 1 = O2O
 					if (selected.id) {
-						this.constructor.placeOrder(this.userCookies, this.userRFCookies, dispatch, selected, billing);
+						this.onPaymentFailed();
 					}
 				}
 			});
