@@ -14,6 +14,7 @@ export default {
 	PHONE_NUMBER: 'No Handphone',
 	DROPSHIPPER_NAME: 'Nama Dropshipper',
 	CREATE_NEW_ADDRESS: 'Buat Alamat Baru',
+	EDIT_ADDRESS: 'Edit Alamat',
 	MUST_FILLED: 'wajib diisi',
 	GOSEND_ADDRESS_RULE: 'Lokasi peta harus sesuai dengan alamat pengiriman. Lokasi diperlukan jika ingin menggunakan jasa pengiriman GO-SEND.',
 	O2O_ADDRESS_RULE: 'Harap tidak mengisi alamat pickup point O2O tanpa melalui pilihan menu Ambil di Toko (O2O). Kami tidak bertanggung jawab bila terjadi kehirlangan',

@@ -359,7 +359,7 @@ class ModalAddress extends Component {
 				showOverlayCloseButton
 				onCloseRequest={this.props.handleClose}
 			>
-				<Modal.Header>{T.checkout.CREATE_NEW_ADDRESS}</Modal.Header>
+				<Modal.Header>{this.props.isEdit ? T.checkout.EDIT_ADDRESS : T.checkout.CREATE_NEW_ADDRESS}</Modal.Header>
 				<Modal.Body>
 					<Input
 						label='Simpan Sebagai *'
