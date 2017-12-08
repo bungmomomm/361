@@ -157,17 +157,16 @@ class ModalAddress extends Component {
 	}
 
 	setPinPoint(e) {
-		if (this.state.isValidMarkerPosition) {
-			if (!this.state.formattedAddress && this.state.mapMarkerCenter === null) {
-				this.FormLongitude = this.selectedPolygon.center.lng;
-				this.FormLatitude = this.selectedPolygon.center.lat;
-			} else {
-				this.FormLongitude = this.state.mapMarkerCenter.lng;
-				this.FormLatitude = this.state.mapMarkerCenter.lat;
-			}
-			this.getPinPointAddress(this.FormLatitude, this.FormLongitude);
-			this.setState({ showMap: false });
+		if (!this.state.isValidMarkerPosition) return;
+
+		this.FormLongitude = this.selectedPolygon.center.lng;
+		this.FormLatitude = this.selectedPolygon.center.lat;
+		if (this.state.mapMarkerCenter && this.state.mapMarkerCenter.lat !== '' && this.state.mapMarkerCenter.lng !== '') {
+			this.FormLongitude = this.state.mapMarkerCenter.lng;
+			this.FormLatitude = this.state.mapMarkerCenter.lat;
 		}
+		this.getPinPointAddress(this.FormLatitude, this.FormLongitude);
+		this.setState({ showMap: false });
 	}
 
 	validatePositionMarker(e) {
@@ -244,26 +243,34 @@ class ModalAddress extends Component {
 
 	toggleGoogleMap() {
 		const showMap = !this.state.showMap;
+		let mapMarkerCenter = this.state.mapMarkerCenter;
 		if (showMap) {
+			// open
 			const district = this.state.selected.district.value.toLowerCase().replace(/\W+(.)/g, (match, chr) => chr.toUpperCase());
 			const selectedPolygon = _.find(Polygon, district);
 			this.selectedPolygon = selectedPolygon[district];
+		} else {
+			// close
+			mapMarkerCenter = {
+				lng: this.FormLongitude === '' ? this.props.formData.attributes.longitude : this.FormLongitude,
+				lat: this.FormLatitude === '' ? this.props.formData.attributes.latitude : this.FormLatitude
+			};
 		}
 		this.setState({ 
-			showMap
+			showMap,
+			mapMarkerCenter,
+			isValidMarkerPosition: true
 		});
 	}
 
 	mapMoved(mapProps, map) {
-		this.FormLatitude = map.getCenter().lat();
-		this.FormLongitude = map.getCenter().lng();
 		const isValidMarkerPosition = this.isValidPosition(map.center);
-		this.getTemporaryPinPointAddress(this.FormLatitude, this.FormLongitude);
+		this.getTemporaryPinPointAddress(map.getCenter().lat(), map.getCenter().lng());
 		this.setState({ 
 			isValidMarkerPosition,
 			mapMarkerCenter: {
-				lat: this.FormLatitude, 
-				lng: this.FormLongitude
+				lat: map.getCenter().lat(), 
+				lng: map.getCenter().lng()
 			} 
 		});
 	}
