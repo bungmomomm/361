@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { Image } from '@/components';
 // component load
 import { Modal, Level } from 'mm-ui';
-import styles from './ModalOVOCountdown.scss';
-import { T } from '@/data/translations';
+// import styles from './ModalOVOCountdown.scss';
+// import { T } from '@/data/translations';
 
 export default class OvoCountDownModal extends Component {
 	constructor(props) {
@@ -40,17 +40,14 @@ export default class OvoCountDownModal extends Component {
 			<Modal size='small' show showOverlayCloseButton={false}>
 				<Modal.Header>
 					<Level>
-						<Level.Item className={styles.borderRight}>
-							<Image src='loading-momo.png' />
-						</Level.Item>
 						<Level.Item>
-							<div className={styles.countdown}>{this.state.countdown}</div>
+							<Image src='loading-momo.png' />
 						</Level.Item>
 					</Level>
 				</Modal.Header>
 				<Modal.Body>
-					<p className='font-purple text-center'><strong>{T.checkout.OVO_PAYMENT}</strong></p>
-					<p className='text-center'>Silakan buka aplikasi OVO Anda untuk konfirmasi pembayaran. Pembayaran Anda akan kadaluarsa dalam waktu <strong>{this.props.secondsRemaining} detik</strong>. Terima Kasih</p>
+					<p className='font-purple'><strong>OVO Payment</strong></p>
+					<p>Mohon lakukan konfirmasi pembayaran dalam waktu <strong>30 detik</strong>.</p>
 				</Modal.Body>
 			</Modal>
 		);
