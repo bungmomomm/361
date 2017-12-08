@@ -285,7 +285,7 @@ class stepOne extends Component {
 			},
 			stepTwo: {
 				...stepState.stepTwo,
-				disabled: false
+				disabled: notAlowedShipping || false
 			},
 		};
 		this.props.applyState(checkoutState);
