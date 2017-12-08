@@ -713,7 +713,7 @@ class StepFour extends Component {
 		const { dispatch, soNumber, payments, stepState } = this.props;
 		const params = payments.selectedPaymentOption.settings.checkParams.join('&');
 		const checkStatusUrl = payments.selectedPaymentOption.settings.checkUrl;
-		const selected = stepState.stepOne.tabIndex > 0 ? stepState.stepOne.selectedAddressO2O : stepState.stepOne.selectedAddress;
+		const selected = stepState.stepOne.activeTab > 0 ? stepState.stepOne.selectedAddressO2O : stepState.stepOne.selectedAddress;
 		
 		if (this.props.payments.paymentOvoFailed) {
 			this.setState({
