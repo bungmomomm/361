@@ -66,12 +66,14 @@ class PaymentInstallment extends Component {
 	}
 
 	onTermChange(term) {
+		let termValue = typeof term.term !== 'undefined' ? term.term : 3;
+		termValue = typeof term.value !== 'undefined' ? term.value : termValue;
 		const { dispatch, payments, appliedBin } = this.props;
 		const selectedPaymentOption = new actions.getAvailabelPaymentSelection(payments.selectedPayment);
 		payments.selectedPaymentOption = selectedPaymentOption;
 		const bank = (!payments.selectedBank) ? '' : payments.selectedBank.value.value;
 		const cardNumber = appliedBin ? appliedBin.cardNumber : '';
-		dispatch(new actions.applyBin(this.cookies, selectedPaymentOption.value, cardNumber, bank, term.term));
+		dispatch(new actions.applyBin(this.cookies, selectedPaymentOption.value, cardNumber, bank, termValue));
 		dispatch(new actions.termChange(term));
 		this.setState({
 			form: {
