@@ -628,7 +628,8 @@ class StepFour extends Component {
 		this.setState({ 
 			showPaymentInfo: null,
 			stateSelectedPayment,
-			cardValidLuhn: false
+			cardValidLuhn: false,
+			alreadySubmitPay: false,
 		});
 
 	}
