@@ -76,12 +76,6 @@ class ModalAddress extends Component {
 		const { dispatch } = this.props;
 		this.constructor.fetchGetCityProvince(this.cookies, dispatch);
 	}
-
-	componentWillReceiveProps(nextProps) {
-		if (nextProps.formData !== this.props.formData) {
-			// this.getPinPointAddress();
-		}
-	}
 	
 	onChangeProvince(e) {
 		const value = e.value;
@@ -243,7 +237,7 @@ class ModalAddress extends Component {
 
 	toggleGoogleMap() {
 		const showMap = !this.state.showMap;
-		let mapMarkerCenter = this.state.mapMarkerCenter;
+		// let mapMarkerCenter = this.state.mapMarkerCenter;
 		if (showMap) {
 			// open
 			const district = this.state.selected.district.value.toLowerCase().replace(/\W+(.)/g, (match, chr) => chr.toUpperCase());
@@ -251,15 +245,28 @@ class ModalAddress extends Component {
 			this.selectedPolygon = selectedPolygon[district];
 		} else {
 			// close
-			mapMarkerCenter = {
-				lng: this.FormLongitude === '' ? this.props.formData.attributes.longitude : this.FormLongitude,
-				lat: this.FormLatitude === '' ? this.props.formData.attributes.latitude : this.FormLatitude
-			};
+			let lat = this.selectedPolygon.center.lat;
+			let lng = this.selectedPolygon.center.lng;
+			
+			if (this.props.isEdit) {
+				if (typeof this.props.formData.attributes.latitude !== 'undefined' && typeof this.props.formData.attributes.longitude !== 'undefined') {
+					lat = this.props.formData.attributes.latitude;
+					lng = this.props.formData.attributes.longitude;
+				}
+			}
+
+			if (typeof this.FormLongitude !== 'undefined' && typeof this.FormLatitude !== 'undefined') {
+				lat = this.FormLatitude;
+				lng = this.FormLongitude;
+			}
+
+			this.setState({ mapMarkerCenter: { lng, lat } });
 		}
+
+		// console.log(mapMarkerCenter);
 		
 		this.setState({ 
 			showMap,
-			mapMarkerCenter,
 			isValidMarkerPosition: true
 		});
 	}
