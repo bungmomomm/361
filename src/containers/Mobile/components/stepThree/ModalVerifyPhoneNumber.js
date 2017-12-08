@@ -176,12 +176,13 @@ class ModalVerifyPhoneNumber extends Component {
 				size='small'
 				className='modalVerifyPhoneNumber'
 				onCloseRequest={(e) => this.closeModal(e)}
+				style={{ padding: '25px 15px', width: '90%' }}
 			>
 				<Modal.Header>
 					<div>{T.checkout.PHONE_NUMBER_VERIFICATION}</div>
 					<small>{T.checkout.PLEASE_ADD_PHONE_NUMBER}</small>
 				</Modal.Header>
-				<Modal.Body style={{ padding: '25px 15px', width: '90%' }}>
+				<Modal.Body>
 					{
 						!this.state.isModalOtpActive && (
 							<Input 
