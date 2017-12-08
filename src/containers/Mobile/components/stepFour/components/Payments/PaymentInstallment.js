@@ -125,7 +125,7 @@ class PaymentInstallment extends Component {
 		list.listCicilan.map((item, idx) => (
 			installmentList.push({
 				label: item.label,
-				value: item.label
+				value: item.value.term
 			})
 		));
 		this.setState({ installmentList });
