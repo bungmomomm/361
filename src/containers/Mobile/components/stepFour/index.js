@@ -157,7 +157,7 @@ class StepFour extends Component {
 			this.setInstallmentList(nextProps.payments.selectedPaymentOption.banks[0]);
 		}
 	}
-
+	
 	onRefreshToken(dispatch, callback = false) {
 		dispatch(getRefreshToken({
 			userToken: this.userCookies,
@@ -877,7 +877,7 @@ class StepFour extends Component {
 					}
 					<div className={styles.checkOutAction}>
 						<Checkbox defaultChecked={this.state.termCondition} onClick={() => this.setState({ termCondition: !this.state.termCondition })}>{T.checkout.TERMS_PAYMENT}</Checkbox>
-						<Button block size='large' color='red' state={!this.props.stepState.stepFour.payNowButton ? 'disabled' : ''} onClick={(e) => this.submitPayment(e)}>{T.checkout.BUY_NOW}</Button>
+						<Button block size='large' color='red' state={this.props.stepState.stepFour.payNowButton && this.state.termCondition ? '' : 'disabled'} onClick={(e) => this.submitPayment(e)}>{T.checkout.BUY_NOW}</Button>
 					</div>
 				</div>
 				{
