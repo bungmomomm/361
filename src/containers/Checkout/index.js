@@ -815,12 +815,14 @@ class Checkout extends Component {
 	}
 
 	onTermChange(term) {
+		let termValue = typeof term.term !== 'undefined' ? term.term : 3;
+		termValue = typeof term.value !== 'undefined' ? term.value : termValue;
 		const { dispatch } = this.props;
 		this.props.payments.selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 		const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 		const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
 		const cardNumber = this.state.appliedBin ? this.state.appliedBin.cardNumber : '';
-		this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, cardNumber, bank, term.term));
+		this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, cardNumber, bank, termValue));
 		dispatch(termChange(term));
 	}
 

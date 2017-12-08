@@ -16,7 +16,6 @@ class GoogleMap extends Component {
 			this.renderAutoComplete = true;
 			if (google) {
 				this.autocomplete = new google.maps.places.Autocomplete(event.target, {
-					types: ['(cities)'],
 					componentRestrictions: { country: 'id' }
 				});
 				this.autocomplete.addListener('place_changed', () => {
@@ -68,18 +67,18 @@ class GoogleMap extends Component {
 					style={{ width: '100%', height: '250px' }}
 					onDragend={onDragend}
 				>
-					<div id='pac-container'>	
-						<Input
-							id='pac-input'
-							onClick={(e) => this.autoComplete(e)}
-							className={styles.searchLocationInput}
-							placeholder='Cari Alamat'
-							size='large'
-							icon='search'
-						/>
-					</div>
 					{polygon && this.renderPolygon()}
 				</Map>
+				<div id='pac-container'>
+					<Input
+						id='pac-input'
+						onClick={(e) => this.autoComplete(e)}
+						className={styles.searchLocationInput}
+						placeholder='Cari Alamat'
+						size='large'
+						icon='search'
+					/>
+				</div>
 				{this.renderMarker()}
 			</div>
 		);
