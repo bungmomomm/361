@@ -509,12 +509,14 @@ class StepFour extends Component {
 	}
 
 	onTermChange(term) {
+		let termValue = typeof term.term !== 'undefined' ? term.term : 3;
+		termValue = typeof term.value !== 'undefined' ? term.value : termValue;
 		const { dispatch } = this.props;
 		const selectedPaymentOption = new paymentAction.getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 		this.props.payments.selectedPaymentOption = selectedPaymentOption;
 		const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
 		const cardNumber = this.state.appliedBin ? this.state.appliedBin.cardNumber : '';
-		dispatch(new paymentAction.applyBin(this.userCookies, selectedPaymentOption.value, cardNumber, bank, term.term));
+		dispatch(new paymentAction.applyBin(this.userCookies, selectedPaymentOption.value, cardNumber, bank, termValue));
 		dispatch(new paymentAction.termChange(term));
 	}
 
