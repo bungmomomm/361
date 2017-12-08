@@ -772,13 +772,17 @@ class StepFour extends Component {
 		].join(' ').trim();
 	}
 
+	billingValidation() {
+		const { payments } = this.props;
+		return payments.billingPhoneNumber && payments.billingPhoneNumber.length >= 6 && payments.billingPhoneNumber.length <= 14;
+	}
+
 	enableButtonPayNow(e) {
-		const validBilling = this.props.payments.billingPhoneNumber && this.props.payments.billingPhoneNumber !== '';
 		this.props.applyState({
 			...this.props.stepState,
 			stepFour: {
 				...this.props.stepState.stepFour,
-				payNowButton: e && validBilling
+				payNowButton: e && this.billingValidation()
 			}
 		});
 	}
@@ -879,7 +883,7 @@ class StepFour extends Component {
 						dataProps={{
 							value: payments.billingPhoneNumber || ''
 						}}
-						color={!payments.billingPhoneNumber ? 'red' : null}
+						color={this.billingValidation() ? null : 'red'}
 						min={0}
 						type='tel'
 						placeholder={payments.billingPhoneNumber || T.checkout.BILLING_PHONE_NUMBER}
