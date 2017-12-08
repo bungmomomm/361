@@ -2,7 +2,7 @@ import humps from 'lodash-humps';
 
 const setPayloadPlaceOrder = (address, billing = false) => {
 	let attributes;
-	
+
 	let id;
 	if (billing) {
 		id = billing.id;
@@ -62,6 +62,16 @@ const setCartModel = (jsoApiResponse) => {
 			const prodRel = a.relationships.products.data;
 			const prods = jsoApiResponse.included.filter(e => e.type === 'products')
 				.find(e => e.type === prodRel.type && e.id === prodRel.id);
+			const idVarians = a.attributes.variants.map((v) => { return v.id; });
+			const attributes = [];
+			idVarians.forEach(element => {
+				const sizeVarian = prods.attributes.variants.find(v => v.id === '103');
+				if (sizeVarian && sizeVarian.options.find(e => e.id === element)) {
+					const title = 'Size : ';
+					attributes.push(title.concat(sizeVarian.options.find(e => e.id === element).name));
+				}
+			});
+
 			return {
 				name: prods.attributes.title,
 				price: parseInt(a.attributes.purchase_price.unit, 10),
@@ -72,10 +82,10 @@ const setCartModel = (jsoApiResponse) => {
 				fgLocation: prods.attributes.fg_location,
 				brand: prods.attributes.brand_name,
 				category: prods.attributes.product_category_names,
-				attribute: [],
+				attribute: attributes
 			};
 		});
-		
+
 		const shipping = {
 			note: attr.shipping_note[0],
 			o2oSupported: attr.o2o_supported === '1',
