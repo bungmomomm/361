@@ -403,7 +403,10 @@ class StepFour extends Component {
 					})
 					.catch((error) => {
 						if (error.response.data.code === 405) {
-							this.onRefreshToken(dispatch, this.onDoPayment());
+							const doPay = () => {
+								this.onDoPayment();
+							};
+							this.onRefreshToken(dispatch, doPay);
 						} else {
 							this.onPaymentFailed();
 						}
@@ -437,7 +440,10 @@ class StepFour extends Component {
 					)
 				).catch((error) => {
 					if (error.response.data.code === 405) {
-						this.onRefreshToken(dispatch, this.onDoPayment());
+						const doPay = () => {
+							this.onDoPayment();
+						};
+						this.onRefreshToken(dispatch, doPay);
 					} else {
 						this.onPaymentFailed();
 					}
