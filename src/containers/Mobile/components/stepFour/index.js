@@ -839,11 +839,12 @@ class StepFour extends Component {
 					
 					
 					{payments.selectedPayment && this.renderSwitchPaymentElement()}
+					<label htmlFor='ovo-phone'>{T.checkout.PHONE_NUMBER_O2O_CONFIRMATION}</label>
 					<Input
 						dataProps={{
 							value: payments.billingPhoneNumber || ''
 						}}
-						label={T.checkout.PHONE_NUMBER_O2O_CONFIRMATION}
+						color={!payments.billingPhoneNumber ? 'red' : null}
 						min={0}
 						type='tel'
 						placeholder={payments.billingPhoneNumber || T.checkout.BILLING_PHONE_NUMBER}
