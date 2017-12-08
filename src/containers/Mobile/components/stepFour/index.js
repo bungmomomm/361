@@ -357,7 +357,7 @@ class StepFour extends Component {
 
 	onPaymentFailed() {
 		const { dispatch, stepState, billing } = this.props;
-		const selectedAddress = stepState.stepOne.tabIndex > 0 ? stepState.stepOne.selectedAddressO2O : stepState.stepOne.selectedAddress;
+		const selectedAddress = stepState.stepOne.activeTab > 0 ? stepState.stepOne.selectedAddressO2O : stepState.stepOne.selectedAddress;
 		this.constructor.placeOrder(this.userCookies, this.userRFCookies, dispatch, selectedAddress, billing);
 		this.setState({
 			alreadySubmitPay: false
