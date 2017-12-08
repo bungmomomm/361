@@ -45,6 +45,10 @@ class PaymentInstallment extends Component {
 		}
 	}
 
+	componentWillUnmount() {
+		this.props.enableButtonPayNow(false);
+	}
+
 	onBankChange(bank) {
 		this.bank = bank.value;		
 		const { dispatch, payments } = this.props;
@@ -140,7 +144,8 @@ class PaymentInstallment extends Component {
 	}
 
 	checkValidInstallment(event) {
-		this.card = event || '';		
+		this.card = event || '';
+		let validInstallmentBin = false;		
 		if (event.valid && event.valid !== null && event.ccNumber.length > 1) {
 			const { blockContent } = this.props;
 			const bank = this.bank === '' ? 'mandiri' : this.bank.value;
@@ -150,33 +155,34 @@ class PaymentInstallment extends Component {
 				const checkingBin = installmentBinBank.filter(e => event.ccNumber.startsWith(e));
 				if (checkingBin.length > 0) {
 					this.onInstallmentCCNumberChange(event);
+					validInstallmentBin = true;
 					this.setState({ validInstallmentBin: true });
 				} else {
+					validInstallmentBin = false;
 					this.setState({ validInstallmentBin: false });
 				}
 			}
 		} else {
+			validInstallmentBin = false;
 			this.setState({ validInstallmentBin: false });
 		}
-		this.validateInstallmentForm();
+		this.validateInstallmentForm(validInstallmentBin);
 	}
 
-	validateInstallmentForm() {
-		setTimeout(() => {
-			if (
-				!!this.elBank.state.selected.value &&
-				!!this.elTerms.state.selected &&
-				this.elCreditCard.state.ccValid === 'green' &&
-				this.elMonthInstallment.state.selected !== null &&
-				this.elYearInstallment.state.selected !== null &&
-				this.ccvValue !== '' &&
-				this.state.validInstallmentBin
-			) {
-				this.props.enableButtonPayNow(true);
-			} else {
-				this.props.enableButtonPayNow(false);
-			}
-		}, 100);
+	validateInstallmentForm(validInstallmentBin = this.state.validInstallmentBin) {
+		if (
+			!!this.elBank.state.selected.value &&
+			!!this.elTerms.state.selected &&
+			this.elCreditCard.state.ccValid === 'green' &&
+			this.elMonthInstallment.state.selected !== null &&
+			this.elYearInstallment.state.selected !== null &&
+			this.ccvValue !== '' &&
+			validInstallmentBin
+		) {
+			this.props.enableButtonPayNow(true);
+		} else {
+			this.props.enableButtonPayNow(false);
+		}
 	}
 
 	renderInstallmentList() {
