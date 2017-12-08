@@ -237,7 +237,6 @@ class ModalAddress extends Component {
 
 	toggleGoogleMap() {
 		const showMap = !this.state.showMap;
-		// let mapMarkerCenter = this.state.mapMarkerCenter;
 		if (showMap) {
 			// open
 			const district = this.state.selected.district.value.toLowerCase().replace(/\W+(.)/g, (match, chr) => chr.toUpperCase());
@@ -247,7 +246,7 @@ class ModalAddress extends Component {
 			// close
 			let lat = this.selectedPolygon.center.lat;
 			let lng = this.selectedPolygon.center.lng;
-			
+
 			if (this.props.isEdit) {
 				if (typeof this.props.formData.attributes.latitude !== 'undefined' && typeof this.props.formData.attributes.longitude !== 'undefined') {
 					lat = this.props.formData.attributes.latitude;
@@ -259,12 +258,8 @@ class ModalAddress extends Component {
 				lat = this.FormLatitude;
 				lng = this.FormLongitude;
 			}
-
 			this.setState({ mapMarkerCenter: { lng, lat } });
 		}
-
-		// console.log(mapMarkerCenter);
-		
 		this.setState({ 
 			showMap,
 			isValidMarkerPosition: true
