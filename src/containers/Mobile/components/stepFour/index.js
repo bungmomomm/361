@@ -173,7 +173,7 @@ class StepFour extends Component {
 			this.userRFCookies = newToken.userRFToken;
 
 			if (callback) {
-				this.callback();
+				callback.apply();
 			}
 		});
 	}
