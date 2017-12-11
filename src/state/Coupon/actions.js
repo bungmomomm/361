@@ -141,7 +141,7 @@ const resendOtp = (token, phone) => dispatch => {
 	});
 };
 
-const verifyOtp = (token, phone, otp, props) => dispatch => {
+const verifyOtp = (token, phone, otp, props) => dispatch => new Promise((resolve, reject) => {
 	dispatch(couponRequestOTP());
 	return request({
 		token,
@@ -160,8 +160,9 @@ const verifyOtp = (token, phone, otp, props) => dispatch => {
 		dispatch(addCoupon(token, props.soNumber, props.coupon.coupon));
 	}).catch((error) => {
 		dispatch(couponReceiveOTP(false, error.response.data.errorMessage));
+		reject(error);
 	});
-};
+});
 
 const resetCoupon = () => dispatch => new Promise((resolve, reject) => {
 	dispatch(couponReset());

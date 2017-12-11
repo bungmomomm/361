@@ -53,14 +53,12 @@ class ModalVerifyPhoneNumber extends Component {
 					this.state.otp,
 					this.props,
 				)
-			).then(() => {
-				console.log(this.props.coupon.otp.valid);
+			).catch(() => {
 				if (!this.props.coupon.otp.valid) {
 					this.setState({
-						showErrorOtp: true
+						showErrorOtp: true,
+						validOtp: false
 					});
-				} else {
-					clearInterval(this.interval);
 				}
 			});
 		}
