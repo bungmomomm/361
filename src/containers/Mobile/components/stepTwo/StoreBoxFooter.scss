@@ -1,0 +1,44 @@
+@import 'mixins';
+@import 'variables';
+
+.footer{
+    margin: 0px rem(-15px) rem(-10px) rem(-15px);
+    .price{
+        padding: rem(10px) rem(15px);
+        border-top: 1px solid border(color);
+    }
+}
+
+.deliveryInfo{
+    padding: rem(10px) rem(15px);
+    border-top: 1px solid border(color);
+}
+
+
+.priceList{
+    display: flex;
+    justify-content: space-between;
+    letter-spacing: 0;
+    &:not(:last-child){
+        margin-bottom: rem(5px);
+    }
+}
+
+.price{
+    background-color: #FAFAFA;
+
+}
+
+.priceListBold{
+    display: flex;
+    justify-content: space-between;
+    letter-spacing: 0;
+    &:not(:last-child){
+        margin-bottom: rem(5px);
+    }
+}
+
+.footer{
+    position: relative;
+    top: -1px;
+}

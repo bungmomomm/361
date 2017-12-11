@@ -1,6 +1,8 @@
 import webpack from 'webpack';
 import path from 'path';
 import Dotenv from 'dotenv-webpack';
+import SWPrecacheWebpackPlugin from 'sw-precache-webpack-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
 import { mozjpeg, pngquant, svgo } from '../loaders/images';
 import files from '../loaders/files';
 
@@ -71,8 +73,7 @@ const config = {
 						outputPath: 'assets/media/'
 					})
 				]
-			},
-
+			}
 		]
 	
 	},
@@ -83,6 +84,7 @@ const config = {
 			'.js',
 			'.jsx',
 			'.json',
+			'.css',
 			'.scss'
 		],
 
@@ -109,7 +111,6 @@ if (
 ) {
 
 	config.plugins.push(
-	
 		new webpack.optimize.UglifyJsPlugin({
 			compress: {
 				warnings: false,
@@ -128,7 +129,28 @@ if (
 				comments: false
 			}
 		})
-
+	);
+	
+	config.plugins.push(
+		new SWPrecacheWebpackPlugin({
+			verbose: true,
+			staticFileGlobsIgnorePatterns: [/dist\//],
+			runtimeCaching: [
+				{
+					handler: 'networkFirst',
+					urlPattern: /^https?.*/
+				}
+			]
+		})
+	);
+	
+	config.plugins.push(
+		new CopyWebpackPlugin([
+			{ 
+				from: path.resolve(__dirname, '..', '..', 'src', 'assets', 'manifest'),
+				to: path.resolve(__dirname, '..', '..', 'dist', 'public', 'assets', 'manifest') 
+			},
+		])
 	);
 
 };

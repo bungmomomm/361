@@ -145,16 +145,30 @@ export default class CreditCardInput extends Component {
 				mask='1111 1111 1111 1111' 
 				name='card'
 				size={20}
+				type='tel'
 				value={value}
 				onChange={this.onChange}
 			/>
 		);
+
+		// const inputClassDefault = (
+		// 	<input
+		// 		className={inputClass}
+		// 		placeholder={placeholder}
+		// 		name='card'
+		// 		value={value}
+		// 		type='number'
+		// 		min='0'
+		// 		max='16'
+		// 		onChange={this.onChange}
+		// 	/>
+		// );
 		
 		return (
 			<div className={inputWrapper}>
 				{LabelElement} 
 				<div className={inputCreditCardClass}>
-					{InputElement} 
+					{this.props.disableMaskInput ? InputElement : InputElement} 
 					{MessageElement}
 					{SpritesElement}
 				</div>
@@ -168,7 +182,7 @@ CreditCardInput.propTypes = {
 	error: PropTypes.bool,
 	creditCard: PropTypes.bool,
 	size: PropTypes.oneOf(['small', 'medium', 'large']),
-	color: PropTypes.oneOf(['red', 'yellow', 'orange', 'green']),
+	color: PropTypes.oneOf(['red', 'yellow', 'orange', 'green', '']),
 	/** make horinzontal layout. */
 	horizontal: PropTypes.bool,
 	/** label content. */

@@ -19,7 +19,7 @@ const dialogOpen = (state) => dispatch => {
 	dispatch(toggleDialog(state));
 };
 
-const getBlockContents = (token, ids) => dispatch => {
+const getBlockContents = (token, ids) => dispatch => new Promise((resolve, reject) => {
 	request({
 		token,
 		path: 'block-content',
@@ -39,8 +39,9 @@ const getBlockContents = (token, ids) => dispatch => {
 		}
 	}).catch((error) => {
 		dispatch(receivedBlockContent([]));
+		reject(error);
 	});
-};
+});
 
 export default {
 	dialogOpen,

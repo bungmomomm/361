@@ -1,6 +1,9 @@
 import currency from './currency';
 import newId from './newId';
 import renderIf from './renderIf';
+import modalController from './modalController';
+import isMobile from './isMobile';
+import componentState from './componentState';
 import { request } from './request';
 
 const getBaseUrl = () => {
@@ -12,5 +15,8 @@ export default {
 	renderIf,
 	currency,
 	request,
-	getBaseUrl
+	getBaseUrl,
+	isMobile,
+	modalController,
+	componentState
 };

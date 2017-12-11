@@ -2,10 +2,12 @@
 @import 'variables';
 
 .checkout{
-    position: relative;
+    // position: relative;
+    position: absolute;
     padding-top: 60px;
     padding-bottom: 20px;   
     height: 100%;
+    width: 100%;
 }
 
 .title{
