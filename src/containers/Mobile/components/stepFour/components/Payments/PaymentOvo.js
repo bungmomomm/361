@@ -81,9 +81,10 @@ class PaymentOvo extends Component {
 				ovoPhonePayment,
 				ovoPhonePaymentValid: useDefault
 			}
+		}, () => {
+			this.props.dispatch(new actions.changeOvoPaymentNumber(ovoPhonePayment));
+			this.validateOvoForm();
 		});
-		this.props.dispatch(new actions.changeOvoPaymentNumber(ovoPhonePayment));
-		this.validateOvoForm();
 	}
 
 	validateOvoForm() {
