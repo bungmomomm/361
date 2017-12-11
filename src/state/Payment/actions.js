@@ -680,10 +680,12 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 			if (payment.paymentMethod === constants.paymentMethodName.COMMERCE_SPRINT_ASIA) {
 				const attributes = getSprintPayload(soNumber, payment, paymentDetail);
 				// console.log(sprintBody);
+				const source = isMobile() ? 'mweb' : 'web';
 				request({
 					token,
 					path: 'payments/websprintinstallment',
 					method: 'POST',
+					source,
 					body: {
 						data: {
 							attributes
