@@ -18,7 +18,7 @@ class ModalVerifyPhoneNumber extends Component {
 		this.state = {
 			validOtp: false,
 			validPhoneNumber: false,
-			verifiedRecaptcha: false,
+			verifiedRecaptcha: true,
 			phoneNumber: '',
 			otp: '',
 			resendOtpCountDown: this.defaultOtpCountDown,
@@ -72,35 +72,17 @@ class ModalVerifyPhoneNumber extends Component {
 
 	onChangePhoneNumber(e) {
 		const value = e.target.value;
-		if (value.length > 6 && value.length < 14) {
-			this.setState({
-				validPhoneNumber: true
-			});
-		} else {
-			this.setState({
-				validPhoneNumber: false
-			});
-		}
-
 		this.setState({
+			validPhoneNumber: (value.length > 6 && value.length < 14) || false,
 			phoneNumber: value,
 		});
 	}
 
 	onChangeOtp(e) {
 		const value = e.target.value;
-		if (value.length === 6) {
-			this.setState({
-				validOtp: true
-			});
-		} else {
-			this.setState({
-				validOtp: false
-			});
-		}
-
 		this.setState({
 			otp: value,
+			validOtp: value.length === 6 || false,
 			showErrorOtp: false,
 		});
 	}
