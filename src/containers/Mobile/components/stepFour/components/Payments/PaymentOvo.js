@@ -19,6 +19,7 @@ class PaymentOvo extends Component {
 				autoLinkage: true,
 			},
 		};
+		this.props.autoLinkage(true);
 		this.input = '';
 		this.cookies = this.props.cookies.get('user.token');
 

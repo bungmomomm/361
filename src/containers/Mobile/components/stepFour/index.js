@@ -838,7 +838,7 @@ class StepFour extends Component {
 					payments={payments}
 					appliedBin={this.state.appliedBin}
 					enableButtonPayNow={(e) => this.enableButtonPayNow(e)}
-					autoLinkage={(e) => this.setState({ ovo: { ...this.state.ovo, autoLinkage: !this.state.ovo.autoLinkage } })}
+					autoLinkage={(e) => this.setState({ ovo: { ...this.state.ovo, autoLinkage: e } })}
 				/>
 			);
 		default:
