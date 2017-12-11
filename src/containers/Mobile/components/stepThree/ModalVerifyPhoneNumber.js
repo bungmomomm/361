@@ -18,7 +18,7 @@ class ModalVerifyPhoneNumber extends Component {
 		this.state = {
 			validOtp: false,
 			validPhoneNumber: false,
-			verifiedRecaptcha: true,
+			verifiedRecaptcha: false,
 			phoneNumber: '',
 			otp: '',
 			resendOtpCountDown: this.defaultOtpCountDown,
@@ -26,6 +26,10 @@ class ModalVerifyPhoneNumber extends Component {
 		};
 		this.interval = null;
 		this.defaultOtpCountDown = 60;
+	}
+
+	componentWillUnmount() {
+		this.closeModal();
 	}
 
 	onSubmitPhoneNumber() {
@@ -50,10 +54,13 @@ class ModalVerifyPhoneNumber extends Component {
 					this.props,
 				)
 			).then(() => {
+				console.log(this.props.coupon.otp.valid);
 				if (!this.props.coupon.otp.valid) {
 					this.setState({
 						showErrorOtp: true
 					});
+				} else {
+					clearInterval(this.interval);
 				}
 			});
 		}
@@ -146,7 +153,7 @@ class ModalVerifyPhoneNumber extends Component {
 		}, 1000);
 	}
 
-	closeModal(e) {
+	closeModal(e = false) {
 		clearInterval(this.interval);
 		this.props.handleClose(e);
 	}
