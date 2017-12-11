@@ -943,7 +943,7 @@ class StepFour extends Component {
 					)
 				}
 				{
-					<Vt3dsModalBox
+					this.props.payments.show3ds && <Vt3dsModalBox
 						show
 						src={this.props.payments.vtRedirectUrl}
 						onClose={() => this.onVt3dsModalBoxClose()}
