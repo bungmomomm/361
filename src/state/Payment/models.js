@@ -262,10 +262,11 @@ const getListAvailablePaymentMethod = (response) => {
 };
 
 const getSprintPayload = (orderId, payment, paymentDetail) => {
+	const term = typeof payment.term.term !== 'undefined' ? payment.term.term : payment.term.value;
 	return {
 		so_number: orderId,
 		bank_name: paymentDetail.card.bank.value,
-		term: payment.term.term,
+		term,
 		cc: {
 			card_number: paymentDetail.cardNumber,
 			card_expiration_month: paymentDetail.cardMonth,
