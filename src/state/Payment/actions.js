@@ -1,6 +1,6 @@
 import * as constants from './constants';
 import { getListAvailablePaymentMethod, getPaymentPayload, getSprintPayload } from './models';
-import { request, isMobile } from '@/utils';
+import { request } from '@/utils';
 import { getCartPaymentData } from '@/state/Cart/models';
 
 const availablePaymentMethodRequest = () => ({
@@ -381,12 +381,10 @@ const changePaymentMethod = (paymentMethod, data, token) => dispatch => {
 
 const getAvailablePaymentMethod = (token) => (dispatch) => {
 	dispatch(availablePaymentMethodRequest());
-	const source = isMobile() ? 'mweb' : 'web';
 	return request({
 		token,
 		path: 'payment_methods',
-		method: 'GET',
-		source
+		method: 'GET'
 	}).then((response) => {
 		const dataPayment = getListAvailablePaymentMethod(response.data);
 		dispatch(availablePaymentMethodReceived(dataPayment));
@@ -680,12 +678,10 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 			if (payment.paymentMethod === constants.paymentMethodName.COMMERCE_SPRINT_ASIA) {
 				const attributes = getSprintPayload(soNumber, payment, paymentDetail);
 				// console.log(sprintBody);
-				const source = isMobile() ? 'mweb' : 'web';
 				request({
 					token,
 					path: 'payments/websprintinstallment',
 					method: 'POST',
-					source,
 					body: {
 						data: {
 							attributes

@@ -2,6 +2,7 @@ import generateRequestHeaders from 'kong-hmac';
 import ES6Promise from 'es6-promise';
 ES6Promise.polyfill();
 import axios from 'axios';
+import isMobile from './isMobile';
 
 const isKongActive = () => {
 	return (process.env.KONG_ENABLED === 'true') || false;
@@ -38,16 +39,12 @@ const kongRequestHeader = (props) => {
 const request = (props) => {
 	
 	const url = buildRequestURL(props);
+	const mode = isMobile() ? 'mweb' : 'web';
 	
 	let headers = {
-		Authorization: `Bearer ${props.token}`
+		Authorization: `Bearer ${props.token}`,
+		'X-Mode': mode
 	};
-	if (typeof props.source !== 'undefined') {
-		headers = {
-			...headers,
-			'X-Mode': props.source
-		};
-	}
 	if (isKongActive()) {
 		headers = kongRequestHeader(props);
 	}
