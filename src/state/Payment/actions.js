@@ -1,6 +1,6 @@
 import * as constants from './constants';
 import { getListAvailablePaymentMethod, getPaymentPayload, getSprintPayload } from './models';
-import { request } from '@/utils';
+import { request, isMobile } from '@/utils';
 import { getCartPaymentData } from '@/state/Cart/models';
 
 const availablePaymentMethodRequest = () => ({
@@ -381,10 +381,12 @@ const changePaymentMethod = (paymentMethod, data, token) => dispatch => {
 
 const getAvailablePaymentMethod = (token) => (dispatch) => {
 	dispatch(availablePaymentMethodRequest());
+	const source = isMobile() ? 'mweb' : 'web';
 	return request({
 		token,
 		path: 'payment_methods',
-		method: 'GET'
+		method: 'GET',
+		source
 	}).then((response) => {
 		const dataPayment = getListAvailablePaymentMethod(response.data);
 		dispatch(availablePaymentMethodReceived(dataPayment));

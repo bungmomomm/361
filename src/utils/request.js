@@ -42,6 +42,12 @@ const request = (props) => {
 	let headers = {
 		Authorization: `Bearer ${props.token}`
 	};
+	if (typeof props.source !== 'undefined') {
+		headers = {
+			...headers,
+			'X-Mode': props.source
+		};
+	}
 	if (isKongActive()) {
 		headers = kongRequestHeader(props);
 	}
