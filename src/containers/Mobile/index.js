@@ -49,37 +49,37 @@ class Mobile extends Component {
 
 	render() {
 		return (
-			<div>
+			<div className='checkout'>
 				<div className={styles.header}>
 					<a href='/'>
 						<Image src='mobile/logo-mm.png' alt='logo mataharimall' />
 					</a>
 				</div>
-				<StepOne 
-					applyState={(e) => this.applyState(e)} 
-					stepState={this.state}
-				/>
-				{
-					<StepTwo 
+				<div className='checkout-wrapper'>
+					<StepOne 
 						applyState={(e) => this.applyState(e)} 
-						stepState={this.state} 
-						disabled={this.state.stepTwo.disabled}
+						stepState={this.state}
 					/>
-				}
-				{
-					<StepThree 
-						applyState={(e) => this.applyState(e)} 
-						stepState={this.state} 
-						disabled={this.state.stepThree.disabled}
-					/>
-				}
-				{
-					<StepFour 
-						applyState={(e) => this.applyState(e)} 
-						stepState={this.state} 
-						disabled={this.state.stepFour.disabled}
-					/>
-				}
+					{
+						<StepTwo 
+							applyState={(e) => this.applyState(e)} 
+							stepState={this.state} 
+							disabled={this.state.stepTwo.disabled}
+						/>
+					}
+					<div className='card-payment'>
+						<StepThree 
+							applyState={(e) => this.applyState(e)} 
+							stepState={this.state} 
+							disabled={this.state.stepThree.disabled}
+						/>
+						<StepFour 
+							applyState={(e) => this.applyState(e)} 
+							stepState={this.state} 
+							disabled={this.state.stepFour.disabled}
+						/>
+					</div>
+				</div>
 			</div>
 		);
 	}

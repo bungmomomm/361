@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { isMobile } from '@/utils';
 
-import routes from './routes';
+// import routes from './routes';
 import routesMobile from './routes.mobile';
 
 export default () => (
@@ -13,7 +13,8 @@ export default () => (
 				routesMobile.map((route, i) => <Route {...route} key={i} />)
 			) : (
 				// redirect to Desktop Route
-				routes.map((route, i) => <Route {...route} key={i} />)
+				// routes.map((route, i) => <Route {...route} key={i} />)
+				routesMobile.map((route, i) => <Route {...route} key={i} />)
 			)
 		}
 	</Switch>
