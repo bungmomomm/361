@@ -260,7 +260,7 @@ export default class CardPengiriman extends Component {
 			<Tabs tabActive={0} loading={this.state.loading} stretch onAfterChange={this.onGetListO2o} >
 				<Tabs.Panel title='Kirim ke Alamat' sprites='truck-off' spritesActive='truck-on'>
 					<Alert align='center' color='yellow' show={!this.state.elockerTab}>
-						GRATIS ongkos kirim hingga Rp 15.000 untuk pembelian produk MatahariStore.com
+						GRATIS ongkos kirim ke seluruh Indonesia untuk pembelian produk MatahariStore.com
 					</Alert>
 					{
 						renderIf(this.state.shipping.length > 0)(
