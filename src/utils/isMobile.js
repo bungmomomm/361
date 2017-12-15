@@ -1,4 +1,3 @@
-console.log(window.innerWidth);
 export default function () {
 	if (navigator.userAgent.match(/Android/i)
     || navigator.userAgent.match(/webOS/i)

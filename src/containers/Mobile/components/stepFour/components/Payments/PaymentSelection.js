@@ -83,7 +83,7 @@ class PaymentSelection extends Component {
 		const listPayment = [];
 		enabledPaymentItems.map((option, index) => {
 			const RadioLabel = (
-				<Level key={index}>
+				<Level key={index} isMobile>
 					<Level.Left>
 						{option.label}
 						{option.disabled && <div style={{ fontSize: '10px' }} className='font-red'>{option.disableMessage}</div>}

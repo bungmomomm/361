@@ -12,7 +12,8 @@ import {
 	Icon,
 	Group,
 	Alert,
-	Panel
+	Panel,
+	// Select
 } from 'mm-ui';
 
 
@@ -20,8 +21,9 @@ import {
 import ModalAddress from './ModalAddress';
 import ModalChooseAddress from './ModalChooseAddress';
 import Modalo2o from './Modalo2o';
-import Dropshipper from './Dropshipper';
-import ViewSelectedAddress from './ViewSelectedAddress';
+// import Dropshipper from './Dropshipper';
+import TabAddress from './TabAddress';
+// import ViewSelectedAddress from './ViewSelectedAddress';
 
 
 import styles from '../../mobile.scss';
@@ -222,7 +224,7 @@ class stepOne extends Component {
 		this.setState({
 			selectedAddress: newSelectedAddress
 		});
-		this.toggleChooseAddressModal();
+		// this.toggleChooseAddressModal();
 	}
 
 	setSelectedAddressO2O(selectedAddressO2O, selectedProvinceO2O) {
@@ -351,13 +353,12 @@ class stepOne extends Component {
 			showModalAddress,
 			showModalo2o,
 			showModalChooseAddress,
-			shipping
+			// shipping
 		} = this.state;
 
 		if (!this.props.addresses) {
 			return null;
 		}
-
 		return (
 			<div className={styles.card}>
 				<p><strong>{T.checkout.STEP_ONE_LABEL}</strong></p>
@@ -365,67 +366,7 @@ class stepOne extends Component {
 					<Tabs.Tab>
 						<Tabs.Title>{T.checkout.TAB_ADDRESS_LABEL}</Tabs.Title>
 						<Tabs.Content>
-							<Alert color='yellow' style={{ marginBottom: '15px', textAlign: 'center' }}>
-								{T.checkout.FREE_ONGKIR_REGULATION}
-							</Alert>
-							{
-								shipping.length > 0 ? (
-									<div>
-										<Panel color='grey'>
-											<Group>
-												<Button onClick={() => this.toggleChooseAddressModal()} block>
-													<Level>
-														<Level.Left className={styles.elipsis}>{selectedAddress.attributes.addressLabel}</Level.Left>
-														<Level.Right><Icon name='angle-down' /></Level.Right>
-													</Level>
-												</Button>
-											</Group>
-											{
-												selectedAddress.attributes.latitude
-												&& selectedAddress.attributes.longitude && (
-													<Level>
-														<Level.Item className='text-right'>
-															<div>
-																<Icon name='map-marker' /> &nbsp; {T.checkout.LOCATION_MARKED}
-															</div>
-														</Level.Item>
-													</Level>
-												)
-											}
-											<ViewSelectedAddress {...selectedAddress.attributes} />
-											<Level>
-												<Level.Item>
-													<div
-														role='button'
-														tabIndex={-1}
-														className='font-orange'
-														onClick={() => this.showModalAddress('edit')}
-													>
-														<Icon name='pencil' /> {T.checkout.CHANGE_ADDRESS}
-													</div>
-												</Level.Item>
-												<Level.Item className='text-right'>
-													<div
-														role='button'
-														tabIndex={-1}
-														className='font-orange'
-														onClick={() => this.showModalAddress('add')}
-													>
-														<Icon name='plus' /> {T.checkout.ADD_ADDRESS}
-													</div>
-												</Level.Item>
-											</Level>
-										</Panel>
-										<Dropshipper stepState={this.props.stepState} onPlaceOrder={(e) => this.onPlaceOrder(e)} applyState={(e) => this.props.applyState(e)} />
-									</div>
-								) : (
-									<Button
-										block
-										color='orange'
-										onClick={() => this.showModalAddress('add')}
-									>{T.checkout.INPUT_DELIVERY_ADDRESS} </Button>
-								)
-							}
+							<TabAddress applyState={this.props.applyState} stepState={this.props.stepState} />
 						</Tabs.Content>
 					</Tabs.Tab>
 					<Tabs.Tab>
@@ -471,10 +412,7 @@ class stepOne extends Component {
 								this.props.latesto2o.length < 1 && this.props.isPickupable === '1' && !selectedAddressO2O.attributes && (
 									<Panel className='customSelectO2OWrapper'>
 										<Group>
-											<Button
-												block
-												onClick={() => this.toggleModalo2o()}
-											>
+											<Button block onClick={() => this.toggleModalo2o()} >
 												<Level>
 													<Level.Left className={styles.elipsis}>{T.checkout.CHOOSE_STORE}</Level.Left>
 													<Level.Right><Icon name='angle-down' /></Level.Right>

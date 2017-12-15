@@ -10,6 +10,7 @@ import {
 	Icon,
 	Select,
 	Alert,
+	Subtitle,
 	Input,
 	Textarea,
 	Modal,
@@ -288,17 +289,22 @@ class ModalAddress extends Component {
 
 	renderButtonMap() {
 		return this.state.isJakarta && this.state.selected.district.value && (
-			<div>
-				<Button
-					block
-					color='grey'
-					onClick={() => this.toggleGoogleMap()}
-					icon={this.state.showMap ? 'times' : 'map-marker'}
-				>
-					{this.state.showMap ? T.checkout.CANCEL : T.checkout.SHOW_IN_MAP}
-				</Button>
-				<p className='font-small font-orange'>{T.checkout.GOSEND_ADDRESS_RULE}</p>
-			</div>
+			<Level hasPadding style={{ marginBottom: '15px' }}>
+				<Level.Left>
+					<Button
+						block
+						size='small'
+						color='grey'
+						onClick={() => this.toggleGoogleMap()}
+						icon={this.state.showMap ? 'times' : 'map-marker'}
+					>
+						{this.state.showMap ? T.checkout.CANCEL : T.checkout.SHOW_IN_MAP}
+					</Button>
+				</Level.Left>
+				<Level.Right>
+					<div className='font-small font-orange'>{T.checkout.GOSEND_ADDRESS_RULE}</div>
+				</Level.Right>
+			</Level>
 		);
 	}
 
@@ -362,13 +368,16 @@ class ModalAddress extends Component {
 				showOverlayCloseButton
 				onCloseRequest={this.props.handleClose}
 			>
-				<Modal.Header>{this.props.isEdit ? T.checkout.EDIT_ADDRESS : T.checkout.CREATE_NEW_ADDRESS}</Modal.Header>
+				<Modal.Header>
+					<Subtitle size={4}>{this.props.isEdit ? T.checkout.EDIT_ADDRESS : T.checkout.CREATE_NEW_ADDRESS}</Subtitle>
+				</Modal.Header>
 				<Modal.Body>
 					<Input
 						label='Simpan Sebagai *'
 						placeholder='Contoh: rumah, kantor, rumah pacar'
 						name='address_label'
 						type='text'
+						horizontal
 						defaultValue={this.props.isEdit ? formData.attributes.addressLabel : ''}
 						ref={(c) => { this.elAddressLabel = c; }}
 						validation={{ rules: 'required', name: 'Nama_Alamat' }}
@@ -378,6 +387,7 @@ class ModalAddress extends Component {
 						placeholder='Masukan nama lengkap penerima'
 						name='fullname'
 						type='text'
+						horizontal
 						ref={(c) => { this.elFullname = c; }}
 						defaultValue={this.props.isEdit ? formData.attributes.fullname : ''}
 						validation={{ rules: 'required', name: 'Nama_Penerima' }}
@@ -387,6 +397,7 @@ class ModalAddress extends Component {
 						placeholder='Contoh : 08123456789'
 						name='phone'
 						type='number'
+						horizontal
 						defaultValue={this.props.isEdit ? formData.attributes.phone : ''}
 						ref={(c) => { this.elPhone = c; }}
 						validation={{ rules: 'required|min:7|max:14|numeric', name: 'No_Handphone' }}
@@ -398,6 +409,7 @@ class ModalAddress extends Component {
 							label='Kota, Provinsi *'
 							hasFilter
 							name='province'
+							horizontal
 							defaultValue={this.props.isEdit ? this.state.selected.province.value : ''}
 							options={address.cityProv}
 							onChange={(e) => this.onChangeProvince(e)}
@@ -413,6 +425,7 @@ class ModalAddress extends Component {
 							label='Kecamatan *'
 							hasFilter
 							name='kecamatan'
+							horizontal
 							defaultValue={this.state.selected.district.value}
 							options={address.district}
 							onChange={(e) => this.onChangeDistrict(e)}
@@ -425,6 +438,7 @@ class ModalAddress extends Component {
 						placeholder='Contoh : 12345'
 						name='zipcode'
 						type='number'
+						horizontal
 						defaultValue={this.props.isEdit ? formData.attributes.zipcode : ''}
 						ref={(c) => { this.elZipcode = c; }}
 						validation={{ rules: 'required|digits:5|numeric', name: 'Kode_Pos' }}
@@ -433,19 +447,26 @@ class ModalAddress extends Component {
 						label='Alamat *'
 						placeholder='Masukkan Alamat Lengkap'
 						name='address'
+						horizontal
 						defaultValue={this.props.isEdit ? formData.attributes.address : ' '}
 						ref={(c) => { this.elAddress = c; }}
 						validation={{ rules: 'required', name: 'Alamat' }}
 					>address</Textarea>
 					{this.state.formattedAddress && !this.state.showMap ? this.renderFormattedAddress() : this.renderButtonMap()}
 					{this.state.showMap && this.renderGoogleMap()}
-					<p><em>* {T.checkout.MUST_FILLED}</em></p>
-					<Button
-						block
-						size='large'
-						color='dark'
-						onClick={(e) => this.validateAndSubmit(e)}
-					>{T.checkout.SAVE_ADDRESS}</Button>
+					<Level>
+						<Level.Left>
+							<p><em>* {T.checkout.MUST_FILLED}</em></p>
+						</Level.Left>
+						<Level.Right>
+							<Button
+								block
+								size='medium'
+								color='dark'
+								onClick={(e) => this.validateAndSubmit(e)}
+							>{T.checkout.SAVE_ADDRESS}</Button>
+						</Level.Right>
+					</Level>
 				</Modal.Body>
 			</Modal>
 		);

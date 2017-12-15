@@ -483,7 +483,7 @@ export default class CardPembayaran extends Component {
 				if (typeof selectedPaymentOption.settings.info !== 'undefined' && selectedPaymentOption.settings.info.length > 0) {
 					info = selectedPaymentOption.settings.info.map((infoText, indexInfo) => {
 						return (
-							<div key={indexInfo}><br />{infoText}</div>
+							<div key={indexInfo}>{infoText}</div>
 						);
 					});
 				}

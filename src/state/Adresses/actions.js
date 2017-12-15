@@ -262,8 +262,7 @@ const getO2OList = (token, rowsRequest, province = 6, query = null) => dispatch 
 	};
 	request(req)
 	.then((response) => {
-		const result = response.data.data;
-		dispatch(o2oListReceived(result));
+		dispatch(o2oListReceived(response.data.data));
 		dispatch(getAvailablePaymentMethod(token));
 	})
 	.catch((error) => {

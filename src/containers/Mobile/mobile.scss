@@ -9,35 +9,6 @@
 	// }
 	@import '~mm-ui/dist/style';
 
-	@media only screen and (min-width: 769px){
-		.checkout{
-			height: 100%;
-			width: 100%;
-			position: absolute;
-		}
-
-		.checkout-wrapper {
-			display: flex;
-			height: calc(100% - 60px);
-			width: 120rem;
-			padding: 0px 20px;
-			margin: 0 auto;
-			> div{
-				flex: 1;
-				margin: 10px;
-				align-items: flex-start;
-			}
-			.card-payment{
-				> div:first-child{
-					margin-top: 0;
-				}
-			}
-
-		}
-	}
-
-
-
 	body {
 		height: auto;
 	}
@@ -63,6 +34,47 @@
 		background-color: #EBEBEB;
 	}
 }
+
+@media only screen and (min-width: 769px) {
+	.checkout {
+		height: 100%;
+		width: 100%;
+		position: absolute;
+	}
+	.checkoutWrapper {
+		display: flex;
+		height: calc(100% - 60px);
+		> .card, 
+		> .cardPayment{
+			width: 33.333%;
+			margin: 10px;
+			align-items: flex-start;
+			overflow: auto;
+		}
+		.cardPayment {
+			display: flex;
+			flex-direction: column;
+		}
+	}
+	.cardStepFour{
+		display: flex;
+		flex: 1;
+	}
+	.cardStepThree {
+		margin-top: 0;
+		height: auto;
+	}
+	.stepFourWrapper{
+		flex: 1;
+		padding-bottom: 100px;
+		overflow: auto;
+		margin-right: -10px;
+		padding-right: 10px;
+	}
+
+
+}
+
 
 .header{
 	background: #DA1818;
@@ -102,6 +114,13 @@
 	border-top: 1px solid border(color, base);
 	margin: 0px rem(-15px);
 	padding: rem(10px) rem(15px) 0px rem(15px);
+	@media only screen and (min-width: 769px) {
+		background: #fff;
+		position: absolute;
+		width: 100%;
+		bottom: 0px;
+		padding-bottom: 15px;
+	}
 }
 
 .voucherLabel{
@@ -143,8 +162,8 @@
 	flex-direction: column;
 	margin-top: 10px;
 	padding: 15px;
-	flex-grow: 0;
 	min-height: 125px;
+	width: 100%;
 	&.loading{
 		pointer-events: none;
 		position: relative;

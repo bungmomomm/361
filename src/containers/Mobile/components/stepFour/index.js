@@ -767,6 +767,7 @@ class StepFour extends Component {
 	createClassCard() {
 		return [
 			styles.card,
+			styles.cardStepFour,
 			this.props.loading ? styles.loading : '',
 			this.props.disabled ? styles.disabled : ''
 		].join(' ').trim();
@@ -796,7 +797,7 @@ class StepFour extends Component {
 			return componentState.button.loading;
 		}
 
-		return componentState.button.active;
+		return '';
 	}
 
 	renderSwitchPaymentElement() {
@@ -856,7 +857,7 @@ class StepFour extends Component {
 		return (
 			<div className={this.createClassCard()}>
 				<p><strong>{T.checkout.STEP_FOUR_LABEL}</strong></p>
-				<div>
+				<div className={styles.stepFourWrapper}>
 					<Select 
 						block 
 						selectStyle='panel'
@@ -866,7 +867,7 @@ class StepFour extends Component {
 						defaultValue={payments.selectedPayment ? payments.selectedPayment.id : null}
 					/>
 					{payments.selectedPaymentOption && payments.selectedPaymentOption.paymentMethod === 'commerce_cod' && 
-						<Level>
+						<Level isMobile>
 							<Level.Left>&nbsp;</Level.Left>
 							<Level.Right>
 								{payments.selectedPaymentOption && payments.selectedPaymentOption.settings.info && <span className={styles.tooltipButton} role='button' tabIndex='-1' onClick={() => this.showTooltip(payments.selectedPaymentOption.settings.info)}>

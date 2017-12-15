@@ -135,6 +135,7 @@ class StepThree extends Component {
 	createClassCard() {
 		return [
 			styles.card,
+			styles.cardStepThree,
 			this.props.loading || this.state.removeCouponStep === 'loading' ? styles.loading : '',
 			this.props.disabled ? styles.disabled : ''
 		].join(' ').trim();
@@ -177,12 +178,12 @@ class StepThree extends Component {
 		return (
 			<div className={this.createClassCard()}>
 				<p><strong>{T.checkout.STEP_THREE_LABEL}</strong></p>
-				<Level style={inlineStyle.mb5}>
+				<Level isMobile style={inlineStyle.mb5}>
 					<Level.Left><strong>{T.checkout.SUB_TOTAL}</strong></Level.Left>
 					<Level.Right className='text-right'><strong>{currency(payments.subTotal)}</strong></Level.Right>
 				</Level>
 				{
-					couponId && <Level style={inlineStyle.mb5}>
+					couponId && <Level isMobile style={inlineStyle.mb5}>
 						<Level.Left>
 							{T.checkout.VOUCHER} : <strong>{couponId}</strong> &nbsp;
 							<span role='button' tabIndex='-1' onClick={(e) => this.onRemoveCoupon(e)} >
@@ -195,11 +196,11 @@ class StepThree extends Component {
 				{
 					renderIf(htmlDisc)(htmlDisc)
 				}
-				<Level style={inlineStyle.mb5}>
+				<Level isMobile style={inlineStyle.mb5}>
 					<Level.Left>{T.checkout.TOTAL_SHIPPING_COST}</Level.Left>
 					<Level.Right className='text-right'>{currency(payments.deliveryCost)}</Level.Right>
 				</Level>
-				<Level style={inlineStyle.mb5}>
+				<Level isMobile style={inlineStyle.mb5}>
 					<Level.Left>
 						<div className='font-green'>{T.checkout.DISCOUNT_SHIPPING_COST}</div>
 					</Level.Left>
@@ -209,7 +210,7 @@ class StepThree extends Component {
 				</Level>
 				{
 					renderIf(!couponId)(
-						<Level style={inlineStyle.mb5}>
+						<Level isMobile style={inlineStyle.mb5}>
 							<Level.Left className={styles.voucherLabel}>{T.checkout.VOUCHER_CODE}</Level.Left>
 							<Level.Right>
 								<Group attached grouped>
@@ -237,14 +238,14 @@ class StepThree extends Component {
 				}
 				{ 
 					renderIf(adminFeeIdr)(
-						<Level>
+						<Level isMobile>
 							<Level.Left><strong>Biaya Administrasi</strong></Level.Left>
 							<Level.Right className='text-right'><strong>{currency(adminFeeIdr)}</strong></Level.Right>
 						</Level>
 					)}
 				{
 					renderIf(typeof coupon.code !== 'undefined' && coupon.code !== 200)(
-						<Level style={inlineStyle.mb5}>
+						<Level isMobile style={inlineStyle.mb5}>
 							<Level.Left>&nbsp;</Level.Left>
 							<Level.Right>
 								<div className='font-red'>{coupon.message}</div>
@@ -254,7 +255,7 @@ class StepThree extends Component {
 				}
 				
 				<div className={styles.CheckoutTitle}>
-					<Level>
+					<Level isMobile>
 						<Level.Left>{T.checkout.TOTAL_PAYMENT}</Level.Left>
 						<Level.Right>
 							<div className={`${styles.price} text-right`}>{currency(payments.total)}</div>

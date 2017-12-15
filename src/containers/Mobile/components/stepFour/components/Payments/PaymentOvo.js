@@ -24,7 +24,7 @@ class PaymentOvo extends Component {
 
 		this.ovoBlockContent = () => {
 			return (
-				<Alert show color='yellow'>
+				<Alert show color='yellow' style={{ marginBottom: '10px' }} >
 					<p>Info Pembayaran dengan Aplikasi OVO</p>
 					<ol>
 						<li>Pastikan Anda sudah login ke aplikasi OVO</li>
@@ -149,7 +149,7 @@ class PaymentOvo extends Component {
 								block
 								data={[{
 									label: (
-										<Level>
+										<Level isMobile>
 											<Level.Left>
 												{payments.ovoPhoneNumber}
 											</Level.Left>

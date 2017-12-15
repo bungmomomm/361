@@ -14,7 +14,7 @@ const StoreBoxBody = ({ products, onUpdateQty, showBtnDelete, stepOneActiveTab }
 			{
 				products.map((product, idx) => (
 					<div key={idx} className={styles.productList}>
-						<Level>
+						<Level isMobile>
 							<Level.Left>
 								<img src={product.image} width={50} height={50} alt={product.name} />
 								{
@@ -31,7 +31,7 @@ const StoreBoxBody = ({ products, onUpdateQty, showBtnDelete, stepOneActiveTab }
 							</Level.Left>
 							<Level.Item style={{ paddingLeft: '20px' }}>
 								<div style={{ marginBottom: '10px' }}>{product.name}</div>
-								<Level style={{ marginBottom: '10px' }}>
+								<Level isMobile style={{ marginBottom: '10px' }}>
 									<Level.Left><strong>{currency(product.price)}</strong></Level.Left>
 									<Level.Right>
 										<Stepper max={product.maxQty} min={1} start={product.qty} value={product.qty} onChange={(e) => onUpdateQty(e, product.id)} />

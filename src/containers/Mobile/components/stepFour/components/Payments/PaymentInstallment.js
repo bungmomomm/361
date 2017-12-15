@@ -190,7 +190,7 @@ class PaymentInstallment extends Component {
 	renderInstallmentList() {
 		const { installmentList } = this.props;
 		if (typeof installmentList === 'object') {
-			return <Select ref={(c) => { this.elTerms = c; }} block options={installmentList} onChange={(e) => this.onTermChange(e)} />;
+			return <Select label='Pilih Lama Cicilan' ref={(c) => { this.elTerms = c; }} block options={installmentList} onChange={(e) => this.onTermChange(e)} />;
 		}
 		return null;
 	}
@@ -208,8 +208,8 @@ class PaymentInstallment extends Component {
 										(dua juta rupiah)</li>
 									</ul>`];
 		return (
-			<Group>
-				<Level>
+			<div>
+				<Level isMobile>
 					<Level.Left>&nbsp;</Level.Left>
 					<Level.Right>
 						<span className={styles.tooltipButton} role='button' tabIndex='-1' onClick={() => this.showTooltip(installmentTooltip)}>
@@ -217,59 +217,61 @@ class PaymentInstallment extends Component {
 						</span>
 						{
 							this.state.tooltip && (
-								<Tooltip 
-									show 
-									content={this.state.tooltip} 
+								<Tooltip
+									show
+									content={this.state.tooltip}
 									onClose={() => this.setState({ tooltip: '' })}
 								/>
 							)
 						}
 					</Level.Right>
 				</Level>
-				
-				<Select 
-					block 
-					options={payments.selectedPayment.paymentItems[0].banks} 
-					onChange={(e) => this.onBankChange(e)} 
-					defaultValue={payments.selectedBank.value || ''}
-					ref={(c) => { this.elBank = c; }}
-				/>
-				{this.renderInstallmentList()}
-				<CreditCardInput
-					placeholder={T.checkout.INPUT_CART_NUMBER}
-					color={!validInstallmentBin && validInstallmentBin !== null ? 'red' : ''}
-					sprites='payment-option'
-					disableMaskInput
-					onChange={(e) => this.checkValidInstallment(e)}
-					ref={(c) => { this.elCreditCard = c; }}
-					message={!validInstallmentBin && validInstallmentBin !== null ? T.checkout.INPUT_MATCHED_CART_NUMBER : ''}
-					validation={{ rules: 'required|max_value:16', name: 'cc' }}
-				/>
-				<Group grouped>
-					<Select
-						options={Bulan}
-						onChange={(e) => dispatch(new actions.changeInstallmentCCMonth(e.value))}
-						validation={{ rules: 'required|min_value:1', name: 'month' }}
-						ref={(c) => { this.elMonthInstallment = c; }}
+				<Group>
+					<Select 
+						block 
+						options={payments.selectedPayment.paymentItems[0].banks} 
+						onChange={(e) => this.onBankChange(e)} 
+						defaultValue={payments.selectedBank.value || ''}
+						ref={(c) => { this.elBank = c; }}
+						label='Pilih Bank'
 					/>
-					<Select
-						block
-						options={this.tahun}
-						onChange={(e) => dispatch(new actions.changeInstallmentCCYear(e.value))}
-						validation={{ rules: 'required|min_value:10|min:1', name: 'year' }}
-						ref={(c) => { this.elYearInstallment = c; }}
+					{this.renderInstallmentList()}
+					<CreditCardInput
+						placeholder={T.checkout.INPUT_CART_NUMBER}
+						color={!validInstallmentBin && validInstallmentBin !== null ? 'red' : ''}
+						sprites='payment-option'
+						disableMaskInput
+						onChange={(e) => this.checkValidInstallment(e)}
+						ref={(c) => { this.elCreditCard = c; }}
+						message={!validInstallmentBin && validInstallmentBin !== null ? T.checkout.INPUT_MATCHED_CART_NUMBER : ''}
+						validation={{ rules: 'required|max_value:16', name: 'cc' }}
 					/>
-					<Input
-						dataProps={{ minLength: 0, maxLength: 4, value: this.state.cvv }}
-						type='password'
-						placeholder='cvv'
-						onChange={(e) => this.onChangeCVV(e)}
-						validation={{ rules: 'required|numeric|min_value:1', name: 'cvv' }}
-						ref={(c) => { this.elCvvInstallment = c; }}
-					/>
-					<div style={{ paddingRight: '30px' }} ><Sprites name='cvv' /></div>
+					<Group grouped>
+						<Select
+							options={Bulan}
+							onChange={(e) => dispatch(new actions.changeInstallmentCCMonth(e.value))}
+							validation={{ rules: 'required|min_value:1', name: 'month' }}
+							ref={(c) => { this.elMonthInstallment = c; }}
+						/>
+						<Select
+							block
+							options={this.tahun}
+							onChange={(e) => dispatch(new actions.changeInstallmentCCYear(e.value))}
+							validation={{ rules: 'required|min_value:10|min:1', name: 'year' }}
+							ref={(c) => { this.elYearInstallment = c; }}
+						/>
+						<Input
+							dataProps={{ minLength: 0, maxLength: 4, value: this.state.cvv }}
+							type='password'
+							placeholder='cvv'
+							onChange={(e) => this.onChangeCVV(e)}
+							validation={{ rules: 'required|numeric|min_value:1', name: 'cvv' }}
+							ref={(c) => { this.elCvvInstallment = c; }}
+						/>
+						<div style={{ paddingRight: '30px' }} ><Sprites name='cvv' /></div>
+					</Group>
 				</Group>
-			</Group>
+			</div>
 		);
 	}
 };

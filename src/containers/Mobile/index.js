@@ -3,6 +3,8 @@ import styles from './mobile.scss';
 
 import { Image } from '@/components';
 
+import { Container } from 'mm-ui';
+
 // step
 import StepOne from './components/stepOne';
 import StepTwo from './components/stepTwo';
@@ -49,13 +51,15 @@ class Mobile extends Component {
 
 	render() {
 		return (
-			<div className='checkout'>
+			<div className={styles.checkout}>
 				<div className={styles.header}>
-					<a href='/'>
-						<Image src='mobile/logo-mm.png' alt='logo mataharimall' />
-					</a>
+					<Container>
+						<a href='/'>
+							<Image src='mobile/logo-mm.png' alt='logo mataharimall' />
+						</a>
+					</Container>
 				</div>
-				<div className='checkout-wrapper'>
+				<Container className={styles.checkoutWrapper}>
 					<StepOne 
 						applyState={(e) => this.applyState(e)} 
 						stepState={this.state}
@@ -67,7 +71,7 @@ class Mobile extends Component {
 							disabled={this.state.stepTwo.disabled}
 						/>
 					}
-					<div className='card-payment'>
+					<div className={[styles.cardPayment].join(' ').trim()}>
 						<StepThree 
 							applyState={(e) => this.applyState(e)} 
 							stepState={this.state} 
@@ -79,7 +83,7 @@ class Mobile extends Component {
 							disabled={this.state.stepFour.disabled}
 						/>
 					</div>
-				</div>
+				</Container>
 			</div>
 		);
 	}
