@@ -9,7 +9,7 @@ export default {
 	ADD_ADDRESS: 'Tambah Alamat',
 	INPUT_DELIVERY_ADDRESS: 'Masukan Alamat Pengiriman',
 	LOCATION_MARKED: 'Lokasi Sudah Ditandai',
-	FREE_ONGKIR_REGULATION: 'GRATIS ongkos kirim ke seluruh Indonesia untuk pembelian produk MatahariStore.com',
+	FREE_ONGKIR_REGULATION: 'GRATIS ongkos kirim hingga Rp 15.000 untuk pembelian produk MatahariStore.com',
 	SEND_AS_DROPSHIPPER: 'Kirim sebagai Dropshipper',
 	PHONE_NUMBER: 'No Handphone',
 	DROPSHIPPER_NAME: 'Nama Dropshipper',
