@@ -43,6 +43,15 @@ class TabO2O extends Component {
 		};
 	}
 
+	onPlaceOrder(address, dropshipper = null) {		
+		address.type = 'pickup';
+		address.attributes.is_dropshipper = false;
+		const billing = this.props.billing && this.props.billing.length > 0 ? this.props.billing[0] : false;
+		
+		this.constructor.placeOrder(this.userCookies, this.userRFCookies, this.props.dispatch, address, billing);
+		this.props.setBillingNumber(address);
+	}
+
 	setSelectedAddressO2O(selectedAddressO2O, selectedProvinceO2O) {
 		this.saveSelectedAddress(selectedAddressO2O, 'selectedAddressO2O');
 		this.setState({
@@ -68,6 +77,24 @@ class TabO2O extends Component {
 			});
 		}
 		return stepState;
+	}
+
+	toggleModalo2o() {
+		this.setState({ showModalo2o: !this.state.showModalo2o });
+	}
+
+	saveSelectedAddress(selectedAddress, selectedAddressType = 'selectedAddress') {
+		let { stepState } = this.props;
+		stepState = this.setStateDefaultElocker(stepState, this.props.latesto2o);
+		
+		const checkoutState = {
+			...stepState,
+			stepOne: {
+				...stepState.stepOne,
+				[selectedAddressType]: selectedAddress
+			}
+		};
+		this.props.applyState(checkoutState);
 	}
 
 	showModalo2o(type) {
@@ -147,7 +174,7 @@ class TabO2O extends Component {
 						handleClose={() => this.hideModalo2o()}
 						selectedAddressO2O={this.state.selectedAddressO2O}
 						selectedProvinceO2O={this.state.selectedProvinceO2O}
-						onChange={(e, p) => console.log('test')}
+						onChange={(e, p) => this.setSelectedAddressO2O(e, p)}
 					/>
 				}
 			</div>

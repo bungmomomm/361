@@ -6,14 +6,7 @@ import _ from 'lodash';
 import { withCookies } from 'react-cookie';
 import React, { Component } from 'react';
 import {
-	Button,
-	Level,
 	Tabs,
-	Icon,
-	Group,
-	Alert,
-	Panel,
-	// Select
 } from 'mm-ui';
 
 
@@ -23,6 +16,7 @@ import ModalChooseAddress from './ModalChooseAddress';
 import Modalo2o from './Modalo2o';
 // import Dropshipper from './Dropshipper';
 import TabAddress from './TabAddress';
+import TabO2O from './TabO2O';
 // import ViewSelectedAddress from './ViewSelectedAddress';
 
 
@@ -377,56 +371,7 @@ class stepOne extends Component {
 					<Tabs.Tab>
 						<Tabs.Title>{T.checkout.TAB_ELOCKER_LABEL}</Tabs.Title>
 						<Tabs.Content>
-							<Alert color='yellow' style={{ marginBottom: '15px', textAlign: 'center' }} safeHtml={T.checkout.REGULATION} />
-							{
-								this.props.isPickupable !== '1' && (
-									<Alert close icon='ban' color='red' style={{ marginBottom: '15px', textAlign: 'center' }} safeHtml={T.checkout.ONE_OR_MORE_PRODUCT_NOT_SUPPORTED} />
-								)
-							}
-							{
-								(selectedAddressO2O.attributes && this.props.isPickupable === '1') && (
-								<Panel className='customSelectO2OWrapper'>
-									<Group>
-										<Button 
-											block 
-											onClick={() => this.toggleModalo2o()}
-										>
-											<Level isMobile>
-												<Level.Left className={styles.elipsis}>{selectedAddressO2O.attributes.address_label}</Level.Left>
-												<Level.Right><Icon name='angle-down' /></Level.Right>
-											</Level>
-										</Button>
-									</Group>
-									<p><strong>{selectedAddressO2O.attributes.address_label}</strong> </p>
-									<p>{selectedAddressO2O.attributes.address}</p>
-									<Level>
-										<Level.Item className='text-right'>
-											<div
-												role='button'
-												tabIndex={-1}
-												className='font-orange'
-												onClick={() => this.toggleModalo2o()} 
-											>
-												{/* <Icon name='plus' /> {T.checkout.ADD_ADDRESS}  */}
-											</div>
-										</Level.Item>
-									</Level>
-								</Panel>)
-							}
-							{
-								this.props.latesto2o.length < 1 && this.props.isPickupable === '1' && !selectedAddressO2O.attributes && (
-									<Panel className='customSelectO2OWrapper'>
-										<Group>
-											<Button block onClick={() => this.toggleModalo2o()} >
-												<Level>
-													<Level.Left className={styles.elipsis}>{T.checkout.CHOOSE_STORE}</Level.Left>
-													<Level.Right><Icon name='angle-down' /></Level.Right>
-												</Level>
-											</Button>
-										</Group>
-									</Panel>
-								)
-							}
+							<TabO2O applyState={this.props.applyState} stepState={this.props.stepState} setBillingNumber={(e) => this.setBillingNumber(e)} />
 						</Tabs.Content>
 					</Tabs.Tab>
 				</Tabs>
