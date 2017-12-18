@@ -68,7 +68,7 @@ export default (state = initialState, action) => {
 		
 		return {
 			...state, 
-			o2o: newO2O.length ? newO2O : action.payload.o2o,
+			o2o: newO2O,
 		};
 	}
 	case ADDR_GET_DISTRICT: {

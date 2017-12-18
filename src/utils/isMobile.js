@@ -1,5 +1,4 @@
 const updateDimensions = () => {
-	console.log('updateDimention');
 	if (navigator.userAgent.match(/Android/i)
 		|| navigator.userAgent.match(/webOS/i)
 		|| navigator.userAgent.match(/iPhone/i)
@@ -13,9 +12,6 @@ const updateDimensions = () => {
 	return false;
 };
 
-window.addEventListener('resize', updateDimensions());
-
 export default function () {
-	console.log(updateDimensions());
 	return updateDimensions();
 }

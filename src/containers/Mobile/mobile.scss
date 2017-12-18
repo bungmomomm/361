@@ -199,6 +199,9 @@
 	.cardStepThree {
 		margin-top: 0;
 		height: auto;
+		display: block;
+		overflow: auto;
+
 	}
 	.stepFourWrapper {
 		flex: 1;
