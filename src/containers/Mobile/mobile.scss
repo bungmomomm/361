@@ -35,53 +35,14 @@
 	}
 }
 
-@media only screen and (min-width: 769px) {
-	.checkout {
-		height: 100%;
-		width: 100%;
-		position: absolute;
-	}
-	.checkoutWrapper {
-		display: flex;
-		height: calc(100% - 60px);
-		> .card, 
-		> .cardPayment{
-			width: 33.333%;
-			margin: 10px;
-			align-items: flex-start;
-			overflow: auto;
-		}
-		.cardPayment {
-			display: flex;
-			flex-direction: column;
-		}
-	}
-	.cardStepFour{
-		display: flex;
-		flex: 1;
-	}
-	.cardStepThree {
-		margin-top: 0;
-		height: auto;
-	}
-	.stepFourWrapper{
-		flex: 1;
-		padding-bottom: 100px;
-		overflow: auto;
-		margin-right: -10px;
-		padding-right: 10px;
-	}
-
-
-}
-
-
 .header{
-	background: #DA1818;
 	height: 47px;
 	display: flex;
-	justify-content: center;
-	align-items: center;
+	@media only screen and (max-width: 769px) {
+		background: #DA1818;
+		justify-content: center;
+		align-items: center;
+	}
 }
 
 
@@ -208,3 +169,43 @@
 		opacity: 0.4;
 	}
 }
+
+
+@media only screen and (min-width: 769px) {
+	.checkout {
+		height: 100%;
+		width: 100%;
+		position: absolute;
+	}
+	.checkoutWrapper {
+		display: flex;
+		height: calc(100% - 60px);
+		>.card,
+		>.cardPayment {
+			width: 33.333%;
+			margin: 10px;
+			align-items: flex-start;
+			overflow: auto;
+		}
+		.cardPayment {
+			display: flex;
+			flex-direction: column;
+		}
+	}
+	.cardStepFour {
+		display: flex;
+		flex: 1;
+	}
+	.cardStepThree {
+		margin-top: 0;
+		height: auto;
+	}
+	.stepFourWrapper {
+		flex: 1;
+		padding-bottom: 100px;
+		overflow: auto;
+		margin-right: -10px;
+		padding-right: 10px;
+	}
+}
+

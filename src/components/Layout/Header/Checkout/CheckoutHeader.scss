@@ -9,6 +9,9 @@
     left: 0px;
     width: 100%;
     z-index: 10;
+    > div{
+        padding: 0px 10px;
+    }
 }
 
 .left{

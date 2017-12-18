@@ -108,17 +108,18 @@ class stepOne extends Component {
 	componentDidMount() {
 		if (this.props.addresses === undefined) {
 			this.constructor.fetchDataAddress(this.userCookies, this.userRFCookies, this.props.dispatch);
-		} else {
-			this.setShipping(this.props.addresses);
-		}
-		const checkoutState = {
-			...this.props.stepState,
-			stepOne: {
-				...this.props.stepState.stepOne,
-				funcShowModalAddress: (e) => this.showModalAddress(e)
-			}
-		};
-		this.props.applyState(checkoutState);
+		} 
+		// else {
+		// 	this.setShipping(this.props.addresses);
+		// }
+		// const checkoutState = {
+		// 	...this.props.stepState,
+		// 	stepOne: {
+		// 		...this.props.stepState.stepOne,
+		// 		funcShowModalAddress: (e) => this.showModalAddress(e)
+		// 	}
+		// };
+		// this.props.applyState(checkoutState);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -131,11 +132,11 @@ class stepOne extends Component {
 			this.props.applyState(checkoutState);
 		}
 		
-		if (this.state.shipping.length < 1 || this.props.addresses !== nextProps.addresses) {
-			if (!_.isEmpty(nextProps.addresses)) {
-				this.setShipping(nextProps.addresses);
-			}
-		}
+		// if (this.state.shipping.length < 1 || this.props.addresses !== nextProps.addresses) {
+		// 	if (!_.isEmpty(nextProps.addresses)) {
+		// 		this.setShipping(nextProps.addresses);
+		// 	}
+		// }
 		
 		if (this.props.stepState.stepOne.dropshipper.checked !== nextProps.stepState.stepOne.dropshipper.checked) {
 			this.onPlaceOrder(nextProps.stepState.stepOne.selectedAddress, nextProps.stepState.stepOne.dropshipper);
@@ -366,7 +367,11 @@ class stepOne extends Component {
 					<Tabs.Tab>
 						<Tabs.Title>{T.checkout.TAB_ADDRESS_LABEL}</Tabs.Title>
 						<Tabs.Content>
-							<TabAddress applyState={this.props.applyState} stepState={this.props.stepState} />
+							<TabAddress 
+								applyState={this.props.applyState} 
+								stepState={this.props.stepState}
+								onPlaceOrder={(address, dropshipper) => this.onPlaceOrder(address, dropshipper)}
+							/>
 						</Tabs.Content>
 					</Tabs.Tab>
 					<Tabs.Tab>
@@ -386,7 +391,7 @@ class stepOne extends Component {
 											block 
 											onClick={() => this.toggleModalo2o()}
 										>
-											<Level>
+											<Level isMobile>
 												<Level.Left className={styles.elipsis}>{selectedAddressO2O.attributes.address_label}</Level.Left>
 												<Level.Right><Icon name='angle-down' /></Level.Right>
 											</Level>

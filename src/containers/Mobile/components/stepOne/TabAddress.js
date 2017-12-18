@@ -95,7 +95,8 @@ class TabAddress extends Component {
 			...stepState,
 			stepOne: {
 				...stepState.stepOne,
-				[selectedAddressType]: selectedAddress
+				[selectedAddressType]: selectedAddress,
+				funcShowModalAddress: (e) => this.showModalAddress(e)
 			}
 		};
 		this.props.applyState(checkoutState);

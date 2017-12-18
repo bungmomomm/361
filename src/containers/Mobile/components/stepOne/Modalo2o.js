@@ -10,6 +10,7 @@ import {
 	Select
 } from 'mm-ui';
 import { T } from '@/data/translations';
+import styles from './modalo2o.scss';
 
 class Modalo2o extends Component {
 	
@@ -92,33 +93,39 @@ class Modalo2o extends Component {
 	
 	render() {
 		return (
-			<Modal 
+			<Modal
 				size='medium' 
+				className={styles.modal}
 				showOverlayCloseButton
 				show={this.props.open}
 				onCloseRequest={this.props.handleClose}
 			>
 				<Modal.Header>
-					{
-						this.props.o2oProvinces &&
-						<Select hasFilter options={this.props.o2oProvinces} onChange={this.onSelectProvince} defaultValue={this.state.selectedProvince} style={{ paddingRight: '30px' }} />
-					}
-					<Input 
-						block 
-						dataProps={{
-							value: this.state.filter
-						}}
-						placeholder='Cari Lokasi Toko / E-Locker (O2O) lainnya' 
-						onChange={this.onChangeFilterText} 
-					/>
+					<div className={styles.header}>
+						{
+							this.props.o2oProvinces &&
+							<div className={styles.searchFilter}><Select hasFilter options={this.props.o2oProvinces} block onChange={this.onSelectProvince} defaultValue={this.state.selectedProvince} /></div>
+						}
+						<div className={styles.searchInput}>
+							<Input 
+								block 
+								dataProps={{
+									value: this.state.filter
+								}}
+								placeholder='Cari Lokasi Toko / E-Locker (O2O) lainnya' 
+								onChange={this.onChangeFilterText} 
+							/>
+						</div>
+					</div>
 				</Modal.Header>
-				<Modal.Body>
+				<Modal.Body className={styles.body}>
 					{
 						this.state.listo2o && this.state.listo2o.filter(e => e.type === 'pickup_location').map((address, index) => {
 							const isChecked = this.props.selectedAddressO2O && this.props.selectedAddressO2O.id === address.id;
 							return (
 								<Panel 
 									key={index} 
+									className={styles.panel}
 									color={isChecked ? 'yellow' : 'grey'}
 									onClick={() => this.props.onChange(address, this.state.selectedProvince)}
 									header={

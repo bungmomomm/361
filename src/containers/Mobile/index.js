@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styles from './mobile.scss';
 
-import { Image } from '@/components';
+import { Image, CheckoutHeader } from '@/components';
 
 import { Container } from 'mm-ui';
 
@@ -12,10 +12,12 @@ import StepThree from './components/stepThree';
 import StepFour from './components/stepFour';
 
 class Mobile extends Component {
+
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
+			isMobile: false,
 			stepOne: {
 				disabled: false,
 				activeTab: 0,
@@ -45,6 +47,19 @@ class Mobile extends Component {
 		};
 	}
 
+	componentWillMount() {
+		this.updateDimensions();
+		window.addEventListener('resize', () => this.updateDimensions());
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener('resize', () => this.updateDimensions());
+	}
+
+	updateDimensions() {
+		this.setState({ isMobile: window.innerWidth <= 768 || false });
+	}
+
 	applyState(data) {
 		this.setState({ ...data });
 	}
@@ -53,11 +68,15 @@ class Mobile extends Component {
 		return (
 			<div className={styles.checkout}>
 				<div className={styles.header}>
-					<Container>
-						<a href='/'>
-							<Image src='mobile/logo-mm.png' alt='logo mataharimall' />
-						</a>
-					</Container>
+					{
+						this.state.isMobile ? (
+							<Container>
+								<a href='/'>
+									<Image src='mobile/logo-mm.png' alt='logo mataharimall' />
+								</a>
+							</Container>
+						) : <CheckoutHeader />
+					}
 				</div>
 				<Container className={styles.checkoutWrapper}>
 					<StepOne 
