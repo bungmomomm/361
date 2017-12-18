@@ -35,6 +35,13 @@
 	.panel{
 		max-width: 33.3333%;
 		padding: 0px 7px;
+		height: 200px;
+		display: flex;
+		flex-direction: column;
+		> div:last-child{
+			flex: 1;
+		}
+
 	}
 
 

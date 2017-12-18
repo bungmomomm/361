@@ -72,7 +72,7 @@ class Modalo2o extends Component {
 
 	onChangeFilterText(event) {
 		const filter = event.target.value;
-		if (this.props.collections && filter !== '') {
+		if (this.props.listo2o && filter !== '') {
 			const listo2o = this.state.collections.map((item) => {
 				const filterLabel = item.attributes.address_label;
 				const isFilteredByLabel = filterLabel && (filterLabel.toUpperCase().indexOf(filter.toUpperCase()) > -1);

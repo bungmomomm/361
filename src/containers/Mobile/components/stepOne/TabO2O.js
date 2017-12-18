@@ -53,6 +53,7 @@ class TabO2O extends Component {
 	}
 
 	setSelectedAddressO2O(selectedAddressO2O, selectedProvinceO2O) {
+		console.log('test');
 		this.saveSelectedAddress(selectedAddressO2O, 'selectedAddressO2O');
 		this.setState({
 			selectedAddressO2O,

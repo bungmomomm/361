@@ -47,7 +47,7 @@ class Mobile extends Component {
 		};
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		this.updateDimensions();
 		window.addEventListener('resize', () => this.updateDimensions());
 	}
