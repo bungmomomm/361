@@ -47,6 +47,7 @@ export default class Button extends Component {
 
 		return (
 			<button 
+				id={this.props.id}
 				type={type} 
 				className={classButton} 
 				onClick={onClick} 

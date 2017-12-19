@@ -54,9 +54,21 @@ export default (state = initialState, action) => {
 		};
 	}
 	case ADDR_O2O_LIST: {
+		let newO2O = []; 
+		if (typeof action.payload.o2o !== 'undefined') {
+			newO2O = action.payload.o2o.filter(e => e.type === 'pickup_location')
+			// .map((item) => {
+			// 	// if (typeof action.payload.o2o !== 'undefined' && typeof item !== 'undefined') {
+			// 	// 	return action.payload.o2o.filter((e) => e.attributes.address_label === item.attributes.address_label);
+			// 	// }
+			// 	return item;
+			// })
+			;
+		}
+		
 		return {
 			...state, 
-			o2o: action.payload.o2o,
+			o2o: newO2O.length ? newO2O : action.payload.o2o,
 		};
 	}
 	case ADDR_GET_DISTRICT: {

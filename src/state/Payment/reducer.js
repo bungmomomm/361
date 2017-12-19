@@ -55,7 +55,7 @@ export default (state = initialState, action) => {
 			...state
 		};
 	}
-
+	
 	switch (action.type) {
 
 	case constants.PAY_LIST_PAYMENT_METHOD: {
@@ -119,7 +119,13 @@ export default (state = initialState, action) => {
 			resetPaymentOption: true,
 			selectedPayment: action.payload.selectedPayment,
 			selectedPaymentOption: null,
-			paymentMethod: null
+			paymentMethod: null,
+			selectedCard: false,
+			selectedCardDetail: {
+				cvv: 0,
+				month: 0,
+				year: 0
+			}
 		};
 	}
 
@@ -184,8 +190,10 @@ export default (state = initialState, action) => {
 					}
 					state.paymentMethod = item.paymentMethod;
 				} else {
+					card.selected = false;
 					state.selectedPaymentOption = false;
-					state.selectedCard = false;
+					state.selectedCard = null;
+					state.paymentMethod = null;
 				}
 				return card;
 			});
@@ -381,6 +389,8 @@ export default (state = initialState, action) => {
 					action.payload.callback
 				);
 			} else if (action.mode === 'mandiri_ecash' ||	 action.mode === 'bca_klikpay') {
+				top.beforeunload = false;
+				top.onbeforeunload = false;
 				top.location.href = action.payload.payment.data;
 				return state;
 			} else if (action.mode === 'complete') {

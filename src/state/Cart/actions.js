@@ -184,7 +184,7 @@ const deleteCart = (token, productId, props) => dispatch => new Promise((resolve
 });
 
 
-const updateCartWithoutSO = (token, productQty, productId) => dispatch => {
+const updateCartWithoutSO = (token, productQty, productId) => dispatch => new Promise((resolve, reject) => {
 	dispatch(gettingCart(token));
 
 	const req = {
@@ -210,9 +210,10 @@ const updateCartWithoutSO = (token, productQty, productId) => dispatch => {
 	})
 	.catch((error) => {
 		console.log(error);
+		reject(error);
 	});
 
-};
+});
 
 const updateQtyCart = (token, productQty, productId, props) => dispatch => new Promise((resolve, reject) => {
 	dispatch(gettingCart(token));
@@ -285,6 +286,7 @@ const updateGosend = (token, storeId, shippingMethodId, props) => dispatch => ne
 	})
 	.catch((error) => {
 		console.log(error);
+		reject(error);
 	});
 
 });

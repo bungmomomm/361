@@ -38,7 +38,9 @@ export default (state = initialState, action) => {
 		return {
 			...state,
 			validCoupon: true,
-			loading: false
+			loading: false,
+			message: null,
+			code: 201
 		};
 	}
 

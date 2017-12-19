@@ -6,6 +6,7 @@ import styles from './Checkout.scss';
 // component load
 import { Container, Row, Col, Loading, CheckoutHeader, Notification } from '@/components';
 import { renderIf } from '@/utils';
+import { Raven } from '@/utils/raven';
 
 import { Validator } from 'ree-validate';
 
@@ -18,7 +19,6 @@ import VerifikasiNoHandponeModalbox from './components/Modal/VerifikasiNoHandpon
 import Vt3dsModalBox from './components/Modal/Vt3dsModalBox';
 import EcashModalBox from './components/Modal/EcashModalBox';
 import OvoCountDownModal from './components/Modal/OvoCountDownModal';
-import OvoErrorPaymentModal from './components/Modal/OvoErrorPaymentModal';
 
 // Section Component
 import CardPesananPengiriman from './components/CardPesananPengiriman';
@@ -67,7 +67,8 @@ import {
 	saveCC,
 	getAvailabelPaymentSelection,
 	checkStatusOvoPayment,
-	refreshInstallmentTerm
+	refreshInstallmentTerm,
+	failAuthTokenCC
 } from '@/state/Payment/actions';
 
 import { getRefreshToken } from '@/state/Auth/actions';
@@ -135,6 +136,8 @@ class Checkout extends Component {
 			ovoTimer: 30,
 			ovoInterval: 5
 		};
+		this.temot = 0;
+		this.idle = false;
 
 		this.restrictO2oFlag = false;
 
@@ -196,6 +199,7 @@ class Checkout extends Component {
 		this.getAffTracking = this.getAffTracking.bind(this);
 		this.okeoce = this.okeoce.bind(this);
 		this.checkOvoStatus = this.checkOvoStatus.bind(this);
+		this.resetTimer = this.resetTimer.bind(this);
 	}
 
 	componentWillMount() {
@@ -234,13 +238,6 @@ class Checkout extends Component {
 		});
 	}
 
-	componentDidMount() {
-		// const { dispatch } = this.props;
-		// dispatch(addCoupon('test'));
-		// const { dispatch } = this.props;
-		// dispatch(getAddresses(this.props.cookies.get('user.token')));
-	}
-
 	componentWillReceiveProps(nextProps) {
 		if (this.state.cityProv !== nextProps.cityProv) {
 			this.setState({
@@ -276,15 +273,16 @@ class Checkout extends Component {
 			userToken: this.props.cookies.get('user.token'),
 			userRFToken: this.props.cookies.get('user.rf.token')
 		})).then((newToken) => {
-			console.log(newToken);
 			this.props.cookies.set('user.exp', Number(newToken.expToken), { domain: process.env.SESSION_DOMAIN });
 			this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: process.env.SESSION_DOMAIN });
 			this.props.cookies.set('user.token', newToken.userToken, { domain: process.env.SESSION_DOMAIN });
 
-			callback(dispatch);
-
+			if (callback !== null) {
+				callback(dispatch);
+			}
 			// this.onReload(dispatch);
 		}).catch((error) => {
+			dispatch(paymentError(error.response.data.errorMessage));
 			this.setState({
 				notifInfo: false,
 				notifMessage: error.response.data.errorMessage,
@@ -310,19 +308,18 @@ class Checkout extends Component {
 					dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), defaultAddress)).then(() => {
 
 					}).catch((error) => {
+						dispatch(paymentError(error.response.data.errorMessage));
 						this.setState({
 							enablePembayaran: false
 						});
 					});
 				}
 			}).catch(error => {
-				// console.log('getAddresses');
-				// console.log(error);
+				dispatch(paymentError(error.response.data.errorMessage));
 				this.onRefreshToken(dispatch, this.onReload);
 			});
 		}).catch(error => {
-			// console.log('getCart');
-			// console.log(error);
+			dispatch(paymentError(error.response.data.errorMessage));
 			this.onRefreshToken(dispatch, this.onReload);
 		});
 	}
@@ -380,6 +377,7 @@ class Checkout extends Component {
 				dispatch(changeBillingNumber(address.attributes.phone));
 			}
 		}).catch((error) => {
+			dispatch(paymentError(error.response.data.errorMessage));
 			this.setState({
 				enablePembayaran: false
 			});
@@ -451,6 +449,7 @@ class Checkout extends Component {
 				this.onReload(dispatch);
 			}).catch((error) => {
 				console.log(error);
+				dispatch(paymentError(error.response.data.errorMessage));
 			});
 		} else {
 			dispatch(deleteCart(this.props.cookies.get('user.token'), cart.data.id, this.props)).then(newCart => {
@@ -458,6 +457,7 @@ class Checkout extends Component {
 				this.onCheckProductJabodetabek(newCart);
 				this.onReload(dispatch);
 			}).catch((error) => {
+				dispatch(paymentError(error.response.data.errorMessage));
 				console.log(error);
 			});
 		}
@@ -548,9 +548,9 @@ class Checkout extends Component {
 		}
 	}
 
-	onGetListO2o(provinceId) {
+	onGetListO2o(provinceId, rowsRequest = 1000) {
 		const { dispatch } = this.props;
-		dispatch(getO2OList(this.props.cookies.get('user.token'), provinceId));
+		dispatch(getO2OList(this.props.cookies.get('user.token'), rowsRequest, provinceId));
 	}
 
 	onGetO2oProvinces() {
@@ -657,6 +657,7 @@ class Checkout extends Component {
 				}
 				dispatch(vtModalBoxOpen(true, response.redirect_url));
 			} else if (parseInt(response.status_code, 10) === 200) {
+				
 				dispatch(vtModalBoxOpen(false));
 				dispatch(
 					pay(
@@ -687,8 +688,26 @@ class Checkout extends Component {
 					)
 				);
 			} else {
+				if (process.env.NODE_ENV === 'production') {
+					Raven('VTCreditCard', 'info', {
+						response,
+						sonumber: this.props.payments.soNumber,
+						selectedcard: this.props.payments.selectedCard,
+						selectedpayment: this.props.payments.selectedPayment,
+						selectedpaymentoption: this.props.payments.selectedPaymentOption,
+						cart: this.props.cart
+					});
+				}
+							
 				dispatch(vtModalBoxOpen(false));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
+				dispatch(
+					failAuthTokenCC(
+						this.props.cookies.get('user.token'),
+						this.props.soNumber
+					)
+				);
+				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
 			}
 		};
 
@@ -729,9 +748,28 @@ class Checkout extends Component {
 					)
 				);
 			} else {
+				if (process.env.NODE_ENV === 'production') {
+					Raven('VTInstallment', 'info', {
+						response,
+						sonumber: this.props.payments.soNumber,
+						selectedcard: this.props.payments.selectedCard,
+						selectedpayment: this.props.payments.selectedPayment,
+						selectedpaymentoption: this.props.payments.selectedPaymentOption,
+						cart: this.props.cart
+					});
+				}
 				dispatch(vtModalBoxOpen(false));
 				dispatch(paymentError('Silahkan periksa data kartu kredit Anda.'));
+				dispatch(
+					failAuthTokenCC(
+						this.props.cookies.get('user.token'),
+						this.props.soNumber
+					)
+				);
+				dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
 			}
+
+
 		};
 		dispatch(
 			pay(
@@ -777,12 +815,14 @@ class Checkout extends Component {
 	}
 
 	onTermChange(term) {
+		let termValue = typeof term.term !== 'undefined' ? term.term : 3;
+		termValue = typeof term.value !== 'undefined' ? term.value : termValue;
 		const { dispatch } = this.props;
 		this.props.payments.selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 		const selectedPaymentOption = getAvailabelPaymentSelection(this.props.payments.selectedPayment);
 		const bank = (!this.props.payments.selectedBank) ? '' : this.props.payments.selectedBank.value.value;
 		const cardNumber = this.state.appliedBin ? this.state.appliedBin.cardNumber : '';
-		this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, cardNumber, bank, term.term));
+		this.props.dispatch(applyBin(this.props.cookies.get('user.token'), selectedPaymentOption.value, cardNumber, bank, termValue));
 		dispatch(termChange(term));
 	}
 
@@ -848,7 +888,8 @@ class Checkout extends Component {
 							showModalOvo: true
 						});
 					})
-					.catch(() => {
+					.catch((error) => {
+						dispatch(paymentError(error.response.data.errorMessage));
 						this.setState({
 							showModalOvo: false
 						});
@@ -892,6 +933,7 @@ class Checkout extends Component {
 			});
 		})
 		.catch(error => {
+			dispatch(paymentError(error.response.data.errorMessage));
 			this.setState({
 				enablePembayaran: false
 			});
@@ -1109,6 +1151,21 @@ class Checkout extends Component {
 		}
 	}
 
+	resetTimer() {
+		const { dispatch } = this.props;
+		if (this.idle) {
+			this.idle = false;
+			this.onRefreshToken(dispatch);
+			return;
+		}
+		clearTimeout(this.temot);
+		const timeout = parseInt(process.env.MILISECOND, 10) * parseInt(process.env.SECOND, 10) * parseInt(process.env.MINUTES, 10);
+		this.temot = setTimeout(() => {
+			this.idle = true;	
+		}, timeout);  // time is in milliseconds
+	}
+	
+
 	checkDropship(field = 'all') {
 		if (this.state.dropshipper) {
 			let formDropshipper = {};
@@ -1182,7 +1239,7 @@ class Checkout extends Component {
 
 
 					}).catch((error) => {
-
+						dispatch(paymentError(error.response.data.errorMessage));
 					});
 				} else {
 					this.onDoPayment();
@@ -1210,6 +1267,7 @@ class Checkout extends Component {
 			dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress)).then(() => {
 				dispatch(changeBillingNumber(this.state.selectedAddress.attributes.phone));
 			}).catch((error) => {
+				dispatch(paymentError(error.response.data.errorMessage));
 				this.setState({
 					enablePembayaran: false,
 					enablePesananPengiriman: this.state.enablePesananPengiriman
@@ -1250,7 +1308,7 @@ class Checkout extends Component {
 		if (param === 'ok') {
 			this.onDoPayment();
 		} else {
-			location.reload();
+			window.location = window.location.href;
 		}
 	}
 
@@ -1286,16 +1344,14 @@ class Checkout extends Component {
 			dispatch(checkStatusOvoPayment(`${checkStatusUrl}${params}`, this.props.cookies.get('user.token'), this.props.soNumber, this.props.payments.ovoPaymentNumber, tick < 1))
 			.then(() => {
 				if (tick === 0 && this.state.selectedAddress) {
+					this.setState({
+						showModalOvo: false
+					});
 					dispatch(getPlaceOrderCart(this.props.cookies.get('user.token'), this.state.selectedAddress));
 					dispatch(changeOvoPaymentNumber());
 				}
 			});
 		}
-		if (tick === 0) {
-			this.setState({
-				showModalOvo: false
-			});
-		} 
 	}
 
 	render() {
@@ -1319,10 +1375,12 @@ class Checkout extends Component {
 			dispatch,
 			cookies
 		} = this.props;
-
 		return (
 			this.props.loading ? <Loading /> : (
-				<div className='page'>
+				<div 
+					className='page' 
+					onMouseMove={() => { this.resetTimer(); }}
+				>
 					<Helmet title='Checkout' />
 					<CheckoutHeader user={user} />
 					<div className={styles.checkout}>
@@ -1433,7 +1491,14 @@ class Checkout extends Component {
 							/>
 						)
 					}
-					<ElockerModalbox closeModalElocker={this.closeModalElocker} shown={this.state.showModalO2o} listo2o={!listo2o ? null : listo2o} o2oProvinces={!o2oProvinces ? null : o2oProvinces} onGetListO2o={this.onGetListO2o} onSelectedLocker={this.onSelectedLocker} />
+					<ElockerModalbox 
+						closeModalElocker={this.closeModalElocker} 
+						shown={this.state.showModalO2o} 
+						listo2o={!listo2o ? null : listo2o} 
+						o2oProvinces={!o2oProvinces ? null : o2oProvinces} 
+						onGetListO2o={this.onGetListO2o} 
+						onSelectedLocker={this.onSelectedLocker}
+					/>
 					<PaymentSuccessModalbox shown={this.props.payments.paymentSuccess} onClose={this.onCloseSuccessBox} />
 					<PaymentErrorModalbox
 						shown={this.props.payments.paymentError}
@@ -1458,15 +1523,11 @@ class Checkout extends Component {
 					{
 						this.state.showModalOvo && (
 							<OvoCountDownModal
+								disableCloseButton
 								shown={this.state.showModalOvo}
 								secondsRemaining={this.state.ovoTimer}
 								tick={(e) => this.checkOvoStatus(e)}
 							/>
-						)
-					}
-					{
-						false && (
-							<OvoErrorPaymentModal shown />
 						)
 					}
 					<EcashModalBox shown={this.props.payments.showEcash} src={this.props.payments.mandiriRedirectUrl} onClose={this.onMandiriEcashClose} />

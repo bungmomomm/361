@@ -550,6 +550,7 @@ const expirePayment = (token, soNumber) => (dispatch) => {
 		}
 	}).then((response) => {
 		// since return 422, error message on catch
+		dispatch(payError(''));
 	}).catch((error) => {
 		dispatch(payError(getError(error)));
 	});
@@ -644,12 +645,17 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 
 				resolve(soNumber, response.data, mode, card, callback);
 			}).catch((error) => {
-				// showError
-				dispatch(payError(getError(error)));
+				if (error.response.data.code !== 405) {
+					// showError
+					dispatch(payError(getError(error)));
+				}
 				reject(error);
 			});
 		}).catch((error) => {
-			dispatch(payError(getError(error)));
+			if (error.response.data.code !== 405) {
+				// showError
+				dispatch(payError(getError(error)));
+			}
 			reject(error);
 		});
 	} else {
@@ -682,6 +688,8 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 						}
 					}
 				}).then((res) => {
+					window.beforeunload = false;
+					window.onbeforeunload = false;
 					window.document.write(res.data);
 					window.document.getElementById('sprint_form').submit();
 				}).catch((error) => {
@@ -696,8 +704,10 @@ const pay = (token, soNumber, payment, paymentDetail = false, mode = 'complete',
 			dispatch(payReceived(soNumber, response.data, mode, card, callback));
 			resolve(soNumber, response.data, mode, card, callback);
 		}).catch((error) => {
-			// showError
-			dispatch(payError(getError(error)));
+			if (error.response.data.code !== 405) {
+				// showError
+				dispatch(payError(getError(error)));
+			}
 			reject(error);
 		});
 	}
@@ -737,6 +747,21 @@ const refreshInstallmentTerm = (selectedPayment, applybinResponse) => dispatch =
 	}
 };
 
+const failAuthTokenCC = (token, soNumber) => dispatch => {
+	return request({
+		token,
+		path: 'payments/fail_auth_token_cc',
+		method: 'POST',
+		body: {
+			order_number: soNumber
+		}
+	}).then((response) => {
+		// since return 422, error message on catch
+	}).catch((error) => {
+		dispatch(payError(getError(error)));
+	});
+};
+
 export default {
 	paymentInfoUpdated,
 	getAvailablePaymentMethod,
@@ -773,5 +798,6 @@ export default {
 	getAvailabelPaymentSelection,
 	checkStatusOvoPayment,
 	expirePayment,
-	refreshInstallmentTerm
+	refreshInstallmentTerm,
+	failAuthTokenCC
 };

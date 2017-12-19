@@ -107,6 +107,8 @@ export default class Input extends Component {
 				onKeyPress={onKeyPress}
 				onBlur={onBlur}
 				onFocus={onFocus}
+				minLength={this.props.minLength} 
+				maxLength={this.props.maxLength}
 				onChange={onChange}
 			/>
 		);
@@ -131,7 +133,7 @@ Input.propTypes = {
 	/** make horinzontal layout. */
 	horizontal: PropTypes.bool,
 	size: PropTypes.oneOf(['small', 'medium', 'large']),
-	color: PropTypes.oneOf(['red', 'yellow', 'orange', 'green', 'black']),
+	color: PropTypes.oneOf(['red', 'yellow', 'orange', 'green', 'black', 'purple']),
 	/** label content. */
 	label: PropTypes.string,
 	/** Input Attribute Type. */

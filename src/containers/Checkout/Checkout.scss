@@ -2,10 +2,12 @@
 @import 'variables';
 
 .checkout{
-    position: relative;
+    // position: relative;
+    position: absolute;
     padding-top: 60px;
     padding-bottom: 20px;   
     height: 100%;
+    width: 100%;
 }
 
 .title{
@@ -44,12 +46,15 @@
 	padding-top: 10px;
 }
 
-.overflow{
-    display: block;
-    flex:1;
-    margin-right: -15px;
+.overflow {
+	display: block;
+	flex: 1;
+	margin-right: -15px;
     padding-right: 15px;
+    overflow-y:auto;
+    -webkit-overflow-scrolling: auto;
 }
+
 
 .fullHeight{
     height: 100%;
