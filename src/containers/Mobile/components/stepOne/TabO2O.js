@@ -53,7 +53,6 @@ class TabO2O extends Component {
 	}
 
 	setSelectedAddressO2O(selectedAddressO2O, selectedProvinceO2O) {
-		console.log('test');
 		this.saveSelectedAddress(selectedAddressO2O, 'selectedAddressO2O');
 		this.setState({
 			selectedAddressO2O,
@@ -131,8 +130,8 @@ class TabO2O extends Component {
 				<Panel className='customSelectO2OWrapper'>
 					<Group>
 						<Button block onClick={() => this.showModalo2o()}>
-							<Level>
-								<Level.Left className={styles.elipsis}>{selectedAddressO2O.attributes.address_label}</Level.Left>
+							<Level isMobile>
+								<Level.Left style={{ maxWidth: '240px' }} className={styles.elipsis}>{selectedAddressO2O.attributes.address_label}</Level.Left>
 								<Level.Right><Icon name='angle-down' /></Level.Right>
 							</Level>
 						</Button>
