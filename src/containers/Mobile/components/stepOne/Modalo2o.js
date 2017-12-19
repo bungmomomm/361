@@ -145,7 +145,11 @@ class Modalo2o extends Component {
 									key={index} 
 									className={styles.panel}
 									color={isChecked ? 'yellow' : 'grey'}
-									onClick={() => this.props.onChange(address, this.state.selectedProvince)}
+									dataProps={{
+										onClick: () => {
+											this.props.onChange(address, this.state.selectedProvince);
+										}
+									}}
 									header={
 										<Radio 
 											inverted={isChecked}
