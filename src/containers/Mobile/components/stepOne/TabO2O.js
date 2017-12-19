@@ -1,7 +1,5 @@
 import { connect } from 'react-redux';
 // import _ from 'lodash';
-import { actions } from '@/state/Cart';
-import { getRefreshToken } from '@/state/Auth/actions';
 import { withCookies } from 'react-cookie';
 import React, { Component } from 'react';
 import {
@@ -19,20 +17,6 @@ import Modalo2o from './Modalo2o';
 
 class TabO2O extends Component {
 
-	static placeOrder(userToken, userRFToken, dispatch, selectedAddress, billing) {
-		dispatch(new actions.getPlaceOrderCart(userToken, selectedAddress, billing))
-			.catch(error => {
-				if (error.response.data.code === 405) {
-					dispatch(getRefreshToken({
-						userToken,
-						userRFToken
-					})).then((response) => {
-						dispatch(new actions.getPlaceOrderCart(response.userToken, selectedAddress, billing));
-					});
-				}
-			});
-	}
-
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -46,10 +30,7 @@ class TabO2O extends Component {
 	onPlaceOrder(address, dropshipper = null) {		
 		address.type = 'pickup';
 		address.attributes.is_dropshipper = false;
-		const billing = this.props.billing && this.props.billing.length > 0 ? this.props.billing[0] : false;
-		
-		this.constructor.placeOrder(this.userCookies, this.userRFCookies, this.props.dispatch, address, billing);
-		this.props.setBillingNumber(address);
+		this.props.onPlaceOrder(address);
 	}
 
 	setSelectedAddressO2O(selectedAddressO2O, selectedProvinceO2O) {
