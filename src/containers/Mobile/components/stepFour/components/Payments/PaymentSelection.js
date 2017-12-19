@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { actions as paymentAction } from '@/state/Payment';
 import styles from '@/containers/Mobile/mobile.scss';
-import Tooltip from '../Tooltip';
+// import Tooltip from '../Tooltip';
 
-import { Radio, Level, Icon } from 'mm-ui';
+import { Radio, Level, Icon, Tooltip } from 'mm-ui';
 import _ from 'lodash';
 
 class PaymentSelection extends Component {
@@ -53,8 +53,8 @@ class PaymentSelection extends Component {
 				}
 			});
 		} else {
-			this.setState({ 
-				selectedPaymentItem 
+			this.setState({
+				selectedPaymentItem
 			});
 		}
 	}
@@ -88,28 +88,29 @@ class PaymentSelection extends Component {
 						{option.label}
 						{option.disabled && <div style={{ fontSize: '10px' }} className='font-red'>{option.disableMessage}</div>}
 					</Level.Left>
-					<Level.Right >	
+					<Level.Right >
 						{option.settings.image && <img src={option.settings.image} alt={option.label} height='15px' />}
-						{option.settings.info && <span className={styles.tooltipButton} role='button' tabIndex='-1' onClick={() => this.showTooltip(option.settings.info)}>
-							{<Icon name='exclamation-circle' />}
-						</span>}
 						{
-							this.state.tooltip && this.state.selectedPaymentOption === option && (
-								<Tooltip
-									id={option.uniqueConstant} 
-									show 
-									content={this.state.tooltip} 
-									onClose={() => this.setState({ tooltip: '' })}
-								/>
-							)
+							option.settings.info &&
+							<Tooltip
+								id={option.uniqueConstant}
+								position='left'
+								label={
+									<span className={styles.tooltipButton}>
+										<Icon name='exclamation-circle' />
+									</span>
+								}
+							>
+								{option.settings.info.join('<br />')}
+							</Tooltip>
 						}
 					</Level.Right>
 				</Level>
 			);
 			return listPayment.push({
-				label: RadioLabel, 
-				dataProps: { 
-					name: `payment-${option.uniqueConstant}`, 
+				label: RadioLabel,
+				dataProps: {
+					name: `payment-${option.uniqueConstant}`,
 					onChange: () => this.onSelectedPaymentItem(option),
 					disabled: option.disabled,
 					checked: this.state.selectedPaymentOption === option || false
