@@ -73,7 +73,8 @@ export default class NewAddressModalbox extends Component {
 				location_coords: null
 			}, 
 			formattedAddress: '',
-			isCustomerData: false
+			isCustomerData: false,
+			shown: true,
 		};
 		this.onChange = this.onChange.bind(this);
 		this.onChangeSelect = this.onChangeSelect.bind(this);
@@ -111,8 +112,8 @@ export default class NewAddressModalbox extends Component {
 					isCustomerData: true
 				});
 			}
-
 		}
+		this.formAddressIsEdit(this.props.formDataAddress.isEdit);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -121,7 +122,7 @@ export default class NewAddressModalbox extends Component {
 				loading: false
 			});
 		}
-		if (nextProps.shown) {
+		if (typeof this.props.shown === 'undefined' || this.props.shown !== nextProps.shown) {
 			this.formAddressIsEdit(this.props.formDataAddress.isEdit);
 			this.setState({
 				shown: nextProps.shown
@@ -137,6 +138,7 @@ export default class NewAddressModalbox extends Component {
 
 	onChangeSelect(e) {
 		this.gosendCheck(e);
+		this.hideGoogleMap();
 		this.setErrors(e.name, e.value);
 	}
 
