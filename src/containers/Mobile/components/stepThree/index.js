@@ -5,7 +5,8 @@ import { withCookies } from 'react-cookie';
 import { actions as couponActions } from '@/state/Coupon';
 import { actions as paymentActions } from '@/state/Payment';
 import { RESET_PAYMENT_METHOD } from '@/state/Payment/constants';
-import { currency, componentState, renderIf, pushDataLayer } from '@/utils';
+import { currency, componentState, renderIf } from '@/utils';
+import { pushDataLayer } from '@/utils/gtm';
 import { T } from '@/data/translations';
 import { 
 	Level,
