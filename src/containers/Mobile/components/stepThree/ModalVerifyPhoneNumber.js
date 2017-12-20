@@ -28,6 +28,10 @@ class ModalVerifyPhoneNumber extends Component {
 		this.defaultOtpCountDown = 60;
 	}
 
+	componentWillUnmount() {
+		this.closeModal();
+	}
+
 	onSubmitPhoneNumber() {
 		if (this.isValidSubmitPhoneNumber()) {
 			const { dispatch } = this.props;
@@ -49,10 +53,11 @@ class ModalVerifyPhoneNumber extends Component {
 					this.state.otp,
 					this.props,
 				)
-			).then(() => {
+			).catch(() => {
 				if (!this.props.coupon.otp.valid) {
 					this.setState({
-						showErrorOtp: true
+						showErrorOtp: true,
+						validOtp: false
 					});
 				}
 			});
@@ -72,35 +77,17 @@ class ModalVerifyPhoneNumber extends Component {
 
 	onChangePhoneNumber(e) {
 		const value = e.target.value;
-		if (value.length > 6 && value.length < 14) {
-			this.setState({
-				validPhoneNumber: true
-			});
-		} else {
-			this.setState({
-				validPhoneNumber: false
-			});
-		}
-
 		this.setState({
+			validPhoneNumber: (value.length > 6 && value.length < 14) || false,
 			phoneNumber: value,
 		});
 	}
 
 	onChangeOtp(e) {
 		const value = e.target.value;
-		if (value.length === 6) {
-			this.setState({
-				validOtp: true
-			});
-		} else {
-			this.setState({
-				validOtp: false
-			});
-		}
-
 		this.setState({
 			otp: value,
+			validOtp: value.length === 6 || false,
 			showErrorOtp: false,
 		});
 	}
@@ -164,7 +151,7 @@ class ModalVerifyPhoneNumber extends Component {
 		}, 1000);
 	}
 
-	closeModal(e) {
+	closeModal(e = false) {
 		clearInterval(this.interval);
 		this.props.handleClose(e);
 	}

@@ -84,7 +84,7 @@
     "kong-hmac": "^0.2.0",
     "lodash-humps": "^3.1.2",
     "luhn-cc": "0.0.6",
-    "mm-ui": "git+https://github.com/mataharimall/frontend.git#master",
+    "mm-ui": "git+https://github.com/mataharimall/frontend.git#v1.0.61",
     "mobile-detect": "^1.3.7",
     "normalize.css": "^7.0.0",
     "prop-types": "15.5.10",

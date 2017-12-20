@@ -19,6 +19,7 @@ class PaymentOvo extends Component {
 				autoLinkage: true,
 			},
 		};
+		this.props.autoLinkage(true);
 		this.input = '';
 		this.cookies = this.props.cookies.get('user.token');
 
@@ -81,9 +82,10 @@ class PaymentOvo extends Component {
 				ovoPhonePayment,
 				ovoPhonePaymentValid: useDefault
 			}
+		}, () => {
+			this.props.dispatch(new actions.changeOvoPaymentNumber(ovoPhonePayment));
+			this.validateOvoForm();
 		});
-		this.props.dispatch(new actions.changeOvoPaymentNumber(ovoPhonePayment));
-		this.validateOvoForm();
 	}
 
 	validateOvoForm() {

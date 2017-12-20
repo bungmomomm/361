@@ -36,9 +36,18 @@ class StepThree extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		if (
+			this.props.coupon.otp !== nextProps.coupon.otp &&
+			nextProps.coupon.otp.valid &&
+			this.state.showModalOtp
+		) {
+			this.showOTPmodal(false);
+			window.scrollTo(0, document.body.scrollHeight);
+		}
+		if (
 			this.props.coupon !== nextProps.coupon &&
 			!nextProps.coupon.validCoupon &&
-			nextProps.coupon.code === 403
+			nextProps.coupon.code === 403 && 
+			!nextProps.coupon.otp.valid
 		) {
 			this.showOTPmodal(true);
 		}
