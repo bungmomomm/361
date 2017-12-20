@@ -24,7 +24,7 @@ import styles from '../../mobile.scss';
 
 // import { Address } from '@/data';
 import { T } from '@/data/translations';
-import { setUserGTM, pushDataLayer } from '@/utils/gtm';
+import { setUserGTM } from '@/utils/gtm';
 import { getRefreshToken } from '@/state/Auth/actions';
 
 class stepOne extends Component {
@@ -55,16 +55,6 @@ class stepOne extends Component {
 				});
 			}
 		});
-	}
-
-	static mapSelectedAddress(selectedAddress) {
-		if (selectedAddress) {
-			return {
-				label: selectedAddress.attributes.addressLabel,
-				value: selectedAddress.id
-			};
-		}
-		return null;
 	}
 
 	constructor(props) {
@@ -103,83 +93,21 @@ class stepOne extends Component {
 		if (this.props.addresses === undefined) {
 			this.constructor.fetchDataAddress(this.userCookies, this.userRFCookies, this.props.dispatch);
 		} 
-		// else {
-		// 	this.setShipping(this.props.addresses);
-		// }
-		// const checkoutState = {
-		// 	...this.props.stepState,
-		// 	stepOne: {
-		// 		...this.props.stepState.stepOne,
-		// 		funcShowModalAddress: (e) => this.showModalAddress(e)
-		// 	}
-		// };
-		// this.props.applyState(checkoutState);
 	}
 
 	componentWillReceiveProps(nextProps) {
 		if (this.props.userGTM !== nextProps.userGTM) {
 			setUserGTM(nextProps.userGTM);
 		}
-		// set default elocker
-		if (!nextProps.stepState.stepOne.selectedAddressO2O && nextProps.latesto2o && nextProps.latesto2o.length > 0) {
-			const checkoutState = this.setStateDefaultElocker(nextProps.stepState, nextProps.latesto2o);
-			this.props.applyState(checkoutState);
-		}
-		
-		// if (this.state.shipping.length < 1 || this.props.addresses !== nextProps.addresses) {
-		// 	if (!_.isEmpty(nextProps.addresses)) {
-		// 		this.setShipping(nextProps.addresses);
-		// 	}
-		// }
-		
-		if (this.props.stepState.stepOne.dropshipper.checked !== nextProps.stepState.stepOne.dropshipper.checked) {
-			this.onPlaceOrder(nextProps.stepState.stepOne.selectedAddress, nextProps.stepState.stepOne.dropshipper);
-		}
-		
+
 		const changeTab = this.props.stepState.stepOne !== nextProps.stepState.stepOne;
 		if (this.props.cart !== nextProps.cart || this.props.error !== nextProps.error || changeTab) {
 			this.checkAllowedPayment(nextProps.stepState.stepOne.selectedAddress, nextProps);
 		}
-
-		if (this.props.stepState.stepOne.selectedAddress !== nextProps.stepState.stepOne.selectedAddress) {
-			// fetch data cart when selectedAddress change
-			this.onPlaceOrder(nextProps.stepState.stepOne.selectedAddress, nextProps.stepState.stepOne.dropshipper);
-		}
-
-		if (this.props.cart && nextProps.cart && nextProps.cart.length < this.props.cart.length) {
-			// fetch data cart when delete item
-			let selectedAddress = nextProps.stepState.stepOne.selectedAddress;
-			if (nextProps.stepState.stepOne.activeTab === 1) {
-				selectedAddress = nextProps.stepState.stepOne.selectedAddressO2O;
-			}
-			if (selectedAddress) {
-				this.onPlaceOrder(selectedAddress, nextProps.stepState.stepOne.dropshipper);
-			} 
-		}
 	}
 
-	onPlaceOrder(address, dropshipper = null) {
-		// handle dropshipper
-		if (!dropshipper) {
-			dropshipper = this.props.stepState.stepOne.dropshipper;
-		}
-		address.attributes.is_dropshipper = dropshipper.checked;
-		if (dropshipper.checked) {
-			address.attributes.dropship_name = dropshipper.name;
-			address.attributes.dropship_phone = dropshipper.phone;
-		}
-		
-		// handle o2o
-		if (address.type !== 'shipping') {
-			// set type pickup for O2O
-			address.type = 'pickup';
-			address.attributes.is_dropshipper = false;
-			pushDataLayer('checkout', 'checkout', { step: 2, option: 'Pickup' }, this.props.products);
-		} else {
-			pushDataLayer('checkout', 'checkout', { step: 2, option: 'Delivery' }, this.props.products);
-		}
+	onPlaceOrder(address) {
 		const billing = this.props.billing && this.props.billing.length > 0 ? this.props.billing[0] : false;
-		
 		this.constructor.placeOrder(this.userCookies, this.userRFCookies, this.props.dispatch, address, billing);
 		this.setBillingNumber(address);
 	}
@@ -190,36 +118,12 @@ class stepOne extends Component {
 		dispatch(new paymentActions.changeBillingNumber(billing));
 	}
 
-	setShipping(addresses) {
-		this.currentAddresses = addresses;
-		const shipping = [];
-		addresses.map((value, index) => (
-			shipping.push({
-				value: value.id,
-				label: !value.attributes.addressLabel ? value.attributes.fullname : value.attributes.addressLabel,
-				info:	`<p><strong>${value.attributes.fullname}</strong></p>
-						<div>${value.attributes.address}</div>
-						<div>${value.attributes.district}</div>
-						<div>${value.attributes.city}, ${value.attributes.province} ${value.attributes.zipcode}</div>
-						<div>P: ${value.attributes.phone}</div>
-						`
-			})
-		));
-		this.saveSelectedAddress(this.currentAddresses[0]);
-		this.setState({
-			shipping,
-			showModalAddress: false,
-			selectedAddress: this.currentAddresses[0]
-		});
-	}
-
 	setSelectedAddress(selected) {
 		const newSelectedAddress = _.find(this.currentAddresses, { id: selected.value });
 		this.saveSelectedAddress(newSelectedAddress);
 		this.setState({
 			selectedAddress: newSelectedAddress
 		});
-		// this.toggleChooseAddressModal();
 	}
 
 	setSelectedAddressO2O(selectedAddressO2O, selectedProvinceO2O) {
@@ -364,14 +268,18 @@ class stepOne extends Component {
 							<TabAddress 
 								applyState={this.props.applyState} 
 								stepState={this.props.stepState}
-								onPlaceOrder={(address, dropshipper) => this.onPlaceOrder(address, dropshipper)}
+								onPlaceOrder={(address) => this.onPlaceOrder(address)}
 							/>
 						</Tabs.Content>
 					</Tabs.Tab>
 					<Tabs.Tab>
 						<Tabs.Title>{T.checkout.TAB_ELOCKER_LABEL}</Tabs.Title>
 						<Tabs.Content>
-							<TabO2O applyState={this.props.applyState} stepState={this.props.stepState} setBillingNumber={(e) => this.setBillingNumber(e)} />
+							<TabO2O 
+								applyState={this.props.applyState} 
+								stepState={this.props.stepState} 
+								onPlaceOrder={(address) => this.onPlaceOrder(address)}
+							/>
 						</Tabs.Content>
 					</Tabs.Tab>
 				</Tabs>
@@ -394,7 +302,6 @@ class stepOne extends Component {
 						onChange={(e) => this.setSelectedAddress(e)}
 					/>
 				}
-
 				{
 					showModalo2o &&
 					<Modalo2o

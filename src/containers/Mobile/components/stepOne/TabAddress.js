@@ -1,7 +1,5 @@
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import { actions } from '@/state/Cart';
-import { getRefreshToken } from '@/state/Auth/actions';
 import { withCookies } from 'react-cookie';
 import React, { Component } from 'react';
 import {
@@ -19,20 +17,6 @@ import Dropshipper from './Dropshipper';
 import ModalAddress from './ModalAddress';
 
 class TabAddress extends Component {
-
-	static placeOrder(userToken, userRFToken, dispatch, selectedAddress, billing) {
-		dispatch(new actions.getPlaceOrderCart(userToken, selectedAddress, billing))
-		.catch(error => {
-			if (error.response.data.code === 405) {
-				dispatch(getRefreshToken({
-					userToken,
-					userRFToken
-				})).then((response) => {
-					dispatch(new actions.getPlaceOrderCart(response.userToken, selectedAddress, billing));
-				});
-			}
-		});
-	}
 
 	constructor(props) {
 		super(props);
@@ -54,6 +38,39 @@ class TabAddress extends Component {
 		if (this.props.addresses !== nextProps.addresses) {
 			this.setShipping(this.props.addresses);
 		}
+
+		if (this.props.stepState.stepOne.dropshipper.checked !== nextProps.stepState.stepOne.dropshipper.checked) {
+			this.onPlaceOrder(nextProps.stepState.stepOne.selectedAddress, nextProps.stepState.stepOne.dropshipper);
+		}
+
+		if (this.props.stepState.stepOne.selectedAddress !== nextProps.stepState.stepOne.selectedAddress) {
+			// fetch data cart when selectedAddress change
+			this.onPlaceOrder(nextProps.stepState.stepOne.selectedAddress, nextProps.stepState.stepOne.dropshipper);
+		}
+
+		if (this.props.cart && nextProps.cart && nextProps.cart.length < this.props.cart.length) {
+			// fetch data cart when delete item
+			let selectedAddress = nextProps.stepState.stepOne.selectedAddress;
+			if (nextProps.stepState.stepOne.activeTab === 1) {
+				selectedAddress = nextProps.stepState.stepOne.selectedAddressO2O;
+			}
+			if (selectedAddress) {
+				this.onPlaceOrder(selectedAddress, nextProps.stepState.stepOne.dropshipper);
+			} 
+		}
+	}
+
+	onPlaceOrder(address, dropshipper = null) {
+		// handle dropshipper
+		if (!dropshipper) {
+			dropshipper = this.props.stepState.stepOne.dropshipper;
+		}
+		address.attributes.is_dropshipper = dropshipper.checked;
+		if (dropshipper.checked) {
+			address.attributes.dropship_name = dropshipper.name;
+			address.attributes.dropship_phone = dropshipper.phone;
+		}
+		this.props.onPlaceOrder(address);
 	}
 
 	setShipping(addresses) {
