@@ -132,13 +132,9 @@ class TabAddress extends Component {
 		const { attributes } = this.props.stepState.stepOne.selectedAddress;
 		if (attributes.latitude && attributes.longitude) {
 			return (
-				<Level>
-					<Level.Item className='text-right'>
-						<div>
-							<Icon name='map-marker' /> &nbsp; {T.checkout.LOCATION_MARKED}
-						</div>
-					</Level.Item>
-				</Level>
+				<div className='pull-right'>
+					<Icon name='map-marker' /> &nbsp; {T.checkout.LOCATION_MARKED}
+				</div>
 			);
 		}
 		return null;

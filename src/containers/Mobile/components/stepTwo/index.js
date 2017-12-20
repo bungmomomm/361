@@ -175,7 +175,7 @@ class StepTwo extends Component {
 								key={indexStoreBox}
 								color={isRestrictO2O || isJabotabekItem ? 'red' : 'grey'}
 								header={
-									<Level>
+									<Level isMobile>
 										<Level.Left>{storeData.store.name}</Level.Left>
 										<Level.Right>{storeData.store.location && <div><Icon name='map-marker' /> {storeData.store.location}</div>}</Level.Right>
 									</Level>

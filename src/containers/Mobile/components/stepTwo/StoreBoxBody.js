@@ -29,20 +29,22 @@ const StoreBoxBody = ({ products, onUpdateQty, showBtnDelete, stepOneActiveTab }
 									</div>
 								}
 							</Level.Left>
-							<Level.Item style={{ paddingLeft: '20px' }}>
-								<div style={{ marginBottom: '10px' }}>{product.name}</div>
-								<Level isMobile style={{ marginBottom: '10px' }}>
-									<Level.Left><strong>{currency(product.price)}</strong></Level.Left>
-									<Level.Right>
-										<Stepper max={product.maxQty} min={1} start={product.qty} value={product.qty} onChange={(e) => onUpdateQty(e, product.id)} />
-									</Level.Right>
-								</Level>
+							<Level.Right style={{ paddingLeft: '20px' }}>
 								<div>
-									{product.attribute.map((list, iList) => (
-										<div key={iList}><em>{list}</em></div>
-									))}
+									<div style={{ marginBottom: '10px' }}>{product.name}</div>
+									<Level hasPadding isMobile style={{ marginBottom: '10px' }}>
+										<Level.Left><strong>{currency(product.price)}</strong></Level.Left>
+										<Level.Right>
+											<Stepper max={product.maxQty} min={1} start={product.qty} value={product.qty} onChange={(e) => onUpdateQty(e, product.id)} />
+										</Level.Right>
+									</Level>
+									<div>
+										{product.attribute.map((list, iList) => (
+											<div key={iList}><em>{list}</em></div>
+										))}
+									</div>
 								</div>
-							</Level.Item>
+							</Level.Right>
 						</Level>
 						{
 							(product.o2o_supported === '0' && stepOneActiveTab > 0) && <div className='font-red' style={{ marginTop: '15px' }}>{T.checkout.O2O_PRODUCT_NOT_SUPPORT}</div>

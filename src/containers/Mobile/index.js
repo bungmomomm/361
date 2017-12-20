@@ -57,7 +57,12 @@ class Mobile extends Component {
 	}
 
 	updateDimensions() {
-		this.setState({ isMobile: window.innerWidth <= 768 || false });
+		if (!this.state.isMobile && window.innerWidth <= 768) {
+			this.setState({ isMobile: true });
+		}
+		if (this.state.isMobile && window.innerWidth > 768) {
+			this.setState({ isMobile: false });
+		}
 	}
 
 	applyState(data) {
