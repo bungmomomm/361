@@ -1,9 +1,9 @@
-import Checkout from '@/containers/Checkout';
+import Page from '@/containers/Page';
 
 export default [
 
 	{
 		path: '/',
-		component: Checkout
+		component: Page
 	}
 ];

@@ -1,6 +1,0 @@
-{
-  "name": "segment",
-  "version": "0.0.0",
-  "private": true,
-  "main": "./Segment.js"
-}
