@@ -30,6 +30,7 @@ import styles from '../../mobile.scss';
 import { T } from '@/data/translations';
 import { setUserGTM, pushDataLayer } from '@/utils/gtm';
 import { getRefreshToken } from '@/state/Auth/actions';
+import { getUser } from '@/state/User/actions';
 
 class stepOne extends Component {
 
@@ -102,6 +103,7 @@ class stepOne extends Component {
 			this.props.cookies.set('user.rf.token', response.userRFToken, { domain: process.env.SESSION_DOMAIN });
 			this.props.cookies.set('user.token', response.userToken, { domain: process.env.SESSION_DOMAIN });
 		});
+		dispatch(getUser(this.props.cookies.get('user.token')));
 	}
 	
 	componentDidMount() {
@@ -131,9 +133,9 @@ class stepOne extends Component {
 		}
 		
 		if (this.state.shipping.length < 1 || this.props.addresses !== nextProps.addresses) {
-			if (!_.isEmpty(nextProps.addresses)) {
-				this.setShipping(nextProps.addresses);
-				pushDataLayer('checkout', 'checkout', { step: 1, option: this.source ? this.source.split('+').join(' ') : '' }, this.props.products);			
+			if (!_.isEmpty(nextProps.addresses) && nextProps.products) {
+				this.setShipping(nextProps.addresses);			
+				pushDataLayer('checkout', 'checkout', { step: 1, option: this.source ? this.source.split('+').join(' ') : '' }, nextProps.products);
 			}
 		}
 		
