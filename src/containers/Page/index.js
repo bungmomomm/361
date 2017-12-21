@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import styles from './page.scss';
 
 import { Image, CheckoutHeader } from '@/components';
+import { withCookies } from 'react-cookie';
 
 import { Container } from 'mm-ui';
 
@@ -10,6 +11,7 @@ import StepOne from './components/stepOne';
 import StepTwo from './components/stepTwo';
 import StepThree from './components/stepThree';
 import StepFour from './components/stepFour';
+import { getBaseUrl } from '@/utils';
 
 class Page extends Component {
 
@@ -48,6 +50,13 @@ class Page extends Component {
 	}
 
 	componentDidMount() {
+		const rfToken = this.props.cookies.get('user.rf.token');
+		const usrToken = this.props.cookies.get('user.token');
+		const isProduction = process.env.APP_ENV.toUpperCase() === 'PRODUCTION';
+		if ((typeof rfToken === 'undefined' || typeof usrToken === 'undefined') 
+		&& isProduction) { 
+			top.location.href = getBaseUrl();
+		}
 		this.updateDimensions();
 		window.addEventListener('resize', () => this.updateDimensions());
 	}
@@ -113,4 +122,4 @@ class Page extends Component {
 	}
 }
 
-export default Page;
+export default withCookies(Page);
