@@ -59,7 +59,12 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 						{
 							!hasLangLat() && (
 								<div>
-									<Checkbox state={!hasLangLat() ? 'disabled' : ''} name='gojek' defaultChecked={false} >
+									<Checkbox 
+										state={!hasLangLat() ? 'disabled' : ''}
+										name='gojek'
+										defaultChecked={false}
+										style={{ display: 'inline-block', verticalAlign: 'top' }}
+									>
 										Pengiriman: <Sprites name='gosend' />
 									</Checkbox>
 									{
