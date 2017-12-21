@@ -273,9 +273,11 @@ class Checkout extends Component {
 			userToken: this.props.cookies.get('user.token'),
 			userRFToken: this.props.cookies.get('user.rf.token')
 		})).then((newToken) => {
-			this.props.cookies.set('user.exp', Number(newToken.expToken), { domain: process.env.SESSION_DOMAIN });
-			this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: process.env.SESSION_DOMAIN });
-			this.props.cookies.set('user.token', newToken.userToken, { domain: process.env.SESSION_DOMAIN });
+			const currentDate = new Date();
+			currentDate.setDate(currentDate.getDate() + (2 * 365));
+			this.props.cookies.set('user.exp', Number(newToken.expToken), { domain: process.env.SESSION_DOMAIN, expires: currentDate });
+			this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: process.env.SESSION_DOMAIN, expires: currentDate });
+			this.props.cookies.set('user.token', newToken.userToken, { domain: process.env.SESSION_DOMAIN, expires: currentDate });
 
 			if (callback !== null) {
 				callback(dispatch);
