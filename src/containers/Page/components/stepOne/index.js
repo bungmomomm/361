@@ -83,9 +83,11 @@ class stepOne extends Component {
 			userToken: this.props.cookies.get('user.token'),
 			userRFToken: this.props.cookies.get('user.rf.token')
 		})).then((response) => {
-			this.props.cookies.set('user.exp', Number(response.expToken), { domain: process.env.SESSION_DOMAIN });
-			this.props.cookies.set('user.rf.token', response.userRFToken, { domain: process.env.SESSION_DOMAIN });
-			this.props.cookies.set('user.token', response.userToken, { domain: process.env.SESSION_DOMAIN });
+			const currentDate = new Date();
+			currentDate.setDate(currentDate.getDate() + (2 * 365));
+			this.props.cookies.set('user.exp', Number(response.expToken), { domain: process.env.SESSION_DOMAIN, expires: currentDate });
+			this.props.cookies.set('user.rf.token', response.userRFToken, { domain: process.env.SESSION_DOMAIN, expires: currentDate });
+			this.props.cookies.set('user.token', response.userToken, { domain: process.env.SESSION_DOMAIN, expires: currentDate });
 		});
 	}
 	

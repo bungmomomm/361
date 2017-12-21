@@ -39,7 +39,7 @@ const getRefreshToken = (token) => dispatch => new Promise((resolve, reject) => 
 	.catch((error) => {
 		// redirect back to main or home page if an user-customer has not logged in yet
 		const isProduction = process.env.APP_ENV.toUpperCase() === 'PRODUCTION';
-		if (error.response.data.code === 401 && isProduction) {
+		if ((error.response.data.code === 401 || error.response.data.code === 403) && isProduction) {
 			top.location.href = getBaseUrl();
 		}
 		
