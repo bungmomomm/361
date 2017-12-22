@@ -65,7 +65,7 @@ class StepThree extends Component {
 		dispatch(new couponActions.addCoupon(me.userCookies, soNumber, me.state.voucherCode)).then(() => {
 			dispatch(new paymentActions.applyBin(me.userCookies, RESET_PAYMENT_METHOD));
 			me.setState({ applyCouponStep: componentState.button.active });
-			pushDataLayer('checkout', 'checkout', { step: 5, option: 'Voucher' });
+			pushDataLayer('checkout', 'checkout', { step: 5, option: 'Voucher' }, this.props.products);
 		}).catch((error) => {
 			me.setState({ applyCouponStep: componentState.button.active });
 			
@@ -111,7 +111,7 @@ class StepThree extends Component {
 				});
 			}
 		});
-		pushDataLayer('checkout', 'checkout', { step: 5, option: 'Non Voucher' });
+		pushDataLayer('checkout', 'checkout', { step: 5, option: 'Non Voucher' }, this.props.products);
 
 	}
 
@@ -289,7 +289,8 @@ const mapStateToProps = (state) => {
 		coupon: state.coupon,
 		soNumber: state.cart.soNumber,
 		payments: state.payments,
-		carts: state.cart.data
+		carts: state.cart.data,
+		products: state.cart.products,
 	};
 };
 
