@@ -421,7 +421,7 @@ class stepOne extends Component {
 												</Level.Item>
 											</Level>
 										</Panel>
-										<Dropshipper stepState={this.props.stepState} onPlaceOrder={(e) => this.onPlaceOrder(e)} applyState={(e) => this.props.applyState(e)} />
+										<Dropshipper stepState={this.props.stepState} onPlaceOrder={(e) => this.onPlaceOrder(e)} applyState={(e) => this.props.applyState(e)} products={this.props.products} />
 									</div>
 								) : (
 									<Button
