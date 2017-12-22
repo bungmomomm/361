@@ -133,9 +133,9 @@ class stepOne extends Component {
 		}
 		
 		if (this.state.shipping.length < 1 || this.props.addresses !== nextProps.addresses) {
-			if (!_.isEmpty(nextProps.addresses) && nextProps.products) {
+			if (!_.isEmpty(nextProps.addresses) && this.props.products) {
 				this.setShipping(nextProps.addresses);			
-				pushDataLayer('checkout', 'checkout', { step: 1, option: this.source ? this.source.split('+').join(' ') : '' }, nextProps.products);
+				pushDataLayer('checkout', 'checkout', { step: 1, option: this.source ? this.source.split('+').join(' ') : '' }, this.props.products);
 			}
 		}
 		
