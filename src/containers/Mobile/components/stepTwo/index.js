@@ -80,7 +80,7 @@ class StepTwo extends Component {
 		const { stepOne } = this.props.stepState;
 		const { selectedAddress } = stepOne;
 		const isCurrentAddressJabotabek = selectedAddress && (typeof selectedAddress.attributes !== 'undefined' && selectedAddress.attributes.isJabodetabekArea === '1');
-		return fgLocation === '1' && stepOne.activeTab === 0 && !isCurrentAddressJabotabek;
+		return fgLocation === '1' && stepOne.activeTab === 0 && !isCurrentAddressJabotabek && selectedAddress.id;
 	}
 
 	updateShippingMethodGosend(checked, store) {

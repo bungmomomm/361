@@ -286,7 +286,7 @@ class stepOne extends Component {
 			},
 			stepTwo: {
 				...stepState.stepTwo,
-				disabled: false
+				disabled: emptyShipping || (restriction ? !restriction : emptyShippingO2o)
 			},
 		};
 		this.props.applyState(checkoutState);
