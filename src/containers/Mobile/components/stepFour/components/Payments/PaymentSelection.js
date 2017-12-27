@@ -7,6 +7,7 @@ import Tooltip from '../Tooltip';
 
 import { Radio, Level, Icon } from 'mm-ui';
 import _ from 'lodash';
+import { pushDataLayer } from '@/utils/gtm';
 
 class PaymentSelection extends Component {
 	constructor(props) {
@@ -52,6 +53,7 @@ class PaymentSelection extends Component {
 					notes: this.selectedData.settings.info.join(' ')
 				}
 			});
+			pushDataLayer('checkout', 'checkout', { step: 7, option: selectedPaymentItem.label });
 		} else {
 			this.setState({ 
 				selectedPaymentItem 
