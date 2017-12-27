@@ -1379,7 +1379,7 @@ class Checkout extends Component {
 			this.props.loading ? <Loading /> : (
 				<div 
 					className='page' 
-					onMouseMove={() => { this.resetTimer(); }}
+					// onMouseMove={() => { this.resetTimer(); }}
 				>
 					<Helmet title='Checkout' />
 					<CheckoutHeader user={user} />
@@ -1479,7 +1479,7 @@ class Checkout extends Component {
 						</Container>
 					</div>
 					{
-						renderIf(this.props.cityProv)(
+						this.props.cityProv && (
 							<NewAddressModalbox
 								shown={this.state.enableNewAddress}
 								formDataAddress={formDataAddress}

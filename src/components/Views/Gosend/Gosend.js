@@ -43,16 +43,26 @@ class Gosend extends Component {
 			center: this.props.center,
 			polygonArea: this.props.polygonArea
 		});
+		if (typeof this.props.google !== 'undefined') {
+			this.onGeoLoad(this.props.center.lat, this.props.center.lng);
+		}
 	}
 
 	componentWillReceiveProps(nextProps) {
 		this.setState({
 			displayMap: nextProps.displayMap
 		});
-		if (typeof nextProps.center.lat !== 'undefined' && nextProps.center.lat !== null) {
+		
+		if (
+			typeof nextProps.center.lat !== 'undefined' &&
+			nextProps.center.lat !== null &&
+			nextProps.center.lat !== this.props.center.lat &&
+			nextProps.center.lng !== this.props.center.lng
+		) {
 			this.setState({
 				center: nextProps.center
 			});
+			this.onGeoLoad(nextProps.center.lat, nextProps.center.lng);
 		}
 
 		if (typeof nextProps.polygonArea !== 'undefined' && nextProps.polygonArea !== null) {
@@ -66,7 +76,7 @@ class Gosend extends Component {
 	componentDidUpdate(prevProps) {
 		const { map } = this.props;
 		
-		if (this.props.isCustomerData) {
+		if (typeof this.props.google !== 'undefined' && this.props.google !== prevProps.google) {
 			this.onGeoLoad(this.props.center.lat, this.props.center.lng);
 		}
 		
@@ -76,7 +86,9 @@ class Gosend extends Component {
 	}
 
 	componentWillUnmount() {
-		window.removeEventListener('click', this.autocomplete, false);
+		if (this.autocomplete !== '') {
+			window.removeEventListener('click', this.autocomplete);
+		}
 	}
 
 	onGeoLoad(lat, lng) {
