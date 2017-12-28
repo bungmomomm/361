@@ -28,9 +28,9 @@ class PaymentSelection extends Component {
 		if (this.props.payments !== nextProps.payments) {
 			this.validateSelection();
 		}
-		if (this.props.payments.selectedPayment !== nextProps.payments.selectedPayment) {
+		if (this.props.payments.selectedPaymentOption !== nextProps.payments.selectedPaymentOption) {
 			this.setState({
-				selectedPaymentOption: null
+				selectedPaymentOption: nextProps.payments.selectedPaymentOption
 			});
 		}
 	}

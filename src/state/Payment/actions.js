@@ -2,6 +2,7 @@ import * as constants from './constants';
 import { getListAvailablePaymentMethod, getPaymentPayload, getSprintPayload } from './models';
 import { request } from '@/utils';
 import { getCartPaymentData } from '@/state/Cart/models';
+import _ from 'lodash';
 
 const availablePaymentMethodRequest = () => ({
 	type: constants.PAY_LIST_PAYMENT_METHOD,
@@ -370,7 +371,8 @@ const changePaymentMethod = (paymentMethod, data, token) => dispatch => {
 		setTimeout(() => {
 			dispatch(paymentOptionReset(false));
 		}, 10);
-		if (selectedPayment.value === 'cod' || selectedPayment.value === 'gratis' || selectedPayment.value === 'installment' || selectedPayment.value === 'e_wallet') {
+		if (selectedPayment.value === 'cod' || selectedPayment.value === 'gratis' 
+			|| selectedPayment.value === 'installment' || selectedPayment.value === 'e_wallet') {
 			const selectedPaymentOption = getAvailabelPaymentSelection(selectedPayment);
 			dispatch(changePaymentOption(selectedPaymentOption, token));
 		} else {
@@ -387,10 +389,32 @@ const getAvailablePaymentMethod = (token) => (dispatch) => {
 		method: 'GET'
 	}).then((response) => {
 		const dataPayment = getListAvailablePaymentMethod(response.data);
+		let selectedPayment = false;
+		let selectedOption = false;
+		if (Object.keys(dataPayment.payments).length) {
+			_.forOwn(dataPayment.payments, (paymentMethod, idxPM) => {
+				if (typeof paymentMethod.paymentItems !== 'undefined'
+					&& paymentMethod.paymentItems.length
+				) {
+					const paymentIndex = paymentMethod.paymentItems
+											.filter(e => e.fgDefault === '1');
+					if (paymentIndex.length) {
+						selectedOption = paymentIndex[0];
+						selectedPayment = dataPayment.payments[idxPM];
+					}
+					
+				}
+			});
+		}
 		dispatch(availablePaymentMethodReceived(dataPayment));
-		dispatch(paymentMethodChanged(false));
-		dispatch(changePaymentOption(false, token));
+		dispatch(paymentMethodChanged(selectedPayment));
+		dispatch(paymentOptionReset(true));
+		setTimeout(() => {
+			dispatch(paymentOptionReset(false));
+		}, 10);
+		dispatch(changePaymentOption(selectedOption, token));
 	}).catch((error) => {
+		console.log(error);
 	});
 };
 
