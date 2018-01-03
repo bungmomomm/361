@@ -30,6 +30,7 @@ import styles from '../../mobile.scss';
 import { T } from '@/data/translations';
 import { setUserGTM, pushDataLayer } from '@/utils/gtm';
 import { getRefreshToken } from '@/state/Auth/actions';
+import { getUser } from '@/state/User/actions';
 
 class stepOne extends Component {
 
@@ -87,6 +88,7 @@ class stepOne extends Component {
 		this.currentAddresses = [];
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
+		this.source = this.props.cookies.get('user.source');
 		this.tabIndex = 0;
 		
 	}
@@ -101,6 +103,7 @@ class stepOne extends Component {
 			this.props.cookies.set('user.rf.token', response.userRFToken, { domain: process.env.SESSION_DOMAIN });
 			this.props.cookies.set('user.token', response.userToken, { domain: process.env.SESSION_DOMAIN });
 		});
+		dispatch(getUser(this.props.cookies.get('user.token')));
 	}
 	
 	componentDidMount() {
@@ -130,8 +133,9 @@ class stepOne extends Component {
 		}
 		
 		if (this.state.shipping.length < 1 || this.props.addresses !== nextProps.addresses) {
-			if (!_.isEmpty(nextProps.addresses)) {
-				this.setShipping(nextProps.addresses);
+			if (!_.isEmpty(nextProps.addresses) && this.props.products) {
+				this.setShipping(nextProps.addresses);			
+				pushDataLayer('checkout', 'checkout', { step: 1, option: this.source ? this.source.split('+').join(' ') : '' }, this.props.products);
 			}
 		}
 		
@@ -177,9 +181,6 @@ class stepOne extends Component {
 			// set type pickup for O2O
 			address.type = 'pickup';
 			address.attributes.is_dropshipper = false;
-			pushDataLayer('checkout', 'checkout', { step: 2, option: 'Pickup' }, this.props.products);
-		} else {
-			pushDataLayer('checkout', 'checkout', { step: 2, option: 'Delivery' }, this.props.products);
 		}
 		const billing = this.props.billing && this.props.billing.length > 0 ? this.props.billing[0] : false;
 		
@@ -285,7 +286,7 @@ class stepOne extends Component {
 			},
 			stepTwo: {
 				...stepState.stepTwo,
-				disabled: false
+				disabled: emptyShipping || (restriction ? !restriction : emptyShippingO2o)
 			},
 		};
 		this.props.applyState(checkoutState);
@@ -294,6 +295,9 @@ class stepOne extends Component {
 	showModalAddress(type) {
 		this.flagModalAddress = type;
 		this.setState({ showModalAddress: true });
+		if (type === 'add') {
+			pushDataLayer('checkout', 'checkout', { step: 1, option: this.source ? this.source.split('+').join(' ') : '' }, this.props.products);
+		}
 	}
 
 	hideModalAddress() {
@@ -317,6 +321,7 @@ class stepOne extends Component {
 		if (typeof selected.id !== 'undefined') {
 			this.onPlaceOrder(selected);
 		}
+		pushDataLayer('checkout', 'checkout', { step: 2, option: event > 0 ? 'Pickup' : 'Delivery' }, this.props.products);
 	}
 
 	saveSelectedAddress(selectedAddress, selectedAddressType = 'selectedAddress') {
@@ -416,7 +421,7 @@ class stepOne extends Component {
 												</Level.Item>
 											</Level>
 										</Panel>
-										<Dropshipper stepState={this.props.stepState} onPlaceOrder={(e) => this.onPlaceOrder(e)} applyState={(e) => this.props.applyState(e)} />
+										<Dropshipper stepState={this.props.stepState} onPlaceOrder={(e) => this.onPlaceOrder(e)} applyState={(e) => this.props.applyState(e)} products={this.props.products} />
 									</div>
 								) : (
 									<Button
