@@ -859,7 +859,7 @@ class StepFour extends Component {
 							<Level.Left>&nbsp;</Level.Left>
 							<Level.Right>
 								{
-									payments.selectedPaymentOption && payments.selectedPaymentOption.settings.info && 
+									payments.selectedPaymentOption.settings && payments.selectedPaymentOption.settings.info && 
 									<Tooltip
 										position='left'
 										label={
@@ -869,7 +869,7 @@ class StepFour extends Component {
 										}
 									>
 										{
-											payments.selectedPaymentOption.settings.info.content.length && 
+											payments.selectedPaymentOption.settings.info.length && 
 											payments.selectedPaymentOption.settings.info.join('<br />')
 										}
 									</Tooltip>
