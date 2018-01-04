@@ -17,10 +17,11 @@ const availablePaymentMethodReceived = (data) => ({
 	}
 });
 
-const paymentMethodChanged = (selectedPayment) => ({
+const paymentMethodChanged = (selectedPayment, isDefault = true) => ({
 	type: constants.PAY_PAYMENT_METHOD_CHANGED,
 	payload: {
-		selectedPayment
+		selectedPayment,
+		isDefault
 	}
 });
 
@@ -363,10 +364,10 @@ const paymentOptionReset = (status) => dispatch => {
 const changePaymentMethod = (paymentMethod, data, token) => dispatch => {
 	dispatch(paymentOvoFailed(false));
 	if (!paymentMethod) {
-		dispatch(paymentMethodChanged(false));
+		dispatch(paymentMethodChanged(false, false));
 	} else {
 		const selectedPayment = data.payments[paymentMethod];
-		dispatch(paymentMethodChanged(selectedPayment));
+		dispatch(paymentMethodChanged(selectedPayment, false));
 		dispatch(paymentOptionReset(true));
 		setTimeout(() => {
 			dispatch(paymentOptionReset(false));
@@ -381,6 +382,30 @@ const changePaymentMethod = (paymentMethod, data, token) => dispatch => {
 	}
 };
 
+const setDefaultPayment = (dataPayment) => {
+	const returnValue = {
+		selectedOption: false, 
+		selectedPayment: false
+	};
+	if (Object.keys(dataPayment.payments).length) {
+		_.forOwn(dataPayment.payments, (paymentMethod, idxPM) => {
+			if (typeof paymentMethod.paymentItems !== 'undefined'
+				&& paymentMethod.paymentItems.length
+			) {
+				const paymentIndex = paymentMethod.paymentItems
+										.filter(e => e.fgDefault === '1');
+				if (paymentIndex.length) {
+					returnValue.selectedOption = paymentIndex[0];
+					returnValue.selectedPayment = dataPayment.payments[idxPM];
+				}
+				
+			}
+		});
+	}
+
+	return returnValue;
+};
+
 const getAvailablePaymentMethod = (token) => (dispatch) => {
 	dispatch(availablePaymentMethodRequest());
 	return request({
@@ -389,30 +414,15 @@ const getAvailablePaymentMethod = (token) => (dispatch) => {
 		method: 'GET'
 	}).then((response) => {
 		const dataPayment = getListAvailablePaymentMethod(response.data);
-		let selectedPayment = false;
-		let selectedOption = false;
-		if (Object.keys(dataPayment.payments).length) {
-			_.forOwn(dataPayment.payments, (paymentMethod, idxPM) => {
-				if (typeof paymentMethod.paymentItems !== 'undefined'
-					&& paymentMethod.paymentItems.length
-				) {
-					const paymentIndex = paymentMethod.paymentItems
-											.filter(e => e.fgDefault === '1');
-					if (paymentIndex.length) {
-						selectedOption = paymentIndex[0];
-						selectedPayment = dataPayment.payments[idxPM];
-					}
-					
-				}
-			});
-		}
+		const defaultPayment = setDefaultPayment(dataPayment);
+		
 		dispatch(availablePaymentMethodReceived(dataPayment));
-		dispatch(paymentMethodChanged(selectedPayment));
+		dispatch(paymentMethodChanged(defaultPayment.selectedPayment));
 		dispatch(paymentOptionReset(true));
 		setTimeout(() => {
 			dispatch(paymentOptionReset(false));
 		}, 10);
-		dispatch(changePaymentOption(selectedOption, token));
+		dispatch(changePaymentOption(defaultPayment.selectedOption, token));
 	}).catch((error) => {
 		console.log(error);
 	});

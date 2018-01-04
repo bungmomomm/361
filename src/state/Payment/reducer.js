@@ -25,6 +25,8 @@ const getStatePaymentMethod = (value, payments) => {
 
 const initialState = {
 	selectedPayment: false,
+	choisedPayment: false,
+	isDefault: true,
 	resetPaymentOption: false,
 	loading: false,
 	paymentMethodLoading: false,
@@ -113,11 +115,31 @@ export default (state = initialState, action) => {
 			}
 			return currentPayment;
 		});
+
+
+		let choisedPayment = !action.payload.isDefault && !state.choisedPayment ? action.payload.selectedPayment : state.choisedPayment;
+		let selPay = false; 
+		const kondisi = state.choisedPayment && !action.payload.isDefault;
+		const kon = state.choisedPayment === action.payload.selectedPayment 
+					|| state.choisedPayment !== action.payload.selectedPayment;
+		
+		if (kondisi && kon) {
+			selPay = action.payload.selectedPayment;
+			choisedPayment = action.payload.selectedPayment;
+		} else if (state.choisedPayment && action.payload.isDefault 
+				&& state.choisedPayment !== action.payload.selectedPayment) { selPay = state.choisedPayment; } 
+
+		if (!state.choisedPayment) {
+			selPay = action.payload.selectedPayment;
+		}
+		
 		return {
 			...state,
 			paymentMethods,
 			resetPaymentOption: true,
-			selectedPayment: action.payload.selectedPayment,
+			selectedPayment: selPay,
+			choisedPayment,
+			isDefault: action.payload.isDefault,
 			selectedPaymentOption: null,
 			paymentMethod: null,
 			selectedCard: false,
