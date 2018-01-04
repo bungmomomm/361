@@ -11,13 +11,11 @@ class PaymentOvo extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			ovo: {
-				ovoTimer: 30, 
-				useDefault: true,
-				ovoPhonePayment: this.props.payments.ovoPhonePayment || this.props.payments.ovoPhoneNumber,
-				ovoPhonePaymentValid: this.props.payments.ovoPhoneNumber,
-				autoLinkage: true,
-			},
+			ovoTimer: 30, 
+			useDefault: true,
+			ovoPhonePayment: this.props.payments.ovoPhonePayment || this.props.payments.ovoPhoneNumber,
+			ovoPhonePaymentValid: this.props.payments.ovoPhoneNumber,
+			autoLinkage: true,
 		};
 		this.props.autoLinkage(true);
 		this.input = '';
@@ -40,7 +38,7 @@ class PaymentOvo extends Component {
 
 	componentWillMount() {
 		this.isOvoPayment = true;
-		if (this.state.ovo.useDefault && this.props.payments.ovoPhoneNumber) {
+		if (this.state.useDefault && this.props.payments.ovoPhoneNumber) {
 			this.props.dispatch(new actions.changeOvoPaymentNumber(this.props.payments.ovoPhoneNumber));	
 		}
 	}
@@ -50,7 +48,7 @@ class PaymentOvo extends Component {
 			this.validateOvoForm();
 		}
 
-		if (this.state.ovo.useDefault && nextProps.payments.ovoPhoneNumber && !nextProps.payments.ovoPaymentNumber) {
+		if (this.state.useDefault && nextProps.payments.ovoPhoneNumber && !nextProps.payments.ovoPaymentNumber) {
 			this.props.dispatch(new actions.changeOvoPaymentNumber(nextProps.payments.ovoPhoneNumber));	
 		}
 	}
@@ -61,27 +59,22 @@ class PaymentOvo extends Component {
 
 	onOvoPaymentNumberChange(event) {
 		this.setState({
-			ovo: {
-				...this.state.ovo,
-				ovoPhonePayment: event.target.value,
-				ovoPhonePaymentValid: this.input.validation.checkValid(event.target.value)
-			}
+			...this.state,
+			ovoPhonePayment: event.target.value,
+			ovoPhonePaymentValid: this.input.validation.checkValid(event.target.value)
 		});
 		this.props.dispatch(new actions.changeOvoPaymentNumber(event.target.value));		
 		this.validateOvoForm();
 	}
 
 	setDefaultOvo(flag) {
-		const ovo = this.state.ovo;
 		const useDefault = flag;
 		const ovoPhonePayment = useDefault ? this.props.payments.ovoPhoneNumber : '';
 		this.setState({
-			ovo: {
-				...ovo,
-				useDefault,
-				ovoPhonePayment,
-				ovoPhonePaymentValid: useDefault
-			}
+			...this.state,
+			useDefault,
+			ovoPhonePayment,
+			ovoPhonePaymentValid: useDefault
 		}, () => {
 			this.props.dispatch(new actions.changeOvoPaymentNumber(ovoPhonePayment));
 			this.validateOvoForm();
@@ -89,7 +82,7 @@ class PaymentOvo extends Component {
 	}
 
 	validateOvoForm() {
-		if (this.isOvoPayment ? this.state.ovo.ovoPhonePaymentValid : true) {
+		if (this.isOvoPayment ? this.state.ovoPhonePaymentValid : true) {
 			this.props.enableButtonPayNow(true);
 		} else {
 			this.props.enableButtonPayNow(false);
@@ -97,8 +90,8 @@ class PaymentOvo extends Component {
 	}
 
 	autoLinkage(event) {
-		this.setState({ ovo: { ...this.state.ovo, autoLinkage: !this.state.ovo.autoLinkage } });
-		this.props.autoLinkage(!this.state.ovo.autoLinkage);
+		this.setState({ ...this.state, autoLinkage: !this.state.autoLinkage });
+		this.props.autoLinkage(!this.state.autoLinkage);
 	}
 
 	renderPaymentInput() {
@@ -106,15 +99,15 @@ class PaymentOvo extends Component {
 			<div>
 				<Input
 					dataProps={{ minLength: 0, maxLength: 30 }}
-					defaultValue={this.state.ovo.ovoPhonePayment || ''}
+					defaultValue={this.state.ovoPhonePayment || ''}
 					type='number'
 					ref={(e) => { this.input = e; }}
 					placeholder={'Masukan No Hp yang terdaftar di OVO'}
 					onChange={(e) => this.onOvoPaymentNumberChange(e)}
 					validation={{ rules: 'required|min:5|max:30|numeric', name: 'Phone_Number' }}
-					color={this.state.ovo.ovoPhonePaymentValid ? 'green' : null}
-					icon={this.state.ovo.ovoPhonePaymentValid ? 'check' : null}
-					message={this.state.ovo.ovoPhonePaymentValid ? 'Poin OVO akan ditambahkan di no ini' : ''}
+					color={this.state.ovoPhonePaymentValid ? 'green' : null}
+					icon={this.state.ovoPhonePaymentValid ? 'check' : null}
+					message={this.state.ovoPhonePaymentValid ? 'Poin OVO akan ditambahkan di no ini' : ''}
 				/>
 				{
 					this.ovoBlockContent()
@@ -163,16 +156,16 @@ class PaymentOvo extends Component {
 									dataProps: {
 										name: 'ovo-phone-payment',
 										onChange: () => this.setDefaultOvo(true),
-										checked: this.state.ovo.useDefault
+										checked: this.state.useDefault
 									}
 								}]} 
 							/>
-							{this.state.ovo.useDefault ? this.renderAddMore() : this.renderPaymentInput()}
+							{this.state.useDefault ? this.renderAddMore() : this.renderPaymentInput()}
 						</div>
 					:
 						<div>
 							{this.renderPaymentInput()}
-							<Checkbox defaultChecked={this.state.ovo.autoLinkage} onClick={(e) => this.autoLinkage(e)}>
+							<Checkbox defaultChecked={this.state.autoLinkage} onClick={(e) => this.autoLinkage(e)}>
 								Simpan untuk transaksi berikutnya & otomatis terhubung ke akun OVO
 							</Checkbox>
 						</div>
