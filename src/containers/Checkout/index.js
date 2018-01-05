@@ -212,10 +212,16 @@ class Checkout extends Component {
 		}
 
 		if (this.props.location.search.indexOf('failed') > 0) {
+			let msg = 'Transaksi gagal, silahkan mencoba kembali.';
+
+			if (this.props.location.search.indexOf('failed-sprint') > 0) {
+				msg = 'Transaksi Gagal. Silakan menggunakan metode kartu yang lain atau metode pembayaran yang lain.';
+			}
+
 			this.setState({
 				enablePembayaran: true,
 				notifInfo: false,
-				notifMessage: 'Transaksi gagal, silahkan mencoba kembali.',
+				notifMessage: msg,
 			});
 		}
 
