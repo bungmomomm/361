@@ -45,9 +45,8 @@ export default class OvoCountDownModal extends Component {
 				</Modal.Header>
 				<Modal.Body >
 					<p className='font-purple'><strong>OVO Payment</strong></p>
-					<p>Konfirmasi pembayaran telah dikirim ke Aplikasi OVO Anda 
-						<br /> Mohon lakukan konfirmasi pembayaran dalam 
-						<strong>30 detik</strong>.
+					<p className='text-center'>Konfirmasi pembayaran telah dikirim ke Aplikasi OVO Anda 
+						<br /> Mohon lakukan konfirmasi pembayaran dalam <strong>30 detik</strong>.
 					</p>
 				</Modal.Body>
 			</Modal>
