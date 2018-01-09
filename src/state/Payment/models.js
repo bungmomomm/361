@@ -119,7 +119,7 @@ const getListAvailablePaymentMethod = (response) => {
 						provider: bank.provider
 					};
 					return bank;
-				});
+				}).filter(e => e.installments.length > 0);
 				
 				paymentData.cards.unshift({
 					label: '-- Pilih Kartu',

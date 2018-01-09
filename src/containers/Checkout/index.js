@@ -212,10 +212,16 @@ class Checkout extends Component {
 		}
 
 		if (this.props.location.search.indexOf('failed') > 0) {
+			let msg = 'Transaksi gagal, silahkan mencoba kembali.';
+
+			if (this.props.location.search.indexOf('failed-sprint') > 0) {
+				msg = 'Transaksi Gagal. Silakan menggunakan metode kartu yang lain atau metode pembayaran yang lain.';
+			}
+
 			this.setState({
 				enablePembayaran: true,
 				notifInfo: false,
-				notifMessage: 'Transaksi gagal, silahkan mencoba kembali.',
+				notifMessage: msg,
 			});
 		}
 
@@ -273,9 +279,11 @@ class Checkout extends Component {
 			userToken: this.props.cookies.get('user.token'),
 			userRFToken: this.props.cookies.get('user.rf.token')
 		})).then((newToken) => {
-			this.props.cookies.set('user.exp', Number(newToken.expToken), { domain: process.env.SESSION_DOMAIN });
-			this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: process.env.SESSION_DOMAIN });
-			this.props.cookies.set('user.token', newToken.userToken, { domain: process.env.SESSION_DOMAIN });
+			const currentDate = new Date();
+			currentDate.setDate(currentDate.getDate() + (2 * 365));
+			this.props.cookies.set('user.exp', Number(newToken.expToken), { domain: process.env.SESSION_DOMAIN, expires: currentDate });
+			this.props.cookies.set('user.rf.token', newToken.userRFToken, { domain: process.env.SESSION_DOMAIN, expires: currentDate });
+			this.props.cookies.set('user.token', newToken.userToken, { domain: process.env.SESSION_DOMAIN, expires: currentDate });
 
 			if (callback !== null) {
 				callback(dispatch);
