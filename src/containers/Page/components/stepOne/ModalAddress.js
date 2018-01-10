@@ -453,7 +453,7 @@ class ModalAddress extends Component {
 						defaultValue={this.props.isEdit ? formData.attributes.address : ' '}
 						ref={(c) => { this.elAddress = c; }}
 						validation={{ rules: 'required', name: 'Alamat' }}
-					>address</Textarea>
+					/>
 					{this.state.formattedAddress && !this.state.showMap ? this.renderFormattedAddress() : this.renderButtonMap()}
 					{this.state.showMap && this.renderGoogleMap()}
 					<Level>
