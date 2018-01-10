@@ -22,6 +22,7 @@ export default {
 	SHOW_IN_MAP: 'Tunjukan Dalam Peta',
 	CHANGE_LOCATION: 'Ganti Lokasi',
 	JABODETABEK_LABEL: 'Mohon maaf, kami tidak dapat mengirimkan item berikut ke alamat pengiriman Anda',
+	STORE_TEMPORARY_CLOSED: 'Mohon maaf, store sedang tutup untuk sementara waktu',
 	O2O_SELLER_NOT_SUPPORT: 'Penjual tidak menyediakan layanan o2o',
 	LOCATION_NOT_MATCH_WITH_SHIPPING_ADDRESS: 'Lokasi tidak sesuai dengan alamat pengiriman',
 	SAVE_ADDRESS: 'Simpan Alamat',

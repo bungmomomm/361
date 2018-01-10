@@ -7,6 +7,7 @@ import StoreBox from './Store/StoreBox';
 import CheckoutResult from './Store/CheckoutResult';
 import CheckoutProduct from './Product/CheckoutProduct';
 import { pushDataLayer } from '@/utils/gtm';
+import { T } from '@/data/translations';
 
 // Dummy Data
 // import { CheckoutList } from '@/data';
@@ -81,11 +82,17 @@ export default class CardPesananPengiriman extends Component {
 							<StoreBox 
 								loading={this.props.loadingUpdateCart} 
 								color={(this.props.restrictO2o && !storeData.store.shipping.o2oSupported) 
-									|| (this.state.cartJabodetabek.indexOf(storeData.store.id) !== -1 && !this.props.restrictO2o) ? 'red' : ''} 
+									|| (this.state.cartJabodetabek.indexOf(storeData.store.id) !== -1 && !this.props.restrictO2o) 
+									|| storeData.store.store_status === '2' ? 'red' : ''} 
 								key={i} 
 								name={storeData.store.name} 
 								location={storeData.store.location}
 							>
+								{
+									storeData.store.store_status === '2' && (<div className='font-red' style={{ marginBottom: '15px', marginLeft: '15px' }}>
+										{T.checkout.STORE_TEMPORARY_CLOSED}
+									</div>)
+								}
 								{
 									storeData.store.products.map((product, index) => (
 										<CheckoutProduct 
