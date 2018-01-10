@@ -23,7 +23,7 @@ const StoreBoxBody = ({ products, onUpdateQty, showBtnDelete, stepOneActiveTab }
 										role='button'
 										tabIndex={-1}
 										className='font-grey'
-										onClick={() => onUpdateQty(0, product.id)} 
+										onClick={() => onUpdateQty(0, product)}
 									>
 										<Icon name='trash-o' /> Hapus
 									</div>
@@ -35,7 +35,7 @@ const StoreBoxBody = ({ products, onUpdateQty, showBtnDelete, stepOneActiveTab }
 									<Level hasPadding isMobile style={{ marginBottom: '10px' }}>
 										<Level.Left><strong>{currency(product.price)}</strong></Level.Left>
 										<Level.Right>
-											<Stepper max={product.maxQty} min={1} start={product.qty} value={product.qty} onChange={(e) => onUpdateQty(e, product.id)} />
+											<Stepper max={product.maxQty} min={1} start={product.qty} value={product.qty} onChange={(e) => onUpdateQty(e, product)} />
 										</Level.Right>
 									</Level>
 									<div>

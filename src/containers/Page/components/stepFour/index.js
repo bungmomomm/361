@@ -619,7 +619,7 @@ class StepFour extends Component {
 			cardValidLuhn: false,
 			alreadySubmitPay: false,
 		});
-
+		pushDataLayer('checkout', 'checkout', { step: 6, option: stateSelectedPayment.label });
 	}
 
 	okeoce(param) {

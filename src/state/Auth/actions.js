@@ -15,6 +15,10 @@ const requestToken = (token) => ({
 
 
 const getRefreshToken = (token) => dispatch => new Promise((resolve, reject) => {
+	if (typeof token.userToken === 'undefined') {
+		// redirect back to main or home page if an user-customer has not logged in yet
+		top.location.href = getBaseUrl();
+	}
 	const $dis = dispatch;
 	const req = {
 		token: token.userToken, 
@@ -42,7 +46,7 @@ const getRefreshToken = (token) => dispatch => new Promise((resolve, reject) => 
 		if ((error.response.data.code === 401 || error.response.data.code === 403) && isProduction) {
 			top.location.href = getBaseUrl();
 		}
-		
+
 	});
 	
     

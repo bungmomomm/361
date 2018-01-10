@@ -26,6 +26,7 @@ import styles from '../../page.scss';
 import { T } from '@/data/translations';
 import { setUserGTM } from '@/utils/gtm';
 import { getRefreshToken } from '@/state/Auth/actions';
+import { getUser } from '@/state/User/actions';
 
 class stepOne extends Component {
 
@@ -73,6 +74,7 @@ class stepOne extends Component {
 		this.currentAddresses = [];
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
+		this.source = this.props.cookies.get('user.source');
 		this.tabIndex = 0;
 		
 	}
@@ -89,12 +91,13 @@ class stepOne extends Component {
 			this.props.cookies.set('user.rf.token', response.userRFToken, { domain: process.env.SESSION_DOMAIN, expires: currentDate });
 			this.props.cookies.set('user.token', response.userToken, { domain: process.env.SESSION_DOMAIN, expires: currentDate });
 		});
+		dispatch(getUser(this.props.cookies.get('user.token')));
 	}
 	
 	componentDidMount() {
 		if (this.props.addresses === undefined) {
 			this.constructor.fetchDataAddress(this.userCookies, this.userRFCookies, this.props.dispatch);
-		} 
+		}
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -188,7 +191,7 @@ class stepOne extends Component {
 			},
 			stepTwo: {
 				...stepState.stepTwo,
-				disabled: false
+				disabled: emptyShipping || (restriction ? !restriction : emptyShippingO2o)
 			},
 		};
 		this.props.applyState(checkoutState);
@@ -197,6 +200,9 @@ class stepOne extends Component {
 	showModalAddress(type) {
 		this.flagModalAddress = type;
 		this.setState({ showModalAddress: true });
+		if (type === 'add') {
+			pushDataLayer('checkout', 'checkout', { step: 1, option: this.source ? this.source.split('+').join(' ') : '' }, this.props.products);
+		}
 	}
 
 	hideModalAddress() {
@@ -220,6 +226,7 @@ class stepOne extends Component {
 		if (typeof selected.id !== 'undefined') {
 			this.onPlaceOrder(selected);
 		}
+		pushDataLayer('checkout', 'checkout', { step: 2, option: event > 0 ? 'Pickup' : 'Delivery' }, this.props.products);
 	}
 
 	saveSelectedAddress(selectedAddress, selectedAddressType = 'selectedAddress') {
@@ -267,8 +274,8 @@ class stepOne extends Component {
 					<Tabs.Tab>
 						<Tabs.Title>{T.checkout.TAB_ADDRESS_LABEL}</Tabs.Title>
 						<Tabs.Content>
-							<TabAddress 
-								applyState={this.props.applyState} 
+							<TabAddress
+								applyState={this.props.applyState}
 								stepState={this.props.stepState}
 								onPlaceOrder={(address) => this.onPlaceOrder(address)}
 							/>
@@ -277,9 +284,9 @@ class stepOne extends Component {
 					<Tabs.Tab>
 						<Tabs.Title>{T.checkout.TAB_ELOCKER_LABEL}</Tabs.Title>
 						<Tabs.Content>
-							<TabO2O 
-								applyState={this.props.applyState} 
-								stepState={this.props.stepState} 
+							<TabO2O
+								applyState={this.props.applyState}
+								stepState={this.props.stepState}
 								onPlaceOrder={(address) => this.onPlaceOrder(address)}
 							/>
 						</Tabs.Content>

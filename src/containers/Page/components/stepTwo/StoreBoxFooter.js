@@ -67,9 +67,21 @@ const StoreBoxFooter = ({ data, selectedAddress, stepOneActiveTab, checkGosendMe
 						{
 							!hasLangLat() && (
 								<div>
-									<Checkbox state={!hasLangLat() ? 'disabled' : ''} name='gojek' defaultChecked={false} >
+									<Checkbox 
+										state={!hasLangLat() ? 'disabled' : ''}
+										name='gojek'
+										defaultChecked={false}
+										style={{ display: 'inline-block', verticalAlign: 'top' }}
+									>
 										Pengiriman: <Sprites name='gosend' />
 									</Checkbox>
+									{
+										typeof gosendInfo !== 'undefined' && gosendInfo.length > 0 && (
+											<span role='button' style={{ marginLeft: '5px' }} tabIndex='-1' onClick={() => onShowGosendTooltip()}>
+												<Icon name='exclamation-circle' class='fa fa-info-circle' />
+											</span>
+										)
+									}
 									<div role='button' onClick={() => showEditAddressModal('edit')} tabIndex='0' className='font-orange'>{T.checkout.CHOOSE_SHIPPING_LOCATION}</div>
 								</div>
 							)

@@ -14,6 +14,7 @@ import StoreBoxFooter from './StoreBoxFooter';
 
 import styles from '../../page.scss';
 import { getRefreshToken } from '@/state/Auth/actions';
+import { pushDataLayer } from '@/utils/gtm';
 
 class StepTwo extends Component {
 	
@@ -79,7 +80,7 @@ class StepTwo extends Component {
 		const { stepOne } = this.props.stepState;
 		const { selectedAddress } = stepOne;
 		const isCurrentAddressJabotabek = selectedAddress && (typeof selectedAddress.attributes !== 'undefined' && selectedAddress.attributes.isJabodetabekArea === '1');
-		return fgLocation === '1' && stepOne.activeTab === 0 && !isCurrentAddressJabotabek;
+		return fgLocation === '1' && stepOne.activeTab === 0 && !isCurrentAddressJabotabek && selectedAddress.id;
 	}
 
 	updateShippingMethodGosend(checked, store) {
@@ -96,9 +97,29 @@ class StepTwo extends Component {
 				});
 			}
 		});
+		const storeItems = this.props.cart.filter(e => e.store.id === store.id);
+		if (storeItems[0]) {
+			pushDataLayer('checkout', 'checkout', { step: 4, option: checked ? 'Gosend' : 'Regular Delivery' }, storeItems[0].store.products);
+		} 
 	}
 
-	updateQty(qty, productId) {
+	updateQty(qty, product) {
+		const setDataLayer = (event, ecommerceEvent, quantity, prod, currencyCode = null) => {
+			const products = [
+				{
+					id: prod.id,
+					name: prod.name,
+					price: prod.price,
+					brand: prod.brand,
+					category: prod.category,
+					variant: '',
+					qty: quantity
+				}
+			];
+			pushDataLayer(event, ecommerceEvent, null, products, currencyCode);
+		};
+
+		const productId = product.id;
 		if (qty !== '') { 
 			const { soNumber, dispatch } = this.props;
 			if (soNumber) {
@@ -125,6 +146,11 @@ class StepTwo extends Component {
 						});
 					}
 				});
+			}
+			if (qty > product.qty) {
+				setDataLayer('addToCart', 'add', qty - product.qty, product, 'IDR');
+			} else {
+				setDataLayer('removeFromCart', 'remove', product.qty - qty, product);
 			}
 		}
 	}
@@ -189,7 +215,7 @@ class StepTwo extends Component {
 								<StoreBoxBody 
 									products={storeData.store.products}
 									stepOneActiveTab={stepOne.activeTab}
-									onUpdateQty={(e, productId) => this.updateQty(e, productId)}
+									onUpdateQty={(e, product) => this.updateQty(e, product)}
 									showBtnDelete={!(this.props.cart.length < 2 && storeData.store.products.length < 2)}
 								/>
 								<StoreBoxFooter 

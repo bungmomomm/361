@@ -5,7 +5,8 @@ import { withCookies } from 'react-cookie';
 import { actions as couponActions } from '@/state/Coupon';
 import { actions as paymentActions } from '@/state/Payment';
 import { RESET_PAYMENT_METHOD } from '@/state/Payment/constants';
-import { currency, componentState, renderIf, pushDataLayer } from '@/utils';
+import { currency, componentState, renderIf } from '@/utils';
+import { pushDataLayer } from '@/utils/gtm';
 import { T } from '@/data/translations';
 import { 
 	Level,
@@ -64,7 +65,7 @@ class StepThree extends Component {
 		dispatch(new couponActions.addCoupon(me.userCookies, soNumber, me.state.voucherCode)).then(() => {
 			dispatch(new paymentActions.applyBin(me.userCookies, RESET_PAYMENT_METHOD));
 			me.setState({ applyCouponStep: componentState.button.active });
-			pushDataLayer('checkout', 'checkout', { step: 5, option: 'Voucher' });
+			pushDataLayer('checkout', 'checkout', { step: 5, option: 'Voucher' }, this.props.products);
 		}).catch((error) => {
 			me.setState({ applyCouponStep: componentState.button.active });
 			
@@ -114,7 +115,7 @@ class StepThree extends Component {
 				});
 			}
 		});
-		pushDataLayer('checkout', 'checkout', { step: 5, option: 'Non Voucher' });
+		pushDataLayer('checkout', 'checkout', { step: 5, option: 'Non Voucher' }, this.props.products);
 
 	}
 
@@ -295,7 +296,8 @@ const mapStateToProps = (state) => {
 		coupon: state.coupon,
 		soNumber: state.cart.soNumber,
 		payments: state.payments,
-		carts: state.cart.data
+		carts: state.cart.data,
+		products: state.cart.products,
 	};
 };
 
