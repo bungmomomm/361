@@ -22,7 +22,7 @@ class TabO2O extends Component {
 		this.props = props;
 		this.state = {
 			showModalo2o: false,
-			selectedAddressO2O: {},
+			selectedAddressO2O: this.props.latesto2o[0] || {},
 			selectedProvinceO2O: null
 		};
 	}

@@ -109,6 +109,12 @@ class stepOne extends Component {
 		if (this.props.cart !== nextProps.cart || this.props.error !== nextProps.error || changeTab) {
 			this.checkAllowedPayment(nextProps.stepState.stepOne.selectedAddress, nextProps);
 		}
+		
+		// set default elocker
+		if (!nextProps.stepState.stepOne.selectedAddressO2O && nextProps.latesto2o && nextProps.latesto2o.length > 0) {
+			const checkoutState = this.setStateDefaultElocker(nextProps.stepState, nextProps.latesto2o);
+			this.props.applyState(checkoutState);
+		}
 	}
 
 	onPlaceOrder(address) {
@@ -144,6 +150,7 @@ class stepOne extends Component {
 	setStateDefaultElocker(stepState, latesto2o) {
 		// set default elocker
 		if (!stepState.stepOne.selectedAddressO2O && latesto2o && latesto2o.length > 0) {
+			latesto2o[0].type = 'pickup';
 			stepState = {
 				...stepState,
 				stepOne: {
@@ -222,7 +229,7 @@ class stepOne extends Component {
 			}
 		};
 		this.props.applyState(checkoutState);
-		const selected = event > 0 ? this.state.selectedAddressO2O : this.state.selectedAddress;
+		const selected = event > 0 ? this.state.selectedAddressO2O : stepState.stepOne.selectedAddress;
 		if (typeof selected.id !== 'undefined') {
 			this.onPlaceOrder(selected);
 		}
