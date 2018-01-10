@@ -52,7 +52,7 @@ class Page extends Component {
 	componentDidMount() {
 		const rfToken = this.props.cookies.get('user.rf.token');
 		const usrToken = this.props.cookies.get('user.token');
-		const isProduction = process.env.APP_ENV.toUpperCase() === 'PRODUCTION';
+		const isProduction = process.env.NODE_ENV.toUpperCase() === 'PRODUCTION';
 		if ((typeof rfToken === 'undefined' || typeof usrToken === 'undefined') 
 		&& isProduction) { 
 			top.location.href = getBaseUrl();
