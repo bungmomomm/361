@@ -12,7 +12,6 @@ import {
 	Alert,
 	Subtitle,
 	Input,
-	Textarea,
 	Modal,
 	Panel
 } from 'mm-ui';
@@ -445,7 +444,8 @@ class ModalAddress extends Component {
 						ref={(c) => { this.elZipcode = c; }}
 						validation={{ rules: 'required|digits:5|numeric', name: 'Kode_Pos' }}
 					/>
-					<Textarea
+					<Input
+						as='textarea'
 						label='Alamat *'
 						placeholder='Masukkan Alamat Lengkap'
 						name='address'

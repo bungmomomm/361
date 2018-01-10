@@ -24,7 +24,7 @@ import styles from '../../page.scss';
 
 // import { Address } from '@/data';
 import { T } from '@/data/translations';
-import { setUserGTM } from '@/utils/gtm';
+import { setUserGTM, pushDataLayer } from '@/utils/gtm';
 import { getRefreshToken } from '@/state/Auth/actions';
 import { getUser } from '@/state/User/actions';
 
