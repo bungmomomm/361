@@ -115,6 +115,7 @@ const setCartModel = (jsoApiResponse) => {
 				location: attr.store_location,
 				total_items: attr.total_items,
 				store_image: attr.store_image,
+				store_status: attr.store_status,
 				isJabodetabekArea,
 				price: {
 					final_delivery_cost: attr.total_price.final_delivery_cost === '' ? 0 : parseInt(attr.total_price.final_delivery_cost, 10),

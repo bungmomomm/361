@@ -196,10 +196,11 @@ class StepTwo extends Component {
 					this.props.cart.map((storeData, indexStoreBox) => {
 						const isRestrictO2O = this.checkRestrictO2o(!storeData.store.shipping.o2oSupported);
 						const isJabotabekItem = this.checkJabotabekItem(storeData.store.products[0].fgLocation);
+						const isClosedStore = storeData.store.store_status === '2';
 						return (
 							<Panel
 								key={indexStoreBox}
-								color={isRestrictO2O || isJabotabekItem ? 'red' : 'grey'}
+								color={isRestrictO2O || isJabotabekItem || isClosedStore ? 'red' : 'grey'}
 								header={
 									<Level isMobile>
 										<Level.Left>{storeData.store.name}</Level.Left>
@@ -210,6 +211,11 @@ class StepTwo extends Component {
 								{
 									isJabotabekItem && (<div className='font-red' style={{ marginBottom: '15px' }}>
 										{T.checkout.JABODETABEK_LABEL}
+									</div>)
+								}
+								{
+									isClosedStore && (<div className='font-red' style={{ marginBottom: '15px' }}>
+										{T.checkout.STORE_TEMPORARY_CLOSED}
 									</div>)
 								}
 								<StoreBoxBody 
