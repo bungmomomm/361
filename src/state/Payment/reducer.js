@@ -118,17 +118,22 @@ export default (state = initialState, action) => {
 
 
 		let choisedPayment = !action.payload.isDefault && !state.choisedPayment ? action.payload.selectedPayment : state.choisedPayment;
-		let selPay = false; 
-		const kondisi = state.choisedPayment && !action.payload.isDefault;
-		const kon = state.choisedPayment === action.payload.selectedPayment 
-					|| state.choisedPayment !== action.payload.selectedPayment;
-		
-		if (kondisi && kon) {
+		let selPay = false;
+		// when user choised manually
+		if ((choisedPayment.id === action.payload.selectedPayment.id) 
+			|| (choisedPayment.id !== action.payload.selectedPayment.id 
+				&& !action.payload.isDefault)) {
 			selPay = action.payload.selectedPayment;
 			choisedPayment = action.payload.selectedPayment;
-		} else if (state.choisedPayment && action.payload.isDefault 
-				&& state.choisedPayment !== action.payload.selectedPayment) { selPay = state.choisedPayment; } 
+		}
+		
+		// when reload and user has choised
+		if (choisedPayment.id !== action.payload.selectedPayment.id 
+			&& action.payload.isDefault) {
+			selPay = state.paymentMethods.payments[state.choisedPayment.id];
+		}
 
+		// when user has no choised
 		if (!state.choisedPayment) {
 			selPay = action.payload.selectedPayment;
 		}
