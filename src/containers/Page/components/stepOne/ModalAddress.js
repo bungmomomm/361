@@ -51,6 +51,7 @@ class ModalAddress extends Component {
 		this.mapIcon = 'gosend-marker.png';
 		this.selectedPolygon = {};
 		this.formattedAddress = '';
+		this.flagNotChoose = false;
 	}
 
 	componentWillMount() {
@@ -75,6 +76,12 @@ class ModalAddress extends Component {
 	componentDidMount() {
 		const { dispatch } = this.props;
 		this.constructor.fetchGetCityProvince(this.cookies, dispatch);
+	}
+
+	componentWillUpdate(nextProps, nextState) {
+		if (this.state.selected.district !== nextState.selected.district) {
+			this.flagNotChoose = true;
+		}
 	}
 	
 	onChangeProvince(e) {
@@ -115,6 +122,7 @@ class ModalAddress extends Component {
 				},
 				showMap: false,
 				formattedAddress: null,
+				tempFormattedAddress: null,
 				mapMarkerCenter: null
 			});
 		}
@@ -161,6 +169,7 @@ class ModalAddress extends Component {
 		}
 		this.getPinPointAddress(this.FormLatitude, this.FormLongitude);
 		this.setState({ showMap: false });
+		this.flagNotChoose = false;
 	}
 
 	validatePositionMarker(e) {
@@ -248,13 +257,13 @@ class ModalAddress extends Component {
 			let lng = this.selectedPolygon.center.lng;
 
 			if (this.props.isEdit) {
-				if (typeof this.props.formData.attributes.latitude !== 'undefined' && typeof this.props.formData.attributes.longitude !== 'undefined') {
+				if (!this.flagNotChoose && typeof this.props.formData.attributes.latitude !== 'undefined' && typeof this.props.formData.attributes.longitude !== 'undefined') {
 					lat = this.props.formData.attributes.latitude;
 					lng = this.props.formData.attributes.longitude;
 				}
 			}
 
-			if (typeof this.FormLongitude !== 'undefined' && typeof this.FormLatitude !== 'undefined') {
+			if (!this.flagNotChoose && typeof this.FormLongitude !== 'undefined' && typeof this.FormLatitude !== 'undefined') {
 				lat = this.FormLatitude;
 				lng = this.FormLongitude;
 			}
