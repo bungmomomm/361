@@ -379,6 +379,9 @@ const changePaymentMethod = (paymentMethod, data, token) => dispatch => {
 		} else {
 			dispatch(changePaymentOption(false, token));
 		}
+		if (selectedPayment.value === 'credit_card') {
+			dispatch(creditCardDeselect());
+		}
 	}
 };
 
