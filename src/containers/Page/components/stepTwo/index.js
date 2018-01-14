@@ -121,16 +121,16 @@ class StepTwo extends Component {
 
 		const productId = product.id;
 		if (qty !== '') { 
-			const { soNumber, dispatch } = this.props;
+			const { soNumber, coupon, dispatch } = this.props;
 			if (soNumber) {
-				dispatch(new actions.updateQtyCart(this.userCookies, qty, productId, { soNumber }))
+				dispatch(new actions.updateQtyCart(this.userCookies, qty, productId, { soNumber, coupon }))
 				.catch((error) => {
 					if (error.response.data.code === 405) {
 						dispatch(getRefreshToken({
 							userToken: this.userCookies,
 							userRFToken: this.userRFCookies
 						})).then((response) => {
-							dispatch(new actions.updateQtyCart(response.userToken, qty, productId, { soNumber }));
+							dispatch(new actions.updateQtyCart(response.userToken, qty, productId, { soNumber, coupon }));
 						});
 					}
 				});
@@ -255,6 +255,7 @@ const mapStateToProps = (state) => {
 		loading: state.cart.loading,
 		totalItems: state.cart.totalItems,
 		gosendInfo: state.cart.gosendInfo,
+		coupon: state.coupon
 	};
 };
 
