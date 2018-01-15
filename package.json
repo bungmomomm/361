@@ -8,6 +8,7 @@
     "start-watch": "nodemon --watch src --exec yarn run build-start",
     "clean": "rimraf dist",
     "dev": "better-npm-run dev",
+    "analyse": "better-npm-run analyse",
     "component": "babel-node ./tools/component/index.js",
     "build-client": "better-npm-run build-client",
     "build-static": "better-npm-run build-static",
@@ -32,6 +33,13 @@
       "command": "babel-node tools/webpack-dev-server.js",
       "env": {
         "NODE_ENV": "development",
+        "PORT": 3001
+      }
+    },
+    "analyse": {
+      "command": "babel-node tools/webpack-dev-server.js",
+      "env": {
+        "NODE_ENV": "analyse",
         "PORT": 3001
       }
     },
@@ -81,6 +89,7 @@
     "html-minifier": "3.5.2",
     "jwt-decode": "^2.2.0",
     "kong-hmac": "^0.2.0",
+    "loadable-components": "^0.4.0",
     "lodash-humps": "^3.1.2",
     "luhn-cc": "0.0.6",
     "mm-ui": "git+https://github.com/mataharimall/frontend.git#master",
@@ -110,6 +119,7 @@
     "babel-eslint": "^7.2.3",
     "babel-loader": "^7.1.1",
     "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-plugin-dynamic-import-webpack": "^1.0.2",
     "babel-plugin-react-transform": "^2.0.2",
     "babel-plugin-syntax-export-extensions": "^6.13.0",
     "babel-plugin-transform-decorators": "^6.24.1",
@@ -150,6 +160,7 @@
     "style-loader": "^0.18.2",
     "webpack": "^3.5.2",
     "webpack-assets-manifest": "^0.7.0",
+    "webpack-bundle-analyzer": "^2.9.2",
     "webpack-dev-middleware": "^1.12.0",
     "webpack-hot-middleware": "^2.18.2",
     "webpack-manifest-plugin": "^1.3.0",

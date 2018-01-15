@@ -2,6 +2,7 @@ import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import WebpackAssetsManifest from 'webpack-assets-manifest';
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 import path from 'path';
 import commonConfig from './common.babel';
 import stylesLoaders from '../loaders/styles';
@@ -110,6 +111,10 @@ if (
 	);
 	
 };
+
+if (process.env.NODE_ENV === 'analyse') {
+	config.plugins.push(new BundleAnalyzerPlugin());
+}
 
 /**
  * Long term caching
