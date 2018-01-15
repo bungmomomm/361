@@ -1,9 +1,11 @@
 
 import loadable from 'loadable-components';
+import { isMobile } from '@/utils';
 
 const Page = loadable(() => import('@/containers/Page'));
-// import Page from '@/containers/Page';
-const Home = loadable(() => import('@/containers/Discovery'));
+const Home = isMobile() ? 
+			loadable(() => import('@/containers/Discovery/Home/Mobile')) 
+			: loadable(() => import('@/containers/Discovery/Home/Desktop'));
 // const Test = loadable(() => import('@/containers/Discovery/Desktop'));
 
 export default [
