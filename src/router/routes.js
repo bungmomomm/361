@@ -2,8 +2,6 @@
 import loadable from 'loadable-components';
 import { isMobile } from '@/utils';
 
-
-
 // const Page = loadable(() => import('@/containers/Page'));
 
 /**
