@@ -11,7 +11,7 @@ import { isMobile } from '@/utils';
  * since genereated js file will mix dekstop & mobile
  */
 
-const Home = isMobile ? loadable(() => import('@/containers/Mobile/Home')) 
+const Home = isMobile() ? loadable(() => import('@/containers/Mobile/Home')) 
 	: loadable(() => import('@/containers/Desktop/Home'));
 
 export default [
