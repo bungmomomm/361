@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 
-class Home extends Component {
+class Category extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -15,11 +15,11 @@ class Home extends Component {
 	}
 }
 
-Home.defaultProps = {
+Category.defaultProps = {
 	Home: 'hallo',
 	Data: 'akjsdaskdjasldjsaldjalskdj'
 
 };
 
 
-export default withCookies(Home);
+export default withCookies(Category);
