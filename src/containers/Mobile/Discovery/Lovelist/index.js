@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
+import * as data from '@/data/example/Lovelist';
 
 class Lovelist extends Component {
 	constructor(props) {
@@ -10,14 +11,13 @@ class Lovelist extends Component {
 	render() {
 		return (
 			<div>
-				<h1>{this.props.Data}</h1>
+				<h1>{JSON.stringify(data.Lovelist)}</h1>
 			</div>);
 	}
 }
 
 Lovelist.defaultProps = {
-	Home: 'hallo',
-	Data: 'akjsdaskdjasldjsaldjalskdj'
+	Lovelist: data.Lovelist
 
 };
 

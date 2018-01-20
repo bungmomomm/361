@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
+import * as data from '@/data/example/Home';
 
 class Home extends Component {
 	constructor(props) {
@@ -10,15 +11,21 @@ class Home extends Component {
 	render() {
 		return (
 			<div>
-				<h1>{this.props.Data}</h1>
+				<h1>{JSON.stringify(data.Segmen)}</h1>
 			</div>);
 	}
 }
 
 Home.defaultProps = {
-	Home: 'hallo',
-	Data: 'akjsdaskdjasldjsaldjalskdj'
-
+	Segmen: data.Segmen,
+	Hashtag: data.Hashtag,
+	FeaturedBanner: data.FeaturedBanner,
+	Middlebanner: data.Middlebanner,
+	BottomBanner: data.BottomBanner,
+	FeaturedBrand: data.FeaturedBrand,
+	Mozaic: data.Mozaic,
+	TotalLovelist: data.TotalLovelist,
+	TotalCart: data.TotalCart
 };
 
 
