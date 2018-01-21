@@ -7,14 +7,14 @@ class Image extends PureComponent {
 			image = require(`@/assets/images/${this.props.src}`);
 		}
 		if (this.props.lazyload) {
-			image = require('@/assets/images/loading-momo.png');
+			image = require('@/assets/images/Loading_icon.gif');
 		}
 		return image;
 	}
 
 	dataSrc() {
 		let image = this.props.src;
-		
+
 		if (this.props.lazyload && this.props.local) {
 			image = require(`@/assets/images/${this.props.src}`);
 			return image;
@@ -23,7 +23,7 @@ class Image extends PureComponent {
 	}
 
 	render() {
-		
+
 		return (
 			<img className={this.props.lazyload && '--lazy-load'} src={this.image()} data-src={this.dataSrc()} alt={this.props.alt || ''} />
 		);
