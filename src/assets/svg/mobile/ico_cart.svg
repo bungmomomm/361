@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>mm_ico_shoppingbag_active</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Assets" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="mm_ico_shoppingbag_active" stroke="#191919" stroke-width="1.5">
+            <g id="bag" transform="translate(10.000000, 10.000000)">
+                <path d="M19.4283429,19.4771729 L0.6312,19.4771729 C0.423771429,19.4771729 0.262628571,19.2858947 0.288342857,19.0687519 L1.91634286,5.25461654 C1.93862857,5.07296241 2.08548571,4.93581955 2.25977143,4.93581955 L17.7997714,4.93581955 C17.9746286,4.93581955 18.1214857,5.07296241 18.1432,5.25461654 L19.7717714,19.0687519 C19.7974857,19.2858947 19.6363429,19.4771729 19.4283429,19.4771729 Z" id="Stroke-1"></path>
+                <path d="M6.47971429,7.46526316 L6.47971429,4.03849624 C6.47971429,1.98255639 8.07742857,0.30075188 10.03,0.30075188 C11.9825714,0.30075188 13.5808571,1.98255639 13.5808571,4.03849624 L13.5808571,7.46526316" id="Stroke-3"></path>
+            </g>
+        </g>
+    </g>
+</svg>

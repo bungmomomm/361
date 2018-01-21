@@ -11,14 +11,36 @@ import { isMobile } from '@/utils';
  * since genereated js file will mix dekstop & mobile
  */
 
-const Home = isMobile() ? loadable(() => import('@/containers/Mobile/Home'))
-	: loadable(() => import('@/containers/Desktop/Home'));
-const Lovelist = isMobile() ? loadable(() => import('@/containers/Mobile/Discovery/Lovelist'))
-	: loadable(() => import('@/containers/Mobile/Home'));
-const Hashtags = isMobile() ? loadable(() => import('@/containers/Mobile/Discovery/Hashtags'))
-	: loadable(() => import('@/containers/Mobile/Home'));
-const HashtagsDetails = isMobile() ? loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'))
-	: loadable(() => import('@/containers/Mobile/Home'));
+const defRoute = loadable(() => import('@/containers/NotFound'));
+
+let Home = defRoute;
+let Search = defRoute;
+let Lovelist = defRoute;
+let Hashtags = defRoute;
+let HashtagsDetails = defRoute;
+
+if (isMobile()) {
+	/**
+	 * Require main mobile styles
+	 */
+	import('@/styles/mobile');
+
+	Home = loadable(() => import('@/containers/Mobile/Home'));
+	
+	// Service Discovery
+	Search = loadable(() => import('@/containers/Mobile/Discovery/Search'));
+	Lovelist = loadable(() => import('@/containers/Mobile/Discovery/Lovelist'));
+	Hashtags = loadable(() => import('@/containers/Mobile/Discovery/Hashtags'));
+
+	// Service Details
+	HashtagsDetails = loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'));
+} else {
+	/**
+	 * Require main desktop styles
+	 */
+	import('@/styles');
+	Home = loadable(() => import('@/containers/Desktop/Home'));
+}
 
 export default [
 
@@ -28,15 +50,23 @@ export default [
 		exact: true
 	},
 	{
-		path: '/lovelist',
-		component: Lovelist
-	},
-	{
 		path: '/hashtags',
-		component: Hashtags
+		component: Hashtags,
+		exact: true
 	},
 	{
 		path: '/hashtags/details',
-		component: HashtagsDetails
-	},
+		component: HashtagsDetails,
+		exact: true
+	}, 
+	{
+		path: '/search',
+		component: Search,
+		exact: true
+	}, {
+		path: '/lovelist',
+		component: Lovelist,
+		exact: true
+	}
+
 ];

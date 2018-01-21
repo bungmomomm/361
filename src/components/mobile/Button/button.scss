@@ -1,0 +1,101 @@
+@import '../../../styles/mobile/_variables.scss';
+@import '../../../styles/mobile/_mixins.scss';
+
+.container {
+  all: initial;
+  display: inline-block;
+  box-sizing: border-box;
+  user-select: none;
+  text-align: center;
+  border: 0;
+  outline: none;
+  &[disabled] {
+    opacity: .8;
+  }
+}
+
+.styled{
+  border: 1px solid transparent;
+  font-family: 'Lato-Bold';
+}
+
+.wide {
+  width: 100%;
+}
+
+.spinner {
+  stroke: white;
+}
+
+.rounded {
+  border-radius: var(--button-next-border-radius);
+}
+
+/* Sizes */
+.small {
+  height: size(--small);
+  font-size: size(--font-small);
+  padding: 0px rem(10px);
+  border-radius: size(--small);
+}
+
+.medium {
+  height: size(--medium);
+  font-size: size(--font-medium);
+  padding: 0px rem(20px);
+  border-radius: size(--medium);
+  letter-spacing: 0.5px;
+}
+
+.black{
+  border-color: color(--black);
+  background-color: color(--black);
+  color: white;
+}
+
+.secondary{
+  border-color: color(--primary);
+  background-color: color(--primary);
+  color: color(--white);
+}
+
+.primary{
+  border-color: color(--secondary);
+  background-color: color(--secondary);
+  color: color(--white);
+}
+
+.transparent{
+  opacity: 0.7;
+}
+
+.outline{
+  background-color: color(--white);
+  &.secondary{
+    border-color: color(--primary);
+    color: color(--primary);
+  }
+
+  &.primary{
+    border-color: color(--secondary);
+    color: color(--secondary);
+  }
+}
+
+// .normal {
+//   padding-top: var(--button-padding-top);
+//   padding-right: var(--button-padding-right);
+//   padding-bottom: var(--button-padding-bottom);
+//   padding-left: var(--button-padding-left);
+//   font-size: var(--button-font-size);
+//   line-height: var(--button-line-height);
+// }
+
+// .large {
+//   padding-top: calc(var(--button-padding-top) * (1 + var(--button-size-modifier)));
+//   padding-right: calc(var(--button-padding-right) * (1 + var(--button-size-modifier)));
+//   padding-bottom: calc(var(--button-padding-bottom) * (1 + var(--button-size-modifier)));
+//   padding-left: calc(var(--button-padding-left) * (1 + var(--button-size-modifier)));
+//   font-size: calc(var(--button-font-size) * (1 + var(--button-size-modifier)));
+//   line-height: calc(var(--button-line-height) * (1 + var(--button-size-modifier)));
+// }

@@ -1,0 +1,16 @@
+.container{
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 15px 10px;
+}
+
+.left{
+    align-items: flex-start;
+}
+.right{
+    align-items: flex-end;
+}
+
+.item{
+    flex-grow: 1;
+}

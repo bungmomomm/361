@@ -1,18 +1,32 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
+import { Header, Page, Card } from '@/components/mobile';
 import * as data from '@/data/example/Lovelist';
 
 class Lovelist extends Component {
 	constructor(props) {
 		super(props);
-		this.props = props;
+		this.state = {
+			shown: false
+		};
+	}
+	componentDidMount() {
+
 	}
 
 	render() {
 		return (
 			<div>
-				<h1>{JSON.stringify(data.Lovelist)}</h1>
-			</div>);
+				<Page>
+					<Card />
+					<Card />
+					<Card />
+					<Card />
+					<Card />
+				</Page>
+				<Header.Lovelist />
+			</div>
+		);
 	}
 }
 

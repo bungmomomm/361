@@ -1,0 +1,14 @@
+.container{
+	flex-wrap: wrap;
+	flex-direction: row;
+}
+
+@for $i from 1 through 12 {
+	.split--#{$i} {
+		> div{
+			display: block;
+			width: 100% / $i
+		}
+	}
+}
+

@@ -39,7 +39,7 @@ const config = {
 			{
 				enforce: 'pre',
 				test: /\.(svg)$/i,
-				include: path.resolve(__dirname, '..', '..', 'src', 'assets', 'svg-inline'),
+				include: path.resolve(__dirname, '..', '..', 'src', 'assets', 'svg'),
 				loaders: [
 					'raw-loader',
 					{

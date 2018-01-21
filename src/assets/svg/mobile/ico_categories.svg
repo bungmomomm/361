@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>mm_ico_categories_active</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Assets" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="mm_ico_categories_active" stroke="#191919" stroke-width="1.5">
+            <g id="categories" transform="translate(7.000000, 11.000000)">
+                <path d="M0,1.04351703 L9.5,1.04351703" id="Stroke-1"></path>
+                <path d="M0,8.61417099 L6,8.61417099" id="Stroke-3"></path>
+                <path d="M0,17.1841315 L10,17.1841315" id="Stroke-5"></path>
+                <path d="M20.608315,4.1444001 C23.235243,6.82130412 23.235243,11.1626044 20.608315,13.8395085 C17.9830873,16.5164125 13.727294,16.5164125 11.100366,13.8395085 C8.47513828,11.1626044 8.47513828,6.82130412 11.100366,4.1444001 C13.727294,1.46749607 17.9830873,1.46749607 20.608315,4.1444001 Z" id="Stroke-7"></path>
+                <path d="M20.608315,13.8391617 L25.5103624,18.836154" id="Stroke-9"></path>
+            </g>
+        </g>
+    </g>
+</svg>
