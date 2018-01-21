@@ -1,0 +1,47 @@
+.container{
+    padding: 0 20px;
+    order: 5;
+}
+
+.wrapper{
+    height: 51px;
+}
+
+.navigation{
+    user-select: none;
+    z-index: 10;
+    background-color: #fff;
+    border: 0;
+    bottom: 0;
+    height: 50px;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: auto;
+    display: flex;
+    flex-direction: row;
+    border-top:1px solid #DBDBDB;
+    padding-bottom: 5px;
+}
+
+.item{
+    flex-grow: 1;
+    flex-basis: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 9px;
+    text-decoration: none;
+    color: #000;
+    align-items: center;
+    opacity: 0.4;
+    svg{
+        height: 40px;
+        margin-top: -2px;
+    }
+}
+
+.label{
+    line-height: 1;
+}

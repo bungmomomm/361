@@ -1,0 +1,113 @@
+@import '_variables.scss';
+@import '_mixins.scss';
+
+
+@include font-face('Helvetica-Roman', 'Helvetica');
+@include font-face('Helvetica-Medium', 'Helvetica');
+@include font-face('Helvetica-Bold', 'Helvetica');
+@include font-face('Lato-Light', 'Lato');
+@include font-face('Lato-Regular', 'Lato');
+@include font-face('Lato-Bold', 'Lato');
+
+
+:root {
+  font-size: $base-font-size;
+}
+
+* {
+    cursor: pointer;
+    -webkit-text-size-adjust: none;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+:not(input):not(textarea):not(button) {
+    user-select: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+
+
+:global{
+  html{
+    -webkit-text-size-adjust: 100%;
+  }
+  html, body{
+    font-family: font-family('Helvetica-Roman');
+    font-size: rem(14px);
+    height: 100%;
+    position: relative;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    color: color(--primary);
+    line-height: 20px;
+  }
+
+  // GENERATE GLOBAL UTILITIES
+  
+  @each $value in $color-list {
+    .font-color#{nth($value, 1)} {
+      color: nth($value, 2);
+    }
+
+    .bg#{nth($value, 1)} {
+      background-color: nth($value, 2);
+    }
+
+    .border#{nth($value, 1)} {
+      border-color: nth($value, 2);
+    }
+  }
+
+  @each $value in $font-lists {
+    .font#{nth($value, 1)} {
+      font-family: font-family(nth($value, 2))
+    }
+  }
+
+  .SVGInline{
+    display: inline-flex;
+  }
+
+  img{
+    display: block;
+    width: 100%;
+  }
+
+  #root, article, div, footer, header, main, nav, section {
+    align-items: stretch;
+    border: 0 solid #000;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0;
+    position: relative;
+  }
+  .--disable-flex{
+    display: block;
+    flex: none;
+  }
+  #root {
+    z-index: 0;
+  }
+  #root, body, html {
+      height: 100%;
+  }
+
+  #root > main{
+    height: 100%;
+    > div:first-child{
+      min-height: 100%;
+      // overflow: hidden;
+    }
+  }
+
+  .margin--medium{
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+}

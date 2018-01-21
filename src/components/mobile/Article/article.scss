@@ -1,0 +1,38 @@
+.container{
+    padding: 0px 10px;
+    display: block;
+    text-align: center;
+}
+
+.title{
+	color: #4A4A4A;
+	font-family: 'Lato-Bold';
+	font-size: 13px;
+	line-height: 16px;
+    text-align: center;
+    text-decoration: none;
+    margin-bottom: 10px;
+    display: block;
+    padding: 0px 15px;
+}
+
+.author{
+	color: #777777;
+	font-family: Lato;
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 13px;
+	text-align: center;
+}
+
+.category{
+    position: relative;
+    margin-top: -20px;
+    span{
+        text-transform: uppercase;
+        color: #4A4A4A;
+        background: #fff;
+        padding: 8px 40px;
+        display: inline-block;
+    }
+}

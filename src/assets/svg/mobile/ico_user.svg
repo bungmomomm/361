@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>mm_ico_user_active</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Assets" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="mm_ico_user_active" stroke="#191919" stroke-width="1.5">
+            <g id="Group" transform="translate(10.000000, 10.000000)">
+                <path d="M14.5037647,5.02411765 C14.5037647,7.47470588 12.5190588,9.46058824 10.0672941,9.46058824 C7.61670588,9.46058824 5.632,7.47470588 5.632,5.02411765 C5.632,2.57352941 7.61670588,0.587647059 10.0672941,0.587647059 C12.5190588,0.587647059 14.5037647,2.57352941 14.5037647,5.02411765 Z" id="Stroke-1"></path>
+                <path d="M0.588235294,19.6512941 L0.588235294,15.7983529 C0.588235294,14.5207059 1.62352941,13.4842353 2.90235294,13.4842353 L17.2329412,13.4842353 C18.5117647,13.4842353 19.5470588,14.5207059 19.5470588,15.7983529 L19.5470588,19.6512941" id="Stroke-3"></path>
+            </g>
+        </g>
+    </g>
+</svg>

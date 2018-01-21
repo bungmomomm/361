@@ -1,0 +1,63 @@
+@import '../../../styles/mobile/variables';
+@import '../../../styles/mobile/mixins';
+
+.container{
+	order: 0;
+}
+
+.wrapper{
+	height: 61px;
+	z-index: 11;
+}
+
+.header, .search, .modal{
+	align-items: center;
+	background-color: #fff;
+	display: flex;
+	flex-direction: row;
+	height: 60px;
+	justify-content: space-between;
+	left: 0;
+	padding: rem(0px) rem(15px);
+	position: fixed;
+	right: 0;
+	top: 0;
+}
+
+
+.center{
+	flex: 1;
+	padding: 0px rem(10px);
+	text-align: center;
+	input{
+		text-align: center;
+	}
+}
+
+.modal{
+	flex: 1;
+	padding: 0px rem(10px);
+	.center{
+		font-family: 'Lato-Regular';
+		font-size: 15px;
+		color: #191919;
+		letter-spacing: 0.5px;
+	}
+}
+
+.search{
+	padding-left: 0px;
+	box-shadow: 0 1px 4px 0 rgba(0,0,0,0.05);
+	input{
+		text-align: left;
+	}
+}
+
+.cancelButton{
+	color: #191919;
+	font-family: 'Lato-Bold';
+	font-size: 12px;
+	letter-spacing: 1px;
+	text-align: center;
+	text-decoration: none;
+}

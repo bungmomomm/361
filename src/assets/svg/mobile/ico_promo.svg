@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>mm_ico_promo_active</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Assets" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="mm_ico_promo_active" stroke="#191919">
+            <g id="promo" transform="translate(20.000000, 20.000000) scale(-1, 1) translate(-20.000000, -20.000000) translate(10.000000, 10.000000)">
+                <path d="M18.3868387,1.63690323 L10.8926452,0.346580645 L0.585548387,10.6536774 C0.234580645,11.0046452 0.234580645,11.5723871 0.585548387,11.9233548 L8.12296774,19.4607742 C8.47393548,19.8117419 9.04232258,19.8117419 9.39329032,19.4607742 L19.6997419,9.15367742 L18.3868387,1.63690323 Z" id="Stroke-1" stroke-width="1.5"></path>
+                <path d="M15.3333405,5.95491756 C14.9907599,6.29814337 14.4339857,6.29814337 14.091405,5.95491756 C13.7481792,5.61233692 13.7481792,5.05556272 14.091405,4.71298208 C14.4339857,4.37040143 14.9907599,4.37040143 15.3333405,4.71298208 C15.6759211,5.05556272 15.6759211,5.61233692 15.3333405,5.95491756 Z" id="Stroke-3" fill="#191919"></path>
+            </g>
+        </g>
+    </g>
+</svg>

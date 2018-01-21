@@ -1,0 +1,16 @@
+
+<svg width="17px" height="20px" viewBox="0 0 17 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="00_01_Lovelist" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="00_01_Lovelist-SingleView" transform="translate(-289.000000, -85.000000)" stroke="#191919" stroke-width="1.5">
+            <g id="Group-3" transform="translate(0.000000, 54.000000)">
+                <g id="back-icon" transform="translate(297.000000, 41.000000) rotate(-180.000000) translate(-297.000000, -41.000000) translate(289.000000, 32.000000)">
+                    <polyline id="Stroke-1" points="8.0938 0 0 9 8.0938 18"></polyline>
+                    <path d="M16,9 L0,9" id="Stroke-3"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

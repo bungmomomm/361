@@ -27,12 +27,6 @@ const store = process.env.NODE_ENV === 'development' ?
 	)); 
 
 /**
- * Require main styles
- */
-
-require('@/styles');
-
-/**
  * Render App component
  */
 
