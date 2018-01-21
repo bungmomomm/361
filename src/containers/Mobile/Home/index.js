@@ -41,7 +41,7 @@ class Home extends Component {
 		};
 
 		return (
-			<div>
+			<div style={this.props.style}>
 				<Page>
 					<Tabs
 						current={this.state.current}

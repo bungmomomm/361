@@ -1,3 +1,6 @@
+@import '../../../styles/mobile/variables';
+@import '../../../styles/mobile/mixins';
+
 .container{
 	background-color: #fff;
 	flex-grow: 1;
@@ -6,7 +9,7 @@
 
 .page{
 	flex-grow: 1;
-    margin: 0 auto 30px;
-    max-width: 935px;
+    margin: 0 auto rem(30px);
+    max-width: rem(935px);
     width: 100%;
 }
