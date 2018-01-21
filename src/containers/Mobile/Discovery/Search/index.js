@@ -11,7 +11,7 @@ class Search extends Component {
 
 	render() {
 		return (
-			<div>
+			<div style={this.props.style}>
 				<Page>
 					<div className={styles.container}>
 						<section className={styles.section}>

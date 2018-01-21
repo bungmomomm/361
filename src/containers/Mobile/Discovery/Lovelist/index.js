@@ -16,7 +16,7 @@ class Lovelist extends Component {
 
 	render() {
 		return (
-			<div>
+			<div style={this.props.style}>
 				<Page>
 					<Card />
 					<Card />

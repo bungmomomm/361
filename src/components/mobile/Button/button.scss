@@ -16,7 +16,7 @@
 
 .styled{
   border: 1px solid transparent;
-  font-family: 'Lato-Bold';
+  font-family: font-family('lato-bold');
 }
 
 .wide {
@@ -28,7 +28,7 @@
 }
 
 .rounded {
-  border-radius: var(--button-next-border-radius);
+  border-radius: map-get($border-radius , --medium);
 }
 
 /* Sizes */
@@ -45,12 +45,6 @@
   padding: 0px rem(20px);
   border-radius: size(--medium);
   letter-spacing: 0.5px;
-}
-
-.black{
-  border-color: color(--black);
-  background-color: color(--black);
-  color: white;
 }
 
 .secondary{
@@ -81,21 +75,3 @@
     color: color(--secondary);
   }
 }
-
-// .normal {
-//   padding-top: var(--button-padding-top);
-//   padding-right: var(--button-padding-right);
-//   padding-bottom: var(--button-padding-bottom);
-//   padding-left: var(--button-padding-left);
-//   font-size: var(--button-font-size);
-//   line-height: var(--button-line-height);
-// }
-
-// .large {
-//   padding-top: calc(var(--button-padding-top) * (1 + var(--button-size-modifier)));
-//   padding-right: calc(var(--button-padding-right) * (1 + var(--button-size-modifier)));
-//   padding-bottom: calc(var(--button-padding-bottom) * (1 + var(--button-size-modifier)));
-//   padding-left: calc(var(--button-padding-left) * (1 + var(--button-size-modifier)));
-//   font-size: calc(var(--button-font-size) * (1 + var(--button-size-modifier)));
-//   line-height: calc(var(--button-line-height) * (1 + var(--button-size-modifier)));
-// }

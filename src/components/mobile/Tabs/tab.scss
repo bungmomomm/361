@@ -3,35 +3,34 @@
 
 /* Reset */
 .container {
-  all: initial;
+	all: initial;
 }
 
 /* Styles */
 .container {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  list-style: none;
-  justify-content: space-around;
-  align-content: center;
-  position: relative;
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	list-style: none;
+	justify-content: space-around;
+	align-content: center;
 }
 
 .tab {
-  display: inline-flex;
-  height: 30px;
-  user-select: none;
-  flex: 1;
-  align-content: center;
-  justify-content: center;
-  align-items: flex-start;
-  font-family: font-family('Lato-Regular');
-  color: #A4A4A4;
-  font-size: 13px;
+	display: inline-flex;
+	height: rem(30px);
+	user-select: none;
+	flex: 1;
+	align-content: center;
+	justify-content: center;
+	align-items: flex-start;
+	font-family: font-family('Lato-Regular');
+	color: #A4A4A4;
+	font-size: 13px;
 }
 
 .active {
-  cursor: default;
-  border-bottom: 1px solid black;
-  color: black;
+	cursor: default;
+	border-bottom: 1px solid black;
+	color: black;
 }

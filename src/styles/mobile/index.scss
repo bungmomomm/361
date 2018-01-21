@@ -9,7 +9,6 @@
 @include font-face('Lato-Regular', 'Lato');
 @include font-face('Lato-Bold', 'Lato');
 
-
 :root {
   font-size: $base-font-size;
 }
@@ -27,8 +26,6 @@
     user-select: none;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
-
-
 
 :global{
   html{
@@ -103,6 +100,12 @@
     > div:first-child{
       min-height: 100%;
       // overflow: hidden;
+    }
+  }
+
+  .switch-wrapper{
+    > div{
+      transition: opacity 0.3s ease;
     }
   }
 
