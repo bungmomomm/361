@@ -13,6 +13,11 @@ $color-list: (
   --secondary-ext-2: #C96D7D,
   --secondary-ext-3: #DDB8C0,
 
+  --tertiary: #3FD0BB,
+  --tertiary-ext-1: #CA333F,
+  --tertiary-ext-2: #C96D7D,
+  --tertiary-ext-3: #DDB8C0,
+
   --almond: #EFDECD,
   --bronze: #804A00,
   --cream: #FFFDD0,
@@ -65,8 +70,10 @@ $font-size: (
 $size-list: (
   --small: 21px,
   --medium: 26px,
+  --large: 40px,
   --font-small: 10px,
   --font-medium: 11px,
+  --font-large: 12px
 );
 
 $border-radius: (

@@ -23,9 +23,14 @@ class Image extends PureComponent {
 	}
 
 	render() {
-
 		return (
-			<img className={this.props.lazyload && '--lazy-load'} src={this.image()} data-src={this.dataSrc()} alt={this.props.alt || ''} />
+			<img
+				className={this.props.lazyload && '--lazy-load'}
+				src={this.image()}
+				data-src={this.dataSrc()}
+				alt={this.props.alt || ''}
+				style={this.props.style}
+			/>
 		);
 	}
 }
