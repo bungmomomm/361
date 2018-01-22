@@ -227,6 +227,11 @@ export const TotalLovelist = {
 	total: 9
 };
 
-export const TotalCart = {
+const TotalCart = {
 	total: 19
+};
+
+export default {
+	TotalCart,
+	TotalLovelist
 };
