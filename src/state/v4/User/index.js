@@ -1,6 +1,9 @@
-import actions from './actions';
-import reducers from './reducers';
+import reducer from './reducer';
+import action from './action';
+import constant from './constant';
+
 export default {
-	actions,
-	reducers
-}
+	action,
+	reducer,
+	constant
+};
