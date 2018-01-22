@@ -1,0 +1,28 @@
+@import '../../../styles/mobile/variables';
+@import '../../../styles/mobile/mixins';
+
+.container{
+    background: #F3F3F3;
+    height: rem(55px);
+    justify-content: center;
+    align-items: center;
+}
+
+.close{
+    position: absolute;
+    right: 0px;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    padding: rem(10px);
+}
+
+.pink{
+    background-color: #FFE6E6;
+}
+.blue{
+    background-color: #D7ECF7;
+}
+.yellow{
+    background-color: #FFECD5;
+}

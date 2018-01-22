@@ -1,30 +1,32 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { Header, Page, Card } from '@/components/mobile';
+import styles from './lovelist.scss';
 import * as data from '@/data/example/Lovelist';
 
 class Lovelist extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			shown: false
+			listTypeGrid: false
 		};
-	}
-	componentDidMount() {
-
 	}
 
 	render() {
+		const type = this.state.listTypeGrid ? 'grid' : 'list';
+
 		return (
 			<div style={this.props.style}>
 				<Page>
-					<Card />
-					<Card />
-					<Card />
-					<Card />
-					<Card />
+					<div className={styles.cardContainer}>
+						<Card type={type} />
+						<Card type={type} />
+						<Card type={type} />
+						<Card type={type} />
+						<Card type={type} />
+					</div>
 				</Page>
-				<Header.Lovelist />
+				<Header.Lovelist listTypeGrid={this.state.listTypeGrid} toggleGrid={() => this.setState({ listTypeGrid: !this.state.listTypeGrid })} />
 			</div>
 		);
 	}
