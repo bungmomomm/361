@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-import * as data from '@/data/example/Home';
 import { Link } from 'react-router-dom';
 import Carousel from 'nuka-carousel';
 import { Header, Tabs, Page, Level, Button, Grid, Article, Navigation, Svg, Image } from '@/components/mobile';
 import styles from './home.scss';
+import { actions } from '@/state/v4/Home';
 
 class Home extends Component {
 	constructor(props) {
@@ -18,11 +19,22 @@ class Home extends Component {
 			{ id: 'pria', title: 'Pria' },
 			{ id: 'anak-anak', title: 'Anak-Anak' }
 		];
+		this.userCookies = this.props.cookies.get('user.token');
+		this.userRFCookies = this.props.cookies.get('user.rf.token');
+		this.source = this.props.cookies.get('user.source');
 	}
 
 	componentDidMount() {
 		this.slider.refs.frame.style.height = '500px';
-
+		console.log(this.props);
+		const { dispatch } = this.props;
+		dispatch(new actions.initAction({
+			token: this.userCookies
+		})).then((response) => {
+			console.log(response);
+		}).catch(error => {
+			console.log(error.response.data.code);
+		});
 	}
 
 	handlePick(current) {
@@ -158,17 +170,11 @@ class Home extends Component {
 	}
 }
 
-Home.defaultProps = {
-	Segmen: data.Segmen,
-	Hashtag: data.Hashtag,
-	FeaturedBanner: data.FeaturedBanner,
-	Middlebanner: data.Middlebanner,
-	BottomBanner: data.BottomBanner,
-	FeaturedBrand: data.FeaturedBrand,
-	Mozaic: data.Mozaic,
-	TotalLovelist: data.TotalLovelist,
-	TotalCart: data.TotalCart
+const mapStateToProps = (state) => {
+	console.log(state);
+	return {
+		...state
+	};
 };
 
-
-export default withCookies(Home);
+export default withCookies(connect(mapStateToProps)(Home));
