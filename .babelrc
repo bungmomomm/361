@@ -1,5 +1,4 @@
 {
-
 	"presets": [
 		"es2015",
 		"react",
@@ -10,6 +9,8 @@
 		"transform-object-rest-spread",
 		"add-module-exports",
 		"transform-decorators-legacy",
-		"dynamic-import-webpack"
+		"dynamic-import-webpack",
+		"transform-async-to-generator",
+		"transform-regenerator"
 	]
 }
