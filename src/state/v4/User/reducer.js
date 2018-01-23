@@ -21,6 +21,14 @@ const reducer = handleActions({
 			isLoading: true
 		};
 	},
+	[actions.userLoginSuccess](state, action) {
+		console.log(action.payload.user.data.data.info);
+		return {
+			...state,
+			user: action.payload.user.data.data.info,
+			isLoading: true
+		};
+	},
 	[actions.userLoginFail](state, action) {
 		return {
 			...state,
@@ -28,7 +36,7 @@ const reducer = handleActions({
 			isLoading: false
 		};
 	},
-	[actions.loginAnonymous](state, action) {
+	[actions.userAnonymous](state, action) {
 		return {
 			...state,
 			...action.payload,

@@ -12,6 +12,10 @@ class Login extends Component {
 		this.props = props;
 	}
 
+	componentDidMount() {
+		this.props.dispatch(new action.userAnonymousLogin());
+	}
+
 	onLogin(e) {
 		this.props.dispatch(new action.userLogin(this.props.userCookies, 'username', 'password'));
 	}
