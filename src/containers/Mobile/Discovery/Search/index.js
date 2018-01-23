@@ -5,19 +5,37 @@ import styles from './search.scss';
 import { connect } from 'react-redux';
 import { actions } from '@/state/v4/Search';
 import { Link } from 'react-router-dom';
+
 class Search extends Component {
+	static listSugestionMaker(lists) {
+		return (<div>
+			{lists.map(list => {
+				const pathProd = `/products?category_id=&query=${list.value}`;
+				return (<li key={Math.random()}><Link to={{ pathname: pathProd }}> {list.text} </Link></li>);
+			})}
+		</div>);
+	};
+
+	static enterSearchHandler(event) {
+		if (event.key === 'Enter') {
+			const pathProd = `/products?category_id=&query=${event.target.value}`;
+			top.location.href = pathProd;
+		}
+	}
+
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
-			keyword: this.props.keyword
+			keyword: this.props.keyword // this state for manipulating stateless search box input
 		};
 		this.userToken = this.props.cookies.get('user.token');
 		this.searchKeywordUpdatedHandler = this.searchKeywordUpdatedHandler.bind(this);
 	}
 
-	searchKeywordUpdatedHandler(newWord) {
-		if (newWord.length >= 3) {
+	searchKeywordUpdatedHandler(event) {
+		const newWord = event.target.value;
+		if (newWord && newWord.length >= 3) {
 			this.props.updatedKeyword(newWord, this.userToken);
 			this.setState({
 				...this.state,
@@ -33,19 +51,10 @@ class Search extends Component {
 	}
 
 	render() {
-		const listSugestionMaker = (lists) => {
-			return (<div>
-				{lists.map(list => {
-					const pathProd = `/products?category_id=&query=${list.value}`;
-					return (<li key={Math.random()}><Link to={{ pathname: pathProd }}> {list.text} </Link></li>);
-				})}
-			</div>);
-		};
-
 		let sectionRelatedCategory = null;
 		let listRelatedCategory = null;
 		if (this.props.relatedKeyword) {
-			listRelatedCategory = listSugestionMaker(this.props.relatedKeyword);
+			listRelatedCategory = this.constructor.listSugestionMaker(this.props.relatedKeyword);
 			sectionRelatedCategory = (
 				<section className={styles.section}>
 					<div className={styles.heading}>Related Categories</div>
@@ -59,10 +68,10 @@ class Search extends Component {
 		let sectionRelatedKeyword = null;
 		let listRelatedKeyword = null;
 		if (this.props.relatedKeyword) {
-			listRelatedKeyword = listSugestionMaker(this.props.relatedKeyword);
+			listRelatedKeyword = this.constructor.listSugestionMaker(this.props.relatedKeyword);
 			sectionRelatedKeyword = (
 				<section className={styles.section}>
-					<div className={styles.heading}>Related Categories</div>
+					<div className={styles.heading}>Related Keywords</div>
 					<ul className={styles.list}>
 						{listRelatedKeyword}
 					</ul>
@@ -73,7 +82,7 @@ class Search extends Component {
 		let sectionRelatedHastag = null;
 		let listRelatedHastag = null;
 		if (this.props.relatedHastag) {
-			listRelatedHastag = listSugestionMaker(this.props.relatedHastag);
+			listRelatedHastag = this.constructor.listSugestionMaker(this.props.relatedHastag);
 			sectionRelatedHastag = (
 				<section className={styles.section}>
 					<div className={styles.heading}>Related Hastag</div>
@@ -89,12 +98,13 @@ class Search extends Component {
 				<Page>
 					<div className={styles.container}>
 						{sectionRelatedCategory}
-						{ this.props.relatedKeyword ? sectionRelatedKeyword : null }
+						{sectionRelatedKeyword}
 						{sectionRelatedHastag}
 					</div>
 				</Page>
 				<Header.Search
-					updatedKeyword={this.searchKeywordUpdatedHandler}
+					updatedKeywordHandler={this.searchKeywordUpdatedHandler}
+					onKeyPressHandler={this.constructor.enterSearchHandler}
 					dataProps={{ value: this.state.keyword }}
 					value={this.state.keyword}
 				/>

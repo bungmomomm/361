@@ -15,12 +15,13 @@ const Search = props => {
 							iconLeft={<Svg src='ico_search.svg' />}
 							iconRight={
 								<button
-									onClick={() => props.updatedKeyword('')}
+									onClick={props.updatedKeywordHandler}
 								>
 									<Svg src='ico_close-grey.svg' />
 								</button>}
 							placeholder='Cari produk, #hashtags, @seller'
-							onChange={(event) => props.updatedKeyword(event.target.value)}
+							onChange={props.updatedKeywordHandler}
+							onKeyPress={props.onKeyPressHandler}
 							defaultValue={props.value}
 							value={props.value}
 						/>
