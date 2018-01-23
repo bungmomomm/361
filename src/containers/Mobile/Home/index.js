@@ -223,7 +223,7 @@ class Home extends Component {
 					<Article />
 				</Page>
 				<Header />
-				<Navigation />
+				<Navigation active='Home' />
 			</div>
 		);
 	}

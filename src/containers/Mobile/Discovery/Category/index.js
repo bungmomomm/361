@@ -64,7 +64,7 @@ class Category extends Component {
 					</div>
 				</Page>
 				<Header />
-				<Navigation />
+				<Navigation active='Categories' />
 			</div>
 		);
 	}

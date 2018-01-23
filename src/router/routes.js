@@ -16,6 +16,7 @@ const defRoute = loadable(() => import('@/containers/NotFound'));
 let Home = defRoute;
 let Search = defRoute;
 let Category = defRoute;
+let ChildCategory = defRoute;
 let Lovelist = defRoute;
 let Hashtags = defRoute;
 let HashtagsDetails = defRoute;
@@ -33,6 +34,7 @@ if (isMobile()) {
 	Lovelist = loadable(() => import('@/containers/Mobile/Discovery/Lovelist'));
 	Hashtags = loadable(() => import('@/containers/Mobile/Discovery/Hashtags'));
 	Category = loadable(() => import('@/containers/Mobile/Discovery/Category'));
+	ChildCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/ChildCategory'));
 
 	// Service Details
 	HashtagsDetails = loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'));
@@ -53,26 +55,26 @@ export default [
 	},
 	{
 		path: '/hashtags',
-		component: Hashtags,
-		exact: true
+		component: Hashtags
 	},
 	{
 		path: '/hashtags/details',
-		component: HashtagsDetails,
-		exact: true
+		component: HashtagsDetails
 	}, 
 	{
 		path: '/search',
-		component: Search,
-		exact: true
+		exact: true,
+		component: Search
 	}, {
 		path: '/category',
 		component: Category,
 		exact: true
 	}, {
+		path: '/category/:slug',
+		component: ChildCategory
+	}, {
 		path: '/lovelist',
-		component: Lovelist,
-		exact: true
+		component: Lovelist
 	}
 
 ];
