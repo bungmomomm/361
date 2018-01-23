@@ -5,8 +5,7 @@ import { Link } from 'react-router-dom';
 import { Header, Carousel, Tabs, Page, Level, Button, Grid, Article, Navigation, Svg, Image, Notification } from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
-// import renderIf from '../../../utils/renderIf';
-// import { renderIf } from '@/utils';
+import { renderIf } from '@/utils';
 // import * as C from '@/constants';
 
 class Home extends Component {
@@ -88,17 +87,41 @@ class Home extends Component {
 		};
 
 		const { home } = this.props;
-		console.log(home.mainData.featureBanner);
-		// let featureBanner = false;
-		// if (home.mainData.featureBanner.length > 0) {
-		// 	let i = 0;
-		// 	featureBanner = home.mainData.featureBanner.map(({ images, link }) => {
-		// 		i++;
-		// 		return (
-		// 			<Image key={i} alt='slide' src={images.mobile} />
-		// 		);
-		// 	});
-		// }
+		
+		let featureBanner = false;
+		if (typeof home.mainData.featureBanner !== 'undefined' && home.mainData.featureBanner.length > 0) {
+			let i = 0;
+			featureBanner = home.mainData.featureBanner.map(({ images, link }) => {
+				i++;
+				return (
+					<Image key={i} alt='slide' src={images.mobile} />
+				);
+			});
+		}
+
+		let hashtag = false; 
+		if (!home.mainData.hashtag.isEmpty && home.mainData.hashtag.images.length > 0) {
+			let i = 0;
+			hashtag = home.mainData.hashtag.images.map(({ images }) => {
+				
+				i++;
+				return (
+					<div><Image key={i} lazyload alt='thumbnail' src={images.mobile} /></div>
+				);
+			});
+		}
+
+		let ootd = false;
+		if (home.mainData.middleBanner.length > 0) {
+			let i = 0; 
+			ootd = home.mainData.middleBanner.map(({ images, link }) => {
+				i++;
+				return (
+					<Image key={i} lazyload alt='banner' src={images.mobile} />
+				);
+			});
+		}
+		console.log(home.mainData.middleBanner);
 
 		return (
 			<div style={this.props.style}>
@@ -113,22 +136,30 @@ class Home extends Component {
 						<div>Up to 70% off Sale</div>
 						<p>same color on all segments</p>
 					</Notification>
-					<Carousel>
-						<Image local alt='slide' src='temp/banner.jpg' />
-						<Image local alt='slide' src='temp/banner.jpg' />
-						<Image local alt='slide' src='temp/banner.jpg' />
-					</Carousel>
-					
+					{
+						renderIf(featureBanner)(
+							<Carousel>
+								{ featureBanner }
+							</Carousel>
+						)
+					}
+
 					{renderSectionHeader('#MauGayaItuGampang', { title: 'See all', url: 'http://www.google.com' })}
-					<Grid split={3}>
-						<div><Image lazyload local alt='thumbnail' src='temp/thumb-1.jpg' /></div>
-						<div><Image lazyload local alt='thumbnail' src='temp/thumb-2.jpg' /></div>
-						<div><Image lazyload local alt='thumbnail' src='temp/thumb-3.jpg' /></div>
-					</Grid>
-					<div className='margin--medium'>
-						<Image local lazyload alt='banner' src='temp/banner-react-1.jpg' />
-						<Image local lazyload alt='banner' src='temp/banner-react-2.jpg' />
-					</div>
+					{
+						renderIf(hashtag)(
+							<Grid split={3}>
+								{hashtag}
+							</Grid>
+						)
+					}
+					{
+						renderIf(ootd)(
+							<div className='margin--medium'>
+								{ootd}
+							</div>
+						)
+					}
+					
 					{renderSectionHeader('New Arrival', { title: 'See all', url: 'http://www.google.com' })}
 					<Grid split={3}>
 						<div>
