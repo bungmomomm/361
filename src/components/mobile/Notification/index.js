@@ -2,27 +2,34 @@ import React, { PureComponent } from 'react';
 import classNames from 'classnames';
 import styles from './notification.scss';
 import Button from '../Button';
+import Svg from '../Svg';
 
 class Notification extends PureComponent {
 	render() {
 		const {
-			active,
 			className,
-			children
+			children,
+			show,
+			onClose,
+			color,
+			...props,
 		} = this.props;
+
 		const createClassName = classNames(
-			styles.container, 
-			{
-				[styles.active]: active
-			},
+			styles.container,
+			styles[color],
 			className
 		);
 
+		if (!show) {
+			return null;
+		}
+
 		return (
-			<div className={createClassName} >
+			<div className={createClassName} {...props} >
 				{children}
-				<div>
-					<Button>X</Button>
+				<div className={styles.close}>
+					<Button onClick={(e) => onClose(e)} ><Svg src='ico_close.svg' /></Button>
 				</div>
 			</div>
 		);

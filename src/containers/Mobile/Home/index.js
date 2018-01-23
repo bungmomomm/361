@@ -2,17 +2,20 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
-import Carousel from 'nuka-carousel';
-import { Header, Tabs, Page, Level, Button, Grid, Article, Navigation, Svg, Image } from '@/components/mobile';
+import { Header, Carousel, Tabs, Page, Level, Button, Grid, Article, Navigation, Svg, Image, Notification } from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
+import * as C from '@/constants';
 
 class Home extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
-			current: 'wanita'
+			current: 'wanita',
+			notification: {
+				show: true
+			}
 		};
 		this.mainNavCategories = [
 			{ id: 'wanita', title: 'Wanita' },
@@ -35,6 +38,7 @@ class Home extends Component {
 		}).catch(error => {
 			console.log(error.response.data.code);
 		});
+		this.mainNavCategories = C.MAIN_NAV_CATEGORIES;
 	}
 
 	handlePick(current) {
@@ -60,7 +64,11 @@ class Home extends Component {
 						variants={this.mainNavCategories}
 						onPick={(e) => this.handlePick(e)}
 					/>
-					<Carousel dragging ref={(n) => { this.slider = n; }}>
+					<Notification color='pink' show={this.state.notification.show} onClose={(e) => this.setState({ notification: { show: false } })}>
+						<div>Up to 70% off Sale</div>
+						<p>same color on all segments</p>
+					</Notification>
+					<Carousel>
 						<Image local alt='slide' src='temp/banner.jpg' />
 						<Image local alt='slide' src='temp/banner.jpg' />
 						<Image local alt='slide' src='temp/banner.jpg' />
@@ -138,33 +146,7 @@ class Home extends Component {
 					<Article />
 				</Page>
 				<Header />
-				<Navigation>
-					<Navigation.Item
-						to='/'
-						icon='ico_home.svg'
-						label='Home'
-					/>
-					<Navigation.Item
-						to='/'
-						icon='ico_categories.svg'
-						label='categories'
-					/>
-					<Navigation.Item
-						to='/'
-						icon='ico_cart.svg'
-						label='Shopping Bag'
-					/>
-					<Navigation.Item
-						to='/'
-						icon='ico_promo.svg'
-						label='Promo'
-					/>
-					<Navigation.Item
-						to='/'
-						icon='ico_user.svg'
-						label='Profile'
-					/>
-				</Navigation>
+				<Navigation />
 			</div>
 		);
 	}

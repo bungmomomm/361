@@ -1,0 +1,29 @@
+@import '../../../styles/mobile/variables';
+@import '../../../styles/mobile/mixins';
+
+.container{
+    position: relative;
+}
+
+.pagination{
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.list{
+    display: inline-flex;
+}
+
+.button{
+    width: rem(5px);
+    height: rem(5px);
+    border-radius: 50%;
+    background-color: color(--white);
+    margin: 0px 3px;
+}
+
+.active{
+    background-color: color(--secondary);
+    border-radius: 10px;
+    width: rem(10px);
+}
