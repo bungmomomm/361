@@ -8,7 +8,7 @@ const actions = createActions({
 });
 
 const initialState = {
-	user: false,
+	userprofile: false,
 	username: false,
 	isLoading: false
 };
@@ -22,10 +22,9 @@ const reducer = handleActions({
 		};
 	},
 	[actions.userLoginSuccess](state, action) {
-		console.log(action.payload.user.data.data.info);
 		return {
 			...state,
-			user: action.payload.user.data.data.info,
+			userprofile: action.payload.user.data.data.info,
 			isLoading: true
 		};
 	},

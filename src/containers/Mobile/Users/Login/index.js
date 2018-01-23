@@ -20,9 +20,17 @@ class Login extends Component {
 		this.props.dispatch(new action.userLogin(this.props.userCookies, 'username', 'password'));
 	}
 	render() {
+		const { userprofile } = this.props.users;
+		const userinfo = Object.keys(userprofile).map((id, key) => {
+			const value = userprofile[id];
+			return (
+				<li key={id}>{value}</li>
+			);
+		});
 		return (
 			<div>
-				<h1>{this.props.Data}</h1>
+				<h1>welcome {this.props.users.userprofile.userid}</h1>
+				{userinfo}
 				<button onClick={(e) => this.onLogin(e)} >Login</button>
 			</div>);
 	}
