@@ -34,6 +34,18 @@ class Home extends Component {
 		}));
 	}
 
+	static newArrival(token, dispatch) {
+		dispatch(new actions.newArrivalAction({
+			token: this.userCookies
+		}));
+	}
+
+	static bestSeller(token, dispatch) {
+		dispatch(new actions.bestSellerAction({
+			token: this.userCookies
+		}));
+	}
+
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -53,7 +65,9 @@ class Home extends Component {
 		this.constructor.initApp(this.userCookies, this.props.dispatch);	
 		this.constructor.mainData(this.userCookies, this.props.dispatch);	
 		this.constructor.lovelist(this.userCookies, this.props.dispatch);	
-		this.constructor.cart(this.userCookies, this.props.dispatch);	
+		this.constructor.cart(this.userCookies, this.props.dispatch);
+		this.constructor.newArrival(this.userCookies, this.props.dispatch);
+		this.constructor.bestSeller(this.userCookies, this.props.dispatch);
 		// this.slider.refs.frame.style.height = '500px';
 		// this.mainNavCategories = C.MAIN_NAV_CATEGORIES;	
 	}
