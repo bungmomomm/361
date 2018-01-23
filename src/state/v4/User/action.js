@@ -27,21 +27,24 @@ const userLogin = (token, email, password) => async dispatch => {
 
 const userAnonymousLogin = () => async dispatch => {
 	dispatch(actions.userAnonymous());
-	const response = await request({
-		method: 'POST',
-		path: 'auth/anonymouslogin',
-		fullpath: false,
-		body: {
-			client_id: getClientID(),
-			client_secret: getClientSecret(),
-			client_version: getClientVersion(),
-			device_id: getDeviceID()
+	try {
+		const response = await request({
+			method: 'POST',
+			path: 'auth/anonymouslogin',
+			fullpath: false,
+			body: {
+				client_id: getClientID(),
+				client_secret: getClientSecret(),
+				client_version: getClientVersion(),
+				device_id: getDeviceID()
+			}
+		});
+		if (isLoginSuccess(response)) {
+			dispatch(actions.userLoginSuccess(response));
+		} else {
+			dispatch(actions.userLoginFail());
 		}
-	});
-	console.log(response.data);
-	if (isLoginSuccess(response)) {
-		dispatch(actions.userLoginSuccess(response));
-	} else {
+	} catch (error) {
 		dispatch(actions.userLoginFail());
 	}
 };
