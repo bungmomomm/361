@@ -1,28 +1,61 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-import * as data from '@/data/example/Home';
 import { Link } from 'react-router-dom';
-import Carousel from 'nuka-carousel';
-import { Header, Tabs, Page, Level, Button, Grid, Article, Navigation, Svg, Image } from '@/components/mobile';
+import { Header, Carousel, Tabs, Page, Level, Button, Grid, Article, Navigation, Svg, Image, Notification } from '@/components/mobile';
 import styles from './home.scss';
+import { actions } from '@/state/v4/Home';
+// import renderIf from '../../../utils/renderIf';
+// import { renderIf } from '@/utils';
+// import * as C from '@/constants';
 
 class Home extends Component {
+	static initApp(token, dispatch) {
+		dispatch(new actions.initAction({
+			token: this.userCookies
+		}));
+	}
+
+	static mainData(token, dispatch) {
+		dispatch(new actions.mainAction({
+			token: this.userCookies
+		}));
+	}
+
+	static lovelist(token, dispatch) {
+		dispatch(new actions.lovelistAction({
+			token: this.userCookies
+		}));
+	}
+
+	static cart(token, dispatch) {
+		dispatch(new actions.cartAction({
+			token: this.userCookies
+		}));
+	}
+
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
-			current: 'wanita'
+			current: 1, // wanita
+			notification: {
+				show: true
+			}
 		};
-		this.mainNavCategories = [
-			{ id: 'wanita', title: 'Wanita' },
-			{ id: 'pria', title: 'Pria' },
-			{ id: 'anak-anak', title: 'Anak-Anak' }
-		];
+		
+		this.userCookies = this.props.cookies.get('user.token');
+		this.userRFCookies = this.props.cookies.get('user.rf.token');
+		this.source = this.props.cookies.get('user.source');
 	}
 
 	componentDidMount() {
-		this.slider.refs.frame.style.height = '500px';
-
+		this.constructor.initApp(this.userCookies, this.props.dispatch);	
+		this.constructor.mainData(this.userCookies, this.props.dispatch);	
+		this.constructor.lovelist(this.userCookies, this.props.dispatch);	
+		this.constructor.cart(this.userCookies, this.props.dispatch);	
+		// this.slider.refs.frame.style.height = '500px';
+		// this.mainNavCategories = C.MAIN_NAV_CATEGORIES;	
 	}
 
 	handlePick(current) {
@@ -40,19 +73,38 @@ class Home extends Component {
 			);
 		};
 
+		const { home } = this.props;
+		console.log(home.mainData.featureBanner);
+		// let featureBanner = false;
+		// if (home.mainData.featureBanner.length > 0) {
+		// 	let i = 0;
+		// 	featureBanner = home.mainData.featureBanner.map(({ images, link }) => {
+		// 		i++;
+		// 		return (
+		// 			<Image key={i} alt='slide' src={images.mobile} />
+		// 		);
+		// 	});
+		// }
+
 		return (
 			<div style={this.props.style}>
 				<Page>
 					<Tabs
 						current={this.state.current}
-						variants={this.mainNavCategories}
+						variants={this.props.home.segmen}
 						onPick={(e) => this.handlePick(e)}
 					/>
-					<Carousel dragging ref={(n) => { this.slider = n; }}>
+			
+					<Notification color='pink' show={this.state.notification.show} onClose={(e) => this.setState({ notification: { show: false } })}>
+						<div>Up to 70% off Sale</div>
+						<p>same color on all segments</p>
+					</Notification>
+					<Carousel>
 						<Image local alt='slide' src='temp/banner.jpg' />
 						<Image local alt='slide' src='temp/banner.jpg' />
 						<Image local alt='slide' src='temp/banner.jpg' />
 					</Carousel>
+					
 					{renderSectionHeader('#MauGayaItuGampang', { title: 'See all', url: 'http://www.google.com' })}
 					<Grid split={3}>
 						<div><Image lazyload local alt='thumbnail' src='temp/thumb-1.jpg' /></div>
@@ -126,49 +178,16 @@ class Home extends Component {
 					<Article />
 				</Page>
 				<Header />
-				<Navigation>
-					<Navigation.Item
-						to='/'
-						icon='ico_home.svg'
-						label='Home'
-					/>
-					<Navigation.Item
-						to='/'
-						icon='ico_categories.svg'
-						label='categories'
-					/>
-					<Navigation.Item
-						to='/'
-						icon='ico_cart.svg'
-						label='Shopping Bag'
-					/>
-					<Navigation.Item
-						to='/'
-						icon='ico_promo.svg'
-						label='Promo'
-					/>
-					<Navigation.Item
-						to='/'
-						icon='ico_user.svg'
-						label='Profile'
-					/>
-				</Navigation>
+				<Navigation />
 			</div>
 		);
 	}
 }
 
-Home.defaultProps = {
-	Segmen: data.Segmen,
-	Hashtag: data.Hashtag,
-	FeaturedBanner: data.FeaturedBanner,
-	Middlebanner: data.Middlebanner,
-	BottomBanner: data.BottomBanner,
-	FeaturedBrand: data.FeaturedBrand,
-	Mozaic: data.Mozaic,
-	TotalLovelist: data.TotalLovelist,
-	TotalCart: data.TotalCart
+const mapStateToProps = (state) => {
+	return {
+		...state
+	};
 };
 
-
-export default withCookies(Home);
+export default withCookies(connect(mapStateToProps)(Home));

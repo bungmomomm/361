@@ -15,6 +15,7 @@ const defRoute = loadable(() => import('@/containers/NotFound'));
 
 let Home = defRoute;
 let Search = defRoute;
+let Category = defRoute;
 let Lovelist = defRoute;
 let Hashtags = defRoute;
 let HashtagsDetails = defRoute;
@@ -31,6 +32,7 @@ if (isMobile()) {
 	Search = loadable(() => import('@/containers/Mobile/Discovery/Search'));
 	Lovelist = loadable(() => import('@/containers/Mobile/Discovery/Lovelist'));
 	Hashtags = loadable(() => import('@/containers/Mobile/Discovery/Hashtags'));
+	Category = loadable(() => import('@/containers/Mobile/Discovery/Category'));
 
 	// Service Details
 	HashtagsDetails = loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'));
@@ -62,6 +64,10 @@ export default [
 	{
 		path: '/search',
 		component: Search,
+		exact: true
+	}, {
+		path: '/category',
+		component: Category,
 		exact: true
 	}, {
 		path: '/lovelist',
