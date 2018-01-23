@@ -5,93 +5,57 @@ import { Link } from 'react-router-dom';
 import { Header, Carousel, Tabs, Page, Level, Button, Grid, Article, Navigation, Svg, Image, Notification } from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
-import * as C from '@/constants';
+// import renderIf from '../../../utils/renderIf';
+// import { renderIf } from '@/utils';
+// import * as C from '@/constants';
 
 class Home extends Component {
-
-	// static init(token, dispatch, type = 'init') {
-	// 	let action = {};
-
-	// 	switch (type) {
-	// 	case this.dataType.cart: {
-	// 		action = new actions.cartAction({
-	// 			token: this.userCookies
-	// 		});
-	// 	} 
-	// 		break;
-	// 	case this.dataType.lovelist: {
-	// 		action = new actions.lovelistAction({
-	// 			token: this.userCookies
-	// 		});
-	// 	}
-	// 		break;
-	// 	case this.dataType.main: {
-	// 		action = new actions.mainAction({
-	// 			token: this.userCookies
-	// 		});
-	// 	}
-	// 		break;
-	// 	default: {
-	// 		action = new actions.initAction({
-	// 			token: this.userCookies
-	// 		});
-	// 	}
-	// 	}
-
-	// 	dispatch(action);
-	// }
-
-	
 	static initApp(token, dispatch) {
 		dispatch(new actions.initAction({
 			token: this.userCookies
 		}));
 	}
 
-	// static mainData(token, dispatch) {
-	// 	dispatch(new actions.mainAction({
-	// 		token: this.userCookies
-	// 	}));
-	// }
+	static mainData(token, dispatch) {
+		dispatch(new actions.mainAction({
+			token: this.userCookies
+		}));
+	}
+
+	static lovelist(token, dispatch) {
+		dispatch(new actions.lovelistAction({
+			token: this.userCookies
+		}));
+	}
+
+	static cart(token, dispatch) {
+		dispatch(new actions.cartAction({
+			token: this.userCookies
+		}));
+	}
 
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
-			current: 'wanita',
+			current: 1, // wanita
 			notification: {
 				show: true
 			}
-			// current: 1 // wanita
 		};
 		
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.source = this.props.cookies.get('user.source');
-		this.dataType = {
-			init: 'init',
-			cart: 'cart',
-			lovelist: 'lovelist',
-			main: 'main'
-		};
-	}
-	componentWillMount() {
-		// console.log('asdasdasdasd');
-		// this.constructor.fetchDataCart(this.userCookies, this.props.dispatch);
 	}
 
 	componentDidMount() {
-		this.slider.refs.frame.style.height = '500px';
-		this.mainNavCategories = C.MAIN_NAV_CATEGORIES;
-		if (this.props.home.segmen.length < 2) {
-			this.constructor.initApp(this.userCookies, this.props.dispatch);	
-		}
-		
-		// this.constructor.mainData(this.userCookies, this.props.dispatch);
-
-		// this.props.dispatch(new actions.lovelistAction({
-		// 	token: this.userCookies
-		// }));
+		this.constructor.initApp(this.userCookies, this.props.dispatch);	
+		this.constructor.mainData(this.userCookies, this.props.dispatch);	
+		this.constructor.lovelist(this.userCookies, this.props.dispatch);	
+		this.constructor.cart(this.userCookies, this.props.dispatch);	
+		// this.slider.refs.frame.style.height = '500px';
+		// this.mainNavCategories = C.MAIN_NAV_CATEGORIES;	
 	}
 
 	handlePick(current) {
@@ -109,6 +73,19 @@ class Home extends Component {
 			);
 		};
 
+		const { home } = this.props;
+		console.log(home.mainData.featureBanner);
+		// let featureBanner = false;
+		// if (home.mainData.featureBanner.length > 0) {
+		// 	let i = 0;
+		// 	featureBanner = home.mainData.featureBanner.map(({ images, link }) => {
+		// 		i++;
+		// 		return (
+		// 			<Image key={i} alt='slide' src={images.mobile} />
+		// 		);
+		// 	});
+		// }
+
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -117,6 +94,7 @@ class Home extends Component {
 						variants={this.props.home.segmen}
 						onPick={(e) => this.handlePick(e)}
 					/>
+			
 					<Notification color='pink' show={this.state.notification.show} onClose={(e) => this.setState({ notification: { show: false } })}>
 						<div>Up to 70% off Sale</div>
 						<p>same color on all segments</p>
@@ -126,6 +104,7 @@ class Home extends Component {
 						<Image local alt='slide' src='temp/banner.jpg' />
 						<Image local alt='slide' src='temp/banner.jpg' />
 					</Carousel>
+					
 					{renderSectionHeader('#MauGayaItuGampang', { title: 'See all', url: 'http://www.google.com' })}
 					<Grid split={3}>
 						<div><Image lazyload local alt='thumbnail' src='temp/thumb-1.jpg' /></div>
@@ -206,7 +185,6 @@ class Home extends Component {
 }
 
 const mapStateToProps = (state) => {
-	// console.log(state);
 	return {
 		...state
 	};

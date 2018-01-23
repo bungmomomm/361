@@ -46,7 +46,7 @@ const reducer = handleActions({
 		};
 	},
 	[homeData](state, { payload: { mainData } }) {
-		return {
+		return { 
 			...state,
 			mainData
 		};

@@ -1,5 +1,5 @@
 import { request } from '@/utils';
-import { initResponse, homeData, totalLove } from './reducer';
+import { initResponse, homeData, totalLove, totalBag } from './reducer';
 
 const initAction = (token) => (dispatch) => {
 	const url = `${process.env.MICROSERVICES_URL}init?platform=mobilesite&version=1.22.0`;
@@ -31,7 +31,6 @@ const mainAction = (token) => (dispatch) => {
 			mozaic: response.data.data.find(e => e.type === 'mozaic').data,
 			featuredBrand: response.data.data.find(e => e.type === 'featured_brand').data
 		};
-		console.log(mainData);
 		dispatch(homeData({ mainData }));
 	});
 };
@@ -57,7 +56,8 @@ const cartAction = (token) => (dispatch) => {
 		method: 'GET',
 		fullpath: true
 	}).then(response => {
-		console.log(response);
+		const total = response.data.data;
+		dispatch(totalBag({ totalCart: total }));
 	});
 };
 
