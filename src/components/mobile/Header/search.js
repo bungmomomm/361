@@ -10,11 +10,19 @@ const Search = props => {
 			<div className={styles.wrapper}>
 				<div className={styles.search}>
 					<div className={styles.center}>
-						<Input 
+						<Input
 							autoFocus
-							iconLeft={<Svg src='ico_search.svg' />}  
-							iconRight={<button><Svg src='ico_close-grey.svg' /></button>}  
-							placeholder='Cari produk, #hashtags, @seller' 
+							iconLeft={<Svg src='ico_search.svg' />}
+							iconRight={
+								<button
+									onClick={() => props.updatedKeyword('')}
+								>
+									<Svg src='ico_close-grey.svg' />
+								</button>}
+							placeholder='Cari produk, #hashtags, @seller'
+							onChange={(event) => props.updatedKeyword(event.target.value)}
+							defaultValue={props.value}
+							value={props.value}
 						/>
 					</div>
 					<div className={styles.right}><Link className={styles.cancelButton} to='/'>BATAL</Link></div>
