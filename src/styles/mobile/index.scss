@@ -82,6 +82,19 @@
   .pull-right{
 	float: right;
   }
+  // https://getbootstrap.com/docs/4.0/utilities/display/
+  .d-none {
+	display: none !important;
+  }
+  .d-block {
+	display: block !important;
+  }
+  .d-inline-block {
+	display: inline-block !important;
+  }
+  .d-flex {
+	display: flex !important;
+  }
 
   .SVGInline{
     display: inline-flex;
@@ -132,8 +145,16 @@
     margin-top: 0px;
     margin-bottom: 0px;
   }
+  .margin--small{
+	margin-top: 5px;
+	margin-bottom: 5px;
+  }
   .margin--medium{
     margin-top: 15px;
     margin-bottom: 15px;
+  }
+  .margin--large{
+    margin-top: 30px;
+    margin-bottom: 30px;
   }
 }

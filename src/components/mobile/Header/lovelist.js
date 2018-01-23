@@ -9,7 +9,11 @@ const Lovelist = props => {
 		<nav className={styles.container}>
 			<div className={styles.wrapper}>
 				<div className={styles.modal}>
-					<div className={styles.left}><Button onClick={() => props.toggleGrid()}><Svg src={!props.listTypeGrid ? 'ico_grid.svg' : 'ico_list.svg'} /></Button></div>
+					<div className={styles.left}>
+						<Button className={props.listType ? null : 'd-none'} onClick={() => props.toggleGrid()}>
+							<Svg src={!props.listTypeGrid ? 'ico_grid.svg' : 'ico_list.svg'} />
+						</Button>
+					</div>
 					<div className={`${styles.center} font--lato-regular`}>Lovelist</div>
 					<div className={styles.right}>
 						<Link className={styles.cancelButton} to='/'><Svg src='ico_arrow-back.svg' /></Link>
