@@ -1,5 +1,5 @@
 import { request } from '@/utils';
-import { initResponse, homeData, totalLove, totalBag } from './reducer';
+import { initResponse, homeData, totalLove, totalBag, newArrival, bestSeller } from './reducer';
 
 const initAction = (token) => (dispatch) => {
 	const url = `${process.env.MICROSERVICES_URL}init?platform=mobilesite&version=1.22.0`;
@@ -11,6 +11,21 @@ const initAction = (token) => (dispatch) => {
 	}).then(response => {
 		const segment = response.data.data.find(e => e.type === 'segment');
 		dispatch(initResponse({ segmen: segment.data }));
+	});
+};
+
+const bestSellerAction = (token) => (dispatch) => {
+	const url = `${process.env.MICROSERVICES_URL}bestseller?page=1&per_page=3`;
+	return request({
+		token,
+		path: url,
+		method: 'GET',
+		fullpath: true
+	}).then(response => {
+		const data = {
+			bestSellerProducts: response.data.data.products
+		};
+		dispatch(bestSeller(data));
 	});
 };
 
@@ -32,6 +47,22 @@ const mainAction = (token) => (dispatch) => {
 			featuredBrand: response.data.data.find(e => e.type === 'featured_brand').data
 		};
 		dispatch(homeData({ mainData }));
+	});
+};
+
+const newArrivalAction = (token) => (dispatch) => {
+	const url = `${process.env.MICROSERVICES_URL}newarrival?page=1&per_page=3`;
+	
+	return request({
+		token,
+		path: url,
+		method: 'GET',
+		fullpath: true
+	}).then(response => {
+		const data = {
+			newArrivalProducts: response.data.data.products
+		};
+		dispatch(newArrival(data));
 	});
 };
 
@@ -65,5 +96,7 @@ export default {
 	initAction,
 	mainAction,
 	lovelistAction,
-	cartAction
+	cartAction,
+	newArrivalAction,
+	bestSellerAction,
 };
