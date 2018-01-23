@@ -5,23 +5,23 @@ import styles from './tab.scss';
 
 class Tabs extends PureComponent {
 	render() {
-		const { current, variants, onPick, ...props } = this.props;
-		const className = classNames(styles.container, this.props.className);
+		const { current, variants, className, type, onPick, ...props } = this.props;
+		const createClassName = classNames(styles.container, className, styles[type]);
 
-		const tabs = variants.map(({ id, Title }) => {
+		const tabs = variants.map(({ id, title }, idx) => {
 			const active = id === current;
 			return (
 				<Tab
 					id={id}
-					key={id}
-					title={Title}
+					key={idx}
+					title={title}
 					active={active}
 					onPick={onPick}
 				/>
 			);
 		});
 
-		return <ul className={className} {...props}>{tabs}</ul>;
+		return <ul className={createClassName} {...props}>{tabs}</ul>;
 	}
 }
 

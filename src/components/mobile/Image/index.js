@@ -1,4 +1,6 @@
 import React, { PureComponent } from 'react';
+import classNames from 'classnames';
+import styles from './image.scss';
 
 class Image extends PureComponent {
 	image() {
@@ -23,13 +25,22 @@ class Image extends PureComponent {
 	}
 
 	render() {
+		const createClassName = classNames(
+			{
+				'--lazy-load': this.props.lazyload,
+				[styles.avatar]: this.props.avatar
+			}
+		);
+
 		return (
-			<img
-				className={this.props.lazyload && '--lazy-load'}
-				src={this.image()}
-				data-src={this.dataSrc()}
-				alt={this.props.alt || ''}
+			<img  
 				style={this.props.style}
+				className={createClassName}
+				height={this.props.height}
+				width={this.props.width}
+				src={this.image()} 
+				data-src={this.dataSrc()} 
+				alt={this.props.alt || ''} 
 			/>
 		);
 	}

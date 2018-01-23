@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { withCookies } from 'react-cookie';
 import { Header, Page, Card, Button, Svg, Image } from '@/components/mobile';
 import styles from './lovelist.scss';
@@ -13,7 +14,20 @@ class Lovelist extends Component {
 	}
 
 	render() {
-		const type = this.state.listTypeGrid ? 'grid' : 'list';
+		const { listTypeGrid } = this.state;
+		const HeaderPage = {
+			left: (
+				<Button onClick={() => this.setState({ listTypeGrid: !listTypeGrid })}>
+					<Svg src={!listTypeGrid ? 'ico_grid.svg' : 'ico_list.svg'} />
+				</Button>
+			), 
+			center: 'Lovelist',
+			right: (
+				<Link to='/'>
+					<Svg src='ico_arrow-back.svg' />
+				</Link>
+			)
+		};
 
 		return (
 			<div style={this.props.style}>
@@ -30,16 +44,15 @@ class Lovelist extends Component {
 						</div>
 					) : (
 						<div className={styles.cardContainer}>
-							<Card type={type} />
-							<Card type={type} />
-							<Card type={type} />
-							<Card type={type} />
-							<Card type={type} />
+							{!listTypeGrid ? <Card.Lovelist /> : <Card.LovelistGrid />}
+							{!listTypeGrid ? <Card.Lovelist /> : <Card.LovelistGrid />}
+							{!listTypeGrid ? <Card.Lovelist /> : <Card.LovelistGrid />}
+							{!listTypeGrid ? <Card.Lovelist /> : <Card.LovelistGrid />}
 						</div>
 						)
 					}
-
 				</Page>
+				<Header.Modal {...HeaderPage} />
 			</div>
 		);
 	}

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
+import { Link } from 'react-router-dom';
 import {
 	Header,
 	Tabs,
@@ -30,38 +31,38 @@ class Category extends Component {
 						current={this.state.current}
 						variants={C.MAIN_NAV_CATEGORIES}
 					/>
-					<div className={styles.list}>
+					<Link to='/subcategory' className={styles.list}>
 						<Image local src='temp/category-1.jpg' />
 						<div className={styles.label}>New in</div>
-					</div>
-					<div className={styles.list}>
+					</Link>
+					<Link to='/subcategory' className={styles.list}>
 						<Image local src='temp/category-1.jpg' />
 						<div className={styles.label}>New in</div>
-					</div>
-					<div className={styles.list}>
+					</Link>
+					<Link to='/subcategory' className={styles.list}>
 						<Image local src='temp/category-1.jpg' />
 						<div className={styles.label}>New in</div>
-					</div>
-					<div className={styles.list}>
+					</Link>
+					<Link to='/subcategory' className={styles.list}>
 						<Image local src='temp/category-1.jpg' />
 						<div className={styles.label}>New in</div>
-					</div>
-					<div className={styles.list}>
+					</Link>
+					<Link to='/subcategory' className={styles.list}>
 						<Image local src='temp/category-1.jpg' />
 						<div className={styles.label}>New in</div>
-					</div>
-					<div className={styles.list}>
+					</Link>
+					<Link to='/subcategory' className={styles.list}>
 						<Image local src='temp/category-1.jpg' />
 						<div className={styles.label}>New in</div>
-					</div>
-					<div className={styles.list}>
+					</Link>
+					<Link to='/subcategory' className={styles.list}>
 						<Image local src='temp/category-1.jpg' />
 						<div className={styles.label}>New in</div>
-					</div>
-					<div className={styles.list}>
+					</Link>
+					<Link to='/subcategory' className={styles.list}>
 						<Image local src='temp/category-1.jpg' />
 						<div className={styles.label}>New in</div>
-					</div>
+					</Link>
 				</Page>
 				<Header />
 				<Navigation active='Categories' />

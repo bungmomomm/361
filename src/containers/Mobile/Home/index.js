@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { Header, Carousel, Tabs, Page, Level, Button, Grid, Article, Navigation, Svg, Image, Notification } from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
-import { renderIf } from '@/utils';
+// import { renderIf } from '@/utils';
 // import * as C from '@/constants';
 
 class Home extends Component {
@@ -75,6 +75,54 @@ class Home extends Component {
 		this.setState({ current });
 	}
 
+	renderFeatureBanner() {
+		const { home } = this.props;
+		if (typeof home.mainData.featureBanner !== 'undefined' && home.mainData.featureBanner.length > 0) {
+			return (
+				<Carousel>
+					{
+						home.mainData.featureBanner.map(({ images, link }, i) => (
+							<Image key={i} alt='slide' src={images.mobile} />
+						))
+					}
+				</Carousel>
+			);
+		}
+		return null;
+	}
+	
+	renderHashtag() {
+		const { home } = this.props;
+		if (typeof home.mainData.hashtag.images !== 'undefined' && home.mainData.hashtag.images.length > 0) {
+			return (
+				<div>
+					{
+						home.mainData.hashtag.images.map(({ images, link }, i) => (
+							<div key={i} ><Image lazyload alt='thumbnail' src={images.mobile} /></div>
+						))
+					}
+				</div>
+			);
+		}
+		return null;
+	}
+	
+	renderOOTD() {
+		const { home } = this.props;
+		if (typeof home.mainData.middlebanner !== 'undefined' && home.mainData.middlebanner.length > 0) {
+			return (
+				<div>
+					{
+						home.mainData.middleBanner.map(({ images, link }, i) => (
+							<Image key={i} lazyload alt='banner' src={images.mobile} />
+						))
+					}
+				</div>
+			);
+		}
+		return null;
+	}
+
 
 	render() {
 		const renderSectionHeader = (title, options) => {
@@ -85,43 +133,6 @@ class Home extends Component {
 				</Level>
 			);
 		};
-
-		const { home } = this.props;
-		
-		let featureBanner = false;
-		if (typeof home.mainData.featureBanner !== 'undefined' && home.mainData.featureBanner.length > 0) {
-			let i = 0;
-			featureBanner = home.mainData.featureBanner.map(({ images, link }) => {
-				i++;
-				return (
-					<Image key={i} alt='slide' src={images.mobile} />
-				);
-			});
-		}
-
-		let hashtag = false; 
-		if (!home.mainData.hashtag.isEmpty && home.mainData.hashtag.images.length > 0) {
-			let i = 0;
-			hashtag = home.mainData.hashtag.images.map(({ images }) => {
-				
-				i++;
-				return (
-					<div><Image key={i} lazyload alt='thumbnail' src={images.mobile} /></div>
-				);
-			});
-		}
-
-		let ootd = false;
-		if (home.mainData.middleBanner.length > 0) {
-			let i = 0; 
-			ootd = home.mainData.middleBanner.map(({ images, link }) => {
-				i++;
-				return (
-					<Image key={i} lazyload alt='banner' src={images.mobile} />
-				);
-			});
-		}
-		console.log(home.mainData.middleBanner);
 
 		return (
 			<div style={this.props.style}>
@@ -136,30 +147,15 @@ class Home extends Component {
 						<div>Up to 70% off Sale</div>
 						<p>same color on all segments</p>
 					</Notification>
-					{
-						renderIf(featureBanner)(
-							<Carousel>
-								{ featureBanner }
-							</Carousel>
-						)
-					}
 
-					{renderSectionHeader('#MauGayaItuGampang', { title: 'See all', url: 'http://www.google.com' })}
-					{
-						renderIf(hashtag)(
-							<Grid split={3}>
-								{hashtag}
-							</Grid>
-						)
-					}
-					{
-						renderIf(ootd)(
-							<div className='margin--medium'>
-								{ootd}
-							</div>
-						)
-					}
+					{this.renderFeatureBanner()}
 					
+					{renderSectionHeader('#MauGayaItuGampang', { title: 'See all', url: 'http://www.google.com' })}
+					
+					{this.renderHashtag()}
+					
+					{this.renderOOTD()}
+
 					{renderSectionHeader('New Arrival', { title: 'See all', url: 'http://www.google.com' })}
 					<Grid split={3}>
 						<div>
