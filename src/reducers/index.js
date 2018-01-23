@@ -8,6 +8,7 @@ import { reducer as payments } from '@/state/Payment/';
 import { reducer as user } from '@/state/User/';
 import { reducer as global } from '@/state/Global';
 import { reducer as home } from '@/state/v4/Home';
+import { reducer as product } from '@/state/v4/Product';
 
 export default combineReducers({
 	...global,
@@ -19,5 +20,6 @@ export default combineReducers({
 	payments,
 	user,
 	global,
-	home
+	home,
+	product
 });

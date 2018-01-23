@@ -19,6 +19,7 @@ let Category = defRoute;
 let Lovelist = defRoute;
 let Hashtags = defRoute;
 let HashtagsDetails = defRoute;
+let Products = defRoute;
 
 if (isMobile()) {
 	/**
@@ -36,6 +37,9 @@ if (isMobile()) {
 
 	// Service Details
 	HashtagsDetails = loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'));
+
+	// PDP
+	Products = loadable(() => import('@/containers/Mobile/Details/Products'));
 } else {
 	/**
 	 * Require main desktop styles
@@ -72,6 +76,10 @@ export default [
 	}, {
 		path: '/lovelist',
 		component: Lovelist,
+		exact: true
+	}, {
+		path: '/product',
+		component: Products,
 		exact: true
 	}
 
