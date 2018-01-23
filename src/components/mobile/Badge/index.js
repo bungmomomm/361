@@ -8,7 +8,10 @@ class Badge extends PureComponent {
 			children,
 			color,
 			size,
+			circle,
+			rounded,
 			className,
+			attached,
 			...props
 		} = this.props;
 
@@ -16,7 +19,12 @@ class Badge extends PureComponent {
 			styles.container,
 			styles[size],
 			styles[color],
-			className
+			className, 
+			{
+				[styles.rounded]: rounded,
+				[styles.circle]: circle,
+				[styles.attached]: attached
+			}
 		);
 
 		return (

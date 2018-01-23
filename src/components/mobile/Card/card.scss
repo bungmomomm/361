@@ -1,4 +1,83 @@
+@import '../../../styles/mobile/variables';
+@import '../../../styles/mobile/mixins';
+
 .container{
-    /* line: */
-    border-color: 1px solid #D8D8D8;
+	margin-bottom: rem(10px);
+	width: 100%;
+}
+
+.action{
+	button{
+		font-family: font-family('Lato-Regular');
+		align-items: center;
+		display: inline-flex;
+		justify-content: center;
+		font-size: map-get($font-size, --small );
+		span{
+			margin: 0px rem(3px);
+		}
+	}
+}
+
+.slider{
+	min-height: rem(300px);
+}
+
+.grid{
+	width: 50%;
+	padding: rem(7px);
+	display: block;
+    text-align: center;
+	&:nth-child(odd){
+		padding-left: rem(14px);
+	}
+	&:nth-child(even){
+		padding-right: rem(14px);
+	}
+	.blockPrice{
+		flex-direction: column;
+	}
+	.action, .footer{
+		padding: rem(10px) 0px;
+	}
+	.title{
+		padding: 0px;
+		text-align: left;
+		padding-right: rem(10px);
+	}
+}
+
+.title{
+	font-family: font-family('Lato-Bold');
+	font-size: map-get($font-size, --small );
+	color: color(--primary);
+	letter-spacing: 0.56px;
+	line-height: 1.4;
+	text-transform: uppercase;
+	padding: rem(10px);
+	span{
+		color: #A4A4A4;
+		text-transform: initial;
+		font-family: font-family('Lato-Regular');
+		letter-spacing: 0.56px;
+		line-height: 1.4;
+	}
+}
+
+.blockPrice{
+	flex-direction: row;
+	align-items: flex-start;
+}
+
+.price{
+	font-family: font-family('Lato-Bold');
+	font-size: map-get($font-size, --medium );
+	color: color(--primary);
+	letter-spacing: 0.5px;
+}
+
+.discount{
+	font-family: font-family('Lato-Regular');
+	font-size: map-get($font-size, --small );
+	color: color(--primary-ext-2);
 }
