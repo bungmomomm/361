@@ -7,6 +7,7 @@ import { reducer as cart } from '@/state/Cart/';
 import { reducer as payments } from '@/state/Payment/';
 import { reducer as user } from '@/state/User/';
 import { reducer as global } from '@/state/Global';
+import { reducer as home } from '@/state/v4/Home';
 
 export default combineReducers({
 	...global,
@@ -18,4 +19,5 @@ export default combineReducers({
 	payments,
 	user,
 	global,
+	home
 });

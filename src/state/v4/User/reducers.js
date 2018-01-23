@@ -1,12 +1,12 @@
 import { handleAction } from 'redux-actions'
-import constants from './constants'
+import * as constants from './constants';
 
 initialState = {
-	isLoading: false
+    isLoading: false
 };
 
 export default handleActions({
-    constants.USER_LOGIN: (state, action) => ([
+    constants.USER_LOGIN: (state, action) =>([
         ...state,
         action.payload,
         isLoading: true
@@ -16,4 +16,4 @@ export default handleActions({
         action.payload,
         isLoading: true
     ])
-}, initialState )
+}, initialState)
