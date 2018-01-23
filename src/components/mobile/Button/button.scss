@@ -23,6 +23,10 @@
   width: 100%;
 }
 
+.inline {
+  flex: 0 1 auto;
+}
+
 .spinner {
   stroke: white;
 }
@@ -45,6 +49,20 @@
   padding: 0px rem(20px);
   border-radius: size(--medium);
   letter-spacing: 0.5px;
+}
+
+.large {
+  height: size(--large);
+  font-size: size(--font-large);
+  padding: 0px rem(30px);
+  border-radius: size(--large);
+  letter-spacing: 0.75px;
+}
+
+.tertiary{
+  border-color: color(--tertiary);
+  background-color: color(--tertiary);
+  color: color(--white);
 }
 
 .secondary{

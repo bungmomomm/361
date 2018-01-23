@@ -22,6 +22,7 @@ class Button extends PureComponent {
 			transparent,
 			color,
 			wide,
+			inline,
 			rounded,
 			children,
 			loading,
@@ -30,7 +31,7 @@ class Button extends PureComponent {
 			className,
 			...props,
 		} = this.props;
-		
+
 
 		const createClassName = classNames(
 			styles.container,
@@ -39,6 +40,7 @@ class Button extends PureComponent {
 			{
 				[styles.styled]: color || size,
 				[styles.wide]: wide,
+				[styles.inline]: inline,
 				[styles.outline]: outline,
 				[styles.transparent]: transparent,
 				[styles.rounded]: rounded,
@@ -64,9 +66,10 @@ class Button extends PureComponent {
 
 Button.defaultProps = {
 	type: 'button',
-	size: '',
+	size: 'medium',
 	color: '',
 	wide: false,
+	inline: false,
 	rounded: true,
 	loading: false,
 	disabled: false
