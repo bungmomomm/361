@@ -22,6 +22,17 @@ const userLogin = (token, email, password) => async dispatch => {
 	}
 };
 
+const userAnonymousLogin = () => async dispatch => {
+	dispatch(actions.loginAnonymous());
+	const response = await request();
+	if (isLoginSuccess(response)) {
+		dispatch(actions.loginSuccess(response));
+	} else {
+		dispatch(actions.loginFail());
+	}
+};
+
 export default {
-	userLogin
+	userLogin,
+	userAnonymousLogin
 };
