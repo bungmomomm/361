@@ -1,0 +1,15 @@
+@import '../../../../styles/mobile/variables';
+@import '../../../../styles/mobile/mixins';
+
+.list{
+    margin: rem(10px) rem(10px) 0px rem(10px);
+}
+
+.label{
+    position: absolute;
+    bottom: rem(10px);
+    left: rem(10px);
+    color: color(--white);
+    font-family: font-family('Lato-Bold');
+    font-size: map-get($font-size, --medium );
+}

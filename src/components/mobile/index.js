@@ -10,6 +10,8 @@ import Navigation from './Navigation';
 import Svg from './Svg';
 import Image from './Image';
 import Card from './Card';
+import Notification from './Notification';
+import Carousel from './Carousel';
 
 export default {
 	Header,
@@ -23,5 +25,7 @@ export default {
 	Navigation,
 	Svg,
 	Image,
-	Card
+	Card,
+	Notification,
+	Carousel,
 };
