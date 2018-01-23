@@ -18,6 +18,7 @@ let Search = defRoute;
 let Lovelist = defRoute;
 let Hashtags = defRoute;
 let HashtagsDetails = defRoute;
+let UserLogin = defRoute;
 
 if (isMobile()) {
 	/**
@@ -34,6 +35,9 @@ if (isMobile()) {
 
 	// Service Details
 	HashtagsDetails = loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'));
+
+	// Users
+	UserLogin = loadable(() => import('@/containers/Mobile/Users/Login'));
 } else {
 	/**
 	 * Require main desktop styles
@@ -66,6 +70,11 @@ export default [
 	}, {
 		path: '/lovelist',
 		component: Lovelist,
+		exact: true
+	},
+	{
+		path: '/login',
+		component: UserLogin,
 		exact: true
 	}
 

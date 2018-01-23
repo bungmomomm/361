@@ -1,69 +1,34 @@
 import { handleActions, createActions } from 'redux-actions';
-import constants from './constants';
+
+const actions = createActions({
+	LOGIN: (email, password) => ({ email, password }),
+	USER_LOGIN_FAIL: (email, password) => ({ email, password: '' }),
+	USER_LOGIN_SUCCESS: (user) => ({ email: undefined, password: undefined, user })
+});
 
 const initialState = {
-	user: null,
+	user: false,
+	username: false,
 	isLoading: false
 };
 
-const { login, loginFail, loginSuccess } = createActions({
-	[constants.USER_LOGIN]: (username, password) => ({
-		username,
-		password
-	}),
-	[constants.USER_LOGIN_FAIL]: undefined,
-	[constants.USER_LOGIN_SUCCESS]: (user) => ({
-		user
-	}),
-});
-
-const { register, registerFail, registerSuccess } = createActions({
-	[constants.USER_REGISTER]: user => ({ user }),
-	[constants.USER_REGISTER_FAIL]: undefined,
-	[constants.USER_REGISTER_SUCCESS]: user => ({ user }),
-});
-
-export default handleActions({
-	[login]: (state, action) => {
+const reducer = handleActions({
+	[actions.login](state, action) {
 		return {
 			...state,
-			payload: action.payload,
+			...action.payload,
 			isLoading: true
 		};
 	},
-	[loginFail]: (state, action) => {
+	[actions.userLoginFail](state, action) {
 		return {
 			...state,
-			payload: action.payload,
+			...action.payload,
 			isLoading: false
 		};
 	},
-	[loginSuccess]: (state, action) => {
-		return {
-			...state,
-			payload: action.payload,
-			isLoading: false
-		};
-	},
-	[register]: (state, action) => {
-		return {
-			...state,
-			payload: action.payload,
-			isLoading: true
-		};
-	},
-	[registerFail]: (state, action) => {
-		return {
-			...state,
-			payload: action.payload,
-			isLoading: false
-		};
-	},
-	[registerSuccess]: (state, action) => {
-		return {
-			...state,
-			payload: action.payload,
-			isLoading: false
-		};
-	}
 }, initialState);
+export default {
+	actions,
+	reducer
+};

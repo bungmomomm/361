@@ -1,23 +1,24 @@
-import { login, loginSuccess, loginFail } from './reducer';
+import { actions } from './reducer';
 
 const request = () => {
-	
+
 };
 
-const isLoginSuccess = (user) => {
-	if (user.status) {
+// Check if user success login
+const isLoginSuccess = (response) => {
+	if (typeof response.code && response.code === 200) {
 		return true;
 	}
 	return false;
 };
 
-const userLogin = async (username, password) => {
-	login(username, password);
-	const user = await request();
-	if (isLoginSuccess(user)) {
-		loginSuccess(user);
+const userLogin = (token, email, password) => async dispatch => {
+	dispatch(actions.login(email, password));
+	const response = await request();
+	if (isLoginSuccess(response)) {
+		dispatch(actions.loginSuccess(response));
 	} else {
-		loginFail();
+		dispatch(actions.loginFail(email, password));
 	}
 };
 
