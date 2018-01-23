@@ -17,6 +17,10 @@ class Products extends Component {
 	componentDidMount() {
 		const { dispatch } = this.props;
 		dispatch(new actions.productDetailAction(this.userCookies, dispatch));
+		dispatch(new actions.productRecommendationAction(this.userCookies, dispatch));
+		dispatch(new actions.productSimilarAction(this.userCookies, dispatch));
+		dispatch(new actions.productSocialSummaryAction(this.userCookies, dispatch));
+		dispatch(new actions.productCommentAction(this.userCookies, dispatch));
 	}
 
 	render() {
