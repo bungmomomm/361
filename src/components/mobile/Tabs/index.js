@@ -8,13 +8,13 @@ class Tabs extends PureComponent {
 		const { current, variants, onPick, ...props } = this.props;
 		const className = classNames(styles.container, this.props.className);
 
-		const tabs = variants.map(({ id, title }) => {
+		const tabs = variants.map(({ id, Title }) => {
 			const active = id === current;
 			return (
 				<Tab
 					id={id}
 					key={id}
-					title={title}
+					title={Title}
 					active={active}
 					onPick={onPick}
 				/>

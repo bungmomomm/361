@@ -19,7 +19,8 @@ const initialState = {
 		hashtag: {},
 		featuredBanner: [],
 		middlebanner: [],
-		bottomBanner: [],
+		bottomBanner1: [],
+		bottomBanner2: [],
 		featuredBrand: [],
 		mozaic: {}
 	}
@@ -27,10 +28,11 @@ const initialState = {
 
 const { initResponse, totalBag, homeData, totalLove } = createActions(
 	'INIT_RESPONSE',
-	'TOTAL_CART_RESPONSE',
-	'MAIN_PROMO_RESPONSE',
-	'TOTAL_LOVELIST_RESPONSE');
-export default handleActions({
+	'TOTAL_BAG',
+	'HOME_DATA',
+	'TOTAL_LOVE');
+
+const reducer = handleActions({
 	[initResponse](state, { payload: { segmen } }) {
 		return {
 			...state,
@@ -56,3 +58,11 @@ export default handleActions({
 		};
 	}
 }, initialState);
+
+export default {
+	reducer, 
+	initResponse, 
+	totalBag, 
+	homeData, 
+	totalLove
+};

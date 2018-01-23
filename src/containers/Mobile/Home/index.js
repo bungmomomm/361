@@ -8,6 +8,52 @@ import { actions } from '@/state/v4/Home';
 import * as C from '@/constants';
 
 class Home extends Component {
+
+	// static init(token, dispatch, type = 'init') {
+	// 	let action = {};
+
+	// 	switch (type) {
+	// 	case this.dataType.cart: {
+	// 		action = new actions.cartAction({
+	// 			token: this.userCookies
+	// 		});
+	// 	} 
+	// 		break;
+	// 	case this.dataType.lovelist: {
+	// 		action = new actions.lovelistAction({
+	// 			token: this.userCookies
+	// 		});
+	// 	}
+	// 		break;
+	// 	case this.dataType.main: {
+	// 		action = new actions.mainAction({
+	// 			token: this.userCookies
+	// 		});
+	// 	}
+	// 		break;
+	// 	default: {
+	// 		action = new actions.initAction({
+	// 			token: this.userCookies
+	// 		});
+	// 	}
+	// 	}
+
+	// 	dispatch(action);
+	// }
+
+	
+	static initApp(token, dispatch) {
+		dispatch(new actions.initAction({
+			token: this.userCookies
+		}));
+	}
+
+	// static mainData(token, dispatch) {
+	// 	dispatch(new actions.mainAction({
+	// 		token: this.userCookies
+	// 	}));
+	// }
+
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -16,29 +62,36 @@ class Home extends Component {
 			notification: {
 				show: true
 			}
+			// current: 1 // wanita
 		};
-		this.mainNavCategories = [
-			{ id: 'wanita', title: 'Wanita' },
-			{ id: 'pria', title: 'Pria' },
-			{ id: 'anak-anak', title: 'Anak-Anak' }
-		];
+		
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.source = this.props.cookies.get('user.source');
+		this.dataType = {
+			init: 'init',
+			cart: 'cart',
+			lovelist: 'lovelist',
+			main: 'main'
+		};
+	}
+	componentWillMount() {
+		// console.log('asdasdasdasd');
+		// this.constructor.fetchDataCart(this.userCookies, this.props.dispatch);
 	}
 
 	componentDidMount() {
 		this.slider.refs.frame.style.height = '500px';
-		console.log(this.props);
-		const { dispatch } = this.props;
-		dispatch(new actions.initAction({
-			token: this.userCookies
-		})).then((response) => {
-			console.log(response);
-		}).catch(error => {
-			console.log(error.response.data.code);
-		});
 		this.mainNavCategories = C.MAIN_NAV_CATEGORIES;
+		if (this.props.home.segmen.length < 2) {
+			this.constructor.initApp(this.userCookies, this.props.dispatch);	
+		}
+		
+		// this.constructor.mainData(this.userCookies, this.props.dispatch);
+
+		// this.props.dispatch(new actions.lovelistAction({
+		// 	token: this.userCookies
+		// }));
 	}
 
 	handlePick(current) {
@@ -61,7 +114,7 @@ class Home extends Component {
 				<Page>
 					<Tabs
 						current={this.state.current}
-						variants={this.mainNavCategories}
+						variants={this.props.home.segmen}
 						onPick={(e) => this.handlePick(e)}
 					/>
 					<Notification color='pink' show={this.state.notification.show} onClose={(e) => this.setState({ notification: { show: false } })}>
@@ -153,7 +206,7 @@ class Home extends Component {
 }
 
 const mapStateToProps = (state) => {
-	console.log(state);
+	// console.log(state);
 	return {
 		...state
 	};

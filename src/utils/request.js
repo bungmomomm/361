@@ -43,6 +43,9 @@ const request = (props) => {
 	
 	let headers = {
 		Authorization: `Bearer ${props.token}`,
+		client_id: isMobile() ? 'mweb' : 'web',
+		session_id: '',
+		client_version: '4.0',
 		'X-Mode': mode
 	};
 	if (isKongActive()) {
