@@ -7,15 +7,6 @@ import { actions } from '@/state/v4/Search';
 import { Link } from 'react-router-dom';
 
 class Search extends Component {
-	static listSugestionMaker(lists) {
-		return (<div>
-			{lists.map(list => {
-				const pathProd = `/products?category_id=&query=${list.value}`;
-				return (<li key={Math.random()}><Link to={{ pathname: pathProd }}> {list.text} </Link></li>);
-			})}
-		</div>);
-	};
-
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -23,19 +14,24 @@ class Search extends Component {
 			keyword: this.props.keyword, // this state for manipulating stateless search box input
 			showHistory: true
 		};
+		this.searchListCookieName = 'user.search.list';
 		this.userToken = this.props.cookies.get('user.token');
 		this.searchKeywordUpdatedHandler = this.searchKeywordUpdatedHandler.bind(this);
 		this.enterSearchHandler = this.enterSearchHandler.bind(this);
-		this.searchListCookieName = 'user.search.list';
+		this.listSugestionMaker = this.listSugestionMaker.bind(this);
+	}
+
+	setCookieSearch(sText, sValue) {
+		let cookies = this.props.cookies.get(this.searchListCookieName);
+		cookies = (!cookies || cookies === []) ? [] : cookies;
+		const newSearch = { text: sText, value: sValue };
+		cookies.unshift(newSearch);
+		this.props.cookies.set(this.searchListCookieName, cookies.filter((val, key) => (key <= 9)));
 	}
 
 	enterSearchHandler(event) {
 		if (event.key === 'Enter') {
-			let cookies = this.props.cookies.get(this.searchListCookieName);
-			cookies = (!cookies || cookies === []) ? [] : cookies;
-			const newSearch = { text: event.target.value, value: event.target.value };
-			cookies.unshift(newSearch);
-			this.props.cookies.set(this.searchListCookieName, cookies.filter((val, key) => (key <= 9)));
+			this.setCookieSearch(event.target.value, event.target.value);
 			const pathProd = `/products?category_id=&query=${event.target.value}`;
 			top.location.href = pathProd;
 		}
@@ -60,12 +56,24 @@ class Search extends Component {
 		}
 	}
 
+	listSugestionMaker(lists) {
+		return (<div>
+			{lists.map(list => {
+				const pathProd = `/products?category_id=&query=${list.value}`;
+				return (
+					<li key={Math.random()} >
+						<Link to={{ pathname: pathProd }} onClick={() => this.setCookieSearch(list.text, list.value)}> {list.text} </Link>
+					</li>);
+			})}
+		</div>);
+	};
+
 	render() {
 		let sectionSearchHistory = null;
 		let listSearchHistory = null;
 		const cookies = this.props.cookies.get(this.searchListCookieName);
 		if (cookies && cookies.length > 0) {
-			listSearchHistory = this.constructor.listSugestionMaker(cookies);
+			listSearchHistory = this.listSugestionMaker(cookies);
 			sectionSearchHistory = (
 				<section className={styles.section}>
 					<div className={styles.heading}>Seach History</div>
@@ -79,7 +87,7 @@ class Search extends Component {
 		let sectionRelatedCategory = null;
 		let listRelatedCategory = null;
 		if (this.props.relatedKeyword) {
-			listRelatedCategory = this.constructor.listSugestionMaker(this.props.relatedKeyword);
+			listRelatedCategory = this.listSugestionMaker(this.props.relatedKeyword);
 			sectionRelatedCategory = (
 				<section className={styles.section}>
 					<div className={styles.heading}>Related Categories</div>
@@ -93,7 +101,7 @@ class Search extends Component {
 		let sectionRelatedKeyword = null;
 		let listRelatedKeyword = null;
 		if (this.props.relatedKeyword) {
-			listRelatedKeyword = this.constructor.listSugestionMaker(this.props.relatedKeyword);
+			listRelatedKeyword = this.listSugestionMaker(this.props.relatedKeyword);
 			sectionRelatedKeyword = (
 				<section className={styles.section}>
 					<div className={styles.heading}>Related Keywords</div>
@@ -107,7 +115,7 @@ class Search extends Component {
 		let sectionRelatedHastag = null;
 		let listRelatedHastag = null;
 		if (this.props.relatedHastag) {
-			listRelatedHastag = this.constructor.listSugestionMaker(this.props.relatedHastag);
+			listRelatedHastag = this.listSugestionMaker(this.props.relatedHastag);
 			sectionRelatedHastag = (
 				<section className={styles.section}>
 					<div className={styles.heading}>Related Hastag</div>
