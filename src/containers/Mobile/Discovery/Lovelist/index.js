@@ -11,7 +11,7 @@ class Lovelist extends Component {
 		this.state = {
 			listTypeGrid: false,
 			listEmpty: false,
-			loggedIn: false
+			loggedIn: true
 		};
 	}
 
@@ -30,14 +30,11 @@ class Lovelist extends Component {
 				</Link>
 			)
 		};
+		console.log(HeaderPage);
 
 		const renderLovelistPage = (content) => {
 			return (
 				<div style={this.props.style}>
-					<Header.Lovelist 
-						listTypeGrid={this.state.listTypeGrid} 
-						toggleGrid={() => this.setState({ listTypeGrid: !this.state.listTypeGrid })} 
-					/>
 					<Page>
 						{content}
 					</Page>

@@ -64,7 +64,9 @@ class NukeCarousel extends PureComponent {
 	
 	updateDimentionCarousel() {
 		setTimeout(() => {
-			this.node.setDimensions();
+			if (this.node !== null) {
+				this.node.setDimensions();
+			}
 		}, 3000);
 	}
 
