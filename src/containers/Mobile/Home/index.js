@@ -10,7 +10,7 @@ import {
 } from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
-import { actions as sharedAction } from '@/state/v4/Shared';
+import Shared from '@/containers/Mobile/Shared';
 
 class Home extends Component {
 	static initApp(token, dispatch) {
@@ -21,16 +21,6 @@ class Home extends Component {
 
 	static mainData(token, dispatch) {
 		dispatch(new actions.mainAction({
-			token: this.userCookies
-		}));
-	}
-
-	static lovelist(token, dispatch) {
-		dispatch(new sharedAction.totalLovelistAction(token));
-	}
-
-	static cart(token, dispatch) {
-		dispatch(new sharedAction.totalCartAction({
 			token: this.userCookies
 		}));
 	}
@@ -53,8 +43,6 @@ class Home extends Component {
 	componentDidMount() {
 		this.constructor.initApp(this.userCookies, this.props.dispatch);
 		this.constructor.mainData(this.userCookies, this.props.dispatch);
-		this.constructor.lovelist(this.userCookies, this.props.dispatch);
-		this.constructor.cart(this.userCookies, this.props.dispatch);
 	}
 
 	handlePick(current) {
@@ -251,4 +239,4 @@ const mapStateToProps = (state) => {
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Home));
+export default withCookies(connect(mapStateToProps)(Shared(Home)));
