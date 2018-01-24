@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { withCookies } from 'react-cookie';
 import { Header, Page } from '@/components/mobile';
 import styles from './search.scss';
@@ -6,12 +6,12 @@ import { connect } from 'react-redux';
 import { actions } from '@/state/v4/Search';
 import { Link } from 'react-router-dom';
 
-class Search extends Component {
+class Search extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
-			keyword: this.props.keyword, // this state for manipulating stateless search box input
+			keyword: '', // this state for manipulating stateless search box input
 			showHistory: true
 		};
 		this.searchListCookieName = 'user.search.list';
@@ -61,19 +61,18 @@ class Search extends Component {
 	}
 
 	searchKeywordUpdatedHandler(event) {
-		const newWord = event.target.value;
+		const newWord = (event.target.value) ? event.target.value : '';
+		this.props.updatedKeyword(newWord, this.userToken);
 		if (newWord && newWord.length >= 3) {
-			this.props.updatedKeyword(newWord, this.userToken);
 			this.setState({
 				...this.state,
 				keyword: newWord,
 				showHistory: false
 			});
 		} else {
-			this.props.updatedKeyword('');
 			this.setState({
 				...this.state,
-				keyword: '',
+				keyword: newWord,
 				showHistory: true
 			});
 		}
@@ -173,7 +172,6 @@ class Search extends Component {
 				<Header.Search
 					updatedKeywordHandler={this.searchKeywordUpdatedHandler}
 					onKeyPressHandler={this.enterSearchHandler}
-					dataProps={{ value: this.state.keyword }}
 					value={this.state.keyword}
 				/>
 			</div>

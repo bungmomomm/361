@@ -22,7 +22,6 @@ const Search = props => {
 							placeholder='Cari produk, #hashtags, @seller'
 							onChange={props.updatedKeywordHandler}
 							onKeyPress={props.onKeyPressHandler}
-							defaultValue={props.value}
 							value={props.value}
 						/>
 					</div>
