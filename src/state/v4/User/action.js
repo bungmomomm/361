@@ -1,4 +1,5 @@
 import { actions } from './reducer';
+import base64 from 'base-64';
 import {
 	request,
 	getDeviceID,
@@ -17,11 +18,28 @@ const isLoginSuccess = (response) => {
 
 const userLogin = (token, email, password) => async dispatch => {
 	dispatch(actions.login(email, password));
-	const response = await request();
-	if (isLoginSuccess(response)) {
-		dispatch(actions.userLoginSuccess(response));
-	} else {
+	try {
+		const response = await request({
+			method: 'POST',
+			path: 'auth/login',
+			fullpath: false,
+			body: {
+				client_id: getClientID(),
+				client_secret: getClientSecret(),
+				client_version: getClientVersion(),
+				email,
+				pwd: base64.encode(password)
+			}
+		});
+		if (isLoginSuccess(response)) {
+			dispatch(actions.userLoginSuccess(response));
+			return Promise.resolve(response);
+		}
 		dispatch(actions.userLoginFail(email, password));
+		return Promise.reject(new Error('Invalid user/password'));
+	} catch (error) {
+		dispatch(actions.userLoginFail(email, password));
+		return Promise.reject(new Error('Error while calling api'));
 	}
 };
 
@@ -41,11 +59,13 @@ const userAnonymousLogin = () => async dispatch => {
 		});
 		if (isLoginSuccess(response)) {
 			dispatch(actions.userLoginSuccess(response));
-		} else {
-			dispatch(actions.userLoginFail());
+			return Promise.resolve(response);
 		}
+		dispatch(actions.userLoginFail());
+		return Promise.reject(new Error('Error while calling api'));
 	} catch (error) {
 		dispatch(actions.userLoginFail());
+		return Promise.reject(new Error('Error while calling api'));
 	}
 };
 
