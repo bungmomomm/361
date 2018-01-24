@@ -6,7 +6,7 @@ const initialState = {
 	segmen: [
 		{
 			id: 1,
-			title: 'Wanita'
+			Title: 'Wanita'
 		}
 	],
 	totalLovelist: {
@@ -18,7 +18,7 @@ const initialState = {
 	mainData: {
 		hashtag: {},
 		featuredBanner: [],
-		middlebanner: [],
+		middleBanner: [],
 		bottomBanner1: [],
 		bottomBanner2: [],
 		featuredBrand: [],
