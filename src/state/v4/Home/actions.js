@@ -39,7 +39,7 @@ const mainAction = (token) => (dispatch) => {
 	}).then(response => {
 		const mainData = {
 			hashtag: response.data.data.find(e => e.type === 'hashtag').data,
-			featureBanner: response.data.data.find(e => e.type === 'featured_banner').data,
+			featuredBanner: response.data.data.find(e => e.type === 'featured_banner').data,
 			middleBanner: response.data.data.find(e => e.type === 'middle_banner').data,
 			bottomBanner1: response.data.data.find(e => e.type === 'bottom_banner1').data,
 			bottomBanner2: response.data.data.find(e => e.type === 'bottom_banner2').data,
@@ -66,17 +66,8 @@ const newArrivalAction = (token) => (dispatch) => {
 	});
 };
 
-const lovelistAction = (token) => (dispatch) => {
-	const url = `${process.env.MICROSERVICES_URL}total/bycustomer`;
-	return request({
-		token,
-		path: url,
-		method: 'GET',
-		fullpath: true
-	}).then(response => {
-		const total = response.data.data;
-		dispatch(totalLove({ totalLovelist: total }));
-	});
+const lovelistAction = (total = 0) => (dispatch) => {
+	dispatch(totalLove({ totalLovelist: total }));
 };
 
 const cartAction = (token) => (dispatch) => {
