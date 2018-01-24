@@ -168,7 +168,11 @@ class Home extends Component {
 		if (!_.isEmpty(home.mainData.mozaic)) {
 			return (
 				<Carousel>
-					<Article mozaic={home.mainData.mozaic} />
+					{
+						home.mainData.mozaic.posts.map((detail, i) => (
+							<Article posts={detail} key={i} />
+						))
+					}
 				</Carousel>
 			);
 		}
