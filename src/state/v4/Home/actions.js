@@ -39,7 +39,7 @@ const mainAction = (token) => (dispatch) => {
 	}).then(response => {
 		const mainData = {
 			hashtag: response.data.data.find(e => e.type === 'hashtag').data,
-			featureBanner: response.data.data.find(e => e.type === 'featured_banner').data,
+			featuredBanner: response.data.data.find(e => e.type === 'featured_banner').data,
 			middleBanner: response.data.data.find(e => e.type === 'middle_banner').data,
 			bottomBanner1: response.data.data.find(e => e.type === 'bottom_banner1').data,
 			bottomBanner2: response.data.data.find(e => e.type === 'bottom_banner2').data,
