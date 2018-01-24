@@ -3,14 +3,17 @@ import { handleActions, createActions } from 'redux-actions';
 const actions = createActions({
 	LOGIN: (email, password) => ({ email, password }),
 	USER_LOGIN_FAIL: () => ({ password: '' }),
-	USER_LOGIN_SUCCESS: (user) => ({ email: undefined, password: undefined, user }),
-	USER_ANONYMOUS: undefined
+	USER_LOGIN_SUCCESS: (userprofile) => ({ email: undefined, password: undefined, userprofile }),
+	USER_ANONYMOUS: undefined,
+	USER_LOGIN_ANONYMOUS_SUCCESS: (userprofile) => ({ userprofile }),
+	USER_NAME_CHANGE: (username) => ({ username })
 });
 
 const initialState = {
 	userprofile: false,
 	username: false,
-	isLoading: false
+	isLoading: false,
+	isAnonymous: false
 };
 
 const reducer = handleActions({
@@ -24,8 +27,9 @@ const reducer = handleActions({
 	[actions.userLoginSuccess](state, action) {
 		return {
 			...state,
-			userprofile: action.payload.user.data.data.info,
-			isLoading: true
+			userprofile: action.payload.userprofile.data.info,
+			isLoading: false,
+			isAnonymous: false
 		};
 	},
 	[actions.userLoginFail](state, action) {
@@ -40,6 +44,20 @@ const reducer = handleActions({
 			...state,
 			...action.payload,
 			isLoading: true 
+		};
+	},
+	[actions.userLoginAnonymousSuccess](state, action) {
+		return {
+			...state,
+			userprofile: action.payload.userprofile.data.info,
+			isLoading: false,
+			isAnonymous: true
+		};
+	},
+	[actions.userNameChange](state, action) {
+		return {
+			...state,
+			...action.payload
 		};
 	},
 }, initialState);

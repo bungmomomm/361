@@ -26,11 +26,16 @@ const getClientVersion = () => {
 	return '2.22.0'; // process.env.BASE_URL;
 };
 
+const getSessionDomain = () => {
+	return process.env.SESSION_DOMAIN;
+};
+
 export default {
 	getDeviceID,
 	getClientID,
 	getClientSecret,
 	getClientVersion,
+	getSessionDomain,
 	newId,
 	renderIf,
 	currency,
