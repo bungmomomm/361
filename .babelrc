@@ -8,7 +8,6 @@
 		"transform-object-rest-spread",
 		"add-module-exports",
 		"transform-decorators-legacy",
-		"dynamic-import-webpack",
-		"transform-async-to-generator"
+		"dynamic-import-webpack"
 	]
 }

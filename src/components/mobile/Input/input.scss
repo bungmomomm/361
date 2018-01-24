@@ -19,11 +19,10 @@
   height: rem(30px);
   padding: rem(10px) rem(15px);
   -webkit-appearance: none;
-  border: none;
   box-shadow: none;
   outline: 0;
   resize: none;
-
+  border: 1px solid transparent;
   &::-webkit-input-placeholder,
   &:-moz-placeholder,
   &::-moz-placeholder,
@@ -51,6 +50,7 @@
     padding-left: rem(40px)
   }
 }
+
 
 .iconRight{
   right: 0px;
@@ -105,5 +105,12 @@
 
 .normal {
   & .input {
+  }
+}
+
+.white{
+  input{
+    background-color: #fff;
+    border-color: #D8D8D8;
   }
 }

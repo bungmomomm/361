@@ -6,7 +6,7 @@ const initialState = {
 	segmen: [
 		{
 			id: 1,
-			Title: 'Wanita'
+			title: 'Wanita'
 		}
 	],
 	totalLovelist: {
@@ -22,15 +22,20 @@ const initialState = {
 		bottomBanner1: [],
 		bottomBanner2: [],
 		featuredBrand: [],
-		mozaic: {}
-	}
+		mozaic: {},
+	},
+	newArrivalProducts: {},
+	bestSellerProducts: {},
 };
 
-const { initResponse, totalBag, homeData, totalLove } = createActions(
+const { initResponse, totalBag, homeData, totalLove, newArrival, bestSeller } = createActions(
 	'INIT_RESPONSE',
-	'TOTAL_BAG',
+	'TOTAL_BAG ',
 	'HOME_DATA',
-	'TOTAL_LOVE');
+	'TOTAL_LOVE',
+	'NEW_ARRIVAL',
+	'BEST_SELLER',
+);
 
 const reducer = handleActions({
 	[initResponse](state, { payload: { segmen } }) {
@@ -46,7 +51,7 @@ const reducer = handleActions({
 		};
 	},
 	[homeData](state, { payload: { mainData } }) {
-		return {
+		return { 
 			...state,
 			mainData
 		};
@@ -56,7 +61,25 @@ const reducer = handleActions({
 			...state,
 			totalLovelist
 		};
-	}
+	},
+	[totalLove](state, { payload: { totalLovelist } }) {
+		return {
+			...state,
+			totalLovelist
+		};
+	},
+	[newArrival](state, { payload: { newArrivalProducts } }) {
+		return {
+			...state,
+			newArrivalProducts
+		};
+	},
+	[bestSeller](state, { payload: { bestSellerProducts } }) {
+		return {
+			...state,
+			bestSellerProducts
+		};
+	},
 }, initialState);
 
 export default {
@@ -64,5 +87,7 @@ export default {
 	initResponse, 
 	totalBag, 
 	homeData, 
-	totalLove
+	totalLove,
+	newArrival,
+	bestSeller,
 };

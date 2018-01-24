@@ -48,6 +48,7 @@ class Input extends PureComponent {
 			size,
 			value,
 			inputClassName,
+			color,
 			iconLeft,
 			iconRight,
 			...props,
@@ -58,6 +59,7 @@ class Input extends PureComponent {
 			status ? styles[status] : null,
 			value ? styles.filled : null,
 			styles[size],
+			styles[color],
 			this.props.className
 		);
 

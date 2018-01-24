@@ -5,97 +5,122 @@ import { Link } from 'react-router-dom';
 import { Header, Carousel, Tabs, Page, Level, Button, Grid, Article, Navigation, Svg, Image, Notification } from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
-import * as C from '@/constants';
+// import { renderIf } from '@/utils';
+// import * as C from '@/constants';
 
 class Home extends Component {
-
-	// static init(token, dispatch, type = 'init') {
-	// 	let action = {};
-
-	// 	switch (type) {
-	// 	case this.dataType.cart: {
-	// 		action = new actions.cartAction({
-	// 			token: this.userCookies
-	// 		});
-	// 	} 
-	// 		break;
-	// 	case this.dataType.lovelist: {
-	// 		action = new actions.lovelistAction({
-	// 			token: this.userCookies
-	// 		});
-	// 	}
-	// 		break;
-	// 	case this.dataType.main: {
-	// 		action = new actions.mainAction({
-	// 			token: this.userCookies
-	// 		});
-	// 	}
-	// 		break;
-	// 	default: {
-	// 		action = new actions.initAction({
-	// 			token: this.userCookies
-	// 		});
-	// 	}
-	// 	}
-
-	// 	dispatch(action);
-	// }
-
-	
 	static initApp(token, dispatch) {
 		dispatch(new actions.initAction({
 			token: this.userCookies
 		}));
 	}
 
-	// static mainData(token, dispatch) {
-	// 	dispatch(new actions.mainAction({
-	// 		token: this.userCookies
-	// 	}));
-	// }
+	static mainData(token, dispatch) {
+		dispatch(new actions.mainAction({
+			token: this.userCookies
+		}));
+	}
+
+	static lovelist(token, dispatch) {
+		dispatch(new actions.lovelistAction({
+			token: this.userCookies
+		}));
+	}
+
+	static cart(token, dispatch) {
+		dispatch(new actions.cartAction({
+			token: this.userCookies
+		}));
+	}
+
+	static newArrival(token, dispatch) {
+		dispatch(new actions.newArrivalAction({
+			token: this.userCookies
+		}));
+	}
+
+	static bestSeller(token, dispatch) {
+		dispatch(new actions.bestSellerAction({
+			token: this.userCookies
+		}));
+	}
 
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
-			current: 'wanita',
+			current: 1, // wanita
 			notification: {
 				show: true
 			}
-			// current: 1 // wanita
 		};
 		
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.source = this.props.cookies.get('user.source');
-		this.dataType = {
-			init: 'init',
-			cart: 'cart',
-			lovelist: 'lovelist',
-			main: 'main'
-		};
-	}
-	componentWillMount() {
-		// console.log('asdasdasdasd');
-		// this.constructor.fetchDataCart(this.userCookies, this.props.dispatch);
 	}
 
 	componentDidMount() {
-		this.slider.refs.frame.style.height = '500px';
-		this.mainNavCategories = C.MAIN_NAV_CATEGORIES;
-		if (this.props.home.segmen.length < 2) {
-			this.constructor.initApp(this.userCookies, this.props.dispatch);	
-		}
-		
-		// this.constructor.mainData(this.userCookies, this.props.dispatch);
-
-		// this.props.dispatch(new actions.lovelistAction({
-		// 	token: this.userCookies
-		// }));
+		this.constructor.initApp(this.userCookies, this.props.dispatch);	
+		this.constructor.mainData(this.userCookies, this.props.dispatch);	
+		this.constructor.lovelist(this.userCookies, this.props.dispatch);	
+		this.constructor.cart(this.userCookies, this.props.dispatch);
+		this.constructor.newArrival(this.userCookies, this.props.dispatch);
+		this.constructor.bestSeller(this.userCookies, this.props.dispatch);
+		// this.slider.refs.frame.style.height = '500px';
+		// this.mainNavCategories = C.MAIN_NAV_CATEGORIES;	
 	}
 
 	handlePick(current) {
 		this.setState({ current });
+	}
+
+	renderFeatureBanner() {
+		const { home } = this.props;
+		if (typeof home.mainData.featureBanner !== 'undefined' && home.mainData.featureBanner.length > 0) {
+			return (
+				<Carousel>
+					{
+						home.mainData.featureBanner.map(({ images, link }, i) => (
+							<Image key={i} alt='slide' src={images.mobile} />
+						))
+					}
+				</Carousel>
+			);
+		}
+		return null;
+	}
+	
+	renderHashtag() {
+		const { home } = this.props;
+		if (typeof home.mainData.hashtag.images !== 'undefined' && home.mainData.hashtag.images.length > 0) {
+			return (
+				<div>
+					{
+						home.mainData.hashtag.images.map(({ images, link }, i) => (
+							<div key={i} ><Image lazyload alt='thumbnail' src={images.mobile} /></div>
+						))
+					}
+				</div>
+			);
+		}
+		return null;
+	}
+	
+	renderOOTD() {
+		const { home } = this.props;
+		if (typeof home.mainData.middlebanner !== 'undefined' && home.mainData.middlebanner.length > 0) {
+			return (
+				<div>
+					{
+						home.mainData.middleBanner.map(({ images, link }, i) => (
+							<Image key={i} lazyload alt='banner' src={images.mobile} />
+						))
+					}
+				</div>
+			);
+		}
+		return null;
 	}
 
 
@@ -117,25 +142,20 @@ class Home extends Component {
 						variants={this.props.home.segmen}
 						onPick={(e) => this.handlePick(e)}
 					/>
+			
 					<Notification color='pink' show={this.state.notification.show} onClose={(e) => this.setState({ notification: { show: false } })}>
 						<div>Up to 70% off Sale</div>
 						<p>same color on all segments</p>
 					</Notification>
-					<Carousel>
-						<Image local alt='slide' src='temp/banner.jpg' />
-						<Image local alt='slide' src='temp/banner.jpg' />
-						<Image local alt='slide' src='temp/banner.jpg' />
-					</Carousel>
+
+					{this.renderFeatureBanner()}
+					
 					{renderSectionHeader('#MauGayaItuGampang', { title: 'See all', url: 'http://www.google.com' })}
-					<Grid split={3}>
-						<div><Image lazyload local alt='thumbnail' src='temp/thumb-1.jpg' /></div>
-						<div><Image lazyload local alt='thumbnail' src='temp/thumb-2.jpg' /></div>
-						<div><Image lazyload local alt='thumbnail' src='temp/thumb-3.jpg' /></div>
-					</Grid>
-					<div className='margin--medium'>
-						<Image local lazyload alt='banner' src='temp/banner-react-1.jpg' />
-						<Image local lazyload alt='banner' src='temp/banner-react-2.jpg' />
-					</div>
+					
+					{this.renderHashtag()}
+					
+					{this.renderOOTD()}
+
 					{renderSectionHeader('New Arrival', { title: 'See all', url: 'http://www.google.com' })}
 					<Grid split={3}>
 						<div>
@@ -199,14 +219,13 @@ class Home extends Component {
 					<Article />
 				</Page>
 				<Header />
-				<Navigation />
+				<Navigation active='Home' />
 			</div>
 		);
 	}
 }
 
 const mapStateToProps = (state) => {
-	// console.log(state);
 	return {
 		...state
 	};

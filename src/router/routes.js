@@ -16,6 +16,9 @@ const defRoute = loadable(() => import('@/containers/NotFound'));
 let Home = defRoute;
 let Search = defRoute;
 let Category = defRoute;
+let SubCategory = defRoute;
+let BrandCategory = defRoute;
+let CatalogCategory = defRoute;
 let Lovelist = defRoute;
 let Hashtags = defRoute;
 let HashtagsDetails = defRoute;
@@ -33,6 +36,9 @@ if (isMobile()) {
 	Lovelist = loadable(() => import('@/containers/Mobile/Discovery/Lovelist'));
 	Hashtags = loadable(() => import('@/containers/Mobile/Discovery/Hashtags'));
 	Category = loadable(() => import('@/containers/Mobile/Discovery/Category'));
+	SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
+	BrandCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/BrandCategory'));
+	CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
 
 	// Service Details
 	HashtagsDetails = loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'));
@@ -53,26 +59,30 @@ export default [
 	},
 	{
 		path: '/hashtags',
-		component: Hashtags,
-		exact: true
+		component: Hashtags
 	},
 	{
 		path: '/hashtags/details',
-		component: HashtagsDetails,
-		exact: true
+		component: HashtagsDetails
 	}, 
 	{
 		path: '/search',
-		component: Search,
-		exact: true
+		component: Search
 	}, {
 		path: '/category',
 		component: Category,
-		exact: true
 	}, {
+		path: '/subcategory',
+		component: SubCategory
+	}, {
+		path: '/brandcategory',
+		component: BrandCategory
+	}, {
+		path: '/catalogcategory',
+		component: CatalogCategory
+	}, {
+		
 		path: '/lovelist',
-		component: Lovelist,
-		exact: true
+		component: Lovelist
 	}
-
 ];
