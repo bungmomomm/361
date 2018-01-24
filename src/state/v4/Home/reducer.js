@@ -24,17 +24,13 @@ const initialState = {
 		featuredBrand: [],
 		mozaic: {},
 	},
-	newArrivalProducts: {},
-	bestSellerProducts: {},
 };
 
-const { initResponse, totalBag, homeData, totalLove, newArrival, bestSeller } = createActions(
+const { initResponse, totalBag, homeData, totalLove } = createActions(
 	'INIT_RESPONSE',
 	'TOTAL_BAG ',
 	'HOME_DATA',
 	'TOTAL_LOVE',
-	'NEW_ARRIVAL',
-	'BEST_SELLER',
 );
 
 const reducer = handleActions({
@@ -68,18 +64,6 @@ const reducer = handleActions({
 			totalLovelist
 		};
 	},
-	[newArrival](state, { payload: { newArrivalProducts } }) {
-		return {
-			...state,
-			newArrivalProducts
-		};
-	},
-	[bestSeller](state, { payload: { bestSellerProducts } }) {
-		return {
-			...state,
-			bestSellerProducts
-		};
-	},
 }, initialState);
 
 export default {
@@ -88,6 +72,4 @@ export default {
 	totalBag, 
 	homeData, 
 	totalLove,
-	newArrival,
-	bestSeller,
 };
