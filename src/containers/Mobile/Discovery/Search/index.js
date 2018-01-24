@@ -16,21 +16,29 @@ class Search extends Component {
 		</div>);
 	};
 
-	static enterSearchHandler(event) {
-		if (event.key === 'Enter') {
-			const pathProd = `/products?category_id=&query=${event.target.value}`;
-			top.location.href = pathProd;
-		}
-	}
-
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
-			keyword: this.props.keyword // this state for manipulating stateless search box input
+			keyword: this.props.keyword, // this state for manipulating stateless search box input
+			showHistory: true
 		};
 		this.userToken = this.props.cookies.get('user.token');
 		this.searchKeywordUpdatedHandler = this.searchKeywordUpdatedHandler.bind(this);
+		this.enterSearchHandler = this.enterSearchHandler.bind(this);
+		this.searchListCookieName = 'user.search.list';
+	}
+
+	enterSearchHandler(event) {
+		if (event.key === 'Enter') {
+			let cookies = this.props.cookies.get(this.searchListCookieName);
+			cookies = (!cookies || cookies === []) ? [] : cookies;
+			const newSearch = { text: event.target.value, value: event.target.value };
+			cookies.unshift(newSearch);
+			this.props.cookies.set(this.searchListCookieName, cookies.filter((val, key) => (key <= 9)));
+			const pathProd = `/products?category_id=&query=${event.target.value}`;
+			top.location.href = pathProd;
+		}
 	}
 
 	searchKeywordUpdatedHandler(event) {
@@ -39,18 +47,35 @@ class Search extends Component {
 			this.props.updatedKeyword(newWord, this.userToken);
 			this.setState({
 				...this.state,
-				keyword: newWord
+				keyword: newWord,
+				showHistory: false
 			});
 		} else {
 			this.props.updatedKeyword('');
 			this.setState({
 				...this.state,
-				keyword: ''
+				keyword: '',
+				showHistory: true
 			});
 		}
 	}
 
 	render() {
+		let sectionSearchHistory = null;
+		let listSearchHistory = null;
+		const cookies = this.props.cookies.get(this.searchListCookieName);
+		if (cookies && cookies.length > 0) {
+			listSearchHistory = this.constructor.listSugestionMaker(cookies);
+			sectionSearchHistory = (
+				<section className={styles.section}>
+					<div className={styles.heading}>Seach History</div>
+					<ul className={styles.list}>
+						{listSearchHistory}
+					</ul>
+				</section>
+			);
+		}
+
 		let sectionRelatedCategory = null;
 		let listRelatedCategory = null;
 		if (this.props.relatedKeyword) {
@@ -93,18 +118,29 @@ class Search extends Component {
 			);
 		}
 
+		let mainList = null;
+		if (this.state.showHistory && cookies && cookies.length > 0) {
+			mainList = (<div>{ sectionSearchHistory }</div>);
+		} else {
+			mainList = (
+				<div>
+					{sectionRelatedCategory}
+					{sectionRelatedKeyword}
+					{sectionRelatedHastag}
+				</div>
+			);
+		}
+
 		return (
 			<div style={this.props.style}>
 				<Page>
-					<div className={styles.container}>
-						{sectionRelatedCategory}
-						{sectionRelatedKeyword}
-						{sectionRelatedHastag}
+					<div className={styles.container} >
+						{mainList}
 					</div>
 				</Page>
 				<Header.Search
 					updatedKeywordHandler={this.searchKeywordUpdatedHandler}
-					onKeyPressHandler={this.constructor.enterSearchHandler}
+					onKeyPressHandler={this.enterSearchHandler}
 					dataProps={{ value: this.state.keyword }}
 					value={this.state.keyword}
 				/>
