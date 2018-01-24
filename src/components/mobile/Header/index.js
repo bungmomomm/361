@@ -13,11 +13,10 @@ const Header = props => {
 			<div className={styles.wrapper}>
 				<div className={styles.header}>
 					<div className={styles.left}>
-						{props.lovelist.showHomeIcon && (
 						<Link to='/lovelist'>
 							<Svg src='ico_lovelist.svg' />
-							<Badge circle attached size='small' className='bg--tosca font-color--white'>{props.lovelist.count}</Badge>
-						</Link>) }
+							<Badge circle attached size='small' className='bg--tosca font-color--white'>{props.lovelist}</Badge>
+						</Link>
 					</div>
 					<div className={styles.center}>
 						<Input 

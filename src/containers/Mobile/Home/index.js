@@ -10,7 +10,7 @@ import {
 } from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
-import { actions as loveListAction } from '@/state/v4/Lovelist';
+import Shared from '@/containers/Mobile/Shared';
 
 class Home extends Component {
 	static initApp(token, dispatch) {
@@ -21,33 +21,6 @@ class Home extends Component {
 
 	static mainData(token, dispatch) {
 		dispatch(new actions.mainAction({
-			token: this.userCookies
-		}));
-	}
-
-	static lovelist(token, dispatch) {
-		// const user is a dummy data only, in future will be removed
-		const user = { loggedId: true, id: 123141, name: 'Ben' };
-		dispatch(new loveListAction.countLoveList(token, user));
-
-		// in future will use this commented dispatch (gets lovelist count based user logged in)
-		// dispatch(new loveListAction.countLovelist(token, this.props.user.user));
-	}
-
-	static cart(token, dispatch) {
-		dispatch(new actions.cartAction({
-			token: this.userCookies
-		}));
-	}
-
-	static newArrival(token, dispatch) {
-		dispatch(new actions.newArrivalAction({
-			token: this.userCookies
-		}));
-	}
-
-	static bestSeller(token, dispatch) {
-		dispatch(new actions.bestSellerAction({
 			token: this.userCookies
 		}));
 	}
@@ -70,13 +43,6 @@ class Home extends Component {
 	componentDidMount() {
 		this.constructor.initApp(this.userCookies, this.props.dispatch);
 		this.constructor.mainData(this.userCookies, this.props.dispatch);
-		this.constructor.lovelist(this.userCookies, this.props.dispatch);
-		this.props.dispatch(new actions.lovelistAction({
-			total: this.props.lovelist.count
-		}));
-		this.constructor.cart(this.userCookies, this.props.dispatch);
-		this.constructor.newArrival(this.userCookies, this.props.dispatch);
-		this.constructor.bestSeller(this.userCookies, this.props.dispatch);
 	}
 
 	handlePick(current) {
@@ -195,6 +161,8 @@ class Home extends Component {
 				</Level>
 			);
 		};
+		const { shared } = this.props;
+		console.log(shared.totalLovelist);
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -258,7 +226,7 @@ class Home extends Component {
 					{renderSectionHeader('Mozaic Megazine', { title: 'See all', url: 'http://www.google.com' })}
 					{this.renderMozaic()}
 				</Page>
-				<Header lovelist={this.props.lovelist} />
+				<Header lovelist={shared.totalLovelist} />
 				<Navigation active='Home' />
 			</div>
 		);
@@ -271,4 +239,4 @@ const mapStateToProps = (state) => {
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Home));
+export default withCookies(connect(mapStateToProps)(Shared(Home)));
