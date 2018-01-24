@@ -1,11 +1,15 @@
+// this actions for PDP page
+
 import { request } from '@/utils';
 import { 
 	productDetail, 
 	productRecommendation, 
 	productSimilar,
 	productSocialSummary,
-	productComment 
 } from './reducer';
+import {
+	commentTotal
+} from '@/state/v4/Comment/reducer';
 
 const productDetailAction = (token) => (dispatch) => {
 	const url = `${process.env.MICROSERVICES_URL}product/31`;
@@ -61,26 +65,10 @@ const productSocialSummaryAction = (token) => (dispatch) => {
 		}
 	}).then(response => {
 		const data = response.data.data;
-		const socialSummary = data.reviews;
-		dispatch(productSocialSummary({ socialSummary }));
-	});
-};
-
-
-const productCommentAction = (token) => (dispatch) => {
-	const url = `${process.env.MICROSERVICES_URL}comments`;
-	return request({
-		token,
-		path: url,
-		method: 'GET',
-		fullpath: true,
-		data: {
-			variant_id: 100
-		}
-	}).then(response => {
-		const data = response.data.data;
-		const comment = data.comments;
-		dispatch(productComment({ comment }));
+		const reviews = data.reviews;
+		const comments = data.comments;
+		dispatch(productSocialSummary({ reviews }));
+		dispatch(commentTotal({ ...comments }));
 	});
 };
 
@@ -89,5 +77,4 @@ export default {
 	productRecommendationAction,
 	productSimilarAction,
 	productSocialSummaryAction,
-	productCommentAction
 };

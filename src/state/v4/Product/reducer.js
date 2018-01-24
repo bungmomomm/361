@@ -3,6 +3,11 @@ import { handleActions, createActions } from 'redux-actions';
 const initialState = {
 	detail: {},
 	recommendation: [],
+	similar: [],
+	reviews: {
+		total: 0,
+		summary: []
+	},
 	loading: false
 };
 
@@ -11,13 +16,11 @@ const {
 	productRecommendation, 
 	productSimilar, 
 	productSocialSummary,
-	productComment 
 } = createActions(
 	'PRODUCT_DETAIL', 
 	'PRODUCT_RECOMMENDATION', 
 	'PRODUCT_SIMILAR',
 	'PRODUCT_SOCIAL_SUMMARY',
-	'PRODUCT_COMMENT',
 );
 
 const reducer = handleActions({
@@ -39,16 +42,10 @@ const reducer = handleActions({
 			similar
 		};
 	},
-	[productSocialSummary](state, { payload: { socialSummary } }) {
+	[productSocialSummary](state, { payload: { reviews } }) {
 		return {
 			...state,
-			socialSummary
-		};
-	},
-	[productComment](state, { payload: { comment } }) {
-		return {
-			...state,
-			comment
+			reviews,
 		};
 	},
 }, initialState);
@@ -59,5 +56,4 @@ export default {
 	productRecommendation,
 	productSimilar,
 	productSocialSummary,
-	productComment,
 };
