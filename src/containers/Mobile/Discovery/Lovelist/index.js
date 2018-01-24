@@ -47,7 +47,7 @@ class Lovelist extends Component {
 		};
 		if (!this.state.loggedIn) {
 			return (renderLovelistPage(
-				<div style={{ marginTop: '60px', padding: '20px' }} className='text-center --disable-flex'>
+				<div style={{ marginTop: '30%', padding: '20px' }} className='text-center --disable-flex'>
 					<Svg src='ico_ghost.svg' />
 					<p className='margin--medium'>Unlock the Full Experience</p>
 					<Level className='margin--medium'>
