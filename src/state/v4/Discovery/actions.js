@@ -5,7 +5,6 @@ const configs = {
 	defaultPage: 30
 };
 
-
 const bestSellerAction = (token, props = false, query = {}) => (dispatch) => {
 	const url = `${process.env.MICROSERVICES_URL}bestseller`;
 	
@@ -27,7 +26,7 @@ const bestSellerAction = (token, props = false, query = {}) => (dispatch) => {
 	});
 };
 
-const newArrivalAction = (token) => (dispatch) => {
+const newArrivalAction = (token, props = false, query = {}) => (dispatch) => {
 	const url = `${process.env.MICROSERVICES_URL}newarrival`;
 	if (!query.page) {
 		query.page = 1;
@@ -37,6 +36,7 @@ const newArrivalAction = (token) => (dispatch) => {
 		token,
 		path: url,
 		method: 'GET',
+		query,
 		fullpath: true
 	}).then(response => {
 		const data = {
