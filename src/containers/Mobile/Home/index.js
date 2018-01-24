@@ -2,11 +2,14 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
-import { Header, Carousel, Tabs, Page, Level, Button, Grid, Article, Navigation, Svg, Image, Notification } from '@/components/mobile';
+import _ from 'lodash';
+import { 
+	Header, Carousel, Tabs, 
+	Page, Level, Button, Grid, Article,
+	Navigation, Svg, Image, Notification 
+} from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
-// import { renderIf } from '@/utils';
-// import * as C from '@/constants';
 
 class Home extends Component {
 	static initApp(token, dispatch) {
@@ -66,9 +69,7 @@ class Home extends Component {
 		this.constructor.lovelist(this.userCookies, this.props.dispatch);	
 		this.constructor.cart(this.userCookies, this.props.dispatch);
 		this.constructor.newArrival(this.userCookies, this.props.dispatch);
-		this.constructor.bestSeller(this.userCookies, this.props.dispatch);
-		// this.slider.refs.frame.style.height = '500px';
-		// this.mainNavCategories = C.MAIN_NAV_CATEGORIES;	
+		this.constructor.bestSeller(this.userCookies, this.props.dispatch);	
 	}
 
 	handlePick(current) {
@@ -77,12 +78,13 @@ class Home extends Component {
 
 	renderFeatureBanner() {
 		const { home } = this.props;
-		if (typeof home.mainData.featureBanner !== 'undefined' && home.mainData.featureBanner.length > 0) {
+		console.log(home.mainData.featureBanner);
+		if (typeof home.mainData.featuredBanner !== 'undefined' && home.mainData.featuredBanner.length > 0) {
 			return (
 				<Carousel>
 					{
-						home.mainData.featureBanner.map(({ images, link }, i) => (
-							<Image key={i} alt='slide' src={images.mobile} />
+						home.mainData.featuredBanner.map(({ images, link }, a) => (
+							<Image key={a} alt='slide' src={images.mobile} />
 						))
 					}
 				</Carousel>
@@ -95,13 +97,13 @@ class Home extends Component {
 		const { home } = this.props;
 		if (typeof home.mainData.hashtag.images !== 'undefined' && home.mainData.hashtag.images.length > 0) {
 			return (
-				<div>
+				<Carousel>
 					{
-						home.mainData.hashtag.images.map(({ images, link }, i) => (
-							<div key={i} ><Image lazyload alt='thumbnail' src={images.mobile} /></div>
+						home.mainData.hashtag.images.map(({ images, link }, b) => (
+							<div key={b} ><Image lazyload alt='thumbnail' src={images.mobile} /></div>
 						))
 					}
-				</div>
+				</Carousel>
 			);
 		}
 		return null;
@@ -109,12 +111,12 @@ class Home extends Component {
 	
 	renderOOTD() {
 		const { home } = this.props;
-		if (typeof home.mainData.middlebanner !== 'undefined' && home.mainData.middlebanner.length > 0) {
+		if (home.mainData.middleBanner.length > 0) {
 			return (
 				<div>
 					{
-						home.mainData.middleBanner.map(({ images, link }, i) => (
-							<Image key={i} lazyload alt='banner' src={images.mobile} />
+						home.mainData.middleBanner.map(({ images, link }, c) => (
+							<Image key={c} lazyload alt='banner' src={images.mobile} />
 						))
 					}
 				</div>
@@ -123,6 +125,56 @@ class Home extends Component {
 		return null;
 	}
 
+	renderBottomBanner(id = 1) {
+		const { home } = this.props;
+		const bottomBanner = id === 1 ? home.mainData.bottomBanner1 : home.mainData.bottomBanner2;
+		if (bottomBanner.length > 0) {
+			return (
+				<div className='margin--medium'>
+					{
+						bottomBanner.map(({ images, link }, d) => (
+							<Image key={d} lazyload alt='banner' src={images.mobile} />
+						))
+					}
+				</div>
+			);
+		}
+
+		return null;
+
+	}
+
+	renderFeaturedBrands() {
+		const { home } = this.props;
+		if (home.mainData.featuredBrand.length > 0) {
+			return (
+				<Grid split={3}>
+					{
+						home.mainData.featuredBrand.map(({ images, link }, e) => (
+							<div key={e}>
+								<Image lazyload alt='thumbnail' src={images.mobile} />
+							</div>
+						))
+					}
+				</Grid>
+			);
+		}
+
+		return null;
+	}
+
+	renderMozaic() {
+		const { home } = this.props;
+		if (!_.isEmpty(home.mainData.mozaic)) {
+			return (
+				<Carousel>
+					<Article mozaic={home.mainData.mozaic} />
+				</Carousel>
+			);
+		}
+
+		return null;
+	}
 
 	render() {
 		const renderSectionHeader = (title, options) => {
@@ -133,7 +185,6 @@ class Home extends Component {
 				</Level>
 			);
 		};
-
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -154,7 +205,7 @@ class Home extends Component {
 					
 					{this.renderHashtag()}
 					
-					{this.renderOOTD()}
+					{/* {this.renderOOTD()} */}
 
 					{renderSectionHeader('New Arrival', { title: 'See all', url: 'http://www.google.com' })}
 					<Grid split={3}>
@@ -171,11 +222,9 @@ class Home extends Component {
 							<Button className={styles.btnThumbnail} transparent color='primary' outline size='small'>Rp. 1.000.000</Button>
 						</div>
 					</Grid>
-					<div className='margin--medium'>
-						<Image local lazyload alt='banner' src='temp/banner-landscape-1.jpg' />
-						<Image local lazyload alt='banner' src='temp/banner-landscape-2.jpg' />
-					</div>
+					{this.renderBottomBanner(1)}
 					{renderSectionHeader('Best Seller', { title: 'See all', url: 'http://www.google.com' })}
+					
 					<Grid split={3}>
 						<div>
 							<Image local lazyload alt='thumbnail' src='temp/thumb-2-1.jpg' />
@@ -190,33 +239,14 @@ class Home extends Component {
 							<Button className={styles.btnThumbnail} transparent color='primary' outline size='small'>Rp. 1.000.000</Button>
 						</div>
 					</Grid>
-					<div className='margin--medium'>
-						<Image local lazyload alt='banner' src='temp/banner-landscape-1.jpg' />
-						<Image local lazyload alt='banner' src='temp/banner-landscape-2.jpg' />
-					</div>
+					
+					{this.renderBottomBanner(2)}
+
 					{renderSectionHeader('Featured Brands', { title: 'See all', url: 'http://www.google.com' })}
-					<Grid split={3}>
-						<div>
-							<Image lazyload alt='thumbnail' src='https://i.pinimg.com/originals/76/1d/c8/761dc83ce2eed1757bbe27f7adb672c2.png' />
-						</div>
-						<div>
-							<Image lazyload alt='thumbnail' src='https://i.pinimg.com/originals/76/1d/c8/761dc83ce2eed1757bbe27f7adb672c2.png' />
-						</div>
-						<div>
-							<Image lazyload alt='thumbnail' src='https://i.pinimg.com/originals/76/1d/c8/761dc83ce2eed1757bbe27f7adb672c2.png' />
-						</div>
-						<div>
-							<Image lazyload alt='thumbnail' src='https://i.pinimg.com/originals/76/1d/c8/761dc83ce2eed1757bbe27f7adb672c2.png' />
-						</div>
-						<div>
-							<Image lazyload alt='thumbnail' src='https://i.pinimg.com/originals/76/1d/c8/761dc83ce2eed1757bbe27f7adb672c2.png' />
-						</div>
-						<div>
-							<Image lazyload alt='thumbnail' src='https://i.pinimg.com/originals/76/1d/c8/761dc83ce2eed1757bbe27f7adb672c2.png' />
-						</div>
-					</Grid>
+					{this.renderFeaturedBrands()}
+					
 					{renderSectionHeader('Mozaic Megazine', { title: 'See all', url: 'http://www.google.com' })}
-					<Article />
+					{this.renderMozaic()}
 				</Page>
 				<Header />
 				<Navigation active='Home' />
