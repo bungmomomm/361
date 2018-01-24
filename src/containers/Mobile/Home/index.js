@@ -78,12 +78,11 @@ class Home extends Component {
 
 	renderFeatureBanner() {
 		const { home } = this.props;
-		console.log(home.mainData.featureBanner);
-		if (typeof home.mainData.featuredBanner !== 'undefined' && home.mainData.featuredBanner.length > 0) {
+		if (home.mainData.featuredBanner.length > 0) {
 			return (
 				<Carousel>
 					{
-						home.mainData.featuredBanner.map(({ images, link }, a) => (
+						home.mainData.featuredBanner.map(({ images }, a) => (
 							<Image key={a} alt='slide' src={images.mobile} />
 						))
 					}
