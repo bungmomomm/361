@@ -79,6 +79,7 @@
   },
   "dependencies": {
     "axios": "^0.16.2",
+    "base-64": "^0.1.0",
     "classnames": "^2.2.5",
     "compression": "^1.7.0",
     "credit-card-type": "^5.0.3",

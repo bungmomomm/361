@@ -10,6 +10,7 @@ import {
 
 // Check if user success login
 const isLoginSuccess = (response) => {
+	console.log(response);
 	if (typeof response.data !== 'undefined' && typeof response.data.code !== 'undefined' && response.data.code === 200) {
 		return true;
 	}
@@ -32,8 +33,15 @@ const userLogin = (token, email, password) => async dispatch => {
 			}
 		});
 		if (isLoginSuccess(response)) {
-			dispatch(actions.userLoginSuccess(response));
-			return Promise.resolve(response);
+			dispatch(actions.userLoginSuccess(response.data));
+			return Promise.resolve({
+				userprofile: response.data.data.info,
+				token: {
+					token: response.data.data.token,
+					expires_in: response.data.data.expires_in,
+					refresh_token: response.data.data.refresh_token
+				}
+			});
 		}
 		dispatch(actions.userLoginFail(email, password));
 		return Promise.reject(new Error('Invalid user/password'));
@@ -58,8 +66,15 @@ const userAnonymousLogin = () => async dispatch => {
 			}
 		});
 		if (isLoginSuccess(response)) {
-			dispatch(actions.userLoginSuccess(response));
-			return Promise.resolve(response);
+			dispatch(actions.userLoginAnonymousSuccess(response.data));
+			return Promise.resolve({
+				userprofile: response.data.data.info,
+				token: {
+					token: response.data.data.token,
+					expires_in: response.data.data.expires_in,
+					refresh_token: response.data.data.refresh_token
+				}
+			});
 		}
 		dispatch(actions.userLoginFail());
 		return Promise.reject(new Error('Error while calling api'));
@@ -69,7 +84,12 @@ const userAnonymousLogin = () => async dispatch => {
 	}
 };
 
+const userNameChange = (username) => dispatch => {
+	dispatch(actions.userNameChange(username));
+};
+
 export default {
 	userLogin,
-	userAnonymousLogin
+	userAnonymousLogin,
+	userNameChange
 };
