@@ -92,6 +92,7 @@ class Input extends PureComponent {
 						{...props}
 						className={CreateinputClassName}
 						ref={this.setInput}
+						value={value}
 					/>
 				</div>
 				{this.renderHint()}
