@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Header, Carousel, Tabs, Page, Level, Button, Grid, Article, Navigation, Svg, Image, Notification } from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
+import { actions as loveListAction } from '@/state/v4/Lovelist';
 // import { renderIf } from '@/utils';
 // import * as C from '@/constants';
 
@@ -22,9 +23,12 @@ class Home extends Component {
 	}
 
 	static lovelist(token, dispatch) {
-		dispatch(new actions.lovelistAction({
-			token: this.userCookies
-		}));
+		// const user is a dummy data only, in future will be removed
+		const user = { loggedId: true, id: 123141, name: 'Ben' };
+		dispatch(new loveListAction.countLoveList(token, user));
+
+		// in future will use this commented dispatch (gets lovelist count based user logged in)
+		// dispatch(new loveListAction.countLovelist(token, this.props.user.user));
 	}
 
 	static cart(token, dispatch) {
@@ -54,16 +58,19 @@ class Home extends Component {
 				show: true
 			}
 		};
-		
+
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.source = this.props.cookies.get('user.source');
 	}
 
 	componentDidMount() {
-		this.constructor.initApp(this.userCookies, this.props.dispatch);	
-		this.constructor.mainData(this.userCookies, this.props.dispatch);	
-		this.constructor.lovelist(this.userCookies, this.props.dispatch);	
+		this.constructor.initApp(this.userCookies, this.props.dispatch);
+		this.constructor.mainData(this.userCookies, this.props.dispatch);
+		this.constructor.lovelist(this.userCookies, this.props.dispatch);
+		this.props.dispatch(new actions.lovelistAction({
+			total: this.props.lovelist.count
+		}));
 		this.constructor.cart(this.userCookies, this.props.dispatch);
 		this.constructor.newArrival(this.userCookies, this.props.dispatch);
 		this.constructor.bestSeller(this.userCookies, this.props.dispatch);
@@ -90,7 +97,7 @@ class Home extends Component {
 		}
 		return null;
 	}
-	
+
 	renderHashtag() {
 		const { home } = this.props;
 		if (typeof home.mainData.hashtag.images !== 'undefined' && home.mainData.hashtag.images.length > 0) {
@@ -106,7 +113,7 @@ class Home extends Component {
 		}
 		return null;
 	}
-	
+
 	renderOOTD() {
 		const { home } = this.props;
 		if (typeof home.mainData.middlebanner !== 'undefined' && home.mainData.middlebanner.length > 0) {
@@ -142,18 +149,18 @@ class Home extends Component {
 						variants={this.props.home.segmen}
 						onPick={(e) => this.handlePick(e)}
 					/>
-			
+
 					<Notification color='pink' show={this.state.notification.show} onClose={(e) => this.setState({ notification: { show: false } })}>
 						<div>Up to 70% off Sale</div>
 						<p>same color on all segments</p>
 					</Notification>
 
 					{this.renderFeatureBanner()}
-					
+
 					{renderSectionHeader('#MauGayaItuGampang', { title: 'See all', url: 'http://www.google.com' })}
-					
+
 					{this.renderHashtag()}
-					
+
 					{this.renderOOTD()}
 
 					{renderSectionHeader('New Arrival', { title: 'See all', url: 'http://www.google.com' })}
@@ -218,7 +225,7 @@ class Home extends Component {
 					{renderSectionHeader('Mozaic Megazine', { title: 'See all', url: 'http://www.google.com' })}
 					<Article />
 				</Page>
-				<Header />
+				<Header lovelist={this.props.lovelist} />
 				<Navigation active='Home' />
 			</div>
 		);

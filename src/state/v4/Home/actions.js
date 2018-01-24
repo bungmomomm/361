@@ -66,17 +66,8 @@ const newArrivalAction = (token) => (dispatch) => {
 	});
 };
 
-const lovelistAction = (token) => (dispatch) => {
-	const url = `${process.env.MICROSERVICES_URL}total/bycustomer`;
-	return request({
-		token,
-		path: url,
-		method: 'GET',
-		fullpath: true
-	}).then(response => {
-		const total = response.data.data;
-		dispatch(totalLove({ totalLovelist: total }));
-	});
+const lovelistAction = (total = 0) => (dispatch) => {
+	dispatch(totalLove({ totalLovelist: total }));
 };
 
 const cartAction = (token) => (dispatch) => {
