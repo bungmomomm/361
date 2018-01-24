@@ -16,17 +16,40 @@ class Search extends Component {
 		};
 		this.searchListCookieName = 'user.search.list';
 		this.userToken = this.props.cookies.get('user.token');
+		this.SUGGEST_KEYWORD = 'SUGGEST_KEYWORD';
+		this.SUGGEST_CATEGORY = 'SUGGEST_CATEGORY';
+		this.SUGGEST_HASTAG = 'SUGGEST_HASTAG';
+		this.SUGGEST_HISTORY = 'SUGGEST_HISTORY';
 		this.searchKeywordUpdatedHandler = this.searchKeywordUpdatedHandler.bind(this);
 		this.enterSearchHandler = this.enterSearchHandler.bind(this);
 		this.listSugestionMaker = this.listSugestionMaker.bind(this);
+		this.urlBuilder = this.urlBuilder.bind(this);
 	}
 
-	setCookieSearch(sText, sValue) {
+	setCookieSearch(sText, sValue, sType) {
 		let cookies = this.props.cookies.get(this.searchListCookieName);
 		cookies = (!cookies || cookies === []) ? [] : cookies;
-		const newSearch = { text: sText, value: sValue };
+		const newSearch = { text: sText, value: sValue, type: sType };
 		cookies.unshift(newSearch);
 		this.props.cookies.set(this.searchListCookieName, cookies.filter((val, key) => (key <= 9)));
+	}
+
+	urlBuilder(type, text, value) {
+		let pathProd = null;
+		switch (type) {
+		case this.SUGGEST_KEYWORD || this.SUGGEST_HASTAG:
+			pathProd = `/products?category_id=&query=${value}`;
+			break;
+		case this.SUGGEST_HASTAG:
+			pathProd = `/products?category_id=&query=${value}`;
+			break;
+		case this.SUGGEST_CATEGORY:
+			pathProd = `/products?category_id=${value}&query=${text}`;
+			break;
+		default:
+			pathProd = '/';
+		}
+		return pathProd;
 	}
 
 	enterSearchHandler(event) {
@@ -56,13 +79,14 @@ class Search extends Component {
 		}
 	}
 
-	listSugestionMaker(lists) {
+	listSugestionMaker(lists, type) {
 		return (<div>
 			{lists.map(list => {
-				const pathProd = `/products?category_id=&query=${list.value}`;
+				const pathProd = (type === this.SUGGEST_HISTORY) ? this.urlBuilder(list.type, list.text, list.value) : this.urlBuilder(type, list.text, list.value);
+				const cookieType = (type === this.SUGGEST_HISTORY) ? list.type : type;
 				return (
 					<li key={Math.random()} >
-						<Link to={{ pathname: pathProd }} onClick={() => this.setCookieSearch(list.text, list.value)}> {list.text} </Link>
+						<Link to={{ pathname: pathProd }} onClick={() => this.setCookieSearch(list.text, list.value, cookieType)}> {list.text} </Link>
 					</li>);
 			})}
 		</div>);
@@ -73,7 +97,7 @@ class Search extends Component {
 		let listSearchHistory = null;
 		const cookies = this.props.cookies.get(this.searchListCookieName);
 		if (cookies && cookies.length > 0) {
-			listSearchHistory = this.listSugestionMaker(cookies);
+			listSearchHistory = this.listSugestionMaker(cookies, this.SUGGEST_HISTORY);
 			sectionSearchHistory = (
 				<section className={styles.section}>
 					<div className={styles.heading}>Seach History</div>
@@ -86,8 +110,8 @@ class Search extends Component {
 
 		let sectionRelatedCategory = null;
 		let listRelatedCategory = null;
-		if (this.props.relatedKeyword) {
-			listRelatedCategory = this.listSugestionMaker(this.props.relatedKeyword);
+		if (this.props.relatedCategory) {
+			listRelatedCategory = this.listSugestionMaker(this.props.relatedCategory, this.SUGGEST_CATEGORY);
 			sectionRelatedCategory = (
 				<section className={styles.section}>
 					<div className={styles.heading}>Related Categories</div>
@@ -101,7 +125,7 @@ class Search extends Component {
 		let sectionRelatedKeyword = null;
 		let listRelatedKeyword = null;
 		if (this.props.relatedKeyword) {
-			listRelatedKeyword = this.listSugestionMaker(this.props.relatedKeyword);
+			listRelatedKeyword = this.listSugestionMaker(this.props.relatedKeyword, this.SUGGEST_KEYWORD);
 			sectionRelatedKeyword = (
 				<section className={styles.section}>
 					<div className={styles.heading}>Related Keywords</div>
@@ -115,7 +139,7 @@ class Search extends Component {
 		let sectionRelatedHastag = null;
 		let listRelatedHastag = null;
 		if (this.props.relatedHastag) {
-			listRelatedHastag = this.listSugestionMaker(this.props.relatedHastag);
+			listRelatedHastag = this.listSugestionMaker(this.props.relatedHastag, this.SUGGEST_HASTAG);
 			sectionRelatedHastag = (
 				<section className={styles.section}>
 					<div className={styles.heading}>Related Hastag</div>
