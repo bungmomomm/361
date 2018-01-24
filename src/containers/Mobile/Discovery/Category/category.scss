@@ -3,6 +3,11 @@
 
 .list{
     margin: rem(10px) rem(10px) 0px rem(10px);
+    display: flex;
+    position: relative;
+    img{
+        width: 100%;
+    }
 }
 
 .label{

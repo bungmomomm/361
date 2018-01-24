@@ -4,7 +4,7 @@ import styles from './header.scss';
 import Svg from '../Svg';
 import Badge from '../Badge';
 import Search from './search';
-import Lovelist from './lovelist';
+import Modal from './modal';
 import { withRouter, Link } from 'react-router-dom';
 
 const Header = props => {
@@ -30,6 +30,6 @@ const Header = props => {
 };
 
 Header.Search = Search;
-Header.Lovelist = Lovelist;
+Header.Modal = Modal;
 
 export default withRouter(Header);

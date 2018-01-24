@@ -4,6 +4,9 @@
 .container{
 	margin-bottom: rem(10px);
 	width: 100%;
+	img{
+		width: 100%;
+	}
 }
 
 .action{
@@ -44,6 +47,19 @@
 		padding: 0px;
 		text-align: left;
 		padding-right: rem(10px);
+	}
+}
+
+.small{
+	width: 33.333%;
+	position: relative;
+	margin: 0px;
+	border: 1px solid #fff;
+	button{
+		position: absolute;
+		bottom: rem(10px);
+		width: 70%;
+		left: 15%;
 	}
 }
 

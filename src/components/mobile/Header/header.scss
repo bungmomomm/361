@@ -43,6 +43,15 @@
 		color: color(--primary);
 		letter-spacing: 0.5px;
 	}
+	a{
+		color: color(--primary);
+		font-family: font-family('lato-bold');
+		font-size: map-get($font-size, --normal);
+		letter-spacing: 1px;
+		text-align: center;
+		text-decoration: none;
+		display: inline-flex;
+	}
 }
 
 .search{
@@ -51,13 +60,4 @@
 	input{
 		text-align: left;
 	}
-}
-
-.cancelButton{
-	color: color(--primary);
-	font-family: font-family('lato-bold');
-	font-size: map-get($font-size, --normal);
-	letter-spacing: 1px;
-	text-align: center;
-	text-decoration: none;
 }

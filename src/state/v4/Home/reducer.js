@@ -6,7 +6,7 @@ const initialState = {
 	segmen: [
 		{
 			id: 1,
-			Title: 'Wanita'
+			title: 'Wanita'
 		}
 	],
 	totalLovelist: {

@@ -12,6 +12,8 @@ import Image from './Image';
 import Card from './Card';
 import Notification from './Notification';
 import Carousel from './Carousel';
+import List from './List';
+import Divider from './Divider';
 
 export default {
 	Header,
@@ -28,4 +30,6 @@ export default {
 	Card,
 	Notification,
 	Carousel,
+	List,
+	Divider
 };
