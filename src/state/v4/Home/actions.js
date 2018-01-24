@@ -1,5 +1,5 @@
 import { request } from '@/utils';
-import { initResponse, homeData, totalLove, totalBag, newArrival, bestSeller } from './reducer';
+import { initResponse, homeData, totalLove, totalBag, newArrival, bestSeller, recommended, recentlyViewed } from './reducer';
 
 const initAction = (token) => (dispatch) => {
 	const url = `${process.env.MICROSERVICES_URL}init?platform=mobilesite&version=1.22.0`;
@@ -52,7 +52,7 @@ const mainAction = (token) => (dispatch) => {
 
 const newArrivalAction = (token) => (dispatch) => {
 	const url = `${process.env.MICROSERVICES_URL}newarrival?page=1&per_page=3`;
-	
+
 	return request({
 		token,
 		path: url,
@@ -63,6 +63,39 @@ const newArrivalAction = (token) => (dispatch) => {
 			newArrivalProducts: response.data.data.products
 		};
 		dispatch(newArrival(data));
+	});
+};
+
+const recommendedAction = (token) => (dispatch) => {
+	const url = `${process.env.MICROSERVICES_URL}recommended?page=1&per_page=3`;
+
+	return request({
+		token,
+		path: url,
+		method: 'GET',
+		fullpath: true
+	}).then(response => {
+		const data = {
+			recommendedProducts: response.data.data.products
+		};
+		dispatch(recommended(data));
+	});
+};
+
+
+const recentlyViewedAction = (token) => (dispatch) => {
+	const url = `${process.env.MICROSERVICES_URL}recentlyviewed?page=1&per_page=3`;
+
+	return request({
+		token,
+		path: url,
+		method: 'GET',
+		fullpath: true
+	}).then(response => {
+		const data = {
+			recentlyViewedProducts: response.data.data.products
+		};
+		dispatch(recentlyViewed(data));
 	});
 };
 
@@ -90,4 +123,6 @@ export default {
 	cartAction,
 	newArrivalAction,
 	bestSellerAction,
+	recommendedAction,
+	recentlyViewedAction
 };

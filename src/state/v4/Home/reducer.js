@@ -26,15 +26,19 @@ const initialState = {
 	},
 	newArrivalProducts: {},
 	bestSellerProducts: {},
+	recommendedProducts: {},
+	recentlyViewedProducts: {},
 };
 
-const { initResponse, totalBag, homeData, totalLove, newArrival, bestSeller } = createActions(
+const { initResponse, totalBag, homeData, totalLove, newArrival, bestSeller, recommended, recentlyViewed } = createActions(
 	'INIT_RESPONSE',
 	'TOTAL_BAG ',
 	'HOME_DATA',
 	'TOTAL_LOVE',
 	'NEW_ARRIVAL',
 	'BEST_SELLER',
+	'RECOMMENDED',
+	'RECENTLY_VIEWED'
 );
 
 const reducer = handleActions({
@@ -51,7 +55,7 @@ const reducer = handleActions({
 		};
 	},
 	[homeData](state, { payload: { mainData } }) {
-		return { 
+		return {
 			...state,
 			mainData
 		};
@@ -80,14 +84,28 @@ const reducer = handleActions({
 			bestSellerProducts
 		};
 	},
+	[recommended](state, { payload: { recommendedProducts } }) {
+		return {
+			...state,
+			recommendedProducts
+		};
+	},
+	[recentlyViewed](state, { payload: { recentlyViewedProducts } }) {
+		return {
+			...state,
+			recentlyViewedProducts
+		};
+	}
 }, initialState);
 
 export default {
-	reducer, 
-	initResponse, 
-	totalBag, 
-	homeData, 
+	reducer,
+	initResponse,
+	totalBag,
+	homeData,
 	totalLove,
 	newArrival,
 	bestSeller,
+	recommended,
+	recentlyViewed
 };
