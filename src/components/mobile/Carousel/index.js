@@ -80,17 +80,13 @@ class NukeCarousel extends PureComponent {
 			className
 		);
 		
-		if (children.length > 0) {
-			return (
-				<div>
-					<Carousel decorators={Decorators} dragging ref={(n) => { this.node = n; }} className={createClassName} {...props}>
-						{children}
-					</Carousel>
-				</div>
-			);
-		}
-
-		return null;
+		return (
+			<div>
+				<Carousel decorators={Decorators} dragging ref={(n) => { this.node = n; }} className={createClassName} {...props}>
+					{children}
+				</Carousel>
+			</div>
+		);
 
 		
 	}
