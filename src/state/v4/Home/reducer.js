@@ -9,11 +9,11 @@ const initialState = {
 			Title: 'Wanita'
 		}
 	],
-	totalLovelist: {
-		total: 0
-	},
-	totalCart: {
-		total: 0
+	activeSegment: 1,
+	allSegmentData: {
+		woman: {},
+		man: {},
+		kids: {}
 	},
 	mainData: {
 		hashtag: {},
@@ -32,11 +32,11 @@ const initialState = {
 	}
 };
 
-const { initResponse, totalBag, homeData, totalLove, promoRecommendation } = createActions(
+const { initResponse, homeData, homepageData, promoRecommendation, segmentActive } = createActions(
 	'INIT_RESPONSE',
-	'TOTAL_BAG ',
 	'HOME_DATA',
-	'TOTAL_LOVE',
+	'HOMEPAGE_DATA',
+	'SEGMENT_ACTIVE',
 	'PROMO_RECOMMENDATION'
 );
 
@@ -47,28 +47,25 @@ const reducer = handleActions({
 			segmen
 		};
 	},
-	[totalBag](state, { payload: { totalCart } }) {
-		return {
-			...state,
-			totalCart
-		};
-	},
 	[homeData](state, { payload: { mainData } }) {
 		return {
 			...state,
 			mainData
 		};
 	},
-	[totalLove](state, { payload: { totalLovelist } }) {
+	[homepageData](state, { payload: { allSegmentData } }) {
 		return {
 			...state,
-			totalLovelist
+			allSegmentData: {
+				...state.allSegmentData,
+				...allSegmentData
+			}
 		};
 	},
-	[totalLove](state, { payload: { totalLovelist } }) {
+	[segmentActive](state, { payload: { activeSegment } }) {
 		return {
 			...state,
-			totalLovelist
+			activeSegment
 		};
 	},
 	[promoRecommendation](state, { payload: { promoRecommendationData } }) {
@@ -82,8 +79,8 @@ const reducer = handleActions({
 export default {
 	reducer,
 	initResponse,
-	totalBag,
 	homeData,
-	totalLove,
+	homepageData,
+	segmentActive,
 	promoRecommendation
 };

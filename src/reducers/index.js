@@ -9,7 +9,10 @@ import { reducer as user } from '@/state/User/';
 import { reducer as global } from '@/state/Global';
 import { reducer as users } from '@/state/v4/User';
 import { reducer as home } from '@/state/v4/Home';
+import { reducer as search } from '@/state/v4/Search';
 import { reducer as lovelist } from '@/state/v4/Lovelist';
+import { reducer as shared } from '@/state/v4/Shared';
+import { reducer as category } from '@/state/v4/Category';
 
 export default combineReducers({
 	...global,
@@ -22,6 +25,9 @@ export default combineReducers({
 	user,
 	global,
 	home,
+	search,
 	lovelist,
-	users
+	users,
+	shared,
+	category
 });

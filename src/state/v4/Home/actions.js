@@ -1,5 +1,6 @@
 import { request } from '@/utils';
-import { initResponse, homeData, totalLove, totalBag, promoRecommendation } from './reducer';
+import { initResponse, homeData, homepageData, segmentActive, promoRecommendation } from './reducer';
+import { forEverBanner } from '@/state/v4/Shared/reducer';
 
 const initAction = (token) => (dispatch) => {
 	const url = `${process.env.MICROSERVICES_URL}init?platform=mobilesite&version=1.22.0`;
@@ -10,32 +11,15 @@ const initAction = (token) => (dispatch) => {
 		fullpath: true
 	}).then(response => {
 		const segment = response.data.data.find(e => e.type === 'segment');
+		const foreverBanner = response.data.data.find(e => e.type === 'forever_banner');
+		dispatch(forEverBanner({ foreverBanner: foreverBanner.data }));
 		dispatch(initResponse({ segmen: segment.data }));
 	});
 };
 
-
-const promoRecommendationAction = (token) => (dispatch) => {
-	const url = `${process.env.MICROSERVICES_URL}recommendation?segment_id=1`;
-	return request({
-		token,
-		path: url,
-		method: 'GET',
-		fullpath: true
-	}).then(response => {
-		const promoRecommendationData = {
-			bestSellerProducts: response.data.data.find(e => e.type === 'bestseller').data,
-			newArrivalProducts: response.data.data.find(e => e.type === 'newarrival').data,
-			recommendedProducts: response.data.data.find(e => e.type === 'recommended').data,
-			recentlyViewedProducts: response.data.data.find(e => e.type === 'recentlyviewed').data
-		};
-
-		dispatch(promoRecommendation({ promoRecommendationData }));
-	});
-};
-
-const mainAction = (token) => (dispatch) => {
-	const url = `${process.env.MICROSERVICES_URL}mainpromo?segment_id=1`;
+const mainAction = (token, activeSegment = 1) => (dispatch) => {
+	console.log(activeSegment);
+	const url = `${process.env.MICROSERVICES_URL}mainpromo?segment_id=${activeSegment}`;
 	return request({
 		token,
 		path: url,
@@ -51,31 +35,37 @@ const mainAction = (token) => (dispatch) => {
 			mozaic: response.data.data.find(e => e.type === 'mozaic').data,
 			featuredBrand: response.data.data.find(e => e.type === 'featured_brand').data
 		};
+		const segment = activeSegment === 1 ? 'woman' : (activeSegment === 2 ? 'man' : 'kids');
+		const allSegmentData = {};
+		allSegmentData[segment] = mainData;
+
 		dispatch(homeData({ mainData }));
+		dispatch(segmentActive({ activeSegment }));
+		dispatch(homepageData({ allSegmentData }));
 	});
 };
 
-const lovelistAction = (total = 0) => (dispatch) => {
-	dispatch(totalLove({ totalLovelist: total }));
-};
+const promoRecommendationAction = (token) => (dispatch) => {
+		const url = `${process.env.MICROSERVICES_URL}recommendation?segment_id=1`;
+		return request({
+			token,
+			path: url,
+			method: 'GET',
+			fullpath: true
+		}).then(response => {
+			const promoRecommendationData = {
+				bestSellerProducts: response.data.data.find(e => e.type === 'bestseller').data,
+				newArrivalProducts: response.data.data.find(e => e.type === 'newarrival').data,
+				recommendedProducts: response.data.data.find(e => e.type === 'recommended').data,
+				recentlyViewedProducts: response.data.data.find(e => e.type === 'recentlyviewed').data
+			};
 
-const cartAction = (token) => (dispatch) => {
-	const url = `${process.env.MICROSERVICES_URL}cart/total`;
-	return request({
-		token,
-		path: url,
-		method: 'GET',
-		fullpath: true
-	}).then(response => {
-		const total = response.data.data;
-		dispatch(totalBag({ totalCart: total }));
-	});
+			dispatch(promoRecommendation({ promoRecommendationData }));
+		});
 };
 
 export default {
 	initAction,
 	mainAction,
-	lovelistAction,
-	cartAction,
 	promoRecommendationAction
 };

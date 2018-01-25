@@ -2,40 +2,10 @@ import { request } from '@/utils';
 import {
 	countLovelist,
 	loveListItems,
-	activeUser,
 	lovelistPdp,
 	addItem,
 	removeItem
 } from './reducer';
-
-/**
- * get total number of user's lovelist
- * @param {*} token 
- * @param {*} userId 
- */
-const countLoveList = (token, userId) => (dispatch) => {
-	const url = `${process.env.MICROSERVICES_URL}total/bycustomer`;
-
-	// send request if only has user logged in
-	if (userId) {
-		return request({
-			token,
-			path: url,
-			method: 'GET',
-			fullpath: true
-		}).then(response => {
-			const total = response.data.data.total || 0;
-			// dispatching total lovelist of logged user
-			dispatch(countLovelist({ count: total }));
-
-			// dispatching of active user
-			const user = { loggedIn: true };
-			dispatch(activeUser({ user }));
-		});
-	}
-
-	return false;
-};
 
 /**
  * fetchs lovelist list into redux lovelist items format
@@ -142,7 +112,6 @@ const countTotalPdpLovelist = (token, variantId) => (dispatch) => {
 };
 
 export default {
-	countLoveList,
 	getList,
 	addToLovelist,
 	removeFromLovelist,
