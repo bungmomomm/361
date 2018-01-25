@@ -38,7 +38,7 @@ const getList = (token, userId) => (dispatch) => {
 		const items = fetchItems(response.data);
 		// dispatching total lovelist of logged user
 		dispatch(loveListItems({ items }));
-		dispatch(countLovelist({ count: items.lenght }));
+		dispatch(countLovelist({ count: items.length }));
 	});
 };
 
