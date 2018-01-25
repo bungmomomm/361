@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
+import _ from 'lodash';
 import { actions } from '@/state/v4/Shared';
+import { actions as users } from '@/state/v4/User';
+import { getSessionDomain } from '@/utils';
 
 const sharedAction = WrappedComponent => {
 	class SharedAction extends Component {
@@ -24,6 +27,27 @@ const sharedAction = WrappedComponent => {
 
 		componentDidMount() {
 			this.constructor.initApp(this.userCookies, this.props.dispatch);
+			this.loginAnonymouse();
+		}
+
+		setUserCookie(token) {
+			const currentDate = new Date();
+			currentDate.setDate(currentDate.getDate() + (2 * 365));
+			this.props.cookies.set('user.exp', Number(token.expires_in), { domain: getSessionDomain(), expires: currentDate });
+			this.props.cookies.set('user.rf.token', token.refresh_token, { domain: getSessionDomain(), expires: currentDate });
+			this.props.cookies.set('user.token', token.token, { domain: getSessionDomain(), expires: currentDate });
+		}
+
+		async loginAnonymouse() {
+			if (_.isEmpty(this.userCookies) || _.isEmpty(this.userRFCookies)) {
+				try {
+					const response = await this.props.dispatch(new users.userAnonymous());
+					this.setUserCookie(response.token);
+				} catch (error) {
+					// @TODO add 
+					console.log('errr', error);
+				}
+			}
 		}
 
 		render() {

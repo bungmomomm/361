@@ -5,7 +5,7 @@ const actions = createActions({
 	USER_LOGIN_FAIL: (error) => ({ login: { error } }),
 	USER_LOGIN_SUCCESS: (userProfile) => ({ email: undefined, password: undefined, userProfile }),
 	USER_ANONYMOUS: undefined,
-	USER_LOGIN_ANONYMOUS_SUCCESS: (userProfile) => ({ userProfile }),
+	USER_ANONYMOUS_SUCCESS: (userProfile) => ({ userProfile }),
 	USER_NAME_CHANGE: (email) => ({ email }),
 	USER_REGISTER: undefined,
 	USER_REGISTER_FAIL: (error) => ({ register: { error } }),
@@ -46,7 +46,7 @@ const reducer = handleActions({
 	},
 	[actions.userLoginFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
 	[actions.userAnonymous]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
-	[actions.userLoginAnonymousSuccess](state, action) {
+	[actions.userAnonymousSuccess](state, action) {
 		return {
 			...state,
 			userprofile: action.payload.userProfile.data.info,

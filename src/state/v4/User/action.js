@@ -38,7 +38,7 @@ const userLogin = (token, email, password) => async dispatch => {
 		const response = await request({
 			token,
 			method: 'POST',
-			path: 'auth/login',
+			path: `${process.env.MICROSERVICES_URL}auth/login`,
 			fullpath: true,
 			body: {
 				client_id: getClientID(),
@@ -67,13 +67,13 @@ const userLogin = (token, email, password) => async dispatch => {
 	}
 };
 
-const userAnonymousLogin = (token) => async dispatch => {
+const userAnonymous = (token) => async dispatch => {
 	dispatch(actions.userAnonymous());
 	try {
 		const response = await request({
 			token,
 			method: 'POST',
-			path: 'auth/anonymouslogin',
+			path: `${process.env.MICROSERVICES_URL}auth/anonymouslogin`,
 			fullpath: true,
 			body: {
 				client_id: getClientID(),
@@ -83,7 +83,7 @@ const userAnonymousLogin = (token) => async dispatch => {
 			}
 		});
 		if (isLoginSuccess(response)) {
-			dispatch(actions.userLoginAnonymousSuccess(response.data));
+			dispatch(actions.userAnonymousSuccess(response.data));
 			return Promise.resolve({
 				userprofile: response.data.data.info,
 				token: {
@@ -111,7 +111,7 @@ const userOtp = (token, phone) => async dispatch => {
 	try {
 		const response = await request({
 			token,
-			path: 'auth/otp/send',
+			path: `${process.env.MICROSERVICES_URL}auth/otp/send`,
 			method: 'POST',
 			body: {
 				hp_email: phone,
@@ -134,7 +134,7 @@ const userOtpValidate = (token, phone, password, fullname, otp) => async dispatc
 	try {
 		const response = await request({
 			token,
-			path: 'auth/otp/validate',
+			path: `${process.env.MICROSERVICES_URL}auth/otp/validate`,
 			method: 'POST',
 			body: {
 				hp_email: phone,
@@ -163,7 +163,7 @@ const userRegister = (token, email, phone, password, fullname) => async dispatch
 	try {
 		const response = await request({
 			token,
-			path: 'auth/register',
+			path: `${process.env.MICROSERVICES_URL}auth/register`,
 			method: 'POST',
 			fullpath: true,
 			body: {
@@ -201,7 +201,7 @@ const userRegister = (token, email, phone, password, fullname) => async dispatch
 
 export default {
 	userLogin,
-	userAnonymousLogin,
+	userAnonymous,
 	userNameChange,
 	userRegister,
 	userOtpValidate
