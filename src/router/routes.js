@@ -13,6 +13,7 @@ import { isMobile } from '@/utils';
 
 const defRoute = loadable(() => import('@/containers/NotFound'));
 
+let Page404 = defRoute;
 let Home = defRoute;
 let Search = defRoute;
 let SearchNotFound = defRoute;
@@ -34,6 +35,7 @@ if (isMobile()) {
 	Home = loadable(() => import('@/containers/Mobile/Home'));
 
 	// Service Discovery
+	Page404 = loadable(() => import('@/containers/Mobile/404'));
 	Search = loadable(() => import('@/containers/Mobile/Discovery/Search'));
 	SearchNotFound = loadable(() => import('@/containers/Mobile/Discovery/SearchNotFound'));
 	Lovelist = loadable(() => import('@/containers/Mobile/Discovery/Lovelist'));
@@ -98,6 +100,11 @@ export default [
 	{
 		path: '/login',
 		component: UserLogin,
+		exact: true
+	},
+	{
+		path: '/*', // Page not found handling.
+		component: Page404,
 		exact: true
 	}
 ];

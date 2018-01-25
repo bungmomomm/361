@@ -85,7 +85,7 @@ class Search extends PureComponent {
 				const cookieType = (type === this.SUGGEST_HISTORY) ? list.type : type;
 				return (
 					<li key={Math.random()} >
-						<Link to={{ pathname: pathProd }} onClick={() => this.setCookieSearch(list.text, list.value, cookieType)}> {list.text} </Link>
+						<Link to={pathProd} onClick={() => this.setCookieSearch(list.text, list.value, cookieType)}> {list.text} </Link>
 					</li>);
 			})}
 		</div>);
