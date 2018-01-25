@@ -1,8 +1,8 @@
-import { actions, reducer } from './reducer';
-import action from './action';
+import { actions as method, reducer } from './reducer';
+import actions from './action';
 
 export default {
 	actions,
-	action,
+	action: method,
 	reducer
 };

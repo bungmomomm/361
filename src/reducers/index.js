@@ -13,6 +13,7 @@ import { reducer as discovery } from '@/state/v4/Discovery';
 import { reducer as search } from '@/state/v4/Search';
 import { reducer as lovelist } from '@/state/v4/Lovelist';
 import { reducer as shared } from '@/state/v4/Shared';
+import { reducer as category } from '@/state/v4/Category';
 
 export default combineReducers({
 	...global,
@@ -30,4 +31,5 @@ export default combineReducers({
 	lovelist,
 	users,
 	shared,
+	category
 });
