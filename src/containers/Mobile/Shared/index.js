@@ -6,15 +6,18 @@ import { getSessionDomain } from '@/utils';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 	class SharedAction extends Component {
-		static initApp(token, dispatch) {
-			dispatch(new actions.totalCartAction({
-				token: this.userCookies
+		static initApp(props) {
+			props.dispatch(new actions.totalCartAction({
+				token: props.userCookies
 			}));
 	
-			dispatch(new actions.totalLovelistAction({
-				token: this.userCookies
+			props.dispatch(new actions.totalLovelistAction({
+				token: props.userCookies
 			}));
-			doAfterAnonymousCall.apply(this, [dispatch]);
+
+			if (typeof doAfterAnonymousCall !== 'undefined') {
+				doAfterAnonymousCall.apply(this, [props]);
+			}
 		}
 
 		constructor(props) {
@@ -32,7 +35,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				this.loginAnonymous();
 			} else {
 				console.log('do');
-				this.constructor.initApp(this.userCookies, this.props.dispatch);
+				this.constructor.initApp(this.props);
 			}
 		}
 
@@ -44,7 +47,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			this.props.cookies.set('user.rf.token', token.refresh_token, { domain: getSessionDomain(), expires: currentDate });
 			this.props.cookies.set('user.token', token.token, { domain: getSessionDomain(), expires: currentDate });
 			console.log('anon do');
-			this.constructor.initApp(this.userCookies, this.props.dispatch);
+			this.constructor.initApp(this.props);
 		}
 
 		shouldLoginAnonymous() {
