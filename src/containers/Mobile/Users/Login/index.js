@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { action } from '@/state/v4/User';
-import { renderIf } from '@/utils';
-import { Header, Page, Navigation, Tabs, Button } from '@/components/mobile';
+import { getSessionDomain } from '@/utils';
+import { Header, Page, Navigation, Button, Input } from '@/components/mobile';
 
 
 class Login extends Component {
@@ -31,9 +31,17 @@ class Login extends Component {
 		}
 	}
 
+	onUserChange(e) {
+		console.log(e);
+		this.props.dispatch(new action.userNameChange(e));
+	}
+
 	setUserCookie(token) {
-		console.log(this.state);
-		console.log(token);
+		const currentDate = new Date();
+		currentDate.setDate(currentDate.getDate() + (2 * 365));
+		this.props.cookies.set('user.exp', Number(token.expires_in), { domain: getSessionDomain(), expires: currentDate });
+		this.props.cookies.set('user.rf.token', token.refresh_token, { domain: getSessionDomain(), expires: currentDate });
+		this.props.cookies.set('user.token', token.token, { domain: getSessionDomain(), expires: currentDate });
 	}
 
 	handlePick(current) {
@@ -52,23 +60,16 @@ class Login extends Component {
 		return (
 			<div style={this.props.style}>
 				<Page>
-					<Tabs
-						current={this.state.current}
-						variants={this.props.Tabs}
-						onPick={(e) => this.handlePick(e)}
-					/>
-					{renderIf(this.state.current === 'login')(
-						<div>
-							Login
-							{userinfo}
-							<Button color='primary' size='small' loading={this.props.isLoginLoading} onClick={(e) => this.onLogin(e)} >Login</Button>
-						</div>
-					)}
-					{renderIf(this.state.current === 'register')(
-						<div>
-							Register
-						</div>
-					)}
+					Login
+					{userinfo}
+					username
+					<Input value={this.props.users.username} onChange={(e) => this.onUserChange(e.target.value)} />
+					<Button color='primary' size='small' loading={this.props.isLoginLoading} onClick={(e) => this.onLogin(e)} >Login</Button>
+					<Button color='primary' size='small' loading={this.props.isLoginLoading} onClick={(e) => this.onUserChange('')} >remove keyword</Button>
+					<Button color='primary' size='small' loading={this.props.isRegisterLoading} onClick={(e) => this.onRegister(e)} >Register By Phone</Button>
+					<Button color='primary' size='small' loading={this.props.isRegisterLoading} onClick={(e) => this.onRegister(e)} >Register By Email</Button>
+					<Button color='primary' size='small' loading={this.props.isRegisterLoading} onClick={(e) => this.onRegister(e)} >Forgotpassword</Button>
+					<Button color='primary' size='small' loading={this.props.isRegisterLoading} onClick={(e) => this.onRegister(e)} >Logout</Button>
 				</Page>
 				<Header />
 				<Navigation />
@@ -78,24 +79,13 @@ class Login extends Component {
 
 Login.defaultProps = {
 	Home: 'hallo',
-	Data: 'akjsdaskdjasldjsaldjalskdj',
-	Tabs: [
-		{
-			id: 'login',
-			title: 'Login',
-			active: true
-		},
-		{
-			id: 'register',
-			title: 'Register'
-		}
-	]
+	Data: 'akjsdaskdjasldjsaldjalskdj'
 };
 
 const mapStateToProps = (state) => {
 	return {
 		...state,
-		isLoginLoading: !state.users.isLoading
+		isLoginLoading: state.users.isLoading
 	};
 };
 
