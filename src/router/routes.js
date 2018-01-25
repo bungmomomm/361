@@ -24,6 +24,7 @@ let Lovelist = defRoute;
 let Hashtags = defRoute;
 let HashtagsDetails = defRoute;
 let UserLogin = defRoute;
+let NewArrival = defRoute;
 
 if (isMobile()) {
 	/**
@@ -42,6 +43,7 @@ if (isMobile()) {
 	SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
 	BrandCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/BrandCategory'));
 	CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
+	NewArrival = loadable(() => import('@/containers/Mobile/Discovery/NewArrival'));
 
 	// Service Details
 	HashtagsDetails = loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'));
@@ -98,6 +100,11 @@ export default [
 	{
 		path: '/login',
 		component: UserLogin,
+		exact: true
+	},
+	{
+		path: '/newarrival',
+		component: NewArrival,
 		exact: true
 	}
 ];
