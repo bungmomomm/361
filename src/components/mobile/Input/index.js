@@ -53,7 +53,7 @@ class Input extends PureComponent {
 			iconRight,
 			...props,
 		} = this.props;
-		
+
 		const className = classNames(
 			styles.container,
 			status ? styles[status] : null,
