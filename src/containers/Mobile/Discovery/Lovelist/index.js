@@ -12,32 +12,52 @@ class Lovelist extends Component {
 		this.state = {
 			listTypeGrid: false,
 			listEmpty: true,
-			loggedIn: false
+			loggedIn: false,
+			products: []
 		};
+
+		this.getLovelistCardsContent = this.getLovelistCardsContent.bind(this);
 	}
 
 	componentWillMount() {
-		// const loginStatus = true;
-		const loginStatus = (this.props.user.user);
+		const loginStatus = true;
+		// const loginStatus = (this.props.user.user);
 		if (loginStatus) {
 			this.setState({ loggedIn: true });
-			const userId = 1;
-			this.props.dispatch(LoveListActionCreator.getList(this.userCookies, userId));
-		// this.props.distpach(new lovelistAction.getList(this.userCookies, this.props.user.user.id));
 		}
-		
+
 		if (this.props.lovelist.count > 0) {
 			this.setState({ listEmpty: false });
 		}
-
-		console.log('checking state on will mount: ', this.state);
 	}
 
 	componentDidMount() {
-		const userId = 1;
-		this.props.dispatch(LoveListActionCreator.getList(this.userCookies, userId));
-		// this.props.distpach(new lovelistAction.getList(this.userCookies, this.props.user.user.id));
-		console.log('checking state on didmount: ', this.state);
+		// fetching lovelist items
+		this.fetchLovelistItems();
+	}
+
+	getLovelistCardsContent() {
+		const { listTypeGrid } = this.state;
+		const content = this.state.products.map((product, idx) => {
+			return !listTypeGrid ? <Card.Lovelist key={idx} /> : <Card.LovelistGrid key={idx} />;
+		});
+
+		return <div className={styles.cardContainer}>{content}</div>;
+	}
+
+	fetchLovelistItems() {
+		// fetching data from server
+		const req = LoveListActionCreator.getLovelisItems(this.userCookies);
+		const { dispatch } = this.props;
+		req.then(response => {
+
+			this.setState({
+				listEmpty: false,
+				products: response.data.data.products
+			});
+
+			dispatch(LoveListActionCreator.getList(response.data.data));
+		});
 	}
 
 	render() {
@@ -96,15 +116,7 @@ class Lovelist extends Component {
 				</div>
 			));
 		}
-
-		return (renderLovelistPage(
-			<div className={styles.cardContainer}>
-				{!listTypeGrid ? <Card.Lovelist /> : <Card.LovelistGrid />}
-				{!listTypeGrid ? <Card.Lovelist /> : <Card.LovelistGrid />}
-				{!listTypeGrid ? <Card.Lovelist /> : <Card.LovelistGrid />}
-				{!listTypeGrid ? <Card.Lovelist /> : <Card.LovelistGrid />}
-			</div>
-		));
+		return (renderLovelistPage(this.getLovelistCardsContent()));
 	}
 }
 
