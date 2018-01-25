@@ -1,6 +1,7 @@
 @import '_variables.scss';
 @import '_mixins.scss';
-
+@import '_typography.scss';
+@import '_typography.scss';
 
 @include font-face('Helvetica-Roman', 'Helvetica');
 @include font-face('Helvetica-Medium', 'Helvetica');
@@ -32,7 +33,7 @@
     -webkit-text-size-adjust: 100%;
   }
   html, body{
-    font-family: font-family('Helvetica-Roman');
+    font-family: font-family('Lato-Regular');
     font-size: rem(14px);
     height: 100%;
     position: relative;
@@ -43,7 +44,7 @@
   }
 
   // GENERATE GLOBAL UTILITIES
-  
+
   @each $value in $color-list {
     .font-color#{nth($value, 1)} {
       color: nth($value, 2);
@@ -63,6 +64,37 @@
       font-family: font-family(nth($value, 2))
     }
   }
+  .font-small{
+	font-size: 10px;
+  }
+  .text-right{
+	text-align: right;
+  }
+  .text-center{
+	text-align: center;
+  }
+  .text-left{
+	text-align: left;
+  }
+  .pull-left{
+	float: left;
+  }
+  .pull-right{
+	float: right;
+  }
+  // https://getbootstrap.com/docs/4.0/utilities/display/
+  .d-none {
+	display: none !important;
+  }
+  .d-block {
+	display: block !important;
+  }
+  .d-inline-block {
+	display: inline-block !important;
+  }
+  .d-flex {
+	display: flex !important;
+  }
 
   .SVGInline{
     display: inline-flex;
@@ -70,7 +102,7 @@
 
   img{
     display: block;
-    width: 100%;
+    // width: 100%;
   }
 
   #root, article, div, footer, header, main, nav, section {
@@ -88,9 +120,6 @@
     display: block;
     flex: none;
   }
-  #root {
-    z-index: 0;
-  }
   #root, body, html {
       height: 100%;
   }
@@ -102,15 +131,35 @@
       // overflow: hidden;
     }
   }
-
-  .switch-wrapper{
-    > div{
-      transition: opacity 0.3s ease;
+  #root {
+    z-index: 0;
+      
+    .switch-wrapper{
+      > div{
+        transition: opacity 0.3s ease;
+      }
     }
-  }
 
-  .margin--medium{
-    margin-top: 15px;
-    margin-bottom: 15px;
+    .margin--medium{
+      margin-top: 15px;
+      margin-bottom: 15px;
+    }
+
+    .margin--none{
+    margin-top: 0px;
+    margin-bottom: 0px;
+    }
+    .margin--small{
+    margin-top: 5px;
+    margin-bottom: 5px;
+    }
+    .margin--medium{
+      margin-top: 15px;
+      margin-bottom: 15px;
+    }
+    .margin--large{
+      margin-top: 30px;
+      margin-bottom: 30px;
+    }
   }
 }

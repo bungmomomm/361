@@ -5,7 +5,7 @@ import styles from './navigation.scss';
 
 class Navigation extends PureComponent {
 	render() {
-		const { className, ...props } = this.props;
+		const { className, active, ...props } = this.props;
 
 		const createClassName = classNames(
 			styles.container,
@@ -20,26 +20,31 @@ class Navigation extends PureComponent {
 							to='/'
 							icon='ico_home.svg'
 							label='Home'
+							active={active === 'Home'}
 						/>
 						<Item
-							to='/'
+							to='/category'
 							icon='ico_categories.svg'
-							label='categories'
+							label='Categories'
+							active={active === 'Categories'}
 						/>
 						<Item
 							to='/'
 							icon='ico_cart.svg'
 							label='Shopping Bag'
+							active={active === 'Shopping Bag'}
 						/>
 						<Item
 							to='/'
 							icon='ico_promo.svg'
 							label='Promo'
+							active={active === 'Promo'}
 						/>
 						<Item
 							to='/'
 							icon='ico_user.svg'
 							label='Profile'
+							active={active === 'Profile'}
 						/>
 					</div>
 				</div>

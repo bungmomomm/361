@@ -53,14 +53,21 @@ const Decorators = [
 
 class NukeCarousel extends PureComponent {
 
-	componentDidMount() {
+	// componentDidMount() {
+	// 	this.updateDimentionCarousel();
+	// }
+
+	componentDidUpdate() {
 		this.updateDimentionCarousel();
+		
 	}
 	
 	updateDimentionCarousel() {
 		setTimeout(() => {
-			this.node.setDimensions();
-		}, 0);
+			if (this.node !== null) {
+				this.node.setDimensions();
+			}
+		}, 3000);
 	}
 
 	render() {
@@ -74,7 +81,7 @@ class NukeCarousel extends PureComponent {
 			styles.container,
 			className
 		);
-
+		
 		return (
 			<div>
 				<Carousel decorators={Decorators} dragging ref={(n) => { this.node = n; }} className={createClassName} {...props}>
@@ -82,6 +89,8 @@ class NukeCarousel extends PureComponent {
 				</Carousel>
 			</div>
 		);
+
+		
 	}
 }
 

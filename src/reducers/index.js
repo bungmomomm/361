@@ -7,9 +7,14 @@ import { reducer as cart } from '@/state/Cart/';
 import { reducer as payments } from '@/state/Payment/';
 import { reducer as user } from '@/state/User/';
 import { reducer as global } from '@/state/Global';
+import { reducer as users } from '@/state/v4/User';
 import { reducer as home } from '@/state/v4/Home';
 import { reducer as product } from '@/state/v4/Product';
 import { reducer as comments } from '@/state/v4/Comment';
+import { reducer as search } from '@/state/v4/Search';
+import { reducer as lovelist } from '@/state/v4/Lovelist';
+import { reducer as shared } from '@/state/v4/Shared';
+
 
 export default combineReducers({
 	...global,
@@ -23,5 +28,9 @@ export default combineReducers({
 	global,
 	home,
 	product,
-	comments
+	comments,
+	search,
+	lovelist,
+	users,
+	shared
 });

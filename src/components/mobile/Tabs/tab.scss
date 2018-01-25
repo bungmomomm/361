@@ -14,6 +14,7 @@
 	list-style: none;
 	justify-content: space-around;
 	align-content: center;
+	background: #fff;
 }
 
 .tab {
@@ -33,4 +34,27 @@
 	cursor: default;
 	border-bottom: 1px solid black;
 	color: black;
+}
+
+.segment{
+	li:not(:last-child) {
+		position: relative;
+		overflow-y: hidden;
+		font-family: font-family('Lato-Regular');
+		color: color(--primary);
+		font-size: 13px;
+		&:after{
+			content: '\2807';
+			font-size: 15px;
+			width: 5px;
+			height: 100%;
+			position: absolute;
+			right: 0px;
+			top: -1px;
+		}	
+	}
+	li:last-child{
+		padding: 0px rem(20px);
+		flex: none;
+	}
 }

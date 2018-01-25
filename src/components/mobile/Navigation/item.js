@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 import styles from './navigation.scss';
 import Svg from '../Svg';
@@ -13,10 +14,10 @@ class Item extends PureComponent {
 		);
 
 		return (
-			<a href={this.props.to} className={createClassName}>
+			<Link to={this.props.to} className={createClassName}>
 				<Svg src={this.props.icon} />
 				<span className={styles.label}>{this.props.label}</span>
-			</a>
+			</Link>
 		);
 	}
 }

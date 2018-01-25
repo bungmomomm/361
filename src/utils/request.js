@@ -53,7 +53,11 @@ const request = (props) => {
 	}
 	switch (props.method) {
 	case 'GET': {
-		return axios.get(url, { headers });
+		let params = {};
+		if (props.query) {
+			params = props.query;
+		}
+		return axios.get(url, { params, headers });
 	}
 	case 'DELETE': {
 		return axios.delete(url, { headers });

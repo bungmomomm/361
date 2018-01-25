@@ -9,28 +9,21 @@ const initialState = {
 			Title: 'Wanita'
 		}
 	],
-	totalLovelist: {
-		total: 0
-	},
-	totalCart: {
-		total: 0
-	},
 	mainData: {
 		hashtag: {},
 		featuredBanner: [],
-		middlebanner: [],
+		middleBanner: [],
 		bottomBanner1: [],
 		bottomBanner2: [],
 		featuredBrand: [],
-		mozaic: {}
+		mozaic: {},
 	}
 };
 
-const { initResponse, totalBag, homeData, totalLove } = createActions(
+const { initResponse, homeData } = createActions(
 	'INIT_RESPONSE',
-	'TOTAL_BAG',
 	'HOME_DATA',
-	'TOTAL_LOVE');
+);
 
 const reducer = handleActions({
 	[initResponse](state, { payload: { segmen } }) {
@@ -39,22 +32,10 @@ const reducer = handleActions({
 			segmen
 		};
 	},
-	[totalBag](state, { payload: { totalCart } }) {
-		return {
-			...state,
-			totalCart
-		};
-	},
 	[homeData](state, { payload: { mainData } }) {
 		return { 
 			...state,
 			mainData
-		};
-	},
-	[totalLove](state, { payload: { totalLovelist } }) {
-		return {
-			...state,
-			totalLovelist
 		};
 	}
 }, initialState);
@@ -62,7 +43,5 @@ const reducer = handleActions({
 export default {
 	reducer, 
 	initResponse, 
-	totalBag, 
 	homeData, 
-	totalLove
 };
