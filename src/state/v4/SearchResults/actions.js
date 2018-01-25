@@ -18,7 +18,6 @@ const initAction = (token, query) => (dispatch) => {
 			sorts: response.data.data.sorts,
 			products: response.data.data.products
 		};
-		console.log(searchData);
 		dispatch(initResponse({ searchParam, searchData }));
 	});
 };

@@ -104,6 +104,7 @@ export default [
 	},
 	{
 		path: '/products',
-		component: SearchResults
+		component: SearchResults,
+		exact: true
 	}
 ];
