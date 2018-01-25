@@ -20,9 +20,8 @@ const fetchItems = (data) => {
 };
 
 /**
- * gets user's lovelist list 
- * @param {*} token 
- * @param {*} userId 
+ * save user's lovelist list
+ * @param {*} itemsLovelist 
  */
 const getList = (itemsLovelist) => (dispatch) => {
 	// fetching response into lovelist redux items format
@@ -75,6 +74,10 @@ const removeFromLovelist = (token, userId, variantId) => (dispatch) => {
 	return false;
 };
 
+/**
+ * Gets user lovelist list from server
+ * @param {*} token 
+ */
 const getLovelisItems = (token) => {
 	const url = `${process.env.MICROSERVICES_URL}gets`;
 	return request({
