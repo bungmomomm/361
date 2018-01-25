@@ -36,18 +36,20 @@ class Search extends PureComponent {
 
 	urlBuilder(type, text, value) {
 		let pathProd = null;
+		const eText = encodeURIComponent(text);
+		const eVal = encodeURIComponent(value);
 		switch (type) {
 		case this.SUGGEST_KEYWORD || this.SUGGEST_HASTAG:
-			pathProd = `/products?category_id=&query=${value}`;
+			pathProd = `/products?category_id=&query=${eVal}`;
 			break;
 		case this.SUGGEST_HASTAG:
-			pathProd = `/products?category_id=&query=${value}`;
+			pathProd = `/products?category_id=&query=${eVal}`;
 			break;
 		case this.SUGGEST_CATEGORY:
-			pathProd = `/products?category_id=${value}&query=${text}`;
+			pathProd = `/products?category_id=${value}&query=${eText}`;
 			break;
 		default:
-			pathProd = '/';
+			pathProd = `/products?category_id=&query=${eVal}`;
 		}
 		return pathProd;
 	}
@@ -173,6 +175,7 @@ class Search extends PureComponent {
 					updatedKeywordHandler={this.searchKeywordUpdatedHandler}
 					onKeyPressHandler={this.enterSearchHandler}
 					value={this.state.keyword || ''}
+					back={this.props.history.goBack}
 				/>
 			</div>
 		);

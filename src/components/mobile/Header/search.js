@@ -2,7 +2,6 @@ import React from 'react';
 import Input from '../Input';
 import styles from './header.scss';
 import Svg from '../Svg';
-import { Link } from 'react-router-dom';
 
 const Search = props => {
 	const toEnd = (e) => {
@@ -29,7 +28,7 @@ const Search = props => {
 							value={props.value}
 						/>
 					</div>
-					<div className={styles.right}><Link className={styles.cancelButton} to='/'>BATAL</Link></div>
+					<div className={styles.right}><button onClick={props.back}>BATAL</button></div>
 				</div>
 			</div>
 		</nav>
