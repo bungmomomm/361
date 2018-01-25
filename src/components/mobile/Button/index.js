@@ -66,7 +66,7 @@ class Button extends PureComponent {
 
 Button.defaultProps = {
 	type: 'button',
-	size: 'medium',
+	size: '',
 	color: '',
 	wide: false,
 	inline: false,

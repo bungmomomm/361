@@ -14,6 +14,7 @@ import Notification from './Notification';
 import Carousel from './Carousel';
 import List from './List';
 import Divider from './Divider';
+import Slider from './Slider';
 
 export default {
 	Header,
@@ -31,5 +32,6 @@ export default {
 	Notification,
 	Carousel,
 	List,
-	Divider
+	Divider,
+	Slider
 };

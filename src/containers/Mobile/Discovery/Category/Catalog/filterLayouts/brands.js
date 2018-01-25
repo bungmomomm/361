@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import {
@@ -13,9 +12,9 @@ import {
 	Navigation
 } from '@/components/mobile';
 import C from '@/constants';
-import styles from './brandCategory.scss';
+import styles from './brands.scss';
 
-class BrandCategory extends Component {
+class Brands extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -35,7 +34,7 @@ class BrandCategory extends Component {
 	render() {
 		const HeaderPage = {
 			left: (
-				<Link to='/subcategory'>
+				<Link to='/catalogcategory'>
 					<Svg src='ico_arrow-back-left.svg' />
 				</Link>
 			),
@@ -88,4 +87,4 @@ class BrandCategory extends Component {
 }
 
 
-export default withCookies(BrandCategory);
+export default Brands;
