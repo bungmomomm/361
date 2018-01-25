@@ -39,30 +39,11 @@ class Home extends Component {
 		}));
 	}
 
-	static newArrival(token, dispatch) {
-		dispatch(new actions.newArrivalAction({
+	static promoRecommendation(token, dispatch) {
+		dispatch(new actions.promoRecommendationAction({
 			token: this.userCookies
 		}));
 	}
-
-	static bestSeller(token, dispatch) {
-		dispatch(new actions.bestSellerAction({
-			token: this.userCookies
-		}));
-	}
-
-	static recommended(token, dispatch) {
-		dispatch(new actions.recommendedAction({
-			token: this.userCookies
-		}));
-	}
-
-	static recentlyViewed(token, dispatch) {
-		dispatch(new actions.recentlyViewedAction({
-			token: this.userCookies
-		}));
-	}
-
 
 	constructor(props) {
 		super(props);
@@ -87,11 +68,7 @@ class Home extends Component {
 			total: this.props.lovelist.count
 		}));
 		this.constructor.cart(this.userCookies, this.props.dispatch);
-		this.constructor.newArrival(this.userCookies, this.props.dispatch);
-		this.constructor.bestSeller(this.userCookies, this.props.dispatch);
-		this.constructor.recommended(this.userCookies, this.props.dispatch);
-		this.constructor.recentlyViewed(this.userCookies, this.props.dispatch);
-
+		this.constructor.promoRecommendation(this.userCookies, this.props.dispatch);
 	}
 
 	handlePick(current) {
@@ -116,11 +93,11 @@ class Home extends Component {
 
 	renderNewArrival() {
 		const { home } = this.props;
-		if (home.newArrivalProducts.length > 0) {
+		if (home.promoRecommendationData.newArrivalProducts.length > 0) {
 			return (
 				<Grid split={3}>
 					{
-						home.newArrivalProducts.map(({ images, pricing }, e) => (
+						home.promoRecommendationData.newArrivalProducts.map(({ images, pricing }, e) => (
 							<div key={e}>
 								<Image lazyload alt='thumbnail' src={images.mobile} />
 								<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
@@ -136,11 +113,11 @@ class Home extends Component {
 
 	renderBestSeller() {
 		const { home } = this.props;
-		if (home.bestSellerProducts.length > 0) {
+		if (home.promoRecommendationData.bestSellerProducts.length > 0) {
 			return (
 				<Grid split={3}>
 					{
-						home.bestSellerProducts.map(({ images, pricing }, e) => (
+						home.promoRecommendationData.bestSellerProducts.map(({ images, pricing }, e) => (
 							<div key={e}>
 								<Image lazyload alt='thumbnail' src={images.mobile} />
 								<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
@@ -156,11 +133,11 @@ class Home extends Component {
 
 	renderRecommendation() {
 		const { home } = this.props;
-		if (home.recommendedProducts.length > 0) {
+		if (home.promoRecommendationData.recommendedProducts.length > 0) {
 			return (
 				<Grid split={3}>
 					{
-						home.recommendedProducts.map(({ images, pricing }, e) => (
+						home.promoRecommendationData.recommendedProducts.map(({ images, pricing }, e) => (
 							<div key={e}>
 								<Image lazyload alt='thumbnail' src={images.mobile} />
 								<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
@@ -176,11 +153,11 @@ class Home extends Component {
 
 	renderRecentlyViewed() {
 		const { home } = this.props;
-		if (home.recentlyViewedProducts.length > 0) {
+		if (home.promoRecommendationData.recentlyViewedProducts.length > 0) {
 			return (
 				<Grid split={3}>
 					{
-						home.recentlyViewedProducts.map(({ images, pricing }, e) => (
+						home.promoRecommendationData.recentlyViewedProducts.map(({ images, pricing }, e) => (
 							<div key={e}>
 								<Image lazyload alt='thumbnail' src={images.mobile} />
 								<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
@@ -313,10 +290,10 @@ class Home extends Component {
 
 					{/* {this.renderOOTD()} */}
 					{renderSectionHeader('New Arrival', { title: 'See all', url: 'http://www.google.com' })}
-					{this.renderNewArrival()}
+					{ this.renderNewArrival() }
 					{this.renderBottomBanner(1)}
 					{renderSectionHeader('Best Seller', { title: 'See all', url: 'http://www.google.com' })}
-					{this.renderBestSeller()}
+					{ this.renderBestSeller() }
 					{this.renderBottomBanner(2)}
 					{renderSectionHeader('Featured Brands', { title: 'See all', url: 'http://www.google.com' })}
 					{this.renderFeaturedBrands()}
