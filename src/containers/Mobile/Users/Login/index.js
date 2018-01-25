@@ -19,7 +19,7 @@ class Login extends Component {
 	}
 
 	componentDidMount() {
-		this.props.dispatch(new action.userAnonymousLogin());
+		this.props.dispatch(new action.userAnonymous());
 	}
 
 	async onLogin(e) {
