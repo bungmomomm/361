@@ -46,22 +46,22 @@ const mainAction = (token, activeSegment = 1) => (dispatch) => {
 };
 
 const promoRecommendationAction = (token) => (dispatch) => {
-		const url = `${process.env.MICROSERVICES_URL}recommendation?segment_id=1`;
-		return request({
-			token,
-			path: url,
-			method: 'GET',
-			fullpath: true
-		}).then(response => {
-			const promoRecommendationData = {
-				bestSellerProducts: response.data.data.find(e => e.type === 'bestseller').data,
-				newArrivalProducts: response.data.data.find(e => e.type === 'newarrival').data,
-				recommendedProducts: response.data.data.find(e => e.type === 'recommended').data,
-				recentlyViewedProducts: response.data.data.find(e => e.type === 'recentlyviewed').data
-			};
+	const url = `${process.env.MICROSERVICES_URL}recommendation?segment_id=1`;
+	return request({
+		token,
+		path: url,
+		method: 'GET',
+		fullpath: true
+	}).then(response => {
+		const promoRecommendationData = {
+			bestSellerProducts: response.data.data.find(e => e.type === 'bestseller').data,
+			newArrivalProducts: response.data.data.find(e => e.type === 'newarrival').data,
+			recommendedProducts: response.data.data.find(e => e.type === 'recommended').data,
+			recentlyViewedProducts: response.data.data.find(e => e.type === 'recentlyviewed').data
+		};
 
-			dispatch(promoRecommendation({ promoRecommendationData }));
-		});
+		dispatch(promoRecommendation({ promoRecommendationData }));
+	});
 };
 
 export default {
