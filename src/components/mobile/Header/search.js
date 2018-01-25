@@ -5,6 +5,12 @@ import Svg from '../Svg';
 import { Link } from 'react-router-dom';
 
 const Search = props => {
+	const toEnd = (e) => {
+		const val = e.target.value;
+		e.target.value = '';
+		e.target.value = val;
+	};
+
 	return (
 		<nav className={styles.container}>
 			<div className={styles.wrapper}>
@@ -12,13 +18,11 @@ const Search = props => {
 					<div className={styles.center}>
 						<Input
 							autoFocus
+							onFocus={toEnd}
 							iconLeft={<Svg src='ico_search.svg' />}
-							iconRight={
-								<button
-									onClick={props.updatedKeywordHandler}
-								>
-									<Svg src='ico_close-grey.svg' />
-								</button>}
+							iconRight={<button onClick={props.updatedKeywordHandler}>
+								<Svg src='ico_close-grey.svg' />
+							</button>}
 							placeholder='Cari produk, #hashtags, @seller'
 							onChange={props.updatedKeywordHandler}
 							onKeyPress={props.onKeyPressHandler}
