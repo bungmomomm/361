@@ -11,7 +11,7 @@ class Search extends PureComponent {
 		super(props);
 		this.props = props;
 		this.state = {
-			keyword: '', // this state for manipulating stateless search box input
+			keyword: this.props.keyword, // this state for manipulating stateless search box input
 			showHistory: true
 		};
 		this.searchListCookieName = 'user.search.list';
@@ -56,7 +56,7 @@ class Search extends PureComponent {
 		if (event.key === 'Enter') {
 			this.setCookieSearch(event.target.value, event.target.value);
 			const pathProd = `/products?category_id=&query=${event.target.value}`;
-			top.location.href = pathProd;
+			this.props.history.push(pathProd);
 		}
 	}
 
@@ -85,7 +85,7 @@ class Search extends PureComponent {
 				const cookieType = (type === this.SUGGEST_HISTORY) ? list.type : type;
 				return (
 					<li key={Math.random()} >
-						<Link to={{ pathname: pathProd }} onClick={() => this.setCookieSearch(list.text, list.value, cookieType)}> {list.text} </Link>
+						<Link to={pathProd} onClick={() => this.setCookieSearch(list.text, list.value, cookieType)}> {list.text} </Link>
 					</li>);
 			})}
 		</div>);
@@ -172,7 +172,7 @@ class Search extends PureComponent {
 				<Header.Search
 					updatedKeywordHandler={this.searchKeywordUpdatedHandler}
 					onKeyPressHandler={this.enterSearchHandler}
-					value={this.state.keyword}
+					value={this.state.keyword || ''}
 				/>
 			</div>
 		);

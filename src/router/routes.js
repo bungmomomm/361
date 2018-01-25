@@ -5,7 +5,7 @@ import { isMobile } from '@/utils';
 // const Page = loadable(() => import('@/containers/Page'));
 
 /**
- * cannot using like this 
+ * cannot using like this
  * const type = isMobile() ? 'Mobile' : 'Desktop';
  * const Home = loadable(() => import(`@/containers/${type}/Home`));
  * since genereated js file will mix dekstop & mobile
@@ -13,8 +13,10 @@ import { isMobile } from '@/utils';
 
 const defRoute = loadable(() => import('@/containers/NotFound'));
 
+let Page404 = defRoute;
 let Home = defRoute;
 let Search = defRoute;
+let SearchNotFound = defRoute;
 let Category = defRoute;
 let SubCategory = defRoute;
 let BrandCategory = defRoute;
@@ -31,9 +33,11 @@ if (isMobile()) {
 	import('@/styles/mobile');
 
 	Home = loadable(() => import('@/containers/Mobile/Home'));
-	
+
 	// Service Discovery
+	Page404 = loadable(() => import('@/containers/Mobile/404'));
 	Search = loadable(() => import('@/containers/Mobile/Discovery/Search'));
+	SearchNotFound = loadable(() => import('@/containers/Mobile/Discovery/SearchNotFound'));
 	Lovelist = loadable(() => import('@/containers/Mobile/Discovery/Lovelist'));
 	Hashtags = loadable(() => import('@/containers/Mobile/Discovery/Hashtags'));
 	Category = loadable(() => import('@/containers/Mobile/Discovery/Category'));
@@ -55,7 +59,6 @@ if (isMobile()) {
 }
 
 export default [
-
 	{
 		path: '/',
 		component: Home,
@@ -68,11 +71,16 @@ export default [
 	{
 		path: '/hashtags/details',
 		component: HashtagsDetails
-	}, 
+	},
 	{
 		path: '/search',
 		component: Search
-	}, {
+	},
+	{
+		path: '/searchnotfound', // This path only for displaying search not found SearchNotFound Container
+		component: SearchNotFound
+	},
+	{
 		path: '/category',
 		component: Category,
 	}, {
@@ -92,6 +100,11 @@ export default [
 	{
 		path: '/login',
 		component: UserLogin,
+		exact: true
+	},
+	{
+		path: '/*', // Page not found handling.
+		component: Page404,
 		exact: true
 	}
 ];
