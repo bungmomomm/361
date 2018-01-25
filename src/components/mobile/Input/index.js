@@ -53,7 +53,7 @@ class Input extends PureComponent {
 			iconRight,
 			...props,
 		} = this.props;
-		
+
 		const className = classNames(
 			styles.container,
 			status ? styles[status] : null,
@@ -92,6 +92,7 @@ class Input extends PureComponent {
 						{...props}
 						className={CreateinputClassName}
 						ref={this.setInput}
+						value={value || ''}
 					/>
 				</div>
 				{this.renderHint()}

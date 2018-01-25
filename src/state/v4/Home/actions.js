@@ -1,5 +1,6 @@
 import { request } from '@/utils';
-import { initResponse, homeData, totalLove, totalBag } from './reducer';
+import { initResponse, homeData } from './reducer';
+import { forEverBanner } from '@/state/v4/Shared/reducer';
 
 const initAction = (token) => (dispatch) => {
 	const url = `${process.env.MICROSERVICES_URL}init?platform=mobilesite&version=1.22.0`;
@@ -10,6 +11,8 @@ const initAction = (token) => (dispatch) => {
 		fullpath: true
 	}).then(response => {
 		const segment = response.data.data.find(e => e.type === 'segment');
+		const foreverBanner = response.data.data.find(e => e.type === 'forever_banner');
+		dispatch(forEverBanner({ foreverBanner: foreverBanner.data }));
 		dispatch(initResponse({ segmen: segment.data }));
 	});
 };
@@ -35,35 +38,7 @@ const mainAction = (token) => (dispatch) => {
 	});
 };
 
-const lovelistAction = (token) => (dispatch) => {
-	const url = `${process.env.MICROSERVICES_URL}total/bycustomer`;
-	return request({
-		token,
-		path: url,
-		method: 'GET',
-		fullpath: true
-	}).then(response => {
-		const total = response.data.data;
-		dispatch(totalLove({ totalLovelist: total }));
-	});
-};
-
-const cartAction = (token) => (dispatch) => {
-	const url = `${process.env.MICROSERVICES_URL}cart/total`;
-	return request({
-		token,
-		path: url,
-		method: 'GET',
-		fullpath: true
-	}).then(response => {
-		const total = response.data.data;
-		dispatch(totalBag({ totalCart: total }));
-	});
-};
-
 export default {
 	initAction,
-	mainAction,
-	lovelistAction,
-	cartAction,
+	mainAction
 };
