@@ -22,17 +22,19 @@ class SearchNotFound extends PureComponent {
 				<Page>
 					<div className={styles.container} >
 						<div style={inlineStyle}>[image kantong kosong]</div>
-						<div style={inlineStyle}>No result found</div>
+						<div style={inlineStyle}>
+							{'Mohon maaf hasil pencarian untuk "'}{this.props.keyword}
+							{ '" tidak dapat ditemukan. Silakan periksa pengejaan kata, atau menggunakan kata kunci lain!'}
+						</div>
 						<div><button><Link to={{ pathname: '/search' }}>Cari kembali</Link></button></div>
 						<div style={inlineStyle}>[Rich Relevant Recommendation section]</div>
 						<div style={inlineStyle}>[Footer]</div>
 					</div>
 				</Page>
-				<Link to={{ pathname: '/search' }}>
-					<Header.SearchResult
-						value={this.props.keyword}
-					/>
-				</Link>
+				<Header.SearchResult
+					value={this.props.keyword}
+					back={this.props.history.goBack}
+				/>
 				<Navigation active='Home' />
 			</div>
 		);

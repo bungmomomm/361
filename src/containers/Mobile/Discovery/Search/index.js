@@ -57,7 +57,6 @@ class Search extends PureComponent {
 			this.setCookieSearch(event.target.value, event.target.value);
 			const pathProd = `/products?category_id=&query=${event.target.value}`;
 			this.props.history.push(pathProd);
-			// top.location.href = pathProd;
 		}
 	}
 
@@ -173,7 +172,7 @@ class Search extends PureComponent {
 				<Header.Search
 					updatedKeywordHandler={this.searchKeywordUpdatedHandler}
 					onKeyPressHandler={this.enterSearchHandler}
-					value={this.state.keyword}
+					value={this.state.keyword || ''}
 				/>
 			</div>
 		);

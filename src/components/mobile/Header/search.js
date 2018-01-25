@@ -20,12 +20,9 @@ const Search = props => {
 							autoFocus
 							onFocus={toEnd}
 							iconLeft={<Svg src='ico_search.svg' />}
-							iconRight={
-								<button
-									onClick={props.updatedKeywordHandler}
-								>
-									<Svg src='ico_close-grey.svg' />
-								</button>}
+							iconRight={<button onClick={props.updatedKeywordHandler}>
+								<Svg src='ico_close-grey.svg' />
+							</button>}
 							placeholder='Cari produk, #hashtags, @seller'
 							onChange={props.updatedKeywordHandler}
 							onKeyPress={props.onKeyPressHandler}
