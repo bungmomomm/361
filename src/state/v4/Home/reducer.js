@@ -24,21 +24,20 @@ const initialState = {
 		featuredBrand: [],
 		mozaic: {},
 	},
-	newArrivalProducts: {},
-	bestSellerProducts: {},
-	recommendedProducts: {},
-	recentlyViewedProducts: {},
+	promoRecommendationData: {
+		newArrivalProducts: [],
+		bestSellerProducts: [],
+		recommendedProducts: [],
+		recentlyViewedProducts: []
+	}
 };
 
-const { initResponse, totalBag, homeData, totalLove, newArrival, bestSeller, recommended, recentlyViewed } = createActions(
+const { initResponse, totalBag, homeData, totalLove, promoRecommendation } = createActions(
 	'INIT_RESPONSE',
 	'TOTAL_BAG ',
 	'HOME_DATA',
 	'TOTAL_LOVE',
-	'NEW_ARRIVAL',
-	'BEST_SELLER',
-	'RECOMMENDED',
-	'RECENTLY_VIEWED'
+	'PROMO_RECOMMENDATION'
 );
 
 const reducer = handleActions({
@@ -72,28 +71,10 @@ const reducer = handleActions({
 			totalLovelist
 		};
 	},
-	[newArrival](state, { payload: { newArrivalProducts } }) {
+	[promoRecommendation](state, { payload: { promoRecommendationData } }) {
 		return {
 			...state,
-			newArrivalProducts
-		};
-	},
-	[bestSeller](state, { payload: { bestSellerProducts } }) {
-		return {
-			...state,
-			bestSellerProducts
-		};
-	},
-	[recommended](state, { payload: { recommendedProducts } }) {
-		return {
-			...state,
-			recommendedProducts
-		};
-	},
-	[recentlyViewed](state, { payload: { recentlyViewedProducts } }) {
-		return {
-			...state,
-			recentlyViewedProducts
+			promoRecommendationData
 		};
 	}
 }, initialState);
@@ -104,8 +85,5 @@ export default {
 	totalBag,
 	homeData,
 	totalLove,
-	newArrival,
-	bestSeller,
-	recommended,
-	recentlyViewed
+	promoRecommendation
 };

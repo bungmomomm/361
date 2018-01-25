@@ -1,5 +1,5 @@
 import { request } from '@/utils';
-import { initResponse, homeData, totalLove, totalBag, newArrival, bestSeller, recommended, recentlyViewed } from './reducer';
+import { initResponse, homeData, totalLove, totalBag, promoRecommendation } from './reducer';
 
 const initAction = (token) => (dispatch) => {
 	const url = `${process.env.MICROSERVICES_URL}init?platform=mobilesite&version=1.22.0`;
@@ -14,18 +14,23 @@ const initAction = (token) => (dispatch) => {
 	});
 };
 
-const bestSellerAction = (token) => (dispatch) => {
-	const url = `${process.env.MICROSERVICES_URL}bestseller?page=1&per_page=3`;
+
+const promoRecommendationAction = (token) => (dispatch) => {
+	const url = `${process.env.MICROSERVICES_URL}recommendation?segment_id=1`;
 	return request({
 		token,
 		path: url,
 		method: 'GET',
 		fullpath: true
 	}).then(response => {
-		const data = {
-			bestSellerProducts: response.data.data.products
+		const promoRecommendationData = {
+			bestSellerProducts: response.data.data.find(e => e.type === 'bestseller').data,
+			newArrivalProducts: response.data.data.find(e => e.type === 'newarrival').data,
+			recommendedProducts: response.data.data.find(e => e.type === 'recommended').data,
+			recentlyViewedProducts: response.data.data.find(e => e.type === 'recentlyviewed').data
 		};
-		dispatch(bestSeller(data));
+
+		dispatch(promoRecommendation({ promoRecommendationData }));
 	});
 };
 
@@ -47,55 +52,6 @@ const mainAction = (token) => (dispatch) => {
 			featuredBrand: response.data.data.find(e => e.type === 'featured_brand').data
 		};
 		dispatch(homeData({ mainData }));
-	});
-};
-
-const newArrivalAction = (token) => (dispatch) => {
-	const url = `${process.env.MICROSERVICES_URL}newarrival?page=1&per_page=3`;
-
-	return request({
-		token,
-		path: url,
-		method: 'GET',
-		fullpath: true
-	}).then(response => {
-		const data = {
-			newArrivalProducts: response.data.data.products
-		};
-		dispatch(newArrival(data));
-	});
-};
-
-const recommendedAction = (token) => (dispatch) => {
-	const url = `${process.env.MICROSERVICES_URL}recommended?page=1&per_page=3`;
-
-	return request({
-		token,
-		path: url,
-		method: 'GET',
-		fullpath: true
-	}).then(response => {
-		const data = {
-			recommendedProducts: response.data.data.products
-		};
-		dispatch(recommended(data));
-	});
-};
-
-
-const recentlyViewedAction = (token) => (dispatch) => {
-	const url = `${process.env.MICROSERVICES_URL}recentlyviewed?page=1&per_page=3`;
-
-	return request({
-		token,
-		path: url,
-		method: 'GET',
-		fullpath: true
-	}).then(response => {
-		const data = {
-			recentlyViewedProducts: response.data.data.products
-		};
-		dispatch(recentlyViewed(data));
 	});
 };
 
@@ -121,8 +77,5 @@ export default {
 	mainAction,
 	lovelistAction,
 	cartAction,
-	newArrivalAction,
-	bestSellerAction,
-	recommendedAction,
-	recentlyViewedAction
+	promoRecommendationAction
 };
