@@ -21,6 +21,11 @@ class Home extends Component {
 		dispatch(new actions.mainAction(token, activeSegment));
 	}
 
+	static promoRecommendation(token, dispatch) {
+		dispatch(new actions.promoRecommendationAction({
+			token: this.userCookies
+		}));
+	}
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -39,12 +44,13 @@ class Home extends Component {
 
 	componentDidMount() {
 		this.initPage();
+		this.constructor.promoRecommendation(this.userCookies, this.props.dispatch);
 	}
 
 	handlePick(current) {
 		this.setState({ current });
 		this.initPage(current);
-		
+
 	}
 
 	initPage(activeSegment = 1) {
@@ -65,6 +71,86 @@ class Home extends Component {
 				</Carousel>
 			);
 		}
+		return null;
+	}
+
+	renderNewArrival() {
+		const { home } = this.props;
+		if (home.promoRecommendationData.newArrivalProducts.length > 0) {
+			return (
+				<Grid split={3}>
+					{
+						home.promoRecommendationData.newArrivalProducts.map(({ images, pricing }, e) => (
+							<div key={e}>
+								<Image lazyload alt='thumbnail' src={images.mobile} />
+								<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
+							</div>
+						))
+					}
+				</Grid>
+			);
+		}
+
+		return null;
+	}
+
+	renderBestSeller() {
+		const { home } = this.props;
+		if (home.promoRecommendationData.bestSellerProducts.length > 0) {
+			return (
+				<Grid split={3}>
+					{
+						home.promoRecommendationData.bestSellerProducts.map(({ images, pricing }, e) => (
+							<div key={e}>
+								<Image lazyload alt='thumbnail' src={images.mobile} />
+								<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
+							</div>
+						))
+					}
+				</Grid>
+			);
+		}
+
+		return null;
+	}
+
+	renderRecommendation() {
+		const { home } = this.props;
+		if (home.promoRecommendationData.recommendedProducts.length > 0) {
+			return (
+				<Grid split={3}>
+					{
+						home.promoRecommendationData.recommendedProducts.map(({ images, pricing }, e) => (
+							<div key={e}>
+								<Image lazyload alt='thumbnail' src={images.mobile} />
+								<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
+							</div>
+						))
+					}
+				</Grid>
+			);
+		}
+
+		return null;
+	}
+
+	renderRecentlyViewed() {
+		const { home } = this.props;
+		if (home.promoRecommendationData.recentlyViewedProducts.length > 0) {
+			return (
+				<Grid split={3}>
+					{
+						home.promoRecommendationData.recentlyViewedProducts.map(({ images, pricing }, e) => (
+							<div key={e}>
+								<Image lazyload alt='thumbnail' src={images.mobile} />
+								<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
+							</div>
+						))
+					}
+				</Grid>
+			);
+		}
+
 		return null;
 	}
 
@@ -186,42 +272,12 @@ class Home extends Component {
 					{this.renderHashtag()}
 
 					{/* {this.renderOOTD()} */}
-
 					{renderSectionHeader('New Arrival', { title: 'See all', url: 'http://www.google.com' })}
-					<Grid split={3}>
-						<div>
-							<Image local lazyload alt='thumbnail' src='temp/thumb-2-1.jpg' />
-							<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>Rp. 1.000.000</Button>
-						</div>
-						<div>
-							<Image local lazyload alt='thumbnail' src='temp/thumb-2-2.jpg' />
-							<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>Rp. 1.000.000</Button>
-						</div>
-						<div>
-							<Image local lazyload alt='thumbnail' src='temp/thumb-2-3.jpg' />
-							<Button className={styles.btnThumbnail} transparent color='primary' outline size='small'>Rp. 1.000.000</Button>
-						</div>
-					</Grid>
+					{ this.renderNewArrival() }
 					{this.renderBottomBanner(1)}
 					{renderSectionHeader('Best Seller', { title: 'See all', url: 'http://www.google.com' })}
-
-					<Grid split={3}>
-						<div>
-							<Image local lazyload alt='thumbnail' src='temp/thumb-2-1.jpg' />
-							<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>Rp. 1.000.000</Button>
-						</div>
-						<div>
-							<Image local lazyload alt='thumbnail' src='temp/thumb-2-2.jpg' />
-							<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>Rp. 1.000.000</Button>
-						</div>
-						<div>
-							<Image local lazyload alt='thumbnail' src='temp/thumb-2-3.jpg' />
-							<Button className={styles.btnThumbnail} transparent color='primary' outline size='small'>Rp. 1.000.000</Button>
-						</div>
-					</Grid>
-
+					{ this.renderBestSeller() }
 					{this.renderBottomBanner(2)}
-
 					{renderSectionHeader('Featured Brands', { title: 'See all', url: 'http://www.google.com' })}
 					{this.renderFeaturedBrands()}
 

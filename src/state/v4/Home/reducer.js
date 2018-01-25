@@ -23,14 +23,21 @@ const initialState = {
 		bottomBanner2: [],
 		featuredBrand: [],
 		mozaic: {},
+	},
+	promoRecommendationData: {
+		newArrivalProducts: [],
+		bestSellerProducts: [],
+		recommendedProducts: [],
+		recentlyViewedProducts: []
 	}
 };
 
-const { initResponse, homeData, homepageData, segmentActive } = createActions(
+const { initResponse, homeData, homepageData, promoRecommendation, segmentActive } = createActions(
 	'INIT_RESPONSE',
 	'HOME_DATA',
 	'HOMEPAGE_DATA',
-	'SEGMENT_ACTIVE'
+	'SEGMENT_ACTIVE',
+	'PROMO_RECOMMENDATION'
 );
 
 const reducer = handleActions({
@@ -41,14 +48,14 @@ const reducer = handleActions({
 		};
 	},
 	[homeData](state, { payload: { mainData } }) {
-		return { 
+		return {
 			...state,
 			mainData
 		};
 	},
 	[homepageData](state, { payload: { allSegmentData } }) {
 		return {
-			...state, 
+			...state,
 			allSegmentData: {
 				...state.allSegmentData,
 				...allSegmentData
@@ -57,16 +64,23 @@ const reducer = handleActions({
 	},
 	[segmentActive](state, { payload: { activeSegment } }) {
 		return {
-			...state, 
+			...state,
 			activeSegment
+		};
+	},
+	[promoRecommendation](state, { payload: { promoRecommendationData } }) {
+		return {
+			...state,
+			promoRecommendationData
 		};
 	}
 }, initialState);
 
 export default {
-	reducer, 
-	initResponse, 
-	homeData, 
+	reducer,
+	initResponse,
+	homeData,
 	homepageData,
-	segmentActive
+	segmentActive,
+	promoRecommendation
 };
