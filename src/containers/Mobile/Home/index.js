@@ -14,15 +14,11 @@ import Shared from '@/containers/Mobile/Shared';
 
 class Home extends Component {
 	static initApp(token, dispatch) {
-		dispatch(new actions.initAction({
-			token: this.userCookies
-		}));
+		dispatch(new actions.initAction(token));
 	}
 
-	static mainData(token, dispatch) {
-		dispatch(new actions.mainAction({
-			token: this.userCookies
-		}));
+	static mainData(token, dispatch, activeSegment) {
+		dispatch(new actions.mainAction(token, activeSegment));
 	}
 
 	constructor(props) {
@@ -38,15 +34,22 @@ class Home extends Component {
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.source = this.props.cookies.get('user.source');
+		this.initPage = this.initPage.bind(this);
 	}
 
 	componentDidMount() {
-		this.constructor.initApp(this.userCookies, this.props.dispatch);
-		this.constructor.mainData(this.userCookies, this.props.dispatch);
+		this.initPage();
 	}
 
 	handlePick(current) {
 		this.setState({ current });
+		this.initPage(current);
+		
+	}
+
+	initPage(activeSegment = 1) {
+		this.constructor.initApp(this.userCookies, this.props.dispatch);
+		this.constructor.mainData(this.userCookies, this.props.dispatch, activeSegment);
 	}
 
 	renderFeatureBanner() {
@@ -162,7 +165,6 @@ class Home extends Component {
 			);
 		};
 		const { shared } = this.props;
-		console.log(shared.totalLovelist);
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -239,8 +241,4 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (dispatch) => {
-	// code here if you need anon token or token
-};
-
-export default withCookies(connect(mapStateToProps)(Shared(Home, doAfterAnonymous)));
+export default withCookies(connect(mapStateToProps)(Shared(Home)));

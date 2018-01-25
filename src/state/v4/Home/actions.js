@@ -1,5 +1,5 @@
 import { request } from '@/utils';
-import { initResponse, homeData } from './reducer';
+import { initResponse, homeData, homepageData, segmentActive } from './reducer';
 import { forEverBanner } from '@/state/v4/Shared/reducer';
 
 const initAction = (token) => (dispatch) => {
@@ -17,8 +17,9 @@ const initAction = (token) => (dispatch) => {
 	});
 };
 
-const mainAction = (token) => (dispatch) => {
-	const url = `${process.env.MICROSERVICES_URL}mainpromo?segment_id=1`;
+const mainAction = (token, activeSegment = 1) => (dispatch) => {
+	console.log(activeSegment);
+	const url = `${process.env.MICROSERVICES_URL}mainpromo?segment_id=${activeSegment}`;
 	return request({
 		token,
 		path: url,
@@ -34,7 +35,13 @@ const mainAction = (token) => (dispatch) => {
 			mozaic: response.data.data.find(e => e.type === 'mozaic').data,
 			featuredBrand: response.data.data.find(e => e.type === 'featured_brand').data
 		};
+		const segment = activeSegment === 1 ? 'woman' : (activeSegment === 2 ? 'man' : 'kids');
+		const allSegmentData = {};
+		allSegmentData[segment] = mainData; 
+
 		dispatch(homeData({ mainData }));
+		dispatch(segmentActive({ activeSegment }));
+		dispatch(homepageData({ allSegmentData }));
 	});
 };
 
