@@ -239,4 +239,8 @@ const mapStateToProps = (state) => {
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(Home)));
+const doAfterAnonymous = (dispatch) => {
+	// code here if you need anon token or token
+};
+
+export default withCookies(connect(mapStateToProps)(Shared(Home, doAfterAnonymous)));

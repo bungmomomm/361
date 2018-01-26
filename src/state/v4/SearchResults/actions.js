@@ -11,14 +11,24 @@ const initAction = (token, query) => (dispatch) => {
 		query,
 		fullpath: true
 	}).then(response => {
-		const searchData = {
-			links: response.data.data.links,
-			info: response.data.data.info,
-			facets: response.data.data.facets,
-			sorts: response.data.data.sorts,
-			products: response.data.data.products
-		};
-		dispatch(initResponse({ searchParam, searchData }));
+		if (query.query === 'notfound') {
+			dispatch(initResponse({
+				searchParam,
+				searchData: '' 
+			}));
+		} else {
+			const searchData = {
+				links: response.data.data.links,
+				info: response.data.data.info,
+				facets: response.data.data.facets,
+				sorts: response.data.data.sorts,
+				products: response.data.data.products
+			};
+			dispatch(initResponse({
+				searchParam,
+				searchData
+			}));
+		}
 	});
 };
 

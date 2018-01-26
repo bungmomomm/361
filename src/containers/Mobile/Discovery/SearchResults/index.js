@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { Header, Page, Navigation } from '@/components/mobile';
-// import styles from './search.scss';
+import styles from './search.scss';
 import { actions } from '@/state/v4/SearchResults';
 import queryString from 'query-string';
+import { Link } from 'react-router-dom';
 
 class SearchResults extends Component {
 	constructor(props) {
@@ -28,6 +29,47 @@ class SearchResults extends Component {
 	}
 
 	render() {
+		const inlineStyle = {
+			textAlign: 'center',
+			margin: '10px auto 10px auto'
+		};
+
+		let searchRender = null;
+		if (this.props.searchResults.searchData !== '') {
+			searchRender = (
+				<div>
+					{
+						this.props.searchResults.searchData.products.map((product, index) => {
+							return (
+								<ul key={index}>
+									<li>{index + 1}</li>
+									<li>
+										<img src={product.images.mobile} alt={product.product_title} />
+									</li>
+									<li>{product.product_title}</li>
+									<li>{product.pricing.formatted.effective_price}</li>
+									<hr />
+								</ul>
+							);
+						})
+					}
+				</div>
+			);
+		} else {
+			searchRender = (
+				<div className={styles.container} >
+					<div style={inlineStyle}>[image kantong kosong]</div>
+					<div style={inlineStyle}>
+						{'Mohon maaf hasil pencarian untuk "'}{this.objParam.query}
+						{ '" tidak dapat ditemukan. Silakan periksa pengejaan kata, atau menggunakan kata kunci lain!'}
+					</div>
+					<div><button><Link to={'/search'}>Cari kembali</Link></button></div>
+					<div style={inlineStyle}>[Rich Relevant Recommendation section]</div>
+					<div style={inlineStyle}>[Footer]</div>
+				</div>
+			);
+		}
+
 		let back = () => { this.props.history.go(-2); };
 		if (this.props.history.length === 0) {
 			back = () => { this.props.history.push('/'); };
@@ -36,27 +78,11 @@ class SearchResults extends Component {
 		return (
 			<div style={this.props.style}>
 				<Page>
-					<div>
-						{
-							this.props.searchResults.searchData.products.map((product, index) => {
-								return (
-									<ul key={index}>
-										<li>{index + 1}</li>
-										<li>
-											<img src={product.images.mobile} alt={product.product_title} />
-										</li>
-										<li>{product.product_title}</li>
-										<li>{product.pricing.formatted.effective_price}</li>
-										<hr />
-									</ul>
-								);
-							})
-						}
-					</div>
+					{searchRender}
 				</Page>
 				<Header.SearchResult
-					value={this.objParam.query || ''}
 					back={back}
+					value={this.objParam.query || ''}
 				/>
 				<Navigation />
 			</div>);
