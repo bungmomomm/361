@@ -5,10 +5,16 @@
 	flex-direction: row;
 	padding-left: rem(15px);
 	min-height: rem(40px);
+	background: #fff;
 	a{
 		width: 100%;
 		text-decoration: none;
 		display: flex;
+	}
+	&:last-child{
+		.content{
+			border: 0px;
+		}
 	}
 }
 
@@ -27,4 +33,9 @@
 	justify-content: space-between;
 	flex-direction: row;
 	padding-right: rem(15px);
+	:global{
+		.SVGInline + .SVGInline{
+			display: none;
+		}
+	}
 }

@@ -41,6 +41,7 @@
     -webkit-overflow-scrolling: touch;
     color: color(--primary);
     line-height: 20px;
+    background-color: #F5F5F5;
   }
 
   // GENERATE GLOBAL UTILITIES
@@ -157,6 +158,14 @@
       margin-top: 15px;
       margin-bottom: 15px;
     }
+
+    .border-top{
+      border-top: 1px solid #D8D8D8;
+    }
+    .border-bottom{
+      border-bottom: 1px solid #D8D8D8;
+    }
+
     .margin--large{
       margin-top: 30px;
       margin-bottom: 30px;
