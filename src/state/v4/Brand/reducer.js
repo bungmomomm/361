@@ -1,25 +1,27 @@
 import { handleActions, createActions } from 'redux-actions';
+// import * as constants from './constants';
+
 
 const initialState = {
-	data: [],
 	loading: false,
-	segment: 1
+	data: [],
+	segment: 1,
 };
 
-const { getCategoryMenu, categoryLoading } = createActions(
-	'GET_CATEGORY_MENU',
-	'CATEGORY_LOADING',
+const { brandList, brandLoading } = createActions(
+	'BRAND_LIST',
+	'BRAND_LOADING',
 );
 
 const reducer = handleActions({
-	[getCategoryMenu](state, { payload: { data, segment } }) {
+	[brandList](state, { payload: { data, segment } }) {
 		return {
 			...state,
 			data,
 			segment
 		};
 	},
-	[categoryLoading](state, { payload: { loading } }) {
+	[brandLoading](state, { payload: { loading } }) {
 		return {
 			...state,
 			loading
@@ -29,6 +31,6 @@ const reducer = handleActions({
 
 export default {
 	reducer, 
-	getCategoryMenu,
-	categoryLoading
+	brandList,
+	brandLoading,
 };
