@@ -24,6 +24,7 @@ let CatalogCategory = defRoute;
 let Lovelist = defRoute;
 let Hashtags = defRoute;
 let HashtagsDetails = defRoute;
+let Products = defRoute;
 let UserLogin = defRoute;
 let FilterCategory = defRoute;
 
@@ -50,6 +51,8 @@ if (isMobile()) {
 	// Service Details
 	HashtagsDetails = loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'));
 
+	// PDP
+	Products = loadable(() => import('@/containers/Mobile/Details/Products'));
 	// Users
 	UserLogin = loadable(() => import('@/containers/Mobile/Users/Login'));
 } else {
@@ -101,6 +104,9 @@ export default [
 		path: '/lovelist',
 		component: Lovelist,
 		exact: true
+	}, {
+		path: '/product',
+		component: Products,
 	},
 	{
 		path: '/login',
