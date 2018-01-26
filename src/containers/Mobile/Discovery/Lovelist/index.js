@@ -1,18 +1,63 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { withCookies } from 'react-cookie';
 import { Header, Page, Card, Button, Svg, Image, Level } from '@/components/mobile';
 import styles from './lovelist.scss';
 import * as data from '@/data/example/Lovelist';
-
+import { actions as LoveListActionCreator } from '@/state/v4/Lovelist';
 class Lovelist extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			listTypeGrid: false,
-			listEmpty: false,
-			loggedIn: true
+			listEmpty: true,
+			loggedIn: false,
+			products: []
 		};
+
+		this.getLovelistCardsContent = this.getLovelistCardsContent.bind(this);
+	}
+
+	componentWillMount() {
+		const loginStatus = true;
+		// const loginStatus = (this.props.user.user);
+		if (loginStatus) {
+			this.setState({ loggedIn: true });
+		}
+
+		if (this.props.lovelist.count > 0) {
+			this.setState({ listEmpty: false });
+		}
+	}
+
+	componentDidMount() {
+		// fetching lovelist items
+		this.fetchLovelistItems();
+	}
+
+	getLovelistCardsContent() {
+		const { listTypeGrid } = this.state;
+		const content = this.state.products.map((product, idx) => {
+			return !listTypeGrid ? <Card.Lovelist key={idx} /> : <Card.LovelistGrid key={idx} />;
+		});
+
+		return <div className={styles.cardContainer}>{content}</div>;
+	}
+
+	fetchLovelistItems() {
+		// fetching data from server
+		const req = LoveListActionCreator.getLovelisItems(this.userCookies);
+		const { dispatch } = this.props;
+		req.then(response => {
+
+			this.setState({
+				listEmpty: false,
+				products: response.data.data.products
+			});
+
+			dispatch(LoveListActionCreator.getList(response.data.data));
+		});
 	}
 
 	render() {
@@ -22,7 +67,7 @@ class Lovelist extends Component {
 				<Button className={this.state.loggedIn && !this.state.listEmpty ? null : 'd-none'} onClick={() => this.setState({ listTypeGrid: !listTypeGrid })}>
 					<Svg src={!listTypeGrid ? 'ico_grid.svg' : 'ico_list.svg'} />
 				</Button>
-			), 
+			),
 			center: 'Lovelist',
 			right: (
 				<Link to='/'>
@@ -30,7 +75,6 @@ class Lovelist extends Component {
 				</Link>
 			)
 		};
-		console.log(HeaderPage);
 
 		const renderLovelistPage = (content) => {
 			return (
@@ -42,6 +86,7 @@ class Lovelist extends Component {
 				</div>
 			);
 		};
+
 		if (!this.state.loggedIn) {
 			return (renderLovelistPage(
 				<div style={{ marginTop: '30%', padding: '20px' }} className='text-center --disable-flex'>
@@ -58,6 +103,7 @@ class Lovelist extends Component {
 				</div>
 			));
 		}
+
 		if (this.state.listEmpty) {
 			return (renderLovelistPage(
 				<div className='text-center --disable-flex'>
@@ -70,14 +116,7 @@ class Lovelist extends Component {
 				</div>
 			));
 		}
-		return (renderLovelistPage(
-			<div className={styles.cardContainer}>
-				{!listTypeGrid ? <Card.Lovelist /> : <Card.LovelistGrid />}
-				{!listTypeGrid ? <Card.Lovelist /> : <Card.LovelistGrid />}
-				{!listTypeGrid ? <Card.Lovelist /> : <Card.LovelistGrid />}
-				{!listTypeGrid ? <Card.Lovelist /> : <Card.LovelistGrid />}
-			</div>
-		));
+		return (renderLovelistPage(this.getLovelistCardsContent()));
 	}
 }
 
@@ -86,4 +125,10 @@ Lovelist.defaultProps = {
 
 };
 
-export default withCookies(Lovelist);
+const mapStateToProps = (state) => {
+	return {
+		...state
+	};
+};
+
+export default withCookies(connect(mapStateToProps)(Lovelist));

@@ -262,7 +262,8 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (dispatch) => {
+const doAfterAnonymous = (props) => {
+	// console.log('a', props);
 	// code here if you need anon token or token
 };
 

@@ -1,0 +1,26 @@
+.sliderLabel, .sliderInfo{
+    justify-content: space-between;
+    flex-direction: row;
+    margin: 5px 0px;
+    text-transform: capitalize;
+}
+
+.sliderLabel{
+    color: #AAAAAA;
+    font-size: 13px;
+}
+
+.sliderInfo{
+    color: #AAAAAA;
+    font-size: 12px;
+}
+
+.priceSlider{
+    padding: 20px 15px 10px 15px;
+}
+
+.action{
+    border-top: 1px solid #D8D8D8;
+    display: block;
+    padding: 15px;
+}
