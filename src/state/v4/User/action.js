@@ -8,23 +8,6 @@ import {
 	getClientVersion
 } from '@/utils';
 
-// Check if user success login
-const isLoginSuccess = (response) => {
-	console.log(response);
-	if (typeof response.data !== 'undefined' && typeof response.data.code !== 'undefined' && response.data.code === 200) {
-		return true;
-	}
-	return false;
-};
-
-const isRegisterSuccess = (response) => {
-	console.log(response);
-	if (typeof response.data !== 'undefined' && typeof response.data.code !== 'undefined' && response.data.code === 200) {
-		return true;
-	}
-	return false;
-};
-
 const isSuccess = (response) => {
 	if (typeof response.data !== 'undefined' && typeof response.data.code !== 'undefined' && response.data.code === 200) {
 		return true;
@@ -48,8 +31,8 @@ const userLogin = (token, email, password) => async dispatch => {
 				pwd: base64.encode(password)
 			}
 		});
-		if (isLoginSuccess(response)) {
-			dispatch(actions.userLoginSuccess(response.data));
+		if (isSuccess(response)) {
+			dispatch(actions.userLoginSuccess(response.data.data.info));
 			return Promise.resolve({
 				userprofile: response.data.data.info,
 				token: {
@@ -59,10 +42,11 @@ const userLogin = (token, email, password) => async dispatch => {
 				}
 			});
 		}
-		dispatch(actions.userLoginFail(email, password));
-		return Promise.reject(new Error('Invalid user/password'));
+		const error = new Error('Invalid user/password');
+		dispatch(actions.userLoginFail(error));
+		return Promise.reject(error);
 	} catch (error) {
-		dispatch(actions.userLoginFail(email, password));
+		dispatch(actions.userLoginFail(error));
 		return Promise.reject(error);
 	}
 };
@@ -82,8 +66,8 @@ const userAnonymous = (token) => async dispatch => {
 				device_id: getDeviceID()
 			}
 		});
-		if (isLoginSuccess(response)) {
-			dispatch(actions.userAnonymousSuccess(response.data));
+		if (isSuccess(response)) {
+			dispatch(actions.userAnonymousSuccess(response.data.data.info));
 			return Promise.resolve({
 				userprofile: response.data.data.info,
 				token: {
@@ -93,10 +77,11 @@ const userAnonymous = (token) => async dispatch => {
 				}
 			});
 		}
-		dispatch(actions.userLoginFail());
-		return Promise.reject(new Error('Error while calling api'));
+		const error = new Error('Error while calling api');
+		dispatch(actions.userLoginFail(error));
+		return Promise.reject(error);
 	} catch (error) {
-		dispatch(actions.userLoginFail());
+		dispatch(actions.userLoginFail(error));
 		return Promise.reject(error);
 	}
 };
@@ -123,8 +108,11 @@ const userOtp = (token, phone) => async dispatch => {
 				message: response.data.data.msg
 			});
 		}
-		return Promise.reject('error from server');
+		const error = new Error('error from server');
+		dispatch(actions.userOtpFail(error));
+		return Promise.reject(error);
 	} catch (error) {
+		dispatch(actions.userOtpFail(error));
 		return Promise.reject(error);
 	}
 };
@@ -150,8 +138,11 @@ const userOtpValidate = (token, phone, password, fullname, otp) => async dispatc
 				data: response.data.data
 			});
 		}
-		return Promise.reject(new Error('error while validating OTP'));
+		const error = new Error('error while validating OTP');
+		dispatch(actions.userOtpValidateFail(error));
+		return Promise.reject(error);
 	} catch (error) {
+		dispatch(actions.userOtpValidateFail(error));
 		return Promise.reject(error);
 	}
 };
@@ -172,7 +163,7 @@ const userRegister = (token, email, phone, password, fullname) => async dispatch
 				fullname
 			}
 		});
-		if (isRegisterSuccess(response)) {
+		if (isSuccess(response)) {
 			dispatch(actions.userRegisterSuccess());
 			if (phone) {
 				userOtp(token, phone);
@@ -181,10 +172,12 @@ const userRegister = (token, email, phone, password, fullname) => async dispatch
 				data: response.data.data
 			});
 		}
-		dispatch(actions.userRegisterFail(new Error()));
-		return Promise.reject(new Error('Error while calling api'));
+		const error = new Error('Error while calling api');
+		dispatch(actions.userRegisterFail(error));
+		return Promise.reject(error);
 	} catch (error) {
-		return Promise.reject(new Error('Error while calling api'));
+		dispatch(actions.userRegisterFail(error));
+		return Promise.reject(error);
 	}
 };
 
@@ -196,6 +189,37 @@ const userRegister = (token, email, phone, password, fullname) => async dispatch
 // 	USER_OTP_VALIDATE_SUCCESS: (userProfile) => ({ userProfile }),
 // 	USER_OTP_VALIDATE_FAIL: (error) => ({ otp: { error } }),
 // 	USER_GET_PROFILE: undefined,
+
+const userGetProfile = (token) => async dispatch => {
+	dispatch(actions.userGetProfile());
+	try {
+		const response = await request({
+			token,
+			method: 'GET',
+			path: `${process.env.MICROSERVICES_URL}me`,
+			fullpath: true,
+			body: {
+				client_id: getClientID(),
+				client_secret: getClientSecret(),
+				client_version: getClientVersion(),
+				device_id: getDeviceID()
+			}
+		});
+		if (isSuccess(response)) {
+			dispatch(actions.userGetProfileSuccess(response.data.data));
+			return Promise.resolve({
+				userprofile: response.data.data
+			});
+		}
+		const error = new Error('Error while calling api');
+		dispatch(actions.userGetProfileFail(error));
+		return Promise.reject(error);
+	} catch (error) {
+		dispatch(actions.userGetProfileFail(error));
+		return Promise.reject(error);
+	}
+};
+
 // 	USER_GET_PROFILE_FAIL: (error) => ({ profile: { error } }),
 // 	USER_GET_PROFILE_SUCCESS: (userProfile) => ({ userProfile }),
 
@@ -203,6 +227,7 @@ export default {
 	userLogin,
 	userAnonymous,
 	userNameChange,
+	userGetProfile,
 	userRegister,
 	userOtpValidate
 };
