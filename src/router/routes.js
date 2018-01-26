@@ -19,7 +19,6 @@ let Search = defRoute;
 let SearchNotFound = defRoute;
 let Category = defRoute;
 let SubCategory = defRoute;
-let BrandCategory = defRoute;
 let CatalogCategory = defRoute;
 let Lovelist = defRoute;
 let Hashtags = defRoute;
@@ -43,7 +42,6 @@ if (isMobile()) {
 	Hashtags = loadable(() => import('@/containers/Mobile/Discovery/Hashtags'));
 	Category = loadable(() => import('@/containers/Mobile/Discovery/Category'));
 	SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
-	BrandCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/BrandCategory'));
 	CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
 	FilterCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog/filter'));
 
@@ -88,10 +86,8 @@ export default [
 	}, {
 		path: '/subcategory',
 		component: SubCategory
-	}, {
-		path: '/brandcategory',
-		component: BrandCategory
-	}, {
+	}, 
+	{
 		path: '/catalogcategory',
 		component: CatalogCategory
 	}, {
