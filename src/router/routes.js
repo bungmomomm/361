@@ -25,6 +25,7 @@ let Lovelist = defRoute;
 let Hashtags = defRoute;
 let HashtagsDetails = defRoute;
 let UserLogin = defRoute;
+let FilterCategory = defRoute;
 
 if (isMobile()) {
 	/**
@@ -44,6 +45,7 @@ if (isMobile()) {
 	SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
 	BrandCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/BrandCategory'));
 	CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
+	FilterCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog/filter'));
 
 	// Service Details
 	HashtagsDetails = loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'));
@@ -92,6 +94,9 @@ export default [
 	}, {
 		path: '/catalogcategory',
 		component: CatalogCategory
+	}, {
+		path: '/filterCategory',
+		component: FilterCategory
 	}, {
 		path: '/lovelist',
 		component: Lovelist,

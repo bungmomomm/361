@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
-import { Header, Page, Card, Svg, Tabs, Button, Level, Image, Input } from '@/components/mobile';
+import { Header, Page, Card, Svg, Tabs, Button, Level, Image, Input, List } from '@/components/mobile';
 import { Link } from 'react-router-dom';
 import styles from './catalog.scss';
 import * as data from '@/data/example/Lovelist';
@@ -20,16 +20,23 @@ class Catalog extends Component {
 		}];
 
 		this.currentListState = 0;
-
 		this.state = {
 			listTypeState: this.listType[this.currentListState]
 		};
 	}
 
 	handlePick(e) {
-		if (e === 'view') {
+		switch (e) {
+		case 'view':
 			this.currentListState = this.currentListState === 2 ? 0 : this.currentListState + 1;
 			this.setState({ listTypeState: this.listType[this.currentListState] });
+			break;
+		case 'filter':
+			this.props.history.push('/filterCategory');
+			break;
+			// Router.history.push('/filterCategory');
+		default:
+			break;
 		}
 	}
 
@@ -97,19 +104,57 @@ class Catalog extends Component {
 					variants={[
 						{
 							id: 'urutkan',
-							title: 'Urutkan'
+							Title: 'Urutkan'
 						},
 						{
 							id: 'filter',
-							title: 'filter'
+							Title: 'filter'
 						},
 						{
 							id: 'view',
-							title: <Svg src={listTypeState.icon} />
+							Title: <Svg src={listTypeState.icon} />
 						}
 					]}
 					onPick={e => this.handlePick(e)}
 				/>
+				<div className={styles.filterNavigation}>
+					<List>
+						<List.Content>
+							Populer
+							<Svg src='ico_check.svg' />
+						</List.Content>
+					</List>
+					<List>
+						<List.Content>
+							Terbaru
+							<Svg src='ico_empty.svg' />
+						</List.Content>
+					</List>
+					<List>
+						<List.Content>
+							Harga Terendah
+							<Svg src='ico_empty.svg' />
+						</List.Content>
+					</List>
+					<List>
+						<List.Content>
+							Harga Tertinggi
+							<Svg src='ico_empty.svg' />
+						</List.Content>
+					</List>
+					<List>
+						<List.Content>
+							Diskon Terendah
+							<Svg src='ico_empty.svg' />
+						</List.Content>
+					</List>
+					<List>
+						<List.Content>
+							Diskon Tertinggi
+							<Svg src='ico_empty.svg' />
+						</List.Content>
+					</List>
+				</div>
 			</div>
 		);
 	}
