@@ -185,7 +185,7 @@ class Home extends Component {
 
 					{/* {this.renderOOTD()} */}
 
-					{renderSectionHeader('New Arrival', { title: 'See all', url: 'http://www.google.com' })}
+					{renderSectionHeader('New Arrival', { title: 'See all', url: '/newarrival' })}
 					<Grid split={3}>
 						<div>
 							<Image local lazyload alt='thumbnail' src='temp/thumb-2-1.jpg' />

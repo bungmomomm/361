@@ -43,5 +43,5 @@ const reducer = handleActions({
 export default {
 	reducer, 
 	initResponse, 
-	homeData, 
+	homeData,
 };
