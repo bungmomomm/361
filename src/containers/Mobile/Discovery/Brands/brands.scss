@@ -1,0 +1,29 @@
+@import '../../../../styles/mobile/variables';
+@import '../../../../styles/mobile/mixins';
+
+
+.filter{
+    padding: 0px rem(15px);
+    input{
+        text-align: center;
+    }
+    button{
+        padding: 5px;
+    }
+}
+
+.listFilterKey{
+    flex-direction: row;
+    width: 80%;
+    margin: rem(15px) auto;
+    flex-wrap: wrap;
+    justify-content: center;
+    button{
+        display: inline-flex;
+        font-family: font-family(--lato-regular);
+        font-size: 12px;
+        letter-spacing: 0.3px;
+        line-height: 26px;
+        padding: 0px rem(5px);
+    }
+}

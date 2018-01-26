@@ -3,30 +3,34 @@ import { handleActions, createActions } from 'redux-actions';
 
 
 const initialState = {
-	// segmen: [
-	// 	{
-	// 		id: 1,
-	// 		Title: 'Wanita'
-	// 	}
-	// ],
 	loading: false,
-	data: []
+	data: [],
+	segment: 1,
 };
 
-const { brandList } = createActions(
+const { brandList, brandLoading } = createActions(
 	'BRAND_LIST',
+	'BRAND_LOADING',
 );
 
 const reducer = handleActions({
-	[brandList](state, { payload: { data } }) {
+	[brandList](state, { payload: { data, segment } }) {
 		return {
 			...state,
-			data
+			data,
+			segment
+		};
+	},
+	[brandLoading](state, { payload: { loading } }) {
+		return {
+			...state,
+			loading
 		};
 	},
 }, initialState);
 
 export default {
 	reducer, 
-	brandList, 
+	brandList,
+	brandLoading,
 };
