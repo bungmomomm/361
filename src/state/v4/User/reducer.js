@@ -28,7 +28,7 @@ const actions = createActions({
 });
 
 const initialState = {
-	userprofile: false,
+	userProfile: false,
 	username: false,
 	isLoading: false,
 	isAnonymous: false
@@ -39,7 +39,10 @@ const reducer = handleActions({
 	[actions.userLoginSuccess](state, action) {
 		return {
 			...state,
-			userprofile: action.payload.userProfile.data.info,
+			userProfile: {
+				...state.userProfile,
+				...action.payload.userProfile
+			},
 			isLoading: false,
 			isAnonymous: false
 		};
@@ -49,7 +52,10 @@ const reducer = handleActions({
 	[actions.userAnonymousSuccess](state, action) {
 		return {
 			...state,
-			userprofile: action.payload.userProfile.data.info,
+			userProfile: {
+				...state.userProfile,
+				...action.payload.userProfile
+			},
 			isLoading: false,
 			isAnonymous: true
 		};
@@ -71,7 +77,17 @@ const reducer = handleActions({
 	[actions.userOtpValidateFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
 	[actions.userGetProfile]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
 	[actions.userGetProfileFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
-	[actions.userGetProfileSuccess]: (state, action) => ({ ...state, ...action.payload, isLoading: false })
+	[actions.userGetProfileSuccess]: (state, action) => {
+		return {
+			...state,
+			userProfile: {
+				...state.userProfile,
+				...action.payload.userProfile
+			},
+			isLoading: false,
+			isAnonymous: true
+		};
+	}
 }, initialState);
 export default {
 	actions,

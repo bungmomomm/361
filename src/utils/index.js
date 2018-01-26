@@ -5,6 +5,7 @@ import modalController from './modalController';
 import isMobile from './isMobile';
 import componentState from './componentState';
 import { request } from './request';
+import { setUserCookie } from './cookie';
 
 const getBaseUrl = () => {
 	return process.env.BASE_URL;
@@ -26,16 +27,12 @@ const getClientVersion = () => {
 	return '2.22.0'; // process.env.BASE_URL;
 };
 
-const getSessionDomain = () => {
-	return process.env.SESSION_DOMAIN;
-};
-
 export default {
 	getDeviceID,
 	getClientID,
 	getClientSecret,
-	getClientVersion,
-	getSessionDomain,
+	getClientVersion,	
+	setUserCookie,
 	newId,
 	renderIf,
 	currency,

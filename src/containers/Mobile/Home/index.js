@@ -263,8 +263,7 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = (props) => {
-	// console.log('a', props);
-	// code here if you need anon token or token
+	console.log('code here if you need anon token or token');
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Home, doAfterAnonymous)));

@@ -9,9 +9,11 @@ const SearchResult = props => {
 		<nav className={styles.container}>
 			<div className={styles.wrapper}>
 				<div className={styles.search}>
-					<div className={styles.left} > <button onClick={props.back}> Back </button> </div>
+					<div className={styles.back}>
+						<button onClick={props.back}> <Svg src='ico_arrow-back-left.svg' /> </button>
+					</div>
 					<div className={styles.center}>
-						<Link to='/search'>
+						<Link to='/search' >
 							<Input
 								iconLeft={<Svg src='ico_search.svg' />}
 								iconRight={<button><Svg src='ico_close-grey.svg' /></button>}
