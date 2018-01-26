@@ -11,8 +11,8 @@ import {
  * fetchs lovelist list into redux lovelist items format
  * @param {*} response 
  */
-const fetchItems = (response) => {
-	const items = response.data.products.map((item, idx) => {
+const fetchItems = (data) => {
+	const items = data.products.map((item, idx) => {
 		return item;
 	});
 
@@ -20,26 +20,16 @@ const fetchItems = (response) => {
 };
 
 /**
- * gets user's lovelist list 
- * @param {*} token 
- * @param {*} userId 
+ * save user's lovelist list
+ * @param {*} itemsLovelist 
  */
-const getList = (token, userId) => (dispatch) => {
-	// const url = `${process.env.MICROSERVICES_URL}total/gets/${userId}`;
-	const url = `${process.env.MICROSERVICES_URL}gets`;
+const getList = (itemsLovelist) => (dispatch) => {
+	// fetching response into lovelist redux items format
+	const items = fetchItems(itemsLovelist);
 
-	return request({
-		token,
-		path: url,
-		method: 'GET',
-		fullpath: true
-	}).then(response => {
-		// fetching response into lovelist redux items format
-		const items = fetchItems(response.data);
-		// dispatching total lovelist of logged user
-		dispatch(loveListItems({ items }));
-		dispatch(countLovelist({ count: items.lenght }));
-	});
+	// dispatching total lovelist of logged user
+	dispatch(loveListItems({ items }));
+	dispatch(countLovelist({ count: items.length }));
 };
 
 const addToLovelist = (token, userId, variantId) => (dispatch) => {
@@ -85,6 +75,20 @@ const removeFromLovelist = (token, userId, variantId) => (dispatch) => {
 };
 
 /**
+ * Gets user lovelist list from server
+ * @param {*} token 
+ */
+const getLovelisItems = (token) => {
+	const url = `${process.env.MICROSERVICES_URL}gets`;
+	return request({
+		token,
+		path: url,
+		method: 'GET',
+		fullpath: true
+	});
+};
+
+/**
  * Gets number lovelist of product detail page
  * @param {*} token 
  * @param {*} variantId 
@@ -115,5 +119,6 @@ export default {
 	getList,
 	addToLovelist,
 	removeFromLovelist,
-	countTotalPdpLovelist
+	countTotalPdpLovelist,
+	getLovelisItems
 };

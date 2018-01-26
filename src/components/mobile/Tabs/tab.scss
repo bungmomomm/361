@@ -15,11 +15,13 @@
 	justify-content: space-around;
 	align-content: center;
 	background: #fff;
+	margin-top: -1px;
 }
 
 .tab {
 	display: inline-flex;
-	height: rem(30px);
+	height: rem(35px);
+	padding-top: rem(5px);
 	user-select: none;
 	flex: 1;
 	align-content: center;
