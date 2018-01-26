@@ -26,6 +26,7 @@ let Hashtags = defRoute;
 let HashtagsDetails = defRoute;
 let Products = defRoute;
 let UserLogin = defRoute;
+let NewArrival = defRoute;
 let FilterCategory = defRoute;
 
 if (isMobile()) {
@@ -46,6 +47,7 @@ if (isMobile()) {
 	SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
 	BrandCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/BrandCategory'));
 	CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
+	NewArrival = loadable(() => import('@/containers/Mobile/Discovery/NewArrival'));
 	FilterCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog/filter'));
 
 	// Service Details
@@ -111,6 +113,11 @@ export default [
 	{
 		path: '/login',
 		component: UserLogin,
+		exact: true
+	},
+	{
+		path: '/newarrival',
+		component: NewArrival,
 		exact: true
 	},
 	{
