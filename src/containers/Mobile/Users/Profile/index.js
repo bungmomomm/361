@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
+// import { Link } from 'react-router-dom';
+import { Page, Navigation, Header, Svg } from '@/components/mobile';
 
 class Profile extends Component {
 	constructor(props) {
@@ -8,16 +10,25 @@ class Profile extends Component {
 	}
 
 	render() {
+		const HeaderPage = {
+			left: null,
+			center: 'Profile',
+			right: (<Svg src='ico_setting.svg' />)
+		};
 		return (
 			<div>
-				<h1>{this.props.Data}</h1>
-			</div>);
+				<Page>
+					<div>Profile</div>
+				</Page>
+				<Header.Modal {...HeaderPage} />
+				<Navigation active='Profile' />
+			</div>
+		);
 	}
 }
 
 Profile.defaultProps = {
-	Home: 'hallo',
-	Data: 'akjsdaskdjasldjsaldjalskdj'
+	Home: 'hallo'
 
 };
 

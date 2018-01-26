@@ -26,6 +26,7 @@ let Hashtags = defRoute;
 let HashtagsDetails = defRoute;
 let UserLogin = defRoute;
 let FilterCategory = defRoute;
+let UserProfile = defRoute;
 
 if (isMobile()) {
 	/**
@@ -52,6 +53,7 @@ if (isMobile()) {
 
 	// Users
 	UserLogin = loadable(() => import('@/containers/Mobile/Users/Login'));
+	UserProfile = loadable(() => import('@/containers/Mobile/Users/Profile'));
 } else {
 	/**
 	 * Require main desktop styles
@@ -110,6 +112,11 @@ export default [
 	{
 		path: '/*', // Page not found handling.
 		component: Page404,
+		exact: true
+	},
+	{
+		path: '/profile',
+		component: UserProfile,
 		exact: true
 	}
 ];
