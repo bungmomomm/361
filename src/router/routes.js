@@ -24,8 +24,10 @@ let CatalogCategory = defRoute;
 let Lovelist = defRoute;
 let Hashtags = defRoute;
 let HashtagsDetails = defRoute;
+let Products = defRoute;
 let UserLogin = defRoute;
 let SearchResults = defRoute;
+let NewArrival = defRoute;
 let FilterCategory = defRoute;
 
 if (isMobile()) {
@@ -47,11 +49,14 @@ if (isMobile()) {
 	BrandCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/BrandCategory'));
 	CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
 	SearchResults = loadable(() => import('@/containers/Mobile/Discovery/SearchResults'));
+	NewArrival = loadable(() => import('@/containers/Mobile/Discovery/NewArrival'));
 	FilterCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog/filter'));
 
 	// Service Details
 	HashtagsDetails = loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'));
 
+	// PDP
+	Products = loadable(() => import('@/containers/Mobile/Details/Products'));
 	// Users
 	UserLogin = loadable(() => import('@/containers/Mobile/Users/Login'));
 } else {
@@ -103,6 +108,9 @@ export default [
 		path: '/lovelist',
 		component: Lovelist,
 		exact: true
+	}, {
+		path: '/product',
+		component: Products,
 	},
 	{
 		path: '/login',
@@ -113,6 +121,10 @@ export default [
 		path: '/products',
 		component: SearchResults,
 		exact: true
+  },
+  {
+		path: '/newarrival',
+		component: NewArrival,
 	},
 	{
 		path: '/*', // Page not found handling.
