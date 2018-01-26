@@ -1,5 +1,5 @@
 import { request } from '@/utils';
-import { initResponse, homeData, homepageData, segmentActive, promoRecommendation } from './reducer';
+import { initResponse, homepageData, segmentActive, recomendation } from './reducer';
 import { forEverBanner } from '@/state/v4/Shared/reducer';
 
 const initAction = (token) => (dispatch) => {
@@ -18,7 +18,6 @@ const initAction = (token) => (dispatch) => {
 };
 
 const mainAction = (token, activeSegment = 1) => (dispatch) => {
-	console.log(activeSegment);
 	const url = `${process.env.MICROSERVICES_URL}mainpromo?segment_id=${activeSegment}`;
 	return request({
 		token,
@@ -39,20 +38,20 @@ const mainAction = (token, activeSegment = 1) => (dispatch) => {
 		const allSegmentData = {};
 		allSegmentData[segment] = mainData;
 
-		dispatch(homeData({ mainData }));
-		dispatch(segmentActive({ activeSegment }));
+		dispatch(segmentActive({ activeSegment: segment }));
 		dispatch(homepageData({ allSegmentData }));
 	});
 };
 
-const promoRecommendationAction = (token) => (dispatch) => {
-	const url = `${process.env.MICROSERVICES_URL}recommendation?segment_id=1`;
+const recomendationAction = (token, activeSegment = 1) => (dispatch) => {
+	const url = `${process.env.MICROSERVICES_URL}recommendation?segment_id=${activeSegment}`;
 	return request({
 		token,
 		path: url,
 		method: 'GET',
 		fullpath: true
 	}).then(response => {
+		const segment = activeSegment === 1 ? 'woman' : (activeSegment === 2 ? 'man' : 'kids');
 		const promoRecommendationData = {
 			bestSellerProducts: response.data.data.find(e => e.type === 'bestseller').data,
 			newArrivalProducts: response.data.data.find(e => e.type === 'newarrival').data,
@@ -60,12 +59,12 @@ const promoRecommendationAction = (token) => (dispatch) => {
 			recentlyViewedProducts: response.data.data.find(e => e.type === 'recentlyviewed').data
 		};
 
-		dispatch(promoRecommendation({ promoRecommendationData }));
+		dispatch(recomendation({ recomendationData: promoRecommendationData, activeSegment: segment }));
 	});
 };
 
 export default {
 	initAction,
 	mainAction,
-	promoRecommendationAction
+	recomendationAction
 };

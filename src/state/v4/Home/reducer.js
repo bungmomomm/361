@@ -9,35 +9,19 @@ const initialState = {
 			Title: 'Wanita'
 		}
 	],
-	activeSegment: 1,
+	activeSegment: 'woman',
 	allSegmentData: {
 		woman: {},
 		man: {},
 		kids: {}
-	},
-	mainData: {
-		hashtag: {},
-		featuredBanner: [],
-		middleBanner: [],
-		bottomBanner1: [],
-		bottomBanner2: [],
-		featuredBrand: [],
-		mozaic: {},
-	},
-	promoRecommendationData: {
-		newArrivalProducts: [],
-		bestSellerProducts: [],
-		recommendedProducts: [],
-		recentlyViewedProducts: []
 	}
 };
 
-const { initResponse, homeData, homepageData, promoRecommendation, segmentActive } = createActions(
+const { initResponse, homepageData, segmentActive, recomendation } = createActions(
 	'INIT_RESPONSE',
-	'HOME_DATA',
 	'HOMEPAGE_DATA',
 	'SEGMENT_ACTIVE',
-	'PROMO_RECOMMENDATION'
+	'RECOMENDATION'
 );
 
 const reducer = handleActions({
@@ -45,12 +29,6 @@ const reducer = handleActions({
 		return {
 			...state,
 			segmen
-		};
-	},
-	[homeData](state, { payload: { mainData } }) {
-		return {
-			...state,
-			mainData
 		};
 	},
 	[homepageData](state, { payload: { allSegmentData } }) {
@@ -68,19 +46,24 @@ const reducer = handleActions({
 			activeSegment
 		};
 	},
-	[promoRecommendation](state, { payload: { promoRecommendationData } }) {
+	[recomendation](state, { payload: { recomendationData, activeSegment } }) {
 		return {
-			...state,
-			promoRecommendationData
+			...state, 
+			allSegmentData: { 
+				...state.allSegmentData,
+				[activeSegment]: {
+					...state.allSegmentData[activeSegment],
+					recomendationData
+				}
+			}
 		};
 	}
 }, initialState);
 
 export default {
-	reducer,
-	initResponse,
-	homeData,
+	reducer, 
+	initResponse, 
 	homepageData,
 	segmentActive,
-	promoRecommendation
+	recomendation
 };
