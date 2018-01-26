@@ -29,9 +29,11 @@ export default (state = initialState, action) => {
 					docHeight: state.products[state.activeTag] && state.products[state.activeTag].docHeight
 						? state.products[state.activeTag].docHeight
 						: 0,
-					allowNextPage: state.products[state.activeTag] && state.products[state.activeTag].docHeight
-						? state.products[state.activeTag].docHeight
-						: true
+					allowNextPage: !state.products[action.activeTag] ||
+									(
+										state.products[action.activeTag] &&
+										state.products[action.activeTag].docHeight < action.docHeight
+									)
 				}
 			}
 		};
