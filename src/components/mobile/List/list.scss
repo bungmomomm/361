@@ -6,7 +6,7 @@
 	padding-left: rem(15px);
 	min-height: rem(40px);
 	background: #fff;
-	a{
+	> a, > button{
 		width: 100%;
 		text-decoration: none;
 		display: flex;
@@ -33,6 +33,7 @@
 	justify-content: space-between;
 	flex-direction: row;
 	padding-right: rem(15px);
+	min-height: rem(40px);
 	:global{
 		.SVGInline + .SVGInline{
 			display: none;

@@ -36,7 +36,7 @@ class Price extends PureComponent {
 						<List><List.Content>20.000 - 300.0000 {icon}</List.Content></List>
 					</div>
 					<div className={styles.action}>
-						<Button size='medium' outline color='secondary'>App Only</Button>
+						<Button wide size='medium' outline color='secondary'>App Only</Button>
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />
