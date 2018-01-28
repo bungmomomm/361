@@ -12,6 +12,6 @@ export default class Svg extends Component {
 	}
 
 	render() {
-		return <SVGInline svg={this.image} />;
+		return <SVGInline style={this.props.style} svg={this.image} />;
 	}
 }

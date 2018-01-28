@@ -34,7 +34,7 @@
   }
   html, body{
     font-family: font-family('Lato-Regular');
-    font-size: rem(14px);
+    font-size: rem(13px);
     height: 100%;
     position: relative;
     overflow-y: scroll;
@@ -72,7 +72,7 @@
 	text-align: right;
   }
   .text-center{
-	text-align: center;
+  text-align: center;
   }
   .text-left{
 	text-align: left;
@@ -138,13 +138,30 @@
       // overflow: hidden;
     }
   }
+  a{
+    color: #3C5A98;
+    text-decoration: none;
+    font-family: 'Lato-Regular';
+  }
+  p{
+    font-size: 13px;
+    text-decoration: none;
+    font-family: 'Lato-Regular';
+    color: #191919;
+  }
   #root {
     z-index: 0;
       
     .switch-wrapper{
+      height: 100%;
       > div{
         transition: opacity 0.3s ease;
+        height: 100%;
       }
+    }
+
+    .full-height{
+      height: 100%;
     }
 
     .margin--medium{
@@ -175,6 +192,16 @@
     .margin--large{
       margin-top: 30px;
       margin-bottom: 30px;
+    }
+    .flex-row{
+      flex-direction: row;
+    }
+    .flex-center{
+      justify-content: center;
+      align-items: center;
+    }
+    .flex-spaceBetween{
+      justify-content: space-between;
     }
   }
 }

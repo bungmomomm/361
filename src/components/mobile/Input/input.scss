@@ -5,6 +5,7 @@
   display: block;
   width: 100%;
   line-height: 0;
+  position: relative;
 }
 
 .input {
@@ -13,7 +14,6 @@
   border-radius: rem(15px);
   cursor: text;
   background-color: #f3f3f3;
-  color: color(--primary-ext-2);
   box-sizing: border-box;
   width: 100%;
   height: rem(30px);
@@ -28,6 +28,23 @@
   &::-moz-placeholder,
   &:-ms-input-placeholder {
     color: color(--primary)
+  }
+}
+
+.flat{
+  &:not(:last-child){
+    margin-bottom: 20px
+  }
+  input{
+    background: transparent;
+    padding-left: 0px;
+    padding-right: 0px;
+    border-radius: 0px;
+    font-size: 13px;
+    outline: 0px;
+    border: 0px;
+    border-bottom: 1px solid #D8D8D8;
+    height: 40px;
   }
 }
 
@@ -62,9 +79,33 @@
 
 .label, .hint {
   font-family: font-family(--lato-normal);
-  font-size: map-get($font-size, --medium );
+  font-size: map-get($font-size, --small );
   line-height: 1.4;
-  color: color(--primary);
+  color: color(--primary-ext-2);
+  display: flex;
+}
+
+.label{
+  position: absolute;
+  left: 15px;
+  top: 5px;
+  pointer-events: none;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.showLabel{
+  .label{
+    opacity: 1;
+    left: 0px;
+    top: -15px;
+  }
+}
+
+.hint{
+  font-size: map-get($font-size, --small );
+  justify-content: flex-end;
+  margin-top: 5px;
 }
 
 
@@ -91,9 +132,12 @@
 
 .error {
   & .input {
+    border-color: #FF1B1B;
+    color: #FF1B1B;
   }
 
   & .hint {
+    color: #FF1B1B;
   }
 }
 
@@ -112,5 +156,37 @@
   input{
     background-color: #fff;
     border-color: #D8D8D8;
+  }
+}
+
+.partitioned{
+  width:290px; 
+  margin: 0 auto;
+  overflow: hidden;
+  .wrapper{
+    left: 0;
+    position: sticky;
+  }
+  input{
+    padding-left: 12px;
+    letter-spacing: 38px;
+    border: 0;
+    background-color: transparent;
+    background-image: linear-gradient(to left, #D8D8D8 70%, rgba(255, 255, 255, 0) 0%);
+    background-position: bottom;
+    background-size: 50px 1px;
+    background-repeat: repeat-x;
+    background-position-x: 35px;
+    width: 340px;
+    font-family: 'Lato-Bold';
+    font-size: 20px;
+    min-width: 340px;
+    height: 35px;
+    border-radius: 0px;
+  }
+  &.error{
+    input{
+      background-image: linear-gradient(to left, #FF1B1B 70%, rgba(255, 255, 255, 0) 0%);
+    }
   }
 }

@@ -3,9 +3,11 @@
 
 .container{
     background: #F3F3F3;
-    height: rem(55px);
+    height: rem(45px);
     justify-content: center;
     align-items: center;
+    font-size: 12px;
+    padding: 0px 15px;
 }
 
 .close{
@@ -25,4 +27,9 @@
 }
 .yellow{
     background-color: #FFECD5;
+}
+
+.green{
+    background-color: #E0EFD8;
+    color: #64BE64;
 }
