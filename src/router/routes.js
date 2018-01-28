@@ -26,7 +26,11 @@ let Hashtags = defRoute;
 let HashtagsDetails = defRoute;
 let Products = defRoute;
 let UserLogin = defRoute;
+let UserRegister = defRoute;
+let UserRegistered = defRoute;
+let UserRegisteredPhoneValidation = defRoute;
 let NewArrival = defRoute;
+let ForgotPassword = defRoute;
 let FilterCategory = defRoute;
 
 if (isMobile()) {
@@ -57,6 +61,10 @@ if (isMobile()) {
 	Products = loadable(() => import('@/containers/Mobile/Details/Products'));
 	// Users
 	UserLogin = loadable(() => import('@/containers/Mobile/Users/Login'));
+	ForgotPassword = loadable(() => import('@/containers/Mobile/Users/Login/forgotPassword'));
+	UserRegister = loadable(() => import('@/containers/Mobile/Users/Register'));
+	UserRegistered = loadable(() => import('@/containers/Mobile/Users/Register/registered'));
+	UserRegisteredPhoneValidation = loadable(() => import('@/containers/Mobile/Users/Register/registeredPhoneValidation'));
 } else {
 	/**
 	 * Require main desktop styles
@@ -113,6 +121,26 @@ export default [
 	{
 		path: '/login',
 		component: UserLogin,
+		exact: true
+	},
+	{
+		path: '/register',
+		component: UserRegister,
+		exact: true
+	},
+	{
+		path: '/registered',
+		component: UserRegistered,
+		exact: true
+	},
+	{
+		path: '/phoneValidation',
+		component: UserRegisteredPhoneValidation,
+		exact: true
+	},
+	{
+		path: '/forgotPassword',
+		component: ForgotPassword,
 		exact: true
 	},
 	{
