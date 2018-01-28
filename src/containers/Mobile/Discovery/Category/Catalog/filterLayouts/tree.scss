@@ -1,3 +1,9 @@
 .child{
     padding-left: 15px;
 }
+
+.parent{
+    > div{
+        margin-top: -10px;
+    }
+}

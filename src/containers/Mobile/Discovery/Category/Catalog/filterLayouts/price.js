@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { Button, Header, Page, Svg, List, Slider } from '@/components/mobile';
 import { Link } from 'react-router-dom';
 import styles from './price.scss';
+import Action from './action';
 
 class Price extends PureComponent {
 	render() {
@@ -40,6 +41,7 @@ class Price extends PureComponent {
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />
+				<Action />
 			</div>
 		);
 	}

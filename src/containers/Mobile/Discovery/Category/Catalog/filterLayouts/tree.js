@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Header, Page, Svg, List, Button } from '@/components/mobile';
 import { Link } from 'react-router-dom';
+import Action from './action';
 import styles from './tree.scss';
 
 class Tree extends PureComponent {
@@ -73,6 +74,7 @@ class Tree extends PureComponent {
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />
+				<Action />
 			</div>
 		);
 	}

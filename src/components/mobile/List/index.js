@@ -3,15 +3,15 @@ import classNames from 'classnames';
 import Svg from '../Svg';
 import styles from './list.scss';
 
-const Image = (props) => {
+const Image = ({ children, ...props }) => {
 	return (
-		<div className={styles.image}>{props.children}</div>
+		<div {...props} className={styles.image}>{children}</div>
 	);
 };
 
-const Content = (props) => {
+const Content = ({ children, ...props }) => {
 	return (
-		<div className={styles.content}>{props.children}<Svg src='ico_chevron-right.svg' /></div>
+		<div {...props} className={styles.content}>{children}<Svg src='ico_chevron-right.svg' /></div>
 	);
 };
 
