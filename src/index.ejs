@@ -38,53 +38,8 @@
         <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
         <link rel="icon" href="https://assets.mataharimall.co/images/favicon.ico" type="image/x-icon" />
         <meta name="theme-color" content="#DA1818" />
-
-		<style>
-			.loader {
-				position: absolute;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				font-size: 10px;
-				top: 50%;
-				left: 50%;
-				margin-top: -1.9em;
-				margin-left: -1.9em;
-			}
-			.loader__wheel {
-				margin: auto;
-				border: 0.1em solid rgba(0, 0, 0, 0.1);
-				border-left: 0.1em solid rgba(0, 0, 0, 1);
-				transform: translateZ(0);
-				animation: appSpinner 1s infinite linear;
-			}
-			.loader__image {
-				position: relative;
-				flex: 0 0 auto;
-				width: 3.2em;
-				height: 3.2em;
-				margin: auto;
-			}
-			.loader__wheel,
-			.loader__wheel:after {
-				position: absolute;
-				border-radius: 50%;
-			}
-			.loader,
-			.loader__wheel,
-			.loader__wheel:after {
-				width: 3.8em;
-				height: 3.8em;
-			}
-			@keyframes appSpinner {
-				0% {
-					transform: rotate(0deg);
-				}
-				100% {
-					transform: rotate(360deg);
-				}
-			}
-		</style>
+	
+	<style>.loader{position:absolute;display:flex;justify-content:center;align-items:center;font-size:10px;top:50%;left:50%;margin-top:-1.9em;margin-left:-1.9em}.loader__wheel{margin:auto;border:.1em solid rgba(0,0,0,.1);border-left:.1em solid rgba(0,0,0,1);transform:translateZ(0);animation:appSpinner 1s infinite linear}.loader__image{position:relative;flex:0 0 auto;width:3.2em;height:3.2em;margin:auto}.loader__wheel,.loader__wheel:after{position:absolute;border-radius:50%}.loader,.loader__wheel,.loader__wheel:after{width:3.8em;height:3.8em}@keyframes appSpinner{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>
     </head>
     <body <% if (params.helmet.htmlAttributes) { %><%= params.helmet.bodyAttributes.toString() %><% } %>>
         <noscript>
