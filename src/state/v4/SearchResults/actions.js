@@ -11,10 +11,10 @@ const initAction = (token, query) => (dispatch) => {
 		query,
 		fullpath: true
 	}).then(response => {
-		if (query.query === 'notfound') {
+		if (query.query === 'notfound' || query.query === '') {
 			dispatch(initResponse({
-				searchParam,
-				searchData: '' 
+				searchStatus: 'failed',
+				searchParam
 			}));
 		} else {
 			const searchData = {
@@ -25,6 +25,7 @@ const initAction = (token, query) => (dispatch) => {
 				products: response.data.data.products
 			};
 			dispatch(initResponse({
+				searchStatus: 'success',
 				searchParam,
 				searchData
 			}));

@@ -1,6 +1,7 @@
 import { handleActions, createActions } from 'redux-actions';
 
 const initialState = {
+	searchStatus: '',
 	searchParam: [],
 	searchData: {
 		links: [],
@@ -16,9 +17,10 @@ const { initResponse } = createActions(
 );
 
 const reducer = handleActions({
-	[initResponse](state, { payload: { searchParam, searchData } }) {
+	[initResponse](state, { payload: { searchStatus, searchParam, searchData } }) {
 		return {
 			...state,
+			searchStatus,
 			searchParam,
 			searchData
 		};

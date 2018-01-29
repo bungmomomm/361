@@ -10,7 +10,15 @@ import styles from './card.scss';
 
 class Catalog extends PureComponent {
 	render() {
-		const { className, type, ...props } = this.props;
+		const {
+			className,
+			type,
+			productTitle,
+			brandName,
+			basePrice,
+			effectivePrice,
+			...props
+		} = this.props;
 
 		const createClassName = classNames(styles.container, styles[type], className);
 		
@@ -39,15 +47,15 @@ class Catalog extends PureComponent {
 					</Level.Item>
 				</Level>
 				<div className={styles.title}>
-					Immaculate Brands of the Year by Yannis Philippakis -{' '}
-					<span>Olivia Von Halle pink print</span>
+					{productTitle} -{' '}
+					<span>{brandName}</span>
 				</div>
 				<Level className={styles.footer}>
 					<Level.Item>
 						<div className={styles.blockPrice}>
 							<div>
-								<div className={styles.price}>Rp1.199.000</div>
-								<div className={styles.discount}>Rp900.900</div>
+								<div className={styles.price}>{basePrice}</div>
+								<div className={styles.discount}>{effectivePrice}</div>
 							</div>
 							<div style={{ marginLeft: '1.5rem' }}>
 								<Badge rounded color='red'>
