@@ -19,12 +19,19 @@ let Search = defRoute;
 let SearchNotFound = defRoute;
 let Category = defRoute;
 let SubCategory = defRoute;
-let BrandCategory = defRoute;
+let Brands = defRoute;
 let CatalogCategory = defRoute;
 let Lovelist = defRoute;
 let Hashtags = defRoute;
 let HashtagsDetails = defRoute;
+let Products = defRoute;
 let UserLogin = defRoute;
+let UserRegister = defRoute;
+let UserRegistered = defRoute;
+let UserRegisteredPhoneValidation = defRoute;
+let NewArrival = defRoute;
+let ForgotPassword = defRoute;
+let FilterCategory = defRoute;
 
 if (isMobile()) {
 	/**
@@ -42,14 +49,22 @@ if (isMobile()) {
 	Hashtags = loadable(() => import('@/containers/Mobile/Discovery/Hashtags'));
 	Category = loadable(() => import('@/containers/Mobile/Discovery/Category'));
 	SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
-	BrandCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/BrandCategory'));
+	Brands = loadable(() => import('@/containers/Mobile/Discovery/Brands'));
 	CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
+	NewArrival = loadable(() => import('@/containers/Mobile/Discovery/NewArrival'));
+	FilterCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog/filter'));
 
 	// Service Details
 	HashtagsDetails = loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'));
 
+	// PDP
+	Products = loadable(() => import('@/containers/Mobile/Details/Products'));
 	// Users
 	UserLogin = loadable(() => import('@/containers/Mobile/Users/Login'));
+	ForgotPassword = loadable(() => import('@/containers/Mobile/Users/Login/forgotPassword'));
+	UserRegister = loadable(() => import('@/containers/Mobile/Users/Register'));
+	UserRegistered = loadable(() => import('@/containers/Mobile/Users/Register/registered'));
+	UserRegisteredPhoneValidation = loadable(() => import('@/containers/Mobile/Users/Register/registeredPhoneValidation'));
 } else {
 	/**
 	 * Require main desktop styles
@@ -87,19 +102,50 @@ export default [
 		path: '/subcategory',
 		component: SubCategory
 	}, {
-		path: '/brandcategory',
-		component: BrandCategory
+		path: '/brands',
+		component: Brands
 	}, {
 		path: '/catalogcategory',
 		component: CatalogCategory
 	}, {
+		path: '/filterCategory',
+		component: FilterCategory
+	}, {
 		path: '/lovelist',
 		component: Lovelist,
 		exact: true
+	}, {
+		path: '/product',
+		component: Products,
 	},
 	{
 		path: '/login',
 		component: UserLogin,
+		exact: true
+	},
+	{
+		path: '/register',
+		component: UserRegister,
+		exact: true
+	},
+	{
+		path: '/registered',
+		component: UserRegistered,
+		exact: true
+	},
+	{
+		path: '/phoneValidation',
+		component: UserRegisteredPhoneValidation,
+		exact: true
+	},
+	{
+		path: '/forgotPassword',
+		component: ForgotPassword,
+		exact: true
+	},
+	{
+		path: '/newarrival',
+		component: NewArrival,
 		exact: true
 	},
 	{

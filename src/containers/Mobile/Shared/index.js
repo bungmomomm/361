@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 import { actions } from '@/state/v4/Shared';
 import { actions as users } from '@/state/v4/User';
-import { getSessionDomain } from '@/utils';
+import { setUserCookie } from '@/utils';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 	class SharedAction extends Component {
@@ -34,20 +34,24 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			if (this.shouldLoginAnonymous()) {
 				this.loginAnonymous();
 			} else {
-				console.log('do');
+				this.getProfile();
 				this.constructor.initApp(this.props);
 			}
 		}
 
 		
 		setUserCookie(token) {
-			const currentDate = new Date();
-			currentDate.setDate(currentDate.getDate() + (2 * 365));
-			this.props.cookies.set('user.exp', Number(token.expires_in), { domain: getSessionDomain(), expires: currentDate });
-			this.props.cookies.set('user.rf.token', token.refresh_token, { domain: getSessionDomain(), expires: currentDate });
-			this.props.cookies.set('user.token', token.token, { domain: getSessionDomain(), expires: currentDate });
-			console.log('anon do');
+			setUserCookie(this.props.cookies, token);
 			this.constructor.initApp(this.props);
+		}
+
+		async getProfile() {
+			try {
+				await this.props.dispatch(new users.userGetProfile());
+			} catch (error) {
+				// @TODO add 
+				console.log('errr', error);
+			}
 		}
 
 		shouldLoginAnonymous() {

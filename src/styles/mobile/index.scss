@@ -34,13 +34,14 @@
   }
   html, body{
     font-family: font-family('Lato-Regular');
-    font-size: rem(14px);
+    font-size: rem(13px);
     height: 100%;
     position: relative;
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
     color: color(--primary);
     line-height: 20px;
+    background-color: #F5F5F5;
   }
 
   // GENERATE GLOBAL UTILITIES
@@ -71,7 +72,7 @@
 	text-align: right;
   }
   .text-center{
-	text-align: center;
+  text-align: center;
   }
   .text-left{
 	text-align: left;
@@ -95,6 +96,12 @@
   .d-flex {
 	display: flex !important;
   }
+
+  .text-elipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
   .SVGInline{
     display: inline-flex;
@@ -131,13 +138,30 @@
       // overflow: hidden;
     }
   }
+  a{
+    color: #3C5A98;
+    text-decoration: none;
+    font-family: 'Lato-Regular';
+  }
+  p{
+    font-size: 13px;
+    text-decoration: none;
+    font-family: 'Lato-Regular';
+    color: #191919;
+  }
   #root {
     z-index: 0;
       
     .switch-wrapper{
+      height: 100%;
       > div{
         transition: opacity 0.3s ease;
+        height: 100%;
       }
+    }
+
+    .full-height{
+      height: 100%;
     }
 
     .margin--medium{
@@ -157,9 +181,27 @@
       margin-top: 15px;
       margin-bottom: 15px;
     }
+
+    .border-top{
+      border-top: 1px solid #D8D8D8;
+    }
+    .border-bottom{
+      border-bottom: 1px solid #D8D8D8;
+    }
+
     .margin--large{
       margin-top: 30px;
       margin-bottom: 30px;
+    }
+    .flex-row{
+      flex-direction: row;
+    }
+    .flex-center{
+      justify-content: center;
+      align-items: center;
+    }
+    .flex-spaceBetween{
+      justify-content: space-between;
     }
   }
 }

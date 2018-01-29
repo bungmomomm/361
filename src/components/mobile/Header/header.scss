@@ -37,6 +37,9 @@
 .modal{
 	flex: 1;
 	padding: 0px rem(15px);
+	background: #FFFFFF;
+	border-bottom: 1px solid #D8D8D8;
+	box-shadow: 0 1px 4px 0 rgba(0,0,0,0.05);
 	.center{
 		font-family: font-family('lato-regular');
 		font-size: map-get($font-size, --medium );
@@ -60,4 +63,16 @@
 	input{
 		text-align: left;
 	}
+	a{
+		text-decoration: none;
+	}
+}
+
+.back{
+	padding: 0px rem(15px);
+}
+
+.disableShadow .modal{
+	box-shadow: none;
+	border: 0px;
 }
