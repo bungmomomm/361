@@ -28,7 +28,7 @@
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="#DA1818" />
-        <meta name="apple-mobile-web-app-title" content="MatahariMall" /> 
+        <meta name="apple-mobile-web-app-title" content="MatahariMall" />
         <% if (params.manifest['main.css']) { %>
             <link rel="stylesheet" href="<%= params.manifest['main.css'] %>" />
         <% } %>
@@ -39,28 +39,52 @@
         <link rel="icon" href="https://assets.mataharimall.co/images/favicon.ico" type="image/x-icon" />
         <meta name="theme-color" content="#DA1818" />
 
-        <!-- Load Jquery for GTM, and Partners who using JQuery -->
-        <script src="https://assets.mataharimall.co/desktop/js/min/jquery.min.js"></script>
-        <!-- END Load Jquery -->
-
-        <!-- Google Tag Manager -->
-        <script>
-        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-        })(window,document,'script','dataLayer','<%= process.env.GTM_KEY %>');
-        </script>
-        <!-- End Google Tag Manager -->
-        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-		<script src="https://cdn.ravenjs.com/3.17.0/raven.min.js"
-				crossorigin="anonymous"></script>
-        <!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChjpQSbwKaJOCJy_06GAwU9dNMwVq_rg4&libraries=places&region=id&language=id"></script> -->
-        <script type="text/javascript" src="<%= process.env.VT_JS %>"></script>
-        <% if (process.env.NODE_ENV === 'production') { %>
-            <script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
-            <script>Raven.config('https://af6e3248ca6f4d8d8c3e669f6fd6e4e4@sentry.io/215821').install();</script>
-        <% } %>
+		<style>
+			.loader {
+				position: absolute;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				font-size: 10px;
+				top: 50%;
+				left: 50%;
+				margin-top: -1.9em;
+				margin-left: -1.9em;
+			}
+			.loader__wheel {
+				margin: auto;
+				border: 0.1em solid rgba(0, 0, 0, 0.1);
+				border-left: 0.1em solid rgba(0, 0, 0, 1);
+				transform: translateZ(0);
+				animation: appSpinner 1s infinite linear;
+			}
+			.loader__image {
+				position: relative;
+				flex: 0 0 auto;
+				width: 3.2em;
+				height: 3.2em;
+				margin: auto;
+			}
+			.loader__wheel,
+			.loader__wheel:after {
+				position: absolute;
+				border-radius: 50%;
+			}
+			.loader,
+			.loader__wheel,
+			.loader__wheel:after {
+				width: 3.8em;
+				height: 3.8em;
+			}
+			@keyframes appSpinner {
+				0% {
+					transform: rotate(0deg);
+				}
+				100% {
+					transform: rotate(360deg);
+				}
+			}
+		</style>
     </head>
     <body <% if (params.helmet.htmlAttributes) { %><%= params.helmet.bodyAttributes.toString() %><% } %>>
         <noscript>
@@ -75,7 +99,55 @@
         <!--[if lt IE 9]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
+        <div class="loader">
+			<div class="loader__image">
+				<?xml version="1.0" encoding="UTF-8"?>
+				<svg width="32px" height="32px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+					<title>MatahariMall.com</title>
+					<desc>Belanja Online Aman, Nyaman, Terpercaya</desc>
+					<defs></defs>
+					<g id="Assets" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+						<g id="mm_ico_home_active" fill="#191919">
+							<g id="Group-2" transform="translate(9.000000, 10.000000)">
+								<path d="M16.5372953,0.850150519 C16.4494962,0.850150519 16.3687776,0.902165786 16.324406,0.985910365 L9.1862391,14.609749 L2.20809332,0.987990975 C2.16466577,0.903206091 2.08253106,0.850150519 1.99378782,0.850150519 L0.421899467,0.850150519 L0.421899467,19.5106274 L1.68082626,19.5106274 L1.68082626,2.78043706 L8.62451323,16.3309341 C8.6669967,16.4141586 8.74724326,16.4656537 8.83409835,16.4656537 L9.53177131,16.4656537 C9.61768233,16.4656537 9.69698481,16.4151989 9.73994031,16.3330147 L16.8252388,2.80384393 L16.8252388,19.5106274 L18.0841656,19.5106274 L18.0841656,0.850150519 L16.5372953,0.850150519 Z" id="Fill-27-Copy"></path>
+								<path d="M21.5460963,19.3160903 L21.5446802,0.850670672 L20.2234443,0.850150519 C20.134229,0.850150519 20.0525664,0.902685938 20.0091388,0.987990975 L18.8314027,3.2953882 L18.8314027,5.45298145 L20.586442,2.01009096 L20.586442,19.3160903 L21.5460963,19.3160903 Z" id="Fill-29-Copy"></path>
+								<polygon id="Fill-31-Copy" points="4.19820781 10.2128985 4.19820781 19.5985332 5.15786217 19.5985332 5.15786217 12.044356"></polygon>
+								<path d="M13.128705,15.3348418 L12.3106622,13.7083244 L11.7508245,14.776718 L12.577836,16.4214407 C12.6160712,16.4963427 12.687349,16.5426363 12.7652353,16.5426363 L13.4950069,16.5426363 C13.5724212,16.5426363 13.6441711,16.4963427 13.6819342,16.4219608 L16.0053079,11.8539801 L16.0053079,9.69274582 L13.128705,15.3348418 Z" id="Fill-33-Copy"></path>
+								<path d="M10.2369969,9.92837498 L5.74035773,0.989551433 C5.69693019,0.903726244 5.61479548,0.850150519 5.52510816,0.850150519 L4.19820781,0.850150519 L4.19820781,3.0327111 L5.15786217,4.86416863 L5.15786217,2.01269173 L9.67715919,10.9967686 L10.2369969,9.92837498 Z" id="Fill-35-Copy"></path>
+							</g>
+						</g>
+					</g>
+				</svg>
+			</div>
+			<div class="loader__wheel"></div>
+		</div>
         <div id="root"><%= params.markup %></div>
+
+
+		<!-- Load Jquery for GTM, and Partners who using JQuery -->
+		<script src="https://assets.mataharimall.co/desktop/js/min/jquery.min.js"></script>
+		<!-- END Load Jquery -->
+
+		<!-- Google Tag Manager -->
+		<script>
+			(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+					new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+					j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+					'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+			})(window,document,'script','dataLayer','<%= process.env.GTM_KEY %>');
+		</script>
+		<!-- End Google Tag Manager -->
+		<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+		<script src="https://cdn.ravenjs.com/3.17.0/raven.min.js"
+				crossorigin="anonymous"></script>
+		<!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChjpQSbwKaJOCJy_06GAwU9dNMwVq_rg4&libraries=places&region=id&language=id"></script> -->
+		<script type="text/javascript" src="<%= process.env.VT_JS %>"></script>
+		<% if (process.env.NODE_ENV === 'production') { %>
+		<script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
+		<script>Raven.config('https://af6e3248ca6f4d8d8c3e669f6fd6e4e4@sentry.io/215821').install();</script>
+		<% } %>
+
+
         <% if (params.state) { %>
             <script>window.__REDUX_STATE__ = <%= JSON.stringify(params.state) %></script>
         <% } %>
