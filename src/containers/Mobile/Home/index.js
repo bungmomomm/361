@@ -91,6 +91,7 @@ class Home extends Component {
 		const { home } = this.props;
 		const segment = this.mappingSegmentValue();
 		const segmentData = home.allSegmentData[segment];
+		// const datas = _.chain(home).get(`allSegmentData.${segment}.hashtag`);
 		if (!_.isEmpty(segmentData) && typeof segmentData.recomendationData !== 'undefined' && segmentData.recomendationData[obj].length > 0) {
 			return (
 				<Grid split={3}>
@@ -111,11 +112,12 @@ class Home extends Component {
 	renderHashtag() {
 		const { home } = this.props;
 		const segment = this.mappingSegmentValue();
-		if (!_.isEmpty(home.allSegmentData[segment]) && typeof home.allSegmentData[segment].hashtag.images !== 'undefined') {
+		const datas = _.chain(home).get(`allSegmentData.${segment}.hashtag`);
+		if (!datas.isEmpty().value()) {
 			return (
 				<Carousel>
 					{
-						home.allSegmentData[segment].hashtag.images.map(({ images, link }, b) => (
+						datas.value().images.map(({ images, link }, b) => (
 							<div key={b} ><Image lazyload alt='thumbnail' src={images.mobile} /></div>
 						))
 					}
