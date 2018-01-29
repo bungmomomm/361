@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { Header, Page, Navigation, Svg, Card, Grid } from '@/components/mobile';
 import { actions as recommendedActions } from '@/state/v4/RecommendedProducts';
+import { withRouter } from 'react-router-dom';
 
 class RecommendedProducts extends Component {
 	constructor(props) {
@@ -57,9 +58,9 @@ class RecommendedProducts extends Component {
 	render() {
 		const HeaderPage = {
 			left: (
-				<a href={history.go - 1}>
+				<button href={this.props.history.goBack}>
 					<Svg src={'ico_arrow-back-left.svg'} />
-				</a>
+				</button>
 			),
 			center: 'Recommended Products',
 			right: (
@@ -107,4 +108,4 @@ const mapDispatchToProps = (dispatch) => {
 	};
 };
 
-export default withCookies(connect(mapStateToProps, mapDispatchToProps)(RecommendedProducts));
+export default withRouter(withCookies(connect(mapStateToProps, mapDispatchToProps)(RecommendedProducts)));
