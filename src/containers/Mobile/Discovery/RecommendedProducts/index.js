@@ -95,7 +95,6 @@ class RecommendedProducts extends Component {
 }
 
 const mapStateToProps = (state) => {
-	console.log(state.recommendedproducts);
 	return {
 		...state.recommendedproducts
 	};
