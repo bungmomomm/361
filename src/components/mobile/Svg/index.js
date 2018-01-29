@@ -12,6 +12,7 @@ export default class Svg extends Component {
 	}
 
 	render() {
-		return <SVGInline svg={this.image} />;
+		const cleanup = ['title', 'desc', 'comment', 'sketchMSShapeGroup', 'sketchMSPage', 'sketchMSLayerGroup'];
+		return <SVGInline svg={this.image} cleanup={cleanup} width={this.props.width} height={this.props.height} />;
 	}
 }
