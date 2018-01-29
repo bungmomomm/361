@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { Header, Page, Grid, Svg, Button } from '@/components/mobile';
 import { Link } from 'react-router-dom';
 import styles from './color.scss';
+import Action from './action';
 
 class Color extends PureComponent {
 	render() {
@@ -48,6 +49,7 @@ class Color extends PureComponent {
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />
+				<Action />
 			</div>
 		);
 	}

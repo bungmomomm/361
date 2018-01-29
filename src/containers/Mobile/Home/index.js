@@ -14,17 +14,16 @@ import Shared from '@/containers/Mobile/Shared';
 
 class Home extends Component {
 	static initApp(token, dispatch) {
-		dispatch(new actions.initAction({
-			token: this.userCookies
-		}));
+		dispatch(new actions.initAction(token));
 	}
 
-	static mainData(token, dispatch) {
-		dispatch(new actions.mainAction({
-			token: this.userCookies
-		}));
+	static mainData(token, dispatch, activeSegment) {
+		dispatch(new actions.mainAction(token, activeSegment));
 	}
 
+	static recomendation(token, dispatch, activeSegment) {
+		dispatch(new actions.recomendationAction(this.userCookies, activeSegment));
+	}
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -41,21 +40,35 @@ class Home extends Component {
 	}
 
 	componentDidMount() {
-		this.constructor.initApp(this.userCookies, this.props.dispatch);
-		this.constructor.mainData(this.userCookies, this.props.dispatch);
+		this.initPage(1, this.props.dispatch);
 	}
 
 	handlePick(current) {
 		this.setState({ current });
+		this.initPage(current, this.props.dispatch);
+		
+	}
+
+	initPage(activeSegment = 1, dispatch) {
+		this.constructor.initApp(this.userCookies, dispatch);
+		this.constructor.mainData(this.userCookies, dispatch, activeSegment);
+		this.constructor.recomendation(this.userCookies, dispatch, activeSegment);
+	}
+
+	mappingSegmentValue() {
+		return this.state.current === 1 ? 'woman' : (this.state.current === 2 ? 'man' : 'kids');
 	}
 
 	renderFeatureBanner() {
 		const { home } = this.props;
-		if (home.mainData.featuredBanner.length > 0) {
+		const segment = this.mappingSegmentValue();
+		if (!_.isEmpty(home.allSegmentData[segment]) 
+			&& typeof home.allSegmentData[segment].featuredBanner !== 'undefined' 
+			&& home.allSegmentData[segment].featuredBanner.length > 0) {
 			return (
 				<Carousel>
 					{
-						home.mainData.featuredBanner.map(({ images }, a) => (
+						home.allSegmentData[segment].featuredBanner.map(({ images }, a) => (
 							<Image key={a} alt='slide' src={images.mobile} />
 						))
 					}
@@ -65,13 +78,44 @@ class Home extends Component {
 		return null;
 	}
 
+	renderRecommendation(type = 'new_arrival_products') {
+		/**
+		 * Registered object 
+		 * new_arrival_products, 
+		 * best_seller_products,
+		 * recommended_products,
+		 * recently_viewed_products
+		 * */ 
+
+		const obj = _.camelCase(type);
+		const { home } = this.props;
+		const segment = this.mappingSegmentValue();
+		const segmentData = home.allSegmentData[segment];
+		if (!_.isEmpty(segmentData) && typeof segmentData.recomendationData !== 'undefined' && segmentData.recomendationData[obj].length > 0) {
+			return (
+				<Grid split={3}>
+					{
+						segmentData.recomendationData[obj].map(({ images, pricing }, e) => (
+							<div key={e}>
+								<Image lazyload alt='thumbnail' src={images.mobile} />
+								<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
+							</div>
+						))
+					}
+				</Grid>
+			);
+		}
+		return null;
+	}
+
 	renderHashtag() {
 		const { home } = this.props;
-		if (typeof home.mainData.hashtag.images !== 'undefined' && home.mainData.hashtag.images.length > 0) {
+		const segment = this.mappingSegmentValue();
+		if (!_.isEmpty(home.allSegmentData[segment]) && typeof home.allSegmentData[segment].hashtag.images !== 'undefined') {
 			return (
 				<Carousel>
 					{
-						home.mainData.hashtag.images.map(({ images, link }, b) => (
+						home.allSegmentData[segment].hashtag.images.map(({ images, link }, b) => (
 							<div key={b} ><Image lazyload alt='thumbnail' src={images.mobile} /></div>
 						))
 					}
@@ -83,11 +127,12 @@ class Home extends Component {
 
 	renderOOTD() {
 		const { home } = this.props;
-		if (home.mainData.middleBanner.length > 0) {
+		const segment = this.mappingSegmentValue();
+		if (!_.isEmpty(home.allSegmentData[segment]) && home.allSegmentData[segment].middleBanner.length > 0) {
 			return (
 				<div>
 					{
-						home.mainData.middleBanner.map(({ images, link }, c) => (
+						home.allSegmentData[segment].middleBanner.map(({ images, link }, c) => (
 							<Image key={c} lazyload alt='banner' src={images.mobile} />
 						))
 					}
@@ -99,7 +144,12 @@ class Home extends Component {
 
 	renderBottomBanner(id = 1) {
 		const { home } = this.props;
-		const bottomBanner = id === 1 ? home.mainData.bottomBanner1 : home.mainData.bottomBanner2;
+		const segment = this.mappingSegmentValue();
+		let bottomBanner = [];
+		if (!_.isEmpty(home.allSegmentData[segment]) 
+			&& (home.allSegmentData[segment].bottomBanner1.length && home.allSegmentData[segment].bottomBanner2.length)) {
+			bottomBanner = id === 1 ? home.allSegmentData[segment].bottomBanner1 : home.allSegmentData[segment].bottomBanner2;
+		}
 		if (bottomBanner.length > 0) {
 			return (
 				<div className='margin--medium'>
@@ -118,11 +168,13 @@ class Home extends Component {
 
 	renderFeaturedBrands() {
 		const { home } = this.props;
-		if (home.mainData.featuredBrand.length > 0) {
+		const segment = this.mappingSegmentValue();
+		if (!_.isEmpty(home.allSegmentData[segment]) 
+			&& home.allSegmentData[segment].featuredBrand.length > 0) {
 			return (
 				<Grid split={3}>
 					{
-						home.mainData.featuredBrand.map(({ images, link }, e) => (
+						home.allSegmentData[segment].featuredBrand.map(({ images, link }, e) => (
 							<div key={e}>
 								<Image lazyload alt='thumbnail' src={images.mobile} />
 							</div>
@@ -137,11 +189,13 @@ class Home extends Component {
 
 	renderMozaic() {
 		const { home } = this.props;
-		if (!_.isEmpty(home.mainData.mozaic)) {
+		const segment = this.mappingSegmentValue();
+		if (!_.isEmpty(home.allSegmentData[segment]) 
+			&& !_.isEmpty(home.allSegmentData[segment].mozaic)) {
 			return (
 				<Carousel>
 					{
-						home.mainData.mozaic.posts.map((detail, i) => (
+						home.allSegmentData[segment].mozaic.posts.map((detail, i) => (
 							<Article posts={detail} key={i} />
 						))
 					}
@@ -162,7 +216,6 @@ class Home extends Component {
 			);
 		};
 		const { shared } = this.props;
-		console.log(shared.totalLovelist);
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -183,43 +236,13 @@ class Home extends Component {
 
 					{this.renderHashtag()}
 
-					{/* {this.renderOOTD()} */}
-
+					{this.renderOOTD()}
 					{renderSectionHeader('New Arrival', { title: 'See all', url: 'http://www.google.com' })}
-					<Grid split={3}>
-						<div>
-							<Image local lazyload alt='thumbnail' src='temp/thumb-2-1.jpg' />
-							<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>Rp. 1.000.000</Button>
-						</div>
-						<div>
-							<Image local lazyload alt='thumbnail' src='temp/thumb-2-2.jpg' />
-							<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>Rp. 1.000.000</Button>
-						</div>
-						<div>
-							<Image local lazyload alt='thumbnail' src='temp/thumb-2-3.jpg' />
-							<Button className={styles.btnThumbnail} transparent color='primary' outline size='small'>Rp. 1.000.000</Button>
-						</div>
-					</Grid>
+					{ this.renderRecommendation('new_arrival_products')}
 					{this.renderBottomBanner(1)}
 					{renderSectionHeader('Best Seller', { title: 'See all', url: 'http://www.google.com' })}
-
-					<Grid split={3}>
-						<div>
-							<Image local lazyload alt='thumbnail' src='temp/thumb-2-1.jpg' />
-							<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>Rp. 1.000.000</Button>
-						</div>
-						<div>
-							<Image local lazyload alt='thumbnail' src='temp/thumb-2-2.jpg' />
-							<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>Rp. 1.000.000</Button>
-						</div>
-						<div>
-							<Image local lazyload alt='thumbnail' src='temp/thumb-2-3.jpg' />
-							<Button className={styles.btnThumbnail} transparent color='primary' outline size='small'>Rp. 1.000.000</Button>
-						</div>
-					</Grid>
-
+					{ this.renderRecommendation('best_seller_products')}
 					{this.renderBottomBanner(2)}
-
 					{renderSectionHeader('Featured Brands', { title: 'See all', url: 'http://www.google.com' })}
 					{this.renderFeaturedBrands()}
 
@@ -240,8 +263,7 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = (props) => {
-	// console.log('a', props);
-	// code here if you need anon token or token
+	console.log('code here if you need anon token or token');
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Home, doAfterAnonymous)));

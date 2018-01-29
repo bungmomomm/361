@@ -1,0 +1,15 @@
+{
+  "title": [
+    {
+      "pattern": "^(feature|fix|docs|style|refactor|perf|update|bug|message):\\s",
+      "flags": ["i"],
+      "message": "Your PR title doesn’t match our schema"
+    }
+  ],
+  "head.ref": [
+    {
+      "pattern": "^(feature|fix|docs|style|refactor|perf|update|bug|message)/",
+      "message": "Your branch name is invalid"
+    }
+  ]
+}
