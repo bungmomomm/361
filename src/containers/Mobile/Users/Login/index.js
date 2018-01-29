@@ -2,10 +2,19 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { users } from '@/state/v4/User';
-import { Header, Page, Navigation, Button, Input } from '@/components/mobile';
+import { Link } from 'react-router-dom';
+import { Header, Page, Button, Input, Tabs, Svg, Notification } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import { setUserCookie } from '@/utils';
+import styles from '../user.scss';
 
+const DUMMY_TAB = [{
+	Title: 'Login',
+	id: 'login'
+}, {
+	Title: 'Daftar',
+	id: 'register'
+}];
 
 class Login extends Component {
 	constructor(props) {
@@ -15,7 +24,8 @@ class Login extends Component {
 		this.source = this.props.cookies.get('user.source');
 		this.props = props;
 		this.state = {
-			current: 'login'
+			current: 'login',
+			visibalePasswod: false
 		};
 	}
 
@@ -40,6 +50,18 @@ class Login extends Component {
 
 	render() {
 		const { userProfile } = this.props.users;
+		const { visibalePasswod } = this.state;
+		const HeaderPage = {
+			left: (
+				<Link to='/'>
+					<Svg src='ico_arrow-back-left.svg' />
+				</Link>
+			),
+			center: 'Login',
+			right: null,
+			shadow: false
+		};
+
 		const userinfo = Object.keys(userProfile).map((id, key) => {
 			const value = userProfile[id];
 			return (
@@ -48,24 +70,52 @@ class Login extends Component {
 		});
 
 		return (
-			<div style={this.props.style}>
+			<div className='full-height' style={this.props.style}>
 				<Page>
-					Login
-					<ul>
-						{userinfo}
-					</ul>
-					username
-					<Input value={this.props.users.username} onChange={(e) => this.onUserChange(e.target.value)} />
-					<Button color='primary' size='small' loading={this.props.isLoginLoading} onClick={(e) => this.onLogin(e)} >Login</Button>
-					<Button color='primary' size='small' loading={this.props.isLoginLoading} onClick={(e) => this.onUserChange('')} >remove keyword</Button>
-					<Button color='primary' size='small' loading={this.props.isRegisterLoading} onClick={(e) => this.onRegister(e)} >Register By Phone</Button>
-					<Button color='primary' size='small' loading={this.props.isRegisterLoading} onClick={(e) => this.onRegister(e)} >Register By Email</Button>
-					<Button color='primary' size='small' loading={this.props.isRegisterLoading} onClick={(e) => this.onRegister(e)} >Forgotpassword</Button>
-					<Button color='primary' size='small' loading={this.props.isRegisterLoading} onClick={(e) => this.onRegister(e)} >Logout</Button>
+					<Tabs
+						current={this.state.current}
+						variants={DUMMY_TAB}
+						onPick={(e) => this.handlePick(e)}
+					/>
+					<div className={styles.container}>
+						<div className='margin--medium'>Login Dengan</div>
+						<div className='flex-row flex-center flex-spaceBetween'>
+							<div style={{ width: '45%' }}><Button wide color='facebook' size='medium' >Facebook</Button></div>
+							<div style={{ width: '45%' }}><Button wide color='google' size='medium' ><Svg src='ico_google.svg' style={{ marginRight: '10px' }} />Google</Button></div>
+						</div>
+						<div className={styles.divider}><span>A	tau</span></div>
+						<Notification style={{ marginBottom: '20px' }} disableClose color='pink' show><span className='font-color--secondary'>Email/No Handphone/Password yang Anda masukkan salah</span></Notification>
+						<div>
+							<Input label='Nomor Handphone/Email' type='text' error hint='wajib diisi' flat placeholder='Nomor Handphone/Email' />
+							<Input label='Password' iconRight={<Button onClick={() => this.setState({ visibalePasswod: !visibalePasswod })}>show</Button>} type={visibalePasswod ? 'text' : 'password'} flat placeholder='Password minimal 6 karakter' />
+						</div>
+						<div className='margin--medium text-right'>
+							<Link to='/'>LUPA PASSWORD</Link>
+						</div>
+						<div className='margin--medium'>
+							<Button color='primary' size='large' onClick={(e) => this.onLogin(e)} >LOGIN</Button>
+						</div>
+					</div>
+
+
+					<div style={{ display: 'none' }}>
+						Login
+						<ul>
+							{userinfo}
+						</ul>
+						username
+						<Input value={this.props.users.username} onChange={(e) => this.onUserChange(e.target.value)} />
+						<Button color='primary' size='small' loading={this.props.isLoginLoading} onClick={(e) => this.onLogin(e)} >Login</Button>
+						<Button color='primary' size='small' loading={this.props.isLoginLoading} onClick={(e) => this.onUserChange('')} >remove keyword</Button>
+						<Button color='primary' size='small' loading={this.props.isRegisterLoading} onClick={(e) => this.onRegister(e)} >Register By Phone</Button>
+						<Button color='primary' size='small' loading={this.props.isRegisterLoading} onClick={(e) => this.onRegister(e)} >Register By Email</Button>
+						<Button color='primary' size='small' loading={this.props.isRegisterLoading} onClick={(e) => this.onRegister(e)} >Forgotpassword</Button>
+						<Button color='primary' size='small' loading={this.props.isRegisterLoading} onClick={(e) => this.onRegister(e)} >Logout</Button>
+					</div>
 				</Page>
-				<Header />
-				<Navigation />
-			</div>);
+				<Header.Modal {...HeaderPage} />
+			</div>
+		);
 	}
 }
 

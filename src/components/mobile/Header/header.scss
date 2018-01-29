@@ -71,3 +71,8 @@
 .back{
 	padding: 0px rem(15px);
 }
+
+.disableShadow .modal{
+	box-shadow: none;
+	border: 0px;
+}

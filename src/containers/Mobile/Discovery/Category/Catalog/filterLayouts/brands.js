@@ -11,6 +11,7 @@ import {
 	List,
 	Navigation
 } from '@/components/mobile';
+import Action from './action';
 import C from '@/constants';
 import styles from './brands.scss';
 
@@ -81,6 +82,7 @@ class Brands extends Component {
 				</Page>
 				<Header.Modal {...HeaderPage} />
 				<Navigation active='Categories' />
+				<Action />
 			</div>
 		);
 	}

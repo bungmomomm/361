@@ -12,6 +12,7 @@ class Notification extends PureComponent {
 			show,
 			onClose,
 			color,
+			disableClose,
 			...props,
 		} = this.props;
 
@@ -28,9 +29,13 @@ class Notification extends PureComponent {
 		return (
 			<div className={createClassName} {...props} >
 				{children}
-				<div className={styles.close}>
-					<Button onClick={(e) => onClose(e)} ><Svg src='ico_close.svg' /></Button>
-				</div>
+				{
+					!disableClose && (
+						<div className={styles.close}>
+							<Button onClick={(e) => onClose(e)} ><Svg src='ico_close.svg' /></Button>
+						</div>
+					)
+				}
 			</div>
 		);
 	}
