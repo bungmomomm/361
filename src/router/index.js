@@ -1,7 +1,8 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import { spring, AnimatedSwitch } from 'react-router-transition';
+import { spring, AnimatedSwitch, AnimatedRoute } from 'react-router-transition';
 import routes from './routes';
+import ProfileEdit from '@/containers/Mobile/Users/Profile';
 
 function mapStyles(styles) {
 	return {
@@ -29,15 +30,27 @@ const transition = {
 };
 
 export default () => (
-	<AnimatedSwitch
-		atEnter={transition.atEnter}
-		atLeave={transition.atLeave}
-		atActive={transition.atActive}
-		mapStyles={mapStyles}
-		className='switch-wrapper'
-	>
-		{
-			routes.map((route, i) => <Route {...route} key={i} />)
-		}
-	</AnimatedSwitch>
-);	
+	<div>
+		<AnimatedSwitch
+			atEnter={transition.atEnter}
+			atLeave={transition.atLeave}
+			atActive={transition.atActive}
+			mapStyles={mapStyles}
+			className='switch-wrapper'
+		>
+			{
+				routes.map((route, i) => <Route {...route} key={i} />)
+			}
+		</AnimatedSwitch>
+		<AnimatedRoute
+			path='/profile/edit'
+			component={ProfileEdit}
+			atEnter={{ offset: -100 }}
+			atLeave={{ offset: -100 }}
+			atActive={{ offset: 0 }}
+			mapStyles={(styles) => ({
+				transform: `translateX(${styles.offset}%)`,
+			})}
+		/>
+	</div>
+);

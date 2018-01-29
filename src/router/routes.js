@@ -151,13 +151,16 @@ export default [
 		exact: true
 	},
 	{
-		path: '/*', // Page not found handling.
-		component: Page404,
-		exact: true
+		path: '/profile',
+		component: UserProfile
 	},
 	{
-		path: '/profile',
-		component: UserProfile,
+		path: '/profile/edit',
+		component: UserProfile
+	},
+	{
+		path: '/*', // Page not found handling.
+		component: Page404,
 		exact: true
 	}
 ];

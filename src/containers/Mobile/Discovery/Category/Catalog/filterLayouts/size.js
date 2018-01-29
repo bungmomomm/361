@@ -15,7 +15,8 @@ class Size extends PureComponent {
 			right: null
 		};
 
-		const icon = false ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
+		// const icon = false ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />; bikin error
+		const icon = null;
 
 		return (
 			<div style={this.props.style}>

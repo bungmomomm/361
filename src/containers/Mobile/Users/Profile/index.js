@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
-// import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Page, Navigation, Header, Svg } from '@/components/mobile';
 
 class Profile extends Component {
@@ -19,6 +19,7 @@ class Profile extends Component {
 			<div>
 				<Page>
 					<div>Profile</div>
+					<Link to='/profile/edit'>Edit</Link>
 				</Page>
 				<Header.Modal {...HeaderPage} />
 				<Navigation active='Profile' />
@@ -27,10 +28,6 @@ class Profile extends Component {
 	}
 }
 
-Profile.defaultProps = {
-	Home: 'hallo'
-
-};
-
+Profile.defaultProps = {};
 
 export default withCookies(Profile);
