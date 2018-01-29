@@ -3,12 +3,14 @@
 
 .container {
   all: initial;
-  display: inline-block;
+  display: inline-flex;
+  justify-content: center;
   box-sizing: border-box;
   user-select: none;
   text-align: center;
   border: 0;
   outline: none;
+  font-size: inherit;
   &[disabled] {
     opacity: .8;
   }
@@ -16,7 +18,7 @@
 
 .styled{
   border: 1px solid transparent;
-  font-family: font-family('lato-bold');
+  font-family: font-family('lato-normal');
 }
 
 .wide {
@@ -35,6 +37,7 @@
   border-radius: map-get($border-radius , --medium);
 }
 
+
 /* Sizes */
 .small {
   height: size(--small);
@@ -44,7 +47,7 @@
 }
 
 .medium {
-  height: size(--medium);
+  height: rem(30px);
   font-size: size(--font-medium);
   padding: 0px rem(20px);
   border-radius: size(--medium);
@@ -86,4 +89,15 @@
     border-color: color(--secondary);
     color: color(--secondary);
   }
+}
+
+
+.facebook{
+  background-color: #4267B2;
+  color: #fff;
+}
+
+.google{
+  background: #F8F8F8;
+  border: 1px solid #DCDCDC;
 }

@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Header, Page, Divider, Svg, List } from '@/components/mobile';
 import { Link } from 'react-router-dom';
+import Action from './action';
 
 class Size extends PureComponent {
 	render() {
@@ -31,6 +32,7 @@ class Size extends PureComponent {
 					<List><List.Content>XL {icon}</List.Content></List>
 				</Page>
 				<Header.Modal {...HeaderPage} />
+				<Action />
 			</div>
 		);
 	}

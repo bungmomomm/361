@@ -10,17 +10,24 @@ import styles from './card.scss';
 
 class CatalogGrid extends PureComponent {
 	render() {
-		const { className, ...props } = this.props;
+		const {
+			className,
+			image,
+			productTitle,
+			basePrice,
+			effectivePrice,
+			...props
+		} = this.props;
 
 		const createClassName = classNames(styles.container, styles.grid, className);
 
 		return (
 			<div className={createClassName} {...props}>
-				<Image local src='temp/product-1.jpg' alt='product' />
+				<Image src={image} alt='product' />
 				<Level className={styles.action}>
 					<Level.Item>
 						<div className={styles.title}>
-							Immaculate Brands of the Year by Yannis Philippakis
+							{productTitle}
 						</div>
 					</Level.Item>
 					<Level.Right>
@@ -32,8 +39,8 @@ class CatalogGrid extends PureComponent {
 				<Level className={styles.footer}>
 					<Level.Item>
 						<div className={styles.blockPrice}>
-							<div className={styles.price}>Rp1.199.000</div>
-							<div className={styles.discount}>Rp900.900</div>
+							<div className={styles.price}>{basePrice}</div>
+							<div className={styles.discount}>{effectivePrice}</div>
 						</div>
 					</Level.Item>
 					<Level.Right>

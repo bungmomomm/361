@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-import { Header, Page, Card, Svg, Tabs, Button, Level, Image, Input, Navigation } from '@/components/mobile';
+import { Header, Page, Card, Svg, Tabs, Button, Level, Image, Input, Navigation, /* Spinner */ } from '@/components/mobile';
 import stylesSearch from '../Search/search.scss';
 import stylesCatalog from '../Category/Catalog/catalog.scss';
 import { actions } from '@/state/v4/SearchResults';
@@ -25,7 +25,7 @@ class SearchResults extends Component {
 			sort: this.parsedUrl.sort !== undefined ? this.parsedUrl.sort : 'energy DESC',
 		};
 
-		this.currentListState = 1;
+		this.currentListState = 0;
 		this.listType = [{
 			type: 'grid',
 			icon: 'ico_list.svg'
@@ -78,71 +78,92 @@ class SearchResults extends Component {
 
 	searchFound(products) {
 		console.log('SearchFound');
-		products.map(product => {
+		if (products.length > 0) {
 			return (
 				<div className={stylesCatalog.cardContainer}>
-					{this.renderList(product)}
+					{
+						products.map((product, index) => 
+							this.renderList(product, index)
+						)
+					}
 				</div>
 			);
-		});
+		}
+
+		return null;
 	}
 
 	searchRender() {
 		let searchView = null;
-		if (this.props.searchResults.searchStatus === 'success') {
-			searchView = (
-				<div>
-					{this.searchFound(this.props.searchResults.searchData.products)}
-				</div>
-			);
+		const searchResults = this.props.searchResults;
+		if (typeof searchResults.searchStatus !== 'undefined' && searchResults.searchStatus !== '') {
+			if (searchResults.searchStatus === 'success' && searchResults.searchData.products.length > 0) {
+				searchView = (
+					<div>
+						{ 
+							this.searchFound(searchResults.searchData.products)
+						}
+						<div className={stylesCatalog.loadmore}>
+							<Button color='secondary' outline size='large'> LOAD MORE </Button>
+						</div>
+					</div>
+				);
+			} else if (searchResults.searchStatus === 'failed') {
+				searchView = (
+					<div>{this.notFound()}</div>
+				);
+			}
 		} else {
-			searchView = (
-				<div>{this.notFound()}</div>
-			);
+			searchView = null; // TO DO: change this with loading state
 		}
 
 		return searchView;
 	}
 
-	renderList(productData) {
-		const renderBlockComment = (
-			<div className={stylesCatalog.commentBlock}>
-				<Button>View 38 comments</Button>
-				<Level>
-					<Level.Left><div style={{ marginRight: '10px' }}><Image avatar width={25} height={25} local src='temp/pp.jpg' /></div></Level.Left>
-					<Level.Item>
-						<Input color='white' placeholder='Write comment' />
-					</Level.Item>
-				</Level>
-			</div>
-		);
-		switch (this.state.listTypeState.type) {
-		case 'list':
-			return (
-				<div className={stylesCatalog.cardCatalog}>
-					<Card.Catalog
+	renderList(productData, index) {
+		if (productData) {
+			const renderBlockComment = (
+				<div className={stylesCatalog.commentBlock}>
+					<Button>View 38 comments</Button>
+					<Level>
+						<Level.Left><div style={{ marginRight: '10px' }}><Image avatar width={25} height={25} local src='temp/pp.jpg' /></div></Level.Left>
+						<Level.Item>
+							<Input color='white' placeholder='Write comment' />
+						</Level.Item>
+					</Level>
+				</div>
+			);
+			switch (this.state.listTypeState.type) {
+			case 'list':
+				return (
+					<div key={index} className={stylesCatalog.cardCatalog}>
+						<Card.Catalog
+							images={productData.images_url}
+							productTitle={productData.product_title}
+							brandName={productData.brand}
+							basePrice={productData.pricing.formatted.base_price}
+							effectivePrice={productData.pricing.formatted.effective_price}
+						/>
+						{renderBlockComment}
+					</div>
+				);
+			case 'grid':
+				return (
+					<Card.CatalogGrid
+						key={index}
+						image={productData.images_url}
 						productTitle={productData.product_title}
-						brandName={productData.brand}
 						basePrice={productData.pricing.formatted.base_price}
 						effectivePrice={productData.pricing.formatted.effective_price}
 					/>
-					{renderBlockComment}
-				</div>
-			);
-		case 'grid':
-			return (
-				// <Card.CatalogGrid
-				// 	imageUrl={productData.thumbnails_url}
-				// 	imageAlt={productData.product_title}
-				// 	productTitle={productData.product_title}
-				// 	basePrice={productData.pricing.formatted.base_price}
-				// 	effectivePrice={productData.pricing.formatted.effective_price}
-				// />
-				<Card.CatalogGrid />
-			);
-		default:
+				);
+			default:
+				return null;
+			}
+		} else {
 			return null;
 		}
+		
 	}
 
 	render() {
@@ -156,7 +177,9 @@ class SearchResults extends Component {
 		return (
 			<div style={this.props.style}>
 				<Page>
-					{this.searchRender()}
+					<div>
+						{this.searchRender()}
+					</div>
 				</Page>
 				<Header.SearchResult
 					back={back}
@@ -182,7 +205,8 @@ class SearchResults extends Component {
 					onPick={e => this.handlePick(e)}
 				/>
 				<Navigation />
-			</div>);
+			</div>
+		);
 	}
 }
 

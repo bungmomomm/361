@@ -6,13 +6,16 @@ import Brands from './filterLayouts/brands';
 import Color from './filterLayouts/color';
 import Size from './filterLayouts/Size';
 import Price from './filterLayouts/price';
+import Tree from './filterLayouts/tree';
+import TreeSegment from './filterLayouts/treeSegment';
+import Result from './filterLayouts/result';
 
 
 class Filter extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
-			layout: 'price',
+			layout: 'result',
 			params: {
 				header: {
 					title: 'Title'
@@ -41,6 +44,15 @@ class Filter extends PureComponent {
 		
 		case 'price':
 			return <Price {...state} />;
+		
+		case 'tree':
+			return <Tree {...state} />;
+		
+		case 'treeSegment':
+			return <TreeSegment {...state} />;
+		
+		case 'result':
+			return <Result {...state} />;
 	
 		default:
 			return null;

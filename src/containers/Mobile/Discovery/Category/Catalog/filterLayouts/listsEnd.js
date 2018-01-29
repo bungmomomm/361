@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Header, Page, Svg, List } from '@/components/mobile';
 import { Link } from 'react-router-dom';
+import Action from './action';
 
 class ListsEnd extends PureComponent {
 	render() {
@@ -57,6 +58,7 @@ class ListsEnd extends PureComponent {
 					</List>
 				</Page>
 				<Header.Modal {...HeaderPage} />
+				<Action />
 			</div>
 		);
 	}

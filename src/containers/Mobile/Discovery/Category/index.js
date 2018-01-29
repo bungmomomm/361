@@ -30,12 +30,20 @@ class Category extends Component {
 
 	componentWillMount() {
 		const { dispatch } = this.props;
-		dispatch(new homeActions.initAction({ token: this.userCookies }));		
-		dispatch(new categoryActions.getCategoryMenuAction(this.userCookies, dispatch));
+		dispatch(new homeActions.initAction({ token: this.userCookies }));	
+		this.getCategory();
+	}
+
+	getCategory(segmen = 1) {
+		const { dispatch } = this.props;
+		dispatch(new categoryActions.getCategoryMenuAction(this.userCookies, segmen));
 	}
 
 	handlePick(current) {
-		this.setState({ current });
+		if (current !== this.state.current) {
+			this.setState({ current });
+			this.getCategory(current);
+		}
 	}
 
 	render() {
@@ -48,15 +56,17 @@ class Category extends Component {
 						variants={this.props.home.segmen}
 						onPick={(e) => this.handlePick(e)}
 					/>
-					{
-						category.data.map((cat, key) => {
-							return (
-								<Link to={cat.link} key={key} className={styles.list}>
-									<Image src={cat.image_url} />
-									<div className={styles.label}>{cat.title}</div>
-								</Link>);
-						})
-					}
+					<div>
+						{
+							category.data.map((cat, key) => {
+								return (
+									<Link to={cat.type === 'brand' ? 'brands' : cat.link} key={key} className={styles.list}>
+										<Image src={cat.image_url} />
+										<div className={styles.label}>{cat.title}</div>
+									</Link>);
+							})
+						}
+					</div>
 				</Page>
 				<Header />
 				<Navigation active='Categories' />

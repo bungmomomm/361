@@ -13,6 +13,7 @@ class Catalog extends PureComponent {
 		const {
 			className,
 			type,
+			images,
 			productTitle,
 			brandName,
 			basePrice,
@@ -25,9 +26,11 @@ class Catalog extends PureComponent {
 		return (
 			<div className={createClassName} {...props}>
 				<Carousel>
-					<Image local src='temp/product-1.jpg' alt='product' />
-					<Image local src='temp/product-1.jpg' alt='product' />
-					<Image local src='temp/product-1.jpg' alt='product' />
+					{
+						images.map((image, index) => (
+							<Image key={index} src={image} alt='product' />
+						))
+					}
 				</Carousel>
 				<Level
 					className={styles.action}
