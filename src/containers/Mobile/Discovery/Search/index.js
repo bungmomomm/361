@@ -152,7 +152,9 @@ class Search extends PureComponent {
 		}
 
 		let mainList = null;
-		if (this.state.showHistory && cookies && cookies.length > 0) {
+		if (this.props.loading) {
+			mainList = (<div style={{ textAlign: 'center', padding: '5px 0px' }} > hhmmmm..... </div>);
+		} else if (this.state.showHistory && cookies && cookies.length > 0) {
 			mainList = (<div>{ sectionSearchHistory }</div>);
 		} else {
 			mainList = (
@@ -188,6 +190,7 @@ const mapStateToProps = (state) => {
 		relatedCategory: state.search.related_category,
 		relatedKeyword: state.search.related_keyword,
 		relatedHastag: state.search.related_hashtag,
+		loading: state.search.loading
 	};
 };
 

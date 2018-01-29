@@ -5,6 +5,10 @@ import { keywordUpdate } from './reducer';
 const updatedKeywordHandler = (string, userToken) => {
 	return dispatch => {
 		if (string.length >= 3) {
+			dispatch(keywordUpdate({
+				keyword: string,
+				loading: true
+			}));
 			const url = `${process.env.MICROSERVICES_URL}product/suggestion?q=${string}`;
 			request({
 				token: userToken,
@@ -19,7 +23,8 @@ const updatedKeywordHandler = (string, userToken) => {
 					keyword: string,
 					related_category: relatedCategory,
 					related_keyword: relatedKeyword,
-					related_hashtag: relatedHastag
+					related_hashtag: relatedHastag,
+					loading: false
 				}));
 			});
 		} else {
@@ -27,7 +32,8 @@ const updatedKeywordHandler = (string, userToken) => {
 				keyword: string,
 				related_category: '',
 				related_keyword: '',
-				related_hashtag: ''
+				related_hashtag: '',
+				loading: false
 			}));
 		}
 	};
