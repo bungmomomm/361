@@ -152,7 +152,6 @@ export default [
 	{
 		path: '/newarrival',
 		component: NewArrival,
-		exact: true
 	},
 	{
 		path: '/*', // Page not found handling.
