@@ -62,13 +62,12 @@ class Home extends Component {
 	renderFeatureBanner() {
 		const { home } = this.props;
 		const segment = this.mappingSegmentValue();
-		if (!_.isEmpty(home.allSegmentData[segment]) 
-			&& typeof home.allSegmentData[segment].featuredBanner !== 'undefined' 
-			&& home.allSegmentData[segment].featuredBanner.length > 0) {
+		const featuredBanner = _.chain(home).get(`allSegmentData.${segment}`).get('featuredBanner');
+		if (!featuredBanner.isEmpty().value()) {
 			return (
 				<Carousel>
 					{
-						home.allSegmentData[segment].featuredBanner.map(({ images }, a) => (
+						featuredBanner.value().map(({ images }, a) => (
 							<Image key={a} alt='slide' src={images.mobile} />
 						))
 					}
@@ -90,13 +89,12 @@ class Home extends Component {
 		const obj = _.camelCase(type);
 		const { home } = this.props;
 		const segment = this.mappingSegmentValue();
-		const segmentData = home.allSegmentData[segment];
-		// const datas = _.chain(home).get(`allSegmentData.${segment}.hashtag`);
-		if (!_.isEmpty(segmentData) && typeof segmentData.recomendationData !== 'undefined' && segmentData.recomendationData[obj].length > 0) {
+		const datas = _.chain(home).get(`allSegmentData.${segment}`).get('recomendationData').get(obj);
+		if (!datas.isEmpty().value()) {
 			return (
 				<Grid split={3}>
 					{
-						segmentData.recomendationData[obj].map(({ images, pricing }, e) => (
+						datas.value().map(({ images, pricing }, e) => (
 							<div key={e}>
 								<Image lazyload alt='thumbnail' src={images.mobile} />
 								<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
@@ -130,11 +128,12 @@ class Home extends Component {
 	renderOOTD() {
 		const { home } = this.props;
 		const segment = this.mappingSegmentValue();
-		if (!_.isEmpty(home.allSegmentData[segment]) && home.allSegmentData[segment].middleBanner.length > 0) {
+		const datas = _.chain(home).get(`allSegmentData.${segment}.middleBanner`);
+		if (!datas.isEmpty().value()) {
 			return (
 				<div>
 					{
-						home.allSegmentData[segment].middleBanner.map(({ images, link }, c) => (
+						datas.value().map(({ images, link }, c) => (
 							<Image key={c} lazyload alt='banner' src={images.mobile} />
 						))
 					}
@@ -148,9 +147,10 @@ class Home extends Component {
 		const { home } = this.props;
 		const segment = this.mappingSegmentValue();
 		let bottomBanner = [];
-		if (!_.isEmpty(home.allSegmentData[segment]) 
-			&& (home.allSegmentData[segment].bottomBanner1.length && home.allSegmentData[segment].bottomBanner2.length)) {
-			bottomBanner = id === 1 ? home.allSegmentData[segment].bottomBanner1 : home.allSegmentData[segment].bottomBanner2;
+		const dataBottomBanner1 = _.chain(home).get(`allSegmentData.${segment}.bottomBanner1`);
+		const dataBottomBanner2 = _.chain(home).get(`allSegmentData.${segment}.bottomBanner2`);
+		if (!dataBottomBanner1.isEmpty().value() && dataBottomBanner2.isEmpty().value()) {
+			bottomBanner = id === 1 ? dataBottomBanner1.value() : dataBottomBanner2.value();
 		}
 		if (bottomBanner.length > 0) {
 			return (
@@ -171,12 +171,12 @@ class Home extends Component {
 	renderFeaturedBrands() {
 		const { home } = this.props;
 		const segment = this.mappingSegmentValue();
-		if (!_.isEmpty(home.allSegmentData[segment]) 
-			&& home.allSegmentData[segment].featuredBrand.length > 0) {
+		const featuredBrand = _.chain(home).get(`allSegmentData.${segment}.featuredBrand`);
+		if (!featuredBrand.isEmpty().value()) {
 			return (
 				<Grid split={3}>
 					{
-						home.allSegmentData[segment].featuredBrand.map(({ images, link }, e) => (
+						featuredBrand.value().map(({ images, link }, e) => (
 							<div key={e}>
 								<Image lazyload alt='thumbnail' src={images.mobile} />
 							</div>
@@ -192,12 +192,13 @@ class Home extends Component {
 	renderMozaic() {
 		const { home } = this.props;
 		const segment = this.mappingSegmentValue();
-		if (!_.isEmpty(home.allSegmentData[segment]) 
-			&& !_.isEmpty(home.allSegmentData[segment].mozaic)) {
+		const mozaic = _.chain(home).get(`allSegmentData.${segment}.mozaic`);
+
+		if (!mozaic.isEmpty().value()) {
 			return (
 				<Carousel>
 					{
-						home.allSegmentData[segment].mozaic.posts.map((detail, i) => (
+						mozaic.value().posts.map((detail, i) => (
 							<Article posts={detail} key={i} />
 						))
 					}
