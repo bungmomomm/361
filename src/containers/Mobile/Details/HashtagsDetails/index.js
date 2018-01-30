@@ -13,14 +13,17 @@ class HashtagsDetails extends Component {
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.source = this.props.cookies.get('user.source');
-		this.hashtag_id = 30;
 	}
 
-
 	componentDidMount() {
+		const { match: { params } } = this.props;
+		if (!params || !params.post_id || isNaN(parseInt(params.post_id, 10))) {
+			window.location.href = '/404';
+		}
+
 		const dataFetch = {
 			token: this.userCookies,
-			hashtag_id: this.hashtag_id
+			post_id: params.post_id
 		};
 
 		this.props.hashtagDetailAction(dataFetch);
@@ -31,9 +34,9 @@ class HashtagsDetails extends Component {
 
 		const HeaderPage = {
 			left: (
-				<a href={$props.history.goBack}>
+				<button href={$props.history.goBack}>
 					<Svg src={'ico_arrow-back-left.svg'} />
-				</a>
+				</button>
 			),
 			center: '#MauGayaItuGampang',
 			right: null
