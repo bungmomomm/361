@@ -138,8 +138,6 @@ class SearchResults extends Component {
 					<div>{this.notFound()}</div>
 				);
 			}
-		} else {
-			searchView = null; // TO DO: change this with loading state
 		}
 
 		return searchView;
@@ -163,11 +161,10 @@ class SearchResults extends Component {
 				return (
 					<div key={index} className={stylesCatalog.cardCatalog}>
 						<Card.Catalog
-							images={productData.images_url}
+							images={productData.images}
 							productTitle={productData.product_title}
 							brandName={productData.brand}
-							basePrice={productData.pricing.formatted.base_price}
-							effectivePrice={productData.pricing.formatted.effective_price}
+							pricing={productData.pricing}
 						/>
 						{renderBlockComment}
 					</div>
@@ -176,10 +173,10 @@ class SearchResults extends Component {
 				return (
 					<Card.CatalogGrid
 						key={index}
-						image={productData.images_url}
+						images={productData.images}
 						productTitle={productData.product_title}
-						basePrice={productData.pricing.formatted.base_price}
-						effectivePrice={productData.pricing.formatted.effective_price}
+						brandName={productData.brand}
+						pricing={productData.pricing}
 					/>
 				);
 			default:

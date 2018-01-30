@@ -12,10 +12,10 @@ class CatalogGrid extends PureComponent {
 	render() {
 		const {
 			className,
-			image,
+			images,
 			productTitle,
-			basePrice,
-			effectivePrice,
+			brandName,
+			pricing,
 			...props
 		} = this.props;
 
@@ -23,11 +23,12 @@ class CatalogGrid extends PureComponent {
 
 		return (
 			<div className={createClassName} {...props}>
-				<Image src={image} alt='product' />
+				<Image src={images[0].mobile} alt='product' />
 				<Level className={styles.action}>
 					<Level.Item>
 						<div className={styles.title}>
-							{productTitle}
+							{brandName}
+							<span>{productTitle}</span>
 						</div>
 					</Level.Item>
 					<Level.Right>
@@ -39,13 +40,13 @@ class CatalogGrid extends PureComponent {
 				<Level className={styles.footer}>
 					<Level.Item>
 						<div className={styles.blockPrice}>
-							<div className={styles.price}>{basePrice}</div>
-							<div className={styles.discount}>{effectivePrice}</div>
+							<div className={styles.price}>{pricing.formatted.effective_price}</div>
+							<div className={styles.discount}>{pricing.formatted.base_price}</div>
 						</div>
 					</Level.Item>
 					<Level.Right>
 						<Badge rounded color='red'>
-							<span className='font--lato-bold'>20%</span>
+							<span className='font--lato-bold'>{pricing.discount}</span>
 						</Badge>
 					</Level.Right>
 				</Level>

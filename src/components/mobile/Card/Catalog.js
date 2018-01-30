@@ -16,8 +16,7 @@ class Catalog extends PureComponent {
 			images,
 			productTitle,
 			brandName,
-			basePrice,
-			effectivePrice,
+			pricing,
 			...props
 		} = this.props;
 
@@ -28,7 +27,7 @@ class Catalog extends PureComponent {
 				<Carousel>
 					{
 						images.map((image, index) => (
-							<Image key={index} src={image} alt='product' />
+							<Image key={index} src={image.mobile} alt='product' />
 						))
 					}
 				</Carousel>
@@ -50,19 +49,18 @@ class Catalog extends PureComponent {
 					</Level.Item>
 				</Level>
 				<div className={styles.title}>
-					{productTitle} -{' '}
-					<span>{brandName}</span>
+					{brandName} - <span>{productTitle}</span>
 				</div>
 				<Level className={styles.footer}>
 					<Level.Item>
 						<div className={styles.blockPrice}>
 							<div>
-								<div className={styles.price}>{basePrice}</div>
-								<div className={styles.discount}>{effectivePrice}</div>
+								<div className={styles.price}>{pricing.formatted.effective_price}</div>
+								<div className={styles.discount}>{pricing.formatted.base_price}</div>
 							</div>
 							<div style={{ marginLeft: '1.5rem' }}>
 								<Badge rounded color='red'>
-									<span className='font--lato-bold'>20%</span>
+									<span className='font--lato-bold'>{pricing.discount}</span>
 								</Badge>
 							</div>
 						</div>
