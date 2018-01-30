@@ -108,7 +108,7 @@ class Lovelist extends Component {
 			return (renderLovelistPage(
 				<div className='text-center --disable-flex'>
 					<p className='margin--medium'>Kamu belum memiliki Lovelist</p>
-					<p className='margin--medium font--lato-light'>Tap the <Svg src='ico_love.svg' /> next to an item to add
+					<p className='margin--medium font--lato-light'>Tap the <Svg width='20px' height='18px' src='ico_love.svg' /> next to an item to add
 						<br />it to your Lovelist.
 					</p>
 					<p className='margin--medium'><Button inline size='large' color='primary'>BELANJA</Button></p>
