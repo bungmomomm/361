@@ -56,6 +56,31 @@ class SearchResults extends Component {
 		}
 	}
 
+	loadingRender() {
+		const inlineStyle = {
+			textAlign: 'center',
+			margin: '10px auto 10px auto'
+		};
+
+		if (this.props.isLoading === true) {
+			return (
+				<div className={stylesSearch.container} >
+					<div style={inlineStyle}>&nbsp;</div>
+					<div style={inlineStyle}>&nbsp;</div>
+					<div style={inlineStyle}>&nbsp;</div>
+					<div style={inlineStyle}>&nbsp;</div>
+					<div style={inlineStyle}>Loading...</div>
+					<div style={inlineStyle}>&nbsp;</div>
+					<div style={inlineStyle}>&nbsp;</div>
+					<div style={inlineStyle}>&nbsp;</div>
+					<div style={inlineStyle}>&nbsp;</div>
+				</div>
+			);
+		}
+
+		return null;
+	}
+
 	notFound() {
 		console.log('NotFound');
 		const inlineStyle = {
@@ -178,7 +203,9 @@ class SearchResults extends Component {
 			<div style={this.props.style}>
 				<Page>
 					<div>
-						{this.searchRender()}
+						{
+							this.props.isLoading ? this.loadingRender() : this.searchRender()
+						}
 					</div>
 				</Page>
 				<Header.SearchResult
@@ -213,7 +240,10 @@ class SearchResults extends Component {
 const mapStateToProps = (state) => {
 	console.log(state);
 	return {
-		...state
+		...state,
+		shared: state.shared,
+		searchResult: state.searchResult,
+		isLoading: state.searchResults.isLoading
 	};
 };
 

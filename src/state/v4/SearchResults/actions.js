@@ -1,7 +1,11 @@
 import { request } from '@/utils';
-import { initResponse } from './reducer';
+import { setLoading, initSearch } from './reducer';
 
 const initAction = (token, query) => (dispatch) => {
+	dispatch(setLoading({
+		isLoading: true
+	}));
+
 	const url = `${process.env.MICROSERVICES_URL}products/search`;
 	const searchParam = query;
 	return request({
@@ -12,7 +16,7 @@ const initAction = (token, query) => (dispatch) => {
 		fullpath: true
 	}).then(response => {
 		if (query.query === 'notfound' || query.query === '') {
-			dispatch(initResponse({
+			dispatch(initSearch({
 				searchStatus: 'failed',
 				searchParam
 			}));
@@ -24,7 +28,7 @@ const initAction = (token, query) => (dispatch) => {
 				sorts: response.data.data.sorts,
 				products: response.data.data.products
 			};
-			dispatch(initResponse({
+			dispatch(initSearch({
 				searchStatus: 'success',
 				searchParam,
 				searchData

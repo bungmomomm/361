@@ -1,6 +1,7 @@
 import { handleActions, createActions } from 'redux-actions';
 
 const initialState = {
+	isLoading: false,
 	searchStatus: '',
 	searchParam: [],
 	searchData: {
@@ -12,14 +13,21 @@ const initialState = {
 	}
 };
 
-const { initResponse } = createActions(
-	'INIT_RESPONSE'
+const { setLoading, initSearch } = createActions(
+	'SET_LOADING', 'INIT_SEARCH'
 );
 
 const reducer = handleActions({
-	[initResponse](state, { payload: { searchStatus, searchParam, searchData } }) {
+	[setLoading](state, { payload: { isLoading } }) {
 		return {
 			...state,
+			isLoading
+		};
+	},
+	[initSearch](state, { payload: { isLoading, searchStatus, searchParam, searchData } }) {
+		return {
+			...state,
+			isLoading: false,
 			searchStatus,
 			searchParam,
 			searchData
@@ -29,5 +37,6 @@ const reducer = handleActions({
 
 export default {
 	reducer, 
-	initResponse
+	setLoading,
+	initSearch
 };
