@@ -20,8 +20,8 @@ const config = Object.assign(commonConfig, {
 	output: {
 	
 		filename: '[name].js',
-		path: path.resolve(__dirname, '..', '..', 'dist', 'public')
-
+		path: path.resolve(__dirname, '..', '..', 'dist', 'public'),
+		publicPath: '/'
 	},
 
 	plugins: [
