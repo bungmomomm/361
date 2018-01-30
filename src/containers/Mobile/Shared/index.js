@@ -5,6 +5,10 @@ import { actions as users } from '@/state/v4/User';
 import { setUserCookie } from '@/utils';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
+	WrappedComponent.contextTypes = {
+		router: React.PropTypes.object,
+		location: React.PropTypes.object
+	};
 	class SharedAction extends Component {
 		static initApp(props) {
 			props.dispatch(new actions.totalCartAction({
@@ -16,7 +20,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			}));
 
 			if (typeof doAfterAnonymousCall !== 'undefined') {
-				doAfterAnonymousCall.apply(this, [props]);
+				doAfterAnonymousCall.apply(this, [props, history]);
 			}
 		}
 
@@ -36,6 +40,11 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			} else {
 				this.getProfile();
 				this.constructor.initApp(this.props);
+			}
+
+			const loadings = window.document.getElementsByClassName('appLoading');
+			if (typeof loadings[0] !== 'undefined') {
+				loadings[0].parentElement.removeChild(loadings[0]);
 			}
 		}
 
