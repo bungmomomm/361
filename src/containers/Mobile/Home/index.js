@@ -240,7 +240,7 @@ class Home extends Component {
 					{this.renderHashtag()}
 
 					{this.renderOOTD()}
-					{renderSectionHeader('New Arrival', { title: 'See all', url: 'http://www.google.com' })}
+					{renderSectionHeader('New Arrival', { title: 'See all', url: '/newarrival' })}
 					{ this.renderRecommendation('new_arrival_products')}
 					{this.renderBottomBanner(1)}
 					{renderSectionHeader('Best Seller', { title: 'See all', url: 'http://www.google.com' })}
