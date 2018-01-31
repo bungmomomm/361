@@ -4,27 +4,28 @@ import { Link } from 'react-router-dom';
 import { withCookies } from 'react-cookie';
 import { Header, Page, Card, Button, Svg, Image, Level } from '@/components/mobile';
 import styles from './lovelist.scss';
-import * as data from '@/data/example/Lovelist';
 import { actions as LoveListActionCreator } from '@/state/v4/Lovelist';
 class Lovelist extends Component {
 	constructor(props) {
 		super(props);
+		this.props = props;
 		this.state = {
-			listTypeGrid: false,
+			listTypeGrid: true,
 			listEmpty: true,
 			loggedIn: false,
 			products: []
 		};
 
 		this.getLovelistCardsContent = this.getLovelistCardsContent.bind(this);
+		this.renderLovelistPage = this.renderLovelistPage.bind(this);
 	}
 
 	componentWillMount() {
+		// const { users } = this.props;
+		// const loginStatus = (users.username && !users.isAnonymous);
 		const loginStatus = true;
-		// const loginStatus = (this.props.user.user);
-		if (loginStatus) {
-			this.setState({ loggedIn: true });
-		}
+
+		this.setState({ loggedIn: loginStatus });
 
 		if (this.props.lovelist.count > 0) {
 			this.setState({ listEmpty: false });
@@ -39,7 +40,7 @@ class Lovelist extends Component {
 	getLovelistCardsContent() {
 		const { listTypeGrid } = this.state;
 		const content = this.state.products.map((product, idx) => {
-			return !listTypeGrid ? <Card.Lovelist key={idx} /> : <Card.LovelistGrid key={idx} />;
+			return !listTypeGrid ? <Card.Lovelist key={idx} data={product} /> : <Card.LovelistGrid key={idx} data={product} />;
 		});
 
 		return <div className={styles.cardContainer}>{content}</div>;
@@ -49,18 +50,18 @@ class Lovelist extends Component {
 		// fetching data from server
 		const req = LoveListActionCreator.getLovelisItems(this.userCookies);
 		const { dispatch } = this.props;
+		dispatch(LoveListActionCreator.setLoadingState({ loading: true }));
 		req.then(response => {
-
 			this.setState({
 				listEmpty: false,
 				products: response.data.data.products
 			});
-
 			dispatch(LoveListActionCreator.getList(response.data.data));
+			dispatch(LoveListActionCreator.setLoadingState({ loading: false }));
 		});
 	}
 
-	render() {
+	renderLovelistPage(content) {
 		const { listTypeGrid } = this.state;
 		const HeaderPage = {
 			left: (
@@ -76,19 +77,19 @@ class Lovelist extends Component {
 			)
 		};
 
-		const renderLovelistPage = (content) => {
-			return (
-				<div style={this.props.style}>
-					<Page>
-						{content}
-					</Page>
-					<Header.Modal {...HeaderPage} />
-				</div>
-			);
-		};
+		return (
+			<div style={this.props.style}>
+				<Page>
+					{content}
+				</Page>
+				<Header.Modal {...HeaderPage} />
+			</div>
+		);
+	}
 
+	render() {
 		if (!this.state.loggedIn) {
-			return (renderLovelistPage(
+			return (this.renderLovelistPage(
 				<div style={{ marginTop: '30%', padding: '20px' }} className='text-center --disable-flex'>
 					<Svg src='ico_ghost.svg' />
 					<p className='margin--medium'>Unlock the Full Experience</p>
@@ -104,11 +105,15 @@ class Lovelist extends Component {
 			));
 		}
 
+		if (this.props.lovelist.loading) {
+			return this.renderLovelistPage('');
+		}
+
 		if (this.state.listEmpty) {
-			return (renderLovelistPage(
+			return (this.renderLovelistPage(
 				<div className='text-center --disable-flex'>
 					<p className='margin--medium'>Kamu belum memiliki Lovelist</p>
-					<p className='margin--medium font--lato-light'>Tap the <Svg src='ico_love.svg' /> next to an item to add
+					<p className='margin--medium font--lato-light'>Tap the <Svg width='20px' height='18px' src='ico_love.svg' /> next to an item to add
 						<br />it to your Lovelist.
 					</p>
 					<p className='margin--medium'><Button inline size='large' color='primary'>BELANJA</Button></p>
@@ -116,14 +121,10 @@ class Lovelist extends Component {
 				</div>
 			));
 		}
-		return (renderLovelistPage(this.getLovelistCardsContent()));
+
+		return (this.renderLovelistPage(this.getLovelistCardsContent()));
 	}
 }
-
-Lovelist.defaultProps = {
-	Lovelist: data.Lovelist
-
-};
 
 const mapStateToProps = (state) => {
 	return {

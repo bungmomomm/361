@@ -12,11 +12,12 @@ const defaultLovelist = {
 	perVariant: {
 		variantId: false,
 		total: 0
-	}
+	},
+	loading: false
 };
 
-const { countLovelist, loveListItems, activeUser, lovelistPdp, addItem, removeItem } = createActions(
-	'COUNT_LOVELIST', 'LOVE_LIST_ITEMS', 'ACTIVE_USER', 'LOVELIST_PDP', 'ADD_ITEM', 'REMOVE_ITEM'
+const { countLovelist, loveListItems, activeUser, lovelistPdp, addItem, removeItem, loadingState } = createActions(
+	'COUNT_LOVELIST', 'LOVE_LIST_ITEMS', 'ACTIVE_USER', 'LOVELIST_PDP', 'ADD_ITEM', 'REMOVE_ITEM', 'LOADING_STATE'
 );
 
 const listActions = {
@@ -64,6 +65,12 @@ const listActions = {
 			...state,
 			user
 		};
+	},
+	[loadingState](state, { payload: { loading } }) {
+		return {
+			...state,
+			loading
+		};
 	}
 };
 
@@ -76,5 +83,6 @@ export default {
 	activeUser,
 	lovelistPdp,
 	addItem,
-	removeItem
+	removeItem,
+	loadingState
 };

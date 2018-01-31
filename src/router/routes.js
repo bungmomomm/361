@@ -16,6 +16,7 @@ const defRoute = loadable(() => import('@/containers/NotFound'));
 let Page404 = defRoute;
 let Home = defRoute;
 let Search = defRoute;
+let SearchResults = defRoute;
 let SearchNotFound = defRoute;
 let Category = defRoute;
 let SubCategory = defRoute;
@@ -44,6 +45,7 @@ if (isMobile()) {
 	// Service Discovery
 	Page404 = loadable(() => import('@/containers/Mobile/404'));
 	Search = loadable(() => import('@/containers/Mobile/Discovery/Search'));
+	SearchResults = loadable(() => import('@/containers/Mobile/Discovery/SearchResults'));
 	SearchNotFound = loadable(() => import('@/containers/Mobile/Discovery/SearchNotFound'));
 	Lovelist = loadable(() => import('@/containers/Mobile/Discovery/Lovelist'));
 	Hashtags = loadable(() => import('@/containers/Mobile/Discovery/Hashtags'));
@@ -92,18 +94,27 @@ export default [
 		component: Search
 	},
 	{
+		path: '/products',
+		component: SearchResults
+	},
+	{
 		path: '/searchnotfound', // This path only for displaying search not found SearchNotFound Container
 		component: SearchNotFound
 	},
 	{
 		path: '/category',
 		component: Category,
+		exact: true
 	}, {
-		path: '/subcategory',
-		component: SubCategory
+		path: '/category/:categoryId',	// for temporary PCP 
+		component: Category,
+	}, {
+		path: '/subcategory/:categoryId',
+		component: SubCategory,
 	}, {
 		path: '/brands',
-		component: Brands
+		component: Brands,
+		exact: true
 	}, {
 		path: '/catalogcategory',
 		component: CatalogCategory
@@ -115,8 +126,9 @@ export default [
 		component: Lovelist,
 		exact: true
 	}, {
-		path: '/product',
+		path: '/product/:id',
 		component: Products,
+		exact: true
 	},
 	{
 		path: '/login',
@@ -146,7 +158,6 @@ export default [
 	{
 		path: '/newarrival',
 		component: NewArrival,
-		exact: true
 	},
 	{
 		path: '/*', // Page not found handling.
