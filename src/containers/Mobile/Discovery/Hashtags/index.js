@@ -3,7 +3,7 @@ import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { actions as hashtagActions } from '@/state/v4/Hashtag';
 import { Header, Page, Navigation, Svg, Grid } from '@/components/mobile';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 
 class Hashtags extends Component {
 
@@ -105,9 +105,9 @@ class Hashtags extends Component {
 
 		const HeaderPage = {
 			left: (
-				<a href={history.go - 1}>
+				<button onClick={this.props.history.goBack}>
 					<Svg src={'ico_arrow-back-left.svg'} />
-				</a>
+				</button>
 			),
 			center: '#MauGayaItuGampang',
 			right: (
@@ -153,6 +153,7 @@ class Hashtags extends Component {
 }
 
 const mapStateToProps = (state) => {
+	// console.log(state);
 	return {
 		...state.hashtag
 	};
@@ -166,4 +167,4 @@ const mapDispatchToProps = (dispatch) => {
 	};
 };
 
-export default withCookies(connect(mapStateToProps, mapDispatchToProps)(Hashtags));
+export default withRouter(withCookies(connect(mapStateToProps, mapDispatchToProps)(Hashtags)));

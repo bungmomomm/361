@@ -21,6 +21,7 @@ const productCommentAction = (token) => (dispatch) => {
 		const data = response.data.data;
 		const comments = data.comments;
 		dispatch(commentList({ data: comments }));
+		dispatch(commentLoading({ loading: false }));
 	});
 };
 
