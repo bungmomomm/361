@@ -5,14 +5,12 @@ const initAction = (dataInit) => (dispatch) => {
 	dispatch(isLoading({ isLoading: true }));
 
 	const url = `${process.env.MICROSERVICES_URL}recommended?page=${dataInit.page}&per_page=10`;
-	// const url = 'https://private-f42bdd-mmv4microservices.apiary-mock.com/hashtags?hashtag_id=100';
 	return request({
 		token: dataInit.token,
 		path: url,
 		method: 'GET',
 		fullpath: true
 	}).then(response => {
-		console.log(response);
 		const data = {
 			nextPage: dataInit.page + 1,
 			links: response.data.data.links,

@@ -104,12 +104,17 @@ export default [
 	{
 		path: '/category',
 		component: Category,
+		exact: true
 	}, {
-		path: '/subcategory',
-		component: SubCategory
+		path: '/category/:categoryId',	// for temporary PCP 
+		component: Category,
+	}, {
+		path: '/subcategory/:categoryId',
+		component: SubCategory,
 	}, {
 		path: '/brands',
-		component: Brands
+		component: Brands,
+		exact: true
 	}, {
 		path: '/catalogcategory',
 		component: CatalogCategory
@@ -121,8 +126,9 @@ export default [
 		component: Lovelist,
 		exact: true
 	}, {
-		path: '/product',
+		path: '/product/:id',
 		component: Products,
+		exact: true
 	},
 	{
 		path: '/login',
