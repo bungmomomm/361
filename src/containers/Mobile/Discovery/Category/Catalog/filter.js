@@ -4,7 +4,7 @@ import Lists from './filterLayouts/lists';
 import ListsEnd from './filterLayouts/listsEnd';
 import Brands from './filterLayouts/brands';
 import Color from './filterLayouts/color';
-import Size from './filterLayouts/Size';
+import Size from './filterLayouts/size';
 import Price from './filterLayouts/price';
 import Tree from './filterLayouts/tree';
 import TreeSegment from './filterLayouts/treeSegment';

@@ -34,9 +34,9 @@ class Category extends Component {
 		this.getCategory();
 	}
 
-	getCategory(segmen = 1) {
+	getCategory(segment = 1) {
 		const { dispatch } = this.props;
-		dispatch(new categoryActions.getCategoryMenuAction(this.userCookies, segmen));
+		dispatch(new categoryActions.getCategoryMenuAction(this.userCookies, segment));
 	}
 
 	handlePick(current) {
@@ -57,10 +57,22 @@ class Category extends Component {
 						onPick={(e) => this.handlePick(e)}
 					/>
 					<div>
+						{ category.loading ? 'Loading...' : '' }
 						{
 							category.data.map((cat, key) => {
+								let url = cat.link;
+								switch (cat.type) {
+								case 'brand':
+									url = '/brands';
+									break;
+								case 'category':
+									url = `/subcategory/${cat.id}`;
+									break;
+								default: 
+									break;
+								}
 								return (
-									<Link to={cat.type === 'brand' ? 'brands' : cat.link} key={key} className={styles.list}>
+									<Link to={url} key={key} className={styles.list}>
 										<Image src={cat.image_url} />
 										<div className={styles.label}>{cat.title}</div>
 									</Link>);

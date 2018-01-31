@@ -23,7 +23,7 @@ class Brands extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			minimumLetter: 3,			
+			minimumLetter: 1,			
 			searchFocus: false,
 			filteredBrand: [],
 			keyword: '',
@@ -130,7 +130,7 @@ class Brands extends Component {
 							list.brands.map((b, i) => {
 								return (
 									<List key={i}>
-										<Link to='/catalogcategory'>
+										<Link to={`/brand/${b.facetrange}`}>
 											<List.Content>{b.facetdisplay} <text style={{ color: 'grey' }} >({b.count} produk)</text></List.Content>
 										</Link>
 									</List>
@@ -149,7 +149,7 @@ class Brands extends Component {
 			this.state.filteredBrand.map((brand, key) => {
 				return (
 					<List key={key}>
-						<Link to='/catalogcategory'>
+						<Link to={`/brand/${brand.facetrange}`}>
 							<List.Content>{brand.facetdisplay} <text style={{ color: 'grey' }} >({brand.count})</text></List.Content>
 						</Link>
 					</List>

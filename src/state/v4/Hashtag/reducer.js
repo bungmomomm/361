@@ -1,3 +1,5 @@
+import { createActions, handleActions } from 'redux-actions';
+
 const initialState = {
 	tags: [],
 	viewMode: 3,
@@ -7,84 +9,93 @@ const initialState = {
 	isLoading: false
 };
 
-export default (state = initialState, action) => {
-	if (typeof action === 'undefined') {
-		return state;
-	}
+const { itemsFetchDataSuccess, itemsIsLoading, itemsHasError, itemsActiveHashtag, switchViewMode, affectDocheight, switchAllowNextPage }
+= createActions(
+	'ITEMS_FETCH_DATA_SUCCESS',
+	'ITEMS_IS_LOADING',
+	'ITEMS_HAS_ERROR',
+	'ITEMS_ACTIVE_HASHTAG',
+	'SWITCH_VIEW_MODE',
+	'AFFECT_DOCHEIGHT',
+	'SWITCH_ALLOW_NEXT_PAGE',
+);
 
-	switch (action.type) {
-	case 'ITEMS_FETCH_DATA_SUCCESS':
+const reducer = handleActions({
+	[itemsFetchDataSuccess](state, { payload: data }) {
 		return {
 			...state,
-			tags: action.tags,
+			tags: data.tags,
 			products: {
 				...state.products,
 				[state.activeTag]: {
 					items: state.products[state.activeTag] && state.products[state.activeTag].items
-						? [...state.products[state.activeTag].items, action.products]
-						: action.products,
+						? [...state.products[state.activeTag].items, data.products]
+						: data.products,
 					nextPage: state.products[state.activeTag] && state.products[state.activeTag].nextPage
 						? state.products[state.activeTag].nextPage + 1
 						: 2,
 					docHeight: state.products[state.activeTag] && state.products[state.activeTag].docHeight
 						? state.products[state.activeTag].docHeight
 						: 0,
-					allowNextPage: !state.products[action.activeTag] ||
-									(
-										state.products[action.activeTag] &&
-										state.products[action.activeTag].docHeight < action.docHeight
-									)
-				}
-			}
-		};
-	case 'ITEMS_IS_LOADING':
-		return {
-			...state,
-			isLoading: action.isLoading
-		};
-	case 'ITEMS_HAS_ERROR':
-		return {
-			...state,
-			hasError: action.hasError
-		};
-	case 'ITEMS_ACTIVE_HASHTAG':
-		return {
-			...state,
-			activeTag: action.activeTag
-		};
-	case 'SWITCH_VIEW_MODE':
-		return {
-			...state,
-			viewMode: action.viewMode
-		};
-	case 'AFFECT_DOCHEIGHT':
-		return {
-			...state,
-			products: {
-				...state.products,
-				[action.activeTag]: {
-					...state.products[action.activeTag],
-					allowNextPage: !state.products[action.activeTag] ||
+					allowNextPage: !state.products[data.activeTag] ||
 					(
-						state.products[action.activeTag] &&
-						state.products[action.activeTag].docHeight < action.docHeight
-					),
-					docHeight: action.docHeight
+						state.products[data.activeTag] &&
+						state.products[data.activeTag].docHeight < data.docHeight
+					)
 				}
 			}
 		};
-	case 'SWITCH_ALLOW_NEXT_PAGE':
+	},
+	[itemsIsLoading](state, { payload: data }) {
+		return { ...state, ...data };
+	},
+	[itemsHasError](state, { payload: data }) {
+		return { ...state, ...data };
+	},
+	[itemsActiveHashtag](state, { payload: data }) {
+		return { ...state, ...data };
+	},
+	[switchViewMode](state, { payload: data }) {
+		return { ...state, ...data };
+	},
+	[affectDocheight](state, { payload: data }) {
 		return {
 			...state,
 			products: {
 				...state.products,
-				[action.activeTag]: {
-					...state.products[action.activeTag],
-					allowNextPage: action.allowNextPage
+				[data.activeTag]: {
+					...state.products[data.activeTag],
+					allowNextPage: !state.products[data.activeTag] ||
+					(
+						state.products[data.activeTag] &&
+						state.products[data.activeTag].docHeight < data.docHeight
+					),
+					docHeight: data.docHeight
 				}
 			}
 		};
-	default:
-		return state;
+	},
+	[switchAllowNextPage](state, { payload: data }) {
+		return {
+			...state,
+			products: {
+				...state.products,
+				[data.activeTag]: {
+					...state.products[data.activeTag],
+					allowNextPage: data.allowNextPage
+				}
+			}
+		};
 	}
+}, initialState);
+
+export default {
+	reducer,
+	itemsFetchDataSuccess,
+	itemsIsLoading,
+	itemsHasError,
+	itemsActiveHashtag,
+	switchViewMode,
+	affectDocheight,
+	switchAllowNextPage
 };

@@ -151,24 +151,23 @@ class Search extends PureComponent {
 			);
 		}
 
+		const showSuggestion = (this.props.relatedHastag || this.props.relatedKeyword || this.props.relatedCategory);
+
 		let mainList = null;
-		if (this.state.showHistory && cookies && cookies.length > 0) {
-			mainList = (<div>{ sectionSearchHistory }</div>);
-		} else {
-			mainList = (
-				<div>
-					{sectionRelatedCategory}
-					{sectionRelatedKeyword}
-					{sectionRelatedHastag}
-				</div>
+		if (showSuggestion) {
+			mainList = (<div>{sectionRelatedCategory}{sectionRelatedKeyword}{sectionRelatedHastag}</div>
 			);
+		} else {
+			mainList = (<div>{ sectionSearchHistory }</div>);
 		}
+
+		const displayLoading = (<div style={{ textAlign: 'center', padding: '5px 0px' }} > hhmmmm..... </div>);
 
 		return (
 			<div style={this.props.style}>
 				<Page>
 					<div className={styles.container} >
-						{mainList}
+						{this.props.isLoading ? displayLoading : mainList}
 					</div>
 				</Page>
 				<Header.Search
@@ -188,6 +187,7 @@ const mapStateToProps = (state) => {
 		relatedCategory: state.search.related_category,
 		relatedKeyword: state.search.related_keyword,
 		relatedHastag: state.search.related_hashtag,
+		isLoading: state.search.loading
 	};
 };
 

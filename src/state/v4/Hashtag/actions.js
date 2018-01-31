@@ -1,96 +1,60 @@
 import { request } from '@/utils';
+import actions from './reducer';
 
-const itemsHasError = (bool) => {
-	return {
-		type: 'ITEMS_HAS_ERROR',
-		hasError: bool
-	};
-};
-
-const itemsIsLoading = (bool) => {
-	return {
-		type: 'ITEMS_IS_LOADING',
-		isLoading: bool
-	};
-};
-
-const itemsActiveHashtag = (tag) => {
-	return {
-		type: 'ITEMS_ACTIVE_HASHTAG',
+const itemsActiveHashtag = (tag) => (dispatch) => {
+	const data = {
 		activeTag: tag ? tag.replace('#', '').toLowerCase() : (tag && !tag.indexOf('#')) ? tag : 'all'
 	};
+	dispatch(actions.itemsActiveHashtag(data));
 };
 
-const switchViewMode = (mode) => {
-	return {
-		type: 'SWITCH_VIEW_MODE',
-		viewMode: mode
-	};
-};
-
-const affectDocHeight = (data) => {
-	return {
-		type: 'AFFECT_DOCHEIGHT',
-		docHeight: data.height,
-		activeTag: data.activeTag
-	};
-};
-
-const switchAllowNextPage = (data) => {
-	return {
-		type: 'SWITCH_ALLOW_NEXT_PAGE',
-		activeTag: data.activeTag,
-		allowNextPage: data.allowNextPage
-	};
-};
-
-const itemsFetchDataSuccess = (data) => {
-	return {
-		type: 'ITEMS_FETCH_DATA_SUCCESS',
-		tags: data.hashtags,
-		products: data.contents
-	};
+const switchViewMode = (mode) => (dispatch) => {
+	const data = { viewMode: mode };
+	dispatch(actions.switchViewMode(data));
 };
 
 const itemsFetchData = (fetchData) => (dispatch) => {
 	const url = process.env.MICROSERVICES_URL + fetchData.path;
 
-	dispatch(itemsIsLoading(true));
+	dispatch(actions.itemsIsLoading({ isLoading: true }));
 	request({
 		token: fetchData.token,
 		path: url,
 		method: 'GET',
 		fullpath: true
 	})
-		.then((response) => {
-			dispatch(itemsIsLoading(false));
-			return response;
-		})
-		.then((items) => dispatch(itemsFetchDataSuccess(items.data.data)))
-		.then(() => {
-			const body = document.body;
-			const html = document.documentElement;
-			const docHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+	.then((response) => {
+		dispatch(actions.itemsIsLoading({ isLoading: false }));
+		return response;
+	})
+	.then((items) => dispatch(actions.itemsFetchDataSuccess({
+		tags: items.data.data.hashtags,
+		products: items.data.data.contents
+	})))
+	.then(() => {
+		const body = document.body;
+		const html = document.documentElement;
+		const height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
 
-			dispatch(affectDocHeight({
-				height: docHeight,
-				activeTag: fetchData.activeTag
-			}));
+		dispatch(actions.affectDocheight({
+			docHeight: height,
+			activeTag: fetchData.activeTag
+		}));
 
-			return {
-				allowNextPage: fetchData.docHeight < docHeight,
-				activeTag: fetchData.activeTag
-			};
+		return {
+			allowNextPage: fetchData.docHeight < height,
+			activeTag: fetchData.activeTag
+		};
 
-		})
-		.then((reactivate) => {
-			if (!reactivate.allowNextPage) {
-				setTimeout(() => {
-					dispatch(switchAllowNextPage({ allowNextPage: true, activeTag: reactivate.activeTag }));
-				}, 20000);
-			}
-		})
-		.catch(() => dispatch(itemsHasError(true)));
+	})
+	.then((reactivate) => {
+		if (!reactivate.allowNextPage) {
+			setTimeout(() => {
+				dispatch(actions.switchAllowNextPage({ allowNextPage: true, activeTag: reactivate.activeTag }));
+			}, 20000);
+		}
+	})
+	.catch(() => dispatch(actions.itemsHasError({ hasError: true })));
 };
 
 export default {

@@ -35,7 +35,6 @@ const reducer = handleActions({
 		return { ...state, allowNextPage: state.docHeight < data.docHeight, ...data };
 	},
 	[switchAllowNextPage](state, { payload: data }) {
-		console.log(data);
 		return { ...state, ...data };
 	}
 }, initialState);

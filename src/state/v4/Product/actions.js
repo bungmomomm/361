@@ -6,13 +6,15 @@ import {
 	productRecommendation, 
 	productSimilar,
 	productSocialSummary,
+	productLoading
 } from './reducer';
 import {
 	commentTotal
 } from '@/state/v4/Comment/reducer';
 
-const productDetailAction = (token) => (dispatch) => {
-	const url = `${process.env.MICROSERVICES_URL}product/31`;
+const productDetailAction = (token, productId) => (dispatch) => {
+	dispatch(productLoading({ loading: true }));
+	const url = `${process.env.MICROSERVICES_URL}product/${productId}`;
 	return request({
 		token,
 		path: url,
@@ -21,10 +23,14 @@ const productDetailAction = (token) => (dispatch) => {
 	}).then(response => {
 		const product = response.data.data;
 		dispatch(productDetail({ detail: product.detail }));
+		dispatch(productLoading({ loading: false }));
+	}).catch((error) => {
+		console.log(error);
 	});
 };
 
 const productRecommendationAction = (token) => (dispatch) => {
+	dispatch(productLoading({ loading: true }));
 	const url = `${process.env.MICROSERVICES_URL}recommendation/pdp`;
 	return request({
 		token,
@@ -34,10 +40,12 @@ const productRecommendationAction = (token) => (dispatch) => {
 	}).then(response => {
 		const recommendation = response.data.data;
 		dispatch(productRecommendation({ recommendation }));
+		dispatch(productLoading({ loading: false }));
 	});
 };
 
 const productSimilarAction = (token) => (dispatch) => {
+	dispatch(productLoading({ loading: true }));
 	const url = `${process.env.MICROSERVICES_URL}similaritems`;
 	return request({
 		token,
@@ -50,10 +58,12 @@ const productSimilarAction = (token) => (dispatch) => {
 	}).then(response => {
 		const similar = response.data.data.products;
 		dispatch(productSimilar({ similar }));
+		dispatch(productLoading({ loading: false }));
 	});
 };
 
 const productSocialSummaryAction = (token) => (dispatch) => {
+	dispatch(productLoading({ loading: true }));
 	const url = `${process.env.MICROSERVICES_URL}summary`;
 	return request({
 		token,
@@ -69,6 +79,7 @@ const productSocialSummaryAction = (token) => (dispatch) => {
 		const comments = data.comments;
 		dispatch(productSocialSummary({ reviews }));
 		dispatch(commentTotal({ ...comments }));
+		dispatch(productLoading({ loading: false }));
 	});
 };
 
