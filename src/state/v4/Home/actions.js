@@ -10,10 +10,10 @@ const initAction = (token) => (dispatch) => {
 		method: 'GET',
 		fullpath: true
 	}).then(response => {
-		const segment = response.data.data.find(e => e.type === 'segment');
-		const foreverBanner = response.data.data.find(e => e.type === 'forever_banner');
-		dispatch(forEverBanner({ foreverBanner: foreverBanner.data }));
-		dispatch(initResponse({ segmen: segment.data }));
+		const segment = response.data.data.segment;
+		const foreverBanner = response.data.data.forever_banner;
+		dispatch(forEverBanner({ foreverBanner }));
+		dispatch(initResponse({ segmen: segment }));
 	});
 };
 
@@ -26,13 +26,13 @@ const mainAction = (token, activeSegment = 1) => (dispatch) => {
 		fullpath: true
 	}).then(response => {
 		const mainData = {
-			hashtag: response.data.data.find(e => e.type === 'hashtag').data,
-			featuredBanner: response.data.data.find(e => e.type === 'featured_banner').data,
-			middleBanner: response.data.data.find(e => e.type === 'middle_banner').data,
-			bottomBanner1: response.data.data.find(e => e.type === 'bottom_banner1').data,
-			bottomBanner2: response.data.data.find(e => e.type === 'bottom_banner2').data,
-			mozaic: response.data.data.find(e => e.type === 'mozaic').data,
-			featuredBrand: response.data.data.find(e => e.type === 'featured_brand').data
+			hashtag: response.data.data.hashtag,
+			featuredBanner: response.data.data.featured_banner,
+			middleBanner: response.data.data.middle_banner,
+			bottomBanner1: response.data.data.bottom_banner1,
+			bottomBanner2: response.data.data.bottom_banner2,
+			mozaic: response.data.data.mozaic,
+			featuredBrand: response.data.data.featured_brand
 		};
 		const segment = activeSegment === 1 ? 'woman' : (activeSegment === 2 ? 'man' : 'kids');
 		const allSegmentData = {};
