@@ -16,9 +16,9 @@ class Price extends PureComponent {
 			right: null
 		};
 
+		// to do: use below logic when implement
 		// const icon = false ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
 		const icon = <Svg src='ico_check.svg' />;
-
 		return (
 			<div style={this.props.style}>
 				<Page>
