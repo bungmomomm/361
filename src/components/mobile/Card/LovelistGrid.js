@@ -10,17 +10,17 @@ import styles from './card.scss';
 
 class LovelistGrid extends PureComponent {
 	render() {
-		const { className, ...props } = this.props;
+		const { className, data, ...props } = this.props;
 
 		const createClassName = classNames(styles.container, styles.grid, className);
 
 		return (
 			<div className={createClassName} {...props}>
-				<Image local src='temp/product-1.jpg' alt='product' />
+				<Image src={data.images[0].mobile} alt='product' />
 				<Level className={styles.action}>
 					<Level.Item>
 						<div className={styles.title}>
-							Immaculate Brands of the Year by Yannis Philippakis
+							{data.product_title}
 						</div>
 					</Level.Item>
 					<Level.Right>
@@ -32,13 +32,13 @@ class LovelistGrid extends PureComponent {
 				<Level className={styles.footer}>
 					<Level.Item>
 						<div className={styles.blockPrice}>
-							<div className={styles.price}>Rp1.199.000</div>
-							<div className={styles.discount}>Rp900.900</div>
+							<div className={styles.price}>{data.pricing.formatted.effective_price}</div>
+							<div className={styles.discount}>{data.pricing.formatted.base_price}</div>
 						</div>
 					</Level.Item>
 					<Level.Right>
 						<Badge rounded color='red'>
-							<span className='font--lato-bold'>20%</span>
+							<span className='font--lato-bold'>{data.pricing.discount}</span>
 						</Badge>
 					</Level.Right>
 				</Level>
