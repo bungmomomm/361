@@ -4,8 +4,13 @@ import {
 	loveListItems,
 	lovelistPdp,
 	addItem,
-	removeItem
+	removeItem,
+	loadingState
 } from './reducer';
+
+const setLoadingState = (loading) => (dispatch) => {
+	dispatch(loadingState(loading));
+};
 
 /**
  * fetchs lovelist list into redux lovelist items format
@@ -120,5 +125,6 @@ export default {
 	addToLovelist,
 	removeFromLovelist,
 	countTotalPdpLovelist,
-	getLovelisItems
+	getLovelisItems,
+	setLoadingState
 };

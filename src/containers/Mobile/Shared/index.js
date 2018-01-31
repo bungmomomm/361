@@ -7,13 +7,9 @@ import { setUserCookie } from '@/utils';
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 	class SharedAction extends Component {
 		static initApp(props) {
-			props.dispatch(new actions.totalCartAction({
-				token: props.userCookies
-			}));
+			props.dispatch(new actions.totalCartAction(props.userCookies));
 	
-			props.dispatch(new actions.totalLovelistAction({
-				token: props.userCookies
-			}));
+			props.dispatch(new actions.totalLovelistAction(props.userCookies));
 
 			if (typeof doAfterAnonymousCall !== 'undefined') {
 				doAfterAnonymousCall.apply(this, [props]);
