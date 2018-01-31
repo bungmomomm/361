@@ -4,8 +4,6 @@ const initialState = {
 	viewMode: 3,
 	nextPage: 1,
 	isLoading: false,
-	docHeight: 0,
-	allowNextPage: true,
 	links: [],
 	info: [],
 	facets: [],
@@ -13,12 +11,10 @@ const initialState = {
 	products: []
 };
 
-const { initResponse, switchMode, isLoading, affectDocHeight, switchAllowNextPage } = createActions(
+const { initResponse, switchMode, isLoading } = createActions(
 	'INIT_RESPONSE',
 	'SWITCH_MODE',
-	'IS_LOADING',
-	'AFFECT_DOC_HEIGHT',
-	'SWITCH_ALLOW_NEXT_PAGE'
+	'IS_LOADING'
 );
 
 const reducer = handleActions({
@@ -30,12 +26,6 @@ const reducer = handleActions({
 	},
 	[isLoading](state, { payload: data }) {
 		return { ...state, ...data };
-	},
-	[affectDocHeight](state, { payload: data }) {
-		return { ...state, allowNextPage: state.docHeight < data.docHeight, ...data };
-	},
-	[switchAllowNextPage](state, { payload: data }) {
-		return { ...state, ...data };
 	}
 }, initialState);
 
@@ -43,7 +33,5 @@ export default {
 	reducer,
 	initResponse,
 	switchMode,
-	isLoading,
-	affectDocHeight,
-	switchAllowNextPage
+	isLoading
 };
