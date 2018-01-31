@@ -98,9 +98,13 @@ export default [
 	{
 		path: '/category',
 		component: Category,
+		exact: true
 	}, {
-		path: '/subcategory',
-		component: SubCategory
+		path: '/category/:categoryId',	// for temporary PCP 
+		component: Category,
+	}, {
+		path: '/subcategory/:categoryId',
+		component: SubCategory,
 	}, {
 		path: '/brands',
 		component: Brands,
