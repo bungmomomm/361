@@ -19,7 +19,11 @@ const { initResponse, switchMode, isLoading } = createActions(
 
 const reducer = handleActions({
 	[initResponse](state, { payload: data }) {
-		return { ...state, ...data };
+		return {
+			...state,
+			...data,
+			products: Array.from([...state.products, ...data.products].reduce((m, t) => m.set(t.product_id, t), new Map()).values())
+		};
 	},
 	[switchMode](state, { payload: data }) {
 		return { ...state, ...data };
