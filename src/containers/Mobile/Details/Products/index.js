@@ -16,17 +16,17 @@ class Products extends Component {
 	
 
 	componentDidMount() {
-		const { dispatch } = this.props;
-		dispatch(new productActions.productDetailAction(this.userCookies, dispatch));
-		dispatch(new productActions.productRecommendationAction(this.userCookies, dispatch));
-		dispatch(new productActions.productSimilarAction(this.userCookies, dispatch));
-		dispatch(new productActions.productSocialSummaryAction(this.userCookies, dispatch));
-		dispatch(new commentActions.productCommentAction(this.userCookies, dispatch));
+		const { dispatch, match } = this.props;
+		dispatch(new productActions.productDetailAction(this.userCookies, match.params.id));
+		dispatch(new productActions.productRecommendationAction(this.userCookies));
+		dispatch(new productActions.productSimilarAction(this.userCookies));
+		dispatch(new productActions.productSocialSummaryAction(this.userCookies));
+		dispatch(new commentActions.productCommentAction(this.userCookies));
 	}
 
 	addComment() {
 		const { dispatch } = this.props;
-		dispatch(new commentActions.commentAddAction(this.userCookies, dispatch));		
+		dispatch(new commentActions.commentAddAction(this.userCookies));		
 	}
 
 	render() {

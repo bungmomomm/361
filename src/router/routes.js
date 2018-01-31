@@ -103,7 +103,8 @@ export default [
 		component: SubCategory
 	}, {
 		path: '/brands',
-		component: Brands
+		component: Brands,
+		exact: true
 	}, {
 		path: '/catalogcategory',
 		component: CatalogCategory
@@ -115,8 +116,9 @@ export default [
 		component: Lovelist,
 		exact: true
 	}, {
-		path: '/product',
+		path: '/product/:id',
 		component: Products,
+		exact: true
 	},
 	{
 		path: '/login',
