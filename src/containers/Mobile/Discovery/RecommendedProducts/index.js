@@ -36,8 +36,15 @@ class RecommendedProducts extends Component {
 		this.props.switchMode(mode);
 	}
 
-	touchDown() {
-		if (this.props.links.next && !this.props.isLoading)	{
+	touchDown(e) {
+		const body = document.body;
+		const html = document.documentElement;
+
+		const docHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+		const scrollY = e.srcElement.scrollTop;
+		const scrHeight = window.screen.height;
+
+		if ((scrollY + scrHeight) >= docHeight && this.props.links.next && !this.props.isLoading)	{
 			const nextLink = new URL(this.props.links.next).searchParams;
 
 			const dataInit = {
