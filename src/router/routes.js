@@ -68,7 +68,7 @@ if (isMobile()) {
 	UserRegister = loadable(() => import('@/containers/Mobile/Users/Register'));
 	UserRegistered = loadable(() => import('@/containers/Mobile/Users/Register/registered'));
 	UserRegisteredPhoneValidation = loadable(() => import('@/containers/Mobile/Users/Register/registeredPhoneValidation'));
-	// promo 
+	// promo
 	Promo = loadable(() => import('@/containers/Mobile/Discovery/Promo'));
 } else {
 	/**
@@ -109,7 +109,7 @@ export default [
 		component: Category,
 		exact: true
 	}, {
-		path: '/category/:categoryId',	// for temporary PCP 
+		path: '/category/:categoryId',	// for temporary PCP
 		component: Category,
 	}, {
 		path: '/subcategory/:categoryId',
