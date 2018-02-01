@@ -3,14 +3,17 @@ import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import {
-	Header, Page, Svg, Navigation, Tabs, Card, Image
+	Header, Page, Svg, Navigation, Card, Image, Button
 } from '@/components/mobile';
+import _ from 'lodash';
 import stylesCatalog from '../Category/Catalog/catalog.scss';
 import Shared from '@/containers/Mobile/Shared';
-import styles from './newarrival.scss';
+import styles from './promo.scss';
 import { actions } from '@/state/v4/Discovery';
 
-class NewArrival extends Component {
+
+class Promo extends Component {
+
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -18,23 +21,34 @@ class NewArrival extends Component {
 		this.state = {
 			listTypeGrid: false,
 			productEmpty: false,
-			products: this.props.discovery.newArrivalData
+			// products: this.props.discovery.Promo,
+			// promoType: '',
 		};
-
-		this.renderNewArrival = this.renderNewArrival.bind(this);
+		this.listPromo = [
+			'new_arrival',
+			'best_seller',
+			'recommended_products',
+			'recent_view'
+		];
+		this.renderNewArrival = this.renderData.bind(this);
 		this.handlePick = this.handlePick.bind(this);
 		this.getProductListContent = this.getProductListContent.bind(this);
+
+		this.userCookies = this.props.cookies.get('user.token');
+		this.userRFCookies = this.props.cookies.get('user.rf.token');
+		this.promoType = this.props.location.pathname.replace('/', '');
+		
 	}
 
 	componentDidMount() {
 		const { dispatch } = this.props;
-		dispatch(actions.newArrivalAction(this.userCookies));
+		dispatch(actions.promoAction(this.userCookies, this.promoType));
 	}
 
 	getProductListContent() {
 		const { discovery } = this.props;
 		const { listTypeGrid } = this.state;
-		const products = discovery.newArrivalData.products;
+		const products = _.chain(discovery).get(`promo.${this.promoType}`).value().products;
 
 		if (typeof products !== 'undefined') {
 			const content = products.map((product, idx) => {
@@ -79,22 +93,29 @@ class NewArrival extends Component {
 		}
 	}
 
-	renderNewArrival(content) {
+	renderData(content) {
 		const { listTypeGrid } = this.state;
+		const { discovery } = this.props;
+		const info = _.chain(discovery).get(`promo.${this.promoType}`).value().info;
 		const bannerInline = {
 			color: 'pink',
 			width: '100%',
 			height: '20%'
 		};
-
+		const headerLabel = info ? `${info.title} <br /> ${info.product_count} Total Produk` : '';
 		const HeaderPage = {
 			left: (
 				<Link to='/'>
 					<Svg src='ico_arrow-back-left.svg' />
 				</Link>
 			),
-			center: 'Produk Terlaris',
-			right: null
+			center: <div dangerouslySetInnerHTML={{ __html: headerLabel }} />,
+			right: (
+				<Button onClick={() => this.setState({ listTypeGrid: !listTypeGrid })}>
+					<Svg src={listTypeGrid ? 'ico_list.svg' : 'ico_grid.svg'} />
+				</Button>
+				
+			)
 		};
 
 		return (
@@ -103,26 +124,6 @@ class NewArrival extends Component {
 					{content}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Tabs
-					className={stylesCatalog.fixed}
-					type='segment'
-					variants={[
-						{
-							id: 'sort',
-							Title: 'Urutkan'
-						},
-						{
-							id: 'filter',
-							Title: 'Filter'
-						},
-						{
-							id: 'view',
-							Title: <Svg src={listTypeGrid ? 'ico_grid.svg' : 'ico_list.svg'} />
-						}
-					]}
-
-					onPick={this.handlePick}
-				/>
 				<Image alt='Product Terlaris' src='http://www.solidbackgrounds.com/images/950x350/950x350-light-pink-solid-color-background.jpg' style={bannerInline} />
 				<Navigation active='Promo' />
 			</div>
@@ -132,11 +133,11 @@ class NewArrival extends Component {
 	render() {
 
 		if (this.state.productEmpty) {
-			return this.renderNewArrival('');
+			return this.renderData('');
 		}
 
 		const content = this.getProductListContent();
-		return this.renderNewArrival(content);
+		return this.renderData(content);
 	}
 }
 
@@ -146,4 +147,4 @@ const mapStateToProps = (state) => {
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(NewArrival)));
+export default withCookies(connect(mapStateToProps)(Shared(Promo)));
