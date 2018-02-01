@@ -4,17 +4,16 @@ import Image from '../Image';
 import Button from '../Button';
 import styles from './card.scss';
 
-
 class CatalogSmall extends PureComponent {
 	render() {
-		const { className, ...props } = this.props;
+		const { className, images, pricing, ...props } = this.props;
 
 		const createClassName = classNames(styles.container, styles.small, className);
 
 		return (
 			<div className={createClassName} {...props}>
-				<Image local src='temp/product-1.jpg' alt='product' />
-				<Button color='secondary' size='small' transparent>Rp. 1.300.000</Button>
+				<Image src={images[0].mobile} alt='product' />
+				<Button color='secondary' size='small' transparent>{pricing.formatted.effective_price}</Button>
 			</div>
 		);
 	}
