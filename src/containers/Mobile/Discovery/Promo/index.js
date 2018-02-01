@@ -33,16 +33,23 @@ class Promo extends Component {
 		this.renderNewArrival = this.renderData.bind(this);
 		this.handlePick = this.handlePick.bind(this);
 		this.getProductListContent = this.getProductListContent.bind(this);
+		this.touchDown = this.touchDown.bind(this);
 
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.promoType = this.props.location.pathname.replace('/', '');
-		
+
 	}
 
 	componentDidMount() {
+		window.addEventListener('scroll', this.touchDown, true);
+
 		const { dispatch } = this.props;
 		dispatch(actions.promoAction(this.userCookies, this.promoType));
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener('scroll', this.touchDown);
 	}
 
 	getProductListContent() {
@@ -93,6 +100,28 @@ class Promo extends Component {
 		}
 	}
 
+	touchDown(e) {
+		const discovery = this.props.discovery;
+		const body = document.body;
+		const html = document.documentElement;
+
+		const docHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+		const scrollY = e.srcElement.scrollTop;
+		const scrHeight = window.screen.height;
+
+		if (
+			(scrollY + scrHeight) >= docHeight
+			&& discovery.promo[this.promoType].links
+			&& discovery.promo[this.promoType].links.next
+			&& !discovery.loading
+		) {
+			const { dispatch } = this.props;
+			const nextLink = new URL(discovery.promo[this.promoType].links.next).searchParams;
+
+			dispatch(actions.promoAction(this.userCookies, this.promoType, { page: nextLink.get('page') }));
+		}
+	};
+
 	renderData(content) {
 		const { listTypeGrid } = this.state;
 		const { discovery } = this.props;
@@ -114,7 +143,7 @@ class Promo extends Component {
 				<Button onClick={() => this.setState({ listTypeGrid: !listTypeGrid })}>
 					<Svg src={listTypeGrid ? 'ico_list.svg' : 'ico_grid.svg'} />
 				</Button>
-				
+
 			)
 		};
 
@@ -126,6 +155,8 @@ class Promo extends Component {
 				<Header.Modal {...HeaderPage} />
 				<Image alt='Product Terlaris' src='http://www.solidbackgrounds.com/images/950x350/950x350-light-pink-solid-color-background.jpg' style={bannerInline} />
 				<Navigation active='Promo' />
+
+				{this.props.discovery.loading}
 			</div>
 		);
 	}

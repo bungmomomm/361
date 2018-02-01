@@ -1,5 +1,5 @@
 import { request } from '@/utils';
-import { promos } from './reducer';
+import { promos, loading } from './reducer';
 // import { promo } from '@/data/translations';
 
 const configs = {
@@ -7,9 +7,9 @@ const configs = {
 };
 
 const promoAction = (token, promoType, query = {}) => (dispatch) => {
-	
+	dispatch(loading({ loading: true }));
+
 	const url = `${process.env.MICROSERVICES_URL}${promoType}`;
-	console.log(url);
 	if (!query.page) {
 		query.page = 1;
 	}
@@ -22,12 +22,12 @@ const promoAction = (token, promoType, query = {}) => (dispatch) => {
 		query,
 		fullpath: true
 	}).then(response => {
-		console.log(response);
 		const promo = {};
 
 		promo[promoType] = response.data.data;
-		
+
 		dispatch(promos({ promo }));
+		dispatch(loading({ loading: false }));
 	});
 };
 

@@ -8,11 +8,12 @@ const initialState = {
 		best_seller: {},
 		recommended_products: {},
 		recent_view: {}
-	}
+	},
+	loading: false
 };
 
-const { promos } = createActions(
-	'PROMOS'
+const { promos, loading } = createActions(
+	'PROMOS', 'LOADING'
 );
 
 const reducer = handleActions({
@@ -23,10 +24,14 @@ const reducer = handleActions({
 				...promo
 			}
 		};
+	},
+	[loading](state, { payload: data }) {
+		return { ...state, ...data };
 	}
 }, initialState);
 
 export default {
 	reducer,
-	promos
+	promos,
+	loading
 };
