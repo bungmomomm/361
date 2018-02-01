@@ -4,7 +4,7 @@ import { initResponse, switchMode, isLoading } from './reducer';
 const initAction = (dataInit) => (dispatch) => {
 	dispatch(isLoading({ isLoading: true }));
 
-	const url = `${process.env.MICROSERVICES_URL}recommended?page=${dataInit.page}&per_page=10`;
+	const url = `${process.env.MICROSERVICES_URL}recommended_products?page=${dataInit.page}&per_page=10`;
 	return request({
 		token: dataInit.token,
 		path: url,
