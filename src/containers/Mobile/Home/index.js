@@ -46,7 +46,7 @@ class Home extends Component {
 	handlePick(current) {
 		this.setState({ current });
 		this.initPage(current, this.props.dispatch);
-		
+
 	}
 
 	initPage(activeSegment = 1, dispatch) {
@@ -79,12 +79,12 @@ class Home extends Component {
 
 	renderRecommendation(type = 'new_arrival_products') {
 		/**
-		 * Registered object 
-		 * new_arrival_products, 
+		 * Registered object
+		 * new_arrival_products,
 		 * best_seller_products,
 		 * recommended_products,
 		 * recently_viewed_products
-		 * */ 
+		 * */
 
 		const obj = _.camelCase(type);
 		const { home } = this.props;
@@ -240,7 +240,7 @@ class Home extends Component {
 					{this.renderHashtag()}
 
 					{this.renderOOTD()}
-					{renderSectionHeader('New Arrival', { title: 'See all', url: 'http://www.google.com' })}
+					{renderSectionHeader('New Arrival', { title: 'See all', url: '/newarrival' })}
 					{ this.renderRecommendation('new_arrival_products')}
 					{this.renderBottomBanner(1)}
 					{renderSectionHeader('Best Seller', { title: 'See all', url: 'http://www.google.com' })}
@@ -252,7 +252,7 @@ class Home extends Component {
 					{renderSectionHeader('Mozaic Megazine', { title: 'See all', url: 'http://www.google.com' })}
 					{this.renderMozaic()}
 				</Page>
-				<Header lovelist={shared.totalLovelist} />
+				<Header lovelist={shared.totalLovelist} value={this.props.search.keyword} />
 				<Navigation active='Home' />
 			</div>
 		);
