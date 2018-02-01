@@ -29,31 +29,9 @@ const itemsFetchData = (fetchData) => (dispatch) => {
 	})
 	.then((items) => dispatch(actions.itemsFetchDataSuccess({
 		tags: items.data.data.hashtags,
-		products: items.data.data.contents
+		products: items.data.data.contents,
+		links: items.data.data.links
 	})))
-	.then(() => {
-		const body = document.body;
-		const html = document.documentElement;
-		const height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-
-		dispatch(actions.affectDocheight({
-			docHeight: height,
-			activeTag: fetchData.activeTag
-		}));
-
-		return {
-			allowNextPage: fetchData.docHeight < height,
-			activeTag: fetchData.activeTag
-		};
-
-	})
-	.then((reactivate) => {
-		if (!reactivate.allowNextPage) {
-			setTimeout(() => {
-				dispatch(actions.switchAllowNextPage({ allowNextPage: true, activeTag: reactivate.activeTag }));
-			}, 20000);
-		}
-	})
 	.catch(() => dispatch(actions.itemsHasError({ hasError: true })));
 };
 

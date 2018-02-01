@@ -36,6 +36,15 @@ const kongRequestHeader = (props) => {
 	return generateRequestHeaders(params);
 };
 
+const getCancelToken = () => {
+	const CancelToken = axios.CancelToken;
+	let cancelCalback = null;
+	const ct = new CancelToken((c) => {
+		cancelCalback = c;
+	});
+	return [ct, cancelCalback];
+};
+
 const request = (props) => {
 	
 	const url = buildRequestURL(props);
@@ -57,7 +66,7 @@ const request = (props) => {
 		if (props.query) {
 			params = props.query;
 		}
-		return axios.get(url, { params, headers });
+		return axios.get(url, { params, headers, cancelToken: props.cancelToken });
 	}
 	case 'DELETE': {
 		return axios.delete(url, { headers });
@@ -83,5 +92,6 @@ const request = (props) => {
 };
 
 export default {
-	request
+	request,
+	getCancelToken
 };
