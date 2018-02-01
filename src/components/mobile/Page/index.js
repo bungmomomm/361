@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import styles from './page.scss';
+import Page404 from './404';
 import Modal from '../Modal';
 import _ from 'lodash';
 
@@ -64,5 +65,7 @@ class Page extends Component {
 		);
 	}
 };
+
+Page.Page404 = Page404;
 
 export default Page;
