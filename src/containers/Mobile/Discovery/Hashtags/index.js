@@ -55,8 +55,16 @@ class Hashtags extends Component {
 		return path;
 	}
 
-	touchDown() {
-		if (!this.props.products[this.props.activeTag]
+	touchDown(e) {
+		const body = document.body;
+		const html = document.documentElement;
+		const docHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+		const scrollY = e.srcElement.scrollTop;
+		const scrHeight = window.screen.height;
+
+		if ((scrollY + scrHeight) < docHeight
+			||
+			!this.props.products[this.props.activeTag]
 			||
 			!this.props.products[this.props.activeTag].links
 			||
