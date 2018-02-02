@@ -10,6 +10,7 @@ import stylesCatalog from '../Category/Catalog/catalog.scss';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './promo.scss';
 import { actions } from '@/state/v4/Discovery';
+import withScroller from '@/containers/Mobile/WithScroller';
 
 
 class Promo extends Component {
@@ -33,7 +34,6 @@ class Promo extends Component {
 		this.renderNewArrival = this.renderData.bind(this);
 		this.handlePick = this.handlePick.bind(this);
 		this.getProductListContent = this.getProductListContent.bind(this);
-		this.touchDown = this.touchDown.bind(this);
 
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
@@ -42,14 +42,7 @@ class Promo extends Component {
 	}
 
 	componentDidMount() {
-		window.addEventListener('scroll', this.touchDown, true);
-
-		const { dispatch } = this.props;
-		dispatch(actions.promoAction(this.userCookies, this.promoType));
-	}
-
-	componentWillUnmount() {
-		window.removeEventListener('scroll', this.touchDown);
+		this.props.loaderWithScroll({ token: this.userCookies, promoType: this.promoType });
 	}
 
 	getProductListContent() {
@@ -99,28 +92,6 @@ class Promo extends Component {
 			break;
 		}
 	}
-
-	touchDown(e) {
-		const discovery = this.props.discovery;
-		const body = document.body;
-		const html = document.documentElement;
-
-		const docHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-		const scrollY = e.srcElement.scrollTop;
-		const scrHeight = window.screen.height;
-
-		if (
-			(scrollY + scrHeight) >= docHeight
-			&& discovery.promo[this.promoType].links
-			&& discovery.promo[this.promoType].links.next
-			&& !discovery.loading
-		) {
-			const { dispatch } = this.props;
-			const nextLink = new URL(discovery.promo[this.promoType].links.next).searchParams;
-
-			dispatch(actions.promoAction(this.userCookies, this.promoType, { page: nextLink.get('page') }));
-		}
-	};
 
 	renderData(content) {
 		const { listTypeGrid } = this.state;
@@ -178,4 +149,10 @@ const mapStateToProps = (state) => {
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(Promo)));
+const mapDispatchToProps = (dispatch) => {
+	return {
+		loaderWithScroller: (data) => dispatch(actions.promoAction(data))
+	};
+};
+
+export default withCookies(connect(mapStateToProps, mapDispatchToProps)(Shared(withScroller(Promo))));
