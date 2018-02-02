@@ -109,7 +109,7 @@ export default [
 		exact: true
 	}, {
 		path: '/category/:categoryId',
-		component: ProductCategory,
+		component: ProductCategory
 	}, {
 		path: '/subcategory/:categoryId',
 		component: SubCategory,

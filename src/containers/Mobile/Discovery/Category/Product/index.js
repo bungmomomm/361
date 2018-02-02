@@ -157,7 +157,7 @@ class Product extends Component {
 	}
 
 	render() {
-		let back = () => { this.props.history.go(-1); };
+		let back = () => { this.props.history.goBack(); };
 		if (this.props.history.length === 0) {
 			back = () => { this.props.history.push('/'); };
 		}
@@ -168,7 +168,7 @@ class Product extends Component {
 					<Svg src='ico_arrow-back-left.svg' />
 				</Link>
 			), 
-			center: this.props.productCategory.pcpData.info.title || '',
+			center: typeof this.props.productCategory.pcpData.info.title !== 'undefined' ? this.props.productCategory.pcpData.info.title : '',
 			right: null
 		};
 
