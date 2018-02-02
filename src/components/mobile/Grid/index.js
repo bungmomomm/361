@@ -5,12 +5,13 @@ import styles from './grid.scss';
 
 class Grid extends PureComponent {
 	render() {
-		const { children, split, className, ...props } = this.props;
+		const { children, split, bordered, className, ...props } = this.props;
 
 		const createClassName = classNames(
 			styles.container,
 			className,
 			styles[`split--${split}`],
+			bordered ? styles.bordered : '',
 		);
 
 		return (
