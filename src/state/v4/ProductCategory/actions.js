@@ -15,8 +15,8 @@ const initAction = (token, query) => (dispatch) => {
 	}).then(response => {
 		if (pcpParam.category_id === '666' || pcpParam.category_id === '') {
 			dispatch(initPcp({
-				pcpStatus: 'failed',
-				pcpParam
+				isLoading: false,
+				pcpStatus: 'failed'
 			}));
 		} else {
 			const pcpData = {
@@ -27,8 +27,8 @@ const initAction = (token, query) => (dispatch) => {
 				products: response.data.data.products
 			};
 			dispatch(initPcp({
+				isLoading: false,
 				pcpStatus: 'success',
-				pcpParam,
 				pcpData
 			}));
 		}

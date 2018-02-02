@@ -156,10 +156,20 @@ class Product extends Component {
 		}
 	}
 
-	render() {
+	renderHeader() {
 		let back = () => { this.props.history.goBack(); };
 		if (this.props.history.length === 0) {
 			back = () => { this.props.history.push('/'); };
+		}
+
+		let headerTitle = null;
+		const pcpResults = this.props.productCategory;
+		if (typeof pcpResults.pcpStatus !== 'undefined' && pcpResults.pcpStatus !== '') {
+			if (pcpResults.pcpStatus === 'success') {
+				headerTitle = pcpResults.pcpData.info.title;
+			} else {
+				headerTitle = 'Not Found';
+			}
 		}
 
 		const HeaderPage = {
@@ -168,16 +178,21 @@ class Product extends Component {
 					<Svg src='ico_arrow-back-left.svg' />
 				</Link>
 			), 
-			center: typeof this.props.productCategory.pcpData.info.title !== 'undefined' ? this.props.productCategory.pcpData.info.title : '',
+			// center: typeof this.props.productCategory.pcpData.info.title !== 'undefined' ? this.props.productCategory.pcpData.info.title : '',
+			center: headerTitle || '',
 			right: null
 		};
 
 		return (
-			<div style={this.props.style}>
-				{
-					this.props.isLoading ? this.loadingRender() : this.pcpRender()
-				}
-				<Header.Modal {...HeaderPage} />
+			<Header.Modal {...HeaderPage} />
+		);
+	}
+
+	renderTabs() {
+		let pcpTabs = null;
+		const pcpResults = this.props.productCategory;
+		if (typeof pcpResults.pcpStatus !== 'undefined' && pcpResults.pcpStatus !== '' && pcpResults.pcpStatus === 'success') {
+			pcpTabs = (
 				<Tabs
 					className={stylesCatalog.fixed}
 					type='segment'
@@ -197,6 +212,20 @@ class Product extends Component {
 					]}
 					onPick={e => this.handlePick(e)}
 				/>
+			);
+		}
+
+		return pcpTabs;
+	}
+
+	render() {
+		return (
+			<div style={this.props.style}>
+				{
+					this.props.isLoading ? this.loadingRender() : this.pcpRender()
+				}
+				{this.renderHeader()}
+				{this.renderTabs()}
 				<Navigation active='Categories' />
 			</div>
 		);
@@ -206,8 +235,9 @@ class Product extends Component {
 const mapStateToProps = (state) => {
 	console.log(state);
 	return {
-		...state,
+		// ...state,
 		shared: state.shared,
+		productCategory: state.productCategory,
 		isLoading: state.productCategory.isLoading
 	};
 };

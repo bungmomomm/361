@@ -19,14 +19,12 @@ const { setLoading, initPcp } = createActions(
 const reducer = handleActions({
 	[setLoading](state, { payload: { isLoading } }) {
 		return {
-			// ...state,
 			isLoading
 		};
 	},
 	[initPcp](state, { payload: { isLoading, pcpStatus, pcpData } }) {
 		return {
-			// ...state,
-			isLoading: false,
+			isLoading,
 			pcpStatus,
 			pcpData
 		};
