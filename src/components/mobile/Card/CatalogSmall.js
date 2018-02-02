@@ -4,15 +4,9 @@ import Image from '../Image';
 import Button from '../Button';
 import styles from './card.scss';
 
-
 class CatalogSmall extends PureComponent {
 	render() {
-		const {
-			className,
-			images,
-			pricing,
-			...props
-		} = this.props;
+		const { className, images, pricing, ...props } = this.props;
 
 		const createClassName = classNames(styles.container, styles.small, className);
 
