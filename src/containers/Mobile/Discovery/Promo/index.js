@@ -174,7 +174,10 @@ class Promo extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		...state
+		discovery: {
+			loading: state.discovery.loading,
+			promo: state.discovery.promo
+		}
 	};
 };
 

@@ -18,6 +18,7 @@ import { reducer as shared } from '@/state/v4/Shared';
 import { reducer as searchResults } from '@/state/v4/SearchResults';
 import { reducer as category } from '@/state/v4/Category';
 import { reducer as brands } from '@/state/v4/Brand';
+import { reducer as hashtag } from '@/state/v4/Hashtag';
 
 export default combineReducers({
 	...global,
@@ -39,5 +40,6 @@ export default combineReducers({
 	users,
 	shared,
 	category,
-	brands
+	brands,
+	hashtag
 });

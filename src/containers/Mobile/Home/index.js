@@ -124,8 +124,6 @@ class Home extends Component {
 				title, 
 				url: link
 			});
-			console.log(type);
-			console.log(datas.value());
 			return (
 				<div>
 					{ header }
@@ -313,7 +311,9 @@ class Home extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		...state
+		home: state.home, 
+		search: state.search, 
+		shared: state.shared
 	};
 };
 
