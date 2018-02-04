@@ -10,7 +10,7 @@ import stylesCatalog from '../Category/Catalog/catalog.scss';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './promo.scss';
 import { actions } from '@/state/v4/Discovery';
-import withScroller from '@/containers/Mobile/WithScroller';
+import Scroller from '@/containers/Mobile/Scroller';
 
 
 class Promo extends Component {
@@ -42,7 +42,7 @@ class Promo extends Component {
 	}
 
 	componentDidMount() {
-		this.props.loaderWithScroll({ token: this.userCookies, promoType: this.promoType });
+		this.props.loadScroller({ token: this.userCookies, promoType: this.promoType });
 	}
 
 	getProductListContent() {
@@ -127,7 +127,7 @@ class Promo extends Component {
 				<Image alt='Product Terlaris' src='http://www.solidbackgrounds.com/images/950x350/950x350-light-pink-solid-color-background.jpg' style={bannerInline} />
 				<Navigation active='Promo' />
 
-				{this.props.discovery.loading}
+				{this.props.scroller.loading}
 			</div>
 		);
 	}
@@ -149,10 +149,10 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapsDispatchToProps = (dispatch) => {
 	return {
-		loaderWithScroller: (data) => dispatch(actions.promoAction(data))
+		loadScroller: (data) => dispatch(actions.promoAction(data))
 	};
 };
 
-export default withCookies(connect(mapStateToProps, mapDispatchToProps)(Shared(withScroller(Promo))));
+export default withCookies(connect(mapStateToProps, mapsDispatchToProps)(Shared(Scroller(Promo))));

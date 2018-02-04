@@ -1,6 +1,6 @@
 import { request } from '@/utils';
 import { promos } from './reducer';
-import { actions as withScroller } from '@/State/v4/WithScroller';
+import { actions as scrollerAction } from '@/State/v4/Scroller';
 // import { promo } from '@/data/translations';
 
 const configs = {
@@ -8,7 +8,7 @@ const configs = {
 };
 
 const promoAction = ({ token, promoType, query = {} }) => (dispatch) => {
-	dispatch(withScroller.initScrollerAction({ loading: true }));
+	dispatch(scrollerAction.initScrollerAction({ loading: true }));
 
 	const url = `${process.env.MICROSERVICES_URL}${promoType}`;
 	if (!query.page) {
@@ -30,9 +30,9 @@ const promoAction = ({ token, promoType, query = {} }) => (dispatch) => {
 		dispatch(promos({ promo }));
 
 		const nextLink = promo[promoType].links && promo[promoType].links.next ? new URL(promo[promoType].links.next).searchParams : false;
-		dispatch(withScroller.initScrollerAction({
-			nextData: { token, promoType, query },
-			page: nextLink ? nextLink.get('page') : false,
+		dispatch(scrollerAction.initScrollerAction({
+			nextData: { token, promoType, query: { page: nextLink ? nextLink.get('page') : false } },
+			page: nextLink !== false,
 			loading: false
 		}));
 	});
