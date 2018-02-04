@@ -10,7 +10,6 @@ import stylesCatalog from '../Category/Catalog/catalog.scss';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './promo.scss';
 import { actions } from '@/state/v4/Discovery';
-import { actions as scrollerActions } from '@/state/v4/Scroller';
 import Scroller from '@/containers/Mobile/Scroller';
 
 class Promo extends Component {
@@ -38,18 +37,11 @@ class Promo extends Component {
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.promoType = this.props.location.pathname.replace('/', '');
+	}
 
+	componentDidMount() {
 		const { dispatch } = this.props;
-		dispatch(scrollerActions.onScroll({
-			nextData: {
-				token: this.userCookies,
-				promoType: this.promoType,
-				query: {}
-			},
-			loader: actions.promoAction,
-			loading: false,
-			nextPage: true
-		}));
+		dispatch(actions.promoAction({ token: this.userCookies, promoType: this.promoType }));
 	}
 
 	getProductListContent() {
@@ -150,7 +142,6 @@ class Promo extends Component {
 }
 
 const mapStateToProps = (state) => {
-	// console.log(state.scroller);
 	return {
 		...state
 	};

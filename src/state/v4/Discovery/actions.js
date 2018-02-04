@@ -7,13 +7,9 @@ const configs = {
 	defaultPage: 30
 };
 
-const promoAction = () => (dispatch, getState) => {
-	const { scroller } = getState();
-	const query = scroller.nextData && scroller.nextData.query ? scroller.nextData.query : {};
-	const token = scroller.nextData && scroller.nextData.token ? scroller.nextData.token : false;
-	const promoType = scroller.nextData && scroller.nextData.promoType ? scroller.nextData.promoType : false;
-
+const promoAction = ({ token, promoType, query = {} }) => (dispatch) => {
 	const url = `${process.env.MICROSERVICES_URL}${promoType}`;
+	dispatch(scrollerActions.onScroll({ loading: true }));
 
 	if (!query.page) {
 		query.page = 1;
@@ -35,7 +31,8 @@ const promoAction = () => (dispatch, getState) => {
 		dispatch(scrollerActions.onScroll({
 			nextData: { token, promoType, query: { page: nextLink ? nextLink.get('page') : false } },
 			nextPage: nextLink !== false,
-			loading: false
+			loading: false,
+			loader: promoAction
 		}));
 	});
 };
