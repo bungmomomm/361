@@ -16,11 +16,13 @@ const {
 	productRecommendation, 
 	productSimilar, 
 	productSocialSummary,
+	productLoading,
 } = createActions(
 	'PRODUCT_DETAIL', 
 	'PRODUCT_RECOMMENDATION', 
 	'PRODUCT_SIMILAR',
 	'PRODUCT_SOCIAL_SUMMARY',
+	'PRODUCT_LOADING',
 );
 
 const reducer = handleActions({
@@ -48,6 +50,12 @@ const reducer = handleActions({
 			reviews,
 		};
 	},
+	[productLoading](state, { payload: { loading } }) {
+		return {
+			...state,
+			loading,
+		};
+	},
 }, initialState);
 
 export default {
@@ -56,4 +64,5 @@ export default {
 	productRecommendation,
 	productSimilar,
 	productSocialSummary,
+	productLoading
 };

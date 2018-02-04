@@ -3,7 +3,7 @@ import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { actions as hashtagActions } from '@/state/v4/Hashtag';
 import { Header, Page, Navigation, Svg, Grid } from '@/components/mobile';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 
 class Hashtags extends Component {
 
@@ -25,7 +25,6 @@ class Hashtags extends Component {
 		const dataFetch = {
 			token: this.userCookies,
 			path: `hashtags${path}`,
-			docHeight: this.props.products[this.props.activeTag] ? this.props.products[this.props.activeTag].docHeight : 0,
 			activeTag: this.props.activeTag
 		};
 		this.props.fetchData(dataFetch);
@@ -37,6 +36,10 @@ class Hashtags extends Component {
 	}
 
 	getPagePath(tag) {
+		if ((this.props.products[tag] && !this.props.products[tag].links && !this.props.products[tag].links.next)) {
+			return false;
+		}
+
 		tag = (tag !== '') ? tag : '#All';
 		const filtr = this.props.tags.filter((obj) => {
 			return obj.hashtag === tag;
@@ -44,31 +47,33 @@ class Hashtags extends Component {
 
 		tag = tag.replace('#', '').toLowerCase();
 		const tagId = (typeof filtr !== 'undefined' && Array.isArray(filtr) && filtr[0] && filtr[0].id) ? filtr[0].id : false;
-		const page = this.props.products[tag] && this.props.products[tag].nextPage ? this.props.products[tag].nextPage : 1;
+		const nextLink = !this.props.products[tag] ? false : new URL(this.props.products[tag].links.next).searchParams;
+		const page = !nextLink ? 1 : nextLink.get('page');
 
 		let path = tagId ? `?hashtag_id=${tagId}` : '';
 		path += (!path) ? `?page=${page}` : `&page=${page}`;
 		return path;
 	}
 
-	touchDown(e) {
-		const body = document.body;
-		const html = document.documentElement;
-
-		const docHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-		const scrollY = e.srcElement.scrollTop;
-		const scrHeight = window.screen.height;
-
-		if ((scrollY + scrHeight) >= docHeight && this.props.products[this.props.activeTag].allowNextPage && !this.props.isLoading)	{
-			const path = this.getPagePath(this.props.location.hash);
-			const dataFetch = {
-				token: this.userCookies,
-				path: `hashtags${path}`,
-				docHeight: this.props.products[this.props.activeTag] ? this.props.products[this.props.activeTag].docHeight : 0,
-				activeTag: this.props.activeTag
-			};
-			this.props.fetchData(dataFetch);
+	touchDown() {
+		if (!this.props.products[this.props.activeTag]
+			||
+			!this.props.products[this.props.activeTag].links
+			||
+			!this.props.products[this.props.activeTag].links.next
+			||
+			this.props.isLoading
+		) {
+			return;
 		}
+
+		const path = this.getPagePath(this.props.location.hash);
+		const dataFetch = {
+			token: this.userCookies,
+			path: `hashtags${path}`,
+			activeTag: this.props.activeTag
+		};
+		this.props.fetchData(dataFetch);
 	};
 
 	switchTag(e) {
@@ -78,12 +83,11 @@ class Hashtags extends Component {
 		if (typeof tag !== 'undefined' && this.props.activeTag !== switchTag) {
 			this.props.switchTag(switchTag);
 
-			if ((!this.props.products[switchTag] || this.props.products[switchTag].allowNextPage) && !this.props.isLoading) {
+			if (!this.props.products[switchTag] && !this.props.isLoading) {
 				const path = this.getPagePath(tag);
 				const dataFetch = {
 					token: this.userCookies,
 					path: `hashtags${path}`,
-					docHeight: this.props.products[switchTag] ? this.props.products[switchTag].docHeight : 0,
 					activeTag: switchTag
 				};
 				this.props.fetchData(dataFetch);
@@ -93,7 +97,7 @@ class Hashtags extends Component {
 
 	switchMode(e) {
 		e.preventDefault();
-		const mode = (this.props.viewMode === 3) ? 1 : 3;
+		const mode = (this.props.viewMode === 3) ? 1 : (this.props.viewMode === 1) ? 2 : 3;
 		this.props.switchMode(mode);
 	}
 
@@ -105,9 +109,9 @@ class Hashtags extends Component {
 
 		const HeaderPage = {
 			left: (
-				<a href={history.go - 1}>
+				<button onClick={this.props.history.goBack}>
 					<Svg src={'ico_arrow-back-left.svg'} />
-				</a>
+				</button>
 			),
 			center: '#MauGayaItuGampang',
 			right: (
@@ -166,4 +170,4 @@ const mapDispatchToProps = (dispatch) => {
 	};
 };
 
-export default withCookies(connect(mapStateToProps, mapDispatchToProps)(Hashtags));
+export default withRouter(withCookies(connect(mapStateToProps, mapDispatchToProps)(Hashtags)));

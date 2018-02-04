@@ -16,6 +16,7 @@ const defRoute = loadable(() => import('@/containers/NotFound'));
 let Page404 = defRoute;
 let Home = defRoute;
 let Search = defRoute;
+let SearchResults = defRoute;
 let SearchNotFound = defRoute;
 let Category = defRoute;
 let SubCategory = defRoute;
@@ -29,9 +30,11 @@ let UserLogin = defRoute;
 let UserRegister = defRoute;
 let UserRegistered = defRoute;
 let UserRegisteredPhoneValidation = defRoute;
-let NewArrival = defRoute;
+// let NewArrival = defRoute;
+// let Recommended = defRoute;
 let ForgotPassword = defRoute;
 let FilterCategory = defRoute;
+let Promo = defRoute;
 let UserProfile = defRoute;
 
 if (isMobile()) {
@@ -45,6 +48,7 @@ if (isMobile()) {
 	// Service Discovery
 	Page404 = loadable(() => import('@/containers/Mobile/404'));
 	Search = loadable(() => import('@/containers/Mobile/Discovery/Search'));
+	SearchResults = loadable(() => import('@/containers/Mobile/Discovery/SearchResults'));
 	SearchNotFound = loadable(() => import('@/containers/Mobile/Discovery/SearchNotFound'));
 	Lovelist = loadable(() => import('@/containers/Mobile/Discovery/Lovelist'));
 	Hashtags = loadable(() => import('@/containers/Mobile/Discovery/Hashtags'));
@@ -52,7 +56,6 @@ if (isMobile()) {
 	SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
 	Brands = loadable(() => import('@/containers/Mobile/Discovery/Brands'));
 	CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
-	NewArrival = loadable(() => import('@/containers/Mobile/Discovery/NewArrival'));
 	FilterCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog/filter'));
 
 	// Service Details
@@ -66,6 +69,8 @@ if (isMobile()) {
 	UserRegister = loadable(() => import('@/containers/Mobile/Users/Register'));
 	UserRegistered = loadable(() => import('@/containers/Mobile/Users/Register/registered'));
 	UserRegisteredPhoneValidation = loadable(() => import('@/containers/Mobile/Users/Register/registeredPhoneValidation'));
+	// promo
+	Promo = loadable(() => import('@/containers/Mobile/Discovery/Promo'));
 	UserProfile = loadable(() => import('@/containers/Mobile/Users/Profile'));
 } else {
 	/**
@@ -94,18 +99,27 @@ export default [
 		component: Search
 	},
 	{
+		path: '/products',
+		component: SearchResults
+	},
+	{
 		path: '/searchnotfound', // This path only for displaying search not found SearchNotFound Container
 		component: SearchNotFound
 	},
 	{
 		path: '/category',
 		component: Category,
+		exact: true
 	}, {
-		path: '/subcategory',
-		component: SubCategory
+		path: '/category/:categoryId',	// for temporary PCP
+		component: Category,
+	}, {
+		path: '/subcategory/:categoryId',
+		component: SubCategory,
 	}, {
 		path: '/brands',
-		component: Brands
+		component: Brands,
+		exact: true
 	}, {
 		path: '/catalogcategory',
 		component: CatalogCategory
@@ -117,8 +131,9 @@ export default [
 		component: Lovelist,
 		exact: true
 	}, {
-		path: '/product',
+		path: '/product/:id',
 		component: Products,
+		exact: true
 	},
 	{
 		path: '/login',
@@ -146,9 +161,20 @@ export default [
 		exact: true
 	},
 	{
-		path: '/newarrival',
-		component: NewArrival,
-		exact: true
+		path: '/new_arrival',
+		component: Promo
+	},
+	{
+		path: '/best_seller',
+		component: Promo
+	},
+	{
+		path: '/recommended_products',
+		component: Promo
+	},
+	{
+		path: '/recent_view',
+		component: Promo
 	},
 	{
 		path: '/profile',

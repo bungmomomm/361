@@ -4,20 +4,22 @@ const initialState = {
 	keyword: '',
 	related_category: '',
 	related_keyword: '',
-	related_hashtag: ''
+	related_hashtag: '',
+	loading: false
 };
 
 const { keywordUpdate } = createActions(
 	'KEYWORD_UPDATE');
 
 const reducer = handleActions({
-	[keywordUpdate](state, { payload: { keyword, related_category, related_keyword, related_hashtag } }) {
+	[keywordUpdate](state, { payload: { keyword, related_category, related_keyword, related_hashtag, loading } }) {
 		return {
 			...state,
 			keyword,
 			related_category,
 			related_keyword,
-			related_hashtag
+			related_hashtag,
+			loading
 		};
 	}
 }, initialState);

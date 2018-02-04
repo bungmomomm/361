@@ -24,6 +24,7 @@ const Header = props => {
 							iconLeft={<Svg src='ico_search.svg' />}
 							onFocus={() => props.history.push('/search')}
 							placeholder='Cari produk, #hashtags, @seller'
+							value={props.value}
 						/>
 					</div>
 					<div className={styles.right}><Link to='/search'><Svg src='ico_hashtags.svg' /></Link></div>
