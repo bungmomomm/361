@@ -32,7 +32,7 @@ class RecommendedProducts extends Component {
 
 	switchMode(e) {
 		e.preventDefault();
-		const mode = (this.props.viewMode === 3) ? 1 : 3;
+		const mode = (this.props.viewMode === 3) ? 1 : (this.props.viewMode === 1) ? 2 : 3;
 		this.props.switchMode(mode);
 	}
 
@@ -44,13 +44,14 @@ class RecommendedProducts extends Component {
 		const scrollY = e.srcElement.scrollTop;
 		const scrHeight = window.screen.height;
 
-		if ((scrollY + scrHeight) >= docHeight && this.props.allowNextPage && !this.props.isLoading)	{
+		if ((scrollY + scrHeight) >= docHeight && this.props.links.next && !this.props.isLoading)	{
+			const nextLink = new URL(this.props.links.next).searchParams;
 
 			const dataInit = {
 				token: this.userCookies,
-				page: this.props.nextPage,
-				docHeight: this.props.docHeight ? this.props.docHeight : 0
+				page: nextLink.get('page')
 			};
+
 			this.props.initAction(dataInit);
 		}
 	};
@@ -58,16 +59,55 @@ class RecommendedProducts extends Component {
 	render() {
 		const HeaderPage = {
 			left: (
-				<button href={this.props.history.goBack}>
+				<button onClick={this.props.history.goBack}>
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</button>
 			),
 			center: 'Recommended Products',
 			right: (
-				<a href={'/'} onClick={this.switchMode}>
+				<button onClick={this.switchMode}>
 					|||
-				</a>
+				</button>
 			)
+		};
+
+		const ProductCard = (productData) => {
+			let productCard;
+
+			switch (this.props.viewMode) {
+			case 3:
+				productCard = (
+					<Card.CatalogSmall
+						key={productData.idx}
+						images={productData.images}
+						pricing={productData.pricing}
+					/>
+				);
+				break;
+			case 2:
+				productCard = (
+					<Card.CatalogGrid
+						key={productData.idx}
+						images={productData.images}
+						productTitle={productData.product_title}
+						brandName={productData.brand}
+						pricing={productData.pricing}
+					/>
+				);
+				break;
+			default:
+				productCard = (
+					<Card.Catalog
+						key={productData.idx}
+						images={productData.images}
+						productTitle={productData.product_title}
+						brandName={productData.brand}
+						pricing={productData.pricing}
+					/>
+				);
+			}
+
+			return productCard;
 		};
 
 		return (
@@ -80,7 +120,7 @@ class RecommendedProducts extends Component {
 							this.props.products.length
 							&&
 							this.props.products.map((product, i) => (
-								<Card.CatalogSmall key={i} />
+								<ProductCard {...product} idx={product.product_id} />
 							))
 						}
 					</Grid>
