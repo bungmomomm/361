@@ -10,8 +10,8 @@ import stylesCatalog from '../Category/Catalog/catalog.scss';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './promo.scss';
 import { actions } from '@/state/v4/Discovery';
+import { actions as scrollerActions } from '@/state/v4/Scroller';
 import Scroller from '@/containers/Mobile/Scroller';
-
 
 class Promo extends Component {
 
@@ -39,10 +39,17 @@ class Promo extends Component {
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.promoType = this.props.location.pathname.replace('/', '');
 
-	}
-
-	componentDidMount() {
-		this.props.loadScroller({ token: this.userCookies, promoType: this.promoType });
+		const { dispatch } = this.props;
+		dispatch(scrollerActions.onScroll({
+			nextData: {
+				token: this.userCookies,
+				promoType: this.promoType,
+				query: {}
+			},
+			loader: actions.promoAction,
+			loading: false,
+			nextPage: true
+		}));
 	}
 
 	getProductListContent() {
@@ -133,7 +140,6 @@ class Promo extends Component {
 	}
 
 	render() {
-
 		if (this.state.productEmpty) {
 			return this.renderData('');
 		}
@@ -144,15 +150,10 @@ class Promo extends Component {
 }
 
 const mapStateToProps = (state) => {
+	// console.log(state.scroller);
 	return {
 		...state
 	};
 };
 
-const mapsDispatchToProps = (dispatch) => {
-	return {
-		loadScroller: (data) => dispatch(actions.promoAction(data))
-	};
-};
-
-export default withCookies(connect(mapStateToProps, mapsDispatchToProps)(Shared(Scroller(Promo))));
+export default withCookies(connect(mapStateToProps)(Shared(Scroller(Promo))));
