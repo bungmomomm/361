@@ -1,44 +1,47 @@
-// import { createAction } from 'redux-actions';
-import { request } from '@/utils';
-import { keywordUpdate } from './reducer';
+import { request, getCancelToken } from '@/utils';
+import { keywordUpdate, initialState } from './reducer';
 
-let delayTimer;
+let cancelReq;
+let cancelTokenReq;
+
 const updatedKeywordHandler = (string, userToken) => {
 	return dispatch => {
 		if (string.length >= 3) {
 			dispatch(keywordUpdate({
+				...initialState,
 				keyword: string,
 				loading: true
 			}));
-			clearTimeout(delayTimer);
-			delayTimer = setTimeout(() => {
-				const url = `${process.env.MICROSERVICES_URL}product/suggestion?q=${string}`;
-				request({
-					token: userToken,
-					path: url,
-					method: 'GET',
-					fullpath: true
-				}).then(response => {
-					const relatedCategory = response.data.data.related_category;
-					const relatedKeyword = response.data.data.related_keyword;
-					const relatedHastag = response.data.data.related_hashtag;
-					dispatch(keywordUpdate({
-						keyword: string,
-						related_category: relatedCategory,
-						related_keyword: relatedKeyword,
-						related_hashtag: relatedHastag,
-						loading: false
-					}));
-				});
-			}, 900);
+			if (cancelReq !== undefined) cancelReq('Previous suggest request canceled.');
+			[cancelTokenReq, cancelReq] = getCancelToken();
+			request({
+				token: userToken,
+				path: `${process.env.MICROSERVICES_URL}product/suggestion?q=${string}`,
+				method: 'GET',
+				fullpath: true,
+				cancelToken: cancelTokenReq
+			}).then(response => {
+				const data = response.data.data;
+				dispatch(keywordUpdate({
+					...initialState,
+					keyword: string,
+					related_category: data.related_category,
+					related_keyword: data.related_category,
+					related_hashtag: data.related_category,
+					loading: false
+				}));
+			}).catch((error) => {
+				console.log('On catch API Suggestion: ', error.message);
+				dispatch(keywordUpdate({
+					...initialState,
+					keyword: string,
+				}));
+			});
 		} else {
-			clearTimeout(delayTimer);
+			if (cancelReq !== undefined) cancelReq('Previous suggest request canceled.[< 3]');
 			dispatch(keywordUpdate({
+				...initialState,
 				keyword: string,
-				related_category: '',
-				related_keyword: '',
-				related_hashtag: '',
-				loading: false
 			}));
 		}
 	};

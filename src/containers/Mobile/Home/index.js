@@ -13,22 +13,11 @@ import { actions } from '@/state/v4/Home';
 import Shared from '@/containers/Mobile/Shared';
 
 class Home extends Component {
-	static initApp(token, dispatch) {
-		dispatch(new actions.initAction(token));
-	}
-
-	static mainData(token, dispatch, activeSegment) {
-		dispatch(new actions.mainAction(token, activeSegment));
-	}
-
-	static recomendation(token, dispatch, activeSegment) {
-		dispatch(new actions.recomendationAction(this.userCookies, activeSegment));
-	}
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
-			current: 1, // wanita
+			current: 'wanita', // wanita
 			notification: {
 				show: true
 			}
@@ -40,28 +29,44 @@ class Home extends Component {
 	}
 
 	componentDidMount() {
-		this.initPage(1, this.props.dispatch);
+		this.initApp();
 	}
 
 	handlePick(current) {
-		this.setState({ current });
-		this.initPage(current, this.props.dispatch);
-		
+		const { segmen } = this.props.home;
+		const { dispatch } = this.props;
+		const willActiveSegment = segmen.find(e => e.id === current);
+		this.setState({ current: willActiveSegment.key });
+
+		dispatch(new actions.mainAction(this.userCookies, willActiveSegment));
+		dispatch(new actions.recomendationAction(this.userCookies, willActiveSegment));
 	}
 
-	initPage(activeSegment = 1, dispatch) {
-		this.constructor.initApp(this.userCookies, dispatch);
-		this.constructor.mainData(this.userCookies, dispatch, activeSegment);
-		this.constructor.recomendation(this.userCookies, dispatch, activeSegment);
+	initApp() {
+		const { dispatch } = this.props;
+		dispatch(new actions.initAction(this.userCookies))
+		.then(segmentData => {
+			const activeSegment = segmentData.find(e => e.key === this.state.current);
+			
+			dispatch(new actions.mainAction(this.userCookies, activeSegment));
+			dispatch(new actions.recomendationAction(this.userCookies, activeSegment));
+		});
 	}
 
-	mappingSegmentValue() {
-		return this.state.current === 1 ? 'woman' : (this.state.current === 2 ? 'man' : 'kids');
+	renderSectionHeader(title, options) {
+		const { home } = this.props;
+		console.log(home);
+		return (
+			<Level>
+				<Level.Left><div className={styles.headline}>{title}</div></Level.Left>
+				<Level.Right><Link to={options.url || '/'} className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></Link></Level.Right>
+			</Level>
+		);
 	}
 
 	renderFeatureBanner() {
 		const { home } = this.props;
-		const segment = this.mappingSegmentValue();
+		const segment = home.activeSegment.key;
 		const featuredBanner = _.chain(home).get(`allSegmentData.${segment}`).get('featuredBanner');
 		if (!featuredBanner.isEmpty().value()) {
 			return (
@@ -79,29 +84,60 @@ class Home extends Component {
 
 	renderRecommendation(type = 'new_arrival_products') {
 		/**
-		 * Registered object 
-		 * new_arrival_products, 
+		 * Registered object
+		 * new_arrival_products,
 		 * best_seller_products,
 		 * recommended_products,
 		 * recently_viewed_products
-		 * */ 
+		 * */
+		let title = ''; 
+		let link = '';
+		let label = '';
+		switch (type) {
+		case 'best_seller_products':
+			title = 'LIHAT SEMUA';
+			link = '/best_seller';
+			label = 'Best Seller';
+			break;
+		case 'recommended_products':
+			title = 'LIHAT SEMUA';
+			link = '/recommended_products';
+			label = 'Recommmended';
+			break;
+		case 'recently_viewed_products':
+			title = 'LIHAT SEMUA';
+			link = '/recent_view';
+			label = 'Recently Viewed';
+			break;
+		default: 
+			title = 'LIHAT SEMUA';
+			link = '/new_arrival';
+			label = 'New Arrival';
+		}
 
 		const obj = _.camelCase(type);
 		const { home } = this.props;
-		const segment = this.mappingSegmentValue();
+		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}`).get('recomendationData').get(obj);
 		if (!datas.isEmpty().value()) {
+			const header = this.renderSectionHeader(label, {
+				title, 
+				url: link
+			});
 			return (
-				<Grid split={3}>
-					{
-						datas.value().map(({ images, pricing }, e) => (
-							<div key={e}>
-								<Image lazyload alt='thumbnail' src={images.mobile} />
-								<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
-							</div>
-						))
-					}
-				</Grid>
+				<div>
+					{ header }
+					<Grid split={3}>
+						{
+							datas.value().map(({ images, pricing }, e) => (
+								<div key={e}>
+									<Image lazyload alt='thumbnail' src={images.mobile} />
+									<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
+								</div>
+							))
+						}
+					</Grid>
+				</div>
 			);
 		}
 		return null;
@@ -109,17 +145,24 @@ class Home extends Component {
 
 	renderHashtag() {
 		const { home } = this.props;
-		const segment = this.mappingSegmentValue();
+		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}.hashtag`);
 		if (!datas.isEmpty().value()) {
+			const header = this.renderSectionHeader(datas.value().hashtag, {
+				title: datas.value().mainlink.text, 
+				url: '/hashtags'
+			});
 			return (
-				<Carousel>
-					{
-						datas.value().images.map(({ images, link }, b) => (
-							<div key={b} ><Image lazyload alt='thumbnail' src={images.mobile} /></div>
-						))
-					}
-				</Carousel>
+				<div>
+					{ header }
+					<Carousel>
+						{
+							datas.value().images.map(({ images, link }, b) => (
+								<div key={b} ><Image lazyload alt='thumbnail' src={images.mobile} /></div>
+							))
+						}
+					</Carousel>
+				</div>
 			);
 		}
 		return null;
@@ -127,7 +170,7 @@ class Home extends Component {
 
 	renderOOTD() {
 		const { home } = this.props;
-		const segment = this.mappingSegmentValue();
+		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}.middleBanner`);
 		if (!datas.isEmpty().value()) {
 			return (
@@ -145,11 +188,11 @@ class Home extends Component {
 
 	renderBottomBanner(id = 1) {
 		const { home } = this.props;
-		const segment = this.mappingSegmentValue();
+		const segment = home.activeSegment.key;
 		let bottomBanner = [];
 		const dataBottomBanner1 = _.chain(home).get(`allSegmentData.${segment}.bottomBanner1`);
 		const dataBottomBanner2 = _.chain(home).get(`allSegmentData.${segment}.bottomBanner2`);
-		if (!dataBottomBanner1.isEmpty().value() && dataBottomBanner2.isEmpty().value()) {
+		if (!dataBottomBanner1.isEmpty().value() && !dataBottomBanner2.isEmpty().value()) {
 			bottomBanner = id === 1 ? dataBottomBanner1.value() : dataBottomBanner2.value();
 		}
 		if (bottomBanner.length > 0) {
@@ -170,7 +213,7 @@ class Home extends Component {
 
 	renderFeaturedBrands() {
 		const { home } = this.props;
-		const segment = this.mappingSegmentValue();
+		const segment = home.activeSegment.key;
 		const featuredBrand = _.chain(home).get(`allSegmentData.${segment}.featuredBrand`);
 		if (!featuredBrand.isEmpty().value()) {
 			return (
@@ -191,18 +234,28 @@ class Home extends Component {
 
 	renderMozaic() {
 		const { home } = this.props;
-		const segment = this.mappingSegmentValue();
+		const segment = home.activeSegment.key;
 		const mozaic = _.chain(home).get(`allSegmentData.${segment}.mozaic`);
 
 		if (!mozaic.isEmpty().value()) {
+			const header = this.renderSectionHeader('Mozaic Megazine', {
+				title: mozaic.value().mainlink.text,
+				url: mozaic.value().mainlink.link
+			});
 			return (
-				<Carousel>
+				<div>
 					{
-						mozaic.value().posts.map((detail, i) => (
-							<Article posts={detail} key={i} />
-						))
+						header
 					}
-				</Carousel>
+					<Carousel>
+						{
+							mozaic.value().posts.map((detail, i) => (
+								<Article posts={detail} key={i} />
+							))
+						}
+					</Carousel>
+				</div>
+				
 			);
 		}
 
@@ -235,24 +288,21 @@ class Home extends Component {
 
 					{this.renderFeatureBanner()}
 
-					{renderSectionHeader('#MauGayaItuGampang', { title: 'See all', url: 'http://www.google.com' })}
-
 					{this.renderHashtag()}
 
 					{this.renderOOTD()}
-					{renderSectionHeader('New Arrival', { title: 'See all', url: 'http://www.google.com' })}
+					
 					{ this.renderRecommendation('new_arrival_products')}
-					{this.renderBottomBanner(1)}
-					{renderSectionHeader('Best Seller', { title: 'See all', url: 'http://www.google.com' })}
+					{ this.renderBottomBanner(1) }
+					
 					{ this.renderRecommendation('best_seller_products')}
-					{this.renderBottomBanner(2)}
+					{ this.renderBottomBanner(2) }
 					{renderSectionHeader('Featured Brands', { title: 'See all', url: 'http://www.google.com' })}
-					{this.renderFeaturedBrands()}
-
-					{renderSectionHeader('Mozaic Megazine', { title: 'See all', url: 'http://www.google.com' })}
+					{ this.renderFeaturedBrands() }
+					
 					{this.renderMozaic()}
 				</Page>
-				<Header lovelist={shared.totalLovelist} />
+				<Header lovelist={shared.totalLovelist} value={this.props.search.keyword} />
 				<Navigation active='Home' />
 			</div>
 		);
@@ -261,7 +311,9 @@ class Home extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		...state
+		home: state.home, 
+		search: state.search, 
+		shared: state.shared
 	};
 };
 

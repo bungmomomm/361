@@ -66,7 +66,7 @@ class Lovelist extends Component {
 		const HeaderPage = {
 			left: (
 				<Button className={this.state.loggedIn && !this.state.listEmpty ? null : 'd-none'} onClick={() => this.setState({ listTypeGrid: !listTypeGrid })}>
-					<Svg src={!listTypeGrid ? 'ico_grid.svg' : 'ico_list.svg'} />
+					<Svg src={listTypeGrid ? 'ico_list.svg' : 'ico_grid.svg'} />
 				</Button>
 			),
 			center: 'Lovelist',
@@ -128,7 +128,7 @@ class Lovelist extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		...state
+		lovelist: state.lovelist
 	};
 };
 

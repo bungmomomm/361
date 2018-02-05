@@ -3,32 +3,35 @@ import { handleActions, createActions } from 'redux-actions';
 
 
 const initialState = {
-	newArrivalData: {},
-	bestSellerData: {},
+	promo: {
+		new_arrival: {},
+		best_seller: {},
+		recommended_products: {},
+		recent_view: {}
+	},
+	loading: false
 };
 
-const { newArrival, bestSeller } = createActions(
-	'NEW_ARRIVAL',
-	'BEST_SELLER',
+const { promos, loading } = createActions(
+	'PROMOS', 'LOADING'
 );
 
 const reducer = handleActions({
-	[newArrival](state, { payload: { newArrivalData } }) {
+	[promos](state, { payload: { promo } }) {
 		return {
-			...state,
-			newArrivalData
+			promo: {
+				...state.promo,
+				...promo
+			}
 		};
 	},
-	[bestSeller](state, { payload: { bestSellerData } }) {
-		return {
-			...state,
-			bestSellerData
-		};
-	},
+	[loading](state, { payload: data }) {
+		return { ...state, ...data };
+	}
 }, initialState);
 
 export default {
 	reducer,
-	newArrival,
-	bestSeller,
+	promos,
+	loading
 };
