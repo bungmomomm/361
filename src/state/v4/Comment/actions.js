@@ -38,7 +38,6 @@ const commentAddAction = (token) => (dispatch) => {
 			comment: 'Gan mau tanya apakah barangnya masih ada dan berapa lama biasanya pengirimannya??'
 		}
 	}).then(response => {
-		console.log(response);
 		dispatch(commentLoading({ loading: false }));
 	}).catch((error) => {
 		console.log(error);

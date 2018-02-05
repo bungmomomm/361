@@ -41,7 +41,7 @@ class Navigation extends PureComponent {
 							active={active === 'Promo'}
 						/>
 						<Item
-							to='/'
+							to='/profile'
 							icon='ico_user.svg'
 							label='Profile'
 							active={active === 'Profile'}
