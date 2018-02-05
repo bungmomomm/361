@@ -18,6 +18,7 @@ import { reducer as shared } from '@/state/v4/Shared';
 import { reducer as searchResults } from '@/state/v4/SearchResults';
 import { reducer as category } from '@/state/v4/Category';
 import { reducer as brands } from '@/state/v4/Brand';
+import { reducer as scroller } from '@/state/v4/Scroller';
 import { reducer as hashtag } from '@/state/v4/Hashtag';
 
 export default combineReducers({
@@ -41,5 +42,6 @@ export default combineReducers({
 	shared,
 	category,
 	brands,
+	scroller,
 	hashtag
 });
