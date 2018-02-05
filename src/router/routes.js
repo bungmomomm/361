@@ -36,7 +36,6 @@ let ForgotPassword = defRoute;
 let FilterCategory = defRoute;
 let Promo = defRoute;
 let UserProfile = defRoute;
-let UserProfileView = defRoute;
 let UserProfileEdit = defRoute;
 let UserProfileEditOVO = defRoute;
 let UserProfileEditHP = defRoute;
@@ -77,7 +76,6 @@ if (isMobile()) {
 	// promo
 	Promo = loadable(() => import('@/containers/Mobile/Discovery/Promo'));
 	UserProfile = loadable(() => import('@/containers/Mobile/Users/Profile'));
-	UserProfileView = loadable(() => import('@/containers/Mobile/Users/Profile/view'));
 	UserProfileEdit = loadable(() => import('@/containers/Mobile/Users/Profile/edit'));
 	UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'));
 	UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'));
@@ -189,10 +187,6 @@ export default [
 	{
 		path: '/profile',
 		component: UserProfile
-	},
-	{
-		path: '/profileView',
-		component: UserProfileView
 	},
 	{
 		path: '/profileEdit',
