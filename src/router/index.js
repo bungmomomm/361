@@ -40,4 +40,4 @@ export default () => (
 			routes.map((route, i) => <Route {...route} key={i} />)
 		}
 	</AnimatedSwitch>
-);	
+);
