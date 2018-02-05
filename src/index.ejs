@@ -38,10 +38,6 @@
         <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
         <link rel="icon" href="https://assets.mataharimall.co/images/favicon.ico" type="image/x-icon" />
         <meta name="theme-color" content="#DA1818" />
-
-		<!-- Page loading -->
-		<style>.loader{position:absolute;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;font-size:10px;top:50%;left:50%;margin-top:-1.9em;margin-left:-1.9em}.loader__wheel{margin:auto;border:.1em solid rgba(0,0,0,.1);border-left:.1em solid rgba(0,0,0,1);-webkit-transform:translateZ(0);transform:translateZ(0);-webkit-animation:appSpinner 1s infinite linear;animation:appSpinner 1s infinite linear}.loader__image{position:relative;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:0 0 auto;width:3.2em;height:3.2em;margin:auto}.loader__wheel,.loader__wheel:after{position:absolute;border-radius:50%}.loader,.loader__wheel,.loader__wheel:after{width:3.8em;height:3.8em}@-webkit-keyframes appSpinner{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}100%{-webkit-transform:rotate(360deg);transform:rotate(360deg)}}@keyframes appSpinner{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}100%{-webkit-transform:rotate(360deg);transform:rotate(360deg)}}</style>
-		<!-- End of Page loading -->
     </head>
     <body <% if (params.helmet.htmlAttributes) { %><%= params.helmet.bodyAttributes.toString() %><% } %>>
         <noscript>
@@ -56,30 +52,25 @@
         <!--[if lt IE 9]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-        <div class="loader">
-			<div class="loader__image">
-				<?xml version="1.0" encoding="UTF-8"?>
-				<svg width="32px" height="32px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-					<title>MatahariMall.com</title>
-					<desc>Belanja Online Aman, Nyaman, Terpercaya</desc>
-					<defs></defs>
-					<g id="Assets" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-						<g id="mm_ico_home_active" fill="#191919">
-							<g id="Group-2" transform="translate(9.000000, 10.000000)">
-								<path d="M16.5372953,0.850150519 C16.4494962,0.850150519 16.3687776,0.902165786 16.324406,0.985910365 L9.1862391,14.609749 L2.20809332,0.987990975 C2.16466577,0.903206091 2.08253106,0.850150519 1.99378782,0.850150519 L0.421899467,0.850150519 L0.421899467,19.5106274 L1.68082626,19.5106274 L1.68082626,2.78043706 L8.62451323,16.3309341 C8.6669967,16.4141586 8.74724326,16.4656537 8.83409835,16.4656537 L9.53177131,16.4656537 C9.61768233,16.4656537 9.69698481,16.4151989 9.73994031,16.3330147 L16.8252388,2.80384393 L16.8252388,19.5106274 L18.0841656,19.5106274 L18.0841656,0.850150519 L16.5372953,0.850150519 Z" id="Fill-27-Copy"></path>
-								<path d="M21.5460963,19.3160903 L21.5446802,0.850670672 L20.2234443,0.850150519 C20.134229,0.850150519 20.0525664,0.902685938 20.0091388,0.987990975 L18.8314027,3.2953882 L18.8314027,5.45298145 L20.586442,2.01009096 L20.586442,19.3160903 L21.5460963,19.3160903 Z" id="Fill-29-Copy"></path>
-								<polygon id="Fill-31-Copy" points="4.19820781 10.2128985 4.19820781 19.5985332 5.15786217 19.5985332 5.15786217 12.044356"></polygon>
-								<path d="M13.128705,15.3348418 L12.3106622,13.7083244 L11.7508245,14.776718 L12.577836,16.4214407 C12.6160712,16.4963427 12.687349,16.5426363 12.7652353,16.5426363 L13.4950069,16.5426363 C13.5724212,16.5426363 13.6441711,16.4963427 13.6819342,16.4219608 L16.0053079,11.8539801 L16.0053079,9.69274582 L13.128705,15.3348418 Z" id="Fill-33-Copy"></path>
-								<path d="M10.2369969,9.92837498 L5.74035773,0.989551433 C5.69693019,0.903726244 5.61479548,0.850150519 5.52510816,0.850150519 L4.19820781,0.850150519 L4.19820781,3.0327111 L5.15786217,4.86416863 L5.15786217,2.01269173 L9.67715919,10.9967686 L10.2369969,9.92837498 Z" id="Fill-35-Copy"></path>
-							</g>
-						</g>
-					</g>
-				</svg>
-			</div>
-			<div class="loader__wheel"></div>
-		</div>
-        <div id="root"><%= params.markup %></div>
 
+		<!-- Loading -->
+		<div id="loading"></div>
+		<style>#loading{position:fixed;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;font-size:10px;top:50%;left:50%;margin-top:-2em;margin-left:-2em;width:4em;height:4em}
+		</style>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/4.13.0/bodymovin_light.min.js"></script>
+		<script>
+			window.mmLoadingAnim = {"v":"5.1.5","fr":29.9700012207031,"ip":0,"op":150.000006109625,"w":500,"h":500,"nm":"mm","ddd":0,"assets":[],"layers":[{"ddd":0,"ind":1,"ty":4,"nm":"mm Outlines 3","sr":1,"ks":{"o":{"a":0,"k":100,"ix":11},"r":{"a":0,"k":0,"ix":10},"p":{"a":0,"k":[250,250,0],"ix":2},"a":{"a":0,"k":[230,229.998,0],"ix":1},"s":{"a":0,"k":[100,100,100],"ix":6}},"ao":0,"shapes":[{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[50.377,0],[0,99.411],[-99.412,0],[0,-99.409],[5.136,-16.73],[0,0],[12.612,0],[0,15.665],[-0.33,1.728],[0,0],[0,0],[15.679,0],[3.785,-15.679],[0,0],[0,0],[15.681,0],[3.785,-15.679],[0,0],[0,0],[15.68,0],[3.78,-15.679],[0,0],[0,0],[15.681,0],[3.785,-15.679],[0,0],[0,0],[0,0],[11.495,0],[2.774,-11.495]],"o":[[-32.674,33.356],[-99.412,0],[0,-99.409],[99.411,0],[0,18.417],[0,0],[-3.691,11.383],[-15.664,0],[0,-1.825],[0,0],[0,0],[3.782,-15.679],[-15.682,0],[0,0],[0,0],[3.785,-15.679],[-15.678,0],[0,0],[0,0],[3.785,-15.679],[-15.68,0],[0,0],[0,0],[3.78,-15.679],[-15.68,0],[0,0],[0,0],[0,0],[2.776,-11.495],[-11.498,0],[0,0]],"v":[[128.594,125.949],[0.003,179.998],[-180,-0.001],[0.003,-179.998],[180,-0.001],[172.099,52.914],[172.148,52.776],[145.154,72.39],[116.787,44.022],[117.289,38.678],[117.3,38.715],[131.104,-18.523],[109.565,-46.913],[74.32,-18.523],[58.537,46.915],[74.32,-18.523],[52.781,-46.913],[17.538,-18.523],[1.756,46.915],[17.538,-18.523],[-4.005,-46.913],[-39.243,-18.523],[-55.026,46.915],[-39.243,-18.523],[-60.788,-46.913],[-96.027,-18.523],[-111.809,46.915],[-96.027,-18.523],[-94.2,-26.098],[-109.994,-46.913],[-135.833,-26.098]],"c":false},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.098039217293,0.098039217293,0.098039217293,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":20,"ix":5},"lc":2,"lj":2,"nm":"Stroke 2","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"st","c":{"a":0,"k":[0.097999999102,0.097999999102,0.097999999102,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":2,"ix":5},"lc":2,"lj":2,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[230,229.998],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":3,"cix":2,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"tm","s":{"a":1,"k":[{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"n":["0p667_1_0p333_0"],"t":0,"s":[99.99],"e":[100]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"n":["0p667_1_0p333_0"],"t":74,"s":[100],"e":[100]},{"t":150.000006109625}],"ix":1},"e":{"a":1,"k":[{"i":{"x":[0.464],"y":[1]},"o":{"x":[0.377],"y":[0]},"n":["0p464_1_0p377_0"],"t":0,"s":[100],"e":[0]},{"i":{"x":[0.557],"y":[1]},"o":{"x":[0.606],"y":[0]},"n":["0p557_1_0p606_0"],"t":74,"s":[0],"e":[99.99]},{"t":150.000006109625}],"ix":2},"o":{"a":0,"k":0,"ix":3},"m":1,"ix":2,"nm":"Trim Paths 1","mn":"ADBE Vector Filter - Trim","hd":false}],"ip":0,"op":899.000036617021,"st":0,"bm":0}],"markers":[]};
+			window.mmLoading = bodymovin.loadAnimation({
+				container: document.getElementById('loading'),
+				renderer: 'svg',
+				loop: true,
+				autoplay: true,
+				animationData: mmLoadingAnim
+			});
+		</script>
+		<!-- End of Loading -->
+
+        <div id="root"><%= params.markup %></div>
 
 		<!-- Load Jquery for GTM, and Partners who using JQuery -->
 		<script src="https://assets.mataharimall.co/desktop/js/min/jquery.min.js"></script>
