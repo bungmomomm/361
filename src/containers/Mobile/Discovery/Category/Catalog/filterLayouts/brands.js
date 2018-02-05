@@ -33,11 +33,12 @@ class Brands extends Component {
 	}
 
 	render() {
+		const { onClose } = this.props;
 		const HeaderPage = {
 			left: (
-				<Link to='/catalogcategory'>
+				<Button onClick={onClose}>
 					<Svg src='ico_arrow-back-left.svg' />
-				</Link>
+				</Button>
 			),
 			center: 'Brands',
 			right: null
@@ -51,6 +52,7 @@ class Brands extends Component {
 							autoFocus
 							iconLeft={<Svg src='ico_search.svg' />}
 							placeholder='cari nama brand'
+							value='a'
 						/>
 						<div className={styles.listFilterKey}>
 							{C.FILTER_KEY.map((key, id) => {

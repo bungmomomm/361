@@ -33,6 +33,7 @@ let UserRegisteredPhoneValidation = defRoute;
 let NewArrival = defRoute;
 let ForgotPassword = defRoute;
 let FilterCategory = defRoute;
+let Filters = defRoute;
 
 if (isMobile()) {
 	/**
@@ -55,6 +56,8 @@ if (isMobile()) {
 	CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
 	NewArrival = loadable(() => import('@/containers/Mobile/Discovery/NewArrival'));
 	FilterCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog/filter'));
+
+	Filters = loadable(() => import('@/containers/Mobile/Filters'));
 
 	// Service Details
 	HashtagsDetails = loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'));
@@ -134,6 +137,10 @@ export default [
 		path: '/login',
 		component: UserLogin,
 		exact: true
+	},
+	{
+		path: '/filters',
+		component: Filters
 	},
 	{
 		path: '/register',

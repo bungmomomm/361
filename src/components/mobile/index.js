@@ -1,4 +1,5 @@
 import Header from './Header';
+import Badge from './Badge';
 import Input from './Input';
 import Tabs from './Tabs';
 import Page from './Page';
@@ -18,6 +19,7 @@ import Divider from './Divider';
 import Slider from './Slider';
 
 export default {
+	Badge,
 	Header,
 	Input,
 	Tabs,

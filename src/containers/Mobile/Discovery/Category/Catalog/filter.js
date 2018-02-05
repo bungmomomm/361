@@ -14,6 +14,7 @@ import Result from './filterLayouts/result';
 class Filter extends PureComponent {
 	constructor(props) {
 		super(props);
+		this.props = props;
 		this.state = {
 			layout: 'result',
 			params: {
@@ -23,36 +24,54 @@ class Filter extends PureComponent {
 			}
 		};
 	}
+	onListClick(e, layout) {
+		this.setState({
+			layout
+		});
+	}
+
+	onFilterSectionClose() {
+		this.setState({
+			layout: 'result'
+		});
+	}
+
+	onFilterColorSelected(e, type, color) {
+		const { onUpdateFilter } = this.props;
+		onUpdateFilter(e, type, color);
+	}
+
 	render() {
 		const { layout, ...state } = this.state;
+		const { onApply, filters } = this.props;
 		
 		switch (layout) {
 		case 'lists':
-			return <Lists {...state} />;
+			return <Lists {...state} filters={filters} />;
 
 		case 'listsEnd':
-			return <ListsEnd {...state} />;
+			return <ListsEnd {...state} filters={filters} />;
 		
-		case 'brands':
-			return <Brands {...state} />;
+		case 'brand':
+			return <Brands {...state} filters={filters} onClose={(e) => this.onFilterSectionClose()} />;
 		
 		case 'color':
-			return <Color {...state} />;
+			return <Color {...state} filters={filters} onClick={(e, value) => this.onFilterSelected(e, 'color', value)} onClose={(e) => this.onFilterSectionClose()} />;
 	
 		case 'size':
-			return <Size {...state} />;
+			return <Size {...state} filters={filters} onClick={(e, value) => this.onFilterSelected(e, 'color', value)} onClose={(e) => this.onFilterSectionClose()} />;
 		
 		case 'price':
-			return <Price {...state} />;
+			return <Price {...state} filters={filters} />;
 		
 		case 'tree':
-			return <Tree {...state} />;
+			return <Tree {...state} filters={filters} />;
 		
 		case 'treeSegment':
-			return <TreeSegment {...state} />;
+			return <TreeSegment {...state} filters={filters} />;
 		
 		case 'result':
-			return <Result {...state} />;
+			return <Result {...state} filters={filters} onApply={onApply} onListClick={(e, key) => this.onListClick(e, key)} />;
 	
 		default:
 			return null;

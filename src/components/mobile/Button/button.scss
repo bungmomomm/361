@@ -37,6 +37,18 @@
   border-radius: map-get($border-radius , --medium);
 }
 
+.left{
+  text-align: left;
+}
+
+.right{
+  text-align: right;
+}
+
+.center{
+  text-align: center;
+}
+
 
 /* Sizes */
 .small {

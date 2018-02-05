@@ -33,6 +33,11 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				this.getProfile();
 				this.constructor.initApp(this.props);
 			}
+
+			const loadings = window.document.getElementsByClassName('loader');
+			if (typeof loadings[0] !== 'undefined') {
+				loadings[0].parentElement.removeChild(loadings[0]);
+			}
 		}
 
 		

@@ -1,59 +1,62 @@
 import React, { PureComponent } from 'react';
-import { Header, Page, Svg, List } from '@/components/mobile';
+import { Header, Page, Svg, List, Button } from '@/components/mobile';
 import Action from './action';
-import { Link } from 'react-router-dom';
 
 // DUMMY DATA
-const DUMMY_RESULT_FILTER = {
-	data: [{
-		name: 'Kategori',
-		params: ['Sneakers'],
-	}, {
-		name: 'Style',
-		params: ['Casual'],
-	}, {
-		name: 'Brand',
-		params: ['3second', 'Arez', 'Cole', 'D&G', 'Nike', 'Hush Puppies'],
-	}, {
-		name: 'Warna',
-		params: ['Black', 'Navy', 'Pink'],
-	}]
-};
+// const DUMMY_RESULT_FILTER = {
+// 	data: [{
+// 		name: 'Kategori',
+// 		params: ['Sneakers'],
+// 	}, {
+// 		name: 'Style',
+// 		params: ['Casual'],
+// 	}, {
+// 		name: 'Brand',
+// 		params: ['3second', 'Arez', 'Cole', 'D&G', 'Nike', 'Hush Puppies'],
+// 	}, {
+// 		name: 'Warna',
+// 		params: ['Black', 'Navy', 'Pink'],
+// 	}]
+// };
 
 // END DUMMY DATA
 
 class Result extends PureComponent {
 	render() {
+		const { onClose, onApply, onListClick, filters } = this.props;
 		const HeaderPage = {
 			left: (
-				<Link to='/catalogcategory'>
+				<Button onClick={onClose}>
 					<Svg src='ico_close.svg' />
-				</Link>
+				</Button>
 			),
 			center: 'Filter',
 			right: null
 		};
 
+		const facets = filters.facets;
+		const selected = [];
+
 		return (
 			<div style={this.props.style}>
 				<Page>
 					{
-						DUMMY_RESULT_FILTER.data.map((category, idx) => (
+						facets.map((facet, idx) => (
 							<List key={idx}>
-								<Link to='/'>
+								<Button align='left' onClick={(e) => onListClick(e, facet.id)}>
 									<List.Content style={{ minHeight: '50px' }}>
 										<div>
-											<div>{category.name}</div>
-											<span className='font-color--secondary font-small text-elipsis' style={{ width: '200px' }}>{category.params.join(', ')}</span>
+											<div>{facet.title}</div>
+											<span className='font-color--secondary font-small text-elipsis' style={{ width: '200px' }}>{selected.join(', ')}</span>
 										</div>
 									</List.Content>
-								</Link>
+								</Button>
 							</List>
 						))
 					}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action hasApply />
+				<Action hasApply onApply={onApply} />
 			</div>
 		);
 	}

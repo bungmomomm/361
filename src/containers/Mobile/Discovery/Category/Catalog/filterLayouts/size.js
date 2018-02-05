@@ -1,15 +1,15 @@
 import React, { PureComponent } from 'react';
-import { Header, Page, Divider, Svg, List } from '@/components/mobile';
-import { Link } from 'react-router-dom';
+import { Header, Page, Divider, Svg, List, Button } from '@/components/mobile';
 import Action from './action';
 
 class Size extends PureComponent {
 	render() {
+		const { onClose } = this.props;
 		const HeaderPage = {
 			left: (
-				<Link to='/catalogcategory'>
+				<Button onClick={onClose}>
 					<Svg src='ico_arrow-back-left.svg' />
-				</Link>
+				</Button>
 			),
 			center: 'Ukuran',
 			right: null
