@@ -10,7 +10,7 @@ import stylesCatalog from '../Category/Catalog/catalog.scss';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './promo.scss';
 import { actions } from '@/state/v4/Discovery';
-import Scroller from '@/containers/Mobile/Scroller';
+import Scroller from '@/containers/Mobile/Shared/scroller';
 
 class Promo extends Component {
 
