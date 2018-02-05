@@ -6,6 +6,7 @@ import { Header, Page, Card, Svg, Tabs, Button, Level, Image, Input, Navigation 
 import stylesCatalog from '../Catalog/catalog.scss';
 import { actions as homeActions } from '@/state/v4/Home';
 import { actions } from '@/state/v4/ProductCategory';
+import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 
 class Product extends Component {
 	constructor(props) {
@@ -26,14 +27,17 @@ class Product extends Component {
 			icon: 'ico_list.svg'
 		}];
 		this.state = {
-			listTypeState: this.listType[this.currentListState]
+			listTypeState: this.listType[this.currentListState],
+			notification: {
+				show: true
+			}
 		};
 	}
 
 	componentWillMount() {
 		this.props.dispatch(new homeActions.initAction({ token: this.userCookies }));
 	}
-  
+
 	componentDidMount() {
 		const pcpResults = this.props.productCategory;
 		if (pcpResults.pcpStatus === 'failed') {
@@ -96,7 +100,7 @@ class Product extends Component {
 					<Page>
 						<div className={stylesCatalog.cardContainer}>
 							{
-								pcpResults.pcpData.products.map((product, index) => 
+								pcpResults.pcpData.products.map((product, index) =>
 									this.renderList(product, index)
 								)
 							}
@@ -187,7 +191,7 @@ class Product extends Component {
 				<Link to='' onClick={back}>
 					<Svg src='ico_arrow-back-left.svg' />
 				</Link>
-			), 
+			),
 			// center: typeof this.props.productCategory.pcpData.info.title !== 'undefined' ? this.props.productCategory.pcpData.info.title : '',
 			center: headerTitle || '',
 			right: null
@@ -229,6 +233,7 @@ class Product extends Component {
 	}
 
 	render() {
+		const { shared } = this.props;
 		return (
 			<div style={this.props.style}>
 				{
@@ -236,6 +241,18 @@ class Product extends Component {
 				}
 				{this.renderHeader()}
 				{this.renderTabs()}
+				{
+					shared.foreverBanner.text ?
+						<ForeverBanner
+							color={shared.foreverBanner.text.background_color}
+							show={this.state.notification.show}
+							onClose={(e) => this.setState({ notification: { show: false } })}
+							text1={shared.foreverBanner.text.text1}
+							text2={shared.foreverBanner.text.text2}
+							textColor={shared.foreverBanner.text.text_color}
+						/>
+						: ''
+				}
 				<Navigation active='Categories' />
 			</div>
 		);
