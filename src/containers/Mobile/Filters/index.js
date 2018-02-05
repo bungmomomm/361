@@ -53,6 +53,7 @@ const mapDispatchToProps = (dispatch) => {
 const doAfterAnonymous = (props) => {
 	console.log('code here if you need anon token or token s');
 	// console.log('a', props, filters);
+	props.dispatch(new actions.doTest('aaa'));
 	
 };
 

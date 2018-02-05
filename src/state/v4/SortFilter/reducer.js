@@ -601,7 +601,25 @@ const actions = createActions({
 	UPDATE_FILTER_FAIL: (active, error) => ({ active, error }),
 	UPDATE_FILTER: undefined,
 	UPDATE_FILTER_SUCCESS: (filters) => ({ filters }),
+	DO_TEST: (t) => ({ t })
 });
+
+const hasChild = (category) => {
+	return (typeof category.childs !== 'undefined' && category.childs.length > 0);
+};
+
+const findAndSetSelected = (categories, value) => {
+	categories = _.map(categories, (category) => {
+		if (category.facetrange === value.facetrange) {
+			category.is_selected = !category.is_selected;
+		}
+		if (hasChild(category)) {
+			category.childs = findAndSetSelected(category.childs, value);
+		}
+		return category;
+	});
+	return categories;
+};
 
 const reducer = handleActions({
 	[actions.updateFilterStore]: (state, action) => ({
@@ -614,16 +632,19 @@ const reducer = handleActions({
 			}
 		}
 	}),
-	[actions.updateFilterCategory]: (state, action) => ({
-		...state,
-		filters: {
-			...state.filters,
-			category: {
-				active: action.payload.active,
-				value: _.uniq(_.concat(action.payload.category))				
+	[actions.updateFilterCategory]: (state, action) => {
+		const facets = _.map(state.facets, (facet) => {
+			if (facet.id === 'category') {
+				const categories = findAndSetSelected(facet.data, action.payload.category);
+				facet.data = categories;
 			}
-		}
-	}),
+			return facet;
+		});
+		return {
+			...state,
+			facets
+		};
+	},
 	[actions.updateFilterType]: (state, action) => ({
 		...state,
 		filters: {
@@ -705,7 +726,8 @@ const reducer = handleActions({
 	}),
 	[actions.updateFilter]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
 	[actions.updateFilterFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
-	[actions.updateFilterSuccess]: (state, action) => ({ 
+	[actions.doTest]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
+	[actions.updateFilterSuccess]: (state, action) => ({
 		...state,
 		filters: {
 			...action.payload.filters

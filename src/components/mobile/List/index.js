@@ -15,7 +15,6 @@ const Content = ({ children, ...props }) => {
 	);
 };
 
-
 class List extends PureComponent {
 	render() {
 		const { children, className, ...props } = this.props;

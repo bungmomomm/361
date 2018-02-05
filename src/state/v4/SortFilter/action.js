@@ -239,6 +239,11 @@ const applyFilter = (token, type, filters) => async dispatch => {
 	*/
 };
 
+const doTest = (t) => dispatch => {
+	console.log(t);
+	dispatch(actions.doTest(t));
+};
+
 const updateFilter = (type, value) => dispatch => {
 	console.log('updateFilter', type, value);
 	switch (type) {
@@ -248,6 +253,9 @@ const updateFilter = (type, value) => dispatch => {
 	case 'size':
 		dispatch(actions.updateFilterSize(true, value));
 		break;
+	case 'category':
+		dispatch(actions.updateFilterCategory(true, value));
+		break;
 	default:
 		break;
 	}
@@ -256,5 +264,6 @@ const updateFilter = (type, value) => dispatch => {
 export default {
 	parseDataToFilter,
 	applyFilter,
+	doTest,
 	updateFilter
 };
