@@ -17,6 +17,7 @@ import List from './List';
 import Modal from './Modal';
 import Divider from './Divider';
 import Slider from './Slider';
+import Panel from './Panel';
 
 export default {
 	Badge,
@@ -37,5 +38,6 @@ export default {
 	List,
 	Divider,
 	Slider,
-	Modal
+	Modal,
+	Panel
 };

@@ -117,7 +117,7 @@ class Lovelist extends Component {
 						<br />it to your Lovelist.
 					</p>
 					<p className='margin--medium'><Button inline size='large' color='primary'>BELANJA</Button></p>
-					<Image local style={{ marginBottom: '-30px' }} alt='Tap the love icon' src='lovelist-guide.png' />
+					<Image local style={{ margin: '0 auto -30px auto' }} alt='Tap the love icon' src='lovelist-guide.png' />
 				</div>
 			));
 		}

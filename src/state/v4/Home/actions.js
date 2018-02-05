@@ -3,7 +3,8 @@ import { initResponse, homepageData, segmentActive, recomendation } from './redu
 import { forEverBanner } from '@/state/v4/Shared/reducer';
 
 const initAction = (token) => (dispatch) => new Promise((resolve, reject) => {
-	const url = `${process.env.MICROSERVICES_URL}init?platform=mobilesite&version=1.22.0`;
+	// const url = `${process.env.MICROSERVICES_URL}init?platform=mobilesite&version=1.22.0`;
+	const url = 'https://services.mataharimall.co/promo/v1/init?platform=mobilesite&version=1.22.0';
 	return request({
 		token,
 		path: url,
@@ -12,18 +13,25 @@ const initAction = (token) => (dispatch) => new Promise((resolve, reject) => {
 	}).then(response => {
 		const segment = response.data.data.segment;
 		const foreverBanner = response.data.data.forever_banner;
-		dispatch(forEverBanner({ foreverBanner }));
+		const serviceUrl = response.data.data.service_url;
+		// console.log(response.data.data);
+		dispatch(forEverBanner({ foreverBanner, serviceUrl }));
 		dispatch(initResponse({ segmen: segment }));
 		resolve(segment);
 	});
 });
 
-const mainAction = (token, activeSegment) => (dispatch) => {
+const mainAction = (token, activeSegment, url = false) => (dispatch) => {
 	console.log(activeSegment);
-	const url = `${process.env.MICROSERVICES_URL}mainpromo?segment_id=${activeSegment.id}`;
+	let path = `${process.env.MICROSERVICES_URL}mainpromo?segment_id=${activeSegment.id}`;
+
+	if (url) {
+		path = `${url.url}/mainpromo?segment_id=${activeSegment.id}`;
+	}
+	
 	return request({
 		token,
-		path: url,
+		path,
 		method: 'GET',
 		fullpath: true
 	}).then(response => {
@@ -44,21 +52,28 @@ const mainAction = (token, activeSegment) => (dispatch) => {
 	});
 };
 
-const recomendationAction = (token, activeSegment) => (dispatch) => {
-	const url = `${process.env.MICROSERVICES_URL}recommended_promo?segment_id=${activeSegment.id}`;
+const recomendationAction = (token, activeSegment, url = false) => (dispatch) => {
+	let path = `${process.env.MICROSERVICES_URL}recommended_promo?segment_id=${activeSegment.id}`;
+	if (url) {
+		path = `${url.url}/recommended_promo?segment_id=${activeSegment.id}`;
+	}
+
 	return request({
 		token,
-		path: url,
+		path,
 		method: 'GET',
 		fullpath: true
 	}).then(response => {
+		const bestSellerProducts = response.data.data.find(e => e.type === 'bestseller') || false;
+		const newArrivalProducts = response.data.data.find(e => e.type === 'newarrival') || false;
+		const recommendedProducts = response.data.data.find(e => e.type === 'recommended') || false;
+		const recentlyViewedProducts = response.data.data.find(e => e.type === 'recentlyviewed') || false;
 		const promoRecommendationData = {
-			bestSellerProducts: response.data.data.find(e => e.type === 'bestseller').data,
-			newArrivalProducts: response.data.data.find(e => e.type === 'newarrival').data,
-			recommendedProducts: response.data.data.find(e => e.type === 'recommended').data,
-			recentlyViewedProducts: response.data.data.find(e => e.type === 'recentlyviewed').data
+			bestSellerProducts: bestSellerProducts ? bestSellerProducts.data : {},
+			newArrivalProducts: newArrivalProducts ? newArrivalProducts.data : {},
+			recommendedProducts: recommendedProducts ? recommendedProducts.data : {},
+			recentlyViewedProducts: recentlyViewedProducts ? recentlyViewedProducts.data : {}
 		};
-		console.log(promoRecommendationData);
 
 		dispatch(recomendation({ recomendationData: promoRecommendationData, activeSegment: activeSegment.key }));
 	});
