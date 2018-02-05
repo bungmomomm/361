@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { Page, Link } from '@/components/mobile';
 
-class Edit extends Component {
+class UserProfileEdit extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -18,6 +18,6 @@ class Edit extends Component {
 	}
 }
 
-Edit.defaultProps = {};
+UserProfileEdit.defaultProps = {};
 
-export default withCookies(Edit);
+export default withCookies(UserProfileEdit);

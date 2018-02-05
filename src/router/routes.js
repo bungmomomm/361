@@ -36,6 +36,7 @@ let ForgotPassword = defRoute;
 let FilterCategory = defRoute;
 let Promo = defRoute;
 let UserProfile = defRoute;
+let UserProfileEdit = defRoute;
 
 if (isMobile()) {
 	/**
@@ -72,6 +73,7 @@ if (isMobile()) {
 	// promo
 	Promo = loadable(() => import('@/containers/Mobile/Discovery/Promo'));
 	UserProfile = loadable(() => import('@/containers/Mobile/Users/Profile'));
+	UserProfileEdit = loadable(() => import('@/containers/Mobile/Users/Profile/edit'));
 } else {
 	/**
 	 * Require main desktop styles
@@ -181,8 +183,8 @@ export default [
 		component: UserProfile
 	},
 	{
-		path: '/profile/edit',
-		component: UserProfile
+		path: '/profileEdit',
+		component: UserProfileEdit
 	},
 	{
 		path: '/*', // Page not found handling.
