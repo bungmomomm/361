@@ -20,20 +20,33 @@ class Brands extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
+			keyword: '',
 			filteredKey: C.FILTER_KEY
 		};
 	}
 
 	filterlist(key) {
 		this.setState({ 
-			filteredKey: _.filter(C.FILTER_KEY, (o) => {
-				return o.trim() === key;
-			}) 
+			filteredKey: key
 		});
 	}
 
+	searchBrand(e) {
+		console.log(this.state);
+		this.setState({
+			keyword: e.target.value
+		});
+	} 
+
 	render() {
-		const { onClose } = this.props;
+		const { onClose, filters } = this.props;
+		const { keyword } = this.state;
+		const brandFacet = _.filter(filters.facets, (facet) => facet.id === 'brand');
+		let brands = [];
+		if (typeof brandFacet[0] !== 'undefined') {
+			brands = brandFacet[0].data;
+		}
+
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
@@ -52,12 +65,14 @@ class Brands extends Component {
 							autoFocus
 							iconLeft={<Svg src='ico_search.svg' />}
 							placeholder='cari nama brand'
-							value='a'
+							value={keyword}
+							onChange={(e) => this.searchBrand(e)}
 						/>
 						<div className={styles.listFilterKey}>
-							{C.FILTER_KEY.map((key, id) => {
+							<Button onClick={() => this.filterlist('')}>ALL</Button>
+							{brands.map((brandGroup, id) => {
 								return (
-									<Button key={id} onClick={() => this.filterlist(key)}>{key}</Button>
+									<Button key={id} onClick={() => this.filterlist(brandGroup.group)}>{brandGroup.group}</Button>
 								);
 							})}
 						</div>
