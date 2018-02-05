@@ -4,6 +4,7 @@ import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import { Header, Page, Card, Svg, Tabs, Button, Level, Image, Input, Navigation } from '@/components/mobile';
 import stylesCatalog from '../Catalog/catalog.scss';
+import { actions as homeActions } from '@/state/v4/Home';
 import { actions } from '@/state/v4/ProductCategory';
 
 class Product extends Component {
@@ -28,12 +29,21 @@ class Product extends Component {
 			listTypeState: this.listType[this.currentListState]
 		};
 	}
+
+	componentWillMount() {
+		this.props.dispatch(new homeActions.initAction({ token: this.userCookies }));
+	}
   
 	componentDidMount() {
-		const pcpParam = {
-			category_id: this.categoryId
-		};
-		this.props.dispatch(actions.initAction(this.userCookies, pcpParam));
+		const pcpResults = this.props.productCategory;
+		if (pcpResults.pcpStatus === 'failed') {
+			this.props.history.push('/not-found');
+		} else {
+			const pcpParam = {
+				category_id: this.categoryId
+			};
+			this.props.dispatch(actions.initAction(this.userCookies, pcpParam));
+		}
 	}
 
 	handlePick(e) {
@@ -96,9 +106,9 @@ class Product extends Component {
 						</div>
 					</Page>
 				);
-			} else if (pcpResults.pcpStatus === 'failed') {
-				pcpView = (<Page.Page404 />);
-			}
+			} /* else if (pcpResults.pcpStatus === 'failed') {
+				this.props.history.push('/not-found');
+			} */
 		}
 
 		return pcpView;
@@ -199,15 +209,15 @@ class Product extends Component {
 					variants={[
 						{
 							id: 'urutkan',
-							Title: 'Urutkan'
+							title: 'Urutkan'
 						},
 						{
 							id: 'filter',
-							Title: 'Filter'
+							title: 'Filter'
 						},
 						{
 							id: 'view',
-							Title: <Svg src={this.state.listTypeState.icon} />
+							title: <Svg src={this.state.listTypeState.icon} />
 						}
 					]}
 					onPick={e => this.handlePick(e)}
