@@ -88,7 +88,8 @@ export default [
 	},
 	{
 		path: '/hashtags',
-		component: Hashtags
+		component: Hashtags,
+		exact: true
 	},
 	{
 		path: '/hashtags/details',
