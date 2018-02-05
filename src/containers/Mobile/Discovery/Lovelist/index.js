@@ -128,7 +128,7 @@ class Lovelist extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		...state
+		lovelist: state.lovelist
 	};
 };
 
