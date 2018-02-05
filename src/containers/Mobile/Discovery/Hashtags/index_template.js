@@ -16,7 +16,7 @@ class Hashtags extends Component {
 	}
 
 	renderGridSmall() {
-		console.log(this);    
+		console.log(this);
 		return (
 			<Grid bordered split={3}>
 				<div><Image local src='temp/thumb-1.jpg' /></div>

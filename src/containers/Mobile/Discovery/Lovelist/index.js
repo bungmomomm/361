@@ -2,16 +2,15 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { withCookies } from 'react-cookie';
-import { Header, Page, Card, Button, Svg, Image, Level, Divider } from '@/components/mobile';
+import { Header, Page, Card, Button, Svg, Image, Level } from '@/components/mobile';
 import styles from './lovelist.scss';
-import * as data from '@/data/example/Lovelist';
 import { actions as LoveListActionCreator } from '@/state/v4/Lovelist';
 class Lovelist extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
-			listTypeGrid: false,
+			listTypeGrid: true,
 			listEmpty: true,
 			loggedIn: false,
 			products: []
@@ -22,11 +21,11 @@ class Lovelist extends Component {
 	}
 
 	componentWillMount() {
+		// const { users } = this.props;
+		// const loginStatus = (users.username && !users.isAnonymous);
 		const loginStatus = true;
-		// const loginStatus = (this.props.user.user);
-		if (loginStatus) {
-			this.setState({ loggedIn: loginStatus });
-		}
+
+		this.setState({ loggedIn: loginStatus });
 
 		if (this.props.lovelist.count > 0) {
 			this.setState({ listEmpty: false });
@@ -41,7 +40,7 @@ class Lovelist extends Component {
 	getLovelistCardsContent() {
 		const { listTypeGrid } = this.state;
 		const content = this.state.products.map((product, idx) => {
-			return !listTypeGrid ? <Card.Lovelist key={idx} /> : <Card.LovelistGrid key={idx} />;
+			return !listTypeGrid ? <Card.Lovelist key={idx} data={product} /> : <Card.LovelistGrid key={idx} data={product} />;
 		});
 
 		return <div className={styles.cardContainer}>{content}</div>;
@@ -67,7 +66,7 @@ class Lovelist extends Component {
 		const HeaderPage = {
 			left: (
 				<Button className={this.state.loggedIn && !this.state.listEmpty ? null : 'd-none'} onClick={() => this.setState({ listTypeGrid: !listTypeGrid })}>
-					<Svg src={!listTypeGrid ? 'ico_grid.svg' : 'ico_list.svg'} />
+					<Svg src={listTypeGrid ? 'ico_list.svg' : 'ico_grid.svg'} />
 				</Button>
 			),
 			center: 'Lovelist',
@@ -107,12 +106,7 @@ class Lovelist extends Component {
 		}
 
 		if (this.props.lovelist.loading) {
-			return this.renderLovelistPage(
-				<div>
-					<Divider>Fetching Products</Divider>
-					<h1>LOADING...</h1>
-				</div>
-			);
+			return this.renderLovelistPage('');
 		}
 
 		if (this.state.listEmpty) {
@@ -132,14 +126,9 @@ class Lovelist extends Component {
 	}
 }
 
-Lovelist.defaultProps = {
-	Lovelist: data.Lovelist
-
-};
-
 const mapStateToProps = (state) => {
 	return {
-		...state
+		lovelist: state.lovelist
 	};
 };
 

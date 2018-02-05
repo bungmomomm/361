@@ -10,16 +10,17 @@ import styles from './card.scss';
 
 class Lovelist extends PureComponent {
 	render() {
-		const { className, type, ...props } = this.props;
-
+		const { className, type, data, ...props } = this.props;
 		const createClassName = classNames(styles.container, styles[type], className);
 		
 		return (
 			<div className={createClassName} {...props}>
 				<Carousel>
-					<Image local src='temp/product-1.jpg' alt='product' />
-					<Image local src='temp/product-1.jpg' alt='product' />
-					<Image local src='temp/product-1.jpg' alt='product' />
+					{
+						data.images.map((image, idx) => (
+							<Image key={idx} src={image.mobile} alt='product' />
+						))
+					}
 				</Carousel>
 				<Level
 					className={styles.action}
@@ -39,19 +40,19 @@ class Lovelist extends PureComponent {
 					</Level.Item>
 				</Level>
 				<div className={styles.title}>
-					Immaculate Brands of the Year by Yannis Philippakis -{' '}
-					<span>Olivia Von Halle pink print</span>
+					{data.product_title}
+					<span>{data.brand}</span>
 				</div>
 				<Level className={styles.footer}>
 					<Level.Item>
 						<div className={styles.blockPrice}>
 							<div>
-								<div className={styles.price}>Rp1.199.000</div>
-								<div className={styles.discount}>Rp900.900</div>
+								<div className={styles.price}>{data.pricing.formatted.effective_price}</div>
+								<div className={styles.discount}>{data.pricing.formatted.base_price}</div>
 							</div>
 							<div style={{ marginLeft: '1.5rem' }}>
 								<Badge rounded color='red'>
-									<span className='font--lato-bold'>20%</span>
+									<span className='font--lato-bold'>{data.pricing.discount}</span>
 								</Badge>
 							</div>
 						</div>

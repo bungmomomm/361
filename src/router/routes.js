@@ -30,9 +30,11 @@ let UserLogin = defRoute;
 let UserRegister = defRoute;
 let UserRegistered = defRoute;
 let UserRegisteredPhoneValidation = defRoute;
-let NewArrival = defRoute;
+// let NewArrival = defRoute;
+// let Recommended = defRoute;
 let ForgotPassword = defRoute;
 let FilterCategory = defRoute;
+let Promo = defRoute;
 
 if (isMobile()) {
 	/**
@@ -53,7 +55,6 @@ if (isMobile()) {
 	SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
 	Brands = loadable(() => import('@/containers/Mobile/Discovery/Brands'));
 	CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
-	NewArrival = loadable(() => import('@/containers/Mobile/Discovery/NewArrival'));
 	FilterCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog/filter'));
 
 	// Service Details
@@ -67,6 +68,8 @@ if (isMobile()) {
 	UserRegister = loadable(() => import('@/containers/Mobile/Users/Register'));
 	UserRegistered = loadable(() => import('@/containers/Mobile/Users/Register/registered'));
 	UserRegisteredPhoneValidation = loadable(() => import('@/containers/Mobile/Users/Register/registeredPhoneValidation'));
+	// promo
+	Promo = loadable(() => import('@/containers/Mobile/Discovery/Promo'));
 } else {
 	/**
 	 * Require main desktop styles
@@ -83,7 +86,8 @@ export default [
 	},
 	{
 		path: '/hashtags',
-		component: Hashtags
+		component: Hashtags,
+		exact: true
 	},
 	{
 		path: '/hashtags/details',
@@ -106,7 +110,7 @@ export default [
 		component: Category,
 		exact: true
 	}, {
-		path: '/category/:categoryId',	// for temporary PCP 
+		path: '/category/:categoryId',	// for temporary PCP
 		component: Category,
 	}, {
 		path: '/subcategory/:categoryId',
@@ -156,8 +160,20 @@ export default [
 		exact: true
 	},
 	{
-		path: '/newarrival',
-		component: NewArrival,
+		path: '/new_arrival',
+		component: Promo
+	},
+	{
+		path: '/best_seller',
+		component: Promo
+	},
+	{
+		path: '/recommended_products',
+		component: Promo
+	},
+	{
+		path: '/recent_view',
+		component: Promo
 	},
 	{
 		path: '/*', // Page not found handling.
