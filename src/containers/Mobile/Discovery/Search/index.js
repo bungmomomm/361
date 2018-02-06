@@ -115,7 +115,7 @@ class Search extends PureComponent {
 			sectionSearchHistory = (
 				<section className={styles.section}>
 					<div className={styles.heading}>
-						<span>Seach History</span>
+						<span>Pencarian Terakhir</span>
 						<span
 							className={styles.delete}
 							onClick={() => this.deleteAllCookieSearchByType(this.searchListCookieName)}
