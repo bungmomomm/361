@@ -29,6 +29,11 @@
   &:-ms-input-placeholder {
     color: color(--primary)
   }
+  &[type="radio"] {
+    display: inline-flex;
+    width: 40px;
+    border-radius: 5px;
+  }
 }
 
 .flat{
@@ -190,3 +195,4 @@
     }
   }
 }
+

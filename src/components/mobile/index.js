@@ -17,6 +17,8 @@ import Modal from './Modal';
 import Divider from './Divider';
 import Slider from './Slider';
 import Panel from './Panel';
+import Comment from './Comment';
+import Radio from './Radio';
 
 export default {
 	Header,
@@ -37,5 +39,7 @@ export default {
 	Divider,
 	Slider,
 	Modal,
-	Panel
+	Panel,
+	Radio,
+	Comment
 };

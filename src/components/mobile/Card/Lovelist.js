@@ -58,7 +58,7 @@ class Lovelist extends PureComponent {
 						</div>
 					</Level.Item>
 					<Level.Right>
-						<Button color='secondary' size='medium' outline rounded>
+						<Button color='secondary' size='medium' rounded>
 							Beli aja
 						</Button>
 					</Level.Right>
