@@ -2,11 +2,15 @@
 import { request } from '@/utils';
 import { totalBag, totalLoveList } from './reducer';
 
-const totalCartAction = (token) => (dispatch) => {
-	const url = `${process.env.MICROSERVICES_URL}cart/total`;
+const totalCartAction = (token, url = false) => (dispatch) => {
+	let path = `${process.env.MICROSERVICES_URL}cart/total`;
+	if (url) {
+		// to do set to cart / shopping bag service
+		path = `${url.url}/cart/total`;
+	}
 	return request({
 		token,
-		path: url,
+		path,
 		method: 'GET',
 		fullpath: true
 	}).then(response => {
@@ -15,12 +19,16 @@ const totalCartAction = (token) => (dispatch) => {
 	});
 };
 
-const totalLovelistAction = (token) => (dispatch) => {
-	const url = `${process.env.MICROSERVICES_URL}total/bycustomer`;
-
+const totalLovelistAction = (token, url = false) => (dispatch) => {
+	
+	let path = `${process.env.MICROSERVICES_URL}total/bycustomer`;
+	if (url) {
+		path = `${url.url}/total/bycustomer`;
+	}
+	
 	return request({
 		token,
-		path: url,
+		path,
 		method: 'GET',
 		fullpath: true
 	}).then(response => {
