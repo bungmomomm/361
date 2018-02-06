@@ -1,6 +1,7 @@
 import { request } from '@/utils';
 import actions from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
+import _ from 'lodash';
 
 const getQuery = (hashtag) => {
 	const tag = hashtag.active.tag;
@@ -57,7 +58,10 @@ const switchViewMode = (mode) => (dispatch) => {
 const itemsFetchData = ({ token, query = {} }) => (dispatch, getState) => {
 	dispatch(scrollerActions.onScroll({ loading: true }));
 
-	const url = `${process.env.MICROSERVICES_URL}hashtags`;
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || process.env.MICROSERVICES_URL;
+
+	const url = `${baseUrl}/hashtags`;
 	request({
 		token,
 		path: url,
@@ -85,8 +89,11 @@ const itemsFetchData = ({ token, query = {} }) => (dispatch, getState) => {
 };
 
 const initHashtags = (token, hash) => (dispatch, getState) => {
-	const url = `${process.env.MICROSERVICES_URL}hashtags`;
 
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || process.env.MICROSERVICES_URL;
+
+	const url = `${baseUrl}/hashtags`;
 	request({
 		token,
 		path: url,

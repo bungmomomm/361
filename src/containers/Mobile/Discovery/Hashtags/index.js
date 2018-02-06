@@ -18,11 +18,6 @@ class Hashtags extends Component {
 		this.switchMode = this.switchMode.bind(this);
 	}
 
-	componentDidMount() {
-		const { dispatch, location } = this.props;
-		dispatch(actions.initHashtags(this.userCookies, location.hash));
-	}
-
 	switchTag(tag) {
 		const switchTag = tag.replace('#', '').toLowerCase();
 		const { dispatch, hashtag } = this.props;
@@ -138,4 +133,9 @@ const mapStateToProps = (state) => {
 	};
 };
 
-export default withRouter(withCookies(connect(mapStateToProps)(Shared(Scroller(Hashtags)))));
+const doAfterAnonymous = (props) => {
+	const { dispatch, location, cookies } = props;
+	dispatch(actions.initHashtags(cookies.get('user.token'), location.hash));
+};
+
+export default withRouter(withCookies(connect(mapStateToProps)(Scroller(Shared(Hashtags, doAfterAnonymous)))));
