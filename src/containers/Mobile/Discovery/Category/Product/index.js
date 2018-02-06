@@ -9,6 +9,7 @@ import Shared from '@/containers/Mobile/Shared';
 import { actions } from '@/state/v4/ProductCategory';
 import queryString from 'query-string';
 import Scroller from '@/containers/Mobile/Shared/scroller';
+import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 
 class Product extends Component {
 	constructor(props) {
@@ -27,7 +28,10 @@ class Product extends Component {
 			icon: 'ico_list.svg'
 		}];
 		this.state = {
-			listTypeState: this.listType[this.currentListState]
+			listTypeState: this.listType[this.currentListState],
+			notification: {
+				show: true
+			}
 		};
 	}
 
@@ -74,6 +78,7 @@ class Product extends Component {
 
 	pcpRender() {
 		let pcpView = null;
+		const { shared } = this.props;
 		const pcpResults = this.props.productCategory;
 		if (typeof pcpResults.pcpStatus !== 'undefined' && pcpResults.pcpStatus !== '') {
 			if (pcpResults.pcpStatus === 'success' && pcpResults.pcpData.products.length > 0) {
@@ -90,6 +95,18 @@ class Product extends Component {
 						</Page>
 						{this.renderHeader()}
 						{this.renderTabs()}
+						{
+							shared.foreverBanner.text ?
+								<ForeverBanner
+									color={shared.foreverBanner.text.background_color}
+									show={this.state.notification.show}
+									onClose={(e) => this.setState({ notification: { show: false } })}
+									text1={shared.foreverBanner.text.text1}
+									text2={shared.foreverBanner.text.text2}
+									textColor={shared.foreverBanner.text.text_color}
+								/>
+								: ''
+						}
 						<Navigation active='Categories' />
 
 						{this.props.scroller.loading}
