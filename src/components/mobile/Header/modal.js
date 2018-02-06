@@ -3,9 +3,9 @@ import styles from './header.scss';
 
 const Lovelist = props => {
 	return (
-		<nav className={`${styles.container} ${props.disableShadow && styles.disableShadow}`}>
+		<nav className={`${styles.container} ${props.disableShadow ? styles.disableShadow : ''}`}>
 			<div className={styles.wrapper}>
-				<div className={styles.modal}>
+				<div style={props.style} className={styles.modal}>
 					<div className={styles.left}>{props.left}</div>
 					<div className={`${styles.center} font--lato-regular`}>{props.center}</div>
 					<div className={styles.right}>{props.right}</div>
