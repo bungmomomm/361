@@ -1,0 +1,19 @@
+.label {
+  color: #A4A4A4;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.inputChange {
+  flex-flow: row nowrap;
+  &Input {
+	flex: 1 0 auto;
+  }
+  &Link {
+	flex: 0 0 auto;
+	height: 40px;
+	padding: 10px 0;
+	border-bottom: 1px solid #D8D8D8;
+	font-size: 11px;
+  }
+}

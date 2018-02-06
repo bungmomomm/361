@@ -9,11 +9,11 @@ const initialState = {
 			Title: 'Wanita'
 		}
 	],
-	activeSegment: 'woman',
+	activeSegment: 'wanita',
 	allSegmentData: {
-		woman: {},
-		man: {},
-		kids: {}
+		wanita: {},
+		pria: {},
+		anak: {}
 	}
 };
 

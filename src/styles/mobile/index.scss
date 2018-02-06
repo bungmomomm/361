@@ -1,208 +1,251 @@
-@import '_variables.scss';
-@import '_mixins.scss';
-@import '_typography.scss';
-@import '_typography.scss';
+@import "_variables.scss";
+@import "_mixins.scss";
+@import "_typography.scss";
+@import "_typography.scss";
 
-@include font-face('Helvetica-Roman', 'Helvetica');
-@include font-face('Helvetica-Medium', 'Helvetica');
-@include font-face('Helvetica-Bold', 'Helvetica');
-@include font-face('Lato-Light', 'Lato');
-@include font-face('Lato-Regular', 'Lato');
-@include font-face('Lato-Bold', 'Lato');
+@include font-face("Helvetica-Roman", "Helvetica");
+@include font-face("Helvetica-Medium", "Helvetica");
+@include font-face("Helvetica-Bold", "Helvetica");
+@include font-face("Lato-Light", "Lato");
+@include font-face("Lato-Regular", "Lato");
+@include font-face("Lato-Bold", "Lato");
 
 :root {
-  font-size: $base-font-size;
+	font-size: $base-font-size;
 }
 
 * {
-    cursor: pointer;
-    -webkit-text-size-adjust: none;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
+	cursor: pointer;
+	-webkit-text-size-adjust: none;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	-webkit-tap-highlight-color: transparent;
 }
 
 :not(input):not(textarea):not(button) {
-    user-select: none;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	user-select: none;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
-:global{
-  html{
-    -webkit-text-size-adjust: 100%;
-  }
-  html, body{
-    font-family: font-family('Lato-Regular');
-    font-size: rem(13px);
-    height: 100%;
-    position: relative;
-    overflow-y: scroll;
-    -webkit-overflow-scrolling: touch;
-    color: color(--primary);
-    line-height: 20px;
-    background-color: #fff;
-  }
+:global {
+	html {
+	  	text-rendering: geometricPrecision;
+	  	transform-style: preserve-3d;
+	  	backface-visibility: hidden;
+	  	-webkit-font-smoothing: antialiased;
+		-webkit-text-size-adjust: 100%;
+	  	-webkit-overflow-scrolling: touch;
+	}
+	html,
+	body {
+		font-family: font-family("Lato-Regular");
+		font-size: rem(13px);
+		height: 100%;
+		position: relative;
+		overflow-y: scroll;
+		color: color(--primary);
+		line-height: 20px;
+		background-color: #fff;
+	}
 
-  // GENERATE GLOBAL UTILITIES
+	// GENERATE GLOBAL UTILITIES
 
-  @each $value in $color-list {
-    .font-color#{nth($value, 1)} {
-      color: nth($value, 2);
-    }
+	@each $value in $color-list {
+		.font-color#{nth($value, 1)} {
+			color: nth($value, 2);
+		}
 
-    .bg#{nth($value, 1)} {
-      background-color: nth($value, 2);
-    }
+		.bg#{nth($value, 1)} {
+			background-color: nth($value, 2);
+		}
 
-    .border#{nth($value, 1)} {
-      border-color: nth($value, 2);
-    }
-  }
+		.border#{nth($value, 1)} {
+			border-color: nth($value, 2);
+		}
+	}
 
-  @each $value in $font-lists {
-    .font#{nth($value, 1)} {
-      font-family: font-family(nth($value, 2))
-    }
-  }
-  .font-small{
-	font-size: 10px;
-  }
-  .text-right{
-	text-align: right;
-  }
-  .text-center{
-  text-align: center;
-  }
-  .text-left{
-	text-align: left;
-  }
-  .pull-left{
-	float: left;
-  }
-  .pull-right{
-	float: right;
-  }
-  // https://getbootstrap.com/docs/4.0/utilities/display/
-  .d-none {
-	display: none !important;
-  }
-  .d-block {
-	display: block !important;
-  }
-  .d-inline-block {
-	display: inline-block !important;
-  }
-  .d-flex {
-	display: flex !important;
-  }
+	@each $value in $font-lists {
+		.font#{nth($value, 1)} {
+			font-family: font-family(nth($value, 2));
+		}
+	}
 
-  .text-elipsis {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-  }
+	.SVGInline {
+		display: inline-flex;
+	}
 
-  .SVGInline{
-    display: inline-flex;
-  }
+	img {
+		display: block;
+		// width: 100%;
+	}
 
-  img{
-    display: block;
-    // width: 100%;
-  }
+	#root,
+	article,
+	div,
+	footer,
+	header,
+	main,
+	nav,
+	section {
+		align-items: stretch;
+		border: 0 solid #000;
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+		flex-shrink: 0;
+		margin: 0;
+		padding: 0;
+		position: relative;
+	}
+	.--disable-flex {
+		display: block;
+		flex: none;
+	}
+	#root,
+	body,
+	html {
+		height: 100%;
+	}
 
-  #root, article, div, footer, header, main, nav, section {
-    align-items: stretch;
-    border: 0 solid #000;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-    margin: 0;
-    padding: 0;
-    position: relative;
-  }
-  .--disable-flex{
-    display: block;
-    flex: none;
-  }
-  #root, body, html {
-      height: 100%;
-  }
+	#root > main {
+		height: 100%;
+		> div:first-child {
+			min-height: 100%;
+			// overflow: hidden;
+		}
+	}
+	a {
+		color: #3c5a98;
+		text-decoration: none;
+		font-family: "Lato-Regular";
+	}
+	p {
+		font-size: 13px;
+		text-decoration: none;
+		font-family: "Lato-Regular";
+		color: #191919;
+	}
 
-  #root > main{
-    height: 100%;
-    > div:first-child{
-      min-height: 100%;
-      // overflow: hidden;
-    }
-  }
-  a{
-    color: #3C5A98;
-    text-decoration: none;
-    font-family: 'Lato-Regular';
-  }
-  p{
-    font-size: 13px;
-    text-decoration: none;
-    font-family: 'Lato-Regular';
-    color: #191919;
-  }
-  #root {
-    z-index: 0;
+	hr{
+		border: none;
+		height: 1px;
+		background: #D8D8D8;
+	}
+	#root {
+		z-index: 0;
 
-    .switch-wrapper{
-      height: 100%;
-	  background: transparent;
-      > div{
-        transition: opacity 0.3s ease;
-        height: 100%;
-      }
-    }
+		.switch-wrapper {
+			height: 100%;
+			background: transparent;
+			> div {
+				transition: opacity 0.3s ease;
+				height: 100%;
+			}
+		}
 
-    .full-height{
-      height: 100%;
-    }
+		.font-small {
+			font-size: 10px;
+		}
+		.font-medium {
+			font-size: 14px;
+		}
+		.font-large {
+			font-size: 18px;
+		}
+		.text-right {
+			text-align: right;
+		}
+		.text-center {
+			text-align: center;
+		}
+		.text-left {
+			text-align: left;
+		}
+		.pull-left {
+			float: left;
+		}
+		.pull-right {
+			float: right;
+		}
+		// https://getbootstrap.com/docs/4.0/utilities/display/
+		.d-none {
+			display: none !important;
+		}
+		.d-block {
+			display: block !important;
+		}
+		.d-inline-block {
+			display: inline-block !important;
+		}
+		.d-flex {
+			display: flex !important;
+		}
 
-    .margin--medium{
-      margin-top: 15px;
-      margin-bottom: 15px;
-    }
+		.text-elipsis {
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
 
-    .margin--none{
-    margin-top: 0px;
-    margin-bottom: 0px;
-    }
-    .margin--small{
-    margin-top: 5px;
-    margin-bottom: 5px;
-    }
-    .margin--medium{
-      margin-top: 15px;
-      margin-bottom: 15px;
-    }
+		.full-height {
+			height: 100%;
+		}
 
-    .border-top{
-      border-top: 1px solid #D8D8D8;
-    }
-    .border-bottom{
-      border-bottom: 1px solid #D8D8D8;
-    }
+		.margin--small {
+			margin-top: 5px;
+			margin-bottom: 5px;
+		}
 
-    .margin--large{
-      margin-top: 30px;
-      margin-bottom: 30px;
-    }
-    .flex-row{
-      flex-direction: row;
-    }
-    .flex-center{
-      justify-content: center;
-      align-items: center;
-    }
-    .flex-spaceBetween{
-      justify-content: space-between;
-    }
-  }
+		.margin--medium {
+			margin-top: 15px;
+			margin-bottom: 15px;
+		}
+
+		.margin--large {
+			margin-top: 30px;
+			margin-bottom: 30px;
+		}
+
+		.padding--small {
+			padding-left: 5px;
+			padding-right: 5px;
+		}
+		.padding--normal {
+			padding-left: 10px;
+			padding-right: 10px;
+		}
+
+		.padding--medium {
+			padding-left: 15px;
+			padding-right: 15px;
+		}
+
+		.padding--large {
+			padding-left: 30px;
+			padding-right: 30px;
+		}
+
+		.margin--none {
+			margin-top: 0px;
+			margin-right: 0px;
+		}
+		.border-top {
+			border-top: 1px solid #d8d8d8;
+		}
+		.border-bottom {
+			border-bottom: 1px solid #d8d8d8;
+		}
+
+		.flex-row {
+			flex-direction: row;
+		}
+		.flex-center {
+			justify-content: center;
+			align-items: center;
+		}
+		.flex-spaceBetween {
+			justify-content: space-between;
+		}
+	}
 }

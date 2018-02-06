@@ -3,7 +3,6 @@ import { withCookies } from 'react-cookie';
 import { Header, Page, Card, Svg, Tabs, Button, Level, Image, Input, List } from '@/components/mobile';
 import { Link } from 'react-router-dom';
 import styles from './catalog.scss';
-import * as data from '@/data/example/Lovelist';
 
 class Catalog extends Component {
 	constructor(props) {
@@ -159,10 +158,6 @@ class Catalog extends Component {
 		);
 	}
 }
-
-Catalog.defaultProps = {
-	Catalog: data.Lovelist
-};
 
 
 export default withCookies(Catalog);

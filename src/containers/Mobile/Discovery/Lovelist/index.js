@@ -66,7 +66,7 @@ class Lovelist extends Component {
 		const HeaderPage = {
 			left: (
 				<Button className={this.state.loggedIn && !this.state.listEmpty ? null : 'd-none'} onClick={() => this.setState({ listTypeGrid: !listTypeGrid })}>
-					<Svg src={!listTypeGrid ? 'ico_grid.svg' : 'ico_list.svg'} />
+					<Svg src={listTypeGrid ? 'ico_list.svg' : 'ico_grid.svg'} />
 				</Button>
 			),
 			center: 'Lovelist',
@@ -117,7 +117,7 @@ class Lovelist extends Component {
 						<br />it to your Lovelist.
 					</p>
 					<p className='margin--medium'><Button inline size='large' color='primary'>BELANJA</Button></p>
-					<Image local style={{ marginBottom: '-30px' }} alt='Tap the love icon' src='lovelist-guide.png' />
+					<Image local style={{ margin: '0 auto -30px auto' }} alt='Tap the love icon' src='lovelist-guide.png' />
 				</div>
 			));
 		}
@@ -128,7 +128,7 @@ class Lovelist extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		...state
+		lovelist: state.lovelist
 	};
 };
 
