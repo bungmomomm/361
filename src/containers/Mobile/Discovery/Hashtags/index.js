@@ -56,7 +56,11 @@ class Hashtags extends Component {
 		return (
 			<Grid bordered split={3}>
 				{items.map((product, i) => (
-					<div key={i}><Image src={product.image} /></div>
+					<div key={i}>
+						<Link to={`/hashtags/${product.id}`}>
+							<Image src={product.image} />
+						</Link>
+					</div>
 				))}
 			</Grid>
 		);
@@ -70,15 +74,17 @@ class Hashtags extends Component {
 		return (
 			<div>
 				{items.map((product, i) => (
-					<div key={i}>
-						<Image src={product.image} width='100%' />
-						<div className='flex-row padding--medium margin--medium'>
-							<div><Image avatar height={40} width={40} local src='temp/pp.jpg' /></div>
-							<div className='padding--medium'>
-								<div><Link className='font-color--primary' to='/'>@vinensiuswibowo</Link></div>
-								<div><em className='font-small font--lato-normal font-color--grey'>Post date: 13/12/2017</em></div>
+					<div>
+						<Link to={`/hashtags/${product.id}`} key={i}>
+							<Image src={product.image} width='100%' />
+							<div className='flex-row padding--medium margin--medium'>
+								<div><Image avatar height={40} width={40} src={product.image} /></div>
+								<div className='padding--medium'>
+									<div><Link className='font-color--primary' to='/'>@{product.user.username}</Link></div>
+									<div><em className='font-small font--lato-normal font-color--grey'>Post date: {product.user.created_time}</em></div>
+								</div>
 							</div>
-						</div>
+						</Link>
 					</div>
 				))}
 			</div>
@@ -117,7 +123,6 @@ class Hashtags extends Component {
 					</div>
 
 					{hashtag.viewMode === 3 ? this.renderGridSmall() : this.renderGridLarge()}
-
 					{scroller.loading && <button>&hellip;</button>}
 				</Page>
 
@@ -128,7 +133,6 @@ class Hashtags extends Component {
 }
 
 const mapStateToProps = (state) => {
-	// console.log(state.hashtag);
 	return {
 		...state
 	};

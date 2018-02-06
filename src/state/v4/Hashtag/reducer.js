@@ -32,8 +32,6 @@ const reducer = handleActions({
 					items: state.products[state.active.node] && state.products[state.active.node].items
 						? Array.from([...state.products[state.active.node].items, ...data.products].reduce((m, t) => m.set(t.id, t), new Map()).values())
 						: Array.from(data.products.reduce((m, t) => m.set(t.id, t), new Map()).values()),
-						// ? [...state.products[state.active.node].items, ...data.products]
-						// : data.products,
 					links: data.links
 				}
 			}
