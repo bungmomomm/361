@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Header, Page, Grid, Svg, Button, Badge } from '@/components/mobile';
-import styles from './color.scss';
+import { Header, Page, Svg, List, Button, Badge } from '@/components/mobile';
 import Action from './action';
 import _ from 'lodash';
 
@@ -22,21 +21,18 @@ class Color extends PureComponent {
 			right: null
 		};
 		const colorList = _.map(colorFilters, (color, key) => {
+			const icon = color.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
 			return (
-				<div className={styles.list} key={key}>
-					<Button onClick={(e) => onClick(e, color)}><Badge circle colorCode={color.colorcode} size='medium' filter={color} >{color.facetdisplay}</Badge></Button>
-				</div>
+				<Button key={key} align='left' wide onClick={(e) => onClick(e, color)}><List.Content><Badge circle colorCode={color.colorcode} size='medium' filter={color} />{color.facetdisplay} {icon}</List.Content></Button>
 			);
 		});
 
 		return (
 			<div style={this.props.style}>
 				<Page>
-					<div className={styles.container}>
-						<Grid split={5}>
-							{colorList}
-						</Grid>
-					</div>
+					<List>
+						{colorList}
+					</List>
 				</Page>
 				<Header.Modal {...HeaderPage} />
 				<Action />

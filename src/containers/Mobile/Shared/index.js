@@ -57,7 +57,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			const [err, response] = await to(this.props.dispatch(new initAction.initAction(token)));
 			if (err) return ('oops something went wrong');
 
-			this.initApp(this.props);
+			this.initApp();
 
 			return response;
 		}
