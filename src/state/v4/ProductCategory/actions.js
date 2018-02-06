@@ -1,19 +1,24 @@
 import { request } from '@/utils';
 import { setLoading, initPcp } from './reducer';
+import { actions as scrollerActions } from '@/state/v4/Scroller';
 
-const initAction = (token, query) => (dispatch) => {
-	dispatch(setLoading({ isLoading: true }));
+const initAction = (token, url = false, query) => (dispatch) => {
+	dispatch(setLoading({ isLoading: false }));
+	dispatch(scrollerActions.onScroll({ loading: true }));
 	
-	const url = `${process.env.MICROSERVICES_URL}categories/products`;
-	const pcpParam = query;
+	let path = `${process.env.MICROSERVICES_URL}categories/products`;
+	if (url) {
+		path = `${url.url}/categories/products`;
+	}
+
 	return request({
 		token,
-		path: url,
+		path,
 		method: 'GET',
 		query,
 		fullpath: true
 	}).then(response => {
-		if (pcpParam.category_id === '666' || pcpParam.category_id === '') {
+		if (query && query.category_id === '666') {
 			dispatch(initPcp({
 				isLoading: false,
 				pcpStatus: 'failed'
@@ -30,6 +35,23 @@ const initAction = (token, query) => (dispatch) => {
 				isLoading: false,
 				pcpStatus: 'success',
 				pcpData
+			}));
+
+			const nextLink = pcpData.links && pcpData.links.next ? new URL(pcpData.links.next).searchParams : false;
+			dispatch(scrollerActions.onScroll({
+				nextData: { 
+					token,
+					query: {
+						category_id: query.category_id,
+						page: nextLink ? parseInt(nextLink.get('page'), 10) : false,
+						per_page: query.per_page,
+						fq: query.fq,
+						sort: query.sort,
+					}
+				},
+				nextPage: nextLink !== false,
+				loading: false,
+				loader: initAction
 			}));
 		}
 	});
