@@ -1,24 +1,27 @@
 import { request } from '@/utils';
 import { setLoading, initSearch } from './reducer';
+import { actions as scrollerActions } from '@/state/v4/Scroller';
 
-const initAction = (token, query) => (dispatch) => {
-	dispatch(setLoading({
-		isLoading: true
-	}));
+const initAction = (token, url = false, query) => (dispatch) => {
+	dispatch(setLoading({ isLoading: true }));
+	dispatch(scrollerActions.onScroll({ loading: true }));
 
-	const url = `${process.env.MICROSERVICES_URL}products/search`;
-	const searchParam = query;
+	let path = `${process.env.MICROSERVICES_URL}products/search`;
+	if (url) {
+		path = `${url.url}/products/search`;
+	}
+
 	return request({
 		token,
-		path: url,
+		path,
 		method: 'GET',
 		query,
 		fullpath: true
 	}).then(response => {
-		if (query.query === 'notfound' || query.query === '') {
+		if ((query && query.q === 'notfound') || (query && query.q === '')) {
 			dispatch(initSearch({
 				searchStatus: 'failed',
-				searchParam
+				searchParam: query
 			}));
 		} else {
 			const searchData = {
@@ -29,9 +32,30 @@ const initAction = (token, query) => (dispatch) => {
 				products: response.data.data.products
 			};
 			dispatch(initSearch({
+				isLoading: false,
 				searchStatus: 'success',
-				searchParam,
+				searchParam: query,
 				searchData
+			}));
+
+			const nextLink = searchData.links && searchData.links.next ? new URL(searchData.links.next).searchParams : false;
+			dispatch(scrollerActions.onScroll({
+				nextData: {
+					token,
+					query: {
+						q: query.q,
+						brand_id: parseInt(query.brand_id, 10),
+						store_id: parseInt(query.store_id, 10),
+						category_id: parseInt(query.category_id, 10),
+						page: nextLink ? parseInt(nextLink.get('page'), 10) : false,
+						per_page: parseInt(query.per_page, 10),
+						fq: query.fq,
+						sort: query.sort,
+					}
+				},
+				nextPage: nextLink !== false,
+				loading: false,
+				loader: initAction
 			}));
 		}
 	});

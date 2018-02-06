@@ -1,29 +1,20 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-import { Header, Page, Card, Svg, Tabs, Button, Level, Image, Input, Navigation, /* Spinner */ } from '@/components/mobile';
+import _ from 'lodash';
+import { Header, Page, Card, Svg, Tabs, Button, Level, Image, Input, Navigation } from '@/components/mobile';
 import stylesSearch from '../Search/search.scss';
 import stylesCatalog from '../Category/Catalog/catalog.scss';
 import { actions } from '@/state/v4/SearchResults';
 import queryString from 'query-string';
 import { Link } from 'react-router-dom';
+import Shared from '@/containers/Mobile/Shared';
+import Scroller from '@/containers/Mobile/Shared/scroller';
 
 class SearchResults extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.userCookies = this.props.cookies.get('user.token');
-
-		this.parsedUrl = queryString.parse(this.props.location.search);
-		this.objParam = {
-			query: this.parsedUrl.query !== undefined ? this.parsedUrl.query : '',
-			brand_id: this.parsedUrl.brand_id !== undefined ? this.parsedUrl.brand_id : '',
-			store_id: this.parsedUrl.store_id !== undefined ? this.parsedUrl.store_id : '',
-			category_id: this.parsedUrl.category_id !== undefined ? this.parsedUrl.category_id : '',
-			page: this.parsedUrl.page !== undefined ? this.parsedUrl.page : 1,
-			per_page: this.parsedUrl.per_page !== undefined ? this.parsedUrl.per_page : 10,
-			sort: this.parsedUrl.sort !== undefined ? this.parsedUrl.sort : 'energy DESC',
-		};
 
 		this.currentListState = 0;
 		this.listType = [{
@@ -38,8 +29,11 @@ class SearchResults extends Component {
 		};
 	}
 
-	componentDidMount() {
-		this.props.dispatch(actions.initAction(this.userCookies, this.objParam));
+	getKeyword() {
+		const parsedUrl = queryString.parse(this.props.location.search);
+		const keywordFromUrl = parsedUrl.query !== undefined ? parsedUrl.query : '';
+
+		return keywordFromUrl;
 	}
 
 	handlePick(e) {
@@ -48,9 +42,9 @@ class SearchResults extends Component {
 			this.currentListState = this.currentListState === 1 ? 0 : this.currentListState + 1;
 			this.setState({ listTypeState: this.listType[this.currentListState] });
 			break;
-		case 'filter':
-			this.props.history.push('/filterCategory');
-			break;
+		// case 'filter':
+		// 	this.props.history.push('/filterCategory');
+		// 	break;
 		default:
 			break;
 		}
@@ -64,17 +58,19 @@ class SearchResults extends Component {
 
 		if (this.props.isLoading === true) {
 			return (
-				<div className={stylesSearch.container} >
-					<div style={inlineStyle}>&nbsp;</div>
-					<div style={inlineStyle}>&nbsp;</div>
-					<div style={inlineStyle}>&nbsp;</div>
-					<div style={inlineStyle}>&nbsp;</div>
-					<div style={inlineStyle}>Loading...</div>
-					<div style={inlineStyle}>&nbsp;</div>
-					<div style={inlineStyle}>&nbsp;</div>
-					<div style={inlineStyle}>&nbsp;</div>
-					<div style={inlineStyle}>&nbsp;</div>
-				</div>
+				<Page>
+					<div className={stylesSearch.container} >
+						<div style={inlineStyle}>&nbsp;</div>
+						<div style={inlineStyle}>&nbsp;</div>
+						<div style={inlineStyle}>&nbsp;</div>
+						<div style={inlineStyle}>&nbsp;</div>
+						<div style={inlineStyle}>Loading...</div>
+						<div style={inlineStyle}>&nbsp;</div>
+						<div style={inlineStyle}>&nbsp;</div>
+						<div style={inlineStyle}>&nbsp;</div>
+						<div style={inlineStyle}>&nbsp;</div>
+					</div>
+				</Page>
 			);
 		}
 
@@ -88,15 +84,20 @@ class SearchResults extends Component {
 			margin: '10px auto 10px auto'
 		};
 		return (
-			<div className={stylesSearch.container} >
-				<div style={inlineStyle}>[image kantong kosong]</div>
-				<div style={inlineStyle}>
-					{'Mohon maaf hasil pencarian untuk "'}{this.objParam.query}
-					{ '" tidak dapat ditemukan. Silakan periksa pengejaan kata, atau menggunakan kata kunci lain!'}
-				</div>
-				<div><button><Link to={'/search'}>Cari kembali</Link></button></div>
-				<div style={inlineStyle}>[Rich Relevant Recommendation section]</div>
-				<div style={inlineStyle}>[Footer]</div>
+			<div style={this.props.style}>
+				<Page>
+					<div className={stylesSearch.container} >
+						<div style={inlineStyle}>[image kantong kosong]</div>
+						<div style={inlineStyle}>
+							{'Mohon maaf hasil pencarian untuk "'}{this.getKeyword()}
+							{ '" tidak dapat ditemukan. Silakan periksa pengejaan kata, atau menggunakan kata kunci lain!'}
+						</div>
+						<div><button><Link to={'/search'}>Cari kembali</Link></button></div>
+						<div style={inlineStyle}>[Rich Relevant Recommendation section]</div>
+						<div style={inlineStyle}>[Footer]</div>
+					</div>
+				</Page>
+				{this.renderHeader()}
 			</div>
 		);
 	}
@@ -105,12 +106,23 @@ class SearchResults extends Component {
 		console.log('SearchFound');
 		if (products.length > 0) {
 			return (
-				<div className={stylesCatalog.cardContainer}>
-					{
-						products.map((product, index) => 
-							this.renderList(product, index)
-						)
-					}
+				<div style={this.props.style}>
+					<Page>
+						<div className={stylesSearch.container} >
+							<div className={stylesCatalog.cardContainer}>
+								{
+									products.map((product, index) => 
+										this.renderList(product, index)
+									)
+								}
+							</div>
+						</div>
+					</Page>
+					{this.renderHeader()}
+					{this.renderTabs()}
+					<Navigation />
+
+					{this.props.scroller.loading}
 				</div>
 			);
 		}
@@ -123,20 +135,9 @@ class SearchResults extends Component {
 		const searchResults = this.props.searchResults;
 		if (typeof searchResults.searchStatus !== 'undefined' && searchResults.searchStatus !== '') {
 			if (searchResults.searchStatus === 'success' && searchResults.searchData.products.length > 0) {
-				searchView = (
-					<div>
-						{ 
-							this.searchFound(searchResults.searchData.products)
-						}
-						<div className={stylesCatalog.loadmore}>
-							<Button color='secondary' outline size='large'> LOAD MORE </Button>
-						</div>
-					</div>
-				);
+				searchView = this.searchFound(searchResults.searchData.products);
 			} else if (searchResults.searchStatus === 'failed') {
-				searchView = (
-					<div>{this.notFound()}</div>
-				);
+				searchView = this.notFound();
 			}
 		}
 
@@ -185,63 +186,78 @@ class SearchResults extends Component {
 		} else {
 			return null;
 		}
-		
 	}
 
-	render() {
+	renderHeader() {
 		let back = () => { this.props.history.go(-2); };
 		if (this.props.history.length === 0) {
 			back = () => { this.props.history.push('/'); };
 		}
 
-		const { listTypeState } = this.state;
-
 		return (
-			<div style={this.props.style}>
-				<Page>
-					<div>
-						{
-							this.props.isLoading ? this.loadingRender() : this.searchRender()
-						}
-					</div>
-				</Page>
-				<Header.SearchResult
-					back={back}
-					value={this.objParam.query || ''}
-				/>
-				<Tabs
-					className={stylesCatalog.fixed}
-					type='segment'
-					variants={[
-						{
-							id: 'urutkan',
-							Title: 'Urutkan'
-						},
-						{
-							id: 'filter',
-							Title: 'Filter'
-						},
-						{
-							id: 'view',
-							Title: <Svg src={listTypeState.icon} />
-						}
-					]}
-					onPick={e => this.handlePick(e)}
-				/>
-				<Navigation />
-			</div>
+			<Header.SearchResult
+				back={back}
+				value={this.getKeyword() || ''}
+			/>
 		);
+	}
+
+	renderTabs() {
+		return (
+			<Tabs
+				className={stylesCatalog.fixed}
+				type='segment'
+				variants={[
+					{
+						id: 'urutkan',
+						title: 'Urutkan'
+					},
+					{
+						id: 'filter',
+						title: 'Filter'
+					},
+					{
+						id: 'view',
+						title: <Svg src={this.state.listTypeState.icon} />
+					}
+				]}
+				onPick={e => this.handlePick(e)}
+			/>
+		);
+	}
+
+	render() {
+		return this.props.isLoading ? this.loadingRender() : this.searchRender();
 	}
 }
 
 const mapStateToProps = (state) => {
-	console.log(state);
 	return {
-		...state,
 		shared: state.shared,
-		searchResult: state.searchResult,
-		isLoading: state.searchResults.isLoading
+		searchResults: state.searchResults,
+		isLoading: state.searchResults.isLoading,
+		scroller: state.scroller
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(SearchResults));
+const doAfterAnonymous = (props) => {
+	console.log(props);
+	const { shared, dispatch, cookies, location } = props;
+
+	const parsedUrl = queryString.parse(location.search);
+	const objParam = {
+		q: parsedUrl.query !== undefined ? parsedUrl.query : '',
+		brand_id: parsedUrl.brand_id !== undefined ? parseInt(parsedUrl.brand_id, 10) : '',
+		store_id: parsedUrl.store_id !== undefined ? parseInt(parsedUrl.store_id, 10) : '',
+		category_id: parsedUrl.category_id !== undefined ? parseInt(parsedUrl.category_id, 10) : '',
+		page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
+		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 10,
+		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
+		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
+	};
+
+	const searchService = _.chain(shared).get('serviceUrl.product').value() || false;
+	dispatch(actions.initAction(cookies.get('user.token'), searchService, objParam));
+};
+
+export default withCookies(connect(mapStateToProps)(Shared(Scroller(SearchResults), doAfterAnonymous)));

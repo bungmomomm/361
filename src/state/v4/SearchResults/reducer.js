@@ -27,7 +27,7 @@ const reducer = handleActions({
 	[initSearch](state, { payload: { isLoading, searchStatus, searchParam, searchData } }) {
 		return {
 			...state,
-			isLoading: false,
+			isLoading,
 			searchStatus,
 			searchParam,
 			searchData
