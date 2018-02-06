@@ -26,16 +26,24 @@ const updatedKeywordHandler = (string, userToken) => {
 					...initialState,
 					keyword: string,
 					related_category: data.related_category,
-					related_keyword: data.related_category,
-					related_hashtag: data.related_category,
+					related_keyword: data.related_keyword,
+					related_hashtag: data.related_hashtag,
 					loading: false
 				}));
 			}).catch((error) => {
-				console.log('On catch API Suggestion: ', error.message);
-				dispatch(keywordUpdate({
-					...initialState,
-					keyword: string,
-				}));
+				if (error.response === undefined) {
+					console.log('On catch API Suggestion: ', error.message);
+					dispatch(keywordUpdate({
+						...initialState,
+						keyword: string,
+						loading: true
+					}));
+				} else {
+					dispatch(keywordUpdate({
+						...initialState,
+						keyword: string,
+					}));
+				}
 			});
 		} else {
 			if (cancelReq !== undefined) cancelReq('Previous suggest request canceled.[< 3]');
