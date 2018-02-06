@@ -80,14 +80,6 @@ class Product extends Component {
 				pcpView = (
 					<div style={this.props.style}>
 						<Page>
-							<div>&nbsp;</div>
-							<div>&nbsp;</div>
-							<div>&nbsp;</div>
-							<div>&nbsp;</div>
-							<div>&nbsp;</div>
-							<div>&nbsp;</div>
-							<div>&nbsp;</div>
-							<div>&nbsp;</div>
 							<div className={stylesCatalog.cardContainer}>
 								{
 									pcpResults.pcpData.products.map((product, index) => 
@@ -100,7 +92,7 @@ class Product extends Component {
 						{this.renderTabs()}
 						<Navigation active='Categories' />
 
-						{this.props.scroller && this.props.scroller.loading}
+						{this.props.scroller.loading}
 					</div>
 				);
 			} else if (pcpResults.pcpStatus === 'failed') {
@@ -240,5 +232,4 @@ const doAfterAnonymous = (props) => {
 	dispatch(actions.initAction(cookies.get('user.token'), productService, pcpParam));
 };
 
-// export default withCookies(connect(mapStateToProps)(Shared(Product, doAfterAnonymous)));
 export default withCookies(connect(mapStateToProps)(Shared(Scroller(Product), doAfterAnonymous)));

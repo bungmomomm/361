@@ -3,7 +3,7 @@ import { setLoading, initPcp } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 
 const initAction = (token, url = false, query) => (dispatch) => {
-	dispatch(setLoading({ isLoading: false }));
+	dispatch(setLoading({ isLoading: true }));
 	dispatch(scrollerActions.onScroll({ loading: true }));
 	
 	let path = `${process.env.MICROSERVICES_URL}categories/products`;
