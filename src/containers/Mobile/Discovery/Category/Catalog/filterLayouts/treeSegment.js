@@ -2,14 +2,15 @@ import React, { PureComponent } from 'react';
 import _ from 'lodash';
 import {
 	Header, 
-	// Divider, 
+	Divider, 
 	Page, 
 	Svg, 
 	List, 
-	Button } from '@/components/mobile';
-import { Link } from 'react-router-dom';
+	Button 
+} from '@/components/mobile';
 import styles from './tree.scss';
 import Action from './action';
+import renderIf from '@/utils/renderIf';
 
 // DUMMY DATA
 /*
@@ -189,8 +190,7 @@ class TreeSegment extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
-			activeTree: [],
-			selected: null,
+			activeTree: []
 		};
 	}
 	
@@ -201,13 +201,15 @@ class TreeSegment extends PureComponent {
 			});
 		} else {
 			this.props.onClick(e, value);
-			// this.setState({ selected: value });
 		}
 	}
 
 	renderChild(category, firstLevel) {
 		const { activeTree } = this.state;
 		if (!firstLevel && activeTree !== category.facetrange) {
+			return null;
+		}
+		if (typeof category.childs === 'undefined') {
 			return null;
 		}
 		return (
@@ -218,15 +220,22 @@ class TreeSegment extends PureComponent {
 						const Label = hasChild ? <strong>{child.facetdisplay}</strong> : child.facetdisplay;
 						const isChildSelected = _.find(child.childs, { is_selected: 1 });
 						return (
-							<List key={id} className={hasChild && styles.parent}>
-								<Button onClick={(e) => this.handleTree(e, child, hasChild)}>
-									<List.Content>
-										{Label} 
-										{treeIcon(hasChild ? activeTree === child.facetrange : child.is_selected, hasChild)}
-									</List.Content>
-								</Button>
-								{(hasChild || isChildSelected) && this.renderChild(child)}
-							</List>
+							<div key={id}>
+								{renderIf(hasChild && firstLevel)(
+									<Divider type='segment'>
+										<Divider.Content>{child.facetdisplay} <span>({child.count} produk)</span></Divider.Content>
+									</Divider>
+								)}
+								<List className={hasChild && styles.parent}>
+									<Button onClick={(e) => this.handleTree(e, child, hasChild)}>
+										<List.Content>
+											{ Label }
+											{treeIcon(hasChild ? activeTree === child.facetrange : child.is_selected, hasChild)}
+										</List.Content>
+									</Button>
+									{(hasChild || isChildSelected) && this.renderChild(child)}
+								</List>
+							</div>
 						);
 					})
 				}
@@ -234,18 +243,17 @@ class TreeSegment extends PureComponent {
 		);
 	}
 
-	renderTree(list) {
-		return this.renderChild(list, true);
+	renderTree(category) {
+		return this.renderChild(category, true);
 	}
 
 	render() {
-		const { data } = this.props;
-		console.log(data);
+		const { onClose, data } = this.props;
 		const HeaderPage = {
 			left: (
-				<Link to='/catalogcategory'>
+				<Button onClick={onClose}>
 					<Svg src='ico_arrow-back-left.svg' />
-				</Link>
+				</Button>
 			),
 			center: 'Kategori',
 			right: null
@@ -254,13 +262,6 @@ class TreeSegment extends PureComponent {
 		return (
 			<div style={this.props.style}>
 				<Page>
-					{/* <Divider type='segment'> 
-						<Divider.Content>Wanita <span>({DUMMY_CATEGORY_WANITA.meta.total} produk)</span></Divider.Content>
-					</Divider>
-					{this.renderTree(DUMMY_CATEGORY_WANITA)}
-					<Divider type='segment'> 
-						<Divider.Content>Pria <span>({DUMMY_CATEGORY_PRIA.meta.total} produk)</span></Divider.Content>
-					</Divider> */}
 					{this.renderTree(data)}
 				</Page>
 				<Header.Modal {...HeaderPage} />

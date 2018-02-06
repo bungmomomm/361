@@ -20,7 +20,6 @@ class Filters extends Component {
 	}
 
 	onUpdateFilter(e, type, value) {
-		console.log(e, type, value);
 		try {
 			this.props.dispatch(new actions.updateFilter(type, value));
 		} catch (error) {

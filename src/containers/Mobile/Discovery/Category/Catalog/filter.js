@@ -18,7 +18,7 @@ class Filter extends PureComponent {
 		super(props);
 		this.props = props;
 		this.state = {
-			layout: 'result',
+			layout: 'tree',
 			params: {
 				header: {
 					title: 'Title'
