@@ -31,6 +31,7 @@
 :global {
 	html {
 		-webkit-text-size-adjust: 100%;
+	  	text-rendering: geometricPrecision;
 	}
 	html,
 	body {
