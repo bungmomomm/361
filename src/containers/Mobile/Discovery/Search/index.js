@@ -101,7 +101,10 @@ class Search extends PureComponent {
 			listSearchHistory = this.listSugestionMaker(cookies, this.SUGGEST_HISTORY);
 			sectionSearchHistory = (
 				<section className={styles.section}>
-					<div className={styles.heading}>Seach History</div>
+					<div className={styles.heading}>
+						<span>Seach History</span>
+						<span className={styles.delete}>Delete History</span>
+					</div>
 					<ul className={styles.list}>
 						{listSearchHistory}
 					</ul>
