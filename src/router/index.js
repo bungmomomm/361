@@ -48,7 +48,7 @@ export default () => (
 				atActive={{ offset: 0 }}
 				className='child-wrapper'
 				mapStyles={(styles) => ({
-					transform: `perspective(0) translateX(${styles.offset}%)`
+					transform: `perspective(1px) translateX(${styles.offset}%)`
 				})}
 			/>
 		)) }
