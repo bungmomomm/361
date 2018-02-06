@@ -3,7 +3,7 @@ import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import { Page, Navigation, Svg, List, Level, Image, Panel } from '@/components/mobile';
 
-class Profile extends Component {
+class UserProfileEditOVO extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -138,6 +138,6 @@ class Profile extends Component {
 	}
 }
 
-Profile.defaultProps = {};
+UserProfileEditOVO.defaultProps = {};
 
-export default withCookies(Profile);
+export default withCookies(UserProfileEditOVO);

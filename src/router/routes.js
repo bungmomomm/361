@@ -35,6 +35,11 @@ let UserRegisteredPhoneValidation = defRoute;
 let ForgotPassword = defRoute;
 let FilterCategory = defRoute;
 let Promo = defRoute;
+let UserProfile = defRoute;
+let UserProfileEdit = defRoute;
+let UserProfileEditOVO = defRoute;
+let UserProfileEditHP = defRoute;
+let UserProfileEditEmail = defRoute;
 
 if (isMobile()) {
 	/**
@@ -70,6 +75,11 @@ if (isMobile()) {
 	UserRegisteredPhoneValidation = loadable(() => import('@/containers/Mobile/Users/Register/registeredPhoneValidation'));
 	// promo
 	Promo = loadable(() => import('@/containers/Mobile/Discovery/Promo'));
+	UserProfile = loadable(() => import('@/containers/Mobile/Users/Profile'));
+	UserProfileEdit = loadable(() => import('@/containers/Mobile/Users/Profile/edit'));
+	UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'));
+	UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'));
+	UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'));
 } else {
 	/**
 	 * Require main desktop styles
@@ -174,6 +184,26 @@ export default [
 	{
 		path: '/recent_view',
 		component: Promo
+	},
+	{
+		path: '/profile',
+		component: UserProfile
+	},
+	{
+		path: '/profileEdit',
+		component: UserProfileEdit
+	},
+	{
+		path: '/profileEditOVO',
+		component: UserProfileEditOVO
+	},
+	{
+		path: '/profileEditHP',
+		component: UserProfileEditHP
+	},
+	{
+		path: '/profileEditEmail',
+		component: UserProfileEditEmail
 	},
 	{
 		path: '/*', // Page not found handling.

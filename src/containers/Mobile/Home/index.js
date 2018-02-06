@@ -12,6 +12,16 @@ import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
 import Shared from '@/containers/Mobile/Shared';
 
+const renderSectionHeader = (title, options) => {
+	return (
+		<Level>
+			<Level.Left><div className={styles.headline}>{title}</div></Level.Left>
+			<Level.Right><Link to={options.url || '/'} className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></Link></Level.Right>
+		</Level>
+	);
+};
+
+
 class Home extends Component {
 	constructor(props) {
 		super(props);
@@ -29,7 +39,7 @@ class Home extends Component {
 	}
 
 	componentDidMount() {
-		this.initApp();
+		// this.initApp();
 	}
 
 	handlePick(current) {
@@ -44,6 +54,7 @@ class Home extends Component {
 
 	initApp() {
 		const { dispatch } = this.props;
+		// doAfterAnonymous(this.props);
 		dispatch(new actions.initAction(this.userCookies))
 		.then(segmentData => {
 			const activeSegment = segmentData.find(e => e.key === this.state.current);
@@ -51,17 +62,6 @@ class Home extends Component {
 			dispatch(new actions.mainAction(this.userCookies, activeSegment));
 			dispatch(new actions.recomendationAction(this.userCookies, activeSegment));
 		});
-	}
-
-	renderSectionHeader(title, options) {
-		const { home } = this.props;
-		console.log(home);
-		return (
-			<Level>
-				<Level.Left><div className={styles.headline}>{title}</div></Level.Left>
-				<Level.Right><Link to={options.url || '/'} className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></Link></Level.Right>
-			</Level>
-		);
 	}
 
 	renderFeatureBanner() {
@@ -120,7 +120,7 @@ class Home extends Component {
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}`).get('recomendationData').get(obj);
 		if (!datas.isEmpty().value()) {
-			const header = this.renderSectionHeader(label, {
+			const header = renderSectionHeader(label, {
 				title, 
 				url: link
 			});
@@ -148,7 +148,7 @@ class Home extends Component {
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}.hashtag`);
 		if (!datas.isEmpty().value()) {
-			const header = this.renderSectionHeader(datas.value().hashtag, {
+			const header = renderSectionHeader(datas.value().hashtag, {
 				title: datas.value().mainlink.text, 
 				url: '/hashtags'
 			});
@@ -238,7 +238,7 @@ class Home extends Component {
 		const mozaic = _.chain(home).get(`allSegmentData.${segment}.mozaic`);
 
 		if (!mozaic.isEmpty().value()) {
-			const header = this.renderSectionHeader('Mozaic Megazine', {
+			const header = renderSectionHeader('Mozaic Megazine', {
 				title: mozaic.value().mainlink.text,
 				url: mozaic.value().mainlink.link
 			});
@@ -263,14 +263,6 @@ class Home extends Component {
 	}
 
 	render() {
-		const renderSectionHeader = (title, options) => {
-			return (
-				<Level>
-					<Level.Left><div className={styles.headline}>{title}</div></Level.Left>
-					<Level.Right><Link to={options.url || '/'} className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></Link></Level.Right>
-				</Level>
-			);
-		};
 		const { shared } = this.props;
 		return (
 			<div style={this.props.style}>
@@ -318,8 +310,16 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = (props) => {
-	console.log('code here if you need anon token or token');
-	// this.initPage(activeSegment = 1, dispatch);
+	console.log(props);
+	const { shared, home, dispatch, cookies } = props;
+	
+	const activeSegment = home.segmen.find(e => e.key === home.activeSegment);
+	
+	const promoService = _.chain(shared).get('serviceUrl.promo').value() || false;
+
+	dispatch(new actions.mainAction(cookies.get('user.token'), activeSegment, promoService));
+	dispatch(new actions.recomendationAction(cookies.get('user.token'), activeSegment, promoService));
 };
+
 
 export default withCookies(connect(mapStateToProps)(Shared(Home, doAfterAnonymous)));
