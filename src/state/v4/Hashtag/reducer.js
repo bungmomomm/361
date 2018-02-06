@@ -4,7 +4,10 @@ const initialState = {
 	tags: [],
 	viewMode: 3,
 	products: { },
-	activeTag: 'all',
+	active: {
+		tag: '#All',
+		node: 'all'
+	},
 	hasError: false,
 	isLoading: false
 };
@@ -15,7 +18,7 @@ const { itemsFetchDataSuccess, itemsIsLoading, itemsHasError, itemsActiveHashtag
 	'ITEMS_IS_LOADING',
 	'ITEMS_HAS_ERROR',
 	'ITEMS_ACTIVE_HASHTAG',
-	'SWITCH_VIEW_MODE',
+	'SWITCH_VIEW_MODE'
 );
 
 const reducer = handleActions({
@@ -25,9 +28,9 @@ const reducer = handleActions({
 			tags: data.tags,
 			products: {
 				...state.products,
-				[state.activeTag]: {
-					items: state.products[state.activeTag] && state.products[state.activeTag].items
-						? Array.from([...state.products[state.activeTag].items, ...data.products].reduce((m, t) => m.set(t.id, t), new Map()).values())
+				[state.active.node]: {
+					items: state.products[state.active.node] && state.products[state.active.node].items
+						? Array.from([...state.products[state.active.node].items, ...data.products].reduce((m, t) => m.set(t.id, t), new Map()).values())
 						: Array.from(data.products.reduce((m, t) => m.set(t.id, t), new Map()).values()),
 					links: data.links
 				}

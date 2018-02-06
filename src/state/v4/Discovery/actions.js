@@ -1,15 +1,16 @@
 import { request } from '@/utils';
-import { promos, loading } from './reducer';
+import { promos } from './reducer';
+import { actions as scrollerActions } from '@/state/v4/Scroller';
 // import { promo } from '@/data/translations';
 
 const configs = {
 	defaultPage: 30
 };
 
-const promoAction = (token, promoType, query = {}) => (dispatch) => {
-	dispatch(loading({ loading: true }));
-
+const promoAction = ({ token, promoType, query = {} }) => (dispatch) => {
 	const url = `${process.env.MICROSERVICES_URL}${promoType}`;
+	dispatch(scrollerActions.onScroll({ loading: true }));
+
 	if (!query.page) {
 		query.page = 1;
 	}
@@ -23,11 +24,16 @@ const promoAction = (token, promoType, query = {}) => (dispatch) => {
 		fullpath: true
 	}).then(response => {
 		const promo = {};
-
 		promo[promoType] = response.data.data;
-
 		dispatch(promos({ promo }));
-		dispatch(loading({ loading: false }));
+
+		const nextLink = promo[promoType].links && promo[promoType].links.next ? new URL(promo[promoType].links.next).searchParams : false;
+		dispatch(scrollerActions.onScroll({
+			nextData: { token, promoType, query: { page: nextLink ? nextLink.get('page') : false } },
+			nextPage: nextLink !== false,
+			loading: false,
+			loader: promoAction
+		}));
 	});
 };
 
