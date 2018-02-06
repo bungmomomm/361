@@ -15,7 +15,7 @@ class UserProfileEditOVO extends Component {
 				<Page>
 					<Level>
 						<Level.Left>
-							&nbsp;
+							<Link to='/profile-edit'><Svg src='ico_arrow-back-left.svg' /></Link>
 						</Level.Left>
 						<Level.Right>
 							<Svg src='ico_setting.svg' />

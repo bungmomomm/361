@@ -13,22 +13,45 @@ class UserProfileView extends Component {
 		};
 	}
 
-	enableEdit(e) {
+	editProfile(e) {
+		e.preventDefault();
 		this.setState({ edit: true });
 	}
 
+	cancelProfile(e) {
+		e.preventDefault();
+		this.setState({ edit: false });
+	}
+
+	saveProfile(e) {
+		e.preventDefault();
+		this.setState({ edit: false });
+	}
+
 	render() {
+		const enableInput = !this.state.edit;
 		return (
 			<Page>
-				<Level>
-					<Level.Left>
-						<Link to='/profile'><Svg src='ico_arrow-back-left.svg' /></Link>
+				<Level style={{ height: '55px' }}>
+					<Level.Left style={{ width: '80px' }}>
+						{
+							this.state.edit ?
+								<Link style={{ color: '#A4A4A4' }} onClick={(e) => (this.cancelProfile(e))} to='#save'>BATAL</Link> :
+								<div>
+									<Link to='/profile'><Svg src='ico_arrow-back-left.svg' /></Link>
+									<Link to='/profile-edit-ovo'><Svg src='ico_arrow-back-left.svg' /></Link>
+								</div>
+						}
 					</Level.Left>
 					<Level.Item style={{ alignItems: 'center' }}>
-						Informasi Akun
+						EDIT
 					</Level.Item>
-					<Level.Right>
-						<Link onCLick={(e) => (this.enableEdit(e))} to='#edit'>UBAH</Link>
+					<Level.Right style={{ width: '80px' }}>
+						{
+							this.state.edit ?
+								<Link onClick={(e) => (this.saveProfile(e))} to='#save'>SIMPAN</Link> :
+								<Link onClick={(e) => (this.editProfile(e))} to='#edit'>UBAH</Link>
+						}
 					</Level.Right>
 				</Level>
 				<div style={{ alignItems: 'center' }}>
@@ -37,46 +60,46 @@ class UserProfileView extends Component {
 				<form style={{ padding: '15px' }}>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='fullName'>Nama Lengkap</label>
-						<Input id='fullName' flat value='Yannis Philippakis' />
+						<Input disabled={enableInput} id='fullName' flat value='Yannis Philippakis' />
 					</div>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='email'>Email</label>
 						<div className={styles.inputChange}>
 							<div className={styles.inputChangeInput}>
-								<Input disabled id='email' flat value='ynnsphlppks@icloud.com' />
+								<Input disabled={enableInput} readOnly id='email' flat value='ynnsphlppks@icloud.com' />
 							</div>
-							<Link className={styles.inputChangeLink} to='#editEmail'>UBAH</Link>
+							{ this.state.edit ? <Link className={styles.inputChangeLink} to='#editEmail'>UBAH</Link> : null }
 						</div>
 					</div>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='cellPhone'>Nomor Handphone</label>
 						<div className={styles.inputChange}>
 							<div className={styles.inputChangeInput}>
-								<Input disabled id='cellPhone' flat value='085975049209' />
+								<Input disabled={enableInput} readOnly id='cellPhone' flat value='085975049209' />
 							</div>
-							<Link className={styles.inputChangeLink} to='#editCellPhone'>UBAH</Link>
+							{ this.state.edit ? <Link className={styles.inputChangeLink} to='#editCellPhone'>UBAH</Link> : null }
 						</div>
 					</div>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='gender'>Jenis Kelamin</label>
-						<Input id='gender' flat value='Pria' />
+						<Input disabled={enableInput} id='gender' flat value='Pria' />
 					</div>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='dob'>Tanggal Lahir</label>
-						<Input id='dob' flat value='23/02/1990' />
+						<Input disabled={enableInput} id='dob' flat value='23/02/1990' />
 					</div>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='password'>Password</label>
 						<div className={styles.inputChange}>
 							<div className={styles.inputChangeInput}>
-								<Input disabled id='password' type='password' flat value='password' />
+								<Input disabled={enableInput} readOnly id='password' type='password' flat value='password' />
 							</div>
-							<Link className={styles.inputChangeLink} to='#editPassword'>UBAH</Link>
+							{ this.state.edit ? <Link className={styles.inputChangeLink} to='#editPassword'>UBAH</Link> : null }
 						</div>
 					</div>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='ovoID'><span style={{ color: '#4E2688' }}>OVO ID</span></label>
-						<Input disabled id='ovoID' flat value='085975049209' />
+						<Input disabled={enableInput} id='ovoID' flat value='085975049209' />
 						<span style={{ color: '#4E2688', fontSize: '12px' }}>OVO ID anda telah terhubung</span>
 					</div>
 				</form>

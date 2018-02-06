@@ -134,6 +134,14 @@
 			}
 		}
 
+		.child-wrapper {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+		  	right: 0px;
+		  	z-index: 11;
+		}
+
 		.font-small {
 			font-size: 10px;
 		}

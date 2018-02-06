@@ -21,7 +21,7 @@ class Profile extends Component {
 							<Svg src='ico_setting.svg' />
 						</Level.Right>
 					</Level>
-					<Link to='/profileEdit'>
+					<Link to='/profile-edit'>
 						<Level>
 							<Level.Left>
 								<Image width={60} height={60} local avatar src='temp/thumb-2.jpg' alt='Rocky Syahputra' />
