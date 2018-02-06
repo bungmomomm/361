@@ -4,7 +4,7 @@ import renderIf from './renderIf';
 import modalController from './modalController';
 import isMobile from './isMobile';
 import componentState from './componentState';
-import { request } from './request';
+import { request, getCancelToken } from './request';
 import { setUserCookie } from './cookie';
 
 const getBaseUrl = () => {
@@ -37,6 +37,7 @@ export default {
 	renderIf,
 	currency,
 	request,
+	getCancelToken,
 	getBaseUrl,
 	isMobile,
 	modalController,

@@ -27,10 +27,11 @@ const reducer = handleActions({
 			totalCart
 		};
 	},
-	[forEverBanner](state, { payload: { foreverBanner } }) {
+	[forEverBanner](state, { payload: { foreverBanner, serviceUrl } }) {
 		return { 
 			...state,
-			foreverBanner
+			foreverBanner,
+			serviceUrl
 		};
 	},
 }, initialState);
