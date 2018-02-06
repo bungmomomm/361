@@ -15,6 +15,7 @@ class Search extends PureComponent {
 			showHistory: true
 		};
 		this.searchListCookieName = 'user.search.list';
+		this.searchHashtagListCookieName = 'user.searchHashtag.list';
 		this.userToken = this.props.cookies.get('user.token');
 		this.SUGGEST_KEYWORD = 'SUGGEST_KEYWORD';
 		this.SUGGEST_CATEGORY = 'SUGGEST_CATEGORY';
@@ -23,15 +24,23 @@ class Search extends PureComponent {
 		this.searchKeywordUpdatedHandler = this.searchKeywordUpdatedHandler.bind(this);
 		this.enterSearchHandler = this.enterSearchHandler.bind(this);
 		this.listSugestionMaker = this.listSugestionMaker.bind(this);
+		this.setCookieSearch = this.setCookieSearch.bind(this);
 		this.urlBuilder = this.urlBuilder.bind(this);
+		this.deleteAllCookieSearchByType = this.deleteAllCookieSearchByType.bind(this);
 	}
 
 	setCookieSearch(sText, sValue, sType) {
-		let cookies = this.props.cookies.get(this.searchListCookieName);
+		const usedCookie = (sText.charAt(0) === '#') ? this.searchHashtagListCookieName : this.searchListCookieName;
+		let cookies = this.props.cookies.get(usedCookie);
 		cookies = (!cookies || cookies === []) ? [] : cookies;
 		const newSearch = { text: sText, value: sValue, type: sType };
 		cookies.unshift(newSearch);
-		this.props.cookies.set(this.searchListCookieName, cookies.filter((val, key) => (key <= 9)));
+		this.props.cookies.set(usedCookie, cookies.filter((val, key) => (key <= 9)));
+	}
+
+	deleteAllCookieSearchByType(type) {
+		this.props.cookies.set(type, '[]');
+		this.forceUpdate();
 	}
 
 	urlBuilder(type, text, value) {
@@ -83,11 +92,14 @@ class Search extends PureComponent {
 	listSugestionMaker(lists, type) {
 		return (<div>
 			{lists.map(list => {
-				const pathProd = (type === this.SUGGEST_HISTORY) ? this.urlBuilder(list.type, list.text, list.value) : this.urlBuilder(type, list.text, list.value);
+				const pathProd = (type === this.SUGGEST_HISTORY) ? this.urlBuilder(list.type, list.text, list.value)
+					: this.urlBuilder(type, list.text, list.value);
 				const cookieType = (type === this.SUGGEST_HISTORY) ? list.type : type;
 				return (
 					<li key={Math.random()} >
-						<Link to={pathProd} onClick={() => this.setCookieSearch(list.text, list.value, cookieType)}> {list.text} </Link>
+						<Link to={pathProd} onClick={() => this.setCookieSearch(list.text, list.value, cookieType)}>
+							{list.text}
+						</Link>
 					</li>);
 			})}
 		</div>);
@@ -96,14 +108,50 @@ class Search extends PureComponent {
 	render() {
 		let sectionSearchHistory = null;
 		let listSearchHistory = null;
-		const cookies = this.props.cookies.get(this.searchListCookieName);
-		if (cookies && cookies.length > 0) {
-			listSearchHistory = this.listSugestionMaker(cookies, this.SUGGEST_HISTORY);
+		const cookieSearch = this.props.cookies.get(this.searchListCookieName);
+		if (cookieSearch && cookieSearch.length > 0) {
+			listSearchHistory = this.listSugestionMaker(cookieSearch, this.SUGGEST_HISTORY);
+
 			sectionSearchHistory = (
 				<section className={styles.section}>
-					<div className={styles.heading}>Seach History</div>
+					<div className={styles.heading}>
+						<span>Pencarian Terakhir</span>
+						<span
+							className={styles.delete}
+							onClick={() => this.deleteAllCookieSearchByType(this.searchListCookieName)}
+							role='button'
+							tabIndex='0'
+						>
+							HAPUS SEMUA
+						</span>
+					</div>
 					<ul className={styles.list}>
 						{listSearchHistory}
+					</ul>
+				</section>
+			);
+		}
+
+		let sectionHashtagHistory = null;
+		let listHashtagHistory = null;
+		const cookieHashtag = this.props.cookies.get(this.searchHashtagListCookieName);
+		if (cookieHashtag && cookieHashtag.length > 0) {
+			listHashtagHistory = this.listSugestionMaker(cookieHashtag, this.SUGGEST_HISTORY);
+			sectionHashtagHistory = (
+				<section className={styles.section}>
+					<div className={styles.heading}>
+						<span>#hashtags Terakhir</span>
+						<span
+							className={styles.delete}
+							onClick={() => this.deleteAllCookieSearchByType(this.searchHashtagListCookieName)}
+							role='button'
+							tabIndex='0'
+						>
+							HAPUS SEMUA
+						</span>
+					</div>
+					<ul className={styles.list}>
+						{listHashtagHistory}
 					</ul>
 				</section>
 			);
@@ -158,7 +206,10 @@ class Search extends PureComponent {
 			mainList = (<div>{sectionRelatedCategory}{sectionRelatedKeyword}{sectionRelatedHastag}</div>
 			);
 		} else {
-			mainList = (<div>{ sectionSearchHistory }</div>);
+			mainList = (<div>
+				{ sectionSearchHistory }
+				{ sectionHashtagHistory }
+			</div>);
 		}
 
 		const displayLoading = (<div style={{ textAlign: 'center', padding: '5px 0px' }} > hhmmmm..... </div>);
