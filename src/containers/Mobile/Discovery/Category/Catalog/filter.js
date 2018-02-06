@@ -6,7 +6,7 @@ import Brands from './filterLayouts/brands';
 import Color from './filterLayouts/color';
 import Size from './filterLayouts/size';
 import Price from './filterLayouts/price';
-import Tree from './filterLayouts/tree';
+import Location from './filterLayouts/locations';
 import TreeSegment from './filterLayouts/treeSegment';
 import Result from './filterLayouts/result';
 
@@ -49,6 +49,7 @@ class Filter extends PureComponent {
 
 		let categories = _.filter(filters.facets, (f) => f.id === 'category')[0];
 		let productType = _.filter(filters.facets, (f) => f.id === 'custom_category_ids')[0];
+		const locations = _.filter(filters.facets, (f) => f.id === 'location')[0];
 
 		categories = {
 			childs: categories.data
@@ -77,8 +78,8 @@ class Filter extends PureComponent {
 		case 'price':
 			return <Price {...state} filters={filters} />;
 		
-		case 'tree':
-			return <Tree {...state} filters={filters} />;
+		case 'location':
+			return <Location {...state} filters={filters} data={locations} onClick={(e, value) => this.onFilterSelected(e, 'location', value)} onClose={(e) => this.onFilterSectionClose()} />;
 		
 		case 'custom_category_ids':
 			return <TreeSegment {...state} filters={filters} data={productType} onClick={(e, value) => this.onFilterSelected(e, 'custom_category_ids', value)} onClose={(e) => this.onFilterSectionClose()} />;

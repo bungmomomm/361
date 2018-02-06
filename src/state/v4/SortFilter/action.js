@@ -259,6 +259,9 @@ const updateFilter = (type, value) => dispatch => {
 	case 'brand':
 		dispatch(actions.updateFilterBrand(true, value));
 		break;
+	case 'location':
+		dispatch(actions.updateFilterLocation(true, value));
+		break;
 	default:
 		break;
 	}

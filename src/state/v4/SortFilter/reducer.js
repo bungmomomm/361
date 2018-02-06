@@ -709,16 +709,25 @@ const reducer = handleActions({
 			}
 		}
 	}),
-	[actions.updateFilterLocation]: (state, action) => ({
-		...state,
-		filters: {
-			...state.filters,
-			location: {
-				active: action.payload.active,
-				value: _.uniq(_.concat(action.payload.location))
+	[actions.updateFilterLocation]: (state, action) => {
+		const facetName = 'location';
+		const facets = _.map(state.facets, (facet) => {
+			if (facet.id === facetName) {
+				const results = _.map(facet.data, (value) => {
+					if (value.facetrange === action.payload[facetName].facetrange) {
+						value.is_selected = !value.is_selected;
+					}
+					return value;
+				});
+				facet.data = results;
 			}
-		}
-	}),
+			return facet;
+		});
+		return {
+			...state,
+			facets
+		};
+	},
 	[actions.updateFilterShipping]: (state, action) => ({
 		...state,
 		filters: {
