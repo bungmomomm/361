@@ -62,21 +62,21 @@ const getFq = (filters) => {
 		}
 		fq[facetName] = [];
 		switch (facetName) {
-		case 'brand':
-			// there brand map,
-			// get group brand
-			_.forEach(facetCollection.data, (group) => {
-				group.brands.forEach((facetData) => {
-					if (facetData.is_selected) {
-						fq[facetName].push(facetData.facetrange);
-					} else {
-						_.remove(fq[facetName], (v) => {
-							return v === facetData.facetrange;
-						});
-					}
-				});
-			});
-			break;
+		// case 'brand':
+		// 	// there brand map,
+		// 	// get group brand
+		// 	_.forEach(facetCollection.data, (group) => {
+		// 		group.brands.forEach((facetData) => {
+		// 			if (facetData.is_selected) {
+		// 				fq[facetName].push(facetData.facetrange);
+		// 			} else {
+		// 				_.remove(fq[facetName], (v) => {
+		// 					return v === facetData.facetrange;
+		// 				});
+		// 			}
+		// 		});
+		// 	});
+		// 	break;
 		case 'category':
 			// child category
 			categories = getCategoryFq(categories, facetCollection.data);
@@ -255,6 +255,9 @@ const updateFilter = (type, value) => dispatch => {
 		break;
 	case 'category':
 		dispatch(actions.updateFilterCategory(true, value));
+		break;
+	case 'brand':
+		dispatch(actions.updateFilterBrand(true, value));
 		break;
 	default:
 		break;

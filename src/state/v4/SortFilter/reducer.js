@@ -207,181 +207,166 @@ const initialState = {
 			title: 'Brand',
 			data: [
 				{
-					group: 'A',
-					brands: [
-						{
-							facetrange: 'oceanseven',
-							facetdisplay: 'oceanseven',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 't-shirt glory',
-							facetdisplay: 't-shirt glory',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 'ordinal',
-							facetdisplay: 'ordinal',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 'kaos123',
-							facetdisplay: 'kaos123',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 'clothing online',
-							facetdisplay: 'clothing online',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 'gshop',
-							facetdisplay: 'gshop',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 'revolterstore',
-							facetdisplay: 'revolterstore',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 'fantasia',
-							facetdisplay: 'fantasia',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 'zeintin',
-							facetdisplay: 'zeintin',
-							is_selected: 0,
-							count: 0
-						}
-					]
+					facetrange: 'oceanseven',
+					facetdisplay: 'oceanseven',
+					is_selected: 0,
+					count: 0
 				},
 				{
-					group: 'B',
-					brands: [
-						{
-							facetrange: 'oceanseven',
-							facetdisplay: 'oceanseven',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 't-shirt glory',
-							facetdisplay: 't-shirt glory',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 'ordinal',
-							facetdisplay: 'ordinal',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 'kaos123',
-							facetdisplay: 'kaos123',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 'clothing online',
-							facetdisplay: 'clothing online',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 'gshop',
-							facetdisplay: 'gshop',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 'revolterstore',
-							facetdisplay: 'revolterstore',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 'fantasia',
-							facetdisplay: 'fantasia',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 'zeintin',
-							facetdisplay: 'zeintin',
-							is_selected: 0,
-							count: 0
-						}
-					]
+					facetrange: 't-shirt glory',
+					facetdisplay: 't-shirt glory',
+					is_selected: 0,
+					count: 0
 				},
 				{
-					group: 'C',
-					brands: [
-						{
-							facetrange: 'oceanseven',
-							facetdisplay: 'oceanseven',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 't-shirt glory',
-							facetdisplay: 't-shirt glory',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 'ordinal',
-							facetdisplay: 'ordinal',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 'kaos123',
-							facetdisplay: 'kaos123',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 'clothing online',
-							facetdisplay: 'clothing online',
-							is_selected: 1,
-							count: 0
-						},
-						{
-							facetrange: 'gshop',
-							facetdisplay: 'gshop',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 'revolterstore',
-							facetdisplay: 'revolterstore',
-							is_selected: 1,
-							count: 0
-						},
-						{
-							facetrange: 'fantasia',
-							facetdisplay: 'fantasia',
-							is_selected: 0,
-							count: 0
-						},
-						{
-							facetrange: 'zeintin',
-							facetdisplay: 'zeintin',
-							is_selected: 0,
-							count: 0
-						}
-					]
+					facetrange: 'ordinal',
+					facetdisplay: 'ordinal',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 'kaos123',
+					facetdisplay: 'kaos123',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 'clothing online',
+					facetdisplay: 'clothing online',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 'gshop',
+					facetdisplay: 'gshop',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 'revolterstore',
+					facetdisplay: 'revolterstore',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 'fantasia',
+					facetdisplay: 'fantasia',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 'zeintin',
+					facetdisplay: 'zeintin',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 'oceanseven',
+					facetdisplay: 'oceanseven',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 't-shirt glory',
+					facetdisplay: 't-shirt glory',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 'ordinal',
+					facetdisplay: 'ordinal',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 'kaos123',
+					facetdisplay: 'kaos123',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 'clothing online',
+					facetdisplay: 'clothing online',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 'gshop',
+					facetdisplay: 'gshop',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 'revolterstore',
+					facetdisplay: 'revolterstore',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 'fantasia',
+					facetdisplay: 'fantasia',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 'zeintin',
+					facetdisplay: 'zeintin',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 'oceanseven',
+					facetdisplay: 'oceanseven',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 't-shirt glory',
+					facetdisplay: 't-shirt glory',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 'ordinal',
+					facetdisplay: 'ordinal',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 'kaos123',
+					facetdisplay: 'kaos123',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 'clothing online',
+					facetdisplay: 'clothing online',
+					is_selected: 1,
+					count: 0
+				},
+				{
+					facetrange: 'gshop',
+					facetdisplay: 'gshop',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 'revolterstore',
+					facetdisplay: 'revolterstore',
+					is_selected: 1,
+					count: 0
+				},
+				{
+					facetrange: 'fantasia',
+					facetdisplay: 'fantasia',
+					is_selected: 0,
+					count: 0
+				},
+				{
+					facetrange: 'zeintin',
+					facetdisplay: 'zeintin',
+					is_selected: 0,
+					count: 0
 				}
 			]
 		},
@@ -592,6 +577,7 @@ const initialState = {
 const actions = createActions({
 	UPDATE_FILTER_STORE: (active, store) => ({ active, store }),
 	UPDATE_FILTER_CATEGORY: (active, category) => ({ active, category }),
+	UPDATE_FILTER_BRAND: (active, brand) => ({ active, brand }),
 	UPDATE_FILTER_TYPE: (active, type) => ({ active, type }),
 	UPDATE_FILTER_COLOR: (active, color) => ({ active, color }),
 	UPDATE_FILTER_SIZE: (active, size) => ({ active, size }),
@@ -665,6 +651,25 @@ const reducer = handleActions({
 					return color;
 				});
 				facet.data = colors;
+			}
+			return facet;
+		});
+		return {
+			...state,
+			facets
+		};
+	},
+	[actions.updateFilterBrand]: (state, action) => {
+		const facetName = 'brand';
+		const facets = _.map(state.facets, (facet) => {
+			if (facet.id === facetName) {
+				const results = _.map(facet.data, (value) => {
+					if (value.facetrange === action.payload[facetName].facetrange) {
+						value.is_selected = !value.is_selected;
+					}
+					return value;
+				});
+				facet.data = results;
 			}
 			return facet;
 		});

@@ -1,19 +1,32 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import {
 	Header,
 	Button,
 	Input,
-	Divider,
+	// Divider,
 	Svg,
 	Page,
 	List,
-	Navigation
+	// Navigation
 } from '@/components/mobile';
 import Action from './action';
 import C from '@/constants';
 import styles from './brands.scss';
+
+const brandWalker = (brands, m) => {
+	if (typeof m === 'undefined') {
+		m = [];
+	}
+	_.forEach(brands, (brand) => {
+		if (typeof (brand.brands) !== 'undefined' && brand.brands.length > 0) {
+			brandWalker(brand.brands, m);
+		} else {
+			m.push(brand.id);
+		}
+	});
+	return m;
+};
 
 class Brands extends Component {
 	constructor(props) {
@@ -32,19 +45,27 @@ class Brands extends Component {
 	}
 
 	searchBrand(e) {
-		console.log(this.state);
 		this.setState({
 			keyword: e.target.value
 		});
 	} 
 
 	render() {
-		const { onClose, filters } = this.props;
+		const { onClose, onClick, filters } = this.props;
 		const { keyword } = this.state;
 		const brandFacet = _.filter(filters.facets, (facet) => facet.id === 'brand');
-		let brands = [];
+		let brandLists = [];
 		if (typeof brandFacet[0] !== 'undefined') {
-			brands = brandFacet[0].data;
+			brandLists = brandFacet[0].data;
+		}
+
+		if (brandLists.length > 0) {
+			if (!_.isEmpty(keyword)) {
+				brandLists = _.filter(brandLists, (brand) => {
+					const rgx = new RegExp(keyword, 'gi');
+					return (brand.facetdisplay.search(rgx)) > -1;
+				});
+			}
 		}
 
 		const HeaderPage = {
@@ -68,37 +89,17 @@ class Brands extends Component {
 							value={keyword}
 							onChange={(e) => this.searchBrand(e)}
 						/>
-						<div className={styles.listFilterKey}>
-							<Button onClick={() => this.filterlist('')}>ALL</Button>
-							{brands.map((brandGroup, id) => {
-								return (
-									<Button key={id} onClick={() => this.filterlist(brandGroup.group)}>{brandGroup.group}</Button>
-								);
-							})}
-						</div>
 					</div>
-					{this.state.filteredKey.map((key, id) => {
-						return (
-							<div key={id}>
-								<Divider className='margin--none' size='small'>
-									{key}
-								</Divider>
-								<List>
-									<Link to='/catalogcategory'>
-										<List.Content>ARMANDO CARUSO</List.Content>
-									</Link>
-								</List>
-								<List>
-									<Link to='/catalogcategory'>
-										<List.Content>ARMANDO CARUSO</List.Content>
-									</Link>
-								</List>
-							</div>
-						);
-					})}
+					<List>
+						{brandLists.map((brand, id) => {
+							const icon = brand.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
+							return (
+								<Button key={id} align='left' wide onClick={(e) => onClick(e, brand)}><List.Content>{brand.facetdisplay} ({brand.count}) {icon}</List.Content></Button>
+							);
+						})}
+					</List>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Categories' />
 				<Action />
 			</div>
 		);

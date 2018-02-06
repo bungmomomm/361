@@ -18,7 +18,7 @@ class Filter extends PureComponent {
 		super(props);
 		this.props = props;
 		this.state = {
-			layout: 'tree',
+			layout: 'result',
 			params: {
 				header: {
 					title: 'Title'
@@ -48,9 +48,14 @@ class Filter extends PureComponent {
 		const { onApply, filters } = this.props;
 
 		let categories = _.filter(filters.facets, (f) => f.id === 'category')[0];
+		let productType = _.filter(filters.facets, (f) => f.id === 'custom_category_ids')[0];
 
 		categories = {
 			childs: categories.data
+		};
+
+		productType = {
+			childs: productType.data
 		};
 		
 		switch (layout) {
@@ -61,7 +66,7 @@ class Filter extends PureComponent {
 			return <ListsEnd {...state} filters={filters} />;
 		
 		case 'brand':
-			return <Brands {...state} filters={filters} onClose={(e) => this.onFilterSectionClose()} />;
+			return <Brands {...state} filters={filters} onClick={(e, value) => this.onFilterSelected(e, 'brand', value)} onClose={(e) => this.onFilterSectionClose()} />;
 		
 		case 'color':
 			return <Color {...state} filters={filters} onClick={(e, value) => this.onFilterSelected(e, 'color', value)} onClose={(e) => this.onFilterSectionClose()} />;
@@ -74,6 +79,9 @@ class Filter extends PureComponent {
 		
 		case 'tree':
 			return <Tree {...state} filters={filters} />;
+		
+		case 'custom_category_ids':
+			return <TreeSegment {...state} filters={filters} data={productType} onClick={(e, value) => this.onFilterSelected(e, 'custom_category_ids', value)} onClose={(e) => this.onFilterSectionClose()} />;
 		
 		case 'category':
 			return <TreeSegment {...state} filters={filters} data={categories} onClick={(e, value) => this.onFilterSelected(e, 'category', value)} onClose={(e) => this.onFilterSectionClose()} />;
