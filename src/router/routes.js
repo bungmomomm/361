@@ -88,126 +88,145 @@ if (isMobile()) {
 	Home = loadable(() => import('@/containers/Desktop/Home'));
 }
 
-export default [
-	{
-		path: '/',
-		component: Home,
-		exact: true
-	},
-	{
-		path: '/hashtags',
-		component: Hashtags,
-		exact: true
-	},
-	{
-		path: '/hashtags/details',
-		component: HashtagsDetails
-	},
-	{
-		path: '/search',
-		component: Search
-	},
-	{
-		path: '/products',
-		component: SearchResults
-	},
-	{
-		path: '/searchnotfound', // This path only for displaying search not found SearchNotFound Container
-		component: SearchNotFound
-	},
-	{
-		path: '/category',
-		component: Category,
-		exact: true
-	}, {
-		path: '/category/:categoryId',	// for temporary PCP
-		component: Category,
-	}, {
-		path: '/subcategory/:categoryId',
-		component: SubCategory,
-	}, {
-		path: '/brands',
-		component: Brands,
-		exact: true
-	}, {
-		path: '/catalogcategory',
-		component: CatalogCategory
-	}, {
-		path: '/filterCategory',
-		component: FilterCategory
-	}, {
-		path: '/lovelist',
-		component: Lovelist,
-		exact: true
-	}, {
-		path: '/product/:id',
-		component: Products,
-		exact: true
-	},
-	{
-		path: '/login',
-		component: UserLogin,
-		exact: true
-	},
-	{
-		path: '/register',
-		component: UserRegister,
-		exact: true
-	},
-	{
-		path: '/registered',
-		component: UserRegistered,
-		exact: true
-	},
-	{
-		path: '/phoneValidation',
-		component: UserRegisteredPhoneValidation,
-		exact: true
-	},
-	{
-		path: '/forgotPassword',
-		component: ForgotPassword,
-		exact: true
-	},
-	{
-		path: '/new_arrival',
-		component: Promo
-	},
-	{
-		path: '/best_seller',
-		component: Promo
-	},
-	{
-		path: '/recommended_products',
-		component: Promo
-	},
-	{
-		path: '/recent_view',
-		component: Promo
-	},
-	{
-		path: '/profile',
-		component: UserProfile
-	},
-	{
-		path: '/profileEdit',
-		component: UserProfileEdit
-	},
-	{
-		path: '/profileEditOVO',
-		component: UserProfileEditOVO
-	},
-	{
-		path: '/profileEditHP',
-		component: UserProfileEditHP
-	},
-	{
-		path: '/profileEditEmail',
-		component: UserProfileEditEmail
-	},
-	{
-		path: '/*', // Page not found handling.
-		component: Page404,
-		exact: true
-	}
-];
+export default {
+	parent: [
+		{
+			path: '/',
+			component: Home,
+			exact: true
+		},
+		{
+			path: '/hashtags',
+			component: Hashtags,
+			exact: true
+		},
+		{
+			path: '/hashtags/details',
+			component: HashtagsDetails
+		},
+		{
+			path: '/search',
+			component: Search
+		},
+		{
+			path: '/products',
+			component: SearchResults
+		},
+		{
+			path: '/searchnotfound', // This path only for displaying search not found SearchNotFound Container
+			component: SearchNotFound
+		},
+		{
+			path: '/category',
+			component: Category,
+			exact: true
+		},
+		{
+			path: '/category/:categoryId',	// for temporary PCP
+			component: Category,
+		},
+		{
+			path: '/subcategory/:categoryId',
+			component: SubCategory,
+		},
+		{
+			path: '/brands',
+			component: Brands,
+			exact: true
+		},
+		{
+			path: '/catalogcategory',
+			component: CatalogCategory
+		},
+		{
+			path: '/filterCategory',
+			component: FilterCategory
+		},
+		{
+			path: '/lovelist',
+			component: Lovelist,
+			exact: true
+		},
+		{
+			path: '/product/:id',
+			component: Products,
+			exact: true
+		},
+		{
+			path: '/login',
+			component: UserLogin,
+			exact: true
+		},
+		{
+			path: '/register',
+			component: UserRegister,
+			exact: true
+		},
+		{
+			path: '/registered',
+			component: UserRegistered,
+			exact: true
+		},
+		{
+			path: '/phoneValidation',
+			component: UserRegisteredPhoneValidation,
+			exact: true
+		},
+		{
+			path: '/forgotPassword',
+			component: ForgotPassword,
+			exact: true
+		},
+		{
+			path: '/new_arrival',
+			component: Promo
+		},
+		{
+			path: '/best_seller',
+			component: Promo
+		},
+		{
+			path: '/recommended_products',
+			component: Promo
+		},
+		{
+			path: '/recent_view',
+			component: Promo
+		},
+		{
+			path: '/profile',
+			component: UserProfile
+		},
+		{
+			path: '/profile-*',
+			component: UserProfile
+		},
+		{
+			path: '/*', // Page not found handling.
+			component: Page404,
+			exact: true
+		}
+	],
+	child: [
+		{
+			path: '/profile-edit',
+			component: UserProfileEdit,
+			child: true
+		},
+		{
+			path: '/profile-edit-ovo',
+			component: UserProfileEditOVO,
+			child: true
+		},
+		{
+			path: '/profile-edit-hp',
+			component: UserProfileEditHP,
+			child: true
+		},
+		{
+			path: '/profile-edit-email',
+			component: UserProfileEditEmail,
+			child: true
+		}
+	]
+};
