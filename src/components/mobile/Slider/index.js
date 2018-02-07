@@ -1,48 +1,42 @@
 import React, { PureComponent } from 'react';
 import classNames from 'classnames';
+import InputRange from 'react-input-range';
 import styles from './slider.scss';
 
 class Slider extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
-			percentInput: 0
+			value: {
+				min: 3,
+				max: 7,
+			},
 		};
 	}
 
-	onChangeInput(value) {
-		const percentInput = ((value.target.value - this.props.min) * 100) / (this.props.max - this.props.min);
-		this.setState({ percentInput });
-		if (typeof this.onc === 'function') {
-			this.onc(value.target.value);
-		}
-	};
-
 	render() {
 		const {
-			className,
-			onChange,
-			...props
+			className
 		} = this.props;
-
-		this.onc = onChange;
 
 		const createClassName = classNames(
 			styles.container,
 			className
 		);
-		
+
 		return (
 			<div className={createClassName}>
-				<input name='green' type='range' onChange={(e) => this.onChangeInput(e)} {...props} />
-				<div className='rangeslider rangeslider-horizontal' id='js-rangeslider-0'>
-					<div className='rangeslider-thumb' />
-					<div style={{ width: `${this.state.percentInput}%` }} className='rangeslider-fill-lower' />
-					<div style={{ left: `${this.state.percentInput}%` }} className='rangeslider-thumb' />
-				</div>
+				<InputRange
+					draggableTrack
+					maxValue={this.props.max}
+					minValue={this.props.min}
+					onChange={(value) => this.setState({ value })}
+					onChangeComplete={value => this.props.onChange(value)}
+					value={this.state.value}
+				/>
 			</div>
 		);
-		
+
 	}
 }
 
