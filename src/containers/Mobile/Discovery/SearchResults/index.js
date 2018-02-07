@@ -7,6 +7,8 @@ import stylesCatalog from '../Category/Catalog/catalog.scss';
 import { actions } from '@/state/v4/SearchResults';
 import queryString from 'query-string';
 import { Link } from 'react-router-dom';
+import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
+import { renderIf } from '@/utils';
 
 class SearchResults extends Component {
 	constructor(props) {
@@ -34,7 +36,10 @@ class SearchResults extends Component {
 			icon: 'ico_grid.svg'
 		}];
 		this.state = {
-			listTypeState: this.listType[this.currentListState]
+			listTypeState: this.listType[this.currentListState],
+			notification: {
+				show: true
+			}
 		};
 	}
 
@@ -195,7 +200,7 @@ class SearchResults extends Component {
 		}
 
 		const { listTypeState } = this.state;
-
+		const { shared } = this.props;
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -228,6 +233,20 @@ class SearchResults extends Component {
 					]}
 					onPick={e => this.handlePick(e)}
 				/>
+				{
+					renderIf(shared && shared.foreverBanner && shared.foreverBanner.text)(
+						<ForeverBanner
+							color={shared.foreverBanner.text.background_color}
+							show={this.state.notification.show}
+							onClose={(e) => this.setState({ notification: { show: false } })}
+							text1={shared.foreverBanner.text.text1}
+							text2={shared.foreverBanner.text.text2}
+							textColor={shared.foreverBanner.text.text_color}
+							linkValue={shared.foreverBanner.target.url}
+						/>
+					)
+				}
+
 				<Navigation />
 			</div>
 		);
