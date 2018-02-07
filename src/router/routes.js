@@ -40,6 +40,7 @@ let UserProfileEdit = defRoute;
 let UserProfileEditOVO = defRoute;
 let UserProfileEditHP = defRoute;
 let UserProfileEditEmail = defRoute;
+let Cart = defRoute;
 
 if (isMobile()) {
 	/**
@@ -67,6 +68,10 @@ if (isMobile()) {
 
 	// PDP
 	Products = loadable(() => import('@/containers/Mobile/Details/Products'));
+	
+	// Shopping-bag
+	Cart = loadable(() => import('@/containers/Mobile/Cart'));
+
 	// Users
 	UserLogin = loadable(() => import('@/containers/Mobile/Users/Login'));
 	ForgotPassword = loadable(() => import('@/containers/Mobile/Users/Login/forgotPassword'));
@@ -200,6 +205,10 @@ export default {
 		{
 			path: '/profile-*',
 			component: UserProfile
+		},
+		{
+			path: '/cart',
+			component: Cart
 		},
 		{
 			path: '/*', // Page not found handling.

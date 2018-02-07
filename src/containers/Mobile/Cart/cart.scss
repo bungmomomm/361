@@ -1,0 +1,39 @@
+.cart{
+	// padding: 0px 15px;
+	padding-left: 15px;
+	padding-top: 15px;
+	margin-bottom: 20px;
+	background: #fff;
+}
+
+.paymentLink{
+	order: 5;
+	> div{
+		height: 50px;
+		> div{
+			z-index: 10;
+			position: fixed;
+			background: #000;
+			height: 50px;
+			bottom: 0px;
+			width: 100%;
+			a{
+				color: #fff;
+				text-transform: uppercase;
+				position: relative;
+				display: flex;
+				height: 50px;
+				justify-content: center;
+				align-items: center;
+				width: 100%;
+				span{
+					position: absolute;
+					right: 15px;
+					height: 100%;
+					align-items: center;
+					top: 0px;
+				}
+			}
+		}
+	}
+}

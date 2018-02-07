@@ -19,6 +19,7 @@ import Slider from './Slider';
 import Panel from './Panel';
 import Comment from './Comment';
 import Radio from './Radio';
+import Select from './Select';
 
 export default {
 	Header,
@@ -41,5 +42,6 @@ export default {
 	Modal,
 	Panel,
 	Radio,
-	Comment
+	Comment,
+	Select
 };
