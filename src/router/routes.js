@@ -122,7 +122,7 @@ export default [
 		component: Category,
 		exact: true
 	}, {
-		path: '/category/:categoryId',
+		path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9]+)',
 		component: ProductCategory
 	}, {
 		path: '/subcategory/:categoryId',

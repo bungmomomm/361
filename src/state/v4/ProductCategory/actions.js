@@ -18,7 +18,7 @@ const initAction = (token, url = false, query) => (dispatch) => {
 		query,
 		fullpath: true
 	}).then(response => {
-		if (query && query.category_id === '666') {
+		if ((query && query.category_id === '666') || (query && query.category_id === '')) {
 			dispatch(initPcp({
 				isLoading: false,
 				pcpStatus: 'failed'

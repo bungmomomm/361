@@ -49,31 +49,12 @@ class Product extends Component {
 		}
 	}
 
-	loadingRender() {
-		const inlineStyle = {
-			textAlign: 'center',
-			margin: '10px auto 10px auto'
-		};
-
-		if (this.props.isLoading === true) {
-			return (
-				<div style={this.props.style}>
-					<Page>
-						<div style={inlineStyle}>&nbsp;</div>
-						<div style={inlineStyle}>&nbsp;</div>
-						<div style={inlineStyle}>&nbsp;</div>
-						<div style={inlineStyle}>&nbsp;</div>
-						<div style={inlineStyle}>Loading...</div>
-						<div style={inlineStyle}>&nbsp;</div>
-						<div style={inlineStyle}>&nbsp;</div>
-						<div style={inlineStyle}>&nbsp;</div>
-						<div style={inlineStyle}>&nbsp;</div>
-					</Page>
-				</div>
-			);
-		}
-
-		return null;
+	loadingView() {
+		return (
+			<div style={this.props.style}>
+				&nbsp;
+			</div>
+		);
 	}
 
 	pcpRender() {
@@ -108,7 +89,7 @@ class Product extends Component {
 								: ''
 						}
 						<Navigation active='Categories' />
-
+		
 						{this.props.scroller.loading}
 					</div>
 				);
@@ -179,13 +160,14 @@ class Product extends Component {
 		}
 
 		const pcpResults = this.props.productCategory;
+		const headerTitle = _.chain(pcpResults).get('pcpData.info.title').value() || '';
 		const HeaderPage = {
 			left: (
 				<Link to='' onClick={back}>
 					<Svg src='ico_arrow-back-left.svg' />
 				</Link>
 			),
-			center: pcpResults.pcpData.info.title || '',
+			center: headerTitle,
 			right: null
 		};
 
@@ -219,7 +201,7 @@ class Product extends Component {
 	}
 
 	render() {
-		return this.props.isLoading ? this.loadingRender() : this.pcpRender();
+		return this.props.isLoading ? this.loadingView() : this.pcpRender();
 	}
 }
 
@@ -237,11 +219,12 @@ const doAfterAnonymous = (props) => {
 	const { shared, dispatch, cookies, match, location } = props;
 
 	const productService = _.chain(shared).get('serviceUrl.product').value() || false;
+	const categoryId = _.chain(match).get('params.categoryId').value() || '';
 	const parsedUrl = queryString.parse(location.search);
 	const pcpParam = {
-		category_id: match.params.categoryId !== undefined ? parseInt(match.params.categoryId, 10) : '',
-		page: parsedUrl.page !== undefined ? parsedUrl.page : 1,
-		per_page: parsedUrl.per_page !== undefined ? parsedUrl.per_page : 10,
+		category_id: categoryId,
+		page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
+		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 10,
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
