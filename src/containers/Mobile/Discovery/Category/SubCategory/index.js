@@ -42,13 +42,16 @@ class SubCategory extends Component {
 		category = (this.categoryLvl3 !== undefined) ?
 			category.sub_categories.filter(e => e.id === this.categoryLvl3)[0] : category;
 		console.log('last category', category);
+
 		if (category) {
+			if (category.sub_categories.length === 0) {
+				this.props.history.push(`/p-${category.id}/${category.title}`);
+			}
 			this.setState({
 				category
 			});
 		} else {
 			const { dispatch } = this.props;
-			// change action if there is any endpoint for subcategory
 			dispatch(new categoryActions.getCategoryMenuAction(this.userCookies));
 		}
 	}
