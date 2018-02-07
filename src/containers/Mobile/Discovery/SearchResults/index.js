@@ -29,6 +29,11 @@ class SearchResults extends Component {
 		};
 	}
 
+	componentWillMount() {
+		const { dispatch } = this.props;
+		dispatch(new actions.initLoading(true));
+	}
+
 	getKeyword() {
 		const parsedUrl = queryString.parse(this.props.location.search);
 		const keywordFromUrl = parsedUrl.query !== undefined ? parsedUrl.query : '';
@@ -58,19 +63,17 @@ class SearchResults extends Component {
 
 		if (this.props.isLoading === true) {
 			return (
-				<Page>
-					<div className={stylesSearch.container} >
-						<div style={inlineStyle}>&nbsp;</div>
-						<div style={inlineStyle}>&nbsp;</div>
-						<div style={inlineStyle}>&nbsp;</div>
-						<div style={inlineStyle}>&nbsp;</div>
-						<div style={inlineStyle}>Loading...</div>
-						<div style={inlineStyle}>&nbsp;</div>
-						<div style={inlineStyle}>&nbsp;</div>
-						<div style={inlineStyle}>&nbsp;</div>
-						<div style={inlineStyle}>&nbsp;</div>
-					</div>
-				</Page>
+				<div className={stylesSearch.container} >
+					<div style={inlineStyle}>&nbsp;</div>
+					<div style={inlineStyle}>&nbsp;</div>
+					<div style={inlineStyle}>&nbsp;</div>
+					<div style={inlineStyle}>&nbsp;</div>
+					<div style={inlineStyle}>Loading...</div>
+					<div style={inlineStyle}>&nbsp;</div>
+					<div style={inlineStyle}>&nbsp;</div>
+					<div style={inlineStyle}>&nbsp;</div>
+					<div style={inlineStyle}>&nbsp;</div>
+				</div>
 			);
 		}
 
@@ -78,51 +81,35 @@ class SearchResults extends Component {
 	}
 
 	notFound() {
-		console.log('NotFound');
 		const inlineStyle = {
 			textAlign: 'center',
 			margin: '10px auto 10px auto'
 		};
 		return (
-			<div style={this.props.style}>
-				<Page>
-					<div className={stylesSearch.container} >
-						<div style={inlineStyle}>[image kantong kosong]</div>
-						<div style={inlineStyle}>
-							{'Mohon maaf hasil pencarian untuk "'}{this.getKeyword()}
-							{ '" tidak dapat ditemukan. Silakan periksa pengejaan kata, atau menggunakan kata kunci lain!'}
-						</div>
-						<div><button><Link to={'/search'}>Cari kembali</Link></button></div>
-						<div style={inlineStyle}>[Rich Relevant Recommendation section]</div>
-						<div style={inlineStyle}>[Footer]</div>
-					</div>
-				</Page>
-				{this.renderHeader()}
+			<div className={stylesSearch.container} >
+				<div style={inlineStyle}>[image kantong kosong]</div>
+				<div style={inlineStyle}>
+					{'Mohon maaf hasil pencarian untuk "'}{this.getKeyword()}
+					{ '" tidak dapat ditemukan. Silakan periksa pengejaan kata, atau menggunakan kata kunci lain!'}
+				</div>
+				<div><button><Link to={'/search'}>Cari kembali</Link></button></div>
+				<div style={inlineStyle}>[Rich Relevant Recommendation section]</div>
+				<div style={inlineStyle}>[Footer]</div>
 			</div>
 		);
 	}
 
 	searchFound(products) {
-		console.log('SearchFound');
 		if (products.length > 0) {
 			return (
-				<div style={this.props.style}>
-					<Page>
-						<div className={stylesSearch.container} >
-							<div className={stylesCatalog.cardContainer}>
-								{
-									products.map((product, index) => 
-										this.renderList(product, index)
-									)
-								}
-							</div>
-						</div>
-					</Page>
-					{this.renderHeader()}
-					{this.renderTabs()}
-					<Navigation />
-
-					{this.props.scroller.loading}
+				<div className={stylesSearch.container} >
+					<div className={stylesCatalog.cardContainer}>
+						{
+							products.map((product, index) => 
+								this.renderList(product, index)
+							)
+						}
+					</div>
 				</div>
 			);
 		}
@@ -203,31 +190,48 @@ class SearchResults extends Component {
 	}
 
 	renderTabs() {
-		return (
-			<Tabs
-				className={stylesCatalog.fixed}
-				type='segment'
-				variants={[
-					{
-						id: 'urutkan',
-						title: 'Urutkan'
-					},
-					{
-						id: 'filter',
-						title: 'Filter'
-					},
-					{
-						id: 'view',
-						title: <Svg src={this.state.listTypeState.icon} />
-					}
-				]}
-				onPick={e => this.handlePick(e)}
-			/>
-		);
+		let tabsView = null;
+		const searchResults = this.props.searchResults;
+		if (typeof searchResults.searchStatus !== 'undefined' && searchResults.searchStatus !== '' && searchResults.searchStatus === 'success') {
+			tabsView = (
+				<Tabs
+					className={stylesCatalog.fixed}
+					type='segment'
+					variants={[
+						{
+							id: 'urutkan',
+							title: 'Urutkan'
+						},
+						{
+							id: 'filter',
+							title: 'Filter'
+						},
+						{
+							id: 'view',
+							title: <Svg src={this.state.listTypeState.icon} />
+						}
+					]}
+					onPick={e => this.handlePick(e)}
+				/>
+			);
+		}
+
+		return tabsView;
 	}
 
 	render() {
-		return this.props.isLoading ? this.loadingRender() : this.searchRender();
+		return (
+			<div style={this.props.style}>
+				<Page>
+					{this.props.isLoading ? this.loadingRender() : this.searchRender()}
+				</Page>
+				{this.renderHeader()}
+				{this.renderTabs()}
+				<Navigation />
+
+				{this.props.scroller.loading}
+			</div>
+		);
 	}
 }
 
@@ -241,7 +245,6 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = (props) => {
-	console.log(props);
 	const { shared, dispatch, cookies, location } = props;
 
 	const parsedUrl = queryString.parse(location.search);
@@ -257,7 +260,7 @@ const doAfterAnonymous = (props) => {
 	};
 
 	const searchService = _.chain(shared).get('serviceUrl.product').value() || false;
-	dispatch(actions.initAction(cookies.get('user.token'), searchService, objParam));
+	dispatch(new actions.initAction(cookies.get('user.token'), searchService, objParam));
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Scroller(SearchResults), doAfterAnonymous)));

@@ -20,6 +20,7 @@ const initAction = (token, url = false, query) => (dispatch) => {
 	}).then(response => {
 		if ((query && query.q === 'notfound') || (query && query.q === '')) {
 			dispatch(initSearch({
+				isLoading: false,
 				searchStatus: 'failed',
 				searchParam: query
 			}));
@@ -61,6 +62,11 @@ const initAction = (token, url = false, query) => (dispatch) => {
 	});
 };
 
+const initLoading = (loading) => (dispatch) => {
+	dispatch(setLoading({ isLoading: loading }));
+};
+
 export default {
-	initAction
+	initAction,
+	initLoading
 };
