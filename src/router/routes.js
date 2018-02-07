@@ -124,8 +124,8 @@ export default {
 			exact: true
 		},
 		{
-      path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9]+)',
-		  component: ProductCategory
+			path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9]+)',
+			component: ProductCategory
 		},
 		{
 			path: '/subcategory/:categoryId',
