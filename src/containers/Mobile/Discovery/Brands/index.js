@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
-// import _ from 'lodash';
 import {
 	Header,
 	Button,
@@ -17,6 +16,8 @@ import {
 import C from '@/constants';
 import styles from './brands.scss';
 import { actions } from '@/state/v4/Brand';
+import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
+import { renderIf } from '@/utils';
 
 class Brands extends Component {
 	constructor(props) {
@@ -27,6 +28,9 @@ class Brands extends Component {
 			searchFocus: false,
 			filteredBrand: [],
 			keyword: '',
+			notification: {
+				show: true
+			}
 		};
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
@@ -168,10 +172,23 @@ class Brands extends Component {
 			center: 'Brands',
 			right: null
 		};
-		
+		const { shared } = this.props;
 		return (
 			<div style={this.props.style}>
 				<Page>
+					{
+						renderIf(shared && shared.foreverBanner && shared.foreverBanner.text)(
+							<ForeverBanner
+								color={shared.foreverBanner.text.background_color}
+								show={this.state.notification.show}
+								onClose={(e) => this.setState({ notification: { show: false } })}
+								text1={shared.foreverBanner.text.text1}
+								text2={shared.foreverBanner.text.text2}
+								textColor={shared.foreverBanner.text.text_color}
+								linkValue={shared.foreverBanner.target.url}
+							/>
+						)
+					}
 					<div className={styles.filter}>
 						<Level>
 							<Level.Item className={styles.center}>
@@ -209,7 +226,8 @@ class Brands extends Component {
 const mapStateToProps = (state) => {
 	return {
 		category: state.category,
-		brands: state.brands
+		brands: state.brands,
+		shared: state.shared
 	};
 };
 
