@@ -5,6 +5,9 @@ import { withCookies } from 'react-cookie';
 import { Header, Page, Card, Button, Svg, Image, Level } from '@/components/mobile';
 import styles from './lovelist.scss';
 import { actions as LoveListActionCreator } from '@/state/v4/Lovelist';
+import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
+import { renderIf } from '@/utils';
+
 class Lovelist extends Component {
 	constructor(props) {
 		super(props);
@@ -13,7 +16,10 @@ class Lovelist extends Component {
 			listTypeGrid: true,
 			listEmpty: true,
 			loggedIn: false,
-			products: []
+			products: [],
+			notification: {
+				show: true
+			}
 		};
 
 		this.getLovelistCardsContent = this.getLovelistCardsContent.bind(this);
@@ -76,10 +82,23 @@ class Lovelist extends Component {
 				</Link>
 			)
 		};
-
+		const { shared } = this.props;
 		return (
 			<div style={this.props.style}>
 				<Page>
+					{
+						renderIf(shared && shared.foreverBanner && shared.foreverBanner.text)(
+							<ForeverBanner
+								color={shared.foreverBanner.text.background_color}
+								show={this.state.notification.show}
+								onClose={(e) => this.setState({ notification: { show: false } })}
+								text1={shared.foreverBanner.text.text1}
+								text2={shared.foreverBanner.text.text2}
+								textColor={shared.foreverBanner.text.text_color}
+								linkValue={shared.foreverBanner.target.url}
+							/>
+						)
+					}
 					{content}
 				</Page>
 				<Header.Modal {...HeaderPage} />
@@ -128,7 +147,8 @@ class Lovelist extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		lovelist: state.lovelist
+		lovelist: state.lovelist,
+		shared: state.shared
 	};
 };
 

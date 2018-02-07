@@ -10,6 +10,8 @@ import queryString from 'query-string';
 import { Link } from 'react-router-dom';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
+// import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
+// import { renderIf } from '@/utils';
 
 class SearchResults extends Component {
 	constructor(props) {
@@ -25,7 +27,10 @@ class SearchResults extends Component {
 			icon: 'ico_grid.svg'
 		}];
 		this.state = {
-			listTypeState: this.listType[this.currentListState]
+			listTypeState: this.listType[this.currentListState],
+			notification: {
+				show: true
+			}
 		};
 	}
 
@@ -56,23 +61,10 @@ class SearchResults extends Component {
 	}
 
 	loadingRender() {
-		const inlineStyle = {
-			textAlign: 'center',
-			margin: '10px auto 10px auto'
-		};
-
 		if (this.props.isLoading === true) {
 			return (
 				<div className={stylesSearch.container} >
-					<div style={inlineStyle}>&nbsp;</div>
-					<div style={inlineStyle}>&nbsp;</div>
-					<div style={inlineStyle}>&nbsp;</div>
-					<div style={inlineStyle}>&nbsp;</div>
-					<div style={inlineStyle}>Loading...</div>
-					<div style={inlineStyle}>&nbsp;</div>
-					<div style={inlineStyle}>&nbsp;</div>
-					<div style={inlineStyle}>&nbsp;</div>
-					<div style={inlineStyle}>&nbsp;</div>
+					&nbsp;
 				</div>
 			);
 		}
@@ -220,13 +212,28 @@ class SearchResults extends Component {
 	}
 
 	render() {
+		// const { shared } = this.props;
 		return (
 			<div style={this.props.style}>
 				<Page>
 					{this.props.isLoading ? this.loadingRender() : this.searchRender()}
 				</Page>
 				{this.renderHeader()}
-				{this.renderTabs()}
+				{this.props.isLoading ? this.loadingRender() : this.renderTabs()}
+				{
+					// renderIf(shared && shared.foreverBanner && shared.foreverBanner.text)(
+					// 	<ForeverBanner
+					// 		color={shared.foreverBanner.text.background_color}
+					// 		show={this.state.notification.show}
+					// 		onClose={(e) => this.setState({ notification: { show: false } })}
+					// 		text1={shared.foreverBanner.text.text1}
+					// 		text2={shared.foreverBanner.text.text2}
+					// 		textColor={shared.foreverBanner.text.text_color}
+					// 		linkValue={shared.foreverBanner.target.url}
+					// 	/>
+					// )
+				}
+
 				<Navigation />
 
 				{this.props.scroller.loading}
@@ -245,8 +252,10 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = (props) => {
+	console.log(props);
 	const { shared, dispatch, cookies, location } = props;
 
+	const searchService = _.chain(shared).get('serviceUrl.product').value() || false;
 	const parsedUrl = queryString.parse(location.search);
 	const objParam = {
 		q: parsedUrl.query !== undefined ? parsedUrl.query : '',
@@ -259,7 +268,6 @@ const doAfterAnonymous = (props) => {
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
 
-	const searchService = _.chain(shared).get('serviceUrl.product').value() || false;
 	dispatch(new actions.initAction(cookies.get('user.token'), searchService, objParam));
 };
 
