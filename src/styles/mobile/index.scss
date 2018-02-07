@@ -30,7 +30,12 @@
 
 :global {
 	html {
+	  	text-rendering: geometricPrecision;
+	  	transform-style: preserve-3d;
+	  	backface-visibility: hidden;
+	  	-webkit-font-smoothing: antialiased;
 		-webkit-text-size-adjust: 100%;
+	  	-webkit-overflow-scrolling: touch;
 	}
 	html,
 	body {
@@ -39,7 +44,6 @@
 		height: 100%;
 		position: relative;
 		overflow-y: scroll;
-		-webkit-overflow-scrolling: touch;
 		color: color(--primary);
 		line-height: 20px;
 		background-color: #fff;
@@ -138,6 +142,14 @@
 				transition: opacity 0.3s ease;
 				height: 100%;
 			}
+		}
+
+		.child-wrapper {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+		  	right: 0px;
+		  	z-index: 11;
 		}
 
 		.font-small {

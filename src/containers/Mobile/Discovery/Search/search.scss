@@ -16,6 +16,12 @@
 	margin-bottom: 15px;
 	font-family: inherit;
 	letter-spacing: 1px;
+  	display: flex;
+  	flex-flow: row nowrap;
+}
+
+.delete{
+	margin-left: auto;
 }
 
 .list{
