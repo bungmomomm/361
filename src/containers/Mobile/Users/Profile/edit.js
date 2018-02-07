@@ -1,35 +1,52 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
-import { Page, Svg, Level, Image, Input } from '@/components/mobile';
+import { Page, Svg, Level, Image, Input, Button } from '@/components/mobile';
 import styles from './profile.scss';
 
-class UserProfileView extends Component {
+class UserProfileEdit extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
-			edit: false
+			edit: false,
+			ovoVerified: false
 		};
+		this.verifyOVO = this.verifyOVO.bind(this);
 	}
-
 	editProfile(e) {
 		e.preventDefault();
 		this.setState({ edit: true });
 	}
-
 	cancelProfile(e) {
 		e.preventDefault();
 		this.setState({ edit: false });
 	}
-
 	saveProfile(e) {
 		e.preventDefault();
 		this.setState({ edit: false });
 	}
+	verifyOVO(e) {
+		e.preventDefault();
+		this.props.history.push('/profile-edit-ovo');
+	}
+	renderOVO(enableInput) {
+		return (
+			this.state.ovoVerified ?
+				<div className='margin--medium'>
+					<label className={styles.label} htmlFor='ovoID'><span style={{ color: '#4E2688' }}>OVO ID</span></label>
+					<Input disabled={enableInput} id='ovoID' flat value='085975049209' />
+					<span style={{ color: '#4E2688', fontSize: '12px' }}>OVO ID anda telah terhubung</span>
+				</div> :
+				<div className='margin--medium'>
+					<Button color='primary' size='large' onClick={this.verifyOVO}>VERIFIKASI OVO ID</Button>
+				</div>
+		);
+	}
 
 	render() {
 		const enableInput = !this.state.edit;
+
 		return (
 			<Page>
 				<Level style={{ height: '55px' }}>
@@ -37,14 +54,11 @@ class UserProfileView extends Component {
 						{
 							this.state.edit ?
 								<Link style={{ color: '#A4A4A4' }} onClick={(e) => (this.cancelProfile(e))} to='#save'>BATAL</Link> :
-								<div>
-									<Link to='/profile'><Svg src='ico_arrow-back-left.svg' /></Link>
-									<Link to='/profile-edit-ovo'><Svg src='ico_arrow-back-left.svg' /></Link>
-								</div>
+								<Link to='/profile'><Svg src='ico_arrow-back-left.svg' /></Link>
 						}
 					</Level.Left>
 					<Level.Item style={{ alignItems: 'center' }}>
-						EDIT
+						{ this.state.edit ? 'Ubah Profil' : 'Informasi Akun' }
 					</Level.Item>
 					<Level.Right style={{ width: '80px' }}>
 						{
@@ -68,7 +82,7 @@ class UserProfileView extends Component {
 							<div className={styles.inputChangeInput}>
 								<Input disabled={enableInput} readOnly id='email' flat value='ynnsphlppks@icloud.com' />
 							</div>
-							{ this.state.edit ? <Link className={styles.inputChangeLink} to='#editEmail'>UBAH</Link> : null }
+							{ this.state.edit ? <Link className={styles.inputChangeLink} to='/profile-edit-email'>UBAH</Link> : null }
 						</div>
 					</div>
 					<div className='margin--medium'>
@@ -77,7 +91,7 @@ class UserProfileView extends Component {
 							<div className={styles.inputChangeInput}>
 								<Input disabled={enableInput} readOnly id='cellPhone' flat value='085975049209' />
 							</div>
-							{ this.state.edit ? <Link className={styles.inputChangeLink} to='#editCellPhone'>UBAH</Link> : null }
+							{ this.state.edit ? <Link className={styles.inputChangeLink} to='/profile-edit-hp'>UBAH</Link> : null }
 						</div>
 					</div>
 					<div className='margin--medium'>
@@ -97,17 +111,13 @@ class UserProfileView extends Component {
 							{ this.state.edit ? <Link className={styles.inputChangeLink} to='#editPassword'>UBAH</Link> : null }
 						</div>
 					</div>
-					<div className='margin--medium'>
-						<label className={styles.label} htmlFor='ovoID'><span style={{ color: '#4E2688' }}>OVO ID</span></label>
-						<Input disabled={enableInput} id='ovoID' flat value='085975049209' />
-						<span style={{ color: '#4E2688', fontSize: '12px' }}>OVO ID anda telah terhubung</span>
-					</div>
+					{ this.renderOVO(enableInput) }
 				</form>
 			</Page>
 		);
 	}
 }
 
-UserProfileView.defaultProps = {};
+UserProfileEdit.defaultProps = {};
 
-export default withCookies(UserProfileView);
+export default withCookies(UserProfileEdit);
