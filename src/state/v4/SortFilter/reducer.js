@@ -581,7 +581,7 @@ const actions = createActions({
 	UPDATE_FILTER_TYPE: (active, type) => ({ active, type }),
 	UPDATE_FILTER_COLOR: (active, color) => ({ active, color }),
 	UPDATE_FILTER_SIZE: (active, size) => ({ active, size }),
-	UPDATE_FILTER_PRICE: (active, min, max) => ({ active, min, max }),
+	UPDATE_FILTER_PRICE: (active, price, min, max) => ({ active, price, min, max }),
 	UPDATE_FILTER_LOCATION: (active, location) => ({ active, location }),
 	UPDATE_FILTER_SHIPPING: (active, shipping) => ({ active, shipping }),
 	UPDATE_FILTER_FAIL: (active, error) => ({ active, error }),
@@ -696,19 +696,25 @@ const reducer = handleActions({
 			facets
 		};
 	},
-	[actions.updateFilterPrice]: (state, action) => ({
-		...state,
-		filters: {
-			...state.filters,
-			price: {
-				active: action.payload.active,
-				value: {
-					...state.price.value,
-					...action.payload.price
-				}
+	[actions.updateFilterPrice]: (state, action) => {
+		const facetName = 'price';
+		const facets = _.map(state.facets, (facet) => {
+			if (facet.id === facetName) {
+				const results = _.map(facet.data, (value) => {
+					if (value.facetrange === action.payload[facetName].facetrange) {
+						value.is_selected = !value.is_selected;
+					}
+					return value;
+				});
+				facet.data = results;
 			}
-		}
-	}),
+			return facet;
+		});
+		return {
+			...state,
+			facets
+		};
+	},
 	[actions.updateFilterLocation]: (state, action) => {
 		const facetName = 'location';
 		const facets = _.map(state.facets, (facet) => {

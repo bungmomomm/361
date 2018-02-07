@@ -50,6 +50,9 @@ class Filter extends PureComponent {
 		let categories = _.filter(filters.facets, (f) => f.id === 'category')[0];
 		let productType = _.filter(filters.facets, (f) => f.id === 'custom_category_ids')[0];
 		const locations = _.filter(filters.facets, (f) => f.id === 'location')[0];
+		const price = _.filter(filters.facets, (f) => f.id === 'price')[0];
+		const prices = price.data;
+		const range = price.range;
 
 		categories = {
 			childs: categories.data
@@ -76,7 +79,7 @@ class Filter extends PureComponent {
 			return <Size {...state} filters={filters} onClick={(e, value) => this.onFilterSelected(e, 'size', value)} onClose={(e) => this.onFilterSectionClose()} />;
 		
 		case 'price':
-			return <Price {...state} filters={filters} />;
+			return <Price {...state} filters={filters} prices={prices} range={range} onClick={(e, value) => this.onFilterSelected(e, 'price', value)} onClose={(e) => this.onFilterSectionClose()} />;
 		
 		case 'location':
 			return <Location {...state} filters={filters} data={locations} onClick={(e, value) => this.onFilterSelected(e, 'location', value)} onClose={(e) => this.onFilterSectionClose()} />;

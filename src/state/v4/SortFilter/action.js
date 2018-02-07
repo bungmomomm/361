@@ -244,7 +244,7 @@ const doTest = (t) => dispatch => {
 	dispatch(actions.doTest(t));
 };
 
-const updateFilter = (type, value) => dispatch => {
+const updateFilter = (type, value, opt) => dispatch => {
 	console.log('updateFilter', type, value);
 	switch (type) {
 	case 'color':
@@ -261,6 +261,9 @@ const updateFilter = (type, value) => dispatch => {
 		break;
 	case 'location':
 		dispatch(actions.updateFilterLocation(true, value));
+		break;
+	case 'price':
+		dispatch(actions.updateFilterPrice(true, value));
 		break;
 	default:
 		break;
