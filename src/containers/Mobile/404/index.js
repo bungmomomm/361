@@ -4,6 +4,7 @@ import { Header, Page, Navigation, Svg } from '@/components/mobile';
 import styles from './search.scss';
 import { connect } from 'react-redux';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
+import { renderIf } from '@/utils';
 
 class Page404 extends PureComponent {
 	constructor(props) {
@@ -58,7 +59,7 @@ class Page404 extends PureComponent {
 				<Header.Modal {...HeaderPage} />
 				<Navigation active='Home' />
 				{
-					shared.foreverBanner.text ?
+					renderIf(shared && shared.foreverBanner && shared.foreverBanner.text)(
 						<ForeverBanner
 							color={shared.foreverBanner.text.background_color}
 							show={this.state.notification.show}
@@ -66,8 +67,9 @@ class Page404 extends PureComponent {
 							text1={shared.foreverBanner.text.text1}
 							text2={shared.foreverBanner.text.text2}
 							textColor={shared.foreverBanner.text.text_color}
+							linkValue={shared.foreverBanner.target.url}
 						/>
-						: ''
+					)
 				}
 			</div>
 		);
@@ -77,6 +79,7 @@ class Page404 extends PureComponent {
 const mapStateToProps = (state) => {
 	return {
 		keyword: state.search.keyword,
+		shared: state.shared
 	};
 };
 
