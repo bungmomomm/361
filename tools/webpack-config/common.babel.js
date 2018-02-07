@@ -7,15 +7,31 @@ import { mozjpeg, pngquant, svgo } from '../loaders/images';
 import files from '../loaders/files';
 
 const config = {
-	
+
 	module: {
-		
+
 		rules: [
 			{
 				enforce: 'pre',
-				exclude: /node_modules/,
+				exclude: [/node_modules/, /assets/],
 				loader: 'eslint-loader',
 				test: /\.js?$/
+			},
+			{
+				enforce: 'post',
+				test: /\.js?$/,
+				exclude: [/node_modules/, /assets/],
+				use: 'babel-loader'
+			},
+			{
+				enforce: 'pre',
+				test: /\.(js)$/i,
+				include: path.resolve(__dirname, '..', '..', 'src', 'assets', 'javascripts'),
+				loaders: [
+					files({
+						outputPath: 'assets/javascripts/'
+					})
+				]
 			},
 			{
 				enforce: 'pre',
@@ -33,7 +49,7 @@ const config = {
 							svgo
 						}
 					}
-				
+
 				]
 			},
 			{
@@ -49,12 +65,6 @@ const config = {
 						}
 					}
 				]
-			},
-			{
-				enforce: 'post',
-				test: /\.js?$/,
-				exclude: /node_modules/,
-				use: 'babel-loader'
 			},
 			{
 				test: /\.(ttf|eot|woff|woff2|svg)$/,
@@ -75,7 +85,7 @@ const config = {
 				]
 			}
 		]
-	
+
 	},
 
 	resolve: {
@@ -130,7 +140,7 @@ if (
 			}
 		})
 	);
-	
+
 	config.plugins.push(
 		new SWPrecacheWebpackPlugin({
 			verbose: true,
@@ -143,12 +153,12 @@ if (
 			]
 		})
 	);
-	
+
 	config.plugins.push(
 		new CopyWebpackPlugin([
-			{ 
+			{
 				from: path.resolve(__dirname, '..', '..', 'src', 'assets', 'manifest'),
-				to: path.resolve(__dirname, '..', '..', 'dist', 'public', 'assets', 'manifest') 
+				to: path.resolve(__dirname, '..', '..', 'dist', 'public', 'assets', 'manifest')
 			},
 		])
 	);
