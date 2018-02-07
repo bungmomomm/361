@@ -208,6 +208,7 @@ const applyFilter = (token, type, filters) => async (dispatch, getState) => {
 	const filterQuery = parseFilter(type, filters);
 	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || process.env.MICROSERVICES_URL;
 	const filterUrl = `${baseUrl}?${filterQuery}`;
+	console.log(filterUrl);
 	const [error, response] = await to(request({
 		token,
 		path: filterUrl,

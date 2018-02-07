@@ -79,7 +79,7 @@ class Filter extends PureComponent {
 			return <Size {...state} filters={filters} onClick={(e, value) => this.onFilterSelected(e, 'size', value)} onClose={(e) => this.onFilterSectionClose()} />;
 		
 		case 'price':
-			return <Price {...state} filters={filters} prices={prices} range={range} onClick={(e, value) => this.onFilterSelected(e, 'price', value)} onClose={(e) => this.onFilterSectionClose()} />;
+			return <Price {...state} filters={filters} prices={prices} range={range} onChange={(e, value) => this.onFilterSelected(e, 'pricerange', value)} onClick={(e, value) => this.onFilterSelected(e, 'price', value)} onClose={(e) => this.onFilterSectionClose()} />;
 		
 		case 'location':
 			return <Location {...state} filters={filters} data={locations} onClick={(e, value) => this.onFilterSelected(e, 'location', value)} onClose={(e) => this.onFilterSectionClose()} />;

@@ -8,10 +8,35 @@ class Slider extends PureComponent {
 		super(props);
 		this.state = {
 			value: {
-				min: 3,
-				max: 7,
+				min: 0 || props.value.min + 1,
+				max: 0 || props.value.max - 1
 			},
 		};
+	}
+
+	componentWillReceiveProps(nextProps) {
+		// console.log(nextProps.value);
+		if (typeof nextProps.value.min !== 'undefined' && (this.state.value.min !== nextProps.value.min || this.state.value.max !== nextProps.value.max)) {
+			this.setState({
+				value: nextProps.value
+			});
+		}
+	}
+
+	onChange(value) {
+		const { onChange } = this.props;
+		this.setState({ value });
+		if (typeof onChange !== 'undefined') {
+			onChange.apply(this, [value]);
+		}
+	}
+
+	onChangeComplete(value) {
+		const { onChangeComplete } = this.props;
+
+		if (typeof onChangeComplete !== 'undefined') {
+			onChangeComplete.apply(this, [value]);
+		}
 	}
 
 	render() {
@@ -30,8 +55,8 @@ class Slider extends PureComponent {
 					draggableTrack
 					maxValue={this.props.max}
 					minValue={this.props.min}
-					onChange={(value) => this.setState({ value })}
-					onChangeComplete={value => this.props.onChange(value)}
+					onChange={(value) => this.onChange(value)}
+					onChangeComplete={value => this.onChangeComplete(value)}
 					value={this.state.value}
 				/>
 			</div>

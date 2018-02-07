@@ -6,6 +6,29 @@ import Action from './action';
 import _ from 'lodash';
 
 class Price extends PureComponent {
+
+	constructor(props) {
+		super(props);
+		this.state = {
+			range: {
+				min: parseInt(props.range.min, 10),
+				max: parseInt(props.range.max, 10)
+			}
+		};
+	}
+
+	updateRange(value) {
+		const { onChange, range } = this.props;
+		this.setState({
+			range: {
+				min: Math.abs(value.min) < parseInt(range.max, 10) ? Math.abs(value.min) : parseInt(range.min, 10),
+				max: Math.abs(value.max) < parseInt(range.max, 10) ? Math.abs(value.max) : parseInt(range.max, 10),
+			}
+		});
+
+		onChange(undefined, value);
+	}
+
 	render() {
 		const { onClose, onClick, prices, range } = this.props;
 		const HeaderPage = {
@@ -23,20 +46,20 @@ class Price extends PureComponent {
 				<Page>
 					<div className={styles.priceSlider}>
 						<div className={styles.sliderLabel}>
-							<span>{range.min}</span>
-							<span>{range.max}</span>
+							<span>{this.state.range.min}</span>
+							<span>{this.state.range.max}</span>
 						</div>
-						<Slider min={range.min} max={range.max} onChange={(e) => console.log(e)} />
+						<Slider min={parseInt(range.min, 10)} max={parseInt(range.max, 10)} value={this.state.range} onChange={(value) => this.updateRange(value)} />
 						<div className={styles.sliderInfo}>
 							<span>min</span>
 							<span>max</span>
 						</div>
 					</div>
 					<div>
-						{ _.map(prices, (price) => {
+						{ _.map(prices, (price, id) => {
 							const icon = price.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
 							return (
-								<List><Button onClick={(e) => onClick(e, price)}><List.Content>{price.facetdisplay} {icon}</List.Content></Button></List>
+								<List key={id}><Button onClick={(e) => onClick(e, price)}><List.Content>{price.facetdisplay} {icon}</List.Content></Button></List>
 							);
 						})}
 					</div>
