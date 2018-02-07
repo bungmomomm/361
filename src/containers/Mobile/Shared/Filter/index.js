@@ -1,14 +1,14 @@
 import React, { PureComponent } from 'react';
 
-import Lists from './filterLayouts/lists';
-import ListsEnd from './filterLayouts/listsEnd';
-import Brands from './filterLayouts/brands';
-import Color from './filterLayouts/color';
-import Size from './filterLayouts/size';
-import Price from './filterLayouts/price';
-import Location from './filterLayouts/locations';
-import TreeSegment from './filterLayouts/treeSegment';
-import Result from './filterLayouts/result';
+import Lists from './layouts/lists';
+import ListsEnd from './layouts/listsEnd';
+import Brands from './layouts/brands';
+import Color from './layouts/color';
+import Size from './layouts/size';
+import Price from './layouts/price';
+import Location from './layouts/locations';
+import TreeSegment from './layouts/treeSegment';
+import Result from './layouts/result';
 
 import _ from 'lodash';
 

@@ -33,7 +33,6 @@ let UserRegisteredPhoneValidation = defRoute;
 // let NewArrival = defRoute;
 // let Recommended = defRoute;
 let ForgotPassword = defRoute;
-let FilterCategory = defRoute;
 let Filters = defRoute;
 let Promo = defRoute;
 let UserProfile = defRoute;
@@ -61,7 +60,6 @@ if (isMobile()) {
 	SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
 	Brands = loadable(() => import('@/containers/Mobile/Discovery/Brands'));
 	CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
-	FilterCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog/filter'));
 
 	Filters = loadable(() => import('@/containers/Mobile/Filters'));
 
@@ -135,9 +133,6 @@ export default [
 	}, {
 		path: '/catalogcategory',
 		component: CatalogCategory
-	}, {
-		path: '/filterCategory',
-		component: FilterCategory
 	}, {
 		path: '/lovelist',
 		component: Lovelist,

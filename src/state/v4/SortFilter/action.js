@@ -1,7 +1,8 @@
 import { actions } from './reducer';
-// import { request } from '@/utils';
+import { request } from '@/utils';
 import _ from 'lodash';
-// import querystring from 'querystring';
+import querystring from 'querystring';
+import { to } from 'await-to-js';
 
 const fqMap = {
 	size: 'size',
@@ -62,22 +63,8 @@ const getFq = (filters) => {
 		}
 		fq[facetName] = [];
 		switch (facetName) {
-		// case 'brand':
-		// 	// there brand map,
-		// 	// get group brand
-		// 	_.forEach(facetCollection.data, (group) => {
-		// 		group.brands.forEach((facetData) => {
-		// 			if (facetData.is_selected) {
-		// 				fq[facetName].push(facetData.facetrange);
-		// 			} else {
-		// 				_.remove(fq[facetName], (v) => {
-		// 					return v === facetData.facetrange;
-		// 				});
-		// 			}
-		// 		});
-		// 	});
-		// 	break;
 		case 'category':
+		case 'custom_category_ids':
 			// child category
 			categories = getCategoryFq(categories, facetCollection.data);
 			_.forEach(categories, (facetData) => {
@@ -92,6 +79,15 @@ const getFq = (filters) => {
 			break;
 		case 'price':
 			// range
+			_.forEach(facetCollection.data, (facetData) => {
+				if (facetData.is_selected) {
+					fq[facetName].push(facetData.facetrange);
+				} else {
+					_.remove(fq[facetName], (v) => {
+						return v === facetData.facetrange;
+					});
+				}
+			});
 			break;
 		default:
 			_.forEach(facetCollection.data, (facetData) => {
@@ -160,8 +156,8 @@ const parseFilter = (type, filters) => {
 	// per_page = per_page
 	// fq = fq
 	// sort = sort
-	return urlFilter;
-	// return querystring.stringify(urlFilter);
+	// return urlFilter;
+	return querystring.stringify(urlFilter);
 };
 
 const parseDataToFilter = (data) => {
@@ -206,37 +202,34 @@ const parseDataToFilter = (data) => {
  * type should be, category, branch, store
  */
 
-const applyFilter = (token, type, filters) => async dispatch => {
+const applyFilter = (token, type, filters) => async (dispatch, getState) => {
 	dispatch(actions.updateFilter());
+	const { shared } = getState();
 	const filterQuery = parseFilter(type, filters);
-	console.log(filterQuery);
-	/*
-	const filterUrl = `${process.env.MICROSERVICES_URL}categories/products?${filterQuery}`;
-	try {
-		const response = await request({
-			token,
-			path: filterUrl,
-			method: 'GET',
-			fullPath: true
-		});
+	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || process.env.MICROSERVICES_URL;
+	const filterUrl = `${baseUrl}?${filterQuery}`;
+	const [error, response] = await to(request({
+		token,
+		path: filterUrl,
+		method: 'GET',
+		fullPath: true
+	}));
 
-		if (response.code === 200) {
-			// dispatch(actions)
-			filters = parseDataToFilter(response.data);
-			dispatch(actions.updateFilterSuccess(filters));
-			return Promise.resolve({
-				data: response.data
-			});
-		}
-		const error = new Error(response.error_message);
-		dispatch(actions.updateFilterFail(error));
-		return Promise.reject(error);
-	} catch (error) {
-		console.log(error);
+	if (error) {
 		dispatch(actions.updateFilterFail(error));
 		return Promise.reject(error);
 	}
-	*/
+
+	if (response.code === 200) {
+		filters = parseDataToFilter(response.data);
+		dispatch(actions.updateFilterSuccess(filters));
+		return Promise.resolve({
+			data: response.data
+		});
+	}
+	const errorMessage = new Error(response.error_message);
+	dispatch(actions.updateFilterFail(errorMessage));
+	return Promise.reject(errorMessage);
 };
 
 const doTest = (t) => dispatch => {
@@ -245,7 +238,6 @@ const doTest = (t) => dispatch => {
 };
 
 const updateFilter = (type, value, opt) => dispatch => {
-	console.log('updateFilter', type, value);
 	switch (type) {
 	case 'color':
 		dispatch(actions.updateFilterColor(true, value));
