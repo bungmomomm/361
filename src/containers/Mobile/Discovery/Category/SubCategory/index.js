@@ -4,7 +4,6 @@ import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import {
 	Header,
-	// Tabs,
 	Divider,
 	Svg,
 	Page,
@@ -13,8 +12,6 @@ import {
 	Navigation
 } from '@/components/mobile';
 import { actions as categoryActions } from '@/state/v4/Category';
-// import * as C from '@/constants';
-// import styles from './subCategory.scss';
 
 class SubCategory extends Component {
 	constructor(props) {
@@ -23,7 +20,8 @@ class SubCategory extends Component {
 		this.state = {
 			category: {}
 		};
-
+		this.categoryLvl2 = props.match.params.categoryLvl2;
+		this.categoryLvl3 = props.match.params.categoryLvl3;
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.source = this.props.cookies.get('user.source');
@@ -40,8 +38,10 @@ class SubCategory extends Component {
 	}
 
 	setParentCategory(props = this.props) {
-		const categoryId = props.match.params.categoryId;
-		const category = props.category.data.filter(e => e.id === categoryId)[0];
+		let category = props.category.data.filter(e => e.id === this.categoryLvl2)[0];
+		category = (this.categoryLvl3 !== undefined) ?
+			category.sub_categories.filter(e => e.id === this.categoryLvl3)[0] : category;
+		console.log('last category', category);
 		if (category) {
 			this.setState({
 				category
@@ -57,32 +57,43 @@ class SubCategory extends Component {
 		const { category } = this.state;
 		const HeaderPage = {
 			left: (
-				<Link to='/category'>
+				<button onClick={this.props.history.goBack}>
 					<Svg src='ico_arrow-back-left.svg' />
-				</Link>
-			), 
+				</button>
+			),
 			center: category.title || '',
 			right: null
 		};
+
+		const listCategory = category.sub_categories &&	category.sub_categories.map((cat, key) => {
+			let list = null;
+			if (this.categoryLvl3 === undefined) {
+				list = (
+					<List key={key}>
+						<Link to={`/subcategory/${this.categoryLvl2}/${cat.id}`}>
+							<List.Image><Image width={40} height={40} avatar src={cat.image_url} /></List.Image>
+							<List.Content>{cat.title}</List.Content>
+						</Link>
+					</List>
+				);
+			} else {
+				list = (
+					<List key={key}>
+						<Link to={`/p-${cat.id}/${cat.title}`}>
+							<List.Image><Image width={40} height={40} avatar src={cat.image_url} /></List.Image>
+							<List.Content>{cat.title}</List.Content>
+						</Link>
+					</List>
+				);
+			}
+			return list;
+		});
 
 		return (
 			<div style={this.props.style}>
 				<Page>
 					<Divider>Shop by Products</Divider>
-					{ this.props.category.loading ? 'Loading...' : '' }
-					{
-						category.sub_categories && 
-						category.sub_categories.map((cat, key) => {
-							return (
-								<List key={key}>
-									<Link to={`/category/${cat.id}`}>
-										<List.Image><Image width={40} height={40} avatar src={cat.image_url} /></List.Image>
-										<List.Content>{cat.title}</List.Content>
-									</Link>
-								</List>
-							);
-						})
-					}
+					{ this.props.category.loading ? 'Loading...' : listCategory }
 					<Divider>Featured Brands</Divider>
 					<List>
 						<Link to='/catalogcategory'>

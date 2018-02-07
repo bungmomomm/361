@@ -18,7 +18,7 @@ class Category extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			current: 1,
+			current: 'wanita',
 			notification: {
 				show: true
 			}
@@ -30,7 +30,7 @@ class Category extends Component {
 
 	componentWillMount() {
 		const { dispatch } = this.props;
-		dispatch(new homeActions.initAction({ token: this.userCookies }));	
+		dispatch(new homeActions.initAction({ token: this.userCookies }));
 		this.getCategory();
 	}
 
@@ -40,14 +40,39 @@ class Category extends Component {
 	}
 
 	handlePick(current) {
+		const { segmen } = this.props.home;
+		const willActiveSegment = segmen.find(e => e.id === current);
 		if (current !== this.state.current) {
-			this.setState({ current });
+			this.setState({ current: willActiveSegment.key });
 			this.getCategory(current);
 		}
 	}
 
 	render() {
 		const { category } = this.props;
+
+		const loading = (<div>Loading...</div>);
+
+		const categories = category.data.map((cat, key) => {
+			let url = cat.link;
+			switch (cat.type) {
+			case 'brand':
+				url = '/brands';
+				break;
+			case 'category':
+				url = `/subcategory/${cat.id}`;
+				break;
+			default:
+				url = '/category';
+				break;
+			}
+			return (
+				<Link to={url} key={key} className={styles.list}>
+					<Image src={cat.image_url} />
+					<div className={styles.label}>{cat.title}</div>
+				</Link>);
+		});
+
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -57,27 +82,7 @@ class Category extends Component {
 						onPick={(e) => this.handlePick(e)}
 					/>
 					<div>
-						{ category.loading ? 'Loading...' : '' }
-						{
-							category.data.map((cat, key) => {
-								let url = cat.link;
-								switch (cat.type) {
-								case 'brand':
-									url = '/brands';
-									break;
-								case 'category':
-									url = `/subcategory/${cat.id}`;
-									break;
-								default: 
-									break;
-								}
-								return (
-									<Link to={url} key={key} className={styles.list}>
-										<Image src={cat.image_url} />
-										<div className={styles.label}>{cat.title}</div>
-									</Link>);
-							})
-						}
+						{ category.loading ? loading : categories }
 					</div>
 				</Page>
 				<Header />

@@ -116,14 +116,17 @@ export default [
 		component: SearchNotFound
 	},
 	{
-		path: '/category',
+		path: '/category', // Category Menu
 		component: Category,
 		exact: true
 	}, {
-		path: '/category/:categoryId',	// for temporary PCP
+		path: '/category/:categoryId',
 		component: Category,
 	}, {
-		path: '/subcategory/:categoryId',
+		path: '/subcategory/:categoryLvl2/:categoryLvl3',
+		component: SubCategory,
+	}, {
+		path: '/subcategory/:categoryLvl2',
 		component: SubCategory,
 	}, {
 		path: '/brands',
