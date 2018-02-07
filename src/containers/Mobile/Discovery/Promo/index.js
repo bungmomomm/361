@@ -39,11 +39,6 @@ class Promo extends Component {
 		this.promoType = this.props.location.pathname.replace('/', '');
 	}
 
-	componentDidMount() {
-		const { dispatch } = this.props;
-		dispatch(actions.promoAction({ token: this.userCookies, promoType: this.promoType }));
-	}
-
 	getProductListContent() {
 		const { discovery } = this.props;
 		const { listTypeGrid } = this.state;
@@ -143,11 +138,22 @@ class Promo extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		discovery: {
-			loading: state.discovery.loading,
-			promo: state.discovery.promo
-		}
+		...state
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(Scroller(Promo))));
+const doAfterAnonymous = (props) => {
+	const { dispatch, cookies, location, home } = props;
+	const filtr = home.segmen.filter((obj) => {
+		return obj.key === home.activeSegment;
+	});
+
+	const query = filtr && filtr[0] ? { segment_id: filtr[0].id } : {};
+	dispatch(actions.promoAction({
+		token: cookies.get('user.token'),
+		promoType: location.pathname.replace('/', ''),
+		query
+	}));
+};
+
+export default withCookies(connect(mapStateToProps)(Scroller(Shared(Promo, doAfterAnonymous))));
