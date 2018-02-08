@@ -2,9 +2,8 @@ import { handleActions, createActions } from 'redux-actions';
 
 const initialState = {
 	isLoading: false,
-	searchStatus: '',
-	searchParam: [],
-	searchData: {
+	pcpStatus: '',
+	pcpData: {
 		links: [],
 		info: [],
 		facets: [],
@@ -13,24 +12,21 @@ const initialState = {
 	}
 };
 
-const { setLoading, initSearch } = createActions(
-	'SET_LOADING', 'INIT_SEARCH'
+const { setLoading, initPcp } = createActions(
+	'SET_LOADING', 'INIT_PCP'
 );
 
 const reducer = handleActions({
 	[setLoading](state, { payload: { isLoading } }) {
 		return {
-			...state,
 			isLoading
 		};
 	},
-	[initSearch](state, { payload: { isLoading, searchStatus, searchParam, searchData } }) {
+	[initPcp](state, { payload: { isLoading, pcpStatus, pcpData } }) {
 		return {
-			...state,
 			isLoading,
-			searchStatus,
-			searchParam,
-			searchData
+			pcpStatus,
+			pcpData
 		};
 	}
 }, initialState);
@@ -38,5 +34,5 @@ const reducer = handleActions({
 export default {
 	reducer, 
 	setLoading,
-	initSearch
+	initPcp
 };

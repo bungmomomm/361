@@ -1,0 +1,14 @@
+
+<svg width="10px" height="14px" viewBox="0 0 10 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="02_Shopping-Bag" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linejoin="round">
+        <g transform="translate(-222.000000, -352.000000)" id="delete" stroke="#A4A4A4">
+            <g transform="translate(222.000000, 353.000000)">
+                <path d="M7.78193333,11.59986 L1.86926667,11.59986 C1.2746,11.59986 0.7926,11.16606 0.7926,10.63086 L0.7926,2.55186 L8.8586,2.55186 L8.8586,10.63086 C8.8586,11.16606 8.3766,11.59986 7.78193333,11.59986 Z" id="Stroke-1" fill="#FFFFFF"></path>
+                <path d="M6.25,4.28571429 L6.25,10.0547143" id="Stroke-5"></path>
+                <path d="M3.33333333,4.28571429 L3.33333333,10.0547143" id="Stroke-7"></path>
+                <path d="M2.97593333,1.77486 C2.97593333,0.96006 3.80393333,0.30006 4.82526667,0.30006 C5.84726667,0.30006 6.67526667,0.96006 6.67526667,1.77486" id="Stroke-9"></path>
+                <path d="M6.66666667e-05,2.5521 L9.6514,2.5521" id="Stroke-11"></path>
+            </g>
+        </g>
+    </g>
+</svg>

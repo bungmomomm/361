@@ -73,9 +73,11 @@ class SubCategory extends Component {
 					{
 						category.sub_categories && 
 						category.sub_categories.map((cat, key) => {
+							const categorySlug = cat.title.replace(/ /g, '-').toLowerCase();
+							
 							return (
 								<List key={key}>
-									<Link to={`/category/${cat.id}`}>
+									<Link to={`/p-${cat.id}/${categorySlug}`}>
 										<List.Image><Image width={40} height={40} avatar src={cat.image_url} /></List.Image>
 										<List.Content>{cat.title}</List.Content>
 									</Link>

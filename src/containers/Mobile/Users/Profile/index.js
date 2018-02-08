@@ -8,10 +8,6 @@ class UserProfile extends Component {
 		super(props);
 		this.props = props;
 	}
-	onChange() {
-		console.log(this);
-		console.log('eeee');
-	}
 
 	render() {
 		return (

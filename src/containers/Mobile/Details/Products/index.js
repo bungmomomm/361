@@ -198,9 +198,9 @@ class Products extends Component {
 										<div className='font-medium'>Ulasan</div>
 										<Link className='font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >See All</span> <Svg src='ico_chevron-right.svg' /></Link>
 									</div>
-									<Comment />
-									<Comment />
-									<Comment />
+									<Comment type='review' />
+									<Comment type='review' />
+									<Comment type='review' />
 								</div>
 							</div>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>

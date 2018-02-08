@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import classNames from 'classnames';
 import styles from './panel.scss';
 
-class List extends PureComponent {
+class Panel extends PureComponent {
 	render() {
 		const { children, className, ...props } = this.props;
 
@@ -17,19 +17,19 @@ class List extends PureComponent {
 	}
 }
 
-const Header = ({ children, ...props }) => {
+const Header = ({ children, className, ...props }) => {
 	return (
-		<div {...props} className={styles.header}>{children}</div>
+		<div {...props} className={classNames(styles.header, className)}>{children}</div>
 	);
 };
 
-const Content = ({ children, ...props }) => {
+const Content = ({ children, className, ...props }) => {
 	return (
-		<div {...props} className={styles.content}>{children}</div>
+		<div {...props} className={classNames(styles.content, className)}>{children}</div>
 	);
 };
 
-List.Header = Header;
-List.Content = Content;
+Panel.Header = Header;
+Panel.Content = Content;
 
-export default List;
+export default Panel;

@@ -5,13 +5,15 @@ import { handleActions, createActions } from 'redux-actions';
 const initialState = {
 	totalLovelist: 0,
 	totalCart: 0,
-	foreverBanner: {}
+	foreverBanner: {},
+	current: 'wanita'
 };
 
-const { totalLoveList, totalBag, forEverBanner } = createActions(
+const { totalLoveList, totalBag, forEverBanner, currentTab } = createActions(
 	'TOTAL_LOVE_LIST',
 	'TOTAL_BAG',
-	'FOR_EVER_BANNER'
+	'FOR_EVER_BANNER',
+	'CURRENT_TAB'
 );
 
 const reducer = handleActions({
@@ -34,11 +36,18 @@ const reducer = handleActions({
 			serviceUrl
 		};
 	},
+	[currentTab](state, { payload: { current } }) {
+		return {
+			...state, 
+			current
+		};
+	}
 }, initialState);
 
 export default {
 	reducer, 
 	totalBag, 
 	totalLoveList,
-	forEverBanner
+	forEverBanner,
+	currentTab
 };
