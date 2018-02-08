@@ -9,32 +9,25 @@ import stylesCatalog from '../Category/Catalog/catalog.scss';
 // import _ from 'lodash';
 
 class Seller extends Component {
-	constructor(props) {
-		super(props);
-		this.props = props;
-		this.currentListState = 0;
-		this.listType = [{
-			type: 'grid',
-			icon: 'ico_list.svg'
-		}, {
-			type: 'list',
-			icon: 'ico_grid.svg'
-		}];
 
-		this.state = {
-			listTypeState: this.listType[this.currentListState]
-		};
+	static currentListState = 0;
+	static listType = [{
+		type: 'grid',
+		icon: 'ico_list.svg'
+	}, {
+		type: 'list',
+		icon: 'ico_grid.svg'
+	}];
 
-		this.handlePick = this.handlePick.bind(this);
-		this.loadProducts = this.loadProducts.bind(this);
-		this.renderList = this.renderList.bind(this);
-	}
+	state = {
+		listTypeState: Seller.listType[Seller.currentListState]
+	};
 
-	handlePick(e) {
+	handlePick = (e) => {
 		switch (e) {
 		case 'view':
-			this.currentListState = this.currentListState === 1 ? 0 : this.currentListState + 1;
-			this.setState({ listTypeState: this.listType[this.currentListState] });
+			Seller.currentListState = Seller.currentListState === 1 ? 0 : Seller.currentListState + 1;
+			this.setState({ listTypeState: Seller.listType[Seller.currentListState] });
 			break;
 		case 'filter':
 			this.props.history.push('/filterCategory');
@@ -44,7 +37,7 @@ class Seller extends Component {
 		}
 	}
 
-	loadProducts(products) {
+	loadProducts = (products) => {
 		if (products.length > 0) {
 			return (
 				<div className={stylesCatalog.cardContainer}>
@@ -60,7 +53,7 @@ class Seller extends Component {
 		return null;
 	}
 
-	renderList(productData, index) {
+	renderList = (productData, index) => {
 		if (productData) {
 			const renderBlockComment = (
 				<div className={stylesCatalog.commentBlock}>
