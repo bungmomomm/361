@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styles from './page.scss';
 import Modal from '../Modal';
+import Select from '../Select';
 import _ from 'lodash';
 
 class Page extends Component {
@@ -60,6 +61,7 @@ class Page extends Component {
 					{this.props.children}
 				</div>
 				<Modal />
+				<Select />
 			</div>
 		);
 	}

@@ -20,6 +20,8 @@ import Slider from './Slider';
 import Panel from './Panel';
 import Comment from './Comment';
 import Radio from './Radio';
+import Select from './Select';
+import Table from './Table';
 
 export default {
 	Badge,
@@ -43,5 +45,7 @@ export default {
 	Modal,
 	Panel,
 	Radio,
-	Comment
+	Comment,
+	Select,
+	Table
 };

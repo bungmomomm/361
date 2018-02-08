@@ -12,7 +12,7 @@ class CatalogSmall extends PureComponent {
 
 		return (
 			<div className={createClassName} {...props}>
-				<Image src={images[0].mobile} alt='product' />
+				<Image src={images[0].thumbnail} alt='product' />
 				<Button color='secondary' size='small' transparent>{pricing.formatted.effective_price}</Button>
 			</div>
 		);

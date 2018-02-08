@@ -20,12 +20,15 @@ let SearchResults = defRoute;
 let SearchNotFound = defRoute;
 let Category = defRoute;
 let SubCategory = defRoute;
+let ProductCategory = defRoute;
 let Brands = defRoute;
 let CatalogCategory = defRoute;
 let Lovelist = defRoute;
 let Hashtags = defRoute;
 let HashtagsDetails = defRoute;
 let Products = defRoute;
+let ProductsComments = defRoute;
+let ProductsGuide = defRoute;
 let UserLogin = defRoute;
 let UserRegister = defRoute;
 let UserRegistered = defRoute;
@@ -40,6 +43,7 @@ let UserProfileEdit = defRoute;
 let UserProfileEditOVO = defRoute;
 let UserProfileEditHP = defRoute;
 let UserProfileEditEmail = defRoute;
+let Cart = defRoute;
 
 if (isMobile()) {
 	/**
@@ -58,6 +62,7 @@ if (isMobile()) {
 	Hashtags = loadable(() => import('@/containers/Mobile/Discovery/Hashtags'));
 	Category = loadable(() => import('@/containers/Mobile/Discovery/Category'));
 	SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
+	ProductCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Product'));
 	Brands = loadable(() => import('@/containers/Mobile/Discovery/Brands'));
 	CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
 
@@ -68,6 +73,13 @@ if (isMobile()) {
 
 	// PDP
 	Products = loadable(() => import('@/containers/Mobile/Details/Products'));
+	
+	// Shopping-bag
+	Cart = loadable(() => import('@/containers/Mobile/Cart'));
+
+	ProductsComments = loadable(() => import('@/containers/Mobile/Details/Products/Comments'));
+	ProductsGuide = loadable(() => import('@/containers/Mobile/Details/Products/Guide'));
+
 	// Users
 	UserLogin = loadable(() => import('@/containers/Mobile/Users/Login'));
 	ForgotPassword = loadable(() => import('@/containers/Mobile/Users/Login/forgotPassword'));
@@ -123,8 +135,8 @@ export default {
 			exact: true
 		},
 		{
-			path: '/category/:categoryId',	// for temporary PCP
-			component: Category,
+			path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9]+)',
+			component: ProductCategory
 		},
 		{
 			path: '/subcategory/:categoryId',
@@ -146,9 +158,16 @@ export default {
 		{
 			path: '/lovelist',
 			component: Lovelist,
-			exact: true
 		},
 		{
+			path: '/product/comments/:id',
+			component: ProductsComments,
+			exact: true
+		}, {
+			path: '/product/guide',
+			component: ProductsGuide,
+			exact: true
+		}, {
 			path: '/product/:id',
 			component: Products,
 			exact: true
@@ -199,8 +218,16 @@ export default {
 			component: UserProfile
 		},
 		{
-			path: '/profile-*',
-			component: UserProfile
+			path: '/profile-edit',
+			component: UserProfileEdit,
+		},
+		{
+			path: '/profile-edit-*',
+			component: UserProfileEdit,
+		},
+		{
+			path: '/cart',
+			component: Cart
 		},
 		{
 			path: '/*', // Page not found handling.
@@ -210,24 +237,16 @@ export default {
 	],
 	child: [
 		{
-			path: '/profile-edit',
-			component: UserProfileEdit,
-			child: true
-		},
-		{
 			path: '/profile-edit-ovo',
-			component: UserProfileEditOVO,
-			child: true
+			component: UserProfileEditOVO
 		},
 		{
 			path: '/profile-edit-hp',
-			component: UserProfileEditHP,
-			child: true
+			component: UserProfileEditHP
 		},
 		{
 			path: '/profile-edit-email',
-			component: UserProfileEditEmail,
-			child: true
+			component: UserProfileEditEmail
 		}
 	]
 };
