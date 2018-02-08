@@ -27,6 +27,8 @@ let Lovelist = defRoute;
 let Hashtags = defRoute;
 let HashtagsDetails = defRoute;
 let Products = defRoute;
+let ProductsComments = defRoute;
+let ProductsGuide = defRoute;
 let UserLogin = defRoute;
 let UserRegister = defRoute;
 let UserRegistered = defRoute;
@@ -69,6 +71,8 @@ if (isMobile()) {
 
 	// PDP
 	Products = loadable(() => import('@/containers/Mobile/Details/Products'));
+	ProductsComments = loadable(() => import('@/containers/Mobile/Details/Products/Comments'));
+	ProductsGuide = loadable(() => import('@/containers/Mobile/Details/Products/Guide'));
 	// Users
 	UserLogin = loadable(() => import('@/containers/Mobile/Users/Login'));
 	ForgotPassword = loadable(() => import('@/containers/Mobile/Users/Login/forgotPassword'));
@@ -143,13 +147,15 @@ export default {
 		{
 			path: '/filterCategory',
 			component: FilterCategory
-		},
-		{
-			path: '/lovelist',
-			component: Lovelist,
+		}, {
+			path: '/product/comments/:id',
+			component: ProductsComments,
 			exact: true
-		},
-		{
+		}, {
+			path: '/product/guide',
+			component: ProductsGuide,
+			exact: true
+		}, {
 			path: '/product/:id',
 			component: Products,
 			exact: true
