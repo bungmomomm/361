@@ -49,6 +49,13 @@ class Filter extends PureComponent {
 		onUpdateFilter(e, type, value);
 	}
 
+	onApply(e) {
+		this.setState({
+			layout: 'result'
+		});
+		this.props.onClose(e);
+	}
+
 	getFacet(key) {
 		const facet = _.first(_.filter(this.props.filters.facets, (f) => (f.id === key)));
 		if (typeof facet !== 'undefined') {
@@ -67,7 +74,7 @@ class Filter extends PureComponent {
 
 	render() {
 		const { layout, ...state } = this.state;
-		const { onApply, onReset, filters, shown } = this.props;
+		const { onReset, filters, shown } = this.props;
 
 		const categories = this.getFacet('category');
 		const customCategoryType = this.getFacet('custom_category_ids');
@@ -171,7 +178,7 @@ class Filter extends PureComponent {
 						{...state} 
 						filters={filters}
 						onReset={onReset} 
-						onApply={onApply} 
+						onApply={(e) => this.onApply(e)} 
 						onListClick={(e, key) => this.onListClick(e, key)} 
 						onClose={(e) => this.onFilterSectionClose()} 
 					/>
