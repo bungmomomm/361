@@ -182,17 +182,12 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = (props) => {
 	const { dispatch, cookies, match: { params } } = props;
-	dispatch(actions.initSeller(cookies.get('user.token'), params.store_id || 0))
-	.then(resp => {
-		if (resp) {
-			dispatch(actions.getProducts({
-				token: cookies.get('user.token'),
-				query: {
-					store_id: params.store_id || 0
-				}
-			}));
-		}
-	});
+	const data = {
+		token: cookies.get('user.token'),
+		query: { store_id: params.store_id || 0 }
+	};
+	dispatch(actions.initSeller(data.token, data.query.store_id));
+	dispatch(actions.getProducts(data));
 };
 
 export default connect(mapStateToProps)(withCookies(Scroller(Shared(Seller, doAfterAnonymous))));
