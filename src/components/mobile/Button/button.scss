@@ -11,6 +11,7 @@
   border: 0;
   outline: none;
   font-size: inherit;
+  font-family: font-family('lato-normal');
   &[disabled] {
     opacity: .4;
   }
