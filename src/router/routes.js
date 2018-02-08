@@ -20,6 +20,7 @@ let SearchResults = defRoute;
 let SearchNotFound = defRoute;
 let Category = defRoute;
 let SubCategory = defRoute;
+let ProductCategory = defRoute;
 let Brands = defRoute;
 let CatalogCategory = defRoute;
 let Lovelist = defRoute;
@@ -58,6 +59,7 @@ if (isMobile()) {
 	Hashtags = loadable(() => import('@/containers/Mobile/Discovery/Hashtags'));
 	Category = loadable(() => import('@/containers/Mobile/Discovery/Category'));
 	SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
+	ProductCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Product'));
 	Brands = loadable(() => import('@/containers/Mobile/Discovery/Brands'));
 	CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
 	FilterCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog/filter'));
@@ -122,8 +124,8 @@ export default {
 			exact: true
 		},
 		{
-			path: '/category/:categoryId',	// for temporary PCP
-			component: Category,
+			path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9]+)',
+			component: ProductCategory
 		},
 		{
 			path: '/subcategory/:categoryId',
