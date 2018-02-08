@@ -212,8 +212,12 @@ export default {
 			component: UserProfile
 		},
 		{
-			path: '/profile-*',
-			component: UserProfile
+			path: '/profile-edit',
+			component: UserProfileEdit,
+		},
+		{
+			path: '/profile-edit-*',
+			component: UserProfileEdit,
 		},
 		{
 			path: '/cart',
@@ -227,24 +231,16 @@ export default {
 	],
 	child: [
 		{
-			path: '/profile-edit',
-			component: UserProfileEdit,
-			child: true
-		},
-		{
 			path: '/profile-edit-ovo',
-			component: UserProfileEditOVO,
-			child: true
+			component: UserProfileEditOVO
 		},
 		{
 			path: '/profile-edit-hp',
-			component: UserProfileEditHP,
-			child: true
+			component: UserProfileEditHP
 		},
 		{
 			path: '/profile-edit-email',
-			component: UserProfileEditEmail,
-			child: true
+			component: UserProfileEditEmail
 		}
 	]
 };
