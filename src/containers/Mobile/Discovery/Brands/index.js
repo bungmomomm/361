@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
+import _ from 'lodash';
 import {
 	Header,
 	Button,
@@ -17,7 +18,6 @@ import C from '@/constants';
 import styles from './brands.scss';
 import { actions } from '@/state/v4/Brand';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-import { renderIf } from '@/utils';
 
 class Brands extends Component {
 	constructor(props) {
@@ -162,6 +162,25 @@ class Brands extends Component {
 		);
 	}
 
+	renderForeverBanner() {
+		const { shared } = this.props;
+		if (!_.isEmpty(shared.foreverBanner)) {
+			return (
+				<ForeverBanner
+					color={shared.foreverBanner.text.background_color}
+					show={this.state.notification.show}
+					onClose={(e) => this.setState({ notification: { show: false } })}
+					text1={shared.foreverBanner.text.text1}
+					text2={shared.foreverBanner.text.text2}
+					textColor={shared.foreverBanner.text.text_color}
+					// linkValue={shared.foreverBanner.target.url}
+				/>
+			);
+		}
+
+		return null;
+	}
+
 	render() {
 		const HeaderPage = {
 			left: (
@@ -172,23 +191,11 @@ class Brands extends Component {
 			center: 'Brands',
 			right: null
 		};
-		const { shared } = this.props;
+		
 		return (
 			<div style={this.props.style}>
 				<Page>
-					{
-						renderIf(shared && shared.foreverBanner && shared.foreverBanner.text)(
-							<ForeverBanner
-								color={shared.foreverBanner.text.background_color}
-								show={this.state.notification.show}
-								onClose={(e) => this.setState({ notification: { show: false } })}
-								text1={shared.foreverBanner.text.text1}
-								text2={shared.foreverBanner.text.text2}
-								textColor={shared.foreverBanner.text.text_color}
-								linkValue={shared.foreverBanner.target.url}
-							/>
-						)
-					}
+					{ this.renderForeverBanner() }
 					<div className={styles.filter}>
 						<Level>
 							<Level.Item className={styles.center}>
