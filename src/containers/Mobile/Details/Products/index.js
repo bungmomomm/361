@@ -49,20 +49,34 @@ class Products extends Component {
 		this.handleScroll = this.handleScroll.bind(this);
 		this.state = {
 			size: 's',
-			showScrollInfomation: false
+			showScrollInfomation: false,
+			detail: {},
+			cardProduct: false,
 		};
 	}
-	
 
 	componentDidMount() {
 		const { dispatch, match } = this.props;
-		dispatch(new productActions.productDetailAction(this.userCookies, match.params.id));
+		const productId = match.params.id;
+		dispatch(new productActions.productDetailAction(this.userCookies, productId));
 		dispatch(new productActions.productRecommendationAction(this.userCookies));
 		dispatch(new productActions.productSimilarAction(this.userCookies));
-		dispatch(new productActions.productSocialSummaryAction(this.userCookies));
+		dispatch(new productActions.productSocialSummaryAction(this.userCookies, productId));
 		dispatch(new commentActions.productCommentAction(this.userCookies));
 		window.addEventListener('scroll', this.handleScroll, true);
 	}
+
+	componentWillReceiveProps(nextProps) {
+		if (this.state.detail !== nextProps.product.detail && Object.keys(nextProps.product.detail).length > 0) {
+			const { product } = nextProps;
+			const cardData = productActions.getProductCardData(product.detail);
+			this.setState({
+				detail: product.detail,
+				cardProduct: cardData
+			});
+		}
+	}
+
 	componentWillUnmount() {
 		window.removeEventListener('scroll', this.handleScroll, true);
 	}
@@ -79,7 +93,7 @@ class Products extends Component {
 
 	addComment() {
 		const { dispatch } = this.props;
-		dispatch(new commentActions.commentAddAction(this.userCookies));		
+		dispatch(new commentActions.commentAddAction(this.userCookies));
 	}
 
 	renderHeaderPage() {
@@ -139,11 +153,17 @@ class Products extends Component {
 
 	render() {
 		const { showScrollInfomation } = this.state;
+
+		// product data is not ready yet, will render null
+		if (!this.state.cardProduct) {
+			return null;
+		}
+
 		return (
 			<div>
 				<Page>
 					<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
-						<Card.Lovelist data={DUMMY_PRODUCT} />
+						<Card.Lovelist data={this.state.cardProduct} />
 						<Level style={{ borderBottom: '1px solid #D8D8D8', borderTop: '1px solid #D8D8D8' }}>
 							<Level.Left className='flex-center'>
 								<Svg src='ico_ovo.svg' />
@@ -158,11 +178,11 @@ class Products extends Component {
 							</Level.Right>
 						</Level>
 						<div className='flex-center margin--large'>
-							<Radio 
+							<Radio
 								name='size'
 								checked={this.state.size}
 								style={{ marginBottom: '10px' }}
-								onChange={(e) => this.setState({ size: e })} 
+								onChange={(e) => this.setState({ size: e })}
 								data={[
 									{ label: 'xs', value: 'xs', disabled: true },
 									{ label: 's', value: 's' },
@@ -175,10 +195,7 @@ class Products extends Component {
 							<p className='font-color--red font-small'>Stock Habis</p>
 							<p className='text-center margin--medium'>Panduan Ukuran</p>
 						</div>
-						<p className='margin--small padding--medium'>
-							lydoaharyantho and 287 others love this
-							DELLOVISIMO Dress, red, premium cotton, bust 88 and length 94, ready to ship 3 Jan 2018.
-						</p>
+						<p className='margin--small padding--medium'>{this.state.detail.description}</p>
 						<span className='margin--small padding--medium'>
 							<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
 						</span>
@@ -225,7 +242,7 @@ class Products extends Component {
 										<div className='font-small'>Jakarta Selatan</div>
 									</div>
 									<div className='margin--medium'>
-										<Grid split={4} className='padding--small'> 
+										<Grid split={4} className='padding--small'>
 											<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
 											<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
 											<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
