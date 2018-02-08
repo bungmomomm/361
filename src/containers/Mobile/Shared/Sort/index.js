@@ -1,8 +1,8 @@
-import React, { Components } from 'react';
+import React, { Component } from 'react';
 import { List, Svg } from '@/components/mobile';
 import styles from './sort.scss';
 
-class Sort extends Components {
+class Sort extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import Filter from '@/containers/Mobile/Shared/Filter';
+import Sort from '@/containers/Mobile/Shared/Sort';
 import Shared from '@/containers/Mobile/Shared';
 import { actions } from '@/state/v4/SortFilter';
 import { Header, Page, Svg, Tabs } from '@/components/mobile';
@@ -83,7 +84,7 @@ class Filters extends Component {
 					<div style={this.props.style}>
 						<Page>
 							<div className={styles.cardContainer}>
-								s
+								<Sort />
 							</div>
 						</Page>
 						<Header.Modal {...HeaderPage} />

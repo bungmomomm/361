@@ -257,6 +257,9 @@ const updateFilter = (type, value, opt) => dispatch => {
 	}
 };
 
+
+// SORT
+
 export default {
 	parseDataToFilter,
 	applyFilter,

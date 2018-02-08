@@ -559,7 +559,11 @@ const actions = createActions({
 	UPDATE_FILTER: undefined,
 	UPDATE_FILTER_SUCCESS: (filters, facets, sorts, page, perPage) => ({ filters, facets, sorts, page, perPage }),
 	UPDATE_FILTER_RESET: undefined,
-	DO_TEST: (t) => ({ t })
+	DO_TEST: (t) => ({ t }),
+	UPDATE_SORT: undefined,
+	UPDATE_SORT_FAIL: (active, error) => ({ active, error }),
+	UPDATE_SORT_APPLY: (active, sort) => ({ sort }),
+	UPDATE_SORT_SUCCESS: (filters, facets, sorts, page, perPage) => ({ filters, facets, sorts, page, perPage })
 });
 
 const hasChild = (category) => {
@@ -716,6 +720,29 @@ const reducer = handleActions({
 		return {
 			...state,
 			facets
+		};
+	},
+	[actions.updateSort]: (state, action) => {
+		return {
+			...state,
+			isLoading: true,
+		};
+	},
+	[actions.updateSortFail]: (state, action) => {
+		return {
+			...state
+		};
+	},
+	[actions.updateSortApply]: (state, action) => {
+		return {
+			...state,
+			isLoading: true,
+		};
+	},
+	[actions.updateSortSuccess]: (state, action) => {
+		return {
+			...state,
+			isLoading: false,
 		};
 	},
 	[actions.updateFilter]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
