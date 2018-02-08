@@ -26,7 +26,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			if (typeof loading !== 'undefined') {
 				loading.parentElement.removeChild(loading);
 			}
-			return this.initProcess(this.userRFCookies);
+			return this.initProcess();
 		}
 
 		shouldLoginAnonymous() {
@@ -70,7 +70,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 					this.withErrorHandling(err);
 				}
 				console.log(response);
-				this.initApp(this.props);
+				this.initApp();
 			}
 
 			
