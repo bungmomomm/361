@@ -22,7 +22,7 @@ class Comment extends PureComponent {
 						</Level.Item>
 						<Level.Right>
 							Rating
-					</Level.Right>
+						</Level.Right>
 					</Level>
 					<div className='padding--normal' style={{ marginLeft: '45px' }}>
 						<div>aduuuuh bajunya keren banget siiiiiiiiiiiiiiiiiiiiiiiih enggak nyesel deh beli di toko ini. makasih ya sis</div>

@@ -3,7 +3,38 @@ import _ from 'lodash';
 
 const initialState = {
 	isLoading: false,
-	sorts: [],
+	sorts: [
+		{
+			title: 'Populer',
+			q: 'energy DESC',
+			is_selected: 0
+		},
+		{
+			title: 'Terbaru',
+			q: 'date DESC',
+			is_selected: 0
+		},
+		{
+			title: 'Harga Terendah',
+			q: 'pricing ASC',
+			is_selected: 0
+		},
+		{
+			title: 'Harga Tertinggi',
+			q: 'pricing DESC',
+			is_selected: 0
+		},
+		{
+			title: 'Diskon Terendah',
+			q: 'discount DESC',
+			is_selected: 0
+		},
+		{
+			title: 'Diskon Tertinggi',
+			q: 'discount DESC',
+			is_selected: 1
+		}
+	],
 	sort: 'laris',
 	page: 1,
 	perPage: 10,

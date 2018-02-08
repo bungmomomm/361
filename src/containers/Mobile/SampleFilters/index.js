@@ -84,7 +84,7 @@ class Filters extends Component {
 					<div style={this.props.style}>
 						<Page>
 							<div className={styles.cardContainer}>
-								<Sort />
+								<Sort sorts={filters.sorts} onSelected={(e) => console.log(e)} />
 							</div>
 						</Page>
 						<Header.Modal {...HeaderPage} />

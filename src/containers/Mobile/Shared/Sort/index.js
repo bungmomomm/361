@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { List, Svg } from '@/components/mobile';
+import { List, Svg, Button } from '@/components/mobile';
 import styles from './sort.scss';
+import _ from 'lodash';
 
 class Sort extends Component {
 	constructor(props) {
@@ -9,44 +10,22 @@ class Sort extends Component {
 	}
 
 	render() {
+		const { onSelected, sorts } = this.props;
 		return (
 			<div className={styles.filterNavigation}>
-				<List>
-					<List.Content>
-						Populer
-						<Svg src='ico_check.svg' />
-					</List.Content>
-				</List>
-				<List>
-					<List.Content>
-						Terbaru
-						<Svg src='ico_empty.svg' />
-					</List.Content>
-				</List>
-				<List>
-					<List.Content>
-						Harga Terendah
-						<Svg src='ico_empty.svg' />
-					</List.Content>
-				</List>
-				<List>
-					<List.Content>
-						Harga Tertinggi
-						<Svg src='ico_empty.svg' />
-					</List.Content>
-				</List>
-				<List>
-					<List.Content>
-						Diskon Terendah
-						<Svg src='ico_empty.svg' />
-					</List.Content>
-				</List>
-				<List>
-					<List.Content>
-						Diskon Tertinggi
-						<Svg src='ico_empty.svg' />
-					</List.Content>
-				</List>
+				{_.map(sorts, (sort) => {
+					const icon = sort.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
+					return (
+						<List>
+							<Button onClick={onSelected}>
+								<List.Content>
+									{sort.title}
+									{icon}
+								</List.Content>
+							</Button>
+						</List>
+					);
+				})}
 			</div>
 		);
 	}
