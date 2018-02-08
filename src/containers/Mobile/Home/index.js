@@ -10,9 +10,9 @@ import {
 } from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
+import { actions as sharedActions } from '@/state/v4/Shared';
 import Shared from '@/containers/Mobile/Shared';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-import { renderIf } from '@/utils';
 
 const renderSectionHeader = (title, options) => {
 	return (
@@ -29,7 +29,7 @@ class Home extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			current: 'wanita', // wanita
+			// current: 'wanita', // wanita
 			notification: {
 				show: true
 			}
@@ -40,30 +40,14 @@ class Home extends Component {
 		this.source = this.props.cookies.get('user.source');
 	}
 
-	componentDidMount() {
-		// this.initApp();
-	}
-
 	handlePick(current) {
 		const { segmen } = this.props.home;
 		const { dispatch } = this.props;
 		const willActiveSegment = segmen.find(e => e.id === current);
-		this.setState({ current: willActiveSegment.key });
-
+		// this.setState({ current: willActiveSegment.key });
+		dispatch(new sharedActions.setCurrentSegment(willActiveSegment.key));
 		dispatch(new actions.mainAction(this.userCookies, willActiveSegment));
 		dispatch(new actions.recomendationAction(this.userCookies, willActiveSegment));
-	}
-
-	initApp() {
-		const { dispatch } = this.props;
-		// doAfterAnonymous(this.props);
-		dispatch(new actions.initAction(this.userCookies))
-		.then(segmentData => {
-			const activeSegment = segmentData.find(e => e.key === this.state.current);
-			
-			dispatch(new actions.mainAction(this.userCookies, activeSegment));
-			dispatch(new actions.recomendationAction(this.userCookies, activeSegment));
-		});
 	}
 
 	renderFeatureBanner() {
@@ -264,30 +248,37 @@ class Home extends Component {
 		return null;
 	}
 
+	renderForeverBanner() {
+		const { shared } = this.props;
+		if (!_.isEmpty(shared.foreverBanner)) {
+			return (
+				<ForeverBanner
+					color={shared.foreverBanner.text.background_color}
+					show={this.state.notification.show}
+					onClose={(e) => this.setState({ notification: { show: false } })}
+					text1={shared.foreverBanner.text.text1}
+					text2={shared.foreverBanner.text.text2}
+					textColor={shared.foreverBanner.text.text_color}
+					// linkValue={shared.foreverBanner.target.url}
+				/>
+			);
+		}
+
+		return null;
+	}
+
 	render() {
 		const { shared } = this.props;
 		return (
 			<div style={this.props.style}>
 				<Page>
 					<Tabs
-						current={this.state.current}
+						current={this.props.shared.current}
 						variants={this.props.home.segmen}
 						onPick={(e) => this.handlePick(e)}
 					/>
 
-					{
-						renderIf(shared && shared.foreverBanner && shared.foreverBanner.text)(
-							<ForeverBanner
-								color={shared.foreverBanner.text.background_color}
-								show={this.state.notification.show}
-								onClose={(e) => this.setState({ notification: { show: false } })}
-								text1={shared.foreverBanner.text.text1}
-								text2={shared.foreverBanner.text.text2}
-								textColor={shared.foreverBanner.text.text_color}
-								linkValue={shared.foreverBanner.target.url}
-							/>
-						)
-					}
+					{this.renderForeverBanner()}
 
 					{this.renderFeatureBanner()}
 

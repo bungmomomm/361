@@ -27,6 +27,8 @@ let Lovelist = defRoute;
 let Hashtags = defRoute;
 let HashtagsDetails = defRoute;
 let Products = defRoute;
+let ProductsComments = defRoute;
+let ProductsGuide = defRoute;
 let UserLogin = defRoute;
 let UserRegister = defRoute;
 let UserRegistered = defRoute;
@@ -41,6 +43,7 @@ let UserProfileEdit = defRoute;
 let UserProfileEditOVO = defRoute;
 let UserProfileEditHP = defRoute;
 let UserProfileEditEmail = defRoute;
+let Cart = defRoute;
 
 if (isMobile()) {
 	/**
@@ -69,6 +72,13 @@ if (isMobile()) {
 
 	// PDP
 	Products = loadable(() => import('@/containers/Mobile/Details/Products'));
+	
+	// Shopping-bag
+	Cart = loadable(() => import('@/containers/Mobile/Cart'));
+
+	ProductsComments = loadable(() => import('@/containers/Mobile/Details/Products/Comments'));
+	ProductsGuide = loadable(() => import('@/containers/Mobile/Details/Products/Guide'));
+
 	// Users
 	UserLogin = loadable(() => import('@/containers/Mobile/Users/Login'));
 	ForgotPassword = loadable(() => import('@/containers/Mobile/Users/Login/forgotPassword'));
@@ -147,13 +157,15 @@ export default {
 		{
 			path: '/filterCategory',
 			component: FilterCategory
-		},
-		{
-			path: '/lovelist',
-			component: Lovelist,
+		}, {
+			path: '/product/comments/:id',
+			component: ProductsComments,
 			exact: true
-		},
-		{
+		}, {
+			path: '/product/guide',
+			component: ProductsGuide,
+			exact: true
+		}, {
 			path: '/product/:id',
 			component: Products,
 			exact: true
@@ -204,8 +216,20 @@ export default {
 			component: UserProfile
 		},
 		{
-			path: '/profile-*',
-			component: UserProfile
+			path: '/profile-edit',
+			component: UserProfileEdit,
+		},
+		{
+			path: '/profile-edit-*',
+			component: UserProfileEdit,
+		},
+		{
+			path: '/cart',
+			component: Cart
+		},
+		{
+			path: '/lovelist',
+			component: Lovelist
 		},
 		{
 			path: '/*', // Page not found handling.
@@ -215,24 +239,16 @@ export default {
 	],
 	child: [
 		{
-			path: '/profile-edit',
-			component: UserProfileEdit,
-			child: true
-		},
-		{
 			path: '/profile-edit-ovo',
-			component: UserProfileEditOVO,
-			child: true
+			component: UserProfileEditOVO
 		},
 		{
 			path: '/profile-edit-hp',
-			component: UserProfileEditHP,
-			child: true
+			component: UserProfileEditHP
 		},
 		{
 			path: '/profile-edit-email',
-			component: UserProfileEditEmail,
-			child: true
+			component: UserProfileEditEmail
 		}
 	]
 };
