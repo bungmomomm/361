@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import { Header, Page, Card, Svg, Tabs, Button, Level, Image, Input, Navigation } from '@/components/mobile';
+import { Header, Page, Card, Svg, Tabs, Navigation, Comment } from '@/components/mobile';
 import stylesCatalog from '../Catalog/catalog.scss';
 import Shared from '@/containers/Mobile/Shared';
 import { actions } from '@/state/v4/ProductCategory';
@@ -16,7 +16,7 @@ class Product extends Component {
 		super(props);
 		this.props = props;
 
-		this.currentListState = 0;
+		this.currentListState = 1;
 		this.listType = [{
 			type: 'list',
 			icon: 'ico_grid.svg'
@@ -85,6 +85,7 @@ class Product extends Component {
 									text1={shared.foreverBanner.text.text1}
 									text2={shared.foreverBanner.text.text2}
 									textColor={shared.foreverBanner.text.text_color}
+									linkValue=''
 								/>
 								: ''
 						}
@@ -103,17 +104,6 @@ class Product extends Component {
 
 	renderList(productData, index) {
 		if (productData) {
-			const renderBlockComment = (
-				<div className={stylesCatalog.commentBlock}>
-					<Button>View 38 comments</Button>
-					<Level>
-						<Level.Left><div style={{ marginRight: '10px' }}><Image avatar width={25} height={25} local src='temp/pp.jpg' /></div></Level.Left>
-						<Level.Item>
-							<Input color='white' placeholder='Write comment' />
-						</Level.Item>
-					</Level>
-				</div>
-			);
 			switch (this.state.listTypeState.type) {
 			case 'list':
 				return (
@@ -124,7 +114,7 @@ class Product extends Component {
 							brandName={productData.brand}
 							pricing={productData.pricing}
 						/>
-						{renderBlockComment}
+						<Comment />
 					</div>
 				);
 			case 'grid':
@@ -222,7 +212,7 @@ const doAfterAnonymous = (props) => {
 	const categoryId = _.chain(match).get('params.categoryId').value() || '';
 	const parsedUrl = queryString.parse(location.search);
 	const pcpParam = {
-		category_id: categoryId,
+		category_id: parseInt(categoryId, 10),
 		page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
 		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 10,
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
@@ -232,4 +222,4 @@ const doAfterAnonymous = (props) => {
 	dispatch(actions.initAction(cookies.get('user.token'), productService, pcpParam));
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(Scroller(Product), doAfterAnonymous)));
+export default withCookies(connect(mapStateToProps)(Scroller(Shared(Product, doAfterAnonymous))));

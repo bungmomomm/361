@@ -10,7 +10,7 @@ const initAction = (token, url = false, query) => (dispatch) => {
 	if (url) {
 		path = `${url.url}/categories/products`;
 	}
-
+	
 	return request({
 		token,
 		path,
@@ -42,11 +42,8 @@ const initAction = (token, url = false, query) => (dispatch) => {
 				nextData: { 
 					token,
 					query: {
-						category_id: query.category_id,
-						page: nextLink ? parseInt(nextLink.get('page'), 10) : false,
-						per_page: query.per_page,
-						fq: query.fq,
-						sort: query.sort,
+						...query,
+						page: nextLink ? parseInt(nextLink.get('page'), 10) : false
 					}
 				},
 				nextPage: nextLink !== false,
