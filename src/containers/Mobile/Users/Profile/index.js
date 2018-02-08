@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
-import { Page, Navigation, Svg, List, Level, Image, Panel } from '@/components/mobile';
+import { Page, Navigation, Svg, List, Level, Image, Panel, Notification } from '@/components/mobile';
 
 class UserProfile extends Component {
 	constructor(props) {
@@ -135,6 +135,9 @@ class UserProfile extends Component {
 							</Level.Item>
 						</Level>
 					</Link>
+					<Notification color='green' show disableClose>
+						<span>Product berhasil dihapus</span>
+					</Notification>
 				</Page>
 				<Navigation active='Profile' />
 			</div>
