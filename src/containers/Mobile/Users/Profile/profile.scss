@@ -1,3 +1,6 @@
+@import '../../../../styles/mobile/variables';
+@import '../../../../styles/mobile/mixins';
+
 .label {
   color: #A4A4A4;
   font-size: 11px;
@@ -16,4 +19,46 @@
 	border-bottom: 1px solid #D8D8D8;
 	font-size: 11px;
   }
+}
+
+.tempPPContainer {
+  display: inline-flex;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-family: font-family('Lato-Bold');
+  font-size: 32px;
+  text-transform: uppercase;
+  overflow: hidden;
+}
+.tempPP {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+}
+.buyer {
+  background: #191919;
+  color: #FFF;
+}
+.seller {
+  background: #D8D8D8;
+  color: #5A5A5A;
+}
+.big {
+  width: 80px;
+  height: 80px;
+  font-size: 44px;
+}
+.editPP {
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  text-align: center;
+  background: rgba(63,208,187,0.90);
+  color: #fff;
+  font-family: font-family('Lato-Bold');
+  font-size: 11px;
+  line-height: 2;
 }
