@@ -224,6 +224,10 @@ export default {
 			component: Cart
 		},
 		{
+			path: '/lovelist',
+			component: Lovelist
+		},
+		{
 			path: '/*', // Page not found handling.
 			component: Page404,
 			exact: true
