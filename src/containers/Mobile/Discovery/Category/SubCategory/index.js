@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
@@ -12,14 +12,16 @@ import {
 	Navigation
 } from '@/components/mobile';
 import { actions as categoryActions } from '@/state/v4/Category';
+import Shared from '@/containers/Mobile/Shared';
 
-class SubCategory extends Component {
+class SubCategory extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
-			category: {}
+			selectedCategory: {}
 		};
+		this.categoryLvl1 = props.match.params.categoryLvl1;
 		this.categoryLvl2 = props.match.params.categoryLvl2;
 		this.categoryLvl3 = props.match.params.categoryLvl3;
 		this.userCookies = this.props.cookies.get('user.token');
@@ -28,52 +30,58 @@ class SubCategory extends Component {
 	}
 
 	componentWillMount() {
-		this.setParentCategory();
+		this.setSelectedCategory(this.props.category.categories);
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (this.props.category.data.length < 1 && nextProps.category.data.length > 0) {
-			this.setParentCategory(nextProps);
+		const isCategoryMenuDataUpdated = nextProps.category.categories.length > 1 &&
+			nextProps.category.categories !== this.props.category.categories;
+		if (isCategoryMenuDataUpdated) {
+			this.setSelectedCategory(nextProps.category.categories);
 		}
 	}
 
-	setParentCategory(props = this.props) {
-		let category = props.category.data.filter(e => e.id === this.categoryLvl2)[0];
-		category = (this.categoryLvl3 !== undefined) ?
-			category.sub_categories.filter(e => e.id === this.categoryLvl3)[0] : category;
-		console.log('last category', category);
+	setSelectedCategory(categories) {
+		let selectedCategory = categories.filter(e => e.id === this.categoryLvl2)[0];
+		if (selectedCategory) {
+			selectedCategory = (this.categoryLvl3 !== undefined) ?
+				selectedCategory.sub_categories.filter(e => e.id === this.categoryLvl3)[0] : selectedCategory;
 
-		if (category) {
-			if (category.sub_categories.length === 0) {
-				this.props.history.push(`/p-${category.id}/${category.title}`);
+			if (selectedCategory.sub_categories.length === 0) {
+				this.props.history.push(`/p-${selectedCategory.id}/${selectedCategory.title}`);
 			}
+
+			this.getFeaturedBrands(selectedCategory.id);
+
 			this.setState({
-				category
+				selectedCategory
 			});
-		} else {
-			const { dispatch } = this.props;
-			dispatch(new categoryActions.getCategoryMenuAction(this.userCookies));
 		}
+	}
+
+	getFeaturedBrands(categoryId) {
+		const { dispatch } = this.props;
+		dispatch(new categoryActions.getBrandsByCategoryIdAction(this.userCookies, categoryId));
 	}
 
 	render() {
-		const { category } = this.state;
+		const { selectedCategory } = this.state;
 		const HeaderPage = {
 			left: (
 				<button onClick={this.props.history.goBack}>
 					<Svg src='ico_arrow-back-left.svg' />
 				</button>
 			),
-			center: category.title || '',
+			center: selectedCategory.title || '',
 			right: null
 		};
 
-		const listCategory = category.sub_categories &&	category.sub_categories.map((cat, key) => {
+		const listCategory = selectedCategory.sub_categories && selectedCategory.sub_categories.map((cat, key) => {
 			let list = null;
 			if (this.categoryLvl3 === undefined) {
 				list = (
 					<List key={key}>
-						<Link to={`/subcategory/${this.categoryLvl2}/${cat.id}`}>
+						<Link to={`/category/${this.categoryLvl1}/${this.categoryLvl2}/${cat.id}`}>
 							<List.Image><Image width={40} height={40} avatar src={cat.image_url} /></List.Image>
 							<List.Content>{cat.title}</List.Content>
 						</Link>
@@ -92,36 +100,25 @@ class SubCategory extends Component {
 			return list;
 		});
 
+		const listFeaturedBrands = this.props.category.brands && this.props.category.brands.map((brand, key) => {
+			return (
+				<List key={key}>
+					<Link to={`/brand/${brand.id}/${brand.title}`}>
+						<List.Image><Image width={40} height={40} avatar src={brand.image_url} /></List.Image>
+						<List.Content>{brand.title}</List.Content>
+					</Link>
+				</List>
+			);
+		});
+
 		return (
 			<div style={this.props.style}>
 				<Page>
 					<Divider>Shop by Products</Divider>
 					{ this.props.category.loading ? 'Loading...' : listCategory }
+
 					<Divider>Featured Brands</Divider>
-					<List>
-						<Link to='/catalogcategory'>
-							<List.Image><Image width={40} height={40} avatar local src='temp/pp.jpg' /></List.Image>
-							<List.Content>Tank Top</List.Content>
-						</Link>
-					</List>
-					<List>
-						<Link to='/catalogcategory'>
-							<List.Image><Image width={40} height={40} avatar local src='temp/pp.jpg' /></List.Image>
-							<List.Content>Tank Top</List.Content>
-						</Link>
-					</List>
-					<List>
-						<Link to='/catalogcategory'>
-							<List.Image><Image width={40} height={40} avatar local src='temp/pp.jpg' /></List.Image>
-							<List.Content>Tank Top</List.Content>
-						</Link>
-					</List>
-					<List>
-						<Link to='/catalogcategory'>
-							<List.Image><Image width={40} height={40} avatar local src='temp/pp.jpg' /></List.Image>
-							<List.Content>Tank Top</List.Content>
-						</Link>
-					</List>
+					{ this.props.category.loadinglistFeaturedBrands ? 'Loading...' : listFeaturedBrands}
 				</Page>
 				<Header.Modal {...HeaderPage} />
 				<Navigation active='Categories' />
@@ -131,9 +128,19 @@ class SubCategory extends Component {
 }
 
 const mapStateToProps = (state) => {
+	// console.log('[at mapStateToProps]', state);
 	return {
 		category: state.category,
+		home: state.home,
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(SubCategory));
+const doAfterAnonymous = (props) => {
+	const { category, home, match, dispatch, cookies } = props;
+	if (category.categories.length < 1) {
+		const selectedSegment = home.segmen.find(e => e.key === match.params.categoryLvl1);
+		dispatch(new categoryActions.getCategoryMenuAction(cookies.get('user.token'), selectedSegment.id, selectedSegment));
+	}
+};
+
+export default withCookies(connect(mapStateToProps)(Shared(SubCategory, doAfterAnonymous)));

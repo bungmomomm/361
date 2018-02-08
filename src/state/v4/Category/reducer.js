@@ -1,22 +1,38 @@
 import { handleActions, createActions } from 'redux-actions';
 
 const initialState = {
-	data: [],
+	categories: [],
+	brands: [],
 	loading: false,
+	loadingBrands: false,
+	activeSegment: {
+		id: 1,
+		key: 'wanita',
+		title: 'Wanita',
+	},
 	segment: 1
 };
 
-const { getCategoryMenu, categoryLoading } = createActions(
+const { getCategoryMenu, getCategoryBrand, categoryLoading, brandsLoading } = createActions(
 	'GET_CATEGORY_MENU',
+	'GET_CATEGORY_BRAND',
 	'CATEGORY_LOADING',
+	'BRANDS_LOADING',
 );
 
 const reducer = handleActions({
-	[getCategoryMenu](state, { payload: { data, segment } }) {
+	[getCategoryMenu](state, { payload: { categories, segment, activeSegment } }) {
 		return {
 			...state,
-			data,
-			segment
+			categories,
+			segment,
+			activeSegment
+		};
+	},
+	[getCategoryBrand](state, { payload: { brands } }) {
+		return {
+			...state,
+			brands
 		};
 	},
 	[categoryLoading](state, { payload: { loading } }) {
@@ -25,10 +41,18 @@ const reducer = handleActions({
 			loading
 		};
 	},
+	[brandsLoading](state, { payload: { loadingBrands } }) {
+		return {
+			...state,
+			loadingBrands
+		};
+	},
 }, initialState);
 
 export default {
-	reducer, 
+	reducer,
 	getCategoryMenu,
-	categoryLoading
+	getCategoryBrand,
+	categoryLoading,
+	brandsLoading
 };

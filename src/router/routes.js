@@ -115,19 +115,17 @@ export default [
 		path: '/searchnotfound', // This path only for displaying search not found SearchNotFound Container
 		component: SearchNotFound
 	},
-	{
-		path: '/category', // Category Menu
-		component: Category,
-		exact: true
-	}, {
-		path: '/category/:categoryId',
-		component: Category,
-	}, {
-		path: '/subcategory/:categoryLvl2/:categoryLvl3',
+	{	path: '/category/:categoryLvl1/:categoryLvl2/:categoryLvl3',
 		component: SubCategory,
 	}, {
-		path: '/subcategory/:categoryLvl2',
+		path: '/category/:categoryLvl1/:categoryLvl2',
 		component: SubCategory,
+	}, {
+		path: '/category/:categoryLvl1',
+		component: Category,
+	}, {
+		path: '/category/',
+		component: Category,
 	}, {
 		path: '/brands',
 		component: Brands,
