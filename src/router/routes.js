@@ -40,6 +40,7 @@ let UserProfileEdit = defRoute;
 let UserProfileEditOVO = defRoute;
 let UserProfileEditHP = defRoute;
 let UserProfileEditEmail = defRoute;
+let Seller = defRoute;
 
 if (isMobile()) {
 	/**
@@ -59,6 +60,7 @@ if (isMobile()) {
 	Category = loadable(() => import('@/containers/Mobile/Discovery/Category'));
 	SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
 	Brands = loadable(() => import('@/containers/Mobile/Discovery/Brands'));
+	Seller = loadable(() => import('@/containers/Mobile/Discovery/Seller'));
 	CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
 	FilterCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog/filter'));
 
@@ -200,6 +202,10 @@ export default {
 		{
 			path: '/profile-*',
 			component: UserProfile
+		},
+		{
+			path: '/store/:store_id',
+			component: Seller
 		},
 		{
 			path: '/*', // Page not found handling.
