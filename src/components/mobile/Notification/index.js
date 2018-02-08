@@ -12,6 +12,7 @@ class Notification extends PureComponent {
 			show,
 			onClose,
 			color,
+			toast,
 			disableClose,
 			...props,
 		} = this.props;
@@ -19,25 +20,40 @@ class Notification extends PureComponent {
 		const createClassName = classNames(
 			styles.container,
 			styles[color],
+			show ? styles.show : styles.hide,
+			toast ? styles.toast : null,
 			className
 		);
 
-		if (!show) {
-			return null;
+		const createClassNameToast = classNames(
+			styles.toastContainer,
+			show ? styles.showToast : styles.hideToast
+		);
+
+		const renderNotification = () => {
+			return (
+				<div className={createClassName} {...props} >
+					{children}
+					{
+						!disableClose && (
+							<div className={styles.close}>
+								<Button onClick={(e) => onClose(e)}><Svg src='ico_close.svg' /></Button>
+							</div>
+						)
+					}
+				</div>
+			);
+		};
+
+		if (toast) {
+			return (
+				<div className={createClassNameToast} onClick={(e) => onClose(e)} role='button' tabIndex='0'>
+					{renderNotification()}
+				</div>
+			);
 		}
 
-		return (
-			<div className={createClassName} {...props} >
-				{children}
-				{
-					!disableClose && (
-						<div className={styles.close}>
-							<Button onClick={(e) => onClose(e)} ><Svg src='ico_close.svg' /></Button>
-						</div>
-					)
-				}
-			</div>
-		);
+		return renderNotification();
 	}
 }
 

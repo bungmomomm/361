@@ -10,8 +10,7 @@ import queryString from 'query-string';
 import { Link } from 'react-router-dom';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
-// import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-// import { renderIf } from '@/utils';
+import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 
 class SearchResults extends Component {
 	constructor(props) {
@@ -211,6 +210,25 @@ class SearchResults extends Component {
 		return tabsView;
 	}
 
+	renderForeverBanner() {
+		const { shared } = this.props;
+		if (!_.isEmpty(shared.foreverBanner)) {
+			return (
+				<ForeverBanner
+					color={shared.foreverBanner.text.background_color}
+					show={this.state.notification.show}
+					onClose={(e) => this.setState({ notification: { show: false } })}
+					text1={shared.foreverBanner.text.text1}
+					text2={shared.foreverBanner.text.text2}
+					textColor={shared.foreverBanner.text.text_color}
+					// linkValue={shared.foreverBanner.target.url}
+				/>
+			);
+		}
+
+		return null;
+	}
+
 	render() {
 		// const { shared } = this.props;
 		return (
@@ -220,19 +238,7 @@ class SearchResults extends Component {
 				</Page>
 				{this.renderHeader()}
 				{this.props.isLoading ? this.loadingRender() : this.renderTabs()}
-				{
-					// renderIf(shared && shared.foreverBanner && shared.foreverBanner.text)(
-					// 	<ForeverBanner
-					// 		color={shared.foreverBanner.text.background_color}
-					// 		show={this.state.notification.show}
-					// 		onClose={(e) => this.setState({ notification: { show: false } })}
-					// 		text1={shared.foreverBanner.text.text1}
-					// 		text2={shared.foreverBanner.text.text2}
-					// 		textColor={shared.foreverBanner.text.text_color}
-					// 		linkValue={shared.foreverBanner.target.url}
-					// 	/>
-					// )
-				}
+				{this.renderForeverBanner()}
 
 				<Navigation />
 

@@ -36,13 +36,14 @@ let UserRegisteredPhoneValidation = defRoute;
 // let NewArrival = defRoute;
 // let Recommended = defRoute;
 let ForgotPassword = defRoute;
-let FilterCategory = defRoute;
+let SampleFilters = defRoute;
 let Promo = defRoute;
 let UserProfile = defRoute;
 let UserProfileEdit = defRoute;
 let UserProfileEditOVO = defRoute;
 let UserProfileEditHP = defRoute;
 let UserProfileEditEmail = defRoute;
+let Seller = defRoute;
 let Cart = defRoute;
 let CartEmpty = defRoute;
 
@@ -65,8 +66,10 @@ if (isMobile()) {
 	SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
 	ProductCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Product'));
 	Brands = loadable(() => import('@/containers/Mobile/Discovery/Brands'));
+	Seller = loadable(() => import('@/containers/Mobile/Discovery/Seller'));
 	CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
-	FilterCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog/filter'));
+
+	SampleFilters = loadable(() => import('@/containers/Mobile/SampleFilters'));
 
 	// Service Details
 	HashtagsDetails = loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'));
@@ -153,9 +156,14 @@ export default {
 			component: CatalogCategory
 		},
 		{
-			path: '/filterCategory',
-			component: FilterCategory
-		}, {
+			path: '/samplefilters',
+			component: SampleFilters
+		},
+		{
+			path: '/lovelist',
+			component: Lovelist,
+		},
+		{
 			path: '/product/comments/:id',
 			component: ProductsComments,
 			exact: true
@@ -214,8 +222,12 @@ export default {
 			component: UserProfile
 		},
 		{
-			path: '/profile-*',
-			component: UserProfile
+			path: '/profile-edit',
+			component: UserProfileEdit,
+		},
+		{
+			path: '/profile-edit-*',
+			component: UserProfileEdit,
 		},
 		{
 			path: '/lovelist',
@@ -230,6 +242,13 @@ export default {
 			path: '/cart/empty',
 			exact: true,
 			component: CartEmpty
+		},{
+			path: '/lovelist',
+			component: Lovelist
+		},
+		{
+			path: '/store/:store_id',
+			component: Seller
 		},
 		{
 			path: '/*', // Page not found handling.
@@ -239,24 +258,16 @@ export default {
 	],
 	child: [
 		{
-			path: '/profile-edit',
-			component: UserProfileEdit,
-			child: true
-		},
-		{
 			path: '/profile-edit-ovo',
-			component: UserProfileEditOVO,
-			child: true
+			component: UserProfileEditOVO
 		},
 		{
 			path: '/profile-edit-hp',
-			component: UserProfileEditHP,
-			child: true
+			component: UserProfileEditHP
 		},
 		{
 			path: '/profile-edit-email',
-			component: UserProfileEditEmail,
-			child: true
+			component: UserProfileEditEmail
 		}
 	]
 };

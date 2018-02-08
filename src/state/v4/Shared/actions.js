@@ -1,6 +1,6 @@
 
 import { request } from '@/utils';
-import { totalBag, totalLoveList } from './reducer';
+import { totalBag, totalLoveList, currentTab } from './reducer';
 
 const totalCartAction = (token, url = false) => (dispatch) => {
 	let path = `${process.env.MICROSERVICES_URL}cart/total`;
@@ -38,7 +38,12 @@ const totalLovelistAction = (token, url = false) => (dispatch) => {
 
 };
 
+const setCurrentSegment = (currentSegment) => (dispatch) => {
+	dispatch(currentTab({ current: currentSegment }));
+};
+
 export default {
 	totalLovelistAction,
-	totalCartAction
+	totalCartAction,
+	setCurrentSegment
 };
