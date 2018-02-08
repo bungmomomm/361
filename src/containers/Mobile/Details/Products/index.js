@@ -52,17 +52,19 @@ class Products extends Component {
 			showScrollInfomation: false,
 			detail: {},
 			cardProduct: false,
+			loading: true,
 		};
 	}
 
 	componentDidMount() {
 		const { dispatch, match } = this.props;
 		const productId = match.params.id;
-		dispatch(new productActions.productDetailAction(this.userCookies, productId));
-		dispatch(new productActions.productRecommendationAction(this.userCookies));
-		dispatch(new productActions.productSimilarAction(this.userCookies));
-		dispatch(new productActions.productSocialSummaryAction(this.userCookies, productId));
-		dispatch(new commentActions.productCommentAction(this.userCookies));
+		const token = this.userCookies;
+		dispatch(new productActions.productDetailAction(token, productId));
+		dispatch(new productActions.productRecommendationAction(token));
+		dispatch(new productActions.productSimilarAction(token));
+		dispatch(new productActions.productSocialSummaryAction(token, productId));
+		dispatch(new commentActions.productCommentAction(token));
 		window.addEventListener('scroll', this.handleScroll, true);
 	}
 
@@ -72,7 +74,8 @@ class Products extends Component {
 			const cardData = productActions.getProductCardData(product.detail);
 			this.setState({
 				detail: product.detail,
-				cardProduct: cardData
+				cardProduct: cardData,
+				loading: false
 			});
 		}
 	}
@@ -128,18 +131,18 @@ class Products extends Component {
 	}
 
 	renderStickyAction() {
-		if (this.state.showScrollInfomation) {
+		if (this.state.showScrollInfomation && !this.state.loading) {
 			return (
 				<div className={styles.stickyAction}>
 					<Level style={{ padding: '10px' }} className='flex-center'>
 						<Level.Left>
 							<div className={styles.stickyActionImage}>
-								<img alt='product' src='https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-01.jpg' />
+								<img alt='product' src={this.state.detail.images[0].thumbnail} />
 							</div>
 						</Level.Left>
 						<Level.Item className='padding--medium'>
-							<div className='font-normal'>Rp1.199.000</div>
-							<div className='font-small font-color--primary-ext-2'>Rp999.000</div>
+							<div className='font-normal'>{this.state.cardProduct.pricing.formatted.effective_price}</div>
+							<div className='font-small font-color--primary-ext-2'>{this.state.cardProduct.pricing.formatted.base_price}</div>
 						</Level.Item>
 						<Level.Right>
 							<Button color='secondary' size='medium'>BELI AJA</Button>
@@ -151,12 +154,41 @@ class Products extends Component {
 		return null;
 	}
 
-	render() {
-		const { showScrollInfomation } = this.state;
-
-		// product data is not ready yet, will render null
-		if (!this.state.cardProduct) {
+	renderSimilarItems() {
+		const { similar } = this.props.product;
+		if (this.state.loading || Object.keys(similar).length === 0) {
 			return null;
+		}
+
+		return similar.map((product, idx) => {
+			const data = {
+				productTitle: product.product_title,
+				brandName: product.brand,
+				pricing: product.pricing,
+				images: product.images.map((image) => ({ mobile: image.thumbnail }))
+			};
+
+			return <Card.CatalogGrid {...data} key={idx} />;
+		});
+	}
+
+	renderReviews() {
+		const { reviews } = this.props.product;
+
+		if (this.state.loading || Object.keys(reviews).length === 0) {
+			return null;
+		}
+
+		return reviews.summary.map((item, idx) => {
+			return <Comment key={idx} type='review' data={item} />;
+		});
+	}
+
+	render() {
+		const { showScrollInfomation, loading, detail } = this.state;
+
+		if (loading) {
+			return <div>Please wait, loading content...</div>;
 		}
 
 		return (
@@ -215,16 +247,14 @@ class Products extends Component {
 										<div className='font-medium'>Ulasan</div>
 										<Link className='font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >See All</span> <Svg src='ico_chevron-right.svg' /></Link>
 									</div>
-									<Comment type='review' />
-									<Comment type='review' />
-									<Comment type='review' />
+									{this.renderReviews()}
 								</div>
 							</div>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								<div className='margin--medium'>
 									<div className='padding--small flex-row flex-spaceBetween'>
 										<div className='padding--small'>
-											<Image avatar width={60} height={60} src='http://coolspotters.com/files/photos/323634/zara-profile.jpg?1357481236' />
+											<Image avatar width={60} height={60} src={detail.seller.seller_logo} />
 										</div>
 										<Level>
 											<Level.Item className='text-center padding--large'>
@@ -238,8 +268,8 @@ class Products extends Component {
 										</Level>
 									</div>
 									<div className='padding--medium margin--small'>
-										<div className='font-medium'>Bitter Ballen Ball</div>
-										<div className='font-small'>Jakarta Selatan</div>
+										<div className='font-medium'>{detail.seller.seller}</div>
+										<div className='font-small'>{detail.seller.location}</div>
 									</div>
 									<div className='margin--medium'>
 										<Grid split={4} className='padding--small'>
@@ -259,8 +289,7 @@ class Products extends Component {
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								<div className='margin--small padding--medium font-medium'>Similar Items</div>
 								<div className='flex-row'>
-									<Card.CatalogGrid {...DUMMY_PRODUCT_GRID} />
-									<Card.CatalogGrid {...DUMMY_PRODUCT_GRID} />
+									{this.renderSimilarItems()}
 								</div>
 							</div>
 						</div>
