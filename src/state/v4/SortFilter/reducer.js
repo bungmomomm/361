@@ -591,9 +591,9 @@ const actions = createActions({
 	UPDATE_FILTER_SUCCESS: (filters, facets, sorts, page, perPage) => ({ filters, facets, sorts, page, perPage }),
 	UPDATE_FILTER_RESET: undefined,
 	DO_TEST: (t) => ({ t }),
-	UPDATE_SORT: undefined,
+	UPDATE_SORT: (active, sorts) => ({ active, sorts }),
 	UPDATE_SORT_FAIL: (active, error) => ({ active, error }),
-	UPDATE_SORT_APPLY: (active, sort) => ({ sort }),
+	UPDATE_SORT_APPLY: undefined,
 	UPDATE_SORT_SUCCESS: (filters, facets, sorts, page, perPage) => ({ filters, facets, sorts, page, perPage })
 });
 
@@ -756,7 +756,9 @@ const reducer = handleActions({
 	[actions.updateSort]: (state, action) => {
 		return {
 			...state,
-			isLoading: true,
+			sorts: {
+				...action.payload.sorts
+			}
 		};
 	},
 	[actions.updateSortFail]: (state, action) => {

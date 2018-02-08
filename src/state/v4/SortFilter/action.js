@@ -185,13 +185,13 @@ const parseDataToFilter = (data) => {
  * type should be, category, branch, store
  */
 
+ 
 const applyFilter = (token, type, filters) => async (dispatch, getState) => {
 	dispatch(actions.updateFilter());
 	const { shared } = getState();
 	const filterQuery = parseFilter(type, filters);
 	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || process.env.MICROSERVICES_URL;
 	const filterUrl = `${baseUrl}/${filterQuery}`;
-	console.log(filterUrl);
 	const [error, response] = await to(request({
 		token,
 		path: filterUrl,
@@ -201,7 +201,7 @@ const applyFilter = (token, type, filters) => async (dispatch, getState) => {
 
 	if (error) {
 		dispatch(actions.updateFilterFail(error));
-		return Promise.reject(error);
+		return Promise.reject([error, null]);
 	}
 
 	if (response.data.code === 200) {
@@ -260,10 +260,57 @@ const updateFilter = (type, value, opt) => dispatch => {
 
 // SORT
 
+const updateSort = (value) => (dispatch, getState) => {
+	const { filters } = getState();
+	const sorts = _.map(filters.sorts, (sort) => {
+		sort.is_selected = false;
+		if (sort.q === value.q) {
+			sort.is_selected = true;
+		}
+
+		return sort;
+	});
+	
+	dispatch(actions.updateSort(sorts));
+};
+
+const applySort = (token, type) => async (dispatch, getState) => {
+	dispatch(actions.updateSortApply());
+	const { filters, shared } = getState();
+	const filterQuery = parseFilter(type, filters);
+	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || process.env.MICROSERVICES_URL;
+	const filterUrl = `${baseUrl}/${filterQuery}`;
+	const [error, response] = await to(request({
+		token,
+		path: filterUrl,
+		method: 'GET',
+		fullPath: true
+	}));
+
+	if (error) {
+		dispatch(actions.updateSortFail(error));
+		return Promise.reject([error, null]);
+	}
+
+	if (response.data.code === 200) {
+		const responseData = _.chain(response);
+		const params = parseDataToFilter(responseData.get('data.data').value());
+		dispatch(actions.updateSortSuccess(params.facets, params.facets, params.sorts, params.page, params.perPage));
+		return Promise.resolve({
+			data: responseData.get('data.data').value()
+		});
+	}
+	const errorMessage = new Error(response.error_message);
+	dispatch(actions.updateSortFail(errorMessage));
+	return Promise.reject(errorMessage);
+};
+
 export default {
 	parseDataToFilter,
 	applyFilter,
 	doTest,
 	updateFilter,
-	resetFilter
+	resetFilter,
+	updateSort,
+	applySort
 };

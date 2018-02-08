@@ -53,6 +53,10 @@ class Filters extends Component {
 		});
 	}
 
+	sort(e, value) {
+		this.props.dispatch(new actions.updateSort(value));
+	}
+
 	render() {
 		const { filters } = this.props;
 		const { shown } = this.state;
@@ -84,7 +88,7 @@ class Filters extends Component {
 					<div style={this.props.style}>
 						<Page>
 							<div className={styles.cardContainer}>
-								<Sort sorts={filters.sorts} onSelected={(e) => console.log(e)} />
+								<Sort sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
 							</div>
 						</Page>
 						<Header.Modal {...HeaderPage} />

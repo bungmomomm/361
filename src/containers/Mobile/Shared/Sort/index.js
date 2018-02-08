@@ -13,11 +13,11 @@ class Sort extends Component {
 		const { onSelected, sorts } = this.props;
 		return (
 			<div className={styles.filterNavigation}>
-				{_.map(sorts, (sort) => {
+				{_.map(sorts, (sort, id) => {
 					const icon = sort.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
 					return (
-						<List>
-							<Button onClick={onSelected}>
+						<List key={id}>
+							<Button onClick={(e) => onSelected(e, sort)}>
 								<List.Content>
 									{sort.title}
 									{icon}
