@@ -11,6 +11,7 @@ import { reducer as users } from '@/state/v4/User';
 import { reducer as home } from '@/state/v4/Home';
 import { reducer as discovery } from '@/state/v4/Discovery';
 import { reducer as product } from '@/state/v4/Product';
+import { reducer as productCategory } from '@/state/v4/ProductCategory';
 import { reducer as comments } from '@/state/v4/Comment';
 import { reducer as search } from '@/state/v4/Search';
 import { reducer as lovelist } from '@/state/v4/Lovelist';
@@ -34,6 +35,7 @@ export default combineReducers({
 	home,
 	discovery,
 	product,
+	productCategory,
 	comments,
 	search,
 	searchResults,
