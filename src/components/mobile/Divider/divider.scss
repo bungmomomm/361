@@ -26,6 +26,7 @@
     color: #000;
     position: relative;
     justify-content: space-between;
+    margin-top:0;
     .content{
         flex-direction: row;
         > span{
@@ -47,3 +48,24 @@
         bottom: -7px;
     }
 }
+
+.closed{
+    min-height: rem(40px);
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    color: #000;
+    position: relative;
+    justify-content: space-between;
+    margin: 0;
+    .content {
+    	flex-direction: row;
+    	>span {
+    		font-style: italic;
+    		font-family: font-family(lato-normal);
+    		margin-left: rem(10px);
+    		color: #A4A4A4;
+    	}
+    }
+}
+

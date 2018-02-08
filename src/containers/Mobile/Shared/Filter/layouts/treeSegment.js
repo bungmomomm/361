@@ -10,7 +10,7 @@ import {
 } from '@/components/mobile';
 import styles from './tree.scss';
 import Action from './action';
-import renderIf from '@/utils/renderIf';
+// import renderIf from '@/utils/renderIf';
 
 // DUMMY DATA
 /*
@@ -219,23 +219,24 @@ class TreeSegment extends PureComponent {
 						const hasChild = typeof child.childs !== 'undefined' && child.childs.length > 0;
 						const Label = hasChild ? <strong>{child.facetdisplay}</strong> : child.facetdisplay;
 						const isChildSelected = _.find(child.childs, { is_selected: 1 });
-						return (
-							<div key={id}>
-								{renderIf(hasChild && firstLevel)(
-									<Divider type='segment'>
+						if (firstLevel) {
+							return (
+								<div key={id}>
+									<Divider type={activeTree === child.facetrange ? 'segment' : 'closed'} onClick={(e) => this.handleTree(e, child, hasChild)}>
 										<Divider.Content>{child.facetdisplay} <span>({child.count} produk)</span></Divider.Content>
 									</Divider>
-								)}
-								<List className={hasChild && styles.parent}>
-									<Button onClick={(e) => this.handleTree(e, child, hasChild)}>
-										<List.Content>
-											{ Label }
-											{treeIcon(hasChild ? activeTree === child.facetrange : child.is_selected, hasChild)}
-										</List.Content>
-									</Button>
-									{(hasChild || isChildSelected) && this.renderChild(child)}
-								</List>
-							</div>
+									{ (hasChild || isChildSelected) && this.renderChild(child) }
+								</div>
+							);
+						}
+						return (
+							<List key={id} className={(hasChild && styles.parent)}>
+								<List.Content className={activeTree === child.facetrange && styles.selected} align='left' onClick={(e) => this.handleTree(e, child, hasChild)}>
+									{Label} ({child.count})
+									{treeIcon(hasChild ? activeTree === child.facetrange : child.is_selected, hasChild)}
+								</List.Content>
+								{(hasChild || isChildSelected) && this.renderChild(child)}
+							</List>
 						);
 					})
 				}
