@@ -135,9 +135,6 @@ class UserProfile extends Component {
 							</Level.Item>
 						</Level>
 					</Link>
-					<Notification color='green' show disableClose>
-						<span>Product berhasil dihapus</span>
-					</Notification>
 				</Page>
 				<Navigation active='Profile' />
 			</div>
