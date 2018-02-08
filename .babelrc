@@ -10,6 +10,7 @@
 		"transform-decorators-legacy",
 		"dynamic-import-webpack",
 		"transform-async-to-generator",
-		"transform-regenerator"
+		"transform-regenerator",
+	  	"transform-class-properties"
 	]
 }

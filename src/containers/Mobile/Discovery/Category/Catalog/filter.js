@@ -15,7 +15,7 @@ class Filter extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
-			layout: 'result',
+			layout: 'price',
 			params: {
 				header: {
 					title: 'Title'
@@ -25,35 +25,35 @@ class Filter extends PureComponent {
 	}
 	render() {
 		const { layout, ...state } = this.state;
-		
+
 		switch (layout) {
 		case 'lists':
 			return <Lists {...state} />;
 
 		case 'listsEnd':
 			return <ListsEnd {...state} />;
-		
+
 		case 'brands':
 			return <Brands {...state} />;
-		
+
 		case 'color':
 			return <Color {...state} />;
-	
+
 		case 'size':
 			return <Size {...state} />;
-		
+
 		case 'price':
 			return <Price {...state} />;
-		
+
 		case 'tree':
 			return <Tree {...state} />;
-		
+
 		case 'treeSegment':
 			return <TreeSegment {...state} />;
-		
+
 		case 'result':
 			return <Result {...state} />;
-	
+
 		default:
 			return null;
 		}

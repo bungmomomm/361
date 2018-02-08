@@ -1,4 +1,5 @@
 import Header from './Header';
+import Badge from './Badge';
 import Input from './Input';
 import Tabs from './Tabs';
 import Page from './Page';
@@ -23,6 +24,7 @@ import Select from './Select';
 import Table from './Table';
 
 export default {
+	Badge,
 	Header,
 	Input,
 	Tabs,

@@ -19,7 +19,14 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		componentDidMount() {
-			this.initProcess();
+			if (this.shouldLoginAnonymous()) {
+				return this.loginAnonymous();
+			} 
+			const loading = window.document.getElementById('loading');
+			if (typeof loading !== 'undefined') {
+				loading.parentElement.removeChild(loading);
+			}
+			return this.initProcess();
 		}
 
 		shouldLoginAnonymous() {
@@ -63,7 +70,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 					this.withErrorHandling(err);
 				}
 				console.log(response);
-				this.initApp(this.props);
+				this.initApp();
 			}
 
 			
