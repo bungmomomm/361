@@ -141,10 +141,13 @@ export default {
 		{
 			path: '/catalogcategory',
 			component: CatalogCategory
-		},
-		{
+		}, {
 			path: '/filterCategory',
 			component: FilterCategory
+		}, {
+			path: '/lovelist',
+			component: Lovelist,
+			exact: true
 		}, {
 			path: '/product/comments/:id',
 			component: ProductsComments,
