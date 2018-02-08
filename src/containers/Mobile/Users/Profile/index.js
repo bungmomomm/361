@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
-import { Page, Navigation, Svg, List, Level, Image, Panel, Notification } from '@/components/mobile';
+import { Page, Navigation, Svg, List, Level, Image, Panel } from '@/components/mobile';
 
 class UserProfile extends Component {
 	constructor(props) {
