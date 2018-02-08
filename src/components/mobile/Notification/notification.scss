@@ -2,12 +2,44 @@
 @import '../../../styles/mobile/mixins';
 
 .container{
+  	display: none;
     background: #F3F3F3;
-    height: rem(45px);
+    min-height: rem(45px);
     justify-content: center;
     align-items: center;
+  	text-align: center;
     font-size: 12px;
-    padding: 0px 15px;
+    padding: 0 15px;
+}
+
+.toastContainer{
+  	visibility: hidden;
+    position: fixed;
+  	top: 0;
+  	left: 0;
+  	right: 0;
+  	bottom: 0;
+  	display: flex;
+  	flex-flow: column wrap;
+  	justify-content: center;
+  	align-items: center;
+}
+
+.toast{
+  flex: 0 0 auto;
+  max-width: 85%;
+  height: 70px;
+  padding: 25px 40px;
+  font-size: 14px;
+  line-height: 17px;
+  letter-spacing: 0.23px;
+  opacity: 0.9;
+  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: 0 0 15px 0 rgba(0,0,0,0.10);
+  border-top-left-radius: 35px 50%;
+  border-top-right-radius: 35px 50%;
+  border-bottom-left-radius: 35px 50%;
+  border-bottom-right-radius: 35px 50%;
 }
 
 .close{
@@ -32,4 +64,26 @@
 .green{
     background-color: #E0EFD8;
     color: #64BE64;
+}
+
+.show {
+  display: flex;
+}
+
+.hide {
+  display: none;
+}
+
+.showToast {
+  :global {
+	animation: fadeIn 0.5s linear;
+	animation-fill-mode: forwards;
+  }
+}
+
+.hideToast {
+  :global {
+	animation: fadeOut 0.5s linear;
+	animation-fill-mode: forwards;
+  }
 }
