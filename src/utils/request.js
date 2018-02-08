@@ -51,12 +51,16 @@ const request = (props) => {
 	const mode = isMobile() ? 'mweb' : 'web';
 	
 	let headers = {
-		Authorization: `Bearer ${props.token}`,
 		client_id: isMobile() ? 'mweb' : 'web',
 		session_id: '',
 		client_version: '4.0',
 		'X-Mode': mode
 	};
+	
+	if (props.token) {
+		headers.Authorization = `Bearer ${props.token}`;
+	}
+
 	if (isKongActive()) {
 		headers = kongRequestHeader(props);
 	}

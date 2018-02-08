@@ -3,10 +3,12 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { withCookies } from 'react-cookie';
 import { Header, Page, Card, Button, Svg, Image, Level } from '@/components/mobile';
+import _ from 'lodash';
 import styles from './lovelist.scss';
 import { actions as LoveListActionCreator } from '@/state/v4/Lovelist';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import { renderIf } from '@/utils';
+import Shared from '@/containers/Mobile/Shared';
 
 class Lovelist extends Component {
 	constructor(props) {
@@ -54,7 +56,11 @@ class Lovelist extends Component {
 
 	fetchLovelistItems() {
 		// fetching data from server
-		const req = LoveListActionCreator.getLovelisItems(this.userCookies);
+		const { shared } = this.props;
+
+		const loveListService = _.chain(shared).get('serviceUrl.lovelist').value() || false;
+
+		const req = LoveListActionCreator.getLovelisItems(this.userCookies, loveListService);
 		const { dispatch } = this.props;
 		dispatch(LoveListActionCreator.setLoadingState({ loading: true }));
 		req.then(response => {
@@ -72,7 +78,7 @@ class Lovelist extends Component {
 		const HeaderPage = {
 			left: (
 				<Button className={this.state.loggedIn && !this.state.listEmpty ? null : 'd-none'} onClick={() => this.setState({ listTypeGrid: !listTypeGrid })}>
-					<Svg src={listTypeGrid ? 'ico_list.svg' : 'ico_grid.svg'} />
+					<Svg src={listTypeGrid ? 'ico_grid.svg' : 'ico_list.svg'} />
 				</Button>
 			),
 			center: 'Lovelist',
@@ -152,4 +158,4 @@ const mapStateToProps = (state) => {
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Lovelist));
+export default withCookies(connect(mapStateToProps)(Shared(Lovelist)));
