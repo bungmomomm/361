@@ -6,11 +6,13 @@ import _ from 'lodash';
 import {
 	Header, Carousel, Tabs,
 	Page, Level, Button, Grid, Article,
-	Navigation, Svg, Image, Notification
+	Navigation, Svg, Image
 } from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
 import Shared from '@/containers/Mobile/Shared';
+import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
+import { renderIf } from '@/utils';
 
 const renderSectionHeader = (title, options) => {
 	return (
@@ -273,10 +275,19 @@ class Home extends Component {
 						onPick={(e) => this.handlePick(e)}
 					/>
 
-					<Notification color='pink' show={this.state.notification.show} onClose={(e) => this.setState({ notification: { show: false } })}>
-						<div>Up to 70% off Sale</div>
-						<p>same color on all segments</p>
-					</Notification>
+					{
+						renderIf(shared && shared.foreverBanner && shared.foreverBanner.text)(
+							<ForeverBanner
+								color={shared.foreverBanner.text.background_color}
+								show={this.state.notification.show}
+								onClose={(e) => this.setState({ notification: { show: false } })}
+								text1={shared.foreverBanner.text.text1}
+								text2={shared.foreverBanner.text.text2}
+								textColor={shared.foreverBanner.text.text_color}
+								linkValue={shared.foreverBanner.target.url}
+							/>
+						)
+					}
 
 					{this.renderFeatureBanner()}
 

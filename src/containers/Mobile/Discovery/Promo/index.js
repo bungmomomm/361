@@ -11,6 +11,8 @@ import Shared from '@/containers/Mobile/Shared';
 import styles from './promo.scss';
 import { actions } from '@/state/v4/Discovery';
 import Scroller from '@/containers/Mobile/Shared/scroller';
+import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
+import { renderIf } from '@/utils';
 
 class Promo extends Component {
 
@@ -21,6 +23,9 @@ class Promo extends Component {
 		this.state = {
 			listTypeGrid: false,
 			productEmpty: false,
+			notification: {
+				show: true
+			}
 			// products: this.props.discovery.Promo,
 			// promoType: '',
 		};
@@ -37,11 +42,6 @@ class Promo extends Component {
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.promoType = this.props.location.pathname.replace('/', '');
-	}
-
-	componentDidMount() {
-		const { dispatch } = this.props;
-		dispatch(actions.promoAction({ token: this.userCookies, promoType: this.promoType }));
 	}
 
 	getProductListContent() {
@@ -116,13 +116,26 @@ class Promo extends Component {
 
 			)
 		};
-
+		const { shared } = this.props;
 		return (
 			<div style={this.props.style}>
 				<Page>
 					{content}
 				</Page>
 				<Header.Modal {...HeaderPage} />
+				{
+					renderIf(shared && shared.foreverBanner && shared.foreverBanner.text)(
+						<ForeverBanner
+							color={shared.foreverBanner.text.background_color}
+							show={this.state.notification.show}
+							onClose={(e) => this.setState({ notification: { show: false } })}
+							text1={shared.foreverBanner.text.text1}
+							text2={shared.foreverBanner.text.text2}
+							textColor={shared.foreverBanner.text.text_color}
+							linkValue={shared.foreverBanner.target.url}
+						/>
+					)
+				}
 				<Image alt='Product Terlaris' src='http://www.solidbackgrounds.com/images/950x350/950x350-light-pink-solid-color-background.jpg' style={bannerInline} />
 				<Navigation active='Promo' />
 
@@ -146,8 +159,23 @@ const mapStateToProps = (state) => {
 		discovery: {
 			loading: state.discovery.loading,
 			promo: state.discovery.promo
-		}
+		},
+		shared: state.shared
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(Scroller(Promo))));
+const doAfterAnonymous = (props) => {
+	const { dispatch, cookies, location, home } = props;
+	const filtr = home.segmen.filter((obj) => {
+		return obj.key === home.activeSegment;
+	});
+
+	const query = filtr && filtr[0] ? { segment_id: filtr[0].id } : {};
+	dispatch(actions.promoAction({
+		token: cookies.get('user.token'),
+		promoType: location.pathname.replace('/', ''),
+		query
+	}));
+};
+
+export default withCookies(connect(mapStateToProps)(Scroller(Shared(Promo, doAfterAnonymous))));
