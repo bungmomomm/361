@@ -126,12 +126,18 @@ Login.defaultProps = {
 
 const mapStateToProps = (state) => {
 	return {
-		...state,
-		isLoginLoading: state.users.isLoading
+		...state
 	};
 };
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		dispatch
+	};
+};
+
 const doAfterAnonymous = (props) => {
 	console.log('code here if you need anon token or token');
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(Login, doAfterAnonymous)));
+export default withCookies(connect(mapStateToProps, mapDispatchToProps)(Shared(Login, doAfterAnonymous)));

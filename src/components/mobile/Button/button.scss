@@ -11,6 +11,7 @@
   border: 0;
   outline: none;
   font-size: inherit;
+  font-family: font-family('lato-normal');
   &[disabled] {
     opacity: .4;
   }
@@ -35,6 +36,18 @@
 
 .rounded {
   border-radius: map-get($border-radius , --medium);
+}
+
+.left{
+  text-align: left;
+}
+
+.right{
+  text-align: right;
+}
+
+.center{
+  text-align: center;
 }
 
 
