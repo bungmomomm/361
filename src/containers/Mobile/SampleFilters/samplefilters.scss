@@ -1,0 +1,11 @@
+.fixed {
+	position: fixed;
+	width: 100%;
+	top: rem(60px);
+	z-index: 11;
+}
+
+
+.cardContainer {
+	flex-flow: row wrap;
+}
