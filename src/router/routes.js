@@ -44,6 +44,7 @@ let UserProfileEditOVO = defRoute;
 let UserProfileEditHP = defRoute;
 let UserProfileEditEmail = defRoute;
 let Cart = defRoute;
+let CartEmpty = defRoute;
 
 if (isMobile()) {
 	/**
@@ -75,6 +76,7 @@ if (isMobile()) {
 	
 	// Shopping-bag
 	Cart = loadable(() => import('@/containers/Mobile/Cart'));
+	CartEmpty = loadable(() => import('@/containers/Mobile/Cart/empty'));
 
 	ProductsComments = loadable(() => import('@/containers/Mobile/Details/Products/Comments'));
 	ProductsGuide = loadable(() => import('@/containers/Mobile/Details/Products/Guide'));
@@ -216,8 +218,18 @@ export default {
 			component: UserProfile
 		},
 		{
+			path: '/lovelist',
+			component: Lovelist
+		},
+		{
 			path: '/cart',
+			exact: true,
 			component: Cart
+		},
+		{
+			path: '/cart/empty',
+			exact: true,
+			component: CartEmpty
 		},
 		{
 			path: '/*', // Page not found handling.
