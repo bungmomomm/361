@@ -154,10 +154,6 @@ export default {
 			component: CatalogCategory
 		},
 		{
-			path: '/filterCategory',
-			component: FilterCategory
-		},
-		{
 			path: '/samplefilters',
 			component: SampleFilters
 		},
