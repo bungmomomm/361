@@ -89,19 +89,21 @@ class Lovelist extends Component {
 			)
 		};
 		const { shared } = this.props;
+		const text = shared.foreverBanner.text || false;
+		const target = shared.foreverBanner.target || false;
 		return (
 			<div style={this.props.style}>
 				<Page>
 					{
-						renderIf(shared && shared.foreverBanner && shared.foreverBanner.text)(
+						renderIf(text && target)(
 							<ForeverBanner
-								color={shared.foreverBanner.text.background_color}
+								color={text && text.background_color}
 								show={this.state.notification.show}
 								onClose={(e) => this.setState({ notification: { show: false } })}
-								text1={shared.foreverBanner.text.text1}
-								text2={shared.foreverBanner.text.text2}
-								textColor={shared.foreverBanner.text.text_color}
-								linkValue={shared.foreverBanner.target.url}
+								text1={text && text.text1}
+								text2={text && text.text2}
+								textColor={text && text.text_color}
+								linkValue={target && target.url}
 							/>
 						)
 					}

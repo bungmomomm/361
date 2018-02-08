@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
+import { renderIf } from '@/utils';
 
 class SearchResults extends Component {
 	constructor(props) {
@@ -96,7 +97,7 @@ class SearchResults extends Component {
 				<div className={stylesSearch.container} >
 					<div className={stylesCatalog.cardContainer}>
 						{
-							products.map((product, index) => 
+							products.map((product, index) =>
 								this.renderList(product, index)
 							)
 						}
@@ -210,27 +211,10 @@ class SearchResults extends Component {
 		return tabsView;
 	}
 
-	renderForeverBanner() {
-		const { shared } = this.props;
-		if (!_.isEmpty(shared.foreverBanner)) {
-			return (
-				<ForeverBanner
-					color={shared.foreverBanner.text.background_color}
-					show={this.state.notification.show}
-					onClose={(e) => this.setState({ notification: { show: false } })}
-					text1={shared.foreverBanner.text.text1}
-					text2={shared.foreverBanner.text.text2}
-					textColor={shared.foreverBanner.text.text_color}
-					// linkValue={shared.foreverBanner.target.url}
-				/>
-			);
-		}
-
-		return null;
-	}
-
 	render() {
-		// const { shared } = this.props;
+		const { shared } = this.props;
+		const text = shared.foreverBanner.text || false;
+		const target = shared.foreverBanner.target || false;
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -238,8 +222,19 @@ class SearchResults extends Component {
 				</Page>
 				{this.renderHeader()}
 				{this.props.isLoading ? this.loadingRender() : this.renderTabs()}
-				{this.renderForeverBanner()}
-
+				{
+					renderIf(text && target)(
+						<ForeverBanner
+							color={text && text.background_color}
+							show={this.state.notification.show}
+							onClose={(e) => this.setState({ notification: { show: false } })}
+							text1={text && text.text1}
+							text2={text && text.text2}
+							textColor={text && text.text_color}
+							linkValue={target && target.url}
+						/>
+					)
+				}
 				<Navigation />
 
 				{this.props.scroller.loading}

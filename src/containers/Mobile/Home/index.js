@@ -13,6 +13,7 @@ import { actions } from '@/state/v4/Home';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import Shared from '@/containers/Mobile/Shared';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
+import { renderIf } from '@/utils';
 
 const renderSectionHeader = (title, options) => {
 	return (
@@ -248,37 +249,33 @@ class Home extends Component {
 		return null;
 	}
 
-	renderForeverBanner() {
-		const { shared } = this.props;
-		if (!_.isEmpty(shared.foreverBanner)) {
-			return (
-				<ForeverBanner
-					color={shared.foreverBanner.text.background_color}
-					show={this.state.notification.show}
-					onClose={(e) => this.setState({ notification: { show: false } })}
-					text1={shared.foreverBanner.text.text1}
-					text2={shared.foreverBanner.text.text2}
-					textColor={shared.foreverBanner.text.text_color}
-					// linkValue={shared.foreverBanner.target.url}
-				/>
-			);
-		}
-
-		return null;
-	}
-
 	render() {
 		const { shared } = this.props;
+		console.log(this.props);
+		const text = shared.foreverBanner.text || false;
+		const target = shared.foreverBanner.target || false;
 		return (
 			<div style={this.props.style}>
 				<Page>
 					<Tabs
-						current={this.props.shared.current}
+						current={this.state.current}
 						variants={this.props.home.segmen}
 						onPick={(e) => this.handlePick(e)}
 					/>
 
-					{this.renderForeverBanner()}
+					{
+						renderIf(text && target)(
+							<ForeverBanner
+								color={text && text.backgroundColor}
+								show={this.state.notification.show}
+								onClose={(e) => this.setState({ notification: { show: false } })}
+								text1={text && text.text1}
+								text2={text && text.text2}
+								textColor={text && text.text_color}
+								linkValue={target && target.url}
+							/>
+						)
+					}
 
 					{this.renderFeatureBanner()}
 
