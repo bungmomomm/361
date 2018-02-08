@@ -5,12 +5,7 @@ import _ from 'lodash';
 
 class Color extends PureComponent {
 	render() {
-		const { onClose, filters, onClick } = this.props;
-		const colors = _.filter(filters.facets, (facet) => facet.id === 'color');
-		let colorFilters = [];
-		if (colors.length > 0) {
-			colorFilters = colors[0].data;
-		}
+		const { onClose, onClick, data } = this.props;
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
@@ -20,7 +15,7 @@ class Color extends PureComponent {
 			center: 'Warna',
 			right: null
 		};
-		const colorList = _.map(colorFilters, (color, key) => {
+		const colorList = _.map(data, (color, key) => {
 			const icon = color.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
 			return (
 				<Button key={key} align='left' wide onClick={(e) => onClick(e, color)}><List.Content><Badge circle colorCode={color.colorcode} size='medium' filter={color} />{color.facetdisplay} {icon}</List.Content></Button>

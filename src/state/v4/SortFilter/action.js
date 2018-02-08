@@ -139,10 +139,10 @@ const parseFilter = (type, filters) => {
 	let urlFilter;
 	switch (type) {
 	case 'category':
-		urlFilter = getUrlFilterForCategory(filters);
+		urlFilter = `categories/products?${querystring.stringify(getUrlFilterForCategory(filters))}`;
 		break;
 	case 'search':
-		urlFilter = getUrlFilterForSearch(filters);
+		urlFilter = `products/search?${querystring.stringify(getUrlFilterForSearch(filters))}`;
 		break;
 	default:
 		break;
@@ -156,42 +156,25 @@ const parseFilter = (type, filters) => {
 	// per_page = per_page
 	// fq = fq
 	// sort = sort
-	// return urlFilter;
-	return querystring.stringify(urlFilter);
+	return urlFilter;
 };
 
 const parseDataToFilter = (data) => {
-	const params = {
-		filters: {},
-	};
-	const filters = {};
-	data.facets.forEach((facet) => {
-		if (facet.id !== 'price') {
-			filters[fqMap[facet.id]] = {
-				active: true,
-				value: facet.data
-			};
-		} else {
-			filters[fqMap[facet.id]] = {
-				active: true,
-				range: facet.range,
-				value: facet.data
-			};
-		}
+	// get sort
+	const queryString = data.links.next.split('?');
+	const sortParams = querystring.parse(queryString[1]);
+	data.page = sortParams.page;
+	data.perPage = sortParams.per_page;
+	if (typeof sortParams.category_id !== 'undefined') {
+		data.categoryID = sortParams.category_id;
+	}
+	data.facets = data.facets;
+	data.sorts = data.sorts;
+	const selectedSort = _.filter(data.sorts, (sort) => (sort.is_selected === 1)).shift();
+	data.sort = typeof selectedSort.q !== 'undefined' ? selectedSort.q : 'energy DESC';
+	data.q = data.info.title;
 
-		filters[fqMap[facet.id]].value = filters[fqMap[facet.id]].value.map((value) => {
-			return {
-				...value,
-				id: value.facetrange
-			};
-		});
-	});
-
-	// sort
-	params.sorts = data.sorts;
-	const selectedSort = params.sorts.filter((sort) => params.is_selected).shift();
-	params.sort = typeof selectedSort.q !== 'undefined' ? selectedSort.q : 'energy DESC';
-	params.q = data.info.title;
+	return data;
 };
 
 // const isSuccess = (response) => {
@@ -207,7 +190,7 @@ const applyFilter = (token, type, filters) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const filterQuery = parseFilter(type, filters);
 	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || process.env.MICROSERVICES_URL;
-	const filterUrl = `${baseUrl}?${filterQuery}`;
+	const filterUrl = `${baseUrl}/${filterQuery}`;
 	console.log(filterUrl);
 	const [error, response] = await to(request({
 		token,
@@ -221,11 +204,12 @@ const applyFilter = (token, type, filters) => async (dispatch, getState) => {
 		return Promise.reject(error);
 	}
 
-	if (response.code === 200) {
-		filters = parseDataToFilter(response.data);
-		dispatch(actions.updateFilterSuccess(filters));
+	if (response.data.code === 200) {
+		const responseData = _.chain(response);
+		const params = parseDataToFilter(responseData.get('data.data').value());
+		dispatch(actions.updateFilterSuccess(params.facets, params.facets, params.sorts, params.page, params.perPage));
 		return Promise.resolve({
-			data: response.data
+			data: responseData.get('data.data').value()
 		});
 	}
 	const errorMessage = new Error(response.error_message);
@@ -236,6 +220,10 @@ const applyFilter = (token, type, filters) => async (dispatch, getState) => {
 const doTest = (t) => dispatch => {
 	console.log(t);
 	dispatch(actions.doTest(t));
+};
+
+const resetFilter = () => dispatch => {
+	dispatch(actions.updateFilterReset());
 };
 
 const updateFilter = (type, value, opt) => dispatch => {
@@ -249,11 +237,17 @@ const updateFilter = (type, value, opt) => dispatch => {
 	case 'category':
 		dispatch(actions.updateFilterCategory(true, value));
 		break;
+	case 'custom_category_ids':
+		dispatch(actions.updateFilterCustomCategory(true, value));
+		break;
 	case 'brand':
 		dispatch(actions.updateFilterBrand(true, value));
 		break;
 	case 'location':
 		dispatch(actions.updateFilterLocation(true, value));
+		break;
+	case 'shipping_methods':
+		dispatch(actions.updateFilterShipping(true, value));
 		break;
 	case 'price':
 		dispatch(actions.updateFilterPrice(true, value));
@@ -267,5 +261,6 @@ export default {
 	parseDataToFilter,
 	applyFilter,
 	doTest,
-	updateFilter
+	updateFilter,
+	resetFilter
 };

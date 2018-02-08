@@ -259,10 +259,14 @@ class TreeSegment extends PureComponent {
 			right: null
 		};
 
+		const categories = {
+			childs: data
+		};
+
 		return (
 			<div style={this.props.style}>
 				<Page>
-					{this.renderTree(data)}
+					{this.renderTree(categories)}
 				</Page>
 				<Header.Modal {...HeaderPage} />
 				<Action />

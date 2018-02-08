@@ -23,7 +23,7 @@ import Action from './action';
 
 class Result extends PureComponent {
 	render() {
-		const { onClose, onApply, onListClick, filters } = this.props;
+		const { onClose, onApply, onReset, onListClick, filters } = this.props;
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
@@ -56,7 +56,7 @@ class Result extends PureComponent {
 					}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action hasApply onApply={onApply} />
+				<Action hasApply hasReset onReset={onReset} onApply={onApply} />
 			</div>
 		);
 	}

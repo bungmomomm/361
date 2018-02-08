@@ -14,20 +14,6 @@ import Action from './action';
 import C from '@/constants';
 import styles from './brands.scss';
 
-const brandWalker = (brands, m) => {
-	if (typeof m === 'undefined') {
-		m = [];
-	}
-	_.forEach(brands, (brand) => {
-		if (typeof (brand.brands) !== 'undefined' && brand.brands.length > 0) {
-			brandWalker(brand.brands, m);
-		} else {
-			m.push(brand.id);
-		}
-	});
-	return m;
-};
-
 class Brands extends Component {
 	constructor(props) {
 		super(props);
@@ -44,26 +30,22 @@ class Brands extends Component {
 		});
 	}
 
-	searchBrand(e) {
+	searchData(e) {
 		this.setState({
 			keyword: e.target.value
 		});
 	} 
 
 	render() {
-		const { onClose, onClick, filters } = this.props;
+		const { onClose, onClick, title } = this.props;
+		let data = this.props.data;
 		const { keyword } = this.state;
-		const brandFacet = _.filter(filters.facets, (facet) => facet.id === 'brand');
-		let brandLists = [];
-		if (typeof brandFacet[0] !== 'undefined') {
-			brandLists = brandFacet[0].data;
-		}
-
-		if (brandLists.length > 0) {
+		
+		if (data.length > 0) {
 			if (!_.isEmpty(keyword)) {
-				brandLists = _.filter(brandLists, (brand) => {
+				data = _.filter(data, (value) => {
 					const rgx = new RegExp(keyword, 'gi');
-					return (brand.facetdisplay.search(rgx)) > -1;
+					return (value.facetdisplay.search(rgx)) > -1;
 				});
 			}
 		}
@@ -74,7 +56,7 @@ class Brands extends Component {
 					<Svg src='ico_arrow-back-left.svg' />
 				</Button>
 			),
-			center: 'Brands',
+			center: _.capitalize(title),
 			right: null
 		};
 
@@ -85,16 +67,16 @@ class Brands extends Component {
 						<Input
 							autoFocus
 							iconLeft={<Svg src='ico_search.svg' />}
-							placeholder='cari nama brand'
+							placeholder={`cari nama ${title}`}
 							value={keyword}
-							onChange={(e) => this.searchBrand(e)}
+							onChange={(e) => this.searchData(e)}
 						/>
 					</div>
 					<List>
-						{brandLists.map((brand, id) => {
-							const icon = brand.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
+						{_.map(data, (value, id) => {
+							const icon = value.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
 							return (
-								<Button key={id} align='left' wide onClick={(e) => onClick(e, brand)}><List.Content>{brand.facetdisplay} ({brand.count}) {icon}</List.Content></Button>
+								<Button key={id} align='left' wide onClick={(e) => onClick(e, value)}><List.Content>{value.facetdisplay} ({value.count}) {icon}</List.Content></Button>
 							);
 						})}
 					</List>

@@ -28,12 +28,16 @@ class Filters extends Component {
 			console.log(error);
 		}
 	}
+	
+	onReset(e) {
+		this.props.dispatch(new actions.resetFilter());
+	}
 
 	render() {
 		const { filters } = this.props;
 		return (
 			<div>
-				<Filter filters={filters} onUpdateFilter={(e, type, value) => this.onUpdateFilter(e, type, value)} onApply={(e) => this.onApply(e)} />
+				<Filter filters={filters} onUpdateFilter={(e, type, value) => this.onUpdateFilter(e, type, value)} onApply={(e) => this.onApply(e)} onReset={(e) => this.onReset(e)} />
 			</div>
 		);
 	}
@@ -53,9 +57,6 @@ const mapDispatchToProps = (dispatch) => {
 
 const doAfterAnonymous = (props) => {
 	console.log('code here if you need anon token or token s');
-	// console.log('a', props, filters);
-	props.dispatch(new actions.doTest('aaa'));
-	
 };
 
 export default withCookies(connect(mapStateToProps, mapDispatchToProps)(Shared(Filters, doAfterAnonymous)));

@@ -5,12 +5,7 @@ import _ from 'lodash';
 
 class Size extends PureComponent {
 	render() {
-		const { onClose, onClick, filters } = this.props;
-		const sizes = _.filter(filters.facets, (facet) => facet.id === 'size');
-		let sizeFilters = [];
-		if (sizes.length > 0) {
-			sizeFilters = sizes[0].data;
-		}
+		const { onClose, onClick, data } = this.props;
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
@@ -24,7 +19,7 @@ class Size extends PureComponent {
 		// to do: use below logic when implement
 		// const icon = <Svg src='ico_check.svg' />;
 		
-		const sizeList = _.map(sizeFilters, (size, id) => {
+		const sizeList = _.map(data, (size, id) => {
 			const icon = size.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
 			return (
 				<Button key={id} align='left' wide onClick={(e) => onClick(e, size)}><List.Content>{size.facetdisplay} {icon}</List.Content></Button>

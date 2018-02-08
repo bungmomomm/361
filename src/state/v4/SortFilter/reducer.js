@@ -541,52 +541,24 @@ const initialState = {
 				}
 			]
 		}
-	],
-	filters: {
-		brand: {
-			active: true,
-			value: []
-		},
-		color: {
-			active: true,
-			value: []
-		},
-		size: {
-			active: true,
-			value: []
-		},
-		price: {
-			active: true,
-			range: {
-				min: 0,
-				max: 0
-			},
-			value: []
-		},
-		location: {
-			active: true,
-			value: []
-		},
-		shipping: {
-			active: true,
-			value: []
-		}
-	}
+	]
 };
 
+initialState.filters = initialState.facets;
+
 const actions = createActions({
-	UPDATE_FILTER_STORE: (active, store) => ({ active, store }),
 	UPDATE_FILTER_CATEGORY: (active, category) => ({ active, category }),
 	UPDATE_FILTER_BRAND: (active, brand) => ({ active, brand }),
-	UPDATE_FILTER_TYPE: (active, type) => ({ active, type }),
+	UPDATE_FILTER_CUSTOM_CATEGORY: (active, category) => ({ active, category }),
 	UPDATE_FILTER_COLOR: (active, color) => ({ active, color }),
 	UPDATE_FILTER_SIZE: (active, size) => ({ active, size }),
 	UPDATE_FILTER_PRICE: (active, price, min, max) => ({ active, price, min, max }),
 	UPDATE_FILTER_LOCATION: (active, location) => ({ active, location }),
-	UPDATE_FILTER_SHIPPING: (active, shipping) => ({ active, shipping }),
+	UPDATE_FILTER_SHIPPING: (active, shipping) => ({ active, shipping_methods: shipping }),
 	UPDATE_FILTER_FAIL: (active, error) => ({ active, error }),
 	UPDATE_FILTER: undefined,
-	UPDATE_FILTER_SUCCESS: (filters) => ({ filters }),
+	UPDATE_FILTER_SUCCESS: (filters, facets, sorts, page, perPage) => ({ filters, facets, sorts, page, perPage }),
+	UPDATE_FILTER_RESET: undefined,
 	DO_TEST: (t) => ({ t })
 });
 
@@ -608,16 +580,6 @@ const findAndSetSelected = (categories, value) => {
 };
 
 const reducer = handleActions({
-	[actions.updateFilterStore]: (state, action) => ({
-		...state,
-		filters: {
-			...state.filters,
-			store: {
-				active: action.payload.active,
-				value: _.uniq(_.concat(action.payload.store))
-			}
-		}
-	}),
 	[actions.updateFilterCategory]: (state, action) => {
 		const facets = _.map(state.facets, (facet) => {
 			if (facet.id === 'category') {
@@ -631,16 +593,19 @@ const reducer = handleActions({
 			facets
 		};
 	},
-	[actions.updateFilterType]: (state, action) => ({
-		...state,
-		filters: {
-			...state.filters,
-			type: {
-				active: action.payload.active,
-				value: _.uniq(_.concat(action.payload.type))
+	[actions.updateFilterCustomCategory]: (state, action) => {
+		const facets = _.map(state.facets, (facet) => {
+			if (facet.id === 'custom_category_ids') {
+				const categories = findAndSetSelected(facet.data, action.payload.category);
+				facet.data = categories;
 			}
-		}
-	}),
+			return facet;
+		});
+		return {
+			...state,
+			facets
+		};
+	},
 	[actions.updateFilterColor]: (state, action) => {
 		const facets = _.map(state.facets, (facet) => {
 			if (facet.id === 'color') {
@@ -734,26 +699,37 @@ const reducer = handleActions({
 			facets
 		};
 	},
-	[actions.updateFilterShipping]: (state, action) => ({
-		...state,
-		filters: {
-			...state.filters,
-			shipping: {
-				active: action.payload.active,
-				value: _.uniq(_.concat(action.payload.shipping))
+	[actions.updateFilterShipping]: (state, action) => {
+		const facetName = 'shipping_methods';
+		const facets = _.map(state.facets, (facet) => {
+			if (facet.id === facetName) {
+				const results = _.map(facet.data, (value) => {
+					if (value.facetrange === action.payload[facetName].facetrange) {
+						value.is_selected = !value.is_selected;
+					}
+					return value;
+				});
+				facet.data = results;
 			}
-		}
-	}),
+			return facet;
+		});
+		return {
+			...state,
+			facets
+		};
+	},
 	[actions.updateFilter]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
 	[actions.updateFilterFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
 	[actions.doTest]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
 	[actions.updateFilterSuccess]: (state, action) => ({
 		...state,
-		filters: {
-			...action.payload.filters
-		},
+		...action.payload,
 		isLoading: false 
 	}),
+	[actions.updateFilterReset]: (state, action) => ({
+		...state,
+		facets: state.filters
+	})
 }, initialState);
 
 export default {

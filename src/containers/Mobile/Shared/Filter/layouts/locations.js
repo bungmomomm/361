@@ -34,8 +34,6 @@ class Location extends PureComponent {
 			right: null
 		};
 
-		const locations = data.data;
-
 		// const { activeTree, selected } = this.state;
 
 		const treeIcon = (active, HasTree) => {
@@ -52,9 +50,9 @@ class Location extends PureComponent {
 			<div style={this.props.style}>
 				<Page>
 					<div>
-						{_.map(locations, (location, id) => {
+						{_.map(data, (value, id) => {
 							return (
-								<List key={id}><Button onClick={(e) => this.handleTree(e, location)}><List.Content>{location.facetdisplay} {treeIcon(location.is_selected)}</List.Content></Button></List>
+								<List key={id}><Button onClick={(e) => this.handleTree(e, value)}><List.Content>{value.facetdisplay} {treeIcon(value.is_selected)}</List.Content></Button></List>
 							);
 						})}
 					</div>

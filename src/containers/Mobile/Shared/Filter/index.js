@@ -43,55 +43,71 @@ class Filter extends PureComponent {
 		onUpdateFilter(e, type, value);
 	}
 
+	getFacet(key) {
+		const facet = _.first(_.filter(this.props.filters.facets, (f) => (f.id === key)));
+		if (typeof facet !== 'undefined') {
+			facet.enabled = 1;
+			return facet;
+		}
+		return {
+			enabled: 0,
+			data: [],
+			range: {
+				min: 0,
+				max: 0
+			}
+		};
+	}
+
 	render() {
 		const { layout, ...state } = this.state;
-		const { onApply, filters } = this.props;
+		const { onApply, filters, onReset } = this.props;
 
-		let categories = _.filter(filters.facets, (f) => f.id === 'category')[0];
-		let productType = _.filter(filters.facets, (f) => f.id === 'custom_category_ids')[0];
-		const locations = _.filter(filters.facets, (f) => f.id === 'location')[0];
-		const price = _.filter(filters.facets, (f) => f.id === 'price')[0];
-		const prices = price.data;
-		const range = price.range;
-
-		categories = {
-			childs: categories.data
-		};
-
-		productType = {
-			childs: productType.data
-		};
-		
+		const categories = this.getFacet('category');
+		const customCategoryType = this.getFacet('custom_category_ids');
+		const locations = this.getFacet('location');
+		const brands = this.getFacet('brand');
+		const colors = this.getFacet('color');
+		const sizes = this.getFacet('size');
+		const shippings = this.getFacet('shipping_methods');
+		const priceData = this.getFacet('price');
+		const prices = priceData.data;
+		const range = priceData.range;
+		// console.log(categories);
+		// console.log(categories, customCategoryType, locations, brands, colors, sizes, prices, range, layout, state, onApply, onReset, filters);
 		switch (layout) {
 		case 'lists':
-			return <Lists {...state} filters={filters} />;
+			return <Lists {...state} />;
 
 		case 'listsEnd':
-			return <ListsEnd {...state} filters={filters} />;
+			return <ListsEnd {...state} />;
 		
 		case 'brand':
-			return <Brands {...state} filters={filters} onClick={(e, value) => this.onFilterSelected(e, 'brand', value)} onClose={(e) => this.onFilterSectionClose()} />;
+			return <Brands {...state} title='brands' data={brands.data} onClick={(e, value) => this.onFilterSelected(e, 'brand', value)} onClose={(e) => this.onFilterSectionClose()} />;
 		
 		case 'color':
-			return <Color {...state} filters={filters} onClick={(e, value) => this.onFilterSelected(e, 'color', value)} onClose={(e) => this.onFilterSectionClose()} />;
+			return <Color {...state} data={colors.data} onClick={(e, value) => this.onFilterSelected(e, 'color', value)} onClose={(e) => this.onFilterSectionClose()} />;
 	
 		case 'size':
-			return <Size {...state} filters={filters} onClick={(e, value) => this.onFilterSelected(e, 'size', value)} onClose={(e) => this.onFilterSectionClose()} />;
+			return <Size {...state} data={sizes.data} onClick={(e, value) => this.onFilterSelected(e, 'size', value)} onClose={(e) => this.onFilterSectionClose()} />;
 		
 		case 'price':
-			return <Price {...state} filters={filters} prices={prices} range={range} onChange={(e, value) => this.onFilterSelected(e, 'pricerange', value)} onClick={(e, value) => this.onFilterSelected(e, 'price', value)} onClose={(e) => this.onFilterSectionClose()} />;
+			return <Price {...state} prices={prices} range={range} onChange={(e, value) => this.onFilterSelected(e, 'pricerange', value)} onClick={(e, value) => this.onFilterSelected(e, 'price', value)} onClose={(e) => this.onFilterSectionClose()} />;
 		
 		case 'location':
-			return <Location {...state} filters={filters} data={locations} onClick={(e, value) => this.onFilterSelected(e, 'location', value)} onClose={(e) => this.onFilterSectionClose()} />;
-		
+			return <Location {...state} filters={filters} data={locations.data} onClick={(e, value) => this.onFilterSelected(e, 'location', value)} onClose={(e) => this.onFilterSectionClose()} />;
+
+		case 'shipping_methods':
+			return <Lists {...state} filters={filters} data={shippings.data} onClick={(e, value) => this.onFilterSelected(e, 'shipping_methods', value)} onClose={(e) => this.onFilterSectionClose()} />;
+
 		case 'custom_category_ids':
-			return <TreeSegment {...state} filters={filters} data={productType} onClick={(e, value) => this.onFilterSelected(e, 'custom_category_ids', value)} onClose={(e) => this.onFilterSectionClose()} />;
+			return <TreeSegment {...state} filters={filters} data={customCategoryType.data} onClick={(e, value) => this.onFilterSelected(e, 'custom_category_ids', value)} onClose={(e) => this.onFilterSectionClose()} />;
 		
 		case 'category':
-			return <TreeSegment {...state} filters={filters} data={categories} onClick={(e, value) => this.onFilterSelected(e, 'category', value)} onClose={(e) => this.onFilterSectionClose()} />;
+			return <TreeSegment {...state} filters={filters} data={categories.data} onClick={(e, value) => this.onFilterSelected(e, 'category', value)} onClose={(e) => this.onFilterSectionClose()} />;
 		
 		case 'result':
-			return <Result {...state} filters={filters} onApply={onApply} onListClick={(e, key) => this.onListClick(e, key)} />;
+			return <Result {...state} filters={filters} onReset={onReset} onApply={onApply} onListClick={(e, key) => this.onListClick(e, key)} />;
 	
 		default:
 			return null;

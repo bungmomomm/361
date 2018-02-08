@@ -1,40 +1,33 @@
 import React, { PureComponent } from 'react';
-import { Header, Page, Svg, List } from '@/components/mobile';
-import { Link } from 'react-router-dom';
+import { Header, Page, Svg, List, Button } from '@/components/mobile';
 import Action from './action';
+import _ from 'lodash';
 
 class Lists extends PureComponent {
 	render() {
+		const { onClose, onClick, data, title } = this.props;
 		const HeaderPage = {
 			left: (
-				<Link to='/catalogcategory'>
-					<Svg src={'ico_close.svg'} />
-				</Link>
+				<Button onClick={onClose}>
+					<Svg src='ico_arrow-back-left.svg' />
+				</Button>
 			),
-			center: 'Filter',
+			center: _.capitalize(title) || 'Default',
 			right: null
 		};
+
+		const sizeList = _.map(data, (size, id) => {
+			const icon = size.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
+			return (
+				<Button key={id} align='left' wide onClick={(e) => onClick(e, size)}><List.Content>{size.facetdisplay} {icon}</List.Content></Button>
+			);
+		});
 
 		return (
 			<div style={this.props.style}>
 				<Page>
 					<List>
-						<List.Content>Style</List.Content>
-					</List>
-					<List>
-						<List.Content>Brand</List.Content>
-					</List>
-					<List>
-						<List.Content>Warna</List.Content>
-					</List>
-					<List>
-						<List.Content>Ukuran</List.Content>
-					</List>
-					<List>
-						<List.Content>Lokasi</List.Content>
-					</List>
-					<List>
-						<List.Content>Layanan Pengiriman</List.Content>
+						{sizeList}
 					</List>
 				</Page>
 				<Header.Modal {...HeaderPage} />

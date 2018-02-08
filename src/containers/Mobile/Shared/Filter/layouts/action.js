@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import { Svg, Button } from '@/components/mobile';
-import { Link } from 'react-router-dom';
 import styles from './action.scss';
 
 class Action extends PureComponent {
@@ -11,15 +10,19 @@ class Action extends PureComponent {
 	}
 
 	render() {
-		const { onApply } = this.props;
+		const { onApply, onReset } = this.props;
 		return (
 			<div className={styles.container}>
 				<div className={styles.wrapper}>
 					<div className={styles.navigation}>
-						<Link className={styles.item} to='/'>
-							<Svg src='ico_reset.svg' />
-							Reset
-						</Link>
+						{
+							this.props.hasReset && (
+								<Button className={styles.item} onClick={onReset}>
+									<Svg src='ico_reset.svg' />
+									Reset
+								</Button>
+							)
+						}
 						{
 							this.props.hasApply && (
 								<Button className={styles.item} onClick={onApply}>
