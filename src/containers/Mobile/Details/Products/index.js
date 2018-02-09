@@ -25,8 +25,8 @@ const DUMMY_PRODUCT = {
 
 const DUMMY_PRODUCT_GRID = {
 	images: [
-		{ mobile: 'https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-01.jpg' },
-		{ mobile: 'https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-02.jpg' }
+		{ thumbnail: 'https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-01.jpg' },
+		{ thumbnail: 'https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-02.jpg' }
 	],
 	productTitle: 'Immaculate Brands of the Year by Yannis Philippakis',
 	brandName: 'Olivia Von Halle pink print',
@@ -165,7 +165,7 @@ class Products extends Component {
 				productTitle: product.product_title,
 				brandName: product.brand,
 				pricing: product.pricing,
-				images: product.images.map((image) => ({ mobile: image.thumbnail }))
+				images: product.images
 			};
 
 			return <Card.CatalogGrid {...data} key={idx} />;
@@ -232,7 +232,7 @@ class Products extends Component {
 							<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
 						</span>
 						<div className='margin--medium --disable-flex padding--medium'>
-							<Button className='font--lato-normal font-color--primary-ext-2'>View 38 comments</Button>
+							<Button className='font--lato-normal font-color--primary-ext-2'>Lihat semua 38 komentar</Button>
 						</div>
 						<hr className='margin--small' />
 						<div className='margin--small padding--medium font-medium'>Shop the Look</div>
@@ -244,8 +244,8 @@ class Products extends Component {
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								<div className='margin--medium'>
 									<div className='padding--small flex-row flex-spaceBetween'>
-										<div className='font-medium'>Ulasan</div>
-										<Link className='font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >See All</span> <Svg src='ico_chevron-right.svg' /></Link>
+										<div className='font-medium'>Penilaian Produk</div>
+										<Link className='font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
 									</div>
 									{this.renderReviews()}
 								</div>
@@ -259,17 +259,17 @@ class Products extends Component {
 										<Level>
 											<Level.Item className='text-center padding--large'>
 												<div className='font-large'>4.5</div>
-												<div className='font-small font-color--primary-ext-2'>Reviews</div>
+												<div className='font-small font-color--primary-ext-2'>Ulasan</div>
 											</Level.Item>
 											<Level.Item className='text-center'>
 												<div className='font-large'>90</div>
-												<div className='font-small font-color--primary-ext-2'>Products</div>
+												<div className='font-small font-color--primary-ext-2'>Produk</div>
 											</Level.Item>
 										</Level>
 									</div>
 									<div className='padding--medium margin--small'>
 										<div className='font-medium'>{detail.seller.seller}</div>
-										<div className='font-small'>{detail.seller.location}</div>
+										<div className='font-small'>{detail.seller.seller_location}</div>
 									</div>
 									<div className='margin--medium'>
 										<Grid split={4} className='padding--small'>
@@ -287,7 +287,7 @@ class Products extends Component {
 								</div>
 							</div>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
-								<div className='margin--small padding--medium font-medium'>Similar Items</div>
+								<div className='margin--small padding--medium font-medium'>Produk Serupa</div>
 								<div className='flex-row'>
 									{this.renderSimilarItems()}
 								</div>
