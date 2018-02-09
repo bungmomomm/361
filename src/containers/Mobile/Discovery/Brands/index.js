@@ -43,7 +43,7 @@ class Brands extends Component {
 
 	onFilter(keyword) {
 		let filteredBrand = [];
-
+		
 		if (keyword.length >= this.state.minimumLetter) {
 			this.props.brands.data.map((e) => {
 				const listBrand = e.brands.filter((list) => {
@@ -56,7 +56,7 @@ class Brands extends Component {
 			});
 			filteredBrand = filteredBrand.sort((a, b) => b.count - a.count);
 		}
-
+		
 		this.setState({
 			filteredBrand,
 			keyword
@@ -99,7 +99,7 @@ class Brands extends Component {
 					const brandExist = brands.data.filter(e => e.group === key.trim());
 					const disabled = brandExist.length < 1;
 					const link = `#${key.trim()}`;
-
+					
 					return (
 						<Button
 							key={id}
@@ -118,7 +118,7 @@ class Brands extends Component {
 
 	renderBrandByAlphabets() {
 		const { brands } = this.props;
-
+		
 		return (
 			this.state.keyword.length < this.state.minimumLetter &&
 			brands.data.length > 0 &&

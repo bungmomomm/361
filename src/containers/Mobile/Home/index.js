@@ -241,7 +241,7 @@ class Home extends Component {
 						}
 					</Carousel>
 				</div>
-
+				
 			);
 		}
 
@@ -257,7 +257,7 @@ class Home extends Component {
 			<div style={this.props.style}>
 				<Page>
 					<Tabs
-						current={this.state.current}
+						current={this.props.shared.current}
 						variants={this.props.home.segmen}
 						onPick={(e) => this.handlePick(e)}
 					/>
@@ -269,15 +269,15 @@ class Home extends Component {
 					{this.renderHashtag()}
 
 					{this.renderOOTD()}
-
+					
 					{ this.renderRecommendation('new_arrival_products')}
 					{ this.renderBottomBanner(1) }
-
+					
 					{ this.renderRecommendation('best_seller_products')}
 					{ this.renderBottomBanner(2) }
 					{renderSectionHeader('Featured Brands', { title: 'See all', url: 'http://www.google.com' })}
 					{ this.renderFeaturedBrands() }
-
+					
 					{this.renderMozaic()}
 				</Page>
 				<Header lovelist={shared.totalLovelist} value={this.props.search.keyword} />
@@ -298,9 +298,9 @@ const mapStateToProps = (state) => {
 const doAfterAnonymous = (props) => {
 	console.log(props);
 	const { shared, home, dispatch, cookies } = props;
-
+	
 	const activeSegment = home.segmen.find(e => e.key === home.activeSegment);
-
+	
 	const promoService = _.chain(shared).get('serviceUrl.promo').value() || false;
 
 	dispatch(new actions.mainAction(cookies.get('user.token'), activeSegment, promoService));
