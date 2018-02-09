@@ -76,7 +76,7 @@ if (isMobile()) {
 
 	// PDP
 	Products = loadable(() => import('@/containers/Mobile/Details/Products'));
-	
+
 	// Shopping-bag
 	Cart = loadable(() => import('@/containers/Mobile/Cart'));
 	CartEmpty = loadable(() => import('@/containers/Mobile/Cart/empty'));
@@ -134,9 +134,20 @@ export default {
 			component: SearchNotFound
 		},
 		{
-			path: '/category',
+			path: '/category/:categoryLvl1/:categoryLvl2/:categoryLvl3',
+			component: SubCategory,
+		},
+		{
+			path: '/category/:categoryLvl1/:categoryLvl2',
+			component: SubCategory,
+		},
+		{
+			path: '/category/:categoryLvl1',
 			component: Category,
-			exact: true
+		},
+		{
+			path: '/category/',
+			component: Category,
 		},
 		{
 			path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9-]+)',
@@ -230,7 +241,7 @@ export default {
 			component: UserProfileEdit,
 		},
 		{
-			path: '/profile-edit-*', 
+			path: '/profile-edit-*',
 			component: UserProfileEdit,
 		},
 		{
