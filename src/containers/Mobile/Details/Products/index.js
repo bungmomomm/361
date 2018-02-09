@@ -55,7 +55,8 @@ class Products extends Component {
 			cardProduct: false,
 			similarItems: 'loading content',
 			reviewItems: 'loading content',
-			loading: true
+			loading: true,
+			dataHasBeenSet: false
 		};
 	}
 
@@ -72,9 +73,11 @@ class Products extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		const { detail, similar, reviews } = nextProps.product; 
+		const { detail, similar, reviews } = nextProps.product;
+		const { dataHasBeenSet } = this.state;
 		
-		if (!_.isEmpty(detail) && !_.isEmpty(similar) && !_.isEmpty(reviews)) {
+		if (!_.isEmpty(detail) && !_.isEmpty(similar) && !_.isEmpty(reviews) && !dataHasBeenSet) {
+			console.log('I am supposed to be called once :(', dataHasBeenSet);
 			const cardData = productActions.getProductCardData(detail);
 			const similarItems = similar.map((item, idx) => {
 				const data = {
@@ -92,6 +95,7 @@ class Products extends Component {
 
 			this.setState({
 				loading: false,
+				dataHasBeenSet: true,
 				detail,
 				cardProduct: cardData,
 				similarItems,
