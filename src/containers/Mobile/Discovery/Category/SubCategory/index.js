@@ -81,7 +81,7 @@ class SubCategory extends PureComponent {
 			if (this.categoryLvl3 === undefined) {
 				list = (
 					<List key={key}>
-						<Link to={`/category/${this.categoryLvl1}/${this.categoryLvl2}/${cat.id}`}>
+						<Link style={{ flexFlow: 'row nowrap' }} to={`/category/${this.categoryLvl1}/${this.categoryLvl2}/${cat.id}`}>
 							<List.Image><Image width={40} height={40} avatar src={cat.image_url} /></List.Image>
 							<List.Content>{cat.title}</List.Content>
 						</Link>
@@ -89,7 +89,7 @@ class SubCategory extends PureComponent {
 				);
 			} else {
 				list = (
-					<List key={key}>
+					<List style={{ flexFlow: 'row nowrap' }} key={key}>
 						<Link to={`/p-${cat.id}/${cat.title}`}>
 							<List.Image><Image width={40} height={40} avatar src={cat.image_url} /></List.Image>
 							<List.Content>{cat.title}</List.Content>
@@ -102,7 +102,7 @@ class SubCategory extends PureComponent {
 
 		const listFeaturedBrands = this.props.category.brands && this.props.category.brands.map((brand, key) => {
 			return (
-				<List key={key}>
+				<List style={{ flexFlow: 'row nowrap' }} key={key}>
 					<Link to={`/brand/${brand.id}/${brand.title}`}>
 						<List.Image><Image width={40} height={40} avatar src={brand.image_url} /></List.Image>
 						<List.Content>{brand.title}</List.Content>
