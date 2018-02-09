@@ -223,7 +223,7 @@ class SearchResults extends Component {
 				{this.renderHeader()}
 				{this.props.isLoading ? this.loadingRender() : this.renderTabs()}
 				{
-                    <ForeverBanner {...foreverBannerData} />
+					<ForeverBanner {...foreverBannerData} />
 				}
 				<Navigation />
 

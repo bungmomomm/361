@@ -95,7 +95,7 @@ class Lovelist extends Component {
 			<div style={this.props.style}>
 				<Page>
 					{
-                        <ForeverBanner {...foreverBannerData} />
+						<ForeverBanner {...foreverBannerData} />
 					}
 					{content}
 				</Page>
