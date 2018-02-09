@@ -40,7 +40,7 @@ class Promo extends Component {
 
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
-		this.promoType = this.props.location.pathname.replace('/', '');
+		this.promoType = this.props.location.pathname.split('/')[2];
 	}
 
 	getProductListContent() {
@@ -141,9 +141,7 @@ class Promo extends Component {
 					{content}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				{
-					this.renderForeverBanner()
-				}
+
 				<Image alt='Product Terlaris' src='http://www.solidbackgrounds.com/images/950x350/950x350-light-pink-solid-color-background.jpg' style={bannerInline} />
 				<Navigation active='Promo' />
 
@@ -179,11 +177,10 @@ const doAfterAnonymous = (props) => {
 	const filtr = home.segmen.filter((obj) => {
 		return obj.key === home.activeSegment;
 	});
-
 	const query = filtr && filtr[0] ? { segment_id: filtr[0].id } : {};
 	dispatch(actions.promoAction({
 		token: cookies.get('user.token'),
-		promoType: location.pathname.replace('/', ''),
+		promoType: location.pathname.split('/')[2],
 		query
 	}));
 };
