@@ -3,14 +3,13 @@ import { handleActions, createActions } from 'redux-actions';
 const initialState = {
 	categories: [],
 	brands: [],
-	loading: false,
-	loadingBrands: false,
+	loading: true,
+	loadingBrands: true,
 	activeSegment: {
 		id: 1,
 		key: 'wanita',
 		title: 'Wanita',
-	},
-	segment: 1
+	}
 };
 
 const { getCategoryMenu, getCategoryBrand, categoryLoading, brandsLoading } = createActions(
@@ -21,11 +20,10 @@ const { getCategoryMenu, getCategoryBrand, categoryLoading, brandsLoading } = cr
 );
 
 const reducer = handleActions({
-	[getCategoryMenu](state, { payload: { categories, segment, activeSegment } }) {
+	[getCategoryMenu](state, { payload: { categories, activeSegment } }) {
 		return {
 			...state,
 			categories,
-			segment,
 			activeSegment
 		};
 	},

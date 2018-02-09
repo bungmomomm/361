@@ -12,42 +12,49 @@ import {
 import styles from './category.scss';
 import { actions as categoryActions } from '@/state/v4/Category';
 import Shared from '@/containers/Mobile/Shared';
+import CONST from '@/constants';
 
 class Category extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.defaultSegment = CONST.SEGMENT_DEFAULT_SELECTED;
 		this.state = {
-			activeSegment: {
-				id: 1,
-				key: 'wanita',
-				title: 'Wanita'
-			},
-			notification: {
-				show: true
-			}
+			activeSegment: undefined
 		};
-		this.userCookies = this.props.cookies.get('user.token');
-		this.userRFCookies = this.props.cookies.get('user.rf.token');
+		this.userCookies = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
+		this.userRFCookies = this.props.cookies.get(CONST.COOKIE_USER_RF_TOKEN);
 		this.categoryLvl1 = props.match.params.categoryLvl1;
 		this.source = this.props.cookies.get('user.source');
 	}
 
 	componentWillMount() {
-		if (!['wanita', 'pria', 'anak'].includes(this.categoryLvl1)) {
-			this.props.history.push('/category/wanita');
+		if (!CONST.SEGMENT_INIT.find(e => e.key === this.categoryLvl1)) {
+			this.props.history.push(`/category/${this.defaultSegment.key}`);
+		}
+
+		const isActiveSegmentNotSet = this.props.home.segmen.length > 1 && this.state.activeSegment === undefined;
+		if (isActiveSegmentNotSet) {
+			this.setActiveState(this.props);
 		}
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.category.activeSegment !== this.props.category.activeSegment) {
-			this.setState({ activeSegment: nextProps.category.activeSegment });
+		const isActiveSegmentSetFromProps = nextProps.home.segmen.length > 1
+			&& nextProps.category.activeSegment !== this.props.category.activeSegment;
+		if (isActiveSegmentSetFromProps) {
+			this.setActiveState(nextProps);
 		}
+	}
+
+	setActiveState(props) {
+		const selectedSegment = props.home.segmen.find(e => e.key === props.match.params.categoryLvl1);
+		this.setState({ activeSegment: selectedSegment });
 	}
 
 	getCategory(selectedSegment) {
 		const { dispatch } = this.props;
-		dispatch(new categoryActions.getCategoryMenuAction(this.userCookies, selectedSegment.id, selectedSegment));
+		dispatch(new categoryActions.getCategoryMenuAction(this.userCookies, selectedSegment));
 		this.setState({ activeSegment: selectedSegment });
 	}
 
@@ -65,16 +72,16 @@ class Category extends PureComponent {
 
 		const loading = (<div />);
 
-		const categories = category.categories.map((cat, key) => {
+		const categories = this.state.activeSegment && category.categories.map((cat, key) => {
 			let url = cat.link;
 			switch (cat.type) {
-			case 'brand':
+			case CONST.CATEGORY_TYPE.brand:
 				url = '/brands';
 				break;
-			case 'newarrival':
-				url = '/newArrival';
+			case CONST.CATEGORY_TYPE.newarrival:
+				url = '/new_arrival';
 				break;
-			case 'category':
+			case CONST.CATEGORY_TYPE.category:
 				url = `/category/${this.state.activeSegment.key}/${cat.id}`;
 				break;
 			default:
@@ -82,9 +89,9 @@ class Category extends PureComponent {
 				break;
 			}
 
-			return (cat.type === 'digital') ?
+			return (cat.type === CONST.CATEGORY_TYPE.digital) ?
 				(
-					<a key={key} href='https://digital.mataharimall.com/' className={styles.list}>
+					<a key={key} href={CONST.DIGITAL_URL} className={styles.list}>
 						<Image src={cat.image_url} />
 						<div className={styles.label}>{cat.title}</div>
 					</a>)
@@ -100,7 +107,7 @@ class Category extends PureComponent {
 			<div style={this.props.style}>
 				<Page>
 					<Tabs
-						current={(this.props.home.segmen.length < 2) ? '' : this.state.activeSegment.key}
+						current={(this.state.activeSegment === undefined || (category.categories.length < 2 && category.loading)) ? '' : this.state.activeSegment.key}
 						variants={this.props.home.segmen}
 						onPick={(e) => this.handlePick(e)}
 					/>
@@ -128,7 +135,7 @@ const doAfterAnonymous = (props) => {
 	const { category, home, match, dispatch, cookies } = props;
 	if (category.categories.length < 1) {
 		const selectedSegment = home.segmen.find(e => e.key === match.params.categoryLvl1);
-		dispatch(new categoryActions.getCategoryMenuAction(cookies.get('user.token'), selectedSegment.id, selectedSegment));
+		dispatch(new categoryActions.getCategoryMenuAction(cookies.get(CONST.COOKIE_USER_TOKEN), selectedSegment));
 	}
 };
 

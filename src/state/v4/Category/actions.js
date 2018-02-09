@@ -1,7 +1,7 @@
 import { request } from '@/utils';
 import { getCategoryMenu, getCategoryBrand, categoryLoading, brandsLoading } from './reducer';
 
-const getCategoryMenuAction = (token, segment, activeSegment) => (dispatch) => {
+const getCategoryMenuAction = (token, activeSegment) => (dispatch) => {
 	dispatch(categoryLoading({ loading: true }));
 	const url = `${process.env.MICROSERVICES_URL}categories/list`;
 	return request({
@@ -10,11 +10,11 @@ const getCategoryMenuAction = (token, segment, activeSegment) => (dispatch) => {
 		method: 'GET',
 		fullpath: true,
 		query: {
-			segment_id: segment
+			segment_id: activeSegment.id
 		}
 	}).then(response => {
 		const categories = response.data.data;
-		dispatch(getCategoryMenu({ categories, segment, activeSegment }));
+		dispatch(getCategoryMenu({ categories, activeSegment }));
 		dispatch(categoryLoading({ loading: false }));
 	});
 };

@@ -13,6 +13,7 @@ import {
 } from '@/components/mobile';
 import { actions as categoryActions } from '@/state/v4/Category';
 import Shared from '@/containers/Mobile/Shared';
+import CONST from '@/constants';
 
 class SubCategory extends PureComponent {
 	constructor(props) {
@@ -24,8 +25,8 @@ class SubCategory extends PureComponent {
 		this.categoryLvl1 = props.match.params.categoryLvl1;
 		this.categoryLvl2 = props.match.params.categoryLvl2;
 		this.categoryLvl3 = props.match.params.categoryLvl3;
-		this.userCookies = this.props.cookies.get('user.token');
-		this.userRFCookies = this.props.cookies.get('user.rf.token');
+		this.userCookies = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
+		this.userRFCookies = this.props.cookies.get(CONST.COOKIE_USER_RF_TOKEN);
 		this.source = this.props.cookies.get('user.source');
 	}
 
@@ -47,8 +48,12 @@ class SubCategory extends PureComponent {
 			selectedCategory = (this.categoryLvl3 !== undefined) ?
 				selectedCategory.sub_categories.filter(e => e.id === this.categoryLvl3)[0] : selectedCategory;
 
+			if (selectedCategory === undefined) {
+				return this.props.history.push('/category/');
+			}
+
 			if (selectedCategory.sub_categories.length === 0) {
-				this.props.history.push(`/p-${selectedCategory.id}/${selectedCategory.title}`);
+				return this.props.history.push(`/p-${selectedCategory.id}/${selectedCategory.title}`);
 			}
 
 			this.getFeaturedBrands(selectedCategory.id);
@@ -57,6 +62,11 @@ class SubCategory extends PureComponent {
 				selectedCategory
 			});
 		}
+
+		if (categories.length > 1 && selectedCategory === undefined) {
+			return this.props.history.push('/category/');
+		}
+		return true;
 	}
 
 	getFeaturedBrands(categoryId) {
@@ -111,14 +121,23 @@ class SubCategory extends PureComponent {
 			);
 		});
 
+		const loadingDisplay = ('');
+
 		return (
 			<div style={this.props.style}>
 				<Page>
-					<Divider>Shop by Products</Divider>
-					{ this.props.category.loading ? 'Loading...' : listCategory }
-
-					<Divider>Featured Brands</Divider>
-					{ this.props.category.loadinglistFeaturedBrands ? 'Loading...' : listFeaturedBrands}
+					{ this.props.category.loading ? loadingDisplay :
+						(<div>
+							<Divider>Shop by Products</Divider>
+							{listCategory}
+						</div>)
+					}
+					{ this.props.category.loadingBrands ? loadingDisplay :
+						(<div>
+							<Divider>Featured Brands</Divider>
+							{listFeaturedBrands}
+						</div>)
+					}
 				</Page>
 				<Header.Modal {...HeaderPage} />
 				<Navigation active='Categories' />
@@ -128,7 +147,6 @@ class SubCategory extends PureComponent {
 }
 
 const mapStateToProps = (state) => {
-	// console.log('[at mapStateToProps]', state);
 	return {
 		category: state.category,
 		home: state.home,
@@ -139,7 +157,7 @@ const doAfterAnonymous = (props) => {
 	const { category, home, match, dispatch, cookies } = props;
 	if (category.categories.length < 1) {
 		const selectedSegment = home.segmen.find(e => e.key === match.params.categoryLvl1);
-		dispatch(new categoryActions.getCategoryMenuAction(cookies.get('user.token'), selectedSegment.id, selectedSegment));
+		dispatch(new categoryActions.getCategoryMenuAction(cookies.get(CONST.COOKIE_USER_TOKEN), selectedSegment.id, selectedSegment));
 	}
 };
 
