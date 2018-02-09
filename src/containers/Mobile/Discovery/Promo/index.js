@@ -12,7 +12,6 @@ import styles from './promo.scss';
 import { actions } from '@/state/v4/Discovery';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-import { renderIf } from '@/utils';
 
 class Promo extends Component {
 
@@ -117,8 +116,9 @@ class Promo extends Component {
 			)
 		};
 		const { shared } = this.props;
-		const text = shared.foreverBanner.text || false;
-		const target = shared.foreverBanner.target || false;
+		const foreverBannerData = shared.foreverBanner;
+		foreverBannerData.show = this.state.notification.show;
+		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -126,17 +126,7 @@ class Promo extends Component {
 				</Page>
 				<Header.Modal {...HeaderPage} />
 				{
-					renderIf(text && target)(
-						<ForeverBanner
-							color={text && text.background_color}
-							show={this.state.notification.show}
-							onClose={(e) => this.setState({ notification: { show: false } })}
-							text1={text && text.text1}
-							text2={text && text.text2}
-							textColor={text && text.text_color}
-							linkValue={target && target.url}
-						/>
-					)
+					<ForeverBanner {...foreverBannerData} />
 				}
 				<Image alt='Product Terlaris' src='http://www.solidbackgrounds.com/images/950x350/950x350-light-pink-solid-color-background.jpg' style={bannerInline} />
 				<Navigation active='Promo' />

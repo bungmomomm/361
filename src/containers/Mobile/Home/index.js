@@ -13,7 +13,6 @@ import { actions } from '@/state/v4/Home';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import Shared from '@/containers/Mobile/Shared';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-import { renderIf } from '@/utils';
 
 const renderSectionHeader = (title, options) => {
 	return (
@@ -77,7 +76,7 @@ class Home extends Component {
 		 * recommended_products,
 		 * recently_viewed_products
 		 * */
-		let title = ''; 
+		let title = '';
 		let link = '';
 		let label = '';
 		switch (type) {
@@ -96,7 +95,7 @@ class Home extends Component {
 			link = '/recent_view';
 			label = 'Recently Viewed';
 			break;
-		default: 
+		default:
 			title = 'LIHAT SEMUA';
 			link = '/new_arrival';
 			label = 'New Arrival';
@@ -108,7 +107,7 @@ class Home extends Component {
 		const datas = _.chain(home).get(`allSegmentData.${segment}`).get('recomendationData').get(obj);
 		if (!datas.isEmpty().value()) {
 			const header = renderSectionHeader(label, {
-				title, 
+				title,
 				url: link
 			});
 			return (
@@ -136,7 +135,7 @@ class Home extends Component {
 		const datas = _.chain(home).get(`allSegmentData.${segment}.hashtag`);
 		if (!datas.isEmpty().value()) {
 			const header = renderSectionHeader(datas.value().hashtag, {
-				title: datas.value().mainlink.text, 
+				title: datas.value().mainlink.text,
 				url: '/hashtags'
 			});
 			return (
@@ -242,7 +241,7 @@ class Home extends Component {
 						}
 					</Carousel>
 				</div>
-				
+
 			);
 		}
 
@@ -251,9 +250,9 @@ class Home extends Component {
 
 	render() {
 		const { shared } = this.props;
-		console.log(this.props);
-		const text = shared.foreverBanner.text || false;
-		const target = shared.foreverBanner.target || false;
+		const foreverBannerData = shared.foreverBanner;
+		foreverBannerData.show = this.state.notification.show;
+		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -263,34 +262,22 @@ class Home extends Component {
 						onPick={(e) => this.handlePick(e)}
 					/>
 
-					{
-						renderIf(text && target)(
-							<ForeverBanner
-								color={text && text.backgroundColor}
-								show={this.state.notification.show}
-								onClose={(e) => this.setState({ notification: { show: false } })}
-								text1={text && text.text1}
-								text2={text && text.text2}
-								textColor={text && text.text_color}
-								linkValue={target && target.url}
-							/>
-						)
-					}
+					{ <ForeverBanner {...foreverBannerData} /> }
 
 					{this.renderFeatureBanner()}
 
 					{this.renderHashtag()}
 
 					{this.renderOOTD()}
-					
+
 					{ this.renderRecommendation('new_arrival_products')}
 					{ this.renderBottomBanner(1) }
-					
+
 					{ this.renderRecommendation('best_seller_products')}
 					{ this.renderBottomBanner(2) }
 					{renderSectionHeader('Featured Brands', { title: 'See all', url: 'http://www.google.com' })}
 					{ this.renderFeaturedBrands() }
-					
+
 					{this.renderMozaic()}
 				</Page>
 				<Header lovelist={shared.totalLovelist} value={this.props.search.keyword} />
@@ -302,8 +289,8 @@ class Home extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		home: state.home, 
-		search: state.search, 
+		home: state.home,
+		search: state.search,
 		shared: state.shared
 	};
 };
@@ -311,9 +298,9 @@ const mapStateToProps = (state) => {
 const doAfterAnonymous = (props) => {
 	console.log(props);
 	const { shared, home, dispatch, cookies } = props;
-	
+
 	const activeSegment = home.segmen.find(e => e.key === home.activeSegment);
-	
+
 	const promoService = _.chain(shared).get('serviceUrl.promo').value() || false;
 
 	dispatch(new actions.mainAction(cookies.get('user.token'), activeSegment, promoService));

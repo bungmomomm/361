@@ -1,18 +1,19 @@
 import React from 'react';
 import { Notification } from '@/components/mobile';
-import { Link } from 'react-router-dom';
 const foreverBanner = (params) => {
 	const inlineStyle = {
-		color: params.textColor
+		color: params.text_color
 	};
-	const paramLinkValue = params.linkValue || '';
 	return (
-		<Link to={paramLinkValue}>
-			<Notification color={params.backgroundColor} show={params.show} onClose={params.onClose}>
-				<div style={inlineStyle}>{params.text1}</div>
-				<p style={inlineStyle}>{params.text2}</p>
-			</Notification>
-		</Link>
+		<Notification
+			color={params.text.background_color}
+			show={params.show}
+			onClose={params.onClose}
+			disableClose={params.close_button.fg_show}
+		>
+			<div style={inlineStyle}>{params.text.text1}</div>
+			<p style={inlineStyle}>{params.text.text2}</p>
+		</Notification>
 	);
 };
 

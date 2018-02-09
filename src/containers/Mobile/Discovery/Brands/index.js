@@ -17,14 +17,13 @@ import C from '@/constants';
 import styles from './brands.scss';
 import { actions } from '@/state/v4/Brand';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-import { renderIf } from '@/utils';
 
 class Brands extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
-			minimumLetter: 1,			
+			minimumLetter: 1,
 			searchFocus: false,
 			filteredBrand: [],
 			keyword: '',
@@ -43,8 +42,8 @@ class Brands extends Component {
 	}
 
 	onFilter(keyword) {
-		let filteredBrand = [];		
-		
+		let filteredBrand = [];
+
 		if (keyword.length >= this.state.minimumLetter) {
 			this.props.brands.data.map((e) => {
 				const listBrand = e.brands.filter((list) => {
@@ -57,7 +56,7 @@ class Brands extends Component {
 			});
 			filteredBrand = filteredBrand.sort((a, b) => b.count - a.count);
 		}
-		
+
 		this.setState({
 			filteredBrand,
 			keyword
@@ -100,15 +99,15 @@ class Brands extends Component {
 					const brandExist = brands.data.filter(e => e.group === key.trim());
 					const disabled = brandExist.length < 1;
 					const link = `#${key.trim()}`;
-					
+
 					return (
 						<Button
-							key={id} 
+							key={id}
 							onClick={() => { window.location.href = link; }}
 							disabled={disabled}
 						>
 							{
-								disabled ? <strike>{key}</strike> : <b>{key}</b>  
+								disabled ? <strike>{key}</strike> : <b>{key}</b>
 							}
 						</Button>
 					);
@@ -119,10 +118,10 @@ class Brands extends Component {
 
 	renderBrandByAlphabets() {
 		const { brands } = this.props;
-		
+
 		return (
 			this.state.keyword.length < this.state.minimumLetter &&
-			brands.data.length > 0 && 
+			brands.data.length > 0 &&
 			brands.data.map((list, id) => {
 				return (
 					<div key={id} id={list.group}>
@@ -173,23 +172,14 @@ class Brands extends Component {
 			right: null
 		};
 		const { shared } = this.props;
-		const text = shared.foreverBanner.text || false;
-		const target = shared.foreverBanner.target || false;
+		const foreverBannerData = shared.foreverBanner;
+		foreverBannerData.show = this.state.notification.show;
+		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
 		return (
 			<div style={this.props.style}>
 				<Page>
 					{
-						renderIf(text && target)(
-							<ForeverBanner
-								color={text && text.backgroundColor}
-								show={this.state.notification.show}
-								onClose={(e) => this.setState({ notification: { show: false } })}
-								text1={text && text.text1}
-								text2={text && text.text2}
-								textColor={text && text.text_color}
-								linkValue={target && target.url}
-							/>
-						)
+						<ForeverBanner {...foreverBannerData} />
 					}
 					<div className={styles.filter}>
 						<Level>

@@ -7,7 +7,6 @@ import _ from 'lodash';
 import styles from './lovelist.scss';
 import { actions as LoveListActionCreator } from '@/state/v4/Lovelist';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-import { renderIf } from '@/utils';
 import Shared from '@/containers/Mobile/Shared';
 
 class Lovelist extends Component {
@@ -89,23 +88,14 @@ class Lovelist extends Component {
 			)
 		};
 		const { shared } = this.props;
-		const text = shared.foreverBanner.text || false;
-		const target = shared.foreverBanner.target || false;
+		const foreverBannerData = shared.foreverBanner;
+		foreverBannerData.show = this.state.notification.show;
+		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
 		return (
 			<div style={this.props.style}>
 				<Page>
 					{
-						renderIf(text && target)(
-							<ForeverBanner
-								color={text && text.background_color}
-								show={this.state.notification.show}
-								onClose={(e) => this.setState({ notification: { show: false } })}
-								text1={text && text.text1}
-								text2={text && text.text2}
-								textColor={text && text.text_color}
-								linkValue={target && target.url}
-							/>
-						)
+                        <ForeverBanner {...foreverBannerData} />
 					}
 					{content}
 				</Page>
