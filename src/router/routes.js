@@ -242,7 +242,8 @@ export default {
 			path: '/cart/empty',
 			exact: true,
 			component: CartEmpty
-		},{
+		},
+		{
 			path: '/lovelist',
 			component: Lovelist
 		},

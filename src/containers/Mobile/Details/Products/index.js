@@ -6,6 +6,7 @@ import { actions as commentActions } from '@/state/v4/Comment';
 import { Link } from 'react-router-dom';
 import { Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid } from '@/components/mobile';
 import styles from './products.scss';
+import _ from 'lodash';
 
 const DUMMY_PRODUCT = {
 	images: [
@@ -52,7 +53,9 @@ class Products extends Component {
 			showScrollInfomation: false,
 			detail: {},
 			cardProduct: false,
-			loading: true,
+			similarItems: 'loading content',
+			reviewItems: 'loading content',
+			loading: true
 		};
 	}
 
@@ -69,13 +72,30 @@ class Products extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (this.state.detail !== nextProps.product.detail && Object.keys(nextProps.product.detail).length > 0) {
-			const { product } = nextProps;
-			const cardData = productActions.getProductCardData(product.detail);
+		const { detail, similar, reviews } = nextProps.product; 
+		
+		if (!_.isEmpty(detail) && !_.isEmpty(similar) && !_.isEmpty(reviews)) {
+			const cardData = productActions.getProductCardData(detail);
+			const similarItems = similar.map((item, idx) => {
+				const data = {
+					productTitle: item.product_title,
+					brandName: item.brand,
+					pricing: item.pricing,
+					images: item.images
+				};
+				return <Card.CatalogGrid {...data} key={idx} />;
+			});
+
+			const reviewItems = reviews.summary.map((item, idx) => {
+				return <Comment key={idx} type='review' data={item} />;
+			});
+
 			this.setState({
-				detail: product.detail,
+				loading: false,
+				detail,
 				cardProduct: cardData,
-				loading: false
+				similarItems,
+				reviewItems
 			});
 		}
 	}
@@ -154,36 +174,6 @@ class Products extends Component {
 		return null;
 	}
 
-	renderSimilarItems() {
-		const { similar } = this.props.product;
-		if (this.state.loading || Object.keys(similar).length === 0) {
-			return null;
-		}
-
-		return similar.map((product, idx) => {
-			const data = {
-				productTitle: product.product_title,
-				brandName: product.brand,
-				pricing: product.pricing,
-				images: product.images
-			};
-
-			return <Card.CatalogGrid {...data} key={idx} />;
-		});
-	}
-
-	renderReviews() {
-		const { reviews } = this.props.product;
-
-		if (this.state.loading || Object.keys(reviews).length === 0) {
-			return null;
-		}
-
-		return reviews.summary.map((item, idx) => {
-			return <Comment key={idx} type='review' data={item} />;
-		});
-	}
-
 	render() {
 		const { showScrollInfomation, loading, detail } = this.state;
 
@@ -247,7 +237,7 @@ class Products extends Component {
 										<div className='font-medium'>Penilaian Produk</div>
 										<Link className='font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
 									</div>
-									{this.renderReviews()}
+									{this.state.reviewItems}
 								</div>
 							</div>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
@@ -289,7 +279,7 @@ class Products extends Component {
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								<div className='margin--small padding--medium font-medium'>Produk Serupa</div>
 								<div className='flex-row'>
-									{this.renderSimilarItems()}
+									{this.state.similarItems}
 								</div>
 							</div>
 						</div>
