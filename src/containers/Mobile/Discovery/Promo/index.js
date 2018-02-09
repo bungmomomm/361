@@ -134,7 +134,7 @@ class Promo extends Component {
 
 			)
 		};
-		
+
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -168,7 +168,9 @@ const mapStateToProps = (state) => {
 			loading: state.discovery.loading,
 			promo: state.discovery.promo
 		},
-		shared: state.shared
+		shared: state.shared,
+		home: state.home,
+		scroller: state.scroller
 	};
 };
 
