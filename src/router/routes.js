@@ -216,27 +216,6 @@ export default {
 			path: '/promo/:type',
 			component: Promo
 		},
-		// {
-		// 	path: '/promo',
-		// 	component: Promo
-		// },
-		// {
-		// 	path: '/new_arrival',
-		// 	component: Promo,
-		// 	exact: true
-		// },
-		// {
-		// 	path: '/best_seller',
-		// 	component: Promo
-		// },
-		// {
-		// 	path: '/recommended_products',
-		// 	component: Promo
-		// },
-		// {
-		// 	path: '/recent_view',
-		// 	component: Promo
-		// },
 		{
 			path: '/profile',
 			component: UserProfile

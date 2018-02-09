@@ -25,8 +25,6 @@ class Promo extends Component {
 			notification: {
 				show: true
 			}
-			// products: this.props.discovery.Promo,
-			// promoType: '',
 		};
 		this.listPromo = [
 			'new_arrival',
@@ -44,8 +42,6 @@ class Promo extends Component {
 	}
 
 	getProductListContent() {
-		const { location } = this.props;
-		console.log(location.pathname.replace('/', '').split('/'));
 		const { discovery } = this.props;
 		const { listTypeGrid } = this.state;
 
@@ -54,7 +50,7 @@ class Promo extends Component {
 		if (typeof products !== 'undefined') {
 			const content = products.map((product, idx) => {
 				return listTypeGrid ?
-					(<Card.CatalogGrid
+					(<Card.CatalogGrid 
 						key={idx}
 						images={product.images}
 						productTitle={product.product_title}
