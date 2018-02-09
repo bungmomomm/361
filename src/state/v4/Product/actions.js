@@ -1,9 +1,9 @@
 // this actions for PDP page
 
 import { request } from '@/utils';
-import { 
-	productDetail, 
-	productRecommendation, 
+import {
+	productDetail,
+	productRecommendation,
 	productSimilar,
 	productSocialSummary,
 	productLoading
@@ -62,9 +62,9 @@ const productSimilarAction = (token) => (dispatch) => {
 	});
 };
 
-const productSocialSummaryAction = (token) => (dispatch) => {
+const productSocialSummaryAction = (token, productId) => (dispatch) => {
 	dispatch(productLoading({ loading: true }));
-	const url = `${process.env.MICROSERVICES_URL}summary`;
+	const url = `${process.env.MICROSERVICES_URL}review/summary/${productId}`;
 	return request({
 		token,
 		path: url,
@@ -83,9 +83,31 @@ const productSocialSummaryAction = (token) => (dispatch) => {
 	});
 };
 
+/**
+ * @param {*} details 
+ */
+const getProductCardData = (details) => {
+	if (details) {
+		const currentVariant = details.variants.find(product => product.id === 5225328);
+		// const currentVariant = details.variants.find(product => product.id === details.id);
+		const images = details.images.map((img, idx) => {
+			return { mobile: img.original };
+		});
+
+		return {
+			brand: details.brand.brand_name,
+			images,
+			pricing: currentVariant.pricing,
+			product_title: details.title,
+		};
+	}
+	return details;
+};
+
 export default {
 	productDetailAction,
 	productRecommendationAction,
 	productSimilarAction,
 	productSocialSummaryAction,
+	getProductCardData
 };
