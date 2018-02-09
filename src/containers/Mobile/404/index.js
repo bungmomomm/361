@@ -26,7 +26,6 @@ class Page404 extends PureComponent {
 
 
 		let back = () => { this.props.history.go(-2); };
-		console.log('histry length', this.props.history.length);
 		if (this.props.history.length < 2) {
 			back = () => { this.props.history.push('/'); };
 		}
