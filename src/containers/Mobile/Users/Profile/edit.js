@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
+import classNames from 'classnames';
 import { Page, Svg, Level, Image, Input, Button } from '@/components/mobile';
 import styles from './profile.scss';
 
@@ -10,7 +11,9 @@ class UserProfileEdit extends Component {
 		this.props = props;
 		this.state = {
 			edit: false,
-			ovoVerified: false
+			ovoVerified: false,
+			hasPP: true,
+			isBuyer: false // buyer or seller
 		};
 		this.verifyOVO = this.verifyOVO.bind(this);
 	}
@@ -47,6 +50,16 @@ class UserProfileEdit extends Component {
 	render() {
 		const enableInput = !this.state.edit;
 
+		const ppClassName = classNames(
+			styles.tempPP,
+			this.state.isBuyer ? styles.buyer : styles.seller
+		);
+
+		const ppCtrClassName = classNames(
+			styles.tempPPContainer,
+			styles.big
+		);
+
 		return (
 			<Page>
 				<Level style={{ height: '55px' }}>
@@ -69,7 +82,14 @@ class UserProfileEdit extends Component {
 					</Level.Right>
 				</Level>
 				<div style={{ alignItems: 'center' }}>
-					<Image width={80} height={80} local avatar src='temp/thumb-2.jpg' alt='Rocky Syahputra' />
+					<div className={ppCtrClassName}>
+						{
+							this.state.hasPP ?
+								<Image width={80} height={80} local avatar src='temp/thumb-2.jpg' alt='Rocky Syahputra' /> :
+								<div className={ppClassName}>RS</div>
+						}
+						{ this.state.edit ? <Link className={styles.editPP} to='#editPhoto'>UBAH</Link> : null }
+					</div>
 				</div>
 				<form style={{ padding: '15px' }}>
 					<div className='margin--medium'>
