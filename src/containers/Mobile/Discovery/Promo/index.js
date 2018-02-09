@@ -40,7 +40,7 @@ class Promo extends Component {
 
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
-		this.promoType = this.props.location.pathname.split('/')[2];
+		this.promoType = this.props.match.params.type;
 	}
 
 	getProductListContent() {
@@ -173,14 +173,14 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = (props) => {
-	const { dispatch, cookies, location, home } = props;
+	const { dispatch, cookies, match, home } = props;
 	const filtr = home.segmen.filter((obj) => {
 		return obj.key === home.activeSegment;
 	});
 	const query = filtr && filtr[0] ? { segment_id: filtr[0].id } : {};
 	dispatch(actions.promoAction({
 		token: cookies.get('user.token'),
-		promoType: location.pathname.split('/')[2],
+		promoType: match.params.type,
 		query
 	}));
 };
