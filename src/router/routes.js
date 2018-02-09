@@ -230,7 +230,7 @@ export default {
 			component: UserProfileEdit,
 		},
 		{
-			path: '/profile-edit-*',
+			path: '/profile-edit-*', 
 			component: UserProfileEdit,
 		},
 		{
@@ -246,7 +246,8 @@ export default {
 			path: '/cart/empty',
 			exact: true,
 			component: CartEmpty
-		},{
+		},
+		{
 			path: '/lovelist',
 			component: Lovelist
 		},
