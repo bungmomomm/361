@@ -134,7 +134,7 @@ class Promo extends Component {
 
 			)
 		};
-		
+
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -164,11 +164,7 @@ class Promo extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		discovery: {
-			loading: state.discovery.loading,
-			promo: state.discovery.promo
-		},
-		shared: state.shared
+		...state
 	};
 };
 
