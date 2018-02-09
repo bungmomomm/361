@@ -37,15 +37,17 @@ const getList = (itemsLovelist) => (dispatch) => {
 	dispatch(countLovelist({ count: items.length }));
 };
 
-const addToLovelist = (token, userId, variantId) => (dispatch) => {
+const addToLovelist = (token, userId, variantId, url) => (dispatch) => {
+	let path = `${process.env.MICROSERVICES_URL}add/${userId}/${variantId}`;
 
-	// const url = `${process.env.MICROSERVICES_URL}total/gets/${userId}`;
-	const url = `${process.env.MICROSERVICES_URL}add/${userId}/${variantId}`;
+	if (url) {
+		path = `${url.url}/add/${userId}/${variantId}`;
+	}
 
 	if (userId && variantId) {
 		return request({
 			token,
-			path: url,
+			path,
 			method: 'GET',
 			fullpath: true
 		}).then(response => {
@@ -58,15 +60,18 @@ const addToLovelist = (token, userId, variantId) => (dispatch) => {
 	return false;
 };
 
-const removeFromLovelist = (token, userId, variantId) => (dispatch) => {
+const removeFromLovelist = (token, userId, variantId, url) => (dispatch) => {
 
-	// const url = `${process.env.MICROSERVICES_URL}total/gets/${userId}`;
-	const url = `${process.env.MICROSERVICES_URL}delete/${userId}/${variantId}`;
+	let path = `${process.env.MICROSERVICES_URL}delete/${userId}/${variantId}`;
+
+	if (url) {
+		path = `${url.url}/delete/${userId}/${variantId}`;
+	}
 
 	if (userId && variantId) {
 		return request({
 			token,
-			path: url,
+			path,
 			method: 'GET',
 			fullpath: true
 		}).then(response => {
@@ -83,11 +88,15 @@ const removeFromLovelist = (token, userId, variantId) => (dispatch) => {
  * Gets user lovelist list from server
  * @param {*} token 
  */
-const getLovelisItems = (token) => {
-	const url = `${process.env.MICROSERVICES_URL}gets`;
+const getLovelisItems = (token, url) => {
+	let path = `${process.env.MICROSERVICES_URL}gets`;
+
+	if (url) {
+		path = `${url.url}/gets`;
+	}
 	return request({
 		token,
-		path: url,
+		path,
 		method: 'GET',
 		fullpath: true
 	});
@@ -98,14 +107,18 @@ const getLovelisItems = (token) => {
  * @param {*} token 
  * @param {*} variantId 
  */
-const countTotalPdpLovelist = (token, variantId) => (dispatch) => {
+const countTotalPdpLovelist = (token, variantId, url) => (dispatch) => {
 
-	const url = `${process.env.MICROSERVICES_URL}total/byvariant/${variantId}`;
+	let path = `${process.env.MICROSERVICES_URL}total/byvariant/${variantId}`;
+
+	if (url) {
+		path = `${url.url}/total/byvariant/${variantId}`;
+	}
 
 	if (variantId) {
 		return request({
 			token,
-			path: url,
+			path,
 			method: 'GET',
 			fullpath: true
 		}).then(response => {

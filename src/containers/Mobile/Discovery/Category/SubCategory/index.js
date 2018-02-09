@@ -52,8 +52,9 @@ class SubCategory extends PureComponent {
 				return this.props.history.push('/category/');
 			}
 
+			const categorySlug = selectedCategory.title.replace(/ /g, '-').toLowerCase();
 			if (selectedCategory.sub_categories.length === 0) {
-				return this.props.history.push(`/p-${selectedCategory.id}/${selectedCategory.title}`);
+				return this.props.history.push(`/p-${selectedCategory.id}/${categorySlug}`);
 			}
 
 			this.getFeaturedBrands(selectedCategory.id);

@@ -49,20 +49,37 @@ class Products extends Component {
 		this.handleScroll = this.handleScroll.bind(this);
 		this.state = {
 			size: 's',
-			showScrollInfomation: false
+			showScrollInfomation: false,
+			detail: {},
+			cardProduct: false,
+			loading: true,
 		};
 	}
-	
 
 	componentDidMount() {
 		const { dispatch, match } = this.props;
-		dispatch(new productActions.productDetailAction(this.userCookies, match.params.id));
-		dispatch(new productActions.productRecommendationAction(this.userCookies));
-		dispatch(new productActions.productSimilarAction(this.userCookies));
-		dispatch(new productActions.productSocialSummaryAction(this.userCookies));
-		dispatch(new commentActions.productCommentAction(this.userCookies));
+		const productId = match.params.id;
+		const token = this.userCookies;
+		dispatch(new productActions.productDetailAction(token, productId));
+		dispatch(new productActions.productRecommendationAction(token));
+		dispatch(new productActions.productSimilarAction(token));
+		dispatch(new productActions.productSocialSummaryAction(token, productId));
+		dispatch(new commentActions.productCommentAction(token));
 		window.addEventListener('scroll', this.handleScroll, true);
 	}
+
+	componentWillReceiveProps(nextProps) {
+		if (this.state.detail !== nextProps.product.detail && Object.keys(nextProps.product.detail).length > 0) {
+			const { product } = nextProps;
+			const cardData = productActions.getProductCardData(product.detail);
+			this.setState({
+				detail: product.detail,
+				cardProduct: cardData,
+				loading: false
+			});
+		}
+	}
+
 	componentWillUnmount() {
 		window.removeEventListener('scroll', this.handleScroll, true);
 	}
@@ -79,7 +96,7 @@ class Products extends Component {
 
 	addComment() {
 		const { dispatch } = this.props;
-		dispatch(new commentActions.commentAddAction(this.userCookies));		
+		dispatch(new commentActions.commentAddAction(this.userCookies));
 	}
 
 	renderHeaderPage() {
@@ -114,18 +131,18 @@ class Products extends Component {
 	}
 
 	renderStickyAction() {
-		if (this.state.showScrollInfomation) {
+		if (this.state.showScrollInfomation && !this.state.loading) {
 			return (
 				<div className={styles.stickyAction}>
 					<Level style={{ padding: '10px' }} className='flex-center'>
 						<Level.Left>
 							<div className={styles.stickyActionImage}>
-								<img alt='product' src='https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-01.jpg' />
+								<img alt='product' src={this.state.detail.images[0].thumbnail} />
 							</div>
 						</Level.Left>
 						<Level.Item className='padding--medium'>
-							<div className='font-normal'>Rp1.199.000</div>
-							<div className='font-small font-color--primary-ext-2'>Rp999.000</div>
+							<div className='font-normal'>{this.state.cardProduct.pricing.formatted.effective_price}</div>
+							<div className='font-small font-color--primary-ext-2'>{this.state.cardProduct.pricing.formatted.base_price}</div>
 						</Level.Item>
 						<Level.Right>
 							<Button color='secondary' size='medium'>BELI AJA</Button>
@@ -137,13 +154,48 @@ class Products extends Component {
 		return null;
 	}
 
+	renderSimilarItems() {
+		const { similar } = this.props.product;
+		if (this.state.loading || Object.keys(similar).length === 0) {
+			return null;
+		}
+
+		return similar.map((product, idx) => {
+			const data = {
+				productTitle: product.product_title,
+				brandName: product.brand,
+				pricing: product.pricing,
+				images: product.images.map((image) => ({ mobile: image.thumbnail }))
+			};
+
+			return <Card.CatalogGrid {...data} key={idx} />;
+		});
+	}
+
+	renderReviews() {
+		const { reviews } = this.props.product;
+
+		if (this.state.loading || Object.keys(reviews).length === 0) {
+			return null;
+		}
+
+		return reviews.summary.map((item, idx) => {
+			return <Comment key={idx} type='review' data={item} />;
+		});
+	}
+
 	render() {
-		const { showScrollInfomation } = this.state;
+		const { showScrollInfomation, loading, detail } = this.state;
+
+		if (loading) {
+			return <div>Please wait, loading content...</div>;
+		}
+
 		return (
 			<div>
 				<Page>
 					<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
-						<Card.Lovelist data={DUMMY_PRODUCT} />
+						<Card.Lovelist data={this.state.cardProduct} />
 						<Level style={{ borderBottom: '1px solid #D8D8D8', borderTop: '1px solid #D8D8D8' }}>
 							<Level.Left className='flex-center'>
 								<Svg src='ico_ovo.svg' />
@@ -158,11 +210,11 @@ class Products extends Component {
 							</Level.Right>
 						</Level>
 						<div className='flex-center margin--large'>
-							<Radio 
+							<Radio
 								name='size'
 								checked={this.state.size}
 								style={{ marginBottom: '10px' }}
-								onChange={(e) => this.setState({ size: e })} 
+								onChange={(e) => this.setState({ size: e })}
 								data={[
 									{ label: 'xs', value: 'xs', disabled: true },
 									{ label: 's', value: 's' },
@@ -175,10 +227,7 @@ class Products extends Component {
 							<p className='font-color--red font-small'>Stock Habis</p>
 							<p className='text-center margin--medium'>Panduan Ukuran</p>
 						</div>
-						<p className='margin--small padding--medium'>
-							lydoaharyantho and 287 others love this
-							DELLOVISIMO Dress, red, premium cotton, bust 88 and length 94, ready to ship 3 Jan 2018.
-						</p>
+						<p className='margin--small padding--medium'>{this.state.detail.description}</p>
 						<span className='margin--small padding--medium'>
 							<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
 						</span>
@@ -198,16 +247,14 @@ class Products extends Component {
 										<div className='font-medium'>Ulasan</div>
 										<Link className='font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >See All</span> <Svg src='ico_chevron-right.svg' /></Link>
 									</div>
-									<Comment />
-									<Comment />
-									<Comment />
+									{this.renderReviews()}
 								</div>
 							</div>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								<div className='margin--medium'>
 									<div className='padding--small flex-row flex-spaceBetween'>
 										<div className='padding--small'>
-											<Image avatar width={60} height={60} src='http://coolspotters.com/files/photos/323634/zara-profile.jpg?1357481236' />
+											<Image avatar width={60} height={60} src={detail.seller.seller_logo} />
 										</div>
 										<Level>
 											<Level.Item className='text-center padding--large'>
@@ -221,11 +268,11 @@ class Products extends Component {
 										</Level>
 									</div>
 									<div className='padding--medium margin--small'>
-										<div className='font-medium'>Bitter Ballen Ball</div>
-										<div className='font-small'>Jakarta Selatan</div>
+										<div className='font-medium'>{detail.seller.seller}</div>
+										<div className='font-small'>{detail.seller.location}</div>
 									</div>
 									<div className='margin--medium'>
-										<Grid split={4} className='padding--small'> 
+										<Grid split={4} className='padding--small'>
 											<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
 											<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
 											<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
@@ -242,8 +289,7 @@ class Products extends Component {
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								<div className='margin--small padding--medium font-medium'>Similar Items</div>
 								<div className='flex-row'>
-									<Card.CatalogGrid {...DUMMY_PRODUCT_GRID} />
-									<Card.CatalogGrid {...DUMMY_PRODUCT_GRID} />
+									{this.renderSimilarItems()}
 								</div>
 							</div>
 						</div>

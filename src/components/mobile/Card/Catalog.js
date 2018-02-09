@@ -27,7 +27,7 @@ class Catalog extends PureComponent {
 				<Carousel>
 					{
 						images.map((image, index) => (
-							<Image key={index} src={image.mobile} alt='product' />
+							<Image key={index} src={image.thumbnail} alt='product' />
 						))
 					}
 				</Carousel>

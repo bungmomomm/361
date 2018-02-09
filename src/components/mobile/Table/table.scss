@@ -1,0 +1,28 @@
+.container{
+	border-spacing: 1px;
+	border-collapse: collapse;
+	width: 100%;
+	th, td{
+		padding: 10px;
+		text-align: center;
+		border: 1px solid #fff;
+	}
+	thead{
+		th{
+			background-color: #606467;
+			color: #fff;
+		}
+	}
+	tbody{
+		td{
+			background-color: #F1F1F1;
+		}
+		tr{
+			&:nth-child(even){
+				td{
+					background-color: #F7F7F7;
+				}
+			}
+		}
+	}
+}

@@ -11,6 +11,7 @@ import Shared from '@/containers/Mobile/Shared';
 import styles from './promo.scss';
 import { actions } from '@/state/v4/Discovery';
 import Scroller from '@/containers/Mobile/Shared/scroller';
+import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 
 class Promo extends Component {
 
@@ -21,6 +22,9 @@ class Promo extends Component {
 		this.state = {
 			listTypeGrid: false,
 			productEmpty: false,
+			notification: {
+				show: true
+			}
 			// products: this.props.discovery.Promo,
 			// promoType: '',
 		};
@@ -87,6 +91,25 @@ class Promo extends Component {
 		}
 	}
 
+	renderForeverBanner() {
+		const { shared } = this.props;
+		if (!_.isEmpty(shared.foreverBanner)) {
+			return (
+				<ForeverBanner
+					color={shared.foreverBanner.text.background_color}
+					show={this.state.notification.show}
+					onClose={(e) => this.setState({ notification: { show: false } })}
+					text1={shared.foreverBanner.text.text1}
+					text2={shared.foreverBanner.text.text2}
+					textColor={shared.foreverBanner.text.text_color}
+					// linkValue={shared.foreverBanner.target.url}
+				/>
+			);
+		}
+
+		return null;
+	}
+
 	renderData(content) {
 		const { listTypeGrid } = this.state;
 		const { discovery } = this.props;
@@ -111,13 +134,16 @@ class Promo extends Component {
 
 			)
 		};
-
+		
 		return (
 			<div style={this.props.style}>
 				<Page>
 					{content}
 				</Page>
 				<Header.Modal {...HeaderPage} />
+				{
+					this.renderForeverBanner()
+				}
 				<Image alt='Product Terlaris' src='http://www.solidbackgrounds.com/images/950x350/950x350-light-pink-solid-color-background.jpg' style={bannerInline} />
 				<Navigation active='Promo' />
 
@@ -138,7 +164,11 @@ class Promo extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		...state
+		discovery: {
+			loading: state.discovery.loading,
+			promo: state.discovery.promo
+		},
+		shared: state.shared
 	};
 };
 
