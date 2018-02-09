@@ -1,9 +1,8 @@
-import React, { PureComponent } from 'react';
-import classNames from 'classnames';
+import React from 'react';
 import Button from '../Button';
 import styles from './select.scss';
 
-const Content = (props) => {
+const Select = (props) => {
 	if (!props.show) return null;
 	return (
 		<div className={`${props.className || ''} ${styles.content}`}>
@@ -28,26 +27,5 @@ const Content = (props) => {
 		</div>
 	);
 };
-
-
-class Select extends PureComponent {
-	render() {
-		const { className, ...props } = this.props;
-
-		const createClassName = classNames(
-			styles.container,
-			className
-		);
-
-		return (
-			<div className={createClassName} {...props}>
-				{Content}
-			</div>
-		);
-	}
-}
-
-Select.Content = Content;
-
 
 export default Select;

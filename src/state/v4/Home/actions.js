@@ -38,6 +38,7 @@ const mainAction = (token, activeSegment, url = false) => async (dispatch) => {
 		method: 'GET',
 		fullpath: true
 	}));
+	console.log(response);
 
 	if (err) {
 		return Promise.reject(err);
@@ -45,10 +46,10 @@ const mainAction = (token, activeSegment, url = false) => async (dispatch) => {
 
 	const mainData = {
 		hashtag: response.data.data.hashtag,
-		featuredBanner: response.data.data.featured_banner,
-		middleBanner: response.data.data.middle_banner,
-		bottomBanner1: response.data.data.bottom_banner1,
-		bottomBanner2: response.data.data.bottom_banner2,
+		heroBanner: response.data.data.hero_banner,
+		squareBanner: response.data.data.square_banner,
+		topLanscape: response.data.data.landscape_new_arrival,
+		bottomLanscape: response.data.data.landscape_best_seller,
 		mozaic: response.data.data.mozaic,
 		featuredBrand: response.data.data.featured_brand
 	};

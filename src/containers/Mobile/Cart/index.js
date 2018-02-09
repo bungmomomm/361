@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
-import { Page, Header, Svg, Panel, Image, Select, Level, Button } from '@/components/mobile';
+import { Page, Header, Svg, Panel, Image, Select, Level, Button, Modal } from '@/components/mobile';
 import styles from './cart.scss';
 
 class Cart extends Component {
@@ -10,6 +10,7 @@ class Cart extends Component {
 		this.props = props;
 		this.state = {
 			showSelect: false,
+			showConfirmDelete: false,
 			selected: {
 				label: null,
 				value: null
@@ -43,7 +44,7 @@ class Cart extends Component {
 				</Level>
 				<div className='flex-row flex-center flex-spaceBetween margin--medium'>
 					<div><Button outline color='secondary' size='medium'><Svg src='ico_reply.svg' /> &nbsp; Pindahkan ke Lovelist</Button></div>
-					<div className='padding--large'><Button className='font-color--primary-ext-1'><Svg src='ico_trash.svg' /> &nbsp; Hapus</Button></div>
+					<div className='padding--large'><Button onClick={() => this.setState({ showConfirmDelete: true })} className='font-color--primary-ext-1'><Svg src='ico_trash.svg' /> &nbsp; Hapus</Button></div>
 				</div>
 			</div>
 		);
@@ -52,7 +53,7 @@ class Cart extends Component {
 	render() {
 		const headerOption = {
 			left: (
-				<Link to={history.go - 1}>
+				<Link to='/'>
 					<Svg src={'ico_close-large.svg'} />
 				</Link>
 			),
@@ -104,7 +105,7 @@ class Cart extends Component {
 						</div>	
 					</div>
 				</div>
-				<Select.Content
+				<Select
 					show={this.state.showSelect}
 					label='Pilih Ukuran'
 					onChange={(e) => this.setState({ selected: e })}
@@ -118,6 +119,20 @@ class Cart extends Component {
 						{ value: 6, label: '6' }
 					]}
 				/>
+				<Modal show={this.state.showConfirmDelete}>
+					<div className='font-medium'>Anda mau menghapus produk ini?</div>
+					<Level style={{ padding: '0px' }} className='margin--medium'>
+						<Level.Left><Image width='40px' src='https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-01.jpg' /></Level.Left>
+						<Level.Item className='padding--medium'>
+							<div className='font-small'>IMMACULATE</div>
+							<div className='font-small font-color--primary-ext-1'>Olivia Von Halle pink print</div>
+						</Level.Item>
+					</Level>
+					<Modal.Action 
+						closeButton={<Button onClick={() => this.setState({ showConfirmDelete: false })}>BATAL</Button>}
+						confirmButton={<Button><span className='font-color--primary-ext-2'>HAPUS</span></Button>}
+					/>
+				</Modal>
 			</div>
 		);
 	}

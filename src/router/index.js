@@ -29,7 +29,7 @@ const transition = {
 };
 
 export default () => (
-	<div>
+	<div className='full-height'>
 		<AnimatedSwitch
 			atEnter={transition.atEnter}
 			atLeave={transition.atLeave}
