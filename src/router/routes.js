@@ -214,8 +214,7 @@ export default {
 		},
 		{
 			path: '/promo/:type',
-			component: Promo,
-			exact: true
+			component: Promo
 		},
 		// {
 		// 	path: '/promo',

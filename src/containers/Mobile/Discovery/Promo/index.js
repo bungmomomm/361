@@ -40,13 +40,14 @@ class Promo extends Component {
 
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
-		this.promoType = this.props.location.pathname.replace('/', '').split('/')[1];
+		// this.promoType = this.props.location.pathname.replace('/', '').split('/')[1];
 	}
 
 	componentDidMount() {
 		const { match, location } = this.props;
 		console.log(match.param.type);
 		console.log(location.pathname.replace('/', '').split('/'));
+		this.promoType = this.props.location.pathname.split('/')[2];
 	}
 
 	getProductListContent() {
@@ -151,9 +152,7 @@ class Promo extends Component {
 					{content}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				{/* {
-					this.renderForeverBanner()
-				} */}
+
 				<Image alt='Product Terlaris' src='http://www.solidbackgrounds.com/images/950x350/950x350-light-pink-solid-color-background.jpg' style={bannerInline} />
 				<Navigation active='Promo' />
 
@@ -189,12 +188,10 @@ const doAfterAnonymous = (props) => {
 	const filtr = home.segmen.filter((obj) => {
 		return obj.key === home.activeSegment;
 	});
-	
-	console.log('test');
 	const query = filtr && filtr[0] ? { segment_id: filtr[0].id } : {};
 	dispatch(actions.promoAction({
 		token: cookies.get('user.token'),
-		promoType: location.pathname.replace('/', '').split('/')[1],
+		promoType: location.pathname.split('/')[2],
 		query
 	}));
 };
