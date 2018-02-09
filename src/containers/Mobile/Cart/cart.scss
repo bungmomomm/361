@@ -33,6 +33,12 @@
 					align-items: center;
 					top: 0px;
 				}
+				svg {
+					transform: scale(0.7);
+					path{
+						stroke: #fff;
+					}
+				}
 			}
 		}
 	}
