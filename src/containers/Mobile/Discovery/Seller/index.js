@@ -23,6 +23,32 @@ class Seller extends Component {
 		listTypeState: Seller.listType[Seller.currentListState]
 	};
 
+	filterTabs = () => {
+		const { listTypeState } = this.state;
+
+		return (
+			<Tabs
+				className={stylesCatalog.fixed}
+				type='segment'
+				variants={[
+					{
+						id: 'urutkan',
+						title: 'Urutkan'
+					},
+					{
+						id: 'filter',
+						title: 'Filter'
+					},
+					{
+						id: 'view',
+						title: <Svg src={listTypeState.icon} />
+					}
+				]}
+				onPick={this.handlePick}
+			/>
+		);
+	}
+
 	handlePick = (e) => {
 		switch (e) {
 		case 'view':
@@ -37,7 +63,9 @@ class Seller extends Component {
 		}
 	}
 
-	loadProducts = (products) => {
+	loadProducts = () => {
+		const { seller: { data: { products } } } = this.props;
+
 		if (products.length > 0) {
 			return (
 				<div className={stylesCatalog.cardContainer}>
@@ -51,6 +79,41 @@ class Seller extends Component {
 		}
 
 		return null;
+	}
+
+	sellerHeader = () => {
+		const { seller } = this.props;
+
+		return (
+			<div>
+				<div>
+					<Grid split={4}>
+						<div>
+							<Image width={60} src={seller.info.seller_logo || ''} />
+							<br />
+							{seller.info.seller || ''}
+							<p>
+								{seller.info.seller_location || ''}
+							</p>
+						</div>
+						<div>
+							<Image width={60} src={seller.info.seller_badge_image || ''} />
+							<br />
+							{seller.info.seller_badge || ''}
+						</div>
+						<div>
+							{seller.info.rating || ''}
+						</div>
+						<div>
+							{seller.info.product || 0}
+						</div>
+					</Grid>
+				</div>
+				<div>
+					{seller.info.description || ''}
+				</div>
+			</div>
+		);
 	}
 
 	renderList = (productData, index) => {
@@ -95,12 +158,9 @@ class Seller extends Component {
 		} else {
 			return null;
 		}
-
 	}
 
 	render() {
-		const { listTypeState } = this.state;
-		const { seller } = this.props;
 		const HeaderPage = {
 			left: (
 				<button href={this.props.history.goBack}>
@@ -113,64 +173,17 @@ class Seller extends Component {
 
 		return (
 			<div>
-
 				<Page>
-					<div>
-						<div>
-							<Grid split={4}>
-								<div>
-									<Image width={60} src={seller.info.seller_logo || ''} />
-									<br />
-									{seller.info.seller || ''}
-									<p>
-										{seller.info.seller_location || ''}
-									</p>
-								</div>
-								<div>
-									<Image width={60} src={seller.info.seller_badge_image || ''} />
-									<br />
-									{seller.info.seller_badge || ''}
-								</div>
-								<div>
-									{seller.info.rating || ''}
-								</div>
-								<div>
-									{seller.info.product || 0}
-								</div>
-							</Grid>
-						</div>
-						<div>
-							{seller.info.description || ''}
-						</div>
-					</div>
-					<div>
-						{this.loadProducts(seller.data.products)}
-					</div>
+					{this.sellerHeader()}
+					{this.loadProducts()}
 				</Page>
 
-				<Tabs
-					className={stylesCatalog.fixed}
-					type='segment'
-					variants={[
-						{
-							id: 'urutkan',
-							title: 'Urutkan'
-						},
-						{
-							id: 'filter',
-							title: 'Filter'
-						},
-						{
-							id: 'view',
-							title: <Svg src={listTypeState.icon} />
-						}
-					]}
-					onPick={this.handlePick}
-				/>
-
 				<Header.Modal {...HeaderPage} />
+				{this.filterTabs()}
+
 				<Navigation />
-			</div>);
+			</div>
+		);
 	}
 }
 
