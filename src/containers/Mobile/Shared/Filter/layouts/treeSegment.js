@@ -231,7 +231,7 @@ class TreeSegment extends PureComponent {
 						}
 						return (
 							<List key={id} className={(hasChild && styles.parent)}>
-								<List.Content className={activeTree === child.facetrange && styles.selected} align='left' onClick={(e) => this.handleTree(e, child, hasChild)}>
+								<List.Content className={activeTree === child.facetrange && styles.selected} onClick={(e) => this.handleTree(e, child, hasChild)}>
 									{Label} ({child.count})
 									{treeIcon(hasChild ? activeTree === child.facetrange : child.is_selected, hasChild)}
 								</List.Content>

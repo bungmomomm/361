@@ -305,6 +305,18 @@ const applySort = (token, type) => async (dispatch, getState) => {
 	return Promise.reject(errorMessage);
 };
 
+const initializeFilter = (filters) => dispatch => {
+	// links: response.data.data.links,
+	// info: response.data.data.info,
+	// facets: response.data.data.facets,
+	// sorts: response.data.data.sorts,
+	// products: response.data.data.products
+	// console.log(filters);
+	const params = parseDataToFilter(filters);
+	
+	dispatch(actions.updateFilterSuccess(params.facets, params.facets, params.sorts, params.page, params.perPage));
+};
+
 export default {
 	parseDataToFilter,
 	applyFilter,
@@ -312,5 +324,6 @@ export default {
 	updateFilter,
 	resetFilter,
 	updateSort,
-	applySort
+	applySort,
+	initializeFilter
 };

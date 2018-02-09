@@ -6,7 +6,7 @@ const foreverBanner = (params) => {
 		color: params.textColor
 	};
 	return (
-		<Link to={(params.linkValue !== 'undefined') ? params.linkValue : ''}>
+		<Link to={(typeof params.linkValue !== 'undefined') ? params.linkValue : ''}>
 			<Notification color={params.backgroundColor} show={params.show} onClose={params.onClose}>
 				<div style={inlineStyle}>{params.text1}</div>
 				<p style={inlineStyle}>{params.text2}</p>
