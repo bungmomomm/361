@@ -176,6 +176,7 @@ class Seller extends Component {
 				<Page>
 					{this.sellerHeader()}
 					{this.loadProducts()}
+					{this.props.scroller.loading && <button>&hellip;</button>}
 				</Page>
 
 				<Header.Modal {...HeaderPage} />
