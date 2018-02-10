@@ -22,6 +22,7 @@ import { reducer as brands } from '@/state/v4/Brand';
 import { reducer as filters } from '@/state/v4/SortFilter';
 import { reducer as scroller } from '@/state/v4/Scroller';
 import { reducer as hashtag } from '@/state/v4/Hashtag';
+import { reducer as seller } from '@/state/v4/Seller';
 
 export default combineReducers({
 	...global,
@@ -47,5 +48,6 @@ export default combineReducers({
 	brands,
 	filters,
 	scroller,
-	hashtag
+	hashtag,
+	seller
 });

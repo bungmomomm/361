@@ -25,8 +25,6 @@ class Promo extends Component {
 			notification: {
 				show: true
 			}
-			// products: this.props.discovery.Promo,
-			// promoType: '',
 		};
 		this.listPromo = [
 			'new_arrival',
@@ -40,12 +38,13 @@ class Promo extends Component {
 
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
-		this.promoType = this.props.location.pathname.replace('/', '');
+		this.promoType = this.props.match.params.type;
 	}
 
 	getProductListContent() {
 		const { discovery } = this.props;
 		const { listTypeGrid } = this.state;
+
 		const products = _.chain(discovery).get(`promo.${this.promoType}`).value().products;
 
 		if (typeof products !== 'undefined') {
@@ -91,7 +90,27 @@ class Promo extends Component {
 		}
 	}
 
+	renderForeverBanner() {
+		const { shared } = this.props;
+		if (!_.isEmpty(shared.foreverBanner)) {
+			return (
+				<ForeverBanner
+					color={shared.foreverBanner.text.background_color}
+					show={this.state.notification.show}
+					onClose={(e) => this.setState({ notification: { show: false } })}
+					text1={shared.foreverBanner.text.text1}
+					text2={shared.foreverBanner.text.text2}
+					textColor={shared.foreverBanner.text.text_color}
+					// linkValue={shared.foreverBanner.target.url}
+				/>
+			);
+		}
+
+		return null;
+	}
+
 	renderData(content) {
+		
 		const { listTypeGrid } = this.state;
 		const { discovery } = this.props;
 		const info = _.chain(discovery).get(`promo.${this.promoType}`).value().info;
@@ -152,20 +171,21 @@ const mapStateToProps = (state) => {
 			loading: state.discovery.loading,
 			promo: state.discovery.promo
 		},
-		shared: state.shared
+		shared: state.shared,
+		home: state.home,
+		scroller: state.scroller
 	};
 };
 
 const doAfterAnonymous = (props) => {
-	const { dispatch, cookies, location, home } = props;
+	const { dispatch, cookies, match, home } = props;
 	const filtr = home.segmen.filter((obj) => {
 		return obj.key === home.activeSegment;
 	});
-
 	const query = filtr && filtr[0] ? { segment_id: filtr[0].id } : {};
 	dispatch(actions.promoAction({
 		token: cookies.get('user.token'),
-		promoType: location.pathname.replace('/', ''),
+		promoType: match.params.type,
 		query
 	}));
 };
