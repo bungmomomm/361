@@ -23,19 +23,24 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		componentDidMount() {
-			if (this.shouldLoginAnonymous()) {
-				return this.loginAnonymous();
-			}
 			const loading = window.document.getElementById('loading');
-			if (typeof loading !== 'undefined') {
+			if (typeof loading !== 'undefined' && loading !== null) {
+				console.log(loading);
 				loading.parentElement.removeChild(loading);
 			}
-			return this.initProcess();
+
+			this.initProcess();
 		}
+    
+    // componentDidUpdate() {
+		// 	console.log('asdadsasd');
+
+		// 	return this.initProcess();
+		// }
 
 		componentWillUnmount() {
 			window.mmLoading.play();
-		}
+    }
 
 		shouldLoginAnonymous() {
 			return (_.isEmpty(this.userCookies) || _.isEmpty(this.userRFCookies));
