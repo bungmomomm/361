@@ -32,13 +32,23 @@ class Category extends PureComponent {
 			this.props.history.push(`/category/${this.defaultSegment.key}`);
 		};
 
-		const selectedSegment = CONST.SEGMENT_INIT.find(e => e.key === this.categoryLvl1);
+		let selectedSegment = null;
+		if (this.props.home.segmen.length > 2) {
+			selectedSegment = this.props.home.segmen.find(e => e.key === this.categoryLvl1);
+		} else {
+			selectedSegment = CONST.SEGMENT_INIT.find(e => e.key === this.categoryLvl1);
+		}
 		this.setSegmentCategory(selectedSegment);
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.match.params.categoryLvl1 !== this.props.match.params.categoryLvl1 && this.props.category.categories.length < 1) {
-			const selectedSegment = CONST.SEGMENT_INIT.find(e => e.key === nextProps.match.params.categoryLvl1);
+		if (nextProps.match.params.categoryLvl1 !== this.props.match.params.categoryLvl1) {
+			let selectedSegment = null;
+			if (this.props.home.segmen.length > 2) {
+				selectedSegment = this.props.home.segmen.find(e => e.key === nextProps.match.params.categoryLvl1);
+			} else {
+				selectedSegment = CONST.SEGMENT_INIT.find(e => e.key === nextProps.match.params.categoryLvl1);
+			}
 			this.setSegmentCategory(selectedSegment);
 		}
 	}
@@ -54,10 +64,7 @@ class Category extends PureComponent {
 	handlePick(selectedSegmentId) {
 		const selectedSegment = this.props.home.segmen.find(e => e.id === selectedSegmentId);
 		if (selectedSegment !== this.state.activeSegment) {
-			this.setState({ activeSegment: selectedSegment });
-			const { dispatch } = this.props;
-			dispatch(new categoryActions.getCategoryMenuAction(this.userCookies, selectedSegment));
-			this.setState({ activeSegment: selectedSegment });
+			this.setSegmentCategory(selectedSegment);
 			this.props.history.push(`/category/${selectedSegment.key}`);
 		}
 	}
