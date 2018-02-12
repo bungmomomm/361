@@ -25,8 +25,8 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		componentDidMount() {
 			this.initProcess();
 		}
-    
-    		// componentDidUpdate() {
+
+		// componentDidUpdate() {
 		// 	console.log('asdadsasd');
 
 		// 	return this.initProcess();
@@ -34,7 +34,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		componentWillUnmount() {
 			window.mmLoading.play();
-    		}
+		}
 
 		shouldLoginAnonymous() {
 			return (_.isEmpty(this.userCookies) || _.isEmpty(this.userRFCookies));
