@@ -45,6 +45,7 @@ let UserProfileEditHP = defRoute;
 let UserProfileEditEmail = defRoute;
 let Seller = defRoute;
 let Cart = defRoute;
+let CartEmpty = defRoute;
 
 if (isMobile()) {
 	/**
@@ -75,9 +76,10 @@ if (isMobile()) {
 
 	// PDP
 	Products = loadable(() => import('@/containers/Mobile/Details/Products'));
-	
+
 	// Shopping-bag
 	Cart = loadable(() => import('@/containers/Mobile/Cart'));
+	CartEmpty = loadable(() => import('@/containers/Mobile/Cart/empty'));
 
 	ProductsComments = loadable(() => import('@/containers/Mobile/Details/Products/Comments'));
 	ProductsGuide = loadable(() => import('@/containers/Mobile/Details/Products/Guide'));
@@ -132,9 +134,20 @@ export default {
 			component: SearchNotFound
 		},
 		{
-			path: '/category',
+			path: '/category/:categoryLvl1/:categoryLvl2/:categoryLvl3',
+			component: SubCategory,
+		},
+		{
+			path: '/category/:categoryLvl1/:categoryLvl2',
+			component: SubCategory,
+		},
+		{
+			path: '/category/:categoryLvl1',
 			component: Category,
-			exact: true
+		},
+		{
+			path: '/category/',
+			component: Category,
 		},
 		{
 			path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9]+)',
@@ -200,19 +213,7 @@ export default {
 			exact: true
 		},
 		{
-			path: '/new_arrival',
-			component: Promo
-		},
-		{
-			path: '/best_seller',
-			component: Promo
-		},
-		{
-			path: '/recommended_products',
-			component: Promo
-		},
-		{
-			path: '/recent_view',
+			path: '/promo/:type',
 			component: Promo
 		},
 		{
@@ -228,8 +229,18 @@ export default {
 			component: UserProfileEdit,
 		},
 		{
+			path: '/lovelist',
+			component: Lovelist
+		},
+		{
 			path: '/cart',
+			exact: true,
 			component: Cart
+		},
+		{
+			path: '/cart/empty',
+			exact: true,
+			component: CartEmpty
 		},
 		{
 			path: '/lovelist',
