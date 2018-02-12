@@ -23,16 +23,10 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		componentDidMount() {
-			const loading = window.document.getElementById('loading');
-			if (typeof loading !== 'undefined' && loading !== null) {
-				console.log(loading);
-				loading.parentElement.removeChild(loading);
-			}
-
 			this.initProcess();
 		}
     
-    // componentDidUpdate() {
+    		// componentDidUpdate() {
 		// 	console.log('asdadsasd');
 
 		// 	return this.initProcess();
@@ -40,7 +34,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		componentWillUnmount() {
 			window.mmLoading.play();
-    }
+    		}
 
 		shouldLoginAnonymous() {
 			return (_.isEmpty(this.userCookies) || _.isEmpty(this.userRFCookies));
