@@ -80,22 +80,23 @@ class Home extends Component {
 		let label = '';
 		switch (type) {
 		case 'best_seller_products':
-			link = '/best_seller'; label = 'Best Seller';
+			link = '/promo/best_seller'; label = 'Best Seller';
 			break;
 		case 'recommended_products':
-			link = '/recommended_products'; label = 'Recommmended';
+			link = '/promo/recommended_products'; label = 'Recommmended';
 			break;
 		case 'recently_viewed_products':
-			link = '/recent_view'; label = 'Recently Viewed';
+			link = '/promo/recent_view'; label = 'Recently Viewed';
 			break;
 		default: 
-			link = '/new_arrival'; label = 'New Arrival';
+			link = '/promo/new_arrival'; label = 'New Arrival';
 		}
 
 		const obj = _.camelCase(type);
 		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}`).get('recomendationData').get(obj);
+		
 		if (!datas.isEmpty().value()) {
 			const header = renderSectionHeader(label, {
 				title, 

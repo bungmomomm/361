@@ -38,7 +38,6 @@ const mainAction = (token, activeSegment, url = false) => async (dispatch) => {
 		method: 'GET',
 		fullpath: true
 	}));
-	console.log(response);
 
 	if (err) {
 		return Promise.reject(err);
@@ -57,7 +56,7 @@ const mainAction = (token, activeSegment, url = false) => async (dispatch) => {
 	allSegmentData[activeSegment.key] = mainData;
 
 	dispatch(segmentActive({ activeSegment }));
-	dispatch(homepageData({ allSegmentData }));
+	dispatch(homepageData({ allSegmentData, activeSegment: activeSegment.key }));
 
 	return Promise.resolve(mainData);
 };

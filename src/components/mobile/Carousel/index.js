@@ -53,9 +53,9 @@ const Decorators = [
 
 class NukeCarousel extends PureComponent {
 
-	// componentDidMount() {
-	// 	this.updateDimentionCarousel();
-	// }
+	componentDidMount() {
+		this.updateDimentionCarousel();
+	}
 
 	componentDidUpdate() {
 		this.updateDimentionCarousel();

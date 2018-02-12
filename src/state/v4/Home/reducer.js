@@ -31,11 +31,14 @@ const reducer = handleActions({
 			segmen
 		};
 	},
-	[homepageData](state, { payload: { allSegmentData } }) {
+	[homepageData](state, { payload: { allSegmentData, activeSegment } }) {
 		return {
 			...state,
 			allSegmentData: {
 				...state.allSegmentData,
+				[activeSegment]: {
+					...state.allSegmentData[activeSegment],
+				},
 				...allSegmentData
 			}
 		};

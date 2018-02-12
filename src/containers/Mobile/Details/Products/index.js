@@ -6,6 +6,7 @@ import { actions as commentActions } from '@/state/v4/Comment';
 import { Link } from 'react-router-dom';
 import { Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid } from '@/components/mobile';
 import styles from './products.scss';
+import _ from 'lodash';
 
 const DUMMY_PRODUCT = {
 	images: [
@@ -25,8 +26,8 @@ const DUMMY_PRODUCT = {
 
 const DUMMY_PRODUCT_GRID = {
 	images: [
-		{ mobile: 'https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-01.jpg' },
-		{ mobile: 'https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-02.jpg' }
+		{ thumbnail: 'https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-01.jpg' },
+		{ thumbnail: 'https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-02.jpg' }
 	],
 	productTitle: 'Immaculate Brands of the Year by Yannis Philippakis',
 	brandName: 'Olivia Von Halle pink print',
@@ -52,7 +53,10 @@ class Products extends Component {
 			showScrollInfomation: false,
 			detail: {},
 			cardProduct: false,
+			similarItems: 'loading content',
+			reviewItems: 'loading content',
 			loading: true,
+			dataHasBeenSet: false
 		};
 	}
 
@@ -69,13 +73,33 @@ class Products extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (this.state.detail !== nextProps.product.detail && Object.keys(nextProps.product.detail).length > 0) {
-			const { product } = nextProps;
-			const cardData = productActions.getProductCardData(product.detail);
+		const { detail, similar, reviews } = nextProps.product;
+		const { dataHasBeenSet } = this.state;
+		
+		if (!_.isEmpty(detail) && !_.isEmpty(similar) && !_.isEmpty(reviews) && !dataHasBeenSet) {
+			console.log('I am supposed to be called once :(', dataHasBeenSet);
+			const cardData = productActions.getProductCardData(detail);
+			const similarItems = similar.map((item, idx) => {
+				const data = {
+					productTitle: item.product_title,
+					brandName: item.brand,
+					pricing: item.pricing,
+					images: item.images
+				};
+				return <Card.CatalogGrid {...data} key={idx} />;
+			});
+
+			const reviewItems = reviews.summary.map((item, idx) => {
+				return <Comment key={idx} type='review' data={item} />;
+			});
+
 			this.setState({
-				detail: product.detail,
+				loading: false,
+				dataHasBeenSet: true,
+				detail,
 				cardProduct: cardData,
-				loading: false
+				similarItems,
+				reviewItems
 			});
 		}
 	}
@@ -154,36 +178,6 @@ class Products extends Component {
 		return null;
 	}
 
-	renderSimilarItems() {
-		const { similar } = this.props.product;
-		if (this.state.loading || Object.keys(similar).length === 0) {
-			return null;
-		}
-
-		return similar.map((product, idx) => {
-			const data = {
-				productTitle: product.product_title,
-				brandName: product.brand,
-				pricing: product.pricing,
-				images: product.images.map((image) => ({ mobile: image.thumbnail }))
-			};
-
-			return <Card.CatalogGrid {...data} key={idx} />;
-		});
-	}
-
-	renderReviews() {
-		const { reviews } = this.props.product;
-
-		if (this.state.loading || Object.keys(reviews).length === 0) {
-			return null;
-		}
-
-		return reviews.summary.map((item, idx) => {
-			return <Comment key={idx} type='review' data={item} />;
-		});
-	}
-
 	render() {
 		const { showScrollInfomation, loading, detail } = this.state;
 
@@ -232,7 +226,7 @@ class Products extends Component {
 							<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
 						</span>
 						<div className='margin--medium --disable-flex padding--medium'>
-							<Button className='font--lato-normal font-color--primary-ext-2'>View 38 comments</Button>
+							<Button className='font--lato-normal font-color--primary-ext-2'>Lihat semua 38 komentar</Button>
 						</div>
 						<hr className='margin--small' />
 						<div className='margin--small padding--medium font-medium'>Shop the Look</div>
@@ -244,10 +238,10 @@ class Products extends Component {
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								<div className='margin--medium'>
 									<div className='padding--small flex-row flex-spaceBetween'>
-										<div className='font-medium'>Ulasan</div>
-										<Link className='font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >See All</span> <Svg src='ico_chevron-right.svg' /></Link>
+										<div className='font-medium'>Penilaian Produk</div>
+										<Link className='font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
 									</div>
-									{this.renderReviews()}
+									{this.state.reviewItems}
 								</div>
 							</div>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
@@ -259,17 +253,17 @@ class Products extends Component {
 										<Level>
 											<Level.Item className='text-center padding--large'>
 												<div className='font-large'>4.5</div>
-												<div className='font-small font-color--primary-ext-2'>Reviews</div>
+												<div className='font-small font-color--primary-ext-2'>Ulasan</div>
 											</Level.Item>
 											<Level.Item className='text-center'>
 												<div className='font-large'>90</div>
-												<div className='font-small font-color--primary-ext-2'>Products</div>
+												<div className='font-small font-color--primary-ext-2'>Produk</div>
 											</Level.Item>
 										</Level>
 									</div>
 									<div className='padding--medium margin--small'>
 										<div className='font-medium'>{detail.seller.seller}</div>
-										<div className='font-small'>{detail.seller.location}</div>
+										<div className='font-small'>{detail.seller.seller_location}</div>
 									</div>
 									<div className='margin--medium'>
 										<Grid split={4} className='padding--small'>
@@ -287,9 +281,9 @@ class Products extends Component {
 								</div>
 							</div>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
-								<div className='margin--small padding--medium font-medium'>Similar Items</div>
+								<div className='margin--small padding--medium font-medium'>Produk Serupa</div>
 								<div className='flex-row'>
-									{this.renderSimilarItems()}
+									{this.state.similarItems}
 								</div>
 							</div>
 						</div>

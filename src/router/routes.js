@@ -213,19 +213,7 @@ export default {
 			exact: true
 		},
 		{
-			path: '/new_arrival',
-			component: Promo
-		},
-		{
-			path: '/best_seller',
-			component: Promo
-		},
-		{
-			path: '/recommended_products',
-			component: Promo
-		},
-		{
-			path: '/recent_view',
+			path: '/promo/:type',
 			component: Promo
 		},
 		{
