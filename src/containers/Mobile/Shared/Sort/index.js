@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { List, Svg, Button } from '@/components/mobile';
+import PropTypes from 'prop-types';
 import styles from './sort.scss';
 import _ from 'lodash';
 
@@ -30,5 +31,10 @@ class Sort extends Component {
 		);
 	}
 }
+
+Sort.propTypes = {
+	onSelected: PropTypes.string,
+	sorts: PropTypes.object
+};
 
 export default Sort;

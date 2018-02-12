@@ -11,6 +11,12 @@ import queryString from 'query-string';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 
+import { actions as filterActions } from '@/state/v4/SortFilter';
+import Filter from '@/containers/Mobile/Shared/Filter';
+import Sort from '@/containers/Mobile/Shared/Sort';
+import { to } from 'await-to-js';
+import Spinner from '../../../../../components/mobile/Spinner';
+
 class Product extends Component {
 	constructor(props) {
 		super(props);
@@ -31,68 +37,128 @@ class Product extends Component {
 			listTypeState: this.listType[this.currentListState],
 			notification: {
 				show: true
-			}
+			},
+			filterShown: false,
+			sortShown: false
 		};
 	}
 
+	async onApply(e) {
+		console.log('onApply called');
+		const { dispatch, cookies, filters } = this.props;
+		const [err, response] = await to(dispatch(new filterActions.applyFilter(cookies.get('user.token'), 'category', filters)));
+		console.log(err, response);
+		if (err) {
+			return err;
+		}
+		this.setState({
+			filterShown: false
+		});
+		console.log(response);
+		return response;
+	}
+
+	onUpdateFilter(e, type, value) {
+		try {
+			this.props.dispatch(new filterActions.updateFilter(type, value));
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	onReset(e) {
+		this.props.dispatch(new filterActions.resetFilter());
+	}
+
+	onClose(e) {
+		this.setState({
+			filterShown: false
+		});
+	}
+
+	sort(e, value) {
+		this.setState({
+			sortShown: false
+		});
+	}
+
 	handlePick(e) {
-		switch (e) {
-		case 'view':
+		if (e === 'view') {
 			this.currentListState = this.currentListState === 2 ? 0 : this.currentListState + 1;
 			this.setState({ listTypeState: this.listType[this.currentListState] });
-			break;
-		// case 'filter':
-		// 	this.props.history.push('/filterCategory');
-		// 	break;
-		default:
-			break;
+		} else {
+			this.setState({
+				filterShown: e === 'filter',
+				sortShown: e === 'sort'
+			});
 		}
 	}
 
 	loadingView() {
 		return (
 			<div style={this.props.style}>
-				&nbsp;
+				<Spinner />
 			</div>
 		);
 	}
 
 	pcpRender() {
 		let pcpView = null;
-		const { shared } = this.props;
+		const { shared, filters } = this.props;
+		console.log(this.props);
+		const { filterShown, sortShown } = this.state;
 		const pcpResults = this.props.productCategory;
 		if (typeof pcpResults.pcpStatus !== 'undefined' && pcpResults.pcpStatus !== '') {
 			if (pcpResults.pcpStatus === 'success' && pcpResults.pcpData.products.length > 0) {
-				pcpView = (
-					<div style={this.props.style}>
-						<Page>
-							<div className={stylesCatalog.cardContainer}>
-								{
-									pcpResults.pcpData.products.map((product, index) => 
-										this.renderList(product, index)
-									)
-								}
-							</div>
-						</Page>
-						{this.renderHeader()}
-						{this.renderTabs()}
-						{
-							shared.foreverBanner.text ?
-								<ForeverBanner
-									color={shared.foreverBanner.text.background_color}
-									show={this.state.notification.show}
-									onClose={(e) => this.setState({ notification: { show: false } })}
-									text1={shared.foreverBanner.text.text1}
-									text2={shared.foreverBanner.text.text2}
-									textColor={shared.foreverBanner.text.text_color}
-								/>
-								: ''
-						}
-						<Navigation active='Categories' />
-		
-						{this.props.scroller.loading}
-					</div>
-				);
+				if (filterShown) {
+					pcpView = (
+						<Filter
+							shown={filterShown}
+							filters={filters}
+							onUpdateFilter={(e, type, value) => this.onUpdateFilter(e, type, value)}
+							onApply={(e) => {
+								this.onApply(e);
+							}}
+							onReset={(e) => this.onReset(e)}
+							onClose={(e) => this.onClose(e)}
+						/>
+					);
+				} else if (sortShown) {
+					pcpView = (
+						<Sort sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
+					);
+				} else {
+					pcpView = (
+						<div style={this.props.style}>
+							<Page>
+								<div className={stylesCatalog.cardContainer}>
+									{
+										pcpResults.pcpData.products.map((product, index) => 
+											this.renderList(product, index)
+										)
+									}
+								</div>
+							</Page>
+							{this.renderHeader()}
+							{this.renderTabs()}
+							{
+								shared.foreverBanner.text ?
+									<ForeverBanner
+										color={shared.foreverBanner.text.background_color}
+										show={this.state.notification.show}
+										onClose={(e) => this.setState({ notification: { show: false } })}
+										text1={shared.foreverBanner.text.text1}
+										text2={shared.foreverBanner.text.text2}
+										textColor={shared.foreverBanner.text.text_color}
+									/>
+									: ''
+							}
+							<Navigation active='Categories' />
+			
+							{this.props.scroller.loading}
+						</div>
+					);
+				}
 			} else if (pcpResults.pcpStatus === 'failed') {
 				window.location.href = '/not-found';
 			}
@@ -183,7 +249,7 @@ class Product extends Component {
 				type='segment'
 				variants={[
 					{
-						id: 'urutkan',
+						id: 'sort',
 						title: 'Urutkan'
 					},
 					{
@@ -207,6 +273,7 @@ class Product extends Component {
 
 const mapStateToProps = (state) => {
 	return {
+		...state,
 		shared: state.shared,
 		productCategory: state.productCategory,
 		isLoading: state.productCategory.isLoading,
@@ -214,7 +281,7 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (props) => {
+const doAfterAnonymous = async (props) => {
 	console.log(props);
 	const { shared, dispatch, cookies, match, location } = props;
 
@@ -229,7 +296,13 @@ const doAfterAnonymous = (props) => {
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
 	
-	dispatch(actions.initAction(cookies.get('user.token'), productService, pcpParam));
+	const [err, response] = await to(dispatch(actions.initAction(cookies.get('user.token'), productService, pcpParam)));
+	
+	if (err) {
+		console.log(err);
+	} else {
+		dispatch(filterActions.initializeFilter(response));
+	}
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Scroller(Product), doAfterAnonymous)));
