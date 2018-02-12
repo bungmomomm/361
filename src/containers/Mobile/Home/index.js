@@ -75,7 +75,7 @@ class Home extends Component {
 		 * recommended_products,
 		 * recently_viewed_products
 		 * */
-		const title = 'LIHAT SEMUA'; 
+		const title = 'LIHAT SEMUA';
 		let link = '';
 		let label = '';
 		switch (type) {
@@ -240,27 +240,11 @@ class Home extends Component {
 		return null;
 	}
 
-	renderForeverBanner() {
-		const { shared } = this.props;
-		if (!_.isEmpty(shared.foreverBanner)) {
-			return (
-				<ForeverBanner
-					color={shared.foreverBanner.text.background_color}
-					show={this.state.notification.show}
-					onClose={(e) => this.setState({ notification: { show: false } })}
-					text1={shared.foreverBanner.text.text1}
-					text2={shared.foreverBanner.text.text2}
-					textColor={shared.foreverBanner.text.text_color}
-					// linkValue={shared.foreverBanner.target.url}
-				/>
-			);
-		}
-
-		return null;
-	}
-
 	render() {
 		const { shared } = this.props;
+		const foreverBannerData = shared.foreverBanner;
+		foreverBannerData.show = this.state.notification.show;
+		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -269,8 +253,8 @@ class Home extends Component {
 						variants={this.props.home.segmen}
 						onPick={(e) => this.handlePick(e)}
 					/>
-
-					{/* {this.renderForeverBanner()} */}
+     
+					{ <ForeverBanner {...foreverBannerData} /> }
 
 					{this.renderHeroBanner()}
 
@@ -297,8 +281,8 @@ class Home extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		home: state.home, 
-		search: state.search, 
+		home: state.home,
+		search: state.search,
 		shared: state.shared
 	};
 };

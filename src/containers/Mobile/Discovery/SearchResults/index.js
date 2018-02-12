@@ -96,7 +96,7 @@ class SearchResults extends Component {
 				<div className={stylesSearch.container} >
 					<div className={stylesCatalog.cardContainer}>
 						{
-							products.map((product, index) => 
+							products.map((product, index) =>
 								this.renderList(product, index)
 							)
 						}
@@ -210,27 +210,11 @@ class SearchResults extends Component {
 		return tabsView;
 	}
 
-	renderForeverBanner() {
-		const { shared } = this.props;
-		if (!_.isEmpty(shared.foreverBanner)) {
-			return (
-				<ForeverBanner
-					color={shared.foreverBanner.text.background_color}
-					show={this.state.notification.show}
-					onClose={(e) => this.setState({ notification: { show: false } })}
-					text1={shared.foreverBanner.text.text1}
-					text2={shared.foreverBanner.text.text2}
-					textColor={shared.foreverBanner.text.text_color}
-					// linkValue={shared.foreverBanner.target.url}
-				/>
-			);
-		}
-
-		return null;
-	}
-
 	render() {
-		// const { shared } = this.props;
+		const { shared } = this.props;
+		const foreverBannerData = shared.foreverBanner;
+		foreverBannerData.show = this.state.notification.show;
+		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -238,8 +222,9 @@ class SearchResults extends Component {
 				</Page>
 				{this.renderHeader()}
 				{this.props.isLoading ? this.loadingRender() : this.renderTabs()}
-				{this.renderForeverBanner()}
-
+				{
+					<ForeverBanner {...foreverBannerData} />
+				}
 				<Navigation />
 
 				{this.props.scroller.loading}
