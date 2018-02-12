@@ -76,27 +76,21 @@ class Product extends Component {
 		});
 	}
 
-	sort(e) {
+	sort(e, value) {
 		this.setState({
 			sortShown: false
 		});
 	}
 
 	handlePick(e) {
-		switch (e) {
-		case 'view':
+		if (e === 'view') {
 			this.currentListState = this.currentListState === 2 ? 0 : this.currentListState + 1;
 			this.setState({ listTypeState: this.listType[this.currentListState] });
-			break;
-		// case 'filter':
-		// 	this.props.history.push('/filterCategory');
-		// 	break;
-		default:
+		} else {
 			this.setState({
 				filterShown: e === 'filter',
 				sortShown: e === 'sort'
 			});
-			break;
 		}
 	}
 

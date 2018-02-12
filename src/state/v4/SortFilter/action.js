@@ -77,18 +77,6 @@ const getFq = (filters) => {
 				}
 			});			
 			break;
-		case 'price':
-			// range
-			_.forEach(facetCollection.data, (facetData) => {
-				if (facetData.is_selected) {
-					fq[facetName].push(facetData.facetrange);
-				} else {
-					_.remove(fq[facetName], (v) => {
-						return v === facetData.facetrange;
-					});
-				}
-			});
-			break;
 		default:
 			_.forEach(facetCollection.data, (facetData) => {
 				if (facetData.is_selected) {
