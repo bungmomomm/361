@@ -12,7 +12,6 @@ class Tab extends PureComponent {
 		const className = classNames(styles.tab, {
 			[styles.active]: active
 		});
-
 		return (
 			<li
 				className={className}

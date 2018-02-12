@@ -11,6 +11,7 @@ import Shared from '@/containers/Mobile/Shared';
 import styles from './promo.scss';
 import { actions } from '@/state/v4/Discovery';
 import Scroller from '@/containers/Mobile/Shared/scroller';
+import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 
 class Promo extends Component {
 
@@ -21,8 +22,9 @@ class Promo extends Component {
 		this.state = {
 			listTypeGrid: false,
 			productEmpty: false,
-			// products: this.props.discovery.Promo,
-			// promoType: '',
+			notification: {
+				show: true
+			}
 		};
 		this.listPromo = [
 			'new_arrival',
@@ -36,17 +38,13 @@ class Promo extends Component {
 
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
-		this.promoType = this.props.location.pathname.replace('/', '');
-	}
-
-	componentDidMount() {
-		const { dispatch } = this.props;
-		dispatch(actions.promoAction({ token: this.userCookies, promoType: this.promoType }));
+		this.promoType = this.props.match.params.type;
 	}
 
 	getProductListContent() {
 		const { discovery } = this.props;
 		const { listTypeGrid } = this.state;
+
 		const products = _.chain(discovery).get(`promo.${this.promoType}`).value().products;
 
 		if (typeof products !== 'undefined') {
@@ -92,7 +90,27 @@ class Promo extends Component {
 		}
 	}
 
+	renderForeverBanner() {
+		const { shared } = this.props;
+		if (!_.isEmpty(shared.foreverBanner)) {
+			return (
+				<ForeverBanner
+					color={shared.foreverBanner.text.background_color}
+					show={this.state.notification.show}
+					onClose={(e) => this.setState({ notification: { show: false } })}
+					text1={shared.foreverBanner.text.text1}
+					text2={shared.foreverBanner.text.text2}
+					textColor={shared.foreverBanner.text.text_color}
+					// linkValue={shared.foreverBanner.target.url}
+				/>
+			);
+		}
+
+		return null;
+	}
+
 	renderData(content) {
+		
 		const { listTypeGrid } = this.state;
 		const { discovery } = this.props;
 		const info = _.chain(discovery).get(`promo.${this.promoType}`).value().info;
@@ -116,13 +134,19 @@ class Promo extends Component {
 
 			)
 		};
-
+		const { shared } = this.props;
+		const foreverBannerData = shared.foreverBanner;
+		foreverBannerData.show = this.state.notification.show;
+		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
 		return (
 			<div style={this.props.style}>
 				<Page>
 					{content}
 				</Page>
 				<Header.Modal {...HeaderPage} />
+				{
+					<ForeverBanner {...foreverBannerData} />
+				}
 				<Image alt='Product Terlaris' src='http://www.solidbackgrounds.com/images/950x350/950x350-light-pink-solid-color-background.jpg' style={bannerInline} />
 				<Navigation active='Promo' />
 
@@ -146,8 +170,24 @@ const mapStateToProps = (state) => {
 		discovery: {
 			loading: state.discovery.loading,
 			promo: state.discovery.promo
-		}
+		},
+		shared: state.shared,
+		home: state.home,
+		scroller: state.scroller
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(Scroller(Promo))));
+const doAfterAnonymous = (props) => {
+	const { dispatch, cookies, match, home } = props;
+	const filtr = home.segmen.filter((obj) => {
+		return obj.key === home.activeSegment;
+	});
+	const query = filtr && filtr[0] ? { segment_id: filtr[0].id } : {};
+	dispatch(actions.promoAction({
+		token: cookies.get('user.token'),
+		promoType: match.params.type,
+		query
+	}));
+};
+
+export default withCookies(connect(mapStateToProps)(Scroller(Shared(Promo, doAfterAnonymous))));

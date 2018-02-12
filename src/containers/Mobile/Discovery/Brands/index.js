@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
-// import _ from 'lodash';
 import {
 	Header,
 	Button,
@@ -17,16 +16,20 @@ import {
 import C from '@/constants';
 import styles from './brands.scss';
 import { actions } from '@/state/v4/Brand';
+import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 
 class Brands extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
-			minimumLetter: 1,			
+			minimumLetter: 1,
 			searchFocus: false,
 			filteredBrand: [],
 			keyword: '',
+			notification: {
+				show: true
+			}
 		};
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
@@ -39,7 +42,7 @@ class Brands extends Component {
 	}
 
 	onFilter(keyword) {
-		let filteredBrand = [];		
+		let filteredBrand = [];
 		
 		if (keyword.length >= this.state.minimumLetter) {
 			this.props.brands.data.map((e) => {
@@ -99,12 +102,12 @@ class Brands extends Component {
 					
 					return (
 						<Button
-							key={id} 
+							key={id}
 							onClick={() => { window.location.href = link; }}
 							disabled={disabled}
 						>
 							{
-								disabled ? <strike>{key}</strike> : <b>{key}</b>  
+								disabled ? <strike>{key}</strike> : <b>{key}</b>
 							}
 						</Button>
 					);
@@ -118,7 +121,7 @@ class Brands extends Component {
 		
 		return (
 			this.state.keyword.length < this.state.minimumLetter &&
-			brands.data.length > 0 && 
+			brands.data.length > 0 &&
 			brands.data.map((list, id) => {
 				return (
 					<div key={id} id={list.group}>
@@ -168,10 +171,16 @@ class Brands extends Component {
 			center: 'Brands',
 			right: null
 		};
-		
+		const { shared } = this.props;
+		const foreverBannerData = shared.foreverBanner;
+		foreverBannerData.show = this.state.notification.show;
+		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
 		return (
 			<div style={this.props.style}>
 				<Page>
+					{
+						<ForeverBanner {...foreverBannerData} />
+					}
 					<div className={styles.filter}>
 						<Level>
 							<Level.Item className={styles.center}>
@@ -209,7 +218,8 @@ class Brands extends Component {
 const mapStateToProps = (state) => {
 	return {
 		category: state.category,
-		brands: state.brands
+		brands: state.brands,
+		shared: state.shared
 	};
 };
 

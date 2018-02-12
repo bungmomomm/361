@@ -6,11 +6,13 @@ import _ from 'lodash';
 import {
 	Header, Carousel, Tabs,
 	Page, Level, Button, Grid, Article,
-	Navigation, Svg, Image, Notification
+	Navigation, Svg, Image
 } from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
+import { actions as sharedActions } from '@/state/v4/Shared';
 import Shared from '@/containers/Mobile/Shared';
+import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 
 const renderSectionHeader = (title, options) => {
 	return (
@@ -27,7 +29,6 @@ class Home extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			current: 'wanita', // wanita
 			notification: {
 				show: true
 			}
@@ -38,36 +39,20 @@ class Home extends Component {
 		this.source = this.props.cookies.get('user.source');
 	}
 
-	componentDidMount() {
-		// this.initApp();
-	}
-
 	handlePick(current) {
 		const { segmen } = this.props.home;
 		const { dispatch } = this.props;
 		const willActiveSegment = segmen.find(e => e.id === current);
-		this.setState({ current: willActiveSegment.key });
-
+		// this.setState({ current: willActiveSegment.key });
+		dispatch(new sharedActions.setCurrentSegment(willActiveSegment.key));
 		dispatch(new actions.mainAction(this.userCookies, willActiveSegment));
 		dispatch(new actions.recomendationAction(this.userCookies, willActiveSegment));
 	}
 
-	initApp() {
-		const { dispatch } = this.props;
-		// doAfterAnonymous(this.props);
-		dispatch(new actions.initAction(this.userCookies))
-		.then(segmentData => {
-			const activeSegment = segmentData.find(e => e.key === this.state.current);
-			
-			dispatch(new actions.mainAction(this.userCookies, activeSegment));
-			dispatch(new actions.recomendationAction(this.userCookies, activeSegment));
-		});
-	}
-
-	renderFeatureBanner() {
+	renderHeroBanner() {
 		const { home } = this.props;
 		const segment = home.activeSegment.key;
-		const featuredBanner = _.chain(home).get(`allSegmentData.${segment}`).get('featuredBanner');
+		const featuredBanner = _.chain(home).get(`allSegmentData.${segment}`).get('heroBanner');
 		if (!featuredBanner.isEmpty().value()) {
 			return (
 				<Carousel>
@@ -90,35 +75,28 @@ class Home extends Component {
 		 * recommended_products,
 		 * recently_viewed_products
 		 * */
-		let title = ''; 
+		const title = 'LIHAT SEMUA';
 		let link = '';
 		let label = '';
 		switch (type) {
 		case 'best_seller_products':
-			title = 'LIHAT SEMUA';
-			link = '/best_seller';
-			label = 'Best Seller';
+			link = '/promo/best_seller'; label = 'Best Seller';
 			break;
 		case 'recommended_products':
-			title = 'LIHAT SEMUA';
-			link = '/recommended_products';
-			label = 'Recommmended';
+			link = '/promo/recommended_products'; label = 'Recommmended';
 			break;
 		case 'recently_viewed_products':
-			title = 'LIHAT SEMUA';
-			link = '/recent_view';
-			label = 'Recently Viewed';
+			link = '/promo/recent_view'; label = 'Recently Viewed';
 			break;
 		default: 
-			title = 'LIHAT SEMUA';
-			link = '/new_arrival';
-			label = 'New Arrival';
+			link = '/promo/new_arrival'; label = 'New Arrival';
 		}
 
 		const obj = _.camelCase(type);
 		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}`).get('recomendationData').get(obj);
+		
 		if (!datas.isEmpty().value()) {
 			const header = renderSectionHeader(label, {
 				title, 
@@ -168,10 +146,10 @@ class Home extends Component {
 		return null;
 	}
 
-	renderOOTD() {
+	renderSquareBanner() {
 		const { home } = this.props;
 		const segment = home.activeSegment.key;
-		const datas = _.chain(home).get(`allSegmentData.${segment}.middleBanner`);
+		const datas = _.chain(home).get(`allSegmentData.${segment}.squareBanner`);
 		if (!datas.isEmpty().value()) {
 			return (
 				<div>
@@ -186,14 +164,14 @@ class Home extends Component {
 		return null;
 	}
 
-	renderBottomBanner(id = 1) {
+	renderBottomBanner(position = 'top') {
 		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		let bottomBanner = [];
-		const dataBottomBanner1 = _.chain(home).get(`allSegmentData.${segment}.bottomBanner1`);
-		const dataBottomBanner2 = _.chain(home).get(`allSegmentData.${segment}.bottomBanner2`);
-		if (!dataBottomBanner1.isEmpty().value() && !dataBottomBanner2.isEmpty().value()) {
-			bottomBanner = id === 1 ? dataBottomBanner1.value() : dataBottomBanner2.value();
+		const dataTop = _.chain(home).get(`allSegmentData.${segment}.topLanscape`);
+		const dataBottm = _.chain(home).get(`allSegmentData.${segment}.bottomLanscape`);
+		if (!dataTop.isEmpty().value() && !dataBottm.isEmpty().value()) {
+			bottomBanner = position === 'top' ? dataTop.value() : dataBottm.value();
 		}
 		if (bottomBanner.length > 0) {
 			return (
@@ -264,32 +242,32 @@ class Home extends Component {
 
 	render() {
 		const { shared } = this.props;
+		const foreverBannerData = shared.foreverBanner;
+		foreverBannerData.show = this.state.notification.show;
+		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
 		return (
 			<div style={this.props.style}>
 				<Page>
 					<Tabs
-						current={this.state.current}
+						current={this.props.shared.current}
 						variants={this.props.home.segmen}
 						onPick={(e) => this.handlePick(e)}
 					/>
+     
+					{ <ForeverBanner {...foreverBannerData} /> }
 
-					<Notification color='pink' show={this.state.notification.show} onClose={(e) => this.setState({ notification: { show: false } })}>
-						<div>Up to 70% off Sale</div>
-						<p>same color on all segments</p>
-					</Notification>
-
-					{this.renderFeatureBanner()}
+					{this.renderHeroBanner()}
 
 					{this.renderHashtag()}
 
-					{this.renderOOTD()}
+					{this.renderSquareBanner()}
 					
 					{ this.renderRecommendation('new_arrival_products')}
-					{ this.renderBottomBanner(1) }
+					{ this.renderBottomBanner('top') }
 					
 					{ this.renderRecommendation('best_seller_products')}
-					{ this.renderBottomBanner(2) }
-					{renderSectionHeader('Featured Brands', { title: 'See all', url: 'http://www.google.com' })}
+					{ this.renderBottomBanner('bottom') }
+					{renderSectionHeader('Featured Brands', { title: 'LIHAT SEMUA', url: '/brands' })}
 					{ this.renderFeaturedBrands() }
 					
 					{this.renderMozaic()}
@@ -303,8 +281,8 @@ class Home extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		home: state.home, 
-		search: state.search, 
+		home: state.home,
+		search: state.search,
 		shared: state.shared
 	};
 };

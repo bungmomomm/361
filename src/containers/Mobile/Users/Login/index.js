@@ -5,8 +5,7 @@ import { actions as users } from '@/state/v4/User';
 import { Link, Redirect } from 'react-router-dom';
 import { Header, Page, Button, Input, Tabs, Svg, Notification } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
-import { setUserCookie } from '@/utils';
-import renderIf from '@/utils/renderif';
+import { setUserCookie, renderIf } from '@/utils';
 import styles from '../user.scss';
 import _ from 'lodash';
 import validator from 'validator';
@@ -148,7 +147,7 @@ const mapStateToProps = (state) => {
 		...state
 	};
 };
-const doAfterAnonymous = (props, history) => {
+const doAfterAnonymous = (props) => {
 	console.log('code here if you need anon token or token');
 	const userCookies = props.cookies.get('user.token');
 	if (!_.isEmpty(userCookies)) {
@@ -157,11 +156,4 @@ const doAfterAnonymous = (props, history) => {
 	}
 };
 
-const mapDispatch = dispatch => {
-	console.log('dispatch');
-	return {
-		dispatch
-	};
-};
-
-export default withCookies(connect(mapStateToProps, mapDispatch)(Shared(Login, doAfterAnonymous)));
+export default withCookies(connect(mapStateToProps)(Shared(Login, doAfterAnonymous)));

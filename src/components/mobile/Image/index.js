@@ -14,6 +14,19 @@ class Image extends PureComponent {
 		return image;
 	}
 
+	triggerEvent(target, type) {
+		const doc = window.document;
+		if (doc.createEvent) {
+			const event = doc.createEvent('HTMLEvents');
+			event.initEvent(type, true, true);
+			target.dispatchEvent(event);
+		} else {
+			const event = doc.createEventObject();
+			target.fireEvent(`on${type}`, event);
+		}
+		return this;
+	}
+
 	dataSrc() {
 		let image = this.props.src;
 
@@ -33,14 +46,15 @@ class Image extends PureComponent {
 		);
 
 		return (
-			<img  
+			<img
+				onLoad={() => this.triggerEvent(window, 'resize')}
 				style={this.props.style}
 				className={createClassName}
 				height={this.props.height}
 				width={this.props.width}
-				src={this.image()} 
-				data-src={this.dataSrc()} 
-				alt={this.props.alt || ''} 
+				src={this.image()}
+				data-src={this.dataSrc()}
+				alt={this.props.alt || ''}
 			/>
 		);
 	}

@@ -1,5 +1,4 @@
-import React, { PureComponent } from 'react';
-import classNames from 'classnames';
+import React from 'react';
 import styles from './modal.scss';
 
 const Action = (props) => {
@@ -11,7 +10,7 @@ const Action = (props) => {
 	);
 };
 
-const Content = (props) => {
+const Modal = (props) => {
 	if (!props.show) {
 		return null;
 	}
@@ -24,26 +23,7 @@ const Content = (props) => {
 	);
 };
 
-
-class Modal extends PureComponent {
-	render() {
-		const { className, ...props } = this.props;
-
-		const createClassName = classNames(
-			styles.container,
-			className
-		);
-
-		return (
-			<div className={createClassName} {...props}>
-				{Content}
-			</div>
-		);
-	}
-}
-
 Modal.Action = Action;
-Modal.Content = Content;
 
 
 export default Modal;

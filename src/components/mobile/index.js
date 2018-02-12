@@ -1,4 +1,5 @@
 import Header from './Header';
+import Badge from './Badge';
 import Input from './Input';
 import Tabs from './Tabs';
 import Page from './Page';
@@ -19,8 +20,11 @@ import Slider from './Slider';
 import Panel from './Panel';
 import Comment from './Comment';
 import Radio from './Radio';
+import Select from './Select';
+import Table from './Table';
 
 export default {
+	Badge,
 	Header,
 	Input,
 	Tabs,
@@ -41,5 +45,7 @@ export default {
 	Modal,
 	Panel,
 	Radio,
-	Comment
+	Comment,
+	Select,
+	Table
 };

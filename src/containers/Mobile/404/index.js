@@ -3,11 +3,17 @@ import { withCookies } from 'react-cookie';
 import { Header, Page, Navigation, Svg } from '@/components/mobile';
 import styles from './search.scss';
 import { connect } from 'react-redux';
+import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 
 class Page404 extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.state = {
+			notification: {
+				show: true
+			}
+		};
 	}
 
 	render() {
@@ -19,7 +25,6 @@ class Page404 extends PureComponent {
 
 
 		let back = () => { this.props.history.go(-2); };
-		console.log('histry length', this.props.history.length);
 		if (this.props.history.length < 2) {
 			back = () => { this.props.history.push('/'); };
 		}
@@ -30,7 +35,10 @@ class Page404 extends PureComponent {
 			),
 			center: '404',
 		};
-
+		const { shared } = this.props;
+		const foreverBannerData = shared.foreverBanner;
+		foreverBannerData.show = this.state.notification.show;
+		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -51,6 +59,9 @@ class Page404 extends PureComponent {
 				</Page>
 				<Header.Modal {...HeaderPage} />
 				<Navigation active='Home' />
+				{
+					<ForeverBanner {...foreverBannerData} />
+				}
 			</div>
 		);
 	}
@@ -59,6 +70,7 @@ class Page404 extends PureComponent {
 const mapStateToProps = (state) => {
 	return {
 		keyword: state.search.keyword,
+		shared: state.shared
 	};
 };
 

@@ -1,29 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-import { Header, Page, Card, Svg, Tabs, Button, Level, Image, Input, Navigation, /* Spinner */ } from '@/components/mobile';
+import _ from 'lodash';
+import { Header, Page, Card, Svg, Tabs, Button, Level, Image, Input, Navigation } from '@/components/mobile';
 import stylesSearch from '../Search/search.scss';
 import stylesCatalog from '../Category/Catalog/catalog.scss';
 import { actions } from '@/state/v4/SearchResults';
 import queryString from 'query-string';
 import { Link } from 'react-router-dom';
+import Shared from '@/containers/Mobile/Shared';
+import Scroller from '@/containers/Mobile/Shared/scroller';
+import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 
 class SearchResults extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.userCookies = this.props.cookies.get('user.token');
-
-		this.parsedUrl = queryString.parse(this.props.location.search);
-		this.objParam = {
-			query: this.parsedUrl.query !== undefined ? this.parsedUrl.query : '',
-			brand_id: this.parsedUrl.brand_id !== undefined ? this.parsedUrl.brand_id : '',
-			store_id: this.parsedUrl.store_id !== undefined ? this.parsedUrl.store_id : '',
-			category_id: this.parsedUrl.category_id !== undefined ? this.parsedUrl.category_id : '',
-			page: this.parsedUrl.page !== undefined ? this.parsedUrl.page : 1,
-			per_page: this.parsedUrl.per_page !== undefined ? this.parsedUrl.per_page : 10,
-			sort: this.parsedUrl.sort !== undefined ? this.parsedUrl.sort : 'energy DESC',
-		};
 
 		this.currentListState = 0;
 		this.listType = [{
@@ -34,12 +26,23 @@ class SearchResults extends Component {
 			icon: 'ico_grid.svg'
 		}];
 		this.state = {
-			listTypeState: this.listType[this.currentListState]
+			listTypeState: this.listType[this.currentListState],
+			notification: {
+				show: true
+			}
 		};
 	}
 
-	componentDidMount() {
-		this.props.dispatch(actions.initAction(this.userCookies, this.objParam));
+	componentWillMount() {
+		const { dispatch } = this.props;
+		dispatch(new actions.initLoading(true));
+	}
+
+	getKeyword() {
+		const parsedUrl = queryString.parse(this.props.location.search);
+		const keywordFromUrl = parsedUrl.query !== undefined ? parsedUrl.query : '';
+
+		return keywordFromUrl;
 	}
 
 	handlePick(e) {
@@ -48,32 +51,19 @@ class SearchResults extends Component {
 			this.currentListState = this.currentListState === 1 ? 0 : this.currentListState + 1;
 			this.setState({ listTypeState: this.listType[this.currentListState] });
 			break;
-		case 'filter':
-			this.props.history.push('/filterCategory');
-			break;
+		// case 'filter':
+		// 	this.props.history.push('/filterCategory');
+		// 	break;
 		default:
 			break;
 		}
 	}
 
 	loadingRender() {
-		const inlineStyle = {
-			textAlign: 'center',
-			margin: '10px auto 10px auto'
-		};
-
 		if (this.props.isLoading === true) {
 			return (
 				<div className={stylesSearch.container} >
-					<div style={inlineStyle}>&nbsp;</div>
-					<div style={inlineStyle}>&nbsp;</div>
-					<div style={inlineStyle}>&nbsp;</div>
-					<div style={inlineStyle}>&nbsp;</div>
-					<div style={inlineStyle}>Loading...</div>
-					<div style={inlineStyle}>&nbsp;</div>
-					<div style={inlineStyle}>&nbsp;</div>
-					<div style={inlineStyle}>&nbsp;</div>
-					<div style={inlineStyle}>&nbsp;</div>
+					&nbsp;
 				</div>
 			);
 		}
@@ -82,7 +72,6 @@ class SearchResults extends Component {
 	}
 
 	notFound() {
-		console.log('NotFound');
 		const inlineStyle = {
 			textAlign: 'center',
 			margin: '10px auto 10px auto'
@@ -91,7 +80,7 @@ class SearchResults extends Component {
 			<div className={stylesSearch.container} >
 				<div style={inlineStyle}>[image kantong kosong]</div>
 				<div style={inlineStyle}>
-					{'Mohon maaf hasil pencarian untuk "'}{this.objParam.query}
+					{'Mohon maaf hasil pencarian untuk "'}{this.getKeyword()}
 					{ '" tidak dapat ditemukan. Silakan periksa pengejaan kata, atau menggunakan kata kunci lain!'}
 				</div>
 				<div><button><Link to={'/search'}>Cari kembali</Link></button></div>
@@ -102,15 +91,16 @@ class SearchResults extends Component {
 	}
 
 	searchFound(products) {
-		console.log('SearchFound');
 		if (products.length > 0) {
 			return (
-				<div className={stylesCatalog.cardContainer}>
-					{
-						products.map((product, index) => 
-							this.renderList(product, index)
-						)
-					}
+				<div className={stylesSearch.container} >
+					<div className={stylesCatalog.cardContainer}>
+						{
+							products.map((product, index) =>
+								this.renderList(product, index)
+							)
+						}
+					</div>
 				</div>
 			);
 		}
@@ -123,20 +113,9 @@ class SearchResults extends Component {
 		const searchResults = this.props.searchResults;
 		if (typeof searchResults.searchStatus !== 'undefined' && searchResults.searchStatus !== '') {
 			if (searchResults.searchStatus === 'success' && searchResults.searchData.products.length > 0) {
-				searchView = (
-					<div>
-						{ 
-							this.searchFound(searchResults.searchData.products)
-						}
-						<div className={stylesCatalog.loadmore}>
-							<Button color='secondary' outline size='large'> LOAD MORE </Button>
-						</div>
-					</div>
-				);
+				searchView = this.searchFound(searchResults.searchData.products);
 			} else if (searchResults.searchStatus === 'failed') {
-				searchView = (
-					<div>{this.notFound()}</div>
-				);
+				searchView = this.notFound();
 			}
 		}
 
@@ -185,63 +164,102 @@ class SearchResults extends Component {
 		} else {
 			return null;
 		}
-		
 	}
 
-	render() {
+	renderHeader() {
 		let back = () => { this.props.history.go(-2); };
 		if (this.props.history.length === 0) {
 			back = () => { this.props.history.push('/'); };
 		}
 
-		const { listTypeState } = this.state;
-
 		return (
-			<div style={this.props.style}>
-				<Page>
-					<div>
-						{
-							this.props.isLoading ? this.loadingRender() : this.searchRender()
-						}
-					</div>
-				</Page>
-				<Header.SearchResult
-					back={back}
-					value={this.objParam.query || ''}
-				/>
+			<Header.SearchResult
+				back={back}
+				value={this.getKeyword() || ''}
+			/>
+		);
+	}
+
+	renderTabs() {
+		let tabsView = null;
+		const searchResults = this.props.searchResults;
+		if (typeof searchResults.searchStatus !== 'undefined' && searchResults.searchStatus !== '' && searchResults.searchStatus === 'success') {
+			tabsView = (
 				<Tabs
 					className={stylesCatalog.fixed}
 					type='segment'
 					variants={[
 						{
 							id: 'urutkan',
-							Title: 'Urutkan'
+							title: 'Urutkan'
 						},
 						{
 							id: 'filter',
-							Title: 'Filter'
+							title: 'Filter'
 						},
 						{
 							id: 'view',
-							Title: <Svg src={listTypeState.icon} />
+							title: <Svg src={this.state.listTypeState.icon} />
 						}
 					]}
 					onPick={e => this.handlePick(e)}
 				/>
+			);
+		}
+
+		return tabsView;
+	}
+
+	render() {
+		const { shared } = this.props;
+		const foreverBannerData = shared.foreverBanner;
+		foreverBannerData.show = this.state.notification.show;
+		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+		return (
+			<div style={this.props.style}>
+				<Page>
+					{this.props.isLoading ? this.loadingRender() : this.searchRender()}
+				</Page>
+				{this.renderHeader()}
+				{this.props.isLoading ? this.loadingRender() : this.renderTabs()}
+				{
+					<ForeverBanner {...foreverBannerData} />
+				}
 				<Navigation />
+
+				{this.props.scroller.loading}
 			</div>
 		);
 	}
 }
 
 const mapStateToProps = (state) => {
-	console.log(state);
 	return {
-		...state,
 		shared: state.shared,
-		searchResult: state.searchResult,
-		isLoading: state.searchResults.isLoading
+		searchResults: state.searchResults,
+		isLoading: state.searchResults.isLoading,
+		scroller: state.scroller
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(SearchResults));
+const doAfterAnonymous = (props) => {
+	console.log(props);
+	const { shared, dispatch, cookies, location } = props;
+
+	const searchService = _.chain(shared).get('serviceUrl.product').value() || false;
+	const parsedUrl = queryString.parse(location.search);
+	const objParam = {
+		q: parsedUrl.query !== undefined ? parsedUrl.query : '',
+		brand_id: parsedUrl.brand_id !== undefined ? parseInt(parsedUrl.brand_id, 10) : '',
+		store_id: parsedUrl.store_id !== undefined ? parseInt(parsedUrl.store_id, 10) : '',
+		category_id: parsedUrl.category_id !== undefined ? parseInt(parsedUrl.category_id, 10) : '',
+		page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
+		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 10,
+		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
+		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
+	};
+
+	dispatch(new actions.initAction(cookies.get('user.token'), searchService, objParam));
+};
+
+export default withCookies(connect(mapStateToProps)(Shared(Scroller(SearchResults), doAfterAnonymous)));

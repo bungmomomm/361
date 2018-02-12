@@ -23,16 +23,20 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		componentDidMount() {
-			if (this.shouldLoginAnonymous()) {
-				return this.loginAnonymous();
-			} 
-
 			const loading = window.document.getElementById('loading');
-			if (typeof loading !== 'undefined') {
+			if (typeof loading !== 'undefined' && loading !== null) {
+				console.log(loading);
 				loading.parentElement.removeChild(loading);
 			}
-			return this.initProcess(this.userRFCookies);
+
+			this.initProcess();
 		}
+
+		// componentDidUpdate() {
+		// 	console.log('asdadsasd');
+
+		// 	return this.initProcess();
+		// }
 
 		shouldLoginAnonymous() {
 			return (_.isEmpty(this.userCookies) || _.isEmpty(this.userRFCookies));
@@ -40,6 +44,10 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		initApp() {
 			const { shared, dispatch } = this.props;
+
+			if (this.shouldLoginAnonymous()) {
+				this.loginAnonymous();
+			}
 			
 			const loveListService = _.chain(shared).get('serviceUrl.lovelist').value() || false;
 			const orderService = _.chain(shared).get('serviceUrl.order').value() || false;
@@ -54,20 +62,43 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		async loginAnonymous() {
 			const [err, response] = await to(this.props.dispatch(new users.userAnonymous()));
-			if (err) return ('oops something went wrong');
+			if (err) {
+				this.withErrorHandling(err);
+			}
 
-			
-			setUserCookie(this.props.cookies, response.token);
-			return this.initProcess(response.token);
+			return setUserCookie(this.props.cookies, response.token);
 		}
 
-		async initProcess(token) {
-			const [err, response] = await to(this.props.dispatch(new initAction.initAction(token)));
-			if (err) return ('oops something went wrong');
+		async initProcess() {
+			// check existing props
+			const { shared } = this.props;
+			const serviceUrl = _.chain(shared).get('serviceUrl').value() || false;
+			if (!serviceUrl) {
+				const [err, response] = await to(this.props.dispatch(new initAction.initAction()));
+				if (err) {
+					this.withErrorHandling(err);
+				}
+				console.log(response);
+				this.initApp();
+			}
 
-			this.initApp();
+			
+		}
 
-			return response;
+		withErrorHandling(err) {
+			console.log(this.props);
+			console.log(err.response.data.code);
+			switch (err.response.data.code) {
+			case 200:
+				console.log('masuk');
+				break;
+			case 500: 
+				console.log('error');
+				break;
+			default: 
+				console.log('default');
+
+			}
 		}
 
 		render() {
