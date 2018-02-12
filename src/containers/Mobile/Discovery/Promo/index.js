@@ -50,7 +50,7 @@ class Promo extends Component {
 		if (typeof products !== 'undefined') {
 			const content = products.map((product, idx) => {
 				return listTypeGrid ?
-					(<Card.CatalogGrid 
+					(<Card.CatalogGrid
 						key={idx}
 						images={product.images}
 						productTitle={product.product_title}
@@ -134,14 +134,19 @@ class Promo extends Component {
 
 			)
 		};
-
+		const { shared } = this.props;
+		const foreverBannerData = shared.foreverBanner;
+		foreverBannerData.show = this.state.notification.show;
+		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
 		return (
 			<div style={this.props.style}>
 				<Page>
 					{content}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-
+				{
+					<ForeverBanner {...foreverBannerData} />
+				}
 				<Image alt='Product Terlaris' src='http://www.solidbackgrounds.com/images/950x350/950x350-light-pink-solid-color-background.jpg' style={bannerInline} />
 				<Navigation active='Promo' />
 
@@ -167,7 +172,7 @@ const mapStateToProps = (state) => {
 			promo: state.discovery.promo
 		},
 		shared: state.shared,
-		home: state.home, 
+		home: state.home,
 		scroller: state.scroller
 	};
 };

@@ -43,10 +43,10 @@ class SubCategory extends PureComponent {
 	}
 
 	setSelectedCategory(categories) {
-		let selectedCategory = categories.filter(e => e.id === this.categoryLvl2)[0];
+		let selectedCategory = categories.filter(e => e.id.toString() === this.categoryLvl2)[0];
 		if (selectedCategory) {
 			selectedCategory = (this.categoryLvl3 !== undefined) ?
-				selectedCategory.sub_categories.filter(e => e.id === this.categoryLvl3)[0] : selectedCategory;
+				selectedCategory.sub_categories.filter(e => e.id.toString() === this.categoryLvl3)[0] : selectedCategory;
 
 			if (selectedCategory === undefined) {
 				return this.props.history.push('/category/');
