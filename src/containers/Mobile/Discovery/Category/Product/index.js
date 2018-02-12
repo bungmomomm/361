@@ -13,6 +13,7 @@ import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 
 import { actions as filterActions } from '@/state/v4/SortFilter';
 import Filter from '@/containers/Mobile/Shared/Filter';
+import Sort from '@/containers/Mobile/Shared/Sort';
 import { to } from 'await-to-js';
 import Spinner from '../../../../../components/mobile/Spinner';
 
@@ -37,7 +38,8 @@ class Product extends Component {
 			notification: {
 				show: true
 			},
-			filterShown: false
+			filterShown: false,
+			sortShown: false
 		};
 	}
 
@@ -74,6 +76,12 @@ class Product extends Component {
 		});
 	}
 
+	sort(e) {
+		this.setState({
+			sortShown: false
+		});
+	}
+
 	handlePick(e) {
 		switch (e) {
 		case 'view':
@@ -85,7 +93,8 @@ class Product extends Component {
 		// 	break;
 		default:
 			this.setState({
-				filterShown: e === 'filter'
+				filterShown: e === 'filter',
+				sortShown: e === 'sort'
 			});
 			break;
 		}
@@ -103,7 +112,7 @@ class Product extends Component {
 		let pcpView = null;
 		const { shared, filters } = this.props;
 		console.log(this.props);
-		const { filterShown } = this.state;
+		const { filterShown, sortShown } = this.state;
 		const pcpResults = this.props.productCategory;
 		if (typeof pcpResults.pcpStatus !== 'undefined' && pcpResults.pcpStatus !== '') {
 			if (pcpResults.pcpStatus === 'success' && pcpResults.pcpData.products.length > 0) {
@@ -119,6 +128,10 @@ class Product extends Component {
 							onReset={(e) => this.onReset(e)}
 							onClose={(e) => this.onClose(e)}
 						/>
+					);
+				} else if (sortShown) {
+					pcpView = (
+						<Sort sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
 					);
 				} else {
 					pcpView = (
@@ -242,7 +255,7 @@ class Product extends Component {
 				type='segment'
 				variants={[
 					{
-						id: 'urutkan',
+						id: 'sort',
 						title: 'Urutkan'
 					},
 					{
