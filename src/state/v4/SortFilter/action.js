@@ -184,7 +184,7 @@ const applyFilter = (token, type, filters) => async (dispatch, getState) => {
 		token,
 		path: filterUrl,
 		method: 'GET',
-		fullPath: true
+		fullpath: true
 	}));
 
 	if (error) {
@@ -272,7 +272,7 @@ const applySort = (token, type) => async (dispatch, getState) => {
 		token,
 		path: filterUrl,
 		method: 'GET',
-		fullPath: true
+		fullpath: true
 	}));
 
 	if (error) {

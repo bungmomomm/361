@@ -33,8 +33,8 @@ class Sort extends Component {
 }
 
 Sort.propTypes = {
-	onSelected: PropTypes.string,
-	sorts: PropTypes.object
+	onSelected: PropTypes.func,
+	sorts: PropTypes.array
 };
 
 export default Sort;
