@@ -12,6 +12,7 @@ class Badge extends PureComponent {
 			rounded,
 			className,
 			attached,
+			colorCode,
 			...props
 		} = this.props;
 
@@ -27,9 +28,14 @@ class Badge extends PureComponent {
 			}
 		);
 
+		const badgeStyle = {
+			backgroundColor: colorCode
+		};
+
 		return (
 			<span
 				className={createClassName}
+				style={badgeStyle}
 				{...props}
 			>
 				{children}

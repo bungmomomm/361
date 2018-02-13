@@ -27,6 +27,7 @@ class Button extends PureComponent {
 			children,
 			loading,
 			outline,
+			align,
 			size,
 			className,
 			...props,
@@ -44,7 +45,10 @@ class Button extends PureComponent {
 				[styles.outline]: outline,
 				[styles.transparent]: transparent,
 				[styles.rounded]: rounded,
-				[styles.loading]: loading
+				[styles.loading]: loading,
+				[styles.left]: align === 'left',
+				[styles.center]: align === 'center',
+				[styles.right]: align === 'right' 
 			},
 			className
 		);

@@ -5,22 +5,22 @@ import styles from './search.scss';
 import { connect } from 'react-redux';
 import { actions } from '@/state/v4/Search';
 import { Link } from 'react-router-dom';
-
+import CONST from '@/constants';
 class Search extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
-			keyword: this.props.keyword, // this state for manipulating stateless search box input
+			keyword: this.props.keyword,
 			showHistory: true
 		};
-		this.searchListCookieName = 'user.search.list';
-		this.searchHashtagListCookieName = 'user.searchHashtag.list';
-		this.userToken = this.props.cookies.get('user.token');
-		this.SUGGEST_KEYWORD = 'SUGGEST_KEYWORD';
-		this.SUGGEST_CATEGORY = 'SUGGEST_CATEGORY';
-		this.SUGGEST_HASTAG = 'SUGGEST_HASTAG';
-		this.SUGGEST_HISTORY = 'SUGGEST_HISTORY';
+		this.searchListCookieName = CONST.COOKIE_USER_SEARCH_LIST;
+		this.searchHashtagListCookieName = CONST.COOKIE_USER_SEARCH_HASHTAG_LIST;
+		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
+		this.SUGGEST_KEYWORD = CONST.SEARCH_SUGGEST_TYPE.suggestKeyword;
+		this.SUGGEST_CATEGORY = CONST.SEARCH_SUGGEST_TYPE.suggestCategory;
+		this.SUGGEST_HASTAG = CONST.SEARCH_SUGGEST_TYPE.suggestHashtag;
+		this.SUGGEST_HISTORY = CONST.SEARCH_SUGGEST_TYPE.suggestHistory;
 		this.searchKeywordUpdatedHandler = this.searchKeywordUpdatedHandler.bind(this);
 		this.enterSearchHandler = this.enterSearchHandler.bind(this);
 		this.listSugestionMaker = this.listSugestionMaker.bind(this);
@@ -66,7 +66,7 @@ class Search extends PureComponent {
 	enterSearchHandler(event) {
 		if (event.key === 'Enter') {
 			this.setCookieSearch(event.target.value, event.target.value);
-			const pathProd = `/products?category_id=&query=${event.target.value}`;
+			const pathProd = `/products?category_id=&query=${encodeURIComponent(event.target.value)}`;
 			this.props.history.push(pathProd);
 		}
 	}

@@ -1,24 +1,32 @@
 import React, { PureComponent } from 'react';
 import _ from 'lodash';
-import { Header, Divider, Page, Svg, List, Button } from '@/components/mobile';
-import { Link } from 'react-router-dom';
+import {
+	Header, 
+	Divider, 
+	Page, 
+	Svg, 
+	List, 
+	Button 
+} from '@/components/mobile';
 import styles from './tree.scss';
 import Action from './action';
+// import renderIf from '@/utils/renderIf';
 
 // DUMMY DATA
+/*
 const DUMMY_CATEGORY_WANITA = {
 	meta: {
 		total: 45
 	},
-	data: [
+	childs: [
 		{
 			name: 'Clothing',
 			id: 'Wanitaclothing',
-			data: [
+			childs: [
 				{
 					name: 'Atasan',
 					id: 'Wanitaatasan',
-					data: [
+					childs: [
 						{
 							name: 'Kaos & Polo Shirt',
 							id: 'WanitaKaosPoloShirt'
@@ -32,7 +40,7 @@ const DUMMY_CATEGORY_WANITA = {
 				{
 					name: 'Bawahan',
 					id: 'Wanitabawahan',
-					data: [
+					childs: [
 						{
 							name: 'Kaos & Polo Shirt',
 							id: 'WanitaKaosPoloShirt'
@@ -46,7 +54,7 @@ const DUMMY_CATEGORY_WANITA = {
 				{
 					name: 'Pakaian Dalam',
 					id: 'WanitabawahanDalam',
-					data: [
+					childs: [
 						{
 							name: 'Kaos & Polo Shirt',
 							id: 'WanitaKaosPoloShirt'
@@ -62,7 +70,7 @@ const DUMMY_CATEGORY_WANITA = {
 		{
 			name: 'Shoes',
 			id: 'Wanitashoes',
-			data: [
+			childs: [
 				{
 					name: 'Semua Sepatu',
 					id: 'WanitasemuaSepatu'
@@ -76,7 +84,7 @@ const DUMMY_CATEGORY_WANITA = {
 		{
 			name: 'Tas',
 			id: 'Wanitatas',
-			data: [
+			childs: [
 				{
 					name: 'Semua tas',
 					id: 'WanitasemuaTas'
@@ -90,15 +98,15 @@ const DUMMY_CATEGORY_PRIA = {
 	meta: {
 		total: 102
 	},
-	data: [
+	childs: [
 		{
 			name: 'Clothing',
 			id: 'priaclothing',
-			data: [
+			childs: [
 				{
 					name: 'Atasan',
 					id: 'priaatasan',
-					data: [
+					childs: [
 						{
 							name: 'Kaos & Polo Shirt',
 							id: 'priaKaosPoloShirt'
@@ -112,7 +120,7 @@ const DUMMY_CATEGORY_PRIA = {
 				{
 					name: 'Bawahan',
 					id: 'priabawahan',
-					data: [
+					childs: [
 						{
 							name: 'Kaos & Polo Shirt',
 							id: 'priaKaosPoloShirt'
@@ -126,7 +134,7 @@ const DUMMY_CATEGORY_PRIA = {
 				{
 					name: 'Pakaian Dalam',
 					id: 'priabawahan',
-					data: [
+					childs: [
 						{
 							name: 'Kaos & Polo Shirt',
 							id: 'priaKaosPoloShirt'
@@ -142,7 +150,7 @@ const DUMMY_CATEGORY_PRIA = {
 		{
 			name: 'Shoes',
 			id: 'priashoes',
-			data: [
+			childs: [
 				{
 					name: 'Semua Sepatu',
 					id: 'priasemuaSepatu'
@@ -156,7 +164,7 @@ const DUMMY_CATEGORY_PRIA = {
 		{
 			name: 'Tas',
 			id: 'priatas',
-			data: [
+			childs: [
 				{
 					name: 'Semua tas',
 					id: 'priasemuaTas'
@@ -165,7 +173,7 @@ const DUMMY_CATEGORY_PRIA = {
 		}
 	]
 };
-
+*/
 // END DUMMY DATA
 
 const treeIcon = (active, HasTree) => {
@@ -182,41 +190,51 @@ class TreeSegment extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
-			activeTree: [],
-			selected: null,
+			activeTree: []
 		};
 	}
 	
-	handleTree(value, isParent) {
+	handleTree(e, value, isParent) {
 		if (isParent) {
 			this.setState({
-				activeTree: value !== this.state.activeTree ? value : null
+				activeTree: value.facetrange !== this.state.activeTree ? value.facetrange : null
 			});
 		} else {
-			this.setState({ selected: value });
+			this.props.onClick(e, value);
 		}
 	}
 
 	renderChild(category, firstLevel) {
-		const { selected, activeTree } = this.state;
-		if (!firstLevel && activeTree !== category.id) {
+		const { activeTree } = this.state;
+		if (!firstLevel && activeTree !== category.facetrange) {
+			return null;
+		}
+		if (typeof category.childs === 'undefined') {
 			return null;
 		}
 		return (
 			<div>
 				{
-					category.data.map((child, id) => {
-						const hasChild = child.data && child.data.length > 0;
-						const Label = hasChild ? <strong>{child.name}</strong> : child.name;
-						const isChildSelected = _.find(child.data, { id: selected });
+					category.childs.map((child, id) => {
+						const hasChild = typeof child.childs !== 'undefined' && child.childs.length > 0;
+						const Label = hasChild ? <strong>{child.facetdisplay}</strong> : child.facetdisplay;
+						const isChildSelected = _.find(child.childs, { is_selected: 1 });
+						if (firstLevel) {
+							return (
+								<div key={id}>
+									<Divider type={activeTree === child.facetrange ? 'segment' : 'closed'} onClick={(e) => this.handleTree(e, child, hasChild)}>
+										<Divider.Content>{child.facetdisplay} <span>({child.count} produk)</span></Divider.Content>
+									</Divider>
+									{ (hasChild || isChildSelected) && this.renderChild(child) }
+								</div>
+							);
+						}
 						return (
-							<List key={id} className={hasChild && styles.parent}>
-								<Button onClick={() => this.handleTree(child.id, hasChild)}>
-									<List.Content>
-										{Label} 
-										{treeIcon(hasChild ? activeTree === child.id : selected === child.id, hasChild)}
-									</List.Content>
-								</Button>
+							<List key={id} className={(hasChild && styles.parent)}>
+								<List.Content className={activeTree === child.facetrange && styles.selected} onClick={(e) => this.handleTree(e, child, hasChild)}>
+									{Label} ({child.count})
+									{treeIcon(hasChild ? activeTree === child.facetrange : child.is_selected, hasChild)}
+								</List.Content>
 								{(hasChild || isChildSelected) && this.renderChild(child)}
 							</List>
 						);
@@ -226,35 +244,30 @@ class TreeSegment extends PureComponent {
 		);
 	}
 
-	renderTree(list) {
-		if (list.data.length < 1) {
-			return null;
-		}
-		return list.data.map((category, idx) => <div key={idx}>{this.renderChild(category, true)}</div>);
+	renderTree(category) {
+		return this.renderChild(category, true);
 	}
 
 	render() {
+		const { onClose, data } = this.props;
 		const HeaderPage = {
 			left: (
-				<Link to='/catalogcategory'>
+				<Button onClick={onClose}>
 					<Svg src='ico_arrow-back-left.svg' />
-				</Link>
+				</Button>
 			),
 			center: 'Kategori',
 			right: null
 		};
 
+		const categories = {
+			childs: data
+		};
+
 		return (
 			<div style={this.props.style}>
 				<Page>
-					<Divider type='segment'> 
-						<Divider.Content>Wanita <span>({DUMMY_CATEGORY_WANITA.meta.total} produk)</span></Divider.Content>
-					</Divider>
-					{this.renderTree(DUMMY_CATEGORY_WANITA)}
-					<Divider type='segment'> 
-						<Divider.Content>Pria <span>({DUMMY_CATEGORY_PRIA.meta.total} produk)</span></Divider.Content>
-					</Divider>
-					{this.renderTree(DUMMY_CATEGORY_PRIA)}
+					{this.renderTree(categories)}
 				</Page>
 				<Header.Modal {...HeaderPage} />
 				<Action />

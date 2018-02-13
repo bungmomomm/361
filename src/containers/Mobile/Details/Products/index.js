@@ -6,6 +6,7 @@ import { actions as commentActions } from '@/state/v4/Comment';
 import { Link } from 'react-router-dom';
 import { Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid } from '@/components/mobile';
 import styles from './products.scss';
+import _ from 'lodash';
 
 const DUMMY_PRODUCT = {
 	images: [
@@ -25,8 +26,8 @@ const DUMMY_PRODUCT = {
 
 const DUMMY_PRODUCT_GRID = {
 	images: [
-		{ mobile: 'https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-01.jpg' },
-		{ mobile: 'https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-02.jpg' }
+		{ thumbnail: 'https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-01.jpg' },
+		{ thumbnail: 'https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-02.jpg' }
 	],
 	productTitle: 'Immaculate Brands of the Year by Yannis Philippakis',
 	brandName: 'Olivia Von Halle pink print',
@@ -49,20 +50,60 @@ class Products extends Component {
 		this.handleScroll = this.handleScroll.bind(this);
 		this.state = {
 			size: 's',
-			showScrollInfomation: false
+			showScrollInfomation: false,
+			detail: {},
+			cardProduct: false,
+			similarItems: 'loading content',
+			reviewItems: 'loading content',
+			loading: true,
+			dataHasBeenSet: false
 		};
 	}
-	
 
 	componentDidMount() {
 		const { dispatch, match } = this.props;
-		dispatch(new productActions.productDetailAction(this.userCookies, match.params.id));
-		dispatch(new productActions.productRecommendationAction(this.userCookies));
-		dispatch(new productActions.productSimilarAction(this.userCookies));
-		dispatch(new productActions.productSocialSummaryAction(this.userCookies));
-		dispatch(new commentActions.productCommentAction(this.userCookies));
+		const productId = match.params.id;
+		const token = this.userCookies;
+		dispatch(new productActions.productDetailAction(token, productId));
+		dispatch(new productActions.productRecommendationAction(token));
+		dispatch(new productActions.productSimilarAction(token));
+		dispatch(new productActions.productSocialSummaryAction(token, productId));
+		dispatch(new commentActions.productCommentAction(token));
 		window.addEventListener('scroll', this.handleScroll, true);
 	}
+
+	componentWillReceiveProps(nextProps) {
+		const { detail, similar, reviews } = nextProps.product;
+		const { dataHasBeenSet } = this.state;
+		
+		if (!_.isEmpty(detail) && !_.isEmpty(similar) && !_.isEmpty(reviews) && !dataHasBeenSet) {
+			console.log('I am supposed to be called once :(', dataHasBeenSet);
+			const cardData = productActions.getProductCardData(detail);
+			const similarItems = similar.map((item, idx) => {
+				const data = {
+					productTitle: item.product_title,
+					brandName: item.brand,
+					pricing: item.pricing,
+					images: item.images
+				};
+				return <Card.CatalogGrid {...data} key={idx} />;
+			});
+
+			const reviewItems = reviews.summary.map((item, idx) => {
+				return <Comment key={idx} type='review' data={item} />;
+			});
+
+			this.setState({
+				loading: false,
+				dataHasBeenSet: true,
+				detail,
+				cardProduct: cardData,
+				similarItems,
+				reviewItems
+			});
+		}
+	}
+
 	componentWillUnmount() {
 		window.removeEventListener('scroll', this.handleScroll, true);
 	}
@@ -79,7 +120,7 @@ class Products extends Component {
 
 	addComment() {
 		const { dispatch } = this.props;
-		dispatch(new commentActions.commentAddAction(this.userCookies));		
+		dispatch(new commentActions.commentAddAction(this.userCookies));
 	}
 
 	renderHeaderPage() {
@@ -114,18 +155,18 @@ class Products extends Component {
 	}
 
 	renderStickyAction() {
-		if (this.state.showScrollInfomation) {
+		if (this.state.showScrollInfomation && !this.state.loading) {
 			return (
 				<div className={styles.stickyAction}>
 					<Level style={{ padding: '10px' }} className='flex-center'>
 						<Level.Left>
 							<div className={styles.stickyActionImage}>
-								<img alt='product' src='https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-01.jpg' />
+								<img alt='product' src={this.state.detail.images[0].thumbnail} />
 							</div>
 						</Level.Left>
 						<Level.Item className='padding--medium'>
-							<div className='font-normal'>Rp1.199.000</div>
-							<div className='font-small font-color--primary-ext-2'>Rp999.000</div>
+							<div className='font-normal'>{this.state.cardProduct.pricing.formatted.effective_price}</div>
+							<div className='font-small font-color--primary-ext-2'>{this.state.cardProduct.pricing.formatted.base_price}</div>
 						</Level.Item>
 						<Level.Right>
 							<Button color='secondary' size='medium'>BELI AJA</Button>
@@ -138,12 +179,18 @@ class Products extends Component {
 	}
 
 	render() {
-		const { showScrollInfomation } = this.state;
+		const { showScrollInfomation, loading, detail } = this.state;
+		const { match } = this.props;
+
+		if (loading) {
+			return <div>Please wait, loading content...</div>;
+		}
+
 		return (
 			<div>
 				<Page>
 					<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
-						<Card.Lovelist data={DUMMY_PRODUCT} />
+						<Card.Lovelist data={this.state.cardProduct} />
 						<Level style={{ borderBottom: '1px solid #D8D8D8', borderTop: '1px solid #D8D8D8' }}>
 							<Level.Left className='flex-center'>
 								<Svg src='ico_ovo.svg' />
@@ -158,11 +205,11 @@ class Products extends Component {
 							</Level.Right>
 						</Level>
 						<div className='flex-center margin--large'>
-							<Radio 
+							<Radio
 								name='size'
 								checked={this.state.size}
 								style={{ marginBottom: '10px' }}
-								onChange={(e) => this.setState({ size: e })} 
+								onChange={(e) => this.setState({ size: e })}
 								data={[
 									{ label: 'xs', value: 'xs', disabled: true },
 									{ label: 's', value: 's' },
@@ -175,15 +222,16 @@ class Products extends Component {
 							<p className='font-color--red font-small'>Stock Habis</p>
 							<p className='text-center margin--medium'>Panduan Ukuran</p>
 						</div>
-						<p className='margin--small padding--medium'>
-							lydoaharyantho and 287 others love this
-							DELLOVISIMO Dress, red, premium cotton, bust 88 and length 94, ready to ship 3 Jan 2018.
-						</p>
+						<p className='margin--small padding--medium'>{this.state.detail.description}</p>
 						<span className='margin--small padding--medium'>
 							<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
 						</span>
 						<div className='margin--medium --disable-flex padding--medium'>
-							<Button className='font--lato-normal font-color--primary-ext-2'>View 38 comments</Button>
+							<Link to={`/product/comments/${match.params.id}`}>
+								<Button className='font--lato-normal font-color--primary-ext-2'>
+									Lihat semua 38 komentar
+								</Button>
+							</Link>
 						</div>
 						<hr className='margin--small' />
 						<div className='margin--small padding--medium font-medium'>Shop the Look</div>
@@ -195,37 +243,35 @@ class Products extends Component {
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								<div className='margin--medium'>
 									<div className='padding--small flex-row flex-spaceBetween'>
-										<div className='font-medium'>Ulasan</div>
-										<Link className='font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >See All</span> <Svg src='ico_chevron-right.svg' /></Link>
+										<div className='font-medium'>Penilaian Produk</div>
+										<Link className='font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
 									</div>
-									<Comment type='review' />
-									<Comment type='review' />
-									<Comment type='review' />
+									{this.state.reviewItems}
 								</div>
 							</div>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								<div className='margin--medium'>
 									<div className='padding--small flex-row flex-spaceBetween'>
 										<div className='padding--small'>
-											<Image avatar width={60} height={60} src='http://coolspotters.com/files/photos/323634/zara-profile.jpg?1357481236' />
+											<Image avatar width={60} height={60} src={detail.seller.seller_logo} />
 										</div>
 										<Level>
 											<Level.Item className='text-center padding--large'>
 												<div className='font-large'>4.5</div>
-												<div className='font-small font-color--primary-ext-2'>Reviews</div>
+												<div className='font-small font-color--primary-ext-2'>Ulasan</div>
 											</Level.Item>
 											<Level.Item className='text-center'>
 												<div className='font-large'>90</div>
-												<div className='font-small font-color--primary-ext-2'>Products</div>
+												<div className='font-small font-color--primary-ext-2'>Produk</div>
 											</Level.Item>
 										</Level>
 									</div>
 									<div className='padding--medium margin--small'>
-										<div className='font-medium'>Bitter Ballen Ball</div>
-										<div className='font-small'>Jakarta Selatan</div>
+										<div className='font-medium'>{detail.seller.seller}</div>
+										<div className='font-small'>{detail.seller.seller_location}</div>
 									</div>
 									<div className='margin--medium'>
-										<Grid split={4} className='padding--small'> 
+										<Grid split={4} className='padding--small'>
 											<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
 											<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
 											<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
@@ -240,10 +286,9 @@ class Products extends Component {
 								</div>
 							</div>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
-								<div className='margin--small padding--medium font-medium'>Similar Items</div>
+								<div className='margin--small padding--medium font-medium'>Produk Serupa</div>
 								<div className='flex-row'>
-									<Card.CatalogGrid {...DUMMY_PRODUCT_GRID} />
-									<Card.CatalogGrid {...DUMMY_PRODUCT_GRID} />
+									{this.state.similarItems}
 								</div>
 							</div>
 						</div>
@@ -258,7 +303,8 @@ class Products extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		...state
+		product: state.product, 
+		shared: state.shared
 	};
 };
 

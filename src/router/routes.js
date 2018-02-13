@@ -22,6 +22,7 @@ let Category = defRoute;
 let SubCategory = defRoute;
 let ProductCategory = defRoute;
 let Brands = defRoute;
+let BrandsDetail = defRoute;
 let CatalogCategory = defRoute;
 let Lovelist = defRoute;
 let Hashtags = defRoute;
@@ -36,15 +37,17 @@ let UserRegisteredPhoneValidation = defRoute;
 // let NewArrival = defRoute;
 // let Recommended = defRoute;
 let ForgotPassword = defRoute;
-let FilterCategory = defRoute;
+let SampleFilters = defRoute;
 let Promo = defRoute;
 let UserProfile = defRoute;
 let UserProfileEdit = defRoute;
 let UserProfileEditOVO = defRoute;
 let UserProfileEditHP = defRoute;
 let UserProfileEditEmail = defRoute;
+let Seller = defRoute;
 let UserProfileEditPassword = defRoute;
 let Cart = defRoute;
+let CartEmpty = defRoute;
 
 if (isMobile()) {
 	/**
@@ -65,8 +68,11 @@ if (isMobile()) {
 	SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
 	ProductCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Product'));
 	Brands = loadable(() => import('@/containers/Mobile/Discovery/Brands'));
+	BrandsDetail = loadable(() => import('@/containers/Mobile/Discovery/Brands/detail'));
+	Seller = loadable(() => import('@/containers/Mobile/Discovery/Seller'));
 	CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
-	FilterCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog/filter'));
+
+	SampleFilters = loadable(() => import('@/containers/Mobile/SampleFilters'));
 
 	// Service Details
 	HashtagsDetails = loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'));
@@ -76,6 +82,7 @@ if (isMobile()) {
 
 	// Shopping-bag
 	Cart = loadable(() => import('@/containers/Mobile/Cart'));
+	CartEmpty = loadable(() => import('@/containers/Mobile/Cart/empty'));
 
 	ProductsComments = loadable(() => import('@/containers/Mobile/Details/Products/Comments'));
 	ProductsGuide = loadable(() => import('@/containers/Mobile/Details/Products/Guide'));
@@ -131,9 +138,20 @@ export default {
 			component: SearchNotFound
 		},
 		{
-			path: '/category',
+			path: '/category/:categoryLvl1/:categoryLvl2/:categoryLvl3',
+			component: SubCategory,
+		},
+		{
+			path: '/category/:categoryLvl1/:categoryLvl2',
+			component: SubCategory,
+		},
+		{
+			path: '/category/:categoryLvl1',
 			component: Category,
-			exact: true
+		},
+		{
+			path: '/category/',
+			component: Category,
 		},
 		{
 			path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9]+)',
@@ -149,13 +167,23 @@ export default {
 			exact: true
 		},
 		{
+			path: '/brandsDetail',
+			component: BrandsDetail,
+			exact: true
+		},
+		{
 			path: '/catalogcategory',
 			component: CatalogCategory
 		},
 		{
-			path: '/filterCategory',
-			component: FilterCategory
-		}, {
+			path: '/samplefilters',
+			component: SampleFilters
+		},
+		{
+			path: '/lovelist',
+			component: Lovelist,
+		},
+		{
 			path: '/product/comments/:id',
 			component: ProductsComments,
 			exact: true
@@ -194,19 +222,7 @@ export default {
 			exact: true
 		},
 		{
-			path: '/new_arrival',
-			component: Promo
-		},
-		{
-			path: '/best_seller',
-			component: Promo
-		},
-		{
-			path: '/recommended_products',
-			component: Promo
-		},
-		{
-			path: '/recent_view',
+			path: '/promo/:type',
 			component: Promo
 		},
 		{
@@ -222,12 +238,26 @@ export default {
 			component: UserProfileEdit,
 		},
 		{
+			path: '/lovelist',
+			component: Lovelist
+		},
+		{
 			path: '/cart',
+			exact: true,
 			component: Cart
+		},
+		{
+			path: '/cart/empty',
+			exact: true,
+			component: CartEmpty
 		},
 		{
 			path: '/lovelist',
 			component: Lovelist
+		},
+		{
+			path: '/store/:store_id',
+			component: Seller
 		},
 		{
 			path: '/*', // Page not found handling.
@@ -249,7 +279,7 @@ export default {
 			component: UserProfileEditEmail
 		},
 		{
-			path: '/profile-edit-email',
+			path: '/profile-edit-password',
 			component: UserProfileEditPassword
 		}
 	]

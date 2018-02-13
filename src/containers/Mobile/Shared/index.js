@@ -8,18 +8,26 @@ import { setUserCookie } from '@/utils';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 	class SharedAction extends Component {
-		
+
 		constructor(props) {
 			super(props);
 			this.props = props;
 			this.state = { data: null };
-	
+
 			this.userCookies = this.props.cookies.get('user.token');
 			this.userRFCookies = this.props.cookies.get('user.rf.token');
 		}
 
-		componentDidMount() {
+		componentWillMount() {
+			window.mmLoading.stop();
 			this.initProcess();
+			// if (typeof doAfterAnonymousCall !== 'undefined') {
+			// 	doAfterAnonymousCall.apply(this, [this.props]);
+			// }
+		}
+
+		componentWillUnmount() {
+			window.mmLoading.play();
 		}
 
 		shouldLoginAnonymous() {
@@ -32,7 +40,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			if (this.shouldLoginAnonymous()) {
 				this.loginAnonymous();
 			}
-			
+
 			const loveListService = _.chain(shared).get('serviceUrl.lovelist').value() || false;
 			const orderService = _.chain(shared).get('serviceUrl.order').value() || false;
 
@@ -63,10 +71,10 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 					this.withErrorHandling(err);
 				}
 				console.log(response);
-				this.initApp(this.props);
+				this.initApp();
 			}
 
-			
+
 		}
 
 		withErrorHandling(err) {
@@ -76,10 +84,10 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			case 200:
 				console.log('masuk');
 				break;
-			case 500: 
+			case 500:
 				console.log('error');
 				break;
-			default: 
+			default:
 				console.log('default');
 
 			}
