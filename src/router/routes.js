@@ -22,6 +22,7 @@ let Category = defRoute;
 let SubCategory = defRoute;
 let ProductCategory = defRoute;
 let Brands = defRoute;
+let BrandsDetail = defRoute;
 let CatalogCategory = defRoute;
 let Lovelist = defRoute;
 let Hashtags = defRoute;
@@ -66,6 +67,7 @@ if (isMobile()) {
 	SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
 	ProductCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Product'));
 	Brands = loadable(() => import('@/containers/Mobile/Discovery/Brands'));
+	BrandsDetail = loadable(() => import('@/containers/Mobile/Discovery/Brands/detail'));
 	Seller = loadable(() => import('@/containers/Mobile/Discovery/Seller'));
 	CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
 
@@ -160,6 +162,11 @@ export default {
 		{
 			path: '/brands',
 			component: Brands,
+			exact: true
+		},
+		{
+			path: '/brandsDetail',
+			component: BrandsDetail,
 			exact: true
 		},
 		{

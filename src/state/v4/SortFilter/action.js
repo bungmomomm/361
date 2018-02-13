@@ -68,7 +68,7 @@ const getFq = (filters) => {
 			// child category
 			categories = getCategoryFq(categories, facetCollection.data);
 			_.forEach(categories, (facetData) => {
-				if (facetData.is_selected) {
+				if (facetData.is_selected === 1) {
 					fq[facetName].push(facetData.facetrange);
 				} else {
 					_.remove(fq[facetName], (v) => {
@@ -77,21 +77,9 @@ const getFq = (filters) => {
 				}
 			});			
 			break;
-		case 'price':
-			// range
-			_.forEach(facetCollection.data, (facetData) => {
-				if (facetData.is_selected) {
-					fq[facetName].push(facetData.facetrange);
-				} else {
-					_.remove(fq[facetName], (v) => {
-						return v === facetData.facetrange;
-					});
-				}
-			});
-			break;
 		default:
 			_.forEach(facetCollection.data, (facetData) => {
-				if (facetData.is_selected) {
+				if (facetData.is_selected === 1) {
 					fq[facetName].push(facetData.facetrange);
 				} else {
 					_.remove(fq[facetName], (v) => {
@@ -196,7 +184,7 @@ const applyFilter = (token, type, filters) => async (dispatch, getState) => {
 		token,
 		path: filterUrl,
 		method: 'GET',
-		fullPath: true
+		fullpath: true
 	}));
 
 	if (error) {
@@ -229,28 +217,28 @@ const resetFilter = () => dispatch => {
 const updateFilter = (type, value, opt) => dispatch => {
 	switch (type) {
 	case 'color':
-		dispatch(actions.updateFilterColor(true, value));
+		dispatch(actions.updateFilterColor(value));
 		break;
 	case 'size':
-		dispatch(actions.updateFilterSize(true, value));
+		dispatch(actions.updateFilterSize(value));
 		break;
 	case 'category':
-		dispatch(actions.updateFilterCategory(true, value));
+		dispatch(actions.updateFilterCategory(value));
 		break;
 	case 'custom_category_ids':
-		dispatch(actions.updateFilterCustomCategory(true, value));
+		dispatch(actions.updateFilterCustomCategory(value));
 		break;
 	case 'brand':
-		dispatch(actions.updateFilterBrand(true, value));
+		dispatch(actions.updateFilterBrand(value));
 		break;
 	case 'location':
-		dispatch(actions.updateFilterLocation(true, value));
+		dispatch(actions.updateFilterLocation(value));
 		break;
 	case 'shipping_methods':
-		dispatch(actions.updateFilterShipping(true, value));
+		dispatch(actions.updateFilterShipping(value));
 		break;
 	case 'price':
-		dispatch(actions.updateFilterPrice(true, value));
+		dispatch(actions.updateFilterPrice(value));
 		break;
 	default:
 		break;
@@ -263,15 +251,16 @@ const updateFilter = (type, value, opt) => dispatch => {
 const updateSort = (value) => (dispatch, getState) => {
 	const { filters } = getState();
 	const sorts = _.map(filters.sorts, (sort) => {
-		sort.is_selected = false;
+		sort.is_selected = 0;
 		if (sort.q === value.q) {
-			sort.is_selected = true;
+			sort.is_selected = 1;
 		}
 
 		return sort;
 	});
-	
-	dispatch(actions.updateSort(sorts));
+	const selectedSort = _.filter(sorts, (sort) => (sort.is_selected === 1)).shift();
+	const sort = typeof selectedSort.q !== 'undefined' ? selectedSort.q : 'energy DESC';
+	dispatch(actions.updateSort(sorts, sort));
 };
 
 const applySort = (token, type) => async (dispatch, getState) => {
@@ -284,7 +273,7 @@ const applySort = (token, type) => async (dispatch, getState) => {
 		token,
 		path: filterUrl,
 		method: 'GET',
-		fullPath: true
+		fullpath: true
 	}));
 
 	if (error) {
@@ -305,6 +294,18 @@ const applySort = (token, type) => async (dispatch, getState) => {
 	return Promise.reject(errorMessage);
 };
 
+const initializeFilter = (filters) => dispatch => {
+	// links: response.data.data.links,
+	// info: response.data.data.info,
+	// facets: response.data.data.facets,
+	// sorts: response.data.data.sorts,
+	// products: response.data.data.products
+	// console.log(filters);
+	const params = parseDataToFilter(filters);
+	
+	dispatch(actions.updateFilterSuccess(params.facets, params.facets, params.sorts, params.page, params.perPage));
+};
+
 export default {
 	parseDataToFilter,
 	applyFilter,
@@ -312,5 +313,6 @@ export default {
 	updateFilter,
 	resetFilter,
 	updateSort,
-	applySort
+	applySort,
+	initializeFilter
 };

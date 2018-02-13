@@ -40,14 +40,15 @@
 	background: #FFFFFF;
 	border-bottom: 1px solid #D8D8D8;
 	box-shadow: 0 1px 4px 0 rgba(0,0,0,0.05);
+	transition: background 0.2s ease;
 	.center{
 		font-family: font-family('lato-regular');
 		font-size: map-get($font-size, --medium );
-		color: color(--primary);
+		color: inherit;
 		letter-spacing: 0.5px;
 	}
 	a{
-		color: color(--primary);
+		color: inherit;
 		font-family: font-family('lato-bold');
 		font-size: map-get($font-size, --normal);
 		letter-spacing: 1px;

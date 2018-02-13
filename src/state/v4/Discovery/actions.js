@@ -1,16 +1,16 @@
-import { request } from '@/utils';
+import to from 'await-to-js';
+import { Promise } from 'es6-promise';
 import _ from 'lodash';
+import { request } from '@/utils';
 import { promos } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
-// import { promo } from '@/data/translations';
 
 const configs = {
 	defaultPage: 30
 };
 
-const promoAction = ({ token, promoType, query = {} }) => (dispatch, getState) => {
+const promoAction = ({ token, promoType, query = {} }) => async (dispatch, getState) => {
 	dispatch(scrollerActions.onScroll({ loading: true }));
-
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || process.env.MICROSERVICES_URL;
 	const url = `${baseUrl}/${promoType}`;
@@ -20,25 +20,26 @@ const promoAction = ({ token, promoType, query = {} }) => (dispatch, getState) =
 	}
 	query.per_page = configs.defaultPage;
 
-	return request({
-		token,
-		path: url,
-		method: 'GET',
-		query,
-		fullpath: true
-	}).then(response => {
-		const promo = {};
-		promo[promoType] = response.data.data;
-		dispatch(promos({ promo }));
+	const [err, response] = await to(request({ token, path: url, method: 'GET', query, fullpath: true }));
 
-		const nextLink = promo[promoType].links && promo[promoType].links.next ? new URL(baseUrl + promo[promoType].links.next).searchParams : false;
-		dispatch(scrollerActions.onScroll({
-			nextData: { token, promoType, query: { ...query, page: nextLink ? nextLink.get('page') : false } },
-			nextPage: nextLink !== false,
-			loading: false,
-			loader: promoAction
-		}));
-	});
+	if (err) {
+		return Promise.reject(err);
+	}
+	
+	const promo = {};
+	promo[promoType] = response.data.data;
+	dispatch(promos({ promo }));
+
+	const nextLink = promo[promoType].links && promo[promoType].links.next ? new URL(baseUrl + promo[promoType].links.next).searchParams : false;
+	dispatch(scrollerActions.onScroll({
+		nextData: { token, promoType, query: { ...query, page: nextLink ? nextLink.get('page') : false } },
+		nextPage: nextLink !== false,
+		loading: false,
+		loader: promoAction
+	}));
+
+	return Promise.resolve(response);
+
 };
 
 export default {

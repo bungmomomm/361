@@ -66,7 +66,7 @@ class Search extends PureComponent {
 	enterSearchHandler(event) {
 		if (event.key === 'Enter') {
 			this.setCookieSearch(event.target.value, event.target.value);
-			const pathProd = `/products?category_id=&query=${event.target.value}`;
+			const pathProd = `/products?category_id=&query=${encodeURIComponent(event.target.value)}`;
 			this.props.history.push(pathProd);
 		}
 	}
