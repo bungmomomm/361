@@ -38,7 +38,7 @@ class UserProfileEdit extends Component {
 			this.state.ovoVerified ?
 				<div className='margin--medium'>
 					<label className={styles.label} htmlFor='ovoID'><span style={{ color: '#4E2688' }}>OVO ID</span></label>
-					<Input disabled={enableInput} id='ovoID' flat value='085975049209' />
+					<Input disabled={enableInput} id='ovoID' flat defaultValue='085975049209' />
 					<span style={{ color: '#4E2688', fontSize: '12px' }}>OVO ID anda telah terhubung</span>
 				</div> :
 				<div className='margin--medium'>
@@ -94,13 +94,13 @@ class UserProfileEdit extends Component {
 				<form style={{ padding: '15px' }}>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='fullName'>Nama Lengkap</label>
-						<Input disabled={enableInput} id='fullName' flat value='Yannis Philippakis' />
+						<Input disabled={enableInput} id='fullName' flat defaultValue='Yannis Philippakis' />
 					</div>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='email'>Email</label>
 						<div className={styles.inputChange}>
 							<div className={styles.inputChangeInput}>
-								<Input disabled={enableInput} readOnly id='email' flat value='ynnsphlppks@icloud.com' />
+								<Input disabled={enableInput} autocomplete='off' readOnly id='email' flat defaultValue='ynnsphlppks@icloud.com' />
 							</div>
 							{ this.state.edit ? <Link className={styles.inputChangeLink} to='/profile-edit-email'>UBAH</Link> : null }
 						</div>
@@ -109,24 +109,24 @@ class UserProfileEdit extends Component {
 						<label className={styles.label} htmlFor='cellPhone'>Nomor Handphone</label>
 						<div className={styles.inputChange}>
 							<div className={styles.inputChangeInput}>
-								<Input disabled={enableInput} readOnly id='cellPhone' flat value='085975049209' />
+								<Input disabled={enableInput} autocomplete='off' readOnly id='cellPhone' flat defaultValue='085975049209' />
 							</div>
 							{ this.state.edit ? <Link className={styles.inputChangeLink} to='/profile-edit-hp'>UBAH</Link> : null }
 						</div>
 					</div>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='gender'>Jenis Kelamin</label>
-						<Input disabled={enableInput} id='gender' flat value='Pria' />
+						<Input disabled={enableInput} autocomplete='off' id='gender' flat defaultValue='Pria' />
 					</div>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='dob'>Tanggal Lahir</label>
-						<Input disabled={enableInput} id='dob' flat value='23/02/1990' />
+						<Input disabled={enableInput} autocomplete='off' id='dob' flat defaultValue='23/02/1990' />
 					</div>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='password'>Password</label>
 						<div className={styles.inputChange}>
 							<div className={styles.inputChangeInput}>
-								<Input disabled={enableInput} readOnly id='password' type='password' flat value='password' />
+								<Input disabled={enableInput} autocomplete='off' readOnly id='password' type='password' flat defaultValue='password' />
 							</div>
 							{ this.state.edit ? <Link className={styles.inputChangeLink} to='#editPassword'>UBAH</Link> : null }
 						</div>
