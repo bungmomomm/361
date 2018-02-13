@@ -5,7 +5,7 @@ const foreverBanner = (params) => {
 		color: params.text_color
 	};
 	
-	const disableCloseFilter = params.close_button.fg_show === '1' === false;
+	const disableCloseFilter = (params.close_button.fg_show === '0');
 	
 	return (
 		<Notification
