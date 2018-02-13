@@ -46,13 +46,6 @@ const initAction = (token, url = false, query) => async (dispatch, getState) => 
 				query: {
 					...query,
 					page: nextLink ? parseInt(nextLink.get('page'), 10) : false,
-					// q: query.q,
-					// brand_id: parseInt(query.brand_id, 10),
-					// store_id: parseInt(query.store_id, 10),
-					// category_id: parseInt(query.category_id, 10),
-					// per_page: parseInt(query.per_page, 10),
-					// fq: query.fq,
-					// sort: query.sort,
 				}
 			},
 			nextPage: nextLink !== false,

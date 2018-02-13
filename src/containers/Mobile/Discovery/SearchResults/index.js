@@ -41,11 +41,6 @@ class SearchResults extends Component {
 		};
 	}
 
-	// componentWillUnmount() {
-	// 	const { dispatch } = this.props;
-	// 	dispatch(new actions.initLoading(true));
-	// }
-
 	async onApply(e) {
 		console.log('onApply called');
 		const { dispatch, cookies, filters } = this.props;
@@ -302,7 +297,7 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-	// console.log(props);
+	console.log(props);
 	const { shared, dispatch, cookies, location } = props;
 
 	const searchService = _.chain(shared).get('serviceUrl.product').value() || false;
