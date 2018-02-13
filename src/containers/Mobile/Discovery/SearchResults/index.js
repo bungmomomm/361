@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import _ from 'lodash';
-import { Header, Page, Card, Svg, Tabs, Button, Level, Image, Input, Navigation } from '@/components/mobile';
+import { Header, Page, Card, Svg, Tabs, Navigation, Comment } from '@/components/mobile';
 import stylesSearch from '../Search/search.scss';
 import stylesCatalog from '../Category/Catalog/catalog.scss';
 import { actions } from '@/state/v4/SearchResults';
@@ -11,6 +11,12 @@ import { Link } from 'react-router-dom';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
+
+import { actions as filterActions } from '@/state/v4/SortFilter';
+import Filter from '@/containers/Mobile/Shared/Filter';
+import Sort from '@/containers/Mobile/Shared/Sort';
+import { to } from 'await-to-js';
+import Spinner from '../../../../components/mobile/Spinner';
 
 class SearchResults extends Component {
 	constructor(props) {
@@ -29,13 +35,43 @@ class SearchResults extends Component {
 			listTypeState: this.listType[this.currentListState],
 			notification: {
 				show: true
-			}
+			},
+			showFilter: false,
+			showSort: false
 		};
 	}
 
-	componentWillMount() {
-		const { dispatch } = this.props;
-		dispatch(new actions.initLoading(true));
+	async onApply(e) {
+		console.log('onApply called');
+		const { dispatch, cookies, filters } = this.props;
+		const [err, response] = await to(dispatch(new filterActions.applyFilter(cookies.get('user.token'), 'search', filters)));
+		console.log(err, response);
+		if (err) {
+			return err;
+		}
+		this.setState({
+			showFilter: false
+		});
+		console.log(response);
+		return response;
+	}
+
+	onUpdateFilter(e, type, value) {
+		try {
+			this.props.dispatch(new filterActions.updateFilter(type, value));
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	onReset(e) {
+		this.props.dispatch(new filterActions.resetFilter());
+	}
+
+	onClose(e) {
+		this.setState({
+			showFilter: false
+		});
 	}
 
 	getKeyword() {
@@ -45,25 +81,30 @@ class SearchResults extends Component {
 		return keywordFromUrl;
 	}
 
+	sort(e, value) {
+		this.setState({
+			showSort: false
+		});
+		this.props.dispatch(new filterActions.updateSort(value));
+	}
+
 	handlePick(e) {
-		switch (e) {
-		case 'view':
+		if (e === 'view') {
 			this.currentListState = this.currentListState === 1 ? 0 : this.currentListState + 1;
 			this.setState({ listTypeState: this.listType[this.currentListState] });
-			break;
-		// case 'filter':
-		// 	this.props.history.push('/filterCategory');
-		// 	break;
-		default:
-			break;
+		} else {
+			this.setState({
+				showFilter: e === 'filter',
+				showSort: e === 'sort'
+			});
 		}
 	}
 
 	loadingRender() {
 		if (this.props.isLoading === true) {
 			return (
-				<div className={stylesSearch.container} >
-					&nbsp;
+				<div style={this.props.style}>
+					<Spinner />
 				</div>
 			);
 		}
@@ -77,30 +118,54 @@ class SearchResults extends Component {
 			margin: '10px auto 10px auto'
 		};
 		return (
-			<div className={stylesSearch.container} >
-				<div style={inlineStyle}>[image kantong kosong]</div>
-				<div style={inlineStyle}>
-					{'Mohon maaf hasil pencarian untuk "'}{this.getKeyword()}
-					{ '" tidak dapat ditemukan. Silakan periksa pengejaan kata, atau menggunakan kata kunci lain!'}
-				</div>
-				<div><button><Link to={'/search'}>Cari kembali</Link></button></div>
-				<div style={inlineStyle}>[Rich Relevant Recommendation section]</div>
-				<div style={inlineStyle}>[Footer]</div>
+			<div style={this.props.style}>
+				<Page>
+					<div className={stylesSearch.container} >
+						<div style={inlineStyle}>[image kantong kosong]</div>
+						<div style={inlineStyle}>
+							{'Mohon maaf hasil pencarian untuk "'}{this.getKeyword()}
+							{ '" tidak dapat ditemukan. Silakan periksa pengejaan kata, atau menggunakan kata kunci lain!'}
+						</div>
+						<div><button><Link to={'/search'}>Cari kembali</Link></button></div>
+						<div style={inlineStyle}>[Rich Relevant Recommendation section]</div>
+						<div style={inlineStyle}>[Footer]</div>
+					</div>
+				</Page>
+				{this.renderHeader()}
 			</div>
 		);
 	}
 
 	searchFound(products) {
 		if (products.length > 0) {
+			const { shared, filters } = this.props;
+			const { showSort } = this.state;
+			const foreverBannerData = shared.foreverBanner;
+			foreverBannerData.show = this.state.notification.show;
+			foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+
 			return (
-				<div className={stylesSearch.container} >
-					<div className={stylesCatalog.cardContainer}>
-						{
-							products.map((product, index) =>
-								this.renderList(product, index)
-							)
-						}
-					</div>
+				<div style={this.props.style}>
+					<Page>
+						<div className={stylesSearch.container} >
+							<div className={stylesCatalog.cardContainer}>
+								{
+									products.map((product, index) =>
+										this.renderList(product, index)
+									)
+								}
+							</div>
+						</div>
+						<Sort shown={showSort} sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
+					</Page>
+					{this.renderHeader()}
+					{this.renderTabs()}
+					{
+						<ForeverBanner {...foreverBannerData} />
+					}
+					<Navigation />
+
+					{this.props.scroller.loading}
 				</div>
 			);
 		}
@@ -110,10 +175,27 @@ class SearchResults extends Component {
 
 	searchRender() {
 		let searchView = null;
+		const { filters } = this.props;
+		const { showFilter } = this.state;
 		const searchResults = this.props.searchResults;
 		if (typeof searchResults.searchStatus !== 'undefined' && searchResults.searchStatus !== '') {
 			if (searchResults.searchStatus === 'success' && searchResults.searchData.products.length > 0) {
-				searchView = this.searchFound(searchResults.searchData.products);
+				if (showFilter) {
+					searchView = (
+						<Filter
+							shown={showFilter}
+							filters={filters}
+							onUpdateFilter={(e, type, value) => this.onUpdateFilter(e, type, value)}
+							onApply={(e) => {
+								this.onApply(e);
+							}}
+							onReset={(e) => this.onReset(e)}
+							onClose={(e) => this.onClose(e)}
+						/>
+					);
+				} else {
+					searchView = this.searchFound(searchResults.searchData.products);
+				}
 			} else if (searchResults.searchStatus === 'failed') {
 				searchView = this.notFound();
 			}
@@ -124,17 +206,6 @@ class SearchResults extends Component {
 
 	renderList(productData, index) {
 		if (productData) {
-			const renderBlockComment = (
-				<div className={stylesCatalog.commentBlock}>
-					<Button>View 38 comments</Button>
-					<Level>
-						<Level.Left><div style={{ marginRight: '10px' }}><Image avatar width={25} height={25} local src='temp/pp.jpg' /></div></Level.Left>
-						<Level.Item>
-							<Input color='white' placeholder='Write comment' />
-						</Level.Item>
-					</Level>
-				</div>
-			);
 			switch (this.state.listTypeState.type) {
 			case 'list':
 				return (
@@ -145,7 +216,7 @@ class SearchResults extends Component {
 							brandName={productData.brand}
 							pricing={productData.pricing}
 						/>
-						{renderBlockComment}
+						<Comment />
 					</div>
 				);
 			case 'grid':
@@ -190,7 +261,7 @@ class SearchResults extends Component {
 					type='segment'
 					variants={[
 						{
-							id: 'urutkan',
+							id: 'sort',
 							title: 'Urutkan'
 						},
 						{
@@ -211,30 +282,13 @@ class SearchResults extends Component {
 	}
 
 	render() {
-		const { shared } = this.props;
-		const foreverBannerData = shared.foreverBanner;
-		foreverBannerData.show = this.state.notification.show;
-		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
-		return (
-			<div style={this.props.style}>
-				<Page>
-					{this.props.isLoading ? this.loadingRender() : this.searchRender()}
-				</Page>
-				{this.renderHeader()}
-				{this.props.isLoading ? this.loadingRender() : this.renderTabs()}
-				{
-					<ForeverBanner {...foreverBannerData} />
-				}
-				<Navigation />
-
-				{this.props.scroller.loading}
-			</div>
-		);
+		return this.props.isLoading ? this.loadingRender() : this.searchRender();
 	}
 }
 
 const mapStateToProps = (state) => {
 	return {
+		...state,
 		shared: state.shared,
 		searchResults: state.searchResults,
 		isLoading: state.searchResults.isLoading,
@@ -242,7 +296,7 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (props) => {
+const doAfterAnonymous = async (props) => {
 	console.log(props);
 	const { shared, dispatch, cookies, location } = props;
 
@@ -258,8 +312,15 @@ const doAfterAnonymous = (props) => {
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
+	
+	const [err, response] = await to(dispatch(new actions.initAction(cookies.get('user.token'), searchService, objParam)));
 
-	dispatch(new actions.initAction(cookies.get('user.token'), searchService, objParam));
+	if (err) {
+		console.log(err.message);
+	} else {
+		console.log('response', response);
+		dispatch(filterActions.initializeFilter(response));
+	}
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Scroller(SearchResults), doAfterAnonymous)));
