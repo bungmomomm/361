@@ -99,6 +99,7 @@ const getProductCardData = (details) => {
 			images,
 			pricing: currentVariant.pricing,
 			product_title: details.title,
+			lovelistTotal: 1230
 		};
 	}
 	return details;

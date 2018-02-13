@@ -3,42 +3,11 @@ import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as commentActions } from '@/state/v4/Comment';
+import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { Link } from 'react-router-dom';
 import { Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid } from '@/components/mobile';
 import styles from './products.scss';
 import _ from 'lodash';
-
-const DUMMY_PRODUCT = {
-	images: [
-		{ mobile: 'https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-01.jpg' },
-		{ mobile: 'https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-02.jpg' }
-	],
-	product_title: 'Immaculate Brands of the Year by Yannis Philippakis',
-	brand: 'Olivia Von Halle pink print',
-	pricing: {
-		formatted: {
-			effective_price: 'Rp.1000.000',
-			base_price: 'Rp.900.000'
-		},
-		discount: '20%'
-	}
-};
-
-const DUMMY_PRODUCT_GRID = {
-	images: [
-		{ thumbnail: 'https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-01.jpg' },
-		{ thumbnail: 'https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-02.jpg' }
-	],
-	productTitle: 'Immaculate Brands of the Year by Yannis Philippakis',
-	brandName: 'Olivia Von Halle pink print',
-	pricing: {
-		formatted: {
-			effective_price: 'Rp.1000.000',
-			base_price: 'Rp.900.000'
-		},
-		discount: '20%'
-	}
-};
 
 class Products extends Component {
 	constructor(props) {
@@ -47,16 +16,23 @@ class Products extends Component {
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.source = this.props.cookies.get('user.source');
+
 		this.handleScroll = this.handleScroll.bind(this);
+		this.handleLovelistClick = this.handleLovelistClick.bind(this);
+
+
 		this.state = {
 			size: 's',
 			showScrollInfomation: false,
-			detail: {},
-			cardProduct: false,
-			similarItems: 'loading content',
-			reviewItems: 'loading content',
 			loading: true,
-			dataHasBeenSet: false
+			isLoved: false,
+			pdpDataHasLoaded: false,
+			pdpData: {
+				cardProduct: false,
+				similarItems: 'loading content',
+				reviewItems: 'loading content'
+			},
+			detail: {},
 		};
 	}
 
@@ -68,17 +44,16 @@ class Products extends Component {
 		dispatch(new productActions.productRecommendationAction(token));
 		dispatch(new productActions.productSimilarAction(token));
 		dispatch(new productActions.productSocialSummaryAction(token, productId));
-		dispatch(new commentActions.productCommentAction(token));
+		dispatch(new commentActions.productCommentAction(token, productId));
 		window.addEventListener('scroll', this.handleScroll, true);
 	}
 
 	componentWillReceiveProps(nextProps) {
 		const { detail, similar, reviews } = nextProps.product;
-		const { dataHasBeenSet } = this.state;
+		const { pdpDataHasLoaded } = this.state;
 		
-		if (!_.isEmpty(detail) && !_.isEmpty(similar) && !_.isEmpty(reviews) && !dataHasBeenSet) {
-			console.log('I am supposed to be called once :(', dataHasBeenSet);
-			const cardData = productActions.getProductCardData(detail);
+		if (!_.isEmpty(detail) && !_.isEmpty(similar) && !_.isEmpty(reviews) && !pdpDataHasLoaded) {
+			const cardProduct = productActions.getProductCardData(detail);
 			const similarItems = similar.map((item, idx) => {
 				const data = {
 					productTitle: item.product_title,
@@ -95,11 +70,13 @@ class Products extends Component {
 
 			this.setState({
 				loading: false,
-				dataHasBeenSet: true,
+				pdpDataHasLoaded: true,
 				detail,
-				cardProduct: cardData,
-				similarItems,
-				reviewItems
+				pdpData: {
+					cardProduct,
+					similarItems,
+					reviewItems
+				}
 			});
 		}
 	}
@@ -123,7 +100,31 @@ class Products extends Component {
 		dispatch(new commentActions.commentAddAction(this.userCookies));
 	}
 
+	handleLovelistClick(e) {
+		const { dispatch, match } = this.props;
+		const { pdpData } = this.state;
+		let { isLoved } = this.state;
+ 
+		if (!isLoved) {
+			isLoved = true;
+			pdpData.cardProduct.lovelistTotal += 1;
+			dispatch(lovelistActions.addToLovelist(this.userCookies, 1, match.params.id));
+			console.log('This product has been added into loved list!!!');
+		} else {
+			isLoved = false;
+			pdpData.cardProduct.lovelistTotal -= 1;
+			dispatch(lovelistActions.removeFromLovelist(this.userCookies, 1, match.params.id));
+			console.log('This product has been removed from loved list!!!');
+		}
+
+		this.setState({
+			isLoved,
+			pdpData
+		});
+	}
+
 	renderHeaderPage() {
+		const { pdpData } = this.state;
 		if (this.state.showScrollInfomation) {
 			return {
 				left: (
@@ -131,7 +132,7 @@ class Products extends Component {
 						<Svg src={'ico_arrow-back-left.svg'} />
 					</a>
 				),
-				center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{DUMMY_PRODUCT.product_title}</div>,
+				center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{pdpData.cardProduct.product_title}</div>,
 				right: (
 					<a href={'/'} onClick={this.switchMode}>
 						<Svg src={'ico_share.svg'} />
@@ -155,6 +156,7 @@ class Products extends Component {
 	}
 
 	renderStickyAction() {
+		const { pdpData } = this.state;
 		if (this.state.showScrollInfomation && !this.state.loading) {
 			return (
 				<div className={styles.stickyAction}>
@@ -165,8 +167,8 @@ class Products extends Component {
 							</div>
 						</Level.Left>
 						<Level.Item className='padding--medium'>
-							<div className='font-normal'>{this.state.cardProduct.pricing.formatted.effective_price}</div>
-							<div className='font-small font-color--primary-ext-2'>{this.state.cardProduct.pricing.formatted.base_price}</div>
+							<div className='font-normal'>{pdpData.cardProduct.pricing.formatted.effective_price}</div>
+							<div className='font-small font-color--primary-ext-2'>{pdpData.cardProduct.pricing.formatted.base_price}</div>
 						</Level.Item>
 						<Level.Right>
 							<Button color='secondary' size='medium'>BELI AJA</Button>
@@ -179,8 +181,8 @@ class Products extends Component {
 	}
 
 	render() {
-		const { showScrollInfomation, loading, detail } = this.state;
-		const { match } = this.props;
+		const { showScrollInfomation, loading, detail, pdpData } = this.state;
+		const { match, history } = this.props;
 
 		if (loading) {
 			return <div>Please wait, loading content...</div>;
@@ -190,7 +192,12 @@ class Products extends Component {
 			<div>
 				<Page>
 					<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
-						<Card.Lovelist data={this.state.cardProduct} />
+						<Card.Lovelist 
+							data={pdpData.cardProduct}
+							isLoved={this.state.isLoved}
+							onBtnLovelistClick={this.handleLovelistClick} 
+							onBtnCommentClick={(e) => (history.push(`/product/comments/${match.params.id}`))}
+						/>
 						<Level style={{ borderBottom: '1px solid #D8D8D8', borderTop: '1px solid #D8D8D8' }}>
 							<Level.Left className='flex-center'>
 								<Svg src='ico_ovo.svg' />
@@ -222,7 +229,7 @@ class Products extends Component {
 							<p className='font-color--red font-small'>Stock Habis</p>
 							<p className='text-center margin--medium'>Panduan Ukuran</p>
 						</div>
-						<p className='margin--small padding--medium'>{this.state.detail.description}</p>
+						<p className='margin--small padding--medium'>{detail.description}</p>
 						<span className='margin--small padding--medium'>
 							<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
 						</span>
@@ -236,8 +243,7 @@ class Products extends Component {
 						<hr className='margin--small' />
 						<div className='margin--small padding--medium font-medium'>Shop the Look</div>
 						<div className='flex-row'>
-							<Card.CatalogGrid {...DUMMY_PRODUCT_GRID} />
-							<Card.CatalogGrid {...DUMMY_PRODUCT_GRID} />
+							{pdpData.similarItems}
 						</div>
 						<div style={{ backgroundColor: '#F5F5F5' }}>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
@@ -246,7 +252,7 @@ class Products extends Component {
 										<div className='font-medium'>Penilaian Produk</div>
 										<Link className='font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
 									</div>
-									{this.state.reviewItems}
+									{pdpData.reviewItems}
 								</div>
 							</div>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
@@ -288,7 +294,7 @@ class Products extends Component {
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								<div className='margin--small padding--medium font-medium'>Produk Serupa</div>
 								<div className='flex-row'>
-									{this.state.similarItems}
+									{pdpData.similarItems}
 								</div>
 							</div>
 						</div>

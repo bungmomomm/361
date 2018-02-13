@@ -10,11 +10,12 @@ import styles from './card.scss';
 
 class Lovelist extends PureComponent {
 	render() {
-		const { className, type, data, ...props } = this.props;
+		const { className, type, data, isLoved } = this.props;
 		const createClassName = classNames(styles.container, styles[type], className);
-		
+		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
+
 		return (
-			<div className={createClassName} {...props}>
+			<div className={createClassName}>
 				<Carousel>
 					{
 						data.images.map((image, idx) => (
@@ -27,13 +28,13 @@ class Lovelist extends PureComponent {
 					style={{ borderBottom: '1px solid #D8D8D8' }}
 				>
 					<Level.Item>
-						<Button>
-							<Svg src='ico_love-filled.svg' />
-							<span>1320</span>
+						<Button onClick={this.props.onBtnLovelistClick}>
+							<Svg src={loveIcon} />
+							<span>{data.lovelistTotal}</span>
 						</Button>
 					</Level.Item>
 					<Level.Item>
-						<Button>
+						<Button onClick={this.props.onBtnCommentClick}>
 							<Svg src='ico_comment.svg' />
 							<span>38</span>
 						</Button>
