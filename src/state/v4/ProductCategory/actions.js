@@ -57,7 +57,7 @@ const initAction = (token, url = false, query) => async (dispatch, getState) => 
 
 		return Promise.resolve(pcpData);
 	}).catch((e) => {
-		return Promise.reject(new Error('error '));
+		return Promise.reject(e);
 	});
 };
 

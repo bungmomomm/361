@@ -80,6 +80,7 @@ class Product extends Component {
 		this.setState({
 			sortShown: false
 		});
+		this.props.dispatch(new filterActions.updateSort(value));
 	}
 
 	handlePick(e) {
@@ -105,7 +106,10 @@ class Product extends Component {
 	pcpRender() {
 		let pcpView = null;
 		const { shared, filters } = this.props;
-		console.log(this.props);
+		const foreverBannerData = shared.foreverBanner;
+		foreverBannerData.show = this.state.notification.show;
+		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+
 		const { filterShown, sortShown } = this.state;
 		const pcpResults = this.props.productCategory;
 		if (typeof pcpResults.pcpStatus !== 'undefined' && pcpResults.pcpStatus !== '') {
@@ -123,10 +127,6 @@ class Product extends Component {
 							onClose={(e) => this.onClose(e)}
 						/>
 					);
-				} else if (sortShown) {
-					pcpView = (
-						<Sort sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
-					);
 				} else {
 					pcpView = (
 						<div style={this.props.style}>
@@ -138,20 +138,12 @@ class Product extends Component {
 										)
 									}
 								</div>
+								<Sort shown={sortShown} sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
 							</Page>
 							{this.renderHeader()}
 							{this.renderTabs()}
 							{
-								shared.foreverBanner.text ?
-									<ForeverBanner
-										color={shared.foreverBanner.text.background_color}
-										show={this.state.notification.show}
-										onClose={(e) => this.setState({ notification: { show: false } })}
-										text1={shared.foreverBanner.text.text1}
-										text2={shared.foreverBanner.text.text2}
-										textColor={shared.foreverBanner.text.text_color}
-									/>
-									: ''
+								<ForeverBanner {...foreverBannerData} />
 							}
 							<Navigation active='Categories' />
 			
@@ -299,7 +291,7 @@ const doAfterAnonymous = async (props) => {
 	const [err, response] = await to(dispatch(actions.initAction(cookies.get('user.token'), productService, pcpParam)));
 	
 	if (err) {
-		console.log(err);
+		console.log(err.message);
 	} else {
 		dispatch(filterActions.initializeFilter(response));
 	}

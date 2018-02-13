@@ -578,21 +578,21 @@ const initialState = {
 initialState.filters = initialState.facets;
 
 const actions = createActions({
-	UPDATE_FILTER_CATEGORY: (active, category) => ({ active, category }),
-	UPDATE_FILTER_BRAND: (active, brand) => ({ active, brand }),
-	UPDATE_FILTER_CUSTOM_CATEGORY: (active, category) => ({ active, category }),
-	UPDATE_FILTER_COLOR: (active, color) => ({ active, color }),
-	UPDATE_FILTER_SIZE: (active, size) => ({ active, size }),
-	UPDATE_FILTER_PRICE: (active, price, min, max) => ({ active, price, min, max }),
-	UPDATE_FILTER_LOCATION: (active, location) => ({ active, location }),
-	UPDATE_FILTER_SHIPPING: (active, shipping) => ({ active, shipping_methods: shipping }),
-	UPDATE_FILTER_FAIL: (active, error) => ({ active, error }),
+	UPDATE_FILTER_CATEGORY: (category) => ({ category }),
+	UPDATE_FILTER_BRAND: (brand) => ({ brand }),
+	UPDATE_FILTER_CUSTOM_CATEGORY: (category) => ({ category }),
+	UPDATE_FILTER_COLOR: (color) => ({ color }),
+	UPDATE_FILTER_SIZE: (size) => ({ size }),
+	UPDATE_FILTER_PRICE: (price, min, max) => ({ price, min, max }),
+	UPDATE_FILTER_LOCATION: (location) => ({ location }),
+	UPDATE_FILTER_SHIPPING: (shipping) => ({ shipping_methods: shipping }),
+	UPDATE_FILTER_FAIL: (error) => ({ error }),
 	UPDATE_FILTER: undefined,
 	UPDATE_FILTER_SUCCESS: (filters, facets, sorts, page, perPage) => ({ filters, facets, sorts, page, perPage }),
 	UPDATE_FILTER_RESET: undefined,
 	DO_TEST: (t) => ({ t }),
-	UPDATE_SORT: (active, sorts, sort) => ({ active, sorts , sort }),
-	UPDATE_SORT_FAIL: (active, error) => ({ active, error }),
+	UPDATE_SORT: (sorts, sort) => ({ sorts, sort }),
+	UPDATE_SORT_FAIL: (error) => ({ error }),
 	UPDATE_SORT_APPLY: undefined,
 	UPDATE_SORT_SUCCESS: (filters, facets, sorts, page, perPage) => ({ filters, facets, sorts, page, perPage })
 });
@@ -604,7 +604,7 @@ const hasChild = (category) => {
 const findAndSetSelected = (categories, value) => {
 	categories = _.map(categories, (category) => {
 		if (category.facetrange === value.facetrange) {
-			category.is_selected = !category.is_selected;
+			category.is_selected = category.is_selected ? 0 : 1;
 		}
 		if (hasChild(category)) {
 			category.childs = findAndSetSelected(category.childs, value);
@@ -612,6 +612,15 @@ const findAndSetSelected = (categories, value) => {
 		return category;
 	});
 	return categories;
+};
+
+const setSelected = (facet, value) => {
+	return _.map(facet.data, (data) => {
+		if (data.facetrange === value.facetrange) {
+			data.is_selected = data.is_selected ? 0 : 1;
+		}
+		return data;
+	});
 };
 
 const reducer = handleActions({
@@ -644,13 +653,7 @@ const reducer = handleActions({
 	[actions.updateFilterColor]: (state, action) => {
 		const facets = _.map(state.facets, (facet) => {
 			if (facet.id === 'color') {
-				const colors = _.map(facet.data, (color) => {
-					if (color.facetrange === action.payload.color.facetrange) {
-						color.is_selected = !color.is_selected;
-					}
-					return color;
-				});
-				facet.data = colors;
+				facet.data = setSelected(facet, action.payload.color);
 			}
 			return facet;
 		});
@@ -663,13 +666,7 @@ const reducer = handleActions({
 		const facetName = 'brand';
 		const facets = _.map(state.facets, (facet) => {
 			if (facet.id === facetName) {
-				const results = _.map(facet.data, (value) => {
-					if (value.facetrange === action.payload[facetName].facetrange) {
-						value.is_selected = !value.is_selected;
-					}
-					return value;
-				});
-				facet.data = results;
+				facet.data = setSelected(facet, action.payload[facetName]);
 			}
 			return facet;
 		});
@@ -679,15 +676,10 @@ const reducer = handleActions({
 		};
 	},
 	[actions.updateFilterSize]: (state, action) => {
+		const facetName = 'brand';
 		const facets = _.map(state.facets, (facet) => {
-			if (facet.id === 'size') {
-				const sizes = _.map(facet.data, (size) => {
-					if (size.facetrange === action.payload.size.facetrange) {
-						size.is_selected = !size.is_selected;
-					}
-					return size;
-				});
-				facet.data = sizes;
+			if (facet.id === facetName) {
+				facet.data = setSelected(facet, action.payload[facetName]);
 			}
 			return facet;
 		});
@@ -700,13 +692,7 @@ const reducer = handleActions({
 		const facetName = 'price';
 		const facets = _.map(state.facets, (facet) => {
 			if (facet.id === facetName) {
-				const results = _.map(facet.data, (value) => {
-					if (value.facetrange === action.payload[facetName].facetrange) {
-						value.is_selected = !value.is_selected;
-					}
-					return value;
-				});
-				facet.data = results;
+				facet.data = setSelected(facet, action.payload[facetName]);
 			}
 			return facet;
 		});
@@ -719,13 +705,7 @@ const reducer = handleActions({
 		const facetName = 'location';
 		const facets = _.map(state.facets, (facet) => {
 			if (facet.id === facetName) {
-				const results = _.map(facet.data, (value) => {
-					if (value.facetrange === action.payload[facetName].facetrange) {
-						value.is_selected = !value.is_selected;
-					}
-					return value;
-				});
-				facet.data = results;
+				facet.data = setSelected(facet, action.payload[facetName]);
 			}
 			return facet;
 		});
@@ -738,13 +718,7 @@ const reducer = handleActions({
 		const facetName = 'shipping_methods';
 		const facets = _.map(state.facets, (facet) => {
 			if (facet.id === facetName) {
-				const results = _.map(facet.data, (value) => {
-					if (value.facetrange === action.payload[facetName].facetrange) {
-						value.is_selected = !value.is_selected;
-					}
-					return value;
-				});
-				facet.data = results;
+				facet.data = setSelected(facet, action.payload[facetName]);
 			}
 			return facet;
 		});
