@@ -258,8 +258,9 @@ const updateSort = (value) => (dispatch, getState) => {
 
 		return sort;
 	});
-	
-	dispatch(actions.updateSort(sorts));
+	const selectedSort = _.filter(sorts, (sort) => (sort.is_selected === 1)).shift();
+	const sort = typeof selectedSort.q !== 'undefined' ? selectedSort.q : 'energy DESC';
+	dispatch(actions.updateSort(sorts, sort));
 };
 
 const applySort = (token, type) => async (dispatch, getState) => {
