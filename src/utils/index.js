@@ -6,6 +6,7 @@ import isMobile from './isMobile';
 import componentState from './componentState';
 import { request, getCancelToken } from './request';
 import { setUserCookie } from './cookie';
+import SocialLogin from './social-login';
 
 const getBaseUrl = () => {
 	return process.env.BASE_URL;
@@ -41,5 +42,6 @@ export default {
 	getBaseUrl,
 	isMobile,
 	modalController,
-	componentState
+	componentState,
+	SocialLogin
 };

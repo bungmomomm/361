@@ -5,7 +5,7 @@ import { actions as users } from '@/state/v4/User';
 import { Link, Redirect } from 'react-router-dom';
 import { Header, Page, Button, Input, Tabs, Svg, Notification } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
-import { setUserCookie, renderIf } from '@/utils';
+import { setUserCookie, renderIf, SocialLogin } from '@/utils';
 import styles from '../user.scss';
 import _ from 'lodash';
 import validator from 'validator';
@@ -103,7 +103,11 @@ class Login extends Component {
 					<div className={styles.container}>
 						<div className='margin--medium'>Login Dengan</div>
 						<div className='flex-row flex-center flex-spaceBetween'>
-							<div style={{ width: '45%' }}><Button wide color='facebook' size='medium'>Facebook</Button></div>
+							<div style={{ width: '45%' }}>
+								<SocialLogin.FacebookLogin appId={process.env.FBAPP_ID} onSuccess={(e) => console.log('success', e)} callback={(e) => console.log('callback', e)}>
+									<Button wide color='facebook' size='medium' >Facebook</Button>
+								</SocialLogin.FacebookLogin>
+							</div>
 							<div style={{ width: '45%' }}><Button wide color='google' size='medium' ><Svg src='ico_google.svg' style={{ marginRight: '10px' }} />Google</Button></div>
 						</div>
 						<div className={styles.divider}><span>Atau</span></div>
