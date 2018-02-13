@@ -20,17 +20,14 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		componentWillMount() {
 			window.mmLoading.stop();
+			if (typeof doAfterAnonymousCall !== 'undefined') {
+				doAfterAnonymousCall.apply(this, [this.props]);
+			}
 		}
 
 		componentDidMount() {
 			this.initProcess();
 		}
-
-		// componentDidUpdate() {
-		// 	console.log('asdadsasd');
-
-		// 	return this.initProcess();
-		// }
 
 		componentWillUnmount() {
 			window.mmLoading.play();
