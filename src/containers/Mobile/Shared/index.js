@@ -21,9 +21,6 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		componentWillMount() {
 			window.mmLoading.stop();
 			this.initProcess();
-			// if (typeof doAfterAnonymousCall !== 'undefined') {
-			// 	doAfterAnonymousCall.apply(this, [this.props]);
-			// }
 		}
 
 		componentWillUnmount() {
@@ -73,8 +70,6 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				console.log(response);
 				this.initApp();
 			}
-
-
 		}
 
 		withErrorHandling(err) {

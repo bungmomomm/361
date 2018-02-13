@@ -3,7 +3,6 @@ import { handleActions, createActions } from 'redux-actions';
 const initialState = {
 	isLoading: false,
 	searchStatus: '',
-	searchParam: [],
 	searchData: {
 		links: [],
 		info: [],
@@ -20,16 +19,13 @@ const { setLoading, initSearch } = createActions(
 const reducer = handleActions({
 	[setLoading](state, { payload: { isLoading } }) {
 		return {
-			...state,
 			isLoading
 		};
 	},
-	[initSearch](state, { payload: { isLoading, searchStatus, searchParam, searchData } }) {
+	[initSearch](state, { payload: { isLoading, searchStatus, searchData } }) {
 		return {
-			...state,
 			isLoading,
 			searchStatus,
-			searchParam,
 			searchData
 		};
 	}
