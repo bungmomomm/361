@@ -288,7 +288,6 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = (props) => {
-	console.log(props);
 	const { shared, home, dispatch, cookies } = props;
 	
 	const activeSegment = home.segmen.find(e => e.key === home.activeSegment);

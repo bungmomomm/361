@@ -180,6 +180,7 @@ class Products extends Component {
 
 	render() {
 		const { showScrollInfomation, loading, detail } = this.state;
+		const { match } = this.props;
 
 		if (loading) {
 			return <div>Please wait, loading content...</div>;
@@ -226,7 +227,11 @@ class Products extends Component {
 							<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
 						</span>
 						<div className='margin--medium --disable-flex padding--medium'>
-							<Button className='font--lato-normal font-color--primary-ext-2'>Lihat semua 38 komentar</Button>
+							<Link to={`/product/comments/${match.params.id}`}>
+								<Button className='font--lato-normal font-color--primary-ext-2'>
+									Lihat semua 38 komentar
+								</Button>
+							</Link>
 						</div>
 						<hr className='margin--small' />
 						<div className='margin--small padding--medium font-medium'>Shop the Look</div>
@@ -298,7 +303,8 @@ class Products extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		...state
+		product: state.product, 
+		shared: state.shared
 	};
 };
 

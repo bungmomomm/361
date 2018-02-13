@@ -26,11 +26,14 @@ class SubCategory extends PureComponent {
 		this.categoryLvl2 = props.match.params.categoryLvl2;
 		this.categoryLvl3 = props.match.params.categoryLvl3;
 		this.userCookies = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
-		this.userRFCookies = this.props.cookies.get(CONST.COOKIE_USER_RF_TOKEN);
 		this.source = this.props.cookies.get('user.source');
+		this.defaultSegment = CONST.SEGMENT_DEFAULT_SELECTED;
 	}
 
 	componentWillMount() {
+		if (this.categoryLvl1 && this.props.category && this.props.category.categories.length < 1) {
+			this.props.history.push(`/category/${this.defaultSegment.key}`);
+		}
 		this.setSelectedCategory(this.props.category.categories);
 	}
 
@@ -47,18 +50,14 @@ class SubCategory extends PureComponent {
 		if (selectedCategory) {
 			selectedCategory = (this.categoryLvl3 !== undefined) ?
 				selectedCategory.sub_categories.filter(e => e.id.toString() === this.categoryLvl3)[0] : selectedCategory;
-
 			if (selectedCategory === undefined) {
 				return this.props.history.push('/category/');
 			}
-
 			const categorySlug = selectedCategory.title.replace(/ /g, '-').toLowerCase();
 			if (selectedCategory.sub_categories.length === 0) {
-				return this.props.history.push(`/p-${selectedCategory.id}/${categorySlug}`);
+				this.props.history.push(`/p-${selectedCategory.id}/${categorySlug}`);
 			}
-
 			this.getFeaturedBrands(selectedCategory.id);
-
 			this.setState({
 				selectedCategory
 			});
@@ -154,12 +153,4 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (props) => {
-	const { category, home, match, dispatch, cookies } = props;
-	if (category.categories.length < 1) {
-		const selectedSegment = home.segmen.find(e => e.key === match.params.categoryLvl1);
-		dispatch(new categoryActions.getCategoryMenuAction(cookies.get(CONST.COOKIE_USER_TOKEN), selectedSegment.id, selectedSegment));
-	}
-};
-
-export default withCookies(connect(mapStateToProps)(Shared(SubCategory, doAfterAnonymous)));
+export default withCookies(connect(mapStateToProps)(Shared(SubCategory)));
