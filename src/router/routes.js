@@ -43,6 +43,7 @@ let UserProfileEdit = defRoute;
 let UserProfileEditOVO = defRoute;
 let UserProfileEditHP = defRoute;
 let UserProfileEditEmail = defRoute;
+let UserProfileEditPassword = defRoute;
 let Cart = defRoute;
 
 if (isMobile()) {
@@ -72,7 +73,7 @@ if (isMobile()) {
 
 	// PDP
 	Products = loadable(() => import('@/containers/Mobile/Details/Products'));
-	
+
 	// Shopping-bag
 	Cart = loadable(() => import('@/containers/Mobile/Cart'));
 
@@ -92,6 +93,7 @@ if (isMobile()) {
 	UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'));
 	UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'));
 	UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'));
+	UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'));
 } else {
 	/**
 	 * Require main desktop styles
@@ -245,6 +247,10 @@ export default {
 		{
 			path: '/profile-edit-email',
 			component: UserProfileEditEmail
+		},
+		{
+			path: '/profile-edit-email',
+			component: UserProfileEditPassword
 		}
 	]
 };
