@@ -128,7 +128,7 @@ class UserProfileEdit extends Component {
 							<div className={styles.inputChangeInput}>
 								<Input disabled={enableInput} readOnly id='password' type='password' flat value='password' />
 							</div>
-							{ this.state.edit ? <Link className={styles.inputChangeLink} to='#editPassword'>UBAH</Link> : null }
+							{ this.state.edit ? <Link className={styles.inputChangeLink} to='/profile-edit-password'>UBAH</Link> : null }
 						</div>
 					</div>
 					{ this.renderOVO(enableInput) }

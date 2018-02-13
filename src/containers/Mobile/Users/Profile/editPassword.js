@@ -24,11 +24,11 @@ class UserProfileEditPassword extends Component {
 				<form style={{ padding: '15px' }}>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='editPassword'>Password</label>
-						<Input id='editPassword' flat value='085975049209' />
+						<Input id='editPassword' type='password' flat />
 					</div>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='editPasswordNew'>Password Baru</label>
-						<Input id='editPasswordNew' flat />
+						<Input id='editPasswordNew' type='password' flat />
 					</div>
 					<div className='margin--medium'>
 						<Button color='primary' size='large'>SIMPAN</Button>
