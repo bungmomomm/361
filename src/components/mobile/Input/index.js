@@ -50,6 +50,7 @@ class Input extends PureComponent {
 			error,
 			iconRight,
 			partitioned,
+			onChange,
 			...props,
 		} = this.props;
 
@@ -107,6 +108,7 @@ class Input extends PureComponent {
 					{renderIconLeft()}
 					{renderIconRight()}
 					<TagName
+						onChange={(e) => { console.log('value', e.target.value); onChange(e); }}
 						{...props}
 						className={CreateinputClassName}
 						ref={this.setInput}

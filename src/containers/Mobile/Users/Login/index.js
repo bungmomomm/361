@@ -75,7 +75,7 @@ class Login extends Component {
 
 	render() {
 		const { isLoading, error } = this.props.users;
-		const { visiblePassword, current, loginId, password, validLoginId, validLoginPassword } = this.state;
+		const { visiblePassword, current, validLoginId, validLoginPassword } = this.state;
 		const buttonLoginEnable = !isLoading && validLoginId && validLoginPassword;
 		const register = (current === 'register');
 		const HeaderPage = {
@@ -108,15 +108,19 @@ class Login extends Component {
 									<Button wide color='facebook' size='medium' >Facebook</Button>
 								</SocialLogin.FacebookLogin>
 							</div>
-							<div style={{ width: '45%' }}><Button wide color='google' size='medium' ><Svg src='ico_google.svg' style={{ marginRight: '10px' }} />Google</Button></div>
+							<div style={{ width: '45%' }}>
+								<SocialLogin.GoogleLogin clientId={process.env.GOOGLEAPP_ID} appId={process.env.GOOGLEAPP_APIKEY} onSuccess={(e) => console.log('success', e)} callback={(e) => console.log('callback', e)}>
+									<Button wide color='google' size='medium' ><Svg src='ico_google.svg' style={{ marginRight: '10px' }} />Google</Button>
+								</SocialLogin.GoogleLogin>
+							</div>
 						</div>
 						<div className={styles.divider}><span>Atau</span></div>
 						{ renderIf(error)(
 							<Notification style={{ marginBottom: '20px' }} disableClose color='pink' show><span className='font-color--secondary'>Email/No Handphone/Password yang Anda masukkan salah</span></Notification>
 						) }
 						<div>
-							<Input ref={c => { this.loginId = c; }} defaultValue={loginId} onChange={(event) => { this.onFieldChange(event, 'loginId'); this.setState({ loginId: event.target.value }); }} label='Nomor Handphone/Email' type='text' flat placeholder='Nomor Handphone/Email' />
-							<Input ref={c => { this.password = c; }} defaultValue={password} onChange={(event) => { this.onFieldChange(event, 'password'); this.setState({ password: event.target.value }); }} label='Password' iconRight={<Button onClick={() => this.setState({ visiblePassword: !visiblePassword })}>show</Button>} type={visiblePassword ? 'text' : 'password'} flat placeholder='Password minimal 6 karakter' />
+							<Input value={this.state.loginId} ref={c => { this.loginId = c; }} onChange={(event) => { console.log(event.target.value); this.onFieldChange(event, 'loginId'); this.setState({ loginId: event.target.value }); }} label='Nomor Handphone/Email' type='text' flat placeholder='Nomor Handphone/Email' />
+							<Input value={this.state.password} ref={c => { this.password = c; }} onChange={(event) => { this.onFieldChange(event, 'password'); this.setState({ password: event.target.value }); }} label='Password' iconRight={<Button onClick={() => this.setState({ visiblePassword: !visiblePassword })}>show</Button>} type={visiblePassword ? 'text' : 'password'} flat placeholder='Password minimal 6 karakter' />
 						</div>
 						<div className='flex-row flex-center flex-spaceBetween'>
 							<div style={{ width: '45%' }}>

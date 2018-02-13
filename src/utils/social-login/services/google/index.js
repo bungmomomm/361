@@ -6,64 +6,69 @@ class GoogleLogin extends PureComponent {
 		this.props = props;
 	}
 	componentDidMount() {
-		((d, s, id) => {
+		const { clientId, appId, discoveryDocs, scope } = this.props;
+		((d, s, id, cb) => {
 			const element = d.getElementsByTagName(s)[0];
 			const fjs = element;
-			let js = element;
 			if (d.getElementById(id)) {
 				return;
 			}
-			js = d.createElement(s); js.id = id;
-			js.src = '//connect.facebook.net/en_US/sdk.js';
+			const js = d.createElement(s); 
+			js.id = id;
+			js.src = '//apis.google.com/js/client:platform.js';
 			fjs.parentNode.insertBefore(js, fjs);
-		})(document, 'script', 'facebook-jssdk');
-
-		window.fbAsyncInit = () => {
-			window.FB.init({
-				appId: this.props.appId,
-				xfbml: true,
-				cookie: true,
-				version: 'v2.12'
+			fjs.onload = cb;
+		})(document, 'script', 'google-sdk', () => {
+			const params = {
+				appId,
+				client_id: clientId,
+				discoveryDocs,
+				scope
+			};
+			this.setState({
+				sdkLoaded: true
 			});
-
-			if (this.props.autoload && this.state.sdkLoaded && !this.loading) {
-				window.FB.getLoginStatus((response) => {
-					this.checkLoginStatus(response);
-				});
-			}
-		};
-	}
-
-	getProfile(response) {
-		window.FB.api('/me', { fields: this.props.fields }, (me) => {
-			this.props.onSuccess(me);
+			window.gapi.load('auth2', async () => {
+				if (!window.gapi.auth2.getAuthInstance()) {
+					window.gapi.auth2.init(params).then(
+						res => {
+							if (res.isSignedIn.get()) {
+								this.proccessLogin(res.currentUser.get());
+							}
+						},
+						err => console.log(err)
+					);
+				}
+			});
 		});
 	}
 
-	checkLoginStatus(response) {
-		if (response.status === 'connected') {
-			this.proccessLogin(response);
-		}
-	}
-
 	login() {
+		const { prompt, onFailure } = this.props;
 		if (this.state.sdkLoaded && !this.state.loading) {
-			window.FB.login((response) => {
-				this.checkLoginStatus(response);
-			}, {
-				scope: this.props.scope
-			});
+			const auth2 = window.gapi.auth2.getAuthInstance();
+			const options = {
+				prompt
+			};
+			auth2.signIn(options).then(res => {
+				this.proccessLogin(res);
+			}, err => onFailure(err));
 		}
 	}
 
 	proccessLogin(response) {
-		if (response.authResponse) {
-			this.getProfile(response);
-		} else if (this.props.onFailure) {
-			this.props.onFailure(response);
-		} else {
-			this.props.callback(response);
-		}
+		const basicProfile = response.getBasicProfile();
+		const authResponse = response.getAuthResponse();
+		const profile = {
+			googleId: basicProfile.getId(),
+			authResponse,
+			imageUrl: basicProfile.getImageUrl(),
+			email: basicProfile.getEmail(),
+			name: basicProfile.getName(),
+			givenName: basicProfile.getGivenName(),
+			familyName: basicProfile.getFamilyName()
+		};
+		this.props.onSuccess(profile);
 	}
 
 	render() {
