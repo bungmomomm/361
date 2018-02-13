@@ -7,6 +7,10 @@ import { actions as initAction } from '@/state/v4/Home';
 import { setUserCookie } from '@/utils';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
+	WrappedComponent.contextTypes = {
+		router: React.PropTypes.object,
+		location: React.PropTypes.object
+	};
 	class SharedAction extends Component {
 
 		constructor(props) {
