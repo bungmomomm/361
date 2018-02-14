@@ -5,80 +5,127 @@ import { Navigation, Svg, Tabs, Header, Page, Button, Level, Image, Input, Card,
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import { actions } from '@/state/v4/Seller';
+import { actions as filterActions } from '@/state/v4/SortFilter';
+import Filter from '@/containers/Mobile/Shared/Filter';
+import Sort from '@/containers/Mobile/Shared/Sort';
+import { to } from 'await-to-js';
+import { Link, withRouter } from 'react-router-dom';
 import stylesCatalog from '../Category/Catalog/catalog.scss';
-// import _ from 'lodash';
+import styles from './styles.scss';
+import Spinner from '@/components/mobile/Spinner';
 
 class Seller extends Component {
 
 	static currentListState = 0;
 	static listType = [{
-		type: 'grid',
-		icon: 'ico_list.svg'
-	}, {
 		type: 'list',
 		icon: 'ico_grid.svg'
+	}, {
+		type: 'grid',
+		icon: 'ico_three-line.svg'
+	}, {
+		type: 'small',
+		icon: 'ico_list.svg'
 	}];
 
 	state = {
-		listTypeState: Seller.listType[Seller.currentListState]
+		listTypeState: Seller.listType[Seller.currentListState],
+		filterShown: false,
+		sortShown: false
+	};
+
+	onApply = async (e) => {
+		const { dispatch, cookies, filters } = this.props;
+		const [err, response] = await to(dispatch(new filterActions.applyFilter(cookies.get('user.token'), 'category', filters)));
+		// console.log(err);
+		// console.log(response);
+		if (err) {
+			return err;
+		}
+		return response;
+	};
+
+	onUpdateFilter = (e, type, value) => {
+		try {
+			this.props.dispatch(new filterActions.updateFilter(type, value));
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	onReset = (e) => {
+		this.props.dispatch(new filterActions.resetFilter());
+	};
+
+	onClose = (e) => {
+		this.setState({
+			filterShown: false
+		});
+	};
+
+	handlePick = (val) => {
+		switch (val) {
+		case 'view':
+			Seller.currentListState = Seller.currentListState === 2 ? 0 : Seller.currentListState + 1;
+			this.setState({ listTypeState: Seller.listType[Seller.currentListState] });
+			break;
+		case 'filter':
+			this.setState({
+				filterShown: val === 'filter'
+			});
+			break;
+		case 'sort':
+			this.setState({
+				sortShown: val === 'sort'
+			});
+			break;
+		default:
+			break;
+		}
+	};
+
+	sort = async (e, value) => {
+		this.setState({
+			sortShown: false
+		});
+
+		this.props.dispatch(filterActions.updateSort(value));
+
+		// const { dispatch, cookies, filters } = this.props;
+		// dispatch(filterActions.updateSort(value));
+        //
+		// const [err, response] = await to(dispatch(new filterActions.applyFilter(cookies.get('user.token'), 'category', filters)));
+		// if (err) {
+		// 	return err;
+		// }
+		// return response;
 	};
 
 	filterTabs = () => {
 		const { listTypeState } = this.state;
 
 		return (
-			<Tabs
-				className={stylesCatalog.fixed}
-				type='segment'
-				variants={[
-					{
-						id: 'urutkan',
-						title: 'Urutkan'
-					},
-					{
-						id: 'filter',
-						title: 'Filter'
-					},
-					{
-						id: 'view',
-						title: <Svg src={listTypeState.icon} />
-					}
-				]}
-				onPick={this.handlePick}
-			/>
+			<div style={this.props.style}>
+				<Tabs
+					type='segment'
+					variants={[
+						{
+							id: 'sort',
+							title: 'Sort'
+						},
+						{
+							id: 'filter',
+							title: 'Filter'
+						},
+						{
+							id: 'view',
+							title: <Svg src={listTypeState.icon} />
+						}
+					]}
+					onPick={e => this.handlePick(e)}
+				/>
+			</div>
 		);
-	}
-
-	handlePick = (e) => {
-		switch (e) {
-		case 'view':
-			Seller.currentListState = Seller.currentListState === 1 ? 0 : Seller.currentListState + 1;
-			this.setState({ listTypeState: Seller.listType[Seller.currentListState] });
-			break;
-		case 'filter':
-			this.props.history.push('/filterCategory');
-			break;
-		default:
-			break;
-		}
-	}
-
-	loadProducts = () => {
-		const { seller: { data: { products } } } = this.props;
-
-		if (products.length > 0) {
-			return (
-				<div className={stylesCatalog.cardContainer}>
-					{
-						products.map((product, index) =>
-							this.renderList(product, index)
-						)
-					}
-				</div>
-			);
-		}
-
-		return null;
 	}
 
 	sellerHeader = () => {
@@ -105,7 +152,7 @@ class Seller extends Component {
 							{seller.info.rating || ''}
 						</div>
 						<div>
-							{seller.info.product || 0}
+							{seller.info.product || ''}
 						</div>
 					</Grid>
 				</div>
@@ -114,6 +161,46 @@ class Seller extends Component {
 				</div>
 			</div>
 		);
+	};
+
+	loadProducts = () => {
+		const { seller: { data: { products } } } = this.props;
+
+		return (
+			<div className={styles.cardContainer}>
+				{
+					products.map((product, index) =>
+						this.renderList(product, index)
+					)
+				}
+			</div>
+		);
+	};
+
+	share = () => {
+		let share = '';
+		const { seller } = this.props;
+
+		if (navigator.share) {
+			const title = seller.info.seller;
+			const url = `${process.env.MOBILE_URL}/store/${seller.info.seller_id}`;
+
+			share = (
+				<Link
+					to='/hashtags'
+					onClick={() => {
+						navigator.share({
+							title,
+							url
+						});
+					}}
+				>
+					<Svg src={'ico_share.svg'} />
+				</Link>
+			);
+		}
+
+		return share;
 	}
 
 	renderList = (productData, index) => {
@@ -152,37 +239,69 @@ class Seller extends Component {
 						pricing={productData.pricing}
 					/>
 				);
+			case 'small':
+				return (
+					<Card.CatalogSmall
+						key={index}
+						images={productData.images}
+						pricing={productData.pricing}
+					/>
+				);
 			default:
 				return null;
 			}
 		} else {
 			return null;
 		}
-	}
+	};
 
-	render() {
+	renderData = () => {
+		const { filterShown, sortShown } = this.state;
+		const { filters } = this.props;
 		const HeaderPage = {
 			left: (
-				<button href={this.props.history.goBack}>
+				<Link to='/'>
 					<Svg src={'ico_arrow-back-left.svg'} />
-				</button>
+				</Link>
 			),
 			center: null,
-			right: null
+			right: this.share()
 		};
 
 		return (
+			<span>
+				{filterShown ? (
+					<Filter
+						shown={filterShown}
+						filters={filters}
+						onUpdateFilter={(e, type, value) => this.onUpdateFilter(e, type, value)}
+						onApply={this.onApply}
+						onReset={this.onReset}
+						onClose={this.onClose}
+					/>
+				) : (
+					<div style={this.props.style}>
+						<Page>
+							{this.sellerHeader()}
+							{this.loadProducts()}
+							<Sort shown={sortShown} sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
+						</Page>
+
+						<Header.Modal {...HeaderPage} />
+						{this.filterTabs()}
+
+						<Navigation />
+					</div>
+				)}
+			</span>
+		);
+	};
+
+	render() {
+		return (
 			<div>
-				<Page>
-					{this.sellerHeader()}
-					{this.loadProducts()}
-					{this.props.scroller.loading && <button>&hellip;</button>}
-				</Page>
-
-				<Header.Modal {...HeaderPage} />
-				{this.filterTabs()}
-
-				<Navigation />
+				{this.renderData()}
+				{this.props.scroller.loading && <Spinner />}
 			</div>
 		);
 	}
@@ -204,4 +323,4 @@ const doAfterAnonymous = (props) => {
 	dispatch(actions.getProducts(data));
 };
 
-export default connect(mapStateToProps)(withCookies(Scroller(Shared(Seller, doAfterAnonymous))));
+export default withRouter(withCookies(connect(mapStateToProps)(Scroller(Shared(Seller, doAfterAnonymous)))));
