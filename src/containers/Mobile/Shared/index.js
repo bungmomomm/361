@@ -7,6 +7,10 @@ import { actions as initAction } from '@/state/v4/Home';
 import { setUserCookie } from '@/utils';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
+	WrappedComponent.contextTypes = {
+		router: React.PropTypes.object,
+		location: React.PropTypes.object
+	};
 	class SharedAction extends Component {
 
 		constructor(props) {
@@ -20,7 +24,12 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		componentWillMount() {
 			window.mmLoading.stop();
-			this.initProcess();
+			
+			this.initProcess().then(shouldInit => {
+				if (!shouldInit) {
+					this.initApp();
+				}
+			});
 		}
 
 		componentWillUnmount() {
@@ -38,11 +47,14 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				this.loginAnonymous();
 			}
 
-			const loveListService = _.chain(shared).get('serviceUrl.lovelist').value() || false;
-			const orderService = _.chain(shared).get('serviceUrl.order').value() || false;
+			if (shared.totalCart === 0) {
+				dispatch(new actions.totalCartAction(this.userCookies));
+			}
 
-			dispatch(new actions.totalCartAction(this.userCookies, orderService));
-			dispatch(new actions.totalLovelistAction(this.userCookies, loveListService));
+			if (shared.totalLovelist === 0) {
+				dispatch(new actions.totalLovelistAction(this.userCookies));
+			}
+
 
 			if (typeof doAfterAnonymousCall !== 'undefined') {
 				doAfterAnonymousCall.apply(this, [this.props]);
@@ -67,9 +79,12 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				if (err) {
 					this.withErrorHandling(err);
 				}
-				console.log(response);
+				
 				this.initApp();
+				return response;
 			}
+
+			return false;
 		}
 
 		withErrorHandling(err) {

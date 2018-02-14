@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
-import { users } from '@/state/v4/User';
-import { Link } from 'react-router-dom';
+import { actions as users } from '@/state/v4/User';
+import { Link, Redirect } from 'react-router-dom';
 import { Header, Page, Button, Input, Tabs, Svg, Notification } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
-import { setUserCookie } from '@/utils';
+import { setUserCookie, renderIf, SocialLogin } from '@/utils';
 import styles from '../user.scss';
+import _ from 'lodash';
+import validator from 'validator';
+import util from 'util';
 
 const DUMMY_TAB = [{
 	Title: 'Login',
@@ -25,32 +28,56 @@ class Login extends Component {
 		this.props = props;
 		this.state = {
 			current: 'login',
-			visibalePasswod: false
+			visiblePassword: false,
+			loginId: '',
+			password: '',
+			validLoginId: false,
+			validPassword: false,
+			validLogin: false,
 		};
 	}
 
 	async onLogin(e) {
 		try {
-			const { token } = await this.props.dispatch(new users.userLogin(this.props.userCookies, 'agus.sarwono@mataharimall.com', 'iniharusnyapassword'));
+			const { token } = await this.props.dispatch(new users.userLogin(this.props.userCookies, this.state.loginId, this.state.password));
 			setUserCookie(this.props.cookies, token);
+			this.props.history.push('/');
 		} catch (error) {
-			console.log(error);
+			console.log(error.message);
 		}
 	}
 
-	onUserChange(e) {
+	onSocialLogin(e) {
 		console.log(e);
-		this.props.dispatch(new users.userNameChange(e));
+		console.log(this.state);
 	}
 
+	onFieldChange(e, type) {
+		const value = util.format('%s', e.target.value);
+		if (type === 'loginId') {
+			let valudId = false;
+			if ((value.substring(0, 1) === '0' && _.parseInt(value) > 0 && validator.isMobilePhone(value, 'any')) || validator.isEmail(value)) {
+				valudId = true;
+			}
+			this.setState({
+				validLoginId: valudId
+			});
+		} else {
+			this.setState({
+				validLoginPassword: !validator.isEmpty(value) && validator.isLength(value, { min: 6, max: undefined })
+			});
+		}
+	}
 
 	handlePick(current) {
 		this.setState({ current });
 	}
 
 	render() {
-		const { userProfile } = this.props.users;
-		const { visibalePasswod } = this.state;
+		const { isLoading, error } = this.props.users;
+		const { visiblePassword, current, validLoginId, validLoginPassword } = this.state;
+		const buttonLoginEnable = !isLoading && validLoginId && validLoginPassword;
+		const register = (current === 'register');
 		const HeaderPage = {
 			left: (
 				<Link to='/'>
@@ -62,15 +89,11 @@ class Login extends Component {
 			shadow: false
 		};
 
-		const userinfo = Object.keys(userProfile).map((id, key) => {
-			const value = userProfile[id];
-			return (
-				<li key={id}>{id} : {value}</li>
-			);
-		});
-
 		return (
 			<div className='full-height' style={this.props.style}>
+				{renderIf(register)(
+					<Redirect to='/register' />
+				)}
 				<Page>
 					<Tabs
 						current={this.state.current}
@@ -80,37 +103,40 @@ class Login extends Component {
 					<div className={styles.container}>
 						<div className='margin--medium'>Login Dengan</div>
 						<div className='flex-row flex-center flex-spaceBetween'>
-							<div style={{ width: '45%' }}><Button wide color='facebook' size='medium' >Facebook</Button></div>
-							<div style={{ width: '45%' }}><Button wide color='google' size='medium' ><Svg src='ico_google.svg' style={{ marginRight: '10px' }} />Google</Button></div>
+							<div style={{ width: '45%' }}>
+								<SocialLogin.FacebookLogin appId={process.env.FBAPP_ID} onSuccess={(e) => console.log('success', e)} callback={(e) => console.log('callback', e)}>
+									<Button wide color='facebook' size='medium' >Facebook</Button>
+								</SocialLogin.FacebookLogin>
+							</div>
+							<div style={{ width: '45%' }}>
+								<SocialLogin.GoogleLogin clientId={process.env.GOOGLEAPP_ID} appId={process.env.GOOGLEAPP_APIKEY} onSuccess={(e) => console.log('success', e)} callback={(e) => console.log('callback', e)}>
+									<Button wide color='google' size='medium' ><Svg src='ico_google.svg' style={{ marginRight: '10px' }} />Google</Button>
+								</SocialLogin.GoogleLogin>
+							</div>
 						</div>
-						<div className={styles.divider}><span>A	tau</span></div>
-						<Notification style={{ marginBottom: '20px' }} disableClose color='pink' show><span className='font-color--secondary'>Email/No Handphone/Password yang Anda masukkan salah</span></Notification>
+						<div className={styles.divider}><span>Atau</span></div>
+						{ renderIf(error)(
+							<Notification style={{ marginBottom: '20px' }} disableClose color='pink' show><span className='font-color--secondary'>Email/No Handphone/Password yang Anda masukkan salah</span></Notification>
+						) }
 						<div>
-							<Input label='Nomor Handphone/Email' type='text' error hint='wajib diisi' flat placeholder='Nomor Handphone/Email' />
-							<Input label='Password' iconRight={<Button onClick={() => this.setState({ visibalePasswod: !visibalePasswod })}>show</Button>} type={visibalePasswod ? 'text' : 'password'} flat placeholder='Password minimal 6 karakter' />
+							<Input value={this.state.loginId} ref={c => { this.loginId = c; }} onChange={(event) => { console.log(event.target.value); this.onFieldChange(event, 'loginId'); this.setState({ loginId: event.target.value }); }} label='Nomor Handphone/Email' type='text' flat placeholder='Nomor Handphone/Email' />
+							<Input value={this.state.password} ref={c => { this.password = c; }} onChange={(event) => { this.onFieldChange(event, 'password'); this.setState({ password: event.target.value }); }} label='Password' iconRight={<Button onClick={() => this.setState({ visiblePassword: !visiblePassword })}>show</Button>} type={visiblePassword ? 'text' : 'password'} flat placeholder='Password minimal 6 karakter' />
 						</div>
-						<div className='margin--medium text-right'>
-							<Link to='/'>LUPA PASSWORD</Link>
+						<div className='flex-row flex-center flex-spaceBetween'>
+							<div style={{ width: '45%' }}>
+								<div className='margin--medium text-left'>
+									<Link to='/'>LUPA PASSWORD</Link>
+								</div>
+							</div>
+							<div style={{ width: '45%' }}>
+								<div className='margin--medium text-right'>
+									<Link to='/register'>DAFTAR</Link>
+								</div>
+							</div>
 						</div>
 						<div className='margin--medium'>
-							<Button color='primary' size='large' onClick={(e) => this.onLogin(e)} >LOGIN</Button>
+							<Button color='primary' size='large' disabled={!buttonLoginEnable} loading={isLoading} onClick={(e) => this.onLogin(e)} >LOGIN</Button>
 						</div>
-					</div>
-
-
-					<div style={{ display: 'none' }}>
-						Login
-						<ul>
-							{userinfo}
-						</ul>
-						username
-						<Input value={this.props.users.username} onChange={(e) => this.onUserChange(e.target.value)} />
-						<Button color='primary' size='small' loading={this.props.isLoginLoading} onClick={(e) => this.onLogin(e)} >Login</Button>
-						<Button color='primary' size='small' loading={this.props.isLoginLoading} onClick={(e) => this.onUserChange('')} >remove keyword</Button>
-						<Button color='primary' size='small' loading={this.props.isRegisterLoading} onClick={(e) => this.onRegister(e)} >Register By Phone</Button>
-						<Button color='primary' size='small' loading={this.props.isRegisterLoading} onClick={(e) => this.onRegister(e)} >Register By Email</Button>
-						<Button color='primary' size='small' loading={this.props.isRegisterLoading} onClick={(e) => this.onRegister(e)} >Forgotpassword</Button>
-						<Button color='primary' size='small' loading={this.props.isRegisterLoading} onClick={(e) => this.onRegister(e)} >Logout</Button>
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />
@@ -129,15 +155,13 @@ const mapStateToProps = (state) => {
 		...state
 	};
 };
-
-const mapDispatchToProps = (dispatch) => {
-	return {
-		dispatch
-	};
-};
-
 const doAfterAnonymous = (props) => {
 	console.log('code here if you need anon token or token');
+	const userCookies = props.cookies.get('user.token');
+	if (!_.isEmpty(userCookies)) {
+		console.log('redirecting...');
+		// props.history.push('/dashboard');
+	}
 };
 
-export default withCookies(connect(mapStateToProps, mapDispatchToProps)(Shared(Login, doAfterAnonymous)));
+export default withCookies(connect(mapStateToProps)(Shared(Login, doAfterAnonymous)));
