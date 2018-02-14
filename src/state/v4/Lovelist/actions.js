@@ -1,3 +1,6 @@
+import to from 'await-to-js';
+import { Promise } from 'es6-promise';
+import _ from 'lodash';
 import { request } from '@/utils';
 import {
 	countLovelist,
@@ -37,48 +40,65 @@ const getList = (itemsLovelist) => (dispatch) => {
 	dispatch(countLovelist({ count: items.length }));
 };
 
-const addToLovelist = (token, userId, variantId, url) => (dispatch) => {
-	let path = `${process.env.MICROSERVICES_URL}add/${userId}/${variantId}`;
-
-	if (url) {
-		path = `${url.url}/add/${userId}/${variantId}`;
-	}
-
+const addToLovelist = (token, userId, variantId, url) => async (dispatch, getState) => {
+	
 	if (userId && variantId) {
-		return request({
+		const { shared } = getState();
+		const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
+
+		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+		const path = `${baseUrl}/add/${userId}/${variantId}`;
+
+		const [err, response] = to(request({
 			token,
 			path,
 			method: 'GET',
 			fullpath: true
-		}).then(response => {
-			// dispatching of adding item into lovelist
-			const item = { variantId };
-			dispatch(addItem({ item }));
-		});
+		}));
+
+		if (err) {
+			return Promise.reject(err);
+		}
+		
+		// dispatching of adding item into lovelist
+		const item = { variantId };
+		dispatch(addItem({ item }));
+
+		return Promise.resolve(response);
+	
 	}
 
 	return false;
 };
 
-const removeFromLovelist = (token, userId, variantId, url) => (dispatch) => {
-
-	let path = `${process.env.MICROSERVICES_URL}delete/${userId}/${variantId}`;
-
-	if (url) {
-		path = `${url.url}/delete/${userId}/${variantId}`;
-	}
+const removeFromLovelist = (token, userId, variantId) => async (dispatch, getState) => {
 
 	if (userId && variantId) {
-		return request({
+		const { shared } = getState();
+		const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
+
+		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+		const path = `${baseUrl}/delete/${userId}/${variantId}`;
+
+		const [err, response] = to(request({
 			token,
 			path,
 			method: 'GET',
 			fullpath: true
-		}).then(response => {
-			// dispatching of deleting item from lovelist
-			const item = { variantId };
-			dispatch(removeItem({ item }));
-		});
+		}));
+		
+		if (err) {
+			return Promise.reject(err);
+		}
+		
+		// dispatching of deleting item from lovelist
+		const item = { variantId };
+		dispatch(removeItem({ item }));
+
+		return Promise.resolve(response);
+	
 	}
 
 	return false;
@@ -88,18 +108,25 @@ const removeFromLovelist = (token, userId, variantId, url) => (dispatch) => {
  * Gets user lovelist list from server
  * @param {*} token 
  */
-const getLovelisItems = (token, url) => {
-	let path = `${process.env.MICROSERVICES_URL}gets`;
+const getLovelisItems = (token) => async (dispatch, getState) => {
+	
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
 
-	if (url) {
-		path = `${url.url}/gets`;
-	}
-	return request({
-		token,
-		path,
-		method: 'GET',
-		fullpath: true
-	});
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	dispatch(setLoadingState({ loading: true }));
+
+	const path = `${baseUrl}/gets`;
+
+	const [err, response] = await to(request({ token, path, method: 'GET', fullpath: true }));
+
+	if (err) return Promise.reject(err);
+
+	dispatch(getList(response.data.data));
+	dispatch(setLoadingState({ loading: false }));
+
+	return Promise.resolve(response);
 };
 
 /**
@@ -107,27 +134,33 @@ const getLovelisItems = (token, url) => {
  * @param {*} token 
  * @param {*} variantId 
  */
-const countTotalPdpLovelist = (token, variantId, url) => (dispatch) => {
-
-	let path = `${process.env.MICROSERVICES_URL}total/byvariant/${variantId}`;
-
-	if (url) {
-		path = `${url.url}/total/byvariant/${variantId}`;
-	}
+const countTotalPdpLovelist = (token, variantId) => async (dispatch, getState) => {
 
 	if (variantId) {
-		return request({
+		const { shared } = getState();
+		const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
+
+		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+		const path = `${baseUrl}/total/byvariant/${variantId}`;
+
+		const [err, response] = to(request({
 			token,
 			path,
 			method: 'GET',
 			fullpath: true
-		}).then(response => {
-			const total = response.data.data.total || 0;
-			dispatch(lovelistPdp({
-				variantId,
-				total
-			}));
-		});
+		}));
+
+		if (err) return Promise.reject(err);
+
+		const total = response.data.data.total || 0;
+		dispatch(lovelistPdp({
+			variantId,
+			total
+		}));
+
+		return Promise.resolve(response);
+	
 	}
 
 	return false;

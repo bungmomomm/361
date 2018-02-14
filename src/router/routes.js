@@ -45,6 +45,7 @@ let UserProfileEditOVO = defRoute;
 let UserProfileEditHP = defRoute;
 let UserProfileEditEmail = defRoute;
 let Seller = defRoute;
+let UserProfileEditPassword = defRoute;
 let Cart = defRoute;
 let CartEmpty = defRoute;
 
@@ -99,6 +100,7 @@ if (isMobile()) {
 	UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'));
 	UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'));
 	UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'));
+	UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'));
 } else {
 	/**
 	 * Require main desktop styles
@@ -275,6 +277,11 @@ export default {
 		{
 			path: '/profile-edit-email',
 			component: UserProfileEditEmail
+		},
+		{
+			path: '/profile-edit-password',
+			component: UserProfileEditPassword
 		}
 	]
 };
+

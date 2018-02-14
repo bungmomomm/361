@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Page, Level, Input, Svg, Button } from '@/components/mobile';
 import styles from './profile.scss';
 
-class UserProfileEditEmail extends Component {
+class UserProfileEditPassword extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -17,18 +17,18 @@ class UserProfileEditEmail extends Component {
 						<Link to='/profile-edit'><Svg src='ico_arrow-back-left.svg' /></Link>
 					</Level.Left>
 					<Level.Item style={{ alignItems: 'center' }}>
-						Ubah No. Handphone
+						Ubah Password
 					</Level.Item>
 					<Level.Right style={{ width: '80px' }}>&nbsp;</Level.Right>
 				</Level>
 				<form style={{ padding: '15px' }}>
 					<div className='margin--medium'>
-						<label className={styles.label} htmlFor='editEmail'>Email</label>
-						<Input id='editEmail' flat value='085975049209' />
+						<label className={styles.label} htmlFor='editPassword'>Password</label>
+						<Input id='editPassword' type='password' flat />
 					</div>
 					<div className='margin--medium'>
-						<label className={styles.label} htmlFor='editEmailNew'>Email Baru</label>
-						<Input id='editEmailNew' flat />
+						<label className={styles.label} htmlFor='editPasswordNew'>Password Baru</label>
+						<Input id='editPasswordNew' type='password' flat />
 					</div>
 					<div className='margin--medium'>
 						<Button color='primary' size='large'>SIMPAN</Button>
@@ -39,6 +39,6 @@ class UserProfileEditEmail extends Component {
 	}
 }
 
-UserProfileEditEmail.defaultProps = {};
+UserProfileEditPassword.defaultProps = {};
 
-export default withCookies(UserProfileEditEmail);
+export default withCookies(UserProfileEditPassword);
