@@ -30,46 +30,37 @@ class Lovelist extends Component {
 	componentWillMount() {
 		// const { users } = this.props;
 		// const loginStatus = (users.username && !users.isAnonymous);
+		const { lovelist } = this.props;
 		const loginStatus = true;
 
 		this.setState({ loggedIn: loginStatus });
-
-		if (this.props.lovelist.count > 0) {
+		if (!_.isEmpty(lovelist.items)) {
 			this.setState({ listEmpty: false });
 		}
 	}
 
-	componentDidMount() {
-		// fetching lovelist items
-		this.fetchLovelistItems();
+	componentWillReceiveProps(nextProps) {
+		
+		const { lovelist } = this.props;
+		if (lovelist.items !== nextProps.lovelist.items) {
+			const loginStatus = true;
+
+			this.setState({ loggedIn: loginStatus });
+			if (!_.isEmpty(nextProps.lovelist.items)) {
+				this.setState({ listEmpty: false });
+			}
+		}
 	}
 
 	getLovelistCardsContent() {
 		const { listTypeGrid } = this.state;
-		const content = this.state.products.map((product, idx) => {
+		const { lovelist } = this.props;
+
+		const content = lovelist.items.map((product, idx) => {
 			return !listTypeGrid ? <Card.Lovelist key={idx} data={product} /> : <Card.LovelistGrid key={idx} data={product} />;
 		});
 
 		return <div className={styles.cardContainer}>{content}</div>;
-	}
-
-	fetchLovelistItems() {
-		// fetching data from server
-		const { shared } = this.props;
-
-		const loveListService = _.chain(shared).get('serviceUrl.lovelist').value() || false;
-
-		const req = LoveListActionCreator.getLovelisItems(this.userCookies, loveListService);
-		const { dispatch } = this.props;
-		dispatch(LoveListActionCreator.setLoadingState({ loading: true }));
-		req.then(response => {
-			this.setState({
-				listEmpty: false,
-				products: response.data.data.products
-			});
-			dispatch(LoveListActionCreator.getList(response.data.data));
-			dispatch(LoveListActionCreator.setLoadingState({ loading: false }));
-		});
 	}
 
 	renderLovelistPage(content) {
@@ -105,6 +96,7 @@ class Lovelist extends Component {
 	}
 
 	render() {
+		
 		if (!this.state.loggedIn) {
 			return (this.renderLovelistPage(
 				<div style={{ marginTop: '30%', padding: '20px' }} className='text-center --disable-flex'>
@@ -150,4 +142,11 @@ const mapStateToProps = (state) => {
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(Lovelist)));
+const doAfterAnonymous = (props) => {
+
+	const { dispatch, cookies } = props;
+
+	dispatch(LoveListActionCreator.getLovelisItems(cookies.get('user.token')));
+};
+
+export default withCookies(connect(mapStateToProps)(Shared(Lovelist, doAfterAnonymous)));

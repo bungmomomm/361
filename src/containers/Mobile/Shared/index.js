@@ -7,6 +7,10 @@ import { actions as initAction } from '@/state/v4/Home';
 import { setUserCookie } from '@/utils';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
+	WrappedComponent.contextTypes = {
+		router: React.PropTypes.object,
+		location: React.PropTypes.object
+	};
 	class SharedAction extends Component {
 
 		constructor(props) {
@@ -20,12 +24,6 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		componentWillMount() {
 			window.mmLoading.stop();
-			if (typeof doAfterAnonymousCall !== 'undefined') {
-				doAfterAnonymousCall.apply(this, [this.props]);
-			}
-		}
-
-		componentDidMount() {
 			this.initProcess();
 		}
 
@@ -76,8 +74,6 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				console.log(response);
 				this.initApp();
 			}
-
-
 		}
 
 		withErrorHandling(err) {
