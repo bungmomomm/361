@@ -13,6 +13,7 @@ import { actions } from '@/state/v4/Home';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import Shared from '@/containers/Mobile/Shared';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
+import CONST from '@/constants';
 
 const renderSectionHeader = (title, options) => {
 	return (
@@ -88,7 +89,7 @@ class Home extends Component {
 		case 'recently_viewed_products':
 			link = '/promo/recent_view'; label = 'Recently Viewed';
 			break;
-		default: 
+		default:
 			link = '/promo/new_arrival'; label = 'New Arrival';
 		}
 
@@ -96,10 +97,10 @@ class Home extends Component {
 		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}`).get('recomendationData').get(obj);
-		
+
 		if (!datas.isEmpty().value()) {
 			const header = renderSectionHeader(label, {
-				title, 
+				title,
 				url: link
 			});
 			return (
@@ -127,7 +128,7 @@ class Home extends Component {
 		const datas = _.chain(home).get(`allSegmentData.${segment}.hashtag`);
 		if (!datas.isEmpty().value()) {
 			const header = renderSectionHeader(datas.value().hashtag, {
-				title: datas.value().mainlink.text, 
+				title: datas.value().mainlink.text,
 				url: '/hashtags'
 			});
 			return (
@@ -197,11 +198,27 @@ class Home extends Component {
 			return (
 				<Grid split={3}>
 					{
-						featuredBrand.value().map(({ images, link }, e) => (
-							<div key={e}>
-								<Image lazyload alt='thumbnail' src={images.mobile} />
-							</div>
-						))
+						featuredBrand.value().map((brand, e) => {
+							let url = '/';
+							switch (brand.link.type) {
+							case CONST.CATEGORY_TYPE.brand:
+								url = `/brand/${brand.brand_id}/${encodeURIComponent(brand.brand_name.toLowerCase())}`;
+								break;
+							case CONST.CATEGORY_TYPE.category: // TODO : must change if api ready
+								url = `/brand/${brand.brand_id}/${encodeURIComponent(brand.brand_name.toLowerCase())}`;
+								break;
+							default:
+								url = `/category/${CONST.SEGMENT_DEFAULT_SELECTED.key}`;
+								break;
+							}
+							return (
+								<div key={e}>
+									<Link to={url} >
+										<Image lazyload alt='thumbnail' src={brand.images.mobile} />
+									</Link>
+								</div>
+							);
+						})
 					}
 				</Grid>
 			);
@@ -233,7 +250,7 @@ class Home extends Component {
 						}
 					</Carousel>
 				</div>
-				
+
 			);
 		}
 
@@ -253,7 +270,7 @@ class Home extends Component {
 						variants={this.props.home.segmen}
 						onPick={(e) => this.handlePick(e)}
 					/>
-     
+
 					{ <ForeverBanner {...foreverBannerData} /> }
 
 					{this.renderHeroBanner()}
@@ -261,15 +278,15 @@ class Home extends Component {
 					{this.renderHashtag()}
 
 					{this.renderSquareBanner()}
-					
+
 					{ this.renderRecommendation('new_arrival_products')}
 					{ this.renderBottomBanner('top') }
-					
+
 					{ this.renderRecommendation('best_seller_products')}
 					{ this.renderBottomBanner('bottom') }
 					{renderSectionHeader('Featured Brands', { title: 'LIHAT SEMUA', url: '/brands' })}
 					{ this.renderFeaturedBrands() }
-					
+
 					{this.renderMozaic()}
 				</Page>
 				<Header lovelist={shared.totalLovelist} value={this.props.search.keyword} />
@@ -289,9 +306,9 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = (props) => {
 	const { shared, home, dispatch, cookies } = props;
-	
+
 	const activeSegment = home.segmen.find(e => e.key === home.activeSegment);
-	
+
 	const promoService = _.chain(shared).get('serviceUrl.promo').value() || false;
 
 	dispatch(new actions.mainAction(cookies.get('user.token'), activeSegment, promoService));

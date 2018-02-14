@@ -165,7 +165,7 @@ export default {
 			exact: true
 		},
 		{
-			path: '/brandsDetail',
+			path: '/brand/:brandId/:brandTitle',
 			component: BrandsDetail,
 			exact: true
 		},
