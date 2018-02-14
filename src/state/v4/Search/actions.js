@@ -1,58 +1,80 @@
 import { request, getCancelToken } from '@/utils';
 import { keywordUpdate, initialState } from './reducer';
+import _ from 'lodash';
+import to from 'await-to-js';
 
 let cancelReq;
 let cancelTokenReq;
 
-const updatedKeywordHandler = (string, userToken) => {
-	return dispatch => {
-		if (string.length >= 3) {
-			dispatch(keywordUpdate({
-				...initialState,
-				keyword: string,
-				loading: true
-			}));
-			if (cancelReq !== undefined) cancelReq('Previous suggest request canceled.');
-			[cancelTokenReq, cancelReq] = getCancelToken();
+const updatedKeywordHandler = (string, userToken) => async (dispatch, getState) => {
+	if (string.length >= 3) {
+		dispatch(keywordUpdate({
+			...initialState,
+			keyword: string,
+			loading: true
+		}));
+
+		if (cancelReq !== undefined) cancelReq('Previous suggest request canceled.');
+		[cancelTokenReq, cancelReq] = getCancelToken();
+
+		const { shared } = getState();
+		let baseUrl = _.chain(shared).get('serviceUrl.suggestion.url').value() || false;
+
+		// TODO: need to enable baseUrl checking while api ready
+		if (true) baseUrl = process.env.MICROSERVICES_URL;
+		// if (!baseUrl) baseUrl = process.env.MICROSERVICES_URL;
+
+		const [err, response] = await to(
 			request({
 				token: userToken,
-				path: `${process.env.MICROSERVICES_URL}product/suggestion?q=${string}`,
+				path: `${baseUrl}product/suggestion?q=${string}`,
 				method: 'GET',
 				fullpath: true,
 				cancelToken: cancelTokenReq
-			}).then(response => {
-				const data = response.data.data;
+			})
+		);
+
+		if (err) {
+			if (err.response === undefined) {
+				console.log('On catch API Suggestion: ', err.message);
 				dispatch(keywordUpdate({
 					...initialState,
 					keyword: string,
-					related_category: data.related_category,
-					related_keyword: data.related_keyword,
-					related_hashtag: data.related_hashtag,
-					loading: false
+					loading: true
 				}));
-			}).catch((error) => {
-				if (error.response === undefined) {
-					console.log('On catch API Suggestion: ', error.message);
-					dispatch(keywordUpdate({
-						...initialState,
-						keyword: string,
-						loading: true
-					}));
-				} else {
-					dispatch(keywordUpdate({
-						...initialState,
-						keyword: string,
-					}));
-				}
-			});
-		} else {
-			if (cancelReq !== undefined) cancelReq('Previous suggest request canceled.[< 3]');
+			} else {
+				dispatch(keywordUpdate({
+					...initialState,
+					keyword: string,
+				}));
+			}
+			return Promise.resolve(err);
+		};
+
+		if (response) {
+			const data = response.data.data;
 			dispatch(keywordUpdate({
 				...initialState,
 				keyword: string,
+				related_category: data.related_category,
+				related_keyword: data.related_keyword,
+				related_hashtag: data.related_hashtag,
+				loading: false
 			}));
+			return Promise.resolve(response);
 		}
-	};
+
+		return false;
+	}
+
+	if (cancelReq !== undefined) cancelReq('Previous suggest request canceled.[< 3]');
+
+	dispatch(keywordUpdate({
+		...initialState,
+		keyword: string,
+	}));
+
+	return false;
 };
 
 export default {
