@@ -1,4 +1,6 @@
 import React, { PureComponent } from 'react';
+import { omit } from 'lodash';
+import Button from '@/components/mobile/Button';
 
 class GoogleLogin extends PureComponent {
 	constructor(props) {
@@ -32,7 +34,7 @@ class GoogleLogin extends PureComponent {
 				if (!window.gapi.auth2.getAuthInstance()) {
 					window.gapi.auth2.init(params).then(
 						res => {
-							if (res.isSignedIn.get()) {
+							if (this.props.autoload && this.state.sdkLoaded && !this.loading && res.isSignedIn.get()) {
 								this.proccessLogin(res.currentUser.get());
 							}
 						},
@@ -73,10 +75,11 @@ class GoogleLogin extends PureComponent {
 
 	render() {
 		const { children, className } = this.props;
+		const props = omit(this.props, ['chidren', 'className', 'clientId', 'appId', 'onSuccess', 'onFailure', 'callback']);
 		return (
-			<button onClick={(e) => this.login()} className={className}>
+			<Button {...props} onClick={(e) => this.login()} className={className}>
 				{children}
-			</button>
+			</Button>
 		);
 	}
 }

@@ -39,9 +39,20 @@ const getCategoryFq = (categories, source) => {
 			categories = getCategoryFq(categories, category.childs);
 		}
 	});
-
+	
 	return categories;
 };
+
+// const checkFq = (source, value) => {
+// 	if (value.is_selected === 1) {
+// 		source.push(value.facetrange);
+// 	} else {
+// 		_.remove(source, (v) => {
+// 			return v === value.facetrange;
+// 		});
+// 	}
+// 	return source;
+// };
 
 const getFq = (filters) => {
 	const fqAll = [];
@@ -86,6 +97,7 @@ const getFq = (filters) => {
 
 	return fqAll.join(',');
 };
+
 
 const getFquery = (filters) => {
 	const fqAll = [];
