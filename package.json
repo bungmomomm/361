@@ -30,7 +30,7 @@
   "homepage": "https://github.com/mataharimall/fe-components#readme",
   "betterScripts": {
     "dev": {
-      "command": "babel-node --debug tools/webpack-dev-server.js",
+      "command": "babel-node tools/webpack-dev-server.js",
       "env": {
         "NODE_ENV": "development",
         "PORT": 3001
