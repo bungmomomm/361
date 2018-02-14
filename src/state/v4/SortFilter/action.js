@@ -45,6 +45,50 @@ const getCategoryFq = (categories, source) => {
 
 const getFq = (filters) => {
 	const fqAll = [];
+	const fq = {};
+	let categories = [];
+	_.forEach(filters.facets, (facet) => {
+		fq[facet.id] = [];
+		switch (facet.id) {
+		case 'category':
+		case 'custom_category_ids':
+			// child category
+			categories = getCategoryFq(categories, facet.data);
+			_.forEach(categories, (value) => {
+				if (value.is_selected === 1) {
+					fq[facet.id].push(value.facetrange);
+				} else {
+					_.remove(fq[facet.id], (v) => {
+						return v === value.facetrange;
+					});
+				}
+			});
+			break;
+		case 'size':
+
+			break;
+		default:
+			_.forEach(facet.data, (value) => {
+				if (value.is_selected === 1) {
+					fq[facet.id].push(value.facetrange);
+				} else {
+					_.remove(fq[facet.id], (v) => {
+						return v === value.facetrange;
+					});
+				}
+			});
+			break;
+		}
+		if (fq[facet.id].length > 0) {
+			fqAll.push(fq[facet.id].map((value) => (`${facet.id}:${value}`)).join(','));
+		}
+	});
+
+	return fqAll.join(',');
+};
+
+const getFquery = (filters) => {
+	const fqAll = [];
 	const data = {};
 	const fq = {};
 
@@ -113,12 +157,12 @@ const getUrlFilterForCategory = (filters) => {
 	};
 };
 
-const getUrlFilterForSearch = (query, filters) => {
+const getUrlFilterForSearch = (filters) => {
 	return {
 		...getPage(filters),
 		category_id: filters.category_id,
 		brand_id: filters.brand_id,
-		q: filters.query,
+		q: filters.q,
 		fq: getFq(filters)
 	};
 };
@@ -314,5 +358,6 @@ export default {
 	resetFilter,
 	updateSort,
 	applySort,
-	initializeFilter
+	initializeFilter,
+	getFquery
 };
