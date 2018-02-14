@@ -9,11 +9,12 @@ const initialState = {
 		facets: [],
 		sorts: [],
 		products: []
-	}
+	},
+	promoData: []
 };
 
-const { setLoading, initSearch } = createActions(
-	'SET_LOADING', 'INIT_SEARCH'
+const { setLoading, initSearch, initPromo } = createActions(
+	'SET_LOADING', 'INIT_SEARCH', 'INIT_PROMO'
 );
 
 const reducer = handleActions({
@@ -28,11 +29,19 @@ const reducer = handleActions({
 			searchStatus,
 			searchData
 		};
+	},
+	[initPromo](state, { payload: { isLoading, searchStatus, promoData } }) {
+		return {
+			isLoading,
+			searchStatus,
+			promoData
+		};
 	}
 }, initialState);
 
 export default {
 	reducer, 
 	setLoading,
-	initSearch
+	initSearch,
+	initPromo
 };

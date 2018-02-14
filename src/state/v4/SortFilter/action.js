@@ -113,12 +113,12 @@ const getUrlFilterForCategory = (filters) => {
 	};
 };
 
-const getUrlFilterForSearch = (query, filters) => {
+const getUrlFilterForSearch = (filters) => {
 	return {
 		...getPage(filters),
 		category_id: filters.category_id,
 		brand_id: filters.brand_id,
-		q: filters.query,
+		q: filters.q,
 		fq: getFq(filters)
 	};
 };

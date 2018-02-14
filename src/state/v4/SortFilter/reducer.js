@@ -38,7 +38,7 @@ const initialState = {
 	sort: 'laris',
 	page: 1,
 	perPage: 10,
-	query: '',
+	q: '',
 	brand_id: 0,
 	category_id: 0,
 	store_id: 0,

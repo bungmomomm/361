@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import _ from 'lodash';
-import { Header, Page, Card, Svg, Tabs, Navigation, Comment } from '@/components/mobile';
+import { Header, Page, Card, Svg, Tabs, Navigation, Button, Level, Image, Input } from '@/components/mobile';
 import stylesSearch from '../Search/search.scss';
 import stylesCatalog from '../Category/Catalog/catalog.scss';
 import { actions } from '@/state/v4/SearchResults';
 import queryString from 'query-string';
-import { Link } from 'react-router-dom';
 import Shared from '@/containers/Mobile/Shared';
+import SearchNotFound from '@/containers/Mobile/Discovery/SearchNotFound';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 
@@ -39,6 +39,11 @@ class SearchResults extends Component {
 			showFilter: false,
 			showSort: false
 		};
+	}
+
+	componentWillUnmount() {
+		const { dispatch } = this.props;
+		dispatch(new actions.initLoading(true));
 	}
 
 	async onApply(e) {
@@ -112,26 +117,21 @@ class SearchResults extends Component {
 		return null;
 	}
 
-	notFound() {
-		const inlineStyle = {
-			textAlign: 'center',
-			margin: '10px auto 10px auto'
-		};
+	searchNotFound() {
+		const { shared, promoData } = this.props;
+		const foreverBannerData = shared.foreverBanner;
+		foreverBannerData.show = this.state.notification.show;
+		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+
 		return (
 			<div style={this.props.style}>
-				<Page>
-					<div className={stylesSearch.container} >
-						<div style={inlineStyle}>[image kantong kosong]</div>
-						<div style={inlineStyle}>
-							{'Mohon maaf hasil pencarian untuk "'}{this.getKeyword()}
-							{ '" tidak dapat ditemukan. Silakan periksa pengejaan kata, atau menggunakan kata kunci lain!'}
-						</div>
-						<div><button><Link to={'/search'}>Cari kembali</Link></button></div>
-						<div style={inlineStyle}>[Rich Relevant Recommendation section]</div>
-						<div style={inlineStyle}>[Footer]</div>
-					</div>
-				</Page>
+				<SearchNotFound
+					keyword={this.getKeyword()}
+					data={promoData}
+				/>
 				{this.renderHeader()}
+				<ForeverBanner {...foreverBannerData} />
+				<Navigation />
 			</div>
 		);
 	}
@@ -197,7 +197,7 @@ class SearchResults extends Component {
 					searchView = this.searchFound(searchResults.searchData.products);
 				}
 			} else if (searchResults.searchStatus === 'failed') {
-				searchView = this.notFound();
+				searchView = this.searchNotFound();
 			}
 		}
 
@@ -206,6 +206,17 @@ class SearchResults extends Component {
 
 	renderList(productData, index) {
 		if (productData) {
+			const renderBlockComment = (
+				<div className={stylesCatalog.commentBlock}>
+					<Button>View 38 comments</Button>
+					<Level>
+						<Level.Left><div style={{ marginRight: '10px' }}><Image avatar width={25} height={25} local src='temp/pp.jpg' /></div></Level.Left>
+						<Level.Item>
+							<Input color='white' placeholder='Write comment' />
+						</Level.Item>
+					</Level>
+				</div>
+			);
 			switch (this.state.listTypeState.type) {
 			case 'list':
 				return (
@@ -216,7 +227,7 @@ class SearchResults extends Component {
 							brandName={productData.brand}
 							pricing={productData.pricing}
 						/>
-						<Comment />
+						{renderBlockComment}
 					</div>
 				);
 			case 'grid':
@@ -291,6 +302,7 @@ const mapStateToProps = (state) => {
 		...state,
 		shared: state.shared,
 		searchResults: state.searchResults,
+		promoData: state.searchResults.promoData,
 		isLoading: state.searchResults.isLoading,
 		scroller: state.scroller
 	};
@@ -313,12 +325,14 @@ const doAfterAnonymous = async (props) => {
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
 	
-	const [err, response] = await to(dispatch(new actions.initAction(cookies.get('user.token'), searchService, objParam)));
+	const [err, response] = await to(dispatch(actions.initAction(cookies.get('user.token'), searchService, objParam)));
 
 	if (err) {
 		console.log(err.message);
+
+		const promoService = _.chain(shared).get('serviceUrl.promo').value() || false;
+		dispatch(actions.getPromo(cookies.get('user.token'), promoService));
 	} else {
-		console.log('response', response);
 		dispatch(filterActions.initializeFilter(response));
 	}
 };
