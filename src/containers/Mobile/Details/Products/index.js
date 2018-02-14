@@ -5,7 +5,7 @@ import { actions as productActions } from '@/state/v4/Product';
 import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { Link } from 'react-router-dom';
-import { Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid } from '@/components/mobile';
+import { Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel } from '@/components/mobile';
 import styles from './products.scss';
 import _ from 'lodash';
 
@@ -19,20 +19,28 @@ class Products extends Component {
 
 		this.handleScroll = this.handleScroll.bind(this);
 		this.handleLovelistClick = this.handleLovelistClick.bind(this);
+		this.handleImageItemClick = this.handleImageItemClick.bind(this);
+		this.setCarouselSlideIndex = this.setCarouselSlideIndex.bind(this);
 
 
 		this.state = {
 			size: 's',
-			showScrollInfomation: false,
-			loading: true,
-			isLoved: false,
-			pdpDataHasLoaded: false,
+			status: {
+				showScrollInfomation: false,
+				loading: true,
+				isLoved: false,
+				isZoomed: false,
+				pdpDataHasLoaded: false,
+			},
 			pdpData: {
 				cardProduct: false,
 				similarItems: 'loading content',
 				reviewItems: 'loading content'
 			},
 			detail: {},
+			carousel: {
+				slideIndex: 0
+			}
 		};
 	}
 
@@ -50,9 +58,9 @@ class Products extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		const { detail, similar, reviews } = nextProps.product;
-		const { pdpDataHasLoaded } = this.state;
+		const { status } = this.state;
 		
-		if (!_.isEmpty(detail) && !_.isEmpty(similar) && !_.isEmpty(reviews) && !pdpDataHasLoaded) {
+		if (!_.isEmpty(detail) && !_.isEmpty(similar) && !_.isEmpty(reviews) && !status.pdpDataHasLoaded) {
 			const cardProduct = productActions.getProductCardData(detail);
 			const similarItems = similar.map((item, idx) => {
 				const data = {
@@ -70,8 +78,10 @@ class Products extends Component {
 
 			this.setState({
 				loading: false,
-				pdpDataHasLoaded: true,
 				detail,
+				status: {
+					pdpDataHasLoaded: true,
+				},
 				pdpData: {
 					cardProduct,
 					similarItems,
@@ -85,12 +95,20 @@ class Products extends Component {
 		window.removeEventListener('scroll', this.handleScroll, true);
 	}
 
+	setCarouselSlideIndex(index) {
+		this.setState({
+			carousel: {
+				slideIndex: index || 0
+			}
+		});
+	}
+
 	handleScroll(e) {
-		const { showScrollInfomation } = this.state;
-		if (e.target.scrollTop > 400 && !showScrollInfomation) {
+		const { status } = this.state;
+		if (e.target.scrollTop > 400 && !status.showScrollInfomation) {
 			this.setState({ showScrollInfomation: true });
 		}
-		if (e.target.scrollTop < 400 && showScrollInfomation) {
+		if (e.target.scrollTop < 400 && status.showScrollInfomation) {
 			this.setState({ showScrollInfomation: false });
 		}
 	}
@@ -103,29 +121,60 @@ class Products extends Component {
 	handleLovelistClick(e) {
 		const { dispatch, match } = this.props;
 		const { pdpData } = this.state;
-		let { isLoved } = this.state;
+		let { isLoved } = this.state.status;
  
 		if (!isLoved) {
 			isLoved = true;
 			pdpData.cardProduct.lovelistTotal += 1;
 			dispatch(lovelistActions.addToLovelist(this.userCookies, 1, match.params.id));
-			console.log('This product has been added into loved list!!!');
 		} else {
 			isLoved = false;
 			pdpData.cardProduct.lovelistTotal -= 1;
 			dispatch(lovelistActions.removeFromLovelist(this.userCookies, 1, match.params.id));
-			console.log('This product has been removed from loved list!!!');
 		}
 
-		this.setState({
-			isLoved,
-			pdpData
-		});
+		this.setState({ status: { isLoved }, pdpData });
+	}
+
+	handleImageItemClick() {
+		this.setState({ status: { isZoomed: true } });
+	}
+
+	renderZoomImage() {
+		const { carousel, cardProduct } = this.state.pdpData;
+		const header = {
+			left: (
+				<Button onClick={() => this.setState({ status: { isZoomed: false } })} >
+					<Svg src={'ico_close-large.svg'} />
+				</Button>
+			),
+			center: '',
+			right: ''
+		};
+
+		return (
+			<div>
+				{/* <Image src={pdpImage.currentImage} /> */}
+				<Carousel
+					slideIndex={carousel.slideIndex}
+					afterSlide={newSlideIndex => this.setCarouselSlideIndex(newSlideIndex)}
+				>
+					{
+						cardProduct.images.map((image, idx) => (
+							<div tabIndex='0' role='button' onClick={this.props.onImageItemClick} key={idx} data-img={image.mobile}>
+								<Image src={image.mobile} alt='product' />
+							</div>
+						))
+					}
+				</Carousel>
+				<Header.Modal style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }} {...header} />
+			</div>
+		);
 	}
 
 	renderHeaderPage() {
-		const { pdpData } = this.state;
-		if (this.state.showScrollInfomation) {
+		const { pdpData, status } = this.state;
+		if (status.showScrollInfomation) {
 			return {
 				left: (
 					<a href={history.go - 1}>
@@ -156,14 +205,14 @@ class Products extends Component {
 	}
 
 	renderStickyAction() {
-		const { pdpData } = this.state;
-		if (this.state.showScrollInfomation && !this.state.loading) {
+		const { pdpData, status, detail } = this.state;
+		if (status.showScrollInfomation && !status.loading) {
 			return (
 				<div className={styles.stickyAction}>
 					<Level style={{ padding: '10px' }} className='flex-center'>
 						<Level.Left>
 							<div className={styles.stickyActionImage}>
-								<img alt='product' src={this.state.detail.images[0].thumbnail} />
+								<img alt='product' src={detail.images[0].thumbnail} />
 							</div>
 						</Level.Left>
 						<Level.Item className='padding--medium'>
@@ -181,11 +230,15 @@ class Products extends Component {
 	}
 
 	render() {
-		const { showScrollInfomation, loading, detail, pdpData } = this.state;
+		const { showScrollInfomation, detail, pdpData, status, carousel } = this.state;
 		const { match, history } = this.props;
 
-		if (loading) {
+		if (status.loading) {
 			return <div>Please wait, loading content...</div>;
+		}
+
+		if (status.isZoomed) {
+			return this.renderZoomImage();
 		}
 
 		return (
@@ -193,8 +246,11 @@ class Products extends Component {
 				<Page>
 					<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
 						<Card.Lovelist 
+							setCarouselSlideIndex={this.setCarouselSlideIndex}
+							slideIndex={carousel.slideIndex}
+							onImageItemClick={this.handleImageItemClick}
 							data={pdpData.cardProduct}
-							isLoved={this.state.isLoved}
+							isLoved={status.isLoved}
 							onBtnLovelistClick={this.handleLovelistClick} 
 							onBtnCommentClick={(e) => (history.push(`/product/comments/${match.params.id}`))}
 						/>

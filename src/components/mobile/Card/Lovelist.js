@@ -16,10 +16,15 @@ class Lovelist extends PureComponent {
 
 		return (
 			<div className={createClassName}>
-				<Carousel>
+				<Carousel 
+					slideIndex={this.props.slideIndex || 0}
+					afterSlide={newSlideIndex => this.props.setCarouselSlideIndex(newSlideIndex)}
+				>
 					{
 						data.images.map((image, idx) => (
-							<Image key={idx} src={image.mobile} alt='product' />
+							<div tabIndex='0' role='button' onClick={this.props.onImageItemClick} key={idx} data-img={image.mobile}>
+								<Image src={image.mobile} alt='product' />
+							</div>
 						))
 					}
 				</Carousel>
