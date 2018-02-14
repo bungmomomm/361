@@ -7,23 +7,50 @@ import Button from '../Button';
 import Level from '../Level';
 import Badge from '../Badge';
 import styles from './card.scss';
+import _ from 'lodash';
 
 class Lovelist extends PureComponent {
+	constructor(props) {
+		super(props);
+		this.state = {
+			slideIndex: 0
+		};
+
+		this.setCarouselSlideIndex = this.setCarouselSlideIndex.bind(this);
+	}
+
+	setCarouselSlideIndex(newSlideIndex) {
+		this.setState({ slideIndex: newSlideIndex });
+		// set slideIndex value on parent component
+		if (_.isFunction(this.props.setCarouselSlideIndex)) {
+			this.props.setCarouselSlideIndex(newSlideIndex);
+		}
+	}
+
+	getSlideIndex() {
+		// return slideIndex on parent component instead of its slideIndex itself
+		if (!_.isUndefined(this.props.slideIndex) && _.isInteger(this.props.slideIndex)) {
+			return this.props.slideIndex;
+		}
+		return this.state.slideIndex;
+	}
+
 	render() {
 		const { className, type, data, isLoved } = this.props;
 		const createClassName = classNames(styles.container, styles[type], className);
 		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
+		const slideIndex = this.getSlideIndex();
 
 		return (
 			<div className={createClassName}>
 				<Carousel 
-					slideIndex={this.props.slideIndex || 0}
-					afterSlide={newSlideIndex => this.props.setCarouselSlideIndex(newSlideIndex)}
+					slideIndex={slideIndex}
+					afterSlide={this.setCarouselSlideIndex}
 				>
 					{
 						data.images.map((image, idx) => (
 							<div tabIndex='0' role='button' onClick={this.props.onImageItemClick} key={idx} data-img={image.mobile}>
-								<Image src={image.mobile} alt='product' />
+								<Image src={image.mobile} alt={data.product_title} />
 							</div>
 						))
 					}

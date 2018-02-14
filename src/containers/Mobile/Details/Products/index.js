@@ -141,7 +141,7 @@ class Products extends Component {
 	}
 
 	renderZoomImage() {
-		const { carousel, cardProduct } = this.state.pdpData;
+		const { carousel, pdpData } = this.state;
 		const header = {
 			left: (
 				<Button onClick={() => this.setState({ status: { isZoomed: false } })} >
@@ -154,13 +154,12 @@ class Products extends Component {
 
 		return (
 			<div>
-				{/* <Image src={pdpImage.currentImage} /> */}
 				<Carousel
 					slideIndex={carousel.slideIndex}
 					afterSlide={newSlideIndex => this.setCarouselSlideIndex(newSlideIndex)}
 				>
 					{
-						cardProduct.images.map((image, idx) => (
+						pdpData.cardProduct.images.map((image, idx) => (
 							<div tabIndex='0' role='button' onClick={this.props.onImageItemClick} key={idx} data-img={image.mobile}>
 								<Image src={image.mobile} alt='product' />
 							</div>
