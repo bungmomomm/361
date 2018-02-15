@@ -8,11 +8,9 @@ const getCategoryMenuAction = (userToken, activeSegment) => async (dispatch, get
 	dispatch(categoryLoading({ loading: true }));
 
 	const { shared } = getState();
-	let baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
+	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
-	// TODO: need to enable baseUrl checking while api ready
-	if (true) baseUrl = process.env.MICROSERVICES_URL;
-	// if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 	const [err, response] = await to(
 		request({
@@ -39,11 +37,9 @@ const getBrandsByCategoryIdAction = (token, categoryId) => async (dispatch, getS
 	dispatch(brandsLoading({ loadingBrands: true }));
 
 	const { shared } = getState();
-	let baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
+	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
-	// TODO: need to enable baseUrl checking while api ready
-	if (true) baseUrl = process.env.MICROSERVICES_URL;
-	// if (!baseUrl) baseUrl = process.env.MICROSERVICES_URL;
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 	// const url = `${process.env.MICROSERVICES_URL}featured_brand`;
 	const [err, response] = await to(

@@ -8,18 +8,14 @@ const brandListAction = (token, segment = 1) => async (dispatch, getState) => {
 	dispatch(brandLoading({ loading: true }));
 
 	const { shared } = getState();
-	let baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
+	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
 
-	// TODO: need to enable baseUrl checking while api ready
-	if (true) baseUrl = process.env.MICROSERVICES_URL;
-	// if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
-	// const url = `${process.env.MICROSERVICES_URL}brand/gets`;
 	const [err, response] = await to(
 		request({
 			token,
-			path: `${baseUrl}brands`,
-			// path: `${baseUrl}brand/gets`,
+			path: `${baseUrl}/brands`,
 			method: 'GET',
 			fullpath: true,
 			query: {
@@ -44,17 +40,14 @@ const brandProductAction = (token, brandId) => async (dispatch, getState) => {
 	dispatch(brandLoadingProducts({ loading_products: true }));
 
 	const { shared } = getState();
-	let baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
+	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
 
-	// TODO: need to enable baseUrl checking while api ready
-	if (true) baseUrl = process.env.MICROSERVICES_URL;
-	// if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
-	// const url = `${process.env.MICROSERVICES_URL}products/search`;
 	const [err, response] = await to(
 		request({
 			token,
-			path: `${baseUrl}products/search`,
+			path: `${baseUrl}/products/search`,
 			method: 'GET',
 			fullpath: true,
 			query: {
@@ -78,17 +71,14 @@ const brandProductAction = (token, brandId) => async (dispatch, getState) => {
 const brandBannerAction = (token, brandId) => async (dispatch, getState) => {
 
 	const { shared } = getState();
-	let baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
+	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
-	// TODO: need to enable baseUrl checking while api ready
-	if (true) baseUrl = process.env.MICROSERVICES_URL;
-	// if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
-	// const url = `${process.env.MICROSERVICES_URL}categories/banner`;
 	const [err, response] = await to(
 		request({
 			token,
-			path: `${baseUrl}categories/banner`,
+			path: `${baseUrl}/categories/banner`,
 			method: 'GET',
 			fullpath: true,
 			query: {

@@ -18,11 +18,9 @@ const updatedKeywordHandler = (string, userToken) => async (dispatch, getState) 
 		[cancelTokenReq, cancelReq] = getCancelToken();
 
 		const { shared } = getState();
-		let baseUrl = _.chain(shared).get('serviceUrl.suggestion.url').value() || false;
+		const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
 
-		// TODO: need to enable baseUrl checking while api ready
-		if (true) baseUrl = process.env.MICROSERVICES_URL;
-		// if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 		const [err, response] = await to(
 			request({
