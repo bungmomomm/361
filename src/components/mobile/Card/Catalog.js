@@ -18,7 +18,7 @@ class Catalog extends PureComponent {
 			productTitle,
 			brandName,
 			pricing,
-            linkToPdp,
+			linkToPdp,
 			...props
 		} = this.props;
 

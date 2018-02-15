@@ -176,27 +176,29 @@ class Product extends Component {
 			
 			const linkToPdpCreator = hyperlink('', ['product', productData.product_id], null);
 			
-			const listCardCatalogAttribute 			= {};
-			listCardCatalogAttribute.images 		= productData.images;
-			listCardCatalogAttribute.productTitle 	= productData.product_title;
-			listCardCatalogAttribute.brandName 		= productData.brand;
-			listCardCatalogAttribute.pricing 		= productData.pricing;
-			listCardCatalogAttribute.linkToPdp 		= linkToPdpCreator;
+			const listCardCatalogAttribute 			= {
+				images: productData.images,
+				productTitle: productData.product_title,
+				brandName: productData.brand,
+				pricing: productData.pricing,
+				linkToPdp: linkToPdpCreator
+			};
 			
-
-			const cardCatalogGridAttribute 			= {};
-			cardCatalogGridAttribute.key    		= index;
-			cardCatalogGridAttribute.images 		= productData.images;
-			cardCatalogGridAttribute.productTitle  	= productData.product_title;
-			cardCatalogGridAttribute.brandName     	= productData.brand;
-			cardCatalogGridAttribute.pricing       	= productData.pricing;
-			cardCatalogGridAttribute.linkToPdp 		= linkToPdpCreator;
+			const cardCatalogGridAttribute 			= {
+				key: index,
+				images: productData.images,
+				productTitle: productData.product_title,
+				brandName: productData.brand,
+				pricing: productData.pricing,
+				linkToPdp: linkToPdpCreator
+			};
 			
-			const cardCatalogSmall 					= {};
-			cardCatalogSmall.key 					= index;
-			cardCatalogSmall.images 				= productData.images;
-			cardCatalogSmall.pricing 				= productData.pricing;
-			cardCatalogSmall.linkToPdp 				= linkToPdpCreator;
+			const cardCatalogSmall 					= {
+				key: index,
+				images: productData.images,
+				pricing: productData.pricing,
+				linkToPdp: linkToPdpCreator
+			};
 			
 			switch (this.state.listTypeState.type) {
 			case 'list':
