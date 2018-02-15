@@ -12,7 +12,7 @@ const brandListAction = (token, segment = 1) => async (dispatch, getState) => {
 
 	// TODO: need to enable baseUrl checking while api ready
 	if (true) baseUrl = process.env.MICROSERVICES_URL;
-	// if (!baseUrl) baseUrl = process.env.MICROSERVICES_URL;
+	// if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 	// const url = `${process.env.MICROSERVICES_URL}brand/gets`;
 	const [err, response] = await to(
@@ -28,20 +28,16 @@ const brandListAction = (token, segment = 1) => async (dispatch, getState) => {
 		})
 	);
 
-	if (response) {
-		const brandList = response.data.data.items;
-		dispatch(brandListUpdate({ brand_list: brandList, segment }));
-		dispatch(brandLoading({ loading: false }));
-
-		return Promise.resolve(response);
-	};
-
 	if (err) {
 		dispatch(brandLoading({ loading: false }));
 		return Promise.reject(err);
 	};
 
-	return false;
+	const brandList = response.data.data.items;
+	dispatch(brandListUpdate({ brand_list: brandList, segment }));
+	dispatch(brandLoading({ loading: false }));
+
+	return Promise.resolve(response);
 };
 
 const brandProductAction = (token, brandId) => async (dispatch, getState) => {
@@ -52,7 +48,7 @@ const brandProductAction = (token, brandId) => async (dispatch, getState) => {
 
 	// TODO: need to enable baseUrl checking while api ready
 	if (true) baseUrl = process.env.MICROSERVICES_URL;
-	// if (!baseUrl) baseUrl = process.env.MICROSERVICES_URL;
+	// if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 	// const url = `${process.env.MICROSERVICES_URL}products/search`;
 	const [err, response] = await to(
@@ -67,20 +63,16 @@ const brandProductAction = (token, brandId) => async (dispatch, getState) => {
 		})
 	);
 
-	if (response) {
-		const products = response.data.data.products;
-		const brandInfo = response.data.data.info;
-		dispatch(brandProducts({ brand_id: brandId, products, brand_info: brandInfo }));
-		dispatch(brandLoadingProducts({ loading_products: false }));
-		return Promise.resolve(response);
-	}
-
 	if (err) {
 		dispatch(brandLoadingProducts({ loading_products: false }));
 		return Promise.reject(err);
 	};
 
-	return false;
+	const products = response.data.data.products;
+	const brandInfo = response.data.data.info;
+	dispatch(brandProducts({ brand_id: brandId, products, brand_info: brandInfo }));
+	dispatch(brandLoadingProducts({ loading_products: false }));
+	return Promise.resolve(response);
 };
 
 const brandBannerAction = (token, brandId) => async (dispatch, getState) => {
@@ -90,7 +82,7 @@ const brandBannerAction = (token, brandId) => async (dispatch, getState) => {
 
 	// TODO: need to enable baseUrl checking while api ready
 	if (true) baseUrl = process.env.MICROSERVICES_URL;
-	// if (!baseUrl) baseUrl = process.env.MICROSERVICES_URL;
+	// if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 	// const url = `${process.env.MICROSERVICES_URL}categories/banner`;
 	const [err, response] = await to(
@@ -105,16 +97,11 @@ const brandBannerAction = (token, brandId) => async (dispatch, getState) => {
 		})
 	);
 
-	if (response) {
-		const banner = response.data.data.banner;
-		dispatch(brandBanner({ brand_id: brandId, banner }));
-		return Promise.resolve(response);
-	};
-
 	if (err) return Promise.reject(err);
 
-	return false;
-
+	const banner = response.data.data.banner;
+	dispatch(brandBanner({ brand_id: brandId, banner }));
+	return Promise.resolve(response);
 };
 
 export default {

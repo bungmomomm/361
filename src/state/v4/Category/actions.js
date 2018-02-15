@@ -12,7 +12,7 @@ const getCategoryMenuAction = (userToken, activeSegment) => async (dispatch, get
 
 	// TODO: need to enable baseUrl checking while api ready
 	if (true) baseUrl = process.env.MICROSERVICES_URL;
-	// if (!baseUrl) baseUrl = process.env.MICROSERVICES_URL;
+	// if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 	const [err, response] = await to(
 		request({
@@ -26,17 +26,13 @@ const getCategoryMenuAction = (userToken, activeSegment) => async (dispatch, get
 		})
 	);
 
-	if (response) {
-		const categories = response.data.data;
-		dispatch(getCategoryMenu({ categories, activeSegment }));
-		dispatch(categoryLoading({ loading: false }));
-
-		return Promise.resolve(response);
-	}
-
 	if (err) return Promise.reject(err);
 
-	return false;
+	const categories = response.data.data;
+	dispatch(getCategoryMenu({ categories, activeSegment }));
+	dispatch(categoryLoading({ loading: false }));
+
+	return Promise.resolve(response);
 };
 
 const getBrandsByCategoryIdAction = (token, categoryId) => async (dispatch, getState) => {
@@ -61,15 +57,14 @@ const getBrandsByCategoryIdAction = (token, categoryId) => async (dispatch, getS
 			}
 		})
 	);
-	if (response) {
-		const brands = response.data.data;
-		dispatch(getCategoryBrand({ brands }));
-		dispatch(brandsLoading({ loadingBrands: false }));
-	};
 
 	if (err) return Promise.reject(err);
 
-	return false;
+	const brands = response.data.data;
+	dispatch(getCategoryBrand({ brands }));
+	dispatch(brandsLoading({ loadingBrands: false }));
+
+	return Promise.resolve(response);
 };
 
 export default {
