@@ -7,8 +7,8 @@ const initialState = {
 	totalCart: 0,
 	foreverBanner: {
 		text: {
-			text1: 'Loading...',
-			text2: 'Please wait',
+			text1: '',
+			text2: '',
 			text_color: 'black',
 			background_color: 'grey'
 		},
