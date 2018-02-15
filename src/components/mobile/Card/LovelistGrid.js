@@ -10,13 +10,13 @@ import styles from './card.scss';
 
 class LovelistGrid extends PureComponent {
 	render() {
-		const { className, data, ...props } = this.props;
-
+		const { className, data, isLoved, ...props } = this.props;
+		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
 		const createClassName = classNames(styles.container, styles.grid, className);
 
 		return (
 			<div className={createClassName} {...props}>
-				<Image src={data.images[0].mobile} alt='product' />
+				<Image src={data.images[0].thumbnail} alt={data.product_title} />
 				<Level className={styles.action}>
 					<Level.Item>
 						<div className={styles.title}>
@@ -25,7 +25,7 @@ class LovelistGrid extends PureComponent {
 					</Level.Item>
 					<Level.Right>
 						<Button>
-							<Svg src='ico_love-filled.svg' />
+							<Svg src={loveIcon} />
 						</Button>
 					</Level.Right>
 				</Level>
