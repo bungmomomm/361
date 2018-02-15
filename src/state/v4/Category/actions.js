@@ -15,7 +15,7 @@ const getCategoryMenuAction = (userToken, activeSegment) => async (dispatch, get
 	const [err, response] = await to(
 		request({
 			token: userToken,
-			path: `${baseUrl}categories/list`,
+			path: `${baseUrl}/categories/list`,
 			method: 'GET',
 			fullpath: true,
 			query: {
@@ -45,7 +45,7 @@ const getBrandsByCategoryIdAction = (token, categoryId) => async (dispatch, getS
 	const [err, response] = await to(
 		request({
 			token,
-			path: `${baseUrl}featured_brand`,
+			path: `${baseUrl}/featured_brand`,
 			method: 'GET',
 			fullpath: true,
 			query: {
