@@ -6,7 +6,7 @@ import { to } from 'await-to-js';
 // import { promo } from '@/data/translations';
 
 const configs = {
-	defaultPage: 30
+	defaultPage: 36
 };
 
 const initSeller = (token, sellerId, query = {}) => async (dispatch, getState) => {

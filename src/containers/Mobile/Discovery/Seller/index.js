@@ -13,6 +13,7 @@ import { Link, withRouter } from 'react-router-dom';
 import stylesCatalog from '../Category/Catalog/catalog.scss';
 import styles from './styles.scss';
 import Spinner from '@/components/mobile/Spinner';
+import Share from '@/components/mobile/Share';
 
 class Seller extends Component {
 
@@ -177,32 +178,6 @@ class Seller extends Component {
 		);
 	};
 
-	share = () => {
-		let share = '';
-		const { seller } = this.props;
-
-		if (navigator.share) {
-			const title = seller.info.seller;
-			const url = `${process.env.MOBILE_URL}/store/${seller.info.seller_id}`;
-
-			share = (
-				<Link
-					to='/hashtags'
-					onClick={() => {
-						navigator.share({
-							title,
-							url
-						});
-					}}
-				>
-					<Svg src={'ico_share.svg'} />
-				</Link>
-			);
-		}
-
-		return share;
-	}
-
 	renderList = (productData, index) => {
 		if (productData) {
 			const renderBlockComment = (
@@ -257,7 +232,10 @@ class Seller extends Component {
 
 	renderData = () => {
 		const { filterShown, sortShown } = this.state;
-		const { filters } = this.props;
+		const { filters, seller } = this.props;
+		const title = seller.info.seller;
+		const url = `${process.env.MOBILE_URL}/store/${seller.info.seller_id}`;
+
 		const HeaderPage = {
 			left: (
 				<Link to='/'>
@@ -265,7 +243,7 @@ class Seller extends Component {
 				</Link>
 			),
 			center: null,
-			right: this.share()
+			right: <Share title={title} url={url} />
 		};
 
 		return (
@@ -284,6 +262,7 @@ class Seller extends Component {
 						<Page>
 							{this.sellerHeader()}
 							{this.loadProducts()}
+
 							<Sort shown={sortShown} sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
 						</Page>
 
