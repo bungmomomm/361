@@ -126,7 +126,7 @@ class Home extends Component {
 		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}.hashtag`);
-		if (!datas.isEmpty().value()) {
+		if (!datas.isEmpty().value() && datas.value().id !== '') {
 			const header = renderSectionHeader(datas.value().hashtag, {
 				title: datas.value().mainlink.text,
 				url: '/hashtags'
@@ -231,7 +231,6 @@ class Home extends Component {
 		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		const mozaic = _.chain(home).get(`allSegmentData.${segment}.mozaic`);
-		console.log(mozaic.value());
 
 		if (!mozaic.isEmpty().value()) {
 			const header = renderSectionHeader('Mozaic Megazine', {
