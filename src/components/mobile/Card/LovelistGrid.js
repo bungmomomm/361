@@ -11,17 +11,17 @@ import { hyperlink } from '@/utils';
 
 class LovelistGrid extends PureComponent {
 	render() {
-		const { className, data, ...props } = this.props;
-
+		const { className, data, isLoved, ...props } = this.props;
+		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
 		const createClassName = classNames(styles.container, styles.grid, className);
 		
 		const linkToPdpCreator = hyperlink('', ['product', data.product_id], null);
-        
+  
 		return (
 			<div className={createClassName} {...props}>
-				<Link to={linkToPdpCreator}>
-					<Image src={data.images[0].mobile} alt='product' />
-				</Link>
+                <Link to={linkToPdpCreator}>
+                    <Image src={data.images[0].thumbnail} alt={data.product_title} />
+                </Link>
 				<Level className={styles.action}>
 					<Level.Item>
 						<div className={styles.title}>
@@ -30,7 +30,7 @@ class LovelistGrid extends PureComponent {
 					</Level.Item>
 					<Level.Right>
 						<Button>
-							<Svg src='ico_love-filled.svg' />
+							<Svg src={loveIcon} />
 						</Button>
 					</Level.Right>
 				</Level>

@@ -23,7 +23,7 @@ class Catalog extends PureComponent {
 		} = this.props;
 
 		const createClassName = classNames(styles.container, styles[type], className);
-		
+
 		return (
 			<div className={createClassName} {...props}>
 				<Link to={linkToPdp}>
@@ -52,25 +52,27 @@ class Catalog extends PureComponent {
 						</Button>
 					</Level.Item>
 				</Level>
-				<div className={styles.title}>
-					{brandName} - <span>{productTitle}</span>
-				</div>
-				<Level className={styles.footer}>
-					<Level.Item>
-						<div className={styles.blockPrice}>
-							<div>
-								<div className={styles.price}>{pricing.formatted.effective_price}</div>
-								<div className={styles.discount}>{pricing.formatted.base_price}</div>
+				<Link to={(linkToPdp) || '/'}>
+					<div className={styles.title}>
+						{brandName} - <span>{productTitle}</span>
+					</div>
+					<Level className={styles.footer}>
+						<Level.Item>
+							<div className={styles.blockPrice}>
+								<div>
+									<div className={styles.price}>{pricing.formatted.effective_price}</div>
+									<div className={styles.discount}>{pricing.formatted.base_price}</div>
+								</div>
+								<div style={{ marginLeft: '1.5rem' }}>
+									<Badge rounded color='red'>
+										<span className='font--lato-bold'>{pricing.discount}</span>
+									</Badge>
+								</div>
 							</div>
-							<div style={{ marginLeft: '1.5rem' }}>
-								<Badge rounded color='red'>
-									<span className='font--lato-bold'>{pricing.discount}</span>
-								</Badge>
-							</div>
-						</div>
-					</Level.Item>
-					<Level.Right>&nbsp;</Level.Right>
-				</Level>
+						</Level.Item>
+						<Level.Right>&nbsp;</Level.Right>
+					</Level>
+				</Link>
 			</div>
 		);
 	}

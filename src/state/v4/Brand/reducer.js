@@ -1,23 +1,29 @@
 import { handleActions, createActions } from 'redux-actions';
-// import * as constants from './constants';
-
 
 const initialState = {
 	loading: false,
-	data: [],
+	brand_list: null,
 	segment: 1,
+	brand_id: null,
+	products: null,
+	loading_products: false,
+	banner: null,
+	brand_info: null
 };
 
-const { brandList, brandLoading } = createActions(
-	'BRAND_LIST',
+const { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner } = createActions(
+	'BRAND_LIST_UPDATE',
 	'BRAND_LOADING',
+	'BRAND_PRODUCTS',
+	'BRAND_LOADING_PRODUCTS',
+	'BRAND_BANNER'
 );
 
 const reducer = handleActions({
-	[brandList](state, { payload: { data, segment } }) {
+	[brandListUpdate](state, { payload: { brand_list, segment } }) {
 		return {
 			...state,
-			data,
+			brand_list,
 			segment
 		};
 	},
@@ -27,10 +33,33 @@ const reducer = handleActions({
 			loading
 		};
 	},
+	[brandProducts](state, { payload: { brand_id, products, brand_info } }) {
+		return {
+			...state,
+			brand_id,
+			products,
+			brand_info
+		};
+	},
+	[brandLoadingProducts](state, { payload: { loading_products } }) {
+		return {
+			...state,
+			loading_products
+		};
+	},
+	[brandBanner](state, { payload: { banner } }) {
+		return {
+			...state,
+			banner
+		};
+	}
 }, initialState);
 
 export default {
-	reducer, 
-	brandList,
+	reducer,
+	brandListUpdate,
 	brandLoading,
+	brandProducts,
+	brandLoadingProducts,
+	brandBanner
 };

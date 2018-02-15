@@ -29,10 +29,12 @@ class CatalogGrid extends PureComponent {
 				</Link>
 				<Level className={styles.action}>
 					<Level.Item>
-						<div className={styles.title}>
-							{brandName}
-							<span>{productTitle}</span>
-						</div>
+						<Link to={(linkToPdp) || '/'}>
+							<div className={styles.title}>
+								{brandName}
+								<span>{productTitle}</span>
+							</div>
+						</Link>
 					</Level.Item>
 					<Level.Right>
 						<Button>
@@ -40,19 +42,21 @@ class CatalogGrid extends PureComponent {
 						</Button>
 					</Level.Right>
 				</Level>
-				<Level className={styles.footer}>
-					<Level.Item>
-						<div className={styles.blockPrice}>
-							<div className={styles.price}>{pricing.formatted.effective_price}</div>
-							<div className={styles.discount}>{pricing.formatted.base_price}</div>
-						</div>
-					</Level.Item>
-					<Level.Right>
-						<Badge rounded color='red'>
-							<span className='font--lato-bold'>{pricing.discount}</span>
-						</Badge>
-					</Level.Right>
-				</Level>
+				<Link to={(linkToPdp) || '/'}>
+					<Level className={styles.footer}>
+						<Level.Item>
+							<div className={styles.blockPrice}>
+								<div className={styles.price}>{pricing.formatted.effective_price}</div>
+								<div className={styles.discount}>{pricing.formatted.base_price}</div>
+							</div>
+						</Level.Item>
+						<Level.Right>
+							<Badge rounded color='red'>
+								<span className='font--lato-bold'>{pricing.discount}</span>
+							</Badge>
+						</Level.Right>
+					</Level>
+				</Link>
 			</div>
 		);
 	}

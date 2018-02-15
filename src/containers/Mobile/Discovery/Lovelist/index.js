@@ -14,10 +14,11 @@ class Lovelist extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			listTypeGrid: true,
+			listTypeGrid: false,
 			listEmpty: true,
-			loggedIn: false,
-			products: [],
+			loading: true,
+			loggedIn: true, // should be adjust when user-login has done... 
+			lovedProducts: [],
 			notification: {
 				show: true
 			}
@@ -27,37 +28,25 @@ class Lovelist extends Component {
 		this.renderLovelistPage = this.renderLovelistPage.bind(this);
 	}
 
-	componentWillMount() {
-		// const { users } = this.props;
-		// const loginStatus = (users.username && !users.isAnonymous);
-		const { lovelist } = this.props;
-		const loginStatus = true;
-
-		this.setState({ loggedIn: loginStatus });
-		if (!_.isEmpty(lovelist.items)) {
-			this.setState({ listEmpty: false });
-		}
-	}
-
 	componentWillReceiveProps(nextProps) {
-		
-		const { lovelist } = this.props;
-		if (lovelist.items !== nextProps.lovelist.items) {
-			const loginStatus = true;
+		const { count, items } = nextProps.lovelist;
+		const { listEmpty } = this.state;
 
-			this.setState({ loggedIn: loginStatus });
-			if (!_.isEmpty(nextProps.lovelist.items)) {
-				this.setState({ listEmpty: false });
-			}
+		// checking resources availability
+		if (!_.isEmpty(items) && _.isInteger(count) && (count > 0) && listEmpty) {
+			this.setState({
+				listEmpty: false,
+				lovedProducts: items,
+				loading: false
+			});
 		}
 	}
 
 	getLovelistCardsContent() {
-		const { listTypeGrid } = this.state;
-		const { lovelist } = this.props;
-
-		const content = lovelist.items.map((product, idx) => {
-			return !listTypeGrid ? <Card.Lovelist key={idx} data={product} /> : <Card.LovelistGrid key={idx} data={product} />;
+		const { listTypeGrid, lovedProducts } = this.state;
+		const isLoved = true;
+		const content = lovedProducts.map((product, idx) => {
+			return !listTypeGrid ? <Card.Lovelist isLoved={isLoved} key={idx} data={product} /> : <Card.LovelistGrid key={idx} data={product} />;
 		});
 
 		return <div className={styles.cardContainer}>{content}</div>;
@@ -96,8 +85,8 @@ class Lovelist extends Component {
 	}
 
 	render() {
-		
-		if (!this.state.loggedIn) {
+		const { loading, loggedIn, listEmpty } = this.state;
+		if (!loggedIn) {
 			return (this.renderLovelistPage(
 				<div style={{ marginTop: '30%', padding: '20px' }} className='text-center --disable-flex'>
 					<Svg src='ico_ghost.svg' />
@@ -114,11 +103,11 @@ class Lovelist extends Component {
 			));
 		}
 
-		if (this.props.lovelist.loading) {
-			return this.renderLovelistPage('');
+		if (loading) {
+			return this.renderLovelistPage(null);
 		}
 
-		if (this.state.listEmpty) {
+		if (listEmpty) {
 			return (this.renderLovelistPage(
 				<div className='text-center --disable-flex'>
 					<p className='margin--medium'>Kamu belum memiliki Lovelist</p>

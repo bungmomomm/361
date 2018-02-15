@@ -1,4 +1,6 @@
 import React, { PureComponent } from 'react';
+import { omit } from 'lodash';
+import Button from '@/components/mobile/Button';
 
 class FacebookLogin extends PureComponent {
 	constructor(props) {
@@ -40,12 +42,12 @@ class FacebookLogin extends PureComponent {
 		};
 	}
 
-	getProfile(response) {
+	getProfile(token, response) {
 		window.FB.api('/me', { fields: this.props.fields }, (me) => {
 			this.setState({
 				loading: false
 			});
-			this.props.onSuccess(me);
+			this.props.onSuccess(token, me);
 		});
 	}
 
@@ -76,7 +78,7 @@ class FacebookLogin extends PureComponent {
 			this.setState({
 				loading: true
 			});
-			this.getProfile(response);
+			this.getProfile(response.authResponse, response);
 		} else if (this.props.onFailure) {
 			this.props.onFailure(response);
 		} else {
@@ -86,10 +88,11 @@ class FacebookLogin extends PureComponent {
 
 	render() {
 		const { children, className } = this.props;
+		const props = omit(this.props, ['chidren', 'className', 'clientId', 'appId', 'onSuccess', 'onFailure', 'callback']);
 		return (
-			<button onClick={(e) => this.login()} className={className}>
+			<Button {...props} onClick={(e) => this.login()} className={className}>
 				{children}
-			</button>
+			</Button>
 		);
 	}
 }
