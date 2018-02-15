@@ -7,6 +7,7 @@ import Button from '../Button';
 import Level from '../Level';
 import Badge from '../Badge';
 import styles from './card.scss';
+import { Link } from 'react-router-dom';
 
 class Catalog extends PureComponent {
 	render() {
@@ -17,6 +18,7 @@ class Catalog extends PureComponent {
 			productTitle,
 			brandName,
 			pricing,
+            linkToPdp,
 			...props
 		} = this.props;
 
@@ -24,13 +26,15 @@ class Catalog extends PureComponent {
 		
 		return (
 			<div className={createClassName} {...props}>
-				<Carousel>
-					{
-						images.map((image, index) => (
-							<Image key={index} src={image.thumbnail} alt='product' />
-						))
-					}
-				</Carousel>
+				<Link to={linkToPdp}>
+					<Carousel>
+						{
+							images.map((image, index) => (
+								<Image key={index} src={image.thumbnail} alt='product' />
+							))
+						}
+					</Carousel>
+				</Link>
 				<Level
 					className={styles.action}
 					style={{ borderBottom: '1px solid #D8D8D8' }}

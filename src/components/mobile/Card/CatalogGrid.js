@@ -6,7 +6,7 @@ import Button from '../Button';
 import Level from '../Level';
 import Badge from '../Badge';
 import styles from './card.scss';
-
+import { Link } from 'react-router-dom';
 
 class CatalogGrid extends PureComponent {
 	render() {
@@ -16,6 +16,7 @@ class CatalogGrid extends PureComponent {
 			productTitle,
 			brandName,
 			pricing,
+            linkToPdp,
 			...props
 		} = this.props;
 
@@ -23,7 +24,9 @@ class CatalogGrid extends PureComponent {
 
 		return (
 			<div className={createClassName} {...props}>
-				<Image src={images[0].thumbnail} alt='product' />
+				<Link to={linkToPdp}>
+					<Image src={images[0].thumbnail} alt='product' />
+				</Link>
 				<Level className={styles.action}>
 					<Level.Item>
 						<div className={styles.title}>

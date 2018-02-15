@@ -7,21 +7,26 @@ import Button from '../Button';
 import Level from '../Level';
 import Badge from '../Badge';
 import styles from './card.scss';
+import { Link } from 'react-router-dom';
+import { hyperlink } from '@/utils';
 
 class Lovelist extends PureComponent {
 	render() {
 		const { className, type, data, ...props } = this.props;
 		const createClassName = classNames(styles.container, styles[type], className);
-		
+		const linkToPdpCreator = hyperlink('', ['product', data.product_id], null);
+  
 		return (
 			<div className={createClassName} {...props}>
-				<Carousel>
-					{
-						data.images.map((image, idx) => (
-							<Image key={idx} src={image.mobile} alt='product' />
-						))
-					}
-				</Carousel>
+				<Link to={linkToPdpCreator}>
+					<Carousel>
+						{
+							data.images.map((image, idx) => (
+								<Image key={idx} src={image.mobile} alt='product' />
+							))
+						}
+					</Carousel>
+				</Link>
 				<Level
 					className={styles.action}
 					style={{ borderBottom: '1px solid #D8D8D8' }}

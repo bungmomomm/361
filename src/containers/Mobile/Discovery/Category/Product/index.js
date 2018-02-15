@@ -16,6 +16,7 @@ import Filter from '@/containers/Mobile/Shared/Filter';
 import Sort from '@/containers/Mobile/Shared/Sort';
 import { to } from 'await-to-js';
 import Spinner from '../../../../../components/mobile/Spinner';
+import { hyperlink } from '@/utils';
 
 class Product extends Component {
 	constructor(props) {
@@ -133,7 +134,7 @@ class Product extends Component {
 							<Page>
 								<div className={stylesCatalog.cardContainer}>
 									{
-										pcpResults.pcpData.products.map((product, index) => 
+										pcpResults.pcpData.products.map((product, index) =>
 											this.renderList(product, index)
 										)
 									}
@@ -172,36 +173,46 @@ class Product extends Component {
 					</Level>
 				</div>
 			);
+			
+			const linkToPdpCreator = hyperlink('', ['product', productData.product_id], null);
+			
+			const listCardCatalogAttribute 			= {};
+			listCardCatalogAttribute.images 		= productData.images;
+			listCardCatalogAttribute.productTitle 	= productData.product_title;
+			listCardCatalogAttribute.brandName 		= productData.brand;
+			listCardCatalogAttribute.pricing 		= productData.pricing;
+			listCardCatalogAttribute.linkToPdp 		= linkToPdpCreator;
+			
+
+			const cardCatalogGridAttribute 			= {};
+			cardCatalogGridAttribute.key    		= index;
+			cardCatalogGridAttribute.images 		= productData.images;
+			cardCatalogGridAttribute.productTitle  	= productData.product_title;
+			cardCatalogGridAttribute.brandName     	= productData.brand;
+			cardCatalogGridAttribute.pricing       	= productData.pricing;
+			cardCatalogGridAttribute.linkToPdp 		= linkToPdpCreator;
+			
+			const cardCatalogSmall 					= {};
+			cardCatalogSmall.key 					= index;
+			cardCatalogSmall.images 				= productData.images;
+			cardCatalogSmall.pricing 				= productData.pricing;
+			cardCatalogSmall.linkToPdp 				= linkToPdpCreator;
+			
 			switch (this.state.listTypeState.type) {
 			case 'list':
 				return (
 					<div key={index} className={stylesCatalog.cardCatalog}>
-						<Card.Catalog
-							images={productData.images}
-							productTitle={productData.product_title}
-							brandName={productData.brand}
-							pricing={productData.pricing}
-						/>
+						<Card.Catalog {...listCardCatalogAttribute} />
 						{renderBlockComment}
 					</div>
 				);
 			case 'grid':
 				return (
-					<Card.CatalogGrid
-						key={index}
-						images={productData.images}
-						productTitle={productData.product_title}
-						brandName={productData.brand}
-						pricing={productData.pricing}
-					/>
+					<Card.CatalogGrid {...cardCatalogGridAttribute} />
 				);
 			case 'small':
 				return (
-					<Card.CatalogSmall
-						key={index}
-						images={productData.images}
-						pricing={productData.pricing}
-					/>
+					<Card.CatalogSmall {...cardCatalogSmall} />
 				);
 			default:
 				return null;
