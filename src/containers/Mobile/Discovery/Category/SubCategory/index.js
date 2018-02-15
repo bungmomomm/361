@@ -113,7 +113,7 @@ class SubCategory extends PureComponent {
 		const listFeaturedBrands = this.props.category.brands && this.props.category.brands.map((brand, key) => {
 			return (
 				<List key={key}>
-					<Link style={{ flexFlow: 'row nowrap' }} to={`/brand/${brand.id}/${brand.title}`}>
+					<Link style={{ flexFlow: 'row nowrap' }} to={`/brand/${brand.id}/${encodeURIComponent(brand.title.toLowerCase())}`}>
 						<List.Image><Image width={40} height={40} avatar src={brand.image_url} /></List.Image>
 						<List.Content>{brand.title}</List.Content>
 					</Link>
