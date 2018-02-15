@@ -18,7 +18,7 @@ class SearchNotFound extends PureComponent {
 	bannerRender() {
 		const { data } = this.props;
 		let bannerView = null;
-		if (data && data !== '') {
+		if (data && data.length > 0) {
 			const banner = _.find(data, { type: 'promo_banner' }) || false;
 			if (banner) {
 				bannerView = (
@@ -39,7 +39,7 @@ class SearchNotFound extends PureComponent {
 	productRender() {
 		const { data } = this.props;
 		let productView = null;
-		if (data && data !== '') {
+		if (data && data.length > 0) {
 			const products = _.find(data, { type: 'recommended' }) || false;
 			if (products) {
 				productView = (

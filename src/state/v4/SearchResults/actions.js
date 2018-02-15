@@ -1,9 +1,9 @@
 import { request } from '@/utils';
-import { setLoading, initSearch, initPromo } from './reducer';
+import { initLoading, initSearch, initPromo } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 
-const initAction = (token, url = false, query) => async (dispatch, getState) => {
-	dispatch(setLoading({ isLoading: true }));
+const searchAction = (token, url = false, query) => async (dispatch, getState) => {
+	dispatch(initLoading({ isLoading: true }));
 	dispatch(scrollerActions.onScroll({ loading: true }));
 
 	let path = `${process.env.MICROSERVICES_URL}products/search`;
@@ -50,7 +50,7 @@ const initAction = (token, url = false, query) => async (dispatch, getState) => 
 			},
 			nextPage: nextLink !== false,
 			loading: false,
-			loader: initAction
+			loader: searchAction
 		}));
 
 		return Promise.resolve(searchData);
@@ -59,8 +59,8 @@ const initAction = (token, url = false, query) => async (dispatch, getState) => 
 	});
 };
 
-const getPromo = (token, url = false) => async (dispatch, getState) => {
-	dispatch(setLoading({ isLoading: true }));
+const promoAction = (token, url = false) => async (dispatch, getState) => {
+	dispatch(initLoading({ isLoading: true }));
 
 	let path = `${process.env.MICROSERVICES_URL}promo/suggestion`;
 	if (url) {
@@ -86,8 +86,8 @@ const getPromo = (token, url = false) => async (dispatch, getState) => {
 	});
 };
 
-const initLoading = (loading) => (dispatch) => {
-	dispatch(setLoading({ isLoading: loading }));
+const loadingAction = (loading) => (dispatch) => {
+	dispatch(initLoading({ isLoading: loading }));
 };
 
 const discoveryUpdate = (response) => async dispatch => {
@@ -106,8 +106,8 @@ const discoveryUpdate = (response) => async dispatch => {
 };
 
 export default {
-	initAction,
-	getPromo,
-	initLoading,
+	searchAction,
+	promoAction,
+	loadingAction,
 	discoveryUpdate
 };

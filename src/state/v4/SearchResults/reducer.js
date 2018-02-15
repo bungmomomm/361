@@ -13,12 +13,12 @@ const initialState = {
 	promoData: []
 };
 
-const { setLoading, initSearch, initPromo } = createActions(
-	'SET_LOADING', 'INIT_SEARCH', 'INIT_PROMO'
+const { initLoading, initSearch, initPromo } = createActions(
+	'INIT_LOADING', 'INIT_SEARCH', 'INIT_PROMO'
 );
 
 const reducer = handleActions({
-	[setLoading](state, { payload: { isLoading } }) {
+	[initLoading](state, { payload: { isLoading } }) {
 		return {
 			isLoading
 		};
@@ -41,7 +41,7 @@ const reducer = handleActions({
 
 export default {
 	reducer, 
-	setLoading,
+	initLoading,
 	initSearch,
 	initPromo
 };

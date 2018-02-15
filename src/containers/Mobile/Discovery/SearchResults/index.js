@@ -43,7 +43,7 @@ class SearchResults extends Component {
 
 	componentWillUnmount() {
 		const { dispatch } = this.props;
-		dispatch(new actions.initLoading(true));
+		dispatch(new actions.loadingAction(true));
 	}
 
 	async onApply(e) {
@@ -325,13 +325,13 @@ const doAfterAnonymous = async (props) => {
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
 	
-	const [err, response] = await to(dispatch(actions.initAction(cookies.get('user.token'), searchService, objParam)));
+	const [err, response] = await to(dispatch(actions.searchAction(cookies.get('user.token'), searchService, objParam)));
 
 	if (err) {
 		console.log(err.message);
 
 		const promoService = _.chain(shared).get('serviceUrl.promo').value() || false;
-		dispatch(actions.getPromo(cookies.get('user.token'), promoService));
+		dispatch(actions.promoAction(cookies.get('user.token'), promoService));
 	} else {
 		dispatch(filterActions.initializeFilter(response));
 	}
