@@ -48,14 +48,14 @@ class Lovelist extends PureComponent {
 			<div className={createClassName}>
 				<Link to={linkToPdpCreator}>
 					<Carousel
-                        slideIndex={slideIndex}
-                        afterSlide={this.setCarouselSlideIndex}
-                    >
+						slideIndex={slideIndex}
+						afterSlide={this.setCarouselSlideIndex}
+					>
 						{
 							data.images.map((image, idx) => (
-                            <div tabIndex='0' role='button' onClick={this.props.onImageItemClick} key={idx} data-img={image.mobile}>
-                                <Image src={image.mobile} alt={data.product_title} />
-                            </div>
+								<div tabIndex='0' role='button' onClick={this.props.onImageItemClick} key={idx} data-img={image.mobile}>
+									<Image src={image.mobile} alt={data.product_title} />
+								</div>
 							))
 						}
 					</Carousel>

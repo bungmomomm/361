@@ -19,9 +19,9 @@ class LovelistGrid extends PureComponent {
   
 		return (
 			<div className={createClassName} {...props}>
-                <Link to={linkToPdpCreator}>
-                    <Image src={data.images[0].thumbnail} alt={data.product_title} />
-                </Link>
+				<Link to={linkToPdpCreator}>
+					<Image src={data.images[0].thumbnail} alt={data.product_title} />
+				</Link>
 				<Level className={styles.action}>
 					<Level.Item>
 						<div className={styles.title}>
