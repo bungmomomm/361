@@ -55,14 +55,15 @@ class Home extends Component {
 		const segment = home.activeSegment.key;
 		const featuredBanner = _.chain(home).get(`allSegmentData.${segment}`).get('heroBanner');
 		if (!featuredBanner.isEmpty().value()) {
+
+			const images = featuredBanner.value()[0].images;
+			const link = featuredBanner.value()[0].link.target;
 			return (
-				<Carousel>
-					{
-						featuredBanner.value().map(({ images }, a) => (
-							<Image key={a} alt='slide' src={images.thumbnail} />
-						))
-					}
-				</Carousel>
+				<Link to={link}>
+					<div>
+						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
+					</div>
+				</Link>
 			);
 		}
 		return null;
@@ -134,13 +135,7 @@ class Home extends Component {
 			return (
 				<div>
 					{ header }
-					<Carousel>
-						{
-							datas.value().images.map(({ images, link }, b) => (
-								<div key={b} ><Image lazyload alt='thumbnail' src={images.thumbnail} /></div>
-							))
-						}
-					</Carousel>
+					<Image lazyload alt='thumbnail' src={datas.value().images[0].thumbnail} />
 				</div>
 			);
 		}
