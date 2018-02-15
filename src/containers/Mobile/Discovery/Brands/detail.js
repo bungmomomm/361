@@ -139,7 +139,10 @@ class Detail extends Component {
 				className={`${styles.backgroundCover} flex-center`}
 				style={
 					{ backgroundImage: `url(${imgBanner})` }}
-			/>
+			>
+				<div className='text-uppercase font--lato-bold font-medium'>{this.props.brands.brand_info.title}</div>
+				<div>{this.props.brands.brand_info.product_count}</div>
+			</div>
 		) : '';
 
 		const { styleHeader } = this.state;

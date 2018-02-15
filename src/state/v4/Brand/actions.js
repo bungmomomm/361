@@ -69,7 +69,8 @@ const brandProductAction = (token, brandId) => async (dispatch, getState) => {
 
 	if (response) {
 		const products = response.data.data.products;
-		dispatch(brandProducts({ brand_id: brandId, products }));
+		const brandInfo = response.data.data.info;
+		dispatch(brandProducts({ brand_id: brandId, products, brand_info: brandInfo }));
 		dispatch(brandLoadingProducts({ loading_products: false }));
 		return Promise.resolve(response);
 	}

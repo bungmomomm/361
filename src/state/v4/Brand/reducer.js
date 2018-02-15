@@ -7,7 +7,8 @@ const initialState = {
 	brand_id: null,
 	products: null,
 	loading_products: false,
-	banner: null
+	banner: null,
+	brand_info: null
 };
 
 const { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner } = createActions(
@@ -32,11 +33,12 @@ const reducer = handleActions({
 			loading
 		};
 	},
-	[brandProducts](state, { payload: { brand_id, products } }) {
+	[brandProducts](state, { payload: { brand_id, products, brand_info } }) {
 		return {
 			...state,
 			brand_id,
-			products
+			products,
+			brand_info
 		};
 	},
 	[brandLoadingProducts](state, { payload: { loading_products } }) {
