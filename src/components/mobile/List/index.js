@@ -9,9 +9,13 @@ const Image = ({ children, ...props }) => {
 	);
 };
 
-const Content = ({ children, ...props }) => {
+const Content = ({ children, className, ...props }) => {
+	const createClassName = classNames(
+		styles.content,
+		className
+	);
 	return (
-		<div {...props} className={styles.content}>{children}<Svg src='ico_chevron-right.svg' /></div>
+		<div {...props} className={createClassName}>{children}<Svg src='ico_chevron-right.svg' /></div>
 	);
 };
 
