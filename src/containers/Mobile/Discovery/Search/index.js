@@ -3,9 +3,10 @@ import { withCookies } from 'react-cookie';
 import { Header, Page } from '@/components/mobile';
 import styles from './search.scss';
 import { connect } from 'react-redux';
-import { actions } from '@/state/v4/Search';
+import { actions as actionSearch } from '@/state/v4/Search';
 import { Link } from 'react-router-dom';
 import CONST from '@/constants';
+import Shared from '@/containers/Mobile/Shared';
 class Search extends PureComponent {
 	constructor(props) {
 		super(props);
@@ -49,13 +50,13 @@ class Search extends PureComponent {
 		const eVal = encodeURIComponent(value);
 		switch (type) {
 		case this.SUGGEST_KEYWORD || this.SUGGEST_HASTAG:
-			pathProd = `/products?category_id=&query=${eVal}`;
+			pathProd = `/products?category_id=&query=${eVal.toLowerCase()}`;
 			break;
 		case this.SUGGEST_HASTAG:
-			pathProd = `/products?category_id=&query=${eVal}`;
+			pathProd = `/products?category_id=&query=${eVal.toLowerCase()}`;
 			break;
 		case this.SUGGEST_CATEGORY:
-			pathProd = `/products?category_id=${value}&query=${eText}`;
+			pathProd = `/products?category_id=${value}&query=${eText.toLowerCase()}`;
 			break;
 		default:
 			pathProd = `/products?category_id=&query=${eVal}`;
@@ -73,7 +74,8 @@ class Search extends PureComponent {
 
 	searchKeywordUpdatedHandler(event) {
 		const newWord = (event.target.value) ? event.target.value : '';
-		this.props.updatedKeyword(newWord, this.userToken);
+		const { dispatch } = this.props;
+		dispatch(actionSearch.updatedKeywordHandler(newWord, this.userToken));
 		if (newWord && newWord.length >= 3) {
 			this.setState({
 				...this.state,
@@ -242,10 +244,4 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const mapDispatchToProps = (dispatch) => {
-	return {
-		updatedKeyword: (keyword, token) => dispatch(actions.updatedKeywordHandler(keyword, token)),
-	};
-};
-
-export default withCookies(connect(mapStateToProps, mapDispatchToProps)(Search));
+export default withCookies(connect(mapStateToProps)(Shared(Search)));
