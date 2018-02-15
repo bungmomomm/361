@@ -76,12 +76,11 @@ class Products extends Component {
 				return <Comment key={idx} type='review' data={item} />;
 			});
 
+			status.pdpDataHasLoaded = true;
+			status.loading = false;
 			this.setState({
-				loading: false,
 				detail,
-				status: {
-					pdpDataHasLoaded: true,
-				},
+				status,
 				pdpData: {
 					cardProduct,
 					similarItems,
@@ -106,11 +105,14 @@ class Products extends Component {
 	handleScroll(e) {
 		const { status } = this.state;
 		if (e.target.scrollTop > 400 && !status.showScrollInfomation) {
-			this.setState({ showScrollInfomation: true });
+			status.showScrollInfomation = true;
 		}
+
 		if (e.target.scrollTop < 400 && status.showScrollInfomation) {
-			this.setState({ showScrollInfomation: false });
+			status.showScrollInfomation = false;
 		}
+
+		this.setState({ status });
 	}
 
 	addComment() {
@@ -229,7 +231,7 @@ class Products extends Component {
 	}
 
 	render() {
-		const { showScrollInfomation, detail, pdpData, status, carousel } = this.state;
+		const { detail, pdpData, status, carousel } = this.state;
 		const { match, history } = this.props;
 
 		if (status.loading) {
@@ -356,7 +358,7 @@ class Products extends Component {
 					</div>
 					{this.renderStickyAction()}
 				</Page>
-				<Header.Modal style={!showScrollInfomation ? { backgroundColor: 'transparent', border: 'none', boxShadow: 'none' } : {}} {...this.renderHeaderPage()} />
+				<Header.Modal style={!status.showScrollInfomation ? { backgroundColor: 'transparent', border: 'none', boxShadow: 'none' } : {}} {...this.renderHeaderPage()} />
 				<Navigation />
 			</div>);
 	}
