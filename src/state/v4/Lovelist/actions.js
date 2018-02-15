@@ -20,11 +20,13 @@ const setLoadingState = (loading) => (dispatch) => {
  * @param {*} response 
  */
 const fetchItems = (data) => {
-	const items = data.products.map((item, idx) => {
+	return data.products.map((item, idx) => {
+		const images = item.images.map((img) => {
+			return { mobile: img.thumbnail, thumbnail: img.thumbnail };
+		});
+		item.images = images;
 		return item;
 	});
-
-	return items;
 };
 
 /**
