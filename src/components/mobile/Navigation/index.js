@@ -30,7 +30,7 @@ class Navigation extends PureComponent {
 							active={active === 'Categories'}
 						/>
 						<Item
-							to='/'
+							to='/cart'
 							icon='ico_cart.svg'
 							label='Shopping Bag'
 							active={active === 'Shopping Bag'}
