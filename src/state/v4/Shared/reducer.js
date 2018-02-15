@@ -8,7 +8,7 @@ const initialState = {
 	foreverBanner: {
 		text: {
 			text1: 'Loading...',
-			text2: 'Loading...',
+			text2: 'Please wait',
 			text_color: 'black',
 			background_color: 'grey'
 		},
