@@ -15,7 +15,7 @@ class Filters extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			shown: false
+			shown: true
 		};
 	}
 

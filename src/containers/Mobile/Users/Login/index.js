@@ -104,14 +104,14 @@ class Login extends Component {
 						<div className='margin--medium'>Login Dengan</div>
 						<div className='flex-row flex-center flex-spaceBetween'>
 							<div style={{ width: '45%' }}>
-								<SocialLogin.FacebookLogin appId={process.env.FBAPP_ID} onSuccess={(e) => console.log('success', e)} callback={(e) => console.log('callback', e)}>
-									<Button wide color='facebook' size='medium' >Facebook</Button>
-								</SocialLogin.FacebookLogin>
+								<SocialLogin provider={'facebook'} wide color='facebook' size='medium' appId={process.env.FBAPP_ID} onSuccess={(e) => console.log('success', e)} callback={(e) => console.log('callback', e)}>
+									Facebook
+								</SocialLogin>
 							</div>
 							<div style={{ width: '45%' }}>
-								<SocialLogin.GoogleLogin clientId={process.env.GOOGLEAPP_ID} appId={process.env.GOOGLEAPP_APIKEY} onSuccess={(e) => console.log('success', e)} callback={(e) => console.log('callback', e)}>
-									<Button wide color='google' size='medium' ><Svg src='ico_google.svg' style={{ marginRight: '10px' }} />Google</Button>
-								</SocialLogin.GoogleLogin>
+								<SocialLogin provider={'google'} wide color='google' size='medium' clientId={process.env.GOOGLEAPP_ID} appId={process.env.GOOGLEAPP_APIKEY} onSuccess={(e) => console.log('success', e)} callback={(e) => console.log('callback', e)}>
+									<Svg src='ico_google.svg' style={{ marginRight: '10px' }} />Google
+								</SocialLogin>
 							</div>
 						</div>
 						<div className={styles.divider}><span>Atau</span></div>
