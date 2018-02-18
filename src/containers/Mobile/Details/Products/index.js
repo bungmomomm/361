@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { actions as productActions } from '@/state/v4/Product';
-import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { Link } from 'react-router-dom';
 import { Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel } from '@/components/mobile';
+import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
 import _ from 'lodash';
 
@@ -52,16 +52,21 @@ class Products extends Component {
 		dispatch(new productActions.productRecommendationAction(token));
 		dispatch(new productActions.productSimilarAction(token));
 		dispatch(new productActions.productSocialSummaryAction(token, productId));
-		dispatch(new commentActions.productCommentAction(token, productId));
 		window.addEventListener('scroll', this.handleScroll, true);
 	}
 
 	componentWillReceiveProps(nextProps) {
-		const { detail, similar, reviews } = nextProps.product;
+		const { product, lovelist } = nextProps;
+		const { detail, similar, socialSummary } = product;
 		const { status } = this.state;
-		
-		if (!_.isEmpty(detail) && !_.isEmpty(similar) && !_.isEmpty(reviews) && !status.pdpDataHasLoaded) {
-			const cardProduct = productActions.getProductCardData(detail);
+
+		if (!_.isEmpty(detail) && !_.isEmpty(similar) && !_.isEmpty(socialSummary.reviews) && 
+			!_.isEmpty(lovelist.bulkieCountProducts) && !status.pdpDataHasLoaded) {
+
+			const reviewItems = socialSummary.reviews.summary.map((item, idx) => {
+				return <Comment key={idx} type='review' data={item} />;
+			});
+
 			const similarItems = similar.map((item, idx) => {
 				const data = {
 					productTitle: item.product_title,
@@ -72,20 +77,17 @@ class Products extends Component {
 				return <Card.CatalogGrid {...data} key={idx} />;
 			});
 
-			const reviewItems = reviews.summary.map((item, idx) => {
-				return <Comment key={idx} type='review' data={item} />;
-			});
-
+			const lovelistProduct = lovelistActions.getProductFromBulk(detail.id, lovelist.bulkieCountProducts);
+			detail.totalLovelist = lovelistProduct.total;
+			detail.totalComments = socialSummary.comments.total || 0;
 			status.pdpDataHasLoaded = true;
 			status.loading = false;
+			const cardProduct = productActions.getProductCardData(detail);
+
 			this.setState({
 				detail,
 				status,
-				pdpData: {
-					cardProduct,
-					similarItems,
-					reviewItems
-				}
+				pdpData: { cardProduct, similarItems, reviewItems }
 			});
 		}
 	}
@@ -115,11 +117,6 @@ class Products extends Component {
 		this.setState({ status });
 	}
 
-	addComment() {
-		const { dispatch } = this.props;
-		dispatch(new commentActions.commentAddAction(this.userCookies));
-	}
-
 	handleLovelistClick(e) {
 		const { dispatch, match } = this.props;
 		const { pdpData } = this.state;
@@ -127,11 +124,11 @@ class Products extends Component {
  
 		if (!isLoved) {
 			isLoved = true;
-			pdpData.cardProduct.lovelistTotal += 1;
+			pdpData.cardProduct.totalLovelist += 1;
 			dispatch(lovelistActions.addToLovelist(this.userCookies, 1, match.params.id));
 		} else {
 			isLoved = false;
-			pdpData.cardProduct.lovelistTotal -= 1;
+			pdpData.cardProduct.totalLovelist -= 1;
 			dispatch(lovelistActions.removeFromLovelist(this.userCookies, 1, match.params.id));
 		}
 
@@ -293,7 +290,7 @@ class Products extends Component {
 						<div className='margin--medium --disable-flex padding--medium'>
 							<Link to={`/product/comments/${match.params.id}`}>
 								<Button className='font--lato-normal font-color--primary-ext-2'>
-									Lihat semua 38 komentar
+									{(detail.totalComments > 0 ? `Lihat semua ${detail.totalComments} komentar` : 'Belum ada komentar')}
 								</Button>
 							</Link>
 						</div>
@@ -367,8 +364,14 @@ class Products extends Component {
 const mapStateToProps = (state) => {
 	return {
 		product: state.product, 
-		shared: state.shared
+		shared: state.shared,
+		lovelist: state.lovelist
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Products));
+const doAfterAnonymous = (props) => {
+	const { dispatch, cookies, match } = props;
+	dispatch(new lovelistActions.bulkieCountByProduct(cookies.get('user.token'), match.params.id));
+};
+
+export default withCookies(connect(mapStateToProps)(Shared(Products, doAfterAnonymous)));

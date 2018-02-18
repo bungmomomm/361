@@ -8,9 +8,6 @@ import {
 	productSocialSummary,
 	productLoading
 } from './reducer';
-import {
-	commentTotal
-} from '@/state/v4/Comment/reducer';
 
 const productDetailAction = (token, productId) => (dispatch) => {
 	dispatch(productLoading({ loading: true }));
@@ -74,11 +71,8 @@ const productSocialSummaryAction = (token, productId) => (dispatch) => {
 			variant_id: 100
 		}
 	}).then(response => {
-		const data = response.data.data;
-		const reviews = data.reviews;
-		const comments = data.comments;
-		dispatch(productSocialSummary({ reviews }));
-		dispatch(commentTotal({ ...comments }));
+		const socialSummary = response.data.data;
+		dispatch(productSocialSummary({ socialSummary }));
 		dispatch(productLoading({ loading: false }));
 	});
 };
@@ -99,7 +93,8 @@ const getProductCardData = (details) => {
 			images,
 			pricing: currentVariant.pricing,
 			product_title: details.title,
-			lovelistTotal: 1230
+			totalLovelist: details.totalLovelist,
+			totalComments: details.totalComments
 		};
 	}
 	return details;
