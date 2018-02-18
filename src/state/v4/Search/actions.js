@@ -18,11 +18,9 @@ const updatedKeywordHandler = (string, userToken) => async (dispatch, getState) 
 		[cancelTokenReq, cancelReq] = getCancelToken();
 
 		const { shared } = getState();
-		let baseUrl = _.chain(shared).get('serviceUrl.suggestion.url').value() || false;
+		const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
 
-		// TODO: need to enable baseUrl checking while api ready
-		if (true) baseUrl = process.env.MICROSERVICES_URL;
-		// if (!baseUrl) baseUrl = process.env.MICROSERVICES_URL;
+		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 		const [err, response] = await to(
 			request({
@@ -51,20 +49,16 @@ const updatedKeywordHandler = (string, userToken) => async (dispatch, getState) 
 			return Promise.resolve(err);
 		};
 
-		if (response) {
-			const data = response.data.data;
-			dispatch(keywordUpdate({
-				...initialState,
-				keyword: string,
-				related_category: data.related_category,
-				related_keyword: data.related_keyword,
-				related_hashtag: data.related_hashtag,
-				loading: false
-			}));
-			return Promise.resolve(response);
-		}
-
-		return false;
+		const data = response.data.data;
+		dispatch(keywordUpdate({
+			...initialState,
+			keyword: string,
+			related_category: data.related_category,
+			related_keyword: data.related_keyword,
+			related_hashtag: data.related_hashtag,
+			loading: false
+		}));
+		return Promise.resolve(response);
 	}
 
 	if (cancelReq !== undefined) cancelReq('Previous suggest request canceled.[< 3]');

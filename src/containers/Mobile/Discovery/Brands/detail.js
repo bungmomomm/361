@@ -160,7 +160,7 @@ class Detail extends Component {
 			right: <Button><Svg src='ico_share.svg' /></Button>
 		};
 
-		const renderTabs = (
+		const renderTabs = this.props.brands.brand_info && (
 			<Tabs
 				className='margin--medium'
 				type='segment'
@@ -186,24 +186,29 @@ class Detail extends Component {
 			&& this.props.brands.products.map((product, index) => this.renderList(product, index));
 
 		return (
-			<div style={this.props.style}>
-				<Page>
-					<div style={{ marginTop: '-61px', marginBottom: '30px' }}>
-						{renderBenner}
-						{renderTabs}
-						<div className='flex-row flex-wrap'>
-							{(renderProduct) || '' }
-						</div>
+			<div>
+				{ this.props.brands.products && (
+					<div style={this.props.style}>
+						<Page>
+							<div style={{ marginTop: '-61px', marginBottom: '30px' }}>
+								{renderBenner}
+								{renderTabs}
+								<div className='flex-row flex-wrap'>
+									{(renderProduct) || '' }
+								</div>
 
-						{/* <div className='flex-center margin--large'>
-							<Button color='secondary' outline size='large'> LOAD MORE </Button>
-						</div> */}
+								{/* <div className='flex-center margin--large'>
+									<Button color='secondary' outline size='large'> LOAD MORE </Button>
+								</div> */}
+							</div>
+						</Page>
+						<Header.Modal className={styleHeader ? styles.headerClear : ''} {...headerComponent} />
+						<Navigation active='Categories' />
 					</div>
-				</Page>
-				<Header.Modal className={styleHeader ? styles.headerClear : ''} {...headerComponent} />
-				<Navigation active='Categories' />
+				)}
 			</div>
 		);
+
 	}
 }
 
