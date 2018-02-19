@@ -77,7 +77,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				}));
 			}
 
-			setUserCookie(this.props.cookies, response.token);
+			setUserCookie(this.props.cookies, response.token, true);
 			return Promise.resolve({
 				status: 1, 
 				msg: '', 
