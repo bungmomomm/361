@@ -11,9 +11,6 @@ import {
 	productSocialSummary,
 	productLoading
 } from './reducer';
-import {
-	commentTotal
-} from '@/state/v4/Comment/reducer';
 
 const productDetailAction = (token, productId) => async (dispatch, getState) => {
 	const { shared } = getState();
@@ -143,7 +140,8 @@ const getProductCardData = (details) => {
 			images,
 			pricing: currentVariant.pricing,
 			product_title: details.title,
-			lovelistTotal: 1230
+			totalLovelist: details.totalLovelist,
+			totalComments: details.totalComments
 		};
 	}
 	return details;

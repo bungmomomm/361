@@ -5,9 +5,9 @@ import _ from 'lodash';
 import { Link } from 'react-router-dom';
 
 import { actions as productActions } from '@/state/v4/Product';
-import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel } from '@/components/mobile';
+import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
 import Shared from '@/containers/Mobile/Shared';
 
@@ -47,23 +47,21 @@ class Products extends Component {
 	}
 
 	componentDidMount() {
-		// const { dispatch, match } = this.props;
-		// const productId = match.params.id;
-		// const token = this.userCookies;
-		// dispatch(new productActions.productDetailAction(token, productId));
-		// dispatch(new productActions.productRecommendationAction(token));
-		// dispatch(new productActions.productSimilarAction(token));
-		// dispatch(new productActions.productSocialSummaryAction(token, productId));
-		// dispatch(new commentActions.productCommentAction(token, productId));
 		window.addEventListener('scroll', this.handleScroll, true);
 	}
 
 	componentWillReceiveProps(nextProps) {
-		const { detail, similar, reviews } = nextProps.product;
+		const { product, lovelist } = nextProps;
+		const { detail, similar, socialSummary } = product;
 		const { status } = this.state;
-		
-		if (!_.isEmpty(detail) && !_.isEmpty(similar) && !_.isEmpty(reviews) && !status.pdpDataHasLoaded) {
-			const cardProduct = productActions.getProductCardData(detail);
+
+		if (!_.isEmpty(detail) && !_.isEmpty(similar) && !_.isEmpty(socialSummary.reviews) && 
+			!_.isEmpty(lovelist.bulkieCountProducts) && !status.pdpDataHasLoaded) {
+
+			const reviewItems = socialSummary.reviews.summary.map((item, idx) => {
+				return <Comment key={idx} type='review' data={item} />;
+			});
+
 			const similarItems = similar.map((item, idx) => {
 				const data = {
 					productTitle: item.product_title,
@@ -74,21 +72,17 @@ class Products extends Component {
 				return <Card.CatalogGrid {...data} key={idx} />;
 			});
 
-			const reviewItems = reviews.summary.map((item, idx) => {
-				return <Comment key={idx} type='review' data={item} />;
-			});
+			const lovelistProduct = lovelistActions.getProductFromBulk(detail.id, lovelist.bulkieCountProducts);
+			detail.totalLovelist = lovelistProduct.total;
+			detail.totalComments = socialSummary.comments.total || 0;
+			status.pdpDataHasLoaded = true;
+			status.loading = false;
+			const cardProduct = productActions.getProductCardData(detail);
 
 			this.setState({
-				loading: false,
 				detail,
-				status: {
-					pdpDataHasLoaded: true,
-				},
-				pdpData: {
-					cardProduct,
-					similarItems,
-					reviewItems
-				}
+				status,
+				pdpData: { cardProduct, similarItems, reviewItems }
 			});
 		}
 	}
@@ -108,16 +102,14 @@ class Products extends Component {
 	handleScroll(e) {
 		const { status } = this.state;
 		if (e.target.scrollTop > 400 && !status.showScrollInfomation) {
-			this.setState({ showScrollInfomation: true });
+			status.showScrollInfomation = true;
 		}
-		if (e.target.scrollTop < 400 && status.showScrollInfomation) {
-			this.setState({ showScrollInfomation: false });
-		}
-	}
 
-	addComment() {
-		const { dispatch } = this.props;
-		dispatch(new commentActions.commentAddAction(this.userCookies));
+		if (e.target.scrollTop < 400 && status.showScrollInfomation) {
+			status.showScrollInfomation = false;
+		}
+
+		this.setState({ status });
 	}
 
 	handleLovelistClick(e) {
@@ -127,11 +119,11 @@ class Products extends Component {
  
 		if (!isLoved) {
 			isLoved = true;
-			pdpData.cardProduct.lovelistTotal += 1;
+			pdpData.cardProduct.totalLovelist += 1;
 			dispatch(lovelistActions.addToLovelist(this.userCookies, 1, match.params.id));
 		} else {
 			isLoved = false;
-			pdpData.cardProduct.lovelistTotal -= 1;
+			pdpData.cardProduct.totalLovelist -= 1;
 			dispatch(lovelistActions.removeFromLovelist(this.userCookies, 1, match.params.id));
 		}
 
@@ -231,7 +223,7 @@ class Products extends Component {
 	}
 
 	render() {
-		const { showScrollInfomation, detail, pdpData, status, carousel } = this.state;
+		const { detail, pdpData, status, carousel } = this.state;
 		const { match, history } = this.props;
 
 		if (status.loading) {
@@ -293,7 +285,7 @@ class Products extends Component {
 						<div className='margin--medium --disable-flex padding--medium'>
 							<Link to={`/product/comments/${match.params.id}`}>
 								<Button className='font--lato-normal font-color--primary-ext-2'>
-									Lihat semua 38 komentar
+									{(detail.totalComments > 0 ? `Lihat semua ${detail.totalComments} komentar` : 'Belum ada komentar')}
 								</Button>
 							</Link>
 						</div>
@@ -358,7 +350,7 @@ class Products extends Component {
 					</div>
 					{this.renderStickyAction()}
 				</Page>
-				<Header.Modal style={!showScrollInfomation ? { backgroundColor: 'transparent', border: 'none', boxShadow: 'none' } : {}} {...this.renderHeaderPage()} />
+				<Header.Modal style={!status.showScrollInfomation ? { backgroundColor: 'transparent', border: 'none', boxShadow: 'none' } : {}} {...this.renderHeaderPage()} />
 				<Navigation />
 			</div>);
 	}
@@ -367,10 +359,10 @@ class Products extends Component {
 const mapStateToProps = (state) => {
 	return {
 		product: state.product, 
-		shared: state.shared
+		shared: state.shared,
+		lovelist: state.lovelist
 	};
 };
-
 
 const doAfterAnonymous = (props) => {
 	const { dispatch, match, cookies } = props;
@@ -383,6 +375,8 @@ const doAfterAnonymous = (props) => {
 	dispatch(new productActions.productSimilarAction(token));
 	dispatch(new productActions.productSocialSummaryAction(token, productId));
 	dispatch(new commentActions.productCommentAction(token, productId));
+  dispatch(new lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productId));
+
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Products, doAfterAnonymous)));

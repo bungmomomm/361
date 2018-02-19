@@ -62,13 +62,13 @@ class Lovelist extends PureComponent {
 					<Level.Item>
 						<Button onClick={this.props.onBtnLovelistClick}>
 							<Svg src={loveIcon} />
-							<span>{data.lovelistTotal}</span>
+							<span>{data.totalLovelist}</span>
 						</Button>
 					</Level.Item>
 					<Level.Item>
 						<Button onClick={this.props.onBtnCommentClick}>
 							<Svg src='ico_comment.svg' />
-							<span>38</span>
+							<span>{data.totalComments}</span>
 						</Button>
 					</Level.Item>
 				</Level>
