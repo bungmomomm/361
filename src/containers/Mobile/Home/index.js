@@ -55,14 +55,15 @@ class Home extends Component {
 		const segment = home.activeSegment.key;
 		const featuredBanner = _.chain(home).get(`allSegmentData.${segment}`).get('heroBanner');
 		if (!featuredBanner.isEmpty().value()) {
+
+			const images = featuredBanner.value()[0].images;
+			const link = featuredBanner.value()[0].link.target;
 			return (
-				<Carousel>
-					{
-						featuredBanner.value().map(({ images }, a) => (
-							<Image key={a} alt='slide' src={images.mobile} />
-						))
-					}
-				</Carousel>
+				<Link to={link}>
+					<div>
+						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
+					</div>
+				</Link>
 			);
 		}
 		return null;
@@ -110,7 +111,7 @@ class Home extends Component {
 						{
 							datas.value().map(({ images, pricing }, e) => (
 								<div key={e}>
-									<Image lazyload alt='thumbnail' src={images.mobile} />
+									<Image lazyload alt='thumbnail' src={images[0].thumbnail} />
 									<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
 								</div>
 							))
@@ -126,7 +127,7 @@ class Home extends Component {
 		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}.hashtag`);
-		if (!datas.isEmpty().value()) {
+		if (!datas.isEmpty().value() && datas.value().id !== '') {
 			const header = renderSectionHeader(datas.value().hashtag, {
 				title: datas.value().mainlink.text,
 				url: '/hashtags'
@@ -134,13 +135,7 @@ class Home extends Component {
 			return (
 				<div>
 					{ header }
-					<Carousel>
-						{
-							datas.value().images.map(({ images, link }, b) => (
-								<div key={b} ><Image lazyload alt='thumbnail' src={images.mobile} /></div>
-							))
-						}
-					</Carousel>
+					<Image lazyload alt='thumbnail' src={datas.value().images[0].thumbnail} />
 				</div>
 			);
 		}
@@ -156,7 +151,7 @@ class Home extends Component {
 				<div>
 					{
 						datas.value().map(({ images, link }, c) => (
-							<Image key={c} lazyload alt='banner' src={images.mobile} />
+							<Image key={c} lazyload alt='banner' src={images.thumbnail} />
 						))
 					}
 				</div>
@@ -179,7 +174,7 @@ class Home extends Component {
 				<div className='margin--medium'>
 					{
 						bottomBanner.map(({ images, link }, d) => (
-							<Image key={d} lazyload alt='banner' src={images.mobile} />
+							<Image key={d} lazyload alt='banner' src={images.thumbnail} />
 						))
 					}
 				</div>
@@ -214,7 +209,7 @@ class Home extends Component {
 							return (
 								<div key={e}>
 									<Link to={url} >
-										<Image lazyload alt='thumbnail' src={brand.images.mobile} />
+										<Image lazyload alt='thumbnail' src={brand.images.thumbnail} />
 									</Link>
 								</div>
 							);
