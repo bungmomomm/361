@@ -117,12 +117,12 @@ export default {
 			exact: true
 		},
 		{
-			path: '/hashtags',
+			path: '/mau-gaya-itu-gampang',
 			component: Hashtags,
 			exact: true
 		},
 		{
-			path: '/hashtags/details',
+			path: '/mau-gaya-itu-gampang/:id',
 			component: HashtagsDetails
 		},
 		{
