@@ -374,13 +374,15 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = (props) => {
 	const { dispatch, match, cookies } = props;
+	
 	const productId = match.params.id;
+	const token = cookies.get('user.token');
 
-	dispatch(new productActions.productDetailAction(cookies.get('user.token'), productId));
-	dispatch(new productActions.productRecommendationAction(cookies.get('user.token')));
-	dispatch(new productActions.productSimilarAction(cookies.get('user.token')));
-	dispatch(new productActions.productSocialSummaryAction(cookies.get('user.token'), productId));
-	dispatch(new commentActions.productCommentAction(cookies.get('user.token'), productId));
+	dispatch(new productActions.productDetailAction(token, productId));
+	dispatch(new productActions.productRecommendationAction(token));
+	dispatch(new productActions.productSimilarAction(token));
+	dispatch(new productActions.productSocialSummaryAction(token, productId));
+	dispatch(new commentActions.productCommentAction(token, productId));
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Products, doAfterAnonymous)));
