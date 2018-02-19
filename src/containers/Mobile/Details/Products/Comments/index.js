@@ -7,6 +7,7 @@ import { Page, Header, Svg, Comment, Input, Button, Level } from '@/components/m
 import styles from './comments.scss';
 import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as productActions } from '@/state/v4/Product';
+import Shared from '@/containers/Mobile/Shared';
 
 class Comments extends Component {
 	constructor(props) {
@@ -18,19 +19,11 @@ class Comments extends Component {
 		this.productId = this.props.match.params.id;
 	}
 
-	componentDidMount() {
-		const { dispatch, product } = this.props;
-		if (_.isEmpty(product.detail)) {
-			dispatch(new productActions.productDetailAction(this.userCookies, this.productId));
-		}
-		dispatch(commentActions.productCommentAction(this.userCookies, this.productId, 1, false));
-
-	}
-
 	render() {
 		const { match, product, comments } = this.props;
 		const detailReady = _.isEmpty(product.detail);
 		const commentReady = _.isEmpty(comments.data);
+		console.log(comments.data);
 		if (detailReady || commentReady) {
 			return <div>Please wait, loading content...</div>;
 		}
@@ -80,4 +73,14 @@ const mapStateToProps = (state) => {
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Comments));
+const doAfterAnonymous = (props) => {
+	const { dispatch, product, cookies, match } = props;
+	const token = cookies.get('user.token');
+	const productId = match.params.id;
+	if (_.isEmpty(product.detail)) {
+		dispatch(new productActions.productDetailAction(token, productId));
+	}
+	dispatch(commentActions.productCommentAction(token, productId, 1));
+};
+
+export default withCookies(connect(mapStateToProps)(Shared(Comments, doAfterAnonymous)));
