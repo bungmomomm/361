@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import _ from 'lodash';
 import {
 	Header, Carousel, Tabs,
@@ -14,6 +14,8 @@ import { actions as sharedActions } from '@/state/v4/Shared';
 import Shared from '@/containers/Mobile/Shared';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import CONST from '@/constants';
+
+import SwipeReact from 'swipe-react';
 
 const renderSectionHeader = (title, options) => {
 	return (
@@ -32,12 +34,26 @@ class Home extends Component {
 		this.state = {
 			notification: {
 				show: true
-			}
+			},
+			direction: ''
 		};
 
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.source = this.props.cookies.get('user.source');
+
+		SwipeReact.config({
+			left: () => {
+				this.setState({
+					direction: 'left'
+				});
+			},
+			right: () => {
+				this.setState({
+					direction: 'right'
+				});
+			}
+		});
 	}
 
 	handlePick(current) {
@@ -254,11 +270,23 @@ class Home extends Component {
 
 	render() {
 		const { shared } = this.props;
+		const { direction } = this.state;
 		const foreverBannerData = shared.foreverBanner;
 		foreverBannerData.show = this.state.notification.show;
 		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+
+		if (direction === 'left') {
+			return (
+				<Redirect to='/hashtags' />
+			);
+		} else if (direction === 'right') {
+			return (
+				<Redirect to='/lovelist' />
+			);
+		}
+
 		return (
-			<div style={this.props.style}>
+			<div style={this.props.style} {...SwipeReact.events}>
 				<Page>
 					<Tabs
 						current={this.props.shared.current}
