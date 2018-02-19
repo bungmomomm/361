@@ -1,6 +1,7 @@
 // this actions for PDP page
 import { Promise } from 'es6-promise';
 import to from 'await-to-js';
+import _ from 'lodash';
 import { request } from '@/utils';
 import { 
 	commentList,
@@ -28,18 +29,17 @@ const commentAddAction = (token) => (dispatch) => {
 	});
 };
 
-const productCommentAction = (token, productId, page = 1, url = false) => async (dispatch) => {
-	const perPage = 10;
+const productCommentAction = (token, productId, page = 1) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
 
-	let path = `${process.env.MICROSERVICES_URL}comments?product_id=${productId}&page=${page}&per_page=${perPage}`;
-	
-	if (url) {
-		path = `${url.url}/comments?product_id=${productId}&page=${page}&per_page=${perPage}`;
-	}
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	const perPage = 10;
 
 	const [err, response] = await to(request({
 		token,
-		path,
+		path: `${baseUrl}/comment?product_id=${productId}&page=${page}&per_page=${perPage}`,
 		method: 'GET',
 		fullpath: true
 	}));

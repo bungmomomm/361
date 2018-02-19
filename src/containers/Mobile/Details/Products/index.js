@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
+import _ from 'lodash';
+import { Link } from 'react-router-dom';
+
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
-import { Link } from 'react-router-dom';
 import { Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel } from '@/components/mobile';
 import styles from './products.scss';
-import _ from 'lodash';
+import Shared from '@/containers/Mobile/Shared';
 
 class Products extends Component {
 	constructor(props) {
@@ -45,14 +47,14 @@ class Products extends Component {
 	}
 
 	componentDidMount() {
-		const { dispatch, match } = this.props;
-		const productId = match.params.id;
-		const token = this.userCookies;
-		dispatch(new productActions.productDetailAction(token, productId));
-		dispatch(new productActions.productRecommendationAction(token));
-		dispatch(new productActions.productSimilarAction(token));
-		dispatch(new productActions.productSocialSummaryAction(token, productId));
-		dispatch(new commentActions.productCommentAction(token, productId));
+		// const { dispatch, match } = this.props;
+		// const productId = match.params.id;
+		// const token = this.userCookies;
+		// dispatch(new productActions.productDetailAction(token, productId));
+		// dispatch(new productActions.productRecommendationAction(token));
+		// dispatch(new productActions.productSimilarAction(token));
+		// dispatch(new productActions.productSocialSummaryAction(token, productId));
+		// dispatch(new commentActions.productCommentAction(token, productId));
 		window.addEventListener('scroll', this.handleScroll, true);
 	}
 
@@ -369,4 +371,16 @@ const mapStateToProps = (state) => {
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Products));
+
+const doAfterAnonymous = (props) => {
+	const { dispatch, match, cookies } = props;
+	const productId = match.params.id;
+
+	dispatch(new productActions.productDetailAction(cookies.get('user.token'), productId));
+	dispatch(new productActions.productRecommendationAction(cookies.get('user.token')));
+	dispatch(new productActions.productSimilarAction(cookies.get('user.token')));
+	dispatch(new productActions.productSocialSummaryAction(cookies.get('user.token'), productId));
+	dispatch(new commentActions.productCommentAction(cookies.get('user.token'), productId));
+};
+
+export default withCookies(connect(mapStateToProps)(Shared(Products, doAfterAnonymous)));

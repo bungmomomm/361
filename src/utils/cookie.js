@@ -1,9 +1,12 @@
-const setUserCookie = (cookies, token) => {
+const setUserCookie = (cookies, token, isAnonymous = false) => {
 	const currentDate = new Date();
-	currentDate.setDate(currentDate.getDate() + (2 * 365));
+	const limitDate = isAnonymous ? 1 : (2 * 365);
+	currentDate.setDate(currentDate.getDate() + limitDate);
 	cookies.set('user.exp', Number(token.expires_in), { domain: process.env.SESSION_DOMAIN, expires: currentDate });
 	cookies.set('user.rf.token', token.refresh_token, { domain: process.env.SESSION_DOMAIN, expires: currentDate });
 	cookies.set('user.token', token.token, { domain: process.env.SESSION_DOMAIN, expires: currentDate });
+
+	cookies.set('isLogin', !isAnonymous, { domain: process.env.SESSION_DOMAIN, expires: currentDate });
 };
 
 export default {

@@ -87,10 +87,10 @@ const recomendationAction = (token, activeSegment, url = false) => async (dispat
 	const recommendedProducts = response.data.data.find(e => e.type === 'recommended') || false;
 	const recentlyViewedProducts = response.data.data.find(e => e.type === 'recentlyviewed') || false;
 	const promoRecommendationData = {
-		bestSellerProducts: bestSellerProducts ? bestSellerProducts.data : {},
-		newArrivalProducts: newArrivalProducts ? newArrivalProducts.data : {},
-		recommendedProducts: recommendedProducts ? recommendedProducts.data : {},
-		recentlyViewedProducts: recentlyViewedProducts ? recentlyViewedProducts.data : {}
+		bestSellerProducts: bestSellerProducts ? _.take(bestSellerProducts.data, 3) : {},
+		newArrivalProducts: newArrivalProducts ? _.take(newArrivalProducts.data, 3) : {},
+		recommendedProducts: recommendedProducts ? _.take(recommendedProducts.data, 3) : {},
+		recentlyViewedProducts: recentlyViewedProducts ? _.take(recentlyViewedProducts.data, 3) : {}
 	};
 
 	dispatch(recomendation({ recomendationData: promoRecommendationData, activeSegment: activeSegment.key }));
