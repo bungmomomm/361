@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import _ from 'lodash';
 import classNames from 'classnames';
 import Image from '../Image';
 import Level from '../Level';
@@ -31,13 +32,14 @@ class Comment extends PureComponent {
 				</div>
 			);
 		} else if (this.props.type === 'comment_summary') {
+			const lastComment = _.last(data.last_comment);
 			return (
 				<div className={createClassName} {...props}>
 					<Button>View {data.total} comments</Button>
 					<Level>
 						<Level.Left>
-							<div style={{ fontWeight: 'bold' }}>{data.last_comment.customer.customer_name}</div>
-							<div>{data.last_comment.comment.comment}</div>
+							<div style={{ fontWeight: 'bold' }}>{lastComment.customer.customer_name}</div>
+							<div>{lastComment.comment.comment}</div>
 						</Level.Left>
 					</Level>
 				</div>

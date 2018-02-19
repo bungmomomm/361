@@ -16,7 +16,7 @@ import { actions as filterActions } from '@/state/v4/SortFilter';
 import Filter from '@/containers/Mobile/Shared/Filter';
 import Sort from '@/containers/Mobile/Shared/Sort';
 import { to } from 'await-to-js';
-// import Spinner from '../../../../components/mobile/Spinner';
+import Spinner from '../../../../components/mobile/Spinner';
 
 import { actions as commentActions } from '@/state/v4/Comment';
 
@@ -111,7 +111,7 @@ class SearchResults extends Component {
 		if (this.props.isLoading === true) {
 			return (
 				<div style={this.props.style}>
-					&nbsp;
+					<Spinner />
 				</div>
 			);
 		}
@@ -120,51 +120,64 @@ class SearchResults extends Component {
 	}
 
 	searchNotFound() {
-		const { shared, promoData } = this.props;
-		const foreverBannerData = shared.foreverBanner;
-		foreverBannerData.show = this.state.notification.show;
-		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+		const { promoData } = this.props;
 
 		return (
-			<div style={this.props.style}>
-				<SearchNotFound
-					keyword={this.getKeyword()}
-					data={promoData}
-				/>
-				{this.renderHeader()}
-				<ForeverBanner {...foreverBannerData} />
-				<Navigation />
-			</div>
+			<SearchNotFound
+				keyword={this.getKeyword()}
+				data={promoData}
+			/>
 		);
 	}
 
 	searchFound(products) {
 		if (products.length > 0) {
-			const { shared, filters } = this.props;
+			const { filters } = this.props;
 			const { showSort } = this.state;
-			const foreverBannerData = shared.foreverBanner;
-			foreverBannerData.show = this.state.notification.show;
-			foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
 
 			return (
-				<div style={this.props.style}>
-					<Page>
-						<div className={stylesSearch.container} >
-							<div className={stylesCatalog.cardContainer}>
-								{
-									products.map((product, index) =>
-										this.renderList(product, index)
-									)
-								}
-							</div>
+				<Page>
+					<div className={stylesSearch.container} >
+						<div className={stylesCatalog.cardContainer}>
+							{
+								products.map((product, index) =>
+									this.renderList(product, index)
+								)
+							}
 						</div>
-						<Sort shown={showSort} sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
-					</Page>
+					</div>
+					<Sort shown={showSort} sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
+				</Page>
+			);
+		}
+
+		return null;
+	}
+
+	renderPage() {
+		let pageView = null;
+		const { filters } = this.props;
+		const { showFilter } = this.state;
+		if (showFilter) {
+			pageView = (
+				<Filter
+					shown={showFilter}
+					filters={filters}
+					onUpdateFilter={(e, type, value) => this.onUpdateFilter(e, type, value)}
+					onApply={(e) => {
+						this.onApply(e);
+					}}
+					onReset={(e) => this.onReset(e)}
+					onClose={(e) => this.onClose(e)}
+				/>
+			);
+		} else {
+			pageView = (
+				<div style={this.props.style}>
+					{this.renderSearch()}
 					{this.renderHeader()}
 					{this.renderTabs()}
-					{
-						<ForeverBanner {...foreverBannerData} />
-					}
+					{this.renderForeverBanner()}
 					<Navigation />
 
 					{this.props.scroller.loading}
@@ -172,31 +185,15 @@ class SearchResults extends Component {
 			);
 		}
 
-		return null;
+		return pageView;
 	}
 
-	searchRender() {
+	renderSearch() {
 		let searchView = null;
-		const { searchResults, filters } = this.props;
-		const { showFilter } = this.state;
-		if (typeof searchResults.searchStatus !== 'undefined' && searchResults.searchStatus !== '') {
+		const { searchResults } = this.props;
+		if (searchResults.searchStatus !== undefined && searchResults.searchStatus !== '') {
 			if (searchResults.searchStatus === 'success' && searchResults.searchData.products.length > 0) {
-				if (showFilter) {
-					searchView = (
-						<Filter
-							shown={showFilter}
-							filters={filters}
-							onUpdateFilter={(e, type, value) => this.onUpdateFilter(e, type, value)}
-							onApply={(e) => {
-								this.onApply(e);
-							}}
-							onReset={(e) => this.onReset(e)}
-							onClose={(e) => this.onClose(e)}
-						/>
-					);
-				} else {
-					searchView = this.searchFound(searchResults.searchData.products);
-				}
+				searchView = this.searchFound(searchResults.searchData.products);
 			} else if (searchResults.searchStatus === 'failed') {
 				searchView = this.searchNotFound();
 			}
@@ -206,6 +203,7 @@ class SearchResults extends Component {
 	}
 
 	renderList(productData, index) {
+		const { comments } = this.props;
 		if (productData) {
 			switch (this.state.listTypeState.type) {
 			case 'list':
@@ -217,7 +215,7 @@ class SearchResults extends Component {
 							brandName={productData.brand}
 							pricing={productData.pricing}
 						/>
-						{this.renderComment(productData.product_id)}
+						{comments && comments.loading ? <Spinner /> : this.renderComment(productData.product_id)}
 					</div>
 				);
 			case 'grid':
@@ -241,7 +239,7 @@ class SearchResults extends Component {
 	renderComment(productId) {
 		let commentView = null;
 		const { comments } = this.props;
-		if (productId) {
+		if (comments && comments.data.length > 0) {
 			const commentById = _.find(comments.data, { product_id: productId }) || null;
 			commentView = (
 				<Comment
@@ -271,8 +269,8 @@ class SearchResults extends Component {
 
 	renderTabs() {
 		let tabsView = null;
-		const searchResults = this.props.searchResults;
-		if (typeof searchResults.searchStatus !== 'undefined' && searchResults.searchStatus !== '' && searchResults.searchStatus === 'success') {
+		const { searchResults } = this.props;
+		if (searchResults.searchStatus !== undefined && searchResults.searchStatus === 'success') {
 			tabsView = (
 				<Tabs
 					className={stylesCatalog.fixed}
@@ -299,8 +297,17 @@ class SearchResults extends Component {
 		return tabsView;
 	}
 
+	renderForeverBanner() {
+		const { shared } = this.props;
+		const foreverBannerData = shared.foreverBanner;
+		foreverBannerData.show = this.state.notification.show;
+		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+
+		return <ForeverBanner {...foreverBannerData} />;
+	}
+
 	render() {
-		return this.props.isLoading ? this.loadingRender() : this.searchRender();
+		return this.renderPage();
 	}
 }
 
