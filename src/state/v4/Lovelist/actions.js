@@ -157,7 +157,7 @@ const bulkieCountByProduct = (token, productId) => async (dispatch, getState) =>
 
 		if (err) return Promise.reject(err);
 
-		const productLovelist = { bulkieCountProducts: response.data.data } || {};
+		const productLovelist = { bulkieCountProducts: (response.data.data || {}) };
 		dispatch(bulkieCount(productLovelist));
 
 		return Promise.resolve(response);
