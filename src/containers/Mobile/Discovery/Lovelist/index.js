@@ -14,7 +14,7 @@ class Lovelist extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			listTypeGrid: false,
+			listTypeGrid: true,
 			listEmpty: true,
 			loading: true,
 			loggedIn: true, // should be adjust when user-login has done... 
@@ -121,9 +121,9 @@ class Lovelist extends Component {
 		if (listEmpty) {
 			return (this.renderLovelistPage(
 				<div className='text-center --disable-flex'>
-					<p className='margin--medium'>Kamu belum memiliki Lovelist</p>
-					<p className='margin--medium font--lato-light'>Tap the <Svg width='20px' height='18px' src='ico_love.svg' /> next to an item to add
-						<br />it to your Lovelist.
+					<p className='margin--medium'>Lovelist kamu masih kosong</p>
+					<p className='margin--medium font--lato-light'>Tekan <Svg width='20px' height='18px' src='ico_love.svg' /> untuk menambahkan
+						<br />produk ke Lovelist.
 					</p>
 					<p className='margin--medium'><Button inline size='large' color='primary'>BELANJA</Button></p>
 					<Image local style={{ margin: '0 auto -30px auto' }} alt='Tap the love icon' src='lovelist-guide.png' />

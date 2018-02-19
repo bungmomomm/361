@@ -60,7 +60,7 @@ const listActions = {
 	[removeItem](state, { payload: { removedItem } }) {
 		const user = state.user;
 		// pushing removed item
-		user.added.push(removedItem);
+		user.deleted.push(removedItem);
 		return {
 			...state,
 			user
