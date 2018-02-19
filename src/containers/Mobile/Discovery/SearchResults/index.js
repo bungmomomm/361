@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import _ from 'lodash';
-import { Header, Page, Card, Svg, Tabs, Navigation, Button, Level, Image, Input } from '@/components/mobile';
+import { Header, Page, Card, Svg, Tabs, Navigation, Comment } from '@/components/mobile';
 import stylesSearch from '../Search/search.scss';
 import stylesCatalog from '../Category/Catalog/catalog.scss';
 import { actions } from '@/state/v4/SearchResults';
@@ -16,14 +16,16 @@ import { actions as filterActions } from '@/state/v4/SortFilter';
 import Filter from '@/containers/Mobile/Shared/Filter';
 import Sort from '@/containers/Mobile/Shared/Sort';
 import { to } from 'await-to-js';
-import Spinner from '../../../../components/mobile/Spinner';
+// import Spinner from '../../../../components/mobile/Spinner';
+
+import { actions as commentActions } from '@/state/v4/Comment';
 
 class SearchResults extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 
-		this.currentListState = 0;
+		this.currentListState = 1;
 		this.listType = [{
 			type: 'grid',
 			icon: 'ico_list.svg'
@@ -41,10 +43,10 @@ class SearchResults extends Component {
 		};
 	}
 
-	componentWillUnmount() {
-		const { dispatch } = this.props;
-		dispatch(new actions.loadingAction(true));
-	}
+	// componentWillUnmount() {
+	// 	const { dispatch } = this.props;
+	// 	dispatch(new actions.loadingAction(true));
+	// }
 
 	async onApply(e) {
 		console.log('onApply called');
@@ -109,7 +111,7 @@ class SearchResults extends Component {
 		if (this.props.isLoading === true) {
 			return (
 				<div style={this.props.style}>
-					<Spinner />
+					&nbsp;
 				</div>
 			);
 		}
@@ -175,9 +177,8 @@ class SearchResults extends Component {
 
 	searchRender() {
 		let searchView = null;
-		const { filters } = this.props;
+		const { searchResults, filters } = this.props;
 		const { showFilter } = this.state;
-		const searchResults = this.props.searchResults;
 		if (typeof searchResults.searchStatus !== 'undefined' && searchResults.searchStatus !== '') {
 			if (searchResults.searchStatus === 'success' && searchResults.searchData.products.length > 0) {
 				if (showFilter) {
@@ -206,17 +207,6 @@ class SearchResults extends Component {
 
 	renderList(productData, index) {
 		if (productData) {
-			const renderBlockComment = (
-				<div className={stylesCatalog.commentBlock}>
-					<Button>View 38 comments</Button>
-					<Level>
-						<Level.Left><div style={{ marginRight: '10px' }}><Image avatar width={25} height={25} local src='temp/pp.jpg' /></div></Level.Left>
-						<Level.Item>
-							<Input color='white' placeholder='Write comment' />
-						</Level.Item>
-					</Level>
-				</div>
-			);
 			switch (this.state.listTypeState.type) {
 			case 'list':
 				return (
@@ -227,7 +217,7 @@ class SearchResults extends Component {
 							brandName={productData.brand}
 							pricing={productData.pricing}
 						/>
-						{renderBlockComment}
+						{this.renderComment(productData.product_id)}
 					</div>
 				);
 			case 'grid':
@@ -246,6 +236,23 @@ class SearchResults extends Component {
 		} else {
 			return null;
 		}
+	}
+
+	renderComment(productId) {
+		let commentView = null;
+		const { comments } = this.props;
+		if (productId) {
+			const commentById = _.find(comments.data, { product_id: productId }) || null;
+			commentView = (
+				<Comment
+					className={stylesCatalog.commentBlock}
+					type='comment_summary'
+					data={commentById}
+				/>
+			);
+		}
+
+		return commentView;
 	}
 
 	renderHeader() {
@@ -302,6 +309,7 @@ const mapStateToProps = (state) => {
 		...state,
 		shared: state.shared,
 		searchResults: state.searchResults,
+		comments: state.comments,
 		promoData: state.searchResults.promoData,
 		isLoading: state.searchResults.isLoading,
 		scroller: state.scroller
@@ -333,6 +341,10 @@ const doAfterAnonymous = async (props) => {
 		const promoService = _.chain(shared).get('serviceUrl.promo').value() || false;
 		dispatch(actions.promoAction(cookies.get('user.token'), promoService));
 	} else {
+		const productIdList = _.map(response.products, 'product_id') || null;
+		const commentService = _.chain(shared).get('serviceUrl.productsocial').value() || false;
+		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList, commentService));
+
 		dispatch(filterActions.initializeFilter(response));
 	}
 };

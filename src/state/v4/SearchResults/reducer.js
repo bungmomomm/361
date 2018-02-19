@@ -2,6 +2,7 @@ import { handleActions, createActions } from 'redux-actions';
 
 const initialState = {
 	isLoading: false,
+	commentLoading: true,
 	searchStatus: '',
 	searchData: {
 		links: [],
