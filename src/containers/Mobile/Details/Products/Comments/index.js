@@ -23,7 +23,7 @@ class Comments extends Component {
 		if (_.isEmpty(product.detail)) {
 			dispatch(new productActions.productDetailAction(this.userCookies, this.productId));
 		}
-		dispatch(commentActions.productCommentAction(this.userCookies, this.productId, 1, false));
+		dispatch(commentActions.productCommentAction(this.userCookies, this.productId, 1));
 
 	}
 

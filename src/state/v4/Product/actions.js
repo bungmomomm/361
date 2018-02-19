@@ -1,4 +1,7 @@
 // this actions for PDP page
+import to from 'await-to-js';
+import { Promise } from 'es6-promise';
+import _ from 'lodash';
 
 import { request } from '@/utils';
 import {
@@ -12,75 +15,116 @@ import {
 	commentTotal
 } from '@/state/v4/Comment/reducer';
 
-const productDetailAction = (token, productId) => (dispatch) => {
+const productDetailAction = (token, productId) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
 	dispatch(productLoading({ loading: true }));
-	const url = `${process.env.MICROSERVICES_URL}product/${productId}`;
-	return request({
+
+	const [err, response] = await to(request({
 		token,
-		path: url,
+		path: `${baseUrl}/product/${productId}`,
 		method: 'GET',
 		fullpath: true
-	}).then(response => {
-		const product = response.data.data;
-		dispatch(productDetail({ detail: product.detail }));
-		dispatch(productLoading({ loading: false }));
-	}).catch((error) => {
-		console.log(error);
-	});
+	}));
+
+	if (err) {
+		return Promise.reject(err);
+	}
+
+	const product = response.data.data;
+	dispatch(productDetail({ detail: product.detail }));
+	dispatch(productLoading({ loading: false }));
+	
+	return Promise.resolve(response);
 };
 
-const productRecommendationAction = (token) => (dispatch) => {
+const productRecommendationAction = (token) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
 	dispatch(productLoading({ loading: true }));
-	const url = `${process.env.MICROSERVICES_URL}recommendation/pdp`;
-	return request({
+	
+	const [err, response] = await to(request({
 		token,
-		path: url,
+		path: `${baseUrl}/recommendation/pdp`,
 		method: 'GET',
 		fullpath: true
-	}).then(response => {
-		const recommendation = response.data.data;
-		dispatch(productRecommendation({ recommendation }));
-		dispatch(productLoading({ loading: false }));
-	});
+	}));
+	if (err) {
+		return Promise.reject(err);
+	}
+	const recommendation = response.data.data;
+	dispatch(productRecommendation({ recommendation }));
+	dispatch(productLoading({ loading: false }));
+
+	return Promise.resolve(response);
+
 };
 
-const productSimilarAction = (token) => (dispatch) => {
+const productSimilarAction = (token) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
 	dispatch(productLoading({ loading: true }));
-	const url = `${process.env.MICROSERVICES_URL}similaritems`;
-	return request({
+	
+	const [err, response] = await to(request({
 		token,
-		path: url,
+		path: `${baseUrl}/similaritems`,
 		method: 'GET',
 		fullpath: true,
 		data: {
 			variant_id: 100
 		}
-	}).then(response => {
-		const similar = response.data.data.products;
-		dispatch(productSimilar({ similar }));
-		dispatch(productLoading({ loading: false }));
-	});
+	}));
+
+	if (err) {
+		return Promise.reject(err);	
+	}
+	
+	const similar = response.data.data.products;
+	dispatch(productSimilar({ similar }));
+	dispatch(productLoading({ loading: false }));
+
+	return Promise.resolve(response);
 };
 
-const productSocialSummaryAction = (token, productId) => (dispatch) => {
+const productSocialSummaryAction = (token, productId) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
 	dispatch(productLoading({ loading: true }));
-	const url = `${process.env.MICROSERVICES_URL}review/summary/${productId}`;
-	return request({
+	
+	const [err, response] = await to(request({
 		token,
-		path: url,
+		path: `${baseUrl}/review/summary/${productId}`,
 		method: 'GET',
 		fullpath: true,
 		data: {
 			variant_id: 100
 		}
-	}).then(response => {
-		const data = response.data.data;
-		const reviews = data.reviews;
-		const comments = data.comments;
-		dispatch(productSocialSummary({ reviews }));
-		dispatch(commentTotal({ ...comments }));
-		dispatch(productLoading({ loading: false }));
-	});
+	}));
+
+	if (err) {
+		return Promise.reject(err);
+	}
+	
+	const data = response.data.data;
+	const reviews = data.reviews;
+	const comments = data.comments;
+	dispatch(productSocialSummary({ reviews }));
+	dispatch(commentTotal({ ...comments }));
+	dispatch(productLoading({ loading: false }));
+
+	return Promise.resolve(response);
 };
 
 /**
