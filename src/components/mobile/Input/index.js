@@ -89,7 +89,7 @@ class Input extends PureComponent {
 		};
 
 		const valueData = () => {
-			if (value) {
+			if (value || value === '') {
 				return { value };
 			}
 			return null;

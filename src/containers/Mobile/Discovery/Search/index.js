@@ -73,7 +73,7 @@ class Search extends PureComponent {
 	}
 
 	searchKeywordUpdatedHandler(event) {
-		const newWord = event.target.value || null;
+		const newWord = event.target.value || '';
 		const { dispatch } = this.props;
 		dispatch(actionSearch.updatedKeywordHandler(newWord, this.userToken));
 		if (newWord && newWord.length >= 3) {
