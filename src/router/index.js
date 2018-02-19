@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import { spring, AnimatedSwitch, AnimatedRoute } from 'react-router-transition';
-import routes from './routes';
+import { spring, AnimatedSwitch } from 'react-router-transition';
+import routes from './routes.detail';
 
 function mapStyles(styles) {
 	return {
@@ -37,20 +37,7 @@ export default () => (
 			mapStyles={mapStyles}
 			className='switch-wrapper'
 		>
-			{ routes.parent.map((route, i) => (<Route {...route} key={i} />)) }
+			{ routes.parent.map((route, i) => (<Route {...route} key={`parent-${i}`} />)) }
 		</AnimatedSwitch>
-		{ routes.child.map((route, i) => (
-			<AnimatedRoute
-				{...route}
-				key={i}
-				atEnter={{ offset: 100 }}
-				atLeave={{ offset: 100 }}
-				atActive={{ offset: 0 }}
-				className='child-wrapper'
-				mapStyles={(styles) => ({
-					transform: `perspective(1px) translateX(${styles.offset}%)`
-				})}
-			/>
-		)) }
 	</div>
 );
