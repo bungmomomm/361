@@ -97,7 +97,7 @@ class Input extends PureComponent {
 			if (value) {
 				return { value };
 			}
-			return null;
+			return { value: '' };
 		};
 
 

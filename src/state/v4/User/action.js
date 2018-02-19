@@ -1,6 +1,8 @@
+import to from 'await-to-js';
+import { Promise } from 'es6-promise';
+import _ from 'lodash';
 import { actions } from './reducer';
 import base64 from 'base-64';
-import _ from 'lodash';
 import {
 	request,
 	getDeviceID,
@@ -15,74 +17,76 @@ const isSuccess = (response) => {
 };
 
 const userLogin = (token, email, password) => async (dispatch, getState) => {
-	dispatch(actions.userLogin(email, password));
 	const { shared } = getState();
-	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || process.env.MICROSERVICES_URL;
-	try {
-		const response = await request({
-			token,
-			method: 'POST',
-			path: `${baseUrl}/auth/login`,
-			fullpath: true,
-			body: {
-				client_secret: getClientSecret(),
-				email,
-				pwd: base64.encode(password)
-			}
-		});
-		if (isSuccess(response)) {
-			dispatch(actions.userLoginSuccess(response.data.data.info));
-			return Promise.resolve({
-				userprofile: response.data.data.info,
-				token: {
-					token: response.data.data.token,
-					expires_in: response.data.data.expires_in,
-					refresh_token: response.data.data.refresh_token
-				}
-			});
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	dispatch(actions.userLogin(email, password));
+	const path = `${baseUrl}/auth/login`;
+	
+	const [err, response] = await to(request({
+		token,
+		method: 'POST',
+		path,
+		fullpath: true,
+		body: {
+			email,
+			pwd: base64.encode(password)
 		}
-		const error = new Error('Invalid user/password');
-		dispatch(actions.userLoginFail(error));
-		return Promise.reject(error);
-	} catch (error) {
-		dispatch(actions.userLoginFail(error));
-		return Promise.reject(error);
+	}));
+
+	if (err) {
+		dispatch(actions.userLoginFail(err));
+		return Promise.reject(err);
 	}
+
+	dispatch(actions.userLoginSuccess(response.data.data.info));
+	return Promise.resolve({
+		userprofile: response.data.data.info,
+		token: {
+			token: response.data.data.token,
+			expires_in: response.data.data.expires_in,
+			refresh_token: response.data.data.refresh_token
+		}
+	});
+
 };
 
 const userAnonymous = (token) => async (dispatch, getState) => {
-	dispatch(actions.userAnonymous());
 	const { shared } = getState();
-	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || process.env.MICROSERVICES_URL;
-	try {
-		const response = await request({
-			token,
-			method: 'POST',
-			path: `${baseUrl}/auth/anonymouslogin`,
-			fullpath: true,
-			body: {
-				client_secret: getClientSecret(),
-				device_id: getDeviceID()
-			}
-		});
-		if (isSuccess(response)) {
-			dispatch(actions.userAnonymousSuccess(response.data.data.info));
-			return Promise.resolve({
-				userprofile: response.data.data.info,
-				token: {
-					token: response.data.data.token,
-					expires_in: response.data.data.expires_in,
-					refresh_token: response.data.data.refresh_token
-				}
-			});
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	const path = `${baseUrl}/auth/anonymouslogin`;
+	
+	dispatch(actions.userAnonymous());
+
+	const [err, response] = await to(request({
+		token,
+		method: 'POST',
+		path,
+		fullpath: true,
+		body: {
+			device_id: getDeviceID()
 		}
-		const error = new Error('Error while calling api');
-		dispatch(actions.userLoginFail(error));
-		return Promise.reject(error);
-	} catch (error) {
-		dispatch(actions.userLoginFail(error));
-		return Promise.reject(error);
+	}));
+
+	if (err) {
+		dispatch(actions.userLoginFail(err));
+		return Promise.reject(err);
 	}
+
+	dispatch(actions.userAnonymousSuccess(response.data.data.info));
+	return Promise.resolve({
+		userprofile: response.data.data.info,
+		token: {
+			token: response.data.data.token,
+			expires_in: response.data.data.expires_in,
+			refresh_token: response.data.data.refresh_token
+		}
+	});
 };
 
 const userNameChange = (username) => dispatch => {
@@ -93,11 +97,16 @@ const userNameChange = (username) => dispatch => {
 
 const userOtp = (token, phone) => async (dispatch, getState) => {
 	const { shared } = getState();
-	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || process.env.MICROSERVICES_URL;
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	const path = `${baseUrl}/auth/otp/send`;
+
 	try {
 		const response = await request({
 			token,
-			path: `${baseUrl}/auth/otp/send`,
+			path,
 			method: 'POST',
 			body: {
 				hp_email: phone,
@@ -119,13 +128,17 @@ const userOtp = (token, phone) => async (dispatch, getState) => {
 };
 
 const userOtpValidate = (token, phone, password, fullname, otp) => async (dispatch, getState) => {
-	dispatch(actions.userOtpValidate());
 	const { shared } = getState();
-	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || process.env.MICROSERVICES_URL;
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	const path = `${baseUrl}/auth/otp/validate`;
+	dispatch(actions.userOtpValidate());
 	try {
 		const response = await request({
 			token,
-			path: `${baseUrl}/auth/otp/validate`,
+			path,
 			method: 'POST',
 			body: {
 				hp_email: phone,
@@ -153,13 +166,18 @@ const userOtpValidate = (token, phone, password, fullname, otp) => async (dispat
 //  USER_REGISTER: undefined,
 
 const userRegister = (token, email, phone, password, fullname) => async (dispatch, getState) => {
-	dispatch(actions.userRegister());
 	const { shared } = getState();
-	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || process.env.MICROSERVICES_URL;
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	const path = `${baseUrl}/auth/register`;
+
+	dispatch(actions.userRegister());
 	try {
 		const response = await request({
 			token,
-			path: `${baseUrl}/auth/register`,
+			path,
 			method: 'POST',
 			fullpath: true,
 			body: {
@@ -196,14 +214,19 @@ const userRegister = (token, email, phone, password, fullname) => async (dispatc
 // 	USER_GET_PROFILE: undefined,
 
 const userGetProfile = (token) => async (dispatch, getState) => {
-	dispatch(actions.userGetProfile());
 	const { shared } = getState();
-	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || process.env.MICROSERVICES_URL;
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	const path = `${baseUrl}/me`;
+
+	dispatch(actions.userGetProfile());
 	try {
 		const response = await request({
 			token,
 			method: 'GET',
-			path: `${baseUrl}/me`,
+			path,
 			fullpath: true,
 			body: {
 				client_secret: getClientSecret(),
