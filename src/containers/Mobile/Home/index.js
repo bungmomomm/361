@@ -54,6 +54,7 @@ class Home extends Component {
 				});
 			}
 		});
+		this.isLogin = this.props.cookies.get('isLogin');
 	}
 
 	handlePick(current) {
@@ -285,6 +286,9 @@ class Home extends Component {
 			);
 		}
 
+		const recommendation1 = !this.isLogin ? 'new_arrival_products' : 'recommended_products';
+		const recommendation2 = !this.isLogin ? 'best_seller_products' : 'recently_viewed_products';
+		
 		return (
 			<div style={this.props.style} {...SwipeReact.events}>
 				<Page>
@@ -302,10 +306,10 @@ class Home extends Component {
 
 					{this.renderSquareBanner()}
 
-					{ this.renderRecommendation('new_arrival_products')}
+					{ this.renderRecommendation(recommendation1)}
 					{ this.renderBottomBanner('top') }
 
-					{ this.renderRecommendation('best_seller_products')}
+					{ this.renderRecommendation(recommendation2)}
 					{ this.renderBottomBanner('bottom') }
 					{renderSectionHeader('Featured Brands', { title: 'LIHAT SEMUA', url: '/brands' })}
 					{ this.renderFeaturedBrands() }
