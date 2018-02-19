@@ -118,10 +118,11 @@ class Product extends Component {
 					pcpView = (
 						<Filter
 							shown={filterShown}
-							filters={filters}
+							filters={pcpResults}
 							onUpdateFilter={(e, type, value) => this.onUpdateFilter(e, type, value)}
 							onApply={(e) => {
-								this.onApply(e);
+								console.log(e);
+								// this.onApply(e);
 							}}
 							onReset={(e) => this.onReset(e)}
 							onClose={(e) => this.onClose(e)}
@@ -288,13 +289,13 @@ const doAfterAnonymous = async (props) => {
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
 	
-	const [err, response] = await to(dispatch(actions.initAction(cookies.get('user.token'), productService, pcpParam)));
+	dispatch(actions.initAction(cookies.get('user.token'), productService, pcpParam));
 	
-	if (err) {
-		console.log(err.message);
-	} else {
-		dispatch(filterActions.initializeFilter(response));
-	}
+	// if (err) {
+	// 	console.log(err.message);
+	// } else {
+	// 	dispatch(filterActions.initializeFilter(response));
+	// }
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Scroller(Product), doAfterAnonymous)));

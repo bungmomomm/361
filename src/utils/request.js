@@ -51,10 +51,11 @@ const request = (props) => {
 	const mode = isMobile() ? 'mweb' : 'web';
 	
 	let headers = {
-		client_id: isMobile() ? 'mweb' : 'web',
-		session_id: '',
+		client_id: isMobile() ? process.env.MOBILE_CLIENT_ID : process.env.DESKTOP_CLIENT_ID,
+		session_id: 'test',
 		client_version: '4.0',
-		'X-Mode': mode
+		'X-Mode': mode,
+		'Content-Type': 'application/json'
 	};
 	
 	if (props.token) {

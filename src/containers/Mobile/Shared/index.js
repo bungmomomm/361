@@ -40,13 +40,8 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			return (_.isEmpty(this.userCookies) || _.isEmpty(this.userRFCookies));
 		}
 
-		initApp() {
+		callApp() {
 			const { shared, dispatch } = this.props;
-
-			if (this.shouldLoginAnonymous()) {
-				this.loginAnonymous();
-			}
-
 			if (shared.totalCart === 0) {
 				dispatch(new actions.totalCartAction(this.userCookies));
 			}
@@ -61,13 +56,29 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			}
 		}
 
+		async initApp() {
+			if (this.shouldLoginAnonymous()) {
+				const response = await to(this.loginAnonymous());
+				if (response[0]) {
+					return this.callApp();
+				}
+
+				return false;
+			}
+
+			return this.callApp(doAfterAnonymousCall);
+			
+		}
+
 		async loginAnonymous() {
 			const [err, response] = await to(this.props.dispatch(new users.userAnonymous()));
 			if (err) {
 				this.withErrorHandling(err);
+				return Promise.reject(false);
 			}
 
-			return setUserCookie(this.props.cookies, response.token);
+			setUserCookie(this.props.cookies, response.token);
+			return Promise.resolve(true);
 		}
 
 		async initProcess() {

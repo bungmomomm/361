@@ -1,11 +1,10 @@
 import { actions } from './reducer';
 import base64 from 'base-64';
+import _ from 'lodash';
 import {
 	request,
 	getDeviceID,
-	getClientID,
-	getClientSecret,
-	getClientVersion
+	getClientSecret
 } from '@/utils';
 
 const isSuccess = (response) => {
@@ -15,18 +14,18 @@ const isSuccess = (response) => {
 	return false;
 };
 
-const userLogin = (token, email, password) => async dispatch => {
+const userLogin = (token, email, password) => async (dispatch, getState) => {
 	dispatch(actions.userLogin(email, password));
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || process.env.MICROSERVICES_URL;
 	try {
 		const response = await request({
 			token,
 			method: 'POST',
-			path: `${process.env.MICROSERVICES_URL}auth/login`,
+			path: `${baseUrl}/auth/login`,
 			fullpath: true,
 			body: {
-				client_id: getClientID(),
 				client_secret: getClientSecret(),
-				client_version: getClientVersion(),
 				email,
 				pwd: base64.encode(password)
 			}
@@ -51,18 +50,18 @@ const userLogin = (token, email, password) => async dispatch => {
 	}
 };
 
-const userAnonymous = (token) => async dispatch => {
+const userAnonymous = (token) => async (dispatch, getState) => {
 	dispatch(actions.userAnonymous());
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || process.env.MICROSERVICES_URL;
 	try {
 		const response = await request({
 			token,
 			method: 'POST',
-			path: `${process.env.MICROSERVICES_URL}auth/anonymouslogin`,
+			path: `${baseUrl}/auth/anonymouslogin`,
 			fullpath: true,
 			body: {
-				client_id: getClientID(),
 				client_secret: getClientSecret(),
-				client_version: getClientVersion(),
 				device_id: getDeviceID()
 			}
 		});
@@ -92,11 +91,13 @@ const userNameChange = (username) => dispatch => {
 
 // 	USER_OTP: undefined,
 
-const userOtp = (token, phone) => async dispatch => {
+const userOtp = (token, phone) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || process.env.MICROSERVICES_URL;
 	try {
 		const response = await request({
 			token,
-			path: `${process.env.MICROSERVICES_URL}auth/otp/send`,
+			path: `${baseUrl}/auth/otp/send`,
 			method: 'POST',
 			body: {
 				hp_email: phone,
@@ -117,12 +118,14 @@ const userOtp = (token, phone) => async dispatch => {
 	}
 };
 
-const userOtpValidate = (token, phone, password, fullname, otp) => async dispatch => {
+const userOtpValidate = (token, phone, password, fullname, otp) => async (dispatch, getState) => {
 	dispatch(actions.userOtpValidate());
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || process.env.MICROSERVICES_URL;
 	try {
 		const response = await request({
 			token,
-			path: `${process.env.MICROSERVICES_URL}auth/otp/validate`,
+			path: `${baseUrl}/auth/otp/validate`,
 			method: 'POST',
 			body: {
 				hp_email: phone,
@@ -149,12 +152,14 @@ const userOtpValidate = (token, phone, password, fullname, otp) => async dispatc
 
 //  USER_REGISTER: undefined,
 
-const userRegister = (token, email, phone, password, fullname) => async dispatch => {
+const userRegister = (token, email, phone, password, fullname) => async (dispatch, getState) => {
 	dispatch(actions.userRegister());
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || process.env.MICROSERVICES_URL;
 	try {
 		const response = await request({
 			token,
-			path: `${process.env.MICROSERVICES_URL}auth/register`,
+			path: `${baseUrl}/auth/register`,
 			method: 'POST',
 			fullpath: true,
 			body: {
@@ -190,18 +195,18 @@ const userRegister = (token, email, phone, password, fullname) => async dispatch
 // 	USER_OTP_VALIDATE_FAIL: (error) => ({ otp: { error } }),
 // 	USER_GET_PROFILE: undefined,
 
-const userGetProfile = (token) => async dispatch => {
+const userGetProfile = (token) => async (dispatch, getState) => {
 	dispatch(actions.userGetProfile());
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || process.env.MICROSERVICES_URL;
 	try {
 		const response = await request({
 			token,
 			method: 'GET',
-			path: `${process.env.MICROSERVICES_URL}me`,
+			path: `${baseUrl}/me`,
 			fullpath: true,
 			body: {
-				client_id: getClientID(),
 				client_secret: getClientSecret(),
-				client_version: getClientVersion(),
 				device_id: getDeviceID()
 			}
 		});

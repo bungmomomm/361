@@ -17,11 +17,11 @@ const getDeviceID = () => {
 };
 
 const getClientID = () => {
-	return isMobile() ? 'mobileweb' : 'web'; // process.env.CLIENT_ID;
+	return isMobile() ? process.env.MOBILE_CLIENT_ID : process.env.DESKTOP_CLIENT_ID;
 };
 
 const getClientSecret = () => {
-	return 'a157f5740fef18518eb15501365f8f20'; // process.env.CLIENT_SECRET;
+	return isMobile() ? process.env.MOBILE_CLIENT_SECRET : process.env.DESKTOP_CLIENT_SECRET;
 };
 
 const getClientVersion = () => {
