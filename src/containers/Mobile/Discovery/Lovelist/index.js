@@ -31,13 +31,24 @@ class Lovelist extends Component {
 	componentWillReceiveProps(nextProps) {
 		const { count, items } = nextProps.lovelist;
 		const { listEmpty } = this.state;
-
 		// checking resources availability
 		if (!_.isEmpty(items) && _.isInteger(count) && (count > 0) && listEmpty) {
+			const lovedItems = items.map((item, idx) => {
+				return {
+					brand: item.brand.brand_name,
+					images: item.images,
+					pricing: item.pricing,
+					product_title: item.product_title,
+					totalLovelist: 0,
+					totalComments: 0
+				};
+			});
+
 			this.setState({
 				listEmpty: false,
-				lovedProducts: items,
-				loading: false
+				lovedProducts: lovedItems,
+				loading: false,
+				lovedComponent: lovedItems
 			});
 		}
 	}
