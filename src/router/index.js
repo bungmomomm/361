@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 import { spring, AnimatedSwitch } from 'react-router-transition';
-import routes from './routes.detail';
+import routes from './routes';
 
 function mapStyles(styles) {
 	return {
