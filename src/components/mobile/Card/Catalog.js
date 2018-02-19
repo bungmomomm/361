@@ -7,6 +7,7 @@ import Button from '../Button';
 import Level from '../Level';
 import Badge from '../Badge';
 import styles from './card.scss';
+import { Link } from 'react-router-dom';
 
 class Catalog extends PureComponent {
 	render() {
@@ -17,20 +18,24 @@ class Catalog extends PureComponent {
 			productTitle,
 			brandName,
 			pricing,
+			url,
 			...props
 		} = this.props;
 
 		const createClassName = classNames(styles.container, styles[type], className);
-		
+
 		return (
 			<div className={createClassName} {...props}>
-				<Carousel>
-					{
-						images.map((image, index) => (
-							<Image key={index} src={image.thumbnail} alt='product' />
-						))
-					}
-				</Carousel>
+				<Link to={(url) || '/'}>
+					<Carousel>
+						{
+							images.map((image, index) => (
+								<Image key={index} src={image.thumbnail} alt='product' />
+							))
+						}
+					</Carousel>
+				</Link>
+
 				<Level
 					className={styles.action}
 					style={{ borderBottom: '1px solid #D8D8D8' }}
@@ -48,25 +53,27 @@ class Catalog extends PureComponent {
 						</Button>
 					</Level.Item>
 				</Level>
-				<div className={styles.title}>
-					{brandName} - <span>{productTitle}</span>
-				</div>
-				<Level className={styles.footer}>
-					<Level.Item>
-						<div className={styles.blockPrice}>
-							<div>
-								<div className={styles.price}>{pricing.formatted.effective_price}</div>
-								<div className={styles.discount}>{pricing.formatted.base_price}</div>
+				<Link to={(url) || '/'}>
+					<div className={styles.title}>
+						{brandName} - <span>{productTitle}</span>
+					</div>
+					<Level className={styles.footer}>
+						<Level.Item>
+							<div className={styles.blockPrice}>
+								<div>
+									<div className={styles.price}>{pricing.formatted.effective_price}</div>
+									<div className={styles.discount}>{pricing.formatted.base_price}</div>
+								</div>
+								<div style={{ marginLeft: '1.5rem' }}>
+									<Badge rounded color='red'>
+										<span className='font--lato-bold'>{pricing.discount}</span>
+									</Badge>
+								</div>
 							</div>
-							<div style={{ marginLeft: '1.5rem' }}>
-								<Badge rounded color='red'>
-									<span className='font--lato-bold'>{pricing.discount}</span>
-								</Badge>
-							</div>
-						</div>
-					</Level.Item>
-					<Level.Right>&nbsp;</Level.Right>
-				</Level>
+						</Level.Item>
+						<Level.Right>&nbsp;</Level.Right>
+					</Level>
+				</Link>
 			</div>
 		);
 	}

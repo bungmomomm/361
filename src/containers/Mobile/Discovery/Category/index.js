@@ -81,7 +81,7 @@ class Category extends PureComponent {
 				url = '/brands';
 				break;
 			case CONST.CATEGORY_TYPE.newarrival:
-				url = '/new_arrival';
+				url = '/promo/new_arrival';
 				break;
 			case CONST.CATEGORY_TYPE.category:
 				url = `/category/${this.state.activeSegment.key}/${cat.id}`;

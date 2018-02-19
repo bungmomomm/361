@@ -5,6 +5,7 @@ import { actions } from '@/state/v4/Shared';
 import { actions as users } from '@/state/v4/User';
 import { actions as initAction } from '@/state/v4/Home';
 import { setUserCookie } from '@/utils';
+import { Promise } from 'es6-promise';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 	WrappedComponent.contextTypes = {
@@ -40,34 +41,48 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			return (_.isEmpty(this.userCookies) || _.isEmpty(this.userRFCookies));
 		}
 
-		initApp() {
+		exeCall(token = null) {
 			const { shared, dispatch } = this.props;
+			const tokenBearer = token === null ? this.userCookies : token.token;
 
-			if (this.shouldLoginAnonymous()) {
-				this.loginAnonymous();
-			}
+			if (shared.totalCart === 0) { dispatch(new actions.totalCartAction(tokenBearer)); }
 
-			if (shared.totalCart === 0) {
-				dispatch(new actions.totalCartAction(this.userCookies));
-			}
-
-			if (shared.totalLovelist === 0) {
-				dispatch(new actions.totalLovelistAction(this.userCookies));
-			}
-
+			if (shared.totalLovelist === 0) { dispatch(new actions.totalLovelistAction(tokenBearer)); }
 
 			if (typeof doAfterAnonymousCall !== 'undefined') {
 				doAfterAnonymousCall.apply(this, [this.props]);
 			}
 		}
 
+		async initApp() {
+
+			if (this.shouldLoginAnonymous()) {
+				const response = await to(this.loginAnonymous());
+				if (response[1] !== null && response[1].status === 1) {
+					return this.exeCall(response[1].token);
+				}
+				return null;
+			}
+
+			return this.exeCall();
+		}
+
 		async loginAnonymous() {
 			const [err, response] = await to(this.props.dispatch(new users.userAnonymous()));
 			if (err) {
 				this.withErrorHandling(err);
+				return Promise.reject(new Error({
+					status: 0,
+					msg: 'anonymous process failed'
+				}));
 			}
 
-			return setUserCookie(this.props.cookies, response.token);
+			setUserCookie(this.props.cookies, response.token, true);
+			return Promise.resolve({
+				status: 1, 
+				msg: '', 
+				token: response.token
+			});
 		}
 
 		async initProcess() {
