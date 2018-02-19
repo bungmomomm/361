@@ -6,10 +6,10 @@ import { Link } from 'react-router-dom';
 
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
+import { actions as commentActions } from '@/state/v4/Comment';
 import { Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
-import Shared from '@/containers/Mobile/Shared';
 
 class Products extends Component {
 	constructor(props) {
@@ -375,7 +375,7 @@ const doAfterAnonymous = (props) => {
 	dispatch(new productActions.productSimilarAction(token));
 	dispatch(new productActions.productSocialSummaryAction(token, productId));
 	dispatch(new commentActions.productCommentAction(token, productId));
-  dispatch(new lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productId));
+	dispatch(new lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productId));
 
 };
 
