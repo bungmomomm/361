@@ -249,7 +249,7 @@ class Home extends Component {
 				url: mozaic.value().mainlink.link
 			});
 			return (
-				<div>
+				<div className='border-top margin--medium'>
 					{
 						header
 					}

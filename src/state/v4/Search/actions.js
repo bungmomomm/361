@@ -7,7 +7,7 @@ let cancelReq;
 let cancelTokenReq;
 
 const updatedKeywordHandler = (string, userToken) => async (dispatch, getState) => {
-	if (string.length >= 3) {
+	if (string && string.length >= 3) {
 		dispatch(keywordUpdate({
 			...initialState,
 			keyword: string,

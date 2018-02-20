@@ -28,6 +28,7 @@ class Navigation extends PureComponent {
 							icon='ico_categories.svg'
 							label='Categories'
 							active={active === 'Categories'}
+							badge={5}
 						/>
 						<Item
 							to='/cart'
