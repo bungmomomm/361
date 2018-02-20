@@ -56,9 +56,9 @@ class Brands extends Component {
 		const { data } = this.state;
 		const { onApply } = this.props;
 		const result = _.filter(data, (facetData) => {
-			return (facetData.facetrange === 1);
+			return (facetData.is_selected === 1);
 		});
-		onApply(result);
+		onApply(e, result);
 	}
 
 	render() {

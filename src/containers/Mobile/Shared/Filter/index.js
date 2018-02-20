@@ -1,15 +1,33 @@
 import React, { PureComponent } from 'react';
-// import Lists from './layouts/lists';
+import Lists from './layouts/lists';
 // import ListsEnd from './layouts/listsEnd';
 import Brands from './layouts/brands';
-// import Color from './layouts/color';
-// import Size from './layouts/size';
-// import Price from './layouts/price';
-// import Location from './layouts/locations';
-// import TreeSegment from './layouts/treeSegment';
+import Color from './layouts/color';
+import Size from './layouts/size';
+import Price from './layouts/price';
+import Location from './layouts/locations';
+import TreeSegment from './layouts/treeSegment';
 import Result from './layouts/result';
+import utils from './layouts/utils';
 
 import _ from 'lodash';
+
+const getSelected = (childs, source = false) => {
+	if (!source) {
+		source = [];
+	}
+	_.forEach(childs, (facetData) => {
+		if (facetData.is_selected === 1) {
+			source.push(facetData);
+		}
+
+		if (facetData.childs && facetData.childs.length > 0) {
+			source = getSelected(facetData.childs, source);
+		}
+	});
+
+	return source;
+};
 
 class Filter extends PureComponent {
 	constructor(props) {
@@ -57,10 +75,13 @@ class Filter extends PureComponent {
 	}
 
 	onApply(e) {
+		const { filters } = this.state;
 		this.setState({
 			layout: 'result'
 		});
-		this.props.onApply(e);
+		const obj = utils.getUrlFilterForCategory(filters);
+		console.log(obj);
+		// this.props.onApply(e);
 	}
 
 	getFacet(key) {
@@ -85,14 +106,32 @@ class Filter extends PureComponent {
 		const results = _.map(values, (value) => {
 			return value.facetrange;
 		});
+		const updateChilds = (c, r, s) => {
+			c = _.map(c, (facetData) => {
+				const isExist = _.find(r, (v) => {
+					return v === facetData.facetrange;
+				});
+				facetData.is_selected = 0;
+				if (isExist) {
+					s.push(facetData);
+					facetData.is_selected = 1;
+				}
+				[c, s] = updateChilds(facetData.childs, r, s);
+				return facetData;
+			});
+
+			return [c, s];
+		};
 		filters.facets = _.map(filters.facets, (facet) => {
 			if (facet.id === type) {
 				switch (facet.id) {
 				case 'category':
-					
-					break;
 				case 'custom_category_ids':
-
+				case 'size':
+					if (facet.id === type) {
+						selected[facet.id] = [];
+						[facet.data, selected[facet.id]] = updateChilds(facet.data, results, selected[facet.id]);
+					}
 					break;
 				case 'price':
 
@@ -100,13 +139,15 @@ class Filter extends PureComponent {
 				default:
 					selected[facet.id] = [];
 					facet.data = _.map(facet.data, (facetData) => {
-						const isExist = _.find(results, (v) => {
-							return v === facetData.facetrange;
-						});
-						facetData.is_selected = 0;
-						if (isExist) {
-							selected[facet.id].push(facetData);
-							facetData.is_selected = 1;
+						if (facet.id === type) {
+							const isExist = _.find(results, (v) => {
+								return v === facetData.facetrange;
+							});
+							facetData.is_selected = 0;
+							if (isExist) {
+								selected[facet.id].push(facetData);
+								facetData.is_selected = 1;
+							}
 						}
 						return facetData;
 					});
@@ -115,9 +156,11 @@ class Filter extends PureComponent {
 			}
 			return facet;
 		});
+
 		this.setState({
 			filters,
-			selected
+			selected,
+			layout: 'result'
 		});
 	}
 
@@ -126,15 +169,15 @@ class Filter extends PureComponent {
 		const { onReset, shown } = this.props;
 
 		const brands = this.getFacet('brand');
-		// const categories = this.getFacet('category');
-		// const customCategoryType = this.getFacet('custom_category_ids');
-		// const locations = this.getFacet('location');
-		// const colors = this.getFacet('color');
-		// const sizes = this.getFacet('size');
-		// const shippings = this.getFacet('shipping_methods');
-		// const priceData = this.getFacet('price');
-		// const prices = priceData.data;
-		// const range = priceData.range;
+		const colors = this.getFacet('color');
+		const sizes = this.getFacet('size');
+		const locations = this.getFacet('location');
+		const priceData = this.getFacet('price');
+		const prices = priceData.data;
+		const range = priceData.range;
+		const shippings = this.getFacet('shipping_methods');
+		const categories = this.getFacet('category');
+		const customCategoryType = this.getFacet('custom_category_ids');
 		// console.log(categories);
 		// console.log(categories, customCategoryType, locations, brands, colors, sizes, prices, range, layout, state, onApply, onReset, filters);
 
@@ -158,7 +201,6 @@ class Filter extends PureComponent {
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
 				);
-			/*	
 			case 'color':
 				return (
 					<Color 
@@ -168,24 +210,13 @@ class Filter extends PureComponent {
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
-				);		
+				);
+			
 			case 'size':
 				return (
 					<Size 
 						{...state} 
 						data={sizes.data} 
-						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
-						onClose={(e) => this.onFilterSectionClose()}
-						onApply={(e, values) => this.applyFilter(layout, values)}
-					/>
-				);			
-			case 'price':
-				return (
-					<Price 
-						{...state} 
-						prices={prices} 
-						range={range} 
-						onChange={(e, value) => this.onFilterSelected(e, 'pricerange', value)} 
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
@@ -201,6 +232,19 @@ class Filter extends PureComponent {
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
 				);
+			
+			case 'price':
+				return (
+					<Price 
+						{...state} 
+						prices={prices} 
+						range={range} 
+						onChange={(e, value) => this.onFilterSelected(e, 'pricerange', value)} 
+						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
+						onClose={(e) => this.onFilterSectionClose()}
+						onApply={(e, values) => this.applyFilter(layout, values)}
+					/>
+				);			
 			case 'shipping_methods':
 				return (
 					<Lists 
@@ -220,7 +264,7 @@ class Filter extends PureComponent {
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
-				);			
+				);		
 			case 'category':
 				return (
 					<TreeSegment 
@@ -231,7 +275,6 @@ class Filter extends PureComponent {
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
 				);
-			*/
 			case 'result':
 				return (
 					<Result 

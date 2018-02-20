@@ -26,6 +26,7 @@ const getFq = (filters) => {
 		switch (facet.id) {
 		case 'category':
 		case 'custom_category_ids':
+		case 'size':
 			// child category
 			categories = getCategoryFq(categories, facet.data);
 			forEach(categories, (value) => {
@@ -37,9 +38,6 @@ const getFq = (filters) => {
 					});
 				}
 			});
-			break;
-		case 'size':
-
 			break;
 		default:
 			forEach(facet.data, (value) => {
@@ -72,7 +70,6 @@ const getPage = (filters) => {
 const getUrlFilterForCategory = (filters) => {
 	return {
 		...getPage(filters),
-		category_id: filters.category_id,
 		fq: getFq(filters)
 	};
 };
@@ -80,9 +77,13 @@ const getUrlFilterForCategory = (filters) => {
 const getUrlFilterForSearch = (filters) => {
 	return {
 		...getPage(filters),
-		category_id: filters.category_id,
-		brand_id: filters.brand_id,
-		q: filters.q,
+		fq: getFq(filters)
+	};
+};
+
+const getFilter = (filters) => {
+	return {
+		...getPage(filters),
 		fq: getFq(filters)
 	};
 };
@@ -111,5 +112,6 @@ export default {
 	getPage,
 	getUrlFilterForCategory,
 	getUrlFilterForSearch,
-	parseFilter
+	parseFilter,
+	getFilter
 };

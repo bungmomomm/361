@@ -13,10 +13,10 @@ const initialState = {
 	brand_id: 0,
 	category_id: 0,
 	store_id: 0,
-	facets: []
+	facet: []
 };
 
-initialState.filters = initialState.facets;
+initialState.filters = initialState.facet;
 
 const actions = createActions({
 	UPDATE_FILTER_CATEGORY: (category) => ({ category }),
@@ -29,13 +29,13 @@ const actions = createActions({
 	UPDATE_FILTER_SHIPPING: (shipping) => ({ shipping_methods: shipping }),
 	UPDATE_FILTER_FAIL: (error) => ({ error }),
 	UPDATE_FILTER: undefined,
-	UPDATE_FILTER_SUCCESS: (filters, facets, sorts, page, perPage) => ({ filters, facets, sorts, page, perPage }),
+	UPDATE_FILTER_SUCCESS: (filters, facet, sorts, page, perPage) => ({ filters, facet, sorts, page, perPage }),
 	UPDATE_FILTER_RESET: undefined,
 	DO_TEST: (t) => ({ t }),
 	UPDATE_SORT: (sorts, sort) => ({ sorts, sort }),
 	UPDATE_SORT_FAIL: (error) => ({ error }),
 	UPDATE_SORT_APPLY: undefined,
-	UPDATE_SORT_SUCCESS: (filters, facets, sorts, page, perPage) => ({ filters, facets, sorts, page, perPage })
+	UPDATE_SORT_SUCCESS: (filters, facet, sorts, page, perPage) => ({ filters, facet, sorts, page, perPage })
 });
 
 const hasChild = (category) => {
@@ -66,106 +66,106 @@ const setSelected = (facet, value) => {
 
 const reducer = handleActions({
 	[actions.updateFilterCategory]: (state, action) => {
-		const facets = _.map(state.facets, (facet) => {
-			if (facet.id === 'category') {
-				const categories = findAndSetSelected(facet.data, action.payload.category);
-				facet.data = categories;
+		const facet = _.map(state.facet, (facetData) => {
+			if (facetData.id === 'category') {
+				const categories = findAndSetSelected(facetData.data, action.payload.category);
+				facetData.data = categories;
 			}
-			return facet;
+			return facetData;
 		});
 		return {
 			...state,
-			facets
+			facet
 		};
 	},
 	[actions.updateFilterCustomCategory]: (state, action) => {
-		const facets = _.map(state.facets, (facet) => {
-			if (facet.id === 'custom_category_ids') {
-				const categories = findAndSetSelected(facet.data, action.payload.category);
-				facet.data = categories;
+		const facet = _.map(state.facet, (facetData) => {
+			if (facetData.id === 'custom_category_ids') {
+				const categories = findAndSetSelected(facetData.data, action.payload.category);
+				facetData.data = categories;
 			}
 			return facet;
 		});
 		return {
 			...state,
-			facets
+			facet
 		};
 	},
 	[actions.updateFilterColor]: (state, action) => {
-		const facets = _.map(state.facets, (facet) => {
-			if (facet.id === 'color') {
-				facet.data = setSelected(facet, action.payload.color);
+		const facet = _.map(state.facet, (facetData) => {
+			if (facetData.id === 'color') {
+				facetData.data = setSelected(facetData, action.payload.color);
 			}
-			return facet;
+			return facetData;
 		});
 		return {
 			...state,
-			facets
+			facet
 		};
 	},
 	[actions.updateFilterBrand]: (state, action) => {
 		const facetName = 'brand';
-		const facets = _.map(state.facets, (facet) => {
-			if (facet.id === facetName) {
-				facet.data = setSelected(facet, action.payload[facetName]);
+		const facet = _.map(state.facet, (facetData) => {
+			if (facetData.id === facetName) {
+				facetData.data = setSelected(facetData, action.payload[facetName]);
 			}
-			return facet;
+			return facetData;
 		});
 		return {
 			...state,
-			facets
+			facet
 		};
 	},
 	[actions.updateFilterSize]: (state, action) => {
 		const facetName = 'brand';
-		const facets = _.map(state.facets, (facet) => {
-			if (facet.id === facetName) {
-				facet.data = setSelected(facet, action.payload[facetName]);
+		const facet = _.map(state.facet, (facetData) => {
+			if (facetData.id === facetName) {
+				facetData.data = setSelected(facetData, action.payload[facetName]);
 			}
-			return facet;
+			return facetData;
 		});
 		return {
 			...state,
-			facets
+			facet
 		};
 	},
 	[actions.updateFilterPrice]: (state, action) => {
 		const facetName = 'price';
-		const facets = _.map(state.facets, (facet) => {
-			if (facet.id === facetName) {
-				facet.data = setSelected(facet, action.payload[facetName]);
+		const facet = _.map(state.facet, (facetData) => {
+			if (facetData.id === facetName) {
+				facetData.data = setSelected(facetData, action.payload[facetName]);
 			}
-			return facet;
+			return facetData;
 		});
 		return {
 			...state,
-			facets
+			facet
 		};
 	},
 	[actions.updateFilterLocation]: (state, action) => {
 		const facetName = 'location';
-		const facets = _.map(state.facets, (facet) => {
-			if (facet.id === facetName) {
-				facet.data = setSelected(facet, action.payload[facetName]);
+		const facet = _.map(state.facet, (facetData) => {
+			if (facetData.id === facetName) {
+				facetData.data = setSelected(facetData, action.payload[facetName]);
 			}
-			return facet;
+			return facetData;
 		});
 		return {
 			...state,
-			facets
+			facet
 		};
 	},
 	[actions.updateFilterShipping]: (state, action) => {
 		const facetName = 'shipping_methods';
-		const facets = _.map(state.facets, (facet) => {
-			if (facet.id === facetName) {
-				facet.data = setSelected(facet, action.payload[facetName]);
+		const facet = _.map(state.facet, (facetData) => {
+			if (facetData.id === facetName) {
+				facetData.data = setSelected(facetData, action.payload[facetName]);
 			}
-			return facet;
+			return facetData;
 		});
 		return {
 			...state,
-			facets
+			facet
 		};
 	},
 	[actions.updateSort]: (state, action) => {
@@ -201,7 +201,7 @@ const reducer = handleActions({
 	}),
 	[actions.updateFilterReset]: (state, action) => ({
 		...state,
-		facets: state.filters
+		facet: state.filters
 	})
 }, initialState);
 

@@ -4,8 +4,19 @@ import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import { to } from 'await-to-js';
-
-import { Header, Page, Card, Svg, Tabs, Button, Level, Image, Input, Navigation, Spinner } from '@/components/mobile';
+import { 
+	Header, 
+	Page, 
+	Card, 
+	Svg, 
+	Tabs, 
+	Button, 
+	Level, 
+	Image, 
+	Input, 
+	Navigation,
+	Spinner
+} from '@/components/mobile';
 import stylesCatalog from '../Catalog/catalog.scss';
 import Shared from '@/containers/Mobile/Shared';
 import { actions } from '@/state/v4/ProductCategory';
@@ -105,20 +116,22 @@ class Product extends Component {
 
 	pcpRender() {
 		let pcpView = null;
-		const { shared, filters } = this.props;
+		const { shared } = this.props;
+		
 		const foreverBannerData = shared.foreverBanner;
 		foreverBannerData.show = this.state.notification.show;
 		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
 
 		const { filterShown, sortShown } = this.state;
 		const pcpResults = this.props.productCategory;
+		
 		if (typeof pcpResults.pcpStatus !== 'undefined' && pcpResults.pcpStatus !== '') {
 			if (pcpResults.pcpStatus === 'success' && pcpResults.pcpData.products.length > 0) {
 				if (filterShown) {
 					pcpView = (
 						<Filter
 							shown={filterShown}
-							filters={pcpResults}
+							filters={pcpResults.pcpData}
 							onUpdateFilter={(e, type, value) => this.onUpdateFilter(e, type, value)}
 							onApply={(e) => {
 								console.log(e);
@@ -134,12 +147,12 @@ class Product extends Component {
 							<Page>
 								<div className={stylesCatalog.cardContainer}>
 									{
-										pcpResults.pcpData.products.map((product, index) =>
-											this.renderList(product, index)
-										)
+										// pcpResults.pcpData.products.map((product, index) =>
+										// 	this.renderList(product, index)
+										// )
 									}
 								</div>
-								<Sort shown={sortShown} sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
+								<Sort shown={sortShown} sorts={pcpResults.pcpData} onSelected={(e, value) => this.sort(e, value)} />
 							</Page>
 							{this.renderHeader()}
 							{this.renderTabs()}

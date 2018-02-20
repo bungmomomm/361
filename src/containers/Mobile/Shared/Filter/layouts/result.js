@@ -35,13 +35,11 @@ class Result extends PureComponent {
 			right: null
 		};
 
-		const facets = filters.facets;
-		
 		return (
 			<div style={this.props.style}>
 				<Page>
 					{
-						facets.map((facet, idx) => (
+						filters.facets.map((facet, idx) => (
 							<List key={idx}>
 								<Button align='left' onClick={(e) => onListClick(e, facet.id)}>
 									<List.Content style={{ minHeight: '50px' }}>

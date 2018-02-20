@@ -9,6 +9,10 @@ import { request, getCancelToken } from './request';
 import { setUserCookie } from './cookie';
 import SocialLogin from './social-login';
 
+const isHexColor = (color) => {
+	return /(^#[0-9A-F]{3}|^#[0-9A-F]{6})$/i.test(color);
+};
+
 const getBaseUrl = () => {
 	return process.env.BASE_URL;
 };
@@ -46,5 +50,6 @@ export default {
 	modalController,
 	componentState,
 	SocialLogin,
-	hyperlink
+	hyperlink,
+	isHexColor
 };

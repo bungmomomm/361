@@ -58,7 +58,7 @@ const getFq = (filters) => {
 	const fqAll = [];
 	const fq = {};
 	let categories = [];
-	_.forEach(filters.facets, (facet) => {
+	_.forEach(filters.facet, (facet) => {
 		fq[facet.id] = [];
 		switch (facet.id) {
 		case 'category':
@@ -107,7 +107,7 @@ const getFquery = (filters) => {
 	let categories = [];
 	
 	_.forEach(fqMap, (facetName, key) => {
-		let facetCollection = _.filter(filters.facets, (facetGroup) => {
+		let facetCollection = _.filter(filters.facet, (facetGroup) => {
 			return facetGroup.id === key;
 		});
 		if (typeof facetCollection[0] !== 'undefined') {
@@ -212,7 +212,7 @@ const parseDataToFilter = (data) => {
 	if (typeof sortParams.category_id !== 'undefined') {
 		data.categoryID = sortParams.category_id;
 	}
-	data.facets = data.facets;
+	data.facet = data.facet;
 	data.sorts = data.sorts;
 	const selectedSort = _.filter(data.sorts, (sort) => (sort.is_selected === 1)).shift();
 	data.sort = typeof selectedSort.q !== 'undefined' ? selectedSort.q : 'energy DESC';
@@ -251,7 +251,7 @@ const applyFilter = (token, type, filters) => async (dispatch, getState) => {
 	if (response.data.code === 200) {
 		const responseData = _.chain(response);
 		const params = parseDataToFilter(responseData.get('data.data').value());
-		dispatch(actions.updateFilterSuccess(params.facets, params.facets, params.sorts, params.page, params.perPage));
+		dispatch(actions.updateFilterSuccess(params.facet, params.facet, params.sorts, params.page, params.perPage));
 		return Promise.resolve({
 			data: responseData.get('data.data').value()
 		});
@@ -340,7 +340,7 @@ const applySort = (token, type) => async (dispatch, getState) => {
 	if (response.data.code === 200) {
 		const responseData = _.chain(response);
 		const params = parseDataToFilter(responseData.get('data.data').value());
-		dispatch(actions.updateSortSuccess(params.facets, params.facets, params.sorts, params.page, params.perPage));
+		dispatch(actions.updateSortSuccess(params.facet, params.facet, params.sorts, params.page, params.perPage));
 		return Promise.resolve({
 			data: responseData.get('data.data').value()
 		});
@@ -353,13 +353,13 @@ const applySort = (token, type) => async (dispatch, getState) => {
 const initializeFilter = (filters) => dispatch => {
 	// links: response.data.data.links,
 	// info: response.data.data.info,
-	// facets: response.data.data.facets,
+	// facets: response.data.data.facet,
 	// sorts: response.data.data.sorts,
 	// products: response.data.data.products
 	// console.log(filters);
 	const params = parseDataToFilter(filters);
 	
-	dispatch(actions.updateFilterSuccess(params.facets, params.facets, params.sorts, params.page, params.perPage));
+	dispatch(actions.updateFilterSuccess(params.facet, params.facet, params.sorts, params.page, params.perPage));
 };
 
 export default {
