@@ -14,11 +14,13 @@ class Lovelist extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			listTypeGrid: true,
-			listEmpty: true,
-			loading: true,
-			loggedIn: true, // should be adjust when user-login has done... 
-			lovedProducts: [],
+			status: {
+				listTypeGrid: true,
+				listEmpty: true,
+				loading: true,
+				loggedIn: true, // should be adjust when user-login has done...,
+				isBulkSet: false
+			},
 			notification: {
 				show: true
 			}
@@ -29,46 +31,68 @@ class Lovelist extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		const { count, items } = nextProps.lovelist;
-		const { listEmpty } = this.state;
+		const { loading, count, items, bulkieCountProducts } = nextProps.lovelist;
+		const { status } = this.state;
+		const { cookies, dispatch } = this.props;
+
 		// checking resources availability
-		if (!_.isEmpty(items) && _.isInteger(count) && (count > 0) && listEmpty) {
-			const lovedItems = items.map((item, idx) => {
-				return {
-					brand: item.brand.brand_name,
-					images: item.images,
-					pricing: item.pricing,
-					product_title: item.product_title,
-					totalLovelist: 0,
-					totalComments: 0
-				};
+		if (!_.isEmpty(items.list) && count > 0 && status.listEmpty) {
+			// gets number of total lovelist of each product item
+			dispatch(LoveListActionCreator.bulkieCountByProduct(cookies.get('user.token'), items.ids));
+			// updates listEmpty state
+			status.listEmpty = false;
+		}
+
+		if (!_.isEmpty(bulkieCountProducts) && !status.isBulkSet) {
+			status.isBulkSet = true;
+			// updates total lovelist each product item
+			items.list = items.list.map((item, idx) => {
+				const productFound = dispatch(LoveListActionCreator.getProductBulk(item.original.product_id));
+				if (productFound) item.totalLovelist = productFound.total;
+				return item;
 			});
 
-			this.setState({
-				listEmpty: false,
-				lovedProducts: lovedItems,
-				loading: false,
-				lovedComponent: lovedItems
-			});
+			dispatch(new LoveListActionCreator.getList(items, false));
 		}
+
+		status.loading = loading;
+		this.setState({ status });
 	}
 
 	getLovelistCardsContent() {
-		const { listTypeGrid, lovedProducts } = this.state;
+		const { items } = this.props.lovelist;
 		const isLoved = true;
-		const content = lovedProducts.map((product, idx) => {
-			return !listTypeGrid ? <Card.Lovelist isLoved={isLoved} key={idx} data={product} /> : <Card.LovelistGrid key={idx} data={product} />;
+		const content = items.list.map((product, idx) => {
+			return !this.state.status.listTypeGrid ? 
+				(<Card.Lovelist 
+					isLoved={isLoved} 
+					key={idx} 
+					data={product}
+					onBtnLovelistClick={(e) => (console.log(this))} 
+				/>) : 
+				(<Card.LovelistGrid 
+					key={idx} 
+					data={product} 
+					isLoved={isLoved}
+					onBtnLovelistClick={(e) => (console.log(this))} 
+				/>);
 		});
 
 		return <div className={styles.cardContainer}>{content}</div>;
 	}
 
 	renderLovelistPage(content) {
-		const { listTypeGrid } = this.state;
+		const { status } = this.state;
 		const HeaderPage = {
 			left: (
-				<Button className={this.state.loggedIn && !this.state.listEmpty ? null : 'd-none'} onClick={() => this.setState({ listTypeGrid: !listTypeGrid })}>
-					<Svg src={listTypeGrid ? 'ico_grid.svg' : 'ico_list.svg'} />
+				<Button 
+					className={status.loggedIn && !status.listEmpty ? null : 'd-none'} 
+					onClick={() => {
+						status.listTypeGrid = (!status.listTypeGrid);
+						this.setState({ status });
+					}}
+				>
+					<Svg src={status.listTypeGrid ? 'ico_grid.svg' : 'ico_list.svg'} />
 				</Button>
 			),
 			center: 'Lovelist',
@@ -78,16 +102,16 @@ class Lovelist extends Component {
 				</Link>
 			)
 		};
+
 		const { shared } = this.props;
 		const foreverBannerData = shared.foreverBanner;
 		foreverBannerData.show = this.state.notification.show;
 		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+
 		return (
 			<div style={this.props.style}>
 				<Page>
-					{
-						<ForeverBanner {...foreverBannerData} />
-					}
+					{ <ForeverBanner {...foreverBannerData} /> }
 					{content}
 				</Page>
 				<Header.Modal {...HeaderPage} />
@@ -96,8 +120,8 @@ class Lovelist extends Component {
 	}
 
 	render() {
-		const { loading, loggedIn, listEmpty } = this.state;
-		if (!loggedIn) {
+		const { status } = this.state;
+		if (!status.loggedIn) {
 			return (this.renderLovelistPage(
 				<div style={{ marginTop: '30%', padding: '20px' }} className='text-center --disable-flex'>
 					<Svg src='ico_ghost.svg' />
@@ -114,11 +138,11 @@ class Lovelist extends Component {
 			));
 		}
 
-		if (loading) {
-			return this.renderLovelistPage(null);
+		if (status.loading) {
+			return this.renderLovelistPage(<h3>Please wait loading content...</h3>);
 		}
 
-		if (listEmpty) {
+		if (status.listEmpty) {
 			return (this.renderLovelistPage(
 				<div className='text-center --disable-flex'>
 					<p className='margin--medium'>Lovelist kamu masih kosong</p>

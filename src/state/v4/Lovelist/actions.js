@@ -19,27 +19,46 @@ const setLoadingState = (loading) => (dispatch) => {
  * fetchs lovelist list into redux lovelist items format
  * @param {*} response 
  */
-const fetchItems = (data) => {
-	return data.products.map((item, idx) => {
-		const images = item.images.map((img) => {
-			return { mobile: img.thumbnail, thumbnail: img.thumbnail };
-		});
-		item.images = images;
-		return item;
-	});
+const formatItems = (data) => {
+	const items = {
+		ids: [],
+		list: []
+	};
+	
+	if (!_.isUndefined(data.products) && !_.isEmpty(data.products)) {
+		items.list = data.products.map((item, idx) => {
+			const images = item.images.map((img) => {
+				return { mobile: img.thumbnail, thumbnail: img.thumbnail };
+			});
+
+			items.ids.push(item.product_id);
+
+			return {
+				brand: item.brand.brand_name,
+				images,
+				pricing: item.pricing,
+				product_title: item.product_title,
+				totalLovelist: 0,
+				totalComments: 0,
+				original: item
+			};
+		});	
+	}
+
+	return items;
 };
 
 /**
  * save user's lovelist list
- * @param {*} itemsLovelist 
+ * @param {*} items 
  */
-const getList = (itemsLovelist) => (dispatch) => {
+const getList = (items, formatted = true) => (dispatch) => {
 	// fetching response into lovelist redux items format
-	const items = fetchItems(itemsLovelist);
+	if (formatted) items = formatItems(items);
 
 	// dispatching total lovelist of logged user
 	dispatch(loveListItems({ items }));
-	dispatch(countLovelist({ count: items.length }));
+	dispatch(countLovelist({ count: items.list.length }));
 };
 
 const addToLovelist = (token, userId, variantId, url) => async (dispatch, getState) => {
@@ -138,7 +157,8 @@ const getLovelisItems = (token) => async (dispatch, getState) => {
  */
 const bulkieCountByProduct = (token, productId) => async (dispatch, getState) => {
 
-	if (_.toInteger(productId) > 0) {
+	// bulkie count accept single productId or arrays of productId
+	if ((_.isArray(productId) && productId.length > 0) || (_.toInteger(productId) > 0)) {
 		const { shared } = getState();
 		const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
 
@@ -151,7 +171,7 @@ const bulkieCountByProduct = (token, productId) => async (dispatch, getState) =>
 			method: 'POST',
 			fullpath: true,
 			body: {
-				product_id: [productId]
+				product_id: _.isArray(productId) ? productId : [productId]
 			}
 		}));
 
@@ -172,6 +192,14 @@ const getProductFromBulk = (productId, bulkieCountProducts) => {
 	return product || {};
 };
 
+const getProductBulk = (productId) => (dispatch, getState) => {
+	const { lovelist } = getState();
+	const { bulkieCountProducts } = lovelist;
+	const product = bulkieCountProducts.find((item) => (item.product_id === productId));
+
+	return !_.isUndefined(product) ? product : false;
+};
+
 export default {
 	getList,
 	addToLovelist,
@@ -179,5 +207,6 @@ export default {
 	bulkieCountByProduct,
 	getLovelisItems,
 	setLoadingState,
-	getProductFromBulk
+	getProductFromBulk,
+	getProductBulk
 };

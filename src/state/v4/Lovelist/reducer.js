@@ -2,7 +2,10 @@ import { handleActions, createActions } from 'redux-actions';
 
 const defaultLovelist = {
 	count: 0,
-	items: {},
+	items: {
+		list: [],
+		ids: []
+	},
 	user: {
 		loggedIn: false,
 		added: [],
