@@ -175,7 +175,7 @@ class Detail extends Component {
 				<div className='text-uppercase font--lato-bold font-medium'>
 					{this.props.brands.brand_info.title}
 				</div>
-				<div>{this.props.brands.brand_info.product_count}</div>
+				<div>{this.props.brands.brand_info.product_count} produk</div>
 			</div>
 		) : '';
 
