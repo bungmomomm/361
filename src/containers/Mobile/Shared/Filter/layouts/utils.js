@@ -23,6 +23,7 @@ const getFq = (filters) => {
 	let categories = [];
 	forEach(filters.facets, (facet) => {
 		fq[facet.id] = [];
+		categories = [];
 		switch (facet.id) {
 		case 'category':
 		case 'custom_category_ids':
