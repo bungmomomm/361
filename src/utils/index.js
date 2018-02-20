@@ -1,5 +1,6 @@
 import currency from './currency';
 import newId from './newId';
+import hyperlink from './hyperlink';
 import renderIf from './renderIf';
 import modalController from './modalController';
 import isMobile from './isMobile';
@@ -44,5 +45,6 @@ export default {
 	isMobile,
 	modalController,
 	componentState,
-	SocialLogin
+	SocialLogin,
+	hyperlink
 };

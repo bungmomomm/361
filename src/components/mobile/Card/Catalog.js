@@ -18,7 +18,7 @@ class Catalog extends PureComponent {
 			productTitle,
 			brandName,
 			pricing,
-			url,
+			linkToPdp,
 			...props
 		} = this.props;
 
@@ -29,7 +29,7 @@ class Catalog extends PureComponent {
 
 		return (
 			<div className={createClassName} {...props}>
-				<Link to={(url) || '/'}>
+				<Link to={linkToPdp}>
 					<Carousel>
 						{
 							images.map((image, index) => (
@@ -38,7 +38,6 @@ class Catalog extends PureComponent {
 						}
 					</Carousel>
 				</Link>
-
 				<Level
 					className={styles.action}
 					style={{ borderBottom: '1px solid #D8D8D8' }}
@@ -58,7 +57,7 @@ class Catalog extends PureComponent {
 						</Link>
 					</Level.Item>
 				</Level>
-				<Link to={(url) || '/'}>
+				<Link to={(linkToPdp) || '/'}>
 					<div className={styles.title}>
 						{brandName} - <span>{productTitle}</span>
 					</div>
