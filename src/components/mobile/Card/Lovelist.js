@@ -7,6 +7,8 @@ import Button from '../Button';
 import Level from '../Level';
 import Badge from '../Badge';
 import styles from './card.scss';
+import { Link } from 'react-router-dom';
+import { hyperlink } from '@/utils';
 import _ from 'lodash';
 
 class Lovelist extends PureComponent {
@@ -38,23 +40,26 @@ class Lovelist extends PureComponent {
 	render() {
 		const { className, type, data, isLoved } = this.props;
 		const createClassName = classNames(styles.container, styles[type], className);
+		const linkToPdpCreator = hyperlink('', ['product', data.product_id], null);
 		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
 		const slideIndex = this.getSlideIndex();
 
 		return (
 			<div className={createClassName}>
-				<Carousel 
-					slideIndex={slideIndex}
-					afterSlide={this.setCarouselSlideIndex}
-				>
-					{
-						data.images.map((image, idx) => (
-							<div tabIndex='0' role='button' onClick={this.props.onImageItemClick} key={idx} data-img={image.mobile}>
-								<Image src={image.mobile} alt={data.product_title} />
-							</div>
-						))
-					}
-				</Carousel>
+				<Link to={linkToPdpCreator}>
+					<Carousel
+						slideIndex={slideIndex}
+						afterSlide={this.setCarouselSlideIndex}
+					>
+						{
+							data.images.map((image, idx) => (
+								<div tabIndex='0' role='button' onClick={this.props.onImageItemClick} key={idx} data-img={image.mobile}>
+									<Image src={image.mobile} alt={data.product_title} />
+								</div>
+							))
+						}
+					</Carousel>
+				</Link>
 				<Level
 					className={styles.action}
 					style={{ borderBottom: '1px solid #D8D8D8' }}
@@ -62,13 +67,13 @@ class Lovelist extends PureComponent {
 					<Level.Item>
 						<Button onClick={this.props.onBtnLovelistClick}>
 							<Svg src={loveIcon} />
-							<span>{data.lovelistTotal}</span>
+							<span>{data.totalLovelist}</span>
 						</Button>
 					</Level.Item>
 					<Level.Item>
 						<Button onClick={this.props.onBtnCommentClick}>
 							<Svg src='ico_comment.svg' />
-							<span>38</span>
+							<span>{data.totalComments}</span>
 						</Button>
 					</Level.Item>
 				</Level>

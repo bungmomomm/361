@@ -84,9 +84,9 @@ class Hashtags extends Component {
 
 		const HeaderPage = {
 			left: (
-				<button onClick={history.goBack}>
+				<Link to='/'>
 					<Svg src={'ico_arrow-back-left.svg'} />
-				</button>
+				</Link>
 			),
 			center: hashtag.header.title,
 			right: (

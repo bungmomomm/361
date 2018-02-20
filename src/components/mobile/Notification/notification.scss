@@ -74,6 +74,15 @@
   display: none;
 }
 
+.alert{
+  position: fixed;
+  bottom: 0px;
+  width: 100%;
+  z-index: 11;
+  background-color: #4A4A4A;
+  
+}
+
 .showToast {
   :global {
 	animation: fadeIn 0.5s linear;
@@ -87,3 +96,4 @@
 	animation-fill-mode: forwards;
   }
 }
+

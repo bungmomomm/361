@@ -1,5 +1,5 @@
 import { request } from '@/utils';
-import { getCategoryMenu, getCategoryBrand, categoryLoading, brandsLoading } from './reducer';
+import { getCategoryMenu, getCategoryBrand, categoryLoading, brandsLoading, setSubCategory } from './reducer';
 import _ from 'lodash';
 import to from 'await-to-js';
 import { Promise } from 'es6-promise';
@@ -63,7 +63,12 @@ const getBrandsByCategoryIdAction = (token, categoryId) => async (dispatch, getS
 	return Promise.resolve(response);
 };
 
+const setSubCateogryAction = (categoryId) => async (dispatch) => {
+	return dispatch(setSubCategory({ sub_category: categoryId }));
+};
+
 export default {
 	getCategoryMenuAction,
-	getBrandsByCategoryIdAction
+	getBrandsByCategoryIdAction,
+	setSubCateogryAction
 };

@@ -12,10 +12,6 @@ class Input extends PureComponent {
 		};
 	}
 
-	handleChange(event) {
-		this.props.onChange(event.target.value, event);
-	}
-
 	showLabel() {
 		this.setState({ showLabel: true });
 	}
@@ -50,7 +46,6 @@ class Input extends PureComponent {
 			error,
 			iconRight,
 			partitioned,
-			onChange,
 			...props,
 		} = this.props;
 
@@ -94,10 +89,10 @@ class Input extends PureComponent {
 		};
 
 		const valueData = () => {
-			if (value) {
+			if (value || value === '') {
 				return { value };
 			}
-			return { value: '' };
+			return null;
 		};
 
 
@@ -108,7 +103,6 @@ class Input extends PureComponent {
 					{renderIconLeft()}
 					{renderIconRight()}
 					<TagName
-						onChange={(e) => { console.log('value', e.target.value); onChange(e); }}
 						{...props}
 						className={CreateinputClassName}
 						ref={this.setInput}
