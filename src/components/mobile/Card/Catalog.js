@@ -24,6 +24,9 @@ class Catalog extends PureComponent {
 
 		const createClassName = classNames(styles.container, styles[type], className);
 
+		const comment = ('commentTotal' in this.props) ? (<span>{this.props.commentTotal} Comments</span>)
+			: (<span>Comment</span>);
+
 		return (
 			<div className={createClassName} {...props}>
 				<Link to={(url) || '/'}>
@@ -47,10 +50,12 @@ class Catalog extends PureComponent {
 						</Button>
 					</Level.Item>
 					<Level.Item>
-						<Button>
-							<Svg src='ico_comment.svg' />
-							<span>Comment</span>
-						</Button>
+						<Link to={('commentUrl' in this.props) ? this.props.commentUrl : '/'}>
+							<Button>
+								<Svg src='ico_comment.svg' />
+								{comment}
+							</Button>
+						</Link>
 					</Level.Item>
 				</Level>
 				<Link to={(url) || '/'}>

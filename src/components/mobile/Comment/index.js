@@ -6,9 +6,9 @@ import styles from './comment.scss';
 
 class Comment extends PureComponent {
 	render() {
-		const { className, data, ...props } = this.props;
+		const { className, data, pcpComment, ...props } = this.props;
 		const createClassName = classNames(styles.container, className);
-		
+
 		if (this.props.type === 'review') {
 			return (
 				<div className={createClassName} {...props}>
@@ -30,6 +30,32 @@ class Comment extends PureComponent {
 				</div>
 			);
 		};
+
+		if (pcpComment) {
+			return (
+				<div>
+					{
+						data.map(({ comment, customer }, i) => (
+							<div key={i} className={createClassName}>
+								<Level style={{ paddingBottom: '5px' }} className='flex-center'>
+									<Level.Item>
+										<div className='padding--medium' style={{ marginLeft: '-15px' }}>
+											<b>{customer.customer_name}</b>
+										</div>
+									</Level.Item>
+								</Level>
+								{/* <div className='padding--normal'>
+									<b>{customer.customer_name}</b>
+								</div> */}
+								<div className='padding--normal'>
+									<div>{comment.comment}</div>
+								</div>
+							</div>
+						))
+					}
+				</div>
+			);
+		}
 
 		return (
 			<div>
