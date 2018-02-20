@@ -8,12 +8,13 @@ import {
 	Svg,
 	Header,
 	Button,
-	Image,
 	Tabs,
 	Level,
-	Input
+	Input,
+	Comment
 } from '@/components/mobile';
 import styles from './brands.scss';
+import { Link } from 'react-router-dom';
 
 import CONST from '@/constants';
 import { actions as brandAction } from '@/state/v4/Brand';
@@ -46,10 +47,27 @@ class Detail extends Component {
 	}
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
-		const { dispatch } = this.props;
-		dispatch(brandAction.brandProductAction(this.userToken, 'brandId-123'));
-		dispatch(brandAction.brandBannerAction(this.userToken, 'brandId-123'));
+		if ('serviceUrl' in this.props.shared) {
+			const { dispatch } = this.props;
+			dispatch(brandAction.brandProductAction(this.userToken, 'brandId-123'));
+			dispatch(brandAction.brandBannerAction(this.userToken, 'brandId-123'));
+		}
 	}
+
+	componentWillReceiveProps(nextProps) {
+		if (!('serviceUrl' in this.props.shared) && 'serviceUrl' in nextProps.shared) {
+			const { dispatch } = this.props;
+			dispatch(brandAction.brandProductAction(this.userToken, nextProps.match.params.brandId));
+			dispatch(brandAction.brandBannerAction(this.userToken, nextProps.match.params.brandId));
+		}
+
+		if (this.props.brands.products !== nextProps.brands.products) {
+			const { dispatch } = this.props;
+			const productId = nextProps.brands.products.map(e => (e.product_id));
+			dispatch(brandAction.brandProductsCommentsAction(this.userCookies, productId));
+		}
+	}
+
 	componentWillUnmount() {
 		window.removeEventListener('scroll', this.handleScroll, true);
 	}
@@ -76,20 +94,32 @@ class Detail extends Component {
 		}
 	}
 
-	renderList(product, index) {
-		if (product) {
-			const urlPcp = `/product/${product.product_id}`;
-			const renderBlockComment = (
+	renderComment(productId) {
+		if (this.props.brands.products_comments) {
+			const commentData = this.props.brands.products_comments.filter(e => e.product_id === productId)[0];
+			return (
 				<div className={stylesCatalog.commentBlock}>
-					<Button>View 38 comments</Button>
+					<Link to={`/product/comments/${commentData.product_id}`}>
+						<Button>View {commentData.total} comments</Button>
+					</Link>
+					<Comment data={commentData.last_comment} pcpComment />
 					<Level>
-						<Level.Left><div style={{ marginRight: '10px' }}><Image avatar width={25} height={25} local src='temp/pp.jpg' /></div></Level.Left>
 						<Level.Item>
 							<Input color='white' placeholder='Write comment' />
 						</Level.Item>
 					</Level>
 				</div>
 			);
+		}
+		return false;
+
+	}
+
+	renderList(product, index) {
+		if (product) {
+			const urlPcp = `/product/${product.product_id}`;
+			const comment = (this.props.brands.products_comments) ?
+				this.props.brands.products_comments.filter(e => e.product_id === product.product_id)[0] : null;
 			switch (this.state.listTypeState.type) {
 			case 'list':
 				return (
@@ -100,8 +130,10 @@ class Detail extends Component {
 							brandName={product.brand}
 							pricing={product.pricing}
 							url={urlPcp}
+							commentTotal={comment.total}
+							commentUrl={`/product/comments/${product.product_id}`}
 						/>
-						{renderBlockComment}
+						{this.renderComment(product.product_id)}
 					</div>
 				);
 			case 'grid':
@@ -215,7 +247,8 @@ class Detail extends Component {
 const mapStateToProps = (state) => {
 	return {
 		category: state.category,
-		brands: state.brands
+		brands: state.brands,
+		shared: state.shared
 	};
 };
 

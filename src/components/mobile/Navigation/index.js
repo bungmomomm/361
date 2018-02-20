@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import classNames from 'classnames';
 import Item from './item';
 import styles from './navigation.scss';
-import CONST from '@/constants';
 
 class Navigation extends PureComponent {
 	render() {
@@ -24,10 +23,11 @@ class Navigation extends PureComponent {
 							active={active === 'Home'}
 						/>
 						<Item
-							to={`/category/${CONST.SEGMENT_DEFAULT_SELECTED.key}`}
+							to={'/category'}
 							icon='ico_categories.svg'
 							label='Categories'
 							active={active === 'Categories'}
+							badge={5}
 						/>
 						<Item
 							to='/cart'

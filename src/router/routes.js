@@ -138,16 +138,8 @@ export default {
 			component: SearchNotFound
 		},
 		{
-			path: '/category/:categoryLvl1/:categoryLvl2/:categoryLvl3',
+			path: '/sub-category/',
 			component: SubCategory,
-		},
-		{
-			path: '/category/:categoryLvl1/:categoryLvl2',
-			component: SubCategory,
-		},
-		{
-			path: '/category/:categoryLvl1',
-			component: Category,
 		},
 		{
 			path: '/category/',
@@ -231,10 +223,7 @@ export default {
 		},
 		{
 			path: '/profile-edit',
-			component: UserProfileEdit,
-		},
-		{
-			path: '/profile-edit-*',
+			exact: true,
 			component: UserProfileEdit,
 		},
 		{
@@ -253,19 +242,12 @@ export default {
 		},
 		{
 			path: '/lovelist',
-			component: Lovelist
+			component: Lovelist,
 		},
 		{
 			path: '/store/:store_id',
 			component: Seller
 		},
-		{
-			path: '/*', // Page not found handling.
-			component: Page404,
-			exact: true
-		}
-	],
-	child: [
 		{
 			path: '/profile-edit-ovo',
 			component: UserProfileEditOVO
@@ -281,7 +263,12 @@ export default {
 		{
 			path: '/profile-edit-password',
 			component: UserProfileEditPassword
-		}
+		},
+		{
+			path: '/*', // Page not found handling.
+			component: Page404,
+			exact: true
+		},
 	]
 };
 
