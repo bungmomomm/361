@@ -94,7 +94,7 @@ class Seller extends Component {
 
 		// const { dispatch, cookies, filters } = this.props;
 		// dispatch(filterActions.updateSort(value));
-        //
+		//
 		// const [err, response] = await to(dispatch(new filterActions.applyFilter(cookies.get('user.token'), 'category', filters)));
 		// if (err) {
 		// 	return err;
@@ -232,15 +232,15 @@ class Seller extends Component {
 
 	renderData = () => {
 		const { filterShown, sortShown } = this.state;
-		const { filters, seller } = this.props;
+		const { filters, seller, history } = this.props;
 		const title = seller.info.seller;
 		const url = `${process.env.MOBILE_URL}/store/${seller.info.seller_id}`;
 
 		const HeaderPage = {
 			left: (
-				<Link to='/'>
+				<Button onClick={history.goBack()}>
 					<Svg src={'ico_arrow-back-left.svg'} />
-				</Link>
+				</Button>
 			),
 			center: null,
 			right: <Share title={title} url={url} />
