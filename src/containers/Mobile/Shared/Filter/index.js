@@ -53,7 +53,7 @@ class Filter extends PureComponent {
 		this.setState({
 			layout: 'result'
 		});
-		this.props.onClose(e);
+		this.props.onApply(e);
 	}
 
 	getFacet(key) {

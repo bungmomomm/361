@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import _ from 'lodash';
 import {
 	Header, 
-	Divider, 
+	// Divider, 
 	Page, 
 	Svg, 
 	List, 
@@ -10,171 +10,7 @@ import {
 } from '@/components/mobile';
 import styles from './tree.scss';
 import Action from './action';
-import renderIf from '@/utils/renderIf';
-
-// DUMMY DATA
-/*
-const DUMMY_CATEGORY_WANITA = {
-	meta: {
-		total: 45
-	},
-	childs: [
-		{
-			name: 'Clothing',
-			id: 'Wanitaclothing',
-			childs: [
-				{
-					name: 'Atasan',
-					id: 'Wanitaatasan',
-					childs: [
-						{
-							name: 'Kaos & Polo Shirt',
-							id: 'WanitaKaosPoloShirt'
-						},
-						{
-							name: 'Blouse',
-							id: 'Wanitablouse'
-						}
-					]
-				},
-				{
-					name: 'Bawahan',
-					id: 'Wanitabawahan',
-					childs: [
-						{
-							name: 'Kaos & Polo Shirt',
-							id: 'WanitaKaosPoloShirt'
-						},
-						{
-							name: 'Blouse',
-							id: 'Wanitablouse'
-						}
-					]
-				},
-				{
-					name: 'Pakaian Dalam',
-					id: 'WanitabawahanDalam',
-					childs: [
-						{
-							name: 'Kaos & Polo Shirt',
-							id: 'WanitaKaosPoloShirt'
-						},
-						{
-							name: 'Blouse',
-							id: 'Wanitablouse'
-						}
-					]
-				}
-			]
-		},
-		{
-			name: 'Shoes',
-			id: 'Wanitashoes',
-			childs: [
-				{
-					name: 'Semua Sepatu',
-					id: 'WanitasemuaSepatu'
-				},
-				{
-					name: 'Sneakers',
-					id: 'Wanitasneakers'
-				}
-			]
-		},
-		{
-			name: 'Tas',
-			id: 'Wanitatas',
-			childs: [
-				{
-					name: 'Semua tas',
-					id: 'WanitasemuaTas'
-				}
-			]
-		}
-	]
-};
-
-const DUMMY_CATEGORY_PRIA = {
-	meta: {
-		total: 102
-	},
-	childs: [
-		{
-			name: 'Clothing',
-			id: 'priaclothing',
-			childs: [
-				{
-					name: 'Atasan',
-					id: 'priaatasan',
-					childs: [
-						{
-							name: 'Kaos & Polo Shirt',
-							id: 'priaKaosPoloShirt'
-						},
-						{
-							name: 'Blouse',
-							id: 'priablouse'
-						}
-					]
-				},
-				{
-					name: 'Bawahan',
-					id: 'priabawahan',
-					childs: [
-						{
-							name: 'Kaos & Polo Shirt',
-							id: 'priaKaosPoloShirt'
-						},
-						{
-							name: 'Blouse',
-							id: 'priablouse'
-						}
-					]
-				},
-				{
-					name: 'Pakaian Dalam',
-					id: 'priabawahan',
-					childs: [
-						{
-							name: 'Kaos & Polo Shirt',
-							id: 'priaKaosPoloShirt'
-						},
-						{
-							name: 'Blouse',
-							id: 'priablouse'
-						}
-					]
-				}
-			]
-		},
-		{
-			name: 'Shoes',
-			id: 'priashoes',
-			childs: [
-				{
-					name: 'Semua Sepatu',
-					id: 'priasemuaSepatu'
-				},
-				{
-					name: 'Sneakers',
-					id: 'priasneakers'
-				}
-			]
-		},
-		{
-			name: 'Tas',
-			id: 'priatas',
-			childs: [
-				{
-					name: 'Semua tas',
-					id: 'priasemuaTas'
-				}
-			]
-		}
-	]
-};
-*/
-// END DUMMY DATA
+// import renderIf from '@/utils/renderIf';
 
 const treeIcon = (active, HasTree) => {
 	if (HasTree) {
@@ -213,29 +49,38 @@ class TreeSegment extends PureComponent {
 			return null;
 		}
 		return (
-			<div>
+			<div className={!firstLevel && styles.childs}>
 				{
 					category.childs.map((child, id) => {
 						const hasChild = typeof child.childs !== 'undefined' && child.childs.length > 0;
 						const Label = hasChild ? <strong>{child.facetdisplay}</strong> : child.facetdisplay;
 						const isChildSelected = _.find(child.childs, { is_selected: 1 });
-						return (
-							<div key={id}>
-								{renderIf(hasChild && firstLevel)(
-									<Divider type='segment'>
-										<Divider.Content>{child.facetdisplay} <span>({child.count} produk)</span></Divider.Content>
-									</Divider>
-								)}
-								<List className={hasChild && styles.parent}>
-									<Button onClick={(e) => this.handleTree(e, child, hasChild)}>
-										<List.Content>
-											{ Label }
-											{treeIcon(hasChild ? activeTree === child.facetrange : child.is_selected, hasChild)}
-										</List.Content>
-									</Button>
+						if (firstLevel) {
+							return (
+								<List key={id} className={activeTree === child.facetrange ? styles.segment : styles.closed}>
+									<List.Content className={activeTree === child.facetrange && styles.selected} onClick={(e) => this.handleTree(e, child, hasChild)}>
+										<div className={styles.label}>{Label} <span> ({child.count}) produk</span></div>
+										{treeIcon(hasChild ? activeTree === child.facetrange : child.is_selected, hasChild)}
+									</List.Content>
 									{(hasChild || isChildSelected) && this.renderChild(child)}
 								</List>
-							</div>
+								// <div key={id}>
+
+								// 	<Divider type={activeTree === child.facetrange ? 'segment' : 'closed'} onClick={(e) => this.handleTree(e, child, hasChild)}>
+								// 		<Divider.Content>{child.facetdisplay} <span>({child.count} produk)</span></Divider.Content>
+								// 	</Divider>
+								// 	{ (hasChild || isChildSelected) && this.renderChild(child) }
+								// </div>
+							);
+						}
+						return (
+							<List key={id} className={(hasChild && styles.parent)}>
+								<List.Content className={activeTree === child.facetrange && styles.selected} onClick={(e) => this.handleTree(e, child, hasChild)}>
+									{Label} ({child.count})
+									{treeIcon(hasChild ? activeTree === child.facetrange : child.is_selected, hasChild)}
+								</List.Content>
+								{(hasChild || isChildSelected) && this.renderChild(child)}
+							</List>
 						);
 					})
 				}

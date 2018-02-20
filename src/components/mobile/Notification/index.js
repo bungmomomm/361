@@ -14,6 +14,7 @@ class Notification extends PureComponent {
 			color,
 			toast,
 			disableClose,
+			alert,
 			...props,
 		} = this.props;
 
@@ -26,6 +27,11 @@ class Notification extends PureComponent {
 		);
 
 		const createClassNameToast = classNames(
+			styles.toastContainer,
+			show ? styles.showToast : styles.hideToast
+		);
+	
+		const createClassNameAlert = classNames(
 			styles.toastContainer,
 			show ? styles.showToast : styles.hideToast
 		);
@@ -44,6 +50,14 @@ class Notification extends PureComponent {
 				</div>
 			);
 		};
+
+		if (alert) {
+			return (
+				<div className={createClassNameAlert}>
+					{renderNotification()}
+				</div>
+			);
+		}
 
 		if (toast) {
 			return (

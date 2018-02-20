@@ -22,6 +22,7 @@ let Category = defRoute;
 let SubCategory = defRoute;
 let ProductCategory = defRoute;
 let Brands = defRoute;
+let BrandsDetail = defRoute;
 let CatalogCategory = defRoute;
 let Lovelist = defRoute;
 let Hashtags = defRoute;
@@ -44,6 +45,7 @@ let UserProfileEditOVO = defRoute;
 let UserProfileEditHP = defRoute;
 let UserProfileEditEmail = defRoute;
 let Seller = defRoute;
+let UserProfileEditPassword = defRoute;
 let Cart = defRoute;
 let CartEmpty = defRoute;
 
@@ -66,6 +68,7 @@ if (isMobile()) {
 	SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
 	ProductCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Product'));
 	Brands = loadable(() => import('@/containers/Mobile/Discovery/Brands'));
+	BrandsDetail = loadable(() => import('@/containers/Mobile/Discovery/Brands/detail'));
 	Seller = loadable(() => import('@/containers/Mobile/Discovery/Seller'));
 	CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
 
@@ -97,6 +100,7 @@ if (isMobile()) {
 	UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'));
 	UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'));
 	UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'));
+	UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'));
 } else {
 	/**
 	 * Require main desktop styles
@@ -167,6 +171,11 @@ export default {
 			exact: true
 		},
 		{
+			path: '/brand/:brandId/:brandTitle',
+			component: BrandsDetail,
+			exact: true
+		},
+		{
 			path: '/catalogcategory',
 			component: CatalogCategory
 		},
@@ -217,19 +226,7 @@ export default {
 			exact: true
 		},
 		{
-			path: '/new_arrival',
-			component: Promo
-		},
-		{
-			path: '/best_seller',
-			component: Promo
-		},
-		{
-			path: '/recommended_products',
-			component: Promo
-		},
-		{
-			path: '/recent_view',
+			path: '/promo/:type',
 			component: Promo
 		},
 		{
@@ -238,10 +235,7 @@ export default {
 		},
 		{
 			path: '/profile-edit',
-			component: UserProfileEdit,
-		},
-		{
-			path: '/profile-edit-*',
+			exact: true,
 			component: UserProfileEdit,
 		},
 		{
@@ -260,19 +254,12 @@ export default {
 		},
 		{
 			path: '/lovelist',
-			component: Lovelist
+			component: Lovelist,
 		},
 		{
 			path: '/store/:store_id',
 			component: Seller
 		},
-		{
-			path: '/*', // Page not found handling.
-			component: Page404,
-			exact: true
-		}
-	],
-	child: [
 		{
 			path: '/profile-edit-ovo',
 			component: UserProfileEditOVO
@@ -284,6 +271,16 @@ export default {
 		{
 			path: '/profile-edit-email',
 			component: UserProfileEditEmail
-		}
+		},
+		{
+			path: '/profile-edit-password',
+			component: UserProfileEditPassword
+		},
+		{
+			path: '/*', // Page not found handling.
+			component: Page404,
+			exact: true
+		},
 	]
 };
+

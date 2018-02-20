@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { users } from '@/state/v4/User';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import {
 	Header,
 	Page,
@@ -12,7 +12,7 @@ import {
 	Svg
 } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
-import { setUserCookie } from '@/utils';
+import { setUserCookie, renderIf } from '@/utils';
 import styles from '../user.scss';
 
 const DUMMY_TAB = [
@@ -65,7 +65,7 @@ class Register extends Component {
 
 	render() {
 		const { userProfile } = this.props.users;
-		const { visibalePasswod } = this.state;
+		const { visibalePasswod, current } = this.state;
 		const HeaderPage = {
 			left: (
 				<Link to='/'>
@@ -86,9 +86,14 @@ class Register extends Component {
 			);
 		});
 
+		const register = (current === 'login');
+
 		return (
 			<div className='full-height' style={this.props.style}>
 				<Page>
+					{renderIf(register)(
+						<Redirect to='/login' />
+					)}
 					<Tabs
 						current={this.state.current}
 						variants={DUMMY_TAB}

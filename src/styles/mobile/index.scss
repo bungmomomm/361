@@ -77,7 +77,7 @@
 
 	img {
 		display: block;
-		// width: 100%;
+		width: 100%;
 	}
 
 	#root,
@@ -97,6 +97,7 @@
 		margin: 0;
 		padding: 0;
 		position: relative;
+		
 	}
 	.--disable-flex {
 		display: block;
@@ -166,6 +167,12 @@
 		}
 		.text-center {
 			text-align: center;
+		}
+		.text-uppercase{
+			text-transform: uppercase;
+		}
+		.text-lowercase{
+			text-transform: lowercase;
 		}
 		.text-left {
 			text-align: left;
@@ -247,6 +254,9 @@
 
 		.flex-row {
 			flex-direction: row;
+		}
+		.flex-wrap {
+			flex-wrap: wrap;
 		}
 		.flex-center {
 			justify-content: center;

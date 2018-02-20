@@ -1,17 +1,30 @@
 import React from 'react';
 import { Notification } from '@/components/mobile';
-import { Link } from 'react-router-dom';
 const foreverBanner = (params) => {
 	const inlineStyle = {
-		color: params.textColor
+		color: params.text_color
 	};
+	
+	const disableCloseFilter = (params.close_button.fg_show === '0');
+	
+	let content = <div>Loading...</div>;
+	if (params.text.text1 && params.text.text2 !== '') {
+		content = (
+			<div className='margin--medium'>
+				<div className='font-large' style={inlineStyle}>{params.text.text1}</div>
+				<p style={inlineStyle}>{params.text.text2}</p>
+			</div>
+		);
+	}
 	return (
-		<Link to={(params.linkValue !== 'undefined') ? params.linkValue : ''}>
-			<Notification color={params.backgroundColor} show={params.show} onClose={params.onClose}>
-				<div style={inlineStyle}>{params.text1}</div>
-				<p style={inlineStyle}>{params.text2}</p>
-			</Notification>
-		</Link>
+		<Notification
+			color='yellow'
+			show={params.show}
+			onClose={params.onClose}
+			disableClose={disableCloseFilter}
+		>
+			{content}
+		</Notification>
 	);
 };
 

@@ -1,43 +1,15 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
-import { actions as productActions } from '@/state/v4/Product';
-import { actions as commentActions } from '@/state/v4/Comment';
+import _ from 'lodash';
 import { Link } from 'react-router-dom';
-import { Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid } from '@/components/mobile';
+
+import { actions as productActions } from '@/state/v4/Product';
+import { actions as lovelistActions } from '@/state/v4/Lovelist';
+import { actions as commentActions } from '@/state/v4/Comment';
+import { Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel } from '@/components/mobile';
+import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
-
-const DUMMY_PRODUCT = {
-	images: [
-		{ mobile: 'https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-01.jpg' },
-		{ mobile: 'https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-02.jpg' }
-	],
-	product_title: 'Immaculate Brands of the Year by Yannis Philippakis',
-	brand: 'Olivia Von Halle pink print',
-	pricing: {
-		formatted: {
-			effective_price: 'Rp.1000.000',
-			base_price: 'Rp.900.000'
-		},
-		discount: '20%'
-	}
-};
-
-const DUMMY_PRODUCT_GRID = {
-	images: [
-		{ mobile: 'https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-01.jpg' },
-		{ mobile: 'https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-02.jpg' }
-	],
-	productTitle: 'Immaculate Brands of the Year by Yannis Philippakis',
-	brandName: 'Olivia Von Halle pink print',
-	pricing: {
-		formatted: {
-			effective_price: 'Rp.1000.000',
-			base_price: 'Rp.900.000'
-		},
-		discount: '20%'
-	}
-};
 
 class Products extends Component {
 	constructor(props) {
@@ -46,36 +18,71 @@ class Products extends Component {
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.source = this.props.cookies.get('user.source');
+
 		this.handleScroll = this.handleScroll.bind(this);
+		this.handleLovelistClick = this.handleLovelistClick.bind(this);
+		this.handleImageItemClick = this.handleImageItemClick.bind(this);
+		this.setCarouselSlideIndex = this.setCarouselSlideIndex.bind(this);
+
+
 		this.state = {
 			size: 's',
-			showScrollInfomation: false,
+			status: {
+				showScrollInfomation: false,
+				loading: true,
+				isLoved: false,
+				isZoomed: false,
+				pdpDataHasLoaded: false,
+			},
+			pdpData: {
+				cardProduct: false,
+				similarItems: 'loading content',
+				reviewItems: 'loading content'
+			},
 			detail: {},
-			cardProduct: false,
-			loading: true,
+			carousel: {
+				slideIndex: 0
+			}
 		};
 	}
 
 	componentDidMount() {
-		const { dispatch, match } = this.props;
-		const productId = match.params.id;
-		const token = this.userCookies;
-		dispatch(new productActions.productDetailAction(token, productId));
-		dispatch(new productActions.productRecommendationAction(token));
-		dispatch(new productActions.productSimilarAction(token));
-		dispatch(new productActions.productSocialSummaryAction(token, productId));
-		dispatch(new commentActions.productCommentAction(token));
 		window.addEventListener('scroll', this.handleScroll, true);
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (this.state.detail !== nextProps.product.detail && Object.keys(nextProps.product.detail).length > 0) {
-			const { product } = nextProps;
-			const cardData = productActions.getProductCardData(product.detail);
+		const { product, lovelist } = nextProps;
+		const { detail, similar, socialSummary } = product;
+		const { status } = this.state;
+
+		if (!_.isEmpty(detail) && !_.isEmpty(similar) && !_.isEmpty(socialSummary.reviews) && 
+			!_.isEmpty(lovelist.bulkieCountProducts) && !status.pdpDataHasLoaded) {
+
+			const reviewItems = socialSummary.reviews.summary.map((item, idx) => {
+				return <Comment key={idx} type='review' data={item} />;
+			});
+
+			const similarItems = similar.map((item, idx) => {
+				const data = {
+					productTitle: item.product_title,
+					brandName: item.brand,
+					pricing: item.pricing,
+					images: item.images
+				};
+				return <Card.CatalogGrid {...data} key={idx} />;
+			});
+
+			const lovelistProduct = lovelistActions.getProductFromBulk(detail.id, lovelist.bulkieCountProducts);
+			detail.totalLovelist = lovelistProduct.total;
+			detail.totalComments = socialSummary.comments.total || 0;
+			status.pdpDataHasLoaded = true;
+			status.loading = false;
+			const cardProduct = productActions.getProductCardData(detail);
+
 			this.setState({
-				detail: product.detail,
-				cardProduct: cardData,
-				loading: false
+				detail,
+				status,
+				pdpData: { cardProduct, similarItems, reviewItems }
 			});
 		}
 	}
@@ -84,30 +91,90 @@ class Products extends Component {
 		window.removeEventListener('scroll', this.handleScroll, true);
 	}
 
-	handleScroll(e) {
-		const { showScrollInfomation } = this.state;
-		if (e.target.scrollTop > 400 && !showScrollInfomation) {
-			this.setState({ showScrollInfomation: true });
-		}
-		if (e.target.scrollTop < 400 && showScrollInfomation) {
-			this.setState({ showScrollInfomation: false });
-		}
+	setCarouselSlideIndex(index) {
+		this.setState({
+			carousel: {
+				slideIndex: index || 0
+			}
+		});
 	}
 
-	addComment() {
-		const { dispatch } = this.props;
-		dispatch(new commentActions.commentAddAction(this.userCookies));
+	handleScroll(e) {
+		const { status } = this.state;
+		if (e.target.scrollTop > 400 && !status.showScrollInfomation) {
+			status.showScrollInfomation = true;
+		}
+
+		if (e.target.scrollTop < 400 && status.showScrollInfomation) {
+			status.showScrollInfomation = false;
+		}
+
+		this.setState({ status });
+	}
+
+	handleLovelistClick(e) {
+		const { dispatch, match } = this.props;
+		const { pdpData } = this.state;
+		let { isLoved } = this.state.status;
+ 
+		if (!isLoved) {
+			isLoved = true;
+			pdpData.cardProduct.totalLovelist += 1;
+			dispatch(lovelistActions.addToLovelist(this.userCookies, 1, match.params.id));
+		} else {
+			isLoved = false;
+			pdpData.cardProduct.totalLovelist -= 1;
+			dispatch(lovelistActions.removeFromLovelist(this.userCookies, 1, match.params.id));
+		}
+
+		this.setState({ status: { isLoved }, pdpData });
+	}
+
+	handleImageItemClick() {
+		this.setState({ status: { isZoomed: true } });
+	}
+
+	renderZoomImage() {
+		const { carousel, pdpData } = this.state;
+		const header = {
+			left: (
+				<Button onClick={() => this.setState({ status: { isZoomed: false } })} >
+					<Svg src={'ico_close-large.svg'} />
+				</Button>
+			),
+			center: '',
+			right: ''
+		};
+
+		return (
+			<div>
+				<Carousel
+					slideIndex={carousel.slideIndex}
+					afterSlide={newSlideIndex => this.setCarouselSlideIndex(newSlideIndex)}
+				>
+					{
+						pdpData.cardProduct.images.map((image, idx) => (
+							<div tabIndex='0' role='button' onClick={this.props.onImageItemClick} key={idx} data-img={image.mobile}>
+								<Image src={image.mobile} alt='product' />
+							</div>
+						))
+					}
+				</Carousel>
+				<Header.Modal style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }} {...header} />
+			</div>
+		);
 	}
 
 	renderHeaderPage() {
-		if (this.state.showScrollInfomation) {
+		const { pdpData, status } = this.state;
+		if (status.showScrollInfomation) {
 			return {
 				left: (
 					<a href={history.go - 1}>
 						<Svg src={'ico_arrow-back-left.svg'} />
 					</a>
 				),
-				center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{DUMMY_PRODUCT.product_title}</div>,
+				center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{pdpData.cardProduct.product_title}</div>,
 				right: (
 					<a href={'/'} onClick={this.switchMode}>
 						<Svg src={'ico_share.svg'} />
@@ -131,18 +198,19 @@ class Products extends Component {
 	}
 
 	renderStickyAction() {
-		if (this.state.showScrollInfomation && !this.state.loading) {
+		const { pdpData, status, detail } = this.state;
+		if (status.showScrollInfomation && !status.loading) {
 			return (
 				<div className={styles.stickyAction}>
 					<Level style={{ padding: '10px' }} className='flex-center'>
 						<Level.Left>
 							<div className={styles.stickyActionImage}>
-								<img alt='product' src={this.state.detail.images[0].thumbnail} />
+								<img alt='product' src={detail.images[0].thumbnail} />
 							</div>
 						</Level.Left>
 						<Level.Item className='padding--medium'>
-							<div className='font-normal'>{this.state.cardProduct.pricing.formatted.effective_price}</div>
-							<div className='font-small font-color--primary-ext-2'>{this.state.cardProduct.pricing.formatted.base_price}</div>
+							<div className='font-normal'>{pdpData.cardProduct.pricing.formatted.effective_price}</div>
+							<div className='font-small font-color--primary-ext-2'>{pdpData.cardProduct.pricing.formatted.base_price}</div>
 						</Level.Item>
 						<Level.Right>
 							<Button color='secondary' size='medium'>BELI AJA</Button>
@@ -154,48 +222,31 @@ class Products extends Component {
 		return null;
 	}
 
-	renderSimilarItems() {
-		const { similar } = this.props.product;
-		if (this.state.loading || Object.keys(similar).length === 0) {
-			return null;
-		}
-
-		return similar.map((product, idx) => {
-			const data = {
-				productTitle: product.product_title,
-				brandName: product.brand,
-				pricing: product.pricing,
-				images: product.images.map((image) => ({ mobile: image.thumbnail }))
-			};
-
-			return <Card.CatalogGrid {...data} key={idx} />;
-		});
-	}
-
-	renderReviews() {
-		const { reviews } = this.props.product;
-
-		if (this.state.loading || Object.keys(reviews).length === 0) {
-			return null;
-		}
-
-		return reviews.summary.map((item, idx) => {
-			return <Comment key={idx} type='review' data={item} />;
-		});
-	}
-
 	render() {
-		const { showScrollInfomation, loading, detail } = this.state;
+		const { detail, pdpData, status, carousel } = this.state;
+		const { match, history } = this.props;
 
-		if (loading) {
+		if (status.loading) {
 			return <div>Please wait, loading content...</div>;
+		}
+
+		if (status.isZoomed) {
+			return this.renderZoomImage();
 		}
 
 		return (
 			<div>
 				<Page>
 					<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
-						<Card.Lovelist data={this.state.cardProduct} />
+						<Card.Lovelist 
+							setCarouselSlideIndex={this.setCarouselSlideIndex}
+							slideIndex={carousel.slideIndex}
+							onImageItemClick={this.handleImageItemClick}
+							data={pdpData.cardProduct}
+							isLoved={status.isLoved}
+							onBtnLovelistClick={this.handleLovelistClick} 
+							onBtnCommentClick={(e) => (history.push(`/product/comments/${match.params.id}`))}
+						/>
 						<Level style={{ borderBottom: '1px solid #D8D8D8', borderTop: '1px solid #D8D8D8' }}>
 							<Level.Left className='flex-center'>
 								<Svg src='ico_ovo.svg' />
@@ -227,27 +278,30 @@ class Products extends Component {
 							<p className='font-color--red font-small'>Stock Habis</p>
 							<p className='text-center margin--medium'>Panduan Ukuran</p>
 						</div>
-						<p className='margin--small padding--medium'>{this.state.detail.description}</p>
+						<p className='margin--small padding--medium'>{detail.description}</p>
 						<span className='margin--small padding--medium'>
 							<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
 						</span>
 						<div className='margin--medium --disable-flex padding--medium'>
-							<Button className='font--lato-normal font-color--primary-ext-2'>View 38 comments</Button>
+							<Link to={`/product/comments/${match.params.id}`}>
+								<Button className='font--lato-normal font-color--primary-ext-2'>
+									{(detail.totalComments > 0 ? `Lihat semua ${detail.totalComments} komentar` : 'Belum ada komentar')}
+								</Button>
+							</Link>
 						</div>
 						<hr className='margin--small' />
 						<div className='margin--small padding--medium font-medium'>Shop the Look</div>
 						<div className='flex-row'>
-							<Card.CatalogGrid {...DUMMY_PRODUCT_GRID} />
-							<Card.CatalogGrid {...DUMMY_PRODUCT_GRID} />
+							{pdpData.similarItems}
 						</div>
 						<div style={{ backgroundColor: '#F5F5F5' }}>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								<div className='margin--medium'>
 									<div className='padding--small flex-row flex-spaceBetween'>
-										<div className='font-medium'>Ulasan</div>
-										<Link className='font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >See All</span> <Svg src='ico_chevron-right.svg' /></Link>
+										<div className='font-medium'>Penilaian Produk</div>
+										<Link className='font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
 									</div>
-									{this.renderReviews()}
+									{pdpData.reviewItems}
 								</div>
 							</div>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
@@ -259,17 +313,17 @@ class Products extends Component {
 										<Level>
 											<Level.Item className='text-center padding--large'>
 												<div className='font-large'>4.5</div>
-												<div className='font-small font-color--primary-ext-2'>Reviews</div>
+												<div className='font-small font-color--primary-ext-2'>Ulasan</div>
 											</Level.Item>
 											<Level.Item className='text-center'>
 												<div className='font-large'>90</div>
-												<div className='font-small font-color--primary-ext-2'>Products</div>
+												<div className='font-small font-color--primary-ext-2'>Produk</div>
 											</Level.Item>
 										</Level>
 									</div>
 									<div className='padding--medium margin--small'>
 										<div className='font-medium'>{detail.seller.seller}</div>
-										<div className='font-small'>{detail.seller.location}</div>
+										<div className='font-small'>{detail.seller.seller_location}</div>
 									</div>
 									<div className='margin--medium'>
 										<Grid split={4} className='padding--small'>
@@ -287,16 +341,16 @@ class Products extends Component {
 								</div>
 							</div>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
-								<div className='margin--small padding--medium font-medium'>Similar Items</div>
+								<div className='margin--small padding--medium font-medium'>Produk Serupa</div>
 								<div className='flex-row'>
-									{this.renderSimilarItems()}
+									{pdpData.similarItems}
 								</div>
 							</div>
 						</div>
 					</div>
 					{this.renderStickyAction()}
 				</Page>
-				<Header.Modal style={!showScrollInfomation ? { backgroundColor: 'transparent', border: 'none', boxShadow: 'none' } : {}} {...this.renderHeaderPage()} />
+				<Header.Modal style={!status.showScrollInfomation ? { backgroundColor: 'transparent', border: 'none', boxShadow: 'none' } : {}} {...this.renderHeaderPage()} />
 				<Navigation />
 			</div>);
 	}
@@ -304,8 +358,25 @@ class Products extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		...state
+		product: state.product, 
+		shared: state.shared,
+		lovelist: state.lovelist
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Products));
+const doAfterAnonymous = (props) => {
+	const { dispatch, match, cookies } = props;
+	
+	const productId = match.params.id;
+	const token = cookies.get('user.token');
+
+	dispatch(new productActions.productDetailAction(token, productId));
+	dispatch(new productActions.productRecommendationAction(token));
+	dispatch(new productActions.productSimilarAction(token));
+	dispatch(new productActions.productSocialSummaryAction(token, productId));
+	dispatch(new commentActions.productCommentAction(token, productId));
+	dispatch(new lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productId));
+
+};
+
+export default withCookies(connect(mapStateToProps)(Shared(Products, doAfterAnonymous)));

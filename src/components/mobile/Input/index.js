@@ -12,10 +12,6 @@ class Input extends PureComponent {
 		};
 	}
 
-	handleChange(event) {
-		this.props.onChange(event.target.value, event);
-	}
-
 	showLabel() {
 		this.setState({ showLabel: true });
 	}
@@ -93,10 +89,10 @@ class Input extends PureComponent {
 		};
 
 		const valueData = () => {
-			if (value) {
+			if (value || value === '') {
 				return { value };
 			}
-			return { value: '' };
+			return null;
 		};
 
 

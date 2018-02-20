@@ -87,14 +87,14 @@ class Hashtags extends Component {
 	}
 
 	render() {
-		const { hashtag, history, scroller } = this.props;
+		const { hashtag, scroller } = this.props;
 		const tags = hashtag.tags.length > 3 ? hashtag.tags.slice(0, 3) : hashtag.tags;
 
 		const HeaderPage = {
 			left: (
-				<button onClick={history.goBack}>
+				<Link to='/'>
 					<Svg src={'ico_arrow-back-left.svg'} />
-				</button>
+				</Link>
 			),
 			center: '#MauGayaItuGampang',
 			right: (

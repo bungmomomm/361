@@ -9,11 +9,11 @@ const initialState = {
 const { 
 	commentTotal, 
 	commentList,
-	commentLoading,
+	commentLoading
 } = createActions(
 	'COMMENT_TOTAL', 
 	'COMMENT_LIST',
-	'COMMENT_LOADING',
+	'COMMENT_LOADING'
 );
 
 const reducer = handleActions({
@@ -36,7 +36,7 @@ const reducer = handleActions({
 			...state,
 			loading
 		};
-	},
+	}
 }, initialState);
 
 export default {

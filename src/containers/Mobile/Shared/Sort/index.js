@@ -10,25 +10,27 @@ class Sort extends Component {
 	}
 
 	render() {
-		const { onSelected, sorts } = this.props;
-		return (
-			<div className={styles.filterNavigation}>
-				{_.map(sorts, (sort, id) => {
-					const icon = sort.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
-					return (
-						<List key={id}>
-							<Button onClick={(e) => onSelected(e, sort)}>
-								<List.Content>
-									{sort.title}
-									{icon}
-								</List.Content>
-							</Button>
-						</List>
-					);
-				})}
-			</div>
-		);
+		const { onSelected, sorts, shown } = this.props;
+		if (shown) {
+			return (
+				<div className={styles.filterNavigation}>
+					{_.map(sorts, (sort, id) => {
+						const icon = sort.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
+						return (
+							<List key={id}>
+								<Button onClick={(e) => onSelected(e, sort)}>
+									<List.Content>
+										{sort.title}
+										{icon}
+									</List.Content>
+								</Button>
+							</List>
+						);
+					})}
+				</div>
+			);
+		}
+		return null;
 	}
 }
-
 export default Sort;

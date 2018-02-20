@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
-import _ from 'lodash';
 import {
 	Header,
 	Button,
@@ -18,13 +17,14 @@ import C from '@/constants';
 import styles from './brands.scss';
 import { actions } from '@/state/v4/Brand';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
+import Shared from '@/containers/Mobile/Shared';
 
 class Brands extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
-			minimumLetter: 1,			
+			minimumLetter: 1,
 			searchFocus: false,
 			filteredBrand: [],
 			keyword: '',
@@ -37,16 +37,17 @@ class Brands extends Component {
 		this.source = this.props.cookies.get('user.source');
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		const { dispatch, category } = this.props;
-		dispatch(new actions.brandListAction(this.userCookies, category.segment));
+		dispatch(new actions.brandListAction(this.userCookies, category.activeSegment.id));
 	}
 
 	onFilter(keyword) {
-		let filteredBrand = [];		
-		
+		let filteredBrand = [];
+
 		if (keyword.length >= this.state.minimumLetter) {
-			this.props.brands.data.map((e) => {
+			console.log('[Brands onFilter - keyword]', keyword);
+			this.props.brands.brand_list.map((e) => {
 				const listBrand = e.brands.filter((list) => {
 					if (list.facetdisplay.indexOf(keyword) >= 0) {
 						filteredBrand.push(list);
@@ -57,7 +58,7 @@ class Brands extends Component {
 			});
 			filteredBrand = filteredBrand.sort((a, b) => b.count - a.count);
 		}
-		
+
 		this.setState({
 			filteredBrand,
 			keyword
@@ -93,37 +94,36 @@ class Brands extends Component {
 
 	renderFilterAlphabets() {
 		const { brands } = this.props;
-		return (
+		return (this.props.brands.brand_list) ? (
 			this.state.keyword.length < this.state.minimumLetter &&
 			<div className={styles.listFilterKey}>
 				{C.FILTER_KEY.map((key, id) => {
-					const brandExist = brands.data.filter(e => e.group === key.trim());
+					const brandExist = brands.brand_list.filter(e => e.group === key.trim());
 					const disabled = brandExist.length < 1;
 					const link = `#${key.trim()}`;
-					
+
 					return (
 						<Button
-							key={id} 
+							key={id}
 							onClick={() => { window.location.href = link; }}
 							disabled={disabled}
 						>
 							{
-								disabled ? <strike>{key}</strike> : <b>{key}</b>  
+								disabled ? <strike>{key}</strike> : <b>{key}</b>
 							}
 						</Button>
 					);
 				})}
 			</div>
-		);
+		) : '';
 	}
 
 	renderBrandByAlphabets() {
 		const { brands } = this.props;
-		
-		return (
+		return (this.props.brands.brand_list) ? (
 			this.state.keyword.length < this.state.minimumLetter &&
-			brands.data.length > 0 && 
-			brands.data.map((list, id) => {
+			brands.brand_list.length > 0 &&
+			brands.brand_list.map((list, id) => {
 				return (
 					<div key={id} id={list.group}>
 						<Divider className='margin--none' size='small'>
@@ -134,8 +134,13 @@ class Brands extends Component {
 							list.brands.map((b, i) => {
 								return (
 									<List key={i}>
-										<Link to={`/brand/${b.facetrange}`}>
-											<List.Content>{b.facetdisplay} <text style={{ color: 'grey' }} >({b.count} produk)</text></List.Content>
+										<Link to={`/brand/${b.facetrange}/${b.facetdisplay.toLowerCase()}`}>
+											<List.Content>
+												{b.facetdisplay}
+												<text style={{ color: 'grey' }} >
+													({b.count} produk)
+												</text>
+											</List.Content>
 										</Link>
 									</List>
 								);
@@ -144,11 +149,11 @@ class Brands extends Component {
 					</div>
 				);
 			})
-		);
+		) : '';
 	}
 
 	renderBrandBySearch() {
-		return (
+		return (this.props.brands.brand_list) ? (
 			this.state.keyword.length >= this.state.minimumLetter &&
 			this.state.filteredBrand.map((brand, key) => {
 				return (
@@ -159,26 +164,7 @@ class Brands extends Component {
 					</List>
 				);
 			})
-		);
-	}
-
-	renderForeverBanner() {
-		const { shared } = this.props;
-		if (!_.isEmpty(shared.foreverBanner)) {
-			return (
-				<ForeverBanner
-					color={shared.foreverBanner.text.background_color}
-					show={this.state.notification.show}
-					onClose={(e) => this.setState({ notification: { show: false } })}
-					text1={shared.foreverBanner.text.text1}
-					text2={shared.foreverBanner.text.text2}
-					textColor={shared.foreverBanner.text.text_color}
-					// linkValue={shared.foreverBanner.target.url}
-				/>
-			);
-		}
-
-		return null;
+		) : '';
 	}
 
 	render() {
@@ -191,11 +177,17 @@ class Brands extends Component {
 			center: 'Brands',
 			right: null
 		};
-		
+		const { shared } = this.props;
+		const foreverBannerData = shared.foreverBanner;
+		foreverBannerData.show = this.state.notification.show;
+		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+
 		return (
 			<div style={this.props.style}>
 				<Page>
-					{ this.renderForeverBanner() }
+					{
+						<ForeverBanner {...foreverBannerData} />
+					}
 					<div className={styles.filter}>
 						<Level>
 							<Level.Item className={styles.center}>
@@ -219,7 +211,6 @@ class Brands extends Component {
 						</Level>
 						{ this.renderFilterAlphabets() }
 					</div>
-					{ this.props.brands.loading ? 'Loading...' : '' }
 					{ this.renderBrandBySearch() }
 					{ this.renderBrandByAlphabets() }
 				</Page>
@@ -238,4 +229,4 @@ const mapStateToProps = (state) => {
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Brands));
+export default withCookies(connect(mapStateToProps)(Shared(Brands)));

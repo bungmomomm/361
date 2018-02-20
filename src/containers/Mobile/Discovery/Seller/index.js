@@ -113,7 +113,6 @@ class Seller extends Component {
 
 		return (
 			<div>
-
 				<Page>
 					<div>
 						<div>
