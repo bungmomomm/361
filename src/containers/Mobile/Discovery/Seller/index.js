@@ -14,6 +14,7 @@ import stylesCatalog from '../Category/Catalog/catalog.scss';
 import styles from './styles.scss';
 import Spinner from '@/components/mobile/Spinner';
 import Share from '@/components/mobile/Share';
+import { hyperlink } from '@/utils';
 
 class Seller extends Component {
 
@@ -198,8 +199,9 @@ class Seller extends Component {
 						<Card.Catalog
 							images={productData.images}
 							productTitle={productData.product_title}
-							brandName={productData.brand}
+							brandName={productData.brand.name}
 							pricing={productData.pricing}
+							linkToPdp={hyperlink('', ['product', productData.product_id], null)}
 						/>
 						{renderBlockComment}
 					</div>
@@ -210,8 +212,9 @@ class Seller extends Component {
 						key={index}
 						images={productData.images}
 						productTitle={productData.product_title}
-						brandName={productData.brand}
+						brandName={productData.brand.name}
 						pricing={productData.pricing}
+						linkToPdp={hyperlink('', ['product', productData.product_id], null)}
 					/>
 				);
 			case 'small':
@@ -220,6 +223,7 @@ class Seller extends Component {
 						key={index}
 						images={productData.images}
 						pricing={productData.pricing}
+						linkToPdp={hyperlink('', ['product', productData.product_id], null)}
 					/>
 				);
 			default:
