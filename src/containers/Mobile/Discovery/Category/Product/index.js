@@ -3,19 +3,18 @@ import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import { Header, Page, Card, Svg, Tabs, Button, Level, Image, Input, Navigation } from '@/components/mobile';
+import { to } from 'await-to-js';
+
+import { Header, Page, Card, Svg, Tabs, Button, Level, Image, Input, Navigation, Spinner } from '@/components/mobile';
 import stylesCatalog from '../Catalog/catalog.scss';
 import Shared from '@/containers/Mobile/Shared';
 import { actions } from '@/state/v4/ProductCategory';
 import queryString from 'query-string';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-
 import { actions as filterActions } from '@/state/v4/SortFilter';
 import Filter from '@/containers/Mobile/Shared/Filter';
 import Sort from '@/containers/Mobile/Shared/Sort';
-import { to } from 'await-to-js';
-import Spinner from '../../../../../components/mobile/Spinner';
 import { hyperlink } from '@/utils';
 
 class Product extends Component {
