@@ -9,14 +9,16 @@ const initialState = {
 		id: 1,
 		key: 'wanita',
 		title: 'Wanita',
-	}
+	},
+	sub_category: null
 };
 
-const { getCategoryMenu, getCategoryBrand, categoryLoading, brandsLoading } = createActions(
+const { getCategoryMenu, getCategoryBrand, categoryLoading, brandsLoading, setSubCategory } = createActions(
 	'GET_CATEGORY_MENU',
 	'GET_CATEGORY_BRAND',
 	'CATEGORY_LOADING',
 	'BRANDS_LOADING',
+	'SET_SUB_CATEGORY'
 );
 
 const reducer = handleActions({
@@ -45,6 +47,13 @@ const reducer = handleActions({
 			loadingBrands
 		};
 	},
+	[setSubCategory](state, { payload: { sub_category } }) {
+		console.log('redux ', sub_category);
+		return {
+			...state,
+			sub_category
+		};
+	}
 }, initialState);
 
 export default {
@@ -52,5 +61,6 @@ export default {
 	getCategoryMenu,
 	getCategoryBrand,
 	categoryLoading,
-	brandsLoading
+	brandsLoading,
+	setSubCategory
 };

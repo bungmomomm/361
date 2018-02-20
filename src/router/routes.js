@@ -138,16 +138,8 @@ export default {
 			component: SearchNotFound
 		},
 		{
-			path: '/category/:categoryLvl1/:categoryLvl2/:categoryLvl3',
+			path: '/sub-category/',
 			component: SubCategory,
-		},
-		{
-			path: '/category/:categoryLvl1/:categoryLvl2',
-			component: SubCategory,
-		},
-		{
-			path: '/category/:categoryLvl1',
-			component: Category,
 		},
 		{
 			path: '/category/',
