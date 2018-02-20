@@ -25,3 +25,14 @@
     width: 70%;
     left: 15%;
 }
+
+.brandsImage {
+  display: flex;
+  align-items: center;
+  img {
+	max-width: 100%;
+	width: auto;
+	height: auto;
+	padding: 10px;
+  }
+}

@@ -223,7 +223,7 @@ class Home extends Component {
 								break;
 							}
 							return (
-								<div key={e}>
+								<div className={styles.brandsImage} key={e}>
 									<Link to={url} >
 										<Image lazyload alt='thumbnail' src={brand.images.thumbnail} />
 									</Link>
