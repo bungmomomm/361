@@ -244,7 +244,7 @@ class Home extends Component {
 		const mozaic = _.chain(home).get(`allSegmentData.${segment}.mozaic`);
 
 		if (!mozaic.isEmpty().value()) {
-			const header = renderSectionHeader('Mozaic Megazine', {
+			const header = renderSectionHeader('Mozaic Artikel', {
 				title: mozaic.value().mainlink.text,
 				url: mozaic.value().mainlink.link
 			});
