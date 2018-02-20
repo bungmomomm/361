@@ -79,7 +79,7 @@ class Hashtags extends Component {
 	}
 
 	render() {
-		const { hashtag, history, scroller } = this.props;
+		const { hashtag, history, scroller } = this.props; // fix previous incomplete conflict resolve
 		const tags = hashtag.tags;
 
 		const HeaderPage = {
