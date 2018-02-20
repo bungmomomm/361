@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { Link, Redirect } from 'react-router-dom';
 import _ from 'lodash';
+import SwipeReact from 'swipe-react';
 import {
 	Header, Carousel, Tabs,
 	Page, Level, Button, Grid, Article,
@@ -14,8 +15,6 @@ import { actions as sharedActions } from '@/state/v4/Shared';
 import Shared from '@/containers/Mobile/Shared';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import CONST from '@/constants';
-
-import SwipeReact from 'swipe-react';
 
 const renderSectionHeader = (title, options) => {
 	return (
@@ -250,7 +249,7 @@ class Home extends Component {
 				url: mozaic.value().mainlink.link
 			});
 			return (
-				<div>
+				<div className='border-top margin--medium'>
 					{
 						header
 					}

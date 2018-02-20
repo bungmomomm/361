@@ -2,6 +2,7 @@ import { handleActions, createActions } from 'redux-actions';
 
 const initialState = {
 	isLoading: false,
+	commentLoading: true,
 	searchStatus: '',
 	searchData: {
 		links: [],
@@ -9,15 +10,16 @@ const initialState = {
 		facets: [],
 		sorts: [],
 		products: []
-	}
+	},
+	promoData: []
 };
 
-const { setLoading, initSearch } = createActions(
-	'SET_LOADING', 'INIT_SEARCH'
+const { initLoading, initSearch, initPromo } = createActions(
+	'INIT_LOADING', 'INIT_SEARCH', 'INIT_PROMO'
 );
 
 const reducer = handleActions({
-	[setLoading](state, { payload: { isLoading } }) {
+	[initLoading](state, { payload: { isLoading } }) {
 		return {
 			isLoading
 		};
@@ -28,11 +30,19 @@ const reducer = handleActions({
 			searchStatus,
 			searchData
 		};
+	},
+	[initPromo](state, { payload: { isLoading, searchStatus, promoData } }) {
+		return {
+			isLoading,
+			searchStatus,
+			promoData
+		};
 	}
 }, initialState);
 
 export default {
 	reducer, 
-	setLoading,
-	initSearch
+	initLoading,
+	initSearch,
+	initPromo
 };

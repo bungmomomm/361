@@ -10,15 +10,15 @@ const foreverBanner = (params) => {
 	let content = <div>Loading...</div>;
 	if (params.text.text1 && params.text.text2 !== '') {
 		content = (
-			<div>
-				<div style={inlineStyle}>{params.text.text1}</div>
+			<div className='margin--medium'>
+				<div className='font-large' style={inlineStyle}>{params.text.text1}</div>
 				<p style={inlineStyle}>{params.text.text2}</p>
 			</div>
 		);
 	}
 	return (
 		<Notification
-			color={params.text.background_color}
+			color='yellow'
 			show={params.show}
 			onClose={params.onClose}
 			disableClose={disableCloseFilter}

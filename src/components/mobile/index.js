@@ -22,6 +22,7 @@ import Comment from './Comment';
 import Radio from './Radio';
 import Select from './Select';
 import Table from './Table';
+import Spinner from './Spinner';
 
 export default {
 	Badge,
@@ -47,5 +48,6 @@ export default {
 	Radio,
 	Comment,
 	Select,
-	Table
+	Table,
+	Spinner
 };
