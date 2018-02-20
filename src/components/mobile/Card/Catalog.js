@@ -18,15 +18,18 @@ class Catalog extends PureComponent {
 			productTitle,
 			brandName,
 			pricing,
-			url,
+			linkToPdp,
 			...props
 		} = this.props;
 
 		const createClassName = classNames(styles.container, styles[type], className);
 
+		const comment = ('commentTotal' in this.props) ? (<span>{this.props.commentTotal} Comments</span>)
+			: (<span>Comment</span>);
+
 		return (
 			<div className={createClassName} {...props}>
-				<Link to={(url) || '/'}>
+				<Link to={linkToPdp}>
 					<Carousel>
 						{
 							images.map((image, index) => (
@@ -35,7 +38,6 @@ class Catalog extends PureComponent {
 						}
 					</Carousel>
 				</Link>
-
 				<Level
 					className={styles.action}
 					style={{ borderBottom: '1px solid #D8D8D8' }}
@@ -47,15 +49,17 @@ class Catalog extends PureComponent {
 						</Button>
 					</Level.Item>
 					<Level.Item>
-						<Button>
-							<Svg src='ico_comment.svg' />
-							<span>Comment</span>
-						</Button>
+						<Link to={('commentUrl' in this.props) ? this.props.commentUrl : '/'}>
+							<Button>
+								<Svg src='ico_comment.svg' />
+								{comment}
+							</Button>
+						</Link>
 					</Level.Item>
 				</Level>
-				<Link to={(url) || '/'}>
+				<Link to={(linkToPdp) || '/'}>
 					<div className={styles.title}>
-						{brandName} - <span>{productTitle}</span>
+						{brandName.name} - <span>{productTitle}</span>
 					</div>
 					<Level className={styles.footer}>
 						<Level.Item>

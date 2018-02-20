@@ -2,15 +2,15 @@ import { request } from '@/utils';
 import { setLoading, initPcp } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 
-const initAction = (token, url = false, query) => async (dispatch, getState) => {
+const pcpAction = (token, url = false, query) => async (dispatch, getState) => {
 	dispatch(setLoading({ isLoading: true }));
 	dispatch(scrollerActions.onScroll({ loading: true }));
 	
-	let path = `${process.env.MICROSERVICES_URL}categories/products`;
+	let path = `${process.env.MICROSERVICES_URL}products/search`;
 	if (url) {
-		path = `${url.url}/categories/products`;
+		path = `${url.url}/products/search`;
 	}
-	
+
 	return request({
 		token,
 		path,
@@ -22,33 +22,6 @@ const initAction = (token, url = false, query) => async (dispatch, getState) => 
 			dispatch(initPcp({
 				isLoading: false,
 				pcpStatus: 'failed'
-			}));
-		} else {
-			const pcpData = {
-				links: response.data.data.links,
-				info: response.data.data.info,
-				facets: response.data.data.facets,
-				sorts: response.data.data.sorts,
-				products: response.data.data.products
-			};
-			dispatch(initPcp({
-				isLoading: false,
-				pcpStatus: 'success',
-				pcpData
-			}));
-
-			const nextLink = pcpData.links && pcpData.links.next ? new URL(pcpData.links.next).searchParams : false;
-			dispatch(scrollerActions.onScroll({
-				nextData: { 
-					token,
-					query: {
-						...query,
-						page: nextLink ? parseInt(nextLink.get('page'), 10) : false
-					}
-				},
-				nextPage: nextLink !== false,
-				loading: false,
-				loader: initAction
 			}));
 			return Promise.reject(new Error('error '));
 		}
@@ -65,21 +38,21 @@ const initAction = (token, url = false, query) => async (dispatch, getState) => 
 			pcpData
 		}));
 		
-		const nextLink = pcpData.links && pcpData.links.next ? new URL(pcpData.links.next).searchParams : false;
+		const nextLink = pcpData.links && pcpData.links.next ? new URL(`http://mm.co${pcpData.links.next}`).searchParams : false;
 		dispatch(scrollerActions.onScroll({
 			nextData: { 
 				token,
 				query: {
-					category_id: query.category_id,
+					category_id: nextLink ? parseInt(nextLink.get('category_id'), 10) : false,
 					page: nextLink ? parseInt(nextLink.get('page'), 10) : false,
-					per_page: query.per_page,
-					fq: query.fq,
-					sort: query.sort,
+					per_page: nextLink ? parseInt(nextLink.get('per_page'), 10) : false,
+					fq: nextLink ? parseInt(nextLink.get('fq'), 10) : false,
+					sort: nextLink ? parseInt(nextLink.get('sort'), 10) : false,
 				}
 			},
 			nextPage: nextLink !== false,
 			loading: false,
-			loader: initAction
+			loader: pcpAction
 		}));
 
 		return Promise.resolve(pcpData);
@@ -104,6 +77,6 @@ const discoveryUpdate = (response) => async dispatch => {
 };
 
 export default {
-	initAction,
+	pcpAction,
 	discoveryUpdate
 };
