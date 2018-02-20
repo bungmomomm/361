@@ -56,7 +56,37 @@ const productCommentAction = (token, productId, page = 1) => async (dispatch, ge
 	return Promise.resolve(comments);
 };
 
+const bulkieCommentAction = (token, productId = [], url = false) => async (dispatch) => {
+	dispatch(commentLoading({ loading: true }));
+	let path = `${process.env.MICROSERVICES_URL}commentcount/bulkie/byproduct`;
+	
+	if (url) {
+		path = `${url.url}/commentcount/bulkie/byproduct`;
+	}
+
+	const [err, response] = await to(request({
+		token,
+		path,
+		method: 'POST',
+		fullpath: true,
+		body: {
+			product_id: productId
+		}
+	}));
+
+	if (err) {
+		return Promise.reject(err);
+	}
+
+	const comments = response.data.data;
+	dispatch(commentList({ data: comments }));
+	dispatch(commentLoading({ loading: false }));
+
+	return Promise.resolve(comments);
+};
+
 export default {
 	productCommentAction,
-	commentAddAction
+	commentAddAction,
+	bulkieCommentAction
 };
