@@ -1,5 +1,6 @@
 import currency from './currency';
 import newId from './newId';
+import hyperlink from './hyperlink';
 import renderIf from './renderIf';
 import modalController from './modalController';
 import isMobile from './isMobile';
@@ -17,11 +18,12 @@ const getDeviceID = () => {
 };
 
 const getClientID = () => {
-	return isMobile() ? 'mobileweb' : 'web'; // process.env.CLIENT_ID;
+	return isMobile() ? 'mweb' : 'web'; // process.env.CLIENT_ID;
 };
 
 const getClientSecret = () => {
-	return 'a157f5740fef18518eb15501365f8f20'; // process.env.CLIENT_SECRET;
+	return isMobile() ? 'AAA0F5AB43C947898294FE43242A6514' : '7C634FC856592651D80325AE3080D6CF'; // process.env.CLIENT_ID;
+	// return 'a157f5740fef18518eb15501365f8f20'; // process.env.CLIENT_SECRET;
 };
 
 const getClientVersion = () => {
@@ -43,5 +45,6 @@ export default {
 	isMobile,
 	modalController,
 	componentState,
-	SocialLogin
+	SocialLogin,
+	hyperlink
 };

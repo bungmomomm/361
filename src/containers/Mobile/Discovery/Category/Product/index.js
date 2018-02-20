@@ -3,19 +3,19 @@ import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import { Header, Page, Card, Svg, Tabs, Button, Level, Image, Input, Navigation } from '@/components/mobile';
+import { to } from 'await-to-js';
+
+import { Header, Page, Card, Svg, Tabs, Button, Level, Image, Input, Navigation, Spinner } from '@/components/mobile';
 import stylesCatalog from '../Catalog/catalog.scss';
 import Shared from '@/containers/Mobile/Shared';
 import { actions } from '@/state/v4/ProductCategory';
 import queryString from 'query-string';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-
 import { actions as filterActions } from '@/state/v4/SortFilter';
 import Filter from '@/containers/Mobile/Shared/Filter';
 import Sort from '@/containers/Mobile/Shared/Sort';
-import { to } from 'await-to-js';
-import Spinner from '../../../../../components/mobile/Spinner';
+import { hyperlink } from '@/utils';
 
 class Product extends Component {
 	constructor(props) {
@@ -133,7 +133,7 @@ class Product extends Component {
 							<Page>
 								<div className={stylesCatalog.cardContainer}>
 									{
-										pcpResults.pcpData.products.map((product, index) => 
+										pcpResults.pcpData.products.map((product, index) =>
 											this.renderList(product, index)
 										)
 									}
@@ -172,36 +172,48 @@ class Product extends Component {
 					</Level>
 				</div>
 			);
+			
+			const linkToPdpCreator = hyperlink('', ['product', productData.product_id], null);
+			
+			const listCardCatalogAttribute 			= {
+				images: productData.images,
+				productTitle: productData.product_title,
+				brandName: productData.brand,
+				pricing: productData.pricing,
+				linkToPdp: linkToPdpCreator
+			};
+			
+			const cardCatalogGridAttribute 			= {
+				key: index,
+				images: productData.images,
+				productTitle: productData.product_title,
+				brandName: productData.brand,
+				pricing: productData.pricing,
+				linkToPdp: linkToPdpCreator
+			};
+			
+			const cardCatalogSmall 					= {
+				key: index,
+				images: productData.images,
+				pricing: productData.pricing,
+				linkToPdp: linkToPdpCreator
+			};
+			
 			switch (this.state.listTypeState.type) {
 			case 'list':
 				return (
 					<div key={index} className={stylesCatalog.cardCatalog}>
-						<Card.Catalog
-							images={productData.images}
-							productTitle={productData.product_title}
-							brandName={productData.brand}
-							pricing={productData.pricing}
-						/>
+						<Card.Catalog {...listCardCatalogAttribute} />
 						{renderBlockComment}
 					</div>
 				);
 			case 'grid':
 				return (
-					<Card.CatalogGrid
-						key={index}
-						images={productData.images}
-						productTitle={productData.product_title}
-						brandName={productData.brand}
-						pricing={productData.pricing}
-					/>
+					<Card.CatalogGrid {...cardCatalogGridAttribute} />
 				);
 			case 'small':
 				return (
-					<Card.CatalogSmall
-						key={index}
-						images={productData.images}
-						pricing={productData.pricing}
-					/>
+					<Card.CatalogSmall {...cardCatalogSmall} />
 				);
 			default:
 				return null;

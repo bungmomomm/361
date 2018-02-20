@@ -1,5 +1,5 @@
 import { request } from '@/utils';
-import { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner } from './reducer';
+import { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner, brandProductsComments } from './reducer';
 import _ from 'lodash';
 import to from 'await-to-js';
 import { Promise } from 'es6-promise';
@@ -11,7 +11,6 @@ const brandListAction = (token, segment = 1) => async (dispatch, getState) => {
 	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
-
 	const [err, response] = await to(
 		request({
 			token,
@@ -69,7 +68,6 @@ const brandProductAction = (token, brandId) => async (dispatch, getState) => {
 };
 
 const brandBannerAction = (token, brandId) => async (dispatch, getState) => {
-
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
@@ -94,8 +92,34 @@ const brandBannerAction = (token, brandId) => async (dispatch, getState) => {
 	return Promise.resolve(response);
 };
 
+const brandProductsCommentsAction = (token, productIds) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
+
+	if (!baseUrl) Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	const [err, response] = await to(
+		request({
+			token,
+			path: `${baseUrl}/commentcount/bulkie/byproduct`,
+			method: 'POST',
+			fullpath: true,
+			body: {
+				product_id: productIds
+			}
+		})
+	);
+	if (err) return Promise.reject(err);
+
+	const productsComments = response.data.data;
+
+	dispatch(brandProductsComments({ products_comments: productsComments }));
+	return Promise.resolve(response);
+};
+
 export default {
 	brandListAction,
 	brandProductAction,
-	brandBannerAction
+	brandBannerAction,
+	brandProductsCommentsAction
 };

@@ -1,5 +1,5 @@
 import { request } from '@/utils';
-import { getCategoryMenu, getCategoryBrand, categoryLoading, brandsLoading } from './reducer';
+import { getCategoryMenu, getCategoryBrand, categoryLoading, brandsLoading, setSubCategory } from './reducer';
 import _ from 'lodash';
 import to from 'await-to-js';
 import { Promise } from 'es6-promise';
@@ -15,7 +15,7 @@ const getCategoryMenuAction = (userToken, activeSegment) => async (dispatch, get
 	const [err, response] = await to(
 		request({
 			token: userToken,
-			path: `${baseUrl}categories/list`,
+			path: `${baseUrl}/categories/list`,
 			method: 'GET',
 			fullpath: true,
 			query: {
@@ -45,7 +45,7 @@ const getBrandsByCategoryIdAction = (token, categoryId) => async (dispatch, getS
 	const [err, response] = await to(
 		request({
 			token,
-			path: `${baseUrl}featured_brand`,
+			path: `${baseUrl}/featured_brand`,
 			method: 'GET',
 			fullpath: true,
 			query: {
@@ -63,7 +63,12 @@ const getBrandsByCategoryIdAction = (token, categoryId) => async (dispatch, getS
 	return Promise.resolve(response);
 };
 
+const setSubCateogryAction = (categoryId) => async (dispatch) => {
+	return dispatch(setSubCategory({ sub_category: categoryId }));
+};
+
 export default {
 	getCategoryMenuAction,
-	getBrandsByCategoryIdAction
+	getBrandsByCategoryIdAction,
+	setSubCateogryAction
 };

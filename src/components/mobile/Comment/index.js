@@ -1,14 +1,16 @@
 import React, { PureComponent } from 'react';
+import _ from 'lodash';
 import classNames from 'classnames';
 import Image from '../Image';
 import Level from '../Level';
+import Button from '../Button';
 import styles from './comment.scss';
 
 class Comment extends PureComponent {
 	render() {
-		const { className, data, ...props } = this.props;
+		const { className, data, pcpComment, ...props } = this.props;
 		const createClassName = classNames(styles.container, className);
-		
+
 		if (this.props.type === 'review') {
 			return (
 				<div className={createClassName} {...props}>
@@ -29,7 +31,46 @@ class Comment extends PureComponent {
 					</div>
 				</div>
 			);
-		};
+		} else if (this.props.type === 'comment_summary') {
+			const lastComment = _.last(data.last_comment);
+			return (
+				<div className={createClassName} {...props}>
+					<Button>View {data.total} comments</Button>
+					<Level>
+						<Level.Left>
+							<div style={{ fontWeight: 'bold' }}>{lastComment.customer.customer_name}</div>
+							<div>{lastComment.comment.comment}</div>
+						</Level.Left>
+					</Level>
+				</div>
+			);
+		}
+
+		if (pcpComment) {
+			return (
+				<div>
+					{
+						data.map(({ comment, customer }, i) => (
+							<div key={i} className={createClassName}>
+								<Level style={{ paddingBottom: '5px' }} className='flex-center'>
+									<Level.Item>
+										<div className='padding--medium' style={{ marginLeft: '-15px' }}>
+											<b>{customer.customer_name}</b>
+										</div>
+									</Level.Item>
+								</Level>
+								{/* <div className='padding--normal'>
+									<b>{customer.customer_name}</b>
+								</div> */}
+								<div className='padding--normal'>
+									<div>{comment.comment}</div>
+								</div>
+							</div>
+						))
+					}
+				</div>
+			);
+		}
 
 		return (
 			<div>

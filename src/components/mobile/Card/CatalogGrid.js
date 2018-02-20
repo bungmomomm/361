@@ -16,7 +16,7 @@ class CatalogGrid extends PureComponent {
 			productTitle,
 			brandName,
 			pricing,
-			url,
+			linkToPdp,
 			...props
 		} = this.props;
 
@@ -24,13 +24,12 @@ class CatalogGrid extends PureComponent {
 
 		return (
 			<div className={createClassName} {...props}>
-				<Link to={(url) || '/'}>
+				<Link to={linkToPdp}>
 					<Image src={images[0].thumbnail} alt='product' />
 				</Link>
-
 				<Level className={styles.action}>
 					<Level.Item>
-						<Link to={(url) || '/'}>
+						<Link to={(linkToPdp) || '/'}>
 							<div className={styles.title}>
 								{brandName}
 								<span>{productTitle}</span>
@@ -43,7 +42,7 @@ class CatalogGrid extends PureComponent {
 						</Button>
 					</Level.Right>
 				</Level>
-				<Link to={(url) || '/'}>
+				<Link to={(linkToPdp) || '/'}>
 					<Level className={styles.footer}>
 						<Level.Item>
 							<div className={styles.blockPrice}>

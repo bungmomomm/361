@@ -24,8 +24,8 @@ class UserProfileEditHP extends Component {
 				</Level>
 				<form style={{ padding: '15px' }}>
 					<div className='margin--medium'>
-						<label className={styles.label} htmlFor='editCellPhone'>No. Handphone</label>
-						<Input id='editCellPhone' flat defaultValue='085975049209' />
+						<label className={styles.label} htmlFor='cellPhone'>No. Handphone</label>
+						<Input id='cellPhone' flat />
 					</div>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='editCellPhoneNew'>No Handphone Baru</label>

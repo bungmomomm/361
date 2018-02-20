@@ -6,29 +6,21 @@ import { Header, Page, Navigation, Svg, Grid, Button, Image } from '@/components
 import { Link, withRouter } from 'react-router-dom';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
+import Spinner from '@/components/mobile/Spinner';
 
 class Hashtags extends Component {
 
-	constructor(props) {
-		super(props);
-		this.props = props;
-
-		this.userCookies = this.props.cookies.get('user.token');
-		this.switchTag = this.switchTag.bind(this);
-		this.switchMode = this.switchMode.bind(this);
-	}
-
-	switchTag(tag) {
+	switchTag = (tag) => {
 		const switchTag = tag.replace('#', '').toLowerCase();
-		const { dispatch, hashtag } = this.props;
+		const { dispatch, hashtag, cookies } = this.props;
 
 		if (typeof tag !== 'undefined' && hashtag.active.tag !== switchTag) {
-			dispatch(actions.itemsActiveHashtag(tag));
+			dispatch(actions.itemsActiveHashtag(tag === '#All' ? 'All' : tag));
 
-			if (!hashtag.products[switchTag] && !hashtag.isLoading) {
-				const q = actions.getQuery(this.props.hashtag);
+			if (!hashtag.products[switchTag] && !hashtag.loading) {
+				const q = actions.getQuery(hashtag);
 				const dataFetch = {
-					token: this.userCookies,
+					token: cookies.get('user.token'),
 					query: q.query
 				};
 				dispatch(actions.itemsFetchData(dataFetch));
@@ -36,14 +28,14 @@ class Hashtags extends Component {
 		}
 	};
 
-	switchMode(e) {
+	switchMode = (e) => {
 		e.preventDefault();
 		const { hashtag, dispatch } = this.props;
 		const mode = hashtag.viewMode === 3 ? 1 : 3;
 		dispatch(actions.switchViewMode(mode));
 	}
 
-	renderGridSmall() {
+	renderGridSmall = () => {
 		const { hashtag } = this.props;
 		const items = hashtag.products[hashtag.active.node] && hashtag.products[hashtag.active.node].items
 					? hashtag.products[hashtag.active.node].items : [];
@@ -52,7 +44,7 @@ class Hashtags extends Component {
 			<Grid bordered split={3}>
 				{items.map((product, i) => (
 					<div key={i}>
-						<Link to={`/hashtags/${product.id}`}>
+						<Link to={`/mau-gaya-itu-gampang/${product.id}`}>
 							<Image src={product.image} />
 						</Link>
 					</div>
@@ -61,7 +53,7 @@ class Hashtags extends Component {
 		);
 	}
 
-	renderGridLarge() {
+	renderGridLarge = () => {
 		const { hashtag } = this.props;
 		const items = hashtag.products[hashtag.active.node] && hashtag.products[hashtag.active.node].items
 					? hashtag.products[hashtag.active.node].items : [];
@@ -69,17 +61,17 @@ class Hashtags extends Component {
 		return (
 			<div>
 				{items.map((product, i) => (
-					<div>
-						<Link to={`/hashtags/${product.id}`} key={i}>
+					<div key={i}>
+						<Link to={`/mau-gaya-itu-gampang/${product.id}`}>
 							<Image src={product.image} width='100%' />
-							<div className='flex-row padding--medium margin--medium'>
-								<div><Image avatar height={40} width={40} src={product.image} /></div>
-								<div className='padding--medium'>
-									<div><Link className='font-color--primary' to='/'>@{product.user.username}</Link></div>
-									<div><em className='font-small font--lato-normal font-color--grey'>Post date: {product.user.created_time}</em></div>
-								</div>
-							</div>
 						</Link>
+						<div className='flex-row padding--medium margin--medium'>
+							<div><Image avatar height={40} width={40} src={product.image} /></div>
+							<div className='padding--medium'>
+								<div><Link className='font-color--primary' to='/'>@{product.username}</Link></div>
+								<div><em className='font-small font--lato-normal font-color--grey'>Post date: {product.created_time}</em></div>
+							</div>
+						</div>
 					</div>
 				))}
 			</div>
@@ -88,7 +80,7 @@ class Hashtags extends Component {
 
 	render() {
 		const { hashtag, history, scroller } = this.props;
-		const tags = hashtag.tags.length > 3 ? hashtag.tags.slice(0, 3) : hashtag.tags;
+		const tags = hashtag.tags;
 
 		const HeaderPage = {
 			left: (
@@ -96,10 +88,10 @@ class Hashtags extends Component {
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</button>
 			),
-			center: '#MauGayaItuGampang',
+			center: hashtag.header.title,
 			right: (
 				<Button onClick={this.switchMode}>
-					<Svg src={hashtag.viewMode === 3 ? 'ico_three-line.svg' : 'ico_grid.svg'} />
+					<Svg src={hashtag.viewMode === 3 ? 'ico_list.svg' : 'ico_three-line.svg'} />
 				</Button>
 			)
 		};
@@ -108,17 +100,22 @@ class Hashtags extends Component {
 			<div>
 				<Page>
 					<div className='margin--medium text-center padding--large'>
-						Upload gaya OOTD kamu di Instagram dengan hashtag #MauGayaItuGampang dan menangin kesempatan tampil di MatahariMall.com!
+						{hashtag.header.description}
 					</div>
 					<div className='flex-row flex-center flex-spaceBetween margin--medium padding--large'>
-						<Link to={'/hashtags#All'} onClick={() => this.switchTag('#All')}>All</Link>
 						{tags.map((tag, i) => (
-							<Link to={`/hashtags${tag.hashtag}`} onClick={() => this.switchTag(tag.hashtag)} key={i}>{tag.hashtag}</Link>
+							<Link
+								to={tag.hashtag.indexOf('#') === -1 ? `/mau-gaya-itu-gampang#${tag.hashtag}` : `/mau-gaya-itu-gampang${tag.hashtag}`}
+								onClick={() => this.switchTag(tag.hashtag)}
+								key={i}
+							>
+								{tag.hashtag}
+							</Link>
 						))}
 					</div>
 
 					{hashtag.viewMode === 3 ? this.renderGridSmall() : this.renderGridLarge()}
-					{scroller.loading && <button>&hellip;</button>}
+					{scroller.loading && <Spinner />}
 				</Page>
 
 				<Header.Modal {...HeaderPage} />
@@ -135,7 +132,7 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = (props) => {
 	const { dispatch, location, cookies } = props;
-	dispatch(actions.initHashtags(cookies.get('user.token'), location.hash));
+	dispatch(actions.initHashtags(cookies.get('user.token'), location.hash === '#All' ? 'All' : location.hash));
 };
 
 export default withRouter(withCookies(connect(mapStateToProps)(Scroller(Shared(Hashtags, doAfterAnonymous)))));

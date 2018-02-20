@@ -16,7 +16,7 @@ class Article extends PureComponent {
 		
 		return ( 
 			<div className={createClassName}>
-				<img src={posts.images.mobile} alt='article' />
+				<img src={posts.images.thumbnail} alt='article' />
 				<div className={`${styles.category} --disable-flex`}>
 					<span>{posts.category}</span>
 				</div>
