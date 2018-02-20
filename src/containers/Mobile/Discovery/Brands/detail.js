@@ -102,7 +102,7 @@ class Detail extends Component {
 					<Link to={`/product/comments/${commentData.product_id}`}>
 						<Button>View {commentData.total} comments</Button>
 					</Link>
-					<Comment data={commentData.last_comment} pcpComment />
+					<Comment data={commentData.last_comment} type='lite-review' />
 					<Level>
 						<Level.Item>
 							<Input color='white' placeholder='Write comment' />
@@ -130,7 +130,7 @@ class Detail extends Component {
 							brandName={product.brand}
 							pricing={product.pricing}
 							url={urlPcp}
-							commentTotal={comment.total}
+							commentTotal={(comment) ? comment.total : null}
 							commentUrl={`/product/comments/${product.product_id}`}
 						/>
 						{this.renderComment(product.product_id)}
@@ -165,14 +165,16 @@ class Detail extends Component {
 
 	render() {
 		const imgBanner = this.props.brands.banner && this.props.brands.banner.images.mobile;
-		const renderBenner = (imgBanner) ?
+		const renderBenner = (imgBanner && this.props.brands.brand_info) ?
 		(
 			<div
 				className={`${styles.backgroundCover} flex-center`}
 				style={
 					{ backgroundImage: `url(${imgBanner})` }}
 			>
-				<div className='text-uppercase font--lato-bold font-medium'>{this.props.brands.brand_info.title}</div>
+				<div className='text-uppercase font--lato-bold font-medium'>
+					{this.props.brands.brand_info.title}
+				</div>
 				<div>{this.props.brands.brand_info.product_count}</div>
 			</div>
 		) : '';
