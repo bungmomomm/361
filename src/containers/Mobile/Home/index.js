@@ -98,7 +98,7 @@ class Home extends Component {
 		let label = '';
 		switch (type) {
 		case 'best_seller_products':
-			link = '/promo/best_seller'; label = 'Best Seller';
+			link = '/promo/best_seller'; label = 'Product Terlaris';
 			break;
 		case 'recommended_products':
 			link = '/promo/recommended_products'; label = 'Recommmended';
@@ -107,7 +107,7 @@ class Home extends Component {
 			link = '/promo/recent_view'; label = 'Recently Viewed';
 			break;
 		default:
-			link = '/promo/new_arrival'; label = 'New Arrival';
+			link = '/promo/new_arrival'; label = 'Terbaru';
 		}
 
 		const obj = _.camelCase(type);
@@ -123,7 +123,7 @@ class Home extends Component {
 			return (
 				<div>
 					{ header }
-					<Grid split={3}>
+					<Grid split={3} bordered>
 						{
 							datas.value().map(({ images, pricing }, e) => (
 								<div key={e}>
@@ -244,7 +244,7 @@ class Home extends Component {
 		const mozaic = _.chain(home).get(`allSegmentData.${segment}.mozaic`);
 
 		if (!mozaic.isEmpty().value()) {
-			const header = renderSectionHeader('Mozaic Megazine', {
+			const header = renderSectionHeader('Mozaic Artikel', {
 				title: mozaic.value().mainlink.text,
 				url: mozaic.value().mainlink.link
 			});
@@ -287,7 +287,7 @@ class Home extends Component {
 
 		const recommendation1 = !this.isLogin ? 'new_arrival_products' : 'recommended_products';
 		const recommendation2 = !this.isLogin ? 'best_seller_products' : 'recently_viewed_products';
-		
+
 		return (
 			<div style={this.props.style} {...SwipeReact.events}>
 				<Page>
@@ -310,7 +310,7 @@ class Home extends Component {
 
 					{ this.renderRecommendation(recommendation2)}
 					{ this.renderBottomBanner('bottom') }
-					{renderSectionHeader('Featured Brands', { title: 'LIHAT SEMUA', url: '/brands' })}
+					{renderSectionHeader('Brand Terpopuler', { title: 'LIHAT SEMUA', url: '/brands' })}
 					{ this.renderFeaturedBrands() }
 
 					{this.renderMozaic()}
