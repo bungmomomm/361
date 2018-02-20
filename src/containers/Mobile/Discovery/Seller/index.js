@@ -9,7 +9,7 @@ import { actions as filterActions } from '@/state/v4/SortFilter';
 import Filter from '@/containers/Mobile/Shared/Filter';
 import Sort from '@/containers/Mobile/Shared/Sort';
 import { to } from 'await-to-js';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import stylesCatalog from '../Category/Catalog/catalog.scss';
 import styles from './styles.scss';
 import Spinner from '@/components/mobile/Spinner';
