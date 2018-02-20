@@ -79,14 +79,14 @@ class Hashtags extends Component {
 	}
 
 	render() {
-		const { hashtag, history, scroller } = this.props; // fix previous incomplete conflict resolve
+		const { hashtag, history, scroller } = this.props;
 		const tags = hashtag.tags;
 
 		const HeaderPage = {
 			left: (
-				<Link to='/'>
+				<button onClick={history.goBack}>
 					<Svg src={'ico_arrow-back-left.svg'} />
-				</Link>
+				</button>
 			),
 			center: hashtag.header.title,
 			right: (
