@@ -42,6 +42,13 @@ class Brands extends Component {
 		dispatch(new actions.brandListAction(this.userCookies, category.activeSegment.id));
 	}
 
+	componentWillReceiveProps(nextProps) {
+		const { dispatch, category } = this.props;
+		if (this.props.shared.serviceUrl !== nextProps.shared.serviceUrl) {
+			dispatch(new actions.brandListAction(this.userCookies, category.activeSegment.id));
+		}
+	}
+
 	onFilter(keyword) {
 		let filteredBrand = [];
 
@@ -134,7 +141,7 @@ class Brands extends Component {
 							list.brands.map((b, i) => {
 								return (
 									<List key={i}>
-										<Link to={`/brand/${b.facetrange}/${b.facetdisplay.toLowerCase()}`}>
+										<Link to={`/brand/${b.facetrange}/${b.facetdisplay.toLowerCase().replace(/ /g, '-')}`}>
 											<List.Content>
 												{b.facetdisplay}
 												<text style={{ color: 'grey' }} >
@@ -158,7 +165,7 @@ class Brands extends Component {
 			this.state.filteredBrand.map((brand, key) => {
 				return (
 					<List key={key}>
-						<Link to={`/brand/${brand.facetrange}`}>
+						<Link to={`/brand/${brand.facetrange}/${brand.facetdisplay.toLowerCase().replace(/ /g, '-')}`}>
 							<List.Content>{brand.facetdisplay} <text style={{ color: 'grey' }} >({brand.count})</text></List.Content>
 						</Link>
 					</List>
