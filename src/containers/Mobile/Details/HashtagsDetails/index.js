@@ -27,41 +27,43 @@ class HashtagsDetails extends PureComponent {
 		return (
 			<div>
 				<Page>
-					{ent.data.post.image && (
-						<Grid split={1}>
-							<div>
-								<img alt='' src={ent.data.post.image} />
-							</div>
-							<div>
-								{ent.data.post.username}
-								<p>
-									Post date: {ent.data.post.created_time} <br />
-									{ent.data.post.caption}
-								</p>
-							</div>
+					<Grid split={1}>
+						{ent.data.post.image && (
+							<span>
+								<div>
+									<img alt='' src={ent.data.post.image} />
+								</div>
+								<div>
+									{ent.data.post.username}
+									<p>
+										Post date: {ent.data.post.created_time} <br />
+										{ent.data.post.caption}
+									</p>
+								</div>
+							</span>
+						)}
 
-							{ent.data.products.length && (
-							<div>
-								<h2>Get The Look</h2>
-								<Grid split={2}>
-									{ent.data.products.map((product, i) =>
-										(
-											<Card.CatalogGrid
-												key={i}
-												images={product.images}
-												productTitle={product.product_title}
-												brandName={product.brand.name}
-												pricing={product.pricing}
-												linkToPdp={hyperlink('', ['product', product.product_id], null)}
-											/>
-										)
-									)}
-								</Grid>
-							</div>
-							)}
+						{ent.data.products.length && (
+						<div>
+							<h2>Get The Look</h2>
+							<Grid split={2}>
+								{ent.data.products.map((product, i) =>
+									(
+										<Card.CatalogGrid
+											key={i}
+											images={product.images}
+											productTitle={product.product_title}
+											brandName={product.brand.name}
+											pricing={product.pricing}
+											linkToPdp={hyperlink('', ['product', product.product_id], null)}
+										/>
+									)
+								)}
+							</Grid>
+						</div>
+						)}
 
-						</Grid>
-					)}
+					</Grid>
 
 					{ent.loading && <Spinner />}
 				</Page>
