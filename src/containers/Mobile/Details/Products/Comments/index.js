@@ -18,8 +18,13 @@ class Comments extends Component {
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.productId = this.props.match.params.id;
+		this.isLogin = this.props.cookies.get('isLogin') || false;
 		this.renderLoading = <div><Spinner /></div>;
-		this.state = {
+		
+	}
+
+	componentWillMount() {
+		this.setState({
 			detail: {
 				isLoading: true, 
 				firstLoad: this.renderLoading
@@ -31,8 +36,8 @@ class Comments extends Component {
 			hashtag: {
 				isLoading: true, 
 				firstLoad: this.renderLoading
-			}
-		};
+			} 
+		});
 	}
 
 	renderComments() {
@@ -43,12 +48,15 @@ class Comments extends Component {
 		if (commentReady) {
 			const me = this;
 			loading().then((response) => {
-				me.setState({
-					comment: {
-						isLoading: false, 
-						firstLoad: null
-					}
-				});
+				if (me.state.comment.isLoading) {
+					me.setState({
+						comment: {
+							isLoading: false, 
+							firstLoad: null
+						}
+					});
+				}
+				
 			});
 			return this.state.comment.firstLoad; 
 		}
@@ -68,12 +76,14 @@ class Comments extends Component {
 		if (detailReady) {
 			const me = this;
 			loading().then((response) => {
-				me.setState({
-					detail: {
-						isLoading: false, 
-						firstLoad: null
-					}
-				});
+				if (me.state.detail.isLoading) {
+					me.setState({
+						detail: {
+							isLoading: false, 
+							firstLoad: null
+						}
+					});
+				}
 			});
 
 			return this.state.detail.firstLoad; 
@@ -83,6 +93,25 @@ class Comments extends Component {
 			<p className='margin--small padding--medium'>
 				{ product.detail.description }
 			</p>
+		);
+	}
+
+	renderAvailComment() {
+		
+		if (this.isLogin === 'true') {
+			return (
+				<Level className={styles.commentbox}>
+					<Level.Item><Input color='white' placeholder='Type a message ...' /></Level.Item>
+					<Level.Right><Button className='padding--small font--lato-normal' style={{ marginLeft: '15px' }}>KIRIM</Button></Level.Right>
+				</Level>
+			);
+		}
+
+
+		return (
+			<Level className={styles.commentbox}>
+				<Link to='/user/login'>Log in</Link> / <Link to='/user/register'>Register</Link> untuk memberi komentar
+			</Level>
 		);
 	}
 
@@ -109,10 +138,8 @@ class Comments extends Component {
 					{ this.renderComments() }
 				</Page>
 				<Header.Modal {...HeaderOption} />
-				<Level className={styles.commentbox}>
-					<Level.Item><Input color='white' placeholder='Type a message ...' /></Level.Item>
-					<Level.Right><Button className='padding--small font--lato-normal' style={{ marginLeft: '15px' }}>KIRIM</Button></Level.Right>
-				</Level>
+				
+				{ this.renderAvailComment() }
 			</div>);
 	}
 }

@@ -77,7 +77,7 @@ class Home extends Component {
 			return (
 				<Link to={link}>
 					<div>
-						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
+						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} width='100%' />
 					</div>
 				</Link>
 			);
@@ -114,6 +114,7 @@ class Home extends Component {
 		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}`).get('recomendationData').get(obj);
+		
 
 		if (!datas.isEmpty().value()) {
 			const header = renderSectionHeader(label, {
@@ -127,7 +128,7 @@ class Home extends Component {
 						{
 							datas.value().map(({ images, pricing }, e) => (
 								<div key={e}>
-									<Image lazyload alt='thumbnail' src={images[0].thumbnail} />
+									<Image lazyload alt='thumbnail' src={images[0].thumbnail} width='100%' />
 									<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
 								</div>
 							))
@@ -151,7 +152,7 @@ class Home extends Component {
 			return (
 				<div>
 					{ header }
-					<Image lazyload alt='thumbnail' src={datas.value().images[0].thumbnail} />
+					<Image lazyload alt='thumbnail' src={datas.value().images[0].thumbnail} width='100%' />
 				</div>
 			);
 		}
@@ -167,7 +168,11 @@ class Home extends Component {
 				<div>
 					{
 						datas.value().map(({ images, link }, c) => (
-							<Image key={c} lazyload alt='banner' src={images.thumbnail} />
+							<Link to={link.target || '/'} key={c}>
+								<div>
+									<Image lazyload alt='banner' src={images.thumbnail} width='100%' />
+								</div>
+							</Link>
 						))
 					}
 				</div>
@@ -190,7 +195,11 @@ class Home extends Component {
 				<div className='margin--medium'>
 					{
 						bottomBanner.map(({ images, link }, d) => (
-							<Image key={d} lazyload alt='banner' src={images.thumbnail} />
+							<Link to={link.target || '/'} key={d}>
+								<div>
+									<Image lazyload alt='banner' src={images.thumbnail} width='100%' />
+								</div>
+							</Link>
 						))
 					}
 				</div>
@@ -225,7 +234,7 @@ class Home extends Component {
 							return (
 								<div key={e}>
 									<Link to={url} >
-										<Image lazyload alt='thumbnail' src={brand.images.thumbnail} />
+										<Image lazyload alt='thumbnail' src={brand.images.thumbnail} width='100%' />
 									</Link>
 								</div>
 							);
@@ -285,8 +294,8 @@ class Home extends Component {
 			);
 		}
 
-		const recommendation1 = !this.isLogin ? 'new_arrival_products' : 'recommended_products';
-		const recommendation2 = !this.isLogin ? 'best_seller_products' : 'recently_viewed_products';
+		const recommendation1 = this.isLogin === 'true' ? 'new_arrival_products' : 'recommended_products';
+		const recommendation2 = this.isLogin === 'true' ? 'best_seller_products' : 'recently_viewed_products';
 		
 		return (
 			<div style={this.props.style} {...SwipeReact.events}>
