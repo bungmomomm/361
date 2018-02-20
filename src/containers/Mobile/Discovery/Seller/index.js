@@ -238,7 +238,7 @@ class Seller extends Component {
 
 		const HeaderPage = {
 			left: (
-				<Button onClick={history.goBack()}>
+				<Button onClick={history.goBack}>
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</Button>
 			),
