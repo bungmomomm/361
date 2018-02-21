@@ -1,6 +1,7 @@
 import { handleActions, createActions } from 'redux-actions';
 
 const initialState = {
+	isLoading: false,
 	pcpStatus: '',
 	pcpData: {
 		links: [],
@@ -11,12 +12,26 @@ const initialState = {
 	}
 };
 
-const { initPcp } = createActions(
-	'INIT_PCP'
+const { initLoading, initPcp, initNextPcp } = createActions(
+	'INIT_LOADING', 'INIT_PCP', 'INIT_NEXT_PCP'
 );
 
 const reducer = handleActions({
-	[initPcp](state, { payload: { pcpStatus, pcpData } }) {
+	[initLoading](state, { payload: { isLoading } }) {
+		return {
+			...state,
+			isLoading
+		};
+	},
+	[initPcp](state, { payload: { isLoading, pcpStatus, pcpData } }) {
+		return {
+			...state,
+			isLoading,
+			pcpStatus,
+			pcpData
+		};
+	},
+	[initNextPcp](state, { payload: { pcpStatus, pcpData } }) {
 		return {
 			...state,
 			pcpStatus,
@@ -33,6 +48,8 @@ const reducer = handleActions({
 }, initialState);
 
 export default {
-	reducer, 
-	initPcp
+	reducer,
+	initLoading,
+	initPcp,
+	initNextPcp
 };

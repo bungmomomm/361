@@ -19,7 +19,7 @@ import { actions as pcpActions } from '@/state/v4/ProductCategory';
 import { actions as filterActions } from '@/state/v4/SortFilter';
 import { actions as commentActions } from '@/state/v4/Comment';
 
-import { hyperlink, loading } from '@/utils';
+import { hyperlink } from '@/utils';
 import stylesCatalog from '../Catalog/catalog.scss';
 
 class Product extends Component {
@@ -44,30 +44,9 @@ class Product extends Component {
 				show: true
 			},
 			filterShown: false,
-			sortShown: false,
-			product: {
-				isLoading: true, 
-				firstLoad: this.renderLoading
-			},
-			comment: {
-				isLoading: true, 
-				firstLoad: this.renderLoading
-			}
+			sortShown: false
 		};
-		this.renderLoading = <div style={{ margin: '20px auto 20px auto' }}><Spinner /></div>;
-	}
-
-	componentWillUnmount() {
-		this.setState({
-			product: {
-				isLoading: true, 
-				firstLoad: this.renderLoading
-			},
-			comment: {
-				isLoading: true, 
-				firstLoad: this.renderLoading
-			}
-		});
+		this.loadingView = <div style={{ margin: '20px auto 20px auto' }}><Spinner /></div>;
 	}
 
 	async onApply(e) {
@@ -122,14 +101,6 @@ class Product extends Component {
 		}
 	}
 
-	loadingView() {
-		return (
-			<div style={this.props.style}>
-				<Spinner />
-			</div>
-		);
-	}
-
 	renderPage() {
 		let pageView = null;
 		const { filters } = this.props;
@@ -165,24 +136,12 @@ class Product extends Component {
 
 	renderPcp() {
 		let pcpView = null;
-		const { productCategory, filters } = this.props;
-		const { sortShown, product } = this.state;
-		// const pcpData = _.isEmpty(productCategory.pcpData);
-		const me = this;
+		const { isLoading, productCategory, filters } = this.props;
+		const { sortShown } = this.state;
 
-		if (product.isLoading) {
-			loading().then((response) => {
-				if (me.state.product.isLoading) {
-					me.setState({
-						product: {
-							isLoading: false,
-							firstLoad: null
-						}
-					});
-				}
-			});
-			return me.state.product.firstLoad;
-		}
+		if (isLoading) {
+			pcpView = this.loadingView;
+		} 
 
 		if (productCategory.pcpStatus !== '') {
 			if (productCategory.pcpStatus === 'success') {
@@ -279,23 +238,10 @@ class Product extends Component {
 
 	renderComment(productId) {
 		let commentView = null;
-		const { comments } = this.props;
-		const { comment } = this.state;
-		// const commentData = _.isEmpty(comments.data);
-		const me = this;
+		const { isLoading, comments } = this.props;
 
-		if (comment.isLoading) {
-			loading().then((response) => {
-				if (me.state.comment.isLoading) {
-					me.setState({
-						comment: {
-							isLoading: false,
-							firstLoad: null
-						}
-					});
-				}
-			});
-			return me.state.comment.firstLoad;
+		if (isLoading) {
+			commentView = this.loadingView;
 		}
 
 		const commentProduct = _.find(comments.data, { product_id: productId }) || false;
@@ -325,7 +271,7 @@ class Product extends Component {
 		}
 
 		const { productCategory } = this.props;
-		const headerTitle = _.chain(productCategory).get('pcpData.info.title').value() || this.renderLoading;
+		const headerTitle = _.chain(productCategory).get('pcpData.info.title').value() || this.loadingView;
 		const HeaderPage = {
 			left: (
 				<Link to='' onClick={back}>
