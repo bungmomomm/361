@@ -40,6 +40,21 @@ const getFq = (filters) => {
 				}
 			});
 			break;
+		case 'price':
+			if (facet.requested_range) {
+				fq[facet.id] = [(`${facet.requested_range.min}-${facet.requested_range.max}`)];
+			} else {
+				forEach(facet.data, (value) => {
+					if (value.is_selected === 1) {
+						fq[facet.id].push(value.facetrange);
+					} else {
+						remove(fq[facet.id], (v) => {
+							return v === value.facetrange;
+						});
+					}
+				});
+			}
+			break;
 		default:
 			forEach(facet.data, (value) => {
 				if (value.is_selected === 1) {

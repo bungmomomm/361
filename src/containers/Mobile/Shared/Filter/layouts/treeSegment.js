@@ -41,9 +41,7 @@ const updateChilds = (childs, item, fields) => {
 	childs = _.map(childs, (facetData) => {
 		if (facetData.facetrange === item.facetrange) {
 			_.forIn(fields, (value, key) => {
-				if (typeof facetData[key] !== 'undefined') {
-					facetData[key] = value;
-				}
+				facetData[key] = value;
 			});
 		}
 		if (facetData.childs && facetData.childs.length > 0) {
@@ -96,8 +94,6 @@ class TreeSegment extends Component {
 		const { data } = this.state;
 		const { onApply } = this.props;
 		const result = getSelected(data);
-		console.log(data);
-		console.log(result);
 		onApply(e, result);
 	}
 
@@ -109,7 +105,7 @@ class TreeSegment extends Component {
 		if (isParent) {
 			this.setState({
 				data: updateChilds(data, value, {
-					collapsed: !value.collapsed
+					open: !value.open
 				})
 			});
 		} else {
@@ -119,6 +115,7 @@ class TreeSegment extends Component {
 
 	renderChild(category, firstLevel) {
 		const { defaultOpen } = this.state;
+		
 		if (typeof category.childs === 'undefined') {
 			return null;
 		}
@@ -130,15 +127,15 @@ class TreeSegment extends Component {
 						const Label = hasChild ? <strong>{child.facetdisplay}</strong> : child.facetdisplay;
 						const isChildSelected = isDescendantSelected(child.childs);
 						let renderChild = false;
-						if ((defaultOpen && isChildSelected) || (!defaultOpen && !child.collapsed)) {
+						if ((defaultOpen && isChildSelected) || (!defaultOpen && hasChild && child.open)) {
 							renderChild = true;
 						}
-						if (firstLevel) {
+						if (firstLevel && hasChild) {
 							return (
-								<List key={id} className={!child.collapsed ? styles.segment : styles.closed}>
-									<List.Content className={!child.collapsed && styles.selected} onClick={(e) => this.handleTree(e, child, hasChild)}>
+								<List key={id} className={child.open ? styles.segment : styles.closed}>
+									<List.Content className={child.open && styles.selected} onClick={(e) => this.handleTree(e, child, hasChild)}>
 										<div className={styles.label}>{Label} <span> ({child.count}) produk</span></div>
-										{treeIcon(hasChild ? !child.collapsed : child.is_selected, hasChild)}
+										{treeIcon(hasChild ? child.open : child.is_selected, hasChild)}
 									</List.Content>
 
 									{renderChild && this.renderChild(child)}
@@ -147,9 +144,9 @@ class TreeSegment extends Component {
 						}
 						return (
 							<List key={id} className={(hasChild && styles.parent)}>
-								<List.Content className={!child.collapsed && styles.segment} onClick={(e) => this.handleTree(e, child, hasChild)}>
+								<List.Content className={child.open && styles.segment} onClick={(e) => this.handleTree(e, child, hasChild)}>
 									{Label} ({child.count})
-									{treeIcon(hasChild ? !child.collapsed : child.is_selected, hasChild)}
+									{treeIcon(hasChild ? child.open : child.is_selected, hasChild)}
 								</List.Content>
 								{renderChild && this.renderChild(child)}
 							</List>

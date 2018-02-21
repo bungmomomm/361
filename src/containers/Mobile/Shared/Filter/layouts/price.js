@@ -14,6 +14,7 @@ class Price extends PureComponent {
 				min: parseInt(props.range.min, 10),
 				max: parseInt(props.range.max, 10)
 			},
+			custom: false,
 			data: props.data || []
 		};
 	}
@@ -28,33 +29,37 @@ class Price extends PureComponent {
 		});
 
 		this.setState({
+			custom: false,
 			data
 		});
 	}
 
 	onApply(e) {
-		const { data } = this.state;
+		const { data, range, custom } = this.state;
 		const { onApply } = this.props;
 		const result = _.filter(data, (facetData) => {
 			return (facetData.is_selected === 1);
 		});
-		onApply(e, result);
+		if (custom) {
+			return onApply(e, result, range);
+		}
+		return onApply(e, result, false);
 	}
 
 	updateRange(value) {
 		const { range } = this.state;
-		console.log(range, value);
-		// this.setState({
-		// 	range: {
-		// 		min: Math.abs(value.min) < parseInt(range.max, 10) ? Math.abs(value.min) : parseInt(range.min, 10),
-		// 		max: Math.abs(value.max) < parseInt(range.max, 10) ? Math.abs(value.max) : parseInt(range.max, 10),
-		// 	}
-		// });
+		this.setState({
+			custom: true,
+			range: {
+				min: Math.abs(value.min) < parseInt(range.max, 10) ? Math.abs(value.min) : parseInt(range.min, 10),
+				max: Math.abs(value.max) < parseInt(range.max, 10) ? Math.abs(value.max) : parseInt(range.max, 10),
+			}
+		});
 	}
 
 	render() {
-		const { onClose } = this.props;
-		const { prices, range } = this.state;
+		const { onClose, range } = this.props;
+		const { data } = this.state;
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
@@ -80,7 +85,7 @@ class Price extends PureComponent {
 						</div>
 					</div>
 					<div>
-						{ _.map(prices, (price, id) => {
+						{_.map(data, (price, id) => {
 							const icon = price.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
 							return (
 								<List key={id}><Button onClick={(e) => this.onClick(e, price)}><List.Content>{price.facetdisplay} {icon}</List.Content></Button></List>

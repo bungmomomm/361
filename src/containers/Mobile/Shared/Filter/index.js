@@ -45,11 +45,16 @@ class Filter extends PureComponent {
 		};
 	}
 
+	componentDidMount() {
+		this.mapFilters();
+	}
+
 	componentWillReceiveProps(nextProps) {
 		const { filters } = this.state;
 		this.setState({
 			filters: nextProps.filters || filters
 		});
+		this.mapFilters(nextProps.filters);
 	}
 
 	onListClick(e, layout) {
@@ -79,11 +84,11 @@ class Filter extends PureComponent {
 		this.setState({
 			layout: 'result'
 		});
-		const obj = utils.getUrlFilterForCategory(filters);
-		console.log(obj);
-		// this.props.onApply(e);
+		const obj = utils.getFq(filters);
+		this.props.onApply(e, obj);
 	}
 
+	
 	getFacet(key) {
 		const { filters } = this.state;
 		const facet = _.first(_.filter(filters.facets, (f) => (f.id === key)));
@@ -101,7 +106,50 @@ class Filter extends PureComponent {
 		};
 	}
 
-	applyFilter(type, values) {
+	mapFilters(newFilters) {
+		const { selected } = this.state;
+		let { filters } = this.state;
+		if (newFilters) {
+			filters = newFilters;
+		}
+		const updateChilds = (c, s) => {
+			c = _.map(c, (facetData) => {
+				if (facetData.is_selected) {
+					s.push(facetData);
+				}
+				[c, s] = updateChilds(facetData.childs, s);
+				return facetData;
+			});
+
+			return [c, s];
+		};
+		filters.facets = _.map(filters.facets, (facet) => {
+			switch (facet.id) {
+			case 'category':
+			case 'custom_category_ids':
+			case 'size':
+				selected[facet.id] = [];
+				[facet.data, selected[facet.id]] = updateChilds(facet.data, selected[facet.id]);
+				break;
+			default:
+				selected[facet.id] = [];
+				facet.data = _.map(facet.data, (facetData) => {
+					if (facetData.is_selected) {
+						selected[facet.id].push(facetData);
+					}
+					return facetData;
+				});
+				break;
+			}
+			return facet;
+		});
+		this.setState({
+			selected
+		});
+		this.forceUpdate();
+	}
+
+	applyFilter(type, values, custom) {
 		const { selected, filters } = this.state;
 		const results = _.map(values, (value) => {
 			return value.facetrange;
@@ -119,9 +167,9 @@ class Filter extends PureComponent {
 				[c, s] = updateChilds(facetData.childs, r, s);
 				return facetData;
 			});
-
 			return [c, s];
 		};
+
 		filters.facets = _.map(filters.facets, (facet) => {
 			if (facet.id === type) {
 				switch (facet.id) {
@@ -134,7 +182,24 @@ class Filter extends PureComponent {
 					}
 					break;
 				case 'price':
-
+					selected[facet.id] = [];
+					if (custom) {
+						selected[facet.id] = [_.values(custom)];
+						facet.requested_range = custom;
+					} else {
+						delete facet.requested_range;
+						facet.data = _.map(facet.data, (facetData) => {
+							const isExist = _.find(results, (v) => {
+								return v === facetData.facetrange;
+							});
+							facetData.is_selected = 0;
+							if (isExist) {
+								selected[facet.id].push(facetData);
+								facetData.is_selected = 1;
+							}
+							return facetData;
+						});
+					}
 					break;
 				default:
 					selected[facet.id] = [];
@@ -178,9 +243,6 @@ class Filter extends PureComponent {
 		const shippings = this.getFacet('shipping_methods');
 		const categories = this.getFacet('category');
 		const customCategoryType = this.getFacet('custom_category_ids');
-		// console.log(categories);
-		// console.log(categories, customCategoryType, locations, brands, colors, sizes, prices, range, layout, state, onApply, onReset, filters);
-
 		if (shown) {
 			switch (layout) {
 			/*
@@ -229,7 +291,7 @@ class Filter extends PureComponent {
 						data={locations.data} 
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
 						onClose={(e) => this.onFilterSectionClose()}
-						onApply={(e, values) => this.applyFilter(layout, values)}
+						onApply={(e, values, custom) => this.applyFilter(layout, values, custom)}
 					/>
 				);
 			
@@ -237,7 +299,7 @@ class Filter extends PureComponent {
 				return (
 					<Price 
 						{...state} 
-						prices={prices} 
+						data={prices} 
 						range={range} 
 						onChange={(e, value) => this.onFilterSelected(e, 'pricerange', value)} 
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 

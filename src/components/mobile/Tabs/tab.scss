@@ -35,9 +35,15 @@
 }
 
 .active {
-	cursor: default;
+	cursor: pointer;
 	border-bottom: 1px solid black;
 	color: black;
+}
+
+li.disabled {
+	span{
+		color: #f3f3f3;
+	}
 }
 
 .segment{
@@ -62,4 +68,11 @@
 		padding: 0px rem(20px);
 		flex: none;
 	}
+
+	li.disabled {
+		span{
+			color: #f3f3f3;
+		}
+	}
 }
+
