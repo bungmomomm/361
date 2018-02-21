@@ -15,6 +15,10 @@ import { actions as categoryActions } from '@/state/v4/Category';
 import Shared from '@/containers/Mobile/Shared';
 import CONST from '@/constants';
 
+const buildUrl = (stringCategory = '') => {
+	return stringCategory.replace(/[^a-zA-Z ]/g, '').replace(/\s\s+/g, ' ').replace(/ /g, '-').toLowerCase();
+};
+
 class SubCategory extends PureComponent {
 	constructor(props) {
 		super(props);
@@ -39,7 +43,8 @@ class SubCategory extends PureComponent {
 	setSelectedCategory(categories) {
 		const selectedCategory = categories.filter(e => e.id === this.props.category.sub_category)[0];
 		if (selectedCategory) {
-			const categorySlug = encodeURIComponent(selectedCategory.title.replace(/ /g, '-').toLowerCase());
+			
+			const categorySlug = encodeURIComponent(buildUrl(selectedCategory.title));
 
 			if (selectedCategory.sub_categories.length === 0) {
 				this.props.history.push(`/p-${selectedCategory.id}/${categorySlug}`);
@@ -72,7 +77,7 @@ class SubCategory extends PureComponent {
 		});
 
 		const listCategory = (selectedCategory) && selectedCategory.sub_categories.map((cat, key) => {
-			const categoryTitle = encodeURIComponent(cat.title.replace(/ /g, '-').toLowerCase());
+			const categoryTitle = encodeURIComponent(buildUrl(cat.title));
 			return (
 				<List key={key}>
 					<Link style={{ flexFlow: 'row nowrap' }} to={`/p-${cat.id}/${categoryTitle}`}>
@@ -84,7 +89,7 @@ class SubCategory extends PureComponent {
 		});
 
 		const listFeaturedBrands = (selectedCategory && this.props.category.brands) && this.props.category.brands.map((brand, key) => {
-			const brandTitle = encodeURIComponent(brand.title.replace(/ /g, '-').toLowerCase());
+			const brandTitle = encodeURIComponent(buildUrl(brand.title));
 			return (
 				<List key={key}>
 					<Link style={{ flexFlow: 'row nowrap' }} to={`/brand/${brand.id}/${brandTitle}`}>

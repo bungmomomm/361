@@ -61,18 +61,17 @@ class Image extends Component {
 
 	src() {
 		let image = this.props.src;
-		if (this.props.local) {
-			image = require(`@/assets/images/${this.props.src}`);
-		}
 		if (this.props.lazyload && !this.state.loaded) {
 			image = require('@/assets/images/Loading_icon.gif');
+		}
+		if (this.props.local) {
+			image = require(`@/assets/images/${this.props.src}`);
 		}
 		return image;
 	}
 
 	dataSrc() {
 		let image = this.props.src;
-
 		if (this.props.lazyload && this.props.local) {
 			image = require(`@/assets/images/${this.props.src}`);
 			return image;
@@ -82,7 +81,8 @@ class Image extends Component {
 
 	render() {
 		const createClassName = classNames([
-			this.props.avatar ? styles.avatar : null
+			this.props.avatar ? styles.avatar : null,
+			this.props.className ? this.props.className : null
 		]);
 
 		return (
