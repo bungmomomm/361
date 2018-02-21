@@ -9,6 +9,7 @@ import { request, getCancelToken } from './request';
 import { setUserCookie } from './cookie';
 import SocialLogin from './social-login';
 import urlBuilder from './urlBuilder';
+import loading from './loading';
 
 const getBaseUrl = () => {
 	return process.env.BASE_URL;
@@ -48,5 +49,6 @@ export default {
 	componentState,
 	SocialLogin,
 	hyperlink,
-	urlBuilder
+	urlBuilder,
+	loading
 };

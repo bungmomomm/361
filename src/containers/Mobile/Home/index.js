@@ -77,7 +77,7 @@ class Home extends Component {
 			return (
 				<Link to={link}>
 					<div>
-						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
+						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} width='100%' />
 					</div>
 				</Link>
 			);
@@ -98,22 +98,23 @@ class Home extends Component {
 		let label = '';
 		switch (type) {
 		case 'best_seller_products':
-			link = '/promo/best_seller'; label = 'Best Seller';
+			link = '/promo/best_seller'; label = 'Product Terlaris';
 			break;
 		case 'recommended_products':
-			link = '/promo/recommended_products'; label = 'Recommmended';
+			link = '/promo/recommended_products'; label = 'Produk Rekomendasi';
 			break;
 		case 'recently_viewed_products':
-			link = '/promo/recent_view'; label = 'Recently Viewed';
+			link = '/promo/recent_view'; label = 'Terakhir Dilihat';
 			break;
 		default:
-			link = '/promo/new_arrival'; label = 'New Arrival';
+			link = '/promo/new_arrival'; label = 'Produk Terbaru';
 		}
 
 		const obj = _.camelCase(type);
 		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}`).get('recomendationData').get(obj);
+
 
 		if (!datas.isEmpty().value()) {
 			const header = renderSectionHeader(label, {
@@ -123,11 +124,11 @@ class Home extends Component {
 			return (
 				<div>
 					{ header }
-					<Grid split={3}>
+					<Grid split={3} bordered>
 						{
 							datas.value().map(({ images, pricing }, e) => (
 								<div key={e}>
-									<Image lazyload alt='thumbnail' src={images[0].thumbnail} />
+									<Image lazyload alt='thumbnail' src={images[0].thumbnail} width='100%' />
 									<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
 								</div>
 							))
@@ -151,7 +152,7 @@ class Home extends Component {
 			return (
 				<div>
 					{ header }
-					<Image lazyload alt='thumbnail' src={datas.value().images[0].thumbnail} />
+					<Image lazyload alt='thumbnail' src={datas.value().images[0].thumbnail} width='100%' />
 				</div>
 			);
 		}
@@ -167,7 +168,11 @@ class Home extends Component {
 				<div>
 					{
 						datas.value().map(({ images, link }, c) => (
-							<Image key={c} lazyload alt='banner' src={images.thumbnail} />
+							<Link to={link.target || '/'} key={c}>
+								<div>
+									<Image lazyload alt='banner' src={images.thumbnail} width='100%' />
+								</div>
+							</Link>
 						))
 					}
 				</div>
@@ -190,7 +195,11 @@ class Home extends Component {
 				<div className='margin--medium'>
 					{
 						bottomBanner.map(({ images, link }, d) => (
-							<Image key={d} lazyload alt='banner' src={images.thumbnail} />
+							<Link to={link.target || '/'} key={d}>
+								<div>
+									<Image lazyload alt='banner' src={images.thumbnail} width='100%' />
+								</div>
+							</Link>
 						))
 					}
 				</div>
@@ -223,9 +232,9 @@ class Home extends Component {
 								break;
 							}
 							return (
-								<div key={e}>
+								<div className={styles.brandsImage} key={e}>
 									<Link to={url} >
-										<Image lazyload alt='thumbnail' src={brand.images.thumbnail} />
+										<Image lazyload alt='thumbnail' src={brand.images.thumbnail} width='100%' />
 									</Link>
 								</div>
 							);
@@ -244,7 +253,7 @@ class Home extends Component {
 		const mozaic = _.chain(home).get(`allSegmentData.${segment}.mozaic`);
 
 		if (!mozaic.isEmpty().value()) {
-			const header = renderSectionHeader('Mozaic Megazine', {
+			const header = renderSectionHeader('Mozaic Artikel', {
 				title: mozaic.value().mainlink.text,
 				url: mozaic.value().mainlink.link
 			});
@@ -285,9 +294,8 @@ class Home extends Component {
 			);
 		}
 
-		const recommendation1 = !this.isLogin ? 'new_arrival_products' : 'recommended_products';
-		const recommendation2 = !this.isLogin ? 'best_seller_products' : 'recently_viewed_products';
-		
+		const recommendation1 = this.isLogin === 'true' ? 'new_arrival_products' : 'recommended_products';
+		const recommendation2 = this.isLogin === 'true' ? 'best_seller_products' : 'recently_viewed_products';
 		return (
 			<div style={this.props.style} {...SwipeReact.events}>
 				<Page>
@@ -310,7 +318,7 @@ class Home extends Component {
 
 					{ this.renderRecommendation(recommendation2)}
 					{ this.renderBottomBanner('bottom') }
-					{renderSectionHeader('Featured Brands', { title: 'LIHAT SEMUA', url: '/brands' })}
+					{renderSectionHeader('Brand Terpopuler', { title: 'LIHAT SEMUA', url: '/brands' })}
 					{ this.renderFeaturedBrands() }
 
 					{this.renderMozaic()}

@@ -7,8 +7,8 @@ import stylesSearch from '../Search/search.scss';
 import stylesCatalog from '../Category/Catalog/catalog.scss';
 import { actions } from '@/state/v4/SearchResults';
 import queryString from 'query-string';
-import { Link } from 'react-router-dom';
 import Shared from '@/containers/Mobile/Shared';
+import SearchNotFound from '@/containers/Mobile/Discovery/SearchNotFound';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 
@@ -18,12 +18,14 @@ import Sort from '@/containers/Mobile/Shared/Sort';
 import { to } from 'await-to-js';
 import Spinner from '../../../../components/mobile/Spinner';
 
+import { actions as commentActions } from '@/state/v4/Comment';
+
 class SearchResults extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 
-		this.currentListState = 0;
+		this.currentListState = 1;
 		this.listType = [{
 			type: 'grid',
 			icon: 'ico_list.svg'
@@ -40,6 +42,11 @@ class SearchResults extends Component {
 			showSort: false
 		};
 	}
+
+	// componentWillUnmount() {
+	// 	const { dispatch } = this.props;
+	// 	dispatch(new actions.loadingAction(true));
+	// }
 
 	async onApply(e) {
 		console.log('onApply called');
@@ -112,57 +119,65 @@ class SearchResults extends Component {
 		return null;
 	}
 
-	notFound() {
-		const inlineStyle = {
-			textAlign: 'center',
-			margin: '10px auto 10px auto'
-		};
+	searchNotFound() {
+		const { promoData } = this.props;
+
 		return (
-			<div style={this.props.style}>
-				<Page>
-					<div className={stylesSearch.container} >
-						<div style={inlineStyle}>[image kantong kosong]</div>
-						<div style={inlineStyle}>
-							{'Mohon maaf hasil pencarian untuk "'}{this.getKeyword()}
-							{ '" tidak dapat ditemukan. Silakan periksa pengejaan kata, atau menggunakan kata kunci lain!'}
-						</div>
-						<div><button><Link to={'/search'}>Cari kembali</Link></button></div>
-						<div style={inlineStyle}>[Rich Relevant Recommendation section]</div>
-						<div style={inlineStyle}>[Footer]</div>
-					</div>
-				</Page>
-				{this.renderHeader()}
-			</div>
+			<SearchNotFound
+				keyword={this.getKeyword()}
+				data={promoData}
+			/>
 		);
 	}
 
 	searchFound(products) {
 		if (products.length > 0) {
-			const { shared, filters } = this.props;
+			const { filters } = this.props;
 			const { showSort } = this.state;
-			const foreverBannerData = shared.foreverBanner;
-			foreverBannerData.show = this.state.notification.show;
-			foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
 
 			return (
-				<div style={this.props.style}>
-					<Page>
-						<div className={stylesSearch.container} >
-							<div className={stylesCatalog.cardContainer}>
-								{
-									products.map((product, index) =>
-										this.renderList(product, index)
-									)
-								}
-							</div>
+				<Page>
+					<div className={stylesSearch.container} >
+						<div className={stylesCatalog.cardContainer}>
+							{
+								products.map((product, index) =>
+									this.renderList(product, index)
+								)
+							}
 						</div>
-						<Sort shown={showSort} sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
-					</Page>
+					</div>
+					<Sort shown={showSort} sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
+				</Page>
+			);
+		}
+
+		return null;
+	}
+
+	renderPage() {
+		let pageView = null;
+		const { filters } = this.props;
+		const { showFilter } = this.state;
+		if (showFilter) {
+			pageView = (
+				<Filter
+					shown={showFilter}
+					filters={filters}
+					onUpdateFilter={(e, type, value) => this.onUpdateFilter(e, type, value)}
+					onApply={(e) => {
+						this.onApply(e);
+					}}
+					onReset={(e) => this.onReset(e)}
+					onClose={(e) => this.onClose(e)}
+				/>
+			);
+		} else {
+			pageView = (
+				<div style={this.props.style}>
+					{this.renderSearch()}
 					{this.renderHeader()}
 					{this.renderTabs()}
-					{
-						<ForeverBanner {...foreverBannerData} />
-					}
+					{this.renderForeverBanner()}
 					<Navigation />
 
 					{this.props.scroller.loading}
@@ -170,34 +185,17 @@ class SearchResults extends Component {
 			);
 		}
 
-		return null;
+		return pageView;
 	}
 
-	searchRender() {
+	renderSearch() {
 		let searchView = null;
-		const { filters } = this.props;
-		const { showFilter } = this.state;
-		const searchResults = this.props.searchResults;
-		if (typeof searchResults.searchStatus !== 'undefined' && searchResults.searchStatus !== '') {
+		const { searchResults } = this.props;
+		if (searchResults.searchStatus !== undefined && searchResults.searchStatus !== '') {
 			if (searchResults.searchStatus === 'success' && searchResults.searchData.products.length > 0) {
-				if (showFilter) {
-					searchView = (
-						<Filter
-							shown={showFilter}
-							filters={filters}
-							onUpdateFilter={(e, type, value) => this.onUpdateFilter(e, type, value)}
-							onApply={(e) => {
-								this.onApply(e);
-							}}
-							onReset={(e) => this.onReset(e)}
-							onClose={(e) => this.onClose(e)}
-						/>
-					);
-				} else {
-					searchView = this.searchFound(searchResults.searchData.products);
-				}
+				searchView = this.searchFound(searchResults.searchData.products);
 			} else if (searchResults.searchStatus === 'failed') {
-				searchView = this.notFound();
+				searchView = this.searchNotFound();
 			}
 		}
 
@@ -205,6 +203,7 @@ class SearchResults extends Component {
 	}
 
 	renderList(productData, index) {
+		const { comments } = this.props;
 		if (productData) {
 			switch (this.state.listTypeState.type) {
 			case 'list':
@@ -216,7 +215,7 @@ class SearchResults extends Component {
 							brandName={productData.brand}
 							pricing={productData.pricing}
 						/>
-						<Comment />
+						{comments && comments.loading ? <Spinner /> : this.renderComment(productData.product_id)}
 					</div>
 				);
 			case 'grid':
@@ -237,6 +236,23 @@ class SearchResults extends Component {
 		}
 	}
 
+	renderComment(productId) {
+		let commentView = null;
+		const { comments } = this.props;
+		if (comments && comments.data.length > 0) {
+			const commentById = _.find(comments.data, { product_id: productId }) || null;
+			commentView = (
+				<Comment
+					className={stylesCatalog.commentBlock}
+					type='comment_summary'
+					data={commentById}
+				/>
+			);
+		}
+
+		return commentView;
+	}
+
 	renderHeader() {
 		let back = () => { this.props.history.go(-2); };
 		if (this.props.history.length === 0) {
@@ -253,8 +269,8 @@ class SearchResults extends Component {
 
 	renderTabs() {
 		let tabsView = null;
-		const searchResults = this.props.searchResults;
-		if (typeof searchResults.searchStatus !== 'undefined' && searchResults.searchStatus !== '' && searchResults.searchStatus === 'success') {
+		const { searchResults } = this.props;
+		if (searchResults.searchStatus !== undefined && searchResults.searchStatus === 'success') {
 			tabsView = (
 				<Tabs
 					className={stylesCatalog.fixed}
@@ -281,8 +297,17 @@ class SearchResults extends Component {
 		return tabsView;
 	}
 
+	renderForeverBanner() {
+		const { shared } = this.props;
+		const foreverBannerData = shared.foreverBanner;
+		foreverBannerData.show = this.state.notification.show;
+		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+
+		return <ForeverBanner {...foreverBannerData} />;
+	}
+
 	render() {
-		return this.props.isLoading ? this.loadingRender() : this.searchRender();
+		return this.renderPage();
 	}
 }
 
@@ -291,6 +316,8 @@ const mapStateToProps = (state) => {
 		...state,
 		shared: state.shared,
 		searchResults: state.searchResults,
+		comments: state.comments,
+		promoData: state.searchResults.promoData,
 		isLoading: state.searchResults.isLoading,
 		scroller: state.scroller
 	};
@@ -313,12 +340,18 @@ const doAfterAnonymous = async (props) => {
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
 	
-	const [err, response] = await to(dispatch(new actions.initAction(cookies.get('user.token'), searchService, objParam)));
+	const [err, response] = await to(dispatch(actions.searchAction(cookies.get('user.token'), searchService, objParam)));
 
 	if (err) {
 		console.log(err.message);
+
+		const promoService = _.chain(shared).get('serviceUrl.promo').value() || false;
+		dispatch(actions.promoAction(cookies.get('user.token'), promoService));
 	} else {
-		console.log('response', response);
+		const productIdList = _.map(response.products, 'product_id') || null;
+		const commentService = _.chain(shared).get('serviceUrl.productsocial').value() || false;
+		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList, commentService));
+
 		dispatch(filterActions.initializeFilter(response));
 	}
 };
