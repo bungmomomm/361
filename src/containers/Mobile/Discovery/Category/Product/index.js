@@ -152,7 +152,7 @@ class Product extends Component {
 										// )
 									}
 								</div>
-								<Sort shown={sortShown} sorts={pcpResults.pcpData} onSelected={(e, value) => this.sort(e, value)} />
+								<Sort shown={sortShown} sorts={pcpResults.pcpData.sorts} onSort={(e, value) => this.sort(e, value)} />
 							</Page>
 							{this.renderHeader()}
 							{this.renderTabs()}
