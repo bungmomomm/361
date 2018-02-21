@@ -15,6 +15,7 @@ import {
 } from '@/components/mobile';
 import styles from './brands.scss';
 import { Link } from 'react-router-dom';
+import _ from 'lodash';
 
 import CONST from '@/constants';
 import { actions as brandAction } from '@/state/v4/Brand';
@@ -46,11 +47,13 @@ class Detail extends Component {
 		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
 	}
 	componentDidMount() {
+		const { match } = this.props;
 		window.addEventListener('scroll', this.handleScroll, true);
+		
 		if ('serviceUrl' in this.props.shared) {
 			const { dispatch } = this.props;
-			dispatch(brandAction.brandProductAction(this.userToken, 'brandId-123'));
-			dispatch(brandAction.brandBannerAction(this.userToken, 'brandId-123'));
+			dispatch(brandAction.brandProductAction(this.userToken, match.params.brandId));
+			dispatch(brandAction.brandBannerAction(this.userToken, match.params.brandId));
 		}
 	}
 
@@ -64,7 +67,7 @@ class Detail extends Component {
 		if (this.props.brands.products !== nextProps.brands.products) {
 			const { dispatch } = this.props;
 			const productId = nextProps.brands.products.map(e => (e.product_id));
-			dispatch(brandAction.brandProductsCommentsAction(this.userCookies, productId));
+			dispatch(brandAction.brandProductsCommentsAction(this.userToken, productId));
 		}
 	}
 
@@ -95,42 +98,141 @@ class Detail extends Component {
 	}
 
 	renderComment(productId) {
+		let komen = null;
 		if (this.props.brands.products_comments) {
 			const commentData = this.props.brands.products_comments.filter(e => e.product_id === productId)[0];
-			return (
+			komen = (
 				<div className={stylesCatalog.commentBlock}>
 					<Link to={`/product/comments/${commentData.product_id}`}>
 						<Button>View {commentData.total} comments</Button>
 					</Link>
 					<Comment data={commentData.last_comment} pcpComment />
-					<Level>
-						<Level.Item>
-							<Input color='white' placeholder='Write comment' />
-						</Level.Item>
-					</Level>
+				</div>
+			);
+			
+		}
+		return (
+			<div>
+				{ komen }
+				<Level>
+					<Level.Item>
+						<Input color='white' placeholder='Write comment' />
+					</Level.Item>
+				</Level>
+			</div>
+		);
+
+	}
+
+	renderBenner() {
+		const { brands } = this.props;
+		const bannerImages = _.chain(brands).get('banner.image');
+		if (!bannerImages.isEmpty().value()) {
+			return (
+				<div
+					className={`${styles.backgroundCover} flex-center`}
+					style={
+						{ backgroundImage: `url(${bannerImages.value().thumbnail})` }}
+				>
+					<div className='text-uppercase font--lato-bold font-medium'>{brands.brand_info.title || ''}</div>
+					<div>{brands.brand_info.product_count || 0}</div>
 				</div>
 			);
 		}
-		return false;
 
+		return null;
+	}
+
+	renderFilter() {
+		const { brands } = this.props;
+		const brandInfo = _.chain(brands).get('brand_info');
+
+		if (!brandInfo.isEmpty().value()) {
+			return (
+				<Tabs
+					className='margin--medium'
+					type='segment'
+					variants={[
+						{
+							id: 'sort',
+							title: 'Urutkan'
+						},
+						{
+							id: 'filter',
+							title: 'Filter'
+						},
+						{
+							id: 'view',
+							title: <Svg src={this.state.listTypeState.icon} />
+						}
+					]}
+					onPick={e => this.handlePick(e)}
+				/>
+			);
+		}
+
+		return null;	
+	}
+
+	renderProduct() {
+		const { brands } = this.props;
+		const { listTypeState } = this.state;
+
+		const brandProducts = _.chain(brands).get('products');
+		
+		if (!brandProducts.isEmpty().value()) {
+			switch (listTypeState.type) {
+			case 'grid': 
+				return null;
+			case 'small':
+				return null;
+			default: 
+				return (
+					<div>
+						
+						{
+							brandProducts.value().map((product, e) => (
+								<div key={e} className={stylesCatalog.cardCatalog}>
+									<Card.Catalog
+										images={product.images}
+										productTitle={product.product_title}
+										brandName={product.brand.name}
+										pricing={product.pricing}
+										// url={`/product/${product.product_id}`}
+										// commentTotal='10'// {comment.total}
+										// commentUrl={`/product/comments/${product.product_id}`}
+										linkToPdp={`/product/${product.product_id}`}
+									/>
+									{this.renderComment(product.product_id)}
+								</div>
+							))
+						}
+					</div>
+				);
+			}
+			
+		}
+
+		return null;
 	}
 
 	renderList(product, index) {
 		if (product) {
 			const urlPcp = `/product/${product.product_id}`;
-			const comment = (this.props.brands.products_comments) ?
-				this.props.brands.products_comments.filter(e => e.product_id === product.product_id)[0] : null;
+			// const comment = (this.props.brands.products_comments) ?
+			// 	this.props.brands.products_comments.filter(e => e.product_id === product.product_id)[0] : null;
+			console.log(this.state.listTypeState.type);
 			switch (this.state.listTypeState.type) {
 			case 'list':
 				return (
 					<div key={index} className={stylesCatalog.cardCatalog}>
 						<Card.Catalog
 							images={product.images}
-							productTitle={product.product_title}
+							// productTitle={product.product_title}
 							brandName={product.brand}
-							pricing={product.pricing}
+							// pricing={product.pricing}
 							url={urlPcp}
-							commentTotal={comment.total}
+							// commentTotal={comment.total}
 							commentUrl={`/product/comments/${product.product_id}`}
 						/>
 						{this.renderComment(product.product_id)}
@@ -164,19 +266,6 @@ class Detail extends Component {
 	}
 
 	render() {
-		const imgBanner = this.props.brands.banner && this.props.brands.banner.images.mobile;
-		const renderBenner = (imgBanner) ?
-		(
-			<div
-				className={`${styles.backgroundCover} flex-center`}
-				style={
-					{ backgroundImage: `url(${imgBanner})` }}
-			>
-				<div className='text-uppercase font--lato-bold font-medium'>{this.props.brands.brand_info.title}</div>
-				<div>{this.props.brands.brand_info.product_count}</div>
-			</div>
-		) : '';
-
 		const { styleHeader } = this.state;
 		const headerComponent = {
 			left: (
@@ -188,56 +277,24 @@ class Detail extends Component {
 					<Svg src='ico_arrow-back-left.svg' />
 				</span>
 			),
-			center: (imgBanner) ? '' : 'Brand',
+			center: 'Brand', // (imgBanner) ? '' : 'Brand',
 			right: <Button><Svg src='ico_share.svg' /></Button>
 		};
 
-		const renderTabs = this.props.brands.brand_info && (
-			<Tabs
-				className='margin--medium'
-				type='segment'
-				variants={[
-					{
-						id: 'sort',
-						title: 'Urutkan'
-					},
-					{
-						id: 'filter',
-						title: 'Filter'
-					},
-					{
-						id: 'view',
-						title: <Svg src={this.state.listTypeState.icon} />
-					}
-				]}
-				onPick={e => this.handlePick(e)}
-			/>
-		);
-
-		const renderProduct = this.props.brands.products
-			&& this.props.brands.products.map((product, index) => this.renderList(product, index));
-
 		return (
-			<div>
-				{ this.props.brands.products && (
-					<div style={this.props.style}>
-						<Page>
-							<div style={{ marginTop: '-61px', marginBottom: '30px' }}>
-								{renderBenner}
-								{renderTabs}
-								<div className='flex-row flex-wrap'>
-									{(renderProduct) || '' }
-								</div>
-
-								{/* <div className='flex-center margin--large'>
-									<Button color='secondary' outline size='large'> LOAD MORE </Button>
-								</div> */}
-							</div>
-						</Page>
-						<Header.Modal className={styleHeader ? styles.headerClear : ''} {...headerComponent} />
-						<Navigation active='Categories' />
+			<div style={this.props.style}>
+				<Page>
+					<div style={{ marginTop: '-61px', marginBottom: '30px' }}>
+						{ this.renderBenner() }
+						{ this.renderFilter() }
+						<div className='flex-row flex-wrap'>
+							{/* {(renderProduct) || '' } */}
+							{ this.renderProduct() }
+						</div>
 					</div>
-				)}
+				</Page>
+				<Header.Modal className={styleHeader ? styles.headerClear : ''} {...headerComponent} />
+				<Navigation active='Categories' />
 			</div>
 		);
 
