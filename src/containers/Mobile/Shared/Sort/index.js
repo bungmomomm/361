@@ -12,6 +12,13 @@ class Sort extends Component {
 		};
 	}
 
+	componentWillReceiveProps(nextProps) {
+		const { sorts } = this.state;
+		this.setState({
+			sorts: nextProps.sorts || sorts
+		});
+	}
+
 	onClick(e, value) {
 		const { onSort } = this.props;
 		let { sorts } = this.state;

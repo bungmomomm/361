@@ -16,8 +16,9 @@ import Sort from '@/containers/Mobile/Shared/Sort';
 import { to } from 'await-to-js';
 import Spinner from '@/components/mobile/Spinner';
 import hyperlink from '@/utils/hyperlink';
+import renderIf from '../../../../utils/renderIf';
 
-// import { actions as commentActions } from '@/state/v4/Comment';
+import { actions as commentActions } from '@/state/v4/Comment';
 
 class SearchResults extends Component {
 	constructor(props) {
@@ -129,6 +130,7 @@ class SearchResults extends Component {
 	}
 
 	handlePick(e) {
+		console.log(e);
 		if (e === 'view') {
 			this.currentListState = this.currentListState === 1 ? 0 : this.currentListState + 1;
 			this.setState({ listTypeState: this.listType[this.currentListState] });
@@ -165,8 +167,6 @@ class SearchResults extends Component {
 
 	searchFound(products) {
 		if (products.length > 0) {
-			const { searchResults } = this.props;
-			const { showSort } = this.state;
 			const productList = _.map(products, (product, index) => {
 				return this.renderList(product, index);
 			});
@@ -178,7 +178,6 @@ class SearchResults extends Component {
 							{ productList }
 						</div>
 					</div>
-					<Sort shown={showSort} sorts={searchResults.searchData.sorts} onSort={(e, value) => this.sort(e, value)} />
 				</Page>
 			);
 		}
@@ -302,30 +301,37 @@ class SearchResults extends Component {
 
 	renderTabs() {
 		const { searchResults } = this.props;
+		const { showSort } = this.state;
 		let tabsView = null;
+		const sorts = _.chain(searchResults).get('searchData.sorts').value() || [];
 		tabsView = (
-			<Tabs
-				className={stylesCatalog.filterBlockContainer}
-				type='segment'
-				variants={[
-					{
-						id: 'sort',
-						title: 'Urutkan',
-						disabled: typeof searchResults.searchData === 'undefined'
-					},
-					{
-						id: 'filter',
-						title: 'Filter',
-						disabled: typeof searchResults.searchData === 'undefined'	
-					},
-					{
-						id: 'view',
-						title: <Svg src={this.state.listTypeState.icon} />,
-						disabled: searchResults.isLoading
-					}
-				]}
-				onPick={e => this.handlePick(e)}
-			/>
+			<div>
+				<Tabs
+					className={stylesCatalog.filterBlockContainer}
+					type='segment'
+					variants={[
+						{
+							id: 'sort',
+							title: 'Urutkan',
+							disabled: typeof searchResults.searchData === 'undefined'
+						},
+						{
+							id: 'filter',
+							title: 'Filter',
+							disabled: typeof searchResults.searchData === 'undefined'	
+						},
+						{
+							id: 'view',
+							title: <Svg src={this.state.listTypeState.icon} />,
+							disabled: searchResults.isLoading
+						}
+					]}
+					onPick={e => this.handlePick(e)}
+				/>
+				{renderIf(sorts)(
+					<Sort shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+				)}
+			</div>
 		);
 		return tabsView;
 	}
@@ -369,19 +375,17 @@ const doAfterAnonymous = async (props) => {
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
 	
-	await to(dispatch(actions.searchAction(cookies.get('user.token'), searchService, objParam)));
-	// if (err) {
-	// 	console.log(err.message);
-
-	// 	const promoService = _.chain(shared).get('serviceUrl.promo').value() || false;
-	// 	dispatch(actions.promoAction(cookies.get('user.token'), promoService));
-	// } else {
-	// 	const productIdList = _.map(response.products, 'product_id') || null;
-	// 	const commentService = _.chain(shared).get('serviceUrl.productsocial').value() || false;
-	// 	dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList, commentService));
-
-	// 	dispatch(filterActions.initializeFilter(response));
-	// }
+	const [err, response] = await to(dispatch(actions.searchAction(cookies.get('user.token'), searchService, objParam)));
+	if (err) {
+		console.log(err);
+		return err;
+	}
+	const promoService = _.chain(shared).get('serviceUrl.promo').value() || false;
+	dispatch(actions.promoAction(cookies.get('user.token'), promoService));
+	const productIdList = _.map(response.products, 'product_id') || null;
+	const commentService = _.chain(shared).get('serviceUrl.productsocial').value() || false;
+	dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList, commentService));
+	return response;
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Scroller(SearchResults), doAfterAnonymous)));

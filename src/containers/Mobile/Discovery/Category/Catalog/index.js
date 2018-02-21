@@ -87,12 +87,12 @@ class Catalog extends Component {
 			<div style={this.props.style}>
 				<Page>
 					<div className={styles.cardContainer}>
-						{/* {this.renderList()}
 						{this.renderList()}
 						{this.renderList()}
 						{this.renderList()}
 						{this.renderList()}
-						{this.renderList()} */}
+						{this.renderList()}
+						{this.renderList()}
 					</div>
 					<div className={styles.loadmore}>
 						<Button color='secondary' outline size='large'> LOAD MORE </Button>

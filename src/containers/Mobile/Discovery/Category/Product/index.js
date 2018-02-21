@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import { to } from 'await-to-js';
 import { 
 	Header, 
 	Page, 
@@ -23,7 +22,6 @@ import { actions } from '@/state/v4/ProductCategory';
 import queryString from 'query-string';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-import { actions as filterActions } from '@/state/v4/SortFilter';
 import Filter from '@/containers/Mobile/Shared/Filter';
 import Sort from '@/containers/Mobile/Shared/Sort';
 import { hyperlink } from '@/utils';
@@ -56,29 +54,9 @@ class Product extends Component {
 
 	async onApply(e) {
 		console.log('onApply called');
-		const { dispatch, cookies, filters } = this.props;
-		const [err, response] = await to(dispatch(new filterActions.applyFilter(cookies.get('user.token'), 'category', filters)));
-		console.log(err, response);
-		if (err) {
-			return err;
-		}
 		this.setState({
 			filterShown: false
 		});
-		console.log(response);
-		return response;
-	}
-
-	onUpdateFilter(e, type, value) {
-		try {
-			this.props.dispatch(new filterActions.updateFilter(type, value));
-		} catch (error) {
-			console.log(error);
-		}
-	}
-
-	onReset(e) {
-		this.props.dispatch(new filterActions.resetFilter());
 	}
 
 	onClose(e) {
@@ -91,7 +69,6 @@ class Product extends Component {
 		this.setState({
 			sortShown: false
 		});
-		this.props.dispatch(new filterActions.updateSort(value));
 	}
 
 	handlePick(e) {
