@@ -76,7 +76,7 @@ const brandBannerAction = (token, brandId) => async (dispatch, getState) => {
 	const [err, response] = await to(
 		request({
 			token,
-			path: `${baseUrl}/categories/banner`,
+			path: `${baseUrl}/brand/banner`,
 			method: 'GET',
 			fullpath: true,
 			query: {
@@ -97,7 +97,6 @@ const brandProductsCommentsAction = (token, productIds) => async (dispatch, getS
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
 
 	if (!baseUrl) Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
-
 	const [err, response] = await to(
 		request({
 			token,
