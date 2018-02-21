@@ -245,8 +245,9 @@ export default {
 			component: Lovelist,
 		},
 		{
-			path: '/store/:store_id',
-			component: Seller
+			path: '/store/:store_id/:store_name',
+			component: Seller,
+			exact: true
 		},
 		{
 			path: '/profile-edit-ovo',
