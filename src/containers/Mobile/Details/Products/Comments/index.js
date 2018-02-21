@@ -8,6 +8,7 @@ import styles from './comments.scss';
 import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as productActions } from '@/state/v4/Product';
 import Shared from '@/containers/Mobile/Shared';
+import { loading } from '@/utils';
 
 class Comments extends Component {
 	constructor(props) {
@@ -17,6 +18,26 @@ class Comments extends Component {
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.productId = this.props.match.params.id;
+		this.isLogin = this.props.cookies.get('isLogin') || false;
+		this.renderLoading = <div><Spinner /></div>;
+		
+	}
+
+	componentWillMount() {
+		this.setState({
+			detail: {
+				isLoading: true, 
+				firstLoad: this.renderLoading
+			},
+			comment: {
+				isLoading: true, 
+				firstLoad: this.renderLoading
+			},
+			hashtag: {
+				isLoading: true, 
+				firstLoad: this.renderLoading
+			} 
+		});
 	}
 
 	renderComments() {
@@ -25,7 +46,19 @@ class Comments extends Component {
 		const commentReady = _.isEmpty(comments.data);
 
 		if (commentReady) {
-			return <div><Spinner /></div>;
+			const me = this;
+			loading().then((response) => {
+				if (me.state.comment.isLoading) {
+					me.setState({
+						comment: {
+							isLoading: false, 
+							firstLoad: null
+						}
+					});
+				}
+				
+			});
+			return this.state.comment.firstLoad; 
 		}
 
 		return (
@@ -41,13 +74,44 @@ class Comments extends Component {
 		const detailReady = _.isEmpty(product.detail);
 
 		if (detailReady) {
-			return <div><Spinner /></div>;
+			const me = this;
+			loading().then((response) => {
+				if (me.state.detail.isLoading) {
+					me.setState({
+						detail: {
+							isLoading: false, 
+							firstLoad: null
+						}
+					});
+				}
+			});
+
+			return this.state.detail.firstLoad; 
 		}
 
 		return (
 			<p className='margin--small padding--medium'>
 				{ product.detail.description }
 			</p>
+		);
+	}
+
+	renderAvailComment() {
+		
+		if (this.isLogin === 'true') {
+			return (
+				<Level className={styles.commentbox}>
+					<Level.Item><Input color='white' placeholder='Type a message ...' /></Level.Item>
+					<Level.Right><Button className='padding--small font--lato-normal' style={{ marginLeft: '15px' }}>KIRIM</Button></Level.Right>
+				</Level>
+			);
+		}
+
+
+		return (
+			<Level className={styles.commentbox}>
+				<Link to='/user/login'>Log in</Link> / <Link to='/user/register'>Register</Link> untuk memberi komentar
+			</Level>
 		);
 	}
 
@@ -74,10 +138,8 @@ class Comments extends Component {
 					{ this.renderComments() }
 				</Page>
 				<Header.Modal {...HeaderOption} />
-				<Level className={styles.commentbox}>
-					<Level.Item><Input color='white' placeholder='Type a message ...' /></Level.Item>
-					<Level.Right><Button className='padding--small font--lato-normal' style={{ marginLeft: '15px' }}>KIRIM</Button></Level.Right>
-				</Level>
+				
+				{ this.renderAvailComment() }
 			</div>);
 	}
 }
