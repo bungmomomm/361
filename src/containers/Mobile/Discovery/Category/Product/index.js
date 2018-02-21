@@ -12,11 +12,12 @@ import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Filter from '@/containers/Mobile/Shared/Filter';
 import Sort from '@/containers/Mobile/Shared/Sort';
 
-import { Header, Page, Card, Svg, Tabs, Navigation } from '@/components/mobile';
+import { Header, Page, Card, Svg, Tabs, Navigation, Comment, Button, Level, Input } from '@/components/mobile';
 import Spinner from '../../../../../components/mobile/Spinner';
 
 import { actions as pcpActions } from '@/state/v4/ProductCategory';
 import { actions as filterActions } from '@/state/v4/SortFilter';
+import { actions as commentActions } from '@/state/v4/Comment';
 
 import { hyperlink } from '@/utils';
 import stylesCatalog from '../Catalog/catalog.scss';
@@ -26,7 +27,7 @@ class Product extends Component {
 		super(props);
 		this.props = props;
 
-		this.currentListState = 1;
+		this.currentListState = 0;
 		this.listType = [{
 			type: 'list',
 			icon: 'ico_grid.svg'
@@ -107,54 +108,57 @@ class Product extends Component {
 		);
 	}
 
-	pcpRender() {
-		let pcpView = null;
-		const { shared, filters } = this.props;
-		const foreverBannerData = shared.foreverBanner;
-		foreverBannerData.show = this.state.notification.show;
-		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+	renderPage() {
+		let pageView = null;
+		const { filters } = this.props;
+		const { filterShown } = this.state;
 
-		const { filterShown, sortShown } = this.state;
+		if (filterShown) {
+			pageView = (
+				<Filter
+					shown={filterShown}
+					filters={filters}
+					onUpdateFilter={(e, type, value) => this.onUpdateFilter(e, type, value)}
+					onApply={(e) => {
+						this.onApply(e);
+					}}
+					onReset={(e) => this.onReset(e)}
+					onClose={(e) => this.onClose(e)}
+				/>
+			);
+		} else {
+			pageView = (
+				<div style={this.props.style}>
+					{this.renderPcp()}
+					{this.renderHeader()}
+					{this.renderTabs()}
+					{this.renderForeverBanner()}
+					<Navigation active='Categories' />
+
+					{this.props.scroller.loading}
+				</div>
+			);
+		}
+
+		return pageView;
+	}
+
+	renderPcp() {
+		let pcpView = (<Spinner />);
+		const { filters } = this.props;
+		const { sortShown } = this.state;
 		const pcpResults = this.props.productCategory;
-		if (typeof pcpResults.pcpStatus !== 'undefined' && pcpResults.pcpStatus !== '') {
-			if (pcpResults.pcpStatus === 'success' && pcpResults.pcpData.products.length > 0) {
-				if (filterShown) {
-					pcpView = (
-						<Filter
-							shown={filterShown}
-							filters={filters}
-							onUpdateFilter={(e, type, value) => this.onUpdateFilter(e, type, value)}
-							onApply={(e) => {
-								this.onApply(e);
-							}}
-							onReset={(e) => this.onReset(e)}
-							onClose={(e) => this.onClose(e)}
-						/>
-					);
-				} else {
-					pcpView = (
-						<div style={this.props.style}>
-							<Page>
-								<div className={stylesCatalog.cardContainer}>
-									{
-										pcpResults.pcpData.products.map((product, index) =>
-											this.renderList(product, index)
-										)
-									}
-								</div>
-								<Sort shown={sortShown} sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
-							</Page>
-							{this.renderHeader()}
-							{this.renderTabs()}
-							{
-								<ForeverBanner {...foreverBannerData} />
-							}
-							<Navigation active='Categories' />
-			
-							{this.props.scroller.loading}
+
+		if (pcpResults.pcpStatus !== undefined && pcpResults.pcpStatus !== '') {
+			if (pcpResults.pcpStatus === 'success' /* && pcpResults.pcpData.products.length > 0 */) {
+				pcpView = (
+					<Page>
+						<div className={stylesCatalog.cardContainer}>
+							{this.renderContent(pcpResults.pcpData.products)}
 						</div>
-					);
-				}
+						<Sort shown={sortShown} sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
+					</Page>
+				);
 			} else if (pcpResults.pcpStatus === 'failed') {
 				window.location.href = '/not-found';
 			}
@@ -163,9 +167,27 @@ class Product extends Component {
 		return pcpView;
 	}
 
+	renderContent(productList) {
+		let contentView = null;
+		if (productList.length > 0) {
+			contentView = (
+				productList.map((product, index) =>
+					this.renderList(product, index)
+				)
+			);
+		} else {
+			contentView = (
+				<h3>Empty Data</h3>
+			);
+		}
+
+		return contentView;
+	}
+
 	renderList(productData, index) {
 		if (productData) {
 			const linkToPdpCreator = hyperlink('', ['product', productData.product_id], null);
+			const { comments } = this.props;
 			
 			const listCardCatalogAttribute = {
 				images: productData.images,
@@ -195,7 +217,12 @@ class Product extends Component {
 			case 'list':
 				return (
 					<div key={index} className={stylesCatalog.cardCatalog}>
-						<Card.Catalog {...listCardCatalogAttribute} />
+						<Card.Catalog
+							{...listCardCatalogAttribute}
+							commentTotal={comments.total}
+							commentUrl={`/product/comments/${productData.product_id}`}
+						/>
+						{comments && comments.loading ? <Spinner /> : this.renderComment(productData.product_id)}
 					</div>
 				);
 			case 'grid':
@@ -214,6 +241,29 @@ class Product extends Component {
 		}
 	}
 
+	renderComment(productId) {
+		let commentView = null;
+		const { comments } = this.props;
+		if (comments && comments.data !== null && comments.data.length > 0) {
+			const commentData = _.find(comments.data, { product_id: productId }) || null;
+			commentView = (
+				<div className={stylesCatalog.commentBlock}>
+					<Link to={`/product/comments/${commentData.product_id}`}>
+						<Button>View {commentData.total} comments</Button>
+					</Link>
+					<Comment data={commentData.last_comment} pcpComment />
+					<Level>
+						<Level.Item>
+							<Input color='white' placeholder='Write comment' />
+						</Level.Item>
+					</Level>
+				</div>
+			);
+		}
+
+		return commentView;
+	}
+
 	renderHeader() {
 		let back = () => { this.props.history.goBack(); };
 		if (this.props.history.length === 0) {
@@ -221,14 +271,14 @@ class Product extends Component {
 		}
 
 		const pcpResults = this.props.productCategory;
-		const headerTitle = _.chain(pcpResults).get('pcpData.info.title').value() || '';
+		const headerTitle = _.chain(pcpResults).get('pcpData.info.title').value();
 		const HeaderPage = {
 			left: (
 				<Link to='' onClick={back}>
 					<Svg src='ico_arrow-back-left.svg' />
 				</Link>
 			),
-			center: headerTitle,
+			center: headerTitle || <Spinner />,
 			right: null
 		};
 
@@ -261,8 +311,17 @@ class Product extends Component {
 		);
 	}
 
+	renderForeverBanner() {
+		const { shared } = this.props;
+		const foreverBannerData = shared.foreverBanner;
+		foreverBannerData.show = this.state.notification.show;
+		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+
+		return <ForeverBanner {...foreverBannerData} />;
+	}
+
 	render() {
-		return this.props.isLoading ? this.loadingView() : this.pcpRender();
+		return this.renderPage();
 	}
 }
 
@@ -271,16 +330,15 @@ const mapStateToProps = (state) => {
 		...state,
 		shared: state.shared,
 		productCategory: state.productCategory,
+		comments: state.comments,
 		isLoading: state.productCategory.isLoading,
 		scroller: state.scroller
 	};
 };
 
 const doAfterAnonymous = async (props) => {
-	console.log(props);
-	const { shared, dispatch, cookies, match, location } = props;
+	const { dispatch, cookies, match, location } = props;
 
-	const productService = _.chain(shared).get('serviceUrl.product').value() || false;
 	const categoryId = _.chain(match).get('params.categoryId').value() || '';
 	const parsedUrl = queryString.parse(location.search);
 	const pcpParam = {
@@ -291,11 +349,14 @@ const doAfterAnonymous = async (props) => {
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
 	
-	const [err, response] = await to(dispatch(pcpActions.pcpAction(cookies.get('user.token'), productService, pcpParam)));
+	const [err, response] = await to(dispatch(pcpActions.pcpAction(cookies.get('user.token'), pcpParam)));
 	
 	if (err) {
 		console.log(err.message);
 	} else {
+		const productIdList = _.map(response.products, 'product_id') || null;
+		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+
 		dispatch(filterActions.initializeFilter(response));
 	}
 };

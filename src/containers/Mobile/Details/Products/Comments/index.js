@@ -3,7 +3,7 @@ import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import { Page, Header, Svg, Comment, Input, Button, Level } from '@/components/mobile';
+import { Page, Header, Svg, Comment, Input, Button, Level, Spinner } from '@/components/mobile';
 import styles from './comments.scss';
 import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as productActions } from '@/state/v4/Product';
@@ -19,15 +19,40 @@ class Comments extends Component {
 		this.productId = this.props.match.params.id;
 	}
 
-	render() {
-		const { match, product, comments } = this.props;
-		const detailReady = _.isEmpty(product.detail);
+	renderComments() {
+		const { comments } = this.props;
+
 		const commentReady = _.isEmpty(comments.data);
-		console.log(comments.data);
-		if (detailReady || commentReady) {
-			return <div>Please wait, loading content...</div>;
+
+		if (commentReady) {
+			return <div><Spinner /></div>;
 		}
 
+		return (
+			<div style={{ marginBottom: '100px' }}>
+				{ <Comment data={comments.data} /> }
+			</div>
+		);
+		
+	}
+
+	renderDetail() {
+		const { product } = this.props;
+		const detailReady = _.isEmpty(product.detail);
+
+		if (detailReady) {
+			return <div><Spinner /></div>;
+		}
+
+		return (
+			<p className='margin--small padding--medium'>
+				{ product.detail.description }
+			</p>
+		);
+	}
+
+	render() {
+		const { match } = this.props;
 		const HeaderOption = {
 			left: (
 				<Link to={`/product/${match.params.id}`}>
@@ -41,20 +66,12 @@ class Comments extends Component {
 			<div>
 				<Page>
 					<div className='margin--medium'>
-						<p className='margin--small padding--medium'>
-							{
-								!detailReady && product.detail.description
-							}
-						</p>
+						{ this.renderDetail() }
 						<span className='margin--small padding--medium'>
 							<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
 						</span>
 					</div>
-					<div style={{ marginBottom: '100px' }}>
-						{
-							!commentReady && <Comment data={comments.data} />
-						}
-					</div>
+					{ this.renderComments() }
 				</Page>
 				<Header.Modal {...HeaderOption} />
 				<Level className={styles.commentbox}>

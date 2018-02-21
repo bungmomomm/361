@@ -117,12 +117,12 @@ export default {
 			exact: true
 		},
 		{
-			path: '/hashtags',
+			path: '/mau-gaya-itu-gampang',
 			component: Hashtags,
 			exact: true
 		},
 		{
-			path: '/hashtags/details',
+			path: '/mau-gaya-itu-gampang/:id',
 			component: HashtagsDetails
 		},
 		{
@@ -138,16 +138,8 @@ export default {
 			component: SearchNotFound
 		},
 		{
-			path: '/category/:categoryLvl1/:categoryLvl2/:categoryLvl3',
+			path: '/sub-category/',
 			component: SubCategory,
-		},
-		{
-			path: '/category/:categoryLvl1/:categoryLvl2',
-			component: SubCategory,
-		},
-		{
-			path: '/category/:categoryLvl1',
-			component: Category,
 		},
 		{
 			path: '/category/',

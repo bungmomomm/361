@@ -12,12 +12,12 @@ const initialState = {
 	}
 };
 
-const { setLoading, initPcp } = createActions(
-	'SET_LOADING', 'INIT_PCP'
+const { initLoading, initPcp } = createActions(
+	'INIT_LOADING', 'INIT_PCP'
 );
 
 const reducer = handleActions({
-	[setLoading](state, { payload: { isLoading } }) {
+	[initLoading](state, { payload: { isLoading } }) {
 		return {
 			isLoading
 		};
@@ -33,6 +33,6 @@ const reducer = handleActions({
 
 export default {
 	reducer, 
-	setLoading,
+	initLoading,
 	initPcp
 };

@@ -19,52 +19,37 @@ class SubCategory extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.state = {
-			selectedCategory: {}
-		};
-		this.categoryLvl1 = props.match.params.categoryLvl1;
-		this.categoryLvl2 = props.match.params.categoryLvl2;
-		this.categoryLvl3 = props.match.params.categoryLvl3;
 		this.userCookies = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
 		this.source = this.props.cookies.get('user.source');
-		this.defaultSegment = CONST.SEGMENT_DEFAULT_SELECTED;
+		this.state = {
+			selectedCategory: null
+		};
 	}
 
 	componentWillMount() {
-		if (this.categoryLvl1 && this.props.category && this.props.category.categories.length < 1) {
-			this.props.history.push(`/category/${this.defaultSegment.key}`);
+		if (this.props.category.sub_category === null && this.props.category.categories.length < 1) {
+			return this.props.history.push('/category');
 		}
-		this.setSelectedCategory(this.props.category.categories);
-	}
 
-	componentWillReceiveProps(nextProps) {
-		const isCategoryMenuDataUpdated = nextProps.category.categories.length > 1 &&
-			nextProps.category.categories !== this.props.category.categories;
-		if (isCategoryMenuDataUpdated) {
-			this.setSelectedCategory(nextProps.category.categories);
-		}
+		this.setSelectedCategory(this.props.category.categories);
+
+		return true;
 	}
 
 	setSelectedCategory(categories) {
-		let selectedCategory = categories.filter(e => e.id.toString() === this.categoryLvl2)[0];
+		const selectedCategory = categories.filter(e => e.id === this.props.category.sub_category)[0];
 		if (selectedCategory) {
-			selectedCategory = (this.categoryLvl3 !== undefined) ?
-				selectedCategory.sub_categories.filter(e => e.id.toString() === this.categoryLvl3)[0] : selectedCategory;
-			if (selectedCategory === undefined) {
-				return this.props.history.push('/category/');
-			}
-			const categorySlug = selectedCategory.title.replace(/ /g, '-').toLowerCase();
+			const categorySlug = encodeURIComponent(selectedCategory.title.replace(/ /g, '-').toLowerCase());
+
 			if (selectedCategory.sub_categories.length === 0) {
 				this.props.history.push(`/p-${selectedCategory.id}/${categorySlug}`);
 			}
 			this.getFeaturedBrands(selectedCategory.id);
-			this.setState({
-				selectedCategory
-			});
+			this.setState({ selectedCategory });
 		}
 
-		if (categories.length > 1 && selectedCategory === undefined) {
-			return this.props.history.push('/category/');
+		if (selectedCategory === undefined) {
+			this.props.history.push('/category');
 		}
 		return true;
 	}
@@ -76,44 +61,33 @@ class SubCategory extends PureComponent {
 
 	render() {
 		const { selectedCategory } = this.state;
-		const HeaderPage = {
+		const HeaderPage = (selectedCategory) && ({
 			left: (
-				<button onClick={this.props.history.goBack}>
+				<Link to={'/category'}>
 					<Svg src='ico_arrow-back-left.svg' />
-				</button>
+				</Link>
 			),
 			center: selectedCategory.title || '',
 			right: null
-		};
-
-		const listCategory = selectedCategory.sub_categories && selectedCategory.sub_categories.map((cat, key) => {
-			let list = null;
-			if (this.categoryLvl3 === undefined) {
-				list = (
-					<List key={key}>
-						<Link style={{ flexFlow: 'row nowrap' }} to={`/category/${this.categoryLvl1}/${this.categoryLvl2}/${cat.id}`}>
-							<List.Image><Image width={40} height={40} avatar src={cat.image_url} /></List.Image>
-							<List.Content>{cat.title}</List.Content>
-						</Link>
-					</List>
-				);
-			} else {
-				list = (
-					<List style={{ flexFlow: 'row nowrap' }} key={key}>
-						<Link to={`/p-${cat.id}/${cat.title}`}>
-							<List.Image><Image width={40} height={40} avatar src={cat.image_url} /></List.Image>
-							<List.Content>{cat.title}</List.Content>
-						</Link>
-					</List>
-				);
-			}
-			return list;
 		});
 
-		const listFeaturedBrands = this.props.category.brands && this.props.category.brands.map((brand, key) => {
+		const listCategory = (selectedCategory) && selectedCategory.sub_categories.map((cat, key) => {
+			const categoryTitle = encodeURIComponent(cat.title.replace(/ /g, '-').toLowerCase());
 			return (
 				<List key={key}>
-					<Link style={{ flexFlow: 'row nowrap' }} to={`/brand/${brand.id}/${encodeURIComponent(brand.title.toLowerCase())}`}>
+					<Link style={{ flexFlow: 'row nowrap' }} to={`/p-${cat.id}/${categoryTitle}`}>
+						<List.Image><Image width={40} height={40} avatar src={cat.image_url} /></List.Image>
+						<List.Content>{cat.title}</List.Content>
+					</Link>
+				</List>
+			);
+		});
+
+		const listFeaturedBrands = (selectedCategory && this.props.category.brands) && this.props.category.brands.map((brand, key) => {
+			const brandTitle = encodeURIComponent(brand.title.replace(/ /g, '-').toLowerCase());
+			return (
+				<List key={key}>
+					<Link style={{ flexFlow: 'row nowrap' }} to={`/brand/${brand.id}/${brandTitle}`}>
 						<List.Image><Image width={40} height={40} avatar src={brand.image_url} /></List.Image>
 						<List.Content>{brand.title}</List.Content>
 					</Link>

@@ -1,64 +1,71 @@
+import _ from 'lodash';
+import { to } from 'await-to-js';
+
 import { request } from '@/utils';
-import { setLoading, initPcp } from './reducer';
+import { initLoading, initPcp } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 
-const pcpAction = (token, url = false, query) => async (dispatch, getState) => {
-	dispatch(setLoading({ isLoading: true }));
+const pcpAction = (token, query) => async (dispatch, getState) => {
+	dispatch(initLoading({ isLoading: true }));
 	dispatch(scrollerActions.onScroll({ loading: true }));
-	
-	let path = `${process.env.MICROSERVICES_URL}products/search`;
-	if (url) {
-		path = `${url.url}/products/search`;
-	}
 
-	return request({
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || process.env.MICROSERVICES_URL;
+
+	const path = `${baseUrl}/products/search`;
+
+	const [err, response] = await to(request({
 		token,
 		path,
 		method: 'GET',
 		query,
 		fullpath: true
-	}).then(response => {
-		if ((query && query.category_id === '666') || (query && query.category_id === '')) {
-			dispatch(initPcp({
-				isLoading: false,
-				pcpStatus: 'failed'
-			}));
-			return Promise.reject(new Error('error '));
-		}
-		const pcpData = {
-			links: response.data.data.links,
-			info: response.data.data.info,
-			facets: response.data.data.facets,
-			sorts: response.data.data.sorts,
-			products: response.data.data.products
-		};
-		dispatch(initPcp({
-			isLoading: false,
-			pcpStatus: 'success',
-			pcpData
-		}));
-		
-		const nextLink = pcpData.links && pcpData.links.next ? new URL(`http://mm.co${pcpData.links.next}`).searchParams : false;
-		dispatch(scrollerActions.onScroll({
-			nextData: { 
-				token,
-				query: {
-					category_id: nextLink ? parseInt(nextLink.get('category_id'), 10) : false,
-					page: nextLink ? parseInt(nextLink.get('page'), 10) : false,
-					per_page: nextLink ? parseInt(nextLink.get('per_page'), 10) : false,
-					fq: nextLink ? parseInt(nextLink.get('fq'), 10) : false,
-					sort: nextLink ? parseInt(nextLink.get('sort'), 10) : false,
-				}
-			},
-			nextPage: nextLink !== false,
-			loading: false,
-			loader: pcpAction
-		}));
+	}));
 
-		return Promise.resolve(pcpData);
-	}).catch((e) => {
-		return Promise.reject(e);
-	});
+	if (err) {
+		return Promise.reject(err);
+	}
+
+	const pcpData = {
+		links: response.data.data.links,
+		info: response.data.data.info,
+		facets: response.data.data.facets,
+		sorts: response.data.data.sorts,
+		products: response.data.data.products
+	};
+
+	// if (_.isEmpty(pcpData.products)) {
+	// 	dispatch(initPcp({
+	// 		isLoading: false,
+	// 		pcpStatus: 'failed'
+	// 	}));
+	// 	return Promise.reject(new Error('Empty data'));
+	// }
+
+	dispatch(initPcp({
+		isLoading: false,
+		pcpStatus: 'success',
+		pcpData
+	}));
+
+	const nextLink = pcpData.links && pcpData.links.next ? new URL(baseUrl + pcpData.links.next).searchParams : false;
+	dispatch(scrollerActions.onScroll({
+		nextData: { 
+			token,
+			query: {
+				category_id: nextLink ? parseInt(nextLink.get('category_id'), 10) : false,
+				page: nextLink ? parseInt(nextLink.get('page'), 10) : false,
+				per_page: nextLink ? parseInt(nextLink.get('per_page'), 10) : false,
+				fq: nextLink ? nextLink.get('fq') : false,
+				sort: nextLink ? nextLink.get('sort') : false,
+			}
+		},
+		nextPage: nextLink !== false,
+		loading: false,
+		loader: pcpAction
+	}));
+
+	return Promise.resolve(pcpData);
 };
 
 const discoveryUpdate = (response) => async dispatch => {
