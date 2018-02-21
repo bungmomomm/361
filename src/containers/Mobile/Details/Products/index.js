@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
-import { actions as commentActions } from '@/state/v4/Comment';
 import { Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
@@ -51,7 +50,7 @@ class Products extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		const { product, lovelist } = nextProps;
+		const { product, lovelist, dispatch } = nextProps;
 		const { detail, similar, socialSummary } = product;
 		const { status } = this.state;
 
@@ -69,10 +68,10 @@ class Products extends Component {
 					pricing: item.pricing,
 					images: item.images
 				};
-				return <Card.CatalogGrid {...data} key={idx} />;
+				return <Card.CatalogGrid linkToPdp='/' {...data} key={idx} />;
 			});
 
-			const lovelistProduct = lovelistActions.getProductFromBulk(detail.id, lovelist.bulkieCountProducts);
+			const lovelistProduct = dispatch(lovelistActions.getProductBulk(5131299));
 			detail.totalLovelist = lovelistProduct.total;
 			detail.totalComments = socialSummary.comments.total || 0;
 			status.pdpDataHasLoaded = true;
@@ -120,11 +119,11 @@ class Products extends Component {
 		if (!isLoved) {
 			isLoved = true;
 			pdpData.cardProduct.totalLovelist += 1;
-			dispatch(lovelistActions.addToLovelist(this.userCookies, 1, match.params.id));
+			dispatch(lovelistActions.addToLovelist(this.userCookies, match.params.id));
 		} else {
 			isLoved = false;
 			pdpData.cardProduct.totalLovelist -= 1;
-			dispatch(lovelistActions.removeFromLovelist(this.userCookies, 1, match.params.id));
+			dispatch(lovelistActions.removeFromLovelist(this.userCookies, match.params.id));
 		}
 
 		this.setState({ status: { isLoved }, pdpData });
@@ -374,7 +373,6 @@ const doAfterAnonymous = (props) => {
 	dispatch(new productActions.productRecommendationAction(token));
 	dispatch(new productActions.productSimilarAction(token));
 	dispatch(new productActions.productSocialSummaryAction(token, productId));
-	dispatch(new commentActions.productCommentAction(token, productId));
 	dispatch(new lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productId));
 
 };

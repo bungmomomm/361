@@ -28,6 +28,7 @@ class Lovelist extends Component {
 
 		this.getLovelistCardsContent = this.getLovelistCardsContent.bind(this);
 		this.renderLovelistPage = this.renderLovelistPage.bind(this);
+		this.handleLovelistClicked = this.handleLovelistClicked.bind(this);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -68,17 +69,43 @@ class Lovelist extends Component {
 					isLoved={isLoved} 
 					key={idx} 
 					data={product}
-					onBtnLovelistClick={(e) => (console.log(this))} 
+					onBtnLovelistClick={this.handleLovelistClicked} 
 				/>) : 
 				(<Card.LovelistGrid 
 					key={idx} 
 					data={product} 
 					isLoved={isLoved}
-					onBtnLovelistClick={(e) => (console.log(this))} 
+					onBtnLovelistClick={() => this.handleLovelistClicked(product)} 
 				/>);
 		});
 
 		return <div className={styles.cardContainer}>{content}</div>;
+	}
+
+	handleLovelistClicked(product) {
+		const { dispatch } = this.props;
+		const { ids, list } = this.props.lovelist.items;
+		const { id } = product;
+
+		const idx = ids.indexOf(id);
+
+		if (idx > -1) {
+
+			// removes item from lovelist list
+			dispatch(LoveListActionCreator.removeFromLovelist(this.userCookies, id));
+			list.splice(idx, 1);
+			ids.splice(idx, 1);
+			
+			// updates state if Lovelist list is empty
+			if (ids.length === 0) {
+				const { status } = this.state;
+				status.listEmpty = true;
+				this.setState({ status });
+			}
+
+			// updating lovelist items props
+			dispatch(new LoveListActionCreator.getList({ ids, list }, false));
+		}
 	}
 
 	renderLovelistPage(content) {
@@ -149,7 +176,7 @@ class Lovelist extends Component {
 					<p className='margin--medium font--lato-light'>Tekan <Svg width='20px' height='18px' src='ico_love.svg' /> untuk menambahkan
 						<br />produk ke Lovelist.
 					</p>
-					<p className='margin--medium'><Button inline size='large' color='primary'>BELANJA</Button></p>
+					<p className='margin--medium'><Button inline size='large' color='secondary'>BELANJA</Button></p>
 					<Image local style={{ margin: '0 auto -30px auto' }} alt='Tap the love icon' src='lovelist-guide.png' />
 				</div>
 			));

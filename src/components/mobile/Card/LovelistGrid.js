@@ -29,7 +29,7 @@ class LovelistGrid extends PureComponent {
 						</div>
 					</Level.Item>
 					<Level.Right>
-						<Button onClick={this.props.onBtnLovelistClick}>
+						<Button onClick={this.props.onBtnLovelistClick} data-id={data} >
 							<Svg src={loveIcon} />
 						</Button>
 					</Level.Right>

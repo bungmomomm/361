@@ -26,14 +26,19 @@ const formatItems = (data) => {
 	};
 	
 	if (!_.isUndefined(data.products) && !_.isEmpty(data.products)) {
+		let i = 1;
 		items.list = data.products.map((item, idx) => {
 			const images = item.images.map((img) => {
 				return { mobile: img.thumbnail, thumbnail: img.thumbnail };
 			});
 
+			item.product_id += i;
+			item.product_title = `${item.product_title} -> ${i}`;
+			i++;
 			items.ids.push(item.product_id);
 
 			return {
+				id: item.product_id,
 				brand: item.brand.brand_name,
 				images,
 				pricing: item.pricing,
@@ -61,21 +66,27 @@ const getList = (items, formatted = true) => (dispatch) => {
 	dispatch(countLovelist({ count: items.list.length }));
 };
 
-const addToLovelist = (token, userId, variantId, url) => async (dispatch, getState) => {
+/**
+ * Adds item into Lovelist
+ * @param {*} token 
+ * @param {*} productId 
+ */
+const addToLovelist = (token, productId) => async (dispatch, getState) => {
 	
-	if (userId && variantId) {
+	if (productId) {
 		const { shared } = getState();
 		const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
 
 		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
-		const path = `${baseUrl}/add/${userId}/${variantId}`;
+		const path = `${baseUrl}/add/${productId}`;
 
 		const [err, response] = await to(request({
 			token,
 			path,
-			method: 'GET',
-			fullpath: true
+			method: 'POST',
+			fullpath: true,
+			body: productId
 		}));
 
 		if (err) {
@@ -83,7 +94,7 @@ const addToLovelist = (token, userId, variantId, url) => async (dispatch, getSta
 		}
 		
 		// dispatching of adding item into lovelist
-		const item = { variantId };
+		const item = { productId };
 		dispatch(addItem({ item }));
 
 		return Promise.resolve(response);
@@ -93,21 +104,27 @@ const addToLovelist = (token, userId, variantId, url) => async (dispatch, getSta
 	return false;
 };
 
-const removeFromLovelist = (token, userId, variantId) => async (dispatch, getState) => {
+/**
+ * Removes item from Lovelist
+ * @param {*} token 
+ * @param {*} productId 
+ */
+const removeFromLovelist = (token, productId) => async (dispatch, getState) => {
 
-	if (userId && variantId) {
+	if (productId) {
 		const { shared } = getState();
 		const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
 
 		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
-		const path = `${baseUrl}/delete/${userId}/${variantId}`;
+		const path = `${baseUrl}/delete/${productId}`;
 
 		const [err, response] = await to(request({
 			token,
 			path,
-			method: 'GET',
-			fullpath: true
+			method: 'POST',
+			fullpath: true,
+			body: productId
 		}));
 		
 		if (err) {
@@ -115,8 +132,8 @@ const removeFromLovelist = (token, userId, variantId) => async (dispatch, getSta
 		}
 		
 		// dispatching of deleting item from lovelist
-		const item = { variantId };
-		dispatch(removeItem({ item }));
+		const item = { productId };
+		dispatch(removeItem(item));
 
 		return Promise.resolve(response);
 	
@@ -186,12 +203,6 @@ const bulkieCountByProduct = (token, productId) => async (dispatch, getState) =>
 	return false;
 };
 
-const getProductFromBulk = (productId, bulkieCountProducts) => {
-	productId = 5131295; // will be removed later, testing purposes
-	const product = bulkieCountProducts.find(item => item.product_id === productId);
-	return product || {};
-};
-
 const getProductBulk = (productId) => (dispatch, getState) => {
 	const { lovelist } = getState();
 	const { bulkieCountProducts } = lovelist;
@@ -207,6 +218,5 @@ export default {
 	bulkieCountByProduct,
 	getLovelisItems,
 	setLoadingState,
-	getProductFromBulk,
 	getProductBulk
 };
