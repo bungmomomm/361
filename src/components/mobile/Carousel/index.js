@@ -59,9 +59,9 @@ class NukeCarousel extends PureComponent {
 
 	componentDidUpdate() {
 		this.updateDimentionCarousel();
-		
+
 	}
-	
+
 	updateDimentionCarousel() {
 		setTimeout(() => {
 			if (this.node !== null) {
@@ -81,16 +81,16 @@ class NukeCarousel extends PureComponent {
 			styles.container,
 			className
 		);
-		
+
 		return (
 			<div>
-				<Carousel decorators={Decorators} dragging ref={(n) => { this.node = n; }} className={createClassName} {...props}>
+				<Carousel width='100%' decorators={Decorators} dragging ref={(n) => { this.node = n; }} className={createClassName} {...props}>
 					{children}
 				</Carousel>
 			</div>
 		);
 
-		
+
 	}
 }
 
