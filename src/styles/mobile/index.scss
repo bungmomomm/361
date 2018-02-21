@@ -104,7 +104,6 @@
 		display: block;
 		flex: none;
 	}
-	#root,
 	body,
 	html {
 		height: 100%;
@@ -135,8 +134,9 @@
 		background: #D8D8D8;
 	}
 	#root {
+	  	width: 100%;
+	  	overflow-y: hidden;
 		z-index: 0;
-
 		.switch-wrapper {
 			height: 100%;
 			background: transparent;
