@@ -2,11 +2,10 @@ import _ from 'lodash';
 import { to } from 'await-to-js';
 
 import { request } from '@/utils';
-import { initLoading, initPcp } from './reducer';
+import { initPcp } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 
-const pcpAction = (token, query) => async (dispatch, getState) => {
-	dispatch(initLoading({ isLoading: true }));
+const pcpAction = ({ token, query = {} }) => async (dispatch, getState) => {
 	dispatch(scrollerActions.onScroll({ loading: true }));
 
 	const { shared } = getState();
@@ -43,7 +42,6 @@ const pcpAction = (token, query) => async (dispatch, getState) => {
 	// }
 
 	dispatch(initPcp({
-		isLoading: false,
 		pcpStatus: 'success',
 		pcpData
 	}));
@@ -53,11 +51,12 @@ const pcpAction = (token, query) => async (dispatch, getState) => {
 		nextData: { 
 			token,
 			query: {
-				category_id: nextLink ? parseInt(nextLink.get('category_id'), 10) : false,
+				...query,
 				page: nextLink ? parseInt(nextLink.get('page'), 10) : false,
-				per_page: nextLink ? parseInt(nextLink.get('per_page'), 10) : false,
-				fq: nextLink ? nextLink.get('fq') : false,
-				sort: nextLink ? nextLink.get('sort') : false,
+				// category_id: nextLink ? parseInt(nextLink.get('category_id'), 10) : false,
+				// per_page: nextLink ? parseInt(nextLink.get('per_page'), 10) : false,
+				// fq: nextLink ? nextLink.get('fq') : false,
+				// sort: nextLink ? nextLink.get('sort') : false,
 			}
 		},
 		nextPage: nextLink !== false,

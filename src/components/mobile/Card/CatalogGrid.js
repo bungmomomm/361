@@ -31,7 +31,7 @@ class CatalogGrid extends PureComponent {
 					<Level.Item>
 						<Link to={(linkToPdp) || '/'}>
 							<div className={styles.title}>
-								{brandName.name}
+								{brandName}
 								<span>{productTitle}</span>
 							</div>
 						</Link>

@@ -19,13 +19,15 @@ class Catalog extends PureComponent {
 			brandName,
 			pricing,
 			linkToPdp,
+			commentTotal,
+			commentUrl,
 			...props
 		} = this.props;
-
+		
 		const createClassName = classNames(styles.container, styles[type], className);
 
-		const comment = ('commentTotal' in this.props) ? (<span>{this.props.commentTotal} Comments</span>)
-			: (<span>Comment</span>);
+		const comment = commentTotal ? <span>{commentTotal} Comments</span>
+			: <span>Comment</span>;
 
 		return (
 			<div className={createClassName} {...props}>
@@ -49,7 +51,7 @@ class Catalog extends PureComponent {
 						</Button>
 					</Level.Item>
 					<Level.Item>
-						<Link to={('commentUrl' in this.props) ? this.props.commentUrl : '/'}>
+						<Link to={commentUrl || '/'}>
 							<Button>
 								<Svg src='ico_comment.svg' />
 								{comment}
@@ -59,7 +61,7 @@ class Catalog extends PureComponent {
 				</Level>
 				<Link to={(linkToPdp) || '/'}>
 					<div className={styles.title}>
-						{brandName.name} - <span>{productTitle}</span>
+						{brandName} - <span>{productTitle}</span>
 					</div>
 					<Level className={styles.footer}>
 						<Level.Item>

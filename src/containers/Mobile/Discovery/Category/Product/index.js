@@ -19,7 +19,7 @@ import { actions as pcpActions } from '@/state/v4/ProductCategory';
 import { actions as filterActions } from '@/state/v4/SortFilter';
 import { actions as commentActions } from '@/state/v4/Comment';
 
-import { hyperlink } from '@/utils';
+import { hyperlink, loading } from '@/utils';
 import stylesCatalog from '../Catalog/catalog.scss';
 
 class Product extends Component {
@@ -27,7 +27,7 @@ class Product extends Component {
 		super(props);
 		this.props = props;
 
-		this.currentListState = 0;
+		this.currentListState = 1;
 		this.listType = [{
 			type: 'list',
 			icon: 'ico_grid.svg'
@@ -44,8 +44,30 @@ class Product extends Component {
 				show: true
 			},
 			filterShown: false,
-			sortShown: false
+			sortShown: false,
+			product: {
+				isLoading: true, 
+				firstLoad: this.renderLoading
+			},
+			comment: {
+				isLoading: true, 
+				firstLoad: this.renderLoading
+			}
 		};
+		this.renderLoading = <div style={{ margin: '20px auto 20px auto' }}><Spinner /></div>;
+	}
+
+	componentWillUnmount() {
+		this.setState({
+			product: {
+				isLoading: true, 
+				firstLoad: this.renderLoading
+			},
+			comment: {
+				isLoading: true, 
+				firstLoad: this.renderLoading
+			}
+		});
 	}
 
 	async onApply(e) {
@@ -134,8 +156,6 @@ class Product extends Component {
 					{this.renderTabs()}
 					{this.renderForeverBanner()}
 					<Navigation active='Categories' />
-
-					{this.props.scroller.loading}
 				</div>
 			);
 		}
@@ -144,22 +164,38 @@ class Product extends Component {
 	}
 
 	renderPcp() {
-		let pcpView = (<Spinner />);
-		const { filters } = this.props;
-		const { sortShown } = this.state;
-		const pcpResults = this.props.productCategory;
+		let pcpView = null;
+		const { productCategory, filters } = this.props;
+		const { sortShown, product } = this.state;
+		// const pcpData = _.isEmpty(productCategory.pcpData);
+		const me = this;
 
-		if (pcpResults.pcpStatus !== undefined && pcpResults.pcpStatus !== '') {
-			if (pcpResults.pcpStatus === 'success' /* && pcpResults.pcpData.products.length > 0 */) {
+		if (product.isLoading) {
+			loading().then((response) => {
+				if (me.state.product.isLoading) {
+					me.setState({
+						product: {
+							isLoading: false,
+							firstLoad: null
+						}
+					});
+				}
+			});
+			return me.state.product.firstLoad;
+		}
+
+		if (productCategory.pcpStatus !== '') {
+			if (productCategory.pcpStatus === 'success') {
 				pcpView = (
 					<Page>
 						<div className={stylesCatalog.cardContainer}>
-							{this.renderContent(pcpResults.pcpData.products)}
+							{this.renderContent(productCategory.pcpData.products)}
+							{this.props.scroller.loading && this.renderLoading}
 						</div>
 						<Sort shown={sortShown} sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
 					</Page>
 				);
-			} else if (pcpResults.pcpStatus === 'failed') {
+			} else if (productCategory.pcpStatus === 'failed') {
 				window.location.href = '/not-found';
 			}
 		}
@@ -188,20 +224,24 @@ class Product extends Component {
 		if (productData) {
 			const linkToPdpCreator = hyperlink('', ['product', productData.product_id], null);
 			const { comments } = this.props;
-			
+			const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: productData.product_id }) : false;
+			const commentTotal = commentData ? commentData.total : null;
+
 			const listCardCatalogAttribute = {
 				images: productData.images,
 				productTitle: productData.product_title,
-				brandName: productData.brand,
+				brandName: productData.brand.name,
 				pricing: productData.pricing,
-				linkToPdp: linkToPdpCreator
+				linkToPdp: linkToPdpCreator,
+				commentTotal,
+				commentUrl: `/product/comments/${productData.product_id}`
 			};
 			
 			const cardCatalogGridAttribute = {
 				key: index,
 				images: productData.images,
 				productTitle: productData.product_title,
-				brandName: productData.brand,
+				brandName: productData.brand.name,
 				pricing: productData.pricing,
 				linkToPdp: linkToPdpCreator
 			};
@@ -217,12 +257,8 @@ class Product extends Component {
 			case 'list':
 				return (
 					<div key={index} className={stylesCatalog.cardCatalog}>
-						<Card.Catalog
-							{...listCardCatalogAttribute}
-							commentTotal={comments.total}
-							commentUrl={`/product/comments/${productData.product_id}`}
-						/>
-						{comments && comments.loading ? <Spinner /> : this.renderComment(productData.product_id)}
+						<Card.Catalog {...listCardCatalogAttribute} />
+						{comments && comments.loading ? this.renderLoading : this.renderComment(productData.product_id)}
 					</div>
 				);
 			case 'grid':
@@ -244,14 +280,32 @@ class Product extends Component {
 	renderComment(productId) {
 		let commentView = null;
 		const { comments } = this.props;
-		if (comments && comments.data !== null && comments.data.length > 0) {
-			const commentData = _.find(comments.data, { product_id: productId }) || null;
+		const { comment } = this.state;
+		// const commentData = _.isEmpty(comments.data);
+		const me = this;
+
+		if (comment.isLoading) {
+			loading().then((response) => {
+				if (me.state.comment.isLoading) {
+					me.setState({
+						comment: {
+							isLoading: false,
+							firstLoad: null
+						}
+					});
+				}
+			});
+			return me.state.comment.firstLoad;
+		}
+
+		const commentProduct = _.find(comments.data, { product_id: productId }) || false;
+		if (commentProduct) {
 			commentView = (
 				<div className={stylesCatalog.commentBlock}>
-					<Link to={`/product/comments/${commentData.product_id}`}>
-						<Button>View {commentData.total} comments</Button>
+					<Link to={`/product/comments/${commentProduct.product_id}`}>
+						<Button>View {commentProduct.total} comments</Button>
 					</Link>
-					<Comment data={commentData.last_comment} pcpComment />
+					<Comment data={commentProduct.last_comment} pcpComment />
 					<Level>
 						<Level.Item>
 							<Input color='white' placeholder='Write comment' />
@@ -270,15 +324,15 @@ class Product extends Component {
 			back = () => { this.props.history.push('/'); };
 		}
 
-		const pcpResults = this.props.productCategory;
-		const headerTitle = _.chain(pcpResults).get('pcpData.info.title').value();
+		const { productCategory } = this.props;
+		const headerTitle = _.chain(productCategory).get('pcpData.info.title').value() || this.renderLoading;
 		const HeaderPage = {
 			left: (
 				<Link to='' onClick={back}>
 					<Svg src='ico_arrow-back-left.svg' />
 				</Link>
 			),
-			center: headerTitle || <Spinner />,
+			center: headerTitle,
 			right: null
 		};
 
@@ -344,18 +398,20 @@ const doAfterAnonymous = async (props) => {
 	const pcpParam = {
 		category_id: parseInt(categoryId, 10),
 		page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
-		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 10,
+		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 36,
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
 	
-	const [err, response] = await to(dispatch(pcpActions.pcpAction(cookies.get('user.token'), pcpParam)));
+	const [err, response] = await to(dispatch(pcpActions.pcpAction({ token: cookies.get('user.token'), query: pcpParam })));
 	
 	if (err) {
 		console.log(err.message);
 	} else {
-		const productIdList = _.map(response.products, 'product_id') || null;
-		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		if (response.products.length > 0) {
+			const productIdList = _.map(response.products, 'product_id') || null;
+			dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		}
 
 		dispatch(filterActions.initializeFilter(response));
 	}
