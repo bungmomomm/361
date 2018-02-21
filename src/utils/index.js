@@ -8,6 +8,7 @@ import componentState from './componentState';
 import { request, getCancelToken } from './request';
 import { setUserCookie } from './cookie';
 import SocialLogin from './social-login';
+import urlBuilder from './urlBuilder';
 
 const getBaseUrl = () => {
 	return process.env.BASE_URL;
@@ -34,7 +35,7 @@ export default {
 	getDeviceID,
 	getClientID,
 	getClientSecret,
-	getClientVersion,	
+	getClientVersion,
 	setUserCookie,
 	newId,
 	renderIf,
@@ -46,5 +47,6 @@ export default {
 	modalController,
 	componentState,
 	SocialLogin,
-	hyperlink
+	hyperlink,
+	urlBuilder
 };
