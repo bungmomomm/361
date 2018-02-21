@@ -2,13 +2,50 @@ import React, { PureComponent } from 'react';
 import { withCookies } from 'react-cookie';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Header, Page, Navigation, Svg, Grid, Card } from '@/components/mobile';
+import { Header, Page, Navigation, Svg, Grid, Card, Carousel } from '@/components/mobile';
 import { actions } from '@/state/v4/HashtagsDetails';
 import Shared from '@/containers/Mobile/Shared';
 import Spinner from '@/components/mobile/Spinner';
 import { hyperlink } from '@/utils';
+import moment from 'moment';
 
 class HashtagsDetails extends PureComponent {
+
+	bufferCarousel = (products) => {
+		const buffer = [];
+		let fragment = [];
+
+		products.forEach((product, i) => {
+			fragment = ((i + 1) % 2 !== 0) ?
+			[
+				<Card.CatalogGrid
+					key={i}
+					images={product.images}
+					productTitle={product.product_title}
+					brandName={product.brand.name}
+					pricing={product.pricing}
+					linkToPdp={hyperlink('', ['product', product.product_id], null)}
+				/>
+			] :
+			[
+				...fragment,
+				<Card.CatalogGrid
+					key={i}
+					images={product.images}
+					productTitle={product.product_title}
+					brandName={product.brand.name}
+					pricing={product.pricing}
+					linkToPdp={hyperlink('', ['product', product.product_id], null)}
+				/>
+			];
+
+			if ((i + 1) % 2 === 0 || products.length === (i + 1)) {
+				buffer.push(fragment);
+			}
+		});
+
+		return buffer;
+	};
 
 	render() {
 		const { hashtagdetails, history } = this.props;
@@ -24,6 +61,8 @@ class HashtagsDetails extends PureComponent {
 			right: null
 		};
 
+		const looks = this.bufferCarousel(ent.data.products);
+
 		return (
 			<div>
 				<Page>
@@ -36,30 +75,19 @@ class HashtagsDetails extends PureComponent {
 								<div>
 									{ent.data.post.username}
 									<p>
-										Post date: {ent.data.post.created_time} <br />
+										Post date: {moment(ent.data.post.created_time).format('DD/MM/YY')} <br />
 										{ent.data.post.caption}
 									</p>
 								</div>
 							</span>
 						)}
 
-						{ent.data.products.length && (
+						{looks.length && (
 						<div>
 							<h2>Get The Look</h2>
-							<Grid split={2}>
-								{ent.data.products.map((product, i) =>
-									(
-										<Card.CatalogGrid
-											key={i}
-											images={product.images}
-											productTitle={product.product_title}
-											brandName={product.brand.name}
-											pricing={product.pricing}
-											linkToPdp={hyperlink('', ['product', product.product_id], null)}
-										/>
-									)
-								)}
-							</Grid>
+							<Carousel>
+								{looks.map((chunk, i) => <Grid split={2} key={i}>{chunk}</Grid>)}
+							</Carousel>
 						</div>
 						)}
 
