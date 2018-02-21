@@ -114,7 +114,7 @@ class Home extends Component {
 		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}`).get('recomendationData').get(obj);
-		
+
 
 		if (!datas.isEmpty().value()) {
 			const header = renderSectionHeader(label, {
@@ -124,7 +124,7 @@ class Home extends Component {
 			return (
 				<div>
 					{ header }
-					<Grid split={3}>
+					<Grid split={3} bordered>
 						{
 							datas.value().map(({ images, pricing }, e) => (
 								<div key={e}>
@@ -232,7 +232,7 @@ class Home extends Component {
 								break;
 							}
 							return (
-								<div key={e}>
+								<div className={styles.brandsImage} key={e}>
 									<Link to={url} >
 										<Image lazyload alt='thumbnail' src={brand.images.thumbnail} width='100%' />
 									</Link>
@@ -296,7 +296,6 @@ class Home extends Component {
 
 		const recommendation1 = this.isLogin === 'true' ? 'new_arrival_products' : 'recommended_products';
 		const recommendation2 = this.isLogin === 'true' ? 'best_seller_products' : 'recently_viewed_products';
-		
 		return (
 			<div style={this.props.style} {...SwipeReact.events}>
 				<Page>
@@ -319,7 +318,7 @@ class Home extends Component {
 
 					{ this.renderRecommendation(recommendation2)}
 					{ this.renderBottomBanner('bottom') }
-					{renderSectionHeader('Featured Brands', { title: 'LIHAT SEMUA', url: '/brands' })}
+					{renderSectionHeader('Brand Terpopuler', { title: 'LIHAT SEMUA', url: '/brands' })}
 					{ this.renderFeaturedBrands() }
 
 					{this.renderMozaic()}

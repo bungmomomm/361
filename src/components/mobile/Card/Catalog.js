@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import classNames from 'classnames';
 import Image from '../Image';
 import Svg from '../Svg';
-import Carousel from '../Carousel';
+// import Carousel from '../Carousel';
 import Button from '../Button';
 import Level from '../Level';
 import Badge from '../Badge';
@@ -29,16 +29,18 @@ class Catalog extends PureComponent {
 		const comment = commentTotal ? <span>{commentTotal} Comments</span>
 			: <span>Comment</span>;
 
+		const image = images[0];
 		return (
 			<div className={createClassName} {...props}>
 				<Link to={linkToPdp}>
-					<Carousel>
+					<Image src={image.thumbnail} alt='product' />
+					{/* <Carousel>
 						{
 							images.map((image, index) => (
 								<Image key={index} src={image.thumbnail} alt='product' />
 							))
 						}
-					</Carousel>
+					</Carousel> */}
 				</Link>
 				<Level
 					className={styles.action}
