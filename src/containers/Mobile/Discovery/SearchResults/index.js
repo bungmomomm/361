@@ -165,7 +165,7 @@ class SearchResults extends Component {
 
 	searchFound(products) {
 		if (products.length > 0) {
-			const { filters } = this.props;
+			const { searchResults } = this.props;
 			const { showSort } = this.state;
 			const productList = _.map(products, (product, index) => {
 				return this.renderList(product, index);
@@ -178,7 +178,7 @@ class SearchResults extends Component {
 							{ productList }
 						</div>
 					</div>
-					<Sort shown={showSort} sorts={filters.sorts} onSort={(e, value) => this.sort(e, value)} />
+					<Sort shown={showSort} sorts={searchResults.searchData.sorts} onSort={(e, value) => this.sort(e, value)} />
 				</Page>
 			);
 		}
