@@ -15,7 +15,7 @@ class LovelistGrid extends PureComponent {
 		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
 		const createClassName = classNames(styles.container, styles.grid, className);
 		
-		const linkToPdpCreator = hyperlink('', ['product', data.product_id], null);
+		const linkToPdpCreator = hyperlink('', ['product', data.id], null);
   
 		return (
 			<div className={createClassName}>
