@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { withCookies } from 'react-cookie';
-import { Header, Page, Card, Button, Svg, Image, Level } from '@/components/mobile';
+import { Header, Page, Card, Button, Svg, Image, Level, Modal } from '@/components/mobile';
 import _ from 'lodash';
 import styles from './lovelist.scss';
 import { actions as LoveListActionCreator } from '@/state/v4/Lovelist';
@@ -19,16 +19,20 @@ class Lovelist extends Component {
 				listEmpty: true,
 				loading: true,
 				loggedIn: true, // should be adjust when user-login has done...,
-				isBulkSet: false
+				isBulkSet: false,
+				showConfirmDelete: false
 			},
 			notification: {
 				show: true
-			}
+			},
+			removedItemId: false
 		};
 
 		this.getLovelistCardsContent = this.getLovelistCardsContent.bind(this);
 		this.renderLovelistPage = this.renderLovelistPage.bind(this);
 		this.handleLovelistClicked = this.handleLovelistClicked.bind(this);
+		this.handleCancelRemoveItem = this.handleCancelRemoveItem.bind(this);
+		this.removeItem = this.removeItem.bind(this);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -75,37 +79,50 @@ class Lovelist extends Component {
 					key={idx} 
 					data={product} 
 					isLoved={isLoved}
-					onBtnLovelistClick={() => this.handleLovelistClicked(product)} 
+					onBtnLovelistClick={this.handleLovelistClicked} 
 				/>);
 		});
 
 		return <div className={styles.cardContainer}>{content}</div>;
 	}
 
-	handleLovelistClicked(product) {
+	handleLovelistClicked(e) {
+		const { status } = this.state;
+		const { id } = e.currentTarget.dataset;
+		status.showConfirmDelete = !status.showConfirmDelete;
+		this.setState({ status, removedItemId: _.toInteger(id) });
+	}
+
+	handleCancelRemoveItem(e) {
+		const { status } = this.state;
+		status.showConfirmDelete = false;
+		this.setState({
+			status,
+			removedItemId: false
+		});
+	}
+
+	removeItem() {
 		const { dispatch } = this.props;
 		const { ids, list } = this.props.lovelist.items;
-		const { id } = product;
+		const { removedItemId, status } = this.state;
+		const idx = ids.indexOf(removedItemId);
 
-		const idx = ids.indexOf(id);
-
-		if (idx > -1) {
-
+		if (removedItemId && (idx > -1)) {
 			// removes item from lovelist list
-			dispatch(LoveListActionCreator.removeFromLovelist(this.userCookies, id));
+			dispatch(LoveListActionCreator.removeFromLovelist(this.userCookies, removedItemId));
 			list.splice(idx, 1);
 			ids.splice(idx, 1);
-			
+			status.showConfirmDelete = false;
+
 			// updates state if Lovelist list is empty
-			if (ids.length === 0) {
-				const { status } = this.state;
-				status.listEmpty = true;
-				this.setState({ status });
-			}
+			if (ids.length === 0) status.listEmpty = true;
 
 			// updating lovelist items props
 			dispatch(new LoveListActionCreator.getList({ ids, list }, false));
-		}
+		} else status.showConfirmDelete = false;
+
+		this.setState({ status, removedItemId: false });
 	}
 
 	renderLovelistPage(content) {
@@ -142,6 +159,25 @@ class Lovelist extends Component {
 					{content}
 				</Page>
 				<Header.Modal {...HeaderPage} />
+
+				<Modal show={status.showConfirmDelete}>
+					<div className='font-medium'>
+						<h3>Hapus Lovelist</h3>
+						<Level style={{ padding: '0px' }} className='margin--medium'>
+							<Level.Left />
+							<Level.Item className='padding--medium'>
+								<div className='font-small'>Kamu yakin mau hapus produk ini dari Lovelist kamu?</div>
+							</Level.Item>
+						</Level>
+					</div>
+					<Modal.Action
+						closeButton={(
+							<Button onClick={this.handleCancelRemoveItem}>
+								<span className='font-color--primary-ext-2'>BATALKAN</span>
+							</Button>)}
+						confirmButton={(<Button onClick={this.removeItem}>YA, HAPUS</Button>)}
+					/>
+				</Modal>
 			</div>
 		);
 	}

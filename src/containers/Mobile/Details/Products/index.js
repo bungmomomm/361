@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
-import { Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel } from '@/components/mobile';
+import { Modal, Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
 
@@ -21,6 +21,8 @@ class Products extends Component {
 		this.handleScroll = this.handleScroll.bind(this);
 		this.handleLovelistClick = this.handleLovelistClick.bind(this);
 		this.handleImageItemClick = this.handleImageItemClick.bind(this);
+		this.handleCancelRemoveItem = this.handleCancelRemoveItem.bind(this);
+		this.removeAddItem = this.removeAddItem.bind(this);
 		this.setCarouselSlideIndex = this.setCarouselSlideIndex.bind(this);
 
 
@@ -30,9 +32,10 @@ class Products extends Component {
 				showScrollInfomation: false,
 				isLoved: true,
 				isZoomed: false,
+				showConfirmDelete: false,
 				pdpDataHasLoaded: false,
 				similarSet: false,
-				reviewsSet: false
+				reviewsSet: false,
 			},
 			pdpData: {
 				cardProduct: {},
@@ -122,21 +125,19 @@ class Products extends Component {
 	}
 
 	handleLovelistClick(e) {
-		const { dispatch, match } = this.props;
-		const { pdpData } = this.state;
-		let { isLoved } = this.state.status;
- 
-		if (!isLoved) {
-			isLoved = true;
-			pdpData.cardProduct.totalLovelist += 1;
-			dispatch(lovelistActions.addToLovelist(this.userCookies, match.params.id));
+		const { status } = this.state;
+		if (status.isLoved) {
+			this.setState({ status });
+			status.showConfirmDelete = !status.showConfirmDelete;
 		} else {
-			isLoved = false;
-			pdpData.cardProduct.totalLovelist -= 1;
-			dispatch(lovelistActions.removeFromLovelist(this.userCookies, match.params.id));
+			this.removeAddItem(e);
 		}
+	}
 
-		this.setState({ status: { isLoved }, pdpData });
+	handleCancelRemoveItem(e) {
+		const { status } = this.state;
+		status.showConfirmDelete = false;
+		this.setState({ status });
 	}
 
 	handleImageItemClick() {
@@ -146,6 +147,24 @@ class Products extends Component {
 	redirectToComments() {
 		const { match, history } = this.props;
 		history.push(`/product/comments/${match.params.id}`);
+	}
+
+	removeAddItem(e) {
+		const { dispatch, match } = this.props;
+		const { pdpData, status } = this.state;
+
+		if (!status.isLoved) {
+			status.isLoved = true;
+			pdpData.cardProduct.totalLovelist += 1;
+			dispatch(lovelistActions.addToLovelist(this.userCookies, match.params.id));
+		} else {
+			status.isLoved = false;
+			pdpData.cardProduct.totalLovelist -= 1;
+			dispatch(lovelistActions.removeFromLovelist(this.userCookies, match.params.id));
+		}
+
+		status.showConfirmDelete = false;
+		this.setState({ status, pdpData });
 	}
 
 	renderZoomImage() {
@@ -359,6 +378,24 @@ class Products extends Component {
 					{this.renderStickyAction()}
 				</Page>
 				<Header.Modal style={!status.showScrollInfomation ? { backgroundColor: 'transparent', border: 'none', boxShadow: 'none' } : {}} {...this.renderHeaderPage()} />
+				<Modal show={status.showConfirmDelete}>
+					<div className='font-medium'>
+						<h3>Hapus Lovelist</h3>
+						<Level style={{ padding: '0px' }} className='margin--medium'>
+							<Level.Left />
+							<Level.Item className='padding--medium'>
+								<div className='font-small'>Kamu yakin mau hapus produk ini dari Lovelist kamu?</div>
+							</Level.Item>
+						</Level>
+					</div>
+					<Modal.Action
+						closeButton={(
+							<Button onClick={this.handleCancelRemoveItem}>
+								<span className='font-color--primary-ext-2'>BATALKAN</span>
+							</Button>)}
+						confirmButton={(<Button onClick={this.removeAddItem}>YA, HAPUS</Button>)}
+					/>
+				</Modal>
 				<Navigation />
 			</div>);
 	}

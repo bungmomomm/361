@@ -95,7 +95,7 @@ const addToLovelist = (token, productId) => async (dispatch, getState) => {
 		
 		// dispatching of adding item into lovelist
 		const item = { productId };
-		dispatch(addItem({ item }));
+		dispatch(addItem(item));
 
 		return Promise.resolve(response);
 	
