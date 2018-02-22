@@ -1,5 +1,6 @@
 import currency from './currency';
 import newId from './newId';
+import hyperlink from './hyperlink';
 import renderIf from './renderIf';
 import modalController from './modalController';
 import isMobile from './isMobile';
@@ -7,6 +8,7 @@ import componentState from './componentState';
 import { request, getCancelToken } from './request';
 import { setUserCookie } from './cookie';
 import SocialLogin from './social-login';
+import loading from './loading';
 
 const getBaseUrl = () => {
 	return process.env.BASE_URL;
@@ -44,5 +46,7 @@ export default {
 	isMobile,
 	modalController,
 	componentState,
-	SocialLogin
+	SocialLogin,
+	hyperlink,
+	loading
 };

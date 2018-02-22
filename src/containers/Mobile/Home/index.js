@@ -98,16 +98,16 @@ class Home extends Component {
 		let label = '';
 		switch (type) {
 		case 'best_seller_products':
-			link = '/promo/best_seller'; label = 'Best Seller';
+			link = '/promo/best_seller'; label = 'Produk Terlaris';
 			break;
 		case 'recommended_products':
-			link = '/promo/recommended_products'; label = 'Recommmended';
+			link = '/promo/recommended_products'; label = 'Produk Rekomendasi';
 			break;
 		case 'recently_viewed_products':
-			link = '/promo/recent_view'; label = 'Recently Viewed';
+			link = '/promo/recent_view'; label = 'Terakhir Dilihat';
 			break;
 		default:
-			link = '/promo/new_arrival'; label = 'New Arrival';
+			link = '/promo/new_arrival'; label = 'Produk Terbaru';
 		}
 
 		const obj = _.camelCase(type);
@@ -244,7 +244,7 @@ class Home extends Component {
 		const mozaic = _.chain(home).get(`allSegmentData.${segment}.mozaic`);
 
 		if (!mozaic.isEmpty().value()) {
-			const header = renderSectionHeader('Mozaic Megazine', {
+			const header = renderSectionHeader('Mozaic Artikel', {
 				title: mozaic.value().mainlink.text,
 				url: mozaic.value().mainlink.link
 			});

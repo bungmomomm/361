@@ -16,15 +16,13 @@ class UserProfileEditEmail extends Component {
 					<Level.Left style={{ width: '80px' }}>
 						<Link to='/profile-edit'><Svg src='ico_arrow-back-left.svg' /></Link>
 					</Level.Left>
-					<Level.Item style={{ alignItems: 'center' }}>
-						Ubah No. Handphone
-					</Level.Item>
+					<Level.Item style={{ alignItems: 'center' }}>Ubah Email</Level.Item>
 					<Level.Right style={{ width: '80px' }}>&nbsp;</Level.Right>
 				</Level>
 				<form style={{ padding: '15px' }}>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='editEmail'>Email</label>
-						<Input id='editEmail' flat value='085975049209' />
+						<Input id='editEmail' flat />
 					</div>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='editEmailNew'>Email Baru</label>

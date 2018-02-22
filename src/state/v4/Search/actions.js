@@ -25,7 +25,7 @@ const updatedKeywordHandler = (string, userToken) => async (dispatch, getState) 
 		const [err, response] = await to(
 			request({
 				token: userToken,
-				path: `${baseUrl}product/suggestion?q=${string}`,
+				path: `${baseUrl}/product/suggestion?q=${string}`,
 				method: 'GET',
 				fullpath: true,
 				cancelToken: cancelTokenReq
