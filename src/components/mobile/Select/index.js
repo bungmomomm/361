@@ -14,7 +14,7 @@ const Select = (props) => {
 				<div className={styles.lists}>
 					{
 						props.options.map((option, idx) => (
-							<Button onClick={() => { props.onChange(option); props.onClose(); }}>
+							<Button key={idx} onClick={() => { props.onChange(option); props.onClose(); }}>
 								<span>
 									<span className={option.disabled ? 'text-line-through font-color--primary-ext-1' : ''}>{option.label}</span>
 									{option.note && <span className='font-color--red font-small'> - {option.note}</span>}
