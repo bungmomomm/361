@@ -149,7 +149,7 @@ class Product extends Component {
 					<Page>
 						<div className={stylesCatalog.cardContainer}>
 							{this.renderContent(productCategory.pcpData.products)}
-							{this.props.scroller.loading && this.renderLoading}
+							{this.props.scroller.loading && this.loadingView}
 						</div>
 						<Sort shown={sortShown} sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
 					</Page>
