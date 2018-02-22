@@ -5,106 +5,119 @@ import { Navigation, Svg, Tabs, Header, Page, Button, Level, Image, Input, Card,
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import { actions } from '@/state/v4/Seller';
-import { actions as filterActions } from '@/state/v4/SortFilter';
 import Filter from '@/containers/Mobile/Shared/Filter';
 import Sort from '@/containers/Mobile/Shared/Sort';
-import { to } from 'await-to-js';
 import { withRouter } from 'react-router-dom';
 import stylesCatalog from '../Category/Catalog/catalog.scss';
 import styles from './styles.scss';
 import Spinner from '@/components/mobile/Spinner';
 import Share from '@/components/mobile/Share';
-import { hyperlink } from '@/utils';
+import { hyperlink, renderIf } from '@/utils';
+import _ from 'lodash';
 
 class Seller extends Component {
+	constructor(props) {
+		super(props);
 
-	static currentListState = 0;
-	static listType = [{
-		type: 'list',
-		icon: 'ico_grid.svg'
-	}, {
-		type: 'grid',
-		icon: 'ico_three-line.svg'
-	}, {
-		type: 'small',
-		icon: 'ico_list.svg'
-	}];
+		this.currentListState = 0;
+		this.listType = [{
+			type: 'list',
+			icon: 'ico_grid.svg'
+		}, {
+			type: 'grid',
+			icon: 'ico_three-line.svg'
+		}, {
+			type: 'small',
+			icon: 'ico_list.svg'
+		}];
 
-	state = {
-		listTypeState: Seller.listType[Seller.currentListState],
-		filterShown: false,
-		sortShown: false
-	};
+		const propsObject = _.chain(props.seller);
 
-	onApply = async (e) => {
-		const { dispatch, cookies, filters } = this.props;
-		const [err, response] = await to(dispatch(new filterActions.applyFilter(cookies.get('user.token'), 'category', filters)));
-		// console.log(err);
-		// console.log(response);
-		if (err) {
-			return err;
+		this.state = {
+			listTypeState: this.listType[this.currentListState],
+			showFilter: false,
+			showSort: false,
+			query: {
+				per_page: 0,
+				page: 0,
+				q: '',
+				brand_id: 0,
+				store_id: 0,
+				category_id: 0,
+				fq: '',
+				sort: '',
+				...propsObject.get('query').value()
+			}
+		};
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.query) {
+			this.setState({
+				query: nextProps.query
+			});
 		}
-		return response;
-	};
+	}
 
-	onUpdateFilter = (e, type, value) => {
-		try {
-			this.props.dispatch(new filterActions.updateFilter(type, value));
-		} catch (error) {
-			console.log(error);
-		}
-	};
-
-	onReset = (e) => {
-		this.props.dispatch(new filterActions.resetFilter());
+	onApply = async (e, fq) => {
+		const { query } = this.state;
+		query.fq = fq;
+		this.setState({
+			query,
+			showFilter: false
+		});
+		this.update({
+			fq
+		});
 	};
 
 	onClose = (e) => {
 		this.setState({
-			filterShown: false
+			showFilter: false
 		});
+	};
+
+	update = (fq) => {
+		const { cookies, dispatch, match: { params } } = this.props;
+		const { query } = this.state;
+		const data = {
+			token: cookies.get('user.token'),
+			query: {
+				...query,
+				...fq,
+				store_id: params.store_id || 0
+			}
+		};
+
+		dispatch(actions.getProducts(data));
 	};
 
 	handlePick = (val) => {
-		switch (val) {
-		case 'view':
-			Seller.currentListState = Seller.currentListState === 2 ? 0 : Seller.currentListState + 1;
-			this.setState({ listTypeState: Seller.listType[Seller.currentListState] });
-			break;
-		case 'filter':
+		if (val === 'view') {
+			this.currentListState = this.currentListState === 2 ? 0 : this.currentListState + 1;
+			this.setState({ listTypeState: this.listType[this.currentListState] });
+		} else {
 			this.setState({
-				filterShown: val === 'filter'
+				showFilter: val === 'filter',
+				showSort: val === 'sort'
 			});
-			break;
-		case 'sort':
-			this.setState({
-				sortShown: val === 'sort'
-			});
-			break;
-		default:
-			break;
 		}
 	};
 
-	sort = async (e, value) => {
+	sort = async (e, sort) => {
 		this.setState({
-			sortShown: false
+			sort,
+			showSort: false
 		});
-
-		this.props.dispatch(filterActions.updateSort(value));
-
-		// const { dispatch, cookies, filters } = this.props;
-		// dispatch(filterActions.updateSort(value));
-		//
-		// const [err, response] = await to(dispatch(new filterActions.applyFilter(cookies.get('user.token'), 'category', filters)));
-		// if (err) {
-		// 	return err;
-		// }
-		// return response;
+		this.update({
+			sort: sort.q
+		});
 	};
 
 	filterTabs = () => {
-		const { listTypeState } = this.state;
+		const { seller } = this.props;
+		const { listTypeState, showSort } = this.state;
+		const sorts = _.chain(seller).get('data.sorts').value() || [];
 
 		return (
 			<div style={this.props.style}>
@@ -113,11 +126,13 @@ class Seller extends Component {
 					variants={[
 						{
 							id: 'sort',
-							title: 'Sort'
+							title: 'Urutkan',
+							disabled: typeof seller.data === 'undefined'
 						},
 						{
 							id: 'filter',
-							title: 'Filter'
+							title: 'Filter',
+							disabled: typeof seller.data === 'undefined'
 						},
 						{
 							id: 'view',
@@ -126,6 +141,9 @@ class Seller extends Component {
 					]}
 					onPick={e => this.handlePick(e)}
 				/>
+				{renderIf(sorts)(
+					<Sort shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+				)}
 			</div>
 		);
 	}
@@ -235,8 +253,8 @@ class Seller extends Component {
 	};
 
 	renderData = () => {
-		const { filterShown, sortShown } = this.state;
-		const { filters, seller, history } = this.props;
+		const { showFilter } = this.state;
+		const { seller, history } = this.props;
 		const title = seller.info.seller;
 		const url = `${process.env.MOBILE_URL}/store/${seller.info.seller_id}`;
 
@@ -252,22 +270,19 @@ class Seller extends Component {
 
 		return (
 			<span>
-				{filterShown ? (
+				{showFilter ? (
 					<Filter
-						shown={filterShown}
-						filters={filters}
-						onUpdateFilter={(e, type, value) => this.onUpdateFilter(e, type, value)}
-						onApply={this.onApply}
-						onReset={this.onReset}
-						onClose={this.onClose}
+						shown={showFilter}
+						filters={seller.data}
+						onApply={(e, fq) => {
+							this.onApply(e, fq);
+						}}
 					/>
 				) : (
 					<div style={this.props.style}>
 						<Page>
 							{this.sellerHeader()}
 							{this.loadProducts()}
-
-							<Sort shown={sortShown} sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
 						</Page>
 
 						<Header.Modal {...HeaderPage} />

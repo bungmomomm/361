@@ -5,8 +5,22 @@ import { handleActions, createActions } from 'redux-actions';
 const initialState = {
 	info: {},
 	data: {
+		links: [],
+		info: [],
+		facets: [],
+		sorts: [],
 		products: []
-	}
+	},
+	query: {
+		per_page: 0,
+		page: 0,
+		q: '',
+		brand_id: '',
+		store_id: '',
+		category_id: '',
+		fq: '',
+		sort: 'energy DESC',
+	},
 };
 
 const { infos, sellerProducts } = createActions(
