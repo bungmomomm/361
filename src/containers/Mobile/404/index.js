@@ -21,17 +21,13 @@ class Page404 extends Component {
 
 	renderRecomendation() {
 		const activeSegment = _.chain(this.props).get('home.activeSegment');
-		
-		if (activeSegment.isEmpty().value()) return null;
-
 		const listData = _.chain(this.props).get(`home.allSegmentData.${activeSegment.value()}.recomendationData.recommendedProducts`);
-
 		if (listData.isEmpty().value()) {
 			return (
 				<div className='margin--large'>
 					<Spinner />
 				</div>
-			)
+			);
 		};
 		
 		return (
@@ -62,7 +58,7 @@ class Page404 extends Component {
 		const { history } = this.props;
 		const HeaderPage = {
 			left: (
-				<button onClick={() => history.length < 2 ? history.push('/') : history.go(-2)}> 
+				<button onClick={() => (history.length < 2 ? history.push('/') : history.go(-2))}> 
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</button>
 			),
