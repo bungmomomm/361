@@ -10,7 +10,9 @@ class Tree extends PureComponent {
 		this.state = {
 			activeTree: null,
 			selected: null,
+			data: props.data || []
 		};
+		this.props = props;
 	}
 	handleTree(value, isParent) {
 		if (isParent) {

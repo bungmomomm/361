@@ -10,6 +10,10 @@ import { setUserCookie } from './cookie';
 import SocialLogin from './social-login';
 import loading from './loading';
 
+const isHexColor = (color) => {
+	return /(^#[0-9A-F]{3}|^#[0-9A-F]{6})$/i.test(color);
+};
+
 const getBaseUrl = () => {
 	return process.env.BASE_URL;
 };
@@ -48,5 +52,6 @@ export default {
 	componentState,
 	SocialLogin,
 	hyperlink,
+	isHexColor,
 	loading
 };

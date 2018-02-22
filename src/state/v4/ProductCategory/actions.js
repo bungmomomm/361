@@ -6,9 +6,9 @@ const initAction = (token, url = false, query) => async (dispatch, getState) => 
 	dispatch(setLoading({ isLoading: true }));
 	dispatch(scrollerActions.onScroll({ loading: true }));
 	
-	let path = `${process.env.MICROSERVICES_URL}categories/products`;
+	let path = `${process.env.MICROSERVICES_URL}/products/search`;
 	if (url) {
-		path = `${url.url}/categories/products`;
+		path = `${url.url}/products/search`;
 	}
 
 	return request({

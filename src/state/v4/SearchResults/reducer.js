@@ -11,6 +11,16 @@ const initialState = {
 		sorts: [],
 		products: []
 	},
+	query: {
+		per_page: 0,
+		page: 0,
+		q: '',
+		brand_id: '',
+		store_id: '',
+		category_id: '',
+		fq: '',
+		sort: 'energy DESC',
+	},
 	promoData: []
 };
 
@@ -24,11 +34,12 @@ const reducer = handleActions({
 			isLoading
 		};
 	},
-	[initSearch](state, { payload: { isLoading, searchStatus, searchData } }) {
+	[initSearch](state, { payload: { isLoading, searchStatus, searchData, query } }) {
 		return {
 			isLoading,
 			searchStatus,
-			searchData
+			searchData,
+			query
 		};
 	},
 	[initPromo](state, { payload: { isLoading, searchStatus, promoData } }) {
