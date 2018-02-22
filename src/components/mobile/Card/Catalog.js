@@ -2,12 +2,13 @@ import React, { PureComponent } from 'react';
 import classNames from 'classnames';
 import Image from '../Image';
 import Svg from '../Svg';
-// import Carousel from '../Carousel';
+import Carousel from '../Carousel';
 import Button from '../Button';
 import Level from '../Level';
 import Badge from '../Badge';
 import styles from './card.scss';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 class Catalog extends PureComponent {
 	render() {
@@ -29,18 +30,16 @@ class Catalog extends PureComponent {
 		const comment = commentTotal ? <span>{commentTotal} Comments</span>
 			: <span>Comment</span>;
 
-		const image = images[0];
 		return (
 			<div className={createClassName} {...props}>
 				<Link to={linkToPdp}>
-					<Image src={image.thumbnail} alt='product' />
-					{/* <Carousel>
+					<Carousel>
 						{
 							images.map((image, index) => (
 								<Image key={index} src={image.thumbnail} alt='product' />
 							))
 						}
-					</Carousel> */}
+					</Carousel>
 				</Link>
 				<Level
 					className={styles.action}
@@ -86,5 +85,14 @@ class Catalog extends PureComponent {
 		);
 	}
 }
+
+Catalog.defaultProps = {
+	linkToPdp: '/'
+};
+
+Catalog.propTypes = {
+	brandName: PropTypes.string,
+	linkToPdp: PropTypes.string.isRequired
+};
 
 export default Catalog;

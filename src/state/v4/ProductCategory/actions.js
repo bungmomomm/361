@@ -28,13 +28,13 @@ const pcpAction = ({ token, query = {}, loadNext = false }) => async (dispatch, 
 		return Promise.reject(err);
 	}
 
-	const pcpData = {
-		links: response.data.data.links,
-		info: response.data.data.info,
-		facets: response.data.data.facets,
-		sorts: response.data.data.sorts,
-		products: response.data.data.products
-	};
+	// const pcpData = {
+	// 	links: response.data.data.links,
+	// 	info: response.data.data.info,
+	// 	facets: response.data.data.facets,
+	// 	sorts: response.data.data.sorts,
+	// 	products: response.data.data.products
+	// };
 
 	// if (_.isEmpty(pcpData.products)) {
 	// 	dispatch(initPcp({
@@ -44,16 +44,22 @@ const pcpAction = ({ token, query = {}, loadNext = false }) => async (dispatch, 
 	// 	return Promise.reject(new Error('Empty data'));
 	// }
 
+	const pcpData = {
+		...response.data.data
+	};
+
 	if (loadNext) {
 		dispatch(initNextPcp({
 			pcpStatus: 'success',
-			pcpData
+			pcpData,
+			query
 		}));
 	} else {
 		dispatch(initPcp({
 			isLoading: false,
 			pcpStatus: 'success',
-			pcpData
+			pcpData,
+			query
 		}));
 	}
 
@@ -72,25 +78,13 @@ const pcpAction = ({ token, query = {}, loadNext = false }) => async (dispatch, 
 		loader: pcpAction
 	}));
 
-	return Promise.resolve(pcpData);
-};
-
-const discoveryUpdate = (response) => async dispatch => {
-	const pcpData = {
-		links: response.links,
-		info: response.info,
-		facets: response.facets,
-		sorts: response.sorts,
-		products: response.products
-	};
-	dispatch(initPcp({
-		isLoading: false,
+	return Promise.resolve({
 		pcpStatus: 'success',
-		pcpData
-	}));
+		pcpData,
+		query
+	});
 };
 
 export default {
-	pcpAction,
-	discoveryUpdate
+	pcpAction
 };

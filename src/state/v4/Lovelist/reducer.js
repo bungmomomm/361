@@ -2,7 +2,10 @@ import { handleActions, createActions } from 'redux-actions';
 
 const defaultLovelist = {
 	count: 0,
-	items: {},
+	items: {
+		list: [],
+		ids: []
+	},
 	user: {
 		loggedIn: false,
 		added: [],
@@ -46,18 +49,19 @@ const listActions = {
 		};
 	},
 	[addItem](state, { payload: { addedItem } }) {
-		const user = state.user;
 		// pushing added item
+		const { user } = state;
 		user.added.push(addedItem);
 		return {
 			...state,
 			user
 		};
 	},
-	[removeItem](state, { payload: { removedItem } }) {
-		const user = state.user;
+	[removeItem](state, { payload: item }) {
 		// pushing removed item
-		user.added.push(removedItem);
+		const { user } = state;
+		user.deleted.push(item.productId);
+
 		return {
 			...state,
 			user

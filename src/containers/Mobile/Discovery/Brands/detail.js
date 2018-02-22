@@ -126,21 +126,23 @@ class Detail extends Component {
 
 	renderBenner() {
 		const { brands } = this.props;
-		const bannerImages = _.chain(brands).get('banner.image');
-		if (!bannerImages.isEmpty().value()) {
-			return (
-				<div
-					className={`${styles.backgroundCover} flex-center`}
-					style={
-						{ backgroundImage: `url(${bannerImages.value().thumbnail})` }}
-				>
-					<div className='text-uppercase font--lato-bold font-medium'>{brands.brand_info.title || ''}</div>
-					<div>{brands.brand_info.product_count || 0}</div>
-				</div>
-			);
-		}
 
-		return null;
+		const bren = _.chain(brands);
+		const bannerImages = bren.get('banner.image');
+		const brandTitle = bren.get('brand_info.title');
+		const productCount = bren.get('brand_info.product_count');
+		
+		const imgBg = !bannerImages.isEmpty().value() ? { backgroundImage: `url(${bannerImages.value().thumbnail})` } : {};
+		
+		return (
+			<div
+				className={`${styles.backgroundCover} flex-center`}
+				style={imgBg}
+			>
+				<div className='text-uppercase font--lato-bold font-medium'>{brandTitle.value() || ''}</div>
+				<div>{productCount.value() || 0}</div>
+			</div>
+		);
 	}
 
 	renderFilter() {
@@ -183,12 +185,40 @@ class Detail extends Component {
 		if (!brandProducts.isEmpty().value()) {
 			switch (listTypeState.type) {
 			case 'grid': 
-				return null;
+				return (
+					<div className='flex-row flex-wrap'>
+						{
+							brandProducts.value().map((product, e) => (
+								<Card.CatalogGrid
+									key={e}
+									images={product.images}
+									productTitle={product.product_title}
+									brandName={product.brand.name}
+									pricing={product.pricing}
+									linkToPdp={`/product/${product.product_id}`}
+								/>
+							))
+						}
+					</div>
+				);
 			case 'small':
-				return null;
+				return (
+					<div className='flex-row flex-wrap'>
+						{
+							brandProducts.value().map((product, e) => (
+								<Card.CatalogSmall
+									key={e}
+									images={product.images}
+									pricing={product.pricing}
+									linkToPdp={`/product/${product.product_id}`}
+								/>
+							))
+						}
+					</div>
+				);
 			default: 
 				return (
-					<div>
+					<div className='flex-row flex-wrap'>
 						
 						{
 							brandProducts.value().map((product, e) => (
@@ -216,55 +246,6 @@ class Detail extends Component {
 		return null;
 	}
 
-	renderList(product, index) {
-		if (product) {
-			const urlPcp = `/product/${product.product_id}`;
-			// const comment = (this.props.brands.products_comments) ?
-			// 	this.props.brands.products_comments.filter(e => e.product_id === product.product_id)[0] : null;
-			console.log(this.state.listTypeState.type);
-			switch (this.state.listTypeState.type) {
-			case 'list':
-				return (
-					<div key={index} className={stylesCatalog.cardCatalog}>
-						<Card.Catalog
-							images={product.images}
-							// productTitle={product.product_title}
-							brandName={product.brand}
-							// pricing={product.pricing}
-							url={urlPcp}
-							// commentTotal={comment.total}
-							commentUrl={`/product/comments/${product.product_id}`}
-						/>
-						{this.renderComment(product.product_id)}
-					</div>
-				);
-			case 'grid':
-				return (
-					<Card.CatalogGrid
-						key={index}
-						images={product.images}
-						productTitle={product.product_title}
-						brandName={product.brand}
-						pricing={product.pricing}
-						url={urlPcp}
-					/>
-				);
-			case 'small':
-				return (
-					<Card.CatalogSmall
-						key={index}
-						images={product.images}
-						pricing={product.pricing}
-						url={urlPcp}
-					/>
-				);
-			default:
-				return null;
-			}
-		}
-		return null;
-	}
-
 	render() {
 		const { styleHeader } = this.state;
 		const headerComponent = {
@@ -287,10 +268,7 @@ class Detail extends Component {
 					<div style={{ marginTop: '-61px', marginBottom: '30px' }}>
 						{ this.renderBenner() }
 						{ this.renderFilter() }
-						<div className='flex-row flex-wrap'>
-							{/* {(renderProduct) || '' } */}
-							{ this.renderProduct() }
-						</div>
+						{ this.renderProduct() }
 					</div>
 				</Page>
 				<Header.Modal className={styleHeader ? styles.headerClear : ''} {...headerComponent} />

@@ -9,6 +9,13 @@ const initialState = {
 		facets: [],
 		sorts: [],
 		products: []
+	},
+	query: {
+		category_id: '',
+		page: 0,
+		per_page: 0,
+		fq: '',
+		sort: ''
 	}
 };
 
@@ -23,15 +30,16 @@ const reducer = handleActions({
 			isLoading
 		};
 	},
-	[initPcp](state, { payload: { isLoading, pcpStatus, pcpData } }) {
+	[initPcp](state, { payload: { isLoading, pcpStatus, pcpData, query } }) {
 		return {
 			...state,
 			isLoading,
 			pcpStatus,
-			pcpData
+			pcpData,
+			query
 		};
 	},
-	[initNextPcp](state, { payload: { pcpStatus, pcpData } }) {
+	[initNextPcp](state, { payload: { pcpStatus, pcpData, query } }) {
 		return {
 			...state,
 			pcpStatus,
@@ -42,7 +50,8 @@ const reducer = handleActions({
 					...state.pcpData.products,
 					...pcpData.products
 				]
-			}
+			},
+			query
 		};
 	}
 }, initialState);

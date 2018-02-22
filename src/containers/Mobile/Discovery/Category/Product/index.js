@@ -12,14 +12,24 @@ import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Filter from '@/containers/Mobile/Shared/Filter';
 import Sort from '@/containers/Mobile/Shared/Sort';
 
-import { Header, Page, Card, Svg, Tabs, Navigation, Comment, Button, Level, Input } from '@/components/mobile';
-import Spinner from '../../../../../components/mobile/Spinner';
+import { 
+	Header, 
+	Page, 
+	Card, 
+	Svg, 
+	Tabs, 
+	Button, 
+	Level, 
+	Input, 
+	Navigation,
+	Spinner,
+	Comment
+} from '@/components/mobile';
 
 import { actions as pcpActions } from '@/state/v4/ProductCategory';
-import { actions as filterActions } from '@/state/v4/SortFilter';
 import { actions as commentActions } from '@/state/v4/Comment';
 
-import { hyperlink } from '@/utils';
+import { hyperlink, renderIf } from '@/utils';
 import stylesCatalog from '../Catalog/catalog.scss';
 
 class Product extends Component {
@@ -38,55 +48,97 @@ class Product extends Component {
 			type: 'small',
 			icon: 'ico_list.svg'
 		}];
+		const propsObject = _.chain(props.productCategory);
 		this.state = {
 			listTypeState: this.listType[this.currentListState],
 			notification: {
 				show: true
 			},
-			filterShown: false,
-			sortShown: false
+			showFilter: false,
+			showSort: false,
+			query: {
+				category_id: '',
+				page: 0,
+				per_page: 0,
+				fq: '',
+				sort: '',
+				...propsObject.get('query').value()
+			}
 		};
 		this.loadingView = <div style={{ margin: '20px auto 20px auto' }}><Spinner /></div>;
 	}
 
-	async onApply(e) {
-		console.log('onApply called');
-		const { dispatch, cookies, filters } = this.props;
-		const [err, response] = await to(dispatch(new filterActions.applyFilter(cookies.get('user.token'), 'category', filters)));
-		console.log(err, response);
-		if (err) {
-			return err;
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.query) {
+			this.setState({
+				query: nextProps.query
+			});
 		}
+	}
+
+	async onApply(e, fq) {
+		const { query } = this.state;
+		query.fq = fq;
 		this.setState({
-			filterShown: false
+			query,
+			showFilter: false
 		});
-		console.log(response);
-		return response;
-	}
-
-	onUpdateFilter(e, type, value) {
-		try {
-			this.props.dispatch(new filterActions.updateFilter(type, value));
-		} catch (error) {
-			console.log(error);
-		}
-	}
-
-	onReset(e) {
-		this.props.dispatch(new filterActions.resetFilter());
+		this.update({
+			fq
+		});
 	}
 
 	onClose(e) {
 		this.setState({
-			filterShown: false
+			showFilter: false
 		});
 	}
 
-	sort(e, value) {
-		this.setState({
-			sortShown: false
+	update = async (params) => {
+		const { cookies, dispatch, location, history } = this.props;
+		const { query } = this.state;
+
+		const parsedUrl = queryString.parse(location.search);
+		const urlParam = {
+			sort: query.sort,
+			per_page: query.per_page,
+			page: query.page,
+			...parsedUrl,
+			...params
+		};
+
+		const url = queryString.stringify(urlParam, {
+			encode: false
 		});
-		this.props.dispatch(new filterActions.updateSort(value));
+		history.push(`?${url}`);
+
+		const pcpParam = {
+			...query,
+			...params
+		};
+
+		console.log('urlParam', urlParam);
+
+		const [err, response] = await to(dispatch(pcpActions.pcpAction({ token: cookies.get('user.token'), query: pcpParam })));
+		if (err) {
+			console.log(err);
+			return err;
+		}
+		if (!_.isEmpty(response.pcpData.products)) {
+			const productIdList = _.map(response.products, 'product_id') || null;
+			dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		}
+		return response;
+	}
+
+	sort(e, sort) {
+		this.setState({
+			sort,
+			showSort: false
+		});
+		this.update({
+			sort: sort.q
+		});
 	}
 
 	handlePick(e) {
@@ -95,27 +147,25 @@ class Product extends Component {
 			this.setState({ listTypeState: this.listType[this.currentListState] });
 		} else {
 			this.setState({
-				filterShown: e === 'filter',
-				sortShown: e === 'sort'
+				showFilter: e === 'filter',
+				showSort: e === 'sort'
 			});
 		}
 	}
 
 	renderPage() {
 		let pageView = null;
-		const { filters } = this.props;
-		const { filterShown } = this.state;
+		const { productCategory } = this.props;
+		const { showFilter } = this.state;
 
-		if (filterShown) {
+		if (showFilter) {
 			pageView = (
 				<Filter
-					shown={filterShown}
-					filters={filters}
-					onUpdateFilter={(e, type, value) => this.onUpdateFilter(e, type, value)}
-					onApply={(e) => {
-						this.onApply(e);
+					shown={showFilter}
+					filters={productCategory.pcpData}
+					onApply={(e, fq) => {
+						this.onApply(e, fq);
 					}}
-					onReset={(e) => this.onReset(e)}
 					onClose={(e) => this.onClose(e)}
 				/>
 			);
@@ -136,8 +186,7 @@ class Product extends Component {
 
 	renderPcp() {
 		let pcpView = null;
-		const { isLoading, productCategory, filters } = this.props;
-		const { sortShown } = this.state;
+		const { isLoading, productCategory } = this.props;
 
 		if (isLoading) {
 			pcpView = this.loadingView;
@@ -151,7 +200,6 @@ class Product extends Component {
 							{this.renderContent(productCategory.pcpData.products)}
 							{this.props.scroller.loading && this.loadingView}
 						</div>
-						<Sort shown={sortShown} sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
 					</Page>
 				);
 			} else if (productCategory.pcpStatus === 'failed') {
@@ -288,27 +336,42 @@ class Product extends Component {
 	}
 
 	renderTabs() {
-		return (
-			<Tabs
-				className={stylesCatalog.fixed}
-				type='segment'
-				variants={[
-					{
-						id: 'sort',
-						title: 'Urutkan'
-					},
-					{
-						id: 'filter',
-						title: 'Filter'
-					},
-					{
-						id: 'view',
-						title: <Svg src={this.state.listTypeState.icon} />
-					}
-				]}
-				onPick={e => this.handlePick(e)}
-			/>
-		);
+		const { productCategory } = this.props;
+		const { showSort } = this.state;
+		let tabsView = null;
+		if (!_.isEmpty(productCategory.pcpData.products)) {
+			const sorts = _.chain(productCategory).get('pcpData.sorts').value() || [];
+			tabsView = (
+				<div>
+					<Tabs
+						className={stylesCatalog.filterBlockContainer}
+						type='segment'
+						variants={[
+							{
+								id: 'sort',
+								title: 'Urutkan',
+								disabled: typeof productCategory.pcpData === 'undefined'
+							},
+							{
+								id: 'filter',
+								title: 'Filter',
+								disabled: typeof productCategory.pcpData === 'undefined'	
+							},
+							{
+								id: 'view',
+								title: <Svg src={this.state.listTypeState.icon} />,
+								disabled: productCategory.isLoading
+							}
+						]}
+						onPick={e => this.handlePick(e)}
+					/>
+					{renderIf(sorts)(
+						<Sort shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+					)}
+				</div>
+			);
+		}
+		return tabsView;
 	}
 
 	renderForeverBanner() {
@@ -328,8 +391,8 @@ class Product extends Component {
 const mapStateToProps = (state) => {
 	return {
 		...state,
-		shared: state.shared,
 		productCategory: state.productCategory,
+		query: state.productCategory.query,
 		comments: state.comments,
 		isLoading: state.productCategory.isLoading,
 		scroller: state.scroller
@@ -352,15 +415,14 @@ const doAfterAnonymous = async (props) => {
 	const [err, response] = await to(dispatch(pcpActions.pcpAction({ token: cookies.get('user.token'), query: pcpParam })));
 	
 	if (err) {
-		console.log(err.message);
-	} else {
-		if (response.products.length > 0) {
-			const productIdList = _.map(response.products, 'product_id') || null;
-			dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-		}
-
-		dispatch(filterActions.initializeFilter(response));
+		console.log(err);
+		return err;
 	}
+	if (!_.isEmpty(response.pcpData.products)) {
+		const productIdList = _.map(response.products, 'product_id') || null;
+		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+	}
+	return response;
 };
 
 export default withCookies(connect(mapStateToProps)(Scroller(Shared(Product, doAfterAnonymous))));
