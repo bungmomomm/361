@@ -47,6 +47,7 @@
 		color: color(--primary);
 		line-height: 20px;
 		background-color: #fff;
+		-webkit-overflow-scrolling: touch;
 	}
 
 	// GENERATE GLOBAL UTILITIES
@@ -114,9 +115,9 @@
 		height: 100%;
 		> div:first-child {
 			min-height: 100%;
-			// overflow: hidden;
 		}
 	}
+
 	a {
 		color: #3c5a98;
 		text-decoration: none;
@@ -129,14 +130,27 @@
 		color: #191919;
 	}
 
+	button{
+		-webkit-appearance: none;
+		outline: none;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		background: transparent;
+		border: none;
+	}
+
 	hr{
 		border: none;
 		height: 1px;
 		background: #D8D8D8;
 	}
 	#root {
-		z-index: 0;
-
+	  	width: 100%;
+		overflow-y: hidden;
+		max-width: $max-width-container;
+		position: relative;
+		margin: 0 auto;
 		.switch-wrapper {
 			height: 100%;
 			background: transparent;
