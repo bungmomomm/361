@@ -9,7 +9,8 @@ import {
 	Page,
 	List,
 	Image,
-	Navigation
+	Navigation,
+	Spinner
 } from '@/components/mobile';
 import { actions as categoryActions } from '@/state/v4/Category';
 import Shared from '@/containers/Mobile/Shared';
@@ -43,7 +44,7 @@ class SubCategory extends PureComponent {
 	setSelectedCategory(categories) {
 		const selectedCategory = categories.filter(e => e.id === this.props.category.sub_category)[0];
 		if (selectedCategory) {
-			
+
 			const categorySlug = encodeURIComponent(buildUrl(selectedCategory.title));
 
 			if (selectedCategory.sub_categories.length === 0) {
@@ -64,6 +65,34 @@ class SubCategory extends PureComponent {
 		dispatch(new categoryActions.getBrandsByCategoryIdAction(this.userCookies, categoryId));
 	}
 
+	renderListCategory() {
+		return (this.state.selectedCategory) && this.state.selectedCategory.sub_categories.map((cat, key) => {
+			const categoryTitle = encodeURIComponent(buildUrl(cat.title));
+			return (
+				<List key={key}>
+					<Link style={{ flexFlow: 'row nowrap' }} to={`/p-${cat.id}/${categoryTitle}`}>
+						<List.Image><Image width={40} height={40} avatar src={cat.image_url} /></List.Image>
+						<List.Content>{cat.title}</List.Content>
+					</Link>
+				</List>
+			);
+		});
+	}
+
+	renderFeaturedBrands() {
+		return (this.state.selectedCategory && this.props.category.brands.length > 1) && this.props.category.brands.map((brand, key) => {
+			const brandTitle = encodeURIComponent(buildUrl(brand.title));
+			return (
+				<List key={key}>
+					<Link style={{ flexFlow: 'row nowrap' }} to={`/brand/${brand.id}/${brandTitle}`}>
+						<List.Image><Image width={40} height={40} avatar src={brand.image_url} /></List.Image>
+						<List.Content>{brand.title}</List.Content>
+					</Link>
+				</List>
+			);
+		});
+	}
+
 	render() {
 		const { selectedCategory } = this.state;
 		const HeaderPage = (selectedCategory) && ({
@@ -76,46 +105,25 @@ class SubCategory extends PureComponent {
 			right: null
 		});
 
-		const listCategory = (selectedCategory) && selectedCategory.sub_categories.map((cat, key) => {
-			const categoryTitle = encodeURIComponent(buildUrl(cat.title));
-			return (
-				<List key={key}>
-					<Link style={{ flexFlow: 'row nowrap' }} to={`/p-${cat.id}/${categoryTitle}`}>
-						<List.Image><Image width={40} height={40} avatar src={cat.image_url} /></List.Image>
-						<List.Content>{cat.title}</List.Content>
-					</Link>
-				</List>
-			);
-		});
-
-		const listFeaturedBrands = (selectedCategory && this.props.category.brands) && this.props.category.brands.map((brand, key) => {
-			const brandTitle = encodeURIComponent(buildUrl(brand.title));
-			return (
-				<List key={key}>
-					<Link style={{ flexFlow: 'row nowrap' }} to={`/brand/${brand.id}/${brandTitle}`}>
-						<List.Image><Image width={40} height={40} avatar src={brand.image_url} /></List.Image>
-						<List.Content>{brand.title}</List.Content>
-					</Link>
-				</List>
-			);
-		});
-
-		const loadingDisplay = ('');
+		const loadingDisplay = (<div style={{ textAlign: 'center', padding: '20px 0px' }} > <Spinner /> </div>);
 
 		return (
 			<div style={this.props.style}>
 				<Page>
-					{ this.props.category.loading ? loadingDisplay :
-						(<div>
-							<Divider>Shop by Products</Divider>
-							{listCategory}
-						</div>)
+					{
+						this.props.category.loading ? loadingDisplay :
+							(<div>
+								<Divider>Shop by Products</Divider>
+								{this.renderListCategory()}
+							</div>)
 					}
-					{ this.props.category.loadingBrands ? loadingDisplay :
-						(<div>
-							<Divider>Featured Brands</Divider>
-							{listFeaturedBrands}
-						</div>)
+					{
+						this.props.category.brands.length > 1 && (
+							<div>
+								<Divider>Featured Brands</Divider>
+								{this.renderFeaturedBrands()}
+							</div>
+						)
 					}
 				</Page>
 				<Header.Modal {...HeaderPage} />
