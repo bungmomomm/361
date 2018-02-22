@@ -24,9 +24,7 @@ class Hashtags extends Component {
 					query: q.query
 				};
 
-				dispatch(actions.itemsFetchData(dataFetch)).then(() => {
-
-				});
+				dispatch(actions.itemsFetchData(dataFetch));
 			}
 		}
 	};
