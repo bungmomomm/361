@@ -236,6 +236,7 @@ class Search extends PureComponent {
 
 const mapStateToProps = (state) => {
 	return {
+		...state,
 		keyword: state.search.keyword,
 		relatedCategory: state.search.related_category,
 		relatedKeyword: state.search.related_keyword,
