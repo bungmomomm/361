@@ -1,8 +1,12 @@
 import { handleActions, createActions } from 'redux-actions';
 
 const initialState = {
-	detail: {},
-	isLoading: false
+	data: {
+		header: {},
+		post: {},
+		products: [],
+	},
+	loading: false
 };
 
 const { hashtagDetail, isLoading } = createActions(
@@ -11,17 +15,11 @@ const { hashtagDetail, isLoading } = createActions(
 );
 
 const reducer = handleActions({
-	[hashtagDetail](state = initialState, { payload: detail }) {
-		return {
-			...state.detail,
-			detail
-		};
+	[hashtagDetail](state, { payload: data }) {
+		return { ...state, ...data };
 	},
 	[isLoading](state, { payload: loading }) {
-		return {
-			...state,
-			...loading
-		};
+		return { ...state, ...loading };
 	},
 }, initialState);
 

@@ -122,7 +122,7 @@ export default {
 			exact: true
 		},
 		{
-			path: '/mau-gaya-itu-gampang/:id',
+			path: '/mau-gaya-itu-gampang/:campaign_id/:post_id',
 			component: HashtagsDetails
 		},
 		{

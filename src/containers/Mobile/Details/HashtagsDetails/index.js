@@ -1,79 +1,99 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { withCookies } from 'react-cookie';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Header, Page, Navigation, Svg, Grid, Card } from '@/components/mobile';
-import { actions as hdActions } from '@/state/v4/HashtagsDetails';
+import { Header, Page, Navigation, Svg, Grid, Card, Carousel } from '@/components/mobile';
+import { actions } from '@/state/v4/HashtagsDetails';
+import Shared from '@/containers/Mobile/Shared';
+import Spinner from '@/components/mobile/Spinner';
+import { hyperlink } from '@/utils';
+import moment from 'moment';
 
-class HashtagsDetails extends Component {
-	constructor(props) {
-		super(props);
-		this.props = props;
+class HashtagsDetails extends PureComponent {
 
-		this.userCookies = this.props.cookies.get('user.token');
-		this.userRFCookies = this.props.cookies.get('user.rf.token');
-		this.source = this.props.cookies.get('user.source');
-	}
+	bufferCarousel = (products) => {
+		const buffer = [];
+		let fragment = [];
 
-	componentDidMount() {
-		const { match: { params } } = this.props;
-		if (!params || !params.post_id || isNaN(parseInt(params.post_id, 10))) {
-			window.location.href = '/404';
-		}
+		products.forEach((product, i) => {
+			fragment = ((i + 1) % 2 !== 0) ?
+			[
+				<Card.CatalogGrid
+					key={i}
+					images={product.images}
+					productTitle={product.product_title}
+					brandName={product.brand.name}
+					pricing={product.pricing}
+					linkToPdp={hyperlink('', ['product', product.product_id], null)}
+				/>
+			] :
+			[
+				...fragment,
+				<Card.CatalogGrid
+					key={i}
+					images={product.images}
+					productTitle={product.product_title}
+					brandName={product.brand.name}
+					pricing={product.pricing}
+					linkToPdp={hyperlink('', ['product', product.product_id], null)}
+				/>
+			];
 
-		const dataFetch = {
-			token: this.userCookies,
-			post_id: params.post_id
-		};
+			if ((i + 1) % 2 === 0 || products.length === (i + 1)) {
+				buffer.push(fragment);
+			}
+		});
 
-		this.props.hashtagDetailAction(dataFetch);
-	}
+		return buffer;
+	};
 
 	render() {
-		const $props = this.props;
+		const { hashtagdetails, history } = this.props;
+		const ent = hashtagdetails;
 
 		const HeaderPage = {
 			left: (
-				<button href={$props.history.goBack}>
+				<button onClick={history.goBack}>
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</button>
 			),
-			center: '#MauGayaItuGampang',
+			center: ent.data.header.title,
 			right: null
 		};
 
-		const $similarproducts = $props.detail.similarproducts && $props.detail.similarproducts.length > 4 ?
-			$props.detail.similarproducts.slice(0, 4) : $props.detail.similarproducts;
+		const looks = this.bufferCarousel(ent.data.products);
 
 		return (
 			<div>
 				<Page>
-					{$props.detail.contentdetail && (
-						<Grid split={1}>
-							<div>
-								<img alt='' src={$props.detail.contentdetail.image} />
-							</div>
-							<div>
-								@{$props.detail.contentdetail.user.username}
-								<p>
-									Post date: {$props.detail.contentdetail.user.created_time} <br />
-									{$props.detail.contentdetail.user.caption}
-								</p>
-							</div>
-							<div>
-								<h2>Get The Look</h2>
-								<Grid split={2}>
-									{$similarproducts.length && $similarproducts.map((product, i) =>
-										(
-											<Card.CatalogSmall key={i} />
-										)
-									)}
-								</Grid>
-							</div>
-						</Grid>
-					)}
+					<Grid split={1}>
+						{ent.data.post.image && (
+							<span>
+								<div>
+									<img alt='' src={ent.data.post.image} />
+								</div>
+								<div>
+									{ent.data.post.username}
+									<p>
+										Post date: {moment(ent.data.post.created_time).format('DD/MM/YY')} <br />
+										{ent.data.post.caption}
+									</p>
+								</div>
+							</span>
+						)}
 
-					{$props.isLoading && <button>&hellip;</button>}
+						{looks.length && (
+						<div>
+							<h2>Get The Look</h2>
+							<Carousel>
+								{looks.map((chunk, i) => <Grid split={2} key={i}>{chunk}</Grid>)}
+							</Carousel>
+						</div>
+						)}
+
+					</Grid>
+
+					{ent.loading && <Spinner />}
 				</Page>
 
 				<Header.Modal {...HeaderPage} />
@@ -84,15 +104,22 @@ class HashtagsDetails extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		...state.hashtagsdetails
+		...state
 	};
 };
 
-const mapDispatchToProps = (dispatch) => {
-	return {
-		hashtagDetailAction: (token) => dispatch(hdActions.hashtagDetailAction(token)),
-		loading: (bool) => dispatch(hdActions.isLoading(bool))
+const doAfterAnonymous = (props) => {
+	const { dispatch, cookies, match: { params } } = props;
+	if (isNaN(parseInt(params.post_id, 10)) || isNaN(parseInt(params.campaign_id, 10))) {
+		window.location.href = '/404';
+	}
+
+	const ids = {
+		post_id: params.post_id,
+		campaign_id: params.campaign_id,
 	};
+
+	dispatch(actions.hashtagDetailAction(cookies.get('user.token'), ids));
 };
 
-export default withRouter(withCookies(connect(mapStateToProps, mapDispatchToProps)(HashtagsDetails)));
+export default withRouter(withCookies(connect(mapStateToProps)(Shared(HashtagsDetails, doAfterAnonymous))));
