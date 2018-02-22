@@ -2,9 +2,9 @@ import { handleActions, createActions } from 'redux-actions';
 
 const initialState = {
 	keyword: '',
-	related_category: '',
-	related_keyword: '',
-	related_hashtag: '',
+	related_category: [],
+	related_keyword: [],
+	related_hashtag: [],
 	loading: false
 };
 

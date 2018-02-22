@@ -22,6 +22,8 @@ import { reducer as brands } from '@/state/v4/Brand';
 import { reducer as scroller } from '@/state/v4/Scroller';
 import { reducer as hashtag } from '@/state/v4/Hashtag';
 import { reducer as seller } from '@/state/v4/Seller';
+import { reducer as shopBag } from '@/state/v4/ShopBag';
+import { reducer as hashtagdetails } from '@/state/v4/HashtagsDetails';
 
 export default combineReducers({
 	...global,
@@ -47,5 +49,7 @@ export default combineReducers({
 	brands,
 	scroller,
 	hashtag,
-	seller
+	seller,
+	shopBag,
+	hashtagdetails
 });
