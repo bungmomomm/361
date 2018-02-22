@@ -2,6 +2,13 @@
  * Created by Faris Rayhan on 2/14/18.
  *
  */
+
+import { kebabCase } from 'lodash';
+
+const product = (productId, productName) => {
+	return `/${kebabCase(productName)}-${productId}.html`;
+};
+
 const hyperlink = (baseUrl, urlSegment, queryString) => {
  
 	// Url segment builder
@@ -41,4 +48,6 @@ const hyperlink = (baseUrl, urlSegment, queryString) => {
 	
 	return linkResult;
 };
+
+hyperlink.product = product;
 export default hyperlink;

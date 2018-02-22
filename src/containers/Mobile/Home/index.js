@@ -98,7 +98,7 @@ class Home extends Component {
 		let label = '';
 		switch (type) {
 		case 'best_seller_products':
-			link = '/promo/best_seller'; label = 'Product Terlaris';
+			link = '/promo/best_seller'; label = 'Produk Terlaris';
 			break;
 		case 'recommended_products':
 			link = '/promo/recommended_products'; label = 'Produk Rekomendasi';

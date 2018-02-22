@@ -40,7 +40,7 @@ class Lovelist extends PureComponent {
 	render() {
 		const { className, type, data, isLoved } = this.props;
 		const createClassName = classNames(styles.container, styles[type], className);
-		const linkToPdpCreator = hyperlink('', ['product', data.product_id], null);
+		const linkToPdpCreator = hyperlink('', ['product', data.id], null);
 		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
 		const slideIndex = this.getSlideIndex();
 

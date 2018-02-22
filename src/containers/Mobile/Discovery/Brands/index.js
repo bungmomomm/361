@@ -132,7 +132,7 @@ class Brands extends Component {
 			brands.brand_list.length > 0 &&
 			brands.brand_list.map((list, id) => {
 				return (
-					<div key={id} id={list.group}>
+					<div key={id} id={list.group} className='margin--medium'>
 						<Divider className='margin--none' size='small'>
 							{list.group}
 						</Divider>
@@ -143,10 +143,10 @@ class Brands extends Component {
 									<List key={i}>
 										<Link to={`/brand/${b.facetrange}/${b.facetdisplay.toLowerCase().replace(/ /g, '-')}`}>
 											<List.Content>
-												{b.facetdisplay}
-												<text style={{ color: 'grey' }} >
-													({b.count} produk)
-												</text>
+												<p className='margin--medium'>
+													<span>{ b.facetdisplay.replace(/\b\w/g, (l) => (l.toUpperCase())) }</span>&nbsp;
+													<span style={{ color: 'grey' }} >({b.count})</span>
+												</p>
 											</List.Content>
 										</Link>
 									</List>

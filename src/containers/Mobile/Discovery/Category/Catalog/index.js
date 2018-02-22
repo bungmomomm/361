@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { Header, Page, Card, Svg, Tabs, Button, Level, Image, Input, List } from '@/components/mobile';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import Shared from '@/containers/Mobile/Shared';
 import styles from './catalog.scss';
 
 class Catalog extends Component {
@@ -159,5 +161,13 @@ class Catalog extends Component {
 	}
 }
 
-
-export default withCookies(Catalog);
+const mapStateToProps = (state) => {
+	return {
+		...state,
+		shared: state.shared,
+		productCategory: state.productCategory,
+		isLoading: state.productCategory.isLoading,
+		scroller: state.scroller
+	};
+};
+export default withCookies(connect(mapStateToProps)(Shared(Catalog)));

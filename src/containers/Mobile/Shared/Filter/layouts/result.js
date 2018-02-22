@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Header, Page, Svg, List, Button } from '@/components/mobile';
+import _ from 'lodash';
 import Action from './action';
 
 // DUMMY DATA
@@ -22,8 +23,9 @@ import Action from './action';
 // END DUMMY DATA
 
 class Result extends PureComponent {
+
 	render() {
-		const { onClose, onApply, onReset, onListClick, filters } = this.props;
+		const { onClose, onApply, onReset, selected, onListClick, filters } = this.props;
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
@@ -33,26 +35,24 @@ class Result extends PureComponent {
 			center: 'Filter',
 			right: null
 		};
-
-		const facets = filters.facets;
-		const selected = [];
-
 		return (
 			<div style={this.props.style}>
 				<Page>
 					{
-						facets.map((facet, idx) => (
-							<List key={idx}>
-								<Button align='left' onClick={(e) => onListClick(e, facet.id)}>
-									<List.Content style={{ minHeight: '50px' }}>
-										<div>
-											<div>{facet.title}</div>
-											<span className='font-color--secondary font-small text-elipsis' style={{ width: '200px' }}>{selected.join(', ')}</span>
-										</div>
-									</List.Content>
-								</Button>
-							</List>
-						))
+						filters.facets.map((facet, idx) => {
+							return (
+								<List key={idx}>
+									<Button align='left' onClick={(e) => onListClick(e, facet.id)}>
+										<List.Content style={{ minHeight: '50px' }}>
+											<div>
+												<div>{facet.title}</div>
+												<span className='font-color--secondary font-small text-elipsis' style={{ width: '200px' }}>{_.map(selected[facet.id], (s) => s.facetdisplay).join(',')}</span>
+											</div>
+										</List.Content>
+									</Button>
+								</List>
+							);
+						})
 					}
 				</Page>
 				<Header.Modal {...HeaderPage} />
