@@ -73,7 +73,7 @@ class Search extends PureComponent {
 	}
 
 	searchKeywordUpdatedHandler(event) {
-		const newWord = (event.target.value) ? event.target.value : '';
+		const newWord = event.target.value || '';
 		const { dispatch } = this.props;
 		dispatch(actionSearch.updatedKeywordHandler(newWord, this.userToken));
 		if (newWord && newWord.length >= 3) {
@@ -236,6 +236,7 @@ class Search extends PureComponent {
 
 const mapStateToProps = (state) => {
 	return {
+		...state,
 		keyword: state.search.keyword,
 		relatedCategory: state.search.related_category,
 		relatedKeyword: state.search.related_keyword,

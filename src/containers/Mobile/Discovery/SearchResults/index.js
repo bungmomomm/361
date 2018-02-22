@@ -7,23 +7,25 @@ import stylesSearch from '../Search/search.scss';
 import stylesCatalog from '../Category/Catalog/catalog.scss';
 import { actions } from '@/state/v4/SearchResults';
 import queryString from 'query-string';
-import { Link } from 'react-router-dom';
 import Shared from '@/containers/Mobile/Shared';
+import SearchNotFound from '@/containers/Mobile/Discovery/SearchNotFound';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-
-import { actions as filterActions } from '@/state/v4/SortFilter';
 import Filter from '@/containers/Mobile/Shared/Filter';
 import Sort from '@/containers/Mobile/Shared/Sort';
 import { to } from 'await-to-js';
-import Spinner from '../../../../components/mobile/Spinner';
+import Spinner from '@/components/mobile/Spinner';
+import hyperlink from '@/utils/hyperlink';
+import renderIf from '../../../../utils/renderIf';
+
+import { actions as commentActions } from '@/state/v4/Comment';
 
 class SearchResults extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 
-		this.currentListState = 0;
+		this.currentListState = 1;
 		this.listType = [{
 			type: 'grid',
 			icon: 'ico_list.svg'
@@ -31,41 +33,51 @@ class SearchResults extends Component {
 			type: 'list',
 			icon: 'ico_grid.svg'
 		}];
+		const propsObject = _.chain(props.searchResults);
 		this.state = {
 			listTypeState: this.listType[this.currentListState],
 			notification: {
 				show: true
 			},
 			showFilter: false,
-			showSort: false
+			showSort: false,
+			query: {
+				per_page: 0,
+				page: 0,
+				q: '',
+				brand_id: '',
+				store_id: '',
+				category_id: '',
+				fq: '',
+				sort: '',
+				...propsObject.get('query').value()
+			}
 		};
 	}
 
-	async onApply(e) {
-		console.log('onApply called');
-		const { dispatch, cookies, filters } = this.props;
-		const [err, response] = await to(dispatch(new filterActions.applyFilter(cookies.get('user.token'), 'search', filters)));
-		console.log(err, response);
-		if (err) {
-			return err;
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.query) {
+			this.setState({
+				query: nextProps.query
+			});
 		}
+	}
+
+	// componentWillUnmount() {
+	// 	const { dispatch } = this.props;
+	// 	dispatch(new actions.loadingAction(true));
+	// }
+	
+	async onApply(e, fq) {
+		const { query } = this.state;
+		query.fq = fq;
 		this.setState({
+			query,
 			showFilter: false
 		});
-		console.log(response);
-		return response;
-	}
-
-	onUpdateFilter(e, type, value) {
-		try {
-			this.props.dispatch(new filterActions.updateFilter(type, value));
-		} catch (error) {
-			console.log(error);
-		}
-	}
-
-	onReset(e) {
-		this.props.dispatch(new filterActions.resetFilter());
+		this.update({
+			fq
+		});
 	}
 
 	onClose(e) {
@@ -81,14 +93,44 @@ class SearchResults extends Component {
 		return keywordFromUrl;
 	}
 
-	sort(e, value) {
+	update(params) {
+		const { shared, cookies, dispatch, location, history } = this.props;
+		const { query } = this.state;
+
+		const parsedUrl = queryString.parse(location.search);
+		const urlParam = {
+			query: query.q,
+			sort: query.sort,
+			per_page: query.per_page,
+			page: query.page,
+			...parsedUrl,
+			...params
+		};
+
+		const url = queryString.stringify(urlParam, {
+			encode: false
+		});
+		history.push(`products?${url}`);
+		const searchService = _.chain(shared).get('serviceUrl.product').value() || false;
+		const objParam = {
+			...query,
+			...params
+		};
+		dispatch(actions.searchAction(cookies.get('user.token'), searchService, objParam));
+	}
+
+	sort(e, sort) {
 		this.setState({
+			sort,
 			showSort: false
 		});
-		this.props.dispatch(new filterActions.updateSort(value));
+		this.update({
+			sort: sort.q
+		});
 	}
 
 	handlePick(e) {
+		console.log(e);
 		if (e === 'view') {
 			this.currentListState = this.currentListState === 1 ? 0 : this.currentListState + 1;
 			this.setState({ listTypeState: this.listType[this.currentListState] });
@@ -112,57 +154,59 @@ class SearchResults extends Component {
 		return null;
 	}
 
-	notFound() {
-		const inlineStyle = {
-			textAlign: 'center',
-			margin: '10px auto 10px auto'
-		};
+	searchNotFound() {
+		const { promoData } = this.props;
+
 		return (
-			<div style={this.props.style}>
-				<Page>
-					<div className={stylesSearch.container} >
-						<div style={inlineStyle}>[image kantong kosong]</div>
-						<div style={inlineStyle}>
-							{'Mohon maaf hasil pencarian untuk "'}{this.getKeyword()}
-							{ '" tidak dapat ditemukan. Silakan periksa pengejaan kata, atau menggunakan kata kunci lain!'}
-						</div>
-						<div><button><Link to={'/search'}>Cari kembali</Link></button></div>
-						<div style={inlineStyle}>[Rich Relevant Recommendation section]</div>
-						<div style={inlineStyle}>[Footer]</div>
-					</div>
-				</Page>
-				{this.renderHeader()}
-			</div>
+			<SearchNotFound
+				keyword={this.getKeyword()}
+				data={promoData}
+			/>
 		);
 	}
 
 	searchFound(products) {
 		if (products.length > 0) {
-			const { shared, filters } = this.props;
-			const { showSort } = this.state;
-			const foreverBannerData = shared.foreverBanner;
-			foreverBannerData.show = this.state.notification.show;
-			foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+			const productList = _.map(products, (product, index) => {
+				return this.renderList(product, index);
+			});
 
 			return (
-				<div style={this.props.style}>
-					<Page>
-						<div className={stylesSearch.container} >
-							<div className={stylesCatalog.cardContainer}>
-								{
-									products.map((product, index) =>
-										this.renderList(product, index)
-									)
-								}
-							</div>
+				<Page>
+					<div className={stylesSearch.container} >
+						<div className={stylesCatalog.cardContainer}>
+							{ productList }
 						</div>
-						<Sort shown={showSort} sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
-					</Page>
+					</div>
+				</Page>
+			);
+		}
+
+		return null;
+	}
+
+	renderPage() {
+		let pageView = null;
+		const { searchResults } = this.props;
+		const { showFilter } = this.state;
+		if (showFilter) {
+			pageView = (
+				<Filter
+					shown={showFilter}
+					filters={searchResults.searchData}
+					onApply={(e, fq) => {
+						this.onApply(e, fq);
+					}}
+					onClose={(e) => this.onClose(e)}
+				/>
+			);
+		} else {
+			pageView = (
+				<div style={this.props.style}>
+					{this.renderSearch()}
 					{this.renderHeader()}
 					{this.renderTabs()}
-					{
-						<ForeverBanner {...foreverBannerData} />
-					}
+					{this.renderForeverBanner()}
 					<Navigation />
 
 					{this.props.scroller.loading}
@@ -170,34 +214,17 @@ class SearchResults extends Component {
 			);
 		}
 
-		return null;
+		return pageView;
 	}
 
-	searchRender() {
+	renderSearch() {
 		let searchView = null;
-		const { filters } = this.props;
-		const { showFilter } = this.state;
-		const searchResults = this.props.searchResults;
-		if (typeof searchResults.searchStatus !== 'undefined' && searchResults.searchStatus !== '') {
+		const { searchResults } = this.props;
+		if (searchResults.searchStatus !== undefined && searchResults.searchStatus !== '') {
 			if (searchResults.searchStatus === 'success' && searchResults.searchData.products.length > 0) {
-				if (showFilter) {
-					searchView = (
-						<Filter
-							shown={showFilter}
-							filters={filters}
-							onUpdateFilter={(e, type, value) => this.onUpdateFilter(e, type, value)}
-							onApply={(e) => {
-								this.onApply(e);
-							}}
-							onReset={(e) => this.onReset(e)}
-							onClose={(e) => this.onClose(e)}
-						/>
-					);
-				} else {
-					searchView = this.searchFound(searchResults.searchData.products);
-				}
+				searchView = this.searchFound(searchResults.searchData.products);
 			} else if (searchResults.searchStatus === 'failed') {
-				searchView = this.notFound();
+				searchView = this.searchNotFound();
 			}
 		}
 
@@ -205,18 +232,21 @@ class SearchResults extends Component {
 	}
 
 	renderList(productData, index) {
+		const { comments } = this.props;
+		const { listTypeState } = this.state;
 		if (productData) {
-			switch (this.state.listTypeState.type) {
+			switch (listTypeState.type) {
 			case 'list':
 				return (
 					<div key={index} className={stylesCatalog.cardCatalog}>
 						<Card.Catalog
 							images={productData.images}
 							productTitle={productData.product_title}
-							brandName={productData.brand}
+							brandName={productData.brand.name}
 							pricing={productData.pricing}
+							linkToPdp={hyperlink.product(productData.product_id, productData.product_title)}
 						/>
-						<Comment />
+						{comments && comments.loading ? <Spinner /> : this.renderComment(productData.product_id)}
 					</div>
 				);
 			case 'grid':
@@ -227,6 +257,7 @@ class SearchResults extends Component {
 						productTitle={productData.product_title}
 						brandName={productData.brand}
 						pricing={productData.pricing}
+						linkToPdp={hyperlink.product(productData.product_id, productData.product_title)}
 					/>
 				);
 			default:
@@ -235,6 +266,23 @@ class SearchResults extends Component {
 		} else {
 			return null;
 		}
+	}
+
+	renderComment(productId) {
+		let commentView = null;
+		const { comments } = this.props;
+		if (comments && comments.data.length > 0) {
+			const commentById = _.find(comments.data, { product_id: productId }) || null;
+			commentView = (
+				<Comment
+					className={stylesCatalog.commentBlock}
+					type='comment_summary'
+					data={commentById}
+				/>
+			);
+		}
+
+		return commentView;
 	}
 
 	renderHeader() {
@@ -252,52 +300,66 @@ class SearchResults extends Component {
 	}
 
 	renderTabs() {
+		const { searchResults } = this.props;
+		const { showSort } = this.state;
 		let tabsView = null;
-		const searchResults = this.props.searchResults;
-		if (typeof searchResults.searchStatus !== 'undefined' && searchResults.searchStatus !== '' && searchResults.searchStatus === 'success') {
-			tabsView = (
+		const sorts = _.chain(searchResults).get('searchData.sorts').value() || [];
+		tabsView = (
+			<div>
 				<Tabs
-					className={stylesCatalog.fixed}
+					className={stylesCatalog.filterBlockContainer}
 					type='segment'
 					variants={[
 						{
 							id: 'sort',
-							title: 'Urutkan'
+							title: 'Urutkan',
+							disabled: typeof searchResults.searchData === 'undefined'
 						},
 						{
 							id: 'filter',
-							title: 'Filter'
+							title: 'Filter',
+							disabled: typeof searchResults.searchData === 'undefined'	
 						},
 						{
 							id: 'view',
-							title: <Svg src={this.state.listTypeState.icon} />
+							title: <Svg src={this.state.listTypeState.icon} />,
+							disabled: searchResults.isLoading
 						}
 					]}
 					onPick={e => this.handlePick(e)}
 				/>
-			);
-		}
-
+				{renderIf(sorts)(
+					<Sort shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+				)}
+			</div>
+		);
 		return tabsView;
 	}
 
+	renderForeverBanner() {
+		const { shared } = this.props;
+		const foreverBannerData = shared.foreverBanner;
+		foreverBannerData.show = this.state.notification.show;
+		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+
+		return <ForeverBanner {...foreverBannerData} />;
+	}
+
 	render() {
-		return this.props.isLoading ? this.loadingRender() : this.searchRender();
+		return this.renderPage();
 	}
 }
 
 const mapStateToProps = (state) => {
 	return {
 		...state,
-		shared: state.shared,
-		searchResults: state.searchResults,
-		isLoading: state.searchResults.isLoading,
-		scroller: state.scroller
+		query: state.searchResults.query,
+		promoData: state.searchResults.promoData,
+		isLoading: state.searchResults.isLoading
 	};
 };
 
 const doAfterAnonymous = async (props) => {
-	console.log(props);
 	const { shared, dispatch, cookies, location } = props;
 
 	const searchService = _.chain(shared).get('serviceUrl.product').value() || false;
@@ -313,14 +375,17 @@ const doAfterAnonymous = async (props) => {
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
 	
-	const [err, response] = await to(dispatch(new actions.initAction(cookies.get('user.token'), searchService, objParam)));
-
+	const [err, response] = await to(dispatch(actions.searchAction(cookies.get('user.token'), searchService, objParam)));
 	if (err) {
-		console.log(err.message);
-	} else {
-		console.log('response', response);
-		dispatch(filterActions.initializeFilter(response));
+		console.log(err);
+		return err;
 	}
+	const promoService = _.chain(shared).get('serviceUrl.promo').value() || false;
+	dispatch(actions.promoAction(cookies.get('user.token'), promoService));
+	const productIdList = _.map(response.products, 'product_id') || null;
+	const commentService = _.chain(shared).get('serviceUrl.productsocial').value() || false;
+	dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList, commentService));
+	return response;
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Scroller(SearchResults), doAfterAnonymous)));

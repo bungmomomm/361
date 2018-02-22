@@ -8,6 +8,7 @@ import Level from '../Level';
 import Badge from '../Badge';
 import styles from './card.scss';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 class Catalog extends PureComponent {
 	render() {
@@ -21,6 +22,7 @@ class Catalog extends PureComponent {
 			url,
 			commentUrl,
 			commentTotal,
+			linkToPdp,
 			...props
 		} = this.props;
 
@@ -31,7 +33,7 @@ class Catalog extends PureComponent {
 
 		return (
 			<div className={createClassName} {...props}>
-				<Link to={(url) || '/'}>
+				<Link to={linkToPdp}>
 					<Carousel>
 						{
 							images.map((image, index) => (
@@ -40,7 +42,6 @@ class Catalog extends PureComponent {
 						}
 					</Carousel>
 				</Link>
-
 				<Level
 					className={styles.action}
 					style={{ borderBottom: '1px solid #D8D8D8' }}
@@ -60,7 +61,7 @@ class Catalog extends PureComponent {
 						</Link>
 					</Level.Item>
 				</Level>
-				<Link to={(url) || '/'}>
+				<Link to={(linkToPdp) || '/'}>
 					<div className={styles.title}>
 						{brandName} - <span>{productTitle}</span>
 					</div>
@@ -85,5 +86,14 @@ class Catalog extends PureComponent {
 		);
 	}
 }
+
+Catalog.defaultProps = {
+	linkToPdp: '/'
+};
+
+Catalog.propTypes = {
+	brandName: PropTypes.string,
+	linkToPdp: PropTypes.string.isRequired
+};
 
 export default Catalog;

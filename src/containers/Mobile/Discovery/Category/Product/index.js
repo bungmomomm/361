@@ -3,19 +3,28 @@ import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import { Header, Page, Card, Svg, Tabs, Button, Level, Image, Input, Navigation } from '@/components/mobile';
+import { 
+	Header, 
+	Page, 
+	Card, 
+	Svg, 
+	Tabs, 
+	Button, 
+	Level, 
+	Image, 
+	Input, 
+	Navigation,
+	Spinner
+} from '@/components/mobile';
 import stylesCatalog from '../Catalog/catalog.scss';
 import Shared from '@/containers/Mobile/Shared';
 import { actions } from '@/state/v4/ProductCategory';
 import queryString from 'query-string';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-
-import { actions as filterActions } from '@/state/v4/SortFilter';
 import Filter from '@/containers/Mobile/Shared/Filter';
 import Sort from '@/containers/Mobile/Shared/Sort';
-import { to } from 'await-to-js';
-import Spinner from '../../../../../components/mobile/Spinner';
+import { hyperlink } from '@/utils';
 
 class Product extends Component {
 	constructor(props) {
@@ -45,29 +54,9 @@ class Product extends Component {
 
 	async onApply(e) {
 		console.log('onApply called');
-		const { dispatch, cookies, filters } = this.props;
-		const [err, response] = await to(dispatch(new filterActions.applyFilter(cookies.get('user.token'), 'category', filters)));
-		console.log(err, response);
-		if (err) {
-			return err;
-		}
 		this.setState({
 			filterShown: false
 		});
-		console.log(response);
-		return response;
-	}
-
-	onUpdateFilter(e, type, value) {
-		try {
-			this.props.dispatch(new filterActions.updateFilter(type, value));
-		} catch (error) {
-			console.log(error);
-		}
-	}
-
-	onReset(e) {
-		this.props.dispatch(new filterActions.resetFilter());
 	}
 
 	onClose(e) {
@@ -80,7 +69,6 @@ class Product extends Component {
 		this.setState({
 			sortShown: false
 		});
-		this.props.dispatch(new filterActions.updateSort(value));
 	}
 
 	handlePick(e) {
@@ -105,23 +93,26 @@ class Product extends Component {
 
 	pcpRender() {
 		let pcpView = null;
-		const { shared, filters } = this.props;
+		const { shared } = this.props;
+		
 		const foreverBannerData = shared.foreverBanner;
 		foreverBannerData.show = this.state.notification.show;
 		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
 
 		const { filterShown, sortShown } = this.state;
 		const pcpResults = this.props.productCategory;
+		
 		if (typeof pcpResults.pcpStatus !== 'undefined' && pcpResults.pcpStatus !== '') {
 			if (pcpResults.pcpStatus === 'success' && pcpResults.pcpData.products.length > 0) {
 				if (filterShown) {
 					pcpView = (
 						<Filter
 							shown={filterShown}
-							filters={filters}
+							filters={pcpResults.pcpData}
 							onUpdateFilter={(e, type, value) => this.onUpdateFilter(e, type, value)}
 							onApply={(e) => {
-								this.onApply(e);
+								console.log(e);
+								// this.onApply(e);
 							}}
 							onReset={(e) => this.onReset(e)}
 							onClose={(e) => this.onClose(e)}
@@ -133,12 +124,12 @@ class Product extends Component {
 							<Page>
 								<div className={stylesCatalog.cardContainer}>
 									{
-										pcpResults.pcpData.products.map((product, index) => 
-											this.renderList(product, index)
-										)
+										// pcpResults.pcpData.products.map((product, index) =>
+										// 	this.renderList(product, index)
+										// )
 									}
 								</div>
-								<Sort shown={sortShown} sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
+								<Sort shown={sortShown} sorts={pcpResults.pcpData.sorts} onSort={(e, value) => this.sort(e, value)} />
 							</Page>
 							{this.renderHeader()}
 							{this.renderTabs()}
@@ -172,36 +163,48 @@ class Product extends Component {
 					</Level>
 				</div>
 			);
+			
+			const linkToPdpCreator = hyperlink('', ['product', productData.product_id], null);
+			
+			const listCardCatalogAttribute 			= {
+				images: productData.images,
+				productTitle: productData.product_title,
+				brandName: productData.brand,
+				pricing: productData.pricing,
+				linkToPdp: linkToPdpCreator
+			};
+			
+			const cardCatalogGridAttribute 			= {
+				key: index,
+				images: productData.images,
+				productTitle: productData.product_title,
+				brandName: productData.brand,
+				pricing: productData.pricing,
+				linkToPdp: linkToPdpCreator
+			};
+			
+			const cardCatalogSmall 					= {
+				key: index,
+				images: productData.images,
+				pricing: productData.pricing,
+				linkToPdp: linkToPdpCreator
+			};
+			
 			switch (this.state.listTypeState.type) {
 			case 'list':
 				return (
 					<div key={index} className={stylesCatalog.cardCatalog}>
-						<Card.Catalog
-							images={productData.images}
-							productTitle={productData.product_title}
-							brandName={productData.brand}
-							pricing={productData.pricing}
-						/>
+						<Card.Catalog {...listCardCatalogAttribute} />
 						{renderBlockComment}
 					</div>
 				);
 			case 'grid':
 				return (
-					<Card.CatalogGrid
-						key={index}
-						images={productData.images}
-						productTitle={productData.product_title}
-						brandName={productData.brand}
-						pricing={productData.pricing}
-					/>
+					<Card.CatalogGrid {...cardCatalogGridAttribute} />
 				);
 			case 'small':
 				return (
-					<Card.CatalogSmall
-						key={index}
-						images={productData.images}
-						pricing={productData.pricing}
-					/>
+					<Card.CatalogSmall {...cardCatalogSmall} />
 				);
 			default:
 				return null;
@@ -288,13 +291,13 @@ const doAfterAnonymous = async (props) => {
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
 	
-	const [err, response] = await to(dispatch(actions.initAction(cookies.get('user.token'), productService, pcpParam)));
+	dispatch(actions.initAction(cookies.get('user.token'), productService, pcpParam));
 	
-	if (err) {
-		console.log(err.message);
-	} else {
-		dispatch(filterActions.initializeFilter(response));
-	}
+	// if (err) {
+	// 	console.log(err.message);
+	// } else {
+	// 	dispatch(filterActions.initializeFilter(response));
+	// }
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Scroller(Product), doAfterAnonymous)));

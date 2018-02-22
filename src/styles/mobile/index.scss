@@ -77,7 +77,8 @@
 
 	img {
 		display: block;
-		// width: 100%;
+		max-width: 100%;
+		align-self: center;
 	}
 
 	#root,
@@ -97,12 +98,12 @@
 		margin: 0;
 		padding: 0;
 		position: relative;
+
 	}
 	.--disable-flex {
 		display: block;
 		flex: none;
 	}
-	#root,
 	body,
 	html {
 		height: 100%;
@@ -133,8 +134,9 @@
 		background: #D8D8D8;
 	}
 	#root {
+	  	width: 100%;
+	  	overflow-y: hidden;
 		z-index: 0;
-
 		.switch-wrapper {
 			height: 100%;
 			background: transparent;

@@ -1,7 +1,9 @@
 import React, { PureComponent } from 'react';
+import _ from 'lodash';
 import classNames from 'classnames';
 import Image from '../Image';
 import Level from '../Level';
+import Button from '../Button';
 import styles from './comment.scss';
 
 class Comment extends PureComponent {
@@ -29,7 +31,20 @@ class Comment extends PureComponent {
 					</div>
 				</div>
 			);
-		};
+		} else if (this.props.type === 'comment_summary') {
+			const lastComment = _.last(data.last_comment);
+			return (
+				<div className={createClassName} {...props}>
+					<Button>View {data.total} comments</Button>
+					<Level>
+						<Level.Left>
+							<div style={{ fontWeight: 'bold' }}>{lastComment.customer.customer_name}</div>
+							<div>{lastComment.comment.comment}</div>
+						</Level.Left>
+					</Level>
+				</div>
+			);
+		}
 
 		if (this.props.type === 'lite-review') {
 			return (
