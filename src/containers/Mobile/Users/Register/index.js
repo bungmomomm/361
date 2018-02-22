@@ -137,7 +137,7 @@ class Register extends Component {
 									<Button
 										onClick={() => this.setState({ visiblePassword: !visiblePassword })}
 									>
-										<Svg src='ico_eye-off.svg' />
+										<Svg src={visiblePassword ? 'ico_eye.svg' : 'ico_eye-off.svg'} />
 									</Button>
 								}
 								type={visiblePassword ? 'text' : 'password'}
