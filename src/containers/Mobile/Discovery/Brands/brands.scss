@@ -14,8 +14,9 @@
 
 .listFilterKey{
     flex-direction: row;
-    width: 80%;
-    margin: rem(15px) auto;
+    width: 100%;
+  	padding: 0 rem(10px);
+    margin: rem(15px) 0;
     flex-wrap: wrap;
     justify-content: center;
     button{

@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { withCookies } from 'react-cookie';
-import { Header, Page } from '@/components/mobile';
+import { Header, Page, Spinner } from '@/components/mobile';
 import styles from './search.scss';
 import { connect } from 'react-redux';
 import { actions as actionSearch } from '@/state/v4/Search';
@@ -107,114 +107,104 @@ class Search extends PureComponent {
 		</div>);
 	};
 
-	render() {
-		let sectionSearchHistory = null;
-		let listSearchHistory = null;
+	renderHistory() {
 		const cookieSearch = this.props.cookies.get(this.searchListCookieName);
-		if (cookieSearch && cookieSearch.length > 0) {
-			listSearchHistory = this.listSugestionMaker(cookieSearch, this.SUGGEST_HISTORY);
+		return (cookieSearch && cookieSearch.length > 0) && (
+			<section className={styles.section}>
+				<div className={styles.heading}>
+					<span>Pencarian Terakhir</span>
+					<span
+						className={styles.delete}
+						onClick={() => this.deleteAllCookieSearchByType(this.searchListCookieName)}
+						role='button'
+						tabIndex='0'
+					>
+						HAPUS SEMUA
+					</span>
+				</div>
+				<ul className={styles.list}>
+					{this.listSugestionMaker(cookieSearch, this.SUGGEST_HISTORY)}
+				</ul>
+			</section>
+		);
+	}
 
-			sectionSearchHistory = (
-				<section className={styles.section}>
-					<div className={styles.heading}>
-						<span>Pencarian Terakhir</span>
-						<span
-							className={styles.delete}
-							onClick={() => this.deleteAllCookieSearchByType(this.searchListCookieName)}
-							role='button'
-							tabIndex='0'
-						>
-							HAPUS SEMUA
-						</span>
-					</div>
-					<ul className={styles.list}>
-						{listSearchHistory}
-					</ul>
-				</section>
-			);
-		}
-
-		let sectionHashtagHistory = null;
-		let listHashtagHistory = null;
+	renderHistoryHashtag() {
 		const cookieHashtag = this.props.cookies.get(this.searchHashtagListCookieName);
-		if (cookieHashtag && cookieHashtag.length > 0) {
-			listHashtagHistory = this.listSugestionMaker(cookieHashtag, this.SUGGEST_HISTORY);
-			sectionHashtagHistory = (
-				<section className={styles.section}>
-					<div className={styles.heading}>
-						<span>#hashtags Terakhir</span>
-						<span
-							className={styles.delete}
-							onClick={() => this.deleteAllCookieSearchByType(this.searchHashtagListCookieName)}
-							role='button'
-							tabIndex='0'
-						>
-							HAPUS SEMUA
-						</span>
-					</div>
-					<ul className={styles.list}>
-						{listHashtagHistory}
-					</ul>
-				</section>
-			);
-		}
+		return (cookieHashtag && cookieHashtag.length > 0) && (
+			<section className={styles.section}>
+				<div className={styles.heading}>
+					<span>#hashtags Terakhir</span>
+					<span
+						className={styles.delete}
+						onClick={() => this.deleteAllCookieSearchByType(this.searchHashtagListCookieName)}
+						role='button'
+						tabIndex='0'
+					>
+						HAPUS SEMUA
+					</span>
+				</div>
+				<ul className={styles.list}>
+					{this.listSugestionMaker(cookieHashtag, this.SUGGEST_HISTORY)}
+				</ul>
+			</section>
+		);
+	}
 
-		let sectionRelatedCategory = null;
-		let listRelatedCategory = null;
-		if (this.props.relatedCategory) {
-			listRelatedCategory = this.listSugestionMaker(this.props.relatedCategory, this.SUGGEST_CATEGORY);
-			sectionRelatedCategory = (
-				<section className={styles.section}>
-					<div className={styles.heading}>Related Categories</div>
-					<ul className={styles.list}>
-						{listRelatedCategory}
-					</ul>
-				</section>
-			);
-		}
+	renderRelatedCategory() {
+		return (this.props.relatedCategory) && (
+			<section className={styles.section}>
+				<div className={styles.heading}>Related Categories</div>
+				<ul className={styles.list}>
+					{this.listSugestionMaker(this.props.relatedCategory, this.SUGGEST_CATEGORY)}
+				</ul>
+			</section>
+		);
+	}
 
-		let sectionRelatedKeyword = null;
-		let listRelatedKeyword = null;
-		if (this.props.relatedKeyword) {
-			listRelatedKeyword = this.listSugestionMaker(this.props.relatedKeyword, this.SUGGEST_KEYWORD);
-			sectionRelatedKeyword = (
-				<section className={styles.section}>
-					<div className={styles.heading}>Related Keywords</div>
-					<ul className={styles.list}>
-						{listRelatedKeyword}
-					</ul>
-				</section>
-			);
-		}
+	renderRelatedKeyword() {
+		return (this.props.relatedKeyword) && (
+			<section className={styles.section}>
+				<div className={styles.heading}>Related Keywords</div>
+				<ul className={styles.list}>
+					{this.listSugestionMaker(this.props.relatedKeyword, this.SUGGEST_KEYWORD)}
+				</ul>
+			</section>
+		);
+	}
 
-		let sectionRelatedHastag = null;
-		let listRelatedHastag = null;
-		if (this.props.relatedHastag) {
-			listRelatedHastag = this.listSugestionMaker(this.props.relatedHastag, this.SUGGEST_HASTAG);
-			sectionRelatedHastag = (
-				<section className={styles.section}>
-					<div className={styles.heading}>Related Hastag</div>
-					<ul className={styles.list}>
-						{listRelatedHastag}
-					</ul>
-				</section>
-			);
-		}
+	renderRelatedHashtag() {
+		return (this.props.relatedHashtag) && (
+			<section className={styles.section}>
+				<div className={styles.heading}>Related Hastag</div>
+				<ul className={styles.list}>
+					{this.listSugestionMaker(this.props.relatedHashtag, this.SUGGEST_HASTAG)}
+				</ul>
+			</section>
+		);
+	}
 
-		const showSuggestion = (this.props.relatedHastag || this.props.relatedKeyword || this.props.relatedCategory);
-
+	render() {
+		const { relatedCategory, relatedKeyword, relatedHashtag } = this.props;
 		let mainList = null;
+
+		const showSuggestion = (relatedHashtag.length > 1 || relatedKeyword.length > 1 || relatedCategory.length > 1);
 		if (showSuggestion) {
-			mainList = (<div>{sectionRelatedCategory}{sectionRelatedKeyword}{sectionRelatedHastag}</div>
+			mainList = (
+				<div>
+					{relatedCategory.length > 1 && this.renderRelatedCategory()}
+					{relatedKeyword.length > 1 && this.renderRelatedKeyword()}
+					{relatedHashtag.length > 1 && this.renderRelatedHashtag()}
+				</div>
 			);
 		} else {
 			mainList = (<div>
-				{ sectionSearchHistory }
-				{ sectionHashtagHistory }
+				{ this.renderHistory() }
+				{ this.renderHistoryHashtag() }
 			</div>);
 		}
 
-		const displayLoading = (<div style={{ textAlign: 'center', padding: '5px 0px' }} > hhmmmm..... </div>);
+		const displayLoading = (<div style={{ textAlign: 'center', padding: '20px 0px' }} > <Spinner /> </div>);
 
 		return (
 			<div style={this.props.style}>
@@ -236,10 +226,11 @@ class Search extends PureComponent {
 
 const mapStateToProps = (state) => {
 	return {
+		...state,
 		keyword: state.search.keyword,
 		relatedCategory: state.search.related_category,
 		relatedKeyword: state.search.related_keyword,
-		relatedHastag: state.search.related_hashtag,
+		relatedHashtag: state.search.related_hashtag,
 		isLoading: state.search.loading
 	};
 };

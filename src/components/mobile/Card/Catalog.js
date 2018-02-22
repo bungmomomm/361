@@ -8,6 +8,7 @@ import Level from '../Level';
 import Badge from '../Badge';
 import styles from './card.scss';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 class Catalog extends PureComponent {
 	render() {
@@ -82,5 +83,14 @@ class Catalog extends PureComponent {
 		);
 	}
 }
+
+Catalog.defaultProps = {
+	linkToPdp: '/'
+};
+
+Catalog.propTypes = {
+	brandName: PropTypes.string,
+	linkToPdp: PropTypes.string.isRequired
+};
 
 export default Catalog;

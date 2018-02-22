@@ -35,7 +35,7 @@ class Register extends Component {
 		this.props = props;
 		this.state = {
 			current: 'register',
-			visibalePasswod: false
+			visiblePassword: false
 		};
 	}
 
@@ -65,7 +65,7 @@ class Register extends Component {
 
 	render() {
 		const { userProfile } = this.props.users;
-		const { visibalePasswod, current } = this.state;
+		const { visiblePassword, current } = this.state;
 		const HeaderPage = {
 			left: (
 				<Link to='/'>
@@ -135,14 +135,12 @@ class Register extends Component {
 								label='Password'
 								iconRight={
 									<Button
-										onClick={() =>
-											this.setState({ visibalePasswod: !visibalePasswod })
-										}
+										onClick={() => this.setState({ visiblePassword: !visiblePassword })}
 									>
-										show
+										<Svg src={visiblePassword ? 'ico_eye.svg' : 'ico_eye-off.svg'} />
 									</Button>
 								}
-								type={visibalePasswod ? 'text' : 'password'}
+								type={visiblePassword ? 'text' : 'password'}
 								flat
 								placeholder='Password minimal 6 karakter'
 							/>
@@ -224,11 +222,6 @@ class Register extends Component {
 		);
 	}
 }
-
-Register.defaultProps = {
-	Home: 'hallo',
-	Data: 'akjsdaskdjasldjsaldjalskdj'
-};
 
 const mapStateToProps = state => {
 	return {
