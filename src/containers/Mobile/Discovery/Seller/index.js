@@ -41,9 +41,9 @@ class Seller extends Component {
 				per_page: 0,
 				page: 0,
 				q: '',
-				brand_id: 0,
-				store_id: 0,
-				category_id: 0,
+				brand_id: '',
+				store_id: '',
+				category_id: '',
 				fq: '',
 				sort: '',
 				...propsObject.get('query').value()
@@ -86,7 +86,8 @@ class Seller extends Component {
 				...query,
 				...fq,
 				store_id: params.store_id || 0
-			}
+			},
+			type: 'init'
 		};
 
 		dispatch(actions.getProducts(data));
@@ -277,12 +278,14 @@ class Seller extends Component {
 						onApply={(e, fq) => {
 							this.onApply(e, fq);
 						}}
+						onClose={(e) => this.onClose(e)}
 					/>
 				) : (
 					<div style={this.props.style}>
 						<Page>
 							{this.sellerHeader()}
 							{this.loadProducts()}
+							{this.props.scroller.loading && <Spinner />}
 						</Page>
 
 						<Header.Modal {...HeaderPage} />
@@ -299,7 +302,6 @@ class Seller extends Component {
 		return (
 			<div>
 				{this.renderData()}
-				{this.props.scroller.loading && <Spinner />}
 			</div>
 		);
 	}
@@ -313,6 +315,10 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = (props) => {
 	const { dispatch, cookies, match: { params } } = props;
+	if (isNaN(parseInt(params.store_id, 10))) {
+		props.history.push('/404');
+	}
+
 	const data = {
 		token: cookies.get('user.token'),
 		query: { store_id: params.store_id || 0 }

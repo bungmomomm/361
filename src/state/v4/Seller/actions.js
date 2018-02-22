@@ -39,7 +39,7 @@ const initSeller = (token, sellerId, query = {}) => async (dispatch, getState) =
 	return Promise.resolve(resp);
 };
 
-const getProducts = ({ token, query = {} }) => async (dispatch, getState) => {
+const getProducts = ({ token, query = {}, type = 'update' }) => async (dispatch, getState) => {
 	dispatch(scrollerActions.onScroll({ loading: true }));
 
 	const { shared, scroller: { nextData } } = getState();
@@ -64,12 +64,13 @@ const getProducts = ({ token, query = {} }) => async (dispatch, getState) => {
 	}
 
 	const data = _.chain(resp).get('data.data').value() || {};
-	dispatch(sellerProducts({ data }));
+	dispatch(sellerProducts({ data, type }));
 
 	const nextLink = data.links && data.links.next ? new URL(baseUrl + data.links.next).searchParams : false;
 	dispatch(scrollerActions.onScroll({
 		nextData: {
 			...nextData,
+			type: type === 'init' ? 'update' : type,
 			query: {
 				...query,
 				page: nextLink ? nextLink.get('page') : false
