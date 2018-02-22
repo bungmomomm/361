@@ -11,6 +11,10 @@ import SocialLogin from './social-login';
 import urlBuilder from './urlBuilder';
 import loading from './loading';
 
+const isHexColor = (color) => {
+	return /(^#[0-9A-F]{3}|^#[0-9A-F]{6})$/i.test(color);
+};
+
 const getBaseUrl = () => {
 	return process.env.BASE_URL;
 };
@@ -50,5 +54,6 @@ export default {
 	SocialLogin,
 	hyperlink,
 	urlBuilder,
+	isHexColor,
 	loading
 };

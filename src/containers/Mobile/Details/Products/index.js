@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
-import { actions as commentActions } from '@/state/v4/Comment';
 import { Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
@@ -29,15 +28,16 @@ class Products extends Component {
 			size: 's',
 			status: {
 				showScrollInfomation: false,
-				loading: true,
-				isLoved: false,
+				isLoved: true,
 				isZoomed: false,
 				pdpDataHasLoaded: false,
+				similarSet: false,
+				reviewsSet: false
 			},
 			pdpData: {
-				cardProduct: false,
-				similarItems: 'loading content',
-				reviewItems: 'loading content'
+				cardProduct: {},
+				reviewContent: {},
+				similarContent: {}
 			},
 			detail: {},
 			carousel: {
@@ -51,40 +51,49 @@ class Products extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		const { product, lovelist } = nextProps;
-		const { detail, similar, socialSummary } = product;
-		const { status } = this.state;
+		const { product, lovelist, dispatch } = nextProps;
+		const { detail, socialSummary, similar } = product;
+		const { status, pdpData } = this.state;
 
-		if (!_.isEmpty(detail) && !_.isEmpty(similar) && !_.isEmpty(socialSummary.reviews) && 
-			!_.isEmpty(lovelist.bulkieCountProducts) && !status.pdpDataHasLoaded) {
+		// sets pdp main data
+		if (!_.isEmpty(detail) && !_.isEmpty(lovelist.bulkieCountProducts) && !status.pdpDataHasLoaded) {
+			const lovelistProduct = dispatch(lovelistActions.getProductBulk(5131299));
 
-			const reviewItems = socialSummary.reviews.summary.map((item, idx) => {
-				return <Comment key={idx} type='review' data={item} />;
-			});
+			detail.totalLovelist = lovelistProduct.total;
+			detail.totalComments = socialSummary.comments.total || 0;
+			status.pdpDataHasLoaded = true;
+			status.loading = false;
+			pdpData.cardProduct = productActions.getProductCardData(detail);
+			
+			console.log('I am being called once! (Main Data)');
+		}
 
-			const similarItems = similar.map((item, idx) => {
+		// sets similar products data
+		if (!_.isEmpty(similar) && !status.similarSet) {
+			status.similarSet = true;
+			pdpData.similarContent = similar.map((item, idx) => {
 				const data = {
 					productTitle: item.product_title,
 					brandName: item.brand,
 					pricing: item.pricing,
 					images: item.images
 				};
-				return <Card.CatalogGrid {...data} key={idx} />;
+				return <Card.CatalogGrid linkToPdp='/' {...data} key={idx} />;
 			});
-
-			const lovelistProduct = lovelistActions.getProductFromBulk(detail.id, lovelist.bulkieCountProducts);
-			detail.totalLovelist = lovelistProduct.total;
-			detail.totalComments = socialSummary.comments.total || 0;
-			status.pdpDataHasLoaded = true;
-			status.loading = false;
-			const cardProduct = productActions.getProductCardData(detail);
-
-			this.setState({
-				detail,
-				status,
-				pdpData: { cardProduct, similarItems, reviewItems }
-			});
+			console.log('I am being called once! (Similar)');
 		}
+
+		// sets product reviews data
+		if (!_.isEmpty(socialSummary.reviews) && !status.reviewsSet) {
+			status.reviewsSet = true;
+			pdpData.reviewContent = socialSummary.reviews.summary.map((item, idx) => {
+				return <Comment key={idx} type='review' data={item} />;
+			});
+			console.log('I am being called once! (Review)');
+		}
+
+		// updates states
+		this.setState({ detail, status, pdpData });
 	}
 
 	componentWillUnmount() {
@@ -120,11 +129,11 @@ class Products extends Component {
 		if (!isLoved) {
 			isLoved = true;
 			pdpData.cardProduct.totalLovelist += 1;
-			dispatch(lovelistActions.addToLovelist(this.userCookies, 1, match.params.id));
+			dispatch(lovelistActions.addToLovelist(this.userCookies, match.params.id));
 		} else {
 			isLoved = false;
 			pdpData.cardProduct.totalLovelist -= 1;
-			dispatch(lovelistActions.removeFromLovelist(this.userCookies, 1, match.params.id));
+			dispatch(lovelistActions.removeFromLovelist(this.userCookies, match.params.id));
 		}
 
 		this.setState({ status: { isLoved }, pdpData });
@@ -132,6 +141,11 @@ class Products extends Component {
 
 	handleImageItemClick() {
 		this.setState({ status: { isZoomed: true } });
+	}
+
+	redirectToComments() {
+		const { match, history } = this.props;
+		history.push(`/product/comments/${match.params.id}`);
 	}
 
 	renderZoomImage() {
@@ -199,7 +213,7 @@ class Products extends Component {
 
 	renderStickyAction() {
 		const { pdpData, status, detail } = this.state;
-		if (status.showScrollInfomation && !status.loading) {
+		if (status.pdpDataHasLoaded && status.showScrollInfomation && !status.loading) {
 			return (
 				<div className={styles.stickyAction}>
 					<Level style={{ padding: '10px' }} className='flex-center'>
@@ -224,11 +238,7 @@ class Products extends Component {
 
 	render() {
 		const { detail, pdpData, status, carousel } = this.state;
-		const { match, history } = this.props;
-
-		if (status.loading) {
-			return <div>Please wait, loading content...</div>;
-		}
+		const { match } = this.props;
 
 		if (status.isZoomed) {
 			return this.renderZoomImage();
@@ -238,15 +248,17 @@ class Products extends Component {
 			<div>
 				<Page>
 					<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
-						<Card.Lovelist 
-							setCarouselSlideIndex={this.setCarouselSlideIndex}
-							slideIndex={carousel.slideIndex}
-							onImageItemClick={this.handleImageItemClick}
-							data={pdpData.cardProduct}
-							isLoved={status.isLoved}
-							onBtnLovelistClick={this.handleLovelistClick} 
-							onBtnCommentClick={(e) => (history.push(`/product/comments/${match.params.id}`))}
-						/>
+						{status.pdpDataHasLoaded && (
+							<Card.Lovelist
+								setCarouselSlideIndex={this.setCarouselSlideIndex}
+								slideIndex={carousel.slideIndex}
+								onImageItemClick={this.handleImageItemClick}
+								data={pdpData.cardProduct || {}}
+								isLoved={status.isLoved}
+								onBtnLovelistClick={this.handleLovelistClick}
+								onBtnCommentClick={this.redirectToComments}
+							/>
+						)}
 						<Level style={{ borderBottom: '1px solid #D8D8D8', borderTop: '1px solid #D8D8D8' }}>
 							<Level.Left className='flex-center'>
 								<Svg src='ico_ovo.svg' />
@@ -278,22 +290,20 @@ class Products extends Component {
 							<p className='font-color--red font-small'>Stock Habis</p>
 							<p className='text-center margin--medium'>Panduan Ukuran</p>
 						</div>
-						<p className='margin--small padding--medium'>{detail.description}</p>
+						<p className='margin--small padding--medium'>{status.pdpDataHasLoaded && detail.description}</p>
 						<span className='margin--small padding--medium'>
 							<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
 						</span>
 						<div className='margin--medium --disable-flex padding--medium'>
 							<Link to={`/product/comments/${match.params.id}`}>
 								<Button className='font--lato-normal font-color--primary-ext-2'>
-									{(detail.totalComments > 0 ? `Lihat semua ${detail.totalComments} komentar` : 'Belum ada komentar')}
+									{(status.pdpDataHasLoaded && detail.totalComments > 0 ? `Lihat semua ${detail.totalComments} komentar` : 'Belum ada komentar')}
 								</Button>
 							</Link>
 						</div>
 						<hr className='margin--small' />
 						<div className='margin--small padding--medium font-medium'>Shop the Look</div>
-						<div className='flex-row'>
-							{pdpData.similarItems}
-						</div>
+						<div className='flex-row'>{(status.similarSet) ? pdpData.similarContent : 'loading content...'}</div>
 						<div style={{ backgroundColor: '#F5F5F5' }}>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								<div className='margin--medium'>
@@ -301,14 +311,14 @@ class Products extends Component {
 										<div className='font-medium'>Penilaian Produk</div>
 										<Link className='font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
 									</div>
-									{pdpData.reviewItems}
+									{(status.reviewsSet) ? pdpData.reviewContent : 'loading content...'}
 								</div>
 							</div>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								<div className='margin--medium'>
 									<div className='padding--small flex-row flex-spaceBetween'>
 										<div className='padding--small'>
-											<Image avatar width={60} height={60} src={detail.seller.seller_logo} />
+											{status.pdpDataHasLoaded && <Image avatar width={60} height={60} src={detail.seller.seller_logo} />}
 										</div>
 										<Level>
 											<Level.Item className='text-center padding--large'>
@@ -322,8 +332,8 @@ class Products extends Component {
 										</Level>
 									</div>
 									<div className='padding--medium margin--small'>
-										<div className='font-medium'>{detail.seller.seller}</div>
-										<div className='font-small'>{detail.seller.seller_location}</div>
+										<div className='font-medium'>{status.pdpDataHasLoaded && detail.seller.seller}</div>
+										<div className='font-small'>{status.pdpDataHasLoaded && detail.seller.seller_location}</div>
 									</div>
 									<div className='margin--medium'>
 										<Grid split={4} className='padding--small'>
@@ -342,9 +352,7 @@ class Products extends Component {
 							</div>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								<div className='margin--small padding--medium font-medium'>Produk Serupa</div>
-								<div className='flex-row'>
-									{pdpData.similarItems}
-								</div>
+								<div className='flex-row'>{(status.similarSet) ? pdpData.similarContent : 'loading content...'}</div>
 							</div>
 						</div>
 					</div>
@@ -371,10 +379,9 @@ const doAfterAnonymous = (props) => {
 	const token = cookies.get('user.token');
 
 	dispatch(new productActions.productDetailAction(token, productId));
-	dispatch(new productActions.productRecommendationAction(token));
+	// dispatch(new productActions.productRecommendationAction(token));
 	dispatch(new productActions.productSimilarAction(token));
 	dispatch(new productActions.productSocialSummaryAction(token, productId));
-	dispatch(new commentActions.productCommentAction(token, productId));
 	dispatch(new lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productId));
 
 };

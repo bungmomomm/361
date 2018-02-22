@@ -1,6 +1,7 @@
 import { request } from '@/utils';
 import { initLoading, initSearch, initPromo } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
+import { to } from 'await-to-js';
 
 const searchAction = (token, url = false, query) => async (dispatch, getState) => {
 	dispatch(initLoading({ isLoading: true }));
@@ -10,52 +11,60 @@ const searchAction = (token, url = false, query) => async (dispatch, getState) =
 	if (url) {
 		path = `${url.url}/products/search`;
 	}
+	if ((query && query.q === 'notfound') || (query && query.q === '')) {
+		dispatch(initSearch({
+			isLoading: false,
+			searchStatus: 'failed'
+		}));
 
-	return request({
+		return Promise.reject(new Error('error '));
+	}
+
+	const [err, response] = await to(request({
 		token,
 		path,
 		method: 'GET',
 		query,
 		fullpath: true
-	}).then(response => {
-		if ((query && query.q === 'notfound') || (query && query.q === '')) {
-			dispatch(initSearch({
-				isLoading: false,
-				searchStatus: 'failed'
-			}));
-
-			return Promise.reject(new Error('error '));
-		}
-		const searchData = {
-			links: response.data.data.links,
-			info: response.data.data.info,
-			facets: response.data.data.facets,
-			sorts: response.data.data.sorts,
-			products: response.data.data.products
-		};
+	}));
+	
+	if (err) {
 		dispatch(initSearch({
 			isLoading: false,
-			searchStatus: 'success',
-			searchData
+			searchStatus: 'failed'
 		}));
 
-		const nextLink = searchData.links && searchData.links.next ? new URL(searchData.links.next).searchParams : false;
-		dispatch(scrollerActions.onScroll({
-			nextData: {
-				token,
-				query: {
-					...query,
-					page: nextLink ? parseInt(nextLink.get('page'), 10) : false,
-				}
-			},
-			nextPage: nextLink !== false,
-			loading: false,
-			loader: searchAction
-		}));
+		return Promise.reject(err);
+	}
 
-		return Promise.resolve(searchData);
-	}).catch((e) => {
-		return Promise.reject(e);
+	const searchData = {
+		...response.data.data
+	};
+	dispatch(initSearch({
+		isLoading: false,
+		searchStatus: 'success',
+		searchData,
+		query
+	}));
+
+	const nextLink = searchData.links && searchData.links.next ? new URL(searchData.links.next).searchParams : false;
+	dispatch(scrollerActions.onScroll({
+		nextData: {
+			token,
+			query: {
+				...query,
+				page: nextLink ? parseInt(nextLink.get('page'), 10) : false,
+			}
+		},
+		nextPage: nextLink !== false,
+		loading: false,
+		loader: searchAction
+	}));
+
+	return Promise.resolve({
+		searchStatus: 'success',
+		searchData,
+		query
 	});
 };
 

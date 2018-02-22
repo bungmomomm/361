@@ -4,13 +4,17 @@ import styles from './tab.scss';
 
 class Tab extends PureComponent {
 	handleClick() {
-		this.props.onPick(this.props.id);
+		const { disabled } = this.props;
+		if (!disabled) {
+			this.props.onPick(this.props.id);
+		}
 	};
 
 	render() {
-		const { title, active, id } = this.props;
+		const { title, active, disabled, id } = this.props;
 		const className = classNames(styles.tab, {
-			[styles.active]: active
+			[styles.active]: active,
+			[styles.disabled]: disabled
 		});
 		return (
 			<li

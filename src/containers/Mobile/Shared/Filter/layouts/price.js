@@ -13,24 +13,53 @@ class Price extends PureComponent {
 			range: {
 				min: parseInt(props.range.min, 10),
 				max: parseInt(props.range.max, 10)
-			}
+			},
+			custom: false,
+			data: props.data || []
 		};
 	}
 
-	updateRange(value) {
-		const { onChange, range } = this.props;
+	onClick(e, value) {
+		let { data } = this.state;
+		data = _.map(data, (facetData) => {
+			if (facetData.facetrange === value.facetrange) {
+				facetData.is_selected = facetData.is_selected === 1 ? 0 : 1;
+			}
+			return facetData;
+		});
+
 		this.setState({
+			custom: false,
+			data
+		});
+	}
+
+	onApply(e) {
+		const { data, range, custom } = this.state;
+		const { onApply } = this.props;
+		const result = _.filter(data, (facetData) => {
+			return (facetData.is_selected === 1);
+		});
+		if (custom) {
+			return onApply(e, result, range);
+		}
+		return onApply(e, result, false);
+	}
+
+	updateRange(value) {
+		const { range } = this.state;
+		this.setState({
+			custom: true,
 			range: {
 				min: Math.abs(value.min) < parseInt(range.max, 10) ? Math.abs(value.min) : parseInt(range.min, 10),
 				max: Math.abs(value.max) < parseInt(range.max, 10) ? Math.abs(value.max) : parseInt(range.max, 10),
 			}
 		});
-
-		onChange(undefined, value);
 	}
 
 	render() {
-		const { onClose, onClick, prices, range } = this.props;
+		const { onClose, range } = this.props;
+		const { data } = this.state;
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
@@ -56,10 +85,10 @@ class Price extends PureComponent {
 						</div>
 					</div>
 					<div>
-						{ _.map(prices, (price, id) => {
+						{_.map(data, (price, id) => {
 							const icon = price.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
 							return (
-								<List key={id}><Button onClick={(e) => onClick(e, price)}><List.Content>{price.facetdisplay} {icon}</List.Content></Button></List>
+								<List key={id}><Button onClick={(e) => this.onClick(e, price)}><List.Content>{price.facetdisplay} {icon}</List.Content></Button></List>
 							);
 						})}
 					</div>
@@ -68,7 +97,7 @@ class Price extends PureComponent {
 					</div> */}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action />
+				<Action hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}

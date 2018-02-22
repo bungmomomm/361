@@ -11,7 +11,7 @@ import {
 	// Navigation
 } from '@/components/mobile';
 import Action from './action';
-import C from '@/constants';
+// import C from '@/constants';
 import styles from './brands.scss';
 
 class Brands extends Component {
@@ -19,9 +19,25 @@ class Brands extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			keyword: '',
-			filteredKey: C.FILTER_KEY
+			data: props.data || [],
+			keyword: ''
 		};
+	}
+
+	onClick(e, value) {
+		console.log(this.state);
+		let { data } = this.state;
+
+		data = _.map(data, (facetData) => {
+			if (facetData.facetrange === value.facetrange) {
+				facetData.is_selected = facetData.is_selected === 1 ? 0 : 1;
+			}
+			return facetData;
+		});
+
+		this.setState({
+			data
+		});
 	}
 
 	filterlist(key) {
@@ -36,11 +52,20 @@ class Brands extends Component {
 		});
 	} 
 
+	applyFilter(e) {
+		const { data } = this.state;
+		const { onApply } = this.props;
+		const result = _.filter(data, (facetData) => {
+			return (facetData.is_selected === 1);
+		});
+		onApply(e, result);
+	}
+
 	render() {
-		const { onClose, onClick, title } = this.props;
-		let data = this.props.data;
+		const { onClose, title } = this.props;
 		const { keyword } = this.state;
 		
+		let data = this.state.data;
 		if (data.length > 0) {
 			if (!_.isEmpty(keyword)) {
 				data = _.filter(data, (value) => {
@@ -76,13 +101,13 @@ class Brands extends Component {
 						{_.map(data, (value, id) => {
 							const icon = value.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
 							return (
-								<Button key={id} align='left' wide onClick={(e) => onClick(e, value)}><List.Content>{value.facetdisplay} ({value.count}) {icon}</List.Content></Button>
+								<Button key={id} align='left' wide onClick={(e) => this.onClick(e, value)}><List.Content>{value.facetdisplay} ({value.count}) {icon}</List.Content></Button>
 							);
 						})}
 					</List>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action />
+				<Action hasApply onApply={(e) => this.applyFilter(e)} />
 			</div>
 		);
 	}

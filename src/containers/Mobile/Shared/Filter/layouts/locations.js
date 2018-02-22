@@ -5,25 +5,50 @@ import Action from './action';
 
 import _ from 'lodash';
 
+const updateChilds = (childs, value) => {
+	childs = _.map(childs, (facetData) => {
+		if (facetData.facetrange === value.facetrange) {
+			facetData.is_selected = facetData.is_selected === 1 ? 0 : 1;
+		}
+		if (facetData.childs && facetData.childs.length > 0) {
+			facetData.childs = updateChilds(facetData.childs, value);
+		}
+		return facetData;
+	});
+
+	return childs;
+};
+
 class Location extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
 			activeTree: null,
 			selected: null,
+			data: props.data || []
 		};
 	}
-	handleTree(e, value, isParent) {
-		if (isParent) {
-			this.setState({
-				activeTree: value !== this.state.activeTree ? value : null
-			});
-		} else {
-			this.props.onClick(e, value);
-		}
+	
+	onApply(e) {
+		const { data } = this.state;
+		const { onApply } = this.props;
+		const result = _.filter(data, (facetData) => {
+			return (facetData.is_selected === 1);
+		});
+		console.log(result);
+		onApply(e, result);
 	}
+
+	onClick(e, value) {
+		const { data } = this.state;
+		this.setState({
+			data: updateChilds(data, value)
+		});
+	}
+
 	render() {
-		const { onClose, data, title } = this.props;
+		const { onClose, title } = this.props;
+		const { data } = this.state;
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
@@ -34,12 +59,7 @@ class Location extends PureComponent {
 			right: null
 		};
 
-		// const { activeTree, selected } = this.state;
-
-		const treeIcon = (active, HasTree) => {
-			if (HasTree) {
-				return active ? <Svg src='ico_chevron-up.svg' /> : <Svg src='ico_chevron-down.svg' />;
-			}
+		const Icon = (active) => {
 			if (active) {
 				return <Svg src='ico_check.svg' />;
 			}
@@ -52,13 +72,13 @@ class Location extends PureComponent {
 					<div>
 						{_.map(data, (value, id) => {
 							return (
-								<List key={id}><Button onClick={(e) => this.handleTree(e, value)}><List.Content>{value.facetdisplay} {treeIcon(value.is_selected)}</List.Content></Button></List>
+								<List key={id}><Button onClick={(e) => this.onClick(e, value)}><List.Content>{value.facetdisplay} {Icon(value.is_selected)}</List.Content></Button></List>
 							);
 						})}
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action />
+				<Action hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}
