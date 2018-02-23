@@ -6,9 +6,7 @@ import base64 from 'base-64';
 import {
 	request,
 	getDeviceID,
-	getClientID,
-	getClientSecret,
-	getClientVersion
+	getClientSecret
 } from '@/utils';
 
 const isSuccess = (response) => {
@@ -33,9 +31,6 @@ const userLogin = (token, email, password) => async (dispatch, getState) => {
 		path,
 		fullpath: true,
 		body: {
-			client_id: getClientID(),
-			client_secret: getClientSecret(),
-			client_version: getClientVersion(),
 			email,
 			pwd: base64.encode(password)
 		}
@@ -74,10 +69,8 @@ const userAnonymous = (token) => async (dispatch, getState) => {
 		path,
 		fullpath: true,
 		body: {
-			client_id: getClientID(),
-			client_secret: getClientSecret(),
-			client_version: getClientVersion(),
-			device_id: getDeviceID()
+			device_id: getDeviceID(),
+			client_secret: getClientSecret()
 		}
 	}));
 
@@ -237,9 +230,7 @@ const userGetProfile = (token) => async (dispatch, getState) => {
 			path,
 			fullpath: true,
 			body: {
-				client_id: getClientID(),
 				client_secret: getClientSecret(),
-				client_version: getClientVersion(),
 				device_id: getDeviceID()
 			}
 		});

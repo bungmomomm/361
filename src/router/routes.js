@@ -117,12 +117,12 @@ export default {
 			exact: true
 		},
 		{
-			path: '/hashtags',
+			path: '/mau-gaya-itu-gampang',
 			component: Hashtags,
 			exact: true
 		},
 		{
-			path: '/hashtags/details',
+			path: '/mau-gaya-itu-gampang/:campaign_id/:post_id',
 			component: HashtagsDetails
 		},
 		{
@@ -138,23 +138,20 @@ export default {
 			component: SearchNotFound
 		},
 		{
-			path: '/category/:categoryLvl1/:categoryLvl2/:categoryLvl3',
+			path: '/sub-category/',
 			component: SubCategory,
-		},
-		{
-			path: '/category/:categoryLvl1/:categoryLvl2',
-			component: SubCategory,
-		},
-		{
-			path: '/category/:categoryLvl1',
-			component: Category,
 		},
 		{
 			path: '/category/',
 			component: Category,
 		},
 		{
-			path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9]+)',
+			path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9-]+)',
+			component: ProductCategory,
+			exact: true
+		},
+		{
+			path: '/p-:categoryId:([0-9]+)}/:categoryTitle([a-zA-Z0-9-]+):brandTitle(/[a-zA-Z0-9-]+)?',
 			component: ProductCategory
 		},
 		{
@@ -231,10 +228,7 @@ export default {
 		},
 		{
 			path: '/profile-edit',
-			component: UserProfileEdit,
-		},
-		{
-			path: '/profile-edit-*',
+			exact: true,
 			component: UserProfileEdit,
 		},
 		{
@@ -253,19 +247,12 @@ export default {
 		},
 		{
 			path: '/lovelist',
-			component: Lovelist
+			component: Lovelist,
 		},
 		{
 			path: '/store/:store_id',
 			component: Seller
 		},
-		{
-			path: '/*', // Page not found handling.
-			component: Page404,
-			exact: true
-		}
-	],
-	child: [
 		{
 			path: '/profile-edit-ovo',
 			component: UserProfileEditOVO
@@ -281,7 +268,12 @@ export default {
 		{
 			path: '/profile-edit-password',
 			component: UserProfileEditPassword
-		}
+		},
+		{
+			path: '/*', // Page not found handling.
+			component: Page404,
+			exact: true
+		},
 	]
 };
 

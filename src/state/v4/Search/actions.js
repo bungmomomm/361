@@ -7,7 +7,7 @@ let cancelReq;
 let cancelTokenReq;
 
 const updatedKeywordHandler = (string, userToken) => async (dispatch, getState) => {
-	if (string.length >= 3) {
+	if (string && string.length >= 3) {
 		dispatch(keywordUpdate({
 			...initialState,
 			keyword: string,
@@ -18,14 +18,14 @@ const updatedKeywordHandler = (string, userToken) => async (dispatch, getState) 
 		[cancelTokenReq, cancelReq] = getCancelToken();
 
 		const { shared } = getState();
-		const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
+		const baseUrl = _.chain(shared).get('serviceUrl.suggestion.url').value() || false;
 
 		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 		const [err, response] = await to(
 			request({
 				token: userToken,
-				path: `${baseUrl}product/suggestion?q=${string}`,
+				path: `${baseUrl}/suggestion?q=${string}`,
 				method: 'GET',
 				fullpath: true,
 				cancelToken: cancelTokenReq

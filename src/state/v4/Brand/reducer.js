@@ -5,18 +5,27 @@ const initialState = {
 	brand_list: null,
 	segment: 1,
 	brand_id: null,
-	products: null,
+	products_comments: null,
 	loading_products: false,
 	banner: null,
-	brand_info: null
+	searchStatus: null,
+	searchData: {
+		links: [],
+		info: [],
+		facets: [],
+		sorts: [],
+		products: []
+	},
+	query: null
 };
 
-const { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner } = createActions(
+const { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner, brandProductsComments } = createActions(
 	'BRAND_LIST_UPDATE',
 	'BRAND_LOADING',
 	'BRAND_PRODUCTS',
 	'BRAND_LOADING_PRODUCTS',
-	'BRAND_BANNER'
+	'BRAND_BANNER',
+	'BRAND_PRODUCTS_COMMENTS'
 );
 
 const reducer = handleActions({
@@ -33,12 +42,11 @@ const reducer = handleActions({
 			loading
 		};
 	},
-	[brandProducts](state, { payload: { brand_id, products, brand_info } }) {
+	[brandProducts](state, { payload: { searchStatus, searchData, query } }) {
 		return {
 			...state,
-			brand_id,
-			products,
-			brand_info
+			searchStatus,
+			searchData
 		};
 	},
 	[brandLoadingProducts](state, { payload: { loading_products } }) {
@@ -52,6 +60,12 @@ const reducer = handleActions({
 			...state,
 			banner
 		};
+	},
+	[brandProductsComments](state, { payload: { products_comments } }) {
+		return {
+			...state,
+			products_comments
+		};
 	}
 }, initialState);
 
@@ -61,5 +75,6 @@ export default {
 	brandLoading,
 	brandProducts,
 	brandLoadingProducts,
-	brandBanner
+	brandBanner,
+	brandProductsComments
 };

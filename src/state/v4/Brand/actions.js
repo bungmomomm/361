@@ -1,8 +1,9 @@
 import { request } from '@/utils';
-import { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner } from './reducer';
+import { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner, brandProductsComments } from './reducer';
 import _ from 'lodash';
 import to from 'await-to-js';
 import { Promise } from 'es6-promise';
+import { actions as scrollerActions } from '@/state/v4/Scroller';
 
 const brandListAction = (token, segment = 1) => async (dispatch, getState) => {
 	dispatch(brandLoading({ loading: true }));
@@ -11,7 +12,6 @@ const brandListAction = (token, segment = 1) => async (dispatch, getState) => {
 	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
-
 	const [err, response] = await to(
 		request({
 			token,
@@ -36,40 +36,64 @@ const brandListAction = (token, segment = 1) => async (dispatch, getState) => {
 	return Promise.resolve(response);
 };
 
-const brandProductAction = (token, brandId) => async (dispatch, getState) => {
+const brandProductAction = (token, url = false, query) => async (dispatch, getState) => {
 	dispatch(brandLoadingProducts({ loading_products: true }));
+	dispatch(scrollerActions.onScroll({ loading: true }));
 
-	const { shared } = getState();
-	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
+	let path = `${process.env.MICROSERVICES_URL}products/search`;
+	if (url) {
+		path = `${url.url}/products/search`;
+	}
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
-
-	const [err, response] = await to(
-		request({
-			token,
-			path: `${baseUrl}/products/search`,
-			method: 'GET',
-			fullpath: true,
-			query: {
-				brand_id: brandId
-			}
-		})
-	);
+	const [err, response] = await to(request({
+		token,
+		path,
+		method: 'GET',
+		query,
+		fullpath: true
+	}));
 
 	if (err) {
 		dispatch(brandLoadingProducts({ loading_products: false }));
+		dispatch(brandProducts({ searchStatus: 'failed' }));
+
 		return Promise.reject(err);
+	}
+
+	const searchData = {
+		...response.data.data
 	};
 
-	const products = response.data.data.products;
-	const brandInfo = response.data.data.info;
-	dispatch(brandProducts({ brand_id: brandId, products, brand_info: brandInfo }));
 	dispatch(brandLoadingProducts({ loading_products: false }));
-	return Promise.resolve(response);
+	dispatch(brandProducts({
+		searchStatus: 'success',
+		searchData,
+		query
+	}));
+
+	const nextLink = searchData.links && searchData.links.next ? new URL(searchData.links.next).searchParams : false;
+	dispatch(scrollerActions.onScroll({
+		nextData: {
+			token,
+			query: {
+				...query,
+				page: nextLink ? parseInt(nextLink.get('page'), 10) : false,
+			}
+		},
+		nextPage: nextLink !== false,
+		loading: false,
+		loader: brandProductAction
+	}));
+
+	return Promise.resolve({
+		searchStatus: 'success',
+		searchData,
+		query
+	});
+
 };
 
 const brandBannerAction = (token, brandId) => async (dispatch, getState) => {
-
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
@@ -78,7 +102,7 @@ const brandBannerAction = (token, brandId) => async (dispatch, getState) => {
 	const [err, response] = await to(
 		request({
 			token,
-			path: `${baseUrl}/categories/banner`,
+			path: `${baseUrl}/brand/banner`,
 			method: 'GET',
 			fullpath: true,
 			query: {
@@ -94,8 +118,33 @@ const brandBannerAction = (token, brandId) => async (dispatch, getState) => {
 	return Promise.resolve(response);
 };
 
+const brandProductsCommentsAction = (token, productIds) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
+
+	if (!baseUrl) Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	const [err, response] = await to(
+		request({
+			token,
+			path: `${baseUrl}/commentcount/bulkie/byproduct`,
+			method: 'POST',
+			fullpath: true,
+			body: {
+				product_id: productIds
+			}
+		})
+	);
+	if (err) return Promise.reject(err);
+
+	const productsComments = response.data.data;
+
+	dispatch(brandProductsComments({ products_comments: productsComments }));
+	return Promise.resolve(response);
+};
+
 export default {
 	brandListAction,
 	brandProductAction,
-	brandBannerAction
+	brandBannerAction,
+	brandProductsCommentsAction
 };

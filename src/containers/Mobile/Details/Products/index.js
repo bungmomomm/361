@@ -5,11 +5,10 @@ import _ from 'lodash';
 import { Link } from 'react-router-dom';
 
 import { actions as productActions } from '@/state/v4/Product';
-import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
-import { Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel } from '@/components/mobile';
-import styles from './products.scss';
+import { Modal, Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
+import styles from './products.scss';
 
 class Products extends Component {
 	constructor(props) {
@@ -22,6 +21,8 @@ class Products extends Component {
 		this.handleScroll = this.handleScroll.bind(this);
 		this.handleLovelistClick = this.handleLovelistClick.bind(this);
 		this.handleImageItemClick = this.handleImageItemClick.bind(this);
+		this.handleCancelRemoveItem = this.handleCancelRemoveItem.bind(this);
+		this.removeAddItem = this.removeAddItem.bind(this);
 		this.setCarouselSlideIndex = this.setCarouselSlideIndex.bind(this);
 
 
@@ -29,15 +30,17 @@ class Products extends Component {
 			size: 's',
 			status: {
 				showScrollInfomation: false,
-				loading: true,
-				isLoved: false,
+				isLoved: true,
 				isZoomed: false,
+				showConfirmDelete: false,
 				pdpDataHasLoaded: false,
+				similarSet: false,
+				reviewsSet: false,
 			},
 			pdpData: {
-				cardProduct: false,
-				similarItems: 'loading content',
-				reviewItems: 'loading content'
+				cardProduct: {},
+				reviewContent: {},
+				similarContent: {}
 			},
 			detail: {},
 			carousel: {
@@ -47,50 +50,53 @@ class Products extends Component {
 	}
 
 	componentDidMount() {
-		// const { dispatch, match } = this.props;
-		// const productId = match.params.id;
-		// const token = this.userCookies;
-		// dispatch(new productActions.productDetailAction(token, productId));
-		// dispatch(new productActions.productRecommendationAction(token));
-		// dispatch(new productActions.productSimilarAction(token));
-		// dispatch(new productActions.productSocialSummaryAction(token, productId));
-		// dispatch(new commentActions.productCommentAction(token, productId));
 		window.addEventListener('scroll', this.handleScroll, true);
 	}
 
 	componentWillReceiveProps(nextProps) {
-		const { detail, similar, reviews } = nextProps.product;
-		const { status } = this.state;
-		
-		if (!_.isEmpty(detail) && !_.isEmpty(similar) && !_.isEmpty(reviews) && !status.pdpDataHasLoaded) {
-			const cardProduct = productActions.getProductCardData(detail);
-			const similarItems = similar.map((item, idx) => {
+		const { product, lovelist, dispatch } = nextProps;
+		const { detail, socialSummary, similar } = product;
+		const { status, pdpData } = this.state;
+
+		// sets pdp main data
+		if (!_.isEmpty(detail) && !_.isEmpty(lovelist.bulkieCountProducts) && !status.pdpDataHasLoaded) {
+			const lovelistProduct = dispatch(lovelistActions.getProductBulk(5131299));
+
+			detail.totalLovelist = lovelistProduct.total;
+			detail.totalComments = socialSummary.comments.total || 0;
+			status.pdpDataHasLoaded = true;
+			status.loading = false;
+			pdpData.cardProduct = productActions.getProductCardData(detail);
+			
+			console.log('I am being called once! (Main Data)');
+		}
+
+		// sets similar products data
+		if (!_.isEmpty(similar) && !status.similarSet) {
+			status.similarSet = true;
+			pdpData.similarContent = similar.map((item, idx) => {
 				const data = {
 					productTitle: item.product_title,
 					brandName: item.brand,
 					pricing: item.pricing,
 					images: item.images
 				};
-				return <Card.CatalogGrid {...data} key={idx} />;
+				return <Card.CatalogGrid linkToPdp='/' {...data} key={idx} />;
 			});
+			console.log('I am being called once! (Similar)');
+		}
 
-			const reviewItems = reviews.summary.map((item, idx) => {
+		// sets product reviews data
+		if (!_.isEmpty(socialSummary.reviews) && !status.reviewsSet) {
+			status.reviewsSet = true;
+			pdpData.reviewContent = socialSummary.reviews.summary.map((item, idx) => {
 				return <Comment key={idx} type='review' data={item} />;
 			});
-
-			this.setState({
-				loading: false,
-				detail,
-				status: {
-					pdpDataHasLoaded: true,
-				},
-				pdpData: {
-					cardProduct,
-					similarItems,
-					reviewItems
-				}
-			});
+			console.log('I am being called once! (Review)');
 		}
+
+		// updates states
+		this.setState({ detail, status, pdpData });
 	}
 
 	componentWillUnmount() {
@@ -108,38 +114,57 @@ class Products extends Component {
 	handleScroll(e) {
 		const { status } = this.state;
 		if (e.target.scrollTop > 400 && !status.showScrollInfomation) {
-			this.setState({ showScrollInfomation: true });
+			status.showScrollInfomation = true;
 		}
-		if (e.target.scrollTop < 400 && status.showScrollInfomation) {
-			this.setState({ showScrollInfomation: false });
-		}
-	}
 
-	addComment() {
-		const { dispatch } = this.props;
-		dispatch(new commentActions.commentAddAction(this.userCookies));
+		if (e.target.scrollTop < 400 && status.showScrollInfomation) {
+			status.showScrollInfomation = false;
+		}
+
+		this.setState({ status });
 	}
 
 	handleLovelistClick(e) {
-		const { dispatch, match } = this.props;
-		const { pdpData } = this.state;
-		let { isLoved } = this.state.status;
- 
-		if (!isLoved) {
-			isLoved = true;
-			pdpData.cardProduct.lovelistTotal += 1;
-			dispatch(lovelistActions.addToLovelist(this.userCookies, 1, match.params.id));
+		const { status } = this.state;
+		if (status.isLoved) {
+			this.setState({ status });
+			status.showConfirmDelete = !status.showConfirmDelete;
 		} else {
-			isLoved = false;
-			pdpData.cardProduct.lovelistTotal -= 1;
-			dispatch(lovelistActions.removeFromLovelist(this.userCookies, 1, match.params.id));
+			this.removeAddItem(e);
 		}
+	}
 
-		this.setState({ status: { isLoved }, pdpData });
+	handleCancelRemoveItem(e) {
+		const { status } = this.state;
+		status.showConfirmDelete = false;
+		this.setState({ status });
 	}
 
 	handleImageItemClick() {
 		this.setState({ status: { isZoomed: true } });
+	}
+
+	redirectToComments() {
+		const { match, history } = this.props;
+		history.push(`/product/comments/${match.params.id}`);
+	}
+
+	removeAddItem(e) {
+		const { dispatch, match } = this.props;
+		const { pdpData, status } = this.state;
+
+		if (!status.isLoved) {
+			status.isLoved = true;
+			pdpData.cardProduct.totalLovelist += 1;
+			dispatch(lovelistActions.addToLovelist(this.userCookies, match.params.id));
+		} else {
+			status.isLoved = false;
+			pdpData.cardProduct.totalLovelist -= 1;
+			dispatch(lovelistActions.removeFromLovelist(this.userCookies, match.params.id));
+		}
+
+		status.showConfirmDelete = false;
+		this.setState({ status, pdpData });
 	}
 
 	renderZoomImage() {
@@ -207,7 +232,7 @@ class Products extends Component {
 
 	renderStickyAction() {
 		const { pdpData, status, detail } = this.state;
-		if (status.showScrollInfomation && !status.loading) {
+		if (status.pdpDataHasLoaded && status.showScrollInfomation && !status.loading) {
 			return (
 				<div className={styles.stickyAction}>
 					<Level style={{ padding: '10px' }} className='flex-center'>
@@ -231,12 +256,8 @@ class Products extends Component {
 	}
 
 	render() {
-		const { showScrollInfomation, detail, pdpData, status, carousel } = this.state;
-		const { match, history } = this.props;
-
-		if (status.loading) {
-			return <div>Please wait, loading content...</div>;
-		}
+		const { detail, pdpData, status, carousel } = this.state;
+		const { match } = this.props;
 
 		if (status.isZoomed) {
 			return this.renderZoomImage();
@@ -246,15 +267,17 @@ class Products extends Component {
 			<div>
 				<Page>
 					<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
-						<Card.Lovelist 
-							setCarouselSlideIndex={this.setCarouselSlideIndex}
-							slideIndex={carousel.slideIndex}
-							onImageItemClick={this.handleImageItemClick}
-							data={pdpData.cardProduct}
-							isLoved={status.isLoved}
-							onBtnLovelistClick={this.handleLovelistClick} 
-							onBtnCommentClick={(e) => (history.push(`/product/comments/${match.params.id}`))}
-						/>
+						{status.pdpDataHasLoaded && (
+							<Card.Lovelist
+								setCarouselSlideIndex={this.setCarouselSlideIndex}
+								slideIndex={carousel.slideIndex}
+								onImageItemClick={this.handleImageItemClick}
+								data={pdpData.cardProduct || {}}
+								isLoved={status.isLoved}
+								onBtnLovelistClick={this.handleLovelistClick}
+								onBtnCommentClick={this.redirectToComments}
+							/>
+						)}
 						<Level style={{ borderBottom: '1px solid #D8D8D8', borderTop: '1px solid #D8D8D8' }}>
 							<Level.Left className='flex-center'>
 								<Svg src='ico_ovo.svg' />
@@ -286,22 +309,20 @@ class Products extends Component {
 							<p className='font-color--red font-small'>Stock Habis</p>
 							<p className='text-center margin--medium'>Panduan Ukuran</p>
 						</div>
-						<p className='margin--small padding--medium'>{detail.description}</p>
+						<p className='margin--small padding--medium'>{status.pdpDataHasLoaded && detail.description}</p>
 						<span className='margin--small padding--medium'>
 							<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
 						</span>
 						<div className='margin--medium --disable-flex padding--medium'>
 							<Link to={`/product/comments/${match.params.id}`}>
 								<Button className='font--lato-normal font-color--primary-ext-2'>
-									Lihat semua 38 komentar
+									{(status.pdpDataHasLoaded && detail.totalComments > 0 ? `Lihat semua ${detail.totalComments} komentar` : 'Belum ada komentar')}
 								</Button>
 							</Link>
 						</div>
 						<hr className='margin--small' />
 						<div className='margin--small padding--medium font-medium'>Shop the Look</div>
-						<div className='flex-row'>
-							{pdpData.similarItems}
-						</div>
+						<div className='flex-row'>{(status.similarSet) ? pdpData.similarContent : 'loading content...'}</div>
 						<div style={{ backgroundColor: '#F5F5F5' }}>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								<div className='margin--medium'>
@@ -309,14 +330,14 @@ class Products extends Component {
 										<div className='font-medium'>Penilaian Produk</div>
 										<Link className='font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
 									</div>
-									{pdpData.reviewItems}
+									{(status.reviewsSet) ? pdpData.reviewContent : 'loading content...'}
 								</div>
 							</div>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								<div className='margin--medium'>
 									<div className='padding--small flex-row flex-spaceBetween'>
 										<div className='padding--small'>
-											<Image avatar width={60} height={60} src={detail.seller.seller_logo} />
+											{status.pdpDataHasLoaded && <Image avatar width={60} height={60} src={detail.seller.seller_logo} />}
 										</div>
 										<Level>
 											<Level.Item className='text-center padding--large'>
@@ -330,8 +351,8 @@ class Products extends Component {
 										</Level>
 									</div>
 									<div className='padding--medium margin--small'>
-										<div className='font-medium'>{detail.seller.seller}</div>
-										<div className='font-small'>{detail.seller.seller_location}</div>
+										<div className='font-medium'>{status.pdpDataHasLoaded && detail.seller.seller}</div>
+										<div className='font-small'>{status.pdpDataHasLoaded && detail.seller.seller_location}</div>
 									</div>
 									<div className='margin--medium'>
 										<Grid split={4} className='padding--small'>
@@ -350,15 +371,31 @@ class Products extends Component {
 							</div>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								<div className='margin--small padding--medium font-medium'>Produk Serupa</div>
-								<div className='flex-row'>
-									{pdpData.similarItems}
-								</div>
+								<div className='flex-row'>{(status.similarSet) ? pdpData.similarContent : 'loading content...'}</div>
 							</div>
 						</div>
 					</div>
 					{this.renderStickyAction()}
 				</Page>
-				<Header.Modal style={!showScrollInfomation ? { backgroundColor: 'transparent', border: 'none', boxShadow: 'none' } : {}} {...this.renderHeaderPage()} />
+				<Header.Modal style={!status.showScrollInfomation ? { backgroundColor: 'transparent', border: 'none', boxShadow: 'none' } : {}} {...this.renderHeaderPage()} />
+				<Modal show={status.showConfirmDelete}>
+					<div className='font-medium'>
+						<h3>Hapus Lovelist</h3>
+						<Level style={{ padding: '0px' }} className='margin--medium'>
+							<Level.Left />
+							<Level.Item className='padding--medium'>
+								<div className='font-small'>Kamu yakin mau hapus produk ini dari Lovelist kamu?</div>
+							</Level.Item>
+						</Level>
+					</div>
+					<Modal.Action
+						closeButton={(
+							<Button onClick={this.handleCancelRemoveItem}>
+								<span className='font-color--primary-ext-2'>BATALKAN</span>
+							</Button>)}
+						confirmButton={(<Button onClick={this.removeAddItem}>YA, HAPUS</Button>)}
+					/>
+				</Modal>
 				<Navigation />
 			</div>);
 	}
@@ -367,10 +404,10 @@ class Products extends Component {
 const mapStateToProps = (state) => {
 	return {
 		product: state.product, 
-		shared: state.shared
+		shared: state.shared,
+		lovelist: state.lovelist
 	};
 };
-
 
 const doAfterAnonymous = (props) => {
 	const { dispatch, match, cookies } = props;
@@ -379,10 +416,11 @@ const doAfterAnonymous = (props) => {
 	const token = cookies.get('user.token');
 
 	dispatch(new productActions.productDetailAction(token, productId));
-	dispatch(new productActions.productRecommendationAction(token));
+	// dispatch(new productActions.productRecommendationAction(token));
 	dispatch(new productActions.productSimilarAction(token));
 	dispatch(new productActions.productSocialSummaryAction(token, productId));
-	dispatch(new commentActions.productCommentAction(token, productId));
+	dispatch(new lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productId));
+
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Products, doAfterAnonymous)));

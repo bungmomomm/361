@@ -25,6 +25,8 @@
 	flex-direction: row;
 	border-top:1px solid #DBDBDB;
 	padding-bottom: rem(5px);
+	max-width: $max-width-container;
+	margin: 0 auto;
 }
 
 .item{
@@ -36,17 +38,25 @@
 	justify-content: center;
 	font-size: map-get($font-size, --xsmall);
 	text-decoration: none;
-	color: color(--primary);
+	color: #A4A4A4;
 	align-items: center;
-	opacity: 0.4;
+	position: relative;
 	svg{
 		height: rem(40px);
 		margin-top: rem(-2px);
+		g, path{
+			stroke: #A4A4A4;
+		}
 	}
 }
 
 .active{
-	opacity: 1;
+	color: color(--primary);
+	svg{
+		g, path{
+			stroke: color(--primary);
+		}
+	}
 }
 
 .label{
