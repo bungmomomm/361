@@ -384,7 +384,7 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-	const { dispatch, cookies, match, location } = props;
+	const { dispatch, cookies, match, location, productCategory } = props;
 
 	const categoryId = _.chain(match).get('params.categoryId').value() || '';
 	const parsedUrl = queryString.parse(location.search);
@@ -396,22 +396,13 @@ const doAfterAnonymous = async (props) => {
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
 	
-	const [err, response] = await to(dispatch(pcpActions.pcpAction({ token: cookies.get('user.token'), query: pcpParam })));
+	dispatch(pcpActions.pcpAction({ token: cookies.get('user.token'), query: pcpParam }));
 	
-	let returnData = null;
-	if (err) {
-		console.log(err);
-		returnData = err;
-	}
-	
-	if (!_.isEmpty(response.pcpData.products)) {
-		const productIdList = _.map(response.pcpData.products, 'product_id') || null;
+	if (!_.isEmpty(productCategory.pcpData.products)) {
+		const productIdList = _.map(productCategory.pcpData.products, 'product_id') || null;
 		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
-		returnData = response;
 	}
-
-	return returnData;
 };
 
 export default withCookies(connect(mapStateToProps)(Scroller(Shared(Product, doAfterAnonymous))));
