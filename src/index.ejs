@@ -17,15 +17,17 @@
 <!DOCTYPE html>
 <html lang="id" <% if (params.helmet.htmlAttributes) { %><%= params.helmet.htmlAttributes.toString() %><% } %>>
     <head>
-        <!-- we're looking for more people to join at MatahariMall.com. Interested? https://www.mataharimall.com/static/4/karir -->
+		<!-- we're looking for more people to join at MatahariMall.com. Interested? https://www.mataharimall.com/static/4/karir -->
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="google-site-verification" content="bVdL10GtDccBSiuntKghg8GHQ85nozeqhdYrCB4tPHg" />
         <link rel="manifest" href="./assets/manifest/manifest.json" />
         <meta name="robots" content="NOINDEX, NOFOLLOW, NOODP, NOYDIR">
         <% if (params.helmet.title) { %><title><%= params.helmet.title.toString() %></title><% } %>
         <% if (params.helmet.meta) { %><meta name="description" content="<%= params.helmet.meta.toString() %>" /><% } %>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <meta name="viewport" content="width=device-width" />
-        <meta name="theme-color" content="#DA1818" id="themeColor" />
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+        <meta name="theme-color" content="#DA1818"  />
         <meta name="full-screen" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
