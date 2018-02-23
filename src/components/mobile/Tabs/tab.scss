@@ -49,7 +49,7 @@ li.disabled {
 .segment{
 	li:not(:last-child) {
 		position: relative;
-		overflow-y: hidden;
+		//overflow-y: hidden;
 		font-family: font-family('Lato-Regular');
 		color: color(--primary);
 		font-size: 13px;
@@ -62,17 +62,15 @@ li.disabled {
 			position: absolute;
 			right: 0px;
 			top: -1px;
-		}	
+		}
 	}
 	li:last-child{
 		padding: 0px rem(20px);
 		flex: none;
 	}
-
 	li.disabled {
 		span{
 			color: #f3f3f3;
 		}
 	}
 }
-
