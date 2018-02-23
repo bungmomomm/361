@@ -2,6 +2,7 @@ import { handleActions, createActions } from 'redux-actions';
 
 const initialState = {
 	total: 0,
+	status: '',
 	data: [],
 	loading: false
 };
@@ -24,9 +25,10 @@ const reducer = handleActions({
 			loading: false
 		};
 	},
-	[commentList](state, { payload: { data } }) {
+	[commentList](state, { payload: { status, data } }) {
 		return {
 			...state,
+			status,
 			data,
 			loading: false
 		};

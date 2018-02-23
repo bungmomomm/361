@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { to } from 'await-to-js';
 
 import { request } from '@/utils';
-import { initLoading, initPcp, initNextPcp } from './reducer';
+import { initLoading, initViewMode, initPcp, initNextPcp } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 
 const pcpAction = ({ token, query = {}, loadNext = false }) => async (dispatch, getState) => {
@@ -25,24 +25,12 @@ const pcpAction = ({ token, query = {}, loadNext = false }) => async (dispatch, 
 	}));
 
 	if (err) {
+		dispatch(initPcp({
+			isLoading: false,
+			pcpStatus: 'failed'
+		}));
 		return Promise.reject(err);
 	}
-
-	// const pcpData = {
-	// 	links: response.data.data.links,
-	// 	info: response.data.data.info,
-	// 	facets: response.data.data.facets,
-	// 	sorts: response.data.data.sorts,
-	// 	products: response.data.data.products
-	// };
-
-	// if (_.isEmpty(pcpData.products)) {
-	// 	dispatch(initPcp({
-	// 		isLoading: false,
-	// 		pcpStatus: 'failed'
-	// 	}));
-	// 	return Promise.reject(new Error('Empty data'));
-	// }
 
 	const pcpData = {
 		...response.data.data
@@ -85,6 +73,34 @@ const pcpAction = ({ token, query = {}, loadNext = false }) => async (dispatch, 
 	});
 };
 
+const viewModeAction = (mode) => (dispatch) => {
+	dispatch(initLoading({ isLoading: true }));
+
+	let icon = null;
+	switch (mode) {
+	case 1:
+		icon = 'ico_grid.svg';
+		break;
+	case 2:
+		icon = 'ico_three-line.svg';
+		break;
+	case 3:
+		icon = 'ico_list.svg';
+		break;
+	default:
+		icon = null;
+	}
+
+	dispatch(initViewMode({
+		isLoading: false,
+		viewMode: {
+			mode,
+			icon
+		}
+	}));
+};
+
 export default {
-	pcpAction
+	pcpAction,
+	viewModeAction
 };

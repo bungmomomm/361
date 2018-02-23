@@ -28,6 +28,7 @@ import {
 
 import { actions as pcpActions } from '@/state/v4/ProductCategory';
 import { actions as commentActions } from '@/state/v4/Comment';
+import { actions as lovelistActions } from '@/state/v4/Lovelist';
 
 import { hyperlink, renderIf } from '@/utils';
 import stylesCatalog from '../Catalog/catalog.scss';
@@ -37,20 +38,8 @@ class Product extends Component {
 		super(props);
 		this.props = props;
 
-		this.currentListState = 1;
-		this.listType = [{
-			type: 'list',
-			icon: 'ico_grid.svg'
-		}, {
-			type: 'grid',
-			icon: 'ico_three-line.svg'
-		}, {
-			type: 'small',
-			icon: 'ico_list.svg'
-		}];
 		const propsObject = _.chain(props.productCategory);
 		this.state = {
-			listTypeState: this.listType[this.currentListState],
 			notification: {
 				show: true
 			},
@@ -117,8 +106,6 @@ class Product extends Component {
 			...params
 		};
 
-		console.log('urlParam', urlParam);
-
 		const [err, response] = await to(dispatch(pcpActions.pcpAction({ token: cookies.get('user.token'), query: pcpParam })));
 		if (err) {
 			console.log(err);
@@ -143,8 +130,9 @@ class Product extends Component {
 
 	handlePick(e) {
 		if (e === 'view') {
-			this.currentListState = this.currentListState === 2 ? 0 : this.currentListState + 1;
-			this.setState({ listTypeState: this.listType[this.currentListState] });
+			const { viewMode, dispatch } = this.props;
+			const mode = viewMode.mode === 3 ? 1 : viewMode.mode + 1;
+			dispatch(pcpActions.viewModeAction(mode));
 		} else {
 			this.setState({
 				showFilter: e === 'filter',
@@ -154,12 +142,11 @@ class Product extends Component {
 	}
 
 	renderPage() {
-		let pageView = null;
 		const { productCategory } = this.props;
 		const { showFilter } = this.state;
 
 		if (showFilter) {
-			pageView = (
+			return (
 				<Filter
 					shown={showFilter}
 					filters={productCategory.pcpData}
@@ -169,19 +156,17 @@ class Product extends Component {
 					onClose={(e) => this.onClose(e)}
 				/>
 			);
-		} else {
-			pageView = (
-				<div style={this.props.style}>
-					{this.renderPcp()}
-					{this.renderHeader()}
-					{this.renderTabs()}
-					{this.renderForeverBanner()}
-					<Navigation active='Categories' />
-				</div>
-			);
 		}
 
-		return pageView;
+		return (
+			<div style={this.props.style}>
+				{this.renderPcp()}
+				{this.renderHeader()}
+				{this.renderTabs()}
+				{this.renderForeverBanner()}
+				<Navigation active='Categories' />
+			</div>
+		);
 	}
 
 	renderPcp() {
@@ -218,10 +203,6 @@ class Product extends Component {
 					this.renderList(product, index)
 				)
 			);
-		} else {
-			contentView = (
-				<h3>Empty Data</h3>
-			);
 		}
 
 		return contentView;
@@ -230,9 +211,12 @@ class Product extends Component {
 	renderList(productData, index) {
 		if (productData) {
 			const linkToPdpCreator = hyperlink('', ['product', productData.product_id], null);
-			const { comments } = this.props;
+			const { viewMode, comments, lovelist } = this.props;
 			const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: productData.product_id }) : false;
 			const commentTotal = commentData ? commentData.total : null;
+			const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: productData.product_id }) : false;
+			const lovelistTotal = lovelistData ? lovelistData.total : null;
+			const lovelistStatus = lovelistData ? lovelistData.status : null;
 
 			const listCardCatalogAttribute = {
 				images: productData.images,
@@ -241,7 +225,9 @@ class Product extends Component {
 				pricing: productData.pricing,
 				linkToPdp: linkToPdpCreator,
 				commentTotal,
-				commentUrl: `/product/comments/${productData.product_id}`
+				commentUrl: `/product/comments/${productData.product_id}`,
+				lovelistTotal,
+				lovelistStatus
 			};
 			
 			const cardCatalogGridAttribute = {
@@ -260,19 +246,19 @@ class Product extends Component {
 				linkToPdp: linkToPdpCreator
 			};
 			
-			switch (this.state.listTypeState.type) {
-			case 'list':
+			switch (viewMode.mode) {
+			case 1:
 				return (
 					<div key={index} className={stylesCatalog.cardCatalog}>
 						<Card.Catalog {...listCardCatalogAttribute} />
 						{comments && comments.loading ? this.renderLoading : this.renderComment(productData.product_id)}
 					</div>
 				);
-			case 'grid':
+			case 2:
 				return (
 					<Card.CatalogGrid {...cardCatalogGridAttribute} />
 				);
-			case 'small':
+			case 3:
 				return (
 					<Card.CatalogSmall {...cardCatalogSmall} />
 				);
@@ -292,41 +278,38 @@ class Product extends Component {
 			commentView = this.loadingView;
 		}
 
-		const commentProduct = _.find(comments.data, { product_id: productId }) || false;
-		if (commentProduct) {
-			commentView = (
-				<div className={stylesCatalog.commentBlock}>
-					<Link to={`/product/comments/${commentProduct.product_id}`}>
-						<Button>View {commentProduct.total} comments</Button>
-					</Link>
-					<Comment data={commentProduct.last_comment} pcpComment />
-					<Level>
-						<Level.Item>
-							<Input color='white' placeholder='Write comment' />
-						</Level.Item>
-					</Level>
-				</div>
-			);
+		if (comments.status === 'success') {
+			const commentProduct = _.find(comments.data, { product_id: productId }) || false;
+			if (commentProduct) {
+				commentView = (
+					<div className={stylesCatalog.commentBlock}>
+						<Link to={`/product/comments/${commentProduct.product_id}`}>
+							<Button>View {commentProduct.total} comments</Button>
+						</Link>
+						<Comment data={commentProduct.last_comment} pcpComment />
+						<Level>
+							<Level.Item>
+								<Input color='white' placeholder='Write comment' />
+							</Level.Item>
+						</Level>
+					</div>
+				);
+			}
 		}
 
 		return commentView;
 	}
 
 	renderHeader() {
-		let back = () => { this.props.history.goBack(); };
-		if (this.props.history.length === 0) {
-			back = () => { this.props.history.push('/'); };
-		}
-
-		const { productCategory } = this.props;
-		const headerTitle = _.chain(productCategory).get('pcpData.info.title').value() || this.loadingView;
+		const { isLoading, productCategory } = this.props;
+		const headerTitle = _.chain(productCategory).get('pcpData.info.title').value() || 'PCP Title';
 		const HeaderPage = {
 			left: (
-				<Link to='' onClick={back}>
+				<Link to='/sub-category'>
 					<Svg src='ico_arrow-back-left.svg' />
 				</Link>
 			),
-			center: headerTitle,
+			center: isLoading ? this.loadingView : headerTitle,
 			right: null
 		};
 
@@ -336,7 +319,7 @@ class Product extends Component {
 	}
 
 	renderTabs() {
-		const { productCategory } = this.props;
+		const { productCategory, viewMode } = this.props;
 		const { showSort } = this.state;
 		let tabsView = null;
 		if (!_.isEmpty(productCategory.pcpData.products)) {
@@ -359,7 +342,7 @@ class Product extends Component {
 							},
 							{
 								id: 'view',
-								title: <Svg src={this.state.listTypeState.icon} />,
+								title: <Svg src={viewMode.icon} />,
 								disabled: productCategory.isLoading
 							}
 						]}
@@ -395,6 +378,7 @@ const mapStateToProps = (state) => {
 		query: state.productCategory.query,
 		comments: state.comments,
 		isLoading: state.productCategory.isLoading,
+		viewMode: state.productCategory.viewMode,
 		scroller: state.scroller
 	};
 };
@@ -414,15 +398,20 @@ const doAfterAnonymous = async (props) => {
 	
 	const [err, response] = await to(dispatch(pcpActions.pcpAction({ token: cookies.get('user.token'), query: pcpParam })));
 	
+	let returnData = null;
 	if (err) {
 		console.log(err);
-		return err;
+		returnData = err;
 	}
+	
 	if (!_.isEmpty(response.pcpData.products)) {
-		const productIdList = _.map(response.products, 'product_id') || null;
+		const productIdList = _.map(response.pcpData.products, 'product_id') || null;
 		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+		returnData = response;
 	}
-	return response;
+
+	return returnData;
 };
 
 export default withCookies(connect(mapStateToProps)(Scroller(Shared(Product, doAfterAnonymous))));
