@@ -65,7 +65,7 @@ class Lovelist extends PureComponent {
 					style={{ borderBottom: '1px solid #D8D8D8' }}
 				>
 					<Level.Item>
-						<Button onClick={this.props.onBtnLovelistClick}>
+						<Button onClick={this.props.onBtnLovelistClick} data-id={data.id}>
 							<Svg src={loveIcon} />
 							<span>{data.totalLovelist}</span>
 						</Button>

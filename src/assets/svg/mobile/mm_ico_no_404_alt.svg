@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="172px" height="172px" viewBox="0 0 172 172" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>mm_ico_no_404_alt</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="mm_ico_no_404_alt">
+            <g id="Group-2" transform="translate(1.000000, 1.000000)">
+                <g id="Group-7">
+                    <circle id="Oval-2" fill="#F4F4F4" cx="85" cy="85" r="85"></circle>
+                    <g id="Group-5" transform="translate(85.284309, 39.916345) scale(-1, 1) rotate(1.000000) translate(-85.284309, -39.916345) translate(61.284309, 23.416345)">
+                        <rect id="Rectangle-2" fill="#A7A7A7" x="25.147929" y="14.0828402" width="2.01183432" height="11.0650888" rx="1.00591716"></rect>
+                        <g id="Group-6" transform="translate(0.899375, 12.328298)" fill="#A7A7A7">
+                            <rect id="Rectangle-2-Copy-3" x="1.6765286" y="0" width="1" height="4.02366864" rx="0.5"></rect>
+                            <rect id="Rectangle-2-Copy-4" transform="translate(2.011834, 2.176529) rotate(90.000000) translate(-2.011834, -2.176529) " x="1.51183432" y="0.16469428" width="1" height="4.02366864" rx="0.5"></rect>
+                        </g>
+                        <g id="Group-6-Copy" transform="translate(43.105531, 5.028783) rotate(-27.000000) translate(-43.105531, -5.028783) translate(39.605531, 1.528783)" fill="#A7A7A7">
+                            <rect id="Rectangle-2-Copy-3" x="2.5147929" y="0" width="1.00591716" height="6.03550296" rx="0.50295858"></rect>
+                            <rect id="Rectangle-2-Copy-4" transform="translate(3.017751, 3.017751) rotate(90.000000) translate(-3.017751, -3.017751) " x="2.5147929" y="0" width="1.00591716" height="6.03550296" rx="0.50295858"></rect>
+                        </g>
+                        <rect id="Rectangle-2-Copy" fill="#A7A7A7" transform="translate(13.968876, 25.879634) rotate(-30.000000) translate(-13.968876, -25.879634) " x="12.9629588" y="22.8618823" width="2.01183432" height="6.03550296" rx="1.00591716"></rect>
+                        <rect id="Rectangle-2-Copy-2" fill="#A7A7A7" transform="translate(38.802641, 25.484035) rotate(43.000000) translate(-38.802641, -25.484035) " x="37.7967234" y="21.4603663" width="2.01183432" height="8.04733728" rx="1.00591716"></rect>
+                        <circle id="Oval-5-Copy" stroke="#979797" stroke-width="2" cx="16.5976331" cy="3.52071006" r="2.5147929"></circle>
+                        <circle id="Oval-5-Copy-2" stroke="#979797" cx="3.47999278" cy="31.035355" r="1.50887574"></circle>
+                    </g>
+                </g>
+                <g id="Group" transform="translate(84.000000, 95.500000) rotate(18.000000) translate(-84.000000, -95.500000) translate(48.000000, 59.000000)">
+                    <path d="M0,26 L72,26 L72,69 C72,71.209139 70.209139,73 68,73 L4,73 C1.790861,73 2.705415e-16,71.209139 0,69 L0,26 Z" id="Rectangle-6" fill="#CECECE"></path>
+                    <polyline id="Path-2" stroke="#5A5A5A" stroke-width="1.5" stroke-linejoin="round" points="25 17 35.6206897 0 47 17"></polyline>
+                    <rect id="Rectangle" fill="#D8D8D8" x="0" y="16" width="72" height="10"></rect>
+                    <rect id="Rectangle-6" fill="#F5F5F5" x="8" y="34" width="56" height="32"></rect>
+                    <text id="404" font-family="Lato-Bold, Lato" font-size="18" font-weight="bold" letter-spacing="0.749999881" fill="#4A4A4A">
+                        <tspan x="19.2150002" y="57">404</tspan>
+                    </text>
+                    <circle id="Oval-5" fill="#A4A4A4" cx="7" cy="21" r="2"></circle>
+                    <circle id="Oval-5-Copy-3" fill="#A4A4A4" cx="14" cy="21" r="2"></circle>
+                    <circle id="Oval-5-Copy-4" fill="#A4A4A4" cx="21" cy="21" r="2"></circle>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

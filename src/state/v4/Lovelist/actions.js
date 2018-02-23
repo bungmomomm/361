@@ -1,7 +1,7 @@
 import to from 'await-to-js';
 import { Promise } from 'es6-promise';
 import _ from 'lodash';
-import { request } from '@/utils';
+import { request, emarsysRequest } from '@/utils';
 import {
 	countLovelist,
 	loveListItems,
@@ -66,6 +66,20 @@ const getList = (items, formatted = true) => (dispatch) => {
 	dispatch(countLovelist({ count: items.list.length }));
 };
 
+const sendLovedItemToEmarsys = () => {
+	const data = {
+		wishlist: {
+			title: 'Connexion Bell Sleeve Mini Dress',
+			link: 'https://mm-imgs.s3.amazonaws.com/tx400/2017/11/03/14/kaos-polo-shirt_nevada-women-39-s-polo-classic-red_4259525__930101.JPG',
+			msrp: 150000,
+			price: 100000,
+			event_id: process.env.EMARYSYS_EVENT_ID
+		}
+	};
+
+	return emarsysRequest(data);
+};
+
 /**
  * Adds item into Lovelist
  * @param {*} token 
@@ -95,7 +109,7 @@ const addToLovelist = (token, productId) => async (dispatch, getState) => {
 		
 		// dispatching of adding item into lovelist
 		const item = { productId };
-		dispatch(addItem({ item }));
+		dispatch(addItem(item));
 
 		return Promise.resolve(response);
 	
@@ -134,6 +148,13 @@ const removeFromLovelist = (token, productId) => async (dispatch, getState) => {
 		// dispatching of deleting item from lovelist
 		const item = { productId };
 		dispatch(removeItem(item));
+
+		// send data to emarsys
+		sendLovedItemToEmarsys().then((res) => {
+			console.log('result: ', res);
+		}).catch((error) => {
+			console.log('error: ', error);
+		});
 
 		return Promise.resolve(response);
 	
@@ -218,5 +239,6 @@ export default {
 	bulkieCountByProduct,
 	getLovelisItems,
 	setLoadingState,
-	getProductBulk
+	getProductBulk,
+	sendLovedItemToEmarsys
 };
