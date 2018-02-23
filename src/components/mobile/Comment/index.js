@@ -8,7 +8,7 @@ import styles from './comment.scss';
 
 class Comment extends PureComponent {
 	render() {
-		const { className, data, pcpComment, ...props } = this.props;
+		const { className, data, ...props } = this.props;
 		const createClassName = classNames(styles.container, className);
 
 		if (this.props.type === 'review') {
@@ -46,7 +46,7 @@ class Comment extends PureComponent {
 			);
 		}
 
-		if (pcpComment) {
+		if (this.props.type === 'lite-review') {
 			return (
 				<div>
 					{
