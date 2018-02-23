@@ -19,7 +19,6 @@ class Catalog extends PureComponent {
 			productTitle,
 			brandName,
 			pricing,
-			url,
 			commentUrl,
 			commentTotal,
 			linkToPdp,

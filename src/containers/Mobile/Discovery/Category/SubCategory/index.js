@@ -15,6 +15,7 @@ import {
 import { actions as categoryActions } from '@/state/v4/Category';
 import Shared from '@/containers/Mobile/Shared';
 import CONST from '@/constants';
+import { urlBuilder } from '@/utils';
 
 const buildUrl = (stringCategory = '') => {
 	return stringCategory.replace(/[^a-zA-Z ]/g, '').replace(/\s\s+/g, ' ').replace(/ /g, '-').toLowerCase();
@@ -67,10 +68,9 @@ class SubCategory extends PureComponent {
 
 	renderListCategory() {
 		return (this.state.selectedCategory) && this.state.selectedCategory.sub_categories.map((cat, key) => {
-			const categoryTitle = encodeURIComponent(buildUrl(cat.title));
 			return (
 				<List key={key}>
-					<Link style={{ flexFlow: 'row nowrap' }} to={`/p-${cat.id}/${categoryTitle}`}>
+					<Link style={{ flexFlow: 'row nowrap' }} to={urlBuilder.setId(cat.id).setName(cat.title).buildPcp()}>
 						<List.Image><Image width={40} height={40} avatar src={cat.image_url} /></List.Image>
 						<List.Content>{cat.title}</List.Content>
 					</Link>
@@ -79,18 +79,22 @@ class SubCategory extends PureComponent {
 		});
 	}
 
-	renderFeaturedBrands() {
-		return (this.state.selectedCategory && this.props.category.brands.length > 1) && this.props.category.brands.map((brand, key) => {
-			const brandTitle = encodeURIComponent(buildUrl(brand.title));
-			return (
-				<List key={key}>
-					<Link style={{ flexFlow: 'row nowrap' }} to={`/brand/${brand.id}/${brandTitle}`}>
-						<List.Image><Image width={40} height={40} avatar src={brand.image_url} /></List.Image>
-						<List.Content>{brand.title}</List.Content>
-					</Link>
-				</List>
-			);
-		});
+	renderFeaturedBrands(categoryName) {
+		return (this.props.category.brands.length > 1)
+			&& this.props.category.brands.map((brand, key) => {
+				return (
+					<List key={key}>
+						<Link
+							style={{ flexFlow: 'row nowrap' }}
+							to={urlBuilder.setId(brand.id).setBrand(brand.title).setName(categoryName).buildFeatureBrand()}
+						>
+							<List.Image><Image width={40} height={40} avatar src={brand.image_url} /></List.Image>
+							<List.Content>{brand.title}</List.Content>
+						</Link>
+					</List>
+				);
+			}
+		);
 	}
 
 	render() {
@@ -121,7 +125,7 @@ class SubCategory extends PureComponent {
 						this.props.category.brands.length > 1 && (
 							<div>
 								<Divider>Featured Brands</Divider>
-								{this.renderFeaturedBrands()}
+								{this.renderFeaturedBrands(selectedCategory.title)}
 							</div>
 						)
 					}
