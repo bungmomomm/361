@@ -81,14 +81,12 @@ const viewModeAction = (mode) => (dispatch) => {
 	case 1:
 		icon = 'ico_grid.svg';
 		break;
-	case 2:
-		icon = 'ico_three-line.svg';
-		break;
 	case 3:
 		icon = 'ico_list.svg';
 		break;
 	default:
-		icon = null;
+		icon = 'ico_three-line.svg';
+		break;
 	}
 
 	dispatch(initViewMode({
