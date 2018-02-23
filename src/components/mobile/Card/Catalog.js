@@ -19,9 +19,9 @@ class Catalog extends PureComponent {
 			productTitle,
 			brandName,
 			pricing,
-			linkToPdp,
-			commentTotal,
 			commentUrl,
+			commentTotal,
+			linkToPdp,
 			lovelistTotal,
 			lovelistStatus,
 			...props
@@ -71,7 +71,7 @@ class Catalog extends PureComponent {
 						</Button>
 					</Level.Item>
 					<Level.Item>
-						<Link to={commentUrl || '/'}>
+						<Link to={(commentUrl) || '/'}>
 							<Button>
 								<Svg src='ico_comment.svg' />
 								{comment}
