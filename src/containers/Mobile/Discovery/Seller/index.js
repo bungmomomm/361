@@ -305,11 +305,10 @@ class Seller extends Component {
 							{this.sellerHeader()}
 							{this.loadProducts()}
 							{this.props.scroller.loading && <Spinner />}
+							{this.filterTabs()}
 						</Page>
 
 						<Header.Modal {...HeaderPage} />
-						{this.filterTabs()}
-
 						<Navigation />
 					</div>
 				)}
