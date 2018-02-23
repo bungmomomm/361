@@ -9,23 +9,15 @@ const configs = {
 	defaultPage: 36
 };
 
-const initSeller = (token, sellerId, query = {}) => async (dispatch, getState) => {
-	dispatch(scrollerActions.onScroll({ loading: true }));
-
+const initSeller = (token, sellerId) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || process.env.MICROSERVICES_URL;
 	const url = `${baseUrl}/sellerrating/${sellerId}`;
-
-	if (!query.page) {
-		query.page = 1;
-	}
-	query.per_page = configs.defaultPage;
 
 	const [err, resp] = await to(request({
 		token,
 		path: url,
 		method: 'GET',
-		query,
 		fullpath: true
 	}));
 

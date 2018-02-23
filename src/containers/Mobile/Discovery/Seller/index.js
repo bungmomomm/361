@@ -5,6 +5,7 @@ import { Navigation, Svg, Tabs, Header, Page, Button, Level, Image, Input, Card,
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import { actions } from '@/state/v4/Seller';
+import { actions as scrollerActions } from '@/state/v4/Scroller';
 import Filter from '@/containers/Mobile/Shared/Filter';
 import Sort from '@/containers/Mobile/Shared/Sort';
 import { withRouter } from 'react-router-dom';
@@ -14,6 +15,7 @@ import Spinner from '@/components/mobile/Spinner';
 import Share from '@/components/mobile/Share';
 import { hyperlink, renderIf } from '@/utils';
 import _ from 'lodash';
+import queryString from 'query-string';
 
 class Seller extends Component {
 	constructor(props) {
@@ -38,12 +40,8 @@ class Seller extends Component {
 			showFilter: false,
 			showSort: false,
 			query: {
-				per_page: 0,
 				page: 0,
-				q: '',
-				brand_id: '',
 				store_id: '',
-				category_id: '',
 				fq: '',
 				sort: '',
 				...propsObject.get('query').value()
@@ -62,6 +60,7 @@ class Seller extends Component {
 	onApply = async (e, fq) => {
 		const { query } = this.state;
 		query.fq = fq;
+
 		this.setState({
 			query,
 			showFilter: false
@@ -77,14 +76,28 @@ class Seller extends Component {
 		});
 	};
 
-	update = (fq) => {
-		const { cookies, dispatch, match: { params } } = this.props;
+	update = (filters) => {
+		const { cookies, dispatch, match: { params }, location, history } = this.props;
 		const { query } = this.state;
+
+		const parsedUrl = queryString.parse(location.search);
+		const urlParam = {
+			sort: query.sort,
+			...parsedUrl,
+			...filters
+		};
+
+		const url = queryString.stringify(urlParam, {
+			encode: false
+		});
+
+		history.push(`?${url}`);
+
 		const data = {
 			token: cookies.get('user.token'),
 			query: {
 				...query,
-				...fq,
+				...filters,
 				store_id: params.store_id || 0
 			},
 			type: 'init'
@@ -98,6 +111,10 @@ class Seller extends Component {
 			this.currentListState = this.currentListState === 2 ? 0 : this.currentListState + 1;
 			this.setState({ listTypeState: this.listType[this.currentListState] });
 		} else {
+			if (val === 'filter') {
+				this.props.dispatch(scrollerActions.onScroll({ nextPage: false }));
+			}
+
 			this.setState({
 				showFilter: val === 'filter',
 				showSort: val === 'sort'
@@ -123,21 +140,23 @@ class Seller extends Component {
 		return (
 			<div style={this.props.style}>
 				<Tabs
+					className={stylesCatalog.filterBlockContainer}
 					type='segment'
 					variants={[
 						{
 							id: 'sort',
 							title: 'Urutkan',
-							disabled: typeof seller.data === 'undefined'
+							disabled: _.isEmpty(seller.data.sorts)
 						},
 						{
 							id: 'filter',
 							title: 'Filter',
-							disabled: typeof seller.data === 'undefined'
+							disabled: _.isEmpty(seller.data.facets)
 						},
 						{
 							id: 'view',
-							title: <Svg src={listTypeState.icon} />
+							title: <Svg src={listTypeState.icon} />,
+							disabled: _.isEmpty(seller.data.products)
 						}
 					]}
 					onPick={e => this.handlePick(e)}
@@ -314,15 +333,20 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = (props) => {
-	const { dispatch, cookies, match: { params } } = props;
+	const { dispatch, cookies, match: { params }, location } = props;
 	if (isNaN(parseInt(params.store_id, 10))) {
 		props.history.push('/404');
 	}
 
+	const qs = queryString.parse(location.search);
 	const data = {
 		token: cookies.get('user.token'),
-		query: { store_id: params.store_id || 0 }
+		query: {
+			store_id: params.store_id || 0,
+			...qs
+		}
 	};
+
 	dispatch(actions.initSeller(data.token, data.query.store_id));
 	dispatch(actions.getProducts(data));
 };
