@@ -1,32 +1,38 @@
-// this actions for PDP page
-
 import { request } from '@/utils';
-import { hashtagDetail, isLoading as loading } from './reducer';
+import { hashtagDetail, isLoading } from './reducer';
+import { to } from 'await-to-js';
 
-const hashtagDetailAction = (token) => (dispatch) => {
-	const url = `${process.env.MICROSERVICES_URL}hashtag/${token.id}`;
-	dispatch(loading({ isLoading: true }));
-	return request({
-		token,
+const hashtagDetailAction = (token, query = {}) => async (dispatch) => {
+	dispatch(isLoading({ loading: true }));
+
+	const baseUrl = `${process.env.MICROSERVICES_URL}`;
+	const url = `${baseUrl}campaign/post`;
+
+	const [err, resp] = await to(request({
+		token: token.token,
 		path: url,
 		method: 'GET',
+		query,
 		fullpath: true
-	}).then(response => {
-		dispatch(hashtagDetail(response.data.data));
-		dispatch(loading({ isLoading: false }));
-	}).catch((err) => {
-		console.log(err);
-	});
-};
+	}));
 
-const isLoading = (bool) => {
-	return {
-		type: 'IS_LOADING',
-		isLoading: bool
-	};
+	if (err) {
+		return Promise.reject(err);
+	}
+
+	dispatch(hashtagDetail({
+		data: {
+			header: resp.data.data.header_intro,
+			post: resp.data.data.post,
+			products: resp.data.data.products,
+		}
+	}));
+
+	dispatch(isLoading({ loading: false }));
+
+	return Promise.resolve(resp);
 };
 
 export default {
-	hashtagDetailAction,
-	isLoading
+	hashtagDetailAction
 };

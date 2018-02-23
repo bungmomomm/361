@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-import { Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import SwipeReact from 'swipe-react';
 import {
 	Header, Carousel, Tabs,
 	Page, Level, Button, Grid, Article,
@@ -33,26 +32,13 @@ class Home extends Component {
 		this.state = {
 			notification: {
 				show: true
-			},
-			direction: ''
+			}
 		};
 
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.source = this.props.cookies.get('user.source');
 
-		SwipeReact.config({
-			left: () => {
-				this.setState({
-					direction: 'left'
-				});
-			},
-			right: () => {
-				this.setState({
-					direction: 'right'
-				});
-			}
-		});
 		this.isLogin = this.props.cookies.get('isLogin');
 	}
 
@@ -279,25 +265,14 @@ class Home extends Component {
 
 	render() {
 		const { shared } = this.props;
-		const { direction } = this.state;
 		const foreverBannerData = shared.foreverBanner;
 		foreverBannerData.show = this.state.notification.show;
 		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
 
-		if (direction === 'left') {
-			return (
-				<Redirect to='/hashtags' />
-			);
-		} else if (direction === 'right') {
-			return (
-				<Redirect to='/lovelist' />
-			);
-		}
-
 		const recommendation1 = this.isLogin === 'true' ? 'new_arrival_products' : 'recommended_products';
 		const recommendation2 = this.isLogin === 'true' ? 'best_seller_products' : 'recently_viewed_products';
 		return (
-			<div style={this.props.style} {...SwipeReact.events}>
+			<div style={this.props.style}>
 				<Page>
 					<Tabs
 						current={this.props.shared.current}

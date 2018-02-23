@@ -8,8 +8,7 @@
         state                   : null,
         markup                  : '',
         manifest                : {
-            'bodymovin': '/assets/javascripts/bodymovin-light-4.13.0.min.js'
-
+			'bodymovin': require('@/assets/javascripts/bodymovin-light-4.13.0.min.js')
 		},
         manifestFileContents    : ''
     }, params);
@@ -18,15 +17,17 @@
 <!DOCTYPE html>
 <html lang="id" <% if (params.helmet.htmlAttributes) { %><%= params.helmet.htmlAttributes.toString() %><% } %>>
     <head>
-        <!-- we're looking for more people to join at MatahariMall.com. Interested? https://www.mataharimall.com/static/4/karir -->
+		<!-- we're looking for more people to join at MatahariMall.com. Interested? https://www.mataharimall.com/static/4/karir -->
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="google-site-verification" content="bVdL10GtDccBSiuntKghg8GHQ85nozeqhdYrCB4tPHg" />
         <link rel="manifest" href="./assets/manifest/manifest.json" />
         <meta name="robots" content="NOINDEX, NOFOLLOW, NOODP, NOYDIR">
         <% if (params.helmet.title) { %><title><%= params.helmet.title.toString() %></title><% } %>
         <% if (params.helmet.meta) { %><meta name="description" content="<%= params.helmet.meta.toString() %>" /><% } %>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <meta name="viewport" content="width=device-width" />
-        <meta name="theme-color" content="#DA1818" id="themeColor" />
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+        <meta name="theme-color" content="#DA1818"  />
         <meta name="full-screen" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
@@ -60,7 +61,7 @@
 		<div id="loading"></div>
 		<style>#loading{position:fixed;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;font-size:10px;top:50%;left:50%;margin-top:-2em;margin-left:-2em;width:4em;height:4em}
 		</style>
-		<script src="<%= params.manifest['bodymovin'] %>"></script>
+		<script src="<%=params.manifest['bodymovin']%>"></script>
 		<script>
 			window.mmLoadingAnim = {"v":"5.1.5","fr":29.9700012207031,"ip":0,"op":150.000006109625,"w":500,"h":500,"nm":"mm","ddd":0,"assets":[],"layers":[{"ddd":0,"ind":1,"ty":4,"nm":"mm Outlines 3","sr":1,"ks":{"o":{"a":0,"k":100,"ix":11},"r":{"a":0,"k":0,"ix":10},"p":{"a":0,"k":[250,250,0],"ix":2},"a":{"a":0,"k":[230,229.998,0],"ix":1},"s":{"a":0,"k":[100,100,100],"ix":6}},"ao":0,"shapes":[{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[50.377,0],[0,99.411],[-99.412,0],[0,-99.409],[5.136,-16.73],[0,0],[12.612,0],[0,15.665],[-0.33,1.728],[0,0],[0,0],[15.679,0],[3.785,-15.679],[0,0],[0,0],[15.681,0],[3.785,-15.679],[0,0],[0,0],[15.68,0],[3.78,-15.679],[0,0],[0,0],[15.681,0],[3.785,-15.679],[0,0],[0,0],[0,0],[11.495,0],[2.774,-11.495]],"o":[[-32.674,33.356],[-99.412,0],[0,-99.409],[99.411,0],[0,18.417],[0,0],[-3.691,11.383],[-15.664,0],[0,-1.825],[0,0],[0,0],[3.782,-15.679],[-15.682,0],[0,0],[0,0],[3.785,-15.679],[-15.678,0],[0,0],[0,0],[3.785,-15.679],[-15.68,0],[0,0],[0,0],[3.78,-15.679],[-15.68,0],[0,0],[0,0],[0,0],[2.776,-11.495],[-11.498,0],[0,0]],"v":[[128.594,125.949],[0.003,179.998],[-180,-0.001],[0.003,-179.998],[180,-0.001],[172.099,52.914],[172.148,52.776],[145.154,72.39],[116.787,44.022],[117.289,38.678],[117.3,38.715],[131.104,-18.523],[109.565,-46.913],[74.32,-18.523],[58.537,46.915],[74.32,-18.523],[52.781,-46.913],[17.538,-18.523],[1.756,46.915],[17.538,-18.523],[-4.005,-46.913],[-39.243,-18.523],[-55.026,46.915],[-39.243,-18.523],[-60.788,-46.913],[-96.027,-18.523],[-111.809,46.915],[-96.027,-18.523],[-94.2,-26.098],[-109.994,-46.913],[-135.833,-26.098]],"c":false},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.098039217293,0.098039217293,0.098039217293,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":20,"ix":5},"lc":2,"lj":2,"nm":"Stroke 2","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"st","c":{"a":0,"k":[0.097999999102,0.097999999102,0.097999999102,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":2,"ix":5},"lc":2,"lj":2,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[230,229.998],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":3,"cix":2,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"tm","s":{"a":1,"k":[{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"n":["0p667_1_0p333_0"],"t":0,"s":[99.99],"e":[100]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"n":["0p667_1_0p333_0"],"t":74,"s":[100],"e":[100]},{"t":150.000006109625}],"ix":1},"e":{"a":1,"k":[{"i":{"x":[0.464],"y":[1]},"o":{"x":[0.377],"y":[0]},"n":["0p464_1_0p377_0"],"t":0,"s":[100],"e":[0]},{"i":{"x":[0.557],"y":[1]},"o":{"x":[0.606],"y":[0]},"n":["0p557_1_0p606_0"],"t":74,"s":[0],"e":[99.99]},{"t":150.000006109625}],"ix":2},"o":{"a":0,"k":0,"ix":3},"m":1,"ix":2,"nm":"Trim Paths 1","mn":"ADBE Vector Filter - Trim","hd":false}],"ip":0,"op":899.000036617021,"st":0,"bm":0}],"markers":[]};
 			window.mmLoading = bodymovin.loadAnimation({

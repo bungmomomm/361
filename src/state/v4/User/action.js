@@ -69,7 +69,8 @@ const userAnonymous = (token) => async (dispatch, getState) => {
 		path,
 		fullpath: true,
 		body: {
-			device_id: getDeviceID()
+			device_id: getDeviceID(),
+			client_secret: getClientSecret()
 		}
 	}));
 
