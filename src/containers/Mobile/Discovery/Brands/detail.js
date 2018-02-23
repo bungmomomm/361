@@ -270,7 +270,7 @@ class Detail extends Component {
 				style={imgBg}
 			>
 				<div className='text-uppercase font--lato-bold font-medium'>{brandTitle.value() || ''}</div>
-				<div>{(brandTitle) ? `${productCount.value()} Produk` : ''}</div>
+				<div>{(productCount.value()) && (`${productCount.value()} Produk`)}</div>
 			</div>
 		);
 	}

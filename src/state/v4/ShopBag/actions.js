@@ -22,6 +22,7 @@ const getAction = (token) => async (dispatch, getState) => {
 
 	if (err) {
 		dispatch(shopBagLoading({ loading: false }));
+		dispatch(shopBagGet({ carts: [], total: null, location_default: null }));
 		return Promise.reject(err);
 	};
 
