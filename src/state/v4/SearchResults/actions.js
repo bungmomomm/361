@@ -1,24 +1,20 @@
-import { request } from '@/utils';
-import { initLoading, initSearch, initPromo } from './reducer';
-import { actions as scrollerActions } from '@/state/v4/Scroller';
+import _ from 'lodash';
 import { to } from 'await-to-js';
 
-const searchAction = (token, url = false, query) => async (dispatch, getState) => {
+import { request } from '@/utils';
+import { initLoading, initViewMode, initSearch, initNextSearch, initPromo } from './reducer';
+import { actions as scrollerActions } from '@/state/v4/Scroller';
+
+const searchAction = ({ token, query = {}, loadNext = false }) => async (dispatch, getState) => {
 	dispatch(initLoading({ isLoading: true }));
-	dispatch(scrollerActions.onScroll({ loading: true }));
-
-	let path = `${process.env.MICROSERVICES_URL}products/search`;
-	if (url) {
-		path = `${url.url}/products/search`;
+	if (loadNext) {
+		dispatch(scrollerActions.onScroll({ loading: true }));
 	}
-	if ((query && query.q === 'notfound') || (query && query.q === '')) {
-		dispatch(initSearch({
-			isLoading: false,
-			searchStatus: 'failed'
-		}));
 
-		return Promise.reject(new Error('error '));
-	}
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || process.env.MICROSERVICES_URL;
+
+	const path = `${baseUrl}/products/search`;
 
 	const [err, response] = await to(request({
 		token,
@@ -27,8 +23,12 @@ const searchAction = (token, url = false, query) => async (dispatch, getState) =
 		query,
 		fullpath: true
 	}));
+
+	const searchData = {
+		...response.data.data
+	};
 	
-	if (err) {
+	if (err || _.isEmpty(searchData.products)) {
 		dispatch(initSearch({
 			isLoading: false,
 			searchStatus: 'failed'
@@ -37,24 +37,30 @@ const searchAction = (token, url = false, query) => async (dispatch, getState) =
 		return Promise.reject(err);
 	}
 
-	const searchData = {
-		...response.data.data
-	};
-	dispatch(initSearch({
-		isLoading: false,
-		searchStatus: 'success',
-		searchData,
-		query
-	}));
-
-	const nextLink = searchData.links && searchData.links.next ? new URL(searchData.links.next).searchParams : false;
+	if (loadNext) {
+		dispatch(initNextSearch({
+			searchStatus: 'success',
+			searchData,
+			query
+		}));
+	} else {
+		dispatch(initSearch({
+			isLoading: false,
+			searchStatus: 'success',
+			searchData,
+			query
+		}));
+	}
+	
+	const nextLink = searchData.links && searchData.links.next ? new URL(baseUrl + searchData.links.next).searchParams : false;
 	dispatch(scrollerActions.onScroll({
 		nextData: {
 			token,
 			query: {
 				...query,
 				page: nextLink ? parseInt(nextLink.get('page'), 10) : false,
-			}
+			},
+			loadNext: true
 		},
 		nextPage: nextLink !== false,
 		loading: false,
@@ -68,55 +74,59 @@ const searchAction = (token, url = false, query) => async (dispatch, getState) =
 	});
 };
 
-const promoAction = (token, url = false) => async (dispatch, getState) => {
+const promoAction = (token) => async (dispatch, getState) => {
 	dispatch(initLoading({ isLoading: true }));
 
-	let path = `${process.env.MICROSERVICES_URL}promo/suggestion`;
-	if (url) {
-		path = `${url.url}/promo/suggestion`;
-	}
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || process.env.MICROSERVICES_URL;
 
-	return request({
+	const path = `${baseUrl}/promo/suggestion`;
+
+	const [err, response] = await to(request({
 		token,
 		path,
 		method: 'GET',
 		fullpath: true
-	}).then(response => {
-		const promoData = response.data.data;
-		dispatch(initPromo({
-			isLoading: false,
-			searchStatus: 'failed',
-			promoData
-		}));
+	}));
 
-		return Promise.resolve(promoData);
-	}).catch((e) => {
-		return Promise.reject(e);
-	});
-};
+	if (err) {
+		return Promise.reject(err);
+	}
 
-const loadingAction = (loading) => (dispatch) => {
-	dispatch(initLoading({ isLoading: loading }));
-};
-
-const discoveryUpdate = (response) => async dispatch => {
-	const searchData = {
-		links: response.links,
-		info: response.info,
-		facets: response.facets,
-		sorts: response.sorts,
-		products: response.products
-	};
-	dispatch(initSearch({
+	const promoData = response.data.data;
+	dispatch(initPromo({
 		isLoading: false,
-		searchStatus: 'success',
-		searchData
+		searchStatus: 'failed',
+		promoData
+	}));
+
+	return Promise.resolve(promoData);
+};
+
+const viewModeAction = (mode) => (dispatch) => {
+	dispatch(initLoading({ isLoading: true }));
+
+	let icon = null;
+	switch (mode) {
+	case 1:
+		icon = 'ico_grid.svg';
+		break;
+	default:
+		icon = 'ico_list.svg';
+		break;
+	}
+
+	dispatch(initViewMode({
+		isLoading: false,
+		viewMode: {
+			mode,
+			icon
+		}
 	}));
 };
 
 export default {
 	searchAction,
 	promoAction,
-	loadingAction,
-	discoveryUpdate
+	viewModeAction
 };
