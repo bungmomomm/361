@@ -20,7 +20,11 @@ const initAction = () => async (dispatch) => {
 	const segment = response.data.data.segment;
 	const foreverBanner = response.data.data.forever_banner;
 	const serviceUrl = response.data.data.service_url;
-	dispatch(forEverBanner({ foreverBanner, serviceUrl }));
+	const banner = {
+		...foreverBanner,
+		show: true
+	};
+	dispatch(forEverBanner({ foreverBanner: banner, serviceUrl }));
 	dispatch(initResponse({ segmen: segment }));
 	return Promise.resolve(segment);
 

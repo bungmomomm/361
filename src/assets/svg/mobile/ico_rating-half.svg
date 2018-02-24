@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="14px" viewBox="0 0 14 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>mm_ico_reviews_solid_half_small</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="6" height="12"></rect>
+    </defs>
+    <g id="Assets" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="mm_ico_reviews_solid_half_small">
+            <polygon id="ion-star---Ionicons" fill="#FFB300" points="13 5.5 9.27678571 8.28571429 10.75 13 7 10 3.25 13 4.72321429 8.28571429 1 5.5 5.60714286 5.5 7 1 8.41964286 5.5"></polygon>
+            <g id="ion-star---Ionicons" transform="translate(7.000000, 1.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <g id="Mask"></g>
+                <polygon fill="#D8D8D8" mask="url(#mask-2)" points="6 4.5 2.27678571 7.28571429 3.75 12 0 9 -3.75 12 -2.27678571 7.28571429 -6 4.5 -1.39285714 4.5 0 0 1.41964286 4.5"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

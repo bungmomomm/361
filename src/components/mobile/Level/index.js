@@ -8,10 +8,11 @@ import Right from './Right';
 
 class Level extends PureComponent {
 	render() {
-		const { children, className, ...props } = this.props;
+		const { children, className, divider, ...props } = this.props;
 
 		const createClassName = classNames(
 			styles.container,
+			divider ? styles.divider : '',
 			className
 		);
 

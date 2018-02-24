@@ -43,9 +43,7 @@ class SearchResults extends Component {
 
 		const propsObject = _.chain(props.searchResults);
 		this.state = {
-			notification: {
-				show: true
-			},
+			listTypeState: this.listType[this.currentListState],
 			showFilter: false,
 			showSort: false,
 			query: {
@@ -372,12 +370,9 @@ class SearchResults extends Component {
 	}
 
 	renderForeverBanner() {
-		const { shared } = this.props;
-		const foreverBannerData = shared.foreverBanner;
-		foreverBannerData.show = this.state.notification.show;
-		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+		const { shared, dispatch } = this.props;
 
-		return <ForeverBanner {...foreverBannerData} />;
+		return <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />;
 	}
 
 	render() {
