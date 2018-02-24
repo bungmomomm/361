@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-import { Navigation, Svg, Tabs, Header, Page, Button, Level, Image, Input, Card, Grid } from '@/components/mobile';
+import { Navigation, Svg, Tabs, Header, Page, Button, Level, Image, Input, Card, Grid, Badge } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import { actions } from '@/state/v4/Seller';
@@ -27,7 +27,7 @@ class Seller extends Component {
 			icon: 'ico_grid.svg'
 		}, {
 			type: 'grid',
-			icon: 'ico_three-line.svg'
+			icon: 'ico_grid-3x3.svg'
 		}, {
 			type: 'small',
 			icon: 'ico_list.svg'
@@ -302,6 +302,51 @@ class Seller extends Component {
 				) : (
 					<div style={this.props.style}>
 						<Page>
+							<div className='border-bottom'>
+								<div className='margin--medium'>
+									<div className='padding--small flex-row flex-spaceBetween'>
+										<div className='padding--small'>
+											<div className='avatar'>
+												<Image avatar width={60} height={60} src='https://knoji.com/images/logo/herschel-supply-co.jpg' />
+												{/* ico_badgebronze.svg */}
+												{/* ico_badgesilver.svg */}
+												<Badge attached position='bottom-right' color='red'><Svg src='ico_premium-seller.svg' /></Badge>
+											</div>
+										</div>
+										<Level divider>
+											<Level.Item className='text-center'>
+												<div className='font-large flex-row flex-center'>
+													<Svg src='ico_newstore.svg' />
+												</div>
+												<div className='font-small font-color--primary-ext-2'>New Store</div>
+											</Level.Item>
+											<Level.Item className='text-center'>
+												<div className='font-large flex-row flex-center flex-middle'>
+													<Svg src='ico_successorder.svg' />
+													<span className='padding--small padding--none-right'>0%</span>
+												</div>
+												<div className='font-small font-color--primary-ext-2'>Order Sukses</div>
+											</Level.Item>
+											<Level.Item className='text-center'>
+												<div className='font-large flex-row flex-middle'>
+													<Svg src='ico_reviews_solid_selected_small.svg' />
+													<span className='padding--small padding--none-right'>4.5</span>
+												</div>
+												<div className='font-small font-color--primary-ext-2'>Rating</div>
+											</Level.Item>
+											<Level.Item className='text-center'>
+												<div className='font-large'>90</div>
+												<div className='font-small font-color--primary-ext-2'>Produk</div>
+											</Level.Item>
+										</Level>
+									</div>
+									<div className='padding--medium margin--small'>
+										<div className='font-medium'>Bitter Ballen Ball</div>
+										<div className='font-small flex-row flex-middle'><Svg src='ico_pinlocation-black.svg' /> <span>Jakarta Selatan</span></div>
+										<div className='font-small'>Yes brader, kamu sedang ada di halaman profil toko kami. Boleh diintip Collections dan Lists kami.</div>
+									</div>
+								</div>
+							</div>
 							{this.filterTabs()}
 							{this.sellerHeader()}
 							{this.loadProducts()}
