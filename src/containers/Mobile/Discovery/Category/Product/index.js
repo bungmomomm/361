@@ -224,7 +224,7 @@ class Product extends Component {
 				commentTotal,
 				commentUrl: `/product/comments/${productData.product_id}`,
 				lovelistTotal,
-				lovelistStatus
+				lovelistStatus 
 			};
 			
 			const cardCatalogGridAttribute = {
@@ -299,7 +299,7 @@ class Product extends Component {
 
 	renderHeader() {
 		const { isLoading, productCategory } = this.props;
-		const headerTitle = _.chain(productCategory).get('pcpData.info.title').value() || 'PCP Title';
+		const headerTitle = _.chain(productCategory).get('pcpData.info.title').value();
 		const HeaderPage = {
 			left: (
 				<Link to='/sub-category'>
@@ -374,7 +374,8 @@ const mapStateToProps = (state) => {
 		isLoading: state.productCategory.isLoading,
 		viewMode: state.productCategory.viewMode,
 		scroller: state.scroller,
-		shared: state.shared
+		shared: state.shared,
+		lovelist: state.lovelist
 	};
 };
 

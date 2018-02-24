@@ -245,8 +245,8 @@ class Products extends Component {
 							</div>
 						</Level.Left>
 						<Level.Item className='padding--medium'>
-							<div className='font-normal'>{pdpData.cardProduct.pricing.formatted.effective_price}</div>
-							<div className='font-small font-color--primary-ext-2'>{pdpData.cardProduct.pricing.formatted.base_price}</div>
+							<div className='font-normal'>{pdpData.cardProduct.pricing.app_effective_price}</div>
+							<div className='font-small font-color--primary-ext-2'>{pdpData.cardProduct.pricing.effective_price}</div>
 						</Level.Item>
 						<Level.Right>
 							<Button color='secondary' size='medium'>BELI AJA</Button>
@@ -322,7 +322,9 @@ class Products extends Component {
 							</Level.Right>
 						</Level>
 						<div className='font-medium margin--medium padding--medium'><strong>Details</strong></div>
-						<p className='padding--medium'>{status.pdpDataHasLoaded && detail.description}</p>
+						{
+							status.pdpDataHasLoaded && <p className='padding--medium' dangerouslySetInnerHTML={{ __html: detail.description }} />
+						}
 						<span className='margin--small padding--medium'>
 							<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
 						</span>
@@ -425,7 +427,7 @@ const mapStateToProps = (state) => {
 const doAfterAnonymous = (props) => {
 	const { dispatch, match, cookies } = props;
 
-	const productId = match.params.id;
+	const productId = _.toInteger(match.params.id);
 	const token = cookies.get('user.token');
 
 	dispatch(new productActions.productDetailAction(token, productId));
