@@ -248,7 +248,7 @@ class Home extends Component {
 					{
 						header
 					}
-					<Carousel>
+					<Carousel className={styles.mozaic}>
 						{
 							mozaic.value().posts.map((detail, i) => (
 								<Article posts={detail} key={i} />
