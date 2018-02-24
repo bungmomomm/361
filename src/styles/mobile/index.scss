@@ -277,6 +277,18 @@
 			padding-right: 30px;
 		}
 
+		.padding--none-left {
+			padding-left: 0px;
+		}
+		
+		.padding--none-right {
+			padding-right: 0px;
+		}
+		
+		.padding--none{
+			padding: 0px;
+		}
+
 		.margin--none {
 			margin-top: 0px;
 			margin-right: 0px;
@@ -313,12 +325,14 @@
 		.flex-wrap {
 			flex-wrap: wrap;
 		}
-		.flex-center {
-			justify-content: center;
+		.flex-middle {
 			align-items: center;
 		}
 		.flex-spaceBetween {
 			justify-content: space-between;
+		}
+		.flex-center{
+			justify-content: center;
 		}
 		.text-line-through{
 			text-decoration: line-through;

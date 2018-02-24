@@ -11,6 +11,7 @@ import {
 	Tabs,
 	Level,
 	Input,
+	Image,
 	Comment
 } from '@/components/mobile';
 import styles from './brands.scss';
@@ -49,7 +50,7 @@ class Detail extends Component {
 			icon: 'ico_grid.svg'
 		}, {
 			type: 'grid',
-			icon: 'ico_three-line.svg'
+			icon: 'ico_grid-3x3.svg'
 		}, {
 			type: 'small',
 			icon: 'ico_list.svg'
@@ -262,15 +263,18 @@ class Detail extends Component {
 		const productCount = brand.get('searchData.info.product_count');
 
 		const imgBg = !bannerImages.isEmpty().value() ? { backgroundImage: `url(${bannerImages.value().thumbnail})` }
-			: {};
+			: { backgroundImage: 'url(http://colorfully.eu/wp-content/uploads/2012/10/empty-road-highway-with-fog-facebook-cover.jpg)' };
 
 		return (
 			<div
-				className={`${styles.backgroundCover} flex-center`}
-				style={imgBg}
+				className={`${styles.backgroundCover} border-bottom flex-center`}
 			>
-				<div className='text-uppercase font--lato-bold font-medium'>{brandTitle.value() || ''}</div>
-				<div>{(productCount.value()) && (`${productCount.value()} Produk`)}</div>
+				<div className={styles.coverImage} style={imgBg} />
+				<div>
+					<Image style={{ boxShadow: '0px 0px 5px rgba(0,0,0,0.3)' }} avatar width={60} height={60} src='https://knoji.com/images/logo/herschel-supply-co.jpg' />
+					<div className='text-uppercase font--lato-bold font-medium margin--medium margin--none-bottom'>{brandTitle.value() || 'Herschell'}</div>
+					<div>{(productCount.value()) && (`${productCount.value()} Produk`)}</div>
+				</div>
 			</div>
 		);
 	}
