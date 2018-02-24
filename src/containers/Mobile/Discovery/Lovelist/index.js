@@ -22,9 +22,6 @@ class Lovelist extends Component {
 				isBulkSet: false,
 				showConfirmDelete: false
 			},
-			notification: {
-				show: true
-			},
 			removedItemId: false
 		};
 
@@ -147,15 +144,12 @@ class Lovelist extends Component {
 			)
 		};
 
-		const { shared } = this.props;
-		const foreverBannerData = shared.foreverBanner;
-		foreverBannerData.show = this.state.notification.show;
-		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+		const { shared, dispatch } = this.props;
 
 		return (
 			<div style={this.props.style}>
 				<Page>
-					{ <ForeverBanner {...foreverBannerData} /> }
+					{ <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} /> }
 					{content}
 				</Page>
 				<Header.Modal {...HeaderPage} />

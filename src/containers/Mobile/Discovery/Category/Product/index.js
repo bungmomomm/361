@@ -40,9 +40,6 @@ class Product extends Component {
 
 		const propsObject = _.chain(props.productCategory);
 		this.state = {
-			notification: {
-				show: true
-			},
 			showFilter: false,
 			showSort: false,
 			query: {
@@ -358,12 +355,9 @@ class Product extends Component {
 	}
 
 	renderForeverBanner() {
-		const { shared } = this.props;
-		const foreverBannerData = shared.foreverBanner;
-		foreverBannerData.show = this.state.notification.show;
-		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+		const { shared, dispatch } = this.props;
 
-		return <ForeverBanner {...foreverBannerData} />;
+		return <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />;
 	}
 
 	render() {
@@ -373,13 +367,14 @@ class Product extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		...state,
+		// ...state,
 		productCategory: state.productCategory,
 		query: state.productCategory.query,
 		comments: state.comments,
 		isLoading: state.productCategory.isLoading,
 		viewMode: state.productCategory.viewMode,
-		scroller: state.scroller
+		scroller: state.scroller,
+		shared: state.shared
 	};
 };
 

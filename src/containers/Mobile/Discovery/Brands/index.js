@@ -28,10 +28,7 @@ class Brands extends Component {
 			minimumLetter: 1,
 			searchFocus: false,
 			filteredBrand: [],
-			keyword: '',
-			notification: {
-				show: true
-			}
+			keyword: ''
 		};
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
@@ -184,16 +181,13 @@ class Brands extends Component {
 			center: 'Brands',
 			right: null
 		};
-		const { shared } = this.props;
-		const foreverBannerData = shared.foreverBanner;
-		foreverBannerData.show = this.state.notification.show;
-		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+		const { shared, dispatch } = this.props;
 
 		return (
 			<div style={this.props.style}>
 				<Page>
 					{
-						<ForeverBanner {...foreverBannerData} />
+						<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />
 					}
 					<div className={styles.filter}>
 						<Level>
