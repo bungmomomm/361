@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { withCookies } from 'react-cookie';
-import { Header, Page, Card, Button, Svg, Image, Level, Modal } from '@/components/mobile';
+import { Header, Page, Card, Button, Svg, Image, Level, Modal, Spinner } from '@/components/mobile';
 import _ from 'lodash';
 import styles from './lovelist.scss';
 import { actions as LoveListActionCreator } from '@/state/v4/Lovelist';
@@ -202,7 +202,11 @@ class Lovelist extends Component {
 		}
 
 		if (status.loading) {
-			return this.renderLovelistPage(<h3>Please wait loading content...</h3>);
+			return this.renderLovelistPage(
+				<div style={{ marginTop: '50%' }} className='text-center'>
+					<Spinner size='large' />
+				</div>
+			);
 		}
 
 		if (status.listEmpty) {
