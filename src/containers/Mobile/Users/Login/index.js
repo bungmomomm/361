@@ -10,6 +10,8 @@ import styles from '../user.scss';
 import _ from 'lodash';
 import validator from 'validator';
 import util from 'util';
+import { to } from 'await-to-js';
+import { Helmet } from 'react-helmet';
 
 const DUMMY_TAB = [{
 	Title: 'Login',
@@ -22,9 +24,6 @@ const DUMMY_TAB = [{
 class Login extends Component {
 	constructor(props) {
 		super(props);
-		this.userCookies = this.props.cookies.get('user.token');
-		this.userRFCookies = this.props.cookies.get('user.rf.token');
-		this.source = this.props.cookies.get('user.source');
 		this.props = props;
 		this.state = {
 			current: 'login',
@@ -38,18 +37,26 @@ class Login extends Component {
 	}
 
 	async onLogin(e) {
-		try {
-			const { token } = await this.props.dispatch(new users.userLogin(this.props.userCookies, this.state.loginId, this.state.password));
-			setUserCookie(this.props.cookies, token);
-			this.props.history.push('/');
-		} catch (error) {
-			console.log(error.message);
+		const { cookies } = this.props;
+		const [err, response] = await to(this.props.dispatch(new users.userLogin(cookies.get('user.token'), this.state.loginId, this.state.password)));
+		if (err) {
+			return err;
 		}
+		setUserCookie(this.props.cookies, response.token);
+		this.props.history.push('/');
+		return response;
 	}
 
-	onSocialLogin(e) {
-		console.log(e);
-		console.log(this.state);
+	async onSocialLogin(provider, e) {
+		const { cookies } = this.props;
+		const { accessToken } = e;
+		const [err, response] = await to(this.props.dispatch(new users.userSocialLogin(cookies.get('user.token'), provider, accessToken)));
+		if (err) {
+			return err;
+		}
+		setUserCookie(this.props.cookies, response.token);
+		this.props.history.push('/');
+		return response;
 	}
 
 	onFieldChange(e, type) {
@@ -94,6 +101,9 @@ class Login extends Component {
 				{renderIf(register)(
 					<Redirect to='/register' />
 				)}
+				<Helmet>
+					<title>Login</title>
+				</Helmet>
 				<Page>
 					<Tabs
 						current={this.state.current}
@@ -104,12 +114,27 @@ class Login extends Component {
 						<div className='margin--medium'>Login Dengan</div>
 						<div className='flex-row flex-center flex-spaceBetween'>
 							<div style={{ width: '45%' }}>
-								<SocialLogin provider={'facebook'} wide color='facebook' size='medium' appId={process.env.FBAPP_ID} onSuccess={(e) => console.log('success', e)} callback={(e) => console.log('callback', e)}>
+								<SocialLogin 
+									provider={'facebook'} 
+									wide
+									size='medium' 
+									appId={process.env.FBAPP_ID} 
+									onSuccess={(e) => this.onSocialLogin('facebook', e)} 
+									callback={(e) => console.log('callback', e)}
+								>
 									Facebook
 								</SocialLogin>
 							</div>
 							<div style={{ width: '45%' }}>
-								<SocialLogin provider={'google'} wide color='google' size='medium' clientId={process.env.GOOGLEAPP_ID} appId={process.env.GOOGLEAPP_APIKEY} onSuccess={(e) => console.log('success', e)} callback={(e) => console.log('callback', e)}>
+								<SocialLogin 
+									provider={'google'} 
+									wide 
+									size='medium' 
+									clientId={process.env.GOOGLEAPP_ID} 
+									appId={process.env.GOOGLEAPP_APIKEY} 
+									onSuccess={(e) => this.onSocialLogin('google', e)} 
+									callback={(e) => console.log('callback', e)}
+								>
 									<Svg src='ico_google.svg' style={{ marginRight: '10px' }} />Google
 								</SocialLogin>
 							</div>

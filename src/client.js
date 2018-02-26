@@ -8,7 +8,7 @@ import thunkMiddleware from 'redux-thunk';
 import reducers from '@/reducers';
 import { CookiesProvider } from 'react-cookie';
 
-const Router = require('react-router-dom')[process.env.STATIC ? 'HashRouter' : 'BrowserRouter'];
+const Router = require('react-router-dom')[process.env.STATIC_ROUTER ? 'HashRouter' : 'BrowserRouter'];
 
 /**
  * Use redux thunk for use promise

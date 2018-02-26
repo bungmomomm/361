@@ -9,9 +9,13 @@ class Button extends PureComponent {
 	}
 	render() {
 		const { children, provider, ...props } = this.props;
-		const TagName = provider === 'facebook' ? 'FacebookLogin' : 'GoogleLogin';
+		if (provider === 'facebook') {
+			return (
+				<FacebookLogin {...props} color={provider}>{children}</FacebookLogin>
+			);
+		}
 		return (
-			<TagName {...props}>{children}</TagName>
+			<GoogleLogin {...props} color={provider}>{children}</GoogleLogin>
 		);
 	}
 }

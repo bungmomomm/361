@@ -9,6 +9,8 @@ import {
 	getClientSecret
 } from '@/utils';
 
+import { userSocialLogin } from './social-action';
+
 const isSuccess = (response) => {
 	if (typeof response.data !== 'undefined' && typeof response.data.code !== 'undefined' && response.data.code === 200) {
 		return true;
@@ -31,6 +33,7 @@ const userLogin = (token, email, password) => async (dispatch, getState) => {
 		path,
 		fullpath: true,
 		body: {
+			client_secret: getClientSecret(),
 			email,
 			pwd: base64.encode(password)
 		}
@@ -69,6 +72,7 @@ const userAnonymous = (token) => async (dispatch, getState) => {
 		path,
 		fullpath: true,
 		body: {
+			client_secret: getClientSecret(),
 			device_id: getDeviceID()
 		}
 	}));
@@ -257,5 +261,6 @@ export default {
 	userNameChange,
 	userGetProfile,
 	userRegister,
-	userOtpValidate
+	userOtpValidate,
+	userSocialLogin
 };

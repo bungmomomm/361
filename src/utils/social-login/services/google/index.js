@@ -1,11 +1,15 @@
 import React, { PureComponent } from 'react';
 import { omit } from 'lodash';
 import Button from '@/components/mobile/Button';
+import PropTypes from 'prop-types';
 
 class GoogleLogin extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.state = {
+			sdkLoaded: false
+		};
 	}
 	componentDidMount() {
 		const { clientId, appId, discoveryDocs, scope } = this.props;
@@ -15,12 +19,11 @@ class GoogleLogin extends PureComponent {
 			if (d.getElementById(id)) {
 				return;
 			}
-			const js = d.createElement(s); 
-			js.id = id;
-			js.src = '//apis.google.com/js/client:platform.js';
+			const js = d.createElement(s); js.id = id;
+			js.src = '//apis.google.com/js/api.js';
 			fjs.parentNode.insertBefore(js, fjs);
-			fjs.onload = cb;
-		})(document, 'script', 'google-sdk', () => {
+			js.onload = cb;
+		})(document, 'script', 'google-jssdk', () => {
 			const params = {
 				appId,
 				client_id: clientId,
@@ -34,9 +37,9 @@ class GoogleLogin extends PureComponent {
 				if (!window.gapi.auth2.getAuthInstance()) {
 					window.gapi.auth2.init(params).then(
 						res => {
-							if (this.props.autoload && this.state.sdkLoaded && !this.loading && res.isSignedIn.get()) {
-								this.proccessLogin(res.currentUser.get());
-							}
+							// if (this.props.autoload && this.state.sdkLoaded && !this.loading && res.isSignedIn.get()) {
+								// this.proccessLogin(res.currentUser.get());
+							// }
 						},
 						err => console.log(err)
 					);
@@ -63,6 +66,8 @@ class GoogleLogin extends PureComponent {
 		const authResponse = response.getAuthResponse();
 		const profile = {
 			googleId: basicProfile.getId(),
+			authToken: authResponse.id_token,
+			expiresIn: authResponse.expires_at,
 			authResponse,
 			imageUrl: basicProfile.getImageUrl(),
 			email: basicProfile.getEmail(),
@@ -83,5 +88,14 @@ class GoogleLogin extends PureComponent {
 		);
 	}
 }
+
+GoogleLogin.propTypes = {
+	appId: PropTypes.string,
+	clientId: PropTypes.string,
+	onSuccess: PropTypes.func,
+	callback: PropTypes.func,
+	onFailure: PropTypes.func,
+	wide: PropTypes.bool
+};
 
 export default GoogleLogin;
