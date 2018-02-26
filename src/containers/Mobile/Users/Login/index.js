@@ -12,6 +12,7 @@ import validator from 'validator';
 import util from 'util';
 import { to } from 'await-to-js';
 import { Helmet } from 'react-helmet';
+import queryString from 'query-string';
 
 const DUMMY_TAB = [{
 	Title: 'Login',
@@ -25,6 +26,8 @@ class Login extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		
+		const query = queryString.parse(props.location.search);
 		this.state = {
 			current: 'login',
 			visiblePassword: false,
@@ -33,7 +36,12 @@ class Login extends Component {
 			validLoginId: false,
 			validPassword: false,
 			validLogin: false,
+			redirectUrl: query.redirect_url || false
 		};
+	}
+
+	componentDidMount() {
+		
 	}
 
 	async onLogin(e) {
@@ -47,7 +55,7 @@ class Login extends Component {
 		return response;
 	}
 
-	async onSocialLogin(provider, e) {
+	async onSocialLogin(provider, e, useRedirect) {
 		const { cookies } = this.props;
 		const { accessToken } = e;
 		const [err, response] = await to(this.props.dispatch(new users.userSocialLogin(cookies.get('user.token'), provider, accessToken)));
@@ -83,6 +91,7 @@ class Login extends Component {
 	render() {
 		const { isLoading, error } = this.props.users;
 		const { visiblePassword, current, validLoginId, validLoginPassword } = this.state;
+		const { USE_REDIRECT } = process.env;
 		const buttonLoginEnable = !isLoading && validLoginId && validLoginPassword;
 		const register = (current === 'register');
 		const HeaderPage = {
@@ -114,29 +123,39 @@ class Login extends Component {
 						<div className='margin--medium'>Login Dengan</div>
 						<div className='flex-row flex-center flex-spaceBetween'>
 							<div style={{ width: '45%' }}>
-								<SocialLogin 
-									provider={'facebook'} 
-									wide
-									size='medium' 
-									appId={process.env.FBAPP_ID} 
-									onSuccess={(e) => this.onSocialLogin('facebook', e)} 
-									callback={(e) => console.log('callback', e)}
-								>
-									Facebook
-								</SocialLogin>
+								{!USE_REDIRECT && (
+									<SocialLogin 
+										provider={'facebook'} 
+										wide
+										size='medium' 
+										appId={process.env.FBAPP_ID} 
+										onSuccess={(e) => this.onSocialLogin('facebook', e)} 
+										callback={(e) => console.log('callback', e)}
+									>
+										Facebook
+									</SocialLogin>
+								)}
+								{USE_REDIRECT && (
+									<Button color='facebook' wide size='medium' onClick={() => this.onSocialLogin('facebook', null, true)}>Facebook</Button>
+								)}
 							</div>
 							<div style={{ width: '45%' }}>
-								<SocialLogin 
-									provider={'google'} 
-									wide 
-									size='medium' 
-									clientId={process.env.GOOGLEAPP_ID} 
-									appId={process.env.GOOGLEAPP_APIKEY} 
-									onSuccess={(e) => this.onSocialLogin('google', e)} 
-									callback={(e) => console.log('callback', e)}
-								>
-									<Svg src='ico_google.svg' style={{ marginRight: '10px' }} />Google
-								</SocialLogin>
+								{!USE_REDIRECT && (
+									<SocialLogin 
+										provider={'google'} 
+										wide 
+										size='medium' 
+										clientId={process.env.GOOGLEAPP_ID} 
+										appId={process.env.GOOGLEAPP_APIKEY} 
+										onSuccess={(e) => this.onSocialLogin('google', e)} 
+										callback={(e) => console.log('callback', e)}
+									>
+										<Svg src='ico_google.svg' style={{ marginRight: '10px' }} />Google
+									</SocialLogin>
+								)}
+								{USE_REDIRECT && (
+									<Button color='google' wide size='medium' onClick={() => this.onSocialLogin('google', null, true)}><Svg src='ico_google.svg' style={{ marginRight: '10px' }} />Google</Button>
+								)}
 							</div>
 						</div>
 						<div className={styles.divider}><span>Atau</span></div>
@@ -181,7 +200,6 @@ const mapStateToProps = (state) => {
 	};
 };
 const doAfterAnonymous = (props) => {
-	console.log('code here if you need anon token or token');
 	const userCookies = props.cookies.get('user.token');
 	if (!_.isEmpty(userCookies)) {
 		console.log('redirecting...');
