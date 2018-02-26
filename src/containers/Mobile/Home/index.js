@@ -201,34 +201,36 @@ class Home extends Component {
 				url: '/brands'
 			});
 			return (
-				<Grid split={3}>
+				<div>
 					{
-						featuredBrand.value().map((brand, e) => {
-							let url = '/';
-							switch (brand.link.type) {
-							case CONST.CATEGORY_TYPE.brand:
-								url = `/brand/${brand.brand_id}/${encodeURIComponent(brand.brand_name.toLowerCase())}`;
-								break;
-							case CONST.CATEGORY_TYPE.category: // TODO : must change if api ready
-								url = `/brand/${brand.brand_id}/${encodeURIComponent(brand.brand_name.toLowerCase())}`;
-								break;
-							default:
-								url = `/category/${CONST.SEGMENT_DEFAULT_SELECTED.key}`;
-								break;
-							}
-							return (
-								<div className={styles.brandsImage} key={e}>
-									{
-										header
-									}
-									<Link to={url} >
-										<Image lazyload alt='thumbnail' src={brand.images.thumbnail} width='100%' />
-									</Link>
-								</div>
-							);
-						})
+						header
 					}
-				</Grid>
+					<Grid split={3}>
+						{
+							featuredBrand.value().map((brand, e) => {
+								let url = '/';
+								switch (brand.link.type) {
+								case CONST.CATEGORY_TYPE.brand:
+									url = `/brand/${brand.brand_id}/${encodeURIComponent(brand.brand_name.toLowerCase())}`;
+									break;
+								case CONST.CATEGORY_TYPE.category: // TODO : must change if api ready
+									url = `/brand/${brand.brand_id}/${encodeURIComponent(brand.brand_name.toLowerCase())}`;
+									break;
+								default:
+									url = `/category/${CONST.SEGMENT_DEFAULT_SELECTED.key}`;
+									break;
+								}
+								return (
+									<div className={styles.brandsImage} key={e}>
+										<Link to={url} >
+											<Image lazyload alt='thumbnail' src={brand.images.thumbnail} width='100%' />
+										</Link>
+									</div>
+								);
+							})
+						}
+					</Grid>
+				</div>
 			);
 		}
 
