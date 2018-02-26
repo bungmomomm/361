@@ -25,7 +25,8 @@
     border-top: 1px solid #DBDBDB;
     padding-bottom: rem(5px);
     max-width: $max-width-container;
-    margin: 0 auto;
+	margin: 0 auto;
+	transition: transform 0.2s ease;
 }
 
 .item {
@@ -52,6 +53,13 @@
             }
         }
     }
+}
+
+.hide{
+	pointer-events: none;
+	.navigation {
+		transform: translate(0px, 100px);
+	}
 }
 
 .active {

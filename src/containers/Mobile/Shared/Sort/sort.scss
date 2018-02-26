@@ -1,8 +1,8 @@
 @import '../../../../styles/mobile/variables';
 @import '../../../../styles/mobile/mixins';
 .filterNavigation {
-	position: fixed;
+	position: absolute;
 	width: 100%;
-	top: rem(114px);
+	top: 100%;
 	z-index: 11;
 }
