@@ -73,7 +73,7 @@ class SearchNotFound extends PureComponent {
 		return (
 			<Page>
 				<div className={styles.container} >
-					<div style={this.inlineStyle}>[Image Kantong Kosong]</div>
+					<div style={this.inlineStyle}>[Image]</div>
 					<div style={this.inlineStyle}>
 						{'Mohon maaf hasil pencarian untuk "'}{keyword || ''}
 						{ '" tidak dapat ditemukan. Silakan periksa pengejaan kata, atau menggunakan kata kunci lain!'}
