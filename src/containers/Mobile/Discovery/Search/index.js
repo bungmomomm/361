@@ -37,6 +37,8 @@ class Search extends PureComponent {
 		const newSearch = { text: sText, value: sValue, type: sType };
 		cookies.unshift(newSearch);
 		this.props.cookies.set(usedCookie, cookies.filter((val, key) => (key <= 9)));
+		const { dispatch } = this.props;
+		dispatch(actionSearch.updatedKeywordHandler(sText, this.userToken));
 	}
 
 	deleteAllCookieSearchByType(type) {
@@ -192,9 +194,9 @@ class Search extends PureComponent {
 		if (showSuggestion) {
 			mainList = (
 				<div>
-					{relatedCategory.length > 1 && this.renderRelatedCategory()}
-					{relatedKeyword.length > 1 && this.renderRelatedKeyword()}
-					{relatedHashtag.length > 1 && this.renderRelatedHashtag()}
+					{relatedCategory.length >= 1 && this.renderRelatedCategory()}
+					{relatedKeyword.length >= 1 && this.renderRelatedKeyword()}
+					{relatedHashtag.length >= 1 && this.renderRelatedHashtag()}
 				</div>
 			);
 		} else {
