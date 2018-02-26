@@ -35,7 +35,7 @@ class Share extends PureComponent {
 		right: 0,
 		backgroundColor: 'rgba(0,0,0,0.3)',
 		padding: '60px 50px 50px 50px',
-		zIndex: 1
+		zIndex: '4 !important'
 	};
 
 	modalStyle = {
@@ -46,7 +46,7 @@ class Share extends PureComponent {
 		// margin: '0 0 0 auto',
 		margin: '0 auto 0 auto',
 		padding: 20,
-		zIndex: 2,
+		zIndex: '4 !important',
 		display: 'block'
 	};
 

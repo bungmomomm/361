@@ -37,11 +37,11 @@ class Sort extends Component {
 	}
 
 	render() {
-		const { shown } = this.props;
+		const { shown, style = {} } = this.props;
 		const { sorts } = this.state;
 		if (shown) {
 			return (
-				<div className={styles.filterNavigation}>
+				<div className={styles.filterNavigation} style={style}>
 					{_.map(sorts, (value, id) => {
 						const icon = value.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
 						return (
