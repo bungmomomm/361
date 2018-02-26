@@ -313,8 +313,7 @@ class Products extends Component {
 	render() {
 		const { detail, pdpData, status, carousel } = this.state;
 		const { match, product } = this.props;
-		// const { seller } = product.socialSummary;
-		const { seller, comment } = product.socialSummary;
+		const { seller, comment, reviews } = product.socialSummary;
 
 		if (status.isZoomed) {
 			return this.renderZoomImage();
@@ -406,13 +405,21 @@ class Products extends Component {
 									<div className='margin--medium'>
 										<div className='padding--small margin--small margin--none-top flex-row flex-spaceBetween'>
 											<div className='font-medium'><strong>Ulasan</strong></div>
-											<Link className='font-small flex-middle d-flex flex-row font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
+											{(typeof reviews.total !== 'undefined' && reviews.total > 0) && (
+												<Link className='font-small flex-middle d-flex flex-row font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
+											)}
 										</div>
 										<div className='border-bottom'>
 											<div className='padding--small margin--medium margin--none-top flex-row flex-middle'>
-												<Rating active='4.5' total={5} />
+												<Rating 
+													active={(typeof reviews.rating !== 'undefined' && reviews.rating > 0) ? reviews.rating : 0} 
+													total={(typeof reviews.total !== 'undefined' && reviews.total > 0) ? reviews.total : 0} 
+												/>
 												<div className='flex-row padding--small'>
-													<strong>4.8</strong>/5 <span className='font-color--primary-ext-2 padding--small'>(99 Ulasan)</span>
+													<strong>{(typeof reviews.rating !== 'undefined' && reviews.rating > 0) ? reviews.rating : 0}</strong>/5 
+													<span className='font-color--primary-ext-2 padding--small'>
+														{(typeof reviews.total !== 'undefined' && reviews.total > 0) ? `(${reviews.total} Ulasan)` : 'Belum Ada Ulasan'}
+													</span>
 												</div>
 											</div>
 										</div>
@@ -424,7 +431,7 @@ class Products extends Component {
 								{
 									status.pdpDataHasLoaded && (
 										<SellerProfile
-											image={detail.seller_logo}
+											image={detail.seller.seller_logo}
 											status='gold'
 											isNewStore={false}
 											// successOrder={(!_.isUndefined(seller.success_order.rate)) ? (seller.success_order.rate || 0) : 0}
