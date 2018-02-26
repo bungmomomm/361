@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import { actions as shopBagAction } from '@/state/v4/ShopBag';
 import CONST from '@/constants';
 import { urlBuilder } from '@/utils';
+import CartEmpty from '@/containers/Mobile/Cart/empty';
 class Cart extends Component {
 	constructor(props) {
 		super(props);
@@ -45,9 +46,6 @@ class Cart extends Component {
 		if (!('serviceUrl' in this.props.shared) && 'serviceUrl' in nextProps.shared) {
 			const { dispatch } = this.props;
 			dispatch(shopBagAction.getAction(this.userToken));
-		}
-		if (nextProps.shopBag.carts !== this.props.shopBag.carts && nextProps.shopBag.carts.length < 1) {
-			this.props.history.push('/cart/empty');
 		}
 	}
 
@@ -236,6 +234,10 @@ class Cart extends Component {
 			// center: (<div>Tas Belanja <span> { ? (<Spinner />) : ''}</span></div>),
 			right: null
 		};
+
+		if (this.props.shopBag.carts && this.props.shopBag.carts.length < 1) {
+			return <CartEmpty />;
+		}
 
 		return (
 			<div>

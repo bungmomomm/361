@@ -18,6 +18,7 @@ import styles from './brands.scss';
 import { actions } from '@/state/v4/Brand';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Shared from '@/containers/Mobile/Shared';
+import { urlBuilder } from '@/utils';
 
 class Brands extends Component {
 	constructor(props) {
@@ -27,10 +28,7 @@ class Brands extends Component {
 			minimumLetter: 1,
 			searchFocus: false,
 			filteredBrand: [],
-			keyword: '',
-			notification: {
-				show: true
-			}
+			keyword: ''
 		};
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
@@ -53,7 +51,6 @@ class Brands extends Component {
 		let filteredBrand = [];
 
 		if (keyword.length >= this.state.minimumLetter) {
-			console.log('[Brands onFilter - keyword]', keyword);
 			this.props.brands.brand_list.map((e) => {
 				const listBrand = e.brands.filter((list) => {
 					if (list.facetdisplay.indexOf(keyword) >= 0) {
@@ -141,7 +138,7 @@ class Brands extends Component {
 							list.brands.map((b, i) => {
 								return (
 									<List key={i}>
-										<Link to={`/brand/${b.facetrange}/${b.facetdisplay.toLowerCase().replace(/ /g, '-')}`}>
+										<Link to={urlBuilder.setId(Number(b.facetrange)).setName(b.facetdisplay).buildBrand()}>
 											<List.Content>
 												<p className='margin--medium'>
 													<span>{ b.facetdisplay.replace(/\b\w/g, (l) => (l.toUpperCase())) }</span>&nbsp;
@@ -165,7 +162,7 @@ class Brands extends Component {
 			this.state.filteredBrand.map((brand, key) => {
 				return (
 					<List key={key}>
-						<Link to={`/brand/${brand.facetrange}/${brand.facetdisplay.toLowerCase().replace(/ /g, '-')}`}>
+						<Link to={urlBuilder.setId(brand.facetrange).setName(brand.facetdisplay).buildBrand()}>
 							<List.Content>{brand.facetdisplay} <text style={{ color: 'grey' }} >({brand.count})</text></List.Content>
 						</Link>
 					</List>
@@ -184,16 +181,13 @@ class Brands extends Component {
 			center: 'Brands',
 			right: null
 		};
-		const { shared } = this.props;
-		const foreverBannerData = shared.foreverBanner;
-		foreverBannerData.show = this.state.notification.show;
-		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+		const { shared, dispatch } = this.props;
 
 		return (
 			<div style={this.props.style}>
 				<Page>
 					{
-						<ForeverBanner {...foreverBannerData} />
+						<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />
 					}
 					<div className={styles.filter}>
 						<Level>

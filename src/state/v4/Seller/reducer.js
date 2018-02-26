@@ -5,8 +5,18 @@ import { handleActions, createActions } from 'redux-actions';
 const initialState = {
 	info: {},
 	data: {
+		links: [],
+		info: [],
+		facets: [],
+		sorts: [],
 		products: []
-	}
+	},
+	query: {
+		page: 0,
+		store_id: '',
+		fq: '',
+		sort: 'energy DESC',
+	},
 };
 
 const { infos, sellerProducts } = createActions(
@@ -23,14 +33,16 @@ const reducer = handleActions({
 			}
 		};
 	},
-	[sellerProducts](state, { payload: { data } }) {
+	[sellerProducts](state, { payload: { data, type } }) {
 		return {
 			...state,
 			data: {
 				...state.data,
 				...data,
-				products: Array.from([...state.data.products, ...data.products].reduce((m, t) => m.set(t.product_id, t), new Map()).values())
-				// products: [...state.data.products, ...data.products]
+				products: type === 'update' ?
+				Array.from([...state.data.products, ...data.products].reduce((m, t) => m.set(t.product_id, t), new Map()).values())
+				// [...state.data.products, ...data.products]
+				: data.products
 			}
 		};
 	}

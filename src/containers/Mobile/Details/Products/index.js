@@ -6,9 +6,10 @@ import { Link } from 'react-router-dom';
 
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
-import { Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel } from '@/components/mobile';
+import { Modal, Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Rating } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
+import SellerProfile from '../../Discovery/Seller/components/SellerProfile';
 
 class Products extends Component {
 	constructor(props) {
@@ -21,6 +22,8 @@ class Products extends Component {
 		this.handleScroll = this.handleScroll.bind(this);
 		this.handleLovelistClick = this.handleLovelistClick.bind(this);
 		this.handleImageItemClick = this.handleImageItemClick.bind(this);
+		this.handleCancelRemoveItem = this.handleCancelRemoveItem.bind(this);
+		this.removeAddItem = this.removeAddItem.bind(this);
 		this.setCarouselSlideIndex = this.setCarouselSlideIndex.bind(this);
 
 
@@ -30,9 +33,10 @@ class Products extends Component {
 				showScrollInfomation: false,
 				isLoved: true,
 				isZoomed: false,
+				showConfirmDelete: false,
 				pdpDataHasLoaded: false,
 				similarSet: false,
-				reviewsSet: false
+				reviewsSet: false,
 			},
 			pdpData: {
 				cardProduct: {},
@@ -64,7 +68,7 @@ class Products extends Component {
 			status.pdpDataHasLoaded = true;
 			status.loading = false;
 			pdpData.cardProduct = productActions.getProductCardData(detail);
-			
+
 			console.log('I am being called once! (Main Data)');
 		}
 
@@ -87,7 +91,9 @@ class Products extends Component {
 		if (!_.isEmpty(socialSummary.reviews) && !status.reviewsSet) {
 			status.reviewsSet = true;
 			pdpData.reviewContent = socialSummary.reviews.summary.map((item, idx) => {
-				return <Comment key={idx} type='review' data={item} />;
+				return (
+					<Comment key={idx} type='review' data={item} />
+				);
 			});
 			console.log('I am being called once! (Review)');
 		}
@@ -122,21 +128,19 @@ class Products extends Component {
 	}
 
 	handleLovelistClick(e) {
-		const { dispatch, match } = this.props;
-		const { pdpData } = this.state;
-		let { isLoved } = this.state.status;
- 
-		if (!isLoved) {
-			isLoved = true;
-			pdpData.cardProduct.totalLovelist += 1;
-			dispatch(lovelistActions.addToLovelist(this.userCookies, match.params.id));
+		const { status } = this.state;
+		if (status.isLoved) {
+			this.setState({ status });
+			status.showConfirmDelete = !status.showConfirmDelete;
 		} else {
-			isLoved = false;
-			pdpData.cardProduct.totalLovelist -= 1;
-			dispatch(lovelistActions.removeFromLovelist(this.userCookies, match.params.id));
+			this.removeAddItem(e);
 		}
+	}
 
-		this.setState({ status: { isLoved }, pdpData });
+	handleCancelRemoveItem(e) {
+		const { status } = this.state;
+		status.showConfirmDelete = false;
+		this.setState({ status });
 	}
 
 	handleImageItemClick() {
@@ -146,6 +150,24 @@ class Products extends Component {
 	redirectToComments() {
 		const { match, history } = this.props;
 		history.push(`/product/comments/${match.params.id}`);
+	}
+
+	removeAddItem(e) {
+		const { dispatch, match } = this.props;
+		const { pdpData, status } = this.state;
+
+		if (!status.isLoved) {
+			status.isLoved = true;
+			pdpData.cardProduct.totalLovelist += 1;
+			dispatch(lovelistActions.addToLovelist(this.userCookies, match.params.id));
+		} else {
+			status.isLoved = false;
+			pdpData.cardProduct.totalLovelist -= 1;
+			dispatch(lovelistActions.removeFromLovelist(this.userCookies, match.params.id));
+		}
+
+		status.showConfirmDelete = false;
+		this.setState({ status, pdpData });
 	}
 
 	renderZoomImage() {
@@ -223,8 +245,8 @@ class Products extends Component {
 							</div>
 						</Level.Left>
 						<Level.Item className='padding--medium'>
-							<div className='font-normal'>{pdpData.cardProduct.pricing.formatted.effective_price}</div>
-							<div className='font-small font-color--primary-ext-2'>{pdpData.cardProduct.pricing.formatted.base_price}</div>
+							<div className='font-normal'>{pdpData.cardProduct.pricing.app_effective_price}</div>
+							<div className='font-small font-color--primary-ext-2'>{pdpData.cardProduct.pricing.effective_price}</div>
 						</Level.Item>
 						<Level.Right>
 							<Button color='secondary' size='medium'>BELI AJA</Button>
@@ -249,7 +271,7 @@ class Products extends Component {
 				<Page>
 					<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
 						{status.pdpDataHasLoaded && (
-							<Card.Lovelist
+							<Card.Product
 								setCarouselSlideIndex={this.setCarouselSlideIndex}
 								slideIndex={carousel.slideIndex}
 								onImageItemClick={this.handleImageItemClick}
@@ -259,12 +281,39 @@ class Products extends Component {
 								onBtnCommentClick={this.redirectToComments}
 							/>
 						)}
-						<Level style={{ borderBottom: '1px solid #D8D8D8', borderTop: '1px solid #D8D8D8' }}>
-							<Level.Left className='flex-center'>
-								<Svg src='ico_ovo.svg' />
-							</Level.Left>
+						<div className='flex-center padding--medium border-top'>
+							<div className='margin--medium'>
+								<div className='flex-row flex-spaceBetween'>
+									<div>Pilih Ukuran</div>
+									<Link to='/product/guide' className='d-flex font-color--primary-ext-2 flex-row flex-middle'><Svg src='ico_sizeguide.svg' /> <span className='padding--small padding--none-right'>PANDUAN UKURAN</span></Link>
+								</div>
+								<div className='margin--medium horizontal-scroll margin--none-bottom'>
+									<Radio
+										name='size'
+										checked={this.state.size}
+										style={{ marginBottom: '10px' }}
+										onChange={(e) => this.setState({ size: e })}
+										data={[
+											{ label: 'xs', value: 'xs', disabled: true },
+											{ label: 's', value: 's' },
+											{ label: 'm', value: 'm' },
+											{ label: 'l', value: 'l' },
+											{ label: 'xl', value: 'xl' },
+											{ label: '2xl', value: '2xl' },
+											{ label: 's', value: 's' },
+											{ label: 'm', value: 'm' },
+											{ label: 'l', value: 'l' },
+											{ label: 'xl', value: 'xl' },
+											{ label: '2xl', value: '2xl' }
+										]}
+									/>
+								</div>
+								<p className='font-color--red font-small'>Stock Habis</p>
+							</div>
+						</div>
+						<Level className='font-color--primary-ext-2 border-top border-bottom'>
 							<Level.Item>
-								<div style={{ marginLeft: '15px' }} className='padding--small'>Point: 300.000</div>
+								<div className='padding--small'>Dapatkan OVO Point: 300.000</div>
 							</Level.Item>
 							<Level.Right>
 								<Button>
@@ -272,33 +321,16 @@ class Products extends Component {
 								</Button>
 							</Level.Right>
 						</Level>
-						<div className='flex-center margin--large'>
-							<Radio
-								name='size'
-								checked={this.state.size}
-								style={{ marginBottom: '10px' }}
-								onChange={(e) => this.setState({ size: e })}
-								data={[
-									{ label: 'xs', value: 'xs', disabled: true },
-									{ label: 's', value: 's' },
-									{ label: 'm', value: 'm' },
-									{ label: 'l', value: 'l' },
-									{ label: 'xl', value: 'xl' },
-									{ label: '2xl', value: '2xl' }
-								]}
-							/>
-							<p className='font-color--red font-small'>Stock Habis</p>
-							<p className='text-center margin--medium'>Panduan Ukuran</p>
-						</div>
-						<p className='margin--small padding--medium'>{status.pdpDataHasLoaded && detail.description}</p>
+						<div className='font-medium margin--medium padding--medium'><strong>Details</strong></div>
+						{
+							status.pdpDataHasLoaded && <p className='padding--medium' dangerouslySetInnerHTML={{ __html: detail.description }} />
+						}
 						<span className='margin--small padding--medium'>
 							<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
 						</span>
 						<div className='margin--medium --disable-flex padding--medium'>
-							<Link to={`/product/comments/${match.params.id}`}>
-								<Button className='font--lato-normal font-color--primary-ext-2'>
-									{(status.pdpDataHasLoaded && detail.totalComments > 0 ? `Lihat semua ${detail.totalComments} komentar` : 'Belum ada komentar')}
-								</Button>
+							<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
+								{(status.pdpDataHasLoaded && detail.totalComments > 0 ? `Lihat semua ${detail.totalComments} komentar` : 'Belum ada komentar')}
 							</Link>
 						</div>
 						<hr className='margin--small' />
@@ -307,47 +339,49 @@ class Products extends Component {
 						<div style={{ backgroundColor: '#F5F5F5' }}>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								<div className='margin--medium'>
-									<div className='padding--small flex-row flex-spaceBetween'>
+									<div className='padding--small margin--small margin--none-top flex-row flex-spaceBetween'>
 										<div className='font-medium'>Penilaian Produk</div>
-										<Link className='font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
+										<Link className='font-small flex-middle d-flex flex-row font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
+									</div>
+									<div className='border-bottom'>
+										<div className='padding--small margin--medium margin--none-top flex-row flex-middle'>
+											<Rating active='4.5' total={5} />
+											<div className='flex-row padding--small'>
+												<strong>4.8</strong>/5 <span className='font-color--primary-ext-2 padding--small'>(99 Ulasan)</span>
+											</div>
+										</div>
 									</div>
 									{(status.reviewsSet) ? pdpData.reviewContent : 'loading content...'}
 								</div>
 							</div>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
-								<div className='margin--medium'>
-									<div className='padding--small flex-row flex-spaceBetween'>
-										<div className='padding--small'>
-											{status.pdpDataHasLoaded && <Image avatar width={60} height={60} src={detail.seller.seller_logo} />}
-										</div>
-										<Level>
-											<Level.Item className='text-center padding--large'>
-												<div className='font-large'>4.5</div>
-												<div className='font-small font-color--primary-ext-2'>Ulasan</div>
-											</Level.Item>
-											<Level.Item className='text-center'>
-												<div className='font-large'>90</div>
-												<div className='font-small font-color--primary-ext-2'>Produk</div>
-											</Level.Item>
-										</Level>
-									</div>
-									<div className='padding--medium margin--small'>
-										<div className='font-medium'>{status.pdpDataHasLoaded && detail.seller.seller}</div>
-										<div className='font-small'>{status.pdpDataHasLoaded && detail.seller.seller_location}</div>
-									</div>
-									<div className='margin--medium'>
-										<Grid split={4} className='padding--small'>
-											<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
-											<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
-											<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
-											<div className='padding--normal'>
-												<Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' />
-												<div className={styles.seeAll}>
-													SEE ALL
-												</div>
+								{
+									status.pdpDataHasLoaded && (
+										<SellerProfile
+											image={detail.seller.seller_logo}
+											status='gold'
+											isNewStore={false}
+											successOrder='95.3'
+											rating='4.5'
+											totalProduct='1.234'
+											name={detail.seller.seller}
+											location={detail.seller.seller_location}
+											description='Yes brader, kamu sedang ada di halaman profil toko kami. Boleh diintip Collections dan Lists kami.'
+										/>
+									)
+								}
+								<div className='margin--medium margin--none-top'>
+									<Grid split={4} className='padding--small'>
+										<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
+										<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
+										<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
+										<div className='padding--normal'>
+											<Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' />
+											<div className={styles.seeAll}>
+												SEE ALL
 											</div>
-										</Grid>
-									</div>
+										</div>
+									</Grid>
 								</div>
 							</div>
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
@@ -359,6 +393,24 @@ class Products extends Component {
 					{this.renderStickyAction()}
 				</Page>
 				<Header.Modal style={!status.showScrollInfomation ? { backgroundColor: 'transparent', border: 'none', boxShadow: 'none' } : {}} {...this.renderHeaderPage()} />
+				<Modal show={status.showConfirmDelete}>
+					<div className='font-medium'>
+						<h3>Hapus Lovelist</h3>
+						<Level style={{ padding: '0px' }} className='margin--medium'>
+							<Level.Left />
+							<Level.Item className='padding--medium'>
+								<div className='font-small'>Kamu yakin mau hapus produk ini dari Lovelist kamu?</div>
+							</Level.Item>
+						</Level>
+					</div>
+					<Modal.Action
+						closeButton={(
+							<Button onClick={this.handleCancelRemoveItem}>
+								<span className='font-color--primary-ext-2'>BATALKAN</span>
+							</Button>)}
+						confirmButton={(<Button onClick={this.removeAddItem}>YA, HAPUS</Button>)}
+					/>
+				</Modal>
 				<Navigation />
 			</div>);
 	}
@@ -366,7 +418,7 @@ class Products extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		product: state.product, 
+		product: state.product,
 		shared: state.shared,
 		lovelist: state.lovelist
 	};
@@ -374,8 +426,8 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = (props) => {
 	const { dispatch, match, cookies } = props;
-	
-	const productId = match.params.id;
+
+	const productId = _.toInteger(match.params.id);
 	const token = cookies.get('user.token');
 
 	dispatch(new productActions.productDetailAction(token, productId));

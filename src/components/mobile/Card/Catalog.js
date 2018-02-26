@@ -19,14 +19,35 @@ class Catalog extends PureComponent {
 			productTitle,
 			brandName,
 			pricing,
+			commentUrl,
+			commentTotal,
 			linkToPdp,
+			lovelistTotal,
+			lovelistStatus,
 			...props
 		} = this.props;
-
+		
 		const createClassName = classNames(styles.container, styles[type], className);
 
-		const comment = ('commentTotal' in this.props) ? (<span>{this.props.commentTotal} Comments</span>)
-			: (<span>Comment</span>);
+		const comment = commentTotal ? <span>{commentTotal} Komentar</span>
+			: <span>0 Komentar</span>;
+
+		const lovelist = lovelistTotal ? <span>{lovelistTotal} Suka</span>
+			: <span>0 Suka</span>;
+
+		const lovelistIcon = lovelistStatus && lovelistStatus === 1 ? 'ico_love-filled.svg' : 'ico_love.svg';
+
+		const discountBadge = pricing.discount !== '0%' ? (
+			<div style={{ marginLeft: '1.5rem' }}>
+				<Badge rounded color='red'>
+					<span className='font--lato-bold'>{pricing.discount}</span>
+				</Badge>
+			</div>
+		) : '';
+
+		const basePrice = pricing.discount !== '0%' ? (
+			<div className={styles.discount}>{pricing.formatted.base_price}</div>
+		) : '';
 
 		return (
 			<div className={createClassName} {...props}>
@@ -34,7 +55,7 @@ class Catalog extends PureComponent {
 					<Carousel>
 						{
 							images.map((image, index) => (
-								<Image key={index} src={image.thumbnail} alt='product' />
+								<Image key={index} src={image.thumbnail} lazyload alt={productTitle} />
 							))
 						}
 					</Carousel>
@@ -45,12 +66,12 @@ class Catalog extends PureComponent {
 				>
 					<Level.Item>
 						<Button>
-							<Svg src='ico_love-filled.svg' />
-							<span>Lovelist</span>
+							<Svg src={lovelistIcon} />
+							{lovelist}
 						</Button>
 					</Level.Item>
 					<Level.Item>
-						<Link to={('commentUrl' in this.props) ? this.props.commentUrl : '/'}>
+						<Link to={(commentUrl) || '/'}>
 							<Button>
 								<Svg src='ico_comment.svg' />
 								{comment}
@@ -67,13 +88,9 @@ class Catalog extends PureComponent {
 							<div className={styles.blockPrice}>
 								<div>
 									<div className={styles.price}>{pricing.formatted.effective_price}</div>
-									<div className={styles.discount}>{pricing.formatted.base_price}</div>
+									{basePrice}
 								</div>
-								<div style={{ marginLeft: '1.5rem' }}>
-									<Badge rounded color='red'>
-										<span className='font--lato-bold'>{pricing.discount}</span>
-									</Badge>
-								</div>
+								{discountBadge}
 							</div>
 						</Level.Item>
 						<Level.Right>&nbsp;</Level.Right>

@@ -22,6 +22,7 @@ import Comment from './Comment';
 import Radio from './Radio';
 import Select from './Select';
 import Table from './Table';
+import Rating from './Rating';
 import Spinner from './Spinner';
 
 export default {
@@ -49,5 +50,6 @@ export default {
 	Comment,
 	Select,
 	Table,
+	Rating,
 	Spinner
 };

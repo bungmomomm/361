@@ -127,19 +127,27 @@ const productSocialSummaryAction = (token, productId) => async (dispatch, getSta
  */
 const getProductCardData = (details) => {
 	if (details) {
-		const currentVariant = details.variants.find(product => product.id === 5225328);
-		// const currentVariant = details.variants.find(product => product.id === details.id);
+		console.log(details);
 		const images = details.images.map((img, idx) => {
 			return { mobile: img.original };
 		});
+		console.log(details);
+
+		// to do confirm to API products, about variant size
+		// const variants = details.variants.map(({ id, options, pricing, variant_sku, stock, warning_stock_text }) => {
+		// 	return {
+		// 		id,
+		// 		label: 
+		// 	};
+		// });
 
 		return {
-			brand: details.brand.brand_name,
+			brand: details.brand.name,
 			images,
-			pricing: currentVariant.pricing,
+			pricing: details.price_range,
 			product_title: details.title,
-			totalLovelist: details.totalLovelist,
-			totalComments: details.totalComments
+			totalLovelist: details.totalLovelist || 0,
+			totalComments: details.totalComments || 0
 		};
 	}
 	return details;
