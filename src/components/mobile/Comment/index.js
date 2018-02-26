@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import classNames from 'classnames';
 import Image from '../Image';
 import Level from '../Level';
+import Rating from '../Rating';
 import styles from './comment.scss';
 
 class Comment extends PureComponent {
@@ -20,7 +21,7 @@ class Comment extends PureComponent {
 							<div className='padding--medium'>{data.customer.customer_name}</div>
 						</Level.Item>
 						<Level.Right>
-							{data.review.rating}
+							<Rating active={data.review.rating} total={5} />
 						</Level.Right>
 					</Level>
 					<div className='padding--normal' style={{ marginLeft: '45px' }}>

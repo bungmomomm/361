@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="16px" viewBox="0 0 20 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>mm_ico_sizeguide</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Assets" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="mm_ico_sizeguide" stroke="#A4A4A4">
+            <g id="Group-4" transform="translate(3.000000, 2.000000)">
+                <path d="M13.1519182,11.9737626 L0.972554545,11.9737626 C0.646736364,11.9737626 0.379463636,11.692057 0.379463636,11.3471525 L0.379463636,5.95037256 C0.379463636,5.60546809 0.646736364,5.3237625 0.972554545,5.3237625 L13.1519182,5.3237625 C13.4783727,5.3237625 13.7450091,5.60546809 13.7450091,5.95037256 L13.7450091,11.3471525 C13.7450091,11.692057 13.4783727,11.9737626 13.1519182,11.9737626 Z" id="Stroke-1"></path>
+                <g id="Group-5" transform="translate(3.149979, 7.000000)">
+                    <path d="M2.625,2.5208625 L2.625,4.9787375" id="Stroke-5"></path>
+                    <path d="M0,0.65125 L0,4.978125" id="Stroke-7"></path>
+                    <path d="M7.875,2.5208625 L7.875,4.9787375" id="Stroke-11"></path>
+                    <path d="M5.25,0.65125 L5.25,4.978125" id="Stroke-13"></path>
+                </g>
+                <path d="M0.421845455,1.7275125 L13.7867545,1.7275125" id="Stroke-17"></path>
+                <polyline id="Stroke-19" points="1.6376545 3.2228875 0.337654545 1.7275125 1.6376545 0.2321375"></polyline>
+                <polyline id="Stroke-21" points="12.6094182 0.2321375 13.9094181 1.7275125 12.6094182 3.2228875"></polyline>
+            </g>
+        </g>
+    </g>
+</svg>

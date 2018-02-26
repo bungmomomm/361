@@ -16,6 +16,7 @@ import Share from '@/components/mobile/Share';
 import { hyperlink, renderIf } from '@/utils';
 import _ from 'lodash';
 import queryString from 'query-string';
+import SellerProfile from './components/SellerProfile';
 
 class Seller extends Component {
 	constructor(props) {
@@ -27,7 +28,7 @@ class Seller extends Component {
 			icon: 'ico_grid.svg'
 		}, {
 			type: 'grid',
-			icon: 'ico_three-line.svg'
+			icon: 'ico_grid-3x3.svg'
 		}, {
 			type: 'small',
 			icon: 'ico_list.svg'
@@ -302,6 +303,19 @@ class Seller extends Component {
 				) : (
 					<div style={this.props.style}>
 						<Page>
+							<div className='border-bottom'>
+								<SellerProfile
+									image='https://knoji.com/images/logo/herschel-supply-co.jpg'
+									status='gold'
+									isNewStore={false}
+									successOrder='95.3'
+									rating='4.5'
+									totalProduct='1.234'
+									name='Bitter Ballen Ball'
+									location='Jakarta Selatan'
+									description='Yes brader, kamu sedang ada di halaman profil toko kami. Boleh diintip Collections dan Lists kami.'
+								/>
+							</div>
 							{this.filterTabs()}
 							{this.sellerHeader()}
 							{this.loadProducts()}

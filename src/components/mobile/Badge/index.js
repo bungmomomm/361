@@ -11,6 +11,7 @@ class Badge extends PureComponent {
 			circle,
 			rounded,
 			className,
+			position,
 			attached,
 			colorCode,
 			...props
@@ -19,6 +20,7 @@ class Badge extends PureComponent {
 		const createClassName = classNames(
 			styles.container,
 			styles[size],
+			styles[position],
 			styles[color],
 			className, 
 			{

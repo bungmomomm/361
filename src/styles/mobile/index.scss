@@ -127,6 +127,7 @@
 		text-decoration: none;
 		font-family: "Lato-Regular";
 		color: #191919;
+		line-height: 1.4;
 	}
 
 	button{
@@ -216,7 +217,7 @@
 			overflow: hidden;
 			text-overflow: ellipsis;
 		}
-		
+
 		.text-muted{
 			font-family: 'Lato-Regular';
 			color: #A4A4A4;
@@ -249,11 +250,11 @@
 			margin-top: 30px;
 			margin-bottom: 30px;
 		}
-		
+
 		.margin--none-bottom {
 			margin-bottom: 0px;
 		}
-		
+
 		.margin--none-top {
 			margin-top: 0px;
 		}
@@ -277,6 +278,18 @@
 			padding-right: 30px;
 		}
 
+		.padding--none-left {
+			padding-left: 0px;
+		}
+
+		.padding--none-right {
+			padding-right: 0px;
+		}
+
+		.padding--none{
+			padding: 0px;
+		}
+
 		.margin--none {
 			margin-top: 0px;
 			margin-right: 0px;
@@ -293,7 +306,7 @@
 		.border-right {
 			border-right: 1px solid #DBDBDB;
 		}
-		
+
 		.border-white-top {
 			border-top: 1px solid #fff;
 		}
@@ -313,12 +326,14 @@
 		.flex-wrap {
 			flex-wrap: wrap;
 		}
-		.flex-center {
-			justify-content: center;
+		.flex-middle {
 			align-items: center;
 		}
 		.flex-spaceBetween {
 			justify-content: space-between;
+		}
+		.flex-center{
+			justify-content: center;
 		}
 		.text-line-through{
 			text-decoration: line-through;
@@ -333,6 +348,13 @@
 			max-height: 140px;
     		width: auto !important;
 		}
+	}
+
+	.horizontal-scroll{
+		flex-wrap: nowrap;
+		overflow: auto;
+		-webkit-overflow-scrolling: touch;
+		-ms-overflow-style: -ms-autohiding-scrollbar;
 	}
 }
 
