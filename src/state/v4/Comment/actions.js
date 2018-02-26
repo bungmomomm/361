@@ -59,7 +59,7 @@ const productCommentAction = (token, productId, page = 1) => async (dispatch, ge
 const bulkieCommentAction = (token, productId) => async (dispatch, getState) => {
 	if ((_.isArray(productId) && productId.length > 0) || (_.toInteger(productId) > 0)) {
 		dispatch(commentLoading({ loading: true }));
-
+		
 		const { shared } = getState();
 		const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
 
@@ -79,13 +79,11 @@ const bulkieCommentAction = (token, productId) => async (dispatch, getState) => 
 
 		if (err) {
 			dispatch(commentList({ status: 'failed' }));
-			dispatch(commentLoading({ loading: false }));
 			return Promise.reject(err);
 		}
 
 		const comments = response.data.data;
 		dispatch(commentList({ status: 'success', data: comments }));
-		dispatch(commentLoading({ loading: false }));
 		
 		return Promise.resolve(comments);
 	}

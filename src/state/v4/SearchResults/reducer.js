@@ -41,14 +41,14 @@ const reducer = handleActions({
 	[initViewMode](state, { payload: { isLoading, viewMode } }) {
 		return {
 			...state,
-			isLoading,
+			isLoading: false,
 			viewMode
 		};
 	},
 	[initSearch](state, { payload: { isLoading, searchStatus, searchData, query } }) {
 		return {
 			...state,
-			isLoading,
+			isLoading: false,
 			searchStatus,
 			searchData,
 			query
@@ -71,7 +71,8 @@ const reducer = handleActions({
 	},
 	[initPromo](state, { payload: { isLoading, searchStatus, promoData } }) {
 		return {
-			isLoading,
+			...state,
+			isLoading: false,
 			searchStatus,
 			promoData
 		};

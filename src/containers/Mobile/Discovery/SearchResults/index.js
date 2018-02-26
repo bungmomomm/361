@@ -43,7 +43,9 @@ class SearchResults extends Component {
 
 		const propsObject = _.chain(props.searchResults);
 		this.state = {
-			listTypeState: this.listType[this.currentListState],
+			notification: {
+				show: true
+			},
 			showFilter: false,
 			showSort: false,
 			query: {
@@ -127,6 +129,7 @@ class SearchResults extends Component {
 		if (!_.isEmpty(response.searchData.products)) {
 			const productIdList = _.map(response.searchData.products, 'product_id') || null;
 			dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 		}
 		return response;
 	}
@@ -167,6 +170,7 @@ class SearchResults extends Component {
 
 	searchFound(products) {
 		if (products.length > 0) {
+			const { scroller } = this.props;
 			const productList = _.map(products, (product, index) => {
 				return this.renderList(product, index);
 			});
@@ -175,8 +179,8 @@ class SearchResults extends Component {
 				<Page>
 					<div className={stylesSearch.container} >
 						<div className={stylesCatalog.cardContainer}>
-							{ productList }
-							{this.props.scroller.loading && this.loadingView}
+							{productList}
+							{scroller.loading && this.loadingView}
 						</div>
 					</div>
 				</Page>
@@ -222,12 +226,10 @@ class SearchResults extends Component {
 			searchView = this.loadingView;
 		} 
 
-		if (searchResults.searchStatus !== '') {
-			if (searchResults.searchStatus === 'success') {
-				searchView = this.searchFound(searchResults.searchData.products);
-			} else if (searchResults.searchStatus === 'failed') {
-				searchView = this.searchNotFound();
-			}
+		if (searchResults.searchStatus === 'success' && !_.isEmpty(searchResults.searchData.products)) {
+			searchView = this.searchFound(searchResults.searchData.products);
+		} else if (searchResults.searchStatus === 'failed' || (searchResults.searchStatus === 'success' && _.isEmpty(searchResults.searchData.products))) {
+			searchView = this.searchNotFound();
 		}
 
 		return searchView;
@@ -261,7 +263,8 @@ class SearchResults extends Component {
 				productTitle: productData.product_title,
 				brandName: productData.brand.name,
 				pricing: productData.pricing,
-				linkToPdp
+				linkToPdp,
+				lovelistStatus
 			};
 
 			switch (viewMode.mode) {
@@ -333,7 +336,7 @@ class SearchResults extends Component {
 		const { showSort } = this.state;
 		let tabsView = null;
 
-		if (searchResults.searchStatus === 'success') {
+		if (searchResults.searchData && !_.isEmpty(searchResults.searchData.products)) {
 			const sorts = _.chain(searchResults).get('searchData.sorts').value() || [];
 			tabsView = (
 				<div>
@@ -370,9 +373,12 @@ class SearchResults extends Component {
 	}
 
 	renderForeverBanner() {
-		const { shared, dispatch } = this.props;
+		const { shared } = this.props;
+		const foreverBannerData = shared.foreverBanner;
+		foreverBannerData.show = this.state.notification.show;
+		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
 
-		return <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />;
+		return <ForeverBanner {...foreverBannerData} />;
 	}
 
 	render() {
@@ -385,6 +391,7 @@ const mapStateToProps = (state) => {
 		...state,
 		shared: state.shared,
 		searchResults: state.searchResults,
+		promoData: state.searchResults.promoData,
 		query: state.searchResults.query,
 		comments: state.comments,
 		isLoading: state.searchResults.isLoading,
@@ -394,7 +401,7 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-	const { dispatch, cookies, location, searchResults } = props;
+	const { dispatch, cookies, location } = props;
 
 	const parsedUrl = queryString.parse(location.search);
 	const searchParam = {
@@ -407,15 +414,19 @@ const doAfterAnonymous = async (props) => {
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
-	
-	dispatch(searchActions.searchAction({ token: cookies.get('user.token'), query: searchParam }));
 
-	if (!_.isEmpty(searchResults.searchData.products)) {
-		const productIdList = _.map(searchResults.searchData.products, 'product_id') || null;
-		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
-	} else {
+	const [err, response] = await to(dispatch(searchActions.searchAction({ token: cookies.get('user.token'), query: searchParam })));
+	if (err) {
 		dispatch(searchActions.promoAction(cookies.get('user.token')));
+	}
+	if (response) {
+		if (!_.isEmpty(response.searchData.products)) {
+			const productIdList = _.map(response.searchData.products, 'product_id') || null;
+			dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+		} else {
+			dispatch(searchActions.promoAction(cookies.get('user.token')));
+		}
 	}
 };
 
