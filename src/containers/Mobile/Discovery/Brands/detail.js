@@ -283,6 +283,7 @@ class Detail extends Component {
 			return (
 				<div>
 					<Tabs
+						isSticky
 						className='margin--medium'
 						type='segment'
 						variants={[

@@ -21,16 +21,18 @@ class Tabs extends PureComponent {
 
 	handleScroll(e) {
 		const { sticky } = this.state;
-		if (e.target.scrollTop > 300 && !sticky) {
-			this.setState({ sticky: true });
-		}
-		if (e.target.scrollTop < 300 && sticky) {
-			this.setState({ sticky: false });
+		if (this.props.isSticky) {
+			if (e.target.scrollTop > 300 && !sticky) {
+				this.setState({ sticky: true });
+			}
+			if (e.target.scrollTop < 300 && sticky) {
+				this.setState({ sticky: false });
+			}
 		}
 	}
 
 	render() {
-		const { current, variants, className, type, onPick, ...props } = this.props;
+		const { current, variants, className, type, onPick, style } = this.props;
 		const createClassName = classNames(
 			styles.container,
 			className,
@@ -53,7 +55,7 @@ class Tabs extends PureComponent {
 		});
 
 		return (
-			<ul className={createClassName} {...props}>
+			<ul className={createClassName} style={style}>
 				{tabs}
 			</ul>
 		);
