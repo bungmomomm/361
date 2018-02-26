@@ -7,9 +7,10 @@ import { Link } from 'react-router-dom';
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as shopBagActions } from '@/state/v4/ShopBag';
-import { Modal, Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Spinner } from '@/components/mobile';
+import { Modal, Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Rating, Spinner } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
+import SellerProfile from '../../Discovery/Seller/components/SellerProfile';
 
 class Products extends Component {
 	constructor(props) {
@@ -19,6 +20,7 @@ class Products extends Component {
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.source = this.props.cookies.get('user.source');
 
+		this.closeZoomImage = this.closeZoomImage.bind(this);
 		this.handleScroll = this.handleScroll.bind(this);
 		this.handleLovelistClick = this.handleLovelistClick.bind(this);
 		this.handleImageItemClick = this.handleImageItemClick.bind(this);
@@ -27,7 +29,6 @@ class Products extends Component {
 		this.redirectToComments = this.redirectToComments.bind(this);
 		this.removeAddItem = this.removeAddItem.bind(this);
 		this.setCarouselSlideIndex = this.setCarouselSlideIndex.bind(this);
-
 
 		this.state = {
 			size: 's',
@@ -54,6 +55,7 @@ class Products extends Component {
 			}
 		};
 
+		this.linkToPdpDisabled = true;
 		this.loadingContent = (
 			<div style={{ margin: '20% auto 20% auto' }}>
 				<Spinner size='large' />
@@ -81,9 +83,7 @@ class Products extends Component {
 		if (!_.isEmpty(lovelist.bulkieCountProducts) && status.pdpDataHasLoaded && !status.bulkieSet) {
 			const lovelistProduct = dispatch(lovelistActions.getProductBulk(_.toInteger(detail.id)));
 			status.bulkieSet = true;
-			console.log('bulkie product: ', lovelistProduct);
 			pdpData.cardProduct.totalLovelist = lovelistProduct.total || 0;
-			console.log('card product totallovelist: ', pdpData.cardProduct.totalLovelist);
 			status.isLoved = (lovelistProduct.status === 1);
 		}
 
@@ -112,7 +112,7 @@ class Products extends Component {
 					key: idx,
 					images: item.images,
 					productTitle: item.product_title,
-					brandName: item.name,
+					brandName: item.brand,
 					pricing: item.pricing,
 					linkToPdp: '/'
 				};
@@ -124,13 +124,17 @@ class Products extends Component {
 		// sets product reviews data
 		if (!_.isEmpty(socialSummary.reviews) && !status.reviewsSet) {
 			status.reviewsSet = true;
-			pdpData.cardProduct.totalComments = socialSummary.comments.total || 0;
+			const commentsSet = (!_.isUndefined(socialSummary.comment) && !_.isEmpty(socialSummary.comment));
+			if (commentsSet && (typeof socialSummary.comment.total !== 'undefined')) {
+				pdpData.cardProduct.totalComments = socialSummary.comment.total || 0;
+			}
+
 			pdpData.reviewContent = socialSummary.reviews.summary.map((item, idx) => {
 				return <Comment key={idx} type='review' data={item} />;
 			});
 		}
 
-		// updates PDP states
+		// updates states
 		this.setState({ detail, status, pdpData });
 	}
 
@@ -144,6 +148,12 @@ class Products extends Component {
 				slideIndex: index || 0
 			}
 		});
+	}
+
+	closeZoomImage(e) {
+		const { status } = this.state;
+		status.isZoomed = false;
+		this.setState({ status });
 	}
 
 	handleScroll(e) {
@@ -183,7 +193,7 @@ class Products extends Component {
 		const token = this.userCookies;
 		const defaultCount = 1;
 
-		dispatch(shopBagActions.updateAction(token, productId, defaultCount, 'add'));
+		dispatch(shopBagActions.updateAction(token, productId, defaultCount));
 		console.log(`Product ${productId} has been added into your cart.`);
 	}
 
@@ -215,15 +225,11 @@ class Products extends Component {
 		status.showConfirmDelete = false;
 		this.setState({ status, pdpData });
 	}
-	
+
 	renderZoomImage() {
 		const { carousel, pdpData } = this.state;
 		const header = {
-			left: (
-				<Button onClick={() => this.setState({ status: { isZoomed: false } })} >
-					<Svg src={'ico_close-large.svg'} />
-				</Button>
-			),
+			left: (<Button onClick={this.closeZoomImage} ><Svg src={'ico_close-large.svg'} /></Button>),
 			center: '',
 			right: ''
 		};
@@ -291,11 +297,11 @@ class Products extends Component {
 							</div>
 						</Level.Left>
 						<Level.Item className='padding--medium'>
-							<div className='font-normal'>{pdpData.cardProduct.pricing.formatted.effective_price}</div>
-							<div className='font-small font-color--primary-ext-2'>{pdpData.cardProduct.pricing.formatted.base_price}</div>
+							<div className='font-normal'>{pdpData.cardProduct.pricing.formatted.app_effective_price}</div>
+							<div className='font-small font-color--primary-ext-2'>{pdpData.cardProduct.pricing.formatted.effective_price}</div>
 						</Level.Item>
 						<Level.Right>
-							<Button color='secondary' size='medium' onClick={this.handleAddItemToCart}>BELI AJA</Button>
+							<Button color='secondary' size='medium' onClick={this.handleAddItemToCart} >BELI AJA</Button>
 						</Level.Right>
 					</Level>
 				</div>
@@ -306,7 +312,9 @@ class Products extends Component {
 
 	render() {
 		const { detail, pdpData, status, carousel } = this.state;
-		const { match } = this.props;
+		const { match, product } = this.props;
+		// const { seller } = product.socialSummary;
+		const { seller, comment } = product.socialSummary;
 
 		if (status.isZoomed) {
 			return this.renderZoomImage();
@@ -317,7 +325,7 @@ class Products extends Component {
 				<Page>
 					<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
 						{status.pdpDataHasLoaded && (
-							<Card.Lovelist
+							<Card.Product
 								setCarouselSlideIndex={this.setCarouselSlideIndex}
 								slideIndex={carousel.slideIndex}
 								onImageItemClick={this.handleImageItemClick}
@@ -326,15 +334,43 @@ class Products extends Component {
 								onBtnLovelistClick={this.handleLovelistClick}
 								onBtnCommentClick={this.redirectToComments}
 								onBtnBeliClick={this.handleAddItemToCart}
+								linkToPdpDisabled={this.linkToPdpDisabled}
 							/>
 						)}
 						{!status.pdpDataHasLoaded && this.loadingContent}
-						<Level style={{ borderBottom: '1px solid #D8D8D8', borderTop: '1px solid #D8D8D8' }}>
-							<Level.Left className='flex-center'>
-								<Svg src='ico_ovo.svg' />
-							</Level.Left>
+						<div className='flex-center padding--medium border-top'>
+							<div className='margin--medium'>
+								<div className='flex-row flex-spaceBetween'>
+									<div>Pilih Ukuran</div>
+									<Link to='/product/guide' className='d-flex font-color--primary-ext-2 flex-row flex-middle'><Svg src='ico_sizeguide.svg' /> <span className='padding--small padding--none-right'>PANDUAN UKURAN</span></Link>
+								</div>
+								<div className='margin--medium horizontal-scroll margin--none-bottom'>
+									<Radio
+										name='size'
+										checked={this.state.size}
+										style={{ marginBottom: '10px' }}
+										onChange={(e) => this.setState({ size: e })}
+										data={[
+											{ label: 'xs', value: 'xs', disabled: true },
+											{ label: 's', value: 's' },
+											{ label: 'm', value: 'm' },
+											{ label: 'l', value: 'l' },
+											{ label: 'xl', value: 'xl' },
+											{ label: '2xl', value: '2xl' },
+											{ label: 's', value: 's' },
+											{ label: 'm', value: 'm' },
+											{ label: 'l', value: 'l' },
+											{ label: 'xl', value: 'xl' },
+											{ label: '2xl', value: '2xl' }
+										]}
+									/>
+								</div>
+								<p className='font-color--red font-small'>Stock Habis</p>
+							</div>
+						</div>
+						<Level className='font-color--primary-ext-2 border-top border-bottom'>
 							<Level.Item>
-								<div style={{ marginLeft: '15px' }} className='padding--small'>Point: 300.000</div>
+								<div className='padding--small'>Dapatkan OVO Point: 300.000</div>
 							</Level.Item>
 							<Level.Right>
 								<Button>
@@ -342,43 +378,25 @@ class Products extends Component {
 								</Button>
 							</Level.Right>
 						</Level>
-						<div className='flex-center margin--large'>
-							<Radio
-								name='size'
-								checked={this.state.size}
-								style={{ marginBottom: '10px' }}
-								onChange={(e) => this.setState({ size: e })}
-								data={[
-									{ label: 'xs', value: 'xs', disabled: true },
-									{ label: 's', value: 's' },
-									{ label: 'm', value: 'm' },
-									{ label: 'l', value: 'l' },
-									{ label: 'xl', value: 'xl' },
-									{ label: '2xl', value: '2xl' }
-								]}
-							/>
-							<p className='font-color--red font-small'>Stock Habis</p>
-							<p className='text-center margin--medium'>Panduan Ukuran</p>
-						</div>
-						<div className='margin--small padding--medium'>
-							{status.pdpDataHasLoaded && 
-								(/^/.test(detail.description)) ? (<div dangerouslySetInnerHTML={{ __html: detail.description }} />) : detail.description
-							}
-						</div>
-						<span className='margin--small padding--medium'>
+						<div className='font-medium margin--medium padding--medium'><strong>Details</strong></div>
+						{
+							status.pdpDataHasLoaded && <p className='padding--medium' dangerouslySetInnerHTML={{ __html: detail.description }} />
+						}
+						{/* <span className='margin--small padding--medium'>
 							<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
-						</span>
+						</span> */}
 						<div className='margin--medium --disable-flex padding--medium'>
-							<Link to={`/product/comments/${match.params.id}`}>
-								<Button className='font--lato-normal font-color--primary-ext-2'>
-									{(status.pdpDataHasLoaded && detail.totalComments > 0 ? `Lihat semua ${detail.totalComments} komentar` : 'Belum ada komentar')}
-								</Button>
+							<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
+								{(status.pdpDataHasLoaded && pdpData.cardProduct.totalComments > 0) ? `Lihat semua ${pdpData.cardProduct.totalComments} komentar` : 'Belum ada komentar'}
 							</Link>
+							{(!_.isUndefined(comment.summary) && !_.isEmpty(comment.summary)) && (
+								<Comment type='lite-review' data={comment.summary} />
+							)}
 						</div>
 						<hr className='margin--small' />
 						{status.recommendationSet && (
 							<div>
-								<div className='margin--small padding--medium font-medium'>Shop the Look</div>
+								<div className='margin--small padding--medium font-medium'><strong>Anda Mungkin Suka</strong></div>
 								<div className='flex-row'>{(!status.loading) ? pdpData.recommendationContent : this.loadingContent}</div>
 							</div>
 						)}
@@ -386,57 +404,57 @@ class Products extends Component {
 							{status.reviewsSet && (
 								<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 									<div className='margin--medium'>
-										<div className='padding--small flex-row flex-spaceBetween'>
-											<div className='font-medium'>Ulasan</div>
-											<Link className='font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
+										<div className='padding--small margin--small margin--none-top flex-row flex-spaceBetween'>
+											<div className='font-medium'><strong>Ulasan</strong></div>
+											<Link className='font-small flex-middle d-flex flex-row font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
 										</div>
-										{(!status.loading) ? pdpData.reviewContent :
-											(<div className='text-center'>
-												<Spinner size='large' />
-											</div>)
-										}
+										<div className='border-bottom'>
+											<div className='padding--small margin--medium margin--none-top flex-row flex-middle'>
+												<Rating active='4.5' total={5} />
+												<div className='flex-row padding--small'>
+													<strong>4.8</strong>/5 <span className='font-color--primary-ext-2 padding--small'>(99 Ulasan)</span>
+												</div>
+											</div>
+										</div>
+										{(!status.loading) ? pdpData.reviewContent : this.loadingContent}
 									</div>
 								</div>
 							)}
 							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
-								<div className='margin--medium'>
-									<div className='padding--small flex-row flex-spaceBetween'>
-										<div className='padding--small'>
-											{status.pdpDataHasLoaded && <Image avatar width={60} height={60} src={detail.seller.seller_logo} />}
-										</div>
-										<Level>
-											<Level.Item className='text-center padding--large'>
-												<div className='font-large'>4.5</div>
-												<div className='font-small font-color--primary-ext-2'>Ulasan</div>
-											</Level.Item>
-											<Level.Item className='text-center'>
-												<div className='font-large'>90</div>
-												<div className='font-small font-color--primary-ext-2'>Produk</div>
-											</Level.Item>
-										</Level>
-									</div>
-									<div className='padding--medium margin--small'>
-										<div className='font-medium'>{status.pdpDataHasLoaded && detail.seller.seller}</div>
-										<div className='font-small'>{status.pdpDataHasLoaded && detail.seller.seller_location}</div>
-									</div>
-									<div className='margin--medium'>
-										<Grid split={4} className='padding--small'>
-											<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
-											<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
-											<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
-											<div className='padding--normal'>
-												<Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' />
-												<div className={styles.seeAll}>
-													SEE ALL
-												</div>
+								{
+									status.pdpDataHasLoaded && (
+										<SellerProfile
+											image={detail.seller_logo}
+											status='gold'
+											isNewStore={false}
+											// successOrder={(!_.isUndefined(seller.success_order.rate)) ? (seller.success_order.rate || 0) : 0}
+											successOrder='98.9'
+											rating={seller.rating}
+											totalProduct='1920'
+											// totalProduct={(!_.isUndefined(seller.success_order.total)) ? (seller.success_order.total || 0) : 0}
+											name={detail.seller.seller}
+											location={detail.seller.seller_location}
+											description={(seller.description || '')}
+										/>
+									)
+								}
+								<div className='margin--medium margin--none-top'>
+									<Grid split={4} className='padding--small'>
+										<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
+										<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
+										<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
+										<div className='padding--normal'>
+											<Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' />
+											<div className={styles.seeAll}>
+												SEE ALL
 											</div>
-										</Grid>
-									</div>
+										</div>
+									</Grid>
 								</div>
 							</div>
 							{status.similarSet && (
 								<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
-									<div className='margin--small padding--medium font-medium'>Produk Serupa</div>
+									<div className='margin--small padding--medium font-medium'><strong>Product Serupa</strong></div>
 									{(!status.loading) ? (<div className='flex-row'>{pdpData.similarContent}</div>) : this.loadingContent}
 								</div>
 							)}
@@ -470,7 +488,7 @@ class Products extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		product: state.product, 
+		product: state.product,
 		shared: state.shared,
 		lovelist: state.lovelist
 	};
@@ -478,8 +496,8 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = (props) => {
 	const { dispatch, match, cookies } = props;
-	
-	const productId = match.params.id;
+
+	const productId = _.toInteger(match.params.id);
 	const token = cookies.get('user.token');
 
 	dispatch(new productActions.productDetailAction(token, productId));
@@ -487,6 +505,7 @@ const doAfterAnonymous = (props) => {
 	dispatch(new productActions.productSimilarAction(token, productId));
 	dispatch(new productActions.productSocialSummaryAction(token, productId));
 	dispatch(new lovelistActions.bulkieCountByProduct(token, productId));
+
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Products, doAfterAnonymous)));

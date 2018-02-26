@@ -9,7 +9,7 @@
 	justify-content: center;
 	align-items: center;
 	font-size: rem(10px);
-	border: 1px solid color(white);
+	border: 1px solid #fff;
 }
 
 .attached{
@@ -21,6 +21,11 @@
 .circle{
 	height: rem(18px);
 	width: rem(18px);
+}
+
+.bottom-right{
+	top: auto;
+	bottom: 2px;
 }
 
 .rounded{

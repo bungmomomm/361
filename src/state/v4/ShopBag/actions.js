@@ -88,7 +88,7 @@ const addLovelistAction = (token, productId) => async (dispatch, getState) => {
 
 const updateAction = (token, productId, newQty, type = 'update') => async (dispatch, getState) => {
 	const { shared } = getState();
-	const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
+	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 	const [err, response] = await to(

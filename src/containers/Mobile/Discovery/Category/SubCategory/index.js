@@ -141,6 +141,7 @@ const mapStateToProps = (state) => {
 	return {
 		category: state.category,
 		home: state.home,
+		shared: state.shared
 	};
 };
 

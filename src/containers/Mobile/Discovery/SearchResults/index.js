@@ -1,58 +1,64 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
+import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import { Header, Page, Card, Svg, Tabs, Navigation, Comment } from '@/components/mobile';
-import stylesSearch from '../Search/search.scss';
-import stylesCatalog from '../Category/Catalog/catalog.scss';
-import { actions } from '@/state/v4/SearchResults';
+import { to } from 'await-to-js';
 import queryString from 'query-string';
+
 import Shared from '@/containers/Mobile/Shared';
 import SearchNotFound from '@/containers/Mobile/Discovery/SearchNotFound';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Filter from '@/containers/Mobile/Shared/Filter';
 import Sort from '@/containers/Mobile/Shared/Sort';
-import { to } from 'await-to-js';
-import Spinner from '@/components/mobile/Spinner';
-import hyperlink from '@/utils/hyperlink';
-import renderIf from '../../../../utils/renderIf';
 
+import {
+	Header,
+	Page,
+	Card,
+	Svg,
+	Tabs,
+	Button, 
+	Level, 
+	Input, 
+	Navigation,
+	Spinner,
+	Comment
+} from '@/components/mobile';
+
+import { actions as searchActions } from '@/state/v4/SearchResults';
 import { actions as commentActions } from '@/state/v4/Comment';
+import { actions as lovelistActions } from '@/state/v4/Lovelist';
+
+import { hyperlink, renderIf } from '@/utils';
+import stylesSearch from '../Search/search.scss';
+import stylesCatalog from '../Category/Catalog/catalog.scss';
+
 
 class SearchResults extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 
-		this.currentListState = 1;
-		this.listType = [{
-			type: 'grid',
-			icon: 'ico_list.svg'
-		}, {
-			type: 'list',
-			icon: 'ico_grid.svg'
-		}];
 		const propsObject = _.chain(props.searchResults);
 		this.state = {
 			listTypeState: this.listType[this.currentListState],
-			notification: {
-				show: true
-			},
 			showFilter: false,
 			showSort: false,
 			query: {
-				per_page: 0,
-				page: 0,
 				q: '',
 				brand_id: '',
 				store_id: '',
 				category_id: '',
+				page: 0,
+				per_page: 0,
 				fq: '',
 				sort: '',
 				...propsObject.get('query').value()
 			}
 		};
+		this.loadingView = <div style={{ margin: '20px auto 20px auto' }}><Spinner /></div>;
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -62,11 +68,6 @@ class SearchResults extends Component {
 			});
 		}
 	}
-
-	// componentWillUnmount() {
-	// 	const { dispatch } = this.props;
-	// 	dispatch(new actions.loadingAction(true));
-	// }
 	
 	async onApply(e, fq) {
 		const { query } = this.state;
@@ -87,22 +88,23 @@ class SearchResults extends Component {
 	}
 
 	getKeyword() {
-		const parsedUrl = queryString.parse(this.props.location.search);
+		const { location } = this.props;
+		const parsedUrl = queryString.parse(location.search);
 		const keywordFromUrl = parsedUrl.query !== undefined ? parsedUrl.query : '';
 
 		return keywordFromUrl;
 	}
 
-	update(params) {
-		const { shared, cookies, dispatch, location, history } = this.props;
+	update = async (params) => {
+		const { cookies, dispatch, location, history } = this.props;
 		const { query } = this.state;
 
 		const parsedUrl = queryString.parse(location.search);
 		const urlParam = {
 			query: query.q,
-			sort: query.sort,
-			per_page: query.per_page,
 			page: query.page,
+			per_page: query.per_page,
+			sort: query.sort,
 			...parsedUrl,
 			...params
 		};
@@ -110,13 +112,23 @@ class SearchResults extends Component {
 		const url = queryString.stringify(urlParam, {
 			encode: false
 		});
-		history.push(`products?${url}`);
-		const searchService = _.chain(shared).get('serviceUrl.product').value() || false;
-		const objParam = {
+		history.push(`?${url}`);
+
+		const searchParam = {
 			...query,
 			...params
 		};
-		dispatch(actions.searchAction(cookies.get('user.token'), searchService, objParam));
+
+		const [err, response] = await to(dispatch(searchActions.searchAction({ token: cookies.get('user.token'), query: searchParam })));
+		if (err) {
+			console.log(err);
+			return err;
+		}
+		if (!_.isEmpty(response.searchData.products)) {
+			const productIdList = _.map(response.searchData.products, 'product_id') || null;
+			dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		}
+		return response;
 	}
 
 	sort(e, sort) {
@@ -130,28 +142,16 @@ class SearchResults extends Component {
 	}
 
 	handlePick(e) {
-		console.log(e);
 		if (e === 'view') {
-			this.currentListState = this.currentListState === 1 ? 0 : this.currentListState + 1;
-			this.setState({ listTypeState: this.listType[this.currentListState] });
+			const { viewMode, dispatch } = this.props;
+			const mode = viewMode.mode === 2 ? 1 : viewMode.mode + 1;
+			dispatch(searchActions.viewModeAction(mode));
 		} else {
 			this.setState({
 				showFilter: e === 'filter',
 				showSort: e === 'sort'
 			});
 		}
-	}
-
-	loadingRender() {
-		if (this.props.isLoading === true) {
-			return (
-				<div style={this.props.style}>
-					<Spinner />
-				</div>
-			);
-		}
-
-		return null;
 	}
 
 	searchNotFound() {
@@ -176,6 +176,7 @@ class SearchResults extends Component {
 					<div className={stylesSearch.container} >
 						<div className={stylesCatalog.cardContainer}>
 							{ productList }
+							{this.props.scroller.loading && this.loadingView}
 						</div>
 					</div>
 				</Page>
@@ -186,11 +187,11 @@ class SearchResults extends Component {
 	}
 
 	renderPage() {
-		let pageView = null;
 		const { searchResults } = this.props;
 		const { showFilter } = this.state;
+
 		if (showFilter) {
-			pageView = (
+			return (
 				<Filter
 					shown={showFilter}
 					filters={searchResults.searchData}
@@ -200,28 +201,29 @@ class SearchResults extends Component {
 					onClose={(e) => this.onClose(e)}
 				/>
 			);
-		} else {
-			pageView = (
-				<div style={this.props.style}>
-					{this.renderSearch()}
-					{this.renderHeader()}
-					{this.renderTabs()}
-					{this.renderForeverBanner()}
-					<Navigation />
-
-					{this.props.scroller.loading}
-				</div>
-			);
 		}
 
-		return pageView;
+		return (
+			<div style={this.props.style}>
+				{this.renderSearch()}
+				{this.renderHeader()}
+				{this.renderTabs()}
+				{this.renderForeverBanner()}
+				<Navigation />
+			</div>
+		);
 	}
 
 	renderSearch() {
 		let searchView = null;
-		const { searchResults } = this.props;
-		if (searchResults.searchStatus !== undefined && searchResults.searchStatus !== '') {
-			if (searchResults.searchStatus === 'success' && searchResults.searchData.products.length > 0) {
+		const { isLoading, searchResults } = this.props;
+
+		if (isLoading) {
+			searchView = this.loadingView;
+		} 
+
+		if (searchResults.searchStatus !== '') {
+			if (searchResults.searchStatus === 'success') {
 				searchView = this.searchFound(searchResults.searchData.products);
 			} else if (searchResults.searchStatus === 'failed') {
 				searchView = this.searchNotFound();
@@ -232,33 +234,47 @@ class SearchResults extends Component {
 	}
 
 	renderList(productData, index) {
-		const { comments } = this.props;
-		const { listTypeState } = this.state;
 		if (productData) {
-			switch (listTypeState.type) {
-			case 'list':
+			const { viewMode, comments, lovelist } = this.props;
+			const linkToPdp = hyperlink('', ['product', productData.product_id], null);
+			const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: productData.product_id }) : false;
+			const commentTotal = commentData ? commentData.total : null;
+			const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: productData.product_id }) : false;
+			const lovelistTotal = lovelistData ? lovelistData.total : null;
+			const lovelistStatus = lovelistData ? lovelistData.status : null;
+
+			const listCardCatalogAttribute = {
+				images: productData.images,
+				productTitle: productData.product_title,
+				brandName: productData.brand.name,
+				pricing: productData.pricing,
+				linkToPdp,
+				commentTotal,
+				commentUrl: `/product/comments/${productData.product_id}`,
+				lovelistTotal,
+				lovelistStatus
+			};
+			
+			const cardCatalogGridAttribute = {
+				key: index,
+				images: productData.images,
+				productTitle: productData.product_title,
+				brandName: productData.brand.name,
+				pricing: productData.pricing,
+				linkToPdp
+			};
+
+			switch (viewMode.mode) {
+			case 1:
 				return (
 					<div key={index} className={stylesCatalog.cardCatalog}>
-						<Card.Catalog
-							images={productData.images}
-							productTitle={productData.product_title}
-							brandName={productData.brand.name}
-							pricing={productData.pricing}
-							linkToPdp={hyperlink.product(productData.product_id, productData.product_title)}
-						/>
-						{comments && comments.loading ? <Spinner /> : this.renderComment(productData.product_id)}
+						<Card.Catalog {...listCardCatalogAttribute} />
+						{comments && comments.loading ? this.renderLoading : this.renderComment(productData.product_id)}
 					</div>
 				);
-			case 'grid':
+			case 2:
 				return (
-					<Card.CatalogGrid
-						key={index}
-						images={productData.images}
-						productTitle={productData.product_title}
-						brandName={productData.brand}
-						pricing={productData.pricing}
-						linkToPdp={hyperlink.product(productData.product_id, productData.product_title)}
-					/>
+					<Card.CatalogGrid {...cardCatalogGridAttribute} />
 				);
 			default:
 				return null;
@@ -270,16 +286,29 @@ class SearchResults extends Component {
 
 	renderComment(productId) {
 		let commentView = null;
-		const { comments } = this.props;
-		if (comments && comments.data.length > 0) {
-			const commentById = _.find(comments.data, { product_id: productId }) || null;
-			commentView = (
-				<Comment
-					className={stylesCatalog.commentBlock}
-					type='comment_summary'
-					data={commentById}
-				/>
-			);
+		const { isLoading, comments } = this.props;
+
+		if (isLoading) {
+			commentView = this.loadingView;
+		}
+
+		if (comments.status === 'success') {
+			const commentProduct = _.find(comments.data, { product_id: productId }) || false;
+			if (commentProduct) {
+				commentView = (
+					<div className={stylesCatalog.commentBlock}>
+						<Link to={`/product/comments/${commentProduct.product_id}`}>
+							<Button>View {commentProduct.total} comments</Button>
+						</Link>
+						<Comment data={commentProduct.last_comment} pcpComment />
+						<Level>
+							<Level.Item>
+								<Input color='white' placeholder='Write comment' />
+							</Level.Item>
+						</Level>
+					</div>
+				);
+			}
 		}
 
 		return commentView;
@@ -300,49 +329,50 @@ class SearchResults extends Component {
 	}
 
 	renderTabs() {
-		const { searchResults } = this.props;
+		const { searchResults, viewMode } = this.props;
 		const { showSort } = this.state;
 		let tabsView = null;
-		const sorts = _.chain(searchResults).get('searchData.sorts').value() || [];
-		tabsView = (
-			<div>
-				<Tabs
-					className={stylesCatalog.filterBlockContainer}
-					type='segment'
-					variants={[
-						{
-							id: 'sort',
-							title: 'Urutkan',
-							disabled: typeof searchResults.searchData === 'undefined'
-						},
-						{
-							id: 'filter',
-							title: 'Filter',
-							disabled: typeof searchResults.searchData === 'undefined'	
-						},
-						{
-							id: 'view',
-							title: <Svg src={this.state.listTypeState.icon} />,
-							disabled: searchResults.isLoading
-						}
-					]}
-					onPick={e => this.handlePick(e)}
-				/>
-				{renderIf(sorts)(
-					<Sort shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
-				)}
-			</div>
-		);
+
+		if (searchResults.searchStatus === 'success') {
+			const sorts = _.chain(searchResults).get('searchData.sorts').value() || [];
+			tabsView = (
+				<div>
+					<Tabs
+						className={stylesCatalog.filterBlockContainer}
+						type='segment'
+						variants={[
+							{
+								id: 'sort',
+								title: 'Urutkan',
+								disabled: typeof searchResults.searchData === 'undefined'
+							},
+							{
+								id: 'filter',
+								title: 'Filter',
+								disabled: typeof searchResults.searchData === 'undefined'	
+							},
+							{
+								id: 'view',
+								title: <Svg src={viewMode.icon} />,
+								disabled: searchResults.isLoading
+							}
+						]}
+						onPick={e => this.handlePick(e)}
+					/>
+					{renderIf(sorts)(
+						<Sort shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+					)}
+				</div>
+			);
+		}
+
 		return tabsView;
 	}
 
 	renderForeverBanner() {
-		const { shared } = this.props;
-		const foreverBannerData = shared.foreverBanner;
-		foreverBannerData.show = this.state.notification.show;
-		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+		const { shared, dispatch } = this.props;
 
-		return <ForeverBanner {...foreverBannerData} />;
+		return <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />;
 	}
 
 	render() {
@@ -353,39 +383,40 @@ class SearchResults extends Component {
 const mapStateToProps = (state) => {
 	return {
 		...state,
+		shared: state.shared,
+		searchResults: state.searchResults,
 		query: state.searchResults.query,
-		promoData: state.searchResults.promoData,
-		isLoading: state.searchResults.isLoading
+		comments: state.comments,
+		isLoading: state.searchResults.isLoading,
+		viewMode: state.searchResults.viewMode,
+		scroller: state.scroller
 	};
 };
 
 const doAfterAnonymous = async (props) => {
-	const { shared, dispatch, cookies, location } = props;
+	const { dispatch, cookies, location, searchResults } = props;
 
-	const searchService = _.chain(shared).get('serviceUrl.product').value() || false;
 	const parsedUrl = queryString.parse(location.search);
-	const objParam = {
+	const searchParam = {
 		q: parsedUrl.query !== undefined ? parsedUrl.query : '',
-		brand_id: parsedUrl.brand_id !== undefined ? parseInt(parsedUrl.brand_id, 10) : '',
-		store_id: parsedUrl.store_id !== undefined ? parseInt(parsedUrl.store_id, 10) : '',
-		category_id: parsedUrl.category_id !== undefined ? parseInt(parsedUrl.category_id, 10) : '',
-		page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
-		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 10,
+		brand_id: parsedUrl.brand_id !== undefined && !_.isEmpty(parsedUrl.brand_id) ? parseInt(parsedUrl.brand_id, 10) : '',
+		store_id: parsedUrl.store_id !== undefined && !_.isEmpty(parsedUrl.store_id) ? parseInt(parsedUrl.store_id, 10) : '',
+		category_id: parsedUrl.category_id !== undefined && !_.isEmpty(parsedUrl.category_id) ? parseInt(parsedUrl.category_id, 10) : '',
+		page: parsedUrl.page !== undefined && !_.isEmpty(parsedUrl.page) ? parseInt(parsedUrl.page, 10) : 1,
+		per_page: parsedUrl.per_page !== undefined && !_.isEmpty(parsedUrl.per_page) ? parseInt(parsedUrl.per_page, 10) : 36,
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
 	
-	const [err, response] = await to(dispatch(actions.searchAction(cookies.get('user.token'), searchService, objParam)));
-	if (err) {
-		console.log(err);
-		return err;
+	dispatch(searchActions.searchAction({ token: cookies.get('user.token'), query: searchParam }));
+
+	if (!_.isEmpty(searchResults.searchData.products)) {
+		const productIdList = _.map(searchResults.searchData.products, 'product_id') || null;
+		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+	} else {
+		dispatch(searchActions.promoAction(cookies.get('user.token')));
 	}
-	const promoService = _.chain(shared).get('serviceUrl.promo').value() || false;
-	dispatch(actions.promoAction(cookies.get('user.token'), promoService));
-	const productIdList = _.map(response.products, 'product_id') || null;
-	const commentService = _.chain(shared).get('serviceUrl.productsocial').value() || false;
-	dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList, commentService));
-	return response;
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Scroller(SearchResults), doAfterAnonymous)));

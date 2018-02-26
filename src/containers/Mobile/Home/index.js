@@ -29,11 +29,6 @@ class Home extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.state = {
-			notification: {
-				show: true
-			}
-		};
 
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
@@ -201,6 +196,10 @@ class Home extends Component {
 		const segment = home.activeSegment.key;
 		const featuredBrand = _.chain(home).get(`allSegmentData.${segment}.featuredBrand`);
 		if (!featuredBrand.isEmpty().value()) {
+			const header = renderSectionHeader('Popular Brand', {
+				title: 'LIHAT SEMUA',
+				url: '/brands'
+			});
 			return (
 				<Grid split={3}>
 					{
@@ -219,6 +218,9 @@ class Home extends Component {
 							}
 							return (
 								<div className={styles.brandsImage} key={e}>
+									{
+										header
+									}
 									<Link to={url} >
 										<Image lazyload alt='thumbnail' src={brand.images.thumbnail} width='100%' />
 									</Link>
@@ -239,7 +241,7 @@ class Home extends Component {
 		const mozaic = _.chain(home).get(`allSegmentData.${segment}.mozaic`);
 
 		if (!mozaic.isEmpty().value()) {
-			const header = renderSectionHeader('Mozaic Artikel', {
+			const header = renderSectionHeader('Artikel Mozaic', {
 				title: mozaic.value().mainlink.text,
 				url: mozaic.value().mainlink.link
 			});
@@ -248,7 +250,7 @@ class Home extends Component {
 					{
 						header
 					}
-					<Carousel>
+					<Carousel className={styles.mozaic}>
 						{
 							mozaic.value().posts.map((detail, i) => (
 								<Article posts={detail} key={i} />
@@ -264,10 +266,7 @@ class Home extends Component {
 	}
 
 	render() {
-		const { shared } = this.props;
-		const foreverBannerData = shared.foreverBanner;
-		foreverBannerData.show = this.state.notification.show;
-		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+		const { shared, dispatch } = this.props;
 
 		const recommendation1 = this.isLogin === 'true' ? 'new_arrival_products' : 'recommended_products';
 		const recommendation2 = this.isLogin === 'true' ? 'best_seller_products' : 'recently_viewed_products';
@@ -280,7 +279,7 @@ class Home extends Component {
 						onPick={(e) => this.handlePick(e)}
 					/>
 
-					{ <ForeverBanner {...foreverBannerData} /> }
+					{ <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} /> }
 
 					{this.renderHeroBanner()}
 
@@ -293,7 +292,7 @@ class Home extends Component {
 
 					{ this.renderRecommendation(recommendation2)}
 					{ this.renderBottomBanner('bottom') }
-					{renderSectionHeader('Brand Terpopuler', { title: 'LIHAT SEMUA', url: '/brands' })}
+					
 					{ this.renderFeaturedBrands() }
 
 					{this.renderMozaic()}

@@ -87,7 +87,7 @@ const productSimilarAction = (token, productId, page = 1, perPage = 2) => async 
 	
 	const [err, response] = await to(request({
 		token,
-		path: `${baseUrl}/similaritems`,
+		path: `${baseUrl}/similar_items`,
 		method: 'GET',
 		fullpath: true,
 		query: {
@@ -126,7 +126,10 @@ const productSocialSummaryAction = (token, productId) => async (dispatch, getSta
 		token,
 		path: `${baseUrl}/review/summary/${productId}`,
 		method: 'GET',
-		fullpath: true
+		fullpath: true,
+		query: {
+			product_id: productId
+		}
 	}));
 
 	if (err) {
@@ -151,6 +154,14 @@ const getProductCardData = (details) => {
 		const images = details.images.map((img, idx) => {
 			return { mobile: img.original };
 		});
+
+		// to do confirm to API products, about variant size
+		// const variants = details.variants.map(({ id, options, pricing, variant_sku, stock, warning_stock_text }) => {
+		// 	return {
+		// 		id,
+		// 		label: 
+		// 	};
+		// });
 
 		return {
 			brand: details.brand,

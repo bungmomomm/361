@@ -3,7 +3,18 @@ import to from 'await-to-js';
 import { Promise } from 'es6-promise';
 import _ from 'lodash';
 import { request } from '@/utils';
-import { totalBag, totalLoveList, currentTab } from './reducer';
+import { totalBag, totalLoveList, currentTab, forEverBanner } from './reducer';
+
+const closeFB = () => (dispatch, getState) => {
+	const { shared } = getState();
+	let { foreverBanner } = shared;
+	foreverBanner = {
+		...foreverBanner, 
+		show: false
+	};
+
+	dispatch(forEverBanner({ foreverBanner, serviceUrl: shared.serviceUrl }));
+};
 
 const totalCartAction = (token) => async (dispatch, getState) => {
 
@@ -65,5 +76,6 @@ const setCurrentSegment = (currentSegment) => (dispatch) => {
 export default {
 	totalLovelistAction,
 	totalCartAction,
-	setCurrentSegment
+	setCurrentSegment,
+	closeFB
 };
