@@ -2,8 +2,11 @@ import { handleActions, createActions } from 'redux-actions';
 
 const initialState = {
 	isLoading: false,
-	commentLoading: true,
 	searchStatus: '',
+	viewMode: {
+		mode: 2,
+		icon: 'ico_list.svg'
+	},
 	searchData: {
 		links: [],
 		info: [],
@@ -12,33 +15,57 @@ const initialState = {
 		products: []
 	},
 	query: {
-		per_page: 0,
-		page: 0,
 		q: '',
 		brand_id: '',
 		store_id: '',
 		category_id: '',
+		page: 0,
+		per_page: 0,
 		fq: '',
 		sort: 'energy DESC',
 	},
 	promoData: []
 };
 
-const { initLoading, initSearch, initPromo } = createActions(
-	'INIT_LOADING', 'INIT_SEARCH', 'INIT_PROMO'
+const { initLoading, initViewMode, initSearch, initNextSearch, initPromo } = createActions(
+	'INIT_LOADING', 'INIT_VIEW_MODE', 'INIT_SEARCH', 'INIT_NEXT_SEARCH', 'INIT_PROMO'
 );
 
 const reducer = handleActions({
 	[initLoading](state, { payload: { isLoading } }) {
 		return {
+			...state,
 			isLoading
+		};
+	},
+	[initViewMode](state, { payload: { isLoading, viewMode } }) {
+		return {
+			...state,
+			isLoading,
+			viewMode
 		};
 	},
 	[initSearch](state, { payload: { isLoading, searchStatus, searchData, query } }) {
 		return {
+			...state,
 			isLoading,
 			searchStatus,
 			searchData,
+			query
+		};
+	},
+	[initNextSearch](state, { payload: { searchStatus, searchData, query } }) {
+		return {
+			...state,
+			searchStatus,
+			searchData: {
+				...state.searchData,
+				...searchData,
+				products: [
+					...state.searchData.products,
+					...searchData.products
+				]
+			},
 			query
 		};
 	},
@@ -54,6 +81,8 @@ const reducer = handleActions({
 export default {
 	reducer, 
 	initLoading,
+	initViewMode,
 	initSearch,
+	initNextSearch,
 	initPromo
 };

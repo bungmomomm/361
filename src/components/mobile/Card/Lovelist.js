@@ -65,21 +65,21 @@ class Lovelist extends PureComponent {
 					style={{ borderBottom: '1px solid #D8D8D8' }}
 				>
 					<Level.Item>
-						<Button onClick={this.props.onBtnLovelistClick}>
+						<Button onClick={this.props.onBtnLovelistClick} data-id={data.id}>
 							<Svg src={loveIcon} />
-							<span>{data.totalLovelist}</span>
+							{data.totalLovelist}
 						</Button>
 					</Level.Item>
 					<Level.Item>
 						<Button onClick={this.props.onBtnCommentClick}>
 							<Svg src='ico_comment.svg' />
-							<span>{data.totalComments}</span>
+							{data.totalComments || 0}
 						</Button>
 					</Level.Item>
 				</Level>
 				<div className={styles.title}>
-					{data.product_title}
-					<span>{data.brand}</span>
+					{data.brand.name}
+					<span>{data.product_title}</span>
 				</div>
 				<Level className={styles.footer}>
 					<Level.Item>
@@ -96,7 +96,7 @@ class Lovelist extends PureComponent {
 						</div>
 					</Level.Item>
 					<Level.Right>
-						<Button color='secondary' size='medium' rounded>
+						<Button color='secondary' size='medium' rounded onClick={this.props.onBtnBeliClick}>
 							Beli aja
 						</Button>
 					</Level.Right>

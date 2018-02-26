@@ -146,7 +146,12 @@ export default {
 			component: Category,
 		},
 		{
-			path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9]+)',
+			path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9-]+)',
+			component: ProductCategory,
+			exact: true
+		},
+		{
+			path: '/p-:categoryId:([0-9]+)}/:categoryTitle([a-zA-Z0-9-]+):brandTitle(/[a-zA-Z0-9-]+)?',
 			component: ProductCategory
 		},
 		{
@@ -245,8 +250,9 @@ export default {
 			component: Lovelist,
 		},
 		{
-			path: '/store/:store_id',
-			component: Seller
+			path: '/store/:store_id/:store_name',
+			component: Seller,
+			exact: true
 		},
 		{
 			path: '/profile-edit-ovo',

@@ -53,9 +53,9 @@ const updatedKeywordHandler = (string, userToken) => async (dispatch, getState) 
 		dispatch(keywordUpdate({
 			...initialState,
 			keyword: string,
-			related_category: data.related_category,
-			related_keyword: data.related_keyword,
-			related_hashtag: data.related_hashtag,
+			related_category: (data && data.related_category) ? data.related_category : [],
+			related_keyword: (data && data.related_keyword) ? data.related_keyword : [],
+			related_hashtag: (data && data.related_hashtag) ? data.related_hashtag : [],
 			loading: false
 		}));
 		return Promise.resolve(response);

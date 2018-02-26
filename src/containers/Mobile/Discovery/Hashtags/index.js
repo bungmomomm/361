@@ -23,6 +23,7 @@ class Hashtags extends Component {
 					token: cookies.get('user.token'),
 					query: q.query
 				};
+
 				dispatch(actions.itemsFetchData(dataFetch));
 			}
 		}
@@ -35,7 +36,7 @@ class Hashtags extends Component {
 		dispatch(actions.switchViewMode(mode));
 	}
 
-	renderGridSmall = () => {
+	renderGridSmall = (campaignId) => {
 		const { hashtag } = this.props;
 		const items = hashtag.products[hashtag.active.node] && hashtag.products[hashtag.active.node].items
 					? hashtag.products[hashtag.active.node].items : [];
@@ -44,7 +45,7 @@ class Hashtags extends Component {
 			<Grid bordered split={3}>
 				{items.map((product, i) => (
 					<div key={i}>
-						<Link to={`/mau-gaya-itu-gampang/${product.id}`}>
+						<Link to={`/mau-gaya-itu-gampang/${campaignId}/${product.id}`}>
 							<Image src={product.image} />
 						</Link>
 					</div>
@@ -53,7 +54,7 @@ class Hashtags extends Component {
 		);
 	}
 
-	renderGridLarge = () => {
+	renderGridLarge = (campaignId) => {
 		const { hashtag } = this.props;
 		const items = hashtag.products[hashtag.active.node] && hashtag.products[hashtag.active.node].items
 					? hashtag.products[hashtag.active.node].items : [];
@@ -62,7 +63,7 @@ class Hashtags extends Component {
 			<div>
 				{items.map((product, i) => (
 					<div key={i}>
-						<Link to={`/mau-gaya-itu-gampang/${product.id}`}>
+						<Link to={`/mau-gaya-itu-gampang/${campaignId}/${product.id}`}>
 							<Image src={product.image} width='100%' />
 						</Link>
 						<div className='flex-row padding--medium margin--medium'>
@@ -81,6 +82,8 @@ class Hashtags extends Component {
 	render() {
 		const { hashtag, history, scroller } = this.props;
 		const tags = hashtag.tags;
+		const q = actions.getQuery(hashtag);
+		const campaignId = q.query.campaign_id || 1;
 
 		const HeaderPage = {
 			left: (
@@ -114,7 +117,7 @@ class Hashtags extends Component {
 						))}
 					</div>
 
-					{hashtag.viewMode === 3 ? this.renderGridSmall() : this.renderGridLarge()}
+					{hashtag.viewMode === 3 ? this.renderGridSmall(campaignId) : this.renderGridLarge(campaignId)}
 					{scroller.loading && <Spinner />}
 				</Page>
 

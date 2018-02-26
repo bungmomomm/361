@@ -1,5 +1,11 @@
 import React from 'react';
 import { Notification } from '@/components/mobile';
+import { actions as sharedActions } from '@/state/v4/Shared';
+
+const onClose = (dispatch) => {
+	dispatch(sharedActions.closeFB());
+};
+
 const foreverBanner = (params) => {
 	const inlineStyle = {
 		color: params.text_color
@@ -20,7 +26,7 @@ const foreverBanner = (params) => {
 		<Notification
 			color='yellow'
 			show={params.show}
-			onClose={params.onClose}
+			onClose={() => onClose(params.dispatch)}
 			disableClose={disableCloseFilter}
 		>
 			{content}

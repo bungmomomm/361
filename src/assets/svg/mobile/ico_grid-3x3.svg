@@ -1,0 +1,24 @@
+
+<svg width="14px" height="14px" viewBox="0 0 14 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="MS-2-(Category,-PCP,-PDP,-Comment,-Seller)" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="01_01_01_Category-GridView-FeaturedBrands" transform="translate(-286.000000, -76.000000)" fill="#191919">
+            <g id="3x3" transform="translate(286.000000, 76.000000)">
+                <g>
+                    <rect id="Mask-Copy-2" x="0" y="0" width="4" height="4" rx="1"></rect>
+                    <rect id="Mask-Copy-4" x="5" y="0" width="4" height="4" rx="1"></rect>
+                    <rect id="Mask-Copy-5" x="10" y="0" width="4" height="4" rx="1"></rect>
+                </g>
+                <g id="3x3-copy" transform="translate(0.000000, 5.000000)">
+                    <rect id="Mask-Copy-2" x="0" y="0" width="4" height="4" rx="1"></rect>
+                    <rect id="Mask-Copy-4" x="5" y="0" width="4" height="4" rx="1"></rect>
+                    <rect id="Mask-Copy-5" x="10" y="0" width="4" height="4" rx="1"></rect>
+                </g>
+                <g id="3x3-copy" transform="translate(0.000000, 10.000000)">
+                    <rect id="Mask-Copy-2" x="0" y="0" width="4" height="4" rx="1"></rect>
+                    <rect id="Mask-Copy-4" x="5" y="0" width="4" height="4" rx="1"></rect>
+                    <rect id="Mask-Copy-5" x="10" y="0" width="4" height="4" rx="1"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

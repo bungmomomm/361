@@ -35,6 +35,13 @@ class Category extends PureComponent {
 		return true;
 	}
 
+	componentWillReceiveProps(nextProps) {
+		if (this.props.home.segmen !== nextProps.home.segmen) {
+			const selectedSegment = nextProps.home.segmen.find(e => e.key === nextProps.shared.current);
+			this.setSegmentCategory(selectedSegment);
+		}
+	}
+
 	setSegmentCategory(selectedSegment) {
 		if (selectedSegment) {
 			const { dispatch } = this.props;

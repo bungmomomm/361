@@ -23,10 +23,7 @@ class Promo extends Component {
 
 		this.state = {
 			listTypeGrid: false,
-			productEmpty: false,
-			notification: {
-				show: true
-			}
+			productEmpty: false
 		};
 		this.handlePick = this.handlePick.bind(this);
 		this.getProductListContent = this.getProductListContent.bind(this);
@@ -115,10 +112,7 @@ class Promo extends Component {
 			)
 		};
 
-		const { shared } = this.props;
-		const foreverBannerData = shared.foreverBanner;
-		foreverBannerData.show = this.state.notification.show;
-		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+		const { shared, dispatch } = this.props;
 
 		return (
 			<div style={this.props.style}>
@@ -128,7 +122,7 @@ class Promo extends Component {
 				</Page>
 
 				<Header.Modal {...HeaderPage} />
-				{<ForeverBanner {...foreverBannerData} />}
+				{<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />}
 				<Image alt='Product Terlaris' src='http://www.solidbackgrounds.com/images/950x350/950x350-light-pink-solid-color-background.jpg' style={bannerInline} />
 				<Navigation active='Promo' />
 			</div>

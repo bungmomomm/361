@@ -10,6 +10,7 @@ import { setUserCookie } from './cookie';
 import SocialLogin from './social-login';
 import urlBuilder from './urlBuilder';
 import loading from './loading';
+import { request as emarsysRequest } from './emarsys';
 
 const isHexColor = (color) => {
 	return /(^#[0-9A-F]{3}|^#[0-9A-F]{6})$/i.test(color);
@@ -55,5 +56,6 @@ export default {
 	hyperlink,
 	urlBuilder,
 	isHexColor,
-	loading
+	loading,
+	emarsysRequest
 };
