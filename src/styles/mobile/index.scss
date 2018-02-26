@@ -1,7 +1,6 @@
 @import "_variables.scss";
 @import "_mixins.scss";
 @import "_typography.scss";
-@import "_typography.scss";
 
 @include font-face("Helvetica-Roman", "Helvetica");
 @include font-face("Helvetica-Medium", "Helvetica");
@@ -9,6 +8,12 @@
 @include font-face("Lato-Light", "Lato");
 @include font-face("Lato-Regular", "Lato");
 @include font-face("Lato-Bold", "Lato");
+
+// Plugins
+:global {
+  @import '~rmc-picker/assets/index';
+  @import '~rmc-picker/assets/popup';
+}
 
 :root {
 	font-size: $base-font-size;
@@ -216,7 +221,7 @@
 			overflow: hidden;
 			text-overflow: ellipsis;
 		}
-		
+
 		.text-muted{
 			font-family: 'Lato-Regular';
 			color: #A4A4A4;
@@ -249,11 +254,11 @@
 			margin-top: 30px;
 			margin-bottom: 30px;
 		}
-		
+
 		.margin--none-bottom {
 			margin-bottom: 0px;
 		}
-		
+
 		.margin--none-top {
 			margin-top: 0px;
 		}
@@ -293,7 +298,7 @@
 		.border-right {
 			border-right: 1px solid #DBDBDB;
 		}
-		
+
 		.border-white-top {
 			border-top: 1px solid #fff;
 		}

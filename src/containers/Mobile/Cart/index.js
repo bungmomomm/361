@@ -79,10 +79,10 @@ class Cart extends Component {
 		});
 	}
 
-	selectedNewQtyHander(e) {
+	selectedNewQtyHander(value) {
 		const { dispatch } = this.props;
-		if (e.value !== this.state.qtyCurrent) {
-			dispatch(shopBagAction.updateAction(this.userToken, this.state.productIdwillUpdate, e.value));
+		if (value !== this.state.qtyCurrent) {
+			dispatch(shopBagAction.updateAction(this.userToken, this.state.productIdwillUpdate, value));
 		}
 	}
 
