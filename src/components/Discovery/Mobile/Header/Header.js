@@ -5,7 +5,7 @@ const Header = (props) => {
 	return (
 		<div>
 			<Group grouped>
-				<Input type='text' placeholder='Cari produk, #hashtags, @seller' />
+				<Input type='text' placeholder='Cari produk, #hashtags' />
 			</Group>
 		</div>
 	);
