@@ -276,7 +276,7 @@ class Filter extends PureComponent {
 		const categories = this.getFacet('category');
 		const customCategoryType = this.getFacet('custom_category_ids');
 
-		let filterView = null;
+		let filterView;
 		if (shown) {
 			switch (layout) {
 			case 'brand':

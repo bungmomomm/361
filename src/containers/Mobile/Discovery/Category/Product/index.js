@@ -126,6 +126,8 @@ class Product extends Component {
 	}
 
 	handlePick(e) {
+		const { showSort } = this.state;
+		console.log(showSort, e);
 		if (e === 'view') {
 			const { viewMode, dispatch } = this.props;
 			const mode = viewMode.mode === 3 ? 1 : viewMode.mode + 1;
@@ -133,7 +135,7 @@ class Product extends Component {
 		} else {
 			this.setState({
 				showFilter: e === 'filter',
-				showSort: e === 'sort'
+				showSort: showSort ? false : (e === 'sort')
 			});
 		}
 	}
@@ -320,10 +322,14 @@ class Product extends Component {
 		if (!_.isEmpty(productCategory.pcpData.products)) {
 			const sorts = _.chain(productCategory).get('pcpData.sorts').value() || [];
 			tabsView = (
-				<div>
+				<div className={'tabContainer'}>
+					{renderIf(sorts)(
+						<Sort shown={showSort} isSticky sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+					)}
 					<Tabs
 						className={stylesCatalog.filterBlockContainer}
 						type='segment'
+						isSticky
 						variants={[
 							{
 								id: 'sort',
@@ -343,9 +349,6 @@ class Product extends Component {
 						]}
 						onPick={e => this.handlePick(e)}
 					/>
-					{renderIf(sorts)(
-						<Sort shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
-					)}
 				</div>
 			);
 		}
