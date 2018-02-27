@@ -122,6 +122,7 @@
     "redux-thunk": "2.2.0",
     "regenerator": "^0.12.3",
     "remove": "^0.1.5",
+    "rmc-picker": "^5.0.4",
     "sass-mq": "^3.3.2",
     "sw-precache-webpack-plugin": "^0.11.4",
     "validator": "^9.4.1"
