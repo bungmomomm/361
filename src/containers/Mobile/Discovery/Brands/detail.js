@@ -25,6 +25,7 @@ import queryString from 'query-string';
 import renderIf from '../../../../utils/renderIf';
 import Sort from '@/containers/Mobile/Shared/Sort';
 import Share from '@/components/mobile/Share';
+import Footer from '@/containers/Mobile/Shared/footer';
 
 class Detail extends Component {
 	static queryObject(props) {
@@ -73,7 +74,8 @@ class Detail extends Component {
 				fq: '',
 				sort: '',
 				...propsObject.get('query').value()
-			}
+			},
+			isFooterShow: true
 		};
 
 		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
@@ -436,6 +438,7 @@ class Detail extends Component {
 						)
 						}
 					</div>
+					<Footer isShow={this.state.isFooterShow} />
 				</Page>
 
 				{(!showFilter) && (

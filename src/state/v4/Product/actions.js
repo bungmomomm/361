@@ -126,10 +126,7 @@ const productSocialSummaryAction = (token, productId) => async (dispatch, getSta
 		token,
 		path: `${baseUrl}/review/summary/${productId}`,
 		method: 'GET',
-		fullpath: true,
-		query: {
-			product_id: productId
-		}
+		fullpath: true
 	}));
 
 	if (err) {

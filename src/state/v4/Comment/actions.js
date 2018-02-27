@@ -23,7 +23,7 @@ const commentAddAction = (token, productId, comment) => async (dispatch, getStat
 		method: 'POST',
 		fullpath: true,
 		body: {
-			variant_id: productId,
+			product_id: _.toInteger(productId),
 			comment
 		}
 	}));
