@@ -34,6 +34,14 @@
 	border-bottom: 1px solid #D8D8D8;
 }
 
+.sticky{
+	position: fixed;
+	top: 40px;
+	z-index: 1;
+	background: #fff;
+	width: 100%;
+}
+
 .active {
 	cursor: pointer;
 	color: black;

@@ -11,7 +11,6 @@ import {
 	Tabs,
 	Level,
 	Input,
-	Image,
 	Comment
 } from '@/components/mobile';
 import styles from './brands.scss';
@@ -192,6 +191,7 @@ class Detail extends Component {
 		tabsView = (
 			<div>
 				<Tabs
+					isSticky
 					className={stylesCatalog.filterBlockContainer}
 					type='segment'
 					variants={[
@@ -260,8 +260,6 @@ class Detail extends Component {
 		const brand = _.chain(brands);
 		const bannerImages = brand.get('banner.image');
 		const brandTitle = brand.get('searchData.info.title');
-		const productCount = brand.get('searchData.info.product_count');
-
 		const imgBg = !bannerImages.isEmpty().value() ? { backgroundImage: `url(${bannerImages.value().thumbnail})` }
 			: { backgroundImage: 'url(http://colorfully.eu/wp-content/uploads/2012/10/empty-road-highway-with-fog-facebook-cover.jpg)' };
 
@@ -271,9 +269,7 @@ class Detail extends Component {
 			>
 				<div className={styles.coverImage} style={imgBg} />
 				<div>
-					<Image style={{ boxShadow: '0px 0px 5px rgba(0,0,0,0.3)' }} avatar width={60} height={60} src='https://knoji.com/images/logo/herschel-supply-co.jpg' />
-					<div className='text-uppercase font--lato-bold font-medium margin--medium margin--none-bottom'>{brandTitle.value() || 'Herschell'}</div>
-					<div>{(productCount.value()) && (`${productCount.value()} Produk`)}</div>
+					<div className='text-uppercase font--lato-bold font-large'>{brandTitle.value() || ''}</div>
 				</div>
 			</div>
 		);
@@ -287,6 +283,7 @@ class Detail extends Component {
 			return (
 				<div>
 					<Tabs
+						isSticky
 						className='margin--medium'
 						type='segment'
 						variants={[
@@ -398,9 +395,10 @@ class Detail extends Component {
 					<Svg src='ico_arrow-back-left.svg' />
 				</span>
 			),
-			center: 'Brand', // (imgBanner) ? '' : 'Brand',
+			center: !styleHeader && 'Brand', // (imgBanner) ? '' : 'Brand',
 			right: <Button><Svg src='ico_share.svg' /></Button>
 		};
+		const productCount = _.chain(this.props.brands).get('searchData.info.product_count');
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -418,6 +416,7 @@ class Detail extends Component {
 							<div>
 								{this.renderBenner()}
 								{this.renderFilter()}
+								<div className='margin--medium margin--none-top text-center'>{productCount.value() || 0} Total Produk</div>
 								{this.renderProduct()}
 							</div>
 						)
