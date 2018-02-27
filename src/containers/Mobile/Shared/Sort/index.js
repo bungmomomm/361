@@ -4,6 +4,15 @@ import styles from './sort.scss';
 import _ from 'lodash';
 
 class Sort extends Component {
+
+	static toggleBodyOverflow(shown) {
+		if (shown) {
+			document.getElementsByTagName('body')[0].style.overflow = 'hidden';
+		} else {
+			document.getElementsByTagName('body')[0].style.overflow = '';
+		}
+	}
+
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -17,6 +26,7 @@ class Sort extends Component {
 		this.setState({
 			sorts: nextProps.sorts || sorts
 		});
+		this.constructor.toggleBodyOverflow(nextProps.shown);
 	}
 
 	onClick(e, value) {

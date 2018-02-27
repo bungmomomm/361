@@ -23,11 +23,11 @@ const Header = props => {
 						<Input
 							iconLeft={<Svg src='ico_search.svg' />}
 							onFocus={() => props.history.push('/search')}
-							placeholder='Cari produk, #hashtags, @seller'
+							placeholder='Cari produk, #hashtags'
 							value={props.value}
 						/>
 					</div>
-					<div className={styles.right}><Link to='/search'><Svg src='ico_hashtags.svg' /></Link></div>
+					<div className={styles.right}><Link to='/mau-gaya-itu-gampang'><Svg src='ico_hashtags.svg' /></Link></div>
 				</div>
 			</div>
 		</nav>

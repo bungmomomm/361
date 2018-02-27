@@ -103,18 +103,20 @@ class Register extends Component {
 						<div className='margin--medium'>Daftar Dengan</div>
 						<div className='flex-row flex-center flex-spaceBetween'>
 							<div style={{ width: '45%' }}>
-								<Button wide color='facebook' size='medium'>
-									Facebook
+								<Button wide color='facebook' size='medium' style={{ justifyContent: 'center' }}>
+									<Svg src='ico_facebook.svg' style={{ marginRight: 'auto' }} />
+									<span style={{ marginRight: 'auto' }}>Facebook</span>
 								</Button>
 							</div>
 							<div style={{ width: '45%' }}>
-								<Button wide color='google' size='medium'>
-									<Svg src='ico_google.svg' style={{ marginRight: '10px' }} />Google
+								<Button wide color='google' size='medium' style={{ justifyContent: 'center' }}>
+									<Svg src='ico_google.svg' style={{ marginRight: 'auto' }} />
+									<span style={{ marginRight: 'auto' }}>Google</span>
 								</Button>
 							</div>
 						</div>
 						<div className={styles.divider}>
-							<span>A tau</span>
+							<span>Atau</span>
 						</div>
 						<div>
 							<Input

@@ -4,11 +4,39 @@ import Item from './item';
 import styles from './navigation.scss';
 
 class Navigation extends PureComponent {
+	constructor(props) {
+		super(props);
+		this.handleScroll = this.handleScroll.bind(this);
+		this.state = {
+			show: true
+		};
+		this.stateScroll = 0;
+	}
+	componentDidMount() {
+		window.addEventListener('scroll', this.handleScroll, true);
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener('scroll', this.handleScroll, true);
+	}
+
+	handleScroll(e) {
+		const { show } = this.state;
+		if (e.target.scrollTop > this.stateScroll && show) {
+			this.setState({ show: false });
+		}
+		if (e.target.scrollTop < this.stateScroll && !show) {
+			this.setState({ show: true });
+		}
+		this.stateScroll = e.target.scrollTop;
+	}
+
 	render() {
 		const { className, active, ...props } = this.props;
 
 		const createClassName = classNames(
 			styles.container,
+			!this.state.show ? styles.hide : '',
 			className
 		);
 

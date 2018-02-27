@@ -40,6 +40,7 @@ class SearchResults extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.isLogin = this.props.cookies.get('isLogin') || false;
 
 		const propsObject = _.chain(props.searchResults);
 		this.state = {
@@ -58,8 +59,10 @@ class SearchResults extends Component {
 				fq: '',
 				sort: '',
 				...propsObject.get('query').value()
-			}
+			},
+			productComment: ''
 		};
+
 		this.loadingView = <div style={{ margin: '20px auto 20px auto' }}><Spinner /></div>;
 	}
 
@@ -123,15 +126,17 @@ class SearchResults extends Component {
 
 		const [err, response] = await to(dispatch(searchActions.searchAction({ token: cookies.get('user.token'), query: searchParam })));
 		if (err) {
-			console.log(err);
-			return err;
+			dispatch(searchActions.promoAction(cookies.get('user.token')));
 		}
-		if (!_.isEmpty(response.searchData.products)) {
-			const productIdList = _.map(response.searchData.products, 'product_id') || null;
-			dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+		if (response) {
+			if (!_.isEmpty(response.searchData.products)) {
+				const productIdList = _.map(response.searchData.products, 'product_id') || null;
+				dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+				dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+			} else {
+				dispatch(searchActions.promoAction(cookies.get('user.token')));
+			}
 		}
-		return response;
 	}
 
 	sort(e, sort) {
@@ -154,6 +159,25 @@ class SearchResults extends Component {
 				showFilter: e === 'filter',
 				showSort: e === 'sort'
 			});
+		}
+	}
+
+	writeComment(e) {
+		this.setState({
+			productComment: e.target.value
+		});
+
+	}
+
+	postComment = async (e, productId) => {
+		if (e.key === 'Enter') {
+			const { dispatch, cookies, searchResults } = this.props;
+			const { productComment } = this.state;
+
+			dispatch(commentActions.commentAddAction(cookies.get('user.token'), productId, productComment));
+
+			const productIdList = _.map(searchResults.searchData.products, 'product_id') || null;
+			dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 		}
 	}
 
@@ -237,9 +261,9 @@ class SearchResults extends Component {
 
 	renderList(productData, index) {
 		if (productData) {
-			const { viewMode, comments, lovelist } = this.props;
+			const { isLoading, viewMode, searchResults, lovelist } = this.props;
 			const linkToPdp = hyperlink('', ['product', productData.product_id], null);
-			const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: productData.product_id }) : false;
+			const commentData = !_.isEmpty(searchResults.commentData) ? _.find(searchResults.commentData, { product_id: productData.product_id }) : false;
 			const commentTotal = commentData ? commentData.total : null;
 			const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: productData.product_id }) : false;
 			const lovelistTotal = lovelistData ? lovelistData.total : null;
@@ -272,7 +296,7 @@ class SearchResults extends Component {
 				return (
 					<div key={index} className={stylesCatalog.cardCatalog}>
 						<Card.Catalog {...listCardCatalogAttribute} />
-						{comments && comments.loading ? this.renderLoading : this.renderComment(productData.product_id)}
+						{isLoading ? this.renderLoading : this.renderComment(productData.product_id)}
 					</div>
 				);
 			case 2:
@@ -289,32 +313,60 @@ class SearchResults extends Component {
 
 	renderComment(productId) {
 		let commentView = null;
-		const { isLoading, comments } = this.props;
+		const { isLoading, searchResults } = this.props;
 
 		if (isLoading) {
 			commentView = this.loadingView;
 		}
 
-		if (comments.status === 'success') {
-			const commentProduct = _.find(comments.data, { product_id: productId }) || false;
-			if (commentProduct) {
-				commentView = (
-					<div className={stylesCatalog.commentBlock}>
-						<Link to={`/product/comments/${commentProduct.product_id}`}>
-							<Button>View {commentProduct.total} comments</Button>
-						</Link>
-						<Comment data={commentProduct.last_comment} pcpComment />
-						<Level>
-							<Level.Item>
-								<Input color='white' placeholder='Write comment' />
-							</Level.Item>
-						</Level>
-					</div>
-				);
-			}
-		}
+		const commentProduct = _.find(searchResults.commentData, { product_id: productId }) || false;
+		const commentLink = commentProduct ? (
+			<Link to={`/product/comments/${commentProduct.product_id}`}>
+				<Button>View {commentProduct.total} comments</Button>
+			</Link>
+		) : '';
+		const commentDetail = commentProduct ? (
+			<Comment data={commentProduct.last_comment} type='lite-review' />
+		) : '';
+
+		commentView = (
+			<div className={stylesCatalog.commentBlock}>
+				{commentLink}
+				{commentDetail}
+				{this.renderAddComment(productId)}
+			</div>
+		);
 
 		return commentView;
+	}
+
+	renderAddComment(productId) {
+		let addCommentView = null;
+		// if (this.isLogin === 'true') {
+		// 	addCommentView = (
+		// 		<Level>
+		// 			<Level.Item>
+		// 				<Input color='white' placeholder='Write comment' />
+		// 			</Level.Item>
+		// 		</Level>
+		// 	);
+		// } else {
+		// 	addCommentView = (
+		// 		<Level>
+		// 			<Link to='/user/login'>Log in</Link> / <Link to='/user/register'>Register</Link> untuk memberi komentar
+		// 		</Level>
+		// 	);
+		// }
+
+		addCommentView = (
+			<Level>
+				<Level.Item>
+					<Input color='white' placeholder='Write comment' onChange={(e) => this.writeComment(e)} onKeyPress={(e) => this.postComment(e, productId)} />
+				</Level.Item>
+			</Level>
+		);
+
+		return addCommentView;
 	}
 
 	renderHeader() {
@@ -361,6 +413,7 @@ class SearchResults extends Component {
 							}
 						]}
 						onPick={e => this.handlePick(e)}
+						isSticky
 					/>
 					{renderIf(sorts)(
 						<Sort shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
@@ -422,7 +475,7 @@ const doAfterAnonymous = async (props) => {
 	if (response) {
 		if (!_.isEmpty(response.searchData.products)) {
 			const productIdList = _.map(response.searchData.products, 'product_id') || null;
-			dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+			dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 		} else {
 			dispatch(searchActions.promoAction(cookies.get('user.token')));

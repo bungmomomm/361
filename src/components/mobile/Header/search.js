@@ -22,7 +22,7 @@ const Search = props => {
 							iconRight={<button onClick={props.updatedKeywordHandler}>
 								<Svg src='ico_close-grey.svg' />
 							</button>}
-							placeholder='Cari produk, #hashtags, @seller'
+							placeholder='Cari produk, #hashtags'
 							onChange={props.updatedKeywordHandler}
 							onKeyPress={props.onKeyPressHandler}
 							value={props.value}
