@@ -312,11 +312,10 @@ class SearchResults extends Component {
 	}
 
 	renderComment(productId) {
-		let commentView = null;
 		const { isLoading, searchResults } = this.props;
 
 		if (isLoading) {
-			commentView = this.loadingView;
+			return this.loadingView;
 		}
 
 		const commentProduct = _.find(searchResults.commentData, { product_id: productId }) || false;
@@ -329,15 +328,13 @@ class SearchResults extends Component {
 			<Comment data={commentProduct.last_comment} type='lite-review' />
 		) : '';
 
-		commentView = (
+		return (
 			<div className={stylesCatalog.commentBlock}>
 				{commentLink}
 				{commentDetail}
 				{this.renderAddComment(productId)}
 			</div>
 		);
-
-		return commentView;
 	}
 
 	renderAddComment(productId) {
@@ -440,6 +437,7 @@ class SearchResults extends Component {
 }
 
 const mapStateToProps = (state) => {
+	console.log(state.scroller);
 	return {
 		...state,
 		shared: state.shared,

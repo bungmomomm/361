@@ -53,22 +53,20 @@ const searchAction = ({ token, query = {}, loadNext = false }) => async (dispatc
 		}));
 	}
 	
-	if (!_.isEmpty(searchData.products)) {
-		const nextLink = searchData.links && searchData.links.next ? new URL(baseUrl + searchData.links.next).searchParams : false;
-		dispatch(scrollerActions.onScroll({
-			nextData: {
-				token,
-				query: {
-					...query,
-					page: nextLink ? parseInt(nextLink.get('page'), 10) : false,
-				},
-				loadNext: true
+	const nextLink = searchData.links && searchData.links.next ? new URL(baseUrl + searchData.links.next).searchParams : false;
+	dispatch(scrollerActions.onScroll({
+		nextData: {
+			token,
+			query: {
+				...query,
+				page: nextLink ? parseInt(nextLink.get('page'), 10) : false,
 			},
-			nextPage: nextLink !== false,
-			loading: false,
-			loader: searchAction
-		}));
-	}
+			loadNext: true
+		},
+		nextPage: nextLink !== false,
+		loading: false,
+		loader: searchAction
+	}));
 
 	return Promise.resolve({
 		searchStatus: 'success',
