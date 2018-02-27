@@ -8,7 +8,7 @@ class Tab extends PureComponent {
 		if (!disabled) {
 			this.props.onPick(this.props.id);
 		}
-	};
+	}
 
 	render() {
 		const { title, active, disabled, id } = this.props;

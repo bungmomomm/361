@@ -58,6 +58,7 @@ class Comment extends PureComponent {
 			);
 		}
 
+		console.log('data received: ', data);
 		return (
 			<div>
 				{

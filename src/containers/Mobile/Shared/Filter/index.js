@@ -9,7 +9,7 @@ import Location from './layouts/locations';
 import TreeSegment from './layouts/treeSegment';
 import Result from './layouts/result';
 import utils from './layouts/utils';
-
+import styles from './filter.scss';
 import _ from 'lodash';
 
 const getSelected = (childs, source = false) => {
@@ -88,7 +88,39 @@ class Filter extends PureComponent {
 		this.props.onApply(e, obj);
 	}
 
-	
+	onReset(e) {
+		const { filters } = this.state;
+		const updateChilds = (c) => {
+			c = _.map(c, (facetData) => {
+				facetData.is_selected = 0;
+				return facetData;
+			});
+
+			return c;
+		};
+		filters.facets = _.map(filters.facets, (facet) => {
+			switch (facet.id) {
+			case 'category':
+			case 'custom_category_ids':
+			case 'size':
+				facet.data = updateChilds(facet.data);
+				break;
+			default:
+				facet.data = _.map(facet.data, (facetData) => {
+					facetData.is_selected = 0;
+					return facetData;
+				});
+				break;
+			}
+			return facet;
+		});
+		this.setState({
+			filters,
+			selected: []
+		});
+		this.forceUpdate();
+	}
+
 	getFacet(key) {
 		const { filters } = this.state;
 		const facet = _.first(_.filter(filters.facets, (f) => (f.id === key)));
@@ -231,7 +263,7 @@ class Filter extends PureComponent {
 
 	render() {
 		const { layout, filters, selected, ...state } = this.state;
-		const { onReset, shown } = this.props;
+		const { shown } = this.props;
 
 		const brands = this.getFacet('brand');
 		const colors = this.getFacet('color');
@@ -243,17 +275,12 @@ class Filter extends PureComponent {
 		const shippings = this.getFacet('shipping_methods');
 		const categories = this.getFacet('category');
 		const customCategoryType = this.getFacet('custom_category_ids');
+
+		let filterView;
 		if (shown) {
 			switch (layout) {
-			/*
-			case 'lists':
-				return <Lists {...state} />;
-
-			case 'listsEnd':
-				return <ListsEnd {...state} />;
-			*/
 			case 'brand':
-				return (
+				filterView = (
 					<Brands 
 						{...state} 
 						title='brands' 
@@ -263,8 +290,9 @@ class Filter extends PureComponent {
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
 				);
+				break;
 			case 'color':
-				return (
+				filterView = (
 					<Color 
 						{...state} 
 						data={colors.data} 
@@ -274,8 +302,9 @@ class Filter extends PureComponent {
 					/>
 				);
 			
+				break;
 			case 'size':
-				return (
+				filterView = (
 					<Size 
 						{...state} 
 						data={sizes.data} 
@@ -284,8 +313,9 @@ class Filter extends PureComponent {
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
 				);			
+				break;
 			case 'location':
-				return (
+				filterView = (
 					<Location 
 						{...state} 
 						data={locations.data} 
@@ -295,8 +325,9 @@ class Filter extends PureComponent {
 					/>
 				);
 			
+				break;
 			case 'price':
-				return (
+				filterView = (
 					<Price 
 						{...state} 
 						data={prices} 
@@ -307,8 +338,9 @@ class Filter extends PureComponent {
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
 				);			
+				break;
 			case 'shipping_methods':
-				return (
+				filterView = (
 					<Lists 
 						{...state} 
 						data={shippings.data} 
@@ -317,8 +349,9 @@ class Filter extends PureComponent {
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
 				);
+				break;
 			case 'custom_category_ids':
-				return (
+				filterView = (
 					<TreeSegment 
 						{...state} 
 						data={customCategoryType.data} 
@@ -327,8 +360,9 @@ class Filter extends PureComponent {
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
 				);		
+				break;
 			case 'category':
-				return (
+				filterView = (
 					<TreeSegment 
 						{...state} 
 						data={categories.data} 
@@ -337,24 +371,30 @@ class Filter extends PureComponent {
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
 				);
+				break;
 			case 'result':
-				return (
+				filterView = (
 					<Result 
 						{...state} 
 						filters={filters}
-						onReset={onReset} 
+						onReset={(e) => this.onReset(e)} 
 						selected={selected}
 						onApply={(e) => this.onApply(e)} 
 						onListClick={(e, key) => this.onListClick(e, key)} 
 						onClose={(e) => this.onFilterSectionClose()} 
 					/>
-				);		
+				);	
+				break;	
 			default:
-				return null;
+				filterView = null;
 			}
 		}
-
-		return null;
+		return (
+			<div className={styles.filterContainer}>
+				<div className={styles.filterBackground} />
+				{filterView}
+			</div>
+		);
 	}
 }
 
