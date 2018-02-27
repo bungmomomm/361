@@ -3,7 +3,6 @@
 
 
 .container{
-	padding: 0 rem(20px);
 	order: 5;
 }
 
@@ -18,8 +17,6 @@
 	background-color: color(--white);
 	border: 0;
 	bottom: 0;
-	left: 0;
-	right: 0;
 	height: rem(50px);
 	position: fixed;
 	top: auto;
@@ -27,6 +24,8 @@
 	flex-direction: row;
 	border-top:1px solid #DBDBDB;
 	padding-bottom: rem(5px);
+	width: 100%;
+	max-width: 480px;
 }
 
 

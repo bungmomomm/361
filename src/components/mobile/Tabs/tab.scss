@@ -36,10 +36,11 @@
 
 .sticky{
 	position: fixed;
-	top: 40px;
+	top: 60px;
 	z-index: 1;
 	background: #fff;
 	width: 100%;
+	max-width: 480px;
 }
 
 .active {

@@ -106,7 +106,7 @@ class Size extends PureComponent {
 
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page hideFooter>
 					<List>
 						{sizeList}
 					</List>
