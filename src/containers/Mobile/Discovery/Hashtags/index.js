@@ -7,9 +7,17 @@ import { Link, withRouter } from 'react-router-dom';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import Spinner from '@/components/mobile/Spinner';
+import Footer from '@/containers/Mobile/Shared/footer';
 
 class Hashtags extends Component {
 
+	constructor(props) {
+		super(props);
+		this.props = props;
+		this.state = {
+			isFooterShow: true
+		};
+	}
 	switchTag = (tag) => {
 		const switchTag = tag.replace('#', '').toLowerCase();
 		const { dispatch, hashtag, cookies } = this.props;
@@ -119,6 +127,7 @@ class Hashtags extends Component {
 
 					{hashtag.viewMode === 3 ? this.renderGridSmall(campaignId) : this.renderGridLarge(campaignId)}
 					{scroller.loading && <Spinner />}
+					<Footer isShow={this.state.isFooterShow} />
 				</Page>
 
 				<Header.Modal {...HeaderPage} />

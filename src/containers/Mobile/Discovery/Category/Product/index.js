@@ -32,6 +32,7 @@ import { actions as lovelistActions } from '@/state/v4/Lovelist';
 
 import { hyperlink, renderIf } from '@/utils';
 import stylesCatalog from '../Catalog/catalog.scss';
+import Footer from '@/containers/Mobile/Shared/footer';
 
 class Product extends Component {
 	constructor(props) {
@@ -49,7 +50,8 @@ class Product extends Component {
 				fq: '',
 				sort: '',
 				...propsObject.get('query').value()
-			}
+			},
+			isFooterShow: true
 		};
 		this.loadingView = <div style={{ margin: '20px auto 20px auto' }}><Spinner /></div>;
 	}
@@ -182,6 +184,7 @@ class Product extends Component {
 							{this.renderContent(productCategory.pcpData.products)}
 							{this.props.scroller.loading && this.loadingView}
 						</div>
+						<Footer isShow={this.state.isFooterShow} />
 					</Page>
 				);
 			} else if (productCategory.pcpStatus === 'failed') {

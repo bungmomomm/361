@@ -13,6 +13,7 @@ import { actions } from '@/state/v4/Home';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import Shared from '@/containers/Mobile/Shared';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
+import Footer from '@/containers/Mobile/Shared/footer';
 import CONST from '@/constants';
 
 const renderSectionHeader = (title, options) => {
@@ -35,6 +36,10 @@ class Home extends Component {
 		this.source = this.props.cookies.get('user.source');
 
 		this.isLogin = this.props.cookies.get('isLogin');
+
+		this.state = {
+			isFooterShow: true
+		};
 	}
 
 	handlePick(current) {
@@ -298,6 +303,8 @@ class Home extends Component {
 					{ this.renderFeaturedBrands() }
 
 					{this.renderMozaic()}
+					
+					<Footer isShow={this.state.isFooterShow} />
 				</Page>
 				<Header lovelist={shared.totalLovelist} value={this.props.search.keyword} />
 				<Navigation active='Home' />
