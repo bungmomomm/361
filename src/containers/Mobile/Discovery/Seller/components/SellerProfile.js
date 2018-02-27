@@ -1,5 +1,6 @@
 import React from 'react';
 import { Svg, Level, Image, Badge } from '@/components/mobile';
+import { Link } from 'react-router-dom';
 
 const sellerStatus = (status) => {
 	switch (status) {
@@ -23,15 +24,18 @@ const SellerProfile = ({
 	totalProduct,
 	name,
 	location,
-	description
+	description,
+	storeAddress
 }) => {
 	return (
 		<div className='margin--medium'>
 			<div className='padding--small flex-row flex-spaceBetween'>
 				<div className='padding--small'>
 					<div className='avatar'>
-						<Image avatar width={60} height={60} src={image} />
-						<Badge attached position='bottom-right'><Svg src={sellerStatus(status)} /></Badge>
+						<Link to={storeAddress} >
+							<Image avatar width={60} height={60} src={image} />
+							<Badge attached position='bottom-right'><Svg src={sellerStatus(status)} /></Badge>
+						</Link>
 					</div>
 				</div>
 				<Level divider>
