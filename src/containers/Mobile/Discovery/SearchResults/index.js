@@ -415,7 +415,7 @@ const doAfterAnonymous = async (props) => {
 		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 	} else {
-		dispatch(searchActions.promoAction(cookies.get('user.token')));
+		// dispatch(searchActions.promoAction(cookies.get('user.token')));
 	}
 };
 

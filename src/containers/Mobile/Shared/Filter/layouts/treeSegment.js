@@ -180,7 +180,7 @@ class TreeSegment extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page hideFooter>
 					{this.renderChild(categories, true)}
 					{/* {this.renderTree(categories)} */}
 				</Page>

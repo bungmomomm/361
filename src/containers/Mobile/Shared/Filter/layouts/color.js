@@ -70,7 +70,7 @@ class Color extends PureComponent {
 
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page hideFooter>
 					<List>
 						{dataList}
 					</List>
