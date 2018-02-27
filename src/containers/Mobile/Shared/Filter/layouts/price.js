@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react';
-import { Button, Header, Page, Svg, List, Slider } from '@/components/mobile';
+import { Button, Header, Page, Svg, Slider, Input } from '@/components/mobile';
 // import { Link } from 'react-router-dom';
 import styles from './price.scss';
 import Action from './action';
 import _ from 'lodash';
+import currency from 'currency.js';
 
 class Price extends PureComponent {
 
@@ -46,20 +47,33 @@ class Price extends PureComponent {
 		return onApply(e, result, false);
 	}
 
-	updateRange(value) {
-		const { range } = this.state;
+	updateRange(value, changes) {
+		const currentRange = this.state.range;
+		const { range } = this.props;
+		if (changes === 'min') {
+			if (value.min > currentRange.max) {
+				return;
+			}
+		} else if (changes === 'max') {
+			if (value.max < currentRange.min) {
+				return;
+			}
+		}
+		const updatedValue = {
+			...currentRange,
+			...value
+		};
 		this.setState({
 			custom: true,
 			range: {
-				min: Math.abs(value.min) < parseInt(range.max, 10) ? Math.abs(value.min) : parseInt(range.min, 10),
-				max: Math.abs(value.max) < parseInt(range.max, 10) ? Math.abs(value.max) : parseInt(range.max, 10),
+				min: Math.abs(updatedValue.min) < parseInt(range.max, 10) ? Math.abs(updatedValue.min) : parseInt(range.min, 10),
+				max: Math.abs(updatedValue.max) < parseInt(range.max, 10) ? Math.abs(updatedValue.max) : parseInt(range.max, 10),
 			}
 		});
 	}
 
 	render() {
 		const { onClose, range } = this.props;
-		const { data } = this.state;
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
@@ -72,11 +86,11 @@ class Price extends PureComponent {
 
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page hideFooter>
 					<div className={styles.priceSlider}>
 						<div className={styles.sliderLabel}>
-							<span>{this.state.range.min}</span>
-							<span>{this.state.range.max}</span>
+							<span>{currency(this.state.range.min, { symbol: 'Rp', precision: 0, formatWithSymbol: true }).format()}</span>
+							<span>{currency(this.state.range.max, { symbol: 'Rp', precision: 0, formatWithSymbol: true }).format()}</span>
 						</div>
 						<Slider min={parseInt(range.min, 10)} max={parseInt(range.max, 10)} value={this.state.range} onChange={(value) => this.updateRange(value)} />
 						<div className={styles.sliderInfo}>
@@ -84,13 +98,15 @@ class Price extends PureComponent {
 							<span>max</span>
 						</div>
 					</div>
-					<div>
-						{_.map(data, (price, id) => {
-							const icon = price.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
-							return (
-								<List key={id}><Button onClick={(e) => this.onClick(e, price)}><List.Content>{price.facetdisplay} {icon}</List.Content></Button></List>
-							);
-						})}
+					<div className={styles.priceInput}>
+						<div className='flex-row flex-center flex-spaceBetween'>
+							<div style={{ width: '45%' }}>
+								<Input value={this.state.range.min} ref={c => { this.rangeMin = c; }} onChange={(event) => { this.updateRange({ min: parseInt(event.target.value, 10) }, 'min'); }} type='number' placeholder='Min price' />
+							</div>
+							<div style={{ width: '45%' }}>
+								<Input value={this.state.range.max} ref={c => { this.rangeMax = c; }} onChange={(event) => { this.updateRange({ max: parseInt(event.target.value, 10) }, 'max'); }} type='number' placeholder='Max price' />
+							</div>
+						</div>
 					</div>
 					{/* <div className={styles.action}>
 						<Button wide size='medium' outline color='secondary'>App Only</Button>
