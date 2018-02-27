@@ -6,6 +6,7 @@ const initialState = {
 	segment: 1,
 	brand_id: null,
 	products_comments: null,
+	products_lovelist: null,
 	loading_products: false,
 	banner: null,
 	searchStatus: null,
@@ -19,13 +20,14 @@ const initialState = {
 	query: null
 };
 
-const { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner, brandProductsComments } = createActions(
+const { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner, brandProductsComments, brandProductsLovelist } = createActions(
 	'BRAND_LIST_UPDATE',
 	'BRAND_LOADING',
 	'BRAND_PRODUCTS',
 	'BRAND_LOADING_PRODUCTS',
 	'BRAND_BANNER',
-	'BRAND_PRODUCTS_COMMENTS'
+	'BRAND_PRODUCTS_COMMENTS',
+	'BRAND_PRODUCTS_LOVELIST'
 );
 
 const reducer = handleActions({
@@ -66,6 +68,13 @@ const reducer = handleActions({
 			...state,
 			products_comments
 		};
+	},
+	[brandProductsLovelist](state, { payload: { products_lovelist } }) {
+		console.log('reducer products_lovelist', products_lovelist);
+		return {
+			...state,
+			products_lovelist
+		};
 	}
 }, initialState);
 
@@ -76,5 +85,6 @@ export default {
 	brandProducts,
 	brandLoadingProducts,
 	brandBanner,
-	brandProductsComments
+	brandProductsComments,
+	brandProductsLovelist
 };

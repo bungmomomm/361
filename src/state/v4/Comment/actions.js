@@ -3,9 +3,9 @@ import { Promise } from 'es6-promise';
 import to from 'await-to-js';
 import _ from 'lodash';
 import { request } from '@/utils';
-import { 
+import {
 	commentList,
-	commentLoading, 
+	commentLoading,
 } from './reducer';
 
 
@@ -75,7 +75,7 @@ const bulkieCommentAction = (token, productId) => async (dispatch, getState) => 
 		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 		const path = `${baseUrl}/commentcount/bulkie/byproduct`;
-		
+
 		const [err, response] = await to(request({
 			token,
 			path,
@@ -95,7 +95,7 @@ const bulkieCommentAction = (token, productId) => async (dispatch, getState) => 
 		const comments = response.data.data;
 		dispatch(commentList({ status: 'success', data: comments }));
 		dispatch(commentLoading({ loading: false }));
-		
+
 		return Promise.resolve(comments);
 	}
 

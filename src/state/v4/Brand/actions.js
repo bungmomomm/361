@@ -1,5 +1,5 @@
 import { request } from '@/utils';
-import { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner, brandProductsComments } from './reducer';
+import { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner, brandProductsComments, brandProductsLovelist } from './reducer';
 import _ from 'lodash';
 import to from 'await-to-js';
 import { Promise } from 'es6-promise';
@@ -142,9 +142,35 @@ const brandProductsCommentsAction = (token, productIds) => async (dispatch, getS
 	return Promise.resolve(response);
 };
 
+const brandProductsLovelistAction = (token, productIds) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
+
+	if (!baseUrl) Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	const [err, response] = await to(
+		request({
+			token,
+			path: `${baseUrl}/bulkie/byproduct`,
+			method: 'POST',
+			fullpath: true,
+			body: {
+				product_id: productIds
+			}
+		})
+	);
+	if (err) return Promise.reject(err);
+
+	const productsLovelist = response.data.data;
+	console.log('brandProductsLovelistAction productsLovelist ', productsLovelist);
+
+	dispatch(brandProductsLovelist({ products_lovelist: productsLovelist }));
+	return Promise.resolve(response);
+};
+
 export default {
 	brandListAction,
 	brandProductAction,
 	brandBannerAction,
-	brandProductsCommentsAction
+	brandProductsCommentsAction,
+	brandProductsLovelistAction
 };
