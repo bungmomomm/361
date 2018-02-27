@@ -90,8 +90,6 @@ class Seller extends Component {
 				o = (((scrollY - 115) * 12) / 12) / 10;
 			} else if (scrollY > 127) {
 				o = 1;
-			} else {
-				o = 0;
 			}
 
 			this.setState({
