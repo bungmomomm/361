@@ -328,8 +328,8 @@ class Seller extends Component {
 		const { showFilter, centerStyle } = this.state;
 		const { seller, history, location, scroller } = this.props;
 		const title = seller.info.seller;
-		const url = `${process.env.MOBILE_URL}/${location.pathname}/${location.search}`;
-		const storename = (title.length > 30) ? `${title.substring(0, 30)}&hellip;` : title;
+		const url = `${process.env.MOBILE_URL}${location.pathname}${location.search}`;
+		const storename = (!title) ? '' : (title.length > 30) ? `${title.substring(0, 30)}&hellip;` : title;
 
 		const HeaderPage = {
 			left: (
