@@ -48,7 +48,8 @@ class Seller extends Component {
 				sort: '',
 				...propsObject.get('query').value()
 			},
-			filterStyle: {}
+			filterStyle: {},
+			centerStyle: { opacity: 0 }
 		};
 	}
 
@@ -71,9 +72,11 @@ class Seller extends Component {
 	onScroll = (e) => {
 		const header = document.getElementById('store-filter');
 		const sticky = header.offsetTop;
+		const scrollY = e.srcElement.scrollTop;
 
-		if (e.srcElement.scrollTop >= sticky) {
+		if (scrollY >= sticky) {
 			this.setState({
+				centerStyle: { opacity: 1 },
 				filterStyle: {
 					position: 'fixed',
 					width: '100%',
@@ -82,7 +85,17 @@ class Seller extends Component {
 				}
 			});
 		} else {
+			let o = 0;
+			if (scrollY > 115 && scrollY < 128) {
+				o = (((scrollY - 115) * 12) / 12) / 10;
+			} else if (scrollY > 127) {
+				o = 1;
+			} else {
+				o = 0;
+			}
+
 			this.setState({
+				centerStyle: { opacity: o },
 				filterStyle: {},
 			});
 		}
@@ -312,11 +325,11 @@ class Seller extends Component {
 
 	renderData = () => {
 
-		const { showFilter } = this.state;
+		const { showFilter, centerStyle } = this.state;
 		const { seller, history, location, scroller } = this.props;
 		const title = seller.info.seller;
 		const url = `${process.env.MOBILE_URL}/${location.pathname}/${location.search}`;
-
+		const storename = (title.length > 30) ? `${title.substring(0, 30)}&hellip;` : title;
 
 		const HeaderPage = {
 			left: (
@@ -324,7 +337,7 @@ class Seller extends Component {
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</Button>
 			),
-			center: null,
+			center: <span style={centerStyle}>{storename}</span>,
 			right: <Share title={title} url={url} />
 		};
 
