@@ -87,7 +87,7 @@ class Brands extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page hideFooter>
 					<div className={styles.filter}>
 						<Input
 							autoFocus

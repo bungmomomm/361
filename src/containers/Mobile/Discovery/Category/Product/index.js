@@ -141,7 +141,6 @@ class Product extends Component {
 	renderPage() {
 		const { productCategory } = this.props;
 		const { showFilter } = this.state;
-
 		if (showFilter) {
 			return (
 				<Filter
@@ -154,7 +153,6 @@ class Product extends Component {
 				/>
 			);
 		}
-
 		return (
 			<div style={this.props.style}>
 				{this.renderPcp()}
