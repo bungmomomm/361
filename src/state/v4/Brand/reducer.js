@@ -10,8 +10,8 @@ const initialState = {
 	banner: null,
 	searchStatus: null,
 	searchData: {
-		links: [],
-		info: [],
+		links: null,
+		info: null,
 		facets: [],
 		sorts: [],
 		products: []

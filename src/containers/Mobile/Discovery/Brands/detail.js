@@ -24,6 +24,7 @@ import stylesCatalog from '@/containers/Mobile/Discovery/Category/Catalog/catalo
 import queryString from 'query-string';
 import renderIf from '../../../../utils/renderIf';
 import Sort from '@/containers/Mobile/Shared/Sort';
+import Share from '@/components/mobile/Share';
 
 class Detail extends Component {
 	static queryObject(props) {
@@ -256,13 +257,11 @@ class Detail extends Component {
 
 	renderBenner() {
 		const { brands } = this.props;
-
 		const brand = _.chain(brands);
-		const bannerImages = brand.get('banner.image');
+		const bannerImages = brand.get('banner.images.original');
 		const brandTitle = brand.get('searchData.info.title');
-		const imgBg = !bannerImages.isEmpty().value() ? { backgroundImage: `url(${bannerImages.value().thumbnail})` }
-			: { backgroundImage: 'url(http://colorfully.eu/wp-content/uploads/2012/10/empty-road-highway-with-fog-facebook-cover.jpg)' };
-
+		const imgBg = !bannerImages.isEmpty().value() ? { backgroundImage: `url(${bannerImages.value()})` }
+			: { backgroundImage: '' };
 		return (
 			<div
 				className={`${styles.backgroundCover} border-bottom flex-center`}
@@ -383,8 +382,10 @@ class Detail extends Component {
 		return null;
 	}
 
-	render() {
-		const { styleHeader, showFilter } = this.state;
+	renderHeader() {
+		const { searchData } = this.props.brands;
+		const title = (searchData.info) ? searchData.info.title : '';
+		const url = `${process.env.MOBILE_URL}/${this.props.location.pathname}`;
 		const headerComponent = {
 			left: (
 				<span
@@ -395,10 +396,23 @@ class Detail extends Component {
 					<Svg src='ico_arrow-back-left.svg' />
 				</span>
 			),
-			center: !styleHeader && 'Brand', // (imgBanner) ? '' : 'Brand',
-			right: <Button><Svg src='ico_share.svg' /></Button>
+
+			center: !this.state.styleHeader && 'Brand',
+			right: <Share title={title} url={url} />
 		};
-		const productCount = _.chain(this.props.brands).get('searchData.info.product_count');
+		return <Header.Modal className={this.state.styleHeader ? styles.headerClear : ''} {...headerComponent} />;
+	}
+
+	renderTotalProduct() {
+		const productCount = this.props.brands.searchData.info && this.props.brands.searchData.info.product_count;
+		return productCount && (
+			<div className='margin--medium margin--none-top text-center'>{productCount} Total Produk</div>
+		);
+	}
+
+	render() {
+		const { showFilter } = this.state;
+
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -416,7 +430,7 @@ class Detail extends Component {
 							<div>
 								{this.renderBenner()}
 								{this.renderFilter()}
-								<div className='margin--medium margin--none-top text-center'>{productCount.value() || 0} Total Produk</div>
+								{this.renderTotalProduct()}
 								{this.renderProduct()}
 							</div>
 						)
@@ -426,7 +440,7 @@ class Detail extends Component {
 
 				{(!showFilter) && (
 					<div>
-						<Header.Modal className={styleHeader ? styles.headerClear : ''} {...headerComponent} />
+						{this.renderHeader()}
 						<Navigation active='Categories' />
 					</div>
 				)}
