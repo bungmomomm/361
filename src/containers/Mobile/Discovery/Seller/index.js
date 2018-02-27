@@ -296,8 +296,12 @@ class Seller extends Component {
 				<meta name='twitter:card' content='summary' />
 				<meta name='twitter:site' content='@MatahariMallCom' />
 				<meta name='twitter:creator' content='@MatahariMallCom' />
+				<meta name='twitter:title' content={info.description} />
+				<meta name='twitter:url' content={`${process.env.MOBILE_URL}${location.pathname}${location.search}`} />
+				<meta name='twitter:description' content={info.description} />
+				<meta name='twitter:image' content={info.seller_logo} />
 				<meta property='og:title' content={info.seller} />
-				<meta property='og:url' content={`${process.env.MOBILE_URL}/${location.pathname}/${location.search}`} />
+				<meta property='og:url' content={`${process.env.MOBILE_URL}${location.pathname}${location.search}`} />
 				<meta property='og:type' content='website' />
 				<meta property='og:description' content={info.description} />
 				<meta property='og:image' content={info.seller_logo} />
