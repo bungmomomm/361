@@ -218,7 +218,7 @@ class Seller extends Component {
 					image={seller.info.seller_logo || ''}
 					status='gold'
 					isNewStore={false}
-					successOrder={_.chain(seller).get('seller.info.success_order.rate').value() || ''}
+					successOrder={_.chain(seller).get('info.success_order.rate').value() || ''}
 					rating={seller.info.rating || ''}
 					totalProduct={seller.info.product || ''}
 					name={seller.info.seller || ''}
