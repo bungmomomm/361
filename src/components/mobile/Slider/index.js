@@ -8,24 +8,25 @@ class Slider extends PureComponent {
 		super(props);
 		this.state = {
 			value: {
-				min: 0 || props.value.min + 1,
-				max: 0 || props.value.max - 1
+				min: props.min + 1,
+				max: props.max - 1
 			},
 		};
 	}
 
 	componentWillReceiveProps(nextProps) {
 		// console.log(nextProps.value);
-		if (typeof nextProps.value.min !== 'undefined' && (this.state.value.min !== nextProps.value.min || this.state.value.max !== nextProps.value.max)) {
-			this.setState({
-				value: nextProps.value
-			});
-		}
+		// if (typeof nextProps.value.min !== 'undefined' && (this.state.value.min !== nextProps.value.min || this.state.value.max !== nextProps.value.max)) {
+		// 	this.setState({
+		// 		value: nextProps.value
+		// 	});
+		// }
 	}
 
 	onChange(value) {
 		const { onChange } = this.props;
 		this.setState({ value });
+		console.log(value);
 		if (typeof onChange !== 'undefined') {
 			onChange.apply(this, [value]);
 		}

@@ -78,7 +78,7 @@ class Lovelist extends PureComponent {
 					</Level.Item>
 				</Level>
 				<div className={styles.title}>
-					{data.brand.name}
+					{data.brand.brand_name}
 					<span>{data.product_title}</span>
 				</div>
 				<Level className={styles.footer}>
