@@ -9,6 +9,7 @@ import { actions as shopBagAction } from '@/state/v4/ShopBag';
 import CONST from '@/constants';
 import { urlBuilder } from '@/utils';
 import CartEmpty from '@/containers/Mobile/Cart/empty';
+import { actions as actionShared } from '@/state/v4/Shared';
 class Cart extends Component {
 	constructor(props) {
 		super(props);
@@ -16,7 +17,7 @@ class Cart extends Component {
 		this.state = {
 			showSelect: false,
 			showConfirmDelete: false,
-			productwillDelete: { product_id: null, brand: null, title: null, image: null },
+			productWillDelete: { product_id: null, brand: null, title: null, image: null },
 			productIdwillUpdate: null,
 			selectList: [],
 			qtyCurrent: null,
@@ -42,6 +43,11 @@ class Cart extends Component {
 		}
 	}
 
+	componentDidMount() {
+		const { dispatch } = this.props;
+		dispatch(new actionShared.totalLovelistAction(this.userToken));
+	}
+
 	componentWillReceiveProps(nextProps) {
 		if (!('serviceUrl' in this.props.shared) && 'serviceUrl' in nextProps.shared) {
 			const { dispatch } = this.props;
@@ -55,7 +61,7 @@ class Cart extends Component {
 	}
 
 	deleteConfirmationItemHandler(productId, itemBrand, itemTitel, itemImage) {
-		this.setState({ showConfirmDelete: true, productwillDelete: { product_id: productId, brand: itemBrand, title: itemTitel, image: itemImage } });
+		this.setState({ showConfirmDelete: true, productWillDelete: { product_id: productId, brand: itemBrand, title: itemTitel, image: itemImage } });
 	}
 
 	deleteItemHandler() {
@@ -78,13 +84,14 @@ class Cart extends Component {
 	}
 
 	selectedNewQtyHander(value) {
-		const { dispatch } = this.props;
-		if (value !== this.state.qtyCurrent) {
-			dispatch(shopBagAction.updateAction(this.userToken, this.state.productIdwillUpdate, value));
-		}
+		this.setState({ qtyNew: value });
 	}
 
 	updateCartHander() {
+		const { dispatch } = this.props;
+		if (this.state.qtyNew !== null && this.state.qtyCurrent !== this.state.qtyNew) {
+			dispatch(shopBagAction.updateAction(this.userToken, this.state.productIdwillUpdate, this.state.qtyNew));
+		}
 		this.setState({ showSelect: false, productIdwillUpdate: null, selectList: [], qtyCurrent: null, qtyNew: null });
 	}
 
@@ -231,7 +238,6 @@ class Cart extends Component {
 				</Link>
 			),
 			center: (<div><span> Tas Belanja {this.props.shopBag.loading ? (<Spinner />) : ''}</span></div>),
-			// center: (<div>Tas Belanja <span> { ? (<Spinner />) : ''}</span></div>),
 			right: null
 		};
 
@@ -241,15 +247,13 @@ class Cart extends Component {
 
 		return (
 			<div>
-				{
-					<Page>
-						<div style={{ backgroundColor: '#F5F5F5' }}>
-							{this.renderHeaderShopBag()}
-							{this.renderList()}
-							{this.renderTotal()}
-						</div>
-					</Page>
-				}
+				<Page>
+					<div style={{ backgroundColor: '#F5F5F5' }}>
+						{this.renderHeaderShopBag()}
+						{this.renderList()}
+						{this.renderTotal()}
+					</div>
+				</Page>
 
 				<Header.Modal {...headerOption} />
 				<div className={styles.paymentLink}>
@@ -273,10 +277,10 @@ class Cart extends Component {
 				<Modal show={this.state.showConfirmDelete}>
 					<div className='font-medium'>Anda mau menghapus produk ini?</div>
 					<Level style={{ padding: '0px' }} className='margin--medium'>
-						<Level.Left><Image width='40px' src={this.state.productwillDelete.image} /></Level.Left>
+						<Level.Left><Image width='40px' src={this.state.productWillDelete.image} /></Level.Left>
 						<Level.Item className='padding--medium'>
-							<div className='font-small'>{this.state.productwillDelete.brand}</div>
-							<div className='font-small font-color--primary-ext-1'>{this.state.productwillDelete.title}</div>
+							<div className='font-small'>{this.state.productWillDelete.brand}</div>
+							<div className='font-small font-color--primary-ext-1'>{this.state.productWillDelete.title}</div>
 						</Level.Item>
 					</Level>
 					<Modal.Action
