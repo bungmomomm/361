@@ -420,12 +420,12 @@ class Products extends Component {
 										</div>
 										<div className='border-bottom'>
 											<div className='padding--small margin--medium margin--none-top flex-row flex-middle'>
-												<Rating 
-													active={(typeof reviews.rating !== 'undefined' && reviews.rating > 0) ? reviews.rating : 0} 
-													total={(typeof reviews.total !== 'undefined' && reviews.total > 0) ? reviews.total : 0} 
+												<Rating
+													active={(typeof reviews.rating !== 'undefined' && reviews.rating > 0) ? reviews.rating : 0}
+													total={(typeof reviews.total !== 'undefined' && reviews.total > 0) ? reviews.total : 0}
 												/>
 												<div className='flex-row padding--small'>
-													<strong>{(typeof reviews.rating !== 'undefined' && reviews.rating > 0) ? reviews.rating : 0}</strong>/5 
+													<strong>{(typeof reviews.rating !== 'undefined' && reviews.rating > 0) ? reviews.rating : 0}</strong>/5
 													<span className='font-color--primary-ext-2 padding--small'>
 														{(typeof reviews.total !== 'undefined' && reviews.total > 0) ? `(${reviews.total} Ulasan)` : 'Belum Ada Ulasan'}
 													</span>
