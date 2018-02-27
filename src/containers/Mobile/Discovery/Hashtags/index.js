@@ -79,34 +79,6 @@ class Hashtags extends Component {
 						</Link>
 					</div>
 				))}
-				{items.map((product, i) => (
-					<div key={i}>
-						<Link to={`/mau-gaya-itu-gampang/${campaignId}/${product.id}`}>
-							<Image src={product.image} />
-						</Link>
-					</div>
-				))}
-				{items.map((product, i) => (
-					<div key={i}>
-						<Link to={`/mau-gaya-itu-gampang/${campaignId}/${product.id}`}>
-							<Image src={product.image} />
-						</Link>
-					</div>
-				))}
-				{items.map((product, i) => (
-					<div key={i}>
-						<Link to={`/mau-gaya-itu-gampang/${campaignId}/${product.id}`}>
-							<Image src={product.image} />
-						</Link>
-					</div>
-				))}
-				{items.map((product, i) => (
-					<div key={i}>
-						<Link to={`/mau-gaya-itu-gampang/${campaignId}/${product.id}`}>
-							<Image src={product.image} />
-						</Link>
-					</div>
-				))}
 			</Grid>
 		);
 	}
