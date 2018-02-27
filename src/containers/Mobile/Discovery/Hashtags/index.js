@@ -7,6 +7,7 @@ import { Link, withRouter } from 'react-router-dom';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import Spinner from '@/components/mobile/Spinner';
+import Helmet from 'react-helmet';
 
 class Hashtags extends Component {
 
@@ -80,7 +81,7 @@ class Hashtags extends Component {
 	}
 
 	render() {
-		const { hashtag, history, scroller } = this.props;
+		const { hashtag, history, scroller, location } = this.props;
 		const tags = hashtag.tags;
 		const q = actions.getQuery(hashtag);
 		const campaignId = q.query.campaign_id || 1;
@@ -94,7 +95,7 @@ class Hashtags extends Component {
 			center: hashtag.header.title,
 			right: (
 				<Button onClick={this.switchMode}>
-					<Svg src={hashtag.viewMode === 3 ? 'ico_list.svg' : 'ico_three-line.svg'} />
+					<Svg src={hashtag.viewMode === 3 ? 'ico_list.svg' : 'ico_grid-3x3.svg'} />
 				</Button>
 			)
 		};
@@ -102,6 +103,23 @@ class Hashtags extends Component {
 		return (
 			<div>
 				<Page>
+
+					<Helmet>
+						<title>{'Mau Gaya Itu Gampang | MatahariMall.com'}</title>
+						<meta name='twitter:card' content='summary' />
+						<meta name='twitter:site' content='@MatahariMallCom' />
+						<meta name='twitter:creator' content='@MatahariMallCom' />
+						<meta name='twitter:title' content='Mau Gaya Itu Gampang' />
+						<meta name='twitter:url' content={`${process.env.MOBILE_URL}${location.pathname}${location.search}`} />
+						<meta name='twitter:description' content='Mau Gaya Itu Gampang' />
+						<meta name='twitter:image' content='https://assets.mataharimall.co/images/favicon.ico' />
+						<meta property='og:title' content='Mau Gaya Itu Gampang' />
+						<meta property='og:url' content={`${process.env.MOBILE_URL}${location.pathname}${location.search}`} />
+						<meta property='og:type' content='website' />
+						<meta property='og:description' content='Mau Gaya Itu Gampang' />
+						<meta property='og:image' content='https://assets.mataharimall.co/images/favicon.ico' />
+					</Helmet>
+
 					<div className='margin--medium text-center padding--large'>
 						{hashtag.header.description}
 					</div>
@@ -123,7 +141,8 @@ class Hashtags extends Component {
 
 				<Header.Modal {...HeaderPage} />
 				<Navigation />
-			</div>);
+			</div>
+		);
 	}
 }
 

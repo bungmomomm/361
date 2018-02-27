@@ -43,7 +43,7 @@ const itemsActiveHashtag = (tag) => (dispatch, getState) => {
 	const data = {
 		active: {
 			tag: tag || 'All',
-			node: tag ? tag.replace('#', '').toLowerCase() : (tag && !tag.indexOf('#')) ? tag : 'all'
+			node: tag ? tag.replace('#', '').toLowerCase() : (tag && !tag.indexOf('#') !== -1) ? tag : 'all'
 		}
 	};
 	dispatch(actions.itemsActiveHashtag(data));
@@ -107,13 +107,31 @@ const itemsFetchData = ({ token, query = {} }) => async (dispatch, getState) => 
 
 const initHashtags = (token, hash) => async (dispatch, getState) => {
 	const { shared } = getState();
+	const baseUrlPromo = _.chain(shared).get('serviceUrl.promo.url').value() || process.env.MICROSERVICES_URL;
+
+	const urlInit = `${baseUrlPromo}/mainpromo?segment_id=1`;
+
+	const [errPromo, initResp] = await to(request({
+		token,
+		path: urlInit,
+		method: 'GET',
+		fullpath: true
+	}));
+
+	if (errPromo) {
+		dispatch(actions.itemsHasError({ hasError: errPromo }));
+		return Promise.reject(errPromo);
+	} else if (!_.chain(initResp).get('data.data.hashtag.campaign_id').value()) {
+		return Promise.reject('Whoops we don\'t have feeds yet, come again later!');
+	}
+
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || process.env.MICROSERVICES_URL;
 
 	const url = `${baseUrl}/campaign`;
 	const query = {
 		page: 1,
 		per_page: configs.defaultPage,
-		campaign_id: 1
+		campaign_id: _.chain(initResp).get('data.data.hashtag.campaign_id').value()
 	};
 
 	const [err, resp] = await to(request({
