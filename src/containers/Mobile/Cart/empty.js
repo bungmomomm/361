@@ -31,7 +31,9 @@ class Empty extends Component {
 								#MauGayaItuGampang,
 							</div>
 							<div className='flex-row flex-center'>
-								<Button color='primary' size='medium'>CEK AJA</Button>
+								<Link to='/mau-gaya-itu-gampang'>
+									<Button color='primary' size='medium'>CEK AJA</Button>
+								</Link>
 							</div>
 						</div>
 					</div>

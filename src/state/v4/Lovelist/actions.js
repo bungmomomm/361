@@ -149,13 +149,6 @@ const removeFromLovelist = (token, productId) => async (dispatch, getState) => {
 		const item = { productId };
 		dispatch(removeItem(item));
 
-		// send data to emarsys
-		sendLovedItemToEmarsys().then((res) => {
-			console.log('result: ', res);
-		}).catch((error) => {
-			console.log('error: ', error);
-		});
-
 		return Promise.resolve(response);
 	
 	}
@@ -209,7 +202,7 @@ const bulkieCountByProduct = (token, productId) => async (dispatch, getState) =>
 			method: 'POST',
 			fullpath: true,
 			body: {
-				product_id: _.isArray(productId) ? productId : [productId]
+				product_id: _.isArray(productId) ? productId : [_.toInteger(productId)]
 			}
 		}));
 

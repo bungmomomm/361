@@ -17,7 +17,7 @@ const SearchResult = props => {
 							<Input
 								iconLeft={<Svg src='ico_search.svg' />}
 								iconRight={<button><Svg src='ico_close-grey.svg' /></button>}
-								placeholder='Cari produk, #hashtags, @seller'
+								placeholder='Cari produk, #hashtags'
 								value={props.value}
 							/>
 						</Link>
