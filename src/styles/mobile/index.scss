@@ -1,7 +1,6 @@
 @import "_variables.scss";
 @import "_mixins.scss";
 @import "_typography.scss";
-@import "_typography.scss";
 
 @include font-face("Helvetica-Roman", "Helvetica");
 @include font-face("Helvetica-Medium", "Helvetica");
@@ -9,6 +8,12 @@
 @include font-face("Lato-Light", "Lato");
 @include font-face("Lato-Regular", "Lato");
 @include font-face("Lato-Bold", "Lato");
+
+// Plugins
+:global {
+  @import '~rmc-picker/assets/index';
+  @import '~rmc-picker/assets/popup';
+}
 
 :root {
 	font-size: $base-font-size;
@@ -352,7 +357,7 @@
 
 	.horizontal-scroll{
 		flex-wrap: nowrap;
-		overflow: auto;
+		overflow-x: scroll;
 		-webkit-overflow-scrolling: touch;
 		-ms-overflow-style: -ms-autohiding-scrollbar;
 	}

@@ -58,7 +58,7 @@ class Home extends Component {
 			return (
 				<Link to={link}>
 					<div>
-						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} width='100%' />
+						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
 					</div>
 				</Link>
 			);
@@ -109,7 +109,7 @@ class Home extends Component {
 						{
 							datas.value().map(({ images, pricing }, e) => (
 								<div key={e}>
-									<Image lazyload alt='thumbnail' src={images[0].thumbnail} width='100%' />
+									<Image lazyload alt='thumbnail' src={images[0].thumbnail} />
 									<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
 								</div>
 							))
@@ -133,7 +133,7 @@ class Home extends Component {
 			return (
 				<div>
 					{ header }
-					<Image lazyload alt='thumbnail' src={datas.value().images[0].thumbnail} width='100%' />
+					<Image lazyload alt='thumbnail' src={datas.value().images[0].thumbnail} />
 				</div>
 			);
 		}
@@ -151,7 +151,7 @@ class Home extends Component {
 						datas.value().map(({ images, link }, c) => (
 							<Link to={link.target || '/'} key={c}>
 								<div>
-									<Image lazyload alt='banner' src={images.thumbnail} width='100%' />
+									<Image lazyload alt='banner' src={images.thumbnail} />
 								</div>
 							</Link>
 						))
@@ -178,7 +178,7 @@ class Home extends Component {
 						bottomBanner.map(({ images, link }, d) => (
 							<Link to={link.target || '/'} key={d}>
 								<div>
-									<Image lazyload alt='banner' src={images.thumbnail} width='100%' />
+									<Image lazyload alt='banner' src={images.thumbnail} />
 								</div>
 							</Link>
 						))
@@ -223,7 +223,7 @@ class Home extends Component {
 								return (
 									<div className={styles.brandsImage} key={e}>
 										<Link to={url} >
-											<Image lazyload alt='thumbnail' src={brand.images.thumbnail} width='100%' />
+											<Image lazyload alt='thumbnail' src={brand.images.thumbnail} />
 										</Link>
 									</div>
 								);
@@ -294,7 +294,7 @@ class Home extends Component {
 
 					{ this.renderRecommendation(recommendation2)}
 					{ this.renderBottomBanner('bottom') }
-					
+
 					{ this.renderFeaturedBrands() }
 
 					{this.renderMozaic()}
