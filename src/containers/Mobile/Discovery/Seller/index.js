@@ -48,10 +48,7 @@ class Seller extends Component {
 				sort: '',
 				...propsObject.get('query').value()
 			},
-			filterStyle: {},
-			sortStyle: {
-				top: '310px'
-			}
+			filterStyle: {}
 		};
 	}
 
@@ -89,13 +86,6 @@ class Seller extends Component {
 				filterStyle: {},
 			});
 		}
-
-		const y = (header.offsetTop - e.srcElement.scrollTop) + 115;
-		this.setState({
-			sortStyle: {
-				top: y >= 115 ? y : 115
-			}
-		});
 	};
 
 	onApply = async (e, fq) => {
@@ -175,7 +165,7 @@ class Seller extends Component {
 
 	filterTabs = () => {
 		const { seller } = this.props;
-		const { listTypeState, showSort, sortStyle, filterStyle } = this.state;
+		const { listTypeState, showSort, filterStyle } = this.state;
 		const sorts = _.chain(seller).get('data.sorts').value() || [];
 
 		return (
@@ -203,7 +193,7 @@ class Seller extends Component {
 					onPick={e => this.handlePick(e)}
 				/>
 				{renderIf(sorts)(
-					<Sort shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} style={sortStyle} />
+					<Sort shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
 				)}
 			</div>
 		);
