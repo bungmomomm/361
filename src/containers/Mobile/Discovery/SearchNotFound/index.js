@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 
-import { Page, Card, Notification, Image, Svg } from '@/components/mobile';
+import { Page, Card, Notification, Image, Svg, Grid, Level, Carousel } from '@/components/mobile';
 import { hyperlink } from '@/utils';
 // import styles from './search.scss';
 
@@ -40,22 +40,34 @@ class SearchNotFound extends PureComponent {
 			const products = _.find(data, { type: 'recommended' }) || false;
 			if (products) {
 				productView = (
-					<div className='flex-row flex-wrap'>
-						{
-							_.map(products.data, (product, index) => {
-								const linkToPdp = hyperlink('', ['product', product.product_id], null);
-								return (
-									<Card.CatalogGrid
-										key={index}
-										images={product.images}
-										productTitle={product.product_title}
-										brandName={product.brand.name}
-										pricing={product.pricing}
-										linkToPdp={linkToPdp}
-									/>
-								);
-							})
-						}
+					<div className='margin--large margin--none-top'>
+						<Level>
+							<Level.Left><strong className='font-medium'>Produk Rekomendasi</strong></Level.Left>
+							<Level.Right>
+								<Link to='/promo/recommended_products' className='text-muted font-small'>
+									LIHAT SEMUA<Svg src='ico_arrow_right_small.svg' />
+								</Link>
+							</Level.Right>
+						</Level>
+						<Grid split={1}>
+							<Carousel slidesToShow={2}>
+								{
+									_.map(products.data, (product, index) => {
+										const linkToPdp = hyperlink('', ['product', product.product_id], null);
+										return (
+											<Card.CatalogGrid
+												key={index}
+												images={product.images}
+												productTitle={product.product_title}
+												brandName={product.brand.name}
+												pricing={product.pricing}
+												linkToPdp={linkToPdp}
+											/>
+										);
+									})
+								}
+							</Carousel>
+						</Grid>
 					</div>
 				);
 			}
