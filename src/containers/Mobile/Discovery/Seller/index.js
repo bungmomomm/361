@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-import { Navigation, Svg, Tabs, Header, Page, Button, Level, Image, Input, Card, Grid } from '@/components/mobile';
+import { Navigation, Svg, Tabs, Header, Page, Button, Level, Image, Input, Card } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import { actions } from '@/state/v4/Seller';
@@ -17,6 +17,7 @@ import { hyperlink, renderIf } from '@/utils';
 import _ from 'lodash';
 import queryString from 'query-string';
 import SellerProfile from './components/SellerProfile';
+import Helmet from 'react-helmet';
 
 class Seller extends Component {
 	constructor(props) {
@@ -46,8 +47,14 @@ class Seller extends Component {
 				fq: '',
 				sort: '',
 				...propsObject.get('query').value()
-			}
+			},
+			filterStyle: {},
+			centerStyle: { opacity: 0 }
 		};
+	}
+
+	componentWillMount() {
+		window.addEventListener('scroll', this.onScroll, true);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -57,6 +64,40 @@ class Seller extends Component {
 			});
 		}
 	}
+
+	componentWillUnmount() {
+		window.removeEventListener('scroll', this.onScroll, true);
+	}
+
+	onScroll = (e) => {
+		const header = document.getElementById('store-filter');
+		const sticky = header.offsetTop;
+		const scrollY = e.srcElement.scrollTop;
+
+		if (scrollY >= sticky) {
+			this.setState({
+				centerStyle: { opacity: 1 },
+				filterStyle: {
+					position: 'fixed',
+					width: '100%',
+					top: '60px',
+					zIndex: '1'
+				}
+			});
+		} else {
+			let o = 0;
+			if (scrollY > 115 && scrollY < 128) {
+				o = (((scrollY - 115) * 12) / 12) / 10;
+			} else if (scrollY > 127) {
+				o = 1;
+			}
+
+			this.setState({
+				centerStyle: { opacity: o },
+				filterStyle: {},
+			});
+		}
+	};
 
 	onApply = async (e, fq) => {
 		const { query } = this.state;
@@ -118,7 +159,7 @@ class Seller extends Component {
 
 			this.setState({
 				showFilter: val === 'filter',
-				showSort: val === 'sort'
+				showSort: (val === 'sort' && !this.state.showSort) || false
 			});
 		}
 	};
@@ -135,11 +176,11 @@ class Seller extends Component {
 
 	filterTabs = () => {
 		const { seller } = this.props;
-		const { listTypeState, showSort } = this.state;
+		const { listTypeState, showSort, filterStyle } = this.state;
 		const sorts = _.chain(seller).get('data.sorts').value() || [];
 
 		return (
-			<div style={this.props.style}>
+			<div id='store-filter' style={filterStyle}>
 				<Tabs
 					className={stylesCatalog.filterBlockContainer}
 					type='segment'
@@ -171,37 +212,21 @@ class Seller extends Component {
 
 	sellerHeader = () => {
 		const { seller } = this.props;
-
-		return (
-			<div>
-				<div>
-					<Grid split={4}>
-						<div>
-							<Image width={60} src={seller.info.seller_logo || ''} />
-							<br />
-							{seller.info.seller || ''}
-							<p>
-								{seller.info.seller_location || ''}
-							</p>
-						</div>
-						<div>
-							<Image width={60} src={seller.info.seller_badge_image || ''} />
-							<br />
-							{seller.info.seller_badge || ''}
-						</div>
-						<div>
-							{seller.info.rating || ''}
-						</div>
-						<div>
-							{seller.info.product || ''}
-						</div>
-					</Grid>
-				</div>
-				<div>
-					{seller.info.description || ''}
-				</div>
+		return (seller.info.seller && (
+			<div className='border-bottom'>
+				<SellerProfile
+					image={seller.info.seller_logo || ''}
+					status='gold'
+					isNewStore={false}
+					successOrder={_.chain(seller).get('info.success_order.rate').value() || ''}
+					rating={seller.info.rating || ''}
+					totalProduct={seller.info.product || ''}
+					name={seller.info.seller || ''}
+					location={seller.info.seller_location || ''}
+					description={seller.info.description || ''}
+				/>
 			</div>
-		);
+		)) || '';
 	};
 
 	loadProducts = () => {
@@ -273,11 +298,36 @@ class Seller extends Component {
 		}
 	};
 
+	renderHelmet = () => {
+		const { seller: { info }, location } = this.props;
+
+		return (
+			<Helmet>
+				<title>{`${info.seller} | MatahariMall.com`}</title>
+				<meta name='twitter:card' content='summary' />
+				<meta name='twitter:site' content='@MatahariMallCom' />
+				<meta name='twitter:creator' content='@MatahariMallCom' />
+				<meta name='twitter:title' content={info.description} />
+				<meta name='twitter:url' content={`${process.env.MOBILE_URL}${location.pathname}${location.search}`} />
+				<meta name='twitter:description' content={info.description} />
+				<meta name='twitter:image' content={info.seller_logo} />
+				<meta property='og:title' content={info.seller} />
+				<meta property='og:url' content={`${process.env.MOBILE_URL}${location.pathname}${location.search}`} />
+				<meta property='og:type' content='website' />
+				<meta property='og:description' content={info.description} />
+				<meta property='og:image' content={info.seller_logo} />
+				<meta property='og:site_name' content='MatahariMall.com' />
+			</Helmet>
+		);
+	};
+
 	renderData = () => {
-		const { showFilter } = this.state;
-		const { seller, history } = this.props;
+
+		const { showFilter, centerStyle } = this.state;
+		const { seller, history, location, scroller } = this.props;
 		const title = seller.info.seller;
-		const url = `${process.env.MOBILE_URL}/store/${seller.info.seller_id}`;
+		const url = `${process.env.MOBILE_URL}${location.pathname}${location.search}`;
+		const storename = (!title) ? '' : (title.length > 30) ? `${title.substring(0, 30)}&hellip;` : title;
 
 		const HeaderPage = {
 			left: (
@@ -285,7 +335,7 @@ class Seller extends Component {
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</Button>
 			),
-			center: null,
+			center: <span style={centerStyle}>{storename}</span>,
 			right: <Share title={title} url={url} />
 		};
 
@@ -303,23 +353,11 @@ class Seller extends Component {
 				) : (
 					<div style={this.props.style}>
 						<Page>
-							<div className='border-bottom'>
-								<SellerProfile
-									image='https://knoji.com/images/logo/herschel-supply-co.jpg'
-									status='gold'
-									isNewStore={false}
-									successOrder='95.3'
-									rating='4.5'
-									totalProduct='1.234'
-									name='Bitter Ballen Ball'
-									location='Jakarta Selatan'
-									description='Yes brader, kamu sedang ada di halaman profil toko kami. Boleh diintip Collections dan Lists kami.'
-								/>
-							</div>
-							{this.filterTabs()}
+							{seller.info.seller && this.renderHelmet()}
 							{this.sellerHeader()}
+							{this.filterTabs()}
 							{this.loadProducts()}
-							{this.props.scroller.loading && <Spinner />}
+							{scroller.loading && <Spinner />}
 						</Page>
 
 						<Header.Modal {...HeaderPage} />
@@ -347,6 +385,7 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = (props) => {
 	const { dispatch, cookies, match: { params }, location } = props;
+
 	if (isNaN(parseInt(params.store_id, 10))) {
 		props.history.push('/404');
 	}
