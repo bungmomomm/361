@@ -19,6 +19,7 @@ class Products extends Component {
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.source = this.props.cookies.get('user.source');
+		this.isLogin = this.props.cookies.get('isLogin');
 
 		this.closeZoomImage = this.closeZoomImage.bind(this);
 		this.goBackPreviousPage = this.goBackPreviousPage.bind(this);
@@ -394,9 +395,18 @@ class Products extends Component {
 							<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
 						</span> */}
 						<div className='margin--medium --disable-flex padding--medium'>
-							<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
-								{(status.pdpDataHasLoaded && pdpData.cardProduct.totalComments > 0) ? `Lihat semua ${pdpData.cardProduct.totalComments} komentar` : 'Belum ada komentar'}
-							</Link>
+							{
+								(this.isLogin === 'true') && 
+								<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
+									{(status.pdpDataHasLoaded && pdpData.cardProduct.totalComments > 0) ? `Lihat semua ${pdpData.cardProduct.totalComments} komentar` : 'Belum ada komentar'}
+								</Link>
+							}
+							{
+								(this.isLogin !== 'true') && 
+								<span>
+									<a href='/user/login'>Log in</a> / <a href='/user/register'>Register</a> untuk memberikan komentar
+								</span>
+							}
 							{(!_.isUndefined(comment.summary) && !_.isEmpty(comment.summary)) && (
 								<Comment type='lite-review' data={comment.summary} />
 							)}
