@@ -3,9 +3,9 @@ import { Promise } from 'es6-promise';
 import to from 'await-to-js';
 import _ from 'lodash';
 import { request } from '@/utils';
-import { 
+import {
 	commentList,
-	commentLoading, 
+	commentLoading,
 } from './reducer';
 
 

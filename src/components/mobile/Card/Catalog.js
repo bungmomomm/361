@@ -24,9 +24,11 @@ class Catalog extends PureComponent {
 			linkToPdp,
 			lovelistTotal,
 			lovelistStatus,
+			lovelistAddTo,
+			lovelistDisable,
 			...props
 		} = this.props;
-		
+
 		const createClassName = classNames(styles.container, styles[type], className);
 
 		const comment = commentTotal ? <span>{commentTotal} Komentar</span>
@@ -65,7 +67,7 @@ class Catalog extends PureComponent {
 					style={{ borderBottom: '1px solid #D8D8D8' }}
 				>
 					<Level.Item>
-						<Button>
+						<Button onClick={lovelistAddTo} disabled={lovelistDisable}>
 							<Svg src={lovelistIcon} />
 							{lovelist}
 						</Button>

@@ -24,7 +24,11 @@ import stylesCatalog from '@/containers/Mobile/Discovery/Category/Catalog/catalo
 import queryString from 'query-string';
 import renderIf from '../../../../utils/renderIf';
 import Sort from '@/containers/Mobile/Shared/Sort';
+import Share from '@/components/mobile/Share';
 import Footer from '@/containers/Mobile/Shared/footer';
+import { actions as commentActions } from '@/state/v4/Comment';
+import { actions as lovelistActions } from '@/state/v4/Lovelist';
+import { Promise } from 'es6-promise';
 
 class Detail extends Component {
 	static queryObject(props) {
@@ -74,9 +78,11 @@ class Detail extends Component {
 				sort: '',
 				...propsObject.get('query').value()
 			},
-			isFooterShow: true
+			isFooterShow: true,
+			newComment: { product_id: '', comment: '' },
+			lovelistProductId: null
 		};
-
+		this.isLogin = this.props.cookies.get('isLogin');
 		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
 	}
 	componentDidMount() {
@@ -100,9 +106,18 @@ class Detail extends Component {
 
 		if (this.props.brands.searchData.products !== nextProps.brands.searchData.products) {
 			const { dispatch } = this.props;
-			const productId = nextProps.brands.searchData.products.map(e => (e.product_id));
-			dispatch(brandAction.brandProductsCommentsAction(this.userToken, productId));
+			const productIds = nextProps.brands.searchData.products.map(e => (e.product_id));
+			dispatch(brandAction.brandProductsCommentsAction(this.userToken, productIds));
+			dispatch(brandAction.brandProductsLovelistAction(this.userToken, productIds));
 		}
+
+		if (nextProps.brands.products_lovelist !== this.props.brands.products_lovelist) {
+			this.setState({ lovelistProductId: '' });
+		}
+		if (nextProps.brands.products_comments !== this.props.brands.products_comments) {
+			this.setState({ newComment: { product_id: '', comment: '' } });
+		}
+
 	}
 
 	componentWillUnmount() {
@@ -127,26 +142,12 @@ class Detail extends Component {
 		});
 	}
 
-	handleScroll(e) {
-		const { styleHeader } = this.state;
-		if (e.target.scrollTop > 300 && styleHeader) {
-			this.setState({ styleHeader: false });
-		}
-		if (e.target.scrollTop < 300 && !styleHeader) {
-			this.setState({ styleHeader: true });
-		}
+	getCommentOfProduct(productId) {
+		return this.props.brands.products_comments && this.props.brands.products_comments.filter(e => e.product_id === productId)[0];
 	}
 
-	handlePick(e) {
-		if (e === 'view') {
-			this.currentListState = this.currentListState === 2 ? 0 : this.currentListState + 1;
-			this.setState({ listTypeState: this.listType[this.currentListState] });
-		} else {
-			this.setState({
-				showFilter: e === 'filter',
-				showSort: e === 'sort'
-			});
-		}
+	getLovelistOfProduct(productId) {
+		return this.props.brands.products_lovelist && this.props.brands.products_lovelist.filter(e => e.product_id === productId)[0];
 	}
 
 	update(params) {
@@ -175,6 +176,28 @@ class Detail extends Component {
 		dispatch(brandAction.brandProductAction(cookies.get('user.token'), searchService, objParam));
 	}
 
+	handlePick(e) {
+		if (e === 'view') {
+			this.currentListState = this.currentListState === 2 ? 0 : this.currentListState + 1;
+			this.setState({ listTypeState: this.listType[this.currentListState] });
+		} else {
+			this.setState({
+				showFilter: e === 'filter',
+				showSort: e === 'sort'
+			});
+		}
+	}
+
+	handleScroll(e) {
+		const { styleHeader } = this.state;
+		if (e.target.scrollTop > 300 && styleHeader) {
+			this.setState({ styleHeader: false });
+		}
+		if (e.target.scrollTop < 300 && !styleHeader) {
+			this.setState({ styleHeader: true });
+		}
+	}
+
 	sort(e, sort) {
 		this.setState({
 			sort,
@@ -183,6 +206,49 @@ class Detail extends Component {
 		this.update({
 			sort: sort.q
 		});
+	}
+
+	addCommentHandler(event, productId) {
+		if (event.key === 'Enter') {
+			const { dispatch } = this.props;
+			const newComment = this.state.newComment;
+			const addingComment = new Promise((resolve, reject) => resolve(
+				dispatch(commentActions.commentAddAction(this.userToken, newComment.product_id, newComment.comment))
+			));
+			addingComment.then((res) => {
+				const productIds = [productId];
+				dispatch(brandAction.brandProductsCommentsAction(this.userToken, productIds));
+			}).catch((err) => this.setState({ newComment: { product_id: '', comment: '' } }));
+		}
+	}
+
+	addCommentOnChange(event, productId) {
+		this.setState({ newComment: { product_id: productId, comment: event.target.value } });
+	}
+
+	addLovelistHandler(productId) {
+		const { dispatch } = this.props;
+
+		const addingLovelist = new Promise((resolve, reject) => {
+			this.setState({ lovelistProductId: productId });
+			resolve(dispatch(lovelistActions.addToLovelist(this.userToken, productId)));
+		});
+		addingLovelist.then((res) => {
+			const productIds = this.props.brands.searchData.products.map(e => (e.product_id));
+			dispatch(brandAction.brandProductsLovelistAction(this.userToken, productIds));
+		}).catch((err) => this.setState({ lovelistProductId: '' }));
+	}
+
+	removeFromLovelistHandler(productId) {
+		const { dispatch } = this.props;
+		const removing = new Promise((resolve, reject) => {
+			this.setState({ lovelistProductId: productId });
+			resolve(dispatch(lovelistActions.removeFromLovelist(this.userToken, productId)));
+		});
+		removing.then((res) => {
+			const productIds = this.props.brands.searchData.products.map(e => (e.product_id));
+			dispatch(brandAction.brandProductsLovelistAction(this.userToken, productIds));
+		}).catch((err) => this.setState({ lovelistProductId: '' }));
 	}
 
 	renderTabs() {
@@ -223,48 +289,50 @@ class Detail extends Component {
 		return tabsView;
 	}
 
-
 	renderComment(productId) {
-		let komen = null;
-		if (this.props.brands.products_comments) {
-			const commentData = this.props.brands.products_comments.filter(e => e.product_id === productId)[0];
-			komen = (
-				<div className={stylesCatalog.commentBlock}>
+		const commentData = this.getCommentOfProduct(productId);
+		let lastComments = null;
+		if (commentData) {
+			const lastCommentShorted = _.orderBy(commentData.last_comment, ['id']);
+			lastComments = (
+				<div>
 					<Link to={`/product/comments/${commentData.product_id}`}>
 						<Button>View {commentData.total} comments</Button>
 					</Link>
-					<Comment data={commentData.last_comment} type='lite-review' />
-					<Level>
-						<Level.Item>
-							<Input color='white' placeholder='Write comment' />
-						</Level.Item>
-					</Level>
+					<Comment data={lastCommentShorted} type='lite-review' />
 				</div>
 			);
-
 		}
-		return (
-			<div>
-				{ komen }
-				<Level>
-					<Level.Item>
-						<Input color='white' placeholder='Write comment' />
-					</Level.Item>
-				</Level>
-			</div>
-		);
-
+		return (<div className={stylesCatalog.commentBlock}>
+			{lastComments}
+			<Level>
+				<Level.Item>
+					{
+						this.isLogin === 'true' ?
+							this.props.comments.loading || this.props.brands.loading_prodcuts_comments ? <div>Sending comment...</div> :
+								(
+									<Input
+										color='white'
+										placeholder='Write comment'
+										onKeyPress={(e) => this.addCommentHandler(e, productId)}
+										onChange={(e) => this.addCommentOnChange(e, productId)}
+									/>)
+						: (
+							<span><Link to='/login'>Login / Register</Link> untuk memberikan komentar</span>
+						)
+					}
+				</Level.Item>
+			</Level>
+		</div>);
 	}
 
 	renderBenner() {
 		const { brands } = this.props;
-
 		const brand = _.chain(brands);
-		const bannerImages = brand.get('banner.image');
+		const bannerImages = brand.get('banner.images.original');
 		const brandTitle = brand.get('searchData.info.title');
-		const imgBg = !bannerImages.isEmpty().value() ? { backgroundImage: `url(${bannerImages.value().thumbnail})` }
-			: { backgroundImage: 'url(http://colorfully.eu/wp-content/uploads/2012/10/empty-road-highway-with-fog-facebook-cover.jpg)' };
-
+		const imgBg = !bannerImages.isEmpty().value() ? { backgroundImage: `url(${bannerImages.value()})` }
+			: { backgroundImage: '' };
 		return (
 			<div
 				className={`${styles.backgroundCover} border-bottom flex-center`}
@@ -359,34 +427,49 @@ class Detail extends Component {
 			default:
 				return (
 					<div className='flex-row flex-wrap'>
-
 						{
-							brandProducts.value().map((product, e) => (
-								<div key={e} className={stylesCatalog.cardCatalog}>
-									<Card.Catalog
-										images={product.images}
-										productTitle={product.product_title}
-										brandName={product.brand.name}
-										pricing={product.pricing}
-										// commentTotal={10}
-										commentUrl={`/product/comments/${product.product_id}`}
-										linkToPdp={`/product/${product.product_id}`}
-									/>
-									{this.renderComment(product.product_id)}
-								</div>
-							))
+							brandProducts.value().map((product, e) => {
+								const lovelist = this.getLovelistOfProduct(product.product_id);
+								let lovelistHandler = null;
+								if (lovelist) {
+									lovelistHandler = (lovelist.status === 1) ?
+										() => (this.removeFromLovelistHandler(product.product_id)) :
+										() => (this.addLovelistHandler(product.product_id));
+								}
+								const lovelistDisable = (this.state.lovelistProductId === product.product_id);
+								const comment = this.getCommentOfProduct(product.product_id);
+								return (
+									<div key={e} className={stylesCatalog.cardCatalog}>
+										<Card.Catalog
+											images={product.images}
+											productTitle={product.product_title}
+											brandName={product.brand.name}
+											pricing={product.pricing}
+											lovelistTotal={lovelist && lovelist.total}
+											lovelistStatus={lovelist && lovelist.status}
+											lovelistAddTo={lovelistHandler}
+											commentTotal={comment && comment.total}
+											commentUrl={`/product/comments/${product.product_id}`}
+											linkToPdp={`/product/${product.product_id}`}
+											lovelistDisable={lovelistDisable}
+										/>
+										{this.renderComment(product.product_id)}
+									</div>
+								);
+							})
 						}
 					</div>
 				);
 			}
-
 		}
 
 		return null;
 	}
 
-	render() {
-		const { styleHeader, showFilter } = this.state;
+	renderHeader() {
+		const { searchData } = this.props.brands;
+		const title = (searchData.info) ? searchData.info.title : '';
+		const url = `${process.env.MOBILE_URL}/${this.props.location.pathname}`;
 		const headerComponent = {
 			left: (
 				<span
@@ -397,10 +480,23 @@ class Detail extends Component {
 					<Svg src='ico_arrow-back-left.svg' />
 				</span>
 			),
-			center: !styleHeader && 'Brand', // (imgBanner) ? '' : 'Brand',
-			right: <Button><Svg src='ico_share.svg' /></Button>
+
+			center: !this.state.styleHeader && 'Brand',
+			right: <Share title={title} url={url} />
 		};
-		const productCount = _.chain(this.props.brands).get('searchData.info.product_count');
+		return <Header.Modal className={this.state.styleHeader ? styles.headerClear : ''} {...headerComponent} />;
+	}
+
+	renderTotalProduct() {
+		const productCount = this.props.brands.searchData.info && this.props.brands.searchData.info.product_count;
+		return productCount && (
+			<div className='margin--medium margin--none-top text-center'>{productCount} Total Produk</div>
+		);
+	}
+
+	render() {
+		const { showFilter } = this.state;
+
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -418,7 +514,7 @@ class Detail extends Component {
 							<div>
 								{this.renderBenner()}
 								{this.renderFilter()}
-								<div className='margin--medium margin--none-top text-center'>{productCount.value() || 0} Total Produk</div>
+								{this.renderTotalProduct()}
 								{this.renderProduct()}
 							</div>
 						)
@@ -429,7 +525,7 @@ class Detail extends Component {
 
 				{(!showFilter) && (
 					<div>
-						<Header.Modal className={styleHeader ? styles.headerClear : ''} {...headerComponent} />
+						{this.renderHeader()}
 						<Navigation active='Categories' />
 					</div>
 				)}
@@ -443,7 +539,8 @@ const mapStateToProps = (state) => {
 	return {
 		category: state.category,
 		brands: state.brands,
-		shared: state.shared
+		shared: state.shared,
+		comments: state.comments
 	};
 };
 

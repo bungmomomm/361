@@ -1,5 +1,5 @@
 import { request } from '@/utils';
-import { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner, brandProductsComments } from './reducer';
+import { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner, brandProductsComments, brandProductsLovelist, brandLoadingProductsComments } from './reducer';
 import _ from 'lodash';
 import to from 'await-to-js';
 import { Promise } from 'es6-promise';
@@ -119,6 +119,7 @@ const brandBannerAction = (token, brandId) => async (dispatch, getState) => {
 };
 
 const brandProductsCommentsAction = (token, productIds) => async (dispatch, getState) => {
+	dispatch(brandLoadingProductsComments({ loading_prodcuts_comments: true }));
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
 
@@ -134,11 +135,40 @@ const brandProductsCommentsAction = (token, productIds) => async (dispatch, getS
 			}
 		})
 	);
-	if (err) return Promise.reject(err);
+	if (err) {
+		dispatch(brandLoadingProductsComments({ loading_prodcuts_comments: false }));
+		return Promise.reject(err);
+	}
 
 	const productsComments = response.data.data;
 
-	dispatch(brandProductsComments({ products_comments: productsComments }));
+	dispatch(brandProductsComments({ productsComments }));
+	dispatch(brandLoadingProductsComments({ loading_prodcuts_comments: false }));
+	return Promise.resolve(response);
+};
+
+const brandProductsLovelistAction = (token, productIds) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
+
+	if (!baseUrl) Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	const [err, response] = await to(
+		request({
+			token,
+			path: `${baseUrl}/bulkie/byproduct`,
+			method: 'POST',
+			fullpath: true,
+			body: {
+				product_id: productIds
+			}
+		})
+	);
+	if (err) return Promise.reject(err);
+
+	const productsLovelist = response.data.data;
+	console.log('brandProductsLovelistAction productsLovelist ', productsLovelist);
+
+	dispatch(brandProductsLovelist({ products_lovelist: productsLovelist }));
 	return Promise.resolve(response);
 };
 
@@ -146,5 +176,6 @@ export default {
 	brandListAction,
 	brandProductAction,
 	brandBannerAction,
-	brandProductsCommentsAction
+	brandProductsCommentsAction,
+	brandProductsLovelistAction
 };
