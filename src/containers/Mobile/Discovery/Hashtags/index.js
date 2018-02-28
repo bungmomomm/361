@@ -13,15 +13,11 @@ import Helmet from 'react-helmet';
 
 class Hashtags extends Component {
 
-	constructor(props) {
-		super(props);
-		this.props = props;
-		this.handleScroll = this.handleScroll.bind(this);
-		this.state = {
-			isFooterShow: true,
-			sticky: false
-		};
-	}
+	state = {
+		isFooterShow: true,
+		sticky: false
+	};
+
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 	}
@@ -30,7 +26,7 @@ class Hashtags extends Component {
 		window.removeEventListener('scroll', this.handleScroll, true);
 	}
 
-	handleScroll(e) {
+	handleScroll = (e) => {
 		const { sticky } = this.state;
 		if (e.target.scrollTop > 170 && !sticky) {
 			this.setState({ sticky: true });
@@ -38,7 +34,7 @@ class Hashtags extends Component {
 		if (e.target.scrollTop < 170 && sticky) {
 			this.setState({ sticky: false });
 		}
-	}
+	};
 
 	switchTag = (tag) => {
 		const switchTag = tag.replace('#', '').toLowerCase();
@@ -160,12 +156,11 @@ class Hashtags extends Component {
 										to={tag.hashtag.indexOf('#') === -1 ? `/mau-gaya-itu-gampang#${tag.hashtag}` : `/mau-gaya-itu-gampang${tag.hashtag}`}
 										onClick={() => this.switchTag(tag.hashtag)}
 										key={i}
-										className='padding--medium'
+										className={tag.hashtag === hashtag.active.tag ? 'padding--medium' : 'padding--medium font-color--primary-ext-2'}
 									>
 										{tag.hashtag}
 									</Link>
 								))}
-								<span className='d-flex padding--medium font-color--primary-ext-2'>#disabled</span>
 							</div>
 						</div>
 					</div>
