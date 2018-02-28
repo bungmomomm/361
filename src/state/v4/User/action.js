@@ -9,6 +9,8 @@ import {
 	getClientSecret
 } from '@/utils';
 
+import { userSocialLogin, userSocialLoginWithRedirect } from './social-action';
+
 const isSuccess = (response) => {
 	if (typeof response.data !== 'undefined' && typeof response.data.code !== 'undefined' && response.data.code === 200) {
 		return true;
@@ -253,6 +255,8 @@ const userGetProfile = (token) => async (dispatch, getState) => {
 // 	USER_GET_PROFILE_SUCCESS: (userProfile) => ({ userProfile }),
 
 export default {
+	userSocialLoginWithRedirect,
+	userSocialLogin,
 	userLogin,
 	userAnonymous,
 	userNameChange,

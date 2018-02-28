@@ -32,15 +32,13 @@
     "dev": {
       "command": "babel-node tools/webpack-dev-server.js",
       "env": {
-        "NODE_ENV": "development",
-        "PORT": 3001
+        "NODE_ENV": "development"
       }
     },
     "analyse": {
       "command": "babel-node tools/webpack-dev-server.js",
       "env": {
-        "NODE_ENV": "analyse",
-        "PORT": 3001
+        "NODE_ENV": "analyse"
       }
     },
     "build-client": {
