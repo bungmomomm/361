@@ -8,16 +8,37 @@ import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import Spinner from '@/components/mobile/Spinner';
 import Footer from '@/containers/Mobile/Shared/footer';
+import styles from './Hashtags.scss';
 
 class Hashtags extends Component {
 
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.handleScroll = this.handleScroll.bind(this);
 		this.state = {
-			isFooterShow: true
+			isFooterShow: true,
+			sticky: false
 		};
 	}
+	componentDidMount() {
+		window.addEventListener('scroll', this.handleScroll, true);
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener('scroll', this.handleScroll, true);
+	}
+
+	handleScroll(e) {
+		const { sticky } = this.state;
+		if (e.target.scrollTop > 170 && !sticky) {
+			this.setState({ sticky: true });
+		}
+		if (e.target.scrollTop < 170 && sticky) {
+			this.setState({ sticky: false });
+		}
+	}
+
 	switchTag = (tag) => {
 		const switchTag = tag.replace('#', '').toLowerCase();
 		const { dispatch, hashtag, cookies } = this.props;
@@ -113,16 +134,22 @@ class Hashtags extends Component {
 					<div className='margin--medium text-center padding--large'>
 						{hashtag.header.description}
 					</div>
-					<div className='flex-row flex-center flex-spaceBetween margin--medium padding--large'>
-						{tags.map((tag, i) => (
-							<Link
-								to={tag.hashtag.indexOf('#') === -1 ? `/mau-gaya-itu-gampang#${tag.hashtag}` : `/mau-gaya-itu-gampang${tag.hashtag}`}
-								onClick={() => this.switchTag(tag.hashtag)}
-								key={i}
-							>
-								{tag.hashtag}
-							</Link>
-						))}
+					<div className={this.state.sticky ? styles.sticky : ''}>
+						<div className='horizontal-scroll padding--large '>
+							<div className='flex-row flex-centerflex-spaceBetween margin--medium'>
+								{tags.map((tag, i) => (
+									<Link
+										to={tag.hashtag.indexOf('#') === -1 ? `/mau-gaya-itu-gampang#${tag.hashtag}` : `/mau-gaya-itu-gampang${tag.hashtag}`}
+										onClick={() => this.switchTag(tag.hashtag)}
+										key={i}
+										className='padding--medium'
+									>
+										{tag.hashtag}
+									</Link>
+								))}
+								<span className='d-flex padding--medium font-color--primary-ext-2'>#disabled</span>
+							</div>
+						</div>
 					</div>
 
 					{hashtag.viewMode === 3 ? this.renderGridSmall(campaignId) : this.renderGridLarge(campaignId)}
