@@ -67,18 +67,20 @@ const reducer = handleActions({
 			banner
 		};
 	},
-	[brandProductsComments](state, { payload: { productsComments, loadingProdcutsComments } }) {
-		if (productsComments.length === 1) {
-			let updatedComments = null;
-			updatedComments = state.products_comments.map(obj => productsComments.find(o => o.product_id === obj.product_id) || obj);
+	[brandProductsComments](state, { payload: { productsComments } }) {
+		let updatedComments = state.products_comments;
+		if (state.products_comments !== null && productsComments && productsComments.length === 1) {
 			if (!_.find(updatedComments, _.matchesProperty('product_id', productsComments[0].product_id))) {
 				updatedComments.push(productsComments[0]);
+			} else {
+				updatedComments = state.products_comments.map(obj => productsComments.find(o => o.product_id === obj.product_id) || obj);
 			}
+		} else {
+			updatedComments = productsComments;
 		}
 		return {
 			...state,
-			products_comments: productsComments,
-			loading_prodcuts_comments: loadingProdcutsComments
+			products_comments: updatedComments
 		};
 	},
 	[brandLoadingProductsComments](state, { payload: { loading_prodcuts_comments } }) {
