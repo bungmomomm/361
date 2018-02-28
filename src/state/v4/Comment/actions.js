@@ -65,45 +65,7 @@ const productCommentAction = (token, productId, page = 1) => async (dispatch, ge
 	return Promise.resolve(comments);
 };
 
-const bulkieCommentAction = (token, productId) => async (dispatch, getState) => {
-	if ((_.isArray(productId) && productId.length > 0) || (_.toInteger(productId) > 0)) {
-		dispatch(commentLoading({ loading: true }));
-
-		const { shared } = getState();
-		const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
-
-		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
-
-		const path = `${baseUrl}/commentcount/bulkie/byproduct`;
-		
-		const [err, response] = await to(request({
-			token,
-			path,
-			method: 'POST',
-			fullpath: true,
-			body: {
-				product_id: _.isArray(productId) ? productId : [productId]
-			}
-		}));
-
-		if (err) {
-			dispatch(commentList({ status: 'failed' }));
-			dispatch(commentLoading({ loading: false }));
-			return Promise.reject(err);
-		}
-
-		const comments = response.data.data;
-		dispatch(commentList({ status: 'success', data: comments }));
-		dispatch(commentLoading({ loading: false }));
-		
-		return Promise.resolve(comments);
-	}
-
-	return false;
-};
-
 export default {
 	productCommentAction,
 	commentAddAction,
-	bulkieCommentAction
 };
