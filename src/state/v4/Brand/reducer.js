@@ -1,4 +1,5 @@
 import { handleActions, createActions } from 'redux-actions';
+import _ from 'lodash';
 
 const initialState = {
 	loading: false,
@@ -63,14 +64,20 @@ const reducer = handleActions({
 			banner
 		};
 	},
-	[brandProductsComments](state, { payload: { products_comments } }) {
+	[brandProductsComments](state, { payload: { productsComments } }) {
+		if (productsComments.length === 1) {
+			let updatedComments = null;
+			updatedComments = state.products_comments.map(obj => productsComments.find(o => o.product_id === obj.product_id) || obj);
+			if (!_.find(updatedComments, _.matchesProperty('product_id', productsComments[0].product_id))) {
+				updatedComments.push(productsComments[0]);
+			}
+		}
 		return {
 			...state,
-			products_comments
+			products_comments: productsComments
 		};
 	},
 	[brandProductsLovelist](state, { payload: { products_lovelist } }) {
-		console.log('reducer products_lovelist', products_lovelist);
 		return {
 			...state,
 			products_lovelist

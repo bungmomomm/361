@@ -138,7 +138,7 @@ const brandProductsCommentsAction = (token, productIds) => async (dispatch, getS
 
 	const productsComments = response.data.data;
 
-	dispatch(brandProductsComments({ products_comments: productsComments }));
+	dispatch(brandProductsComments({ productsComments }));
 	return Promise.resolve(response);
 };
 

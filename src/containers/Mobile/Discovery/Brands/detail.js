@@ -216,7 +216,7 @@ class Detail extends Component {
 				dispatch(commentActions.commentAddAction(this.userToken, newComment.product_id, newComment.comment))
 			));
 			addingComment.then((res) => {
-				const productIds = this.props.brands.searchData.products.map(e => (e.product_id));
+				const productIds = [productId];
 				dispatch(brandAction.brandProductsCommentsAction(this.userToken, productIds));
 			}).catch((err) => this.setState({ newComment: { product_id: '', comment: '' } }));
 		}
@@ -293,12 +293,13 @@ class Detail extends Component {
 		const commentData = this.getCommentOfProduct(productId);
 		let lastComments = null;
 		if (commentData) {
+			const lastCommentShorted = _.orderBy(commentData.last_comment, ['id']);
 			lastComments = (
 				<div>
 					<Link to={`/product/comments/${commentData.product_id}`}>
 						<Button>View {commentData.total} comments</Button>
 					</Link>
-					<Comment data={commentData.last_comment} type='lite-review' />
+					<Comment data={lastCommentShorted} type='lite-review' />
 				</div>
 			);
 		}
