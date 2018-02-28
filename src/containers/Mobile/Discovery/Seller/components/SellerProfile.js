@@ -2,22 +2,22 @@ import React from 'react';
 import { Svg, Level, Image, Badge } from '@/components/mobile';
 import { Link } from 'react-router-dom';
 
-const sellerStatus = (status) => {
-	switch (status) {
-	case 'gold':
-		return 'ico_premium-seller.svg';
-	case 'bronze':
-		return 'ico_badgebronze.svg';
-	case 'silver':
-		return 'ico_badgesilver.svg';
-	default:
-		return '';
-	}
-};
+// const sellerStatus = (status) => {
+// 	switch (status) {
+// 	case 'gold':
+// 		return 'ico_premium-seller.svg';
+// 	case 'bronze':
+// 		return 'ico_badgebronze.svg';
+// 	case 'silver':
+// 		return 'ico_badgesilver.svg';
+// 	default:
+// 		return '';
+// 	}
+// };
 
 const SellerProfile = ({
 	image,
-	status,
+	badgeImage,
 	isNewStore,
 	successOrder,
 	rating,
@@ -34,13 +34,13 @@ const SellerProfile = ({
 					<div className='avatar'>
 						<Link to={storeAddress} >
 							<Image avatar width={60} height={60} src={image} />
-							<Badge attached position='bottom-right'><Svg src={sellerStatus(status)} /></Badge>
+							<Badge attached position='bottom-right'><Image src={badgeImage} width={12} /></Badge>
 						</Link>
 					</div>
 				</div>
 				<Level divider>
 					{
-						isNewStore && (
+						isNewStore !== 0 && (
 							<Level.Item className='text-center'>
 								<div className='font-large flex-row flex-center'>
 									<Svg src='ico_newstore.svg' />

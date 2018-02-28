@@ -81,7 +81,8 @@ class Seller extends Component {
 					position: 'fixed',
 					width: '100%',
 					top: '60px',
-					zIndex: '1'
+					zIndex: '1',
+					overflow: 'hidden'
 				}
 			});
 		} else {
@@ -211,19 +212,20 @@ class Seller extends Component {
 	}
 
 	sellerHeader = () => {
-		const { seller } = this.props;
+		const { seller, location } = this.props;
 		return (seller.info.seller && (
 			<div className='border-bottom'>
 				<SellerProfile
 					image={seller.info.seller_logo || ''}
-					status='gold'
-					isNewStore={false}
+					badgeImage={seller.info.seller_badge_image}
+					isNewStore={seller.info.is_new_seller || 0}
 					successOrder={_.chain(seller).get('info.success_order.rate').value() || ''}
 					rating={seller.info.rating || ''}
 					totalProduct={seller.info.product || ''}
 					name={seller.info.seller || ''}
 					location={seller.info.seller_location || ''}
 					description={seller.info.description || ''}
+					storeAddress={`${location.pathname}${location.search}`}
 				/>
 			</div>
 		)) || '';
