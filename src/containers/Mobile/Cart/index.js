@@ -1,9 +1,15 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
-import { Page, Header, Svg, Panel, Image, Select, Level, Button, Modal } from '@/components/mobile';
+import { Page, Header, Svg, Panel, Image, Select, Level, Button, Modal, Spinner } from '@/components/mobile';
 import styles from './cart.scss';
-
+import Shared from '@/containers/Mobile/Shared';
+import { connect } from 'react-redux';
+import { actions as shopBagAction } from '@/state/v4/ShopBag';
+import CONST from '@/constants';
+import { urlBuilder } from '@/utils';
+import CartEmpty from '@/containers/Mobile/Cart/empty';
+import { actions as actionShared } from '@/state/v4/Shared';
 class Cart extends Component {
 	constructor(props) {
 		super(props);
@@ -11,42 +17,216 @@ class Cart extends Component {
 		this.state = {
 			showSelect: false,
 			showConfirmDelete: false,
+			productWillDelete: { product_id: null, brand: null, title: null, image: null },
+			productIdwillUpdate: null,
+			selectList: [],
+			qtyCurrent: null,
+			qtyNew: null,
 			selected: {
 				label: null,
 				value: null
 			}
 		};
+		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
+		this.deleteItemHandler = this.deleteItemHandler.bind(this);
+		this.addToLovelistHandler = this.addToLovelistHandler.bind(this);
+		this.selectItemHandler = this.selectItemHandler.bind(this);
+		this.selectedNewQtyHander = this.selectedNewQtyHander.bind(this);
+		this.updateCartHander = this.updateCartHander.bind(this);
+		this.isLogin = this.props.cookies.get('isLogin');
 	}
 
-	renderList() {
-		return (
-			<div style={{ paddingLeft: '15px', paddingTop: '15px', marginBottom: '20px', background: '#fff' }}>
-				<div>BitterBallenBall</div>
-				<Level style={{ paddingLeft: '0px' }} className='flex-row border-bottom'>
-					<Level.Item><Image width='100%' src='https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-01.jpg' /></Level.Item>
-					<Level.Item className='padding--medium'>
-						<div>HeavyWater </div>
-						<div className='font-color--primary-ext-1'>Holy shoes brown egg </div>
-						<div className='margin--medium'>
-							<div>Rp3.890.000</div>
-							<div className='font-color--primary-ext-1 font-small text-line-through'>Rp900.900</div>
-						</div>
-						<Level className='flex-row border-bottom'>
+	componentWillMount() {
+		if ('serviceUrl' in this.props.shared) {
+			const { dispatch } = this.props;
+			dispatch(shopBagAction.getAction(this.userToken));
+		}
+	}
+
+	componentDidMount() {
+		const { dispatch } = this.props;
+		dispatch(new actionShared.totalLovelistAction(this.userToken));
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (!('serviceUrl' in this.props.shared) && 'serviceUrl' in nextProps.shared) {
+			const { dispatch } = this.props;
+			dispatch(shopBagAction.getAction(this.userToken));
+		}
+	}
+
+	addToLovelistHandler(productId) {
+		const { dispatch } = this.props;
+		dispatch(shopBagAction.addLovelistAction(this.userToken, productId));
+	}
+
+	deleteConfirmationItemHandler(productId, itemBrand, itemTitel, itemImage) {
+		this.setState({ showConfirmDelete: true, productWillDelete: { product_id: productId, brand: itemBrand, title: itemTitel, image: itemImage } });
+	}
+
+	deleteItemHandler() {
+		const { dispatch } = this.props;
+		this.setState({ showConfirmDelete: false, productIdwillDelete: null });
+		dispatch(shopBagAction.deleteAction(this.userToken, this.state.productIdwillDelete));
+	}
+
+	selectItemHandler(productId, maxQty, qty) {
+		const selectListData = [];
+		for (let step = 1; step <= maxQty; step++) {
+			selectListData.push({ value: step, label: step });
+		}
+		this.setState({
+			showSelect: !this.state.showSelect,
+			productIdwillUpdate: productId,
+			selectList: selectListData,
+			qtyCurrent: qty
+		});
+	}
+
+	selectedNewQtyHander(value) {
+		this.setState({ qtyNew: value });
+	}
+
+	updateCartHander() {
+		const { dispatch } = this.props;
+		if (this.state.qtyNew !== null && this.state.qtyCurrent !== this.state.qtyNew) {
+			dispatch(shopBagAction.updateAction(this.userToken, this.state.productIdwillUpdate, this.state.qtyNew));
+		}
+		this.setState({ showSelect: false, productIdwillUpdate: null, selectList: [], qtyCurrent: null, qtyNew: null });
+	}
+
+	renderList(shopBagData) {
+		return (this.props.shopBag.carts !== null) && (this.props.shopBag.carts.map((cart, key) => {
+			const items = cart.items.map((item, keyItem) => {
+				return (
+					<div key={keyItem}>
+						<Level style={{ paddingLeft: '0px' }} className='flex-row border-bottom'>
 							<Level.Item>
-								<Button onClick={() => this.setState({ showSelect: !this.state.showSelect })} className='flex-center'><span style={{ marginRight: '10px' }}>{this.state.selected.label || 'M'}</span> <Svg src='ico_chevron-down.svg' /></Button>
+								<Link to={urlBuilder.setId(item.product_id).setName(item.product_title).buildPdp()}>
+									<Image width='100%' src={item.images[0].mobile} />
+								</Link>
 							</Level.Item>
-							<Level.Item>
-								<Button onClick={() => this.setState({ showSelect: !this.state.showSelect })} className='flex-center'><span style={{ marginRight: '10px' }}>{this.state.selected.label || 'M'}</span> <Svg src='ico_chevron-down.svg' /></Button>
+							<Level.Item className='padding--medium'>
+								<div>
+									<Link to={urlBuilder.setId(item.brand.id).setName(item.brand.brand_name).buildBrand()}>
+										{item.brand.brand_name}
+									</Link>
+								</div>
+								<div className='font-color--primary-ext-1'>
+									<Link to={urlBuilder.setId(item.product_id).setName(item.product_title).buildPdp()}>
+										{item.product_title}
+									</Link>
+								</div>
+								<div className='margin--medium'>
+									<div>{item.pricing.formatted.effective_price}</div>
+									{(item.pricing.formatted.effective_price !== item.pricing.formatted.base_price) && (
+										<div className='font-color--primary-ext-1 font-small text-line-through'>
+											{item.pricing.formatted.base_price}
+										</div>
+									) }
+								</div>
+								<Level className='flex-row border-bottom'>
+									<Level.Left>
+										<div>Jumlah</div>
+									</Level.Left>
+									<Level.Item>
+										<Button
+											onClick={() => this.selectItemHandler(
+												item.product_id, item.max_quantity, item.qty
+											)}
+											className='flex-center'
+										>
+											<span style={{ marginRight: '10px' }}>{item.qty}</span>
+											<Svg src='ico_chevron-down.svg' />
+										</Button>
+									</Level.Item>
+								</Level>
 							</Level.Item>
 						</Level>
-						<div className='margin--medium font-medium'>Rp3.890.000</div>
-					</Level.Item>
-				</Level>
-				<div className='flex-row flex-center flex-spaceBetween margin--medium'>
-					<div><Button outline color='secondary' size='medium'><Svg src='ico_reply.svg' /> &nbsp; Pindahkan ke Lovelist</Button></div>
-					<div className='padding--large'><Button onClick={() => this.setState({ showConfirmDelete: true })} className='font-color--primary-ext-1'><Svg src='ico_trash.svg' /> &nbsp; Hapus</Button></div>
+						<div className='flex-row flex-center flex-spaceBetween margin--medium'>
+							<div>
+								<Button
+									onClick={() => this.addToLovelistHandler(item.product_id)}
+									outline
+									color='secondary'
+									size='medium'
+								>
+									<Svg src='ico_reply.svg' /> &nbsp; Pindahkan ke Lovelist
+								</Button>
+							</div>
+							<div className='padding--large'>
+								<Button
+									onClick={() => this.deleteConfirmationItemHandler(
+										item.product_id, item.brand.brand_name, item.product_title, item.images[0].mobile
+									)}
+									className='font-color--primary-ext-1'
+								>
+									<Svg src='ico_trash.svg' /> &nbsp; Hapus
+								</Button>
+							</div>
+						</div>
+					</div>
+				);
+			});
+			return (
+				<div
+					key={key}
+					style={{ paddingLeft: '15px', paddingTop: '15px', marginBottom: '20px', background: '#fff' }}
+				>
+					<div>
+						<Link to={urlBuilder.setId(cart.seller.seller_id).setName(cart.seller.seller).buildStore()} >
+							{cart.seller.seller}
+						</Link>
+					</div>
+					{items}
+				</div>
+			);
+		}));
+	}
+
+	renderTotal() {
+		return (this.props.shopBag.total !== null) && (
+			<div className='padding--medium' style={{ backgroundColor: '#fff' }}>
+				<div className='margin--medium'>
+					<div className='flex-row flex-spaceBetween'>
+						<div>Subtotal</div>
+						<div className='font-medium'>{this.props.shopBag.total.formatted.subtotal}</div>
+					</div>
+					<div className='flex-row flex-spaceBetween'>
+						<div>
+							<div>Estimasi biaya pengiriman</div>
+							<div className='font-small'>({this.props.shopBag.location_default})</div>
+						</div>
+						<div className='font-medium'>{this.props.shopBag.total.formatted.shipping_estimation}</div>
+					</div>
+					<hr className='margin--medium' />
+					<div className='flex-row flex-spaceBetween'>
+						<div>
+							<div>Total Pembayaran</div>
+							<div className='font-color--primary-ext-1 font-small'>(Termasuk PPN)</div>
+						</div>
+						<div className='font-medium'>{this.props.shopBag.total.formatted.total}</div>
+					</div>
 				</div>
 			</div>
+		);
+	}
+
+	renderHeaderShopBag() {
+		if (this.props.shopBag.carts === null) {
+			return null;
+		}
+		const totalItem = this.props.shopBag.carts.map(e => (parseInt(e.total_items, 16))).reduce((a, b) => (a + b), 0);
+		return (
+			<Panel className='flex-row flex-spaceBetween'>
+				<div className='flex-row'>
+					<span className='font-color--primary'>Total:</span>
+					<span className='padding--medium'>{(totalItem)} ITEM(S)</span>
+				</div>
+				<div className='font-medium font-color--primary'>
+					{this.props.shopBag.total.formatted.total}
+				</div>
+			</Panel>
 		);
 	}
 
@@ -57,80 +237,66 @@ class Cart extends Component {
 					<Svg src={'ico_close-large.svg'} />
 				</Link>
 			),
-			center: 'Tas Belanja',
+			center: (<div><span> Tas Belanja {this.props.shopBag.loading ? (<Spinner />) : ''}</span></div>),
 			right: null
 		};
+
+		if (this.props.shopBag.carts && this.props.shopBag.carts.length < 1) {
+			return <CartEmpty />;
+		}
+
 		return (
 			<div>
 				<Page>
 					<div style={{ backgroundColor: '#F5F5F5' }}>
-						<Panel className='flex-row flex-spaceBetween'>
-							<div className='flex-row'><span className='font-color--primary'>Total:</span> <span className='padding--medium'>2 ITEM(S)</span></div>
-							<div className='font-medium font-color--primary'>Rp6.000.000</div>
-						</Panel>
+						{this.renderHeaderShopBag()}
 						{this.renderList()}
-						{this.renderList()}
-						{this.renderList()}
-						{this.renderList()}
-						<div className='padding--medium' style={{ backgroundColor: '#fff' }}>
-							<div className='margin--medium'>
-								<div className='flex-row flex-spaceBetween'>
-									<div>Subtotal</div>
-									<div className='font-medium'>Rp2.600.000</div>
-								</div>
-								<div className='flex-row flex-spaceBetween'>
-									<div>
-										<div>Estimasi biaya pengiriman</div>
-										<div className='font-small'>(Jakarta)</div>
-									</div>
-									<div className='font-medium'>Rp19.000</div>
-								</div>
-								<hr className='margin--medium' />
-								<div className='flex-row flex-spaceBetween'>
-									<div>
-										<div>Total Pembayaran</div>
-										<div className='font-color--primary-ext-1 font-small'>(Termasuk PPN)</div>
-									</div>
-									<div className='font-medium'>Rp2.619.000</div>
-								</div>
-							</div>
-						</div>
+						{this.renderTotal()}
 					</div>
 				</Page>
+
 				<Header.Modal {...headerOption} />
 				<div className={styles.paymentLink}>
 					<div>
 						<div>
-							<Link to='/'>Lanjutkan ke Pembayaran <Svg color='#fff' src='ico_arrow-back.svg' /></Link>
-						</div>	
+							<Link to={(this.isLogin) ? process.env.CHECKOUT_URL : '/login'}>
+								Lanjutkan ke Pembayaran <Svg color='#fff' src='ico_arrow-back.svg' />
+							</Link>
+						</div>
 					</div>
 				</div>
+
 				<Select
 					show={this.state.showSelect}
 					label='Pilih Ukuran'
-					onChange={(e) => this.setState({ selected: e })}
-					onClose={() => this.setState({ showSelect: false })}
-					options={[
-						{ value: 1, label: '1', disabled: true, note: 'Stock Habis' },
-						{ value: 2, label: '2' },
-						{ value: 3, label: '3' },
-						{ value: 4, label: '4' },
-						{ value: 5, label: '5' },
-						{ value: 6, label: '6' }
-					]}
+					onChange={(e) => this.selectedNewQtyHander(e)}
+					onClose={this.updateCartHander}
+					options={this.state.selectList}
 				/>
+
 				<Modal show={this.state.showConfirmDelete}>
 					<div className='font-medium'>Anda mau menghapus produk ini?</div>
 					<Level style={{ padding: '0px' }} className='margin--medium'>
-						<Level.Left><Image width='40px' src='https://www.wowkeren.com/images/events/ori/2015/03/26/minah-album-i-am-a-woman-too-01.jpg' /></Level.Left>
+						<Level.Left><Image width='40px' src={this.state.productWillDelete.image} /></Level.Left>
 						<Level.Item className='padding--medium'>
-							<div className='font-small'>IMMACULATE</div>
-							<div className='font-small font-color--primary-ext-1'>Olivia Von Halle pink print</div>
+							<div className='font-small'>{this.state.productWillDelete.brand}</div>
+							<div className='font-small font-color--primary-ext-1'>{this.state.productWillDelete.title}</div>
 						</Level.Item>
 					</Level>
-					<Modal.Action 
-						closeButton={<Button onClick={() => this.setState({ showConfirmDelete: false })}>BATAL</Button>}
-						confirmButton={<Button><span className='font-color--primary-ext-2'>HAPUS</span></Button>}
+					<Modal.Action
+						closeButton={
+							<Button
+								onClick={() => {
+									this.setState({ showConfirmDelete: false, productIdwillDelete: null, selectList: [] });
+								}}
+							> BATAL
+							</Button>
+						}
+						confirmButton={
+							<Button onClick={this.deleteItemHandler}>
+								<span className='font-color--primary-ext-2'>HAPUS</span>
+							</Button>
+						}
 					/>
 				</Modal>
 			</div>
@@ -138,5 +304,11 @@ class Cart extends Component {
 	}
 }
 
+const mapStateToProps = (state) => {
+	return {
+		shared: state.shared,
+		shopBag: state.shopBag
+	};
+};
 
-export default withCookies(Cart);
+export default withCookies(connect(mapStateToProps)(Shared(Cart)));

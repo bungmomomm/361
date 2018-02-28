@@ -3,30 +3,64 @@ import { Promise } from 'es6-promise';
 import to from 'await-to-js';
 import _ from 'lodash';
 import { request } from '@/utils';
-import { 
+import {
 	commentList,
 	commentLoading, 
+	addComment
 } from './reducer';
 
 
-const commentAddAction = (token) => (dispatch) => {
+const newCommentData = (commentState, newComment, userProfile) => {
+
+	const newC = {
+		id: newComment.id, 
+		customer: {
+			customer_avatar: userProfile.avatar,
+			customer_id: userProfile.id,
+			customer_name: userProfile.name
+		},
+		comment: {
+			comment: newComment.comment,
+			created_time: newComment.created_time
+		}
+	};
+	commentState.data.push(newC);
+	// commentState.total = commentState.data.length;
+
+	return commentState;
+};
+
+const commentAddAction = (token, productId, comment) => async (dispatch, getState) => {
 	dispatch(commentLoading({ loading: true }));
-	const url = `${process.env.MICROSERVICES_URL}comment/add`;
-	return request({
+
+	const { shared, comments, users } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	const [err, response] = await to(request({
 		token,
-		path: url,
+		path: `${baseUrl}/comment/add`,
 		method: 'POST',
 		fullpath: true,
 		body: {
-			variant_id: '123',
-			comment: 'Gan mau tanya apakah barangnya masih ada dan berapa lama biasanya pengirimannya??'
+			product_id: _.toInteger(productId),
+			comment
 		}
-	}).then(response => {
+	}));
+
+	if (err) {
 		dispatch(commentLoading({ loading: false }));
-	}).catch((error) => {
-		console.log(error);
-		dispatch(commentLoading({ loading: false }));
-	});
+
+		return Promise.reject(err);
+	}
+	
+	const newComment = newCommentData(comments, response.data.data, users.userProfile);
+
+	dispatch(addComment({ data: newComment.data }));
+
+	dispatch(commentLoading({ loading: false }));
+	return Promise.resolve(response);
 };
 
 const productCommentAction = (token, productId, page = 1) => async (dispatch, getState) => {
@@ -56,37 +90,7 @@ const productCommentAction = (token, productId, page = 1) => async (dispatch, ge
 	return Promise.resolve(comments);
 };
 
-const bulkieCommentAction = (token, productId = [], url = false) => async (dispatch) => {
-	dispatch(commentLoading({ loading: true }));
-	let path = `${process.env.MICROSERVICES_URL}commentcount/bulkie/byproduct`;
-	
-	if (url) {
-		path = `${url.url}/commentcount/bulkie/byproduct`;
-	}
-
-	const [err, response] = await to(request({
-		token,
-		path,
-		method: 'POST',
-		fullpath: true,
-		body: {
-			product_id: productId
-		}
-	}));
-
-	if (err) {
-		return Promise.reject(err);
-	}
-
-	const comments = response.data.data;
-	dispatch(commentList({ data: comments }));
-	dispatch(commentLoading({ loading: false }));
-
-	return Promise.resolve(comments);
-};
-
 export default {
 	productCommentAction,
 	commentAddAction,
-	bulkieCommentAction
 };

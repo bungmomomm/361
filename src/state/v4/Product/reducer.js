@@ -6,7 +6,7 @@ const initialState = {
 	similar: [],
 	socialSummary: {
 		reviews: {},
-		comments: {},
+		comment: {},
 		seller: {}
 	},
 	loading: false

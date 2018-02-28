@@ -1,7 +1,6 @@
 @import "_variables.scss";
 @import "_mixins.scss";
 @import "_typography.scss";
-@import "_typography.scss";
 
 @include font-face("Helvetica-Roman", "Helvetica");
 @include font-face("Helvetica-Medium", "Helvetica");
@@ -9,6 +8,12 @@
 @include font-face("Lato-Light", "Lato");
 @include font-face("Lato-Regular", "Lato");
 @include font-face("Lato-Bold", "Lato");
+
+// Plugins
+:global {
+  @import '~rmc-picker/assets/index';
+  @import '~rmc-picker/assets/popup';
+}
 
 :root {
 	font-size: $base-font-size;
@@ -47,6 +52,7 @@
 		color: color(--primary);
 		line-height: 20px;
 		background-color: #fff;
+		-webkit-overflow-scrolling: touch;
 	}
 
 	// GENERATE GLOBAL UTILITIES
@@ -113,9 +119,9 @@
 		height: 100%;
 		> div:first-child {
 			min-height: 100%;
-			// overflow: hidden;
 		}
 	}
+
 	a {
 		color: #3c5a98;
 		text-decoration: none;
@@ -126,6 +132,17 @@
 		text-decoration: none;
 		font-family: "Lato-Regular";
 		color: #191919;
+		line-height: 1.4;
+	}
+
+	button{
+		-webkit-appearance: none;
+		outline: none;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		background: transparent;
+		border: none;
 	}
 
 	hr{
@@ -135,8 +152,10 @@
 	}
 	#root {
 	  	width: 100%;
-	  	overflow-y: hidden;
-		z-index: 0;
+		// overflow-y: hidden;
+		max-width: $max-width-container;
+		position: relative;
+		margin: 0 auto;
 		.switch-wrapper {
 			height: 100%;
 			background: transparent;
@@ -204,6 +223,20 @@
 			text-overflow: ellipsis;
 		}
 
+		.text-muted{
+			font-family: 'Lato-Regular';
+			color: #A4A4A4;
+			letter-spacing: 1px;
+			text-transform: uppercase;
+			text-decoration: none;
+			display: inline-flex;
+			justify-content: center;
+			align-items: center;
+			> span{
+				margin-left: 5px;
+			}
+		}
+
 		.full-height {
 			height: 100%;
 		}
@@ -221,6 +254,14 @@
 		.margin--large {
 			margin-top: 30px;
 			margin-bottom: 30px;
+		}
+
+		.margin--none-bottom {
+			margin-bottom: 0px;
+		}
+
+		.margin--none-top {
+			margin-top: 0px;
 		}
 
 		.padding--small {
@@ -242,15 +283,46 @@
 			padding-right: 30px;
 		}
 
+		.padding--none-left {
+			padding-left: 0px;
+		}
+
+		.padding--none-right {
+			padding-right: 0px;
+		}
+
+		.padding--none{
+			padding: 0px;
+		}
+
 		.margin--none {
 			margin-top: 0px;
 			margin-right: 0px;
 		}
 		.border-top {
-			border-top: 1px solid #DBDBDB;
+			border-top: 0.5px solid #DBDBDB;
 		}
 		.border-bottom {
-			border-bottom: 1px solid #DBDBDB;
+			border-bottom: 0.5px solid #DBDBDB;
+		}
+		.border-left {
+			border-left: 0.5px solid #DBDBDB;
+		}
+		.border-right {
+			border-right: 0.5px solid #DBDBDB;
+		}
+
+		.border-white-top {
+			border-top: 0.5px solid #fff;
+		}
+		.border-white-bottom {
+			border-bottom: 0.5px solid #fff;
+		}
+		.border-white-left {
+			border-left: 0.5px solid #fff;
+		}
+		.border-white-right {
+			border-right: 0.5px solid #fff;
 		}
 
 		.flex-row {
@@ -259,16 +331,35 @@
 		.flex-wrap {
 			flex-wrap: wrap;
 		}
-		.flex-center {
-			justify-content: center;
+		.flex-middle {
 			align-items: center;
 		}
 		.flex-spaceBetween {
 			justify-content: space-between;
 		}
+		.flex-center{
+			justify-content: center;
+		}
 		.text-line-through{
 			text-decoration: line-through;
 		}
+	}
+
+	.thumbnail-small{
+		display: flex !important;
+		justify-content: center;
+    	align-items: center;
+		img{
+			max-height: 140px;
+    		width: auto !important;
+		}
+	}
+
+	.horizontal-scroll{
+		flex-wrap: nowrap;
+		overflow-x: scroll;
+		-webkit-overflow-scrolling: touch;
+		-ms-overflow-style: -ms-autohiding-scrollbar;
 	}
 }
 

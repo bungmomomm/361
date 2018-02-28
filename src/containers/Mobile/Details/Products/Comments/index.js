@@ -20,6 +20,8 @@ class Comments extends Component {
 		this.productId = this.props.match.params.id;
 		this.isLogin = this.props.cookies.get('isLogin') || false;
 		this.renderLoading = <div><Spinner /></div>;
+		this.writeComment = this.writeComment.bind(this);
+		this.postComment = this.postComment.bind(this);
 		
 	}
 
@@ -36,8 +38,27 @@ class Comments extends Component {
 			hashtag: {
 				isLoading: true, 
 				firstLoad: this.renderLoading
-			} 
+			}, 
+			productComment: '' 
 		});
+	}
+
+	writeComment(e) {
+		this.setState({
+			productComment: e.target.value
+		});
+
+	}
+
+	postComment() {
+		const { dispatch } = this.props;
+		const { productComment } = this.state;
+		
+		this.setState({
+			productComment: ''
+		});
+
+		dispatch(commentActions.commentAddAction(this.userCookies, this.productId, productComment));
 	}
 
 	renderComments() {
@@ -63,7 +84,7 @@ class Comments extends Component {
 
 		return (
 			<div style={{ marginBottom: '100px' }}>
-				{ <Comment data={comments.data} /> }
+				{ <Comment data={comments.data} loading={comments.loading} /> }
 			</div>
 		);
 		
@@ -90,28 +111,31 @@ class Comments extends Component {
 		}
 
 		return (
-			<p className='margin--small padding--medium'>
-				{ product.detail.description }
-			</p>
+			<div>
+				<p className='margin--small padding--medium' dangerouslySetInnerHTML={{ __html: product.detail.description }} />
+				{/* <span className='margin--small padding--medium'>
+					<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
+				</span> */}
+			</div>
 		);
 	}
 
 	renderAvailComment() {
-		
+		const { comments } = this.props;
 		if (this.isLogin === 'true') {
 			return (
 				<Level className={styles.commentbox}>
-					<Level.Item><Input color='white' placeholder='Type a message ...' /></Level.Item>
-					<Level.Right><Button className='padding--small font--lato-normal' style={{ marginLeft: '15px' }}>KIRIM</Button></Level.Right>
+					<Level.Item><Input color='white' placeholder='Type a message ...' value={this.state.productComment} onChange={this.writeComment} /></Level.Item>
+					<Level.Right><Button className='padding--small font--lato-normal' style={{ marginLeft: '15px' }} onClick={this.postComment} loading={comments.loading}>KIRIM</Button></Level.Right>
 				</Level>
 			);
 		}
 
 
 		return (
-			<Level className={styles.commentbox}>
-				<Link to='/user/login'>Log in</Link> / <Link to='/user/register'>Register</Link> untuk memberi komentar
-			</Level>
+			<span className={styles.commentbox}>
+				<a href='/user/login'>Log in</a> / <a href='/user/register'>Register</a> untuk memberi komentar
+			</span>
 		);
 	}
 
@@ -131,9 +155,6 @@ class Comments extends Component {
 				<Page>
 					<div className='margin--medium'>
 						{ this.renderDetail() }
-						<span className='margin--small padding--medium'>
-							<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
-						</span>
 					</div>
 					{ this.renderComments() }
 				</Page>
@@ -148,7 +169,8 @@ const mapStateToProps = (state) => {
 	return {
 		comments: state.comments,
 		product: state.product, 
-		shared: state.shared
+		shared: state.shared,
+		users: state.users
 	};
 };
 

@@ -18,14 +18,14 @@ const updatedKeywordHandler = (string, userToken) => async (dispatch, getState) 
 		[cancelTokenReq, cancelReq] = getCancelToken();
 
 		const { shared } = getState();
-		const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
+		const baseUrl = _.chain(shared).get('serviceUrl.suggestion.url').value() || false;
 
 		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 		const [err, response] = await to(
 			request({
 				token: userToken,
-				path: `${baseUrl}/product/suggestion?q=${string}`,
+				path: `${baseUrl}/suggestion?q=${encodeURIComponent(string)}`,
 				method: 'GET',
 				fullpath: true,
 				cancelToken: cancelTokenReq
@@ -53,9 +53,9 @@ const updatedKeywordHandler = (string, userToken) => async (dispatch, getState) 
 		dispatch(keywordUpdate({
 			...initialState,
 			keyword: string,
-			related_category: data.related_category,
-			related_keyword: data.related_keyword,
-			related_hashtag: data.related_hashtag,
+			related_category: (data && data.related_category) ? data.related_category : [],
+			related_keyword: (data && data.related_keyword) ? data.related_keyword : [],
+			related_hashtag: (data && data.related_hashtag) ? data.related_hashtag : [],
 			loading: false
 		}));
 		return Promise.resolve(response);

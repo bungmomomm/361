@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-import { Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import SwipeReact from 'swipe-react';
 import {
 	Header, Carousel, Tabs,
 	Page, Level, Button, Grid, Article,
@@ -14,6 +13,7 @@ import { actions } from '@/state/v4/Home';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import Shared from '@/containers/Mobile/Shared';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
+import Footer from '@/containers/Mobile/Shared/footer';
 import CONST from '@/constants';
 
 const renderSectionHeader = (title, options) => {
@@ -30,30 +30,16 @@ class Home extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.state = {
-			notification: {
-				show: true
-			},
-			direction: ''
-		};
 
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.source = this.props.cookies.get('user.source');
 
-		SwipeReact.config({
-			left: () => {
-				this.setState({
-					direction: 'left'
-				});
-			},
-			right: () => {
-				this.setState({
-					direction: 'right'
-				});
-			}
-		});
 		this.isLogin = this.props.cookies.get('isLogin');
+
+		this.state = {
+			isFooterShow: true
+		};
 	}
 
 	handlePick(current) {
@@ -77,7 +63,7 @@ class Home extends Component {
 			return (
 				<Link to={link}>
 					<div>
-						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} width='100%' />
+						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
 					</div>
 				</Link>
 			);
@@ -98,7 +84,7 @@ class Home extends Component {
 		let label = '';
 		switch (type) {
 		case 'best_seller_products':
-			link = '/promo/best_seller'; label = 'Product Terlaris';
+			link = '/promo/best_seller'; label = 'Produk Terlaris';
 			break;
 		case 'recommended_products':
 			link = '/promo/recommended_products'; label = 'Produk Rekomendasi';
@@ -128,7 +114,7 @@ class Home extends Component {
 						{
 							datas.value().map(({ images, pricing }, e) => (
 								<div key={e}>
-									<Image lazyload alt='thumbnail' src={images[0].thumbnail} width='100%' />
+									<Image lazyload alt='thumbnail' src={images[0].thumbnail} />
 									<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
 								</div>
 							))
@@ -152,7 +138,7 @@ class Home extends Component {
 			return (
 				<div>
 					{ header }
-					<Image lazyload alt='thumbnail' src={datas.value().images[0].thumbnail} width='100%' />
+					<Image lazyload alt='thumbnail' src={datas.value().images[0].thumbnail} />
 				</div>
 			);
 		}
@@ -170,7 +156,7 @@ class Home extends Component {
 						datas.value().map(({ images, link }, c) => (
 							<Link to={link.target || '/'} key={c}>
 								<div>
-									<Image lazyload alt='banner' src={images.thumbnail} width='100%' />
+									<Image lazyload alt='banner' src={images.thumbnail} />
 								</div>
 							</Link>
 						))
@@ -197,7 +183,7 @@ class Home extends Component {
 						bottomBanner.map(({ images, link }, d) => (
 							<Link to={link.target || '/'} key={d}>
 								<div>
-									<Image lazyload alt='banner' src={images.thumbnail} width='100%' />
+									<Image lazyload alt='banner' src={images.thumbnail} />
 								</div>
 							</Link>
 						))
@@ -215,32 +201,41 @@ class Home extends Component {
 		const segment = home.activeSegment.key;
 		const featuredBrand = _.chain(home).get(`allSegmentData.${segment}.featuredBrand`);
 		if (!featuredBrand.isEmpty().value()) {
+			const header = renderSectionHeader('Popular Brand', {
+				title: 'LIHAT SEMUA',
+				url: '/brands'
+			});
 			return (
-				<Grid split={3}>
+				<div>
 					{
-						featuredBrand.value().map((brand, e) => {
-							let url = '/';
-							switch (brand.link.type) {
-							case CONST.CATEGORY_TYPE.brand:
-								url = `/brand/${brand.brand_id}/${encodeURIComponent(brand.brand_name.toLowerCase())}`;
-								break;
-							case CONST.CATEGORY_TYPE.category: // TODO : must change if api ready
-								url = `/brand/${brand.brand_id}/${encodeURIComponent(brand.brand_name.toLowerCase())}`;
-								break;
-							default:
-								url = `/category/${CONST.SEGMENT_DEFAULT_SELECTED.key}`;
-								break;
-							}
-							return (
-								<div className={styles.brandsImage} key={e}>
-									<Link to={url} >
-										<Image lazyload alt='thumbnail' src={brand.images.thumbnail} width='100%' />
-									</Link>
-								</div>
-							);
-						})
+						header
 					}
-				</Grid>
+					<Grid split={3}>
+						{
+							featuredBrand.value().map((brand, e) => {
+								let url = '/';
+								switch (brand.link.type) {
+								case CONST.CATEGORY_TYPE.brand:
+									url = `/brand/${brand.brand_id}/${encodeURIComponent(brand.brand_name.toLowerCase())}`;
+									break;
+								case CONST.CATEGORY_TYPE.category: // TODO : must change if api ready
+									url = `/brand/${brand.brand_id}/${encodeURIComponent(brand.brand_name.toLowerCase())}`;
+									break;
+								default:
+									url = `/category/${CONST.SEGMENT_DEFAULT_SELECTED.key}`;
+									break;
+								}
+								return (
+									<div className={styles.brandsImage} key={e}>
+										<Link to={url} >
+											<Image lazyload alt='thumbnail' src={brand.images.thumbnail} />
+										</Link>
+									</div>
+								);
+							})
+						}
+					</Grid>
+				</div>
 			);
 		}
 
@@ -253,7 +248,7 @@ class Home extends Component {
 		const mozaic = _.chain(home).get(`allSegmentData.${segment}.mozaic`);
 
 		if (!mozaic.isEmpty().value()) {
-			const header = renderSectionHeader('Mozaic Artikel', {
+			const header = renderSectionHeader('Artikel Mozaic', {
 				title: mozaic.value().mainlink.text,
 				url: mozaic.value().mainlink.link
 			});
@@ -262,7 +257,7 @@ class Home extends Component {
 					{
 						header
 					}
-					<Carousel>
+					<Carousel className={styles.mozaic}>
 						{
 							mozaic.value().posts.map((detail, i) => (
 								<Article posts={detail} key={i} />
@@ -278,26 +273,12 @@ class Home extends Component {
 	}
 
 	render() {
-		const { shared } = this.props;
-		const { direction } = this.state;
-		const foreverBannerData = shared.foreverBanner;
-		foreverBannerData.show = this.state.notification.show;
-		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
-
-		if (direction === 'left') {
-			return (
-				<Redirect to='/hashtags' />
-			);
-		} else if (direction === 'right') {
-			return (
-				<Redirect to='/lovelist' />
-			);
-		}
+		const { shared, dispatch } = this.props;
 
 		const recommendation1 = this.isLogin === 'true' ? 'new_arrival_products' : 'recommended_products';
 		const recommendation2 = this.isLogin === 'true' ? 'best_seller_products' : 'recently_viewed_products';
 		return (
-			<div style={this.props.style} {...SwipeReact.events}>
+			<div style={this.props.style}>
 				<Page>
 					<Tabs
 						current={this.props.shared.current}
@@ -305,7 +286,7 @@ class Home extends Component {
 						onPick={(e) => this.handlePick(e)}
 					/>
 
-					{ <ForeverBanner {...foreverBannerData} /> }
+					{ <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} /> }
 
 					{this.renderHeroBanner()}
 
@@ -318,10 +299,12 @@ class Home extends Component {
 
 					{ this.renderRecommendation(recommendation2)}
 					{ this.renderBottomBanner('bottom') }
-					{renderSectionHeader('Brand Terpopuler', { title: 'LIHAT SEMUA', url: '/brands' })}
+
 					{ this.renderFeaturedBrands() }
 
 					{this.renderMozaic()}
+					
+					<Footer isShow={this.state.isFooterShow} />
 				</Page>
 				<Header lovelist={shared.totalLovelist} value={this.props.search.keyword} />
 				<Navigation active='Home' />

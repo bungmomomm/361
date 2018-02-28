@@ -8,7 +8,13 @@ import componentState from './componentState';
 import { request, getCancelToken } from './request';
 import { setUserCookie } from './cookie';
 import SocialLogin from './social-login';
+import urlBuilder from './urlBuilder';
 import loading from './loading';
+import { request as emarsysRequest } from './emarsys';
+
+const isHexColor = (color) => {
+	return /(^#[0-9A-F]{3}|^#[0-9A-F]{6})$/i.test(color);
+};
 
 const getBaseUrl = () => {
 	return process.env.BASE_URL;
@@ -35,7 +41,7 @@ export default {
 	getDeviceID,
 	getClientID,
 	getClientSecret,
-	getClientVersion,	
+	getClientVersion,
 	setUserCookie,
 	newId,
 	renderIf,
@@ -48,5 +54,8 @@ export default {
 	componentState,
 	SocialLogin,
 	hyperlink,
-	loading
+	urlBuilder,
+	isHexColor,
+	loading,
+	emarsysRequest
 };

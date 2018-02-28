@@ -38,8 +38,10 @@ const productDetailAction = (token, productId) => async (dispatch, getState) => 
 	return Promise.resolve(response);
 };
 
-const productRecommendationAction = (token) => async (dispatch, getState) => {
-	const { shared } = getState();
+// limited to be two products only => to do carousel on CatalogGrid view
+const productRecommendationAction = (token, productId, page = 1, perPage = 2) => async (dispatch, getState) => {
+	const { shared, home } = getState();
+	const activeSegment = home.segmen.find(e => e.key === home.activeSegment);
 	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
@@ -48,11 +50,18 @@ const productRecommendationAction = (token) => async (dispatch, getState) => {
 	
 	const [err, response] = await to(request({
 		token,
-		path: `${baseUrl}/recommendation/pdp`,
+		path: `${baseUrl}/recommended_products`,
 		method: 'GET',
-		fullpath: true
+		fullpath: true,
+		query: {
+			segment_id: activeSegment.id,
+			product_id: productId,
+			page,
+			per_page: perPage
+		}
 	}));
 	if (err) {
+		dispatch(productLoading({ loading: false }));
 		return Promise.reject(err);
 	}
 	const recommendation = response.data.data;
@@ -63,7 +72,12 @@ const productRecommendationAction = (token) => async (dispatch, getState) => {
 
 };
 
-const productSimilarAction = (token) => async (dispatch, getState) => {
+/**
+ * Gets product similar items
+ * @param {*} token 
+ * @param {*} productId 
+ */
+const productSimilarAction = (token, productId, page = 1, perPage = 2) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
@@ -73,15 +87,18 @@ const productSimilarAction = (token) => async (dispatch, getState) => {
 	
 	const [err, response] = await to(request({
 		token,
-		path: `${baseUrl}/similaritems`,
+		path: `${baseUrl}/similar_items`,
 		method: 'GET',
 		fullpath: true,
-		data: {
-			variant_id: 100
+		query: {
+			product_id: productId,
+			page,
+			per_page: perPage
 		}
 	}));
 
 	if (err) {
+		dispatch(productLoading({ loading: false }));
 		return Promise.reject(err);	
 	}
 	
@@ -92,6 +109,11 @@ const productSimilarAction = (token) => async (dispatch, getState) => {
 	return Promise.resolve(response);
 };
 
+/**
+ * Gets product reviews summary
+ * @param {*} token 
+ * @param {*} productId 
+ */
 const productSocialSummaryAction = (token, productId) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
@@ -104,10 +126,7 @@ const productSocialSummaryAction = (token, productId) => async (dispatch, getSta
 		token,
 		path: `${baseUrl}/review/summary/${productId}`,
 		method: 'GET',
-		fullpath: true,
-		data: {
-			variant_id: 100
-		}
+		fullpath: true
 	}));
 
 	if (err) {
@@ -126,20 +145,28 @@ const productSocialSummaryAction = (token, productId) => async (dispatch, getSta
  * @param {*} details 
  */
 const getProductCardData = (details) => {
-	if (details) {
-		const currentVariant = details.variants.find(product => product.id === 5225328);
-		// const currentVariant = details.variants.find(product => product.id === details.id);
+	if (!_.isEmpty(details)) {
+		// get pricing data from product variants, since there is no pricing data of product provided by api
+		const currentVariant = details.variants[0];
 		const images = details.images.map((img, idx) => {
 			return { mobile: img.original };
 		});
 
+		// to do confirm to API products, about variant size
+		// const variants = details.variants.map(({ id, options, pricing, variant_sku, stock, warning_stock_text }) => {
+		// 	return {
+		// 		id,
+		// 		label: 
+		// 	};
+		// });
+
 		return {
-			brand: details.brand.brand_name,
+			brand: details.brand,
 			images,
 			pricing: currentVariant.pricing,
 			product_title: details.title,
-			totalLovelist: details.totalLovelist,
-			totalComments: details.totalComments
+			totalLovelist: 0,
+			totalComments: 0
 		};
 	}
 	return details;

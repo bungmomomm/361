@@ -35,12 +35,24 @@ class Category extends PureComponent {
 		return true;
 	}
 
+	componentWillReceiveProps(nextProps) {
+		if (this.props.home.segmen !== nextProps.home.segmen) {
+			const selectedSegment = nextProps.home.segmen.find(e => e.key === nextProps.shared.current);
+			this.setSegmentCategory(selectedSegment);
+		}
+	}
+
 	setSegmentCategory(selectedSegment) {
 		if (selectedSegment) {
 			const { dispatch } = this.props;
 			dispatch(sharedActions.setCurrentSegment(selectedSegment.key));
 			dispatch(new categoryActions.getCategoryMenuAction(this.userCookies, selectedSegment));
 		}
+	}
+
+	selectSubCategoryHandler(categoryId) {
+		const { dispatch } = this.props;
+		dispatch(categoryActions.setSubCateogryAction(categoryId));
 	}
 
 	handlePick(selectedSegmentId) {
@@ -50,16 +62,8 @@ class Category extends PureComponent {
 		}
 	}
 
-	selectSubCategoryHandler(categoryId) {
-		const { dispatch } = this.props;
-		dispatch(categoryActions.setSubCateogryAction(categoryId));
-	}
-
-	render() {
-		const { category } = this.props;
-
-		const loading = (<div />);
-		const categories = category.categories.length > 1 && category.categories.map((cat, key) => {
+	renderCategories() {
+		return this.props.category.categories.length > 1 && this.props.category.categories.map((cat, key) => {
 			let url = cat.link;
 			switch (cat.type) {
 			case CONST.CATEGORY_TYPE.brand:
@@ -89,17 +93,22 @@ class Category extends PureComponent {
 					</Link>
 				);
 		});
+	}
+
+	render() {
+		const { category } = this.props;
+		const loading = (<div />);
 
 		return (
 			<div style={this.props.style}>
 				<Page>
 					<Tabs
-						current={(category.categories.length < 1 || (category.categories.length < 2 && category.loading)) ? '' : this.props.shared.current}
+						current={this.props.shared.current}
 						variants={this.props.home.segmen}
 						onPick={(e) => this.handlePick(e)}
 					/>
 					<div>
-						{ category.loading ? loading : categories }
+						{ category.loading ? loading : this.renderCategories() }
 					</div>
 				</Page>
 				<Header lovelist={this.props.shared.totalLovelist} value={this.props.search.keyword} />

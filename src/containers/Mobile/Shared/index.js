@@ -49,6 +49,8 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 			if (shared.totalLovelist === 0) { dispatch(new actions.totalLovelistAction(tokenBearer)); }
 
+			dispatch(new users.userGetProfile(tokenBearer));
+
 			if (typeof doAfterAnonymousCall !== 'undefined') {
 				doAfterAnonymousCall.apply(this, [this.props]);
 			}

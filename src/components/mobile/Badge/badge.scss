@@ -9,7 +9,7 @@
 	justify-content: center;
 	align-items: center;
 	font-size: rem(10px);
-	border: 1px solid color(white);
+	border: 1px solid #fff;
 }
 
 .attached{
@@ -23,8 +23,13 @@
 	width: rem(18px);
 }
 
+.bottom-right{
+	top: auto;
+	bottom: 2px;
+}
+
 .rounded{
-	border-radius: 4px;
+	border-radius: 20px;
 	padding: 0px rem(5px);
 	&.red{
 		border-color: color(--secondary);

@@ -1,55 +1,79 @@
 @import '../../../styles/mobile/variables';
 @import '../../../styles/mobile/mixins';
-
-.container{
-	padding: 0 rem(20px);
-	order: 5;
+.container {
+    padding: 0 rem(20px);
+    order: 5;
 }
 
-.wrapper{
-	height: rem(51px);
+.wrapper {
+    height: rem(51px);
 }
 
-.navigation{
-	user-select: none;
-	z-index: 10;
-	background-color: color(--white);
-	border: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	height: rem(50px);
-	position: fixed;
-	top: auto;
-	display: flex;
-	flex-direction: row;
-	border-top:1px solid #DBDBDB;
-	padding-bottom: rem(5px);
+.navigation {
+    user-select: none;
+    z-index: 10;
+    background-color: color(--white);
+    border: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: rem(50px);
+    position: fixed;
+    top: auto;
+    display: flex;
+    flex-direction: row;
+    border-top: 1px solid #DBDBDB;
+    padding-bottom: rem(5px);
+    max-width: $max-width-container;
+	margin: 0 auto;
+	transition: transform 0.2s ease;
 }
 
-.item{
-	flex-grow: 1;
-	flex-basis: 0;
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	font-size: map-get($font-size, --xsmall);
-	text-decoration: none;
-	color: color(--primary);
-	align-items: center;
-	opacity: 0.4;
-	position: relative;
-	svg{
-		height: rem(40px);
-		margin-top: rem(-2px);
+.item {
+    flex-grow: 1;
+    flex-basis: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: map-get($font-size, --xsmall);
+    text-decoration: none;
+    color: #A4A4A4;
+    align-items: center;
+    position: relative;
+    svg {
+        height: rem(40px);
+        margin-top: rem(-2px);
+    }
+    &:not(:first-child) {
+        svg {
+            g,
+            path {
+                stroke: #A4A4A4;
+            }
+        }
+    }
+}
+
+.hide{
+	pointer-events: none;
+	.navigation {
+		transform: translate(0px, 100px);
 	}
 }
 
-.active{
-	opacity: 1;
+.active {
+    color: color(--primary);
+    &:not(:first-child) {
+        svg {
+            g,
+            path {
+                stroke: color(--primary);
+            }
+        }
+    }
 }
 
-.label{
-	line-height: 1;
+.label {
+    line-height: 1;
 }

@@ -7,7 +7,6 @@
 
 .wrapper{
 	height: rem(61px);
-	z-index: 11;
 }
 
 .header, .search, .modal{
@@ -22,6 +21,9 @@
 	position: fixed;
 	right: 0;
 	top: 0;
+	max-width: $max-width-container;
+	margin: 0 auto;
+
 }
 
 
@@ -40,7 +42,6 @@
 	background: #FFFFFF;
 	border-bottom: 1px solid #D8D8D8;
 	box-shadow: 0 1px 4px 0 rgba(0,0,0,0.05);
-	transition: background 0.2s ease;
 	.center{
 		font-family: font-family('lato-regular');
 		font-size: map-get($font-size, --medium );
