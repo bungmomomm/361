@@ -1,5 +1,5 @@
 import { request } from '@/utils';
-import { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner, brandProductsComments, brandProductsLovelist } from './reducer';
+import { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner, brandProductsComments, brandProductsLovelist, brandLoadingProductsComments } from './reducer';
 import _ from 'lodash';
 import to from 'await-to-js';
 import { Promise } from 'es6-promise';
@@ -119,6 +119,7 @@ const brandBannerAction = (token, brandId) => async (dispatch, getState) => {
 };
 
 const brandProductsCommentsAction = (token, productIds) => async (dispatch, getState) => {
+	dispatch(brandLoadingProductsComments({ loading_prodcuts_comments: true }));
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
 
@@ -134,11 +135,15 @@ const brandProductsCommentsAction = (token, productIds) => async (dispatch, getS
 			}
 		})
 	);
-	if (err) return Promise.reject(err);
+	if (err) {
+		dispatch(brandLoadingProductsComments({ loading_prodcuts_comments: false }));
+		return Promise.reject(err);
+	}
 
 	const productsComments = response.data.data;
 
 	dispatch(brandProductsComments({ productsComments }));
+	dispatch(brandLoadingProductsComments({ loading_prodcuts_comments: false }));
 	return Promise.resolve(response);
 };
 

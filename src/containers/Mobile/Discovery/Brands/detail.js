@@ -309,7 +309,7 @@ class Detail extends Component {
 				<Level.Item>
 					{
 						this.isLogin === 'true' ?
-							this.props.comments.loading ? <div>Sending comment...</div> :
+							this.props.comments.loading || this.props.brands.loading_prodcuts_comments ? <div>Sending comment...</div> :
 								(
 									<Input
 										color='white'

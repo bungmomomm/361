@@ -7,6 +7,7 @@ const initialState = {
 	segment: 1,
 	brand_id: null,
 	products_comments: null,
+	loading_prodcuts_comments: null,
 	products_lovelist: null,
 	loading_products: false,
 	banner: null,
@@ -21,14 +22,16 @@ const initialState = {
 	query: null
 };
 
-const { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner, brandProductsComments, brandProductsLovelist } = createActions(
+const { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner, brandProductsComments,
+	brandProductsLovelist, brandLoadingProductsComments } = createActions(
 	'BRAND_LIST_UPDATE',
 	'BRAND_LOADING',
 	'BRAND_PRODUCTS',
 	'BRAND_LOADING_PRODUCTS',
 	'BRAND_BANNER',
 	'BRAND_PRODUCTS_COMMENTS',
-	'BRAND_PRODUCTS_LOVELIST'
+	'BRAND_PRODUCTS_LOVELIST',
+	'BRAND_LOADING_PRODUCTS_COMMENTS'
 );
 
 const reducer = handleActions({
@@ -64,7 +67,7 @@ const reducer = handleActions({
 			banner
 		};
 	},
-	[brandProductsComments](state, { payload: { productsComments } }) {
+	[brandProductsComments](state, { payload: { productsComments, loadingProdcutsComments } }) {
 		if (productsComments.length === 1) {
 			let updatedComments = null;
 			updatedComments = state.products_comments.map(obj => productsComments.find(o => o.product_id === obj.product_id) || obj);
@@ -74,7 +77,14 @@ const reducer = handleActions({
 		}
 		return {
 			...state,
-			products_comments: productsComments
+			products_comments: productsComments,
+			loading_prodcuts_comments: loadingProdcutsComments
+		};
+	},
+	[brandLoadingProductsComments](state, { payload: { loading_prodcuts_comments } }) {
+		return {
+			...state,
+			loading_prodcuts_comments
 		};
 	},
 	[brandProductsLovelist](state, { payload: { products_lovelist } }) {
@@ -93,5 +103,6 @@ export default {
 	brandLoadingProducts,
 	brandBanner,
 	brandProductsComments,
-	brandProductsLovelist
+	brandProductsLovelist,
+	brandLoadingProductsComments
 };
