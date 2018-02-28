@@ -40,10 +40,13 @@ class SearchResults extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.isLogin = this.props.cookies.get('isLogin') || false;
 
 		const propsObject = _.chain(props.searchResults);
 		this.state = {
-			listTypeState: this.listType[this.currentListState],
+			notification: {
+				show: true
+			},
 			showFilter: false,
 			showSort: false,
 			query: {
@@ -56,8 +59,10 @@ class SearchResults extends Component {
 				fq: '',
 				sort: '',
 				...propsObject.get('query').value()
-			}
+			},
+			productComment: ''
 		};
+
 		this.loadingView = <div style={{ margin: '20px auto 20px auto' }}><Spinner /></div>;
 	}
 
@@ -121,14 +126,17 @@ class SearchResults extends Component {
 
 		const [err, response] = await to(dispatch(searchActions.searchAction({ token: cookies.get('user.token'), query: searchParam })));
 		if (err) {
-			console.log(err);
-			return err;
+			dispatch(searchActions.promoAction(cookies.get('user.token')));
 		}
-		if (!_.isEmpty(response.searchData.products)) {
-			const productIdList = _.map(response.searchData.products, 'product_id') || null;
-			dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		if (response) {
+			if (!_.isEmpty(response.searchData.products)) {
+				const productIdList = _.map(response.searchData.products, 'product_id') || null;
+				dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+				dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+			} else {
+				dispatch(searchActions.promoAction(cookies.get('user.token')));
+			}
 		}
-		return response;
 	}
 
 	sort(e, sort) {
@@ -154,6 +162,25 @@ class SearchResults extends Component {
 		}
 	}
 
+	writeComment(e) {
+		this.setState({
+			productComment: e.target.value
+		});
+
+	}
+
+	postComment = async (e, productId) => {
+		if (e.key === 'Enter') {
+			const { dispatch, cookies, searchResults } = this.props;
+			const { productComment } = this.state;
+
+			dispatch(commentActions.commentAddAction(cookies.get('user.token'), productId, productComment));
+
+			const productIdList = _.map(searchResults.searchData.products, 'product_id') || null;
+			dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		}
+	}
+
 	searchNotFound() {
 		const { promoData } = this.props;
 
@@ -167,6 +194,7 @@ class SearchResults extends Component {
 
 	searchFound(products) {
 		if (products.length > 0) {
+			const { scroller } = this.props;
 			const productList = _.map(products, (product, index) => {
 				return this.renderList(product, index);
 			});
@@ -175,8 +203,8 @@ class SearchResults extends Component {
 				<Page>
 					<div className={stylesSearch.container} >
 						<div className={stylesCatalog.cardContainer}>
-							{ productList }
-							{this.props.scroller.loading && this.loadingView}
+							{productList}
+							{scroller.loading && this.loadingView}
 						</div>
 					</div>
 				</Page>
@@ -222,12 +250,10 @@ class SearchResults extends Component {
 			searchView = this.loadingView;
 		} 
 
-		if (searchResults.searchStatus !== '') {
-			if (searchResults.searchStatus === 'success') {
-				searchView = this.searchFound(searchResults.searchData.products);
-			} else if (searchResults.searchStatus === 'failed') {
-				searchView = this.searchNotFound();
-			}
+		if (searchResults.searchStatus === 'success' && !_.isEmpty(searchResults.searchData.products)) {
+			searchView = this.searchFound(searchResults.searchData.products);
+		} else if (searchResults.searchStatus === 'failed' || (searchResults.searchStatus === 'success' && _.isEmpty(searchResults.searchData.products))) {
+			searchView = this.searchNotFound();
 		}
 
 		return searchView;
@@ -235,9 +261,9 @@ class SearchResults extends Component {
 
 	renderList(productData, index) {
 		if (productData) {
-			const { viewMode, comments, lovelist } = this.props;
+			const { isLoading, viewMode, searchResults, lovelist } = this.props;
 			const linkToPdp = hyperlink('', ['product', productData.product_id], null);
-			const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: productData.product_id }) : false;
+			const commentData = !_.isEmpty(searchResults.commentData) ? _.find(searchResults.commentData, { product_id: productData.product_id }) : false;
 			const commentTotal = commentData ? commentData.total : null;
 			const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: productData.product_id }) : false;
 			const lovelistTotal = lovelistData ? lovelistData.total : null;
@@ -261,7 +287,8 @@ class SearchResults extends Component {
 				productTitle: productData.product_title,
 				brandName: productData.brand.name,
 				pricing: productData.pricing,
-				linkToPdp
+				linkToPdp,
+				lovelistStatus
 			};
 
 			switch (viewMode.mode) {
@@ -269,7 +296,7 @@ class SearchResults extends Component {
 				return (
 					<div key={index} className={stylesCatalog.cardCatalog}>
 						<Card.Catalog {...listCardCatalogAttribute} />
-						{comments && comments.loading ? this.renderLoading : this.renderComment(productData.product_id)}
+						{isLoading ? this.renderLoading : this.renderComment(productData.product_id)}
 					</div>
 				);
 			case 2:
@@ -285,33 +312,58 @@ class SearchResults extends Component {
 	}
 
 	renderComment(productId) {
-		let commentView = null;
-		const { isLoading, comments } = this.props;
+		const { isLoading, searchResults } = this.props;
 
 		if (isLoading) {
-			commentView = this.loadingView;
+			return this.loadingView;
 		}
 
-		if (comments.status === 'success') {
-			const commentProduct = _.find(comments.data, { product_id: productId }) || false;
-			if (commentProduct) {
-				commentView = (
-					<div className={stylesCatalog.commentBlock}>
-						<Link to={`/product/comments/${commentProduct.product_id}`}>
-							<Button>View {commentProduct.total} comments</Button>
-						</Link>
-						<Comment data={commentProduct.last_comment} pcpComment />
-						<Level>
-							<Level.Item>
-								<Input color='white' placeholder='Write comment' />
-							</Level.Item>
-						</Level>
-					</div>
-				);
-			}
-		}
+		const commentProduct = _.find(searchResults.commentData, { product_id: productId }) || false;
+		const commentLink = commentProduct ? (
+			<Link to={`/product/comments/${commentProduct.product_id}`}>
+				<Button>View {commentProduct.total} comments</Button>
+			</Link>
+		) : '';
+		const commentDetail = commentProduct ? (
+			<Comment data={commentProduct.last_comment} type='lite-review' />
+		) : '';
 
-		return commentView;
+		return (
+			<div className={stylesCatalog.commentBlock}>
+				{commentLink}
+				{commentDetail}
+				{this.renderAddComment(productId)}
+			</div>
+		);
+	}
+
+	renderAddComment(productId) {
+		let addCommentView = null;
+		// if (this.isLogin === 'true') {
+		// 	addCommentView = (
+		// 		<Level>
+		// 			<Level.Item>
+		// 				<Input color='white' placeholder='Write comment' />
+		// 			</Level.Item>
+		// 		</Level>
+		// 	);
+		// } else {
+		// 	addCommentView = (
+		// 		<Level>
+		// 			<Link to='/user/login'>Log in</Link> / <Link to='/user/register'>Register</Link> untuk memberi komentar
+		// 		</Level>
+		// 	);
+		// }
+
+		addCommentView = (
+			<Level>
+				<Level.Item>
+					<Input color='white' placeholder='Write comment' onChange={(e) => this.writeComment(e)} onKeyPress={(e) => this.postComment(e, productId)} />
+				</Level.Item>
+			</Level>
+		);
+
+		return addCommentView;
 	}
 
 	renderHeader() {
@@ -333,7 +385,7 @@ class SearchResults extends Component {
 		const { showSort } = this.state;
 		let tabsView = null;
 
-		if (searchResults.searchStatus === 'success') {
+		if (searchResults.searchData && !_.isEmpty(searchResults.searchData.products)) {
 			const sorts = _.chain(searchResults).get('searchData.sorts').value() || [];
 			tabsView = (
 				<div>
@@ -358,6 +410,7 @@ class SearchResults extends Component {
 							}
 						]}
 						onPick={e => this.handlePick(e)}
+						isSticky
 					/>
 					{renderIf(sorts)(
 						<Sort shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
@@ -370,9 +423,12 @@ class SearchResults extends Component {
 	}
 
 	renderForeverBanner() {
-		const { shared, dispatch } = this.props;
+		const { shared } = this.props;
+		const foreverBannerData = shared.foreverBanner;
+		foreverBannerData.show = this.state.notification.show;
+		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
 
-		return <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />;
+		return <ForeverBanner {...foreverBannerData} />;
 	}
 
 	render() {
@@ -381,10 +437,12 @@ class SearchResults extends Component {
 }
 
 const mapStateToProps = (state) => {
+	console.log(state.scroller);
 	return {
 		...state,
 		shared: state.shared,
 		searchResults: state.searchResults,
+		promoData: state.searchResults.promoData,
 		query: state.searchResults.query,
 		comments: state.comments,
 		isLoading: state.searchResults.isLoading,
@@ -394,7 +452,7 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-	const { dispatch, cookies, location, searchResults } = props;
+	const { dispatch, cookies, location } = props;
 
 	const parsedUrl = queryString.parse(location.search);
 	const searchParam = {
@@ -407,15 +465,19 @@ const doAfterAnonymous = async (props) => {
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
-	
-	dispatch(searchActions.searchAction({ token: cookies.get('user.token'), query: searchParam }));
 
-	if (!_.isEmpty(searchResults.searchData.products)) {
-		const productIdList = _.map(searchResults.searchData.products, 'product_id') || null;
-		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
-	} else {
+	const [err, response] = await to(dispatch(searchActions.searchAction({ token: cookies.get('user.token'), query: searchParam })));
+	if (err) {
 		dispatch(searchActions.promoAction(cookies.get('user.token')));
+	}
+	if (response) {
+		if (!_.isEmpty(response.searchData.products)) {
+			const productIdList = _.map(response.searchData.products, 'product_id') || null;
+			dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+		} else {
+			dispatch(searchActions.promoAction(cookies.get('user.token')));
+		}
 	}
 };
 

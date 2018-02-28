@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { withCookies } from 'react-cookie';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Header, Page, Navigation, Svg, Grid, Card, Carousel } from '@/components/mobile';
+import { Header, Page, Navigation, Svg, Grid, Card, Carousel, Button } from '@/components/mobile';
 import { actions } from '@/state/v4/HashtagsDetails';
 import Shared from '@/containers/Mobile/Shared';
 import Spinner from '@/components/mobile/Spinner';
@@ -66,33 +66,43 @@ class HashtagsDetails extends PureComponent {
 		return (
 			<div>
 				<Page>
-					<Grid split={1}>
-						{ent.data.post.image && (
-							<span>
+					<div>
+						<img alt='hastag' src={ent.data.post.image} />
+					</div>
+					<div className='padding--medium padding--none-right'>
+						<div className='border-bottom'>
+							<div className='margin--medium flex-row flex-spaceBetween flex-middle'>
 								<div>
-									<img alt='' src={ent.data.post.image} />
+									<div>{ent.data.post.username}</div>
+									<div className='font-color--primary-ext-2 font-small'>Post date: {moment(ent.data.post.created_time).format('DD/MM/YY')}</div>
 								</div>
-								<div>
-									{ent.data.post.username}
-									<p>
-										Post date: {moment(ent.data.post.created_time).format('DD/MM/YY')} <br />
-										{ent.data.post.caption}
-									</p>
+								<div className='padding--medium'>
+									<Button>
+										<div className='flex-row flex-middle'>
+											<Svg src='ico_lovelist.svg' />
+											<span>1.002</span>
+										</div>
+									</Button>
 								</div>
-							</span>
-						)}
-
-						{looks.length && (
-						<div>
-							<h2>Get The Look</h2>
-							<Carousel>
-								{looks.map((chunk, i) => <Grid split={2} key={i}>{chunk}</Grid>)}
-							</Carousel>
+							</div>
 						</div>
-						)}
-
-					</Grid>
-
+					</div>
+					<div className='padding--medium border-bottom'>
+						<div className='margin--medium'>
+							<div className='margin--medium margin--none-top'>{ent.data.post.caption}</div>
+							<div className='font-color--primary-ext-2'>
+								#nike #supplierbangkok #pobkkfirsthand #pobkk #pohk #grosirbaju #premiumquaity #readytowear #ootdindo #olshop #trustedseller #supplierbaju #pochina
+							</div>
+						</div>
+					</div>
+					{looks.length && (
+					<div className='margin--medium'>
+						<div className='padding--medium font-medium'><strong>Get The Look</strong></div>
+						<Carousel className='margin--medium'>
+							{looks.map((chunk, i) => <Grid split={2} key={i}>{chunk}</Grid>)}
+						</Carousel>
+					</div>
+					)}
 					{ent.loading && <Spinner />}
 				</Page>
 

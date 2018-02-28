@@ -58,7 +58,7 @@ class Lists extends PureComponent {
 
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page hideFooter>
 					<List>
 						{lists}
 					</List>

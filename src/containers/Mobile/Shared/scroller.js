@@ -26,7 +26,7 @@ const Scroller = (WrappedComponent) => {
 		}
 
 		componentWillUnmount() {
-			window.removeEventListener('scroll', this.touchDown);
+			window.removeEventListener('scroll', this.touchDown, true);
 		}
 
 		touchDown(e) {

@@ -24,11 +24,12 @@ const initialState = {
 		fq: '',
 		sort: 'energy DESC',
 	},
+	commentData: [],
 	promoData: []
 };
 
-const { initLoading, initViewMode, initSearch, initNextSearch, initPromo } = createActions(
-	'INIT_LOADING', 'INIT_VIEW_MODE', 'INIT_SEARCH', 'INIT_NEXT_SEARCH', 'INIT_PROMO'
+const { initLoading, initViewMode, initSearch, initNextSearch, initBulkieComment, initPromo } = createActions(
+	'INIT_LOADING', 'INIT_VIEW_MODE', 'INIT_SEARCH', 'INIT_NEXT_SEARCH', 'INIT_BULKIE_COMMENT', 'INIT_PROMO'
 );
 
 const reducer = handleActions({
@@ -41,14 +42,14 @@ const reducer = handleActions({
 	[initViewMode](state, { payload: { isLoading, viewMode } }) {
 		return {
 			...state,
-			isLoading,
+			isLoading: false,
 			viewMode
 		};
 	},
 	[initSearch](state, { payload: { isLoading, searchStatus, searchData, query } }) {
 		return {
 			...state,
-			isLoading,
+			isLoading: false,
 			searchStatus,
 			searchData,
 			query
@@ -69,9 +70,16 @@ const reducer = handleActions({
 			query
 		};
 	},
+	[initBulkieComment](state, { payload: { isLoading, commentData } }) {
+		return {
+			...state,
+			isLoading: false,
+			commentData
+		};
+	},
 	[initPromo](state, { payload: { isLoading, searchStatus, promoData } }) {
 		return {
-			isLoading,
+			...state,
 			searchStatus,
 			promoData
 		};
@@ -84,5 +92,6 @@ export default {
 	initViewMode,
 	initSearch,
 	initNextSearch,
+	initBulkieComment,
 	initPromo
 };
