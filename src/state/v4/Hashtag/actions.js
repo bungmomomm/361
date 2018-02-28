@@ -43,7 +43,7 @@ const itemsActiveHashtag = (tag) => (dispatch, getState) => {
 	const data = {
 		active: {
 			tag: tag || 'All',
-			node: tag ? tag.replace('#', '').toLowerCase() : (tag && !tag.indexOf('#') !== -1) ? tag : 'all'
+			node: tag ? tag.replace('#', '').toLowerCase() : (tag && tag.indexOf('#') !== -1) ? tag : 'all'
 		}
 	};
 	dispatch(actions.itemsActiveHashtag(data));
