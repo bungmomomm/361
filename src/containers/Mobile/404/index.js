@@ -17,11 +17,13 @@ class Page404 extends Component {
 				show: true
 			}
 		};
+		this.isLogin = this.props.cookies.get('isLogin');
 	}
 
 	renderRecomendation() {
+		const recommendation = this.isLogin === 'true' ? 'bestSellerProducts' : 'recommendedProducts';
 		const activeSegment = _.chain(this.props).get('home.activeSegment');
-		const listData = _.chain(this.props).get(`home.allSegmentData.${activeSegment.value()}.recomendationData.recommendedProducts`);
+		const listData = _.chain(this.props).get(`home.allSegmentData.${activeSegment.value()}.recomendationData.${recommendation}`);
 		if (listData.isEmpty().value()) {
 			return (
 				<div className='margin--large'>
@@ -33,7 +35,7 @@ class Page404 extends Component {
 		return (
 			<div className='margin--large margin--none-top'>
 				<Level>
-					<Level.Left><strong className='font-medium'>Recomended</strong></Level.Left>
+					<Level.Left><strong className='font-medium'>Produk Rekomendasi</strong></Level.Left>
 					<Level.Right>
 						<Link to='/promo/recommended_products' className='text-muted font-small'>
 							LIHAT SEMUA<Svg src='ico_arrow_right_small.svg' />
