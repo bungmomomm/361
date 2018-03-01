@@ -76,7 +76,7 @@ class HashtagsDetails extends PureComponent {
 									<div className='margin--medium flex-row flex-spaceBetween flex-middle'>
 										<div>
 											<div>{ent.data.post.username}</div>
-											<div className='font-color--primary-ext-2 font-small'>Post date: {moment(ent.data.post.created_time, 'DD MMM YYYY').format('DD/MM/YY')}</div>
+											<div className='font-color--primary-ext-2 font-small'>{moment(ent.data.post.created_time, 'DD MMM YYYY').format('DD/MM/YY')}</div>
 										</div>
 										{(
 											<div className='padding--medium'>
