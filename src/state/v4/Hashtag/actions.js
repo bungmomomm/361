@@ -14,7 +14,7 @@ const getQuery = (hashtag) => {
 	const limit = configs.defaultPage;
 
 	const filtr = hashtag.tags.filter((obj) => {
-		return obj.hashtag === tag;
+		return (obj.hashtag === tag || obj.hashtag === tag.replace('#', ''));
 	});
 
 	if (hashtag.products[node] && (!hashtag.products[node].links || !hashtag.products[node].links.next)) {
@@ -43,7 +43,7 @@ const itemsActiveHashtag = (tag) => (dispatch, getState) => {
 	const data = {
 		active: {
 			tag: tag || 'All',
-			node: tag ? tag.replace('#', '').toLowerCase() : (tag && tag.indexOf('#') !== -1) ? tag : 'all'
+			node: tag ? tag.replace('#', '').toLowerCase() : 'all'
 		}
 	};
 	dispatch(actions.itemsActiveHashtag(data));
@@ -108,9 +108,7 @@ const itemsFetchData = ({ token, query = {} }) => async (dispatch, getState) => 
 const initHashtags = (token, hash) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrlPromo = _.chain(shared).get('serviceUrl.promo.url').value() || process.env.MICROSERVICES_URL;
-
 	const urlInit = `${baseUrlPromo}/mainpromo?segment_id=1`;
-
 	const [errPromo, initResp] = await to(request({
 		token,
 		path: urlInit,
@@ -121,17 +119,16 @@ const initHashtags = (token, hash) => async (dispatch, getState) => {
 	if (errPromo) {
 		dispatch(actions.itemsHasError({ hasError: errPromo }));
 		return Promise.reject(errPromo);
-	} else if (!_.chain(initResp).get('data.data.hashtag.campaign_id').value()) {
-		return Promise.reject('Whoops we don\'t have feeds yet, come again later!');
+	} else if (_.chain(initResp).get('data.data.hashtag.campaign_id').value() === undefined) {
+		return Promise.reject('Whoops no feeds to show you for now, get a life!');
 	}
 
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || process.env.MICROSERVICES_URL;
-
 	const url = `${baseUrl}/campaign`;
 	const query = {
 		page: 1,
 		per_page: configs.defaultPage,
-		campaign_id: _.chain(initResp).get('data.data.hashtag.campaign_id').value()
+		campaign_id: initResp.data.data.hashtag.campaign_id
 	};
 
 	const [err, resp] = await to(request({
@@ -149,8 +146,8 @@ const initHashtags = (token, hash) => async (dispatch, getState) => {
 
 	dispatch(actions.itemsActiveHashtag({
 		active: {
-			tag: hash || 'All',
-			node: hash ? hash.replace('#', '').toLowerCase() : (hash && !hash.indexOf('#')) ? hash : 'all'
+			tag: hash || initResp.data.data.hashtag.hashtag,
+			node: hash ? hash.replace('#', '').toLowerCase() : initResp.data.data.hashtag.hashtag.replace('#', '').toLowerCase()
 		}
 	}));
 

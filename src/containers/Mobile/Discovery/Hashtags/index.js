@@ -10,6 +10,7 @@ import Spinner from '@/components/mobile/Spinner';
 import Footer from '@/containers/Mobile/Shared/footer';
 import styles from './Hashtags.scss';
 import Helmet from 'react-helmet';
+import _ from 'lodash';
 
 class Hashtags extends Component {
 
@@ -109,7 +110,7 @@ class Hashtags extends Component {
 		const { hashtag, history, scroller, location } = this.props;
 		const tags = hashtag.tags;
 		const q = actions.getQuery(hashtag);
-		const campaignId = q.query.campaign_id || 1;
+		const campaignId = _.chain(q).get('query.campaign_id').value() || 1;
 
 		const HeaderPage = {
 			left: (
@@ -158,14 +159,20 @@ class Hashtags extends Component {
 										key={i}
 										className={tag.hashtag === hashtag.active.tag ? 'padding--medium' : 'padding--medium font-color--primary-ext-2'}
 									>
-										{tag.hashtag}
+										{tag.hashtag.indexOf('#') === -1 ? `#${tag.hashtag}` : tag.hashtag}
 									</Link>
 								))}
 							</div>
 						</div>
 					</div>
 
-					{hashtag.viewMode === 3 ? this.renderGridSmall(campaignId) : this.renderGridLarge(campaignId)}
+					{
+						campaignId && hashtag.viewMode === 3
+						? this.renderGridSmall(campaignId)
+						: campaignId && hashtag.viewMode === 1
+						? this.renderGridLarge(campaignId)
+						: ''
+					}
 					{scroller.loading && <Spinner />}
 					<Footer isShow={this.state.isFooterShow} />
 				</Page>
