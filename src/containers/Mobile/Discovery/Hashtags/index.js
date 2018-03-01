@@ -42,15 +42,14 @@ class Hashtags extends Component {
 		const { dispatch, hashtag, cookies } = this.props;
 
 		if (typeof tag !== 'undefined' && hashtag.active.tag !== switchTag) {
-			dispatch(actions.itemsActiveHashtag(tag === '#All' ? 'All' : tag));
+			dispatch(actions.itemsActiveHashtag(tag));
 
 			if (!hashtag.products[switchTag] && !hashtag.loading) {
-				const q = actions.getQuery(hashtag);
+				const q = dispatch(actions.getQuery());
 				const dataFetch = {
 					token: cookies.get('user.token'),
 					query: q.query
 				};
-
 				dispatch(actions.itemsFetchData(dataFetch));
 			}
 		}
@@ -61,7 +60,7 @@ class Hashtags extends Component {
 		const { hashtag, dispatch } = this.props;
 		const mode = hashtag.viewMode === 3 ? 1 : 3;
 		dispatch(actions.switchViewMode(mode));
-	}
+	};
 
 	renderGridSmall = (campaignId) => {
 		const { hashtag } = this.props;
@@ -79,7 +78,7 @@ class Hashtags extends Component {
 				))}
 			</Grid>
 		);
-	}
+	};
 
 	renderGridLarge = (campaignId) => {
 		const { hashtag } = this.props;
@@ -104,12 +103,12 @@ class Hashtags extends Component {
 				))}
 			</div>
 		);
-	}
+	};
 
 	render() {
-		const { hashtag, history, scroller, location } = this.props;
+		const { hashtag, history, scroller, location, dispatch } = this.props;
 		const tags = hashtag.tags;
-		const q = actions.getQuery(hashtag);
+		const q = dispatch(actions.getQuery());
 		const campaignId = _.chain(q).get('query.campaign_id').value() || 1;
 
 		const HeaderPage = {
@@ -157,9 +156,9 @@ class Hashtags extends Component {
 										to={tag.hashtag.indexOf('#') === -1 ? `/mau-gaya-itu-gampang#${tag.hashtag}` : `/mau-gaya-itu-gampang${tag.hashtag}`}
 										onClick={() => this.switchTag(tag.hashtag)}
 										key={i}
-										className={tag.hashtag === hashtag.active.tag ? 'padding--medium' : 'padding--medium font-color--primary-ext-2'}
+										className={tag.hashtag.replace('#', '') === hashtag.active.tag.replace('#', '') ? 'padding--medium' : 'padding--medium font-color--primary-ext-2'}
 									>
-										{tag.hashtag !== 'All' && tag.hashtag.indexOf('#') === -1 ? `#${tag.hashtag}` : tag.hashtag}
+										{tag.hashtag.indexOf('#') === -1 ? `#${tag.hashtag}` : tag.hashtag}
 									</Link>
 								))}
 							</div>
@@ -192,7 +191,7 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = (props) => {
 	const { dispatch, location, cookies } = props;
-	dispatch(actions.initHashtags(cookies.get('user.token'), location.hash === '#All' ? 'All' : location.hash));
+	dispatch(actions.initHashtags(cookies.get('user.token'), location.hash));
 };
 
 export default withRouter(withCookies(connect(mapStateToProps)(Scroller(Shared(Hashtags, doAfterAnonymous)))));

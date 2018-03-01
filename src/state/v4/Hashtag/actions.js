@@ -8,7 +8,8 @@ const configs = {
 	defaultPage: 20
 };
 
-const getQuery = (hashtag) => {
+const getQuery = () => (dispatch, getState) => {
+	const { hashtag } = getState();
 	const tag = hashtag.active.tag;
 	const node = hashtag.active.node;
 	const limit = configs.defaultPage;
@@ -17,13 +18,12 @@ const getQuery = (hashtag) => {
 		return (obj.hashtag === tag || obj.hashtag === tag.replace('#', ''));
 	});
 
-	if (hashtag.products[node] && (!hashtag.products[node].links || !hashtag.products[node].links.next)) {
-		return false;
-	}
-
 	const tagId = (typeof filtr !== 'undefined' && Array.isArray(filtr) && filtr[0] && filtr[0].campaign_id) ? filtr[0].campaign_id : false;
-	const nextLink = !hashtag.products[node] || !hashtag.products[node].links || !hashtag.products[node].links.next
-					? false : new URL(`http://mm.m${hashtag.products[node].links.next}`).searchParams;
+	const nextUrl = !hashtag.products[node] ? `${process.env.MOBILE_URL}?page=1`
+					: (hashtag.products[node].links && !hashtag.products[node].links.next) ? false
+					: `${process.env.MOBILE_URL}${hashtag.products[node].links.next}`;
+
+	const nextLink = (nextUrl && new URL(nextUrl).searchParams) || false;
 
 	let query = { per_page: limit };
 	query = (nextLink) ? { ...query, page: nextLink.get('page') } : query;
@@ -42,13 +42,13 @@ const getQuery = (hashtag) => {
 const itemsActiveHashtag = (tag) => (dispatch, getState) => {
 	const data = {
 		active: {
-			tag: tag || 'All',
-			node: tag ? tag.replace('#', '').toLowerCase() : 'all'
+			tag,
+			node: tag.replace('#', '').toLowerCase()
 		}
 	};
 	dispatch(actions.itemsActiveHashtag(data));
-	const { hashtag, scroller } = getState();
-	const q = getQuery(hashtag);
+	const { scroller } = getState();
+	const q = dispatch(getQuery());
 
 	dispatch(scrollerActions.onScroll({
 		nextData: { ...scroller.nextData, query: q ? q.query : {} },
@@ -89,12 +89,11 @@ const itemsFetchData = ({ token, query = {} }) => async (dispatch, getState) => 
 	}
 
 	dispatch(actions.itemsFetchDataSuccess({
-		products: resp.data.data.contents,
+		products: resp.data.data.contents || [],
 		links: resp.data.data.links
 	}));
 
-	const { hashtag } = getState();
-	const q = getQuery(hashtag);
+	const q = dispatch(getQuery());
 
 	dispatch(scrollerActions.onScroll({
 		nextData: { token, query: q ? q.query : {} },
@@ -109,7 +108,7 @@ const initHashtags = (token, hash) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrlPromo = _.chain(shared).get('serviceUrl.promo.url').value() || process.env.MICROSERVICES_URL;
 	const urlInit = `${baseUrlPromo}/mainpromo?segment_id=1`;
-	const [errPromo, initResp] = await to(request({
+	const [errPromo, respPromo] = await to(request({
 		token,
 		path: urlInit,
 		method: 'GET',
@@ -119,56 +118,43 @@ const initHashtags = (token, hash) => async (dispatch, getState) => {
 	if (errPromo) {
 		dispatch(actions.itemsHasError({ hasError: errPromo }));
 		return Promise.reject(errPromo);
-	} else if (_.chain(initResp).get('data.data.hashtag.campaign_id').value() === undefined) {
-		return Promise.reject('Whoops no feeds to show you for now, get a life!');
+	} else if (_.chain(respPromo).get('data.data.hashtag.campaign_id').value() === undefined) {
+		return Promise.reject('Whoops sorry, no feeds to show you for now.');
 	}
 
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || process.env.MICROSERVICES_URL;
 	const url = `${baseUrl}/campaign`;
-	const query = {
+	let query = {
 		page: 1,
 		per_page: configs.defaultPage,
-		campaign_id: initResp.data.data.hashtag.campaign_id
+		campaign_id: respPromo.data.data.hashtag.campaign_id
 	};
-
-	const [err, resp] = await to(request({
+	const [errInit, respInit] = await to(request({
 		token,
 		path: url,
 		method: 'GET',
 		query,
 		fullpath: true
 	}));
-
-	if (err) {
-		dispatch(actions.itemsHasError({ hasError: err }));
-		return Promise.reject(err);
+	if (errInit) {
+		dispatch(actions.itemsHasError({ hasError: errInit }));
+		return Promise.reject(errInit);
 	}
-
 	dispatch(actions.itemsActiveHashtag({
 		active: {
-			tag: hash || initResp.data.data.hashtag.hashtag,
-			node: hash ? hash.replace('#', '').toLowerCase() : initResp.data.data.hashtag.hashtag.replace('#', '').toLowerCase()
+			tag: hash || respPromo.data.data.hashtag.hashtag,
+			node: hash ? hash.replace('#', '').toLowerCase() : respPromo.data.data.hashtag.hashtag.replace('#', '').toLowerCase()
 		}
 	}));
-
 	dispatch(actions.initFetchDataSuccess({
-		header: resp.data.data.header_intro,
-		tags: Array.from(resp.data.data.hashtags.reduce((m, t) => m.set(t.campaign_id, t), new Map()).values()),
-		products: resp.data.data.contents,
-		links: resp.data.data.links
+		header: respInit.data.data.header_intro,
+		tags: Array.from(respInit.data.data.hashtags.reduce((m, t) => m.set(t.campaign_id, t), new Map()).values()),
 	}));
 
-	const { hashtag } = getState();
-	const q = getQuery(hashtag);
+	const q = dispatch(getQuery());
+	query = q.query;
 
-	dispatch(scrollerActions.onScroll({
-		nextData: { token, query: q ? q.query : {} },
-		nextPage: q ? q.nextPage : false,
-		loading: false,
-		loader: itemsFetchData
-	}));
-
-	return Promise.resolve(resp);
+	return dispatch(itemsFetchData({ token, query }));
 };
 
 export default {
