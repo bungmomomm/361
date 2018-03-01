@@ -78,7 +78,7 @@ class HashtagsDetails extends PureComponent {
 											<div>{ent.data.post.username}</div>
 											<div className='font-color--primary-ext-2 font-small'>Post date: {moment(ent.data.post.created_time, 'DD MMM YYYY').format('DD/MM/YY')}</div>
 										</div>
-										{ent.data.post.like > 0 && (
+										{(
 											<div className='padding--medium'>
 												<div className='flex-row flex-middle'>
 													<Svg src='ico_lovelist.svg' />
