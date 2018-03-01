@@ -11,6 +11,7 @@ import Footer from '@/containers/Mobile/Shared/footer';
 import styles from './Hashtags.scss';
 import Helmet from 'react-helmet';
 import _ from 'lodash';
+import currency from 'currency.js';
 
 class Hashtags extends Component {
 
@@ -92,11 +93,16 @@ class Hashtags extends Component {
 						<Link to={`/mau-gaya-itu-gampang/${campaignId}/${product.id}`}>
 							<Image src={product.image} width='100%' />
 						</Link>
-						<div className='flex-row padding--medium margin--medium'>
-							<div><Image avatar height={40} width={40} src={product.image} /></div>
+						<div className='margin--medium flex-row flex-spaceBetween flex-middle'>
 							<div className='padding--medium'>
 								<div><Link className='font-color--primary' to='/'>@{product.username}</Link></div>
-								<div><em className='font-small font--lato-normal font-color--grey'>Post date: {product.created_time}</em></div>
+								<div><em className='font-small font--lato-normal font-color--grey'>{product.created_time}</em></div>
+							</div>
+							<div className='padding--medium'>
+								<div className='flex-row flex-middle'>
+									<Svg src='ico_lovelist.svg' />
+									<span>{currency(product.like, { separator: '.', decimal: ',', precision: 0 }).format()}</span>
+								</div>
 							</div>
 						</div>
 					</div>
