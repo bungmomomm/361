@@ -27,7 +27,7 @@ class Login extends Component {
 			validLoginId: false,
 			validPassword: false,
 			validLogin: false,
-			redirectUrl: query.redirect_url || false
+			redirectUrl: query.redirect_uri || false
 		};
 	}
 
