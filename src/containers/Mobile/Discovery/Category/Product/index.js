@@ -30,7 +30,7 @@ import { actions as pcpActions } from '@/state/v4/ProductCategory';
 import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 
-import { hyperlink, renderIf } from '@/utils';
+import { urlBuilder, renderIf } from '@/utils';
 import stylesCatalog from '../Catalog/catalog.scss';
 import Footer from '@/containers/Mobile/Shared/footer';
 
@@ -87,18 +87,18 @@ class Product extends Component {
 		const { query } = this.state;
 
 		const parsedUrl = queryString.parse(location.search);
-		const urlParam = {
+
+		const url = queryString.stringify({
 			sort: query.sort,
 			per_page: query.per_page,
 			page: query.page,
 			...parsedUrl,
 			...params
-		};
-
-		const url = queryString.stringify(urlParam, {
+		}, {
 			encode: false
 		});
-		history.push(`?${url}`);
+		
+		history.replace(`?${url}`);
 
 		const pcpParam = {
 			...query,
@@ -210,7 +210,7 @@ class Product extends Component {
 
 	renderList(productData, index) {
 		if (productData) {
-			const linkToPdpCreator = hyperlink('', ['product', productData.product_id], null);
+			const linkToPdpCreator = urlBuilder.buildPdp(productData.product_title, productData.product_id);
 			const { viewMode, comments, lovelist } = this.props;
 			const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: productData.product_id }) : false;
 			const commentTotal = commentData ? commentData.total : null;
