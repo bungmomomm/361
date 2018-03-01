@@ -48,6 +48,7 @@ let Seller = defRoute;
 let UserProfileEditPassword = defRoute;
 let Cart = defRoute;
 let CartEmpty = defRoute;
+let ThankYou = defRoute;
 
 if (isMobile()) {
 	/**
@@ -101,6 +102,10 @@ if (isMobile()) {
 	UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'));
 	UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'));
 	UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'));
+
+	// Order
+	ThankYou = loadable(() => import('@/containers/Mobile/Order/ThankYou'));
+
 } else {
 	/**
 	 * Require main desktop styles
@@ -269,6 +274,10 @@ export default {
 		{
 			path: '/profile-edit-password',
 			component: UserProfileEditPassword
+		},
+		{
+			path: '/checkout/complete/:so_number([a-zA-Z0-9-]+)',
+			component: ThankYou
 		},
 		{
 			path: '/*', // Page not found handling.
