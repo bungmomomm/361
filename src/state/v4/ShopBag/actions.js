@@ -57,8 +57,6 @@ const deleteAction = (token, productId) => async (dispatch, getState) => {
 		return Promise.reject(err);
 	};
 
-	dispatch(getAction(token));
-
 	return Promise.resolve(response);
 };
 
@@ -80,8 +78,6 @@ const addLovelistAction = (token, productId) => async (dispatch, getState) => {
 	if (err) {
 		return Promise.reject(err);
 	};
-
-	dispatch(deleteAction(token, productId));
 
 	return Promise.resolve(response);
 };

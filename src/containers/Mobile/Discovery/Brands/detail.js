@@ -299,7 +299,11 @@ class Detail extends Component {
 					<Link to={`/product/comments/${commentData.product_id}`}>
 						<Button>View {commentData.total} comments</Button>
 					</Link>
-					<Comment data={lastCommentShorted} type='lite-review' />
+					<Comment
+						data={lastCommentShorted}
+						type='lite-review'
+						loading={this.props.brands.loading_prodcuts_comments}
+					/>
 				</div>
 			);
 		}
