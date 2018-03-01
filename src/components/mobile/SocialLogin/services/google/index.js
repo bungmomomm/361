@@ -12,24 +12,30 @@ class GoogleLogin extends PureComponent {
 		};
 	}
 	componentDidMount() {
-		const { clientId, scope } = this.props;
-		const firstJS = document.getElementsByTagName('script')[0];
-		const js = document.createElement('script');
-		js.src = '//apis.google.com/js/platform.js';
-		js.id = 'gapi-client';
-		js.async = true;
-		js.defer = true;
-		js.onload = () => {
+		const { clientId, appId, discoveryDocs, scope } = this.props;
+		((d, s, id, cb) => {
+			const element = d.getElementsByTagName(s)[0];
+			const fjs = element;
+			if (d.getElementById(id)) {
+				return;
+			}
+			const js = d.createElement(s); js.id = id;
+			js.src = '//apis.google.com/js/api.js';
+			fjs.parentNode.insertBefore(js, fjs);
+			js.onload = cb;
+		})(document, 'script', 'google-jssdk', () => {
+			const params = {
+				appId,
+				client_id: clientId,
+				discoveryDocs,
+				scope
+			};
 			this.setState({
 				sdkLoaded: true
 			});
-			window.gapi.load('auth2', () => {
+			window.gapi.load('auth2', async () => {
 				if (!window.gapi.auth2.getAuthInstance()) {
-					window.gapi.auth2.init({
-						client_id: clientId,
-						fetchBasicProfile: true,
-						scope: scope ? ((Array.isArray(scope) && scope.join(' ')) || scope) : null
-					}).then(
+					window.gapi.auth2.init(params).then(
 						res => {
 							// if (this.props.autoload && this.state.sdkLoaded && !this.loading && res.isSignedIn.get()) {
 								// this.proccessLogin(res.currentUser.get());
@@ -39,13 +45,7 @@ class GoogleLogin extends PureComponent {
 					);
 				}
 			});
-		};
-
-		if (!firstJS) {
-			document.appendChild(js);
-		} else {
-			firstJS.parentNode.appendChild(js);
-		}
+		});
 	}
 
 	login() {
@@ -66,7 +66,7 @@ class GoogleLogin extends PureComponent {
 		const authResponse = response.getAuthResponse();
 		const profile = {
 			googleId: basicProfile.getId(),
-			authToken: authResponse.id_token,
+			access_token: authResponse.id_token,
 			expiresIn: authResponse.expires_at,
 			authResponse,
 			imageUrl: basicProfile.getImageUrl(),

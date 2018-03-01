@@ -26,7 +26,6 @@ const searchAction = ({ token, query = {}, loadNext = false }) => async (dispatc
 		query,
 		fullpath: true
 	}));
-
 	const searchData = {
 		...response.data.data
 	};
@@ -52,7 +51,6 @@ const searchAction = ({ token, query = {}, loadNext = false }) => async (dispatc
 			query
 		}));
 	}
-	
 	const nextLink = searchData.links && searchData.links.next ? new URL(baseUrl + searchData.links.next).searchParams : false;
 	dispatch(scrollerActions.onScroll({
 		nextData: {
@@ -93,6 +91,7 @@ const promoAction = (token) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
+		console.log(err);
 		return Promise.reject(err);
 	}
 
@@ -101,6 +100,8 @@ const promoAction = (token) => async (dispatch, getState) => {
 		searchStatus: 'failed',
 		promoData
 	}));
+
+	console.log(promoData);
 
 	return Promise.resolve(promoData);
 };
