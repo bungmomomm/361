@@ -82,7 +82,7 @@ class SearchNotFound extends PureComponent {
 		return (
 			<Page>
 				<div className='text-center' >
-					<div className='margin--medium flex-center'><Svg src='mm_ico_no_404_alt.svg' /></div>
+					<div className='margin--medium flex-center flex-middle'><Svg src='mm_ico_no_404_alt.svg' /></div>
 					<div className=' margin--small'>
 						<strong className='font-bold font-large'>SORRY!</strong>
 					</div>

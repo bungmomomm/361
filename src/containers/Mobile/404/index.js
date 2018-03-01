@@ -31,7 +31,7 @@ class Page404 extends Component {
 				</div>
 			);
 		};
-		
+
 		return (
 			<div className='margin--large margin--none-top'>
 				<Level>
@@ -60,7 +60,7 @@ class Page404 extends Component {
 		const { history } = this.props;
 		const HeaderPage = {
 			left: (
-				<button onClick={() => (history.length < 2 ? history.push('/') : history.go(-2))}> 
+				<button onClick={() => (history.length < 2 ? history.push('/') : history.go(-2))}>
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</button>
 			),
@@ -70,7 +70,7 @@ class Page404 extends Component {
 			<div className='text-center' style={this.props.style}>
 				<Page>
 					<div className={styles.container} >
-						<div className='margin--medium flex-center'><Svg src='mm_ico_no_404_alt.svg' /></div>
+						<div className='margin--medium flex-center flex-middle'><Svg src='mm_ico_no_404_alt.svg' /></div>
 						<div className=' margin--small'>
 							<strong className='font-bold font-large'>OOPS!</strong>
 						</div>
@@ -115,7 +115,7 @@ const doAfterAnonymous = (props) => {
 export default withCookies(
 	connect(mapStateToProps)(
 		Shared(
-			Page404, 
+			Page404,
 			doAfterAnonymous
 		)
 	)

@@ -15,7 +15,7 @@ class Hashtags extends Component {
 
 	state = {
 		isFooterShow: true,
-		sticky: false
+		sticky: true
 	};
 
 	componentDidMount() {
@@ -28,10 +28,11 @@ class Hashtags extends Component {
 
 	handleScroll = (e) => {
 		const { sticky } = this.state;
-		if (e.target.scrollTop > 170 && !sticky) {
+		const scrollTop = e.target.scrollTop;
+		if (scrollTop > 170 && scrollTop > 0 && !sticky) {
 			this.setState({ sticky: true });
 		}
-		if (e.target.scrollTop < 170 && sticky) {
+		if (scrollTop < 170 && scrollTop > 0 && sticky) {
 			this.setState({ sticky: false });
 		}
 	};
