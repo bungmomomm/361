@@ -159,7 +159,7 @@ class Hashtags extends Component {
 										key={i}
 										className={tag.hashtag === hashtag.active.tag ? 'padding--medium' : 'padding--medium font-color--primary-ext-2'}
 									>
-										{tag.hashtag.indexOf('#') === -1 ? `#${tag.hashtag}` : tag.hashtag}
+										{tag.hashtag !== 'All' && tag.hashtag.indexOf('#') === -1 ? `#${tag.hashtag}` : tag.hashtag}
 									</Link>
 								))}
 							</div>
