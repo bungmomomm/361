@@ -25,6 +25,7 @@ let Brands = defRoute;
 let BrandsDetail = defRoute;
 let CatalogCategory = defRoute;
 let Lovelist = defRoute;
+let LovelistLogin = defRoute;
 let Hashtags = defRoute;
 let HashtagsDetails = defRoute;
 let Products = defRoute;
@@ -63,6 +64,7 @@ if (isMobile()) {
 	SearchResults = loadable(() => import('@/containers/Mobile/Discovery/SearchResults'));
 	SearchNotFound = loadable(() => import('@/containers/Mobile/Discovery/SearchNotFound'));
 	Lovelist = loadable(() => import('@/containers/Mobile/Discovery/Lovelist'));
+	LovelistLogin = loadable(() => import('@/containers/Mobile/Discovery/Lovelist/login'));
 	Hashtags = loadable(() => import('@/containers/Mobile/Discovery/Hashtags'));
 	Category = loadable(() => import('@/containers/Mobile/Discovery/Category'));
 	SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
@@ -234,6 +236,10 @@ export default {
 		{
 			path: '/lovelist',
 			component: Lovelist
+		},
+		{
+			path: '/lovelist-login',
+			component: LovelistLogin
 		},
 		{
 			path: '/cart',

@@ -3,6 +3,8 @@
 
 .container{
 	order: 0;
+  	height: 0;
+  	overflow: visible;
 }
 
 .wrapper{
@@ -78,4 +80,15 @@
 .disableShadow .modal{
 	box-shadow: none;
 	border: 0px;
+}
+
+.transparent {
+  color: #ffffff;
+  font-weight: bold;
+  background: transparent;
+  border-bottom: 0;
+  box-shadow: none;
+  svg path {
+	stroke: #ffffff;
+  }
 }
