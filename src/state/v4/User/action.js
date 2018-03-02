@@ -251,6 +251,41 @@ const userGetProfile = (token) => async (dispatch, getState) => {
 	}
 };
 
+const userForgotPassword = (token, username) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	const path = `${baseUrl}/auth/forgotpwd`;
+
+	dispatch(actions.userForgotPassword());
+	try {
+		const response = await request({
+			token,
+			method: 'POST',
+			path,
+			fullpath: true,
+			body: {
+				client_secret: getClientSecret(),
+				hp_email: username
+			}
+		});
+		if (isSuccess(response)) {
+			dispatch(actions.userForgotPasswordSuccess(response.data.data));
+			return Promise.resolve({
+				data: response.data.data
+			});
+		}
+		const error = new Error('Error while calling api');
+		dispatch(actions.userForgotPasswordFail(error));
+		return Promise.reject(error);
+	} catch (error) {
+		dispatch(actions.userForgotPasswordFail(error));
+		return Promise.reject(error);
+	}
+};
+
 // 	USER_GET_PROFILE_FAIL: (error) => ({ profile: { error } }),
 // 	USER_GET_PROFILE_SUCCESS: (userProfile) => ({ userProfile }),
 
@@ -262,5 +297,6 @@ export default {
 	userNameChange,
 	userGetProfile,
 	userRegister,
+	userForgotPassword,
 	userOtpValidate
 };

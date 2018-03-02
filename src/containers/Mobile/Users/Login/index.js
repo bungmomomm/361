@@ -10,7 +10,7 @@ import styles from '../user.scss';
 import _ from 'lodash';
 import validator from 'validator';
 import util from 'util';
-import { to } from 'await-to-js';
+import to from 'await-to-js';
 import queryString from 'query-string';
 
 class Login extends Component {
@@ -158,7 +158,7 @@ class Login extends Component {
 						<div className='flex-row flex-center flex-spaceBetween'>
 							<div style={{ width: '45%' }}>
 								<div className='margin--medium text-left'>
-									<Link to='/'>LUPA PASSWORD</Link>
+									<Link to='/forgot-password'>LUPA PASSWORD</Link>
 								</div>
 							</div>
 							<div style={{ width: '45%' }}>

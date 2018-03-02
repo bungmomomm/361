@@ -214,7 +214,7 @@ export default {
 			exact: true
 		},
 		{
-			path: '/forgotPassword',
+			path: '/forgot-password',
 			component: ForgotPassword,
 			exact: true
 		},
