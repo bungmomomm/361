@@ -14,7 +14,7 @@
 	background-color: #fff;
 	display: flex;
 	flex-direction: row;
-	height: rem(60px);
+  	min-height: rem(60px);
 	justify-content: space-between;
 	padding: rem(0px) rem(15px);
 	position: fixed;
@@ -90,4 +90,18 @@
 .disableShadow .modal{
 	box-shadow: none;
 	border: 0px;
+}
+
+.rows {
+  flex-flow: row wrap;
+  height: auto;
+  > div {
+	min-height: 60px;
+	justify-content: center;
+  }
+  .row {
+	margin: 0 rem(-15px);
+	min-height: unset;
+	width: calc(100% + (15px  * 2));
+  }
 }

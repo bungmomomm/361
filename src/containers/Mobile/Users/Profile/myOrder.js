@@ -9,9 +9,9 @@ import {
 	Page,
 	Navigation,
 	Tabs,
-	List,
-	Image
+	List
 } from '@/components/mobile';
+import styles from './profile.scss';
 
 class MyOrder extends Component {
 	constructor(props) {
@@ -74,25 +74,44 @@ class MyOrder extends Component {
 				</Link>
 			),
 			center: 'Pesanan Saya',
-			right: null
+			right: null,
+			rows: [{
+				left: null,
+				center: (
+					<Tabs
+						type='minimal'
+						current={this.state.current}
+						variants={this.menu}
+						onPick={(e) => this.handlePick(e)}
+					/>
+				),
+				right: null
+			}]
 		});
 
 		return (
 			<div style={this.props.style}>
 				<Page>
-					<Tabs
-						current={this.state.current}
-						variants={this.menu}
-						onPick={(e) => this.handlePick(e)}
-					/>
-					<div>
+					<div className='margin--medium'>
 						{
 							this.dummyData.map((data, key) => {
 								return (
 									<List key={key}>
 										<Link style={{ flexFlow: 'row nowrap' }} to='/'>
-											<List.Image><Image width={40} height={40} avatar src='' /></List.Image>
-											<List.Content>Pesanan #{data.soNumber}</List.Content>
+											<List.Image>
+												<div className={styles.orderIconCtr}>
+													<Svg src='ico_money-time.svg' />
+													{/* <Svg src='ico_truck.svg' /> */}
+													{/* <Svg src='ico_wallet.svg' /> */}
+												</div>
+											</List.Image>
+											<List.Content>
+												<div className='orderDesc'>
+													<span>Pesanan <b>#{data.soNumber}</b></span>
+													<small className='font-color--primary-ext-3'>06/04/2017</small>
+													<small className='font-color--primary-ext-2'>Menunggu Pembayaran</small>
+												</div>
+											</List.Content>
 										</Link>
 									</List>
 								);
