@@ -7,9 +7,11 @@ import Shared from '@/containers/Mobile/Shared';
 import { connect } from 'react-redux';
 import { actions as shopBagAction } from '@/state/v4/ShopBag';
 import CONST from '@/constants';
-import { urlBuilder } from '@/utils';
+import { urlBuilder, aux } from '@/utils';
 import CartEmpty from '@/containers/Mobile/Cart/empty';
 import { actions as actionShared } from '@/state/v4/Shared';
+import _ from 'lodash';
+
 class Cart extends Component {
 	constructor(props) {
 		super(props);
@@ -17,15 +19,16 @@ class Cart extends Component {
 		this.state = {
 			showSelect: false,
 			showConfirmDelete: false,
-			productWillDelete: { product_id: null, brand: null, title: null, image: null },
-			productIdwillUpdate: null,
+			productWillDelete: { variant_id: null, brand: null, title: null, image: null },
+			variantIdwillUpdate: null,
 			selectList: [],
 			qtyCurrent: null,
 			qtyNew: null,
 			selected: {
 				label: null,
 				value: null
-			}
+			},
+			itemsNotProced: []
 		};
 		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
 		this.deleteItemHandler = this.deleteItemHandler.bind(this);
@@ -53,31 +56,59 @@ class Cart extends Component {
 			const { dispatch } = this.props;
 			dispatch(shopBagAction.getAction(this.userToken));
 		}
+		this.checkNotProcedItem(nextProps);
 	}
 
-	addToLovelistHandler(productId) {
+	checkNotProcedItem(props) {
+		const items = _.flatMap(props.shopBag.carts, (e) => (e.items));
+		const notProcedItems = items.filter((item) => (item.max_qty < item.qty));
+		this.setState({ itemsNotProced: notProcedItems });
+	}
+
+	addToLovelistHandler(productId, variantId) {
 		const { dispatch } = this.props;
-		dispatch(shopBagAction.addLovelistAction(this.userToken, productId));
+		const movingToLovelist = new Promise((resolve, reject) => {
+			resolve(dispatch(shopBagAction.addLovelistAction(this.userToken, productId)));
+		});
+		movingToLovelist.then((res) => {
+			const deleting = new Promise((resolve, reject) => {
+				resolve(dispatch(shopBagAction.deleteAction(this.userToken, variantId)));
+			});
+			deleting.then((resp) => {
+				dispatch(shopBagAction.getAction(this.userToken));
+			});
+		});
 	}
 
-	deleteConfirmationItemHandler(productId, itemBrand, itemTitel, itemImage) {
-		this.setState({ showConfirmDelete: true, productWillDelete: { product_id: productId, brand: itemBrand, title: itemTitel, image: itemImage } });
+	deleteConfirmationItemHandler(variantId, itemBrand, itemTitel, itemImage) {
+		this.setState({ showConfirmDelete: true, productWillDelete: { variant_id: variantId, brand: itemBrand, title: itemTitel, image: itemImage } });
+	}
+
+	clearWillDeleteState() {
+		this.setState({ showConfirmDelete: false, productWillDelete: { variant_id: null, brand: null, title: null, image: null } });
 	}
 
 	deleteItemHandler() {
 		const { dispatch } = this.props;
-		this.setState({ showConfirmDelete: false, productIdwillDelete: null });
-		dispatch(shopBagAction.deleteAction(this.userToken, this.state.productIdwillDelete));
+
+		const deleting = new Promise((resolve, reject) => {
+			resolve(dispatch(shopBagAction.deleteAction(this.userToken, this.state.productWillDelete.variant_id)));
+			this.clearWillDeleteState();
+		});
+		deleting.then((res) => {
+			dispatch(shopBagAction.getAction(this.userToken));
+		}).catch((err) => this.clearWillDeleteState());
+
 	}
 
-	selectItemHandler(productId, maxQty, qty) {
+	selectItemHandler(variantId, maxQty, qty) {
 		const selectListData = [];
 		for (let step = 1; step <= maxQty; step++) {
 			selectListData.push({ value: step, label: step });
 		}
 		this.setState({
 			showSelect: !this.state.showSelect,
-			productIdwillUpdate: productId,
+			variantIdwillUpdate: variantId,
 			selectList: selectListData,
 			qtyCurrent: qty
 		});
@@ -90,9 +121,9 @@ class Cart extends Component {
 	updateCartHander() {
 		const { dispatch } = this.props;
 		if (this.state.qtyNew !== null && this.state.qtyCurrent !== this.state.qtyNew) {
-			dispatch(shopBagAction.updateAction(this.userToken, this.state.productIdwillUpdate, this.state.qtyNew));
+			dispatch(shopBagAction.updateAction(this.userToken, this.state.variantIdwillUpdate, this.state.qtyNew));
 		}
-		this.setState({ showSelect: false, productIdwillUpdate: null, selectList: [], qtyCurrent: null, qtyNew: null });
+		this.setState({ showSelect: false, variantIdwillUpdate: null, selectList: [], qtyCurrent: null, qtyNew: null });
 	}
 
 	renderList(shopBagData) {
@@ -103,7 +134,10 @@ class Cart extends Component {
 						<Level style={{ paddingLeft: '0px' }} className='flex-row border-bottom'>
 							<Level.Item>
 								<Link to={urlBuilder.setId(item.product_id).setName(item.product_title).buildPdp()}>
-									<Image width='100%' src={item.images[0].mobile} />
+									<Image width='100%' src={item.images[0].original} />
+									{(item.max_qty < item.qty) && (
+										<div style={{ backgroundColor: '#ffaeae', padding: '5px 10px', textAlign: 'center', fontSize: '12px' }}>SUDAH TIDAK DIJUAL</div>
+									)}
 								</Link>
 							</Level.Item>
 							<Level.Item className='padding--medium'>
@@ -132,7 +166,7 @@ class Cart extends Component {
 									<Level.Item>
 										<Button
 											onClick={() => this.selectItemHandler(
-												item.product_id, item.max_quantity, item.qty
+												item.variant_id, item.max_qty, item.qty
 											)}
 											className='flex-center'
 										>
@@ -146,7 +180,7 @@ class Cart extends Component {
 						<div className='flex-row flex-center flex-spaceBetween margin--medium'>
 							<div>
 								<Button
-									onClick={() => this.addToLovelistHandler(item.product_id)}
+									onClick={() => this.addToLovelistHandler(item.product_id, item.variant_id)}
 									outline
 									color='secondary'
 									size='medium'
@@ -157,7 +191,7 @@ class Cart extends Component {
 							<div className='padding--large'>
 								<Button
 									onClick={() => this.deleteConfirmationItemHandler(
-										item.product_id, item.brand.brand_name, item.product_title, item.images[0].mobile
+										item.variant_id, item.brand.brand_name, item.product_title, item.images[0].thumbnail
 									)}
 									className='font-color--primary-ext-1'
 								>
@@ -230,6 +264,41 @@ class Cart extends Component {
 		);
 	}
 
+	renderCheckoutButton() {
+		let link = null;
+		const wording = (<aux>Lanjutkan ke Pembayaran <Svg color='#fff' src='ico_arrow-back.svg' /></aux>);
+		if (this.isLogin === 'true') {
+			if (this.state.itemsNotProced.length > 0) {
+				link = (<a>{wording}</a>);
+			} else {
+				link = (<a href={process.env.CHECKOUT_URL}>{wording}</a>);
+			}
+		} else {
+			link = (<Link to='/login'>{wording}</Link>);
+		}
+		return (
+			<div className={styles.paymentLink}>
+				<div>
+					<div>
+						{link}
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	renderMessageNotProcedItems() {
+		const style = {
+			backgroundColor: '#ffaeae',
+			padding: '5px 10px'
+		};
+		return this.state.itemsNotProced.length > 0 && (
+			<div style={style}>
+				1 produk atau lebih item tidak dapat dibeli. Silahkan hapus barang untuk melanjutkan pembayaran
+			</div>
+		);
+	}
+
 	render() {
 		const headerOption = {
 			left: (
@@ -250,21 +319,15 @@ class Cart extends Component {
 				<Page>
 					<div style={{ backgroundColor: '#F5F5F5' }}>
 						{this.renderHeaderShopBag()}
+						{this.renderMessageNotProcedItems()}
 						{this.renderList()}
 						{this.renderTotal()}
 					</div>
 				</Page>
 
 				<Header.Modal {...headerOption} />
-				<div className={styles.paymentLink}>
-					<div>
-						<div>
-							<Link to={(this.isLogin) ? process.env.CHECKOUT_URL : '/login'}>
-								Lanjutkan ke Pembayaran <Svg color='#fff' src='ico_arrow-back.svg' />
-							</Link>
-						</div>
-					</div>
-				</div>
+
+				{this.renderCheckoutButton()}
 
 				<Select
 					show={this.state.showSelect}
@@ -286,9 +349,7 @@ class Cart extends Component {
 					<Modal.Action
 						closeButton={
 							<Button
-								onClick={() => {
-									this.setState({ showConfirmDelete: false, productIdwillDelete: null, selectList: [] });
-								}}
+								onClick={this.clearWillDeleteState}
 							> BATAL
 							</Button>
 						}

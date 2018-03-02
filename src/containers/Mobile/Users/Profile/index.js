@@ -23,14 +23,14 @@ class UserProfile extends Component {
 			isBuyer: true // buyer or seller
 		};
 		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
-		this.isLogin = this.props.cookies.get('isLogin');
+		this.isLogin = this.props.cookies.get('isLogin') === 'true' && true;
 		this.loadingView = <div><Spinner /></div>;
 	}
 
 	componentWillMount() {
 		if (!this.isLogin) {
 			const { history } = this.props;
-			history.push('/');
+			history.push('/login');
 		}
 	}
 

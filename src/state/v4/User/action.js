@@ -215,8 +215,9 @@ const userRegister = (token, email, phone, password, fullname) => async (dispatc
 // 	USER_GET_PROFILE: undefined,
 
 const userGetProfile = (token) => async (dispatch, getState) => {
-	const { shared } = getState();
-	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+	// const { shared } = getState();
+	// const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+	const baseUrl = 'https://private-2c527d-mmv4microservices.apiary-mock.com';
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
@@ -252,11 +253,45 @@ const userGetProfile = (token) => async (dispatch, getState) => {
 // 	USER_GET_PROFILE_FAIL: (error) => ({ profile: { error } }),
 // 	USER_GET_PROFILE_SUCCESS: (userProfile) => ({ userProfile }),
 
+const userEditProfile = (token, data = []) => async (dispatch, getState) => {
+	// const { shared } = getState();
+	// const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+	const baseUrl = 'https://private-2c527d-mmv4microservices.apiary-mock.com';
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	const path = `${baseUrl}/e/edit`;
+
+	dispatch(actions.userEditProfile());
+	try {
+		const response = await request({
+			token,
+			method: 'POST',
+			path,
+			fullpath: true,
+			body: data
+		});
+		if (isSuccess(response)) {
+			dispatch(actions.userEditProfileSuccess(response.data.data));
+			return Promise.resolve({
+				data: response.data.data
+			});
+		}
+		const error = new Error('Error while calling api');
+		dispatch(actions.userEditProfileFail(error));
+		return Promise.reject(error);
+	} catch (error) {
+		dispatch(actions.userEditProfileFail(error));
+		return Promise.reject(error);
+	}
+};
+
 export default {
 	userLogin,
 	userAnonymous,
 	userNameChange,
 	userGetProfile,
+	userEditProfile,
 	userRegister,
 	userOtpValidate
 };

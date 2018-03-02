@@ -19,6 +19,9 @@ const actions = createActions({
 	USER_GET_PROFILE: undefined,
 	USER_GET_PROFILE_FAIL: (error) => ({ profile: { error } }),
 	USER_GET_PROFILE_SUCCESS: (userProfile) => ({ userProfile }),
+	USER_EDIT_PROFILE: undefined,
+	USER_EDIT_PROFILE_FAIL: (error) => ({ editProfile: { error } }),
+	USER_EDIT_PROFILE_SUCCESS: (message) => ({ editProfile: { message } }),
 	USER_FORGET_PASSWORD: undefined,
 	USER_FORGET_PASSWORD_FAIL: (error) => ({ forgot: { error } }),
 	USER_FORGET_PASSOWRD_SUCCESS: (message) => ({ forget: { message } }),
@@ -89,7 +92,10 @@ const reducer = handleActions({
 			isLoading: false,
 			isAnonymous: true
 		};
-	}
+	},
+	[actions.userEditProfile]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
+	[actions.userEditProfileFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
+	[actions.userEditProfileSuccess]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
 }, initialState);
 export default {
 	actions,

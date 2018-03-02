@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 import _ from 'lodash';
 import moment from 'moment';
+import util from 'util';
+import base64 from 'base-64';
 
 import Shared from '@/containers/Mobile/Shared';
 
@@ -23,10 +25,13 @@ class UserProfileEdit extends Component {
 			edit: false,
 			ovoVerified: false,
 			hasPP: true,
-			isBuyer: true // buyer or seller
+			isBuyer: true, // buyer or seller
+			formValid: false,
+			formError: '',
+			formData: props.userProfile,
 		};
 		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
-		this.isLogin = this.props.cookies.get('isLogin');
+		this.isLogin = this.props.cookies.get('isLogin') === 'true' && true;
 
 		this.verifyOVO = this.verifyOVO.bind(this);
 
@@ -37,6 +42,36 @@ class UserProfileEdit extends Component {
 		if (!this.isLogin) {
 			const { history } = this.props;
 			history.push('/');
+		}
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.userProfile !== false) {
+			this.setState({
+				formData: nextProps.userProfile
+			});
+		}
+	}
+
+	inputHandler(e) {
+		const { formData } = this.state;
+		const name = e.target.name;
+		const value = util.format('%s', e.target.value);
+
+		if (name === 'password') {
+			this.setState({
+				formData: {
+					...formData,
+					[name]: base64.encode(value)
+				}
+			});
+		} else {
+			this.setState({
+				formData: {
+					...formData,
+					[name]: value
+				}
+			});
 		}
 	}
 
@@ -108,11 +143,10 @@ class UserProfileEdit extends Component {
 	}
 
 	renderAvatar() {
-		const { users } = this.props;
+		const { userProfile } = this.props;
 		const { isBuyer } = this.state;
-		const userProfile = users.userProfile;
 
-		if (!userProfile) {
+		if (_.isEmpty(userProfile)) {
 			return (
 				<form style={{ padding: '15px' }}>
 					{this.loadingView}
@@ -146,15 +180,17 @@ class UserProfileEdit extends Component {
 		);
 	}
 
-	renderOvo(enableInput) {
-		const { users } = this.props;
-		const userProfile = users.userProfile;
+	renderOvo() {
+		const { userProfile } = this.props;
+		const { edit } = this.state;
+		const enableInput = !edit;
 
+		const hpValue = userProfile.hp || '081234567890';
 		return (
 			userProfile.fg_ovo_verified === 1 ?
 				<div className='margin--medium'>
 					<label className={styles.label} htmlFor='ovoID'><span style={{ color: '#4E2688' }}>OVO ID</span></label>
-					<Input disabled={enableInput} id='ovoID' flat defaultValue='085975049209' />
+					<Input disabled={enableInput} id='ovoID' flat defaultValue={hpValue} />
 					<span style={{ color: '#4E2688', fontSize: '12px' }}>OVO ID anda telah terhubung</span>
 				</div> :
 				<div className='margin--medium'>
@@ -164,12 +200,11 @@ class UserProfileEdit extends Component {
 	}
 
 	renderForm() {
-		const { users } = this.props;
+		const { userProfile } = this.props;
 		const { edit } = this.state;
 		const enableInput = !edit;
-		const userProfile = users.userProfile;
 
-		if (!userProfile) {
+		if (_.isEmpty(userProfile)) {
 			return (
 				<form style={{ padding: '15px' }}>
 					{this.loadingView}
@@ -181,11 +216,11 @@ class UserProfileEdit extends Component {
 		const nameField = (
 			<div className='margin--medium'>
 				<label className={styles.label} htmlFor='fullName'>Nama Lengkap</label>
-				<Input disabled={enableInput} id='fullName' flat defaultValue={fullName} />
+				<Input name='name' disabled={enableInput} id='fullName' flat defaultValue={fullName} onChange={(e) => this.inputHandler(e)} />
 			</div>
 		);
 
-		const emailValue = userProfile.email || 'email@domain.com';
+		const emailValue = !_.isEmpty(userProfile.email) ? userProfile.email : 'email@domain.com';
 		const emailEditLink = edit ? (
 			<Link className={styles.inputChangeLink} to='/profile-edit-email'>UBAH</Link>
 		) : null;
@@ -201,7 +236,7 @@ class UserProfileEdit extends Component {
 			</div>
 		);
 
-		const hpValue = userProfile.hp || '081234567890';
+		const phoneValue = !_.isEmpty(userProfile.phone) ? userProfile.phone : '081234567890';
 		const hpEditLink = edit ? (
 			<Link className={styles.inputChangeLink} to='/profile-edit-hp'>UBAH</Link>
 		) : null;
@@ -210,30 +245,33 @@ class UserProfileEdit extends Component {
 				<label className={styles.label} htmlFor='cellPhone'>Nomor Handphone</label>
 				<div className={styles.inputChange}>
 					<div className={styles.inputChangeInput}>
-						<Input disabled={enableInput} autoComplete='off' readOnly id='cellPhone' flat defaultValue={hpValue} />
+						<Input disabled={enableInput} autoComplete='off' readOnly id='cellPhone' flat defaultValue={phoneValue} />
 					</div>
 					{hpEditLink}
 				</div>
 			</div>
 		);
 
-		const genderValue = _.capitalize(userProfile.gender) || 'Pria';
+		const genderValue = !_.isEmpty(userProfile.gender) ? _.capitalize(userProfile.gender) : 'Pria';
 		const genderField = (
 			<div className='margin--medium'>
 				<label className={styles.label} htmlFor='gender'>Jenis Kelamin</label>
-				<Input disabled={enableInput} autoComplete='off' id='gender' flat defaultValue={genderValue} />
+				<Input name='gender' disabled={enableInput} autoComplete='off' id='gender' flat defaultValue={genderValue} onChange={(e) => this.inputHandler(e)} />
 			</div>
 		);
 
 		
-		const dobValue = moment(userProfile.birthday, 'DD/MM/YYYY').isValid() || 'DD/MM/YYYY';
+		const dobValue = moment(userProfile.birthday).isValid() === true ? moment(userProfile.birthday).format('DD/MM/YYYY') : 'DD/MM/YYYY';
 		const dobField = (
 			<div className='margin--medium'>
 				<label className={styles.label} htmlFor='dob'>Tanggal Lahir</label>
-				<Input disabled={enableInput} autoComplete='off' id='dob' flat defaultValue={dobValue} />
+				<Input name='birthday' disabled={enableInput} autoComplete='off' id='dob' flat defaultValue={dobValue} onChange={(e) => this.inputHandler(e)} />
 			</div>
 		);
 
+		const passwordEditLink = edit ? (
+			<Link className={styles.inputChangeLink} to='/profile-edit-password'>UBAH</Link>
+		) : null;
 		const passwordField = (
 			<div className='margin--medium'>
 				<label className={styles.label} htmlFor='password'>Password</label>
@@ -241,7 +279,7 @@ class UserProfileEdit extends Component {
 					<div className={styles.inputChangeInput}>
 						<Input disabled={enableInput} autoComplete='off' readOnly id='password' type='password' flat defaultValue='password' />
 					</div>
-					{ this.state.edit ? <Link className={styles.inputChangeLink} to='/profile-edit-password'>UBAH</Link> : null }
+					{passwordEditLink}
 				</div>
 			</div>
 		);
@@ -254,7 +292,7 @@ class UserProfileEdit extends Component {
 				{genderField}
 				{dobField}
 				{passwordField}
-				{this.renderOvo(enableInput)}
+				{this.renderOvo()}
 			</form>
 		);
 	}
@@ -270,9 +308,14 @@ class UserProfileEdit extends Component {
 	}
 }
 
+// UserProfileEdit.defaultProps = {
+// 	userProfile: ''
+// };
+
 const mapStateToProps = (state) => {
 	return {
 		...state,
+		userProfile: state.users.userProfile,
 		isLoading: state.users.isLoading
 	};
 };
