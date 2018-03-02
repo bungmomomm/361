@@ -2,7 +2,6 @@ import { handleActions, createActions } from 'redux-actions';
 
 const initialState = {
 	total: 0,
-	status: '',
 	data: [],
 	loading: false
 };
@@ -10,11 +9,13 @@ const initialState = {
 const { 
 	commentTotal, 
 	commentList,
-	commentLoading
+	commentLoading,
+	addComment
 } = createActions(
 	'COMMENT_TOTAL', 
 	'COMMENT_LIST',
-	'COMMENT_LOADING'
+	'COMMENT_LOADING',
+	'ADD_COMMENT'
 );
 
 const reducer = handleActions({
@@ -25,10 +26,9 @@ const reducer = handleActions({
 			loading: false
 		};
 	},
-	[commentList](state, { payload: { status, data } }) {
+	[commentList](state, { payload: { data } }) {
 		return {
 			...state,
-			status,
 			data,
 			loading: false
 		};
@@ -38,6 +38,14 @@ const reducer = handleActions({
 			...state,
 			loading
 		};
+	},
+	[addComment](state, { payload: { data } }) {
+		return {
+			...state,
+			data
+
+		};
+
 	}
 }, initialState);
 
@@ -45,5 +53,6 @@ export default {
 	reducer, 
 	commentTotal,
 	commentList,
-	commentLoading
+	commentLoading,
+	addComment
 };

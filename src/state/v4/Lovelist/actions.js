@@ -26,20 +26,16 @@ const formatItems = (data) => {
 	};
 	
 	if (!_.isUndefined(data.products) && !_.isEmpty(data.products)) {
-		let i = 1;
 		items.list = data.products.map((item, idx) => {
 			const images = item.images.map((img) => {
 				return { mobile: img.thumbnail, thumbnail: img.thumbnail };
 			});
 
-			item.product_id += i;
-			item.product_title = `${item.product_title} -> ${i}`;
-			i++;
 			items.ids.push(item.product_id);
 
 			return {
 				id: item.product_id,
-				brand: item.brand.brand_name,
+				brand: item.brand,
 				images,
 				pricing: item.pricing,
 				product_title: item.product_title,

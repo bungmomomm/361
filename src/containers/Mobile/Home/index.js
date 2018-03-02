@@ -13,6 +13,7 @@ import { actions } from '@/state/v4/Home';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import Shared from '@/containers/Mobile/Shared';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
+import Footer from '@/containers/Mobile/Shared/footer';
 import CONST from '@/constants';
 
 const renderSectionHeader = (title, options) => {
@@ -35,6 +36,10 @@ class Home extends Component {
 		this.source = this.props.cookies.get('user.source');
 
 		this.isLogin = this.props.cookies.get('isLogin');
+
+		this.state = {
+			isFooterShow: true
+		};
 	}
 
 	handlePick(current) {
@@ -58,7 +63,7 @@ class Home extends Component {
 			return (
 				<Link to={link}>
 					<div>
-						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} width='100%' />
+						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
 					</div>
 				</Link>
 			);
@@ -74,27 +79,27 @@ class Home extends Component {
 		 * recommended_products,
 		 * recently_viewed_products
 		 * */
+		const { home } = this.props;
+		const segment = home.activeSegment;
 		const title = 'LIHAT SEMUA';
 		let link = '';
 		let label = '';
 		switch (type) {
 		case 'best_seller_products':
-			link = '/promo/best_seller'; label = 'Produk Terlaris';
+			link = `/promo/best_seller?segment_id=${segment.id}`; label = 'Produk Terlaris';
 			break;
 		case 'recommended_products':
-			link = '/promo/recommended_products'; label = 'Produk Rekomendasi';
+			link = `/promo/recommended_products?segment_id=${segment.id}`; label = 'Produk Rekomendasi';
 			break;
 		case 'recently_viewed_products':
-			link = '/promo/recent_view'; label = 'Terakhir Dilihat';
+			link = `/promo/recent_view?segment_id=${segment.id}`; label = 'Terakhir Dilihat';
 			break;
 		default:
-			link = '/promo/new_arrival'; label = 'Produk Terbaru';
+			link = `/promo/new_arrival?segment_id=${segment.id}`; label = 'Produk Terbaru';
 		}
 
 		const obj = _.camelCase(type);
-		const { home } = this.props;
-		const segment = home.activeSegment.key;
-		const datas = _.chain(home).get(`allSegmentData.${segment}`).get('recomendationData').get(obj);
+		const datas = _.chain(home).get(`allSegmentData.${segment.key}`).get('recomendationData').get(obj);
 
 
 		if (!datas.isEmpty().value()) {
@@ -109,7 +114,7 @@ class Home extends Component {
 						{
 							datas.value().map(({ images, pricing }, e) => (
 								<div key={e}>
-									<Image lazyload alt='thumbnail' src={images[0].thumbnail} width='100%' />
+									<Image lazyload alt='thumbnail' src={images[0].thumbnail} />
 									<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
 								</div>
 							))
@@ -133,7 +138,15 @@ class Home extends Component {
 			return (
 				<div>
 					{ header }
-					<Image lazyload alt='thumbnail' src={datas.value().images[0].thumbnail} width='100%' />
+					<Grid split={3} bordered>
+						{
+							datas.value().images.map(({ images }, e) => (
+								<div key={e}>
+									<Image lazyload alt='thumbnail' src={images.thumbnail} />
+								</div>
+							))
+						}
+					</Grid>
 				</div>
 			);
 		}
@@ -146,12 +159,12 @@ class Home extends Component {
 		const datas = _.chain(home).get(`allSegmentData.${segment}.squareBanner`);
 		if (!datas.isEmpty().value()) {
 			return (
-				<div>
+				<div className='margin--medium'>
 					{
 						datas.value().map(({ images, link }, c) => (
 							<Link to={link.target || '/'} key={c}>
 								<div>
-									<Image lazyload alt='banner' src={images.thumbnail} width='100%' />
+									<Image lazyload alt='banner' src={images.thumbnail} />
 								</div>
 							</Link>
 						))
@@ -178,7 +191,7 @@ class Home extends Component {
 						bottomBanner.map(({ images, link }, d) => (
 							<Link to={link.target || '/'} key={d}>
 								<div>
-									<Image lazyload alt='banner' src={images.thumbnail} width='100%' />
+									<Image lazyload alt='banner' src={images.thumbnail} />
 								</div>
 							</Link>
 						))
@@ -223,7 +236,7 @@ class Home extends Component {
 								return (
 									<div className={styles.brandsImage} key={e}>
 										<Link to={url} >
-											<Image lazyload alt='thumbnail' src={brand.images.thumbnail} width='100%' />
+											<Image lazyload alt='thumbnail' src={brand.images.thumbnail} />
 										</Link>
 									</div>
 								);
@@ -294,10 +307,12 @@ class Home extends Component {
 
 					{ this.renderRecommendation(recommendation2)}
 					{ this.renderBottomBanner('bottom') }
-					
+
 					{ this.renderFeaturedBrands() }
 
 					{this.renderMozaic()}
+					
+					<Footer isShow={this.state.isFooterShow} />
 				</Page>
 				<Header lovelist={shared.totalLovelist} value={this.props.search.keyword} />
 				<Navigation active='Home' />

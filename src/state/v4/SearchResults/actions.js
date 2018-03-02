@@ -2,17 +2,20 @@ import _ from 'lodash';
 import { to } from 'await-to-js';
 
 import { request } from '@/utils';
-import { initLoading, initViewMode, initSearch, initNextSearch, initPromo } from './reducer';
+import { initLoading, initViewMode, initSearch, initNextSearch, initBulkieComment, initPromo } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 
 const searchAction = ({ token, query = {}, loadNext = false }) => async (dispatch, getState) => {
-	dispatch(initLoading({ isLoading: true }));
 	if (loadNext) {
 		dispatch(scrollerActions.onScroll({ loading: true }));
+	} else {
+		dispatch(initLoading({ isLoading: true }));
 	}
 
 	const { shared } = getState();
-	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || process.env.MICROSERVICES_URL;
+	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 	const path = `${baseUrl}/products/search`;
 
@@ -23,14 +26,12 @@ const searchAction = ({ token, query = {}, loadNext = false }) => async (dispatc
 		query,
 		fullpath: true
 	}));
-
 	const searchData = {
 		...response.data.data
 	};
 	
-	if (err || _.isEmpty(searchData.products)) {
+	if (err) {
 		dispatch(initSearch({
-			isLoading: false,
 			searchStatus: 'failed'
 		}));
 
@@ -45,13 +46,11 @@ const searchAction = ({ token, query = {}, loadNext = false }) => async (dispatc
 		}));
 	} else {
 		dispatch(initSearch({
-			isLoading: false,
 			searchStatus: 'success',
 			searchData,
 			query
 		}));
 	}
-	
 	const nextLink = searchData.links && searchData.links.next ? new URL(baseUrl + searchData.links.next).searchParams : false;
 	dispatch(scrollerActions.onScroll({
 		nextData: {
@@ -78,9 +77,11 @@ const promoAction = (token) => async (dispatch, getState) => {
 	dispatch(initLoading({ isLoading: true }));
 
 	const { shared } = getState();
-	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || process.env.MICROSERVICES_URL;
+	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
-	const path = `${baseUrl}/promo/suggestion`;
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	const path = `${baseUrl}/suggestion?mode=404`;
 
 	const [err, response] = await to(request({
 		token,
@@ -90,15 +91,17 @@ const promoAction = (token) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
+		console.log(err);
 		return Promise.reject(err);
 	}
 
 	const promoData = response.data.data;
 	dispatch(initPromo({
-		isLoading: false,
 		searchStatus: 'failed',
 		promoData
 	}));
+
+	console.log(promoData);
 
 	return Promise.resolve(promoData);
 };
@@ -117,7 +120,6 @@ const viewModeAction = (mode) => (dispatch) => {
 	}
 
 	dispatch(initViewMode({
-		isLoading: false,
 		viewMode: {
 			mode,
 			icon
@@ -125,8 +127,43 @@ const viewModeAction = (mode) => (dispatch) => {
 	}));
 };
 
+const bulkieCommentAction = (token, productId) => async (dispatch, getState) => {
+	if ((_.isArray(productId) && productId.length > 0) || (_.toInteger(productId) > 0)) {
+		dispatch(initLoading({ isLoading: true }));
+		
+		const { shared } = getState();
+		const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
+
+		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+		const path = `${baseUrl}/commentcount/bulkie/byproduct`;
+		
+		const [err, response] = await to(request({
+			token,
+			path,
+			method: 'POST',
+			fullpath: true,
+			body: {
+				product_id: _.isArray(productId) ? productId : [productId]
+			}
+		}));
+
+		if (err) {
+			return Promise.reject(err);
+		}
+
+		const commentData = response.data.data;
+		dispatch(initBulkieComment({ commentData }));
+		
+		return Promise.resolve(commentData);
+	}
+
+	return false;
+};
+
 export default {
 	searchAction,
 	promoAction,
-	viewModeAction
+	viewModeAction,
+	bulkieCommentAction
 };

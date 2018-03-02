@@ -6,6 +6,7 @@ import { actions as users } from '@/state/v4/User';
 import { actions as initAction } from '@/state/v4/Home';
 import { setUserCookie } from '@/utils';
 import { Promise } from 'es6-promise';
+import queryString from 'query-string';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 	WrappedComponent.contextTypes = {
@@ -17,7 +18,13 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		constructor(props) {
 			super(props);
 			this.props = props;
-			this.state = { data: null };
+			
+			const query = queryString.parse(props.location.search);
+			this.state = {
+				data: null,
+				login: query.code || false,
+				provider: (query.code || query.state) ? (query.code ? 'facebook' : 'google') : false
+			};
 
 			this.userCookies = this.props.cookies.get('user.token');
 			this.userRFCookies = this.props.cookies.get('user.rf.token');
@@ -38,20 +45,32 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		shouldLoginAnonymous() {
-			return (_.isEmpty(this.userCookies) || _.isEmpty(this.userRFCookies));
+			const { cookies } = this.props;
+			return (_.isEmpty(cookies.get('user.token')) || _.isEmpty(cookies.get('user.rf.token')));
 		}
 
-		exeCall(token = null) {
-			const { shared, dispatch } = this.props;
+		async exeCall(token = null) {
+			const { shared, dispatch, cookies } = this.props;
+			const { login, provider } = this.state;
 			const tokenBearer = token === null ? this.userCookies : token.token;
 
 			if (shared.totalCart === 0) { dispatch(new actions.totalCartAction(tokenBearer)); }
 
 			if (shared.totalLovelist === 0) { dispatch(new actions.totalLovelistAction(tokenBearer)); }
+			if (login && provider) {
+				const response = await to(dispatch(new users.userSocialLogin(cookies.get('user.token'), provider, login)));
+				console.log('login', response);
+				if (response[0]) {
+					return response[0];
+				}
+			}
+
+			dispatch(new users.userGetProfile(tokenBearer));
 
 			if (typeof doAfterAnonymousCall !== 'undefined') {
 				doAfterAnonymousCall.apply(this, [this.props]);
 			}
+			return null;
 		}
 
 		async initApp() {

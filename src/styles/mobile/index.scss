@@ -1,7 +1,6 @@
 @import "_variables.scss";
 @import "_mixins.scss";
 @import "_typography.scss";
-@import "_typography.scss";
 
 @include font-face("Helvetica-Roman", "Helvetica");
 @include font-face("Helvetica-Medium", "Helvetica");
@@ -9,6 +8,12 @@
 @include font-face("Lato-Light", "Lato");
 @include font-face("Lato-Regular", "Lato");
 @include font-face("Lato-Bold", "Lato");
+
+// Plugins
+:global {
+  @import '~rmc-picker/assets/index';
+  @import '~rmc-picker/assets/popup';
+}
 
 :root {
 	font-size: $base-font-size;
@@ -307,29 +312,29 @@
 			margin-right: 0px;
 		}
 		.border-top {
-			border-top: 1px solid #DBDBDB;
+			border-top: 0.5px solid #DBDBDB;
 		}
 		.border-bottom {
-			border-bottom: 1px solid #DBDBDB;
+			border-bottom: 0.5px solid #DBDBDB;
 		}
 		.border-left {
-			border-left: 1px solid #DBDBDB;
+			border-left: 0.5px solid #DBDBDB;
 		}
 		.border-right {
-			border-right: 1px solid #DBDBDB;
+			border-right: 0.5px solid #DBDBDB;
 		}
 
 		.border-white-top {
-			border-top: 1px solid #fff;
+			border-top: 0.5px solid #fff;
 		}
 		.border-white-bottom {
-			border-bottom: 1px solid #fff;
+			border-bottom: 0.5px solid #fff;
 		}
 		.border-white-left {
-			border-left: 1px solid #fff;
+			border-left: 0.5px solid #fff;
 		}
 		.border-white-right {
-			border-right: 1px solid #fff;
+			border-right: 0.5px solid #fff;
 		}
 
 		.flex-row {
@@ -364,7 +369,7 @@
 
 	.horizontal-scroll{
 		flex-wrap: nowrap;
-		overflow: auto;
+		overflow-x: scroll;
 		-webkit-overflow-scrolling: touch;
 		-ms-overflow-style: -ms-autohiding-scrollbar;
 	}

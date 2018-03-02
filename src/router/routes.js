@@ -40,6 +40,7 @@ let UserRegisteredPhoneValidation = defRoute;
 let ForgotPassword = defRoute;
 let SampleFilters = defRoute;
 let Promo = defRoute;
+let PromoList = defRoute;
 let UserProfile = defRoute;
 let UserProfileEdit = defRoute;
 let UserProfileEditOVO = defRoute;
@@ -49,6 +50,7 @@ let Seller = defRoute;
 let UserProfileEditPassword = defRoute;
 let Cart = defRoute;
 let CartEmpty = defRoute;
+let ThankYou = defRoute;
 
 if (isMobile()) {
 	/**
@@ -97,12 +99,17 @@ if (isMobile()) {
 	UserRegisteredPhoneValidation = loadable(() => import('@/containers/Mobile/Users/Register/registeredPhoneValidation'));
 	// promo
 	Promo = loadable(() => import('@/containers/Mobile/Discovery/Promo'));
+	PromoList = loadable(() => import('@/containers/Mobile/Discovery/Promo/PromoList'));
 	UserProfile = loadable(() => import('@/containers/Mobile/Users/Profile'));
 	UserProfileEdit = loadable(() => import('@/containers/Mobile/Users/Profile/edit'));
 	UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'));
 	UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'));
 	UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'));
 	UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'));
+
+	// Order
+	ThankYou = loadable(() => import('@/containers/Mobile/Order/ThankYou'));
+
 } else {
 	/**
 	 * Require main desktop styles
@@ -216,8 +223,13 @@ export default {
 			exact: true
 		},
 		{
-			path: '/forgotPassword',
+			path: '/forgot-password',
 			component: ForgotPassword,
+			exact: true
+		},
+		{
+			path: '/promo',
+			component: PromoList, 
 			exact: true
 		},
 		{
@@ -275,6 +287,10 @@ export default {
 		{
 			path: '/profile-edit-password',
 			component: UserProfileEditPassword
+		},
+		{
+			path: '/checkout/complete/:so_number([a-zA-Z0-9-]+)',
+			component: ThankYou
 		},
 		{
 			path: '/*', // Page not found handling.

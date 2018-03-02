@@ -30,8 +30,9 @@ import { actions as pcpActions } from '@/state/v4/ProductCategory';
 import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 
-import { hyperlink, renderIf } from '@/utils';
+import { urlBuilder, renderIf } from '@/utils';
 import stylesCatalog from '../Catalog/catalog.scss';
+import Footer from '@/containers/Mobile/Shared/footer';
 
 class Product extends Component {
 	constructor(props) {
@@ -49,7 +50,8 @@ class Product extends Component {
 				fq: '',
 				sort: '',
 				...propsObject.get('query').value()
-			}
+			},
+			isFooterShow: true
 		};
 		this.loadingView = <div style={{ margin: '20px auto 20px auto' }}><Spinner /></div>;
 	}
@@ -85,18 +87,18 @@ class Product extends Component {
 		const { query } = this.state;
 
 		const parsedUrl = queryString.parse(location.search);
-		const urlParam = {
+
+		const url = queryString.stringify({
 			sort: query.sort,
 			per_page: query.per_page,
 			page: query.page,
 			...parsedUrl,
 			...params
-		};
-
-		const url = queryString.stringify(urlParam, {
+		}, {
 			encode: false
 		});
-		history.push(`?${url}`);
+		
+		history.replace(`?${url}`);
 
 		const pcpParam = {
 			...query,
@@ -126,6 +128,8 @@ class Product extends Component {
 	}
 
 	handlePick(e) {
+		const { showSort } = this.state;
+		console.log(showSort, e);
 		if (e === 'view') {
 			const { viewMode, dispatch } = this.props;
 			const mode = viewMode.mode === 3 ? 1 : viewMode.mode + 1;
@@ -133,7 +137,7 @@ class Product extends Component {
 		} else {
 			this.setState({
 				showFilter: e === 'filter',
-				showSort: e === 'sort'
+				showSort: showSort ? false : (e === 'sort')
 			});
 		}
 	}
@@ -141,7 +145,6 @@ class Product extends Component {
 	renderPage() {
 		const { productCategory } = this.props;
 		const { showFilter } = this.state;
-
 		if (showFilter) {
 			return (
 				<Filter
@@ -154,7 +157,6 @@ class Product extends Component {
 				/>
 			);
 		}
-
 		return (
 			<div style={this.props.style}>
 				{this.renderPcp()}
@@ -182,6 +184,7 @@ class Product extends Component {
 							{this.renderContent(productCategory.pcpData.products)}
 							{this.props.scroller.loading && this.loadingView}
 						</div>
+						<Footer isShow={this.state.isFooterShow} />
 					</Page>
 				);
 			} else if (productCategory.pcpStatus === 'failed') {
@@ -207,7 +210,7 @@ class Product extends Component {
 
 	renderList(productData, index) {
 		if (productData) {
-			const linkToPdpCreator = hyperlink('', ['product', productData.product_id], null);
+			const linkToPdpCreator = urlBuilder.buildPdp(productData.product_title, productData.product_id);
 			const { viewMode, comments, lovelist } = this.props;
 			const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: productData.product_id }) : false;
 			const commentTotal = commentData ? commentData.total : null;
@@ -322,10 +325,14 @@ class Product extends Component {
 		if (!_.isEmpty(productCategory.pcpData.products)) {
 			const sorts = _.chain(productCategory).get('pcpData.sorts').value() || [];
 			tabsView = (
-				<div>
+				<div className={'tabContainer'}>
+					{renderIf(sorts)(
+						<Sort shown={showSort} isSticky sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+					)}
 					<Tabs
 						className={stylesCatalog.filterBlockContainer}
 						type='segment'
+						isSticky
 						variants={[
 							{
 								id: 'sort',
@@ -345,9 +352,6 @@ class Product extends Component {
 						]}
 						onPick={e => this.handlePick(e)}
 					/>
-					{renderIf(sorts)(
-						<Sort shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
-					)}
 				</div>
 			);
 		}

@@ -1,4 +1,5 @@
 import { handleActions, createActions } from 'redux-actions';
+import _ from 'lodash';
 
 const initialState = {
 	loading: false,
@@ -6,12 +7,14 @@ const initialState = {
 	segment: 1,
 	brand_id: null,
 	products_comments: null,
+	loading_prodcuts_comments: null,
+	products_lovelist: null,
 	loading_products: false,
 	banner: null,
 	searchStatus: null,
 	searchData: {
-		links: [],
-		info: [],
+		links: null,
+		info: null,
 		facets: [],
 		sorts: [],
 		products: []
@@ -19,13 +22,16 @@ const initialState = {
 	query: null
 };
 
-const { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner, brandProductsComments } = createActions(
+const { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner, brandProductsComments,
+	brandProductsLovelist, brandLoadingProductsComments } = createActions(
 	'BRAND_LIST_UPDATE',
 	'BRAND_LOADING',
 	'BRAND_PRODUCTS',
 	'BRAND_LOADING_PRODUCTS',
 	'BRAND_BANNER',
-	'BRAND_PRODUCTS_COMMENTS'
+	'BRAND_PRODUCTS_COMMENTS',
+	'BRAND_PRODUCTS_LOVELIST',
+	'BRAND_LOADING_PRODUCTS_COMMENTS'
 );
 
 const reducer = handleActions({
@@ -61,10 +67,32 @@ const reducer = handleActions({
 			banner
 		};
 	},
-	[brandProductsComments](state, { payload: { products_comments } }) {
+	[brandProductsComments](state, { payload: { productsComments } }) {
+		let updatedComments = state.products_comments;
+		if (state.products_comments !== null && productsComments && productsComments.length === 1) {
+			if (!_.find(updatedComments, _.matchesProperty('product_id', productsComments[0].product_id))) {
+				updatedComments.push(productsComments[0]);
+			} else {
+				updatedComments = state.products_comments.map(obj => productsComments.find(o => o.product_id === obj.product_id) || obj);
+			}
+		} else {
+			updatedComments = productsComments;
+		}
 		return {
 			...state,
-			products_comments
+			products_comments: updatedComments
+		};
+	},
+	[brandLoadingProductsComments](state, { payload: { loading_prodcuts_comments } }) {
+		return {
+			...state,
+			loading_prodcuts_comments
+		};
+	},
+	[brandProductsLovelist](state, { payload: { products_lovelist } }) {
+		return {
+			...state,
+			products_lovelist
 		};
 	}
 }, initialState);
@@ -76,5 +104,7 @@ export default {
 	brandProducts,
 	brandLoadingProducts,
 	brandBanner,
-	brandProductsComments
+	brandProductsComments,
+	brandProductsLovelist,
+	brandLoadingProductsComments
 };
