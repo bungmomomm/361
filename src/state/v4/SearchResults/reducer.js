@@ -3,40 +3,95 @@ import { handleActions, createActions } from 'redux-actions';
 const initialState = {
 	isLoading: false,
 	searchStatus: '',
-	searchParam: [],
+	viewMode: {
+		mode: 2,
+		icon: 'ico_list.svg'
+	},
 	searchData: {
 		links: [],
 		info: [],
 		facets: [],
 		sorts: [],
 		products: []
-	}
+	},
+	query: {
+		q: '',
+		brand_id: '',
+		store_id: '',
+		category_id: '',
+		page: 0,
+		per_page: 0,
+		fq: '',
+		sort: 'energy DESC',
+	},
+	commentData: [],
+	promoData: []
 };
 
-const { setLoading, initSearch } = createActions(
-	'SET_LOADING', 'INIT_SEARCH'
+const { initLoading, initViewMode, initSearch, initNextSearch, initBulkieComment, initPromo } = createActions(
+	'INIT_LOADING', 'INIT_VIEW_MODE', 'INIT_SEARCH', 'INIT_NEXT_SEARCH', 'INIT_BULKIE_COMMENT', 'INIT_PROMO'
 );
 
 const reducer = handleActions({
-	[setLoading](state, { payload: { isLoading } }) {
+	[initLoading](state, { payload: { isLoading } }) {
 		return {
 			...state,
 			isLoading
 		};
 	},
-	[initSearch](state, { payload: { isLoading, searchStatus, searchParam, searchData } }) {
+	[initViewMode](state, { payload: { isLoading, viewMode } }) {
 		return {
 			...state,
-			isLoading,
+			isLoading: false,
+			viewMode
+		};
+	},
+	[initSearch](state, { payload: { isLoading, searchStatus, searchData, query } }) {
+		return {
+			...state,
+			isLoading: false,
 			searchStatus,
-			searchParam,
-			searchData
+			searchData,
+			query
+		};
+	},
+	[initNextSearch](state, { payload: { searchStatus, searchData, query } }) {
+		return {
+			...state,
+			searchStatus,
+			searchData: {
+				...state.searchData,
+				...searchData,
+				products: [
+					...state.searchData.products,
+					...searchData.products
+				]
+			},
+			query
+		};
+	},
+	[initBulkieComment](state, { payload: { isLoading, commentData } }) {
+		return {
+			...state,
+			isLoading: false,
+			commentData
+		};
+	},
+	[initPromo](state, { payload: { isLoading, searchStatus, promoData } }) {
+		return {
+			...state,
+			searchStatus,
+			promoData
 		};
 	}
 }, initialState);
 
 export default {
 	reducer, 
-	setLoading,
-	initSearch
+	initLoading,
+	initViewMode,
+	initSearch,
+	initNextSearch,
+	initBulkieComment,
+	initPromo
 };

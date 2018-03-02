@@ -1,49 +1,17 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
-import Filter from '@/containers/Mobile/Shared/Filter';
-import Sort from '@/containers/Mobile/Shared/Sort';
 import Shared from '@/containers/Mobile/Shared';
-import { actions } from '@/state/v4/SortFilter';
-import { Header, Page, Svg, Tabs } from '@/components/mobile';
+import { Header, Svg, Tabs } from '@/components/mobile';
 import { Link } from 'react-router-dom';
-import { to } from 'await-to-js';
-import styles from './samplefilters';
 
 class Filters extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
-			shown: false
+			shown: true
 		};
-	}
-
-	async onApply(e) {
-		const { dispatch, cookies, filters } = this.props;
-		const [err, response] = await to(dispatch(new actions.applyFilter(cookies.get('user.token'), 'category', filters)));
-		if (err) {
-			return err;
-		}
-		return response;
-	}
-
-	onUpdateFilter(e, type, value) {
-		try {
-			this.props.dispatch(new actions.updateFilter(type, value));
-		} catch (error) {
-			console.log(error);
-		}
-	}
-	
-	onReset(e) {
-		this.props.dispatch(new actions.resetFilter());
-	}
-
-	onClose(e) {
-		this.setState({
-			shown: false
-		});
 	}
 
 	handlePick(what) {
@@ -53,13 +21,7 @@ class Filters extends Component {
 		});
 	}
 
-	sort(e, value) {
-		this.props.dispatch(new actions.updateSort(value));
-	}
-
 	render() {
-		const { filters } = this.props;
-		const { shown } = this.state;
 
 		const HeaderPage = {
 			left: (
@@ -73,46 +35,27 @@ class Filters extends Component {
 
 		return (
 			<div>
-				{shown && (
-					<Filter 
-						shown={shown} 
-						filters={filters} 
-						onUpdateFilter={(e, type, value) => this.onUpdateFilter(e, type, value)} 
-						onApply={(e) => this.onApply(e)} 
-						onReset={(e) => this.onReset(e)}
-						onClose={(e) => this.onClose(e)}
+				<div style={this.props.style}>
+					<Header.Modal {...HeaderPage} />
+					<Tabs
+						type='segment'
+						variants={[
+							{
+								id: 'urutkan',
+								title: 'Urutkan'
+							},
+							{
+								id: 'filter',
+								title: 'filter'
+							},
+							{
+								id: 'view',
+								title: <Svg src='ico_grid.svg' />
+							}
+						]}
+						onPick={e => this.handlePick(e)}
 					/>
-				)}
-
-				{!shown && (
-					<div style={this.props.style}>
-						<Page>
-							<div className={styles.cardContainer}>
-								<Sort sorts={filters.sorts} onSelected={(e, value) => this.sort(e, value)} />
-							</div>
-						</Page>
-						<Header.Modal {...HeaderPage} />
-						<Tabs
-							type='segment'
-							variants={[
-								{
-									id: 'urutkan',
-									title: 'Urutkan'
-								},
-								{
-									id: 'filter',
-									title: 'filter'
-								},
-								{
-									id: 'view',
-									title: <Svg src='ico_grid.svg' />
-								}
-							]}
-							onPick={e => this.handlePick(e)}
-						/>
-					</div>
-				)}
-
+				</div>
 			</div>
 		);
 	}

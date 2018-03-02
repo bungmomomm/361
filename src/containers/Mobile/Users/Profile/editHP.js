@@ -10,6 +10,7 @@ class UserProfileEditHP extends Component {
 		this.props = props;
 	}
 	render() {
+		console.log('render');
 		return (
 			<Page>
 				<Level style={{ height: '55px' }}>
@@ -24,11 +25,11 @@ class UserProfileEditHP extends Component {
 				<form style={{ padding: '15px' }}>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='cellPhone'>No. Handphone</label>
-						<Input id='cellPhone' flat value='085975049209' />
+						<Input id='cellPhone' flat />
 					</div>
 					<div className='margin--medium'>
-						<label className={styles.label} htmlFor='cellPhoneNew'>No Handphone Baru</label>
-						<Input id='cellPhoneNew' flat />
+						<label className={styles.label} htmlFor='editCellPhoneNew'>No Handphone Baru</label>
+						<Input id='editCellPhoneNew' flat />
 					</div>
 					<div className='margin--medium'>
 						<Button color='primary' size='large'>SIMPAN</Button>
@@ -38,7 +39,5 @@ class UserProfileEditHP extends Component {
 		);
 	}
 }
-
-UserProfileEditHP.defaultProps = {};
 
 export default withCookies(UserProfileEditHP);

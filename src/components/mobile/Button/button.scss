@@ -87,6 +87,12 @@
   color: color(--white);
 }
 
+.white{
+	border-color: color(--primary);
+  background-color: #fff;
+  color: color(--primary);
+}
+
 .transparent{
   opacity: 0.7;
 }

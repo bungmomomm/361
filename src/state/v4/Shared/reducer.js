@@ -5,7 +5,20 @@ import { handleActions, createActions } from 'redux-actions';
 const initialState = {
 	totalLovelist: 0,
 	totalCart: 0,
-	foreverBanner: {},
+	foreverBanner: {
+		text: {
+			text1: '',
+			text2: '',
+			text_color: 'black',
+			background_color: 'grey'
+		},
+		close_button: {
+			fg_show: 1,
+			color: '#F12332'
+		},
+		show: false,
+		onClose: false
+	},
 	current: 'wanita'
 };
 
@@ -30,7 +43,7 @@ const reducer = handleActions({
 		};
 	},
 	[forEverBanner](state, { payload: { foreverBanner, serviceUrl } }) {
-		return { 
+		return {
 			...state,
 			foreverBanner,
 			serviceUrl
@@ -38,15 +51,15 @@ const reducer = handleActions({
 	},
 	[currentTab](state, { payload: { current } }) {
 		return {
-			...state, 
+			...state,
 			current
 		};
 	}
 }, initialState);
 
 export default {
-	reducer, 
-	totalBag, 
+	reducer,
+	totalBag,
 	totalLoveList,
 	forEverBanner,
 	currentTab

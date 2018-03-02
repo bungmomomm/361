@@ -1,8 +1,11 @@
-import { request } from '@/utils';
+import to from 'await-to-js';
+import { Promise } from 'es6-promise';
+import _ from 'lodash';
+import { request, emarsysRequest } from '@/utils';
 import {
 	countLovelist,
 	loveListItems,
-	lovelistPdp,
+	bulkieCount,
 	addItem,
 	removeItem,
 	loadingState
@@ -16,69 +19,134 @@ const setLoadingState = (loading) => (dispatch) => {
  * fetchs lovelist list into redux lovelist items format
  * @param {*} response 
  */
-const fetchItems = (data) => {
-	const items = data.products.map((item, idx) => {
-		return item;
-	});
+const formatItems = (data) => {
+	const items = {
+		ids: [],
+		list: []
+	};
+	
+	if (!_.isUndefined(data.products) && !_.isEmpty(data.products)) {
+		items.list = data.products.map((item, idx) => {
+			const images = item.images.map((img) => {
+				return { mobile: img.thumbnail, thumbnail: img.thumbnail };
+			});
+
+			items.ids.push(item.product_id);
+
+			return {
+				id: item.product_id,
+				brand: item.brand,
+				images,
+				pricing: item.pricing,
+				product_title: item.product_title,
+				totalLovelist: 0,
+				totalComments: 0,
+				original: item
+			};
+		});	
+	}
 
 	return items;
 };
 
 /**
  * save user's lovelist list
- * @param {*} itemsLovelist 
+ * @param {*} items 
  */
-const getList = (itemsLovelist) => (dispatch) => {
+const getList = (items, formatted = true) => (dispatch) => {
 	// fetching response into lovelist redux items format
-	const items = fetchItems(itemsLovelist);
+	if (formatted) items = formatItems(items);
 
 	// dispatching total lovelist of logged user
 	dispatch(loveListItems({ items }));
-	dispatch(countLovelist({ count: items.length }));
+	dispatch(countLovelist({ count: items.list.length }));
 };
 
-const addToLovelist = (token, userId, variantId, url) => (dispatch) => {
-	let path = `${process.env.MICROSERVICES_URL}add/${userId}/${variantId}`;
+const sendLovedItemToEmarsys = () => {
+	const data = {
+		wishlist: {
+			title: 'Connexion Bell Sleeve Mini Dress',
+			link: 'https://mm-imgs.s3.amazonaws.com/tx400/2017/11/03/14/kaos-polo-shirt_nevada-women-39-s-polo-classic-red_4259525__930101.JPG',
+			msrp: 150000,
+			price: 100000,
+			event_id: process.env.EMARYSYS_EVENT_ID
+		}
+	};
 
-	if (url) {
-		path = `${url.url}/add/${userId}/${variantId}`;
-	}
+	return emarsysRequest(data);
+};
 
-	if (userId && variantId) {
-		return request({
+/**
+ * Adds item into Lovelist
+ * @param {*} token 
+ * @param {*} productId 
+ */
+const addToLovelist = (token, productId) => async (dispatch, getState) => {
+	
+	if (productId) {
+		const { shared } = getState();
+		const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
+
+		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+		const path = `${baseUrl}/add/${productId}`;
+
+		const [err, response] = await to(request({
 			token,
 			path,
-			method: 'GET',
-			fullpath: true
-		}).then(response => {
-			// dispatching of adding item into lovelist
-			const item = { variantId };
-			dispatch(addItem({ item }));
-		});
+			method: 'POST',
+			fullpath: true,
+			body: productId
+		}));
+
+		if (err) {
+			return Promise.reject(err);
+		}
+		
+		// dispatching of adding item into lovelist
+		const item = { productId };
+		dispatch(addItem(item));
+
+		return Promise.resolve(response);
+	
 	}
 
 	return false;
 };
 
-const removeFromLovelist = (token, userId, variantId, url) => (dispatch) => {
+/**
+ * Removes item from Lovelist
+ * @param {*} token 
+ * @param {*} productId 
+ */
+const removeFromLovelist = (token, productId) => async (dispatch, getState) => {
 
-	let path = `${process.env.MICROSERVICES_URL}delete/${userId}/${variantId}`;
+	if (productId) {
+		const { shared } = getState();
+		const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
 
-	if (url) {
-		path = `${url.url}/delete/${userId}/${variantId}`;
-	}
+		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
-	if (userId && variantId) {
-		return request({
+		const path = `${baseUrl}/delete/${productId}`;
+
+		const [err, response] = await to(request({
 			token,
 			path,
-			method: 'GET',
-			fullpath: true
-		}).then(response => {
-			// dispatching of deleting item from lovelist
-			const item = { variantId };
-			dispatch(removeItem({ item }));
-		});
+			method: 'POST',
+			fullpath: true,
+			body: productId
+		}));
+		
+		if (err) {
+			return Promise.reject(err);
+		}
+		
+		// dispatching of deleting item from lovelist
+		const item = { productId };
+		dispatch(removeItem(item));
+
+		return Promise.resolve(response);
+	
 	}
 
 	return false;
@@ -88,56 +156,78 @@ const removeFromLovelist = (token, userId, variantId, url) => (dispatch) => {
  * Gets user lovelist list from server
  * @param {*} token 
  */
-const getLovelisItems = (token, url) => {
-	let path = `${process.env.MICROSERVICES_URL}gets`;
+const getLovelisItems = (token) => async (dispatch, getState) => {
+	
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
 
-	if (url) {
-		path = `${url.url}/gets`;
-	}
-	return request({
-		token,
-		path,
-		method: 'GET',
-		fullpath: true
-	});
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	dispatch(setLoadingState({ loading: true }));
+
+	const path = `${baseUrl}/gets`;
+
+	const [err, response] = await to(request({ token, path, method: 'GET', fullpath: true }));
+
+	if (err) return Promise.reject(err);
+
+	dispatch(getList(response.data.data));
+	dispatch(setLoadingState({ loading: false }));
+
+	return Promise.resolve(response);
 };
 
 /**
  * Gets number lovelist of product detail page
  * @param {*} token 
- * @param {*} variantId 
+ * @param {*} productId
  */
-const countTotalPdpLovelist = (token, variantId, url) => (dispatch) => {
+const bulkieCountByProduct = (token, productId) => async (dispatch, getState) => {
 
-	let path = `${process.env.MICROSERVICES_URL}total/byvariant/${variantId}`;
+	// bulkie count accept single productId or arrays of productId
+	if ((_.isArray(productId) && productId.length > 0) || (_.toInteger(productId) > 0)) {
+		const { shared } = getState();
+		const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
 
-	if (url) {
-		path = `${url.url}/total/byvariant/${variantId}`;
-	}
+		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
-	if (variantId) {
-		return request({
+		const path = `${baseUrl}/bulkie/byproduct`;
+		const [err, response] = await to(request({
 			token,
 			path,
-			method: 'GET',
-			fullpath: true
-		}).then(response => {
-			const total = response.data.data.total || 0;
-			dispatch(lovelistPdp({
-				variantId,
-				total
-			}));
-		});
+			method: 'POST',
+			fullpath: true,
+			body: {
+				product_id: _.isArray(productId) ? productId : [_.toInteger(productId)]
+			}
+		}));
+
+		if (err) return Promise.reject(err);
+
+		const productLovelist = { bulkieCountProducts: (response.data.data || {}) };
+		dispatch(bulkieCount(productLovelist));
+
+		return Promise.resolve(response);
 	}
 
 	return false;
+};
+
+const getProductBulk = (productId) => (dispatch, getState) => {
+	const { lovelist } = getState();
+	const { bulkieCountProducts } = lovelist;
+	const product = bulkieCountProducts.find((item) => (item.product_id === productId));
+
+	return !_.isUndefined(product) ? product : false;
 };
 
 export default {
 	getList,
 	addToLovelist,
 	removeFromLovelist,
-	countTotalPdpLovelist,
+	bulkieCountByProduct,
 	getLovelisItems,
-	setLoadingState
+	setLoadingState,
+	getProductBulk,
+	sendLovedItemToEmarsys
 };

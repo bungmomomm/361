@@ -1,19 +1,24 @@
 import { createActions, handleActions } from 'redux-actions';
 
 const initialState = {
+	header: {
+		title: '',
+		description: '',
+	},
 	tags: [],
 	viewMode: 3,
 	products: { },
 	active: {
-		tag: '#All',
+		tag: 'All',
 		node: 'all'
 	},
 	hasError: false,
-	isLoading: false
+	loading: false
 };
 
-const { itemsFetchDataSuccess, itemsIsLoading, itemsHasError, itemsActiveHashtag, switchViewMode }
+const { initFetchDataSuccess, itemsFetchDataSuccess, itemsIsLoading, itemsHasError, itemsActiveHashtag, switchViewMode }
 = createActions(
+	'INIT_FETCH_DATA_SUCCESS',
 	'ITEMS_FETCH_DATA_SUCCESS',
 	'ITEMS_IS_LOADING',
 	'ITEMS_HAS_ERROR',
@@ -22,10 +27,16 @@ const { itemsFetchDataSuccess, itemsIsLoading, itemsHasError, itemsActiveHashtag
 );
 
 const reducer = handleActions({
+	[initFetchDataSuccess](state, { payload: data }) {
+		return {
+			...state,
+			header: data.header,
+			tags: data.tags
+		};
+	},
 	[itemsFetchDataSuccess](state, { payload: data }) {
 		return {
 			...state,
-			tags: data.tags,
 			products: {
 				...state.products,
 				[state.active.node]: {
@@ -53,6 +64,7 @@ const reducer = handleActions({
 
 export default {
 	reducer,
+	initFetchDataSuccess,
 	itemsFetchDataSuccess,
 	itemsIsLoading,
 	itemsHasError,

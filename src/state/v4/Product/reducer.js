@@ -4,9 +4,10 @@ const initialState = {
 	detail: {},
 	recommendation: [],
 	similar: [],
-	reviews: {
-		total: 0,
-		summary: []
+	socialSummary: {
+		reviews: {},
+		comment: {},
+		seller: {}
 	},
 	loading: false
 };
@@ -44,10 +45,10 @@ const reducer = handleActions({
 			similar
 		};
 	},
-	[productSocialSummary](state, { payload: { reviews } }) {
+	[productSocialSummary](state, { payload: { socialSummary } }) {
 		return {
 			...state,
-			reviews,
+			socialSummary,
 		};
 	},
 	[productLoading](state, { payload: { loading } }) {

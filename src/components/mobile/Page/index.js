@@ -34,7 +34,7 @@ class Page extends Component {
 			}
 			this.filteredLazyImage = this.lazyImageList;
 		}
-	} 
+	}
 
 	handleScroll(e) {
 		if (this.filteredLazyImage.length > 0) {
@@ -51,7 +51,7 @@ class Page extends Component {
 			this.getImage();
 		}
 	}
-	
+
 	render() {
 		return (
 			<div className={styles.container}>

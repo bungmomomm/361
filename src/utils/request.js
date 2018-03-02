@@ -52,9 +52,10 @@ const request = (props) => {
 	
 	let headers = {
 		client_id: isMobile() ? 'mweb' : 'web',
-		session_id: '',
+		session_id: 'beliajaaaa',
 		client_version: '4.0',
-		'X-Mode': mode
+		'X-Mode': mode,
+		'Content-Type': 'application/json'
 	};
 	
 	if (props.token) {

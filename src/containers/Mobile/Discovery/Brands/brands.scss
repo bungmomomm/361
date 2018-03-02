@@ -1,29 +1,64 @@
 @import '../../../../styles/mobile/variables';
 @import '../../../../styles/mobile/mixins';
-
-
-.filter{
+.filter {
     padding: 0px rem(15px);
-    input{
+    input {
         text-align: center;
     }
-    button{
+    button {
         padding: 5px;
     }
 }
 
-.listFilterKey{
+.listFilterKey {
     flex-direction: row;
-    width: 80%;
-    margin: rem(15px) auto;
+    width: 100%;
+    padding: 0 rem(10px);
+    margin: rem(15px) 0;
     flex-wrap: wrap;
     justify-content: center;
-    button{
+    button {
         display: inline-flex;
         font-family: font-family(--lato-regular);
         font-size: 12px;
         letter-spacing: 0.3px;
         line-height: 26px;
         padding: 0px rem(5px);
+    }
+}
+
+.backgroundCover {
+	text-align: center;
+	height: 145px;
+    padding: 30px 0px 20px 0px;
+    color: #fff;
+
+}
+
+.coverImage {
+    height: 145px;
+    width: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top center;
+    background-color: #bfbfbf;
+}
+
+.headerClear {
+    >div {
+        >div {
+            background: transparent;
+            border: 0px;
+            box-shadow: none;
+            svg {
+                path {
+                    stroke: #fff;
+                }
+            }
+            color: #fff;
+        }
     }
 }

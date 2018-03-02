@@ -11,81 +11,72 @@ import {
 } from '@/components/mobile';
 import styles from './category.scss';
 import { actions as categoryActions } from '@/state/v4/Category';
-import Shared from '@/containers/Mobile/Shared';
 import CONST from '@/constants';
+import Shared from '@/containers/Mobile/Shared';
+import { actions as sharedActions } from '@/state/v4/Shared';
 
 class Category extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.defaultSegment = CONST.SEGMENT_DEFAULT_SELECTED;
-		this.state = {
-			activeSegment: undefined
-		};
 		this.userCookies = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
-		this.userRFCookies = this.props.cookies.get(CONST.COOKIE_USER_RF_TOKEN);
-		this.categoryLvl1 = props.match.params.categoryLvl1;
 		this.source = this.props.cookies.get('user.source');
 	}
 
 	componentWillMount() {
-		if (!CONST.SEGMENT_INIT.find(e => e.key === this.categoryLvl1)) {
-			this.props.history.push(`/category/${this.defaultSegment.key}`);
+		let selectedSegment = null;
+		if (this.props.home.segmen.length > 2) {
+			selectedSegment = this.props.home.segmen.find(e => e.key === this.props.shared.current);
+		} else {
+			selectedSegment = CONST.SEGMENT_INIT.find(e => e.key === this.props.shared.current);
 		}
+		this.setSegmentCategory(selectedSegment);
 
-		const isActiveSegmentNotSet = this.props.home.segmen.length > 1 && this.state.activeSegment === undefined;
-		if (isActiveSegmentNotSet) {
-			this.setActiveState(this.props);
-		}
+		return true;
 	}
 
 	componentWillReceiveProps(nextProps) {
-		const isActiveSegmentSetFromProps = nextProps.home.segmen.length > 1
-			&& nextProps.category.activeSegment !== this.props.category.activeSegment;
-		if (isActiveSegmentSetFromProps) {
-			this.setActiveState(nextProps);
+		if (this.props.home.segmen !== nextProps.home.segmen) {
+			const selectedSegment = nextProps.home.segmen.find(e => e.key === nextProps.shared.current);
+			this.setSegmentCategory(selectedSegment);
 		}
 	}
 
-	setActiveState(props) {
-		const selectedSegment = props.home.segmen.find(e => e.key === props.match.params.categoryLvl1);
-		this.setState({ activeSegment: selectedSegment });
+	setSegmentCategory(selectedSegment) {
+		if (selectedSegment) {
+			const { dispatch } = this.props;
+			dispatch(sharedActions.setCurrentSegment(selectedSegment.key));
+			dispatch(new categoryActions.getCategoryMenuAction(this.userCookies, selectedSegment));
+		}
 	}
 
-	getCategory(selectedSegment) {
+	selectSubCategoryHandler(categoryId) {
 		const { dispatch } = this.props;
-		dispatch(new categoryActions.getCategoryMenuAction(this.userCookies, selectedSegment));
-		this.setState({ activeSegment: selectedSegment });
+		dispatch(categoryActions.setSubCateogryAction(categoryId));
 	}
 
 	handlePick(selectedSegmentId) {
 		const selectedSegment = this.props.home.segmen.find(e => e.id === selectedSegmentId);
-		if (selectedSegment !== this.state.activeSegment) {
-			this.setState({ activeSegment: selectedSegment });
-			this.getCategory(selectedSegment);
-			this.props.history.push(`/category/${selectedSegment.key}`);
+		if (selectedSegment.key !== this.props.shared.current) {
+			this.setSegmentCategory(selectedSegment);
 		}
 	}
 
-	render() {
-		const { category } = this.props;
-
-		const loading = (<div />);
-
-		const categories = this.state.activeSegment && category.categories.map((cat, key) => {
+	renderCategories() {
+		return this.props.category.categories.length > 1 && this.props.category.categories.map((cat, key) => {
 			let url = cat.link;
 			switch (cat.type) {
 			case CONST.CATEGORY_TYPE.brand:
 				url = '/brands';
 				break;
 			case CONST.CATEGORY_TYPE.newarrival:
-				url = '/new_arrival';
+				url = '/promo/new_arrival';
 				break;
 			case CONST.CATEGORY_TYPE.category:
-				url = `/category/${this.state.activeSegment.key}/${cat.id}`;
+				url = '/sub-category/';
 				break;
 			default:
-				url = `/category/${this.state.activeSegment.key}`;
+				url = '/category/';
 				break;
 			}
 
@@ -96,23 +87,28 @@ class Category extends PureComponent {
 						<div className={styles.label}>{cat.title}</div>
 					</a>)
 				: (
-					<Link to={url} key={key} className={styles.list}>
+					<Link to={url} key={key} className={styles.list} onClick={() => this.selectSubCategoryHandler(cat.id)}>
 						<Image src={cat.image_url} />
 						<div className={styles.label}>{cat.title}</div>
 					</Link>
 				);
 		});
+	}
+
+	render() {
+		const { category } = this.props;
+		const loading = (<div />);
 
 		return (
 			<div style={this.props.style}>
 				<Page>
 					<Tabs
-						current={(this.state.activeSegment === undefined || (category.categories.length < 2 && category.loading)) ? '' : this.state.activeSegment.key}
+						current={this.props.shared.current}
 						variants={this.props.home.segmen}
 						onPick={(e) => this.handlePick(e)}
 					/>
 					<div>
-						{ category.loading ? loading : categories }
+						{ category.loading ? loading : this.renderCategories() }
 					</div>
 				</Page>
 				<Header lovelist={this.props.shared.totalLovelist} value={this.props.search.keyword} />
@@ -131,12 +127,4 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (props) => {
-	const { category, home, match, dispatch, cookies } = props;
-	if (category.categories.length < 1) {
-		const selectedSegment = home.segmen.find(e => e.key === match.params.categoryLvl1);
-		dispatch(new categoryActions.getCategoryMenuAction(cookies.get(CONST.COOKIE_USER_TOKEN), selectedSegment));
-	}
-};
-
-export default withCookies(connect(mapStateToProps)(Shared(Category, doAfterAnonymous)));
+export default withCookies(connect(mapStateToProps)(Shared(Category)));

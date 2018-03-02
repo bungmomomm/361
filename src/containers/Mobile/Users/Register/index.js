@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { users } from '@/state/v4/User';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import {
 	Header,
 	Page,
@@ -12,7 +12,7 @@ import {
 	Svg
 } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
-import { setUserCookie } from '@/utils';
+import { setUserCookie, renderIf } from '@/utils';
 import styles from '../user.scss';
 
 const DUMMY_TAB = [
@@ -35,7 +35,7 @@ class Register extends Component {
 		this.props = props;
 		this.state = {
 			current: 'register',
-			visibalePasswod: false
+			visiblePassword: false
 		};
 	}
 
@@ -65,7 +65,7 @@ class Register extends Component {
 
 	render() {
 		const { userProfile } = this.props.users;
-		const { visibalePasswod } = this.state;
+		const { visiblePassword, current } = this.state;
 		const HeaderPage = {
 			left: (
 				<Link to='/'>
@@ -86,9 +86,14 @@ class Register extends Component {
 			);
 		});
 
+		const register = (current === 'login');
+
 		return (
 			<div className='full-height' style={this.props.style}>
 				<Page>
+					{renderIf(register)(
+						<Redirect to='/login' />
+					)}
 					<Tabs
 						current={this.state.current}
 						variants={DUMMY_TAB}
@@ -98,18 +103,20 @@ class Register extends Component {
 						<div className='margin--medium'>Daftar Dengan</div>
 						<div className='flex-row flex-center flex-spaceBetween'>
 							<div style={{ width: '45%' }}>
-								<Button wide color='facebook' size='medium'>
-									Facebook
+								<Button wide color='facebook' size='medium' style={{ justifyContent: 'center' }}>
+									<Svg src='ico_facebook.svg' style={{ marginRight: 'auto' }} />
+									<span style={{ marginRight: 'auto' }}>Facebook</span>
 								</Button>
 							</div>
 							<div style={{ width: '45%' }}>
-								<Button wide color='google' size='medium'>
-									<Svg src='ico_google.svg' style={{ marginRight: '10px' }} />Google
+								<Button wide color='google' size='medium' style={{ justifyContent: 'center' }}>
+									<Svg src='ico_google.svg' style={{ marginRight: 'auto' }} />
+									<span style={{ marginRight: 'auto' }}>Google</span>
 								</Button>
 							</div>
 						</div>
 						<div className={styles.divider}>
-							<span>A tau</span>
+							<span>Atau</span>
 						</div>
 						<div>
 							<Input
@@ -130,14 +137,12 @@ class Register extends Component {
 								label='Password'
 								iconRight={
 									<Button
-										onClick={() =>
-											this.setState({ visibalePasswod: !visibalePasswod })
-										}
+										onClick={() => this.setState({ visiblePassword: !visiblePassword })}
 									>
-										show
+										<Svg src={visiblePassword ? 'ico_eye.svg' : 'ico_eye-off.svg'} />
 									</Button>
 								}
-								type={visibalePasswod ? 'text' : 'password'}
+								type={visiblePassword ? 'text' : 'password'}
 								flat
 								placeholder='Password minimal 6 karakter'
 							/>
@@ -219,11 +224,6 @@ class Register extends Component {
 		);
 	}
 }
-
-Register.defaultProps = {
-	Home: 'hallo',
-	Data: 'akjsdaskdjasldjsaldjalskdj'
-};
 
 const mapStateToProps = state => {
 	return {

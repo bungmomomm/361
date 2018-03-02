@@ -22,6 +22,7 @@ let Category = defRoute;
 let SubCategory = defRoute;
 let ProductCategory = defRoute;
 let Brands = defRoute;
+let BrandsDetail = defRoute;
 let CatalogCategory = defRoute;
 let Lovelist = defRoute;
 let Hashtags = defRoute;
@@ -38,14 +39,17 @@ let UserRegisteredPhoneValidation = defRoute;
 let ForgotPassword = defRoute;
 let SampleFilters = defRoute;
 let Promo = defRoute;
+let PromoList = defRoute;
 let UserProfile = defRoute;
 let UserProfileEdit = defRoute;
 let UserProfileEditOVO = defRoute;
 let UserProfileEditHP = defRoute;
 let UserProfileEditEmail = defRoute;
 let Seller = defRoute;
+let UserProfileEditPassword = defRoute;
 let Cart = defRoute;
 let CartEmpty = defRoute;
+let ThankYou = defRoute;
 
 if (isMobile()) {
 	/**
@@ -66,6 +70,7 @@ if (isMobile()) {
 	SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
 	ProductCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Product'));
 	Brands = loadable(() => import('@/containers/Mobile/Discovery/Brands'));
+	BrandsDetail = loadable(() => import('@/containers/Mobile/Discovery/Brands/detail'));
 	Seller = loadable(() => import('@/containers/Mobile/Discovery/Seller'));
 	CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
 
@@ -92,11 +97,17 @@ if (isMobile()) {
 	UserRegisteredPhoneValidation = loadable(() => import('@/containers/Mobile/Users/Register/registeredPhoneValidation'));
 	// promo
 	Promo = loadable(() => import('@/containers/Mobile/Discovery/Promo'));
+	PromoList = loadable(() => import('@/containers/Mobile/Discovery/Promo/PromoList'));
 	UserProfile = loadable(() => import('@/containers/Mobile/Users/Profile'));
 	UserProfileEdit = loadable(() => import('@/containers/Mobile/Users/Profile/edit'));
 	UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'));
 	UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'));
 	UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'));
+	UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'));
+
+	// Order
+	ThankYou = loadable(() => import('@/containers/Mobile/Order/ThankYou'));
+
 } else {
 	/**
 	 * Require main desktop styles
@@ -113,12 +124,12 @@ export default {
 			exact: true
 		},
 		{
-			path: '/hashtags',
+			path: '/mau-gaya-itu-gampang',
 			component: Hashtags,
 			exact: true
 		},
 		{
-			path: '/hashtags/details',
+			path: '/mau-gaya-itu-gampang/:campaign_id/:post_id',
 			component: HashtagsDetails
 		},
 		{
@@ -134,23 +145,20 @@ export default {
 			component: SearchNotFound
 		},
 		{
-			path: '/category/:categoryLvl1/:categoryLvl2/:categoryLvl3',
+			path: '/sub-category/',
 			component: SubCategory,
-		},
-		{
-			path: '/category/:categoryLvl1/:categoryLvl2',
-			component: SubCategory,
-		},
-		{
-			path: '/category/:categoryLvl1',
-			component: Category,
 		},
 		{
 			path: '/category/',
 			component: Category,
 		},
 		{
-			path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9]+)',
+			path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9-]+)',
+			component: ProductCategory,
+			exact: true
+		},
+		{
+			path: '/p-:categoryId:([0-9]+)}/:categoryTitle([a-zA-Z0-9-]+):brandTitle(/[a-zA-Z0-9-]+)?',
 			component: ProductCategory
 		},
 		{
@@ -160,6 +168,11 @@ export default {
 		{
 			path: '/brands',
 			component: Brands,
+			exact: true
+		},
+		{
+			path: '/brand/:brandId/:brandTitle',
+			component: BrandsDetail,
 			exact: true
 		},
 		{
@@ -208,24 +221,17 @@ export default {
 			exact: true
 		},
 		{
-			path: '/forgotPassword',
+			path: '/forgot-password',
 			component: ForgotPassword,
 			exact: true
 		},
 		{
-			path: '/new_arrival',
-			component: Promo
+			path: '/promo',
+			component: PromoList, 
+			exact: true
 		},
 		{
-			path: '/best_seller',
-			component: Promo
-		},
-		{
-			path: '/recommended_products',
-			component: Promo
-		},
-		{
-			path: '/recent_view',
+			path: '/promo/:type',
 			component: Promo
 		},
 		{
@@ -234,10 +240,7 @@ export default {
 		},
 		{
 			path: '/profile-edit',
-			component: UserProfileEdit,
-		},
-		{
-			path: '/profile-edit-*',
+			exact: true,
 			component: UserProfileEdit,
 		},
 		{
@@ -256,19 +259,13 @@ export default {
 		},
 		{
 			path: '/lovelist',
-			component: Lovelist
+			component: Lovelist,
 		},
 		{
-			path: '/store/:store_id',
-			component: Seller
-		},
-		{
-			path: '/*', // Page not found handling.
-			component: Page404,
+			path: '/store/:store_id/:store_name',
+			component: Seller,
 			exact: true
-		}
-	],
-	child: [
+		},
 		{
 			path: '/profile-edit-ovo',
 			component: UserProfileEditOVO
@@ -280,6 +277,20 @@ export default {
 		{
 			path: '/profile-edit-email',
 			component: UserProfileEditEmail
-		}
+		},
+		{
+			path: '/profile-edit-password',
+			component: UserProfileEditPassword
+		},
+		{
+			path: '/checkout/complete/:so_number([a-zA-Z0-9-]+)',
+			component: ThankYou
+		},
+		{
+			path: '/*', // Page not found handling.
+			component: Page404,
+			exact: true
+		},
 	]
 };
+
