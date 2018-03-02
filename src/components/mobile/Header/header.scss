@@ -16,14 +16,12 @@
 	flex-direction: row;
 	height: rem(60px);
 	justify-content: space-between;
-	left: 0;
 	padding: rem(0px) rem(15px);
 	position: fixed;
-	right: 0;
 	top: 0;
 	max-width: $max-width-container;
 	margin: 0 auto;
-
+	width: 100%;
 }
 
 

@@ -64,10 +64,13 @@ class GoogleLogin extends PureComponent {
 	proccessLogin(response) {
 		const basicProfile = response.getBasicProfile();
 		const authResponse = response.getAuthResponse();
-		const profile = {
-			googleId: basicProfile.getId(),
-			authToken: authResponse.id_token,
+		const token = {
+			userID: basicProfile.getId(),
+			accessToken: authResponse.id_token,
 			expiresIn: authResponse.expires_at,
+		};
+
+		const me = {
 			authResponse,
 			imageUrl: basicProfile.getImageUrl(),
 			email: basicProfile.getEmail(),
@@ -75,7 +78,7 @@ class GoogleLogin extends PureComponent {
 			givenName: basicProfile.getGivenName(),
 			familyName: basicProfile.getFamilyName()
 		};
-		this.props.onSuccess(profile);
+		this.props.onSuccess(token, me);
 	}
 
 	render() {

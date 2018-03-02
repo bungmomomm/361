@@ -1,11 +1,21 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
-import { users } from '@/state/v4/User';
-import { Link } from 'react-router-dom';
-import { Header, Page, Button, Svg, Input, Modal } from '@/components/mobile';
+import { actions as users } from '@/state/v4/User';
+// import { Link } from 'react-router-dom';
+import { 
+	Header,
+	Page,
+	Button,
+	Svg,
+	Input,
+	Modal
+} from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import styles from '../user.scss';
+import { to } from 'await-to-js';
+import validator from 'validator';
+import _ from 'lodash';
 
 
 class ForgotPassword extends Component {
@@ -16,13 +26,46 @@ class ForgotPassword extends Component {
 		this.source = this.props.cookies.get('user.source');
 		this.props = props;
 		this.state = {
-			visibalePasswod: false,
-			showModal: true,
+			error: false,
+			isValidUsername: false,
+			showModal: false,
+			userName: '',
 		};
 	}
 	
-	onUserChange(e) {
-		this.props.dispatch(new users.userNameChange(e));
+	async onResetPassword(e) {
+		const { dispatch, cookies } = this.props;
+		const { username } = this.state;
+		const [err, response] = await to(dispatch(new users.userForgotPassword(cookies.get('user.token'), username)));
+		if (err) {
+			this.setState({
+				error: true,
+			});
+			return err;
+		}
+		this.setState({
+			error: false,
+			message: response.data,
+			showModal: true
+		});
+		return response;
+	}
+
+	onBack(e) {
+		const { history } = this.props;
+		history.goBack();
+	}
+
+	onUserChange(value) {
+		let isValidUsername = false;
+		if ((value.substring(0, 1) === '0' && _.parseInt(value) > 0 && validator.isMobilePhone(value, 'any')) || validator.isEmail(value)) {
+			isValidUsername = true;
+		}
+		this.setState({
+			error: false,
+			userName: value,
+			isValidUsername
+		});
 	}
 
 	handlePick(current) {
@@ -30,29 +73,43 @@ class ForgotPassword extends Component {
 	}
 
 	render() {
+		const { isLoginLoading } = this.props;
+		const { error, isValidUsername, userName } = this.state;
 		const HeaderPage = {
 			left: (
-				<Link to='/'>
+				<Button onClick={(e) => this.onBack(e)}>
 					<Svg src='ico_arrow-back-left.svg' />
-				</Link>
+				</Button>
 			),
 			center: 'Lupa Password',
 			right: null
 		};
 		
 		return (
+
 			<div className='full-height' style={this.props.style}>
 				<Page>
 					<div className={styles.container}>
 						<div className='margin--medium'>Masukkan alamat email atau nomer telepon Anda dan kami akan mengirimkan link untuk mengubah password lama Anda.</div>
 						<div className='margin--medium text-center'>
-							<Input flat placeholder='Email / Nomor Handphone' label='Email / Nomor Handphone' />
+							<Input 
+								disabled={isLoginLoading}
+								flat 
+								placeholder='Email / Nomor Handphone' 
+								label='Email / Nomor Handphone' 
+								onChange={(e) => this.onUserChange(e.target.value)} 
+								error={error}
+								hint={error ? 'We are unable to proccess your request, please try again' : ''}
+							/>
 						</div>
 						<div className='margin--medium'>
 							<Button
+								className={'error'}
 								color='primary'
 								size='large'
-								onClick={e => this.onLogin(e)}
+								disabled={!isValidUsername}
+								loading={isLoginLoading}
+								onClick={e => this.onResetPassword(e)}
 							>
 								RESET
 							</Button>
@@ -60,24 +117,19 @@ class ForgotPassword extends Component {
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Modal.Content className='text-center' show={this.state.showModal}>
+				<Modal className='text-center' show={this.state.showModal}>
 					<div><strong>Lupa Password</strong></div>
-					<p className='margin--medium'>Kami telah mengirimkan link reset password ke <strong>me@bungmomo.com</strong>, silahkan cek email Anda</p>
+					<p className='margin--medium'>Kami telah mengirimkan link reset password ke <strong>{userName}</strong>, silahkan cek email Anda</p>
 					<Modal.Action 
-						closeButton={<Button onClick={() => this.setState({ showModal: !this.state.showModal })}>CLOSE</Button>}
-						confirmButton={<Button>OK</Button>}
+						closeButton={''}
+						confirmButton={<Button onClick={() => this.setState({ showModal: !this.state.showModal })}>OK</Button>}
 						overlayClose={() => this.setState({ showModal: !this.state.showModal })}
 					/>
-				</Modal.Content>
+				</Modal>
 			</div>
 		);
 	}
 }
-
-ForgotPassword.defaultProps = {
-	Home: 'hallo',
-	Data: 'akjsdaskdjasldjsaldjalskdj'
-};
 
 const mapStateToProps = state => {
 	return {
@@ -89,6 +141,4 @@ const doAfterAnonymous = props => {
 	console.log('code here if you need anon token or token');
 };
 
-export default withCookies(
-	connect(mapStateToProps)(Shared(ForgotPassword, doAfterAnonymous))
-);
+export default withCookies(connect(mapStateToProps)(Shared(ForgotPassword, doAfterAnonymous)));
