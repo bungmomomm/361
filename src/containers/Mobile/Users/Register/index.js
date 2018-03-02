@@ -96,6 +96,17 @@ class Register extends Component {
 		// Call register action.
 		const [errorRegister, responseRegister] = await to(dispatch(new users.userRegister(cookies.get('user.token'), dataForRegister)));
 		
+		// Throw error if any.
+		if (errorRegister) {
+			const { code } = errorRegister.response.data;
+			if (code === 422) {
+				console.log(errorRegister.response.data.message);
+				this.setState({ whatIShouldRender: 'EMAIL_MOBILE_HAS_BEEN_REGISTERED' });
+				return false;
+			}
+			
+			return false;
+		}
 		// Extract response from register
 		const { data } = responseRegister;
 		const { code } = data;
@@ -134,7 +145,7 @@ class Register extends Component {
 				const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get('user.token'), loginData)));
 				if (errorUserLogin) {
 					console.log('error on user login');
-					return errorUserLogin;
+					return false;
 				}
 				console.log(responseUserLogin);
 				
@@ -143,12 +154,7 @@ class Register extends Component {
 				history.push(redirectUrl || '/');
 			}
 		}
-
-		if (errorRegister) {
-			this.setState({ whatIShouldRender: 'EMAIL_MOBILE_HAS_BEEN_REGISTERED' });
-			return false;
-		}
-
+		
 		return responseRegister;
   
 	}
