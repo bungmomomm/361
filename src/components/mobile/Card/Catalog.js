@@ -30,13 +30,6 @@ class Catalog extends PureComponent {
 		} = this.props;
 
 		const createClassName = classNames(styles.container, styles[type], className);
-
-		const comment = commentTotal ? <span>{commentTotal} Komentar</span>
-			: <span>0 Komentar</span>;
-
-		const lovelist = lovelistTotal ? <span>{lovelistTotal} Suka</span>
-			: <span>0 Suka</span>;
-
 		const lovelistIcon = lovelistStatus && lovelistStatus === 1 ? 'ico_love-filled.svg' : 'ico_love.svg';
 
 		const discountBadge = pricing.discount !== '0%' ? (
@@ -57,7 +50,7 @@ class Catalog extends PureComponent {
 					<Carousel>
 						{
 							images.map((image, index) => (
-								<Image key={index} src={image.thumbnail} lazyload alt={productTitle} />
+								<Image key={index} src={image.thumbnail} alt={productTitle} />
 							))
 						}
 					</Carousel>
@@ -69,14 +62,14 @@ class Catalog extends PureComponent {
 					<Level.Item>
 						<Button onClick={lovelistAddTo} disabled={lovelistDisable}>
 							<Svg src={lovelistIcon} />
-							{lovelist}
+							<span>{lovelistTotal} Suka</span>
 						</Button>
 					</Level.Item>
 					<Level.Item>
 						<Link to={(commentUrl) || '/'}>
-							<Button>
+							<Button wide>
 								<Svg src='ico_comment.svg' />
-								{comment}
+								<span>{commentTotal} Komentar</span>
 							</Button>
 						</Link>
 					</Level.Item>
@@ -104,7 +97,9 @@ class Catalog extends PureComponent {
 }
 
 Catalog.defaultProps = {
-	linkToPdp: '/'
+	linkToPdp: '/',
+	commentTotal: 0,
+	lovelistTotal: 0
 };
 
 Catalog.propTypes = {

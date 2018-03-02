@@ -1,6 +1,6 @@
 
 import loadable from 'loadable-components';
-import { isMobile } from '@/utils';
+// import { isMobile } from '@/utils';
 
 // const Page = loadable(() => import('@/containers/Page'));
 
@@ -51,70 +51,70 @@ let Cart = defRoute;
 let CartEmpty = defRoute;
 let ThankYou = defRoute;
 
-if (isMobile()) {
-	/**
-	 * Require main mobile styles
-	 */
-	import('@/styles/mobile');
+// if (isMobile()) {
+/**
+ * Require main mobile styles
+ */
+import('@/styles/mobile');
 
-	Home = loadable(() => import('@/containers/Mobile/Home'));
+Home = loadable(() => import('@/containers/Mobile/Home'));
 
-	// Service Discovery
-	Page404 = loadable(() => import('@/containers/Mobile/404'));
-	Search = loadable(() => import('@/containers/Mobile/Discovery/Search'));
-	SearchResults = loadable(() => import('@/containers/Mobile/Discovery/SearchResults'));
-	SearchNotFound = loadable(() => import('@/containers/Mobile/Discovery/SearchNotFound'));
-	Lovelist = loadable(() => import('@/containers/Mobile/Discovery/Lovelist'));
-	Hashtags = loadable(() => import('@/containers/Mobile/Discovery/Hashtags'));
-	Category = loadable(() => import('@/containers/Mobile/Discovery/Category'));
-	SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
-	ProductCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Product'));
-	Brands = loadable(() => import('@/containers/Mobile/Discovery/Brands'));
-	BrandsDetail = loadable(() => import('@/containers/Mobile/Discovery/Brands/detail'));
-	Seller = loadable(() => import('@/containers/Mobile/Discovery/Seller'));
-	CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
+// Service Discovery
+Page404 = loadable(() => import('@/containers/Mobile/404'));
+Search = loadable(() => import('@/containers/Mobile/Discovery/Search'));
+SearchResults = loadable(() => import('@/containers/Mobile/Discovery/SearchResults'));
+SearchNotFound = loadable(() => import('@/containers/Mobile/Discovery/SearchNotFound'));
+Lovelist = loadable(() => import('@/containers/Mobile/Discovery/Lovelist'));
+Hashtags = loadable(() => import('@/containers/Mobile/Discovery/Hashtags'));
+Category = loadable(() => import('@/containers/Mobile/Discovery/Category'));
+SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
+ProductCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Product'));
+Brands = loadable(() => import('@/containers/Mobile/Discovery/Brands'));
+BrandsDetail = loadable(() => import('@/containers/Mobile/Discovery/Brands/detail'));
+Seller = loadable(() => import('@/containers/Mobile/Discovery/Seller'));
+CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
 
-	SampleFilters = loadable(() => import('@/containers/Mobile/SampleFilters'));
+SampleFilters = loadable(() => import('@/containers/Mobile/SampleFilters'));
 
-	// Service Details
-	HashtagsDetails = loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'));
+// Service Details
+HashtagsDetails = loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'));
 
-	// PDP
-	Products = loadable(() => import('@/containers/Mobile/Details/Products'));
+// PDP
+Products = loadable(() => import('@/containers/Mobile/Details/Products'));
 
-	// Shopping-bag
-	Cart = loadable(() => import('@/containers/Mobile/Cart'));
-	CartEmpty = loadable(() => import('@/containers/Mobile/Cart/empty'));
+// Shopping-bag
+Cart = loadable(() => import('@/containers/Mobile/Cart'));
+CartEmpty = loadable(() => import('@/containers/Mobile/Cart/empty'));
 
-	ProductsComments = loadable(() => import('@/containers/Mobile/Details/Products/Comments'));
-	ProductsGuide = loadable(() => import('@/containers/Mobile/Details/Products/Guide'));
+ProductsComments = loadable(() => import('@/containers/Mobile/Details/Products/Comments'));
+ProductsGuide = loadable(() => import('@/containers/Mobile/Details/Products/Guide'));
 
-	// Users
-	UserLogin = loadable(() => import('@/containers/Mobile/Users/Login'));
-	ForgotPassword = loadable(() => import('@/containers/Mobile/Users/Login/forgotPassword'));
-	UserRegister = loadable(() => import('@/containers/Mobile/Users/Register'));
-	UserRegistered = loadable(() => import('@/containers/Mobile/Users/Register/registered'));
-	UserRegisteredPhoneValidation = loadable(() => import('@/containers/Mobile/Users/Register/registeredPhoneValidation'));
-	// promo
-	Promo = loadable(() => import('@/containers/Mobile/Discovery/Promo'));
-	PromoList = loadable(() => import('@/containers/Mobile/Discovery/Promo/PromoList'));
-	UserProfile = loadable(() => import('@/containers/Mobile/Users/Profile'));
-	UserProfileEdit = loadable(() => import('@/containers/Mobile/Users/Profile/edit'));
-	UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'));
-	UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'));
-	UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'));
-	UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'));
+// Users
+UserLogin = loadable(() => import('@/containers/Mobile/Users/Login'));
+ForgotPassword = loadable(() => import('@/containers/Mobile/Users/Login/forgotPassword'));
+UserRegister = loadable(() => import('@/containers/Mobile/Users/Register'));
+UserRegistered = loadable(() => import('@/containers/Mobile/Users/Register/registered'));
+UserRegisteredPhoneValidation = loadable(() => import('@/containers/Mobile/Users/Register/registeredPhoneValidation'));
+// promo
+Promo = loadable(() => import('@/containers/Mobile/Discovery/Promo'));
+PromoList = loadable(() => import('@/containers/Mobile/Discovery/Promo/PromoList'));
+UserProfile = loadable(() => import('@/containers/Mobile/Users/Profile'));
+UserProfileEdit = loadable(() => import('@/containers/Mobile/Users/Profile/edit'));
+UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'));
+UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'));
+UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'));
+UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'));
 
-	// Order
-	ThankYou = loadable(() => import('@/containers/Mobile/Order/ThankYou'));
+// Order
+ThankYou = loadable(() => import('@/containers/Mobile/Order/ThankYou'));
 
-} else {
-	/**
-	 * Require main desktop styles
-	 */
-	import('@/styles');
-	Home = loadable(() => import('@/containers/Desktop/Home'));
-}
+// } else {
+// 	/**
+// 	 * Require main desktop styles
+// 	 */
+// 	import('@/styles');
+// 	Home = loadable(() => import('@/containers/Desktop/Home'));
+// }
 
 export default {
 	parent: [
