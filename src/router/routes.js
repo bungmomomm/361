@@ -39,6 +39,7 @@ let UserRegisteredPhoneValidation = defRoute;
 let ForgotPassword = defRoute;
 let SampleFilters = defRoute;
 let Promo = defRoute;
+let PromoList = defRoute;
 let UserProfile = defRoute;
 let UserProfileEdit = defRoute;
 let UserProfileEditOVO = defRoute;
@@ -96,6 +97,7 @@ if (isMobile()) {
 	UserRegisteredPhoneValidation = loadable(() => import('@/containers/Mobile/Users/Register/registeredPhoneValidation'));
 	// promo
 	Promo = loadable(() => import('@/containers/Mobile/Discovery/Promo'));
+	PromoList = loadable(() => import('@/containers/Mobile/Discovery/Promo/PromoList'));
 	UserProfile = loadable(() => import('@/containers/Mobile/Users/Profile'));
 	UserProfileEdit = loadable(() => import('@/containers/Mobile/Users/Profile/edit'));
 	UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'));
@@ -221,6 +223,11 @@ export default {
 		{
 			path: '/forgot-password',
 			component: ForgotPassword,
+			exact: true
+		},
+		{
+			path: '/promo',
+			component: PromoList, 
 			exact: true
 		},
 		{
