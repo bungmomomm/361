@@ -49,7 +49,7 @@ let Seller = defRoute;
 let UserProfileEditPassword = defRoute;
 let Cart = defRoute;
 let CartEmpty = defRoute;
-let ThankYou = defRoute;
+let MyOrder = defRoute;
 
 if (isMobile()) {
 	/**
@@ -104,9 +104,7 @@ if (isMobile()) {
 	UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'));
 	UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'));
 	UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'));
-
-	// Order
-	ThankYou = loadable(() => import('@/containers/Mobile/Order/ThankYou'));
+	MyOrder = loadable(() => import('@/containers/Mobile/Users/Profile/myOrder'));
 
 } else {
 	/**
@@ -227,7 +225,7 @@ export default {
 		},
 		{
 			path: '/promo',
-			component: PromoList, 
+			component: PromoList,
 			exact: true
 		},
 		{
@@ -283,8 +281,8 @@ export default {
 			component: UserProfileEditPassword
 		},
 		{
-			path: '/checkout/complete/:so_number([a-zA-Z0-9-]+)',
-			component: ThankYou
+			path: '/profile-my-order',
+			component: MyOrder
 		},
 		{
 			path: '/*', // Page not found handling.
