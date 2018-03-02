@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
-import { users } from '@/state/v4/User';
-import { Link, Redirect } from 'react-router-dom';
+import { actions as users } from '@/state/v4/User';
+import { 
+	Link,
+	Redirect 
+} from 'react-router-dom';
 import {
 	Header,
 	Page,
@@ -12,19 +15,13 @@ import {
 	Svg
 } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
-import { setUserCookie, renderIf } from '@/utils';
+import LoginWidget from '@/containers/Mobile/Shared/Widget/Login';
+import { 
+	setUserCookie, 
+	renderIf 
+} from '@/utils';
 import styles from '../user.scss';
-
-const DUMMY_TAB = [
-	{
-		Title: 'Login',
-		id: 'login'
-	},
-	{
-		Title: 'Daftar',
-		id: 'register'
-	}
-];
+import to from 'await-to-js';
 
 class Register extends Component {
 	constructor(props) {
@@ -39,19 +36,17 @@ class Register extends Component {
 		};
 	}
 
-	async onLogin(e) {
-		try {
-			const { token } = await this.props.dispatch(
-				new users.userLogin(
-					this.props.userCookies,
-					'agus.sarwono@mataharimall.com',
-					'iniharusnyapassword'
-				)
-			);
-			setUserCookie(this.props.cookies, token);
-		} catch (error) {
-			console.log(error);
+	async onSocialLogin(provider, token, profile) {
+		const { cookies, dispatch, history } = this.props;
+		const { redirectUrl } = this.state;
+		const { accessToken } = token;
+		const [err, response] = await to(dispatch(new users.userSocialLogin(cookies.get('user.token'), provider, accessToken)));
+		if (err) {
+			return err;
 		}
+		setUserCookie(this.props.cookies, response.token);
+		history.push(redirectUrl || '/');
+		return response;
 	}
 
 	onUserChange(e) {
@@ -64,8 +59,10 @@ class Register extends Component {
 	}
 
 	render() {
-		const { userProfile } = this.props.users;
-		const { visiblePassword, current } = this.state;
+		const { 
+			visiblePassword,
+			current
+		} = this.state;
 		const HeaderPage = {
 			left: (
 				<Link to='/'>
@@ -77,17 +74,16 @@ class Register extends Component {
 			shadow: false
 		};
 
-		const userinfo = Object.keys(userProfile).map((id, key) => {
-			const value = userProfile[id];
-			return (
-				<li key={id}>
-					{id} : {value}
-				</li>
-			);
-		});
-
 		const register = (current === 'login');
-
+		const providerConfig = {
+			google: {
+				clientId: process.env.GOOGLEAPP_ID,
+				appId: process.env.GOOGLEAPP_APIKEY
+			},
+			facebook: {
+				appId: process.env.FBAPP_ID
+			}
+		};
 		return (
 			<div className='full-height' style={this.props.style}>
 				<Page>
@@ -96,25 +92,25 @@ class Register extends Component {
 					)}
 					<Tabs
 						current={this.state.current}
-						variants={DUMMY_TAB}
+						variants={[
+							{
+								Title: 'Login',
+								id: 'login'
+							},
+							{
+								Title: 'Daftar',
+								id: 'register'
+							}
+						]}
 						onPick={e => this.handlePick(e)}
 					/>
 					<div className={styles.container}>
 						<div className='margin--medium'>Daftar Dengan</div>
-						<div className='flex-row flex-center flex-spaceBetween'>
-							<div style={{ width: '45%' }}>
-								<Button wide color='facebook' size='medium' style={{ justifyContent: 'center' }}>
-									<Svg src='ico_facebook.svg' style={{ marginRight: 'auto' }} />
-									<span style={{ marginRight: 'auto' }}>Facebook</span>
-								</Button>
-							</div>
-							<div style={{ width: '45%' }}>
-								<Button wide color='google' size='medium' style={{ justifyContent: 'center' }}>
-									<Svg src='ico_google.svg' style={{ marginRight: 'auto' }} />
-									<span style={{ marginRight: 'auto' }}>Google</span>
-								</Button>
-							</div>
-						</div>
+						<LoginWidget
+							provider={providerConfig}
+							onSuccess={(provider, token, profile) => this.onSocialLogin(provider, token, profile)}
+							onFailure={(provider, e) => console.log(provider, e)}
+						/>
 						<div className={styles.divider}>
 							<span>Atau</span>
 						</div>
@@ -136,9 +132,7 @@ class Register extends Component {
 							<Input
 								label='Password'
 								iconRight={
-									<Button
-										onClick={() => this.setState({ visiblePassword: !visiblePassword })}
-									>
+									<Button>
 										<Svg src={visiblePassword ? 'ico_eye.svg' : 'ico_eye-off.svg'} />
 									</Button>
 								}
@@ -154,69 +148,10 @@ class Register extends Component {
 							<Button
 								color='primary'
 								size='large'
-								onClick={e => this.onLogin(e)}
 							>
 								Daftar
 							</Button>
 						</div>
-					</div>
-
-					<div style={{ display: 'none' }}>
-						Login
-						<ul>{userinfo}</ul>
-						username
-						<Input
-							value={this.props.users.username}
-							onChange={e => this.onUserChange(e.target.value)}
-						/>
-						<Button
-							color='primary'
-							size='small'
-							loading={this.props.isLoginLoading}
-							onClick={e => this.onLogin(e)}
-						>
-							Login
-						</Button>
-						<Button
-							color='primary'
-							size='small'
-							loading={this.props.isLoginLoading}
-							onClick={e => this.onUserChange('')}
-						>
-							remove keyword
-						</Button>
-						<Button
-							color='primary'
-							size='small'
-							loading={this.props.isRegisterLoading}
-							onClick={e => this.onRegister(e)}
-						>
-							Register By Phone
-						</Button>
-						<Button
-							color='primary'
-							size='small'
-							loading={this.props.isRegisterLoading}
-							onClick={e => this.onRegister(e)}
-						>
-							Register By Email
-						</Button>
-						<Button
-							color='primary'
-							size='small'
-							loading={this.props.isRegisterLoading}
-							onClick={e => this.onRegister(e)}
-						>
-							Forgotpassword
-						</Button>
-						<Button
-							color='primary'
-							size='small'
-							loading={this.props.isRegisterLoading}
-							onClick={e => this.onRegister(e)}
-						>
-							Logout
-						</Button>
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />
