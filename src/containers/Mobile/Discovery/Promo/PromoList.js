@@ -30,16 +30,16 @@ class PromoList extends Component {
 		return (
 			<div className='text-center' style={this.props.style}>
 				<Page>
-					<Iframe 
+					<Iframe
 						url='https://super.mataharimall.com/promo/new/mobileapps.html'
 						id='myId'
-						width='355' 
+						width='355'
 						height='530'
-						allowFullScreen 
+						allowFullScreen
 					/>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Promo' />
+				<Navigation active='Promo' scroll={this.props.scroll} />
 			</div>
 		);
 	}
@@ -60,7 +60,7 @@ const doAfterAnonymous = (props) => {
 export default withCookies(
 	connect(mapStateToProps)(
 		Shared(
-			PromoList, 
+			PromoList,
 			doAfterAnonymous
 		)
 	)

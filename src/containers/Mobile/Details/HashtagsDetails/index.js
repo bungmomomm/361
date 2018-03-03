@@ -112,7 +112,7 @@ class HashtagsDetails extends PureComponent {
 				</Page>
 
 				<Header.Modal {...HeaderPage} />
-				<Navigation />
+				<Navigation scroll={this.props.scroll} />
 			</div>);
 	}
 }

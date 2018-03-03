@@ -184,7 +184,7 @@ class Hashtags extends Component {
 				</Page>
 
 				<Header.Modal {...HeaderPage} />
-				<Navigation />
+				<Navigation scroll={this.props.scroll} />
 			</div>
 		);
 	}
