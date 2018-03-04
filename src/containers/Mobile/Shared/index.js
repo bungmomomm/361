@@ -149,13 +149,15 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		handleScroll(e) {
-			const docHeight = this.docBody ? this.docBody.scrollHeight - window.innerHeight : 0;
-			this.setState({
-				scroll: {
-					top: e.target.scrollTop,
-					docHeight
-				}
-			});
+			if (e.target.tagName === 'BODY') {
+				const docHeight = this.docBody ? this.docBody.scrollHeight - window.innerHeight : 0;
+				this.setState({
+					scroll: {
+						top: e.target.scrollTop,
+						docHeight
+					}
+				});
+			}
 		}
 
 		render() {

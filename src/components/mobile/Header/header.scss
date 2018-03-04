@@ -55,17 +55,17 @@
 	background: #FFFFFF;
 	border-bottom: 1px solid #D8D8D8;
 	box-shadow: 0 1px 4px 0 rgba(0,0,0,0.05);
-	.center{
+	.center:not(.row){
 		font-family: font-family('lato-regular');
 		font-size: map-get($font-size, --medium );
 		color: inherit;
 		letter-spacing: 0.5px;
 	}
 	a{
-		color: inherit;
-		font-family: font-family('lato-bold');
-		font-size: map-get($font-size, --normal);
-		letter-spacing: 1px;
+		// color: inherit;
+		// font-family: font-family('lato-bold');
+		// font-size: map-get($font-size, --normal);
+		// letter-spacing: 1px;
 		text-align: center;
 		text-decoration: none;
 		display: inline-flex;
