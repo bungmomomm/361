@@ -118,8 +118,8 @@ class Hashtags extends Component {
 		const isSticky = () => {
 			if (this.staticHashtag) {
 				const rect = this.staticHashtag.getBoundingClientRect();
-				const threshold = 90;
-				return this.props.scroll.top > (rect.top + rect.height + threshold);
+				// const threshold = 90;
+				return this.props.scroll.top > (rect.top + rect.height);
 			}
 			return false;
 		};
