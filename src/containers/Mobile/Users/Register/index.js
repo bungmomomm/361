@@ -374,7 +374,7 @@ class Register extends Component {
 				<div className='margin--medium'>Daftar Dengan</div>
 				<LoginWidget
 					provider={providerConfig}
-					onSuccess={(provider, token, profile) => this.onSocialRegister(provider, token, profile)}
+					onSuccess={(provider, token) => this.onSocialRegister(provider, token)}
 					onFailure={(provider, e) => console.log(provider, e)}
 				/>
 				<div className={styles.divider}>
