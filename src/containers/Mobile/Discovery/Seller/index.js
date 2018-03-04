@@ -362,7 +362,7 @@ class Seller extends Component {
 							{scroller.loading && <Spinner />}
 						</Page>
 
-						<Header.Modal {...HeaderPage} />
+						<Header.Modal {...HeaderPage} style={{ zIndex: 1 }} />
 						<Navigation />
 					</div>
 				)}

@@ -64,7 +64,7 @@ class Navigation extends PureComponent {
 							active={active === 'Shopping Bag'}
 						/>
 						<Item
-							to='/'
+							to='/promo'
 							icon='ico_promo.svg'
 							label='Promo'
 							active={active === 'Promo'}
