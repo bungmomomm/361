@@ -190,16 +190,10 @@ const userRegister = (token, bodyData) => async (dispatch, getState) => {
 			body: dataForRegister
 		};
 		
-		console.log('Data register');
-		console.log(requestData);
-		
 		const response = await request(requestData);
 		
 		if (isSuccess(response)) {
 			dispatch(actions.userRegisterSuccess());
-			if (bodyData.registerWith === 'MOBILE') {
-				dispatch(actions.userOtp(token, bodyData.hp_email));
-			}
 			return Promise.resolve(response);
 		}
 		const error = new Error('Error while calling api');

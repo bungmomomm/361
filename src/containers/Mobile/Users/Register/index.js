@@ -99,8 +99,7 @@ class Register extends Component {
 		// Throw error if any.
 		if (errorRegister) {
 			const { code } = errorRegister.response.data;
-			if (code === 422) {
-				console.log(errorRegister.response.data.message);
+			if (code === 422 && errorRegister.response.data.error_message === 'hp_email is already taken.') {
 				this.setState({ whatIShouldRender: 'EMAIL_MOBILE_HAS_BEEN_REGISTERED' });
 				return false;
 			}
@@ -121,38 +120,33 @@ class Register extends Component {
 					console.log('Error on OTP');
 					return false;
 				}
-				console.log(responseUserOtp);
-				console.log('data from register');
-				console.log(data);
-				console.log('code from register');
-				console.log(code);
 				// Set state for OTP
 				this.setState({
 					whatIShouldRender: 'VALIDATE_OTP'
 				});
-			} else {
-				// Otherwise do the login.
-				const loginData = {
-					email,
-					pwd: base64.encode(password),
-					device_id: getDeviceID(),
-					client_secret: getClientSecret()
-				};
 				
-				console.log('Login data');
-				console.log(loginData);
+				return responseUserOtp;
 				
-				const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get('user.token'), loginData)));
-				if (errorUserLogin) {
-					console.log('error on user login');
-					return false;
-				}
-				console.log(responseUserLogin);
-				
-				// Set the cookie for the page.
-				setUserCookie(cookies, responseUserLogin.token);
-				history.push(redirectUrl || '/');
 			}
+			
+			// Otherwise do the login.
+			const loginData = {
+				email,
+				pwd: base64.encode(password),
+				device_id: getDeviceID(),
+				client_secret: getClientSecret()
+			};
+			
+			const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get('user.token'), loginData)));
+			
+			if (errorUserLogin) {
+				return false;
+			}
+			
+			// Set the cookie for the page.
+			setUserCookie(cookies, responseUserLogin.token);
+			history.push(redirectUrl || '/');
+			
 		}
 		
 		return responseRegister;
@@ -170,15 +164,11 @@ class Register extends Component {
 		const { email } = this.state;
   
 		// Send the OTP again.
-		const [errUserOtp, responseUserOtp] = await to(dispatch(new users.userOtp(cookies.get('user.token'), email)));
 		
-		console.log('Error user OTP');
-		console.log(errUserOtp);
-		console.log('Response user otp');
-		console.log(responseUserOtp);
+		await to(dispatch(new users.userOtp(cookies.get('user.token'), email)));
 		
 		// Set the initial number for OTP to 10.
-		let number = 10;
+		let number = 301;
 		
 		const counterDown = () => {
 			
@@ -210,8 +200,8 @@ class Register extends Component {
 	
 	async onVerifyOtp() {
 		
-		const { cookies, dispatch } = this.props;
-		const { loginId, email, password, otpValue } = this.state;
+		const { cookies, dispatch, history } = this.props;
+		const { loginId, email, password, otpValue, redirectUrl } = this.state;
 		
 		const dataForVerify = {
 			hp_email: email,
@@ -223,9 +213,29 @@ class Register extends Component {
 		const [err, response] = await to(dispatch(new users.userOtpValidate(cookies.get('user.token'), dataForVerify)));
 		
 		if (err) {
-			console.log('Masalah terjadi ketika memvalidasi kode OTP');
+			console.log('Something error when try to validate OTP code');
 			return err;
 		}
+        
+		// Otherwise do the login.
+		const loginData = {
+			email,
+			pwd: base64.encode(password),
+			device_id: getDeviceID(),
+			client_secret: getClientSecret()
+		};
+  
+		const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get('user.token'), loginData)));
+		
+		if (errorUserLogin) {
+			console.log('error on user login');
+			return false;
+		}
+		
+		// Set the cookie for the page.
+		setUserCookie(cookies, responseUserLogin.token);
+		history.push(redirectUrl || '/');
+  
 		return response;
 	}
 
@@ -459,8 +469,6 @@ class Register extends Component {
 	}
  
 	renderMobileOrEmailHasBeenRegistered() {
-		
-		console.log('Pmn');
 		
 		const { email } = this.state;
 		
