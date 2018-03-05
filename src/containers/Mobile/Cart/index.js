@@ -99,7 +99,7 @@ class Cart extends Component {
 									<Image width='100%' src={item.images[0].mobile} />
 								</Link>
 							</Level.Item>
-							<Level.Item className='padding--medium'>
+							<Level.Item className='padding--medium-h'>
 								<div>
 									<Link to={urlBuilder.setId(item.brand.id).setName(item.brand.brand_name).buildBrand()}>
 										{item.brand.brand_name}
@@ -147,7 +147,7 @@ class Cart extends Component {
 									<Svg src='ico_reply.svg' /> &nbsp; Pindahkan ke Lovelist
 								</Button>
 							</div>
-							<div className='padding--large'>
+							<div className='padding--large-h'>
 								<Button
 									onClick={() => this.deleteConfirmationItemHandler(
 										item.product_id, item.brand.brand_name, item.product_title, item.images[0].mobile
@@ -179,7 +179,7 @@ class Cart extends Component {
 
 	renderTotal() {
 		return (this.props.shopBag.total !== null) && (
-			<div className='padding--medium' style={{ backgroundColor: '#fff' }}>
+			<div className='padding--medium-h' style={{ backgroundColor: '#fff' }}>
 				<div className='margin--medium'>
 					<div className='flex-row flex-spaceBetween'>
 						<div>Subtotal</div>
@@ -214,7 +214,7 @@ class Cart extends Component {
 			<Panel className='flex-row flex-spaceBetween'>
 				<div className='flex-row'>
 					<span className='font-color--primary'>Total:</span>
-					<span className='padding--medium'>{(totalItem)} ITEM(S)</span>
+					<span className='padding--medium-h'>{(totalItem)} ITEM(S)</span>
 				</div>
 				<div className='font-medium font-color--primary'>
 					{this.props.shopBag.total.formatted.total}
@@ -274,7 +274,7 @@ class Cart extends Component {
 					<div className='font-medium'>Anda mau menghapus produk ini?</div>
 					<Level style={{ padding: '0px' }} className='margin--medium'>
 						<Level.Left><Image width='40px' src={this.state.productwillDelete.image} /></Level.Left>
-						<Level.Item className='padding--medium'>
+						<Level.Item className='padding--medium-h'>
 							<div className='font-small'>{this.state.productwillDelete.brand}</div>
 							<div className='font-small font-color--primary-ext-1'>{this.state.productwillDelete.title}</div>
 						</Level.Item>

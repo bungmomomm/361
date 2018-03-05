@@ -27,8 +27,8 @@ const SellerProfile = ({
 }) => {
 	return (
 		<div className='margin--medium'>
-			<div className='padding--small flex-row flex-spaceBetween'>
-				<div className='padding--small'>
+			<div className='padding--small-h flex-row flex-spaceBetween'>
+				<div className='padding--small-h'>
 					<div className='avatar'>
 						<Image avatar width={60} height={60} src={image} />
 						<Badge attached position='bottom-right'><Svg src={sellerStatus(status)} /></Badge>
@@ -48,14 +48,14 @@ const SellerProfile = ({
 					<Level.Item className='text-center'>
 						<div className='font-large flex-row flex-center flex-middle'>
 							<Svg src='ico_successorder.svg' />
-							<span className='padding--small padding--none-right'>{successOrder}%</span>
+							<span className='padding--small-h padding--none-r'>{successOrder}%</span>
 						</div>
 						<div className='font-small font-color--primary-ext-2'>Order Sukses</div>
 					</Level.Item>
 					<Level.Item className='text-center'>
 						<div className='font-large flex-row flex-middle'>
 							<Svg src='ico_reviews_solid_selected_small.svg' />
-							<span className='padding--small padding--none-right'>{rating}</span>
+							<span className='padding--small-h padding--none-r'>{rating}</span>
 						</div>
 						<div className='font-small font-color--primary-ext-2'>Rating</div>
 					</Level.Item>
@@ -65,7 +65,7 @@ const SellerProfile = ({
 					</Level.Item>
 				</Level>
 			</div>
-			<div className='padding--medium margin--small'>
+			<div className='padding--medium-h margin--small'>
 				<div className='font-medium'>{name}</div>
 				<div className='font-small flex-row flex-middle'><Svg src='ico_pinlocation-black.svg' /> <span>{location}</span></div>
 				{

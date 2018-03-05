@@ -66,9 +66,9 @@ class Hashtags extends Component {
 						<Link to={`/mau-gaya-itu-gampang/${campaignId}/${product.id}`}>
 							<Image src={product.image} width='100%' />
 						</Link>
-						<div className='flex-row padding--medium margin--medium'>
+						<div className='flex-row padding--medium-h margin--medium'>
 							<div><Image avatar height={40} width={40} src={product.image} /></div>
-							<div className='padding--medium'>
+							<div className='padding--medium-h'>
 								<div><Link className='font-color--primary' to='/'>@{product.username}</Link></div>
 								<div><em className='font-small font--lato-normal font-color--grey'>Post date: {product.created_time}</em></div>
 							</div>
@@ -102,10 +102,10 @@ class Hashtags extends Component {
 		return (
 			<div>
 				<Page>
-					<div className='margin--medium text-center padding--large'>
+					<div className='margin--medium text-center padding--large-h'>
 						{hashtag.header.description}
 					</div>
-					<div className='flex-row flex-center flex-spaceBetween margin--medium padding--large'>
+					<div className='flex-row flex-center flex-spaceBetween margin--medium padding--large-h'>
 						{tags.map((tag, i) => (
 							<Link
 								to={tag.hashtag.indexOf('#') === -1 ? `/mau-gaya-itu-gampang#${tag.hashtag}` : `/mau-gaya-itu-gampang${tag.hashtag}`}

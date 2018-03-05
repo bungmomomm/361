@@ -15,7 +15,7 @@ const Comments = () => {
 	return (
 		<div>
 			<Page>
-				<div className='margin--medium padding--medium'>
+				<div className='margin--medium padding--medium-h'>
 					<Table>
 						<thead>
 							<tr>
@@ -34,7 +34,7 @@ const Comments = () => {
 						</tbody>
 					</Table>
 				</div>
-				<div className='margin--medium padding--medium'>
+				<div className='margin--medium padding--medium-h'>
 					<Image local src='temp/size-guide.jpg' />
 				</div>
 			</Page>

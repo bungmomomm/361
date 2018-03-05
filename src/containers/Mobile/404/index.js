@@ -29,7 +29,7 @@ class Page404 extends Component {
 				</div>
 			);
 		};
-		
+
 		return (
 			<div className='margin--large margin--none-top'>
 				<Level>
@@ -58,7 +58,7 @@ class Page404 extends Component {
 		const { history } = this.props;
 		const HeaderPage = {
 			left: (
-				<button onClick={() => (history.length < 2 ? history.push('/') : history.go(-2))}> 
+				<button onClick={() => (history.length < 2 ? history.push('/') : history.go(-2))}>
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</button>
 			),
@@ -81,7 +81,7 @@ class Page404 extends Component {
 							<Link to='/'><Image local src='temp/promo404-2.jpg' /></Link>
 						</div>
 						<Notification color='yellow' show disableClose>
-							<div className='margin--medium padding--medium' style={{ color: '#F57C00' }}>Jika anda mengalami kesulitan silahkan hubungi Customer Support kami di: 1500038</div>
+							<div className='margin--medium padding--medium-h' style={{ color: '#F57C00' }}>Jika anda mengalami kesulitan silahkan hubungi Customer Support kami di: 1500038</div>
 						</Notification>
 						{this.renderRecomendation()}
 					</div>
@@ -113,7 +113,7 @@ const doAfterAnonymous = (props) => {
 export default withCookies(
 	connect(mapStateToProps)(
 		Shared(
-			Page404, 
+			Page404,
 			doAfterAnonymous
 		)
 	)

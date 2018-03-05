@@ -22,24 +22,24 @@ class Comments extends Component {
 		this.renderLoading = <div><Spinner /></div>;
 		this.writeComment = this.writeComment.bind(this);
 		this.postComment = this.postComment.bind(this);
-		
+
 	}
 
 	componentWillMount() {
 		this.setState({
 			detail: {
-				isLoading: true, 
+				isLoading: true,
 				firstLoad: this.renderLoading
 			},
 			comment: {
-				isLoading: true, 
+				isLoading: true,
 				firstLoad: this.renderLoading
 			},
 			hashtag: {
-				isLoading: true, 
+				isLoading: true,
 				firstLoad: this.renderLoading
-			}, 
-			productComment: '' 
+			},
+			productComment: ''
 		});
 	}
 
@@ -68,14 +68,14 @@ class Comments extends Component {
 				if (me.state.comment.isLoading) {
 					me.setState({
 						comment: {
-							isLoading: false, 
+							isLoading: false,
 							firstLoad: null
 						}
 					});
 				}
-				
+
 			});
-			return this.state.comment.firstLoad; 
+			return this.state.comment.firstLoad;
 		}
 
 		return (
@@ -83,7 +83,7 @@ class Comments extends Component {
 				{ <Comment data={comments.data} /> }
 			</div>
 		);
-		
+
 	}
 
 	renderDetail() {
@@ -96,20 +96,20 @@ class Comments extends Component {
 				if (me.state.detail.isLoading) {
 					me.setState({
 						detail: {
-							isLoading: false, 
+							isLoading: false,
 							firstLoad: null
 						}
 					});
 				}
 			});
 
-			return this.state.detail.firstLoad; 
+			return this.state.detail.firstLoad;
 		}
 
 		return (
 			<div>
-				<p className='margin--small padding--medium' dangerouslySetInnerHTML={{ __html: product.detail.description }} />
-				{/* <span className='margin--small padding--medium'>
+				<p className='margin--small padding--medium-h' dangerouslySetInnerHTML={{ __html: product.detail.description }} />
+				{/* <span className='margin--small padding--medium-h'>
 					<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
 				</span> */}
 			</div>
@@ -117,12 +117,12 @@ class Comments extends Component {
 	}
 
 	renderAvailComment() {
-		
+
 		if (this.isLogin === 'true') {
 			return (
 				<Level className={styles.commentbox}>
 					<Level.Item><Input color='white' placeholder='Type a message ...' onChange={this.writeComment} /></Level.Item>
-					<Level.Right><Button className='padding--small font--lato-normal' style={{ marginLeft: '15px' }} onClick={this.postComment} >KIRIM</Button></Level.Right>
+					<Level.Right><Button className='padding--small-h font--lato-normal' style={{ marginLeft: '15px' }} onClick={this.postComment} >KIRIM</Button></Level.Right>
 				</Level>
 			);
 		}
@@ -155,7 +155,7 @@ class Comments extends Component {
 					{ this.renderComments() }
 				</Page>
 				<Header.Modal {...HeaderOption} />
-				
+
 				{ this.renderAvailComment() }
 			</div>);
 	}
@@ -165,7 +165,7 @@ const mapStateToProps = (state) => {
 	console.log(state);
 	return {
 		comments: state.comments,
-		product: state.product, 
+		product: state.product,
 		shared: state.shared
 	};
 };

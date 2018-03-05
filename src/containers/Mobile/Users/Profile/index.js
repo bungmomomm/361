@@ -28,7 +28,7 @@ class UserProfile extends Component {
 		return (
 			<div>
 				<Page>
-					<Level>
+					<Level className='padding--large-v'>
 						<Level.Left>
 							&nbsp;
 						</Level.Left>
