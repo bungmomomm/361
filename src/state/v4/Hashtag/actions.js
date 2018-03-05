@@ -3,7 +3,7 @@ import actions from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 import _ from 'lodash';
 import { to } from 'await-to-js';
-import Promise from 'es6-promise';
+import { Promise } from 'es6-promise';
 
 const configs = {
 	defaultPage: 20
