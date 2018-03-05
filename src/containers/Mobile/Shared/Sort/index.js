@@ -10,7 +10,7 @@ class Sort extends Component {
 		if (shown) {
 			document.getElementsByTagName('body')[0].style.overflow = 'hidden';
 		} else {
-			document.getElementsByTagName('body')[0].style.overflow = '';
+			document.getElementsByTagName('body')[0].style.overflow = 'auto';
 		}
 	}
 

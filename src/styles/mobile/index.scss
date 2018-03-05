@@ -113,6 +113,12 @@
 		display: block;
 		flex: none;
 	}
+	body,
+	html {
+		height: 100%;
+	  	overflow-x: hidden;
+	  	overflow-y: scroll;
+	}
 
 	#root > main {
 		height: 100%;

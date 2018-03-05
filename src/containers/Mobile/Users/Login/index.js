@@ -3,8 +3,9 @@ import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { actions as users } from '@/state/v4/User';
 import { Link, Redirect } from 'react-router-dom';
-import { Header, Page, Button, Input, Tabs, Svg, Notification, SocialLogin } from '@/components/mobile';
+import { Header, Page, Button, Input, Tabs, Svg, Notification } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
+import LoginWidget from '@/containers/Mobile/Shared/Widget/Login';
 import { setUserCookie, renderIf } from '@/utils';
 import styles from '../user.scss';
 import _ from 'lodash';
@@ -47,10 +48,10 @@ class Login extends Component {
 		return response;
 	}
 
-	async onSocialLogin(provider, e) {
+	async onSocialLogin(provider, token, profile) {
 		const { cookies, dispatch, history } = this.props;
 		const { redirectUrl } = this.state;
-		const { accessToken } = e;
+		const { accessToken } = token;
 		const [err, response] = await to(dispatch(new users.userSocialLogin(cookies.get('user.token'), provider, accessToken)));
 		if (err) {
 			return err;
@@ -98,6 +99,16 @@ class Login extends Component {
 			shadow: false
 		};
 
+		const providerConfig = {
+			google: {
+				clientId: process.env.GOOGLEAPP_ID,
+				appId: process.env.GOOGLEAPP_APIKEY
+			},
+			facebook: {
+				appId: process.env.FBAPP_ID
+			}
+		};
+
 		return (
 			<div className='full-height' style={style}>
 				{renderIf(register)(
@@ -120,33 +131,11 @@ class Login extends Component {
 					/>
 					<div className={styles.container}>
 						<div className='margin--medium'>Login Dengan</div>
-						<div className='flex-row flex-center flex-spaceBetween'>
-							<div style={{ width: '45%' }}>
-								<SocialLogin 
-									provider={'facebook'} 
-									wide
-									size='medium' 
-									appId={process.env.FBAPP_ID} 
-									onSuccess={(e) => this.onSocialLogin('facebook', e)} 
-									callback={(e) => console.log('callback', e)}
-								>
-									Facebook
-								</SocialLogin>
-							</div>
-							<div style={{ width: '45%' }}>
-								<SocialLogin 
-									provider={'google'} 
-									wide 
-									size='medium' 
-									clientId={process.env.GOOGLEAPP_ID} 
-									appId={process.env.GOOGLEAPP_APIKEY} 
-									onSuccess={(e) => this.onSocialLogin('google', e)} 
-									callback={(e) => console.log('callback', e)}
-								>
-									<Svg src='ico_google.svg' style={{ marginRight: '10px' }} />Google
-								</SocialLogin>
-							</div>
-						</div>
+						<LoginWidget
+							provider={providerConfig}
+							onSuccess={(provider, token, profile) => this.onSocialLogin(provider, token, profile)} 
+							onFailure={(provider, e) => console.log(provider, e)}
+						/>
 						<div className={styles.divider}><span>Atau</span></div>
 						{ renderIf(error)(
 							<Notification style={{ marginBottom: '20px' }} disableClose color='pink' show><span className='font-color--secondary'>Email/No Handphone/Password yang Anda masukkan salah</span></Notification>

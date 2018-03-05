@@ -530,7 +530,7 @@ class Detail extends Component {
 				{(!showFilter) && (
 					<div>
 						{this.renderHeader()}
-						<Navigation active='Categories' />
+						<Navigation active='Categories' scroll={this.props.scroll} />
 					</div>
 				)}
 			</div>

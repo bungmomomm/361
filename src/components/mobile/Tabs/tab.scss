@@ -46,7 +46,7 @@
 
 .active {
 	cursor: pointer;
-	color: black;
+	color: #191919;
 }
 
 li.disabled {
@@ -82,4 +82,17 @@ li.disabled {
 			color: #f3f3f3;
 		}
 	}
+}
+
+/* Types */
+.minimal {
+  // margin-top: -1px;
+  box-shadow: none;
+  border: 0;
+  .tab {
+	border-bottom: solid 1px transparent;
+  }
+  .active {
+	border-bottom: solid 1px #191919;
+  }
 }

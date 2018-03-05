@@ -12,15 +12,15 @@ import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Filter from '@/containers/Mobile/Shared/Filter';
 import Sort from '@/containers/Mobile/Shared/Sort';
 
-import { 
-	Header, 
-	Page, 
-	Card, 
-	Svg, 
-	Tabs, 
-	Button, 
-	Level, 
-	Input, 
+import {
+	Header,
+	Page,
+	Card,
+	Svg,
+	Tabs,
+	Button,
+	Level,
+	Input,
 	Navigation,
 	Spinner,
 	Comment
@@ -97,7 +97,7 @@ class Product extends Component {
 		}, {
 			encode: false
 		});
-		
+
 		history.replace(`?${url}`);
 
 		const pcpParam = {
@@ -163,7 +163,7 @@ class Product extends Component {
 				{this.renderHeader()}
 				{this.renderTabs()}
 				{this.renderForeverBanner()}
-				<Navigation active='Categories' />
+				<Navigation active='Categories' scroll={this.props.scroll} />
 			</div>
 		);
 	}
@@ -174,7 +174,7 @@ class Product extends Component {
 
 		if (isLoading) {
 			pcpView = this.loadingView;
-		} 
+		}
 
 		if (productCategory.pcpStatus !== '') {
 			if (productCategory.pcpStatus === 'success') {
@@ -227,9 +227,9 @@ class Product extends Component {
 				commentTotal,
 				commentUrl: `/product/comments/${productData.product_id}`,
 				lovelistTotal,
-				lovelistStatus 
+				lovelistStatus
 			};
-			
+
 			const cardCatalogGridAttribute = {
 				key: index,
 				images: productData.images,
@@ -238,14 +238,14 @@ class Product extends Component {
 				pricing: productData.pricing,
 				linkToPdp: linkToPdpCreator
 			};
-			
+
 			const cardCatalogSmall = {
 				key: index,
 				images: productData.images,
 				pricing: productData.pricing,
 				linkToPdp: linkToPdpCreator
 			};
-			
+
 			switch (viewMode.mode) {
 			case 1:
 				return (
@@ -342,7 +342,7 @@ class Product extends Component {
 							{
 								id: 'filter',
 								title: 'Filter',
-								disabled: typeof productCategory.pcpData === 'undefined'	
+								disabled: typeof productCategory.pcpData === 'undefined'
 							},
 							{
 								id: 'view',
@@ -395,9 +395,9 @@ const doAfterAnonymous = async (props) => {
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
-	
+
 	dispatch(pcpActions.pcpAction({ token: cookies.get('user.token'), query: pcpParam }));
-	
+
 	if (!_.isEmpty(productCategory.pcpData.products)) {
 		const productIdList = _.map(productCategory.pcpData.products, 'product_id') || null;
 		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));

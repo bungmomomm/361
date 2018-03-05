@@ -396,13 +396,13 @@ class Products extends Component {
 						</span> */}
 						<div className='margin--medium --disable-flex padding--medium'>
 							{
-								(this.isLogin === 'true') && 
+								(this.isLogin === 'true') &&
 								<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
 									{(status.pdpDataHasLoaded && pdpData.cardProduct.totalComments > 0) ? `Lihat semua ${pdpData.cardProduct.totalComments} komentar` : 'Belum ada komentar'}
 								</Link>
 							}
 							{
-								(this.isLogin !== 'true') && 
+								(this.isLogin !== 'true') &&
 								<span>
 									<a href='/user/login'>Log in</a> / <a href='/user/register'>Register</a> untuk memberikan komentar
 								</span>
@@ -512,7 +512,7 @@ class Products extends Component {
 						confirmButton={(<Button onClick={this.removeAddItem}>YA, HAPUS</Button>)}
 					/>
 				</Modal>
-				<Navigation />
+				<Navigation scroll={this.props.scroll} />
 			</div>);
 	}
 }
