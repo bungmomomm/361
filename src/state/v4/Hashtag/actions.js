@@ -3,6 +3,7 @@ import actions from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 import _ from 'lodash';
 import { to } from 'await-to-js';
+import Promise from 'es6-promise';
 
 const configs = {
 	defaultPage: 20
@@ -21,7 +22,8 @@ const getQuery = () => (dispatch, getState) => {
 	const tagId = (typeof filtr !== 'undefined' && Array.isArray(filtr) && filtr[0] && filtr[0].campaign_id) ? filtr[0].campaign_id : false;
 	const nextUrl = !hashtag.products[node] ? `${process.env.MOBILE_URL}?page=1`
 					: (hashtag.products[node].links && !hashtag.products[node].links.next) ? false
-					: `${process.env.MOBILE_URL}${hashtag.products[node].links.next}`;
+					: (hashtag.products[node].links.next.indexOf('http') === -1) ? `${process.env.MOBILE_URL}${hashtag.products[node].links.next}`
+					: hashtag.products[node].links.next;
 
 	const nextLink = (nextUrl && new URL(nextUrl).searchParams) || false;
 
