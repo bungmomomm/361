@@ -9,8 +9,7 @@ import {
 	Button,
 	Input,
 	Tabs,
-	Svg,
-    Notification
+	Svg
 } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import { setUserCookie, renderIf, getDeviceID, getClientSecret } from '@/utils';
@@ -22,6 +21,7 @@ import util from 'util';
 import _ from 'lodash';
 import LoginWidget from '@/containers/Mobile/Shared/Widget/Login';
 import base64 from 'base-64';
+import Helmet from 'react-helmet';
 
 /* import Helmet from 'react-helmet'; */
 
@@ -60,7 +60,8 @@ class Register extends Component {
 			redirectUrl: query.redirect_url || false,
 			disableOtpButton: false,
 			otpButtonText: OTP_BUTTON_TEXT,
-			showNotification: false
+			displayErrorOnValidateOtpForm: false,
+			textErrorOnValidateOtpForm: ''
 		};
 		this.renderRegisterView = this.renderRegisterView.bind(this);
 		this.renderValidateOtpView = this.renderValidateOtpView.bind(this);
@@ -213,7 +214,12 @@ class Register extends Component {
 		const [err, response] = await to(dispatch(new users.userOtpValidate(cookies.get('user.token'), dataForVerify)));
 		
 		if (err) {
-			console.log('Something error when try to validate OTP code');
+			
+			this.setState({
+				displayErrorOnValidateOtpForm: true,
+				textErrorOnValidateOtpForm: 'Kode OTP tidak valid.'
+			});
+   
 			return err;
 		}
         
@@ -276,6 +282,16 @@ class Register extends Component {
 	handlePick(current) {
 		this.setState({ current });
 	}
+	
+	renderHelmet = () => {
+		return (
+			<Helmet>
+				<script
+					src='https://www.google.com/recaptcha/api.js'
+				/>
+			</Helmet>
+		);
+	};
 	
 	renderRegisterView() {
 		const {
@@ -378,7 +394,6 @@ class Register extends Component {
 					onFailure={(provider, e) => console.log(provider, e)}
 				/>
 				<div className={styles.divider}>
-					{ this.renderNotification() }
 					<span>Atau</span>
 				</div>
 				<div>
@@ -395,25 +410,16 @@ class Register extends Component {
 			</div>
 		);
 	}
- 
-	renderNotification() {
-		
-		const { showNotification } = this.state;
-		
-		if (showNotification === true) {
-			return (
-				<Notification>
-					Maaf, Sesuatu terjadi di server kita. Kami sedang berusaha keras untuk memperbaiki nya.
-				</Notification>
-			);
-		}
-		
-		return false;
-		
-	}
+	
 	renderValidateOtpView() {
 		
-		const { disableOtpButton, otpValue, otpButtonText } = this.state;
+		const {
+			disableOtpButton,
+			otpValue,
+			otpButtonText,
+			displayErrorOnValidateOtpForm,
+			textErrorOnValidateOtpForm
+		} = this.state;
 		
 		const buttonPropertyResendOTP = {
 			color: 'secondary',
@@ -447,15 +453,30 @@ class Register extends Component {
 		
 		return (
 			<div>
-				{ this.renderNotification() }
-				<p>Kami telah mengirimkan kode verifikasi ke no XXXXXXX</p>
-				<p>Silahkan masukan kode verifikasi</p>
-				<Input {...enterOtpVerification} />
-				
+				{this.renderHelmet()}
+				{ displayErrorOnValidateOtpForm && (
+					<div>
+						<strong>
+							{ textErrorOnValidateOtpForm }
+						</strong>
+					</div>
+				) }
+				<div>
+					<p>Kami telah mengirimkan kode verifikasi ke no XXXXXXX</p>
+					<p>Silahkan masukan kode verifikasi</p>
+					<Input {...enterOtpVerification} />
+				</div>
 				<p>
 					<Button {...buttonPropertyResendOTP}>
 						{otpButtonText}
 					</Button>
+				</p>
+				
+				<p>
+					<div
+						className='g-recaptcha'
+						data-sitekey={`${process.env.GOOGLE_CAPTCHA_SITE_KEY}`}
+					/>
 				</p>
 				
 				<p>
@@ -479,7 +500,6 @@ class Register extends Component {
 		
 		return (
 			<div>
-				{ this.renderNotification() }
 				<p>Akun ini sudah terdafatar. Silahkan lakukan log in untuk mengakses akun</p>
 				<p>Masuk dengan {email} </p>
 				<Link to='/login'>
@@ -489,14 +509,6 @@ class Register extends Component {
 			</div>
 		);
 	}
- 
-   /* renderHelmet = () => {
-		return (
-			<Helmet>
-			
-			</Helmet>
-		);
-	}; */
 	
 	render() {
 		const { current } = this.state;
@@ -528,7 +540,7 @@ class Register extends Component {
 		if (whatIShouldRender === 'VALIDATE_OTP') {
 			View = this.renderValidateOtpView();
 		}
-        
+  
 		if (whatIShouldRender === 'EMAIL_MOBILE_HAS_BEEN_REGISTERED') {
 			View = this.renderMobileOrEmailHasBeenRegistered();
 		}
