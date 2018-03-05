@@ -99,14 +99,14 @@ class Hashtags extends Component {
 		const campaignId = _.chain(q).get('query.campaign_id').value() || 1;
 
 		const listHastags = (
-			<div className='horizontal-scroll padding--large '>
+			<div className='horizontal-scroll padding--large-h'>
 				<div className='flex-row flex-centerflex-spaceBetween margin--medium'>
 					{tags.map((tag, i) => (
 						<Link
 							to={tag.hashtag.indexOf('#') === -1 ? `/mau-gaya-itu-gampang#${tag.hashtag}` : `/mau-gaya-itu-gampang${tag.hashtag}`}
 							onClick={() => this.switchTag(tag.hashtag)}
 							key={i}
-							className={tag.hashtag.replace('#', '') === hashtag.active.tag.replace('#', '') ? 'padding--medium' : 'padding--medium font-color--primary-ext-2'}
+							className={tag.hashtag.replace('#', '') === hashtag.active.tag.replace('#', '') ? 'padding--medium-h' : 'padding--medium-h font-color--primary-ext-2'}
 						>
 							{tag.hashtag.indexOf('#') === -1 ? `#${tag.hashtag}` : tag.hashtag}
 						</Link>

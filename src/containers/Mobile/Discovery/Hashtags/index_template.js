@@ -47,7 +47,7 @@ class Hashtags extends Component {
 			<div>
 				<div>
 					<Image local src='temp/product-1.jpg' width='100%' />
-					<div className='flex-row padding--medium-h margin--medium'>
+					<div className='flex-row padding--medium-h margin--medium-h'>
 						<div><Image avatar height={40} width={40} local src='temp/pp.jpg' /></div>
 						<div className='padding--medium-h'>
 							<div><Link className='font-color--primary' to='/'>@vinensiuswibowo</Link></div>

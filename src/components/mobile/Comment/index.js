@@ -32,13 +32,13 @@ class Comment extends Component {
 							<Image height={30} width={30} avatar src={customer.customer_avatar} />
 						</Level.Left>
 						<Level.Item>
-							<div className='padding--medium'>{customer.customer_name}</div>
+							<div className='padding--medium-h'>{customer.customer_name}</div>
 						</Level.Item>
 						<Level.Right>
 							<div className='margin--small font-small font-color--primary-ext-2'>{comment.created_time}</div>
 						</Level.Right>
 					</Level>
-					<div className='padding--normal' style={{ marginLeft: '45px' }}>
+					<div className='padding--normal-h' style={{ marginLeft: '45px' }}>
 						<div>{comment.comment}</div>
 					</div>
 				</div>
