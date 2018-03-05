@@ -24,6 +24,7 @@ class Button extends PureComponent {
 			wide,
 			inline,
 			rounded,
+			circle,
 			children,
 			loading,
 			outline,
@@ -45,10 +46,11 @@ class Button extends PureComponent {
 				[styles.outline]: outline,
 				[styles.transparent]: transparent,
 				[styles.rounded]: rounded,
+				[styles.circle]: circle,
 				[styles.loading]: loading,
 				[styles.left]: align === 'left',
 				[styles.center]: align === 'center',
-				[styles.right]: align === 'right' 
+				[styles.right]: align === 'right'
 			},
 			className
 		);
@@ -75,6 +77,7 @@ Button.defaultProps = {
 	wide: false,
 	inline: false,
 	rounded: true,
+	circle: false,
 	loading: false,
 	disabled: false
 };

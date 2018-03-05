@@ -63,6 +63,7 @@ const UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profi
 const UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'));
 const UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'));
 const MyOrder = loadable(() => import('@/containers/Mobile/Users/Profile/myOrder'));
+const MyOrderDetail = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderDetail'));
 
 
 // promo
@@ -238,6 +239,10 @@ export default {
 		{
 			path: '/profile-my-order',
 			component: MyOrder
+		},
+		{
+			path: '/profile-my-order-detail',
+			component: MyOrderDetail
 		},
 		{
 			path: '/*', // Page not found handling.

@@ -50,7 +50,7 @@
 		position: relative;
 		color: color(--primary);
 		line-height: 20px;
-		background-color: #fff;
+		background-color: #F5F5F5;
 		-webkit-overflow-scrolling: touch;
 	}
 
@@ -109,9 +109,17 @@
 		display: block;
 		flex: none;
 	}
+  	// Full height page
 	body,
-	html {
-		height: 100%;
+	html,
+	#root,
+	[data-reactroot],
+	.switch-wrapper,
+	.switch-wrapper > div,
+	.switch-wrapper > div > div
+	{
+	  	flex: 1 0 auto;
+		min-height: 100%;
 	  	overflow-x: hidden;
 	  	overflow-y: scroll;
 	}
@@ -158,11 +166,9 @@
 		position: relative;
 		margin: 0 auto;
 		.switch-wrapper {
-			height: 100%;
 			background: transparent;
 			> div {
 				transition: opacity 0.3s ease;
-				height: 100%;
 			}
 		}
 
@@ -174,6 +180,9 @@
 		  	z-index: 11;
 		}
 
+		.font-xsmall {
+			font-size: 9px;
+		}
 		.font-small {
 			font-size: 10px;
 		}

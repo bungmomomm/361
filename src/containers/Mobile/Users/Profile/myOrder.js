@@ -97,7 +97,7 @@ class MyOrder extends Component {
 							this.dummyData.map((data, key) => {
 								return (
 									<List key={key}>
-										<Link style={{ flexFlow: 'row nowrap' }} to='/'>
+										<Link style={{ flexFlow: 'row nowrap' }} to='/profile-my-order-detail'>
 											<List.Image>
 												<div className={styles.orderIconCtr}>
 													<Svg src='ico_money-time.svg' />
