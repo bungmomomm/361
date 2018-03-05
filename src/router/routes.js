@@ -41,11 +41,11 @@ let SampleFilters = defRoute;
 let Promo = defRoute;
 let UserProfile = defRoute;
 let UserProfileEdit = defRoute;
-let UserProfileEditOVO = defRoute;
-let UserProfileEditHP = defRoute;
-let UserProfileEditEmail = defRoute;
+// let UserProfileEditOVO = defRoute;
+// let UserProfileEditHP = defRoute;
+// let UserProfileEditEmail = defRoute;
+// let UserProfileEditPassword = defRoute;
 let Seller = defRoute;
-let UserProfileEditPassword = defRoute;
 let Cart = defRoute;
 let CartEmpty = defRoute;
 
@@ -97,10 +97,10 @@ if (isMobile()) {
 	Promo = loadable(() => import('@/containers/Mobile/Discovery/Promo'));
 	UserProfile = loadable(() => import('@/containers/Mobile/Users/Profile'));
 	UserProfileEdit = loadable(() => import('@/containers/Mobile/Users/Profile/edit'));
-	UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'));
-	UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'));
-	UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'));
-	UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'));
+	// UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'));
+	// UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'));
+	// UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'));
+	// UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'));
 } else {
 	/**
 	 * Require main desktop styles
@@ -254,22 +254,22 @@ export default {
 			component: Seller,
 			exact: true
 		},
-		{
-			path: '/profile-edit-ovo',
-			component: UserProfileEditOVO
-		},
-		{
-			path: '/profile-edit-hp',
-			component: UserProfileEditHP
-		},
-		{
-			path: '/profile-edit-email',
-			component: UserProfileEditEmail
-		},
-		{
-			path: '/profile-edit-password',
-			component: UserProfileEditPassword
-		},
+		// {
+		// 	path: '/profile-edit-ovo',
+		// 	component: UserProfileEditOVO
+		// },
+		// {
+		// 	path: '/profile-edit-hp',
+		// 	component: UserProfileEditHP
+		// },
+		// {
+		// 	path: '/profile-edit-email',
+		// 	component: UserProfileEditEmail
+		// },
+		// {
+		// 	path: '/profile-edit-password',
+		// 	component: UserProfileEditPassword
+		// },
 		{
 			path: '/*', // Page not found handling.
 			component: Page404,

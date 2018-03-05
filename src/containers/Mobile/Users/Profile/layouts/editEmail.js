@@ -1,20 +1,42 @@
 import React, { Component } from 'react';
-import { withCookies } from 'react-cookie';
-import { Link } from 'react-router-dom';
-import { Page, Level, Input, Svg, Button } from '@/components/mobile';
-import styles from './profile.scss';
+import util from 'util';
 
-class UserProfileEditEmail extends Component {
+import { Page, Level, Input, Svg, Button } from '@/components/mobile';
+
+import styles from '../profile.scss';
+
+class EditEmail extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.state = {
+			data: props.data || '',
+		};
 	}
+
+	inputHandler(e) {
+		const value = util.format('%s', e.target.value);
+
+		this.setState({
+			data: value
+		});
+	}
+
+	saveData(e) {
+		const { onSave } = this.props;
+		const { data } = this.state;
+		onSave(e, data);
+	}
+
 	render() {
+		const { onClickBack } = this.props;
+		const { data } = this.state;
+
 		return (
 			<Page>
 				<Level style={{ height: '55px' }}>
 					<Level.Left style={{ width: '80px' }}>
-						<Link to='/profile-edit'><Svg src='ico_arrow-back-left.svg' /></Link>
+						<Button onClick={onClickBack}><Svg src='ico_arrow-back-left.svg' /></Button>
 					</Level.Left>
 					<Level.Item style={{ alignItems: 'center' }}>Ubah Email</Level.Item>
 					<Level.Right style={{ width: '80px' }}>&nbsp;</Level.Right>
@@ -22,14 +44,14 @@ class UserProfileEditEmail extends Component {
 				<form style={{ padding: '15px' }}>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='editEmail'>Email</label>
-						<Input id='editEmail' flat />
+						<Input id='editEmail' flat defaultValue={data} />
 					</div>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='editEmailNew'>Email Baru</label>
-						<Input id='editEmailNew' flat />
+						<Input id='editEmailNew' flat onChange={(e) => this.inputHandler(e)} />
 					</div>
 					<div className='margin--medium'>
-						<Button color='primary' size='large'>SIMPAN</Button>
+						<Button color='primary' size='large' onClick={(e) => this.saveData(e)}>SIMPAN</Button>
 					</div>
 				</form>
 			</Page>
@@ -37,6 +59,4 @@ class UserProfileEditEmail extends Component {
 	}
 }
 
-UserProfileEditEmail.defaultProps = {};
-
-export default withCookies(UserProfileEditEmail);
+export default EditEmail;

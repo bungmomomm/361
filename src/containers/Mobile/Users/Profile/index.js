@@ -7,7 +7,7 @@ import _ from 'lodash';
 
 import Shared from '@/containers/Mobile/Shared';
 
-import { Page, Navigation, Svg, List, Level, Image, Panel, Spinner } from '@/components/mobile';
+import { Header, Page, Navigation, Svg, List, Level, Image, Panel, Spinner } from '@/components/mobile';
 
 import CONST from '@/constants';
 import { splitString } from '@/utils';
@@ -32,6 +32,20 @@ class UserProfile extends Component {
 			const { history } = this.props;
 			history.push('/login');
 		}
+	}
+
+	renderHeader() {
+		const { history } = this.props;
+		const HeaderPage = {
+			left: (
+				<button onClick={() => (history.length < 2 ? history.push('/') : history.go(-2))}> 
+					<Svg src={'ico_arrow-back-left.svg'} />
+				</button>
+			),
+			center: 'Profile',
+		};
+
+		return <Header.Modal {...HeaderPage} />;
 	}
 
 	renderProfile() {
@@ -86,14 +100,6 @@ class UserProfile extends Component {
 		return (
 			<div>
 				<Page>
-					<Level>
-						<Level.Left>
-							&nbsp;
-						</Level.Left>
-						<Level.Right>
-							<Svg src='ico_setting.svg' />
-						</Level.Right>
-					</Level>
 					{this.renderProfile()}
 					<Panel>Account</Panel>
 					<Link to='/'>
@@ -178,6 +184,7 @@ class UserProfile extends Component {
 						</Level>
 					</Link>
 				</Page>
+				{this.renderHeader()}
 				<Navigation active='Profile' />
 			</div>
 		);

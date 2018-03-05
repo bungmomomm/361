@@ -1,20 +1,42 @@
 import React, { Component } from 'react';
-import { withCookies } from 'react-cookie';
-import { Link } from 'react-router-dom';
-import { Page, Level, Input, Svg, Button } from '@/components/mobile';
-import styles from './profile.scss';
+import util from 'util';
+import base64 from 'base-64';
 
-class UserProfileEditPassword extends Component {
+import { Page, Level, Input, Svg, Button } from '@/components/mobile';
+
+import styles from '../profile.scss';
+
+class EditPassword extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.state = {
+			data: '',
+		};
 	}
+
+	inputHandler(e) {
+		const value = util.format('%s', e.target.value);
+
+		this.setState({
+			data: base64.encode(value)
+		});
+	}
+
+	saveData(e) {
+		const { onSave } = this.props;
+		const { data } = this.state;
+		onSave(e, data);
+	}
+
 	render() {
+		const { onClickBack } = this.props;
+		
 		return (
 			<Page>
 				<Level style={{ height: '55px' }}>
 					<Level.Left style={{ width: '80px' }}>
-						<Link to='/profile-edit'><Svg src='ico_arrow-back-left.svg' /></Link>
+						<Button onClick={onClickBack}><Svg src='ico_arrow-back-left.svg' /></Button>
 					</Level.Left>
 					<Level.Item style={{ alignItems: 'center' }}>
 						Ubah Password
@@ -23,15 +45,15 @@ class UserProfileEditPassword extends Component {
 				</Level>
 				<form style={{ padding: '15px' }}>
 					<div className='margin--medium'>
-						<label className={styles.label} htmlFor='editPassword'>Password</label>
+						<label className={styles.label} htmlFor='editPassword'>Password Lama</label>
 						<Input id='editPassword' type='password' flat />
 					</div>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='editPasswordNew'>Password Baru</label>
-						<Input id='editPasswordNew' type='password' flat />
+						<Input id='editPasswordNew' type='password' flat onChange={(e) => this.inputHandler(e)} />
 					</div>
 					<div className='margin--medium'>
-						<Button color='primary' size='large'>SIMPAN</Button>
+						<Button color='primary' size='large' onClick={(e) => this.saveData(e)}>SIMPAN</Button>
 					</div>
 				</form>
 			</Page>
@@ -39,6 +61,4 @@ class UserProfileEditPassword extends Component {
 	}
 }
 
-UserProfileEditPassword.defaultProps = {};
-
-export default withCookies(UserProfileEditPassword);
+export default EditPassword;

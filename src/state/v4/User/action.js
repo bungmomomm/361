@@ -254,9 +254,9 @@ const userGetProfile = (token) => async (dispatch, getState) => {
 // 	USER_GET_PROFILE_SUCCESS: (userProfile) => ({ userProfile }),
 
 const userEditProfile = (token, data = []) => async (dispatch, getState) => {
-	// const { shared } = getState();
-	// const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
-	const baseUrl = 'https://private-2c527d-mmv4microservices.apiary-mock.com';
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+	// const baseUrl = 'https://private-2c527d-mmv4microservices.apiary-mock.com';
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
