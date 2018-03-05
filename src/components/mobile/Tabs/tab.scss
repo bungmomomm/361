@@ -34,9 +34,19 @@
 	border-bottom: 1px solid #D8D8D8;
 }
 
+.sticky{
+	position: fixed;
+	top: 60px;
+	z-index: 1;
+	background: #fff;
+	width: 100%;
+	max-width: 480px;
+	margin: -1px 0px 0px 0px !important;
+}
+
 .active {
 	cursor: pointer;
-	color: black;
+	color: #191919;
 }
 
 li.disabled {
@@ -72,4 +82,17 @@ li.disabled {
 			color: #f3f3f3;
 		}
 	}
+}
+
+/* Types */
+.minimal {
+  // margin-top: -1px;
+  box-shadow: none;
+  border: 0;
+  .tab {
+	border-bottom: solid 1px transparent;
+  }
+  .active {
+	border-bottom: solid 1px #191919;
+  }
 }

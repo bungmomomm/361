@@ -54,7 +54,7 @@ class Product extends PureComponent {
 							{
 								data.images.map((image, idx) => (
 									<div tabIndex='0' role='button' onClick={this.props.onImageItemClick} key={idx} data-img={image.mobile}>
-										<Image src={image.mobile} alt={data.product_title} />
+										<Image lazyload src={image.mobile} alt={data.product_title} />
 									</div>
 								))
 							}

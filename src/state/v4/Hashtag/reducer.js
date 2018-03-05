@@ -31,16 +31,7 @@ const reducer = handleActions({
 		return {
 			...state,
 			header: data.header,
-			tags: data.tags,
-			products: {
-				...state.products,
-				[state.active.node]: {
-					items: state.products[state.active.node] && state.products[state.active.node].items
-						? Array.from([...state.products[state.active.node].items, ...data.products].reduce((m, t) => m.set(t.id, t), new Map()).values())
-						: Array.from(data.products.reduce((m, t) => m.set(t.id, t), new Map()).values()),
-					links: data.links
-				}
-			}
+			tags: data.tags
 		};
 	},
 	[itemsFetchDataSuccess](state, { payload: data }) {

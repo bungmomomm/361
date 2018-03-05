@@ -1,8 +1,5 @@
 
 import loadable from 'loadable-components';
-import { isMobile } from '@/utils';
-
-// const Page = loadable(() => import('@/containers/Page'));
 
 /**
  * cannot using like this
@@ -11,103 +8,66 @@ import { isMobile } from '@/utils';
  * since genereated js file will mix dekstop & mobile
  */
 
-const defRoute = loadable(() => import('@/containers/NotFound'));
+// const defRoute = loadable(() => import('@/containers/NotFound'));
+/**
+ * Require main mobile styles
+ */
+import('@/styles/mobile');
 
-let Page404 = defRoute;
-let Home = defRoute;
-let Search = defRoute;
-let SearchResults = defRoute;
-let SearchNotFound = defRoute;
-let Category = defRoute;
-let SubCategory = defRoute;
-let ProductCategory = defRoute;
-let Brands = defRoute;
-let BrandsDetail = defRoute;
-let CatalogCategory = defRoute;
-let Lovelist = defRoute;
-let Hashtags = defRoute;
-let HashtagsDetails = defRoute;
-let Products = defRoute;
-let ProductsComments = defRoute;
-let ProductsGuide = defRoute;
-let UserLogin = defRoute;
-let UserRegister = defRoute;
-let UserRegistered = defRoute;
-let UserRegisteredPhoneValidation = defRoute;
-// let NewArrival = defRoute;
-// let Recommended = defRoute;
-let ForgotPassword = defRoute;
-let SampleFilters = defRoute;
-let Promo = defRoute;
-let UserProfile = defRoute;
-let UserProfileEdit = defRoute;
-let UserProfileEditOVO = defRoute;
-let UserProfileEditHP = defRoute;
-let UserProfileEditEmail = defRoute;
-let Seller = defRoute;
-let UserProfileEditPassword = defRoute;
-let Cart = defRoute;
-let CartEmpty = defRoute;
+const Home = loadable(() => import('@/containers/Mobile/Home'));
 
-if (isMobile()) {
-	/**
-	 * Require main mobile styles
-	 */
-	import('@/styles/mobile');
+const Page404 = loadable(() => import('@/containers/Mobile/404'));
 
-	Home = loadable(() => import('@/containers/Mobile/Home'));
+// Service Discovery
+const Search = loadable(() => import('@/containers/Mobile/Discovery/Search'));
+const SearchResults = loadable(() => import('@/containers/Mobile/Discovery/SearchResults'));
+const SearchNotFound = loadable(() => import('@/containers/Mobile/Discovery/SearchNotFound'));
 
-	// Service Discovery
-	Page404 = loadable(() => import('@/containers/Mobile/404'));
-	Search = loadable(() => import('@/containers/Mobile/Discovery/Search'));
-	SearchResults = loadable(() => import('@/containers/Mobile/Discovery/SearchResults'));
-	SearchNotFound = loadable(() => import('@/containers/Mobile/Discovery/SearchNotFound'));
-	Lovelist = loadable(() => import('@/containers/Mobile/Discovery/Lovelist'));
-	Hashtags = loadable(() => import('@/containers/Mobile/Discovery/Hashtags'));
-	Category = loadable(() => import('@/containers/Mobile/Discovery/Category'));
-	SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
-	ProductCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Product'));
-	Brands = loadable(() => import('@/containers/Mobile/Discovery/Brands'));
-	BrandsDetail = loadable(() => import('@/containers/Mobile/Discovery/Brands/detail'));
-	Seller = loadable(() => import('@/containers/Mobile/Discovery/Seller'));
-	CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
+const Lovelist = loadable(() => import('@/containers/Mobile/Discovery/Lovelist'));
 
-	SampleFilters = loadable(() => import('@/containers/Mobile/SampleFilters'));
+const Category = loadable(() => import('@/containers/Mobile/Discovery/Category'));
+const SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
+const ProductCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Product'));
+const CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
 
-	// Service Details
-	HashtagsDetails = loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'));
+const Brands = loadable(() => import('@/containers/Mobile/Discovery/Brands'));
+const BrandsDetail = loadable(() => import('@/containers/Mobile/Discovery/Brands/detail'));
 
-	// PDP
-	Products = loadable(() => import('@/containers/Mobile/Details/Products'));
+const Seller = loadable(() => import('@/containers/Mobile/Discovery/Seller'));
 
-	// Shopping-bag
-	Cart = loadable(() => import('@/containers/Mobile/Cart'));
-	CartEmpty = loadable(() => import('@/containers/Mobile/Cart/empty'));
+const Hashtags = loadable(() => import('@/containers/Mobile/Discovery/Hashtags'));
+const HashtagsDetails = loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'));
 
-	ProductsComments = loadable(() => import('@/containers/Mobile/Details/Products/Comments'));
-	ProductsGuide = loadable(() => import('@/containers/Mobile/Details/Products/Guide'));
+const SampleFilters = loadable(() => import('@/containers/Mobile/SampleFilters')); // we used this ?
 
-	// Users
-	UserLogin = loadable(() => import('@/containers/Mobile/Users/Login'));
-	ForgotPassword = loadable(() => import('@/containers/Mobile/Users/Login/forgotPassword'));
-	UserRegister = loadable(() => import('@/containers/Mobile/Users/Register'));
-	UserRegistered = loadable(() => import('@/containers/Mobile/Users/Register/registered'));
-	UserRegisteredPhoneValidation = loadable(() => import('@/containers/Mobile/Users/Register/registeredPhoneValidation'));
-	// promo
-	Promo = loadable(() => import('@/containers/Mobile/Discovery/Promo'));
-	UserProfile = loadable(() => import('@/containers/Mobile/Users/Profile'));
-	UserProfileEdit = loadable(() => import('@/containers/Mobile/Users/Profile/edit'));
-	UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'));
-	UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'));
-	UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'));
-	UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'));
-} else {
-	/**
-	 * Require main desktop styles
-	 */
-	import('@/styles');
-	Home = loadable(() => import('@/containers/Desktop/Home'));
-}
+
+// PDP
+const Products = loadable(() => import('@/containers/Mobile/Details/Products'));
+const ProductsComments = loadable(() => import('@/containers/Mobile/Details/Products/Comments'));
+const ProductsGuide = loadable(() => import('@/containers/Mobile/Details/Products/Guide'));
+
+// Shopping-bag
+const Cart = loadable(() => import('@/containers/Mobile/Cart'));
+const CartEmpty = loadable(() => import('@/containers/Mobile/Cart/empty'));
+
+// Users
+const UserLogin = loadable(() => import('@/containers/Mobile/Users/Login'));
+const ForgotPassword = loadable(() => import('@/containers/Mobile/Users/Login/forgotPassword'));
+const UserRegister = loadable(() => import('@/containers/Mobile/Users/Register'));
+const UserRegistered = loadable(() => import('@/containers/Mobile/Users/Register/registered'));
+const UserRegisteredPhoneValidation = loadable(() => import('@/containers/Mobile/Users/Register/registeredPhoneValidation'));
+const UserProfile = loadable(() => import('@/containers/Mobile/Users/Profile'));
+const UserProfileEdit = loadable(() => import('@/containers/Mobile/Users/Profile/edit'));
+const UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'));
+const UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'));
+const UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'));
+const UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'));
+const MyOrder = loadable(() => import('@/containers/Mobile/Users/Profile/myOrder'));
+
+
+// promo
+const Promo = loadable(() => import('@/containers/Mobile/Discovery/Promo'));
+const PromoList = loadable(() => import('@/containers/Mobile/Discovery/Promo/PromoList'));
 
 export default {
 	parent: [
@@ -214,8 +174,13 @@ export default {
 			exact: true
 		},
 		{
-			path: '/forgotPassword',
+			path: '/forgot-password',
 			component: ForgotPassword,
+			exact: true
+		},
+		{
+			path: '/promo',
+			component: PromoList,
 			exact: true
 		},
 		{
@@ -269,6 +234,10 @@ export default {
 		{
 			path: '/profile-edit-password',
 			component: UserProfileEditPassword
+		},
+		{
+			path: '/profile-my-order',
+			component: MyOrder
 		},
 		{
 			path: '/*', // Page not found handling.

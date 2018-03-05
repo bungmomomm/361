@@ -3,7 +3,7 @@ import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
-
+import { urlBuilder } from '@/utils';
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as shopBagActions } from '@/state/v4/ShopBag';
@@ -19,8 +19,10 @@ class Products extends Component {
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.source = this.props.cookies.get('user.source');
+		this.isLogin = this.props.cookies.get('isLogin');
 
 		this.closeZoomImage = this.closeZoomImage.bind(this);
+		this.goBackPreviousPage = this.goBackPreviousPage.bind(this);
 		this.handleScroll = this.handleScroll.bind(this);
 		this.handleLovelistClick = this.handleLovelistClick.bind(this);
 		this.handleImageItemClick = this.handleImageItemClick.bind(this);
@@ -156,6 +158,15 @@ class Products extends Component {
 		this.setState({ status });
 	}
 
+	goBackPreviousPage(e) {
+		const { history } = this.props;
+		if ((history.length - 1 >= 0)) {
+			history.goBack();
+		} else {
+			history.push('/');
+		}
+	}
+
 	handleScroll(e) {
 		const { status } = this.state;
 		if (e.target.scrollTop > 400 && !status.showScrollInfomation) {
@@ -194,7 +205,6 @@ class Products extends Component {
 		const defaultCount = 1;
 
 		dispatch(shopBagActions.updateAction(token, productId, defaultCount));
-		console.log(`Product ${productId} has been added into your cart.`);
 	}
 
 	handleImageItemClick() {
@@ -258,29 +268,29 @@ class Products extends Component {
 		if (status.showScrollInfomation) {
 			return {
 				left: (
-					<a href={history.go - 1}>
+					<Button onClick={this.switchMode} >
 						<Svg src={'ico_arrow-back-left.svg'} />
-					</a>
+					</Button>
 				),
 				center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{pdpData.cardProduct.product_title}</div>,
 				right: (
-					<a href={'/'} onClick={this.switchMode}>
+					<Button href={'/'} onClick={this.goBackPreviousPage}>
 						<Svg src={'ico_share.svg'} />
-					</a>
+					</Button>
 				)
 			};
 		}
 		return {
 			left: (
-				<a href={history.go - 1}>
+				<Button onClick={this.goBackPreviousPage}>
 					<Svg src={'ico_arrow-back-left.svg'} />
-				</a>
+				</Button>
 			),
 			center: '',
 			right: (
-				<a href={'/'} onClick={this.switchMode}>
+				<Button href={'/'} onClick={this.switchMode}>
 					<Svg src={'ico_share.svg'} />
-				</a>
+				</Button>
 			)
 		};
 	}
@@ -385,9 +395,18 @@ class Products extends Component {
 							<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
 						</span> */}
 						<div className='margin--medium --disable-flex padding--medium-h'>
-							<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
-								{(status.pdpDataHasLoaded && pdpData.cardProduct.totalComments > 0) ? `Lihat semua ${pdpData.cardProduct.totalComments} komentar` : 'Belum ada komentar'}
-							</Link>
+							{
+								(this.isLogin === 'true') &&
+								<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
+									{(status.pdpDataHasLoaded && pdpData.cardProduct.totalComments > 0) ? `Lihat semua ${pdpData.cardProduct.totalComments} komentar` : 'Belum ada komentar'}
+								</Link>
+							}
+							{
+								(this.isLogin !== 'true') &&
+								<span>
+									<a href='/user/login'>Log in</a> / <a href='/user/register'>Register</a> untuk memberikan komentar
+								</span>
+							}
 							{(!_.isUndefined(comment.summary) && !_.isEmpty(comment.summary)) && (
 								<Comment type='lite-review' data={comment.summary} />
 							)}
@@ -442,22 +461,27 @@ class Products extends Component {
 											name={detail.seller.seller}
 											location={detail.seller.seller_location}
 											description={(seller.description || '')}
+											storeAddress={urlBuilder.setId(detail.seller.seller_id).setName(detail.seller.seller).buildStore()}
 										/>
 									)
 								}
-								<div className='margin--medium margin--none-top'>
-									<Grid split={4} className='padding--small-h'>
-										<div className='padding--normal-h'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
-										<div className='padding--normal-h'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
-										<div className='padding--normal-h'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
-										<div className='padding--normal-h'>
-											<Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' />
-											<div className={styles.seeAll}>
-												SEE ALL
-											</div>
+
+								{
+									status.pdpDataHasLoaded && (
+										<div className='margin--medium margin--none-top'>
+											<Grid split={4} className='padding--small-h'>
+												<div className='padding--normal-h'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
+												<div className='padding--normal-h'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
+												<div className='padding--normal-h'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
+												<div className='padding--normal-h'>
+													<Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' />
+													<div className={styles.seeAll}>
+														SEE ALL
+													</div>
+												</div>
+											</Grid>
 										</div>
-									</Grid>
-								</div>
+								)}
 							</div>
 							{status.similarSet && (
 								<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
@@ -488,7 +512,7 @@ class Products extends Component {
 						confirmButton={(<Button onClick={this.removeAddItem}>YA, HAPUS</Button>)}
 					/>
 				</Modal>
-				<Navigation />
+				<Navigation scroll={this.props.scroll} />
 			</div>);
 	}
 }

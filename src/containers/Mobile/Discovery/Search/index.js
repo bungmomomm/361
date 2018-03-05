@@ -8,6 +8,11 @@ import { Link } from 'react-router-dom';
 import CONST from '@/constants';
 import Shared from '@/containers/Mobile/Shared';
 class Search extends PureComponent {
+	static isKeywordNotExistInHistory(cookies, text) {
+		const foundKeyword = cookies.filter(e => e.text === text);
+		return foundKeyword.length === 0;
+	}
+
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -33,10 +38,12 @@ class Search extends PureComponent {
 	setCookieSearch(sText, sValue, sType) {
 		const usedCookie = (sText.charAt(0) === '#') ? this.searchHashtagListCookieName : this.searchListCookieName;
 		let cookies = this.props.cookies.get(usedCookie);
-		cookies = (!cookies || cookies === []) ? [] : cookies;
-		const newSearch = { text: sText, value: sValue, type: sType };
-		cookies.unshift(newSearch);
-		this.props.cookies.set(usedCookie, cookies.filter((val, key) => (key <= 9)));
+		if (Search.isKeywordNotExistInHistory(cookies, sText)) {
+			cookies = (!cookies || cookies === []) ? [] : cookies;
+			const newSearch = { text: sText, value: sValue, type: sType };
+			cookies.unshift(newSearch);
+			this.props.cookies.set(usedCookie, cookies.filter((val, key) => (key <= 9)));
+		};
 		const { dispatch } = this.props;
 		dispatch(actionSearch.updatedKeywordHandler(sText, this.userToken));
 	}
@@ -68,7 +75,7 @@ class Search extends PureComponent {
 
 	enterSearchHandler(event) {
 		if (event.key === 'Enter') {
-			this.setCookieSearch(event.target.value, event.target.value);
+			this.setCookieSearch(event.target.value, event.target.value, this.SUGGEST_KEYWORD);
 			const pathProd = `/products?category_id=&query=${encodeURIComponent(event.target.value)}`;
 			this.props.history.push(pathProd);
 		}

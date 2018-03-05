@@ -3,7 +3,17 @@ import { List, Svg, Button } from '@/components/mobile';
 import styles from './sort.scss';
 import _ from 'lodash';
 
+import classNames from 'classnames';
 class Sort extends Component {
+
+	static toggleBodyOverflow(shown) {
+		if (shown) {
+			document.getElementsByTagName('body')[0].style.overflow = 'hidden';
+		} else {
+			document.getElementsByTagName('body')[0].style.overflow = 'auto';
+		}
+	}
+
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -17,6 +27,7 @@ class Sort extends Component {
 		this.setState({
 			sorts: nextProps.sorts || sorts
 		});
+		this.constructor.toggleBodyOverflow(nextProps.shown);
 	}
 
 	onClick(e, value) {
@@ -37,11 +48,14 @@ class Sort extends Component {
 	}
 
 	render() {
-		const { shown } = this.props;
+		const { isSticky, shown } = this.props;
 		const { sorts } = this.state;
 		if (shown) {
+			const cx = classNames(
+				isSticky ? styles.filterNavigationFixed : styles.filterNavigation
+			);
 			return (
-				<div className={styles.filterNavigation}>
+				<div className={cx}>
 					{_.map(sorts, (value, id) => {
 						const icon = value.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
 						return (

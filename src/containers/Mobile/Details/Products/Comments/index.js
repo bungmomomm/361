@@ -54,6 +54,10 @@ class Comments extends Component {
 		const { dispatch } = this.props;
 		const { productComment } = this.state;
 
+		this.setState({
+			productComment: ''
+		});
+
 		dispatch(commentActions.commentAddAction(this.userCookies, this.productId, productComment));
 	}
 
@@ -80,7 +84,7 @@ class Comments extends Component {
 
 		return (
 			<div style={{ marginBottom: '100px' }}>
-				{ <Comment data={comments.data} /> }
+				{ <Comment data={comments.data} loading={comments.loading} /> }
 			</div>
 		);
 
@@ -117,21 +121,21 @@ class Comments extends Component {
 	}
 
 	renderAvailComment() {
-
+		const { comments } = this.props;
 		if (this.isLogin === 'true') {
 			return (
 				<Level className={styles.commentbox}>
-					<Level.Item><Input color='white' placeholder='Type a message ...' onChange={this.writeComment} /></Level.Item>
-					<Level.Right><Button className='padding--small-h font--lato-normal' style={{ marginLeft: '15px' }} onClick={this.postComment} >KIRIM</Button></Level.Right>
+					<Level.Item><Input color='white' placeholder='Type a message ...' value={this.state.productComment} onChange={this.writeComment} /></Level.Item>
+					<Level.Right><Button className='padding--small-h font--lato-normal' style={{ marginLeft: '15px' }} onClick={this.postComment} loading={comments.loading}>KIRIM</Button></Level.Right>
 				</Level>
 			);
 		}
 
 
 		return (
-			<Level className={styles.commentbox}>
-				<Link to='/user/login'>Log in</Link> / <Link to='/user/register'>Register</Link> untuk memberi komentar
-			</Level>
+			<span className={styles.commentbox}>
+				<a href='/user/login'>Log in</a> / <a href='/user/register'>Register</a> untuk memberi komentar
+			</span>
 		);
 	}
 
@@ -162,11 +166,11 @@ class Comments extends Component {
 }
 
 const mapStateToProps = (state) => {
-	console.log(state);
 	return {
 		comments: state.comments,
 		product: state.product,
-		shared: state.shared
+		shared: state.shared,
+		users: state.users
 	};
 };
 

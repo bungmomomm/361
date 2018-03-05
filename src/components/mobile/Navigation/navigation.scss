@@ -1,7 +1,7 @@
 @import '../../../styles/mobile/variables';
 @import '../../../styles/mobile/mixins';
 .container {
-    padding: 0 rem(20px);
+    padding: 0;
     order: 5;
 }
 
@@ -14,18 +14,20 @@
     z-index: 10;
     background-color: color(--white);
     border: 0;
+	position: fixed;
+	top: auto;
     bottom: 0;
-    left: 0;
-    right: 0;
+    left: auto;
+    right: auto;
     height: rem(50px);
-    position: fixed;
-    top: auto;
     display: flex;
     flex-direction: row;
     border-top: 1px solid #DBDBDB;
     padding-bottom: rem(5px);
+    width: 100%;
     max-width: $max-width-container;
-    margin: 0 auto;
+	margin: 0 auto;
+	transition: transform 0.2s ease;
 }
 
 .item {
@@ -52,6 +54,13 @@
             }
         }
     }
+}
+
+.hide{
+	pointer-events: none;
+	.navigation {
+		transform: translate(0px, 100px);
+	}
 }
 
 .active {

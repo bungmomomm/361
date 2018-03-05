@@ -37,7 +37,7 @@ class Result extends PureComponent {
 		};
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page hideFooter>
 					{
 						filters.facets.map((facet, idx) => {
 							return (

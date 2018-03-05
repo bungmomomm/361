@@ -4,11 +4,27 @@ import Item from './item';
 import styles from './navigation.scss';
 
 class Navigation extends PureComponent {
+	constructor(props) {
+		super(props);
+		this.state = {
+			show: true
+		};
+		this.currentScrollPos = 0;
+	}
 	render() {
-		const { className, active, ...props } = this.props;
+		const { className, active, scroll, ...props } = this.props;
+
+		const isSticky = (oldPos = this.currentScrollPos) => {
+			if (!scroll) {
+				return false;
+			}
+			this.currentScrollPos = scroll.top;
+			return scroll.top > oldPos && scroll.top < scroll.docHeight;
+		};
 
 		const createClassName = classNames(
 			styles.container,
+			isSticky() ? styles.hide : '',
 			className
 		);
 
@@ -36,7 +52,7 @@ class Navigation extends PureComponent {
 							active={active === 'Shopping Bag'}
 						/>
 						<Item
-							to='/'
+							to='/promo'
 							icon='ico_promo.svg'
 							label='Promo'
 							active={active === 'Promo'}
