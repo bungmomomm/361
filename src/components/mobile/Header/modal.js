@@ -13,15 +13,9 @@ const Modal = props => {
 		styles.modal,
 		props.transparent ? styles.transparent : null
 	);
-	const className = classNames(
-		styles.modal,
-		props.rows ? styles.rows : null,
-	    props.transparent ? styles.transparent : null
-	);
 	return (
 		<nav className={containerClass}>
 			<div className={styles.wrapper}>
-				<div style={props.style} className={className}>
 				<div style={props.style} className={modalClass}>
 					<div className={styles.left}>{props.left}</div>
 					<div className={`${styles.center} font--lato-regular`}>{props.center}</div>
