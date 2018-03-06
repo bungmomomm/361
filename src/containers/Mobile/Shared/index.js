@@ -18,21 +18,26 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		constructor(props) {
 			super(props);
 			this.props = props;
-			
 			const query = queryString.parse(props.location.search);
 			this.state = {
 				data: null,
 				login: query.code || false,
+				scroll: {
+					top: 0,
+					docHeight: 0
+				},
 				provider: (query.code || query.state) ? (query.code ? 'facebook' : 'google') : false
 			};
 
 			this.userCookies = this.props.cookies.get('user.token');
 			this.userRFCookies = this.props.cookies.get('user.rf.token');
+			this.handleScroll = this.handleScroll.bind(this);
+			this.docBody = null;
 		}
 
 		componentWillMount() {
 			window.mmLoading.stop();
-			
+
 			this.initProcess().then(shouldInit => {
 				if (!shouldInit) {
 					this.initApp();
@@ -40,8 +45,14 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			});
 		}
 
+		componentDidMount() {
+			window.addEventListener('scroll', this.handleScroll, true);
+			this.docBody = document.body;
+		}
+
 		componentWillUnmount() {
 			window.mmLoading.play();
+			window.removeEventListener('scroll', this.handleScroll, true);
 		}
 
 		shouldLoginAnonymous() {
@@ -98,8 +109,8 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 			setUserCookie(this.props.cookies, response.token, true);
 			return Promise.resolve({
-				status: 1, 
-				msg: '', 
+				status: 1,
+				msg: '',
 				token: response.token
 			});
 		}
@@ -113,7 +124,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				if (err) {
 					this.withErrorHandling(err);
 				}
-				
+
 				this.initApp();
 				return response;
 			}
@@ -137,9 +148,21 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			}
 		}
 
+		handleScroll(e) {
+			if (e.target.tagName === 'BODY') {
+				const docHeight = this.docBody ? this.docBody.scrollHeight - window.innerHeight : 0;
+				this.setState({
+					scroll: {
+						top: e.target.scrollTop,
+						docHeight
+					}
+				});
+			}
+		}
+
 		render() {
 			return (
-				<WrappedComponent {...this.props} />
+				<WrappedComponent {...this.props} scroll={this.state.scroll} />
 			);
 		}
 	}

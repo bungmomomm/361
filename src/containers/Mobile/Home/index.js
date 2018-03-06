@@ -311,11 +311,11 @@ class Home extends Component {
 					{ this.renderFeaturedBrands() }
 
 					{this.renderMozaic()}
-					
+
 					<Footer isShow={this.state.isFooterShow} />
 				</Page>
 				<Header lovelist={shared.totalLovelist} value={this.props.search.keyword} />
-				<Navigation active='Home' />
+				<Navigation active='Home' scroll={this.props.scroll} />
 			</div>
 		);
 	}
