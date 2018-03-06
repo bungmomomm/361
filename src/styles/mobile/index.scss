@@ -242,27 +242,31 @@
 			height: 100%;
 		}
 
-		.margin--small {
-			margin-top: 5px;
-			margin-bottom: 5px;
-		}
-
-		.margin--medium {
-			margin-top: 15px;
-			margin-bottom: 15px;
-		}
-
-		.margin--large {
-			margin-top: 30px;
-			margin-bottom: 30px;
-		}
-
-		.margin--none-bottom {
-			margin-bottom: 0px;
-		}
-
-		.margin--none-top {
-			margin-top: 0px;
+	  	// Margin
+		@each $value in $space-list {
+			.margin#{nth($value, 1)} {
+			  	margin: nth($value, 2);
+			}
+			.margin#{nth($value, 1)}-v {
+			  	margin-top: nth($value, 2);
+			  	margin-bottom: nth($value, 2);
+			}
+			.margin#{nth($value, 1)}-h {
+			  	margin-left: nth($value, 2);
+			  	margin-right: nth($value, 2);
+			}
+			.margin#{nth($value, 1)}-t {
+			  	margin-top: nth($value, 2);
+			}
+			.margin#{nth($value, 1)}-b {
+			  	margin-bottom: nth($value, 2);
+			}
+			.margin#{nth($value, 1)}-l {
+			  	margin-left: nth($value, 2);
+			}
+			.margin#{nth($value, 1)}-r {
+			  	margin-right: nth($value, 2);
+			}
 		}
 
 	  	// Padding
@@ -292,10 +296,6 @@
 			}
 		}
 
-		.margin--none {
-			margin-top: 0px;
-			margin-right: 0px;
-		}
 		.border-top {
 			border-top: 0.5px solid #DBDBDB;
 		}

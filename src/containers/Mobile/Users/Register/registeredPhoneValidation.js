@@ -19,7 +19,7 @@ class RegisteredPhoneValidation extends Component {
 			visibalePasswod: false
 		};
 	}
-	
+
 	onUserChange(e) {
 		this.props.dispatch(new users.userNameChange(e));
 	}
@@ -38,19 +38,19 @@ class RegisteredPhoneValidation extends Component {
 			center: 'Verifikasi Nomor HP',
 			right: null
 		};
-		
+
 		return (
 			<div className='full-height' style={this.props.style}>
 				<Page>
 					<div className={styles.container}>
-						<div className='margin--medium'>Kami telah mengirimkan kode verifikasi ke no XXXXXXXX. Silakan masukan kode verifikasi.</div>
+						<div className='margin--medium-v'>Kami telah mengirimkan kode verifikasi ke no XXXXXXXX. Silakan masukan kode verifikasi.</div>
 						<Notification color='green' show disableClose>
 							<span>Pengiriman kode verifikasi sukses!</span>
 						</Notification>
-						<div className='margin--medium text-center'>
+						<div className='margin--medium-v text-center'>
 							<Input value='123123' error hint='Kode verifikasi salah' partitioned maxLength={6} />
 						</div>
-						<div className='margin--small'>
+						<div className='margin--small-v'>
 							<Button
 								color='secondary'
 								size='large'
@@ -60,7 +60,7 @@ class RegisteredPhoneValidation extends Component {
 								Kirim Ulang Kode SMS
 							</Button>
 						</div>
-						<div className='margin--medium'>
+						<div className='margin--medium-v'>
 							<Button
 								color='primary'
 								size='large'

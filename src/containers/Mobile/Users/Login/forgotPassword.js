@@ -3,7 +3,7 @@ import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { actions as users } from '@/state/v4/User';
 // import { Link } from 'react-router-dom';
-import { 
+import {
 	Header,
 	Page,
 	Button,
@@ -32,7 +32,7 @@ class ForgotPassword extends Component {
 			userName: '',
 		};
 	}
-	
+
 	async onResetPassword(e) {
 		const { dispatch, cookies } = this.props;
 		const { username } = this.state;
@@ -84,25 +84,25 @@ class ForgotPassword extends Component {
 			center: 'Lupa Password',
 			right: null
 		};
-		
+
 		return (
 
 			<div className='full-height' style={this.props.style}>
 				<Page>
 					<div className={styles.container}>
-						<div className='margin--medium'>Masukkan alamat email atau nomer telepon Anda dan kami akan mengirimkan link untuk mengubah password lama Anda.</div>
-						<div className='margin--medium text-center'>
-							<Input 
+						<div className='margin--medium-v'>Masukkan alamat email atau nomer telepon Anda dan kami akan mengirimkan link untuk mengubah password lama Anda.</div>
+						<div className='margin--medium-v text-center'>
+							<Input
 								disabled={isLoginLoading}
-								flat 
-								placeholder='Email / Nomor Handphone' 
-								label='Email / Nomor Handphone' 
-								onChange={(e) => this.onUserChange(e.target.value)} 
+								flat
+								placeholder='Email / Nomor Handphone'
+								label='Email / Nomor Handphone'
+								onChange={(e) => this.onUserChange(e.target.value)}
 								error={error}
 								hint={error ? 'We are unable to proccess your request, please try again' : ''}
 							/>
 						</div>
-						<div className='margin--medium'>
+						<div className='margin--medium-v'>
 							<Button
 								className={'error'}
 								color='primary'
@@ -119,8 +119,8 @@ class ForgotPassword extends Component {
 				<Header.Modal {...HeaderPage} />
 				<Modal className='text-center' show={this.state.showModal}>
 					<div><strong>Lupa Password</strong></div>
-					<p className='margin--medium'>Kami telah mengirimkan link reset password ke <strong>{userName}</strong>, silahkan cek email Anda</p>
-					<Modal.Action 
+					<p className='margin--medium-v'>Kami telah mengirimkan link reset password ke <strong>{userName}</strong>, silahkan cek email Anda</p>
+					<Modal.Action
 						closeButton={''}
 						confirmButton={<Button onClick={() => this.setState({ showModal: !this.state.showModal })}>OK</Button>}
 						overlayClose={() => this.setState({ showModal: !this.state.showModal })}
