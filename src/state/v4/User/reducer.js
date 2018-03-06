@@ -19,6 +19,7 @@ const actions = createActions({
 	USER_GET_PROFILE: undefined,
 	USER_GET_PROFILE_FAIL: (error) => ({ profile: { error } }),
 	USER_GET_PROFILE_SUCCESS: (userProfile) => ({ userProfile }),
+	USER_CREDIT_CARD: (userCreditCard) => ({ userCreditCard }),
 	USER_FORGOT_PASSWORD: undefined,
 	USER_FORGOT_PASSWORD_FAIL: (error) => ({ forgot: { error } }),
 	USER_FORGOT_PASSWORD_SUCCESS: (message) => ({ forget: { message } }),
@@ -32,7 +33,8 @@ const initialState = {
 	userProfile: false,
 	username: false,
 	isLoading: false,
-	isAnonymous: false
+	isAnonymous: false,
+	creditCard: {}
 };
 
 const reducer = handleActions({
@@ -65,6 +67,16 @@ const reducer = handleActions({
 		return {
 			...state,
 			...action.payload
+		};
+	},
+	[actions.userCreditCard]: (state, action) => {
+		
+		return {
+			...state,
+			creditCard: {
+				...state.creditCard,
+				...action.payload.userCreditCard
+			},
 		};
 	},
 	[actions.userSocialLogin]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
