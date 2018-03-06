@@ -28,7 +28,7 @@ const SellerProfile = ({
 	storeAddress
 }) => {
 	return (
-		<div className='margin--medium'>
+		<div className='margin--medium-v'>
 			<div className='padding--small-h flex-row flex-spaceBetween'>
 				<div className='padding--small-h'>
 					<div className='avatar'>
@@ -69,7 +69,7 @@ const SellerProfile = ({
 					</Level.Item>
 				</Level>
 			</div>
-			<div className='padding--medium-h margin--small'>
+			<div className='padding--medium-h margin--small-v'>
 				<div className='font-medium'>{name}</div>
 				<div className='font-small flex-row flex-middle'><Svg src='ico_pinlocation-black.svg' /> <span>{location}</span></div>
 				{

@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { actions as users } from '@/state/v4/User';
-import { 
+import {
 	Link,
-	Redirect 
+	Redirect
 } from 'react-router-dom';
 import {
 	Header,
@@ -16,9 +16,9 @@ import {
 } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import LoginWidget from '@/containers/Mobile/Shared/Widget/Login';
-import { 
-	setUserCookie, 
-	renderIf 
+import {
+	setUserCookie,
+	renderIf
 } from '@/utils';
 import styles from '../user.scss';
 import to from 'await-to-js';
@@ -59,7 +59,7 @@ class Register extends Component {
 	}
 
 	render() {
-		const { 
+		const {
 			visiblePassword,
 			current
 		} = this.state;
@@ -105,7 +105,7 @@ class Register extends Component {
 						onPick={e => this.handlePick(e)}
 					/>
 					<div className={styles.container}>
-						<div className='margin--medium'>Daftar Dengan</div>
+						<div className='margin--medium-v'>Daftar Dengan</div>
 						<LoginWidget
 							provider={providerConfig}
 							onSuccess={(provider, token, profile) => this.onSocialLogin(provider, token, profile)}
@@ -141,10 +141,10 @@ class Register extends Component {
 								placeholder='Password minimal 6 karakter'
 							/>
 						</div>
-						<div className='margin--medium text-left'>
+						<div className='margin--medium-v text-left'>
 							<p><small>Dengan membuka Akun, Anda telah membaca, mengerti dan menyetujui <Link to='/'>Syarat & Ketentuan dan Kebijakan Privasi</Link> MatahariMall.com</small></p>
 						</div>
-						<div className='margin--medium'>
+						<div className='margin--medium-v'>
 							<Button
 								color='primary'
 								size='large'

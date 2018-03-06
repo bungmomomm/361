@@ -22,11 +22,11 @@ class UserProfileEditOVO extends Component {
 					<Level.Right style={{ width: '80px' }}>&nbsp;</Level.Right>
 				</Level>
 				<form style={{ padding: '15px' }}>
-					<div className='margin--medium'>
+					<div className='margin--medium-v'>
 						<label className={styles.label} htmlFor='ovoID'>Nama Lengkap</label>
 						<Input id='ovoID' flat placeholder='No. Hp/OVO ID/No. Matahari Rewards/No Hi Card' />
 					</div>
-					<div className='margin--medium'>
+					<div className='margin--medium-v'>
 						<Button color='primary' size='large'>VERIFIKASI OVO ID</Button>
 					</div>
 				</form>

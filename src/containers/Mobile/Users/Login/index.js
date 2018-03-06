@@ -18,7 +18,7 @@ class Login extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		
+
 		const query = queryString.parse(props.location.search);
 		this.state = {
 			current: 'login',
@@ -33,7 +33,7 @@ class Login extends Component {
 	}
 
 	componentDidMount() {
-		
+
 	}
 
 	async onLogin(e) {
@@ -130,10 +130,10 @@ class Login extends Component {
 						onPick={(e) => this.handlePick(e)}
 					/>
 					<div className={styles.container}>
-						<div className='margin--medium'>Login Dengan</div>
+						<div className='margin--medium-v'>Login Dengan</div>
 						<LoginWidget
 							provider={providerConfig}
-							onSuccess={(provider, token, profile) => this.onSocialLogin(provider, token, profile)} 
+							onSuccess={(provider, token, profile) => this.onSocialLogin(provider, token, profile)}
 							onFailure={(provider, e) => console.log(provider, e)}
 						/>
 						<div className={styles.divider}><span>Atau</span></div>
@@ -146,17 +146,17 @@ class Login extends Component {
 						</div>
 						<div className='flex-row flex-center flex-spaceBetween'>
 							<div style={{ width: '45%' }}>
-								<div className='margin--medium text-left'>
+								<div className='margin--medium-v text-left'>
 									<Link to='/forgot-password'>LUPA PASSWORD</Link>
 								</div>
 							</div>
 							<div style={{ width: '45%' }}>
-								<div className='margin--medium text-right'>
+								<div className='margin--medium-v text-right'>
 									<Link to='/register'>DAFTAR</Link>
 								</div>
 							</div>
 						</div>
-						<div className='margin--medium'>
+						<div className='margin--medium-v'>
 							<Button color='primary' size='large' disabled={!buttonLoginEnable} loading={isLoading} onClick={(e) => this.onLogin(e)} >LOGIN</Button>
 						</div>
 					</div>

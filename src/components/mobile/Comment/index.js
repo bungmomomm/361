@@ -35,7 +35,7 @@ class Comment extends Component {
 							<div className='padding--medium-h'>{customer.customer_name}</div>
 						</Level.Item>
 						<Level.Right>
-							<div className='margin--small font-small font-color--primary-ext-2'>{comment.created_time}</div>
+							<div className='margin--small-v font-small font-color--primary-ext-2'>{comment.created_time}</div>
 						</Level.Right>
 					</Level>
 					<div className='padding--normal-h' style={{ marginLeft: '45px' }}>
@@ -67,7 +67,7 @@ class Comment extends Component {
 					</Level>
 					<div className='padding--normal-h' style={{ marginLeft: '45px' }}>
 						<div>{data.review.review}</div>
-						<div className='margin--small font-small font-color--primary-ext-2'>Post updated: {data.review.created_time}</div>
+						<div className='margin--small-v font-small font-color--primary-ext-2'>Post updated: {data.review.created_time}</div>
 					</div>
 				</div>
 			);

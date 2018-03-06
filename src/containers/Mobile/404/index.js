@@ -26,14 +26,14 @@ class Page404 extends Component {
 		const listData = _.chain(this.props).get(`home.allSegmentData.${activeSegment.value()}.recomendationData.${recommendation}`);
 		if (listData.isEmpty().value()) {
 			return (
-				<div className='margin--large'>
+				<div className='margin--large-v'>
 					<Spinner />
 				</div>
 			);
 		};
 
 		return (
-			<div className='margin--large margin--none-top'>
+			<div className='margin--large-v margin--none-t'>
 				<Level>
 					<Level.Left><strong className='font-medium'>Produk Rekomendasi</strong></Level.Left>
 					<Level.Right>
@@ -70,20 +70,20 @@ class Page404 extends Component {
 			<div className='text-center' style={this.props.style}>
 				<Page>
 					<div className={styles.container} >
-						<div className='margin--medium flex-center flex-middle'><Svg src='mm_ico_no_404_alt.svg' /></div>
-						<div className=' margin--small'>
+						<div className='margin--medium-v flex-center flex-middle'><Svg src='mm_ico_no_404_alt.svg' /></div>
+						<div className=' margin--small-v'>
 							<strong className='font-bold font-large'>OOPS!</strong>
 						</div>
 						<div>
 							Maaf, halaman yang kamu tuju tidak ditemukan. <br />
 							Periksa kembali link yang kamu tuju.
 						</div>
-						<div className='flex-row margin--large margin--none-bottom'>
+						<div className='flex-row margin--large-v margin--none-b'>
 							<Link className='border-white-right' to='/'><Image local src='temp/promo404-1.jpg' /></Link>
 							<Link to='/'><Image local src='temp/promo404-2.jpg' /></Link>
 						</div>
 						<Notification color='yellow' show disableClose>
-							<div className='margin--medium padding--medium-h' style={{ color: '#F57C00' }}>Jika anda mengalami kesulitan silahkan hubungi Customer Support kami di: 1500038</div>
+							<div className='margin--medium-v padding--medium-h' style={{ color: '#F57C00' }}>Jika anda mengalami kesulitan silahkan hubungi Customer Support kami di: 1500038</div>
 						</Notification>
 						{this.renderRecomendation()}
 					</div>
