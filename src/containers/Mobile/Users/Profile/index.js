@@ -28,7 +28,7 @@ class UserProfile extends Component {
 		return (
 			<div>
 				<Page>
-					<Level className='bg--white'>
+					<Level className='bg--white padding--large-v'>
 						<Level.Left>
 							&nbsp;
 						</Level.Left>
