@@ -23,8 +23,8 @@ const initialState = {
 	}
 };
 
-const { initLoading, initViewMode, initPcp, initNextPcp } = createActions(
-	'INIT_LOADING', 'INIT_VIEW_MODE', 'INIT_PCP', 'INIT_NEXT_PCP'
+const { initLoading, initViewMode, initPcp, initNextPcp, pcpUpdateSingleItem } = createActions(
+	'INIT_LOADING', 'INIT_VIEW_MODE', 'INIT_PCP', 'INIT_NEXT_PCP', 'PCP_UPDATE_SINGLE_ITEM'
 );
 
 const reducer = handleActions({
@@ -64,6 +64,18 @@ const reducer = handleActions({
 			},
 			query
 		};
+	},
+	[pcpUpdateSingleItem](state, { payload: { item } }) {
+		return {
+			...state,
+			pcpData: {
+				...state.pcpData,
+				products: [
+					...state.pcpData.products,
+					...[item]
+				]
+			}
+		};
 	}
 }, initialState);
 
@@ -72,5 +84,6 @@ export default {
 	initLoading,
 	initViewMode,
 	initPcp,
-	initNextPcp
+	initNextPcp,
+	pcpUpdateSingleItem
 };

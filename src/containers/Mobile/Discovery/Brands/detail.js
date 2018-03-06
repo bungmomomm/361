@@ -358,7 +358,7 @@ class Detail extends Component {
 				<div>
 					<Tabs
 						isSticky
-						className='margin--medium'
+						className='margin--medium-v'
 						type='segment'
 						variants={[
 							{
@@ -494,7 +494,7 @@ class Detail extends Component {
 	renderTotalProduct() {
 		const productCount = this.props.brands.searchData.info && this.props.brands.searchData.info.product_count;
 		return productCount && (
-			<div className='margin--medium margin--none-top text-center'>{productCount} Total Produk</div>
+			<div className='margin--medium-v margin--none-t text-center'>{productCount} Total Produk</div>
 		);
 	}
 

@@ -221,7 +221,7 @@ const userGetProfile = (token) => async (dispatch, getState) => {
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 	const path = `${baseUrl}/me`;
-	console.log('bcd');
+
 	dispatch(actions.userGetProfile());
 	try {
 		const response = await request({

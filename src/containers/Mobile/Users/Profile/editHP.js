@@ -23,15 +23,15 @@ class UserProfileEditHP extends Component {
 					<Level.Right style={{ width: '80px' }}>&nbsp;</Level.Right>
 				</Level>
 				<form style={{ padding: '15px' }}>
-					<div className='margin--medium'>
+					<div className='margin--medium-v'>
 						<label className={styles.label} htmlFor='cellPhone'>No. Handphone</label>
 						<Input id='cellPhone' flat />
 					</div>
-					<div className='margin--medium'>
+					<div className='margin--medium-v'>
 						<label className={styles.label} htmlFor='editCellPhoneNew'>No Handphone Baru</label>
 						<Input id='editCellPhoneNew' flat />
 					</div>
-					<div className='margin--medium'>
+					<div className='margin--medium-v'>
 						<Button color='primary' size='large'>SIMPAN</Button>
 					</div>
 				</form>
