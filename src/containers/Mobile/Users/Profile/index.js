@@ -28,7 +28,7 @@ class UserProfile extends Component {
 		return (
 			<div>
 				<Page>
-					<Level className='bg--white padding--large-v'>
+					<Level className='bg--white'>
 						<Level.Left>
 							&nbsp;
 						</Level.Left>
@@ -132,7 +132,7 @@ class UserProfile extends Component {
 						</Level>
 					</Link>
 					<Panel>&nbsp;</Panel>
-					<Link to='/' className='bg--white'>
+					<Link to='/' className='bg--white margin--medium-b'>
 						<Level style={{ padding: '0 0 0 15px', minHeight: '50px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_logout.svg' />

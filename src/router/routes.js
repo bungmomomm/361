@@ -64,6 +64,8 @@ const UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Pr
 const UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'));
 const MyOrder = loadable(() => import('@/containers/Mobile/Users/Profile/myOrder'));
 const MyOrderDetail = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderDetail'));
+const MyOrderTracking = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderTracking'));
+const MyOrderConfirm = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderConfirm'));
 
 
 // promo
@@ -243,6 +245,14 @@ export default {
 		{
 			path: '/profile-my-order-detail',
 			component: MyOrderDetail
+		},
+		{
+			path: '/profile-my-order-tracking',
+			component: MyOrderTracking
+		},
+		{
+			path: '/profile-my-order-confirm',
+			component: MyOrderConfirm
 		},
 		{
 			path: '/*', // Page not found handling.
