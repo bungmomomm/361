@@ -25,6 +25,9 @@ const actions = createActions({
 	USER_FORGET_PASSWORD: undefined,
 	USER_FORGET_PASSWORD_FAIL: (error) => ({ forgot: { error } }),
 	USER_FORGET_PASSOWRD_SUCCESS: (message) => ({ forget: { message } }),
+	USER_FORGOT_PASSWORD: undefined,
+	USER_FORGOT_PASSWORD_FAIL: (error) => ({ forgot: { error } }),
+	USER_FORGOT_PASSWORD_SUCCESS: (message) => ({ forget: { message } }),
 	USER_NEW_PASSWORD: undefined,
 	USER_NEW_PASSWORD_FAIL: (error) => ({ newpassword: { error } }),
 	USER_NEW_PASSWORD_SUCCESS: (message) => ({ newpassword: { message } }),
@@ -96,6 +99,9 @@ const reducer = handleActions({
 	[actions.userEditProfile]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
 	[actions.userEditProfileFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
 	[actions.userEditProfileSuccess]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
+	[actions.userForgotPassword]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
+	[actions.userForgotPasswordFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
+	[actions.userForgotPasswordSuccess]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
 }, initialState);
 export default {
 	actions,

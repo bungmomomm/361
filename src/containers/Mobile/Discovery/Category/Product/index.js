@@ -12,15 +12,15 @@ import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Filter from '@/containers/Mobile/Shared/Filter';
 import Sort from '@/containers/Mobile/Shared/Sort';
 
-import { 
-	Header, 
-	Page, 
-	Card, 
-	Svg, 
-	Tabs, 
-	Button, 
-	Level, 
-	Input, 
+import {
+	Header,
+	Page,
+	Card,
+	Svg,
+	Tabs,
+	Button,
+	Level,
+	Input,
 	Navigation,
 	Spinner,
 	Comment
@@ -30,7 +30,7 @@ import { actions as pcpActions } from '@/state/v4/ProductCategory';
 import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 
-import { hyperlink, renderIf } from '@/utils';
+import { urlBuilder, renderIf } from '@/utils';
 import stylesCatalog from '../Catalog/catalog.scss';
 import Footer from '@/containers/Mobile/Shared/footer';
 
@@ -87,18 +87,18 @@ class Product extends Component {
 		const { query } = this.state;
 
 		const parsedUrl = queryString.parse(location.search);
-		const urlParam = {
+
+		const url = queryString.stringify({
 			sort: query.sort,
 			per_page: query.per_page,
 			page: query.page,
 			...parsedUrl,
 			...params
-		};
-
-		const url = queryString.stringify(urlParam, {
+		}, {
 			encode: false
 		});
-		history.push(`?${url}`);
+
+		history.replace(`?${url}`);
 
 		const pcpParam = {
 			...query,
@@ -163,7 +163,7 @@ class Product extends Component {
 				{this.renderHeader()}
 				{this.renderTabs()}
 				{this.renderForeverBanner()}
-				<Navigation active='Categories' />
+				<Navigation active='Categories' scroll={this.props.scroll} />
 			</div>
 		);
 	}
@@ -174,7 +174,7 @@ class Product extends Component {
 
 		if (isLoading) {
 			pcpView = this.loadingView;
-		} 
+		}
 
 		if (productCategory.pcpStatus !== '') {
 			if (productCategory.pcpStatus === 'success') {
@@ -210,7 +210,7 @@ class Product extends Component {
 
 	renderList(productData, index) {
 		if (productData) {
-			const linkToPdpCreator = hyperlink('', ['product', productData.product_id], null);
+			const linkToPdpCreator = urlBuilder.buildPdp(productData.product_title, productData.product_id);
 			const { viewMode, comments, lovelist } = this.props;
 			const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: productData.product_id }) : false;
 			const commentTotal = commentData ? commentData.total : null;
@@ -227,9 +227,9 @@ class Product extends Component {
 				commentTotal,
 				commentUrl: `/product/comments/${productData.product_id}`,
 				lovelistTotal,
-				lovelistStatus 
+				lovelistStatus
 			};
-			
+
 			const cardCatalogGridAttribute = {
 				key: index,
 				images: productData.images,
@@ -238,14 +238,14 @@ class Product extends Component {
 				pricing: productData.pricing,
 				linkToPdp: linkToPdpCreator
 			};
-			
+
 			const cardCatalogSmall = {
 				key: index,
 				images: productData.images,
 				pricing: productData.pricing,
 				linkToPdp: linkToPdpCreator
 			};
-			
+
 			switch (viewMode.mode) {
 			case 1:
 				return (
@@ -342,7 +342,7 @@ class Product extends Component {
 							{
 								id: 'filter',
 								title: 'Filter',
-								disabled: typeof productCategory.pcpData === 'undefined'	
+								disabled: typeof productCategory.pcpData === 'undefined'
 							},
 							{
 								id: 'view',
@@ -395,9 +395,9 @@ const doAfterAnonymous = async (props) => {
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
-	
+
 	dispatch(pcpActions.pcpAction({ token: cookies.get('user.token'), query: pcpParam }));
-	
+
 	if (!_.isEmpty(productCategory.pcpData.products)) {
 		const productIdList = _.map(productCategory.pcpData.products, 'product_id') || null;
 		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));

@@ -362,8 +362,8 @@ class Seller extends Component {
 							{scroller.loading && <Spinner />}
 						</Page>
 
-						<Header.Modal {...HeaderPage} />
-						<Navigation />
+						<Header.Modal {...HeaderPage} style={{ zIndex: 1 }} />
+						<Navigation scroll={this.props.scroll} />
 					</div>
 				)}
 			</span>

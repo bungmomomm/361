@@ -5,22 +5,14 @@ import { actions as users } from '@/state/v4/User';
 import { Link, Redirect } from 'react-router-dom';
 import { Header, Page, Button, Input, Tabs, Svg, Notification } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
-import { setUserCookie, renderIf, SocialLogin } from '@/utils';
+import LoginWidget from '@/containers/Mobile/Shared/Widget/Login';
+import { setUserCookie, renderIf } from '@/utils';
 import styles from '../user.scss';
 import _ from 'lodash';
 import validator from 'validator';
 import util from 'util';
-import { to } from 'await-to-js';
-import { Helmet } from 'react-helmet';
+import to from 'await-to-js';
 import queryString from 'query-string';
-
-const DUMMY_TAB = [{
-	Title: 'Login',
-	id: 'login'
-}, {
-	Title: 'Daftar',
-	id: 'register'
-}];
 
 class Login extends Component {
 	constructor(props) {
@@ -36,7 +28,7 @@ class Login extends Component {
 			validLoginId: false,
 			validPassword: false,
 			validLogin: false,
-			redirectUrl: query.redirect_url || false
+			redirectUrl: query.redirect_uri || false
 		};
 	}
 
@@ -45,25 +37,27 @@ class Login extends Component {
 	}
 
 	async onLogin(e) {
-		const { cookies } = this.props;
-		const [err, response] = await to(this.props.dispatch(new users.userLogin(cookies.get('user.token'), this.state.loginId, this.state.password)));
+		const { cookies, dispatch, history } = this.props;
+		const { loginId, password, redirectUrl } = this.state;
+		const [err, response] = await to(dispatch(new users.userLogin(cookies.get('user.token'), loginId, password)));
 		if (err) {
 			return err;
 		}
 		setUserCookie(this.props.cookies, response.token);
-		this.props.history.push('/');
+		history.push(redirectUrl || '/');
 		return response;
 	}
 
-	async onSocialLogin(provider, e, useRedirect) {
-		const { cookies } = this.props;
-		const { accessToken } = e;
-		const [err, response] = await to(this.props.dispatch(new users.userSocialLogin(cookies.get('user.token'), provider, accessToken)));
+	async onSocialLogin(provider, token, profile) {
+		const { cookies, dispatch, history } = this.props;
+		const { redirectUrl } = this.state;
+		const { accessToken } = token;
+		const [err, response] = await to(dispatch(new users.userSocialLogin(cookies.get('user.token'), provider, accessToken)));
 		if (err) {
 			return err;
 		}
 		setUserCookie(this.props.cookies, response.token);
-		this.props.history.push('/');
+		history.push(redirectUrl || '/');
 		return response;
 	}
 
@@ -89,9 +83,9 @@ class Login extends Component {
 	}
 
 	render() {
+		const { style } = this.props;
 		const { isLoading, error } = this.props.users;
-		const { visiblePassword, current, validLoginId, validLoginPassword } = this.state;
-		const { USE_REDIRECT } = process.env;
+		const { visiblePassword, current, validLoginId, validLoginPassword, loginId, password } = this.state;
 		const buttonLoginEnable = !isLoading && validLoginId && validLoginPassword;
 		const register = (current === 'register');
 		const HeaderPage = {
@@ -105,71 +99,55 @@ class Login extends Component {
 			shadow: false
 		};
 
+		const providerConfig = {
+			google: {
+				clientId: process.env.GOOGLEAPP_ID,
+				appId: process.env.GOOGLEAPP_APIKEY
+			},
+			facebook: {
+				appId: process.env.FBAPP_ID
+			}
+		};
+
 		return (
-			<div className='full-height' style={this.props.style}>
+			<div className='full-height' style={style}>
 				{renderIf(register)(
 					<Redirect to='/register' />
 				)}
-				<Helmet>
-					<title>Login</title>
-				</Helmet>
 				<Page>
 					<Tabs
-						current={this.state.current}
-						variants={DUMMY_TAB}
+						current={current}
+						variants={[
+							{
+								title: 'Login',
+								id: 'login'
+							},
+							{
+								title: 'register',
+								id: 'register'
+							}
+						]}
 						onPick={(e) => this.handlePick(e)}
 					/>
 					<div className={styles.container}>
 						<div className='margin--medium'>Login Dengan</div>
-						<div className='flex-row flex-center flex-spaceBetween'>
-							<div style={{ width: '45%' }}>
-								{!USE_REDIRECT && (
-									<SocialLogin 
-										provider={'facebook'} 
-										wide
-										size='medium' 
-										appId={process.env.FBAPP_ID} 
-										onSuccess={(e) => this.onSocialLogin('facebook', e)} 
-										callback={(e) => console.log('callback', e)}
-									>
-										Facebook
-									</SocialLogin>
-								)}
-								{USE_REDIRECT && (
-									<Button color='facebook' wide size='medium' onClick={() => this.onSocialLogin('facebook', null, true)}>Facebook</Button>
-								)}
-							</div>
-							<div style={{ width: '45%' }}>
-								{!USE_REDIRECT && (
-									<SocialLogin 
-										provider={'google'} 
-										wide 
-										size='medium' 
-										clientId={process.env.GOOGLEAPP_ID} 
-										appId={process.env.GOOGLEAPP_APIKEY} 
-										onSuccess={(e) => this.onSocialLogin('google', e)} 
-										callback={(e) => console.log('callback', e)}
-									>
-										<Svg src='ico_google.svg' style={{ marginRight: '10px' }} />Google
-									</SocialLogin>
-								)}
-								{USE_REDIRECT && (
-									<Button color='google' wide size='medium' onClick={() => this.onSocialLogin('google', null, true)}><Svg src='ico_google.svg' style={{ marginRight: '10px' }} />Google</Button>
-								)}
-							</div>
-						</div>
+						<LoginWidget
+							provider={providerConfig}
+							onSuccess={(provider, token, profile) => this.onSocialLogin(provider, token, profile)} 
+							onFailure={(provider, e) => console.log(provider, e)}
+						/>
 						<div className={styles.divider}><span>Atau</span></div>
 						{ renderIf(error)(
 							<Notification style={{ marginBottom: '20px' }} disableClose color='pink' show><span className='font-color--secondary'>Email/No Handphone/Password yang Anda masukkan salah</span></Notification>
 						) }
 						<div>
-							<Input value={this.state.loginId} ref={c => { this.loginId = c; }} onChange={(event) => { console.log(event.target.value); this.onFieldChange(event, 'loginId'); this.setState({ loginId: event.target.value }); }} label='Nomor Handphone/Email' type='text' flat placeholder='Nomor Handphone/Email' />
-							<Input value={this.state.password} ref={c => { this.password = c; }} onChange={(event) => { this.onFieldChange(event, 'password'); this.setState({ password: event.target.value }); }} label='Password' iconRight={<Button onClick={() => this.setState({ visiblePassword: !visiblePassword })}>show</Button>} type={visiblePassword ? 'text' : 'password'} flat placeholder='Password minimal 6 karakter' />
+							<Input value={loginId} ref={c => { this.loginId = c; }} onChange={(event) => { this.onFieldChange(event, 'loginId'); this.setState({ loginId: event.target.value }); }} label='Nomor Handphone/Email' type='text' flat placeholder='Nomor Handphone/Email' />
+							<Input value={password} ref={c => { this.password = c; }} onChange={(event) => { this.onFieldChange(event, 'password'); this.setState({ password: event.target.value }); }} label='Password' iconRight={<Button onClick={() => this.setState({ visiblePassword: !visiblePassword })}>show</Button>} type={visiblePassword ? 'text' : 'password'} flat placeholder='Password minimal 6 karakter' />
 						</div>
 						<div className='flex-row flex-center flex-spaceBetween'>
 							<div style={{ width: '45%' }}>
 								<div className='margin--medium text-left'>
-									<Link to='/'>LUPA PASSWORD</Link>
+									<Link to='/forgot-password'>LUPA PASSWORD</Link>
 								</div>
 							</div>
 							<div style={{ width: '45%' }}>

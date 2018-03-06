@@ -3,7 +3,7 @@ import webpack from 'webpack';
 import path from 'path';
 import devConfig from './webpack-config/dev.babel';
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3001;
 const app = new Express();
 const compiler = webpack(devConfig);
 

@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import _ from 'lodash';
 import moment from 'moment';
 import util from 'util';
+import { to } from 'await-to-js';
 
 import Shared from '@/containers/Mobile/Shared';
 import EditEmail from './layouts/editEmail';
@@ -13,7 +14,9 @@ import EditHp from './layouts/editHp';
 import EditPassword from './layouts/editPassword';
 import EditOvo from './layouts/editOVO';
 
-import { Page, Svg, Level, Image, Input, Button, Spinner } from '@/components/mobile';
+import { Page, Svg, Level, Image, Input, Button, Spinner, Select, Notification } from '@/components/mobile';
+
+import { actions as userActions } from '@/state/v4/User';
 
 import CONST from '@/constants';
 import { splitString } from '@/utils';
@@ -26,16 +29,32 @@ class UserProfileEdit extends Component {
 		this.props = props;
 		this.state = {
 			edit: true,
+			showSelect: false,
+			newGender: null,
 			ovoVerified: false,
 			hasPP: true,
 			isBuyer: true, // buyer or seller
 			layout: 'main',
-			formValid: false,
-			formError: '',
+			formResult: {
+				status: '',
+				message: ''
+			},
 			formData: props.userProfile,
 		};
 		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
 		this.isLogin = this.props.cookies.get('isLogin') === 'true' && true;
+
+		this.AVATAR_FIELD = CONST.USER_PROFILE_FIELD.avatar;
+		this.NAME_FIELD = CONST.USER_PROFILE_FIELD.name;
+		this.PHONE_FIELD = CONST.USER_PROFILE_FIELD.phone;
+		this.GENDER_FIELD = CONST.USER_PROFILE_FIELD.gender;
+		this.BIRTHDAY_FIELD = CONST.USER_PROFILE_FIELD.birthday;
+		this.EMAIL_FIELD = CONST.USER_PROFILE_FIELD.email;
+		this.OLD_PWD_FIELD = CONST.USER_PROFILE_FIELD.oldPwd;
+		this.NEW_PWD_FIELD = CONST.USER_PROFILE_FIELD.newPwd;
+		this.USER_POINT_FIELD = CONST.USER_PROFILE_FIELD.userPoint;
+		this.OVO_ID_FIELD = CONST.USER_PROFILE_FIELD.ovoId;
+		this.OVO_VERIFIED_FIELD = CONST.USER_PROFILE_FIELD.ovoVerified;
 
 		this.loadingView = <div><Spinner /></div>;
 	}
@@ -55,25 +74,30 @@ class UserProfileEdit extends Component {
 		}
 	}
 
-	switchLayoutHandler(e, layout) {
-		this.setState({
-			layout
-		});
+	setTimeoutForm() {
+		window.setTimeout(() => {
+			this.setState({
+				layout: 'main',
+				formResult: {
+					status: '',
+					message: ''
+				}
+			});
+		}, 5000);
 	}
 
-	saveInputData(name, value) {
-		const { formData } = this.state;
-		const val = util.format('%s', value);
+	switchLayoutHandler(e, layout) {
 		this.setState({
-			formData: {
-				...formData,
-				[name]: val
-			},
-			layout: 'main'
+			layout,
+			formResult: {
+				status: '',
+				message: ''
+			}
 		});
 	}
 
 	inputHandler(e) {
+		e.preventDefault();
 		const { formData } = this.state;
 		const name = e.target.name;
 		const value = util.format('%s', e.target.value);
@@ -86,9 +110,74 @@ class UserProfileEdit extends Component {
 		});
 	}
 
-	saveProfile(e) {
-		e.preventDefault();
-		this.setState({ edit: false });
+	showSelectGender() {
+		const { showSelect } = this.state;
+		this.setState({
+			showSelect: !showSelect
+		});
+	}
+
+	selectGenderHandler(value) {
+		this.setState({ newGender: value });
+	}
+
+	updateGender() {
+		const { newGender, formData } = this.state;
+		if (newGender !== null) {
+			this.setState({
+				formData: {
+					...formData,
+					[this.GENDER_FIELD]: newGender
+				},
+				showSelect: false,
+				newGender: null
+			});
+		} else {
+			this.setState({
+				showSelect: false,
+				newGender: null
+			});
+		}
+	}
+
+	saveFormData = async (value) => {
+		const { dispatch } = this.props;
+		const { formData } = this.state;
+
+		let newData = null;
+		if (value && !_.isEmpty(value)) {
+			newData = value;
+		} else {
+			newData = {
+				[this.NAME_FIELD]: formData[this.NAME_FIELD],
+				[this.GENDER_FIELD]: formData[this.GENDER_FIELD],
+				[this.BIRTHDAY_FIELD]: formData[this.BIRTHDAY_FIELD]
+			};
+		}
+
+		const [err, response] = await to(dispatch(userActions.userEditProfile(this.userToken, newData)));
+		if (err) {
+			this.setState({
+				formResult: {
+					status: 'failed',
+					message: err.error_message || 'Form failed'
+				}
+			});
+			console.log(err);
+		} else if (response) {
+			this.setState({
+				formResult: {
+					status: 'success',
+					message: response.msg || 'Form success'
+				},
+				formData: {
+					...formData,
+					...newData
+				}
+			});
+			this.setTimeoutForm();
+			console.log(response);
+		}
 	}
 
 	renderHeader() {
@@ -110,11 +199,9 @@ class UserProfileEdit extends Component {
 		const leftHeader = (
 			<Link to='/profile'><Svg src='ico_arrow-back-left.svg' /></Link>
 		);
-
 		const centerHeader = 'Ubah Profil';
-
 		const rightHeader = (
-			<Link onClick={(e) => (this.saveProfile(e))} to='#save'>SIMPAN</Link>
+			<Button onClick={() => (this.saveFormData())}>SIMPAN</Button>
 		);
 
 		return (
@@ -130,6 +217,24 @@ class UserProfileEdit extends Component {
 				</Level.Right>
 			</Level>
 		);
+	}
+
+	renderNotif() {
+		const { formResult } = this.state;
+		if (!_.isEmpty(formResult.status) && !_.isEmpty(formResult.message)) {
+			const notifColor = formResult.status === 'success' ? 'green' : 'pink';
+			return (
+				<Notification
+					color={notifColor}
+					disableClose
+					show
+				>
+					<span>{formResult.message}</span>
+				</Notification>
+			);
+		}
+		
+		return null;
 	}
 
 	renderAvatar() {
@@ -154,10 +259,10 @@ class UserProfileEdit extends Component {
 			styles.big
 		);
 
-		const avatar = userProfile && userProfile.avatar ? (
-			<Image width={80} height={80} avatar src={userProfile.avatar} alt={_.capitalize(userProfile.name) || ''} />
+		const avatar = userProfile && userProfile[this.AVATAR_FIELD] ? (
+			<Image width={80} height={80} avatar src={userProfile[this.AVATAR_FIELD]} alt={_.capitalize(userProfile[this.NAME_FIELD]) || ''} />
 		) : (
-			<div className={ppClassName}>{splitString(userProfile.name || '')}</div>
+			<div className={ppClassName}>{splitString(userProfile[this.NAME_FIELD] || '')}</div>
 		);
 
 		return (
@@ -181,9 +286,9 @@ class UserProfileEdit extends Component {
 			);
 		}
 
-		const ovoId = formData.ovo_id || '081234567890';
+		const ovoId = formData[this.OVO_ID_FIELD] || '081234567890';
 		return (
-			formData.fg_ovo_verified === '1' ?
+			formData[this.OVO_VERIFIED_FIELD] === '1' ?
 				<div className='margin--medium'>
 					<label className={styles.label} htmlFor='ovoID'><span style={{ color: '#4E2688' }}>OVO ID</span></label>
 					<div className={styles.inputChange}>
@@ -214,7 +319,7 @@ class UserProfileEdit extends Component {
 			);
 		}
 
-		const fullName = _.chain(formData.name).lowerCase().startCase().value() || 'Nama Lengkap';
+		const fullName = !_.isEmpty(formData[this.NAME_FIELD]) ? formData[this.NAME_FIELD] : '';
 		const nameField = (
 			<div className='margin--medium'>
 				<label className={styles.label} htmlFor='fullName'>Nama Lengkap</label>
@@ -222,7 +327,7 @@ class UserProfileEdit extends Component {
 			</div>
 		);
 
-		const emailValue = !_.isEmpty(formData.email) ? formData.email : 'email@domain.com';
+		const emailValue = !_.isEmpty(formData[this.EMAIL_FIELD]) ? formData[this.EMAIL_FIELD] : '';
 		const emailField = (
 			<div className='margin--medium'>
 				<label className={styles.label} htmlFor='email'>Email</label>
@@ -230,12 +335,12 @@ class UserProfileEdit extends Component {
 					<div className={styles.inputChangeInput}>
 						<Input disabled={enableInput} autoComplete='off' readOnly id='email' flat defaultValue={emailValue} />
 					</div>
-					<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, 'email')}>UBAH</Button>
+					<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.EMAIL_FIELD)}>UBAH</Button>
 				</div>
 			</div>
 		);
 
-		const phoneValue = !_.isEmpty(formData.phone) ? formData.phone : '081234567890';
+		const phoneValue = !_.isEmpty(formData[this.PHONE_FIELD]) ? formData[this.PHONE_FIELD] : '';
 		const phoneField = (
 			<div className='margin--medium'>
 				<label className={styles.label} htmlFor='cellPhone'>Nomor Handphone</label>
@@ -243,25 +348,41 @@ class UserProfileEdit extends Component {
 					<div className={styles.inputChangeInput}>
 						<Input disabled={enableInput} autoComplete='off' readOnly id='cellPhone' flat defaultValue={phoneValue} />
 					</div>
-					<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, 'phone')}>UBAH</Button>
+					<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.PHONE_FIELD)}>UBAH</Button>
 				</div>
 			</div>
 		);
 
-		const genderValue = !_.isEmpty(formData.gender) ? _.capitalize(formData.gender) : 'Pria';
-		const genderField = (
+		const genderValue = !_.isEmpty(formData[this.GENDER_FIELD]) ? _.capitalize(formData[this.GENDER_FIELD]) : 'Pria';
+		/* const genderField = (
 			<div className='margin--medium'>
 				<label className={styles.label} htmlFor='gender'>Jenis Kelamin</label>
 				<Input name='gender' disabled={enableInput} autoComplete='off' id='gender' flat defaultValue={genderValue} onChange={(e) => this.inputHandler(e)} />
 			</div>
+		); */
+		const genderField = (
+			<div className='margin--medium'>
+				<label className={styles.label} htmlFor='gender'>Jenis Kelamin</label>
+				<Level className='flex-row border-bottom' onClick={() => this.showSelectGender()}>
+					<Level.Left>
+						<div>{genderValue}</div>
+					</Level.Left>
+					<Level.Right>
+						<Button
+							className='flex-center'
+						>
+							<Svg src='ico_chevron-down.svg' />
+						</Button>
+					</Level.Right>
+				</Level>
+			</div>
 		);
-
 		
-		const dobValue = moment(formData.birthday).isValid() === true ? moment(formData.birthday).format('DD/MM/YYYY') : 'DD/MM/YYYY';
-		const dobField = (
+		const birthdayValue = moment(formData[this.BIRTHDAY_FIELD]).isValid() === true ? moment(formData[this.BIRTHDAY_FIELD]).format('YYYY-MM-DD') : '';
+		const birthdayField = (
 			<div className='margin--medium'>
 				<label className={styles.label} htmlFor='dob'>Tanggal Lahir</label>
-				<Input name='birthday' disabled={enableInput} autoComplete='off' id='dob' flat defaultValue={dobValue} onChange={(e) => this.inputHandler(e)} />
+				<Input type='date' name='birthday' autoComplete='off' id='dob' flat value={birthdayValue} onChange={(e) => this.inputHandler(e)} />
 			</div>
 		);
 
@@ -272,7 +393,7 @@ class UserProfileEdit extends Component {
 					<div className={styles.inputChangeInput}>
 						<Input disabled={enableInput} autoComplete='off' readOnly id='password' type='password' flat defaultValue='password' />
 					</div>
-					<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, 'password')}>UBAH</Button>
+					<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.NEW_PWD_FIELD)}>UBAH</Button>
 				</div>
 			</div>
 		);
@@ -283,53 +404,73 @@ class UserProfileEdit extends Component {
 				{emailField}
 				{phoneField}
 				{genderField}
-				{dobField}
+				{birthdayField}
 				{passwordField}
 				{this.renderOvo()}
 			</form>
 		);
 	}
 
+	renderGenderSelect() {
+		const { showSelect, formData } = this.state;
+		const genderList = [
+			{ value: 'male', label: 'Male' },
+			{ value: 'female', label: 'Female' }
+		];
+		const defaultValue = !_.isEmpty(formData[this.GENDER_FIELD]) ? formData[this.GENDER_FIELD] : null;
+
+		return (
+			<Select
+				show={showSelect}
+				label='Pilih Jenis Kelamin'
+				onChange={(e) => this.selectGenderHandler(e)}
+				onClose={() => this.updateGender()}
+				options={genderList}
+				defaultValue={defaultValue}
+			/>
+		);
+	}
+
 	renderLayout() {
-		const { layout, formData, ...state } = this.state;
+		const { layout, formResult, formData } = this.state;
 		let layoutView;
 		switch (layout) {
-		case 'email':
+		case this.EMAIL_FIELD:
 			layoutView = (
 				<EditEmail
-					{...state}
-					data={formData.email}
+					data={formData[this.EMAIL_FIELD]}
 					onClickBack={(e, value) => this.switchLayoutHandler(e, 'main')}
-					onSave={(e, value) => this.saveInputData(layout, value)}
+					onSave={(e, value) => this.saveFormData(value)}
+					formResult={formResult}
 				/>
 			);
 			break;
-		case 'phone':
+		case this.PHONE_FIELD:
 			layoutView = (
 				<EditHp
-					{...state}
-					data={formData.phone}
+					data={formData[this.PHONE_FIELD]}
 					onClickBack={(e, value) => this.switchLayoutHandler(e, 'main')}
-					onSave={(e, value) => this.saveInputData(layout, value)}
+					onSave={(e, value) => this.saveFormData(value)}
+					formResult={formResult}
 				/>
 			);
 			break;
-		case 'password':
+		case this.NEW_PWD_FIELD:
 			layoutView = (
 				<EditPassword
-					{...state}
 					onClickBack={(e, value) => this.switchLayoutHandler(e, 'main')}
-					onSave={(e, value) => this.saveInputData(layout, value)}
+					onSave={(e, value) => this.saveFormData(value)}
+					formResult={formResult}
 				/>
 			);
 			break;
-		case 'ovo_id':
+		case this.OVO_ID_FIELD:
 			layoutView = (
 				<EditOvo
-					{...state}
-					data={formData.ovo_id}
+					data={formData[this.OVO_ID_FIELD]}
 					onClickBack={(e, value) => this.switchLayoutHandler(e, 'main')}
-					onSave={(e, value) => this.saveInputData(layout, value)}
+					onSave={(e, value) => this.saveFormData(layout, value)}
+					formResult={formResult}
 				/>
 			);
 			break;
@@ -337,6 +478,7 @@ class UserProfileEdit extends Component {
 			layoutView = (
 				<Page>
 					{this.renderHeader()}
+					{this.renderNotif()}
 					{this.renderAvatar()}
 					{this.renderForm()}
 				</Page>
@@ -350,6 +492,7 @@ class UserProfileEdit extends Component {
 		return (
 			<div>
 				{this.renderLayout()}
+				{this.renderGenderSelect()}
 			</div>
 		);
 	}

@@ -8,32 +8,15 @@ import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import Spinner from '@/components/mobile/Spinner';
 import Footer from '@/containers/Mobile/Shared/footer';
-import styles from './Hashtags.scss';
+// import styles from './Hashtags.scss';
 import Helmet from 'react-helmet';
+import _ from 'lodash';
+import currency from 'currency.js';
 
 class Hashtags extends Component {
 
 	state = {
 		isFooterShow: true,
-		sticky: false
-	};
-
-	componentDidMount() {
-		window.addEventListener('scroll', this.handleScroll, true);
-	}
-
-	componentWillUnmount() {
-		window.removeEventListener('scroll', this.handleScroll, true);
-	}
-
-	handleScroll = (e) => {
-		const { sticky } = this.state;
-		if (e.target.scrollTop > 170 && !sticky) {
-			this.setState({ sticky: true });
-		}
-		if (e.target.scrollTop < 170 && sticky) {
-			this.setState({ sticky: false });
-		}
 	};
 
 	switchTag = (tag) => {
@@ -41,15 +24,14 @@ class Hashtags extends Component {
 		const { dispatch, hashtag, cookies } = this.props;
 
 		if (typeof tag !== 'undefined' && hashtag.active.tag !== switchTag) {
-			dispatch(actions.itemsActiveHashtag(tag === '#All' ? 'All' : tag));
+			dispatch(actions.itemsActiveHashtag(tag));
 
 			if (!hashtag.products[switchTag] && !hashtag.loading) {
-				const q = actions.getQuery(hashtag);
+				const q = dispatch(actions.getQuery());
 				const dataFetch = {
 					token: cookies.get('user.token'),
 					query: q.query
 				};
-
 				dispatch(actions.itemsFetchData(dataFetch));
 			}
 		}
@@ -60,7 +42,7 @@ class Hashtags extends Component {
 		const { hashtag, dispatch } = this.props;
 		const mode = hashtag.viewMode === 3 ? 1 : 3;
 		dispatch(actions.switchViewMode(mode));
-	}
+	};
 
 	renderGridSmall = (campaignId) => {
 		const { hashtag } = this.props;
@@ -78,7 +60,7 @@ class Hashtags extends Component {
 				))}
 			</Grid>
 		);
-	}
+	};
 
 	renderGridLarge = (campaignId) => {
 		const { hashtag } = this.props;
@@ -92,24 +74,55 @@ class Hashtags extends Component {
 						<Link to={`/mau-gaya-itu-gampang/${campaignId}/${product.id}`}>
 							<Image src={product.image} width='100%' />
 						</Link>
-						<div className='flex-row padding--medium margin--medium'>
-							<div><Image avatar height={40} width={40} src={product.image} /></div>
+						<div className='margin--medium flex-row flex-spaceBetween flex-middle'>
 							<div className='padding--medium'>
 								<div><Link className='font-color--primary' to='/'>@{product.username}</Link></div>
-								<div><em className='font-small font--lato-normal font-color--grey'>Post date: {product.created_time}</em></div>
+								<div><em className='font-small font--lato-normal font-color--grey'>{product.created_time}</em></div>
+							</div>
+							<div className='padding--medium'>
+								<div className='flex-row flex-middle'>
+									<Svg src='ico_lovelist.svg' />
+									<span>{currency(product.like, { separator: '.', decimal: ',', precision: 0 }).format()}</span>
+								</div>
 							</div>
 						</div>
 					</div>
 				))}
 			</div>
 		);
-	}
+	};
 
 	render() {
-		const { hashtag, history, scroller, location } = this.props;
+		const { hashtag, history, scroller, location, dispatch } = this.props;
 		const tags = hashtag.tags;
-		const q = actions.getQuery(hashtag);
-		const campaignId = q.query.campaign_id || 1;
+		const q = dispatch(actions.getQuery());
+		const campaignId = _.chain(q).get('query.campaign_id').value() || 1;
+
+		const listHastags = (
+			<div className='horizontal-scroll padding--large '>
+				<div className='flex-row flex-centerflex-spaceBetween margin--medium'>
+					{tags.map((tag, i) => (
+						<Link
+							to={tag.hashtag.indexOf('#') === -1 ? `/mau-gaya-itu-gampang#${tag.hashtag}` : `/mau-gaya-itu-gampang${tag.hashtag}`}
+							onClick={() => this.switchTag(tag.hashtag)}
+							key={i}
+							className={tag.hashtag.replace('#', '') === hashtag.active.tag.replace('#', '') ? 'padding--medium' : 'padding--medium font-color--primary-ext-2'}
+						>
+							{tag.hashtag.indexOf('#') === -1 ? `#${tag.hashtag}` : tag.hashtag}
+						</Link>
+					))}
+				</div>
+			</div>
+		);
+
+		const isSticky = () => {
+			if (this.staticHashtag) {
+				const rect = this.staticHashtag.getBoundingClientRect();
+				// const threshold = 90;
+				return this.props.scroll.top > (rect.top + rect.height);
+			}
+			return false;
+		};
 
 		const HeaderPage = {
 			left: (
@@ -122,7 +135,12 @@ class Hashtags extends Component {
 				<Button onClick={this.switchMode}>
 					<Svg src={hashtag.viewMode === 3 ? 'ico_list.svg' : 'ico_grid-3x3.svg'} />
 				</Button>
-			)
+			),
+			rows: [{
+				left: null,
+				center: isSticky() ? listHastags : null,
+				right: null
+			}]
 		};
 
 		return (
@@ -148,30 +166,23 @@ class Hashtags extends Component {
 					<div className='margin--medium text-center padding--large'>
 						{hashtag.header.description}
 					</div>
-					<div className={this.state.sticky ? styles.sticky : ''}>
-						<div className='horizontal-scroll padding--large '>
-							<div className='flex-row flex-centerflex-spaceBetween margin--medium'>
-								{tags.map((tag, i) => (
-									<Link
-										to={tag.hashtag.indexOf('#') === -1 ? `/mau-gaya-itu-gampang#${tag.hashtag}` : `/mau-gaya-itu-gampang${tag.hashtag}`}
-										onClick={() => this.switchTag(tag.hashtag)}
-										key={i}
-										className={tag.hashtag === hashtag.active.tag ? 'padding--medium' : 'padding--medium font-color--primary-ext-2'}
-									>
-										{tag.hashtag}
-									</Link>
-								))}
-							</div>
-						</div>
+					<div ref={(n) => { this.staticHashtag = n; }}>
+						{listHastags}
 					</div>
 
-					{hashtag.viewMode === 3 ? this.renderGridSmall(campaignId) : this.renderGridLarge(campaignId)}
+					{
+						campaignId && hashtag.viewMode === 3
+						? this.renderGridSmall(campaignId)
+						: campaignId && hashtag.viewMode === 1
+						? this.renderGridLarge(campaignId)
+						: ''
+					}
 					{scroller.loading && <Spinner />}
 					<Footer isShow={this.state.isFooterShow} />
 				</Page>
 
 				<Header.Modal {...HeaderPage} />
-				<Navigation />
+				<Navigation scroll={this.props.scroll} />
 			</div>
 		);
 	}
@@ -185,7 +196,7 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = (props) => {
 	const { dispatch, location, cookies } = props;
-	dispatch(actions.initHashtags(cookies.get('user.token'), location.hash === '#All' ? 'All' : location.hash));
+	dispatch(actions.initHashtags(cookies.get('user.token'), location.hash));
 };
 
 export default withRouter(withCookies(connect(mapStateToProps)(Scroller(Shared(Hashtags, doAfterAnonymous)))));

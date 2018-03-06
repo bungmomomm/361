@@ -124,7 +124,7 @@ class Promo extends Component {
 				<Header.Modal {...HeaderPage} />
 				{<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />}
 				<Image alt='Product Terlaris' src='http://www.solidbackgrounds.com/images/950x350/950x350-light-pink-solid-color-background.jpg' style={bannerInline} />
-				<Navigation active='Promo' />
+				<Navigation active='Promo' scroll={this.props.scroll} />
 			</div>
 		);
 	}

@@ -8,7 +8,6 @@ import componentState from './componentState';
 import splitString from './splitString';
 import { request, getCancelToken } from './request';
 import { setUserCookie } from './cookie';
-import SocialLogin from './social-login';
 import urlBuilder from './urlBuilder';
 import loading from './loading';
 import { request as emarsysRequest } from './emarsys';
@@ -54,7 +53,6 @@ export default {
 	isMobile,
 	modalController,
 	componentState,
-	SocialLogin,
 	hyperlink,
 	splitString,
 	urlBuilder,

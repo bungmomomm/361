@@ -102,7 +102,7 @@ class UserProfile extends Component {
 				<Page>
 					{this.renderProfile()}
 					<Panel>Account</Panel>
-					<Link to='/'>
+					<Link to='/profile-my-order'>
 						<Level style={{ padding: '0 0 0 15px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_order.svg' />

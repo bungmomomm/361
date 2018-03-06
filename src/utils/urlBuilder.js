@@ -1,3 +1,13 @@
+import { kebabCase } from 'lodash';
+import queryString from 'query-string';
+
+const replace = (history, obj) => {
+	const url = queryString.stringify(obj, {
+		encode: false
+	});
+	history.push(`?${url}`);
+};
+
 class MMUrlBuilder {
 	id = '';
 	name = '';
@@ -18,9 +28,9 @@ class MMUrlBuilder {
 		this.brand = MMUrlBuilder.formatedText(brand);
 		return this;
 	}
-
+	// use kebabCase to remove unnecessary characters
 	static formatedText(text) {
-		return text.toLowerCase().replace(/[^A-Za-z0-9\s]/g, '').replace(/ /g, '-');
+		return kebabCase(text);
 	}
 
 	reset() {
@@ -44,7 +54,12 @@ class MMUrlBuilder {
 	}
 
 	// spec: https://[MM_HOSTNAME]/[NAME]-[ID].html
-	buildPdp = () => {
+	buildPdp = (productName, productId) => {
+		if (productName && productId) {
+			return `/${kebabCase(productName)}-${productId}.html`;
+		}
+		if (this.name === null) throw new Error('urlBuilder: pdp required name');
+		if (this.id === null) throw new Error('urlBuilder: pdp required id');
 		const temp = { ...this };
 		this.reset();
 		return `/${temp.name}-${temp.id}.html`;
@@ -68,5 +83,6 @@ class MMUrlBuilder {
 }
 
 const urlBuilder = new MMUrlBuilder();
+urlBuilder.replace = replace;
 
 export default urlBuilder;

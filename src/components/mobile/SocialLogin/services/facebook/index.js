@@ -46,7 +46,7 @@ class FacebookLogin extends PureComponent {
 	}
 
 	getProfile(token, response) {
-		window.FB.api('/me', { fields: this.props.fields }, (me) => {
+		window.FB.api('/me', {}, (me) => {
 			this.setState({
 				loading: false
 			});

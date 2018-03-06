@@ -19,9 +19,9 @@ import {
 	Card,
 	Svg,
 	Tabs,
-	Button, 
-	Level, 
-	Input, 
+	Button,
+	Level,
+	Input,
 	Navigation,
 	Spinner,
 	Comment
@@ -31,7 +31,8 @@ import { actions as searchActions } from '@/state/v4/SearchResults';
 import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 
-import { hyperlink, renderIf } from '@/utils';
+// TODO util management
+import { urlBuilder, renderIf } from '@/utils';
 import stylesSearch from '../Search/search.scss';
 import stylesCatalog from '../Category/Catalog/catalog.scss';
 
@@ -73,7 +74,7 @@ class SearchResults extends Component {
 			});
 		}
 	}
-	
+
 	async onApply(e, fq) {
 		const { query } = this.state;
 		query.fq = fq;
@@ -103,28 +104,24 @@ class SearchResults extends Component {
 	update = async (params) => {
 		const { cookies, dispatch, location, history } = this.props;
 		const { query } = this.state;
-
 		const parsedUrl = queryString.parse(location.search);
-		const urlParam = {
+
+		urlBuilder.replace(history, {
 			query: query.q,
 			page: query.page,
 			per_page: query.per_page,
 			sort: query.sort,
 			...parsedUrl,
 			...params
-		};
-
-		const url = queryString.stringify(urlParam, {
-			encode: false
 		});
-		history.push(`?${url}`);
 
-		const searchParam = {
-			...query,
-			...params
-		};
-
-		const [err, response] = await to(dispatch(searchActions.searchAction({ token: cookies.get('user.token'), query: searchParam })));
+		const [err, response] = await to(dispatch(searchActions.searchAction({
+			token: cookies.get('user.token'),
+			query: {
+				...query,
+				...params
+			}
+		})));
 		if (err) {
 			dispatch(searchActions.promoAction(cookies.get('user.token')));
 		}
@@ -150,6 +147,7 @@ class SearchResults extends Component {
 	}
 
 	handlePick(e) {
+		const { showSort } = this.state;
 		if (e === 'view') {
 			const { viewMode, dispatch } = this.props;
 			const mode = viewMode.mode === 2 ? 1 : viewMode.mode + 1;
@@ -157,7 +155,7 @@ class SearchResults extends Component {
 		} else {
 			this.setState({
 				showFilter: e === 'filter',
-				showSort: e === 'sort'
+				showSort: showSort ? false : (e === 'sort')
 			});
 		}
 	}
@@ -237,7 +235,7 @@ class SearchResults extends Component {
 				{this.renderHeader()}
 				{this.renderTabs()}
 				{this.renderForeverBanner()}
-				<Navigation />
+				<Navigation scroll={this.props.scroll} />
 			</div>
 		);
 	}
@@ -248,7 +246,7 @@ class SearchResults extends Component {
 
 		if (isLoading) {
 			searchView = this.loadingView;
-		} 
+		}
 
 		if (searchResults.searchStatus === 'success' && !_.isEmpty(searchResults.searchData.products)) {
 			searchView = this.searchFound(searchResults.searchData.products);
@@ -262,7 +260,7 @@ class SearchResults extends Component {
 	renderList(productData, index) {
 		if (productData) {
 			const { isLoading, viewMode, searchResults, lovelist } = this.props;
-			const linkToPdp = hyperlink('', ['product', productData.product_id], null);
+			const linkToPdp = urlBuilder.buildPdp(productData.product_title, productData.product_id);
 			const commentData = !_.isEmpty(searchResults.commentData) ? _.find(searchResults.commentData, { product_id: productData.product_id }) : false;
 			const commentTotal = commentData ? commentData.total : null;
 			const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: productData.product_id }) : false;
@@ -280,7 +278,7 @@ class SearchResults extends Component {
 				lovelistTotal,
 				lovelistStatus
 			};
-			
+
 			const cardCatalogGridAttribute = {
 				key: index,
 				images: productData.images,
@@ -389,9 +387,13 @@ class SearchResults extends Component {
 			const sorts = _.chain(searchResults).get('searchData.sorts').value() || [];
 			tabsView = (
 				<div>
+					{renderIf(sorts)(
+						<Sort shown={showSort} isSticky sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+					)}
 					<Tabs
 						className={stylesCatalog.filterBlockContainer}
 						type='segment'
+						isSticky
 						variants={[
 							{
 								id: 'sort',
@@ -401,7 +403,7 @@ class SearchResults extends Component {
 							{
 								id: 'filter',
 								title: 'Filter',
-								disabled: typeof searchResults.searchData === 'undefined'	
+								disabled: typeof searchResults.searchData === 'undefined'
 							},
 							{
 								id: 'view',
@@ -410,11 +412,7 @@ class SearchResults extends Component {
 							}
 						]}
 						onPick={e => this.handlePick(e)}
-						isSticky
 					/>
-					{renderIf(sorts)(
-						<Sort shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
-					)}
 				</div>
 			);
 		}
@@ -465,7 +463,6 @@ const doAfterAnonymous = async (props) => {
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
-
 	const [err, response] = await to(dispatch(searchActions.searchAction({ token: cookies.get('user.token'), query: searchParam })));
 	if (err) {
 		dispatch(searchActions.promoAction(cookies.get('user.token')));

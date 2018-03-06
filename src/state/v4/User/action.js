@@ -9,6 +9,8 @@ import {
 	getClientSecret
 } from '@/utils';
 
+import { userSocialLogin, userSocialLoginWithRedirect } from './social-action';
+
 const isSuccess = (response) => {
 	if (typeof response.data !== 'undefined' && typeof response.data.code !== 'undefined' && response.data.code === 200) {
 		return true;
@@ -32,7 +34,9 @@ const userLogin = (token, email, password) => async (dispatch, getState) => {
 		fullpath: true,
 		body: {
 			email,
-			pwd: base64.encode(password)
+			pwd: base64.encode(password),
+			device_id: getDeviceID(),
+			client_secret: getClientSecret()
 		}
 	}));
 
@@ -215,9 +219,9 @@ const userRegister = (token, email, phone, password, fullname) => async (dispatc
 // 	USER_GET_PROFILE: undefined,
 
 const userGetProfile = (token) => async (dispatch, getState) => {
-	// const { shared } = getState();
-	// const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
-	const baseUrl = 'https://private-2c527d-mmv4microservices.apiary-mock.com';
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+	// const baseUrl = 'https://private-2c527d-mmv4microservices.apiary-mock.com';
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
@@ -250,6 +254,41 @@ const userGetProfile = (token) => async (dispatch, getState) => {
 	}
 };
 
+const userForgotPassword = (token, username) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	const path = `${baseUrl}/auth/forgotpwd`;
+
+	dispatch(actions.userForgotPassword());
+	try {
+		const response = await request({
+			token,
+			method: 'POST',
+			path,
+			fullpath: true,
+			body: {
+				client_secret: getClientSecret(),
+				hp_email: username
+			}
+		});
+		if (isSuccess(response)) {
+			dispatch(actions.userForgotPasswordSuccess(response.data.data));
+			return Promise.resolve({
+				data: response.data.data
+			});
+		}
+		const error = new Error('Error while calling api');
+		dispatch(actions.userForgotPasswordFail(error));
+		return Promise.reject(error);
+	} catch (error) {
+		dispatch(actions.userForgotPasswordFail(error));
+		return Promise.reject(error);
+	}
+};
+
 // 	USER_GET_PROFILE_FAIL: (error) => ({ profile: { error } }),
 // 	USER_GET_PROFILE_SUCCESS: (userProfile) => ({ userProfile }),
 
@@ -260,38 +299,34 @@ const userEditProfile = (token, data = []) => async (dispatch, getState) => {
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
-	const path = `${baseUrl}/e/edit`;
+	const path = `${baseUrl}/me/edit`;
 
-	dispatch(actions.userEditProfile());
-	try {
-		const response = await request({
-			token,
-			method: 'POST',
-			path,
-			fullpath: true,
-			body: data
-		});
-		if (isSuccess(response)) {
-			dispatch(actions.userEditProfileSuccess(response.data.data));
-			return Promise.resolve({
-				data: response.data.data
-			});
-		}
-		const error = new Error('Error while calling api');
-		dispatch(actions.userEditProfileFail(error));
-		return Promise.reject(error);
-	} catch (error) {
-		dispatch(actions.userEditProfileFail(error));
-		return Promise.reject(error);
+	const [err, response] = await to(request({
+		token,
+		method: 'POST',
+		path,
+		fullpath: true,
+		body: data
+	}));
+
+	if (err) {
+		dispatch(actions.userEditProfileFail(err.response.data));
+		return Promise.reject(err.response.data);
 	}
+
+	dispatch(actions.userEditProfileSuccess(response.data.data));
+	return Promise.resolve(response.data.data);
 };
 
 export default {
+	userSocialLoginWithRedirect,
+	userSocialLogin,
 	userLogin,
 	userAnonymous,
 	userNameChange,
 	userGetProfile,
 	userEditProfile,
 	userRegister,
+	userForgotPassword,
 	userOtpValidate
 };
