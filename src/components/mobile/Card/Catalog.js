@@ -11,6 +11,16 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 class Catalog extends PureComponent {
+
+	lovelistAddTo() {
+		const { lovelistStatus, lovelistAddTo } = this.props;
+		console.log('love', lovelistStatus);
+		if (lovelistStatus && lovelistStatus === 1) {
+			return lovelistAddTo(false);
+		}
+		return lovelistAddTo(true);
+	}
+	
 	render() {
 		const {
 			className,
@@ -29,6 +39,7 @@ class Catalog extends PureComponent {
 			...props
 		} = this.props;
 
+		const disableLovelist = lovelistDisable && lovelistAddTo;
 		const createClassName = classNames(styles.container, styles[type], className);
 		const lovelistIcon = lovelistStatus && lovelistStatus === 1 ? 'ico_love-filled.svg' : 'ico_love.svg';
 
@@ -60,7 +71,7 @@ class Catalog extends PureComponent {
 					style={{ borderBottom: '1px solid #D8D8D8' }}
 				>
 					<Level.Item>
-						<Button onClick={lovelistAddTo} disabled={lovelistDisable}>
+						<Button onClick={(e) => this.lovelistAddTo()} disabled={disableLovelist}>
 							<Svg src={lovelistIcon} />
 							<span>{lovelistTotal} Suka</span>
 						</Button>

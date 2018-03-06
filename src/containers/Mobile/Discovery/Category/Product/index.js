@@ -27,7 +27,7 @@ import {
 } from '@/components/mobile';
 
 import { actions as pcpActions } from '@/state/v4/ProductCategory';
-import { actions as commentActions } from '@/state/v4/Comment';
+// import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 
 import { 
@@ -116,7 +116,8 @@ class Product extends Component {
 		}
 		if (!_.isEmpty(response.pcpData.products)) {
 			const productIdList = _.map(response.products, 'product_id') || null;
-			dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+			// dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 		}
 		return response;
 	}
@@ -146,11 +147,25 @@ class Product extends Component {
 		}
 	}
 
-	async ilovethis(productId) {
-		const { cookies, dispatch } = this.props;
+	async ilovethis(add, product) {
+		const { cookies, dispatch, productCategory } = this.props;
 		if (cookies.get('isLogin')) {
-			dispatch(lovelistActions.addToLovelist(this.userToken, productId));
+			console.log(add, product);
+			let response;
+			if (add) {
+				response = await to(dispatch(lovelistActions.addToLovelist(cookies.get('user.token'), product.product_id)));
+			} else {
+				response = await to(dispatch(lovelistActions.removeFromLovelist(cookies.get('user.token'), product.product_id)));
+			}
+			if (response[0] !== null) {
+				return response[0];
+			}
+			const productIdList = _.map(productCategory.pcpData.products, 'product_id') || null;
+			// dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 		}
+
+		return null;
 	}
 
 	renderPage() {
@@ -227,7 +242,7 @@ class Product extends Component {
 							commentUrl={product.commentUrl}
 							lovelistTotal={product.lovelistTotal}
 							lovelistStatus={product.lovelistStatus}
-							lovelistAddTo={(e) => this.ilovethis(e)}
+							lovelistAddTo={(add) => this.ilovethis(add, product)}
 						/>
 						{comments && comments.loading ? this.renderLoading : this.renderComment(product.product_id) }
 					</div>
@@ -241,7 +256,8 @@ class Product extends Component {
 						brandName={product.brand.name}
 						pricing={product.pricing}
 						linkToPdp={product.url}
-						lovelistAddTo={(e) => this.ilovethis(e)}
+						lovelistStatus={product.lovelistStatus}
+						lovelistAddTo={(add) => this.ilovethis(add, product)}
 					/>
 				);
 			case 3:
@@ -423,7 +439,7 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-	const { dispatch, cookies, match, location, productCategory } = props;
+	const { dispatch, cookies, match, location } = props;
 
 	const categoryId = _.chain(match).get('params.categoryId').value() || '';
 	const parsedUrl = queryString.parse(location.search);
@@ -435,11 +451,11 @@ const doAfterAnonymous = async (props) => {
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
 	
-	dispatch(pcpActions.pcpAction({ token: cookies.get('user.token'), query: pcpParam }));
+	const response = await dispatch(pcpActions.pcpAction({ token: cookies.get('user.token'), query: pcpParam }));
 	
-	if (!_.isEmpty(productCategory.pcpData.products)) {
-		const productIdList = _.map(productCategory.pcpData.products, 'product_id') || null;
-		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+	const productIdList = _.map(response.pcpData.products, 'product_id') || [];
+	if (productIdList.length > 0) {
+		// dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 	}
 };
