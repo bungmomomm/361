@@ -10,6 +10,16 @@ import Badge from '../Badge';
 import styles from './card.scss';
 
 class CatalogGrid extends PureComponent {
+
+	lovelistAddTo() {
+		const { lovelistStatus, lovelistAddTo } = this.props;
+		console.log('love', lovelistStatus);
+		if (lovelistStatus && lovelistStatus === 1) {
+			return lovelistAddTo(false);
+		}
+		return lovelistAddTo(true);
+	}
+
 	render() {
 		const {
 			className,
@@ -19,9 +29,12 @@ class CatalogGrid extends PureComponent {
 			pricing,
 			linkToPdp,
 			lovelistStatus,
+			lovelistDisable,
+			lovelistAddTo,
 			...props
 		} = this.props;
 		
+		const disableLovelist = lovelistDisable && lovelistAddTo;
 		const createClassName = classNames(styles.container, styles.grid, className);
 
 		const lovelistIcon = lovelistStatus && lovelistStatus === 1 ? 'ico_love-filled.svg' : 'ico_love.svg';
@@ -41,7 +54,7 @@ class CatalogGrid extends PureComponent {
 		return (
 			<div className={createClassName} {...props}>
 				<Link to={linkToPdp || '/'}>
-					<Image src={images[0].thumbnail} lazyload alt={productTitle} />
+					<Image src={images[0].thumbnail} alt={productTitle} />
 				</Link>
 				<Level className={styles.action}>
 					<Level.Item>
@@ -53,7 +66,7 @@ class CatalogGrid extends PureComponent {
 						</Link>
 					</Level.Item>
 					<Level.Right>
-						<Button>
+						<Button onClick={(e) => this.lovelistAddTo()} disabled={disableLovelist}>
 							<Svg src={lovelistIcon} />
 						</Button>
 					</Level.Right>

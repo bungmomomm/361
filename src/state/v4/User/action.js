@@ -34,7 +34,8 @@ const userLogin = (token, email, password) => async (dispatch, getState) => {
 		fullpath: true,
 		body: {
 			email,
-			pwd: base64.encode(password)
+			pwd: base64.encode(password),
+			client_secret: getClientSecret()
 		}
 	}));
 

@@ -19,7 +19,7 @@ class CatalogSmall extends PureComponent {
 		return (
 			<div className={createClassName} {...props}>
 				<Link to={(linkToPdp) || '/'}>
-					<Image src={images[0].thumbnail} lazyload alt='product' />
+					<Image src={images[0].thumbnail} alt='product' />
 					<Button color='secondary' size='small' transparent>{pricing.formatted.effective_price}</Button>
 				</Link>
 			</div>
