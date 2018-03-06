@@ -23,7 +23,7 @@ class Comment extends Component {
 	renderData() {
 		const { className, data } = this.props;
 		const createClassName = classNames(styles.container, className);
-		
+
 		return (
 			data.map(({ comment, customer }, i) => (
 				<div key={i} className={createClassName}>
@@ -32,13 +32,13 @@ class Comment extends Component {
 							<Image height={30} width={30} avatar src={customer.customer_avatar} />
 						</Level.Left>
 						<Level.Item>
-							<div className='padding--medium'>{customer.customer_name}</div>
+							<div className='padding--medium-h'>{customer.customer_name}</div>
 						</Level.Item>
 						<Level.Right>
 							<div className='margin--small font-small font-color--primary-ext-2'>{comment.created_time}</div>
 						</Level.Right>
 					</Level>
-					<div className='padding--normal' style={{ marginLeft: '45px' }}>
+					<div className='padding--normal-h' style={{ marginLeft: '45px' }}>
 						<div>{comment.comment}</div>
 					</div>
 				</div>
@@ -47,7 +47,7 @@ class Comment extends Component {
 	}
 
 	render() {
-		
+
 		const { className, data, ...props } = this.props;
 		const createClassName = classNames(styles.container, className);
 
@@ -59,13 +59,13 @@ class Comment extends Component {
 							<Image height={30} width={30} avatar src={data.customer.customer_avatar} />
 						</Level.Left>
 						<Level.Item>
-							<div className='padding--medium'>{data.customer.customer_name}</div>
+							<div className='padding--medium-h'>{data.customer.customer_name}</div>
 						</Level.Item>
 						<Level.Right>
 							<Rating active={data.review.rating} total={5} />
 						</Level.Right>
 					</Level>
-					<div className='padding--normal' style={{ marginLeft: '45px' }}>
+					<div className='padding--normal-h' style={{ marginLeft: '45px' }}>
 						<div>{data.review.review}</div>
 						<div className='margin--small font-small font-color--primary-ext-2'>Post updated: {data.review.created_time}</div>
 					</div>
@@ -81,15 +81,15 @@ class Comment extends Component {
 							<div key={i} className={createClassName}>
 								<Level style={{ paddingBottom: '5px' }} className='flex-center'>
 									<Level.Item>
-										<div className='padding--medium' style={{ marginLeft: '-15px' }}>
+										<div className='padding--medium-h' style={{ marginLeft: '-15px' }}>
 											<b>{customer.customer_name}</b>
 										</div>
 									</Level.Item>
 								</Level>
-								{/* <div className='padding--normal'>
+								{/* <div className='padding--normal-h'>
 									<b>{customer.customer_name}</b>
 								</div> */}
-								<div className='padding--normal'>
+								<div className='padding--normal-h'>
 									<div>{comment.comment}</div>
 								</div>
 							</div>

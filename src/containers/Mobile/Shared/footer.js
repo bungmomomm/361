@@ -12,17 +12,17 @@ const footer = (props) => {
 		<div>
 			<div style={{ backgroundColor: '#D8D8D8' }}>
 				<div className='flex-row flex-middle flex-center margin--medium'>
-					<div className='padding--medium'>BUTUH BANTUAN ? HUBUNGI KAMI</div>
+					<div className='padding--medium-h'>BUTUH BANTUAN ? HUBUNGI KAMI</div>
 					<Svg src='ico_chevron-right.svg' />
 				</div>
 			</div>
 			<div style={{ backgroundColor: '#EBEBEB' }}>
-				<div className='flex-middle flex-center padding--large text-center'>
+				<div className='flex-middle flex-center padding--large-h text-center'>
 					<div className='margin--medium'>
 						<Button outline color='white' size='medium'>
 							<div className='flex-row flex-center flex-middle'>
 								<Svg src='ico_newstore.svg' />
-								<span className='padding--small'>JUALAN AJA</span>
+								<span className='padding--small-h'>JUALAN AJA</span>
 							</div>
 						</Button>
 					</div>
@@ -35,7 +35,7 @@ const footer = (props) => {
 						[mobile apps media]
 					</div>
 				</div>
-				<div className='border-top text-center padding--medium'>
+				<div className='border-top text-center padding--medium-h'>
 					<div className='margin--small font-color--primary-ext-2 font-small'>
 						<span className='margin--small'>©PT Solusi Ecommerce Global</span>
 					</div>

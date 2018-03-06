@@ -95,7 +95,7 @@ class SearchNotFound extends PureComponent {
 						<Link to='/'><Image local src='temp/promo404-2.jpg' /></Link>
 					</div>
 					<Notification color='yellow' show disableClose>
-						<div className='margin--medium padding--medium' style={{ color: '#F57C00' }}>
+						<div className='margin--medium padding--medium-h' style={{ color: '#F57C00' }}>
 							Jika anda mengalami kesulitan silahkan hubungi<br />
 							<strong>Customer Support kami di: 1500038</strong>
 						</div>
