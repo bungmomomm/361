@@ -19,9 +19,9 @@ import {
 	Card,
 	Svg,
 	Tabs,
-	Button, 
-	Level, 
-	Input, 
+	Button,
+	Level,
+	Input,
 	Navigation,
 	Spinner,
 	Comment
@@ -66,7 +66,7 @@ class SearchResults extends Component {
 
 		this.loadingView = <div style={{ margin: '20px auto 20px auto' }}><Spinner /></div>;
 	}
-	
+
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.query) {
 			this.setState({
@@ -74,7 +74,7 @@ class SearchResults extends Component {
 			});
 		}
 	}
-	
+
 	async onApply(e, fq) {
 		const { query } = this.state;
 		query.fq = fq;
@@ -235,7 +235,7 @@ class SearchResults extends Component {
 				{this.renderHeader()}
 				{this.renderTabs()}
 				{this.renderForeverBanner()}
-				<Navigation />
+				<Navigation scroll={this.props.scroll} />
 			</div>
 		);
 	}
@@ -246,7 +246,7 @@ class SearchResults extends Component {
 
 		if (isLoading) {
 			searchView = this.loadingView;
-		} 
+		}
 
 		if (searchResults.searchStatus === 'success' && !_.isEmpty(searchResults.searchData.products)) {
 			searchView = this.searchFound(searchResults.searchData.products);
@@ -278,7 +278,7 @@ class SearchResults extends Component {
 				lovelistTotal,
 				lovelistStatus
 			};
-			
+
 			const cardCatalogGridAttribute = {
 				key: index,
 				images: productData.images,
@@ -403,7 +403,7 @@ class SearchResults extends Component {
 							{
 								id: 'filter',
 								title: 'Filter',
-								disabled: typeof searchResults.searchData === 'undefined'	
+								disabled: typeof searchResults.searchData === 'undefined'
 							},
 							{
 								id: 'view',

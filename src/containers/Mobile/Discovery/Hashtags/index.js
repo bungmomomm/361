@@ -8,7 +8,7 @@ import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import Spinner from '@/components/mobile/Spinner';
 import Footer from '@/containers/Mobile/Shared/footer';
-import styles from './Hashtags.scss';
+// import styles from './Hashtags.scss';
 import Helmet from 'react-helmet';
 import _ from 'lodash';
 import currency from 'currency.js';
@@ -17,26 +17,6 @@ class Hashtags extends Component {
 
 	state = {
 		isFooterShow: true,
-		sticky: true
-	};
-
-	componentDidMount() {
-		window.addEventListener('scroll', this.handleScroll, true);
-	}
-
-	componentWillUnmount() {
-		window.removeEventListener('scroll', this.handleScroll, true);
-	}
-
-	handleScroll = (e) => {
-		const { sticky } = this.state;
-		const scrollTop = e.target.scrollTop;
-		if (scrollTop > 170 && scrollTop > 0 && !sticky) {
-			this.setState({ sticky: true });
-		}
-		if (scrollTop < 170 && scrollTop > 0 && sticky) {
-			this.setState({ sticky: false });
-		}
 	};
 
 	switchTag = (tag) => {
@@ -118,6 +98,32 @@ class Hashtags extends Component {
 		const q = dispatch(actions.getQuery());
 		const campaignId = _.chain(q).get('query.campaign_id').value() || 1;
 
+		const listHastags = (
+			<div className='horizontal-scroll padding--large '>
+				<div className='flex-row flex-centerflex-spaceBetween margin--medium'>
+					{tags.map((tag, i) => (
+						<Link
+							to={tag.hashtag.indexOf('#') === -1 ? `/mau-gaya-itu-gampang#${tag.hashtag}` : `/mau-gaya-itu-gampang${tag.hashtag}`}
+							onClick={() => this.switchTag(tag.hashtag)}
+							key={i}
+							className={tag.hashtag.replace('#', '') === hashtag.active.tag.replace('#', '') ? 'padding--medium' : 'padding--medium font-color--primary-ext-2'}
+						>
+							{tag.hashtag.indexOf('#') === -1 ? `#${tag.hashtag}` : tag.hashtag}
+						</Link>
+					))}
+				</div>
+			</div>
+		);
+
+		const isSticky = () => {
+			if (this.staticHashtag) {
+				const rect = this.staticHashtag.getBoundingClientRect();
+				// const threshold = 90;
+				return this.props.scroll.top > (rect.top + rect.height);
+			}
+			return false;
+		};
+
 		const HeaderPage = {
 			left: (
 				<button onClick={history.goBack}>
@@ -129,7 +135,12 @@ class Hashtags extends Component {
 				<Button onClick={this.switchMode}>
 					<Svg src={hashtag.viewMode === 3 ? 'ico_list.svg' : 'ico_grid-3x3.svg'} />
 				</Button>
-			)
+			),
+			rows: [{
+				left: null,
+				center: isSticky() ? listHastags : null,
+				right: null
+			}]
 		};
 
 		return (
@@ -155,21 +166,8 @@ class Hashtags extends Component {
 					<div className='margin--medium text-center padding--large'>
 						{hashtag.header.description}
 					</div>
-					<div className={this.state.sticky ? styles.sticky : ''}>
-						<div className='horizontal-scroll padding--large '>
-							<div className='flex-row flex-centerflex-spaceBetween margin--medium'>
-								{tags.map((tag, i) => (
-									<Link
-										to={tag.hashtag.indexOf('#') === -1 ? `/mau-gaya-itu-gampang#${tag.hashtag}` : `/mau-gaya-itu-gampang${tag.hashtag}`}
-										onClick={() => this.switchTag(tag.hashtag)}
-										key={i}
-										className={tag.hashtag.replace('#', '') === hashtag.active.tag.replace('#', '') ? 'padding--medium' : 'padding--medium font-color--primary-ext-2'}
-									>
-										{tag.hashtag.indexOf('#') === -1 ? `#${tag.hashtag}` : tag.hashtag}
-									</Link>
-								))}
-							</div>
-						</div>
+					<div ref={(n) => { this.staticHashtag = n; }}>
+						{listHastags}
 					</div>
 
 					{
@@ -184,7 +182,7 @@ class Hashtags extends Component {
 				</Page>
 
 				<Header.Modal {...HeaderPage} />
-				<Navigation />
+				<Navigation scroll={this.props.scroll} />
 			</div>
 		);
 	}

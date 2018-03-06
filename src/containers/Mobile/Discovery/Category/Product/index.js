@@ -12,15 +12,15 @@ import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Filter from '@/containers/Mobile/Shared/Filter';
 import Sort from '@/containers/Mobile/Shared/Sort';
 
-import { 
-	Header, 
-	Page, 
-	Card, 
-	Svg, 
-	Tabs, 
-	Button, 
-	Level, 
-	Input, 
+import {
+	Header,
+	Page,
+	Card,
+	Svg,
+	Tabs,
+	Button,
+	Level,
+	Input,
 	Navigation,
 	Spinner,
 	Comment
@@ -177,7 +177,7 @@ class Product extends Component {
 				{this.renderHeader()}
 				{this.renderTabs()}
 				{this.renderForeverBanner()}
-				<Navigation active='Categories' />
+				<Navigation active='Categories' scroll={this.props.scroll} />
 			</div>
 		);
 	}
