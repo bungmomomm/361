@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import util from 'util';
 import _ from 'lodash';
 
-import { Page, Input, Button, Level, Svg, Notification } from '@/components/mobile';
+import { Page, Input, Button, Level, Svg, Notification, Spinner } from '@/components/mobile';
 
 import CONST from '@/constants';
 
@@ -16,16 +16,19 @@ class EditEmail extends Component {
 			data: props.data || '',
 			formResult: {
 				...props.formResult
-			}
+			},
+			isLoading: false
 		};
 
 		this.EMAIL_FIELD = CONST.USER_PROFILE_FIELD.email;
+		this.loadingView = <div><Spinner /></div>;
 	}
 
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.formResult !== false) {
 			this.setState({
-				formResult: nextProps.formResult
+				formResult: nextProps.formResult,
+				isLoading: false
 			});
 		}
 	}
@@ -42,6 +45,9 @@ class EditEmail extends Component {
 		const { onSave } = this.props;
 		const { data } = this.state;
 		onSave(e, { [this.EMAIL_FIELD]: data });
+		this.setState({
+			isLoading: true
+		});
 	}
 
 	renderHeader() {
@@ -57,25 +63,6 @@ class EditEmail extends Component {
 		);
 
 		return headerView;
-	}
-
-	renderEmailField() {
-		const { data } = this.state;
-
-		return (
-			<form style={{ padding: '15px' }}>
-				<div className='margin--medium'>
-					<label className={styles.label} htmlFor='editEmail'>Alamat Email</label>
-					<Input id='editEmail' disabled flat defaultValue={data} />
-				</div>
-				<div className='margin--medium'>
-					<label className={styles.label} htmlFor='editEmailNew'>Alamat Email Baru</label>
-					<Input id='editEmailNew' flat onChange={(e) => this.inputHandler(e)} />
-				</div>
-				{this.renderSubmitButton()}
-				{this.renderNotif()}
-			</form>
-		);
 	}
 
 	renderNotif() {
@@ -104,11 +91,31 @@ class EditEmail extends Component {
 		);
 	}
 
+	renderEmailForm() {
+		const { isLoading, data } = this.state;
+
+		return (
+			<form style={{ padding: '15px' }}>
+				<div className='margin--medium'>
+					<label className={styles.label} htmlFor='editEmail'>Alamat Email</label>
+					<Input id='editEmail' disabled flat defaultValue={data} />
+				</div>
+				<div className='margin--medium'>
+					<label className={styles.label} htmlFor='editEmailNew'>Alamat Email Baru</label>
+					<Input id='editEmailNew' flat onChange={(e) => this.inputHandler(e)} />
+				</div>
+				{this.renderNotif()}
+				{isLoading ? this.loadingView : this.renderSubmitButton()}
+			</form>
+		);
+	}
+
 	render() {
+		console.log(this.props);
 		return (
 			<Page>
 				{this.renderHeader()}
-				{this.renderEmailField()}
+				{this.renderEmailForm()}
 			</Page>
 		);
 	}

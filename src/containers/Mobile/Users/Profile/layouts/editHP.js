@@ -101,19 +101,25 @@ class EditHp extends Component {
 		);
 	}
 
+	renderPhoneForm() {
+		return (
+			<form style={{ padding: '15px' }}>
+				{this.renderOldPhone()}
+				<div className='margin--medium'>
+					<label className={styles.label} htmlFor='editCellPhoneNew'>No Handphone Baru</label>
+					<Input id='editCellPhoneNew' flat onChange={(e) => this.inputHandler(e)} />
+				</div>
+				{this.renderNotif()}
+				{this.renderSubmitButton()}
+			</form>
+		);
+	}
+
 	render() {
 		return (
 			<Page>
 				{this.renderHeader()}
-				<form style={{ padding: '15px' }}>
-					{this.renderOldPhone()}
-					<div className='margin--medium'>
-						<label className={styles.label} htmlFor='editCellPhoneNew'>No Handphone Baru</label>
-						<Input id='editCellPhoneNew' flat onChange={(e) => this.inputHandler(e)} />
-					</div>
-					{this.renderSubmitButton()}
-					{this.renderNotif()}
-				</form>
+				{this.renderPhoneForm()}
 			</Page>
 		);
 	}

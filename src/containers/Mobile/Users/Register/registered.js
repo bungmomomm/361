@@ -19,7 +19,7 @@ class Registered extends Component {
 			visibalePasswod: false
 		};
 	}
-	
+
 	onUserChange(e) {
 		this.props.dispatch(new users.userNameChange(e));
 	}
@@ -39,18 +39,18 @@ class Registered extends Component {
 			right: null,
 			shadow: false
 		};
-		
+
 		return (
 			<div className='full-height' style={this.props.style}>
 				<Page>
 					<div className={styles.container}>
-						<div className='margin--medium'>Akun ini sudah terdaftar. Silahkan lakukan log in untuk mengakses akun.</div>
-						<div className='margin--medium text-center'>
+						<div className='margin--medium-v'>Akun ini sudah terdaftar. Silahkan lakukan log in untuk mengakses akun.</div>
+						<div className='margin--medium-v text-center'>
 							<p>
 								MASUK DENGAN <strong>085975049209</strong>
 							</p>
 						</div>
-						<div className='margin--small'>
+						<div className='margin--small-v'>
 							<Button
 								color='primary'
 								size='large'
@@ -59,7 +59,7 @@ class Registered extends Component {
 								Login
 							</Button>
 						</div>
-						<div className='margin--medium text-center'>
+						<div className='margin--medium-v text-center'>
 							<Link to='/'>Lupa Password</Link>
 						</div>
 					</div>

@@ -57,7 +57,7 @@ class Hashtags extends Component {
 				</div>
 				<div>
 					<Image local src='temp/product-1.jpg' width='100%' />
-					<div className='flex-row padding--medium-h margin--medium'>
+					<div className='flex-row padding--medium-h margin--medium-v'>
 						<div><Image avatar height={40} width={40} local src='temp/pp.jpg' /></div>
 						<div className='padding--medium-h'>
 							<div><Link className='font-color--primary' to='/'>@vinensiuswibowo</Link></div>
@@ -67,7 +67,7 @@ class Hashtags extends Component {
 				</div>
 				<div>
 					<Image local src='temp/product-1.jpg' width='100%' />
-					<div className='flex-row padding--medium-h margin--medium'>
+					<div className='flex-row padding--medium-h margin--medium-v'>
 						<div><Image avatar height={40} width={40} local src='temp/pp.jpg' /></div>
 						<div className='padding--medium-h'>
 							<div><Link className='font-color--primary' to='/'>@vinensiuswibowo</Link></div>
@@ -98,10 +98,10 @@ class Hashtags extends Component {
 		return (
 			<div style={this.props.style}>
 				<Page>
-					<div className='margin--medium text-center padding--large-h'>
+					<div className='margin--medium-v text-center padding--large-h'>
 						Upload gaya OOTD kamu di Instagram dengan hashtag #MauGayaItuGampang dan menangin kesempatan tampil di MatahariMall.com!
 					</div>
-					<div className='flex-row flex-center flex-spaceBetween margin--medium padding--large-h'>
+					<div className='flex-row flex-center flex-spaceBetween margin--medium-v padding--large-h'>
 						<Link to='/'>All</Link>
 						<Link to='/'>#MDSMens</Link>
 						<Link to='/'>#MDSWomens</Link>
@@ -110,7 +110,7 @@ class Hashtags extends Component {
 					{
 						this.state.gridSizeSmall ? this.renderGridSmall() : this.renderGridLarge()
 					}
-					<div className='flex-center padding--medium-h margin--large'>
+					<div className='flex-center padding--medium-h margin--large-v'>
 						<Button color='secondary' size='medium' style={{ width: '200px' }} outline>LOAD MORE</Button>
 					</div>
 				</Page>

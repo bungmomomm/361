@@ -73,7 +73,7 @@ class HashtagsDetails extends PureComponent {
 							</div>
 							<div className='padding--medium-h padding--none-r'>
 								<div className='border-bottom'>
-									<div className='margin--medium flex-row flex-spaceBetween flex-middle'>
+									<div className='margin--medium-v flex-row flex-spaceBetween flex-middle'>
 										<div>
 											<div>{ent.data.post.username}</div>
 											<div className='font-color--primary-ext-2 font-small'>{moment(ent.data.post.created_time, 'DD MMM YYYY').format('DD/MM/YY')}</div>
@@ -90,8 +90,8 @@ class HashtagsDetails extends PureComponent {
 								</div>
 							</div>
 							<div className='padding--medium-h border-bottom'>
-								<div className='margin--medium'>
-									<div className='margin--medium margin--none-top'>{ent.data.post.caption}</div>
+								<div className='margin--medium-v'>
+									<div className='margin--medium-v margin--none-t'>{ent.data.post.caption}</div>
 									{/* <div className='font-color--primary-ext-2'> */}
 									{/* #nike #supplierbangkok #pobkkfirsthand #pobkk #pohk #grosirbaju #premiumquaity #readytowear #ootdindo #olshop #trustedseller #supplierbaju #pochina */}
 									{/* </div> */}
@@ -101,9 +101,9 @@ class HashtagsDetails extends PureComponent {
 					)}
 
 					{looks.length > 0 && (
-						<div className='margin--medium'>
+						<div className='margin--medium-v'>
 							<div className='padding--medium-h font-medium'><strong>Get The Look</strong></div>
-							<Carousel className='margin--medium'>
+							<Carousel className='margin--medium-v'>
 								{looks.map((chunk, i) => <Grid split={2} key={i}>{chunk}</Grid>)}
 							</Carousel>
 						</div>

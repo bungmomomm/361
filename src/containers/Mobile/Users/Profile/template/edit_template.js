@@ -36,12 +36,12 @@ class UserProfileEdit extends Component {
 	renderOVO(enableInput) {
 		return (
 			this.state.ovoVerified ?
-				<div className='margin--medium'>
+				<div className='margin--medium-v-v'>
 					<label className={styles.label} htmlFor='ovoID'><span style={{ color: '#4E2688' }}>OVO ID</span></label>
 					<Input disabled={enableInput} id='ovoID' flat defaultValue='085975049209' />
 					<span style={{ color: '#4E2688', fontSize: '12px' }}>OVO ID anda telah terhubung</span>
 				</div> :
-				<div className='margin--medium'>
+				<div className='margin--medium-v-v'>
 					<Button color='primary' size='large' onClick={this.verifyOVO}>VERIFIKASI OVO ID</Button>
 				</div>
 		);
@@ -92,11 +92,11 @@ class UserProfileEdit extends Component {
 					</div>
 				</div>
 				<form style={{ padding: '15px' }}>
-					<div className='margin--medium'>
+					<div className='margin--medium-v'>
 						<label className={styles.label} htmlFor='fullName'>Nama Lengkap</label>
 						<Input disabled={enableInput} id='fullName' flat defaultValue='Yannis Philippakis' />
 					</div>
-					<div className='margin--medium'>
+					<div className='margin--medium-v'>
 						<label className={styles.label} htmlFor='email'>Email</label>
 						<div className={styles.inputChange}>
 							<div className={styles.inputChangeInput}>
@@ -105,7 +105,7 @@ class UserProfileEdit extends Component {
 							{ this.state.edit ? <Link className={styles.inputChangeLink} to='/profile-edit-email'>UBAH</Link> : null }
 						</div>
 					</div>
-					<div className='margin--medium'>
+					<div className='margin--medium-v'>
 						<label className={styles.label} htmlFor='cellPhone'>Nomor Handphone</label>
 						<div className={styles.inputChange}>
 							<div className={styles.inputChangeInput}>
@@ -114,15 +114,15 @@ class UserProfileEdit extends Component {
 							{ this.state.edit ? <Link className={styles.inputChangeLink} to='/profile-edit-hp'>UBAH</Link> : null }
 						</div>
 					</div>
-					<div className='margin--medium'>
+					<div className='margin--medium-v'>
 						<label className={styles.label} htmlFor='gender'>Jenis Kelamin</label>
 						<Input disabled={enableInput} autoComplete='off' id='gender' flat defaultValue='Pria' />
 					</div>
-					<div className='margin--medium'>
+					<div className='margin--medium-v'>
 						<label className={styles.label} htmlFor='dob'>Tanggal Lahir</label>
 						<Input disabled={enableInput} autoComplete='off' id='dob' flat defaultValue='23/02/1990' />
 					</div>
-					<div className='margin--medium'>
+					<div className='margin--medium-v'>
 						<label className={styles.label} htmlFor='password'>Password</label>
 						<div className={styles.inputChange}>
 							<div className={styles.inputChangeInput}>

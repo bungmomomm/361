@@ -348,12 +348,12 @@ class Products extends Component {
 						)}
 						{!status.pdpDataHasLoaded && this.loadingContent}
 						<div className='flex-center padding--medium-h border-top'>
-							<div className='margin--medium'>
+							<div className='margin--medium-v'>
 								<div className='flex-row flex-spaceBetween'>
 									<div>Pilih Ukuran</div>
 									<Link to='/product/guide' className='d-flex font-color--primary-ext-2 flex-row flex-middle'><Svg src='ico_sizeguide.svg' /> <span className='padding--small-h padding--none-r'>PANDUAN UKURAN</span></Link>
 								</div>
-								<div className='margin--medium horizontal-scroll margin--none-bottom'>
+								<div className='margin--medium-v horizontal-scroll margin--none-b'>
 									<Radio
 										name='size'
 										checked={this.state.size}
@@ -387,14 +387,14 @@ class Products extends Component {
 								</Button>
 							</Level.Right>
 						</Level>
-						<div className='font-medium margin--medium padding--medium-h'><strong>Details</strong></div>
+						<div className='font-medium margin--medium-v padding--medium-h'><strong>Details</strong></div>
 						{
 							status.pdpDataHasLoaded && <p className='padding--medium-h' dangerouslySetInnerHTML={{ __html: detail.description }} />
 						}
-						{/* <span className='margin--small padding--medium-h'>
+						{/* <span className='margin--small-v padding--medium-h'>
 							<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
 						</span> */}
-						<div className='margin--medium --disable-flex padding--medium-h'>
+						<div className='margin--medium-v --disable-flex padding--medium-h'>
 							{
 								(this.isLogin === 'true') &&
 								<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
@@ -411,25 +411,25 @@ class Products extends Component {
 								<Comment type='lite-review' data={comment.summary} />
 							)}
 						</div>
-						<hr className='margin--small' />
+						<hr className='margin--small-v' />
 						{status.recommendationSet && (
 							<div>
-								<div className='margin--small padding--medium-h font-medium'><strong>Anda Mungkin Suka</strong></div>
+								<div className='margin--small-v padding--medium-h font-medium'><strong>Anda Mungkin Suka</strong></div>
 								<div className='flex-row'>{(!status.loading) ? pdpData.recommendationContent : this.loadingContent}</div>
 							</div>
 						)}
 						<div style={{ backgroundColor: '#F5F5F5' }}>
 							{status.reviewsSet && (
 								<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
-									<div className='margin--medium'>
-										<div className='padding--small-h margin--small margin--none-top flex-row flex-spaceBetween'>
+									<div className='margin--medium-v'>
+										<div className='padding--small-h margin--small-v margin--none-t flex-row flex-spaceBetween'>
 											<div className='font-medium'><strong>Ulasan</strong></div>
 											{(typeof reviews.total !== 'undefined' && reviews.total > 0) && (
 												<Link className='font-small flex-middle d-flex flex-row font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
 											)}
 										</div>
 										<div className='border-bottom'>
-											<div className='padding--small-h margin--medium margin--none-top flex-row flex-middle'>
+											<div className='padding--small-h margin--medium-v margin--none-t flex-row flex-middle'>
 												<Rating
 													active={(typeof reviews.rating !== 'undefined' && reviews.rating > 0) ? reviews.rating : 0}
 													total={(typeof reviews.total !== 'undefined' && reviews.total > 0) ? reviews.total : 0}
@@ -468,7 +468,7 @@ class Products extends Component {
 
 								{
 									status.pdpDataHasLoaded && (
-										<div className='margin--medium margin--none-top'>
+										<div className='margin--medium-v margin--none-t'>
 											<Grid split={4} className='padding--small-h'>
 												<div className='padding--normal-h'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
 												<div className='padding--normal-h'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
@@ -485,7 +485,7 @@ class Products extends Component {
 							</div>
 							{status.similarSet && (
 								<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
-									<div className='margin--small padding--medium-h font-medium'><strong>Product Serupa</strong></div>
+									<div className='margin--small-v padding--medium-h font-medium'><strong>Product Serupa</strong></div>
 									{(!status.loading) ? (<div className='flex-row'>{pdpData.similarContent}</div>) : this.loadingContent}
 								</div>
 							)}
@@ -497,7 +497,7 @@ class Products extends Component {
 				<Modal show={status.showConfirmDelete}>
 					<div className='font-medium'>
 						<h3>Hapus Lovelist</h3>
-						<Level style={{ padding: '0px' }} className='margin--medium'>
+						<Level style={{ padding: '0px' }} className='margin--medium-v'>
 							<Level.Left />
 							<Level.Item className='padding--medium-h'>
 								<div className='font-small'>Kamu yakin mau hapus produk ini dari Lovelist kamu?</div>

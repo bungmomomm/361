@@ -151,7 +151,7 @@ class Cart extends Component {
 										{item.product_title}
 									</Link>
 								</div>
-								<div className='margin--medium'>
+								<div className='margin--medium-v'>
 									<div>{item.pricing.formatted.effective_price}</div>
 									{(item.pricing.formatted.effective_price !== item.pricing.formatted.base_price) && (
 										<div className='font-color--primary-ext-1 font-small text-line-through'>
@@ -177,7 +177,7 @@ class Cart extends Component {
 								</Level>
 							</Level.Item>
 						</Level>
-						<div className='flex-row flex-center flex-spaceBetween margin--medium'>
+						<div className='flex-row flex-center flex-spaceBetween margin--medium-v'>
 							<div>
 								<Button
 									onClick={() => this.addToLovelistHandler(item.product_id, item.variant_id)}
@@ -221,7 +221,7 @@ class Cart extends Component {
 	renderTotal() {
 		return (this.props.shopBag.total !== null) && (
 			<div className='padding--medium-h' style={{ backgroundColor: '#fff' }}>
-				<div className='margin--medium'>
+				<div className='margin--medium-v'>
 					<div className='flex-row flex-spaceBetween'>
 						<div>Subtotal</div>
 						<div className='font-medium'>{this.props.shopBag.total.formatted.subtotal}</div>
@@ -233,7 +233,7 @@ class Cart extends Component {
 						</div>
 						<div className='font-medium'>{this.props.shopBag.total.formatted.shipping_estimation}</div>
 					</div>
-					<hr className='margin--medium' />
+					<hr className='margin--medium-v' />
 					<div className='flex-row flex-spaceBetween'>
 						<div>
 							<div>Total Pembayaran</div>
@@ -339,7 +339,7 @@ class Cart extends Component {
 
 				<Modal show={this.state.showConfirmDelete}>
 					<div className='font-medium'>Anda mau menghapus produk ini?</div>
-					<Level style={{ padding: '0px' }} className='margin--medium'>
+					<Level style={{ padding: '0px' }} className='margin--medium-v'>
 						<Level.Left><Image width='40px' src={this.state.productWillDelete.image} /></Level.Left>
 						<Level.Item className='padding--medium-h'>
 							<div className='font-small'>{this.state.productWillDelete.brand}</div>

@@ -22,15 +22,15 @@ class UserProfileEditPassword extends Component {
 					<Level.Right style={{ width: '80px' }}>&nbsp;</Level.Right>
 				</Level>
 				<form style={{ padding: '15px' }}>
-					<div className='margin--medium'>
+					<div className='margin--medium-v'>
 						<label className={styles.label} htmlFor='editPassword'>Password</label>
 						<Input id='editPassword' type='password' flat />
 					</div>
-					<div className='margin--medium'>
+					<div className='margin--medium-v'>
 						<label className={styles.label} htmlFor='editPasswordNew'>Password Baru</label>
 						<Input id='editPasswordNew' type='password' flat />
 					</div>
-					<div className='margin--medium'>
+					<div className='margin--medium-v'>
 						<Button color='primary' size='large'>SIMPAN</Button>
 					</div>
 				</form>

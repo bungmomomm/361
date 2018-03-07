@@ -92,7 +92,7 @@ class MyOrder extends Component {
 		return (
 			<div style={this.props.style}>
 				<Page>
-					<div className='margin--medium'>
+					<div className='margin--medium-v'>
 						{
 							this.dummyData.map((data, key) => {
 								return (

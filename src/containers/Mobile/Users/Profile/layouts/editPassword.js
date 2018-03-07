@@ -62,27 +62,6 @@ class EditPassword extends Component {
 		return headerView;
 	}
 
-	renderPasswordField() {
-		return (
-			<form style={{ padding: '15px' }}>
-				<div className='margin--medium'>
-					<label className={styles.label} htmlFor='editPassword'>Password Saat Ini</label>
-					<Input name={this.OLD_PWD_FIELD} id='editPassword' type='password' flat onChange={(e) => this.inputHandler(e)} />
-				</div>
-				<div className='margin--medium'>
-					<label className={styles.label} htmlFor='editPasswordNew'>Password Baru</label>
-					<Input name={this.NEW_PWD_FIELD} id='editPasswordNew' type='password' flat onChange={(e) => this.inputHandler(e)} />
-				</div>
-				<div className='margin--medium'>
-					<label className={styles.label} htmlFor='editPasswordNew'>Ulangi Password Baru</label>
-					<Input id='editPasswordNewConfirm' type='password' flat />
-				</div>
-				{this.renderSubmitButton()}
-				{this.renderNotif()}
-			</form>
-		);
-	}
-
 	renderNotif() {
 		const { formResult } = this.state;
 		if (!_.isEmpty(formResult.status) && !_.isEmpty(formResult.message)) {
@@ -109,11 +88,32 @@ class EditPassword extends Component {
 		);
 	}
 
+	renderPasswordForm() {
+		return (
+			<form style={{ padding: '15px' }}>
+				<div className='margin--medium'>
+					<label className={styles.label} htmlFor='editPassword'>Password Saat Ini</label>
+					<Input name={this.OLD_PWD_FIELD} id='editPassword' type='password' flat onChange={(e) => this.inputHandler(e)} />
+				</div>
+				<div className='margin--medium'>
+					<label className={styles.label} htmlFor='editPasswordNew'>Password Baru</label>
+					<Input name={this.NEW_PWD_FIELD} id='editPasswordNew' type='password' flat onChange={(e) => this.inputHandler(e)} />
+				</div>
+				<div className='margin--medium'>
+					<label className={styles.label} htmlFor='editPasswordNew'>Ulangi Password Baru</label>
+					<Input id='editPasswordNewConfirm' type='password' flat />
+				</div>
+				{this.renderNotif()}
+				{this.renderSubmitButton()}
+			</form>
+		);
+	}
+
 	render() {
 		return (
 			<Page>
 				{this.renderHeader()}
-				{this.renderPasswordField()}
+				{this.renderPasswordForm()}
 			</Page>
 		);
 	}
