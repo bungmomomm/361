@@ -259,64 +259,60 @@
 			height: 100%;
 		}
 
-		.margin--small {
-			margin-top: 5px;
-			margin-bottom: 5px;
+	  	// Margin
+		@each $value in $space-list {
+			.margin#{nth($value, 1)} {
+			  	margin: nth($value, 2);
+			}
+			.margin#{nth($value, 1)}-v {
+			  	margin-top: nth($value, 2);
+			  	margin-bottom: nth($value, 2);
+			}
+			.margin#{nth($value, 1)}-h {
+			  	margin-left: nth($value, 2);
+			  	margin-right: nth($value, 2);
+			}
+			.margin#{nth($value, 1)}-t {
+			  	margin-top: nth($value, 2);
+			}
+			.margin#{nth($value, 1)}-b {
+			  	margin-bottom: nth($value, 2);
+			}
+			.margin#{nth($value, 1)}-l {
+			  	margin-left: nth($value, 2);
+			}
+			.margin#{nth($value, 1)}-r {
+			  	margin-right: nth($value, 2);
+			}
 		}
 
-		.margin--medium {
-			margin-top: 15px;
-			margin-bottom: 15px;
+	  	// Padding
+		@each $value in $space-list {
+			.padding#{nth($value, 1)} {
+			  	padding: nth($value, 2);
+			}
+			.padding#{nth($value, 1)}-v {
+			  	padding-top: nth($value, 2);
+			  	padding-bottom: nth($value, 2);
+			}
+			.padding#{nth($value, 1)}-h {
+			  	padding-left: nth($value, 2);
+			  	padding-right: nth($value, 2);
+			}
+			.padding#{nth($value, 1)}-t {
+			  	padding-top: nth($value, 2);
+			}
+			.padding#{nth($value, 1)}-b {
+			  	padding-bottom: nth($value, 2);
+			}
+			.padding#{nth($value, 1)}-l {
+			  	padding-left: nth($value, 2);
+			}
+			.padding#{nth($value, 1)}-r {
+			  	padding-right: nth($value, 2);
+			}
 		}
 
-		.margin--large {
-			margin-top: 30px;
-			margin-bottom: 30px;
-		}
-
-		.margin--none-bottom {
-			margin-bottom: 0px;
-		}
-
-		.margin--none-top {
-			margin-top: 0px;
-		}
-
-		.padding--small {
-			padding-left: 5px;
-			padding-right: 5px;
-		}
-		.padding--normal {
-			padding-left: 10px;
-			padding-right: 10px;
-		}
-
-		.padding--medium {
-			padding-left: 15px;
-			padding-right: 15px;
-		}
-
-		.padding--large {
-			padding-left: 30px;
-			padding-right: 30px;
-		}
-
-		.padding--none-left {
-			padding-left: 0px;
-		}
-
-		.padding--none-right {
-			padding-right: 0px;
-		}
-
-		.padding--none{
-			padding: 0px;
-		}
-
-		.margin--none {
-			margin-top: 0px;
-			margin-right: 0px;
-		}
 		.border-top {
 			border-top: 0.5px solid #DBDBDB;
 		}

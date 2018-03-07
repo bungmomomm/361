@@ -158,9 +158,9 @@ class Lovelist extends Component {
 				<Modal show={status.showConfirmDelete}>
 					<div className='font-medium'>
 						<h3>Hapus Lovelist</h3>
-						<Level style={{ padding: '0px' }} className='margin--medium'>
+						<Level style={{ padding: '0px' }} className='margin--medium-v'>
 							<Level.Left />
-							<Level.Item className='padding--medium'>
+							<Level.Item className='padding--medium-h'>
 								<div className='font-small'>Kamu yakin mau hapus produk ini dari Lovelist kamu?</div>
 							</Level.Item>
 						</Level>
@@ -195,7 +195,7 @@ class Lovelist extends Component {
 						Tekan&nbsp;<Svg width='20px' height='18px' src='ico_love.svg' />&nbsp;untuk menambahkan
 					</div>
 					<div className={styles.lovelistEmptyDescription}>produk ke Lovelist.</div>
-					<p className='margin--medium'><Button to='/' inline size='medium' color='secondary'>BELANJA</Button></p>
+					<p className='margin--medium-v'><Button to='/' inline size='medium' color='secondary'>BELANJA</Button></p>
 					<Image local className={styles.lovelistEmptyImg} alt='Tap the love icon' src='lovelist-guide.png' />
 				</div>
 			));
