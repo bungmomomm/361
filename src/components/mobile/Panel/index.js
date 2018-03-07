@@ -5,10 +5,15 @@ import styles from './panel.scss';
 class Panel extends PureComponent {
 	render() {
 		const { children, className, ...props } = this.props;
-
+		const panelClass = classNames(
+			styles.container,
+			className,
+			this.props.color ? styles[this.props.color] : null,
+			this.props.rounded ? styles.rounded : null
+		);
 		return (
 			<div
-				className={classNames(styles.container, className)}
+				className={panelClass}
 				{...props}
 			>
 				{children}
