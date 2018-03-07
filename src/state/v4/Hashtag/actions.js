@@ -68,7 +68,9 @@ const itemsFetchData = ({ token, query = {} }) => async (dispatch, getState) => 
 	dispatch(scrollerActions.onScroll({ loading: true }));
 
 	const { shared } = getState();
-	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || process.env.MICROSERVICES_URL;
+
+	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 	const url = `${baseUrl}/campaign`;
 
@@ -108,7 +110,10 @@ const itemsFetchData = ({ token, query = {} }) => async (dispatch, getState) => 
 
 const initHashtags = (token, hash) => async (dispatch, getState) => {
 	const { shared } = getState();
-	const baseUrlPromo = _.chain(shared).get('serviceUrl.promo.url').value() || process.env.MICROSERVICES_URL;
+
+	const baseUrlPromo = _.chain(shared).get('serviceUrl.promo.url').value() || false;
+	if (!baseUrlPromo) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
 	const urlInit = `${baseUrlPromo}/mainpromo?segment_id=1`;
 	const [errPromo, respPromo] = await to(request({
 		token,
@@ -124,7 +129,9 @@ const initHashtags = (token, hash) => async (dispatch, getState) => {
 		return Promise.reject('Whoops sorry, no feeds to show you for now.');
 	}
 
-	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || process.env.MICROSERVICES_URL;
+	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
 	const url = `${baseUrl}/campaign`;
 	let query = {
 		page: 1,
