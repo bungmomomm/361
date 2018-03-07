@@ -127,10 +127,11 @@ class Lovelist extends Component {
 		const HeaderPage = {
 			left: (
 				<Button
-					className={status.loggedIn && !status.listEmpty ? null : 'd-none'}
+					className={status.loggedIn || !status.listEmpty ? null : 'd-none'}
 					onClick={() => {
 						status.listTypeGrid = (!status.listTypeGrid);
 						this.setState({ status });
+						this.setState({ status: { listEmpty: true } });
 					}}
 				>
 					<Svg src={status.listTypeGrid ? 'ico_grid.svg' : 'ico_list.svg'} />
@@ -178,23 +179,6 @@ class Lovelist extends Component {
 
 	render() {
 		const { status } = this.state;
-		if (!status.loggedIn) {
-			return (this.renderLovelistPage(
-				<div style={{ marginTop: '30%', padding: '20px' }} className='text-center --disable-flex'>
-					<Svg src='ico_ghost.svg' />
-					<p className='margin--medium-v'>Unlock the Full Experience</p>
-					<Level className='margin--medium-v'>
-						<Level.Left>&nbsp;</Level.Left>
-						<Level.Item>
-							<p className='margin--small-v'><Button wide size='large' color='primary'>LOGIN</Button></p>
-							<p className='margin--small-v'><Button wide outline size='large' color='primary'>DAFTAR</Button></p>
-						</Level.Item>
-						<Level.Right>&nbsp;</Level.Right>
-					</Level>
-				</div>
-			));
-		}
-
 		if (status.loading) {
 			return this.renderLovelistPage(
 				<div style={{ marginTop: '50%' }} className='text-center'>
@@ -206,12 +190,13 @@ class Lovelist extends Component {
 		if (status.listEmpty) {
 			return (this.renderLovelistPage(
 				<div className='text-center --disable-flex'>
-					<p className='margin--medium-v'>Lovelist kamu masih kosong</p>
-					<p className='margin--medium-v font--lato-light'>Tekan <Svg width='20px' height='18px' src='ico_love.svg' /> untuk menambahkan
-						<br />produk ke Lovelist.
-					</p>
-					<p className='margin--medium-v'><Button inline size='large' color='secondary'>BELANJA</Button></p>
-					<Image local style={{ margin: '0 auto -30px auto' }} alt='Tap the love icon' src='lovelist-guide.png' />
+					<p className={styles.lovelistEmpty}>Kamu belum memiliki Lovelist</p>
+					<div className={styles.lovelistEmptyDescription}>
+						Tekan&nbsp;<Svg width='20px' height='18px' src='ico_love.svg' />&nbsp;untuk menambahkan
+					</div>
+					<div className={styles.lovelistEmptyDescription}>produk ke Lovelist.</div>
+					<p className='margin--medium-v'><Button to='/' inline size='medium' color='secondary'>BELANJA</Button></p>
+					<Image local className={styles.lovelistEmptyImg} alt='Tap the love icon' src='lovelist-guide.png' />
 				</div>
 			));
 		}

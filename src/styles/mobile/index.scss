@@ -48,6 +48,10 @@
 		font-size: rem(13px);
 		height: 100%;
 		position: relative;
+		display: flex;
+		flex-flow: column;
+		flex: 1 0 auto;
+		overflow-y: scroll;
 		color: color(--primary);
 		line-height: 20px;
 		background-color: #fff;
@@ -109,9 +113,17 @@
 		display: block;
 		flex: none;
 	}
+  	// Full height page
 	body,
-	html {
-		height: 100%;
+	html,
+	#root,
+	[data-reactroot],
+	.switch-wrapper,
+	.switch-wrapper > div,
+	.switch-wrapper > div > div
+	{
+	  	flex: 1 0 auto;
+		min-height: 100%;
 	  	overflow-x: hidden;
 	  	overflow-y: scroll;
 	}
@@ -153,16 +165,27 @@
 	}
 	#root {
 	  	width: 100%;
-		// overflow-y: hidden;
+		overflow-y: hidden;
+		display: flex;
+		flex-flow: column;
+		flex: 1 0 auto;
 		max-width: $max-width-container;
 		position: relative;
 		margin: 0 auto;
+	  	.height-autofill,
+	  	.switch-wrapper,
+	  	.switch-wrapper > div,
+	  	.switch-wrapper > div > div,
+		[data-reactroot] {
+		  display: flex;
+		  flex-flow: column;
+		  flex: 1 0 auto;
+		}
+
 		.switch-wrapper {
-			height: 100%;
 			background: transparent;
 			> div {
 				transition: opacity 0.3s ease;
-				height: 100%;
 			}
 		}
 
@@ -174,6 +197,9 @@
 		  	z-index: 11;
 		}
 
+		.font-xsmall {
+			font-size: 9px;
+		}
 		.font-small {
 			font-size: 10px;
 		}

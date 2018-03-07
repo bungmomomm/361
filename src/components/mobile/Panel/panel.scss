@@ -5,7 +5,7 @@
   display: flex;
   flex-flow: row nowrap;
   background: #F5F5F5;
-  color: #A4A4A4;
+  color: color(--primary-ext-2);
   padding: 10px;
 }
 .header {
@@ -13,4 +13,12 @@
 }
 .content {
 
+}
+.rounded {
+  border-radius: 6px;
+}
+
+.blue {
+  color: color(--primary);
+  background-color: #ebfaf8;
 }
