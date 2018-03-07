@@ -315,7 +315,7 @@ class Home extends Component {
 					<Footer isShow={this.state.isFooterShow} />
 				</Page>
 				<Header lovelist={shared.totalLovelist} value={this.props.search.keyword} />
-				<Navigation active='Home' scroll={this.props.scroll} />
+				<Navigation active='Home' scroll={this.props.scroll} totalCartItems={shared.totalCart} />
 			</div>
 		);
 	}

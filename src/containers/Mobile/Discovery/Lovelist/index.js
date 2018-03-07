@@ -210,7 +210,11 @@ class Lovelist extends Component {
 					<p className='margin--medium font--lato-light'>Tekan <Svg width='20px' height='18px' src='ico_love.svg' /> untuk menambahkan
 						<br />produk ke Lovelist.
 					</p>
-					<p className='margin--medium'><Button inline size='large' color='secondary'>BELANJA</Button></p>
+					<p className='margin--medium'>
+						<Link to='/'>
+							<Button inline size='large' color='secondary'>BELANJA</Button>
+						</Link>
+					</p>
 					<Image local style={{ margin: '0 auto -30px auto' }} alt='Tap the love icon' src='lovelist-guide.png' />
 				</div>
 			));

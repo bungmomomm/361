@@ -146,27 +146,41 @@ const productSocialSummaryAction = (token, productId) => async (dispatch, getSta
  */
 const getProductCardData = (details) => {
 	if (!_.isEmpty(details)) {
-		// get pricing data from product variants, since there is no pricing data of product provided by api
-		const currentVariant = details.variants[0];
+		const productVariants = [];
 		const images = details.images.map((img, idx) => {
 			return { mobile: img.original };
 		});
 
-		// to do confirm to API products, about variant size
-		// const variants = details.variants.map(({ id, options, pricing, variant_sku, stock, warning_stock_text }) => {
-		// 	return {
-		// 		id,
-		// 		label: 
-		// 	};
-		// });
+		try {
+			if (!_.isEmpty(details.variants) && _.isArray(details.variants)) {
+				details.variants.forEach((variant, idx) => {
+					const optionsSet = ((typeof variant.options !== 'undefined') && _.isArray(variant.options) && variant.options.length > 0);
+					if (optionsSet) {
+						const variantSize = variant.options.filter(item => (item.key === 'size'));
+						if (!_.isEmpty(variantSize) && variantSize.length > 0) {
+							const val = variantSize[0].value.toLowerCase();
+							productVariants.push({
+								label: val,
+								value: val,
+								disabled: (typeof variant.stock !== 'undefined' && variant.stock === 0),
+								data: variant
+							});
+						}
+					}
+				});
+			}
+		} catch (error) {
+			console.log('error: ', error);
+		}
 
 		return {
 			brand: details.brand,
 			images,
-			pricing: currentVariant.pricing,
+			pricing: details.price_range,
 			product_title: details.title,
 			totalLovelist: 0,
-			totalComments: 0
+			totalComments: 0,
+			variants: productVariants
 		};
 	}
 	return details;
