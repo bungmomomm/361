@@ -19,6 +19,7 @@ const actions = createActions({
 	USER_GET_PROFILE: undefined,
 	USER_GET_PROFILE_FAIL: (error) => ({ profile: { error } }),
 	USER_GET_PROFILE_SUCCESS: (userProfile) => ({ userProfile }),
+	USER_CREDIT_CARD: (userCreditCard) => ({ userCreditCard }),
 	USER_FORGOT_PASSWORD: undefined,
 	USER_FORGOT_PASSWORD_FAIL: (error) => ({ forgot: { error } }),
 	USER_FORGOT_PASSWORD_SUCCESS: (message) => ({ forget: { message } }),
@@ -39,7 +40,8 @@ const initialState = {
 	isAnonymous: false,
 	myOrders: { konfirmasi: null, dikirim: null, batal: null, selesai: null },
 	myOrdersCurrent: 'konfirmasi',
-	myOrdersDetail: null
+	myOrdersDetail: null,
+	creditCard: {}
 };
 
 const reducer = handleActions({
@@ -72,6 +74,16 @@ const reducer = handleActions({
 		return {
 			...state,
 			...action.payload
+		};
+	},
+	[actions.userCreditCard]: (state, action) => {
+
+		return {
+			...state,
+			creditCard: {
+				...state.creditCard,
+				...action.payload.userCreditCard
+			},
 		};
 	},
 	[actions.userSocialLogin]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),

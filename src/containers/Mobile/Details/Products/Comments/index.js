@@ -112,8 +112,8 @@ class Comments extends Component {
 
 		return (
 			<div>
-				<p className='margin--small padding--medium-h' dangerouslySetInnerHTML={{ __html: product.detail.description }} />
-				{/* <span className='margin--small padding--medium-h'>
+				<p className='margin--small-v padding--medium-h' dangerouslySetInnerHTML={{ __html: product.detail.description }} />
+				{/* <span className='margin--small-v padding--medium-h'>
 					<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
 				</span> */}
 			</div>
@@ -153,7 +153,7 @@ class Comments extends Component {
 		return (
 			<div>
 				<Page>
-					<div className='margin--medium'>
+					<div className='margin--medium-v'>
 						{ this.renderDetail() }
 					</div>
 					{ this.renderComments() }

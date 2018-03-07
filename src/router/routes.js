@@ -66,6 +66,7 @@ const MyOrder = loadable(() => import('@/containers/Mobile/Users/Profile/myOrder
 const MyOrderDetail = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderDetail'));
 const MyOrderTracking = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderTracking'));
 const MyOrderConfirm = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderConfirm'));
+const CreditCard = loadable(() => import('@/containers/Mobile/Users/Profile/creditCard'));
 
 
 // promo
@@ -254,6 +255,10 @@ export default {
 		{
 			path: '/profile-my-order-confirm',
 			component: MyOrderConfirm
+		},
+		{
+			path: '/profile-credit-card',
+			component: CreditCard
 		},
 		{
 			path: '/*', // Page not found handling.
