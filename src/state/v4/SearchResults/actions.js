@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { to } from 'await-to-js';
 
 import { request } from '@/utils';
-import { initLoading, initViewMode, initSearch, initNextSearch, initBulkieComment, initPromo } from './reducer';
+import { initLoading, initViewMode, initSearch, initNextSearch, commentListLoad, commentListLoaded, commentListFailed, initPromo } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 
 const searchAction = ({ token, query = {}, loadNext = false }) => async (dispatch, getState) => {
@@ -129,7 +129,7 @@ const viewModeAction = (mode) => (dispatch) => {
 
 const bulkieCommentAction = (token, productId) => async (dispatch, getState) => {
 	if ((_.isArray(productId) && productId.length > 0) || (_.toInteger(productId) > 0)) {
-		dispatch(initLoading({ isLoading: true }));
+		dispatch(commentListLoad({ isLoading: true }));
 		
 		const { shared } = getState();
 		const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
@@ -149,11 +149,12 @@ const bulkieCommentAction = (token, productId) => async (dispatch, getState) => 
 		}));
 
 		if (err) {
+			dispatch(commentListFailed());
 			return Promise.reject(err);
 		}
 
 		const commentData = response.data.data;
-		dispatch(initBulkieComment({ commentData }));
+		dispatch(commentListLoaded({ commentData }));
 		
 		return Promise.resolve(commentData);
 	}

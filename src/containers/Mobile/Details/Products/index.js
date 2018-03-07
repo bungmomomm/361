@@ -394,7 +394,7 @@ class Products extends Component {
 								</Level.Left>
 							</Level>
 						</Level.Left>
-						<Level.Item className='padding--medium'>
+						<Level.Item className='padding--medium-h'>
 							<Level className={styles.action}>
 								<Level.Item>
 									<div className='font-normal'>{pdpData.cardProduct.pricing.effective_price}</div>
@@ -447,15 +447,19 @@ class Products extends Component {
 								linkToPdpDisabled={linkToPdpDisabled}
 							/>
 						)}
+						
 						{!status.pdpDataHasLoaded && this.loadingContent}
+
 						{status.pdpDataHasLoaded && status.hasVariantSize && (
-							<div className='flex-center padding--medium border-top'>
-								<div className='margin--medium'>
+							<div className='flex-center padding--medium-h border-top'>
+								<div className='margin--medium-v'>
 									<div className='flex-row flex-spaceBetween'>
 										<div>Pilih Ukuran</div>
-										<Link to='/product/guide' className='d-flex font-color--primary-ext-2 flex-row flex-middle'><Svg src='ico_sizeguide.svg' /> <strong className='padding--small padding--none-right'>PANDUAN UKURAN</strong></Link>
+										<Link to='/product/guide' className='d-flex font-color--primary-ext-2 flex-row flex-middle'>
+											<Svg src='ico_sizeguide.svg' /> <span className='padding--small-h padding--none-r'>PANDUAN UKURAN</span>
+										</Link>
 									</div>
-									<div className='margin--medium horizontal-scroll margin--none-bottom'>
+									<div className='margin--medium-v horizontal-scroll margin--none-b'>
 										<Radio
 											name='size'
 											checked={this.state.size}
@@ -470,7 +474,7 @@ class Products extends Component {
 						)}
 						<Level className='font-color--primary-ext-2 border-top border-bottom'>
 							<Level.Item>
-								<div className='padding--small'>Dapatkan OVO Point: 300.000</div>
+								<div className='padding--small-h'>Dapatkan OVO Point: 300.000</div>
 							</Level.Item>
 							<Level.Right>
 								<Button>
@@ -478,14 +482,14 @@ class Products extends Component {
 								</Button>
 							</Level.Right>
 						</Level>
-						<div className='font-medium margin--medium padding--medium'><strong>Details</strong></div>
+						<div className='font-medium margin--medium-v padding--medium-h'><strong>Details</strong></div>
 						{
-							status.pdpDataHasLoaded && <p className='padding--medium' dangerouslySetInnerHTML={{ __html: detail.description }} />
+							status.pdpDataHasLoaded && <p className='padding--medium-h' dangerouslySetInnerHTML={{ __html: detail.description }} />
 						}
-						{/* <span className='margin--small padding--medium'>
+						{/* <span className='margin--small-v padding--medium-h'>
 							<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
 						</span> */}
-						<div className='margin--medium --disable-flex padding--medium'>
+						<div className='margin--medium-v --disable-flex padding--medium-h'>
 							{
 								(this.isLogin === 'true') &&
 								<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
@@ -502,32 +506,32 @@ class Products extends Component {
 								<Comment type='lite-review' data={comment.summary} />
 							)}
 						</div>
-						<hr className='margin--small' />
+						<hr className='margin--small-v' />
 						{status.recommendationSet && (
 							<div>
-								<div className='margin--small padding--medium font-medium'><strong>Anda Mungkin Suka</strong></div>
+								<div className='margin--small-v padding--medium-h font-medium'><strong>Anda Mungkin Suka</strong></div>
 								<div className='flex-row'>{(!status.loading) ? pdpData.recommendationContent : this.loadingContent}</div>
 							</div>
 						)}
 						<div style={{ backgroundColor: '#F5F5F5' }}>
 							{status.reviewsSet && (
-								<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
-									<div className='margin--medium'>
-										<div className='padding--small margin--small margin--none-top flex-row flex-spaceBetween'>
+								<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
+									<div className='margin--medium-v'>
+										<div className='padding--small-h margin--small-v margin--none-t flex-row flex-spaceBetween'>
 											<div className='font-medium'><strong>Ulasan</strong></div>
 											{(typeof reviews.total !== 'undefined' && reviews.total > 0) && (
 												<Link className='font-small flex-middle d-flex flex-row font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
 											)}
 										</div>
 										<div className='border-bottom'>
-											<div className='padding--small margin--medium margin--none-top flex-row flex-middle'>
+											<div className='padding--small-h margin--medium-v margin--none-t flex-row flex-middle'>
 												<Rating
 													active={(typeof reviews.rating !== 'undefined' && reviews.rating > 0) ? reviews.rating : 0}
 													total={(typeof reviews.total !== 'undefined' && reviews.total > 0) ? reviews.total : 0}
 												/>
-												<div className='flex-row padding--small'>
+												<div className='flex-row padding--small-h'>
 													<strong>{(typeof reviews.rating !== 'undefined' && reviews.rating > 0) ? reviews.rating : 0}</strong>/5
-													<span className='font-color--primary-ext-2 padding--small'>
+													<span className='font-color--primary-ext-2 padding--small-h'>
 														{(typeof reviews.total !== 'undefined' && reviews.total > 0) ? `(${reviews.total} Ulasan)` : 'Belum Ada Ulasan'}
 													</span>
 												</div>
@@ -537,7 +541,7 @@ class Products extends Component {
 									</div>
 								</div>
 							)}
-							<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
+							<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								{
 									status.pdpDataHasLoaded && (
 										<SellerProfile
@@ -559,12 +563,12 @@ class Products extends Component {
 
 								{
 									status.pdpDataHasLoaded && (
-										<div className='margin--medium margin--none-top'>
-											<Grid split={4} className='padding--small'>
-												<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
-												<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
-												<div className='padding--normal'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
-												<div className='padding--normal'>
+										<div className='margin--medium-v margin--none-t'>
+											<Grid split={4} className='padding--small-h'>
+												<div className='padding--normal-h'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
+												<div className='padding--normal-h'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
+												<div className='padding--normal-h'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
+												<div className='padding--normal-h'>
 													<Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' />
 													<div className={styles.seeAll}>
 														SEE ALL
@@ -575,8 +579,8 @@ class Products extends Component {
 								)}
 							</div>
 							{status.similarSet && (
-								<div className='padding--small' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
-									<div className='margin--small padding--medium font-medium'><strong>Product Serupa</strong></div>
+								<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
+									<div className='margin--small-v padding--medium-h font-medium'><strong>Product Serupa</strong></div>
 									{(!status.loading) ? (<div className='flex-row'>{pdpData.similarContent}</div>) : this.loadingContent}
 								</div>
 							)}
@@ -588,9 +592,9 @@ class Products extends Component {
 				<Modal show={status.showConfirmDelete}>
 					<div className='font-medium'>
 						<h3>Hapus Lovelist</h3>
-						<Level style={{ padding: '0px' }} className='margin--medium'>
+						<Level style={{ padding: '0px' }} className='margin--medium-v'>
 							<Level.Left />
-							<Level.Item className='padding--medium'>
+							<Level.Item className='padding--medium-h'>
 								<div className='font-small'>Kamu yakin mau hapus produk ini dari Lovelist kamu?</div>
 							</Level.Item>
 						</Level>

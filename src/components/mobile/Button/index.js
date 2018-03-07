@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 import Spinner from '../Spinner';
 import styles from './button.scss';
@@ -24,6 +25,7 @@ class Button extends PureComponent {
 			wide,
 			inline,
 			rounded,
+			circle,
 			children,
 			loading,
 			outline,
@@ -45,15 +47,16 @@ class Button extends PureComponent {
 				[styles.outline]: outline,
 				[styles.transparent]: transparent,
 				[styles.rounded]: rounded,
+				[styles.circle]: circle,
 				[styles.loading]: loading,
 				[styles.left]: align === 'left',
 				[styles.center]: align === 'center',
-				[styles.right]: align === 'right' 
+				[styles.right]: align === 'right'
 			},
 			className
 		);
 
-		return (
+		const renderButton = () => (
 			<button
 				id={id}
 				className={createClassName}
@@ -65,6 +68,16 @@ class Button extends PureComponent {
 				{loading ? this.renderLoading() : children}
 			</button>
 		);
+
+		if (this.props.to) {
+			return (
+				<Link to={this.props.to}>
+					{renderButton()}
+				</Link>
+			);
+		}
+
+		return renderButton();
 	}
 }
 
@@ -75,6 +88,7 @@ Button.defaultProps = {
 	wide: false,
 	inline: false,
 	rounded: true,
+	circle: false,
 	loading: false,
 	disabled: false
 };

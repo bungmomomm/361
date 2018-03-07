@@ -25,6 +25,7 @@ import Table from './Table';
 import Rating from './Rating';
 import Spinner from './Spinner';
 import SocialLogin from './SocialLogin';
+import Timeline from './Timeline';
 
 // Alphabetically sort (^_^)
 export default {
@@ -55,4 +56,5 @@ export default {
 	Svg,
 	Tabs,
 	Table,
+	Timeline,
 };

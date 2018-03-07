@@ -8,6 +8,7 @@ $color-list: (
   --primary-ext-3: #D8D8D8,
   --primary-ext-4: #EBEBEB,
   --primary-ext-5: #F7F7F7,
+  --primary-ext-6: #F5F5F5,
 
   --secondary: #AD0C18,
   --secondary-ext-1: #CA333F,
@@ -18,6 +19,11 @@ $color-list: (
   --tertiary-ext-1: #CA333F,
   --tertiary-ext-2: #C96D7D,
   --tertiary-ext-3: #DDB8C0,
+
+  --mm-blue: #037BF4,
+  --mm-blue-ext-1: #CA333F,
+  --mm-blue-ext-2: #C96D7D,
+  --mm-blue-ext-3: #E7F5FC,
 
   --almond: #EFDECD,
   --bronze: #804A00,
@@ -74,7 +80,15 @@ $size-list: (
   --large: 40px,
   --font-small: 10px,
   --font-medium: 11px,
-  --font-large: 12px
+  --font-large: 12px,
+);
+
+$space-list: (
+  --none: 0px,
+  --small: 5px,
+  --normal: 10px,
+  --medium: 15px,
+  --large: 30px
 );
 
 $border-radius: (

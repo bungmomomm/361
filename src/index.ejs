@@ -58,8 +58,8 @@
         <![endif]-->
 
 		<!-- Loading -->
-		<div id="loading"></div>
-		<style>#loading{position:fixed;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;font-size:10px;top:50%;left:50%;margin-top:-2em;margin-left:-2em;width:4em;height:4em}
+		<div id="loading-ctr"><div id="loading"></div></div>
+		<style>#loading-ctr, #loading{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;font-size:10px;}#loading-ctr{position:fixed;top:0;right:0;bottom:0;left:0;background-color:#fff;}#loading{width:4em;height:4em}
 		</style>
 		<script src="<%=params.manifest['bodymovin']%>"></script>
 		<script>

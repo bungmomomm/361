@@ -28,7 +28,7 @@ class UserProfile extends Component {
 		return (
 			<div>
 				<Page>
-					<Level>
+					<Level className='bg--white'>
 						<Level.Left>
 							&nbsp;
 						</Level.Left>
@@ -36,7 +36,7 @@ class UserProfile extends Component {
 							<Svg src='ico_setting.svg' />
 						</Level.Right>
 					</Level>
-					<Link to='/profile-edit'>
+					<Link to='/profile-edit' className='bg--white'>
 						<Level>
 							<Level.Left>
 								<div className={ppCtrClassName}>
@@ -58,7 +58,7 @@ class UserProfile extends Component {
 						</Level>
 					</Link>
 					<Panel>Account</Panel>
-					<Link to='/profile-my-order'>
+					<Link to='/profile-my-order' className='bg--white'>
 						<Level style={{ padding: '0 0 0 15px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_order.svg' />
@@ -70,7 +70,7 @@ class UserProfile extends Component {
 							</Level.Item>
 						</Level>
 					</Link>
-					<Link to='/'>
+					<Link to='/' className='bg--white'>
 						<Level style={{ padding: '0 0 0 15px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_rating.svg' />
@@ -82,7 +82,7 @@ class UserProfile extends Component {
 							</Level.Item>
 						</Level>
 					</Link>
-					<Link to='/'>
+					<Link to='/profile-credit-card'>
 						<Level style={{ padding: '0 0 0 15px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_cc.svg' />
@@ -94,7 +94,7 @@ class UserProfile extends Component {
 							</Level.Item>
 						</Level>
 					</Link>
-					<Link to='/'>
+					<Link to='/' className='bg--white'>
 						<Level style={{ padding: '0 0 0 15px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_address.svg' />
@@ -107,7 +107,7 @@ class UserProfile extends Component {
 						</Level>
 					</Link>
 					<Panel>More</Panel>
-					<Link to='/'>
+					<Link to='/' className='bg--white'>
 						<Level style={{ padding: '0 0 0 15px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_help.svg' />
@@ -119,7 +119,7 @@ class UserProfile extends Component {
 							</Level.Item>
 						</Level>
 					</Link>
-					<Link to='/'>
+					<Link to='/' className='bg--white'>
 						<Level style={{ padding: '0 0 0 15px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_contact.svg' />
@@ -131,8 +131,9 @@ class UserProfile extends Component {
 							</Level.Item>
 						</Level>
 					</Link>
-					<Link to='/'>
-						<Level style={{ padding: '0 0 0 15px', minHeight: '80px' }}>
+					<Panel>&nbsp;</Panel>
+					<Link to='/' className='bg--white margin--medium-b'>
+						<Level style={{ padding: '0 0 0 15px', minHeight: '50px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_logout.svg' />
 							</Level.Left>

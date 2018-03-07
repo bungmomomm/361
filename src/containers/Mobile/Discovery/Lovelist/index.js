@@ -65,18 +65,18 @@ class Lovelist extends Component {
 		const { items } = this.props.lovelist;
 		const isLoved = true;
 		const content = items.list.map((product, idx) => {
-			return !this.state.status.listTypeGrid ? 
-				(<Card.Lovelist 
-					isLoved={isLoved} 
-					key={idx} 
-					data={product}
-					onBtnLovelistClick={this.handleLovelistClicked} 
-				/>) : 
-				(<Card.LovelistGrid 
-					key={idx} 
-					data={product} 
+			return !this.state.status.listTypeGrid ?
+				(<Card.Lovelist
 					isLoved={isLoved}
-					onBtnLovelistClick={this.handleLovelistClicked} 
+					key={idx}
+					data={product}
+					onBtnLovelistClick={this.handleLovelistClicked}
+				/>) :
+				(<Card.LovelistGrid
+					key={idx}
+					data={product}
+					isLoved={isLoved}
+					onBtnLovelistClick={this.handleLovelistClicked}
 				/>);
 		});
 
@@ -126,11 +126,12 @@ class Lovelist extends Component {
 		const { status } = this.state;
 		const HeaderPage = {
 			left: (
-				<Button 
-					className={status.loggedIn && !status.listEmpty ? null : 'd-none'} 
+				<Button
+					className={status.loggedIn || !status.listEmpty ? null : 'd-none'}
 					onClick={() => {
 						status.listTypeGrid = (!status.listTypeGrid);
 						this.setState({ status });
+						this.setState({ status: { listEmpty: true } });
 					}}
 				>
 					<Svg src={status.listTypeGrid ? 'ico_grid.svg' : 'ico_list.svg'} />
@@ -157,9 +158,9 @@ class Lovelist extends Component {
 				<Modal show={status.showConfirmDelete}>
 					<div className='font-medium'>
 						<h3>Hapus Lovelist</h3>
-						<Level style={{ padding: '0px' }} className='margin--medium'>
+						<Level style={{ padding: '0px' }} className='margin--medium-v'>
 							<Level.Left />
-							<Level.Item className='padding--medium'>
+							<Level.Item className='padding--medium-h'>
 								<div className='font-small'>Kamu yakin mau hapus produk ini dari Lovelist kamu?</div>
 							</Level.Item>
 						</Level>
@@ -178,23 +179,6 @@ class Lovelist extends Component {
 
 	render() {
 		const { status } = this.state;
-		if (!status.loggedIn) {
-			return (this.renderLovelistPage(
-				<div style={{ marginTop: '30%', padding: '20px' }} className='text-center --disable-flex'>
-					<Svg src='ico_ghost.svg' />
-					<p className='margin--medium'>Unlock the Full Experience</p>
-					<Level className='margin--medium'>
-						<Level.Left>&nbsp;</Level.Left>
-						<Level.Item>
-							<p className='margin--small'><Button wide size='large' color='primary'>LOGIN</Button></p>
-							<p className='margin--small'><Button wide outline size='large' color='primary'>DAFTAR</Button></p>
-						</Level.Item>
-						<Level.Right>&nbsp;</Level.Right>
-					</Level>
-				</div>
-			));
-		}
-
 		if (status.loading) {
 			return this.renderLovelistPage(
 				<div style={{ marginTop: '50%' }} className='text-center'>
@@ -206,16 +190,16 @@ class Lovelist extends Component {
 		if (status.listEmpty) {
 			return (this.renderLovelistPage(
 				<div className='text-center --disable-flex'>
-					<p className='margin--medium'>Lovelist kamu masih kosong</p>
-					<p className='margin--medium font--lato-light'>Tekan <Svg width='20px' height='18px' src='ico_love.svg' /> untuk menambahkan
+					<p className={styles.lovelistEmpty}>Lovelist kamu masih kosong</p>
+					<p className={styles.lovelistEmptyDescription}>Tekan <Svg width='20px' height='18px' src='ico_love.svg' /> untuk menambahkan
 						<br />produk ke Lovelist.
 					</p>
-					<p className='margin--medium'>
+					<p className='margin--medium-v'>
 						<Link to='/'>
-							<Button inline size='large' color='secondary'>BELANJA</Button>
+							<Button to='/' inline size='medium' color='secondary'>BELANJA</Button>
 						</Link>
 					</p>
-					<Image local style={{ margin: '0 auto -30px auto' }} alt='Tap the love icon' src='lovelist-guide.png' />
+					<Image local className={styles.lovelistEmptyImg} alt='Tap the love icon' src='lovelist-guide.png' />
 				</div>
 			));
 		}

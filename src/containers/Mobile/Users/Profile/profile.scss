@@ -72,3 +72,30 @@
   align-items: center;
   background: #ECECEC;
 }
+.orderList {
+  > li {
+	margin-bottom: 15px;
+	&:last-child {
+	  margin-bottom: 0;
+	}
+  }
+}
+
+.orderPaymentList {
+  list-style-type: none;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #D8D8D8;
+  > li {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-between;
+  }
+}
+
+.orderPaymentTotal {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}

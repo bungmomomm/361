@@ -23,7 +23,7 @@ class Hashtags extends Component {
 		const switchTag = tag.replace('#', '').toLowerCase();
 		const { dispatch, hashtag, cookies } = this.props;
 
-		if (typeof tag !== 'undefined' && hashtag.active.tag !== switchTag) {
+		if (tag && hashtag.active.tag !== switchTag) {
 			dispatch(actions.itemsActiveHashtag(tag));
 
 			if (!hashtag.products[switchTag] && !hashtag.loading) {
@@ -74,12 +74,12 @@ class Hashtags extends Component {
 						<Link to={`/mau-gaya-itu-gampang/${campaignId}/${product.id}`}>
 							<Image src={product.image} width='100%' />
 						</Link>
-						<div className='margin--medium flex-row flex-spaceBetween flex-middle'>
-							<div className='padding--medium'>
+						<div className='margin--medium-v flex-row flex-spaceBetween flex-middle'>
+							<div className='padding--medium-h'>
 								<div><Link className='font-color--primary' to='/'>@{product.username}</Link></div>
 								<div><em className='font-small font--lato-normal font-color--grey'>{product.created_time}</em></div>
 							</div>
-							<div className='padding--medium'>
+							<div className='padding--medium-h'>
 								<div className='flex-row flex-middle'>
 									<Svg src='ico_lovelist.svg' />
 									<span>{currency(product.like, { separator: '.', decimal: ',', precision: 0 }).format()}</span>
@@ -99,14 +99,14 @@ class Hashtags extends Component {
 		const campaignId = _.chain(q).get('query.campaign_id').value() || 1;
 
 		const listHastags = (
-			<div className='horizontal-scroll padding--large '>
-				<div className='flex-row flex-centerflex-spaceBetween margin--medium'>
+			<div className='horizontal-scroll padding--large-h'>
+				<div className='flex-row flex-centerflex-spaceBetween margin--medium-v'>
 					{tags.map((tag, i) => (
 						<Link
 							to={tag.hashtag.indexOf('#') === -1 ? `/mau-gaya-itu-gampang#${tag.hashtag}` : `/mau-gaya-itu-gampang${tag.hashtag}`}
 							onClick={() => this.switchTag(tag.hashtag)}
 							key={i}
-							className={tag.hashtag.replace('#', '') === hashtag.active.tag.replace('#', '') ? 'padding--medium' : 'padding--medium font-color--primary-ext-2'}
+							className={tag.hashtag.replace('#', '') === hashtag.active.tag.replace('#', '') ? 'padding--medium-h' : 'padding--medium-h font-color--primary-ext-2'}
 						>
 							{tag.hashtag.indexOf('#') === -1 ? `#${tag.hashtag}` : tag.hashtag}
 						</Link>
@@ -163,7 +163,7 @@ class Hashtags extends Component {
 						<meta property='og:image' content='https://assets.mataharimall.co/images/favicon.ico' />
 					</Helmet>
 
-					<div className='margin--medium text-center padding--large'>
+					<div className='margin--medium-v text-center padding--large-h'>
 						{hashtag.header.description}
 					</div>
 					<div ref={(n) => { this.staticHashtag = n; }}>

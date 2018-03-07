@@ -159,7 +159,7 @@ class Home extends Component {
 		const datas = _.chain(home).get(`allSegmentData.${segment}.squareBanner`);
 		if (!datas.isEmpty().value()) {
 			return (
-				<div className='margin--medium'>
+				<div className='margin--medium-v'>
 					{
 						datas.value().map(({ images, link }, c) => (
 							<Link to={link.target || '/'} key={c}>
@@ -186,7 +186,7 @@ class Home extends Component {
 		}
 		if (bottomBanner.length > 0) {
 			return (
-				<div className='margin--medium'>
+				<div className='margin--medium-v'>
 					{
 						bottomBanner.map(({ images, link }, d) => (
 							<Link to={link.target || '/'} key={d}>
@@ -261,7 +261,7 @@ class Home extends Component {
 				url: mozaic.value().mainlink.link
 			});
 			return (
-				<div className='border-top margin--medium'>
+				<div className='border-top margin--medium-v'>
 					{
 						header
 					}
