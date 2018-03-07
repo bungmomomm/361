@@ -64,6 +64,9 @@ const UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profi
 const UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'));
 const UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'));
 const MyOrder = loadable(() => import('@/containers/Mobile/Users/Profile/myOrder'));
+const MyOrderDetail = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderDetail'));
+const MyOrderTracking = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderTracking'));
+const MyOrderConfirm = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderConfirm'));
 const CreditCard = loadable(() => import('@/containers/Mobile/Users/Profile/creditCard'));
 
 
@@ -243,7 +246,20 @@ export default {
 		},
 		{
 			path: '/profile-my-order',
-			component: MyOrder
+			component: MyOrder,
+			exact: true,
+		},
+		{
+			path: '/profile-my-order/:so_number([a-zA-Z0-9-]+)',
+			component: MyOrderDetail
+		},
+		{
+			path: '/profile-my-order-tracking',
+			component: MyOrderTracking
+		},
+		{
+			path: '/profile-my-order-confirm',
+			component: MyOrderConfirm
 		},
 		{
 			path: '/profile-credit-card',

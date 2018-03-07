@@ -10,6 +10,7 @@ import {
 } from '@/utils';
 
 import { userSocialLogin, userSocialLoginWithRedirect } from './social-action';
+import { getMyOrder, getMyOrderDetail, updateMyOrdersCurrent } from './myOrder-action';
 
 const isSuccess = (response) => {
 	if (typeof response.data !== 'undefined' && typeof response.data.code !== 'undefined' && response.data.code === 200) {
@@ -23,9 +24,9 @@ const userLogin = (token, loginData) => async (dispatch, getState) => {
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
-	
+
 	const path = `${baseUrl}/auth/login`;
-	
+
 	const [err, response] = await to(request({
 		token,
 		method: 'POST',
@@ -37,7 +38,7 @@ const userLogin = (token, loginData) => async (dispatch, getState) => {
 	if (err) {
 		return Promise.reject(err);
 	}
-	
+
 	return Promise.resolve({
 		userprofile: response.data.data.info,
 		token: {
@@ -56,7 +57,7 @@ const userAnonymous = (token) => async (dispatch, getState) => {
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 	const path = `${baseUrl}/auth/anonymouslogin`;
-	
+
 	dispatch(actions.userAnonymous());
 
 	const [err, response] = await to(request({
@@ -93,18 +94,18 @@ const userNameChange = (username) => dispatch => {
 // 	USER_OTP: undefined,
 
 const userOtp = (token, phone) => async (dispatch, getState) => {
-	
+
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 	const path = `${baseUrl}/auth/otp/send`;
-	
+
 	const dataForOtp = {
 		hp_email: phone
 	};
-	
+
 	const requestData = {
 		token,
 		path,
@@ -112,37 +113,37 @@ const userOtp = (token, phone) => async (dispatch, getState) => {
 		fullpath: true,
 		body: dataForOtp
 	};
-	
+
 	const response = await request(requestData);
-	
+
 	console.log('Otp data');
 	console.log(requestData);
-	
+
 	if (isSuccess(response)) {
 		console.log('Send user otp');
 		return Promise.resolve(response);
 	}
-	
+
 	return Promise.reject(response);
-	
+
 };
 
 const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
 
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
-	
+
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
-	
+
 	const path = `${baseUrl}/auth/otp/validate`;
-	
+
 	const dataForOtpValidate = {
 		hp_email: bodyData.phone,
 		pwd: base64.encode(bodyData.password),
 		fullname: bodyData.fullname,
 		otp: bodyData.otp
 	};
-	
+
 	const requestData = {
 		token,
 		path,
@@ -150,14 +151,14 @@ const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
 		fullpath: true,
 		body: dataForOtpValidate
 	};
-	
+
 	const response = await request(requestData);
-	
+
 	if (isSuccess(response)) {
 		console.log('User OTP validate');
 		return Promise.resolve(response);
 	}
-	
+
 	return Promise.reject(response);
 
 };
@@ -167,16 +168,16 @@ const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
 const userRegister = (token, bodyData) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
-	
+
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 	const path = `${baseUrl}/auth/register`;
-	
-	
+
+
 	dispatch(actions.userRegister());
-	
+
 	try {
-		
+
 		const dataForRegister = {
 			hp_email: bodyData.hp_email,
 			pwd: base64.encode(bodyData.pwd),
@@ -189,9 +190,9 @@ const userRegister = (token, bodyData) => async (dispatch, getState) => {
 			fullpath: true,
 			body: dataForRegister
 		};
-		
+
 		const response = await request(requestData);
-		
+
 		if (isSuccess(response)) {
 			dispatch(actions.userRegisterSuccess());
 			return Promise.resolve(response);
@@ -296,6 +297,9 @@ export default {
 	userGetProfile,
 	userRegister,
 	userForgotPassword,
-	userOtp,
-	userOtpValidate
+	userOtpValidate,
+	getMyOrder,
+	getMyOrderDetail,
+	updateMyOrdersCurrent,
+	userOtp
 };

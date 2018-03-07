@@ -38,6 +38,25 @@
   border-radius: map-get($border-radius , --medium);
 }
 
+.circle {
+  border-radius: 50%;
+  &.small {
+	height: size(--small);
+	width: size(--small);
+	padding: 0;
+  }
+  &.medium {
+	height: size(--medium);
+	width: size(--medium);
+	padding: 0;
+  }
+  &.large {
+	height: size(--large);
+	width: size(--large);
+	padding: 0;
+  }
+}
+
 .left{
   text-align: left;
 }
@@ -88,9 +107,15 @@
 }
 
 .white{
-	border-color: color(--primary);
+  border-color: color(--primary);
   background-color: #fff;
   color: color(--primary);
+}
+
+.blue{
+  border-color: color(--mm-blue);
+  background-color: color(--mm-blue);
+  color: color(--white);
 }
 
 .transparent{
