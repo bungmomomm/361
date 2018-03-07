@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 import Spinner from '../Spinner';
 import styles from './button.scss';
@@ -55,7 +56,7 @@ class Button extends PureComponent {
 			className
 		);
 
-		return (
+		const renderButton = () => (
 			<button
 				id={id}
 				className={createClassName}
@@ -67,6 +68,16 @@ class Button extends PureComponent {
 				{loading ? this.renderLoading() : children}
 			</button>
 		);
+
+		if (this.props.to) {
+			return (
+				<Link to={this.props.to}>
+					{renderButton()}
+				</Link>
+			);
+		}
+
+		return renderButton();
 	}
 }
 

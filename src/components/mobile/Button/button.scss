@@ -133,6 +133,12 @@
     border-color: color(--secondary);
     color: color(--secondary);
   }
+
+  &.transparent{
+	color: color(--white);
+	border-color: color(--white);
+	background-color: transparent;
+  }
 }
 
 

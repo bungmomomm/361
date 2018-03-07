@@ -24,6 +24,7 @@ const SearchResults = loadable(() => import('@/containers/Mobile/Discovery/Searc
 const SearchNotFound = loadable(() => import('@/containers/Mobile/Discovery/SearchNotFound'));
 
 const Lovelist = loadable(() => import('@/containers/Mobile/Discovery/Lovelist'));
+const LovelistLogin = loadable(() => import('@/containers/Mobile/Discovery/Lovelist/login'));
 
 const Category = loadable(() => import('@/containers/Mobile/Discovery/Category'));
 const SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
@@ -203,6 +204,10 @@ export default {
 		{
 			path: '/lovelist',
 			component: Lovelist
+		},
+		{
+			path: '/lovelist-login',
+			component: LovelistLogin
 		},
 		{
 			path: '/cart',
