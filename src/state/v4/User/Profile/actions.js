@@ -21,9 +21,12 @@ const getCreditCard = (token) => async (dispatch, getState) => {
 		fullpath: true
 	}));
 	
-	if (response.data.code === 200) {
-		dispatch(actions.userCreditCard(response.data.data));
-		return Promise.resolve(response);
+	if (response) {
+		const { code } = response.data;
+		if (code === 200) {
+			dispatch(actions.userCreditCard(response.data.data));
+			return Promise.resolve(response);
+		}
 	}
 	
 	const error = new Error(err);
@@ -48,8 +51,11 @@ const setCreditCard = (token, bodyData) => async (dispatch, getState) => {
 		body: bodyData
 	}));
 	
-	if (response.data.code === 200) {
-		return Promise.resolve(response);
+	if (response) {
+		const { code } = response.data;
+		if (code === 200) {
+			return Promise.resolve(response);
+		}
 	}
 	
 	const error = new Error(err);
