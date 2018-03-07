@@ -53,6 +53,9 @@ class MyOrder extends Component {
 			const { dispatch } = this.props;
 			dispatch(userAction.getMyOrder(this.userToken));
 		}
+		if (nextProps.user.myOrders !== this.props.user.myOrders && nextProps.user.myOrders === false) {
+			this.props.history.push('/profile');
+		}
 	}
 
 	componentDidUpdate() {

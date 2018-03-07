@@ -137,5 +137,6 @@ const reducer = handleActions({
 }, initialState);
 export default {
 	actions,
-	reducer
+	reducer,
+	initialState
 };
