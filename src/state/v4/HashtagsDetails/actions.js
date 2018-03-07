@@ -1,12 +1,14 @@
 import { request } from '@/utils';
 import { hashtagDetail, isLoading } from './reducer';
 import { to } from 'await-to-js';
+import _ from 'lodash';
 
-const hashtagDetailAction = (token, query = {}) => async (dispatch) => {
+const hashtagDetailAction = (token, query = {}) => async (dispatch, getState) => {
 	dispatch(isLoading({ loading: true }));
 
-	const baseUrl = `${process.env.MICROSERVICES_URL}`;
-	const url = `${baseUrl}campaign/post`;
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || process.env.MICROSERVICES_URL;
+	const url = `${baseUrl}/campaign/post`;
 
 	const [err, resp] = await to(request({
 		token: token.token,
