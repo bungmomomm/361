@@ -9,7 +9,8 @@ import {
 	Button,
 	Input,
 	Tabs,
-	Svg
+	Svg,
+	Notification
 } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import { setUserCookie, renderIf, getDeviceID, getClientSecret } from '@/utils';
@@ -22,8 +23,7 @@ import _ from 'lodash';
 import LoginWidget from '@/containers/Mobile/Shared/Widget/Login';
 import base64 from 'base-64';
 import Helmet from 'react-helmet';
-
-/* import Helmet from 'react-helmet'; */
+import Recaptcha from 'react-recaptcha';
 
 const DUMMY_TAB = [
 	{
@@ -60,8 +60,10 @@ class Register extends Component {
 			redirectUrl: query.redirect_url || false,
 			disableOtpButton: false,
 			otpButtonText: OTP_BUTTON_TEXT,
-			displayErrorOnValidateOtpForm: false,
-			textErrorOnValidateOtpForm: ''
+			displayMessageOnValidateOtpForm: false,
+			messageType: 'SUCCESS',
+			textMessageOnValidateOtpForm: '',
+			captchaValue: ''
 		};
 		this.renderRegisterView = this.renderRegisterView.bind(this);
 		this.renderValidateOtpView = this.renderValidateOtpView.bind(this);
@@ -166,7 +168,23 @@ class Register extends Component {
   
 		// Send the OTP again.
 		
-		await to(dispatch(new users.userOtp(cookies.get('user.token'), email)));
+		const [error, response] = await to(dispatch(new users.userOtp(cookies.get('user.token'), email)));
+		
+		if (error) {
+			return false;
+		}
+		
+		// Extract response from send OTP
+		const { data } = response;
+		
+		const { code } = data;
+		
+		if (code === 200) {
+			this.setState({
+				displayMessageOnValidateOtpForm: true,
+				textMessageOnValidateOtpForm: 'Pengiriman kode OTP berhasil'
+			});
+		}
 		
 		// Set the initial number for OTP to 10.
 		let number = 301;
@@ -195,14 +213,25 @@ class Register extends Component {
 		
 		doCounter();
 		
-		return this;
+		return response;
 		
 	}
 	
 	async onVerifyOtp() {
 		
 		const { cookies, dispatch, history } = this.props;
-		const { loginId, email, password, otpValue, redirectUrl } = this.state;
+		const { loginId, email, password, otpValue, redirectUrl, captchaValue } = this.state;
+		
+		if (captchaValue.length === 0) {
+
+			this.setState({
+				displayMessageOnValidateOtpForm: true,
+				textMessageOnValidateOtpForm: 'Mohon centang checkbox pada captcha. ',
+				messageType: 'ERROR'
+			});
+			
+			return false;
+		}
 		
 		const dataForVerify = {
 			hp_email: email,
@@ -216,13 +245,14 @@ class Register extends Component {
 		if (err) {
 			
 			this.setState({
-				displayErrorOnValidateOtpForm: true,
-				textErrorOnValidateOtpForm: 'Kode OTP tidak valid.'
+				displayMessageOnValidateOtpForm: true,
+				textMessageOnValidateOtpForm: 'Kode OTP tidak valid.',
+				messageType: 'ERROR'
 			});
    
 			return err;
 		}
-        
+  
 		// Otherwise do the login.
 		const loginData = {
 			email,
@@ -284,10 +314,13 @@ class Register extends Component {
 	}
 	
 	renderHelmet = () => {
+  
 		return (
 			<Helmet>
 				<script
-					src='https://www.google.com/recaptcha/api.js'
+					src={process.env.GOOGLE_CAPTCHA_END_POINT}
+					async
+					defer
 				/>
 			</Helmet>
 		);
@@ -417,8 +450,9 @@ class Register extends Component {
 			disableOtpButton,
 			otpValue,
 			otpButtonText,
-			displayErrorOnValidateOtpForm,
-			textErrorOnValidateOtpForm
+            displayMessageOnValidateOtpForm,
+			textMessageOnValidateOtpForm,
+            messageType
 		} = this.state;
 		
 		const buttonPropertyResendOTP = {
@@ -454,16 +488,15 @@ class Register extends Component {
 		return (
 			<div>
 				{this.renderHelmet()}
-				{ displayErrorOnValidateOtpForm && (
-					<div>
-						<strong>
-							{ textErrorOnValidateOtpForm }
-						</strong>
-					</div>
-				) }
 				<div>
 					<p>Kami telah mengirimkan kode verifikasi ke no XXXXXXX</p>
 					<p>Silahkan masukan kode verifikasi</p>
+					
+					{ displayMessageOnValidateOtpForm && (
+						<Notification color={(messageType === 'SUCCESS') ? 'green' : 'red'} show disableClose>
+							<span>{ textMessageOnValidateOtpForm }</span>
+						</Notification>
+					)}
 					<Input {...enterOtpVerification} />
 				</div>
 				<p>
@@ -473,9 +506,21 @@ class Register extends Component {
 				</p>
 				
 				<p>
-					<div
-						className='g-recaptcha'
-						data-sitekey={`${process.env.GOOGLE_CAPTCHA_SITE_KEY}`}
+					<Recaptcha
+						sitekey={`${process.env.GOOGLE_CAPTCHA_SITE_KEY}`}
+						size='compact'
+						render='explicit'
+						verifyCallback={
+							(response) => {
+								if (response.length !== 0) {
+									this.setState(
+										{
+											captchaValue: response
+										}
+									);
+								}
+							}
+						}
 					/>
 				</p>
 				
