@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import classNames from 'classNames';
+import classNames from 'classnames';
 import styles from './radio.scss';
 
 class Radio extends PureComponent {
