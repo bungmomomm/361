@@ -65,18 +65,18 @@ class Lovelist extends Component {
 		const { items } = this.props.lovelist;
 		const isLoved = true;
 		const content = items.list.map((product, idx) => {
-			return !this.state.status.listTypeGrid ? 
-				(<Card.Lovelist 
-					isLoved={isLoved} 
-					key={idx} 
-					data={product}
-					onBtnLovelistClick={this.handleLovelistClicked} 
-				/>) : 
-				(<Card.LovelistGrid 
-					key={idx} 
-					data={product} 
+			return !this.state.status.listTypeGrid ?
+				(<Card.Lovelist
 					isLoved={isLoved}
-					onBtnLovelistClick={this.handleLovelistClicked} 
+					key={idx}
+					data={product}
+					onBtnLovelistClick={this.handleLovelistClicked}
+				/>) :
+				(<Card.LovelistGrid
+					key={idx}
+					data={product}
+					isLoved={isLoved}
+					onBtnLovelistClick={this.handleLovelistClicked}
 				/>);
 		});
 
@@ -126,8 +126,8 @@ class Lovelist extends Component {
 		const { status } = this.state;
 		const HeaderPage = {
 			left: (
-				<Button 
-					className={status.loggedIn && !status.listEmpty ? null : 'd-none'} 
+				<Button
+					className={status.loggedIn && !status.listEmpty ? null : 'd-none'}
 					onClick={() => {
 						status.listTypeGrid = (!status.listTypeGrid);
 						this.setState({ status });
@@ -159,7 +159,7 @@ class Lovelist extends Component {
 						<h3>Hapus Lovelist</h3>
 						<Level style={{ padding: '0px' }} className='margin--medium'>
 							<Level.Left />
-							<Level.Item className='padding--medium'>
+							<Level.Item className='padding--medium-h'>
 								<div className='font-small'>Kamu yakin mau hapus produk ini dari Lovelist kamu?</div>
 							</Level.Item>
 						</Level>

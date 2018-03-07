@@ -47,9 +47,9 @@ class Hashtags extends Component {
 			<div>
 				<div>
 					<Image local src='temp/product-1.jpg' width='100%' />
-					<div className='flex-row padding--medium margin--medium'>
+					<div className='flex-row padding--medium-h margin--medium-h'>
 						<div><Image avatar height={40} width={40} local src='temp/pp.jpg' /></div>
-						<div className='padding--medium'>
+						<div className='padding--medium-h'>
 							<div><Link className='font-color--primary' to='/'>@vinensiuswibowo</Link></div>
 							<div><em className='font-small font--lato-normal font-color--grey'>Post date: 13/12/2017</em></div>
 						</div>
@@ -57,9 +57,9 @@ class Hashtags extends Component {
 				</div>
 				<div>
 					<Image local src='temp/product-1.jpg' width='100%' />
-					<div className='flex-row padding--medium margin--medium'>
+					<div className='flex-row padding--medium-h margin--medium'>
 						<div><Image avatar height={40} width={40} local src='temp/pp.jpg' /></div>
-						<div className='padding--medium'>
+						<div className='padding--medium-h'>
 							<div><Link className='font-color--primary' to='/'>@vinensiuswibowo</Link></div>
 							<div><em className='font-small font--lato-normal font-color--grey'>Post date: 13/12/2017</em></div>
 						</div>
@@ -67,9 +67,9 @@ class Hashtags extends Component {
 				</div>
 				<div>
 					<Image local src='temp/product-1.jpg' width='100%' />
-					<div className='flex-row padding--medium margin--medium'>
+					<div className='flex-row padding--medium-h margin--medium'>
 						<div><Image avatar height={40} width={40} local src='temp/pp.jpg' /></div>
-						<div className='padding--medium'>
+						<div className='padding--medium-h'>
 							<div><Link className='font-color--primary' to='/'>@vinensiuswibowo</Link></div>
 							<div><em className='font-small font--lato-normal font-color--grey'>Post date: 13/12/2017</em></div>
 						</div>
@@ -98,10 +98,10 @@ class Hashtags extends Component {
 		return (
 			<div style={this.props.style}>
 				<Page>
-					<div className='margin--medium text-center padding--large'>
+					<div className='margin--medium text-center padding--large-h'>
 						Upload gaya OOTD kamu di Instagram dengan hashtag #MauGayaItuGampang dan menangin kesempatan tampil di MatahariMall.com!
 					</div>
-					<div className='flex-row flex-center flex-spaceBetween margin--medium padding--large'>
+					<div className='flex-row flex-center flex-spaceBetween margin--medium padding--large-h'>
 						<Link to='/'>All</Link>
 						<Link to='/'>#MDSMens</Link>
 						<Link to='/'>#MDSWomens</Link>
@@ -110,7 +110,7 @@ class Hashtags extends Component {
 					{
 						this.state.gridSizeSmall ? this.renderGridSmall() : this.renderGridLarge()
 					}
-					<div className='flex-center padding--medium margin--large'>
+					<div className='flex-center padding--medium-h margin--large'>
 						<Button color='secondary' size='medium' style={{ width: '200px' }} outline>LOAD MORE</Button>
 					</div>
 				</Page>

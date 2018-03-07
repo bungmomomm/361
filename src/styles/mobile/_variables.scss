@@ -74,7 +74,15 @@ $size-list: (
   --large: 40px,
   --font-small: 10px,
   --font-medium: 11px,
-  --font-large: 12px
+  --font-large: 12px,
+);
+
+$space-list: (
+  --none: 0px,
+  --small: 5px,
+  --normal: 10px,
+  --medium: 15px,
+  --large: 30px
 );
 
 $border-radius: (

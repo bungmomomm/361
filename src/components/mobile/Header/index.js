@@ -27,7 +27,7 @@ const Header = props => {
 						/>
 						<div className={styles.dummyplaceholder}>
 							<span><Svg src='ico_search.svg' /></span>
-							<span className='padding--small'>Cari produk, #hashtags</span>
+							<span className='padding--small-h'>Cari produk, #hashtags</span>
 						</div>
 					</div>
 					<div className={styles.right}><Link to='/mau-gaya-itu-gampang'><Svg src='ico_hashtags.svg' /></Link></div>

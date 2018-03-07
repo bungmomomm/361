@@ -83,7 +83,7 @@ class Page404 extends Component {
 							<Link to='/'><Image local src='temp/promo404-2.jpg' /></Link>
 						</div>
 						<Notification color='yellow' show disableClose>
-							<div className='margin--medium padding--medium' style={{ color: '#F57C00' }}>Jika anda mengalami kesulitan silahkan hubungi Customer Support kami di: 1500038</div>
+							<div className='margin--medium padding--medium-h' style={{ color: '#F57C00' }}>Jika anda mengalami kesulitan silahkan hubungi Customer Support kami di: 1500038</div>
 						</Notification>
 						{this.renderRecomendation()}
 					</div>

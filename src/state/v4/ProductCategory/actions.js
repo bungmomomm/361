@@ -2,8 +2,12 @@ import _ from 'lodash';
 import { to } from 'await-to-js';
 
 import { request } from '@/utils';
-import { initLoading, initViewMode, initPcp, initNextPcp } from './reducer';
+import { initLoading, initViewMode, initPcp, initNextPcp, pcpUpdateSingleItem } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
+
+const updateSingleItem = (item) => async (dispatch, getState) => {
+	dispatch(pcpUpdateSingleItem(item));
+};
 
 const pcpAction = ({ token, query = {}, loadNext = false }) => async (dispatch, getState) => {
 	dispatch(initLoading({ isLoading: true }));
@@ -100,5 +104,6 @@ const viewModeAction = (mode) => (dispatch) => {
 
 export default {
 	pcpAction,
+	updateSingleItem,
 	viewModeAction
 };
