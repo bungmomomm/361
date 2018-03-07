@@ -19,26 +19,34 @@ const isSuccess = (response) => {
 	return false;
 };
 
-const userLogin = (token, loginData) => async (dispatch, getState) => {
+const userLogin = (token, email, password) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
+	dispatch(actions.userLogin());
 	const path = `${baseUrl}/auth/login`;
-
+	
 	const [err, response] = await to(request({
 		token,
 		method: 'POST',
 		path,
 		fullpath: true,
-		body: loginData
+		body: {
+			email,
+			pwd: base64.encode(password),
+			client_secret: getClientSecret(),
+			device_id: getDeviceID()
+		}
 	}));
 
 	if (err) {
+		dispatch(actions.userLoginFail(err));
 		return Promise.reject(err);
 	}
 
+	dispatch(actions.userLoginSuccess(response.data.data.info));
 	return Promise.resolve({
 		userprofile: response.data.data.info,
 		token: {
