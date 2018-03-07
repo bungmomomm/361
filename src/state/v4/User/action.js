@@ -25,7 +25,7 @@ const userLogin = (token, email, password) => async (dispatch, getState) => {
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
-	dispatch(actions.userLogin(email, password));
+	dispatch(actions.userLogin());
 	const path = `${baseUrl}/auth/login`;
 	
 	const [err, response] = await to(request({
