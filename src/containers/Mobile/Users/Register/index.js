@@ -21,7 +21,6 @@ import validator from 'validator';
 import util from 'util';
 import _ from 'lodash';
 import LoginWidget from '@/containers/Mobile/Shared/Widget/Login';
-import base64 from 'base-64';
 import Helmet from 'react-helmet';
 import Recaptcha from 'react-recaptcha';
 
@@ -132,7 +131,7 @@ class Register extends Component {
 				
 			}
 			
-			const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get('user.token'), email, base64.encode(password))));
+			const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get('user.token'), email, password)));
 			
 			if (errorUserLogin) {
 				return false;
@@ -245,7 +244,7 @@ class Register extends Component {
 			return err;
 		}
 		
-		const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get('user.token'), email, base64.encode(password))));
+		const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get('user.token'), email, password)));
 		
 		if (errorUserLogin) {
 			console.log('error on user login');
