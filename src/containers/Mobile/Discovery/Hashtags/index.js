@@ -23,7 +23,7 @@ class Hashtags extends Component {
 		const switchTag = tag.replace('#', '').toLowerCase();
 		const { dispatch, hashtag, cookies } = this.props;
 
-		if (typeof tag !== 'undefined' && hashtag.active.tag !== switchTag) {
+		if (tag && hashtag.active.tag !== switchTag) {
 			dispatch(actions.itemsActiveHashtag(tag));
 
 			if (!hashtag.products[switchTag] && !hashtag.loading) {

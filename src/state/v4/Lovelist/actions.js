@@ -110,8 +110,7 @@ const addToLovelist = (token, productId) => async (dispatch, getState) => {
 		return Promise.resolve(response);
 	
 	}
-
-	return false;
+	return Promise.reject(new Error('Invalid ProductId'));
 };
 
 /**
@@ -149,7 +148,7 @@ const removeFromLovelist = (token, productId) => async (dispatch, getState) => {
 	
 	}
 
-	return false;
+	return Promise.reject(new Error('Invalid ProductId'));
 };
 
 /**
@@ -210,7 +209,7 @@ const bulkieCountByProduct = (token, productId) => async (dispatch, getState) =>
 		return Promise.resolve(response);
 	}
 
-	return false;
+	return Promise.reject(new Error('Invalid ProductIds'));
 };
 
 const getProductBulk = (productId) => (dispatch, getState) => {

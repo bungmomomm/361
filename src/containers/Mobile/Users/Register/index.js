@@ -13,7 +13,7 @@ import {
 	Notification
 } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
-import { setUserCookie, renderIf, getDeviceID, getClientSecret } from '@/utils';
+import { setUserCookie, renderIf } from '@/utils';
 import styles from '../user.scss';
 import { to } from 'await-to-js';
 import queryString from 'query-string';
@@ -21,7 +21,6 @@ import validator from 'validator';
 import util from 'util';
 import _ from 'lodash';
 import LoginWidget from '@/containers/Mobile/Shared/Widget/Login';
-import base64 from 'base-64';
 import Helmet from 'react-helmet';
 import Recaptcha from 'react-recaptcha';
 
@@ -132,15 +131,7 @@ class Register extends Component {
 				
 			}
 			
-			// Otherwise do the login.
-			const loginData = {
-				email,
-				pwd: base64.encode(password),
-				device_id: getDeviceID(),
-				client_secret: getClientSecret()
-			};
-			
-			const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get('user.token'), loginData)));
+			const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get('user.token'), email, password)));
 			
 			if (errorUserLogin) {
 				return false;
@@ -252,16 +243,8 @@ class Register extends Component {
    
 			return err;
 		}
-  
-		// Otherwise do the login.
-		const loginData = {
-			email,
-			pwd: base64.encode(password),
-			device_id: getDeviceID(),
-			client_secret: getClientSecret()
-		};
-  
-		const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get('user.token'), loginData)));
+		
+		const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get('user.token'), email, password)));
 		
 		if (errorUserLogin) {
 			console.log('error on user login');

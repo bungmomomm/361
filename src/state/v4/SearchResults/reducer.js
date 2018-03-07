@@ -28,8 +28,16 @@ const initialState = {
 	promoData: []
 };
 
-const { initLoading, initViewMode, initSearch, initNextSearch, initBulkieComment, initPromo } = createActions(
-	'INIT_LOADING', 'INIT_VIEW_MODE', 'INIT_SEARCH', 'INIT_NEXT_SEARCH', 'INIT_BULKIE_COMMENT', 'INIT_PROMO'
+const { initLoading, initViewMode, initSearch, initNextSearch, initBulkieComment, initPromo, commentListLoad, commentListLoadFail, commentListLoaded } = createActions(
+	'INIT_LOADING',
+	'INIT_VIEW_MODE',
+	'INIT_SEARCH',
+	'INIT_NEXT_SEARCH',
+	'INIT_BULKIE_COMMENT',
+	'INIT_PROMO',
+	'COMMENT_LIST_LOAD',
+	'COMMENT_LIST_LOAD_FAIL',
+	'COMMENT_LIST_LOADED'
 );
 
 const reducer = handleActions({
@@ -83,7 +91,26 @@ const reducer = handleActions({
 			searchStatus,
 			promoData
 		};
-	}
+	},
+	[commentListLoad](state, { payload: { isLoading, commentData } }) {
+		return {
+			...state,
+			isLoading: true
+		};
+	},
+	[commentListLoaded](state, { payload: { isLoading, commentData } }) {
+		return {
+			...state,
+			isLoading: false,
+			commentData
+		};
+	},
+	[commentListLoadFail](state, { payload: { isLoading, commentData } }) {
+		return {
+			...state,
+			isLoading: false
+		};
+	},
 }, initialState);
 
 export default {
@@ -93,5 +120,8 @@ export default {
 	initSearch,
 	initNextSearch,
 	initBulkieComment,
-	initPromo
+	initPromo,
+	commentListLoad,
+	commentListLoaded,
+	commentListLoadFail
 };
