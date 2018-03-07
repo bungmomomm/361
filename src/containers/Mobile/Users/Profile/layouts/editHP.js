@@ -65,7 +65,7 @@ class EditHp extends Component {
 		const { data } = this.props;
 		if (!_.isEmpty(data)) {
 			return (
-				<div className='margin--medium'>
+				<div className='margin--medium-v'>
 					<label className={styles.label} htmlFor='cellPhone'>No. Handphone</label>
 					<Input id='cellPhone' disabled flat defaultValue={data} />
 				</div>
@@ -95,7 +95,7 @@ class EditHp extends Component {
 
 	renderSubmitButton() {
 		return (
-			<div className='margin--medium'>
+			<div className='margin--medium-v'>
 				<Button color='primary' size='large' onClick={(e) => this.saveData(e)}>SIMPAN</Button>
 			</div>
 		);
@@ -105,7 +105,7 @@ class EditHp extends Component {
 		return (
 			<form style={{ padding: '15px' }}>
 				{this.renderOldPhone()}
-				<div className='margin--medium'>
+				<div className='margin--medium-v'>
 					<label className={styles.label} htmlFor='editCellPhoneNew'>No Handphone Baru</label>
 					<Input id='editCellPhoneNew' flat onChange={(e) => this.inputHandler(e)} />
 				</div>
@@ -117,7 +117,7 @@ class EditHp extends Component {
 
 	render() {
 		return (
-			<Page>
+			<Page style={{ paddingTop: 0 }} color='white'>
 				{this.renderHeader()}
 				{this.renderPhoneForm()}
 			</Page>

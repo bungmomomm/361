@@ -114,7 +114,7 @@ class EditOvo extends Component {
 	render() {
 
 		return (
-			<Page>
+			<Page style={{ paddingTop: 0 }} color='white'>
 				{this.renderHeader()}
 				{this.renderOvoForm()}
 			</Page>

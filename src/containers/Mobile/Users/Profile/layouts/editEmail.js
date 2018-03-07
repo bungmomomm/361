@@ -85,7 +85,7 @@ class EditEmail extends Component {
 
 	renderSubmitButton() {
 		return (
-			<div className='margin--medium'>
+			<div className='margin--medium-v'>
 				<Button color='primary' size='large' onClick={(e) => this.saveData(e)}>SIMPAN</Button>
 			</div>
 		);
@@ -96,11 +96,11 @@ class EditEmail extends Component {
 
 		return (
 			<form style={{ padding: '15px' }}>
-				<div className='margin--medium'>
+				<div className='margin--medium-v'>
 					<label className={styles.label} htmlFor='editEmail'>Alamat Email</label>
 					<Input id='editEmail' disabled flat defaultValue={data} />
 				</div>
-				<div className='margin--medium'>
+				<div className='margin--medium-v'>
 					<label className={styles.label} htmlFor='editEmailNew'>Alamat Email Baru</label>
 					<Input id='editEmailNew' flat onChange={(e) => this.inputHandler(e)} />
 				</div>
@@ -113,7 +113,7 @@ class EditEmail extends Component {
 	render() {
 		console.log(this.props);
 		return (
-			<Page>
+			<Page style={{ paddingTop: 0 }} color='white'>
 				{this.renderHeader()}
 				{this.renderEmailForm()}
 			</Page>

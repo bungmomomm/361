@@ -82,7 +82,7 @@ class EditPassword extends Component {
 
 	renderSubmitButton() {
 		return (
-			<div className='margin--medium'>
+			<div className='margin--medium-v'>
 				<Button color='primary' size='large' onClick={(e) => this.saveData(e)}>SIMPAN</Button>
 			</div>
 		);
@@ -91,15 +91,15 @@ class EditPassword extends Component {
 	renderPasswordForm() {
 		return (
 			<form style={{ padding: '15px' }}>
-				<div className='margin--medium'>
+				<div className='margin--medium-v'>
 					<label className={styles.label} htmlFor='editPassword'>Password Saat Ini</label>
 					<Input name={this.OLD_PWD_FIELD} id='editPassword' type='password' flat onChange={(e) => this.inputHandler(e)} />
 				</div>
-				<div className='margin--medium'>
+				<div className='margin--medium-v'>
 					<label className={styles.label} htmlFor='editPasswordNew'>Password Baru</label>
 					<Input name={this.NEW_PWD_FIELD} id='editPasswordNew' type='password' flat onChange={(e) => this.inputHandler(e)} />
 				</div>
-				<div className='margin--medium'>
+				<div className='margin--medium-v'>
 					<label className={styles.label} htmlFor='editPasswordNew'>Ulangi Password Baru</label>
 					<Input id='editPasswordNewConfirm' type='password' flat />
 				</div>
@@ -111,7 +111,7 @@ class EditPassword extends Component {
 
 	render() {
 		return (
-			<Page>
+			<Page style={{ paddingTop: 0 }} color='white'>
 				{this.renderHeader()}
 				{this.renderPasswordForm()}
 			</Page>
