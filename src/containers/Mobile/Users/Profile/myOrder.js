@@ -30,6 +30,10 @@ class MyOrder extends Component {
 		];
 		this.isLogin = this.props.cookies.get('isLogin');
 		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
+
+		if (this.isLogin !== 'true') {
+			this.props.history.push('/');
+		}
 	}
 
 	componentWillMount() {

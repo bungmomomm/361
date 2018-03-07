@@ -30,7 +30,8 @@ const actions = createActions({
 	USER_GET_MY_ORDER: undefined,
 	USER_APPEND_MY_ORDER: undefined,
 	USER_GET_MY_ORDER_DETAIL: undefined,
-	USER_UPDATE_MY_ORDER_CURRENT: undefined
+	USER_UPDATE_MY_ORDER_CURRENT: undefined,
+	USER_GET_TRACKING_INFO: undefined
 });
 
 const initialState = {
@@ -41,7 +42,8 @@ const initialState = {
 	myOrders: { konfirmasi: null, dikirim: null, batal: null, selesai: null },
 	myOrdersCurrent: 'konfirmasi',
 	myOrdersDetail: null,
-	creditCard: {}
+	creditCard: {},
+	trackingInfo: null
 };
 
 const reducer = handleActions({
@@ -131,6 +133,7 @@ const reducer = handleActions({
 			...state,
 			myOrders: allOrders };
 	},
+	[actions.userGetTrackingInfo]: (state, action) => ({ ...state, ...action.payload }),
 }, initialState);
 export default {
 	actions,

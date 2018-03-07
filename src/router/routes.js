@@ -249,7 +249,7 @@ export default {
 			component: MyOrderDetail
 		},
 		{
-			path: '/profile-my-order-tracking',
+			path: '/track/:provider/:so_number([a-zA-Z0-9-]+)',
 			component: MyOrderTracking
 		},
 		{
