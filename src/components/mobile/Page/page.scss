@@ -4,6 +4,7 @@
 .container{
 	flex-grow: 1;
 	order: 4;
+  	background-color: color(white);
 }
 
 .page{
@@ -11,4 +12,16 @@
     margin: 0 auto;
     max-width: rem(935px);
     width: 100%;
+}
+
+.white {
+  	background-color: color(white);
+}
+
+.transparent {
+  	background-color: transparent;
+}
+
+.grey {
+  	background-color: color(--primary-ext-6);
 }
