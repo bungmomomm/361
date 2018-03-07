@@ -23,11 +23,12 @@ import {
 	Input,
 	Navigation,
 	Spinner,
+	Modal,
 	Comment
 } from '@/components/mobile';
 
 import { actions as pcpActions } from '@/state/v4/ProductCategory';
-// import { actions as commentActions } from '@/state/v4/Comment';
+import { actions as searchActions } from '@/state/v4/SearchResults';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 
 import { 
@@ -47,6 +48,7 @@ class Product extends Component {
 			mode: 1,
 			showFilter: false,
 			showSort: false,
+			showLoginPopup: false,
 			query: {
 				category_id: '',
 				page: 0,
@@ -116,7 +118,7 @@ class Product extends Component {
 		}
 		if (!_.isEmpty(response.pcpData.products)) {
 			const productIdList = _.map(response.products, 'product_id') || null;
-			// dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+			dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 		}
 		return response;
@@ -147,10 +149,23 @@ class Product extends Component {
 		}
 	}
 
+	loginLater() {
+		this.setState({
+			showLoginPopup: false
+		});
+	}
+
+	loginNow() {
+		const { history } = this.props;
+		history.push(`/login?redirect_uri=${location.pathname}`);
+		this.setState({
+			showLoginPopup: false
+		});
+	}
+
 	async ilovethis(add, product) {
 		const { cookies, dispatch, productCategory } = this.props;
-		if (cookies.get('isLogin')) {
-			console.log(add, product);
+		if (cookies.get('isLogin') === 'true') {
 			let response;
 			if (add) {
 				response = await to(dispatch(lovelistActions.addToLovelist(cookies.get('user.token'), product.product_id)));
@@ -161,8 +176,12 @@ class Product extends Component {
 				return response[0];
 			}
 			const productIdList = _.map(productCategory.pcpData.products, 'product_id') || null;
-			// dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+			dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+		} else {
+			this.setState({
+				showLoginPopup: true
+			});
 		}
 
 		return null;
@@ -170,7 +189,7 @@ class Product extends Component {
 
 	renderPage() {
 		const { productCategory, isLoading } = this.props;
-		const { showFilter } = this.state;
+		const { showFilter, showLoginPopup } = this.state;
 		if (showFilter) {
 			return (
 				<Filter
@@ -185,13 +204,31 @@ class Product extends Component {
 		}
 		return (
 			<div style={this.props.style}>
-				{!isLoading && this.renderPcp()}
+				{this.renderPcp()}
 				{isLoading && (
 					<Spinner />
 				)}
 				{this.renderHeader()}
 				{this.renderTabs()}
 				{this.renderForeverBanner()}
+				<Modal show={showLoginPopup}>
+					<div className='font-medium'>
+						<h3 className='text-center'>Lovelist</h3>
+						<Level style={{ padding: '0px' }} className='margin--medium-v'>
+							<Level.Left />
+							<Level.Item className='padding--medium-h'>
+								<div className='font-small'>Silahkan login/register untuk menambahkan produk ke Lovelist</div>
+							</Level.Item>
+						</Level>
+					</div>
+					<Modal.Action
+						closeButton={(
+							<Button onClick={(e) => this.loginLater()}>
+								<span className='font-color--primary-ext-2'>NANTI</span>
+							</Button>)}
+						confirmButton={(<Button onClick={(e) => this.loginNow()}>SEKARANG</Button>)}
+					/>
+				</Modal>
 				<Navigation active='Categories' scroll={this.props.scroll} />
 			</div>
 		);
@@ -423,7 +460,7 @@ const mapStateToProps = (state) => {
 			...product,
 			url: urlBuilder.buildPdp(product.product_title, product.product_id),
 			commentTotal: commentData ? commentData.total : 0,
-			commentUrl: urlBuilder.buildPcpCommentUrl(product.product_id),
+			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`,
 			lovelistTotal: lovelistData ? lovelistData.total : 0,
 			lovelistStatus: lovelistData ? lovelistData.status : 0
 		};
@@ -431,7 +468,7 @@ const mapStateToProps = (state) => {
 
 	return {
 		...state,
-		productCategory: state.productCategory,
+		productCategory,
 		query: state.productCategory.query,
 		isLoading: state.productCategory.isLoading,
 		viewMode: state.productCategory.viewMode,
@@ -455,7 +492,7 @@ const doAfterAnonymous = async (props) => {
 	
 	const productIdList = _.map(response.pcpData.products, 'product_id') || [];
 	if (productIdList.length > 0) {
-		// dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 	}
 };

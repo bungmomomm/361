@@ -10,14 +10,52 @@ import Badge from '../Badge';
 import styles from './card.scss';
 
 class CatalogGrid extends PureComponent {
+	constructor(props) {
+		super(props);
+		this.state = {
+			loading: false,
+			prevLoved: props.lovelistStatus ? 0 : 1,
+			loved: props.lovelistStatus || 0
+		};
+	}
+
+	componentWillReceiveProps(nextProps) {
+		const { loading, prevLoved } = this.state;
+		const { optimistic } = this.props;
+		if (optimistic) {
+			if (typeof nextProps.lovelistStatus !== 'undefined' && !loading) {
+				this.setState({
+					loved: nextProps.lovelistStatus,
+					loading: false
+				});
+			} else if (prevLoved !== nextProps.lovelistStatus) {
+				this.setState({
+					loading: false
+				});
+			}
+		}
+	}
 
 	lovelistAddTo() {
-		const { lovelistStatus, lovelistAddTo } = this.props;
-		console.log('love', lovelistStatus);
+		const { loading } = this.state;
+		const { lovelistStatus, lovelistAddTo, optimistic } = this.props;
+		let loved = 1;
 		if (lovelistStatus && lovelistStatus === 1) {
-			return lovelistAddTo(false);
+			loved = 0;
 		}
-		return lovelistAddTo(true);
+		if (optimistic) {
+			if (loading) {
+				return;
+			}
+			lovelistAddTo(loved);
+			this.setState({
+				prevLoved: loved ? 0 : 1,
+				loved,
+				loading: true
+			});
+		} else {
+			lovelistAddTo(loved);
+		}
 	}
 
 	render() {
@@ -31,14 +69,19 @@ class CatalogGrid extends PureComponent {
 			lovelistStatus,
 			lovelistDisable,
 			lovelistAddTo,
+			optimistic,
 			...props
 		} = this.props;
-		
+		const { loved } = this.state;
+
 		const disableLovelist = lovelistDisable && lovelistAddTo;
 		const createClassName = classNames(styles.container, styles.grid, className);
 
-		const lovelistIcon = lovelistStatus && lovelistStatus === 1 ? 'ico_love-filled.svg' : 'ico_love.svg';
-
+		let lovelistIcon = lovelistStatus && lovelistStatus === 1 ? 'ico_love-filled.svg' : 'ico_love.svg';
+		if (optimistic) {
+			lovelistIcon = loved && loved === 1 ? 'ico_love-filled.svg' : 'ico_love.svg';
+		}
+		
 		const discountBadge = pricing.discount !== '' && pricing.discount !== '0%' ? (
 			<Level.Right>
 				<Badge rounded color='red'>
@@ -52,7 +95,7 @@ class CatalogGrid extends PureComponent {
 		) : '';
 
 		return (
-			<div className={createClassName} {...props}>
+			<div className={createClassName} {...props} data-loved={lovelistStatus}>
 				<Link to={linkToPdp || '/'}>
 					<Image src={images[0].thumbnail} alt={productTitle} />
 				</Link>
@@ -86,5 +129,11 @@ class CatalogGrid extends PureComponent {
 		);
 	}
 }
+
+
+CatalogGrid.defaultProps = {
+	linkToPdp: '/',
+	optimistic: true // set to false if lovelist using loading, true otherwise
+};
 
 export default CatalogGrid;

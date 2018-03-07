@@ -21,8 +21,10 @@ class GoogleLogin extends PureComponent {
 			}
 			const js = d.createElement(s); js.id = id;
 			js.src = '//apis.google.com/js/api.js';
-			fjs.parentNode.insertBefore(js, fjs);
+			js.async = true;
+			js.defer = true;
 			js.onload = cb;
+			fjs.parentNode.insertBefore(js, fjs);
 		})(document, 'script', 'google-jssdk', () => {
 			const params = {
 				appId,
