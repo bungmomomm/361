@@ -74,7 +74,7 @@ class Hashtags extends Component {
 						<Link to={`/mau-gaya-itu-gampang/${campaignId}/${product.id}`}>
 							<Image src={product.image} width='100%' />
 						</Link>
-						<div className='margin--medium flex-row flex-spaceBetween flex-middle'>
+						<div className='margin--medium-v flex-row flex-spaceBetween flex-middle'>
 							<div className='padding--medium-h'>
 								<div><Link className='font-color--primary' to='/'>@{product.username}</Link></div>
 								<div><em className='font-small font--lato-normal font-color--grey'>{product.created_time}</em></div>
@@ -100,7 +100,7 @@ class Hashtags extends Component {
 
 		const listHastags = (
 			<div className='horizontal-scroll padding--large-h'>
-				<div className='flex-row flex-centerflex-spaceBetween margin--medium'>
+				<div className='flex-row flex-centerflex-spaceBetween margin--medium-v'>
 					{tags.map((tag, i) => (
 						<Link
 							to={tag.hashtag.indexOf('#') === -1 ? `/mau-gaya-itu-gampang#${tag.hashtag}` : `/mau-gaya-itu-gampang${tag.hashtag}`}
@@ -163,7 +163,7 @@ class Hashtags extends Component {
 						<meta property='og:image' content='https://assets.mataharimall.co/images/favicon.ico' />
 					</Helmet>
 
-					<div className='margin--medium text-center padding--large-h'>
+					<div className='margin--medium-v text-center padding--large-h'>
 						{hashtag.header.description}
 					</div>
 					<div ref={(n) => { this.staticHashtag = n; }}>
