@@ -99,7 +99,7 @@ class UserProfile extends Component {
 	render() {
 		return (
 			<div>
-				<Page>
+				<Page style={{ paddingTop: 0 }}>
 					{this.renderProfile()}
 					<Panel>Account</Panel>
 					<Link to='/profile-my-order' className='bg--white'>

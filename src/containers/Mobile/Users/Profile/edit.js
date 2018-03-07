@@ -496,7 +496,7 @@ class UserProfileEdit extends Component {
 			break;
 		default:
 			layoutView = (
-				<Page color='white'>
+				<Page style={{ paddingTop: 0 }} color='white'>
 					{this.renderHeader()}
 					{this.renderNotif()}
 					{this.renderAvatar()}

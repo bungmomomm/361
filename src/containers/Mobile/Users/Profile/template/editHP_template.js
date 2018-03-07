@@ -12,7 +12,7 @@ class UserProfileEditHP extends Component {
 	render() {
 		console.log('render');
 		return (
-			<Page>
+			<Page style={{ paddingTop: 0 }}>
 				<Level style={{ height: '55px' }}>
 					<Level.Left style={{ width: '80px' }}>
 						<Link to='/profile-edit'><Svg src='ico_arrow-back-left.svg' /></Link>

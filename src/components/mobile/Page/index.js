@@ -4,12 +4,13 @@ import className from 'classnames';
 
 class Page extends Component {
 	render() {
+		const { ...props } = this.props;
 		const pageClass = className(
 			styles.container,
 			this.props.color ? styles[this.props.color] : styles.grey
 		);
 		return (
-			<div className={pageClass}>
+			<div className={pageClass} {...props}>
 				<div className={styles.page} ref={(n) => { this.node = n; }}>
 					{this.props.children}
 				</div>
