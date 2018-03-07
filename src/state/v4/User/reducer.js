@@ -25,14 +25,21 @@ const actions = createActions({
 	USER_NEW_PASSWORD: undefined,
 	USER_NEW_PASSWORD_FAIL: (error) => ({ newpassword: { error } }),
 	USER_NEW_PASSWORD_SUCCESS: (message) => ({ newpassword: { message } }),
-	USER_SOCIAL_LOGIN: undefined
+	USER_SOCIAL_LOGIN: undefined,
+	USER_GET_MY_ORDER: undefined,
+	USER_APPEND_MY_ORDER: undefined,
+	USER_GET_MY_ORDER_DETAIL: undefined,
+	USER_UPDATE_MY_ORDER_CURRENT: undefined
 });
 
 const initialState = {
 	userProfile: false,
 	username: false,
 	isLoading: false,
-	isAnonymous: false
+	isAnonymous: false,
+	myOrders: { konfirmasi: null, dikirim: null, batal: null, selesai: null },
+	myOrdersCurrent: 'konfirmasi',
+	myOrdersDetail: null
 };
 
 const reducer = handleActions({
@@ -93,6 +100,25 @@ const reducer = handleActions({
 	[actions.userForgotPassword]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
 	[actions.userForgotPasswordFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
 	[actions.userForgotPasswordSuccess]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
+	[actions.userGetMyOrder]: (state, action) => ({ ...state, ...action.payload }),
+	[actions.userGetMyOrderDetail]: (state, action) => ({ ...state, ...action.payload }),
+	[actions.userUpdateMyOrderCurrent]: (state, action) => ({ ...state, ...action.payload }),
+	[actions.userAppendMyOrder]: (state, action) => {
+		let allOrders = null;
+		let updated = null;
+		let currentOrders = null;
+		allOrders = state.myOrders;
+		currentOrders = state.myOrders[action.payload.type].orders;
+
+		if (action.payload.data.length > 0) {
+			updated = currentOrders.concat(action.payload.data);
+		}
+
+		allOrders[action.payload.type].orders = updated;
+		return {
+			...state,
+			myOrders: allOrders };
+	},
 }, initialState);
 export default {
 	actions,

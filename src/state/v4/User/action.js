@@ -10,6 +10,7 @@ import {
 } from '@/utils';
 
 import { userSocialLogin, userSocialLoginWithRedirect } from './social-action';
+import { getMyOrder, getMyOrderDetail, updateMyOrdersCurrent } from './myOrder-action';
 
 const isSuccess = (response) => {
 	if (typeof response.data !== 'undefined' && typeof response.data.code !== 'undefined' && response.data.code === 200) {
@@ -26,7 +27,7 @@ const userLogin = (token, email, password) => async (dispatch, getState) => {
 
 	dispatch(actions.userLogin(email, password));
 	const path = `${baseUrl}/auth/login`;
-	
+
 	const [err, response] = await to(request({
 		token,
 		method: 'POST',
@@ -62,7 +63,7 @@ const userAnonymous = (token) => async (dispatch, getState) => {
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 	const path = `${baseUrl}/auth/anonymouslogin`;
-	
+
 	dispatch(actions.userAnonymous());
 
 	const [err, response] = await to(request({
@@ -298,5 +299,8 @@ export default {
 	userGetProfile,
 	userRegister,
 	userForgotPassword,
-	userOtpValidate
+	userOtpValidate,
+	getMyOrder,
+	getMyOrderDetail,
+	updateMyOrdersCurrent
 };

@@ -240,10 +240,11 @@ export default {
 		},
 		{
 			path: '/profile-my-order',
-			component: MyOrder
+			component: MyOrder,
+			exact: true,
 		},
 		{
-			path: '/profile-my-order-detail',
+			path: '/profile-my-order/:so_number([a-zA-Z0-9-]+)',
 			component: MyOrderDetail
 		},
 		{
