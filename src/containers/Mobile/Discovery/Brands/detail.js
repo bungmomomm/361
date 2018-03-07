@@ -11,6 +11,7 @@ import {
 	Tabs,
 	Level,
 	Input,
+	Modal,
 	Comment
 } from '@/components/mobile';
 import styles from './brands.scss';
@@ -67,6 +68,7 @@ class Detail extends Component {
 			styleHeader: true,
 			showFilter: false,
 			showSort: false,
+			showLoginPopup: false,
 			query: {
 				per_page: 0,
 				page: 0,
@@ -208,6 +210,20 @@ class Detail extends Component {
 		});
 	}
 
+	loginLater() {
+		this.setState({
+			showLoginPopup: false
+		});
+	}
+
+	loginNow() {
+		const { history, location } = this.props;
+		history.push(`/login?redirect_uri=${location.pathname}`);
+		this.setState({
+			showLoginPopup: false
+		});
+	}
+
 	addCommentHandler(event, productId) {
 		if (event.key === 'Enter') {
 			const { dispatch } = this.props;
@@ -227,16 +243,21 @@ class Detail extends Component {
 	}
 
 	addLovelistHandler(productId) {
-		const { dispatch } = this.props;
-
-		const addingLovelist = new Promise((resolve, reject) => {
-			this.setState({ lovelistProductId: productId });
-			resolve(dispatch(lovelistActions.addToLovelist(this.userToken, productId)));
-		});
-		addingLovelist.then((res) => {
-			const productIds = this.props.brands.searchData.products.map(e => (e.product_id));
-			dispatch(brandAction.brandProductsLovelistAction(this.userToken, productIds));
-		}).catch((err) => this.setState({ lovelistProductId: '' }));
+		const { cookies, dispatch, brands } = this.props;
+		if (cookies.get('isLogin') === 'true') {
+			const addingLovelist = new Promise((resolve, reject) => {
+				this.setState({ lovelistProductId: productId });
+				resolve(dispatch(lovelistActions.addToLovelist(this.userToken, productId)));
+			});
+			addingLovelist.then((res) => {
+				const productIds = brands.searchData.products.map(e => (e.product_id));
+				dispatch(brandAction.brandProductsLovelistAction(this.userToken, productIds));
+			}).catch((err) => this.setState({ lovelistProductId: '' }));
+		} else {
+			this.setState({
+				showLoginPopup: true
+			});
+		}
 	}
 
 	removeFromLovelistHandler(productId) {
@@ -499,7 +520,7 @@ class Detail extends Component {
 	}
 
 	render() {
-		const { showFilter } = this.state;
+		const { showFilter, showLoginPopup } = this.state;
 
 		return (
 			<div style={this.props.style}>
@@ -524,6 +545,24 @@ class Detail extends Component {
 						)
 						}
 					</div>
+					<Modal show={showLoginPopup}>
+						<div className='font-medium'>
+							<h3 className='text-center'>Lovelist</h3>
+							<Level style={{ padding: '0px' }} className='margin--medium-v'>
+								<Level.Left />
+								<Level.Item className='padding--medium-h'>
+									<div className='font-small'>Silahkan login/register untuk menambahkan produk ke Lovelist</div>
+								</Level.Item>
+							</Level>
+						</div>
+						<Modal.Action
+							closeButton={(
+								<Button onClick={(e) => this.loginLater()}>
+									<span className='font-color--primary-ext-2'>NANTI</span>
+								</Button>)}
+							confirmButton={(<Button onClick={(e) => this.loginNow()}>SEKARANG</Button>)}
+						/>
+					</Modal>
 					<Footer isShow={this.state.isFooterShow} />
 				</Page>
 
