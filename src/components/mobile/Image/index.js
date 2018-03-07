@@ -14,12 +14,18 @@ class Image extends Component {
 
 	componentDidMount() {
 		if (this.props.lazyload) {
+			// Bind scroll when element added
 			const body = window.document.getElementsByTagName('body')[0];
 			body.addEventListener('scroll', this.onBodyScroll);
+			if (!this.state.loaded) {
+				// Fix for lazyload
+				this.checkVisibility();
+			}
 		}
 	}
 
 	componentDidUpdate() {
+		// Remove scroll bind when lazyload props removed
 		if (!this.props.lazyload) {
 			const body = window.document.getElementsByTagName('body')[0];
 			body.removeEventListener('scroll', this.onBodyScroll);
@@ -27,25 +33,34 @@ class Image extends Component {
 	}
 
 	componentWillUnmount() {
+		// Remove scroll bind when element removed
 		const body = window.document.getElementsByTagName('body')[0];
 		body.removeEventListener('scroll', this.onBodyScroll);
 	}
 
 	onBodyScroll() {
-		if (this.props.lazyload && !this.state.loaded) {
-			const viewportH = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-			const imgOffset = this.imgRef.getBoundingClientRect();
-			const isVisible = viewportH >= imgOffset.top;
-			if (isVisible) {
-				this.setState({ loaded: true });
-			}
-		}
+		this.checkVisibility();
 	}
 
 	onLoad() {
+		// Fix for carousel issue
 		this.triggerEvent(window, 'resize');
 	}
 
+	checkVisibility() {
+		// If element is visible load image
+		const viewportH = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+		const viewportOffset = 0; // Debug only
+		const imgOffset = this.imgRef.getBoundingClientRect();
+		const isVisible = imgOffset.top <= (viewportH + viewportOffset);
+		if (this.props.lazyload && !this.state.loaded && isVisible) {
+			this.setState({ loaded: true });
+			const body = window.document.getElementsByTagName('body')[0];
+			body.removeEventListener('scroll', this.onBodyScroll);
+		}
+	}
+
+	// Cross compatibility javascript event emitter
 	triggerEvent(target, type) {
 		const doc = window.document;
 		if (doc.createEvent) {
@@ -72,7 +87,6 @@ class Image extends Component {
 
 	dataSrc() {
 		let image = this.props.src;
-
 		if (this.props.lazyload && this.props.local) {
 			image = require(`@/assets/images/${this.props.src}`);
 			return image;
@@ -82,7 +96,8 @@ class Image extends Component {
 
 	render() {
 		const createClassName = classNames([
-			this.props.avatar ? styles.avatar : null
+			this.props.avatar ? styles.avatar : null,
+			this.props.className ? this.props.className : null
 		]);
 
 		return (

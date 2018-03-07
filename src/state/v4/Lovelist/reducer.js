@@ -2,22 +2,22 @@ import { handleActions, createActions } from 'redux-actions';
 
 const defaultLovelist = {
 	count: 0,
-	items: {},
+	items: {
+		list: [],
+		ids: []
+	},
 	user: {
 		loggedIn: false,
 		added: [],
 		deleted: []
 	},
 	showHomeIcon: false,
-	perVariant: {
-		variantId: false,
-		total: 0
-	},
+	bulkieCountProducts: [],
 	loading: false
 };
 
-const { countLovelist, loveListItems, activeUser, lovelistPdp, addItem, removeItem, loadingState } = createActions(
-	'COUNT_LOVELIST', 'LOVE_LIST_ITEMS', 'ACTIVE_USER', 'LOVELIST_PDP', 'ADD_ITEM', 'REMOVE_ITEM', 'LOADING_STATE'
+const { countLovelist, loveListItems, activeUser, bulkieCount, addItem, removeItem, loadingState } = createActions(
+	'COUNT_LOVELIST', 'LOVE_LIST_ITEMS', 'ACTIVE_USER', 'BULKIE_COUNT', 'ADD_ITEM', 'REMOVE_ITEM', 'LOADING_STATE'
 );
 
 const listActions = {
@@ -42,25 +42,26 @@ const listActions = {
 			user
 		};
 	},
-	[lovelistPdp](state, { payload: { perVariant } }) {
+	[bulkieCount](state, { payload: { bulkieCountProducts } }) {
 		return {
 			...state,
-			perVariant
+			bulkieCountProducts
 		};
 	},
 	[addItem](state, { payload: { addedItem } }) {
-		const user = state.user;
 		// pushing added item
+		const { user } = state;
 		user.added.push(addedItem);
 		return {
 			...state,
 			user
 		};
 	},
-	[removeItem](state, { payload: { removedItem } }) {
-		const user = state.user;
+	[removeItem](state, { payload: item }) {
 		// pushing removed item
-		user.added.push(removedItem);
+		const { user } = state;
+		user.deleted.push(item.productId);
+
 		return {
 			...state,
 			user
@@ -81,7 +82,7 @@ export default {
 	countLovelist,
 	loveListItems,
 	activeUser,
-	lovelistPdp,
+	bulkieCount,
 	addItem,
 	removeItem,
 	loadingState

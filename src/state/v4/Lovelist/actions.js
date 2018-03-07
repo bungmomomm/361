@@ -1,11 +1,11 @@
 import to from 'await-to-js';
 import { Promise } from 'es6-promise';
 import _ from 'lodash';
-import { request } from '@/utils';
+import { request, emarsysRequest } from '@/utils';
 import {
 	countLovelist,
 	loveListItems,
-	lovelistPdp,
+	bulkieCount,
 	addItem,
 	removeItem,
 	loadingState
@@ -19,44 +19,84 @@ const setLoadingState = (loading) => (dispatch) => {
  * fetchs lovelist list into redux lovelist items format
  * @param {*} response 
  */
-const fetchItems = (data) => {
-	return data.products.map((item, idx) => {
-		const images = item.images.map((img) => {
-			return { mobile: img.thumbnail, thumbnail: img.thumbnail };
-		});
-		item.images = images;
-		return item;
-	});
+const formatItems = (data) => {
+	const items = {
+		ids: [],
+		list: []
+	};
+	
+	if (!_.isUndefined(data.products) && !_.isEmpty(data.products)) {
+		items.list = data.products.map((item, idx) => {
+			const images = item.images.map((img) => {
+				return { mobile: img.thumbnail, thumbnail: img.thumbnail };
+			});
+
+			items.ids.push(item.product_id);
+
+			return {
+				id: item.product_id,
+				brand: item.brand,
+				images,
+				pricing: item.pricing,
+				product_title: item.product_title,
+				totalLovelist: 0,
+				totalComments: 0,
+				original: item
+			};
+		});	
+	}
+
+	return items;
 };
 
 /**
  * save user's lovelist list
- * @param {*} itemsLovelist 
+ * @param {*} items 
  */
-const getList = (itemsLovelist) => (dispatch) => {
+const getList = (items, formatted = true) => (dispatch) => {
 	// fetching response into lovelist redux items format
-	const items = fetchItems(itemsLovelist);
+	if (formatted) items = formatItems(items);
 
 	// dispatching total lovelist of logged user
 	dispatch(loveListItems({ items }));
-	dispatch(countLovelist({ count: items.length }));
+	dispatch(countLovelist({ count: items.list.length }));
 };
 
-const addToLovelist = (token, userId, variantId, url) => async (dispatch, getState) => {
+const sendLovedItemToEmarsys = () => {
+	const data = {
+		wishlist: {
+			title: 'Connexion Bell Sleeve Mini Dress',
+			link: 'https://mm-imgs.s3.amazonaws.com/tx400/2017/11/03/14/kaos-polo-shirt_nevada-women-39-s-polo-classic-red_4259525__930101.JPG',
+			msrp: 150000,
+			price: 100000,
+			event_id: process.env.EMARYSYS_EVENT_ID
+		}
+	};
+
+	return emarsysRequest(data);
+};
+
+/**
+ * Adds item into Lovelist
+ * @param {*} token 
+ * @param {*} productId 
+ */
+const addToLovelist = (token, productId) => async (dispatch, getState) => {
 	
-	if (userId && variantId) {
+	if (productId) {
 		const { shared } = getState();
 		const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
 
 		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
-		const path = `${baseUrl}/add/${userId}/${variantId}`;
+		const path = `${baseUrl}/add/${productId}`;
 
-		const [err, response] = to(request({
+		const [err, response] = await to(request({
 			token,
 			path,
-			method: 'GET',
-			fullpath: true
+			method: 'POST',
+			fullpath: true,
+			body: productId
 		}));
 
 		if (err) {
@@ -64,8 +104,8 @@ const addToLovelist = (token, userId, variantId, url) => async (dispatch, getSta
 		}
 		
 		// dispatching of adding item into lovelist
-		const item = { variantId };
-		dispatch(addItem({ item }));
+		const item = { productId };
+		dispatch(addItem(item));
 
 		return Promise.resolve(response);
 	
@@ -74,21 +114,27 @@ const addToLovelist = (token, userId, variantId, url) => async (dispatch, getSta
 	return false;
 };
 
-const removeFromLovelist = (token, userId, variantId) => async (dispatch, getState) => {
+/**
+ * Removes item from Lovelist
+ * @param {*} token 
+ * @param {*} productId 
+ */
+const removeFromLovelist = (token, productId) => async (dispatch, getState) => {
 
-	if (userId && variantId) {
+	if (productId) {
 		const { shared } = getState();
 		const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
 
 		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
-		const path = `${baseUrl}/delete/${userId}/${variantId}`;
+		const path = `${baseUrl}/delete/${productId}`;
 
-		const [err, response] = to(request({
+		const [err, response] = await to(request({
 			token,
 			path,
-			method: 'GET',
-			fullpath: true
+			method: 'POST',
+			fullpath: true,
+			body: productId
 		}));
 		
 		if (err) {
@@ -96,8 +142,8 @@ const removeFromLovelist = (token, userId, variantId) => async (dispatch, getSta
 		}
 		
 		// dispatching of deleting item from lovelist
-		const item = { variantId };
-		dispatch(removeItem({ item }));
+		const item = { productId };
+		dispatch(removeItem(item));
 
 		return Promise.resolve(response);
 	
@@ -134,45 +180,54 @@ const getLovelisItems = (token) => async (dispatch, getState) => {
 /**
  * Gets number lovelist of product detail page
  * @param {*} token 
- * @param {*} variantId 
+ * @param {*} productId
  */
-const countTotalPdpLovelist = (token, variantId) => async (dispatch, getState) => {
+const bulkieCountByProduct = (token, productId) => async (dispatch, getState) => {
 
-	if (variantId) {
+	// bulkie count accept single productId or arrays of productId
+	if ((_.isArray(productId) && productId.length > 0) || (_.toInteger(productId) > 0)) {
 		const { shared } = getState();
 		const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
 
 		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
-		const path = `${baseUrl}/total/byvariant/${variantId}`;
-
-		const [err, response] = to(request({
+		const path = `${baseUrl}/bulkie/byproduct`;
+		const [err, response] = await to(request({
 			token,
 			path,
-			method: 'GET',
-			fullpath: true
+			method: 'POST',
+			fullpath: true,
+			body: {
+				product_id: _.isArray(productId) ? productId : [_.toInteger(productId)]
+			}
 		}));
 
 		if (err) return Promise.reject(err);
 
-		const total = response.data.data.total || 0;
-		dispatch(lovelistPdp({
-			variantId,
-			total
-		}));
+		const productLovelist = { bulkieCountProducts: (response.data.data || {}) };
+		dispatch(bulkieCount(productLovelist));
 
 		return Promise.resolve(response);
-	
 	}
 
 	return false;
+};
+
+const getProductBulk = (productId) => (dispatch, getState) => {
+	const { lovelist } = getState();
+	const { bulkieCountProducts } = lovelist;
+	const product = bulkieCountProducts.find((item) => (item.product_id === productId));
+
+	return !_.isUndefined(product) ? product : false;
 };
 
 export default {
 	getList,
 	addToLovelist,
 	removeFromLovelist,
-	countTotalPdpLovelist,
+	bulkieCountByProduct,
 	getLovelisItems,
-	setLoadingState
+	setLoadingState,
+	getProductBulk,
+	sendLovedItemToEmarsys
 };

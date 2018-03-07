@@ -1,3 +1,32 @@
 .cardContainer{
     flex-flow: row wrap;
 }
+
+.lovelistEmpty {
+  	font-size: 15px;
+  	margin: 30px auto 15px auto;
+}
+
+.lovelistEmptyImg {
+  	margin: 0 auto 30px auto;
+}
+
+.lovelistEmptyDescription {
+	flex-direction: row;
+  	justify-content: center;
+  	align-items: center;
+  	font-family: "Lato-Light";
+  	font-size: 12px;
+  	&:first-child {
+	  margin-top: 15px;
+	}
+}
+
+.lovelistLogin {
+  	composes: height-autofill from global;
+  	padding: 20px;
+  	text-align: center;
+  	background-size: cover;
+  	justify-content: center;
+
+}

@@ -1,7 +1,6 @@
 @import "_variables.scss";
 @import "_mixins.scss";
 @import "_typography.scss";
-@import "_typography.scss";
 
 @include font-face("Helvetica-Roman", "Helvetica");
 @include font-face("Helvetica-Medium", "Helvetica");
@@ -9,6 +8,12 @@
 @include font-face("Lato-Light", "Lato");
 @include font-face("Lato-Regular", "Lato");
 @include font-face("Lato-Bold", "Lato");
+
+// Plugins
+:global {
+  @import '~rmc-picker/assets/index';
+  @import '~rmc-picker/assets/popup';
+}
 
 :root {
 	font-size: $base-font-size;
@@ -43,10 +48,14 @@
 		font-size: rem(13px);
 		height: 100%;
 		position: relative;
+		display: flex;
+		flex-flow: column;
+		flex: 1 0 auto;
 		overflow-y: scroll;
 		color: color(--primary);
 		line-height: 20px;
 		background-color: #fff;
+		-webkit-overflow-scrolling: touch;
 	}
 
 	// GENERATE GLOBAL UTILITIES
@@ -77,7 +86,8 @@
 
 	img {
 		display: block;
-		// width: 100%;
+		max-width: 100%;
+		align-self: center;
 	}
 
 	#root,
@@ -97,24 +107,26 @@
 		margin: 0;
 		padding: 0;
 		position: relative;
+
 	}
 	.--disable-flex {
 		display: block;
 		flex: none;
 	}
-	#root,
 	body,
 	html {
 		height: 100%;
+	  	overflow-x: hidden;
+	  	overflow-y: scroll;
 	}
 
 	#root > main {
 		height: 100%;
 		> div:first-child {
 			min-height: 100%;
-			// overflow: hidden;
 		}
 	}
+
 	a {
 		color: #3c5a98;
 		text-decoration: none;
@@ -125,6 +137,17 @@
 		text-decoration: none;
 		font-family: "Lato-Regular";
 		color: #191919;
+		line-height: 1.4;
+	}
+
+	button{
+		-webkit-appearance: none;
+		outline: none;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		background: transparent;
+		border: none;
 	}
 
 	hr{
@@ -133,7 +156,23 @@
 		background: #D8D8D8;
 	}
 	#root {
-		z-index: 0;
+	  	width: 100%;
+		overflow-y: hidden;
+		display: flex;
+		flex-flow: column;
+		flex: 1 0 auto;
+		max-width: $max-width-container;
+		position: relative;
+		margin: 0 auto;
+	  	.height-autofill,
+	  	.switch-wrapper,
+	  	.switch-wrapper > div,
+	  	.switch-wrapper > div > div,
+		[data-reactroot] {
+		  display: flex;
+		  flex-flow: column;
+		  flex: 1 0 auto;
+		}
 
 		.switch-wrapper {
 			height: 100%;
@@ -202,53 +241,102 @@
 			text-overflow: ellipsis;
 		}
 
+		.text-muted{
+			font-family: 'Lato-Regular';
+			color: #A4A4A4;
+			letter-spacing: 1px;
+			text-transform: uppercase;
+			text-decoration: none;
+			display: inline-flex;
+			justify-content: center;
+			align-items: center;
+			> span{
+				margin-left: 5px;
+			}
+		}
+
 		.full-height {
 			height: 100%;
 		}
 
-		.margin--small {
-			margin-top: 5px;
-			margin-bottom: 5px;
+	  	// Margin
+		@each $value in $space-list {
+			.margin#{nth($value, 1)} {
+			  	margin: nth($value, 2);
+			}
+			.margin#{nth($value, 1)}-v {
+			  	margin-top: nth($value, 2);
+			  	margin-bottom: nth($value, 2);
+			}
+			.margin#{nth($value, 1)}-h {
+			  	margin-left: nth($value, 2);
+			  	margin-right: nth($value, 2);
+			}
+			.margin#{nth($value, 1)}-t {
+			  	margin-top: nth($value, 2);
+			}
+			.margin#{nth($value, 1)}-b {
+			  	margin-bottom: nth($value, 2);
+			}
+			.margin#{nth($value, 1)}-l {
+			  	margin-left: nth($value, 2);
+			}
+			.margin#{nth($value, 1)}-r {
+			  	margin-right: nth($value, 2);
+			}
 		}
 
-		.margin--medium {
-			margin-top: 15px;
-			margin-bottom: 15px;
+	  	// Padding
+		@each $value in $space-list {
+			.padding#{nth($value, 1)} {
+			  	padding: nth($value, 2);
+			}
+			.padding#{nth($value, 1)}-v {
+			  	padding-top: nth($value, 2);
+			  	padding-bottom: nth($value, 2);
+			}
+			.padding#{nth($value, 1)}-h {
+			  	padding-left: nth($value, 2);
+			  	padding-right: nth($value, 2);
+			}
+			.padding#{nth($value, 1)}-t {
+			  	padding-top: nth($value, 2);
+			}
+			.padding#{nth($value, 1)}-b {
+			  	padding-bottom: nth($value, 2);
+			}
+			.padding#{nth($value, 1)}-l {
+			  	padding-left: nth($value, 2);
+			}
+			.padding#{nth($value, 1)}-r {
+			  	padding-right: nth($value, 2);
+			}
 		}
 
-		.margin--large {
-			margin-top: 30px;
-			margin-bottom: 30px;
-		}
-
-		.padding--small {
-			padding-left: 5px;
-			padding-right: 5px;
-		}
-		.padding--normal {
-			padding-left: 10px;
-			padding-right: 10px;
-		}
-
-		.padding--medium {
-			padding-left: 15px;
-			padding-right: 15px;
-		}
-
-		.padding--large {
-			padding-left: 30px;
-			padding-right: 30px;
-		}
-
-		.margin--none {
-			margin-top: 0px;
-			margin-right: 0px;
-		}
 		.border-top {
-			border-top: 1px solid #DBDBDB;
+			border-top: 0.5px solid #DBDBDB;
 		}
 		.border-bottom {
-			border-bottom: 1px solid #DBDBDB;
+			border-bottom: 0.5px solid #DBDBDB;
+		}
+		.border-left {
+			border-left: 0.5px solid #DBDBDB;
+		}
+		.border-right {
+			border-right: 0.5px solid #DBDBDB;
+		}
+
+		.border-white-top {
+			border-top: 0.5px solid #fff;
+		}
+		.border-white-bottom {
+			border-bottom: 0.5px solid #fff;
+		}
+		.border-white-left {
+			border-left: 0.5px solid #fff;
+		}
+		.border-white-right {
+			border-right: 0.5px solid #fff;
 		}
 
 		.flex-row {
@@ -257,16 +345,35 @@
 		.flex-wrap {
 			flex-wrap: wrap;
 		}
-		.flex-center {
-			justify-content: center;
+		.flex-middle {
 			align-items: center;
 		}
 		.flex-spaceBetween {
 			justify-content: space-between;
 		}
+		.flex-center{
+			justify-content: center;
+		}
 		.text-line-through{
 			text-decoration: line-through;
 		}
+	}
+
+	.thumbnail-small{
+		display: flex !important;
+		justify-content: center;
+    	align-items: center;
+		img{
+			max-height: 140px;
+    		width: auto !important;
+		}
+	}
+
+	.horizontal-scroll{
+		flex-wrap: nowrap;
+		overflow-x: scroll;
+		-webkit-overflow-scrolling: touch;
+		-ms-overflow-style: -ms-autohiding-scrollbar;
 	}
 }
 

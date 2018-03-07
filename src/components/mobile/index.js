@@ -22,30 +22,37 @@ import Comment from './Comment';
 import Radio from './Radio';
 import Select from './Select';
 import Table from './Table';
+import Rating from './Rating';
+import Spinner from './Spinner';
+import SocialLogin from './SocialLogin';
 
+// Alphabetically sort (^_^)
 export default {
-	Badge,
-	Header,
-	Input,
-	Tabs,
-	Page,
-	Level,
-	Button,
-	Grid,
 	Article,
-	Navigation,
-	Svg,
-	Image,
+	Badge,
+	Button,
 	Card,
-	Notification,
 	Carousel,
-	List,
+	Comment,
 	Divider,
-	Slider,
+	Grid,
+	Header,
+	Image,
+	Input,
+	Level,
+	List,
 	Modal,
+	Navigation,
+	Notification,
+	Page,
 	Panel,
 	Radio,
-	Comment,
+	Rating,
 	Select,
-	Table
+	Slider,
+	Spinner,
+	SocialLogin,
+	Svg,
+	Tabs,
+	Table,
 };

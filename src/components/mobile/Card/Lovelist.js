@@ -7,6 +7,8 @@ import Button from '../Button';
 import Level from '../Level';
 import Badge from '../Badge';
 import styles from './card.scss';
+import { Link } from 'react-router-dom';
+import { hyperlink } from '@/utils';
 import _ from 'lodash';
 
 class Lovelist extends PureComponent {
@@ -38,43 +40,46 @@ class Lovelist extends PureComponent {
 	render() {
 		const { className, type, data, isLoved } = this.props;
 		const createClassName = classNames(styles.container, styles[type], className);
+		const linkToPdpCreator = hyperlink('', ['product', data.id], null);
 		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
 		const slideIndex = this.getSlideIndex();
 
 		return (
 			<div className={createClassName}>
-				<Carousel 
-					slideIndex={slideIndex}
-					afterSlide={this.setCarouselSlideIndex}
-				>
-					{
-						data.images.map((image, idx) => (
-							<div tabIndex='0' role='button' onClick={this.props.onImageItemClick} key={idx} data-img={image.mobile}>
-								<Image src={image.mobile} alt={data.product_title} />
-							</div>
-						))
-					}
-				</Carousel>
+				<Link to={linkToPdpCreator}>
+					<Carousel
+						slideIndex={slideIndex}
+						afterSlide={this.setCarouselSlideIndex}
+					>
+						{
+							data.images.map((image, idx) => (
+								<div tabIndex='0' role='button' onClick={this.props.onImageItemClick} key={idx} data-img={image.mobile}>
+									<Image src={image.mobile} alt={data.product_title} />
+								</div>
+							))
+						}
+					</Carousel>
+				</Link>
 				<Level
 					className={styles.action}
 					style={{ borderBottom: '1px solid #D8D8D8' }}
 				>
 					<Level.Item>
-						<Button onClick={this.props.onBtnLovelistClick}>
+						<Button onClick={this.props.onBtnLovelistClick} data-id={data.id}>
 							<Svg src={loveIcon} />
-							<span>{data.lovelistTotal}</span>
+							{data.totalLovelist}
 						</Button>
 					</Level.Item>
 					<Level.Item>
 						<Button onClick={this.props.onBtnCommentClick}>
 							<Svg src='ico_comment.svg' />
-							<span>38</span>
+							{data.totalComments || 0}
 						</Button>
 					</Level.Item>
 				</Level>
 				<div className={styles.title}>
-					{data.product_title}
-					<span>{data.brand}</span>
+					{data.brand.brand_name}
+					<span>{data.product_title}</span>
 				</div>
 				<Level className={styles.footer}>
 					<Level.Item>
@@ -91,7 +96,7 @@ class Lovelist extends PureComponent {
 						</div>
 					</Level.Item>
 					<Level.Right>
-						<Button color='secondary' size='medium' rounded>
+						<Button color='secondary' size='medium' rounded onClick={this.props.onBtnBeliClick}>
 							Beli aja
 						</Button>
 					</Level.Right>

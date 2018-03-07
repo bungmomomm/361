@@ -3,9 +3,9 @@
 
 .list{
     margin: rem(10px) rem(10px) 0px rem(10px);
-    display: flex;
+    display: block;
     position: relative;
-    height: 90px;
+    min-height: 100px;
     img{
         width: 100%;
     }

@@ -18,6 +18,7 @@ import styles from './brands.scss';
 import { actions } from '@/state/v4/Brand';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Shared from '@/containers/Mobile/Shared';
+import { urlBuilder } from '@/utils';
 
 class Brands extends Component {
 	constructor(props) {
@@ -27,10 +28,7 @@ class Brands extends Component {
 			minimumLetter: 1,
 			searchFocus: false,
 			filteredBrand: [],
-			keyword: '',
-			notification: {
-				show: true
-			}
+			keyword: ''
 		};
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
@@ -42,11 +40,17 @@ class Brands extends Component {
 		dispatch(new actions.brandListAction(this.userCookies, category.activeSegment.id));
 	}
 
+	componentWillReceiveProps(nextProps) {
+		const { dispatch, category } = this.props;
+		if (this.props.shared.serviceUrl !== nextProps.shared.serviceUrl) {
+			dispatch(new actions.brandListAction(this.userCookies, category.activeSegment.id));
+		}
+	}
+
 	onFilter(keyword) {
 		let filteredBrand = [];
 
 		if (keyword.length >= this.state.minimumLetter) {
-			console.log('[Brands onFilter - keyword]', keyword);
 			this.props.brands.brand_list.map((e) => {
 				const listBrand = e.brands.filter((list) => {
 					if (list.facetdisplay.indexOf(keyword) >= 0) {
@@ -125,8 +129,8 @@ class Brands extends Component {
 			brands.brand_list.length > 0 &&
 			brands.brand_list.map((list, id) => {
 				return (
-					<div key={id} id={list.group}>
-						<Divider className='margin--none' size='small'>
+					<div key={id} id={list.group} className='margin--medium-v'>
+						<Divider className='margin--none-t margin--none-r' size='small'>
 							{list.group}
 						</Divider>
 						{
@@ -134,12 +138,12 @@ class Brands extends Component {
 							list.brands.map((b, i) => {
 								return (
 									<List key={i}>
-										<Link to={`/brand/${b.facetrange}/${b.facetdisplay.toLowerCase()}`}>
+										<Link to={urlBuilder.setId(Number(b.facetrange)).setName(b.facetdisplay).buildBrand()}>
 											<List.Content>
-												{b.facetdisplay}
-												<text style={{ color: 'grey' }} >
-													({b.count} produk)
-												</text>
+												<p className='margin--medium-v'>
+													<span>{ b.facetdisplay.replace(/\b\w/g, (l) => (l.toUpperCase())) }</span>&nbsp;
+													<span style={{ color: 'grey' }} >({b.count})</span>
+												</p>
 											</List.Content>
 										</Link>
 									</List>
@@ -158,7 +162,7 @@ class Brands extends Component {
 			this.state.filteredBrand.map((brand, key) => {
 				return (
 					<List key={key}>
-						<Link to={`/brand/${brand.facetrange}`}>
+						<Link to={urlBuilder.setId(brand.facetrange).setName(brand.facetdisplay).buildBrand()}>
 							<List.Content>{brand.facetdisplay} <text style={{ color: 'grey' }} >({brand.count})</text></List.Content>
 						</Link>
 					</List>
@@ -177,16 +181,13 @@ class Brands extends Component {
 			center: 'Brands',
 			right: null
 		};
-		const { shared } = this.props;
-		const foreverBannerData = shared.foreverBanner;
-		foreverBannerData.show = this.state.notification.show;
-		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+		const { shared, dispatch } = this.props;
 
 		return (
 			<div style={this.props.style}>
 				<Page>
 					{
-						<ForeverBanner {...foreverBannerData} />
+						<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />
 					}
 					<div className={styles.filter}>
 						<Level>
@@ -215,7 +216,7 @@ class Brands extends Component {
 					{ this.renderBrandByAlphabets() }
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Categories' />
+				<Navigation active='Categories' scroll={this.props.scroll} />
 			</div>
 		);
 	}

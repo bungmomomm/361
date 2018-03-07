@@ -28,7 +28,7 @@ class UserProfile extends Component {
 		return (
 			<div>
 				<Page>
-					<Level>
+					<Level className='padding--large-v'>
 						<Level.Left>
 							&nbsp;
 						</Level.Left>
@@ -58,7 +58,7 @@ class UserProfile extends Component {
 						</Level>
 					</Link>
 					<Panel>Account</Panel>
-					<Link to='/'>
+					<Link to='/profile-my-order'>
 						<Level style={{ padding: '0 0 0 15px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_order.svg' />
@@ -82,7 +82,7 @@ class UserProfile extends Component {
 							</Level.Item>
 						</Level>
 					</Link>
-					<Link to='/'>
+					<Link to='/profile-credit-card'>
 						<Level style={{ padding: '0 0 0 15px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_cc.svg' />

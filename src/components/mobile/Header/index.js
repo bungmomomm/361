@@ -16,18 +16,21 @@ const Header = props => {
 					<div className={styles.left}>
 						<Link to='/lovelist'>
 							<Svg src='ico_lovelist.svg' />
-							<Badge circle attached size='small' className='bg--tosca font-color--white'>{props.lovelist}</Badge>
+							<Badge circle attached size='small' className='bg--red font-color--white'>{props.lovelist}</Badge>
 						</Link>
 					</div>
 					<div className={styles.center}>
 						<Input
-							iconLeft={<Svg src='ico_search.svg' />}
 							onFocus={() => props.history.push('/search')}
-							placeholder='Cari produk, #hashtags, @seller'
+							placeholder=''
 							value={props.value}
 						/>
+						<div className={styles.dummyplaceholder}>
+							<span><Svg src='ico_search.svg' /></span>
+							<span className='padding--small-h'>Cari produk, #hashtags</span>
+						</div>
 					</div>
-					<div className={styles.right}><Link to='/search'><Svg src='ico_hashtags.svg' /></Link></div>
+					<div className={styles.right}><Link to='/mau-gaya-itu-gampang'><Svg src='ico_hashtags.svg' /></Link></div>
 				</div>
 			</div>
 		</nav>

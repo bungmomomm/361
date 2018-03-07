@@ -8,8 +8,19 @@ import Level from '../Level';
 import Badge from '../Badge';
 import styles from './card.scss';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 class Catalog extends PureComponent {
+
+	lovelistAddTo() {
+		const { lovelistStatus, lovelistAddTo } = this.props;
+		console.log('love', lovelistStatus);
+		if (lovelistStatus && lovelistStatus === 1) {
+			return lovelistAddTo(false);
+		}
+		return lovelistAddTo(true);
+	}
+	
 	render() {
 		const {
 			className,
@@ -18,42 +29,63 @@ class Catalog extends PureComponent {
 			productTitle,
 			brandName,
 			pricing,
-			url,
+			commentUrl,
+			commentTotal,
+			linkToPdp,
+			lovelistTotal,
+			lovelistStatus,
+			lovelistAddTo,
+			lovelistDisable,
 			...props
 		} = this.props;
 
+		const disableLovelist = lovelistDisable && lovelistAddTo;
 		const createClassName = classNames(styles.container, styles[type], className);
+		const lovelistIcon = lovelistStatus && lovelistStatus === 1 ? 'ico_love-filled.svg' : 'ico_love.svg';
+
+		const discountBadge = pricing.discount !== '0%' ? (
+			<div style={{ marginLeft: '1.5rem' }}>
+				<Badge rounded color='red'>
+					<span className='font--lato-bold'>{pricing.discount}</span>
+				</Badge>
+			</div>
+		) : '';
+
+		const basePrice = pricing.discount !== '0%' ? (
+			<div className={styles.discount}>{pricing.formatted.base_price}</div>
+		) : '';
 
 		return (
 			<div className={createClassName} {...props}>
-				<Link to={(url) || '/'}>
+				<Link to={linkToPdp}>
 					<Carousel>
 						{
 							images.map((image, index) => (
-								<Image key={index} src={image.thumbnail} alt='product' />
+								<Image key={index} src={image.thumbnail} alt={productTitle} />
 							))
 						}
 					</Carousel>
 				</Link>
-
 				<Level
 					className={styles.action}
 					style={{ borderBottom: '1px solid #D8D8D8' }}
 				>
 					<Level.Item>
-						<Button>
-							<Svg src='ico_love-filled.svg' />
-							<span>Lovelist</span>
+						<Button onClick={(e) => this.lovelistAddTo()} disabled={disableLovelist}>
+							<Svg src={lovelistIcon} />
+							<span>{lovelistTotal} Suka</span>
 						</Button>
 					</Level.Item>
 					<Level.Item>
-						<Button>
-							<Svg src='ico_comment.svg' />
-							<span>Comment</span>
-						</Button>
+						<Link to={(commentUrl) || '/'}>
+							<Button wide>
+								<Svg src='ico_comment.svg' />
+								<span>{commentTotal} Komentar</span>
+							</Button>
+						</Link>
 					</Level.Item>
 				</Level>
-				<Link to={(url) || '/'}>
+				<Link to={(linkToPdp) || '/'}>
 					<div className={styles.title}>
 						{brandName} - <span>{productTitle}</span>
 					</div>
@@ -62,13 +94,9 @@ class Catalog extends PureComponent {
 							<div className={styles.blockPrice}>
 								<div>
 									<div className={styles.price}>{pricing.formatted.effective_price}</div>
-									<div className={styles.discount}>{pricing.formatted.base_price}</div>
+									{basePrice}
 								</div>
-								<div style={{ marginLeft: '1.5rem' }}>
-									<Badge rounded color='red'>
-										<span className='font--lato-bold'>{pricing.discount}</span>
-									</Badge>
-								</div>
+								{discountBadge}
 							</div>
 						</Level.Item>
 						<Level.Right>&nbsp;</Level.Right>
@@ -78,5 +106,16 @@ class Catalog extends PureComponent {
 		);
 	}
 }
+
+Catalog.defaultProps = {
+	linkToPdp: '/',
+	commentTotal: 0,
+	lovelistTotal: 0
+};
+
+Catalog.propTypes = {
+	brandName: PropTypes.string,
+	linkToPdp: PropTypes.string.isRequired
+};
 
 export default Catalog;

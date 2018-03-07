@@ -22,16 +22,18 @@ class Empty extends Component {
 		return (
 			<div className='full-height'>
 				<Page>
-					<div className='padding--medium text-center full-height'>
-						<div className='margin--large'>
+					<div className='padding--medium-h text-center full-height'>
+						<div className='margin--large-v'>
 							<div className='font-large'>Shopping Bag Kamu Masih Kosong</div>
-							<div className='margin--medium'>
+							<div className='margin--medium-v'>
 								Butuh inspirasi gaya fashion? <br />
 								Cek halaman <br />
 								#MauGayaItuGampang,
 							</div>
 							<div className='flex-row flex-center'>
-								<Button color='primary' size='medium'>CEK AJA</Button>
+								<Link to='/mau-gaya-itu-gampang'>
+									<Button color='primary' size='medium'>CEK AJA</Button>
+								</Link>
 							</div>
 						</div>
 					</div>

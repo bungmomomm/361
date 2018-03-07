@@ -1,12 +1,19 @@
 import currency from './currency';
 import newId from './newId';
+import hyperlink from './hyperlink';
 import renderIf from './renderIf';
 import modalController from './modalController';
 import isMobile from './isMobile';
 import componentState from './componentState';
 import { request, getCancelToken } from './request';
 import { setUserCookie } from './cookie';
-import SocialLogin from './social-login';
+import urlBuilder from './urlBuilder';
+import loading from './loading';
+import { request as emarsysRequest } from './emarsys';
+
+const isHexColor = (color) => {
+	return /(^#[0-9A-F]{3}|^#[0-9A-F]{6})$/i.test(color);
+};
 
 const getBaseUrl = () => {
 	return process.env.BASE_URL;
@@ -33,7 +40,7 @@ export default {
 	getDeviceID,
 	getClientID,
 	getClientSecret,
-	getClientVersion,	
+	getClientVersion,
 	setUserCookie,
 	newId,
 	renderIf,
@@ -44,5 +51,9 @@ export default {
 	isMobile,
 	modalController,
 	componentState,
-	SocialLogin
+	hyperlink,
+	urlBuilder,
+	isHexColor,
+	loading,
+	emarsysRequest
 };

@@ -1,19 +1,41 @@
 @import '../../../styles/mobile/variables';
 @import '../../../styles/mobile/mixins';
-
-.container{
+.container {
     flex-direction: row;
     justify-content: space-between;
     padding: rem(15px) rem(10px);
 }
 
-.left{
+.left {
     align-items: flex-start;
 }
-.right{
+
+.right {
     align-items: flex-end;
 }
 
-.item{
+.item {
     flex: 1;
+    // white-space: nowrap;
+}
+
+.divider {
+    .item {
+        position: relative;
+        padding-right: 0px;
+        &:not(:last-child) {
+            padding-right: 25px;
+            &:after {
+                content: '\2807';
+                font-size: 15px;
+                width: 5px;
+                height: 100%;
+                position: absolute;
+                right: 11px;
+                overflow: hidden;
+                top: -1px;
+                color: #A4A4A4;
+            }
+        }
+    }
 }

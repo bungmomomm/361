@@ -18,10 +18,22 @@ const { promos, loading } = createActions(
 
 const reducer = handleActions({
 	[promos](state, { payload: { promo } }) {
+		const keys = Object.keys(promo);
 		return {
+			...state,
 			promo: {
 				...state.promo,
-				...promo
+				...promo,
+				[keys[0]]: {
+					...promo[keys[0]],
+					products:
+						state.promo[keys[0]].products ?
+						[
+							...state.promo[keys[0]].products,
+							...promo[keys[0]].products
+						] :
+						promo[keys[0]].products
+				}
 			}
 		};
 	},

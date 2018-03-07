@@ -96,4 +96,5 @@
 	font-family: font-family('Lato-Regular');
 	font-size: map-get($font-size, --small );
 	color: color(--primary-ext-2);
+	text-decoration: line-through;
 }

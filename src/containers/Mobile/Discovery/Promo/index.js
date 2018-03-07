@@ -12,6 +12,8 @@ import styles from './promo.scss';
 import { actions } from '@/state/v4/Discovery';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
+import { hyperlink } from '@/utils';
+import Spinner from '@/components/mobile/Spinner';
 
 class Promo extends Component {
 
@@ -21,18 +23,8 @@ class Promo extends Component {
 
 		this.state = {
 			listTypeGrid: false,
-			productEmpty: false,
-			notification: {
-				show: true
-			}
+			productEmpty: false
 		};
-		this.listPromo = [
-			'new_arrival',
-			'best_seller',
-			'recommended_products',
-			'recent_view'
-		];
-		this.renderNewArrival = this.renderData.bind(this);
 		this.handlePick = this.handlePick.bind(this);
 		this.getProductListContent = this.getProductListContent.bind(this);
 
@@ -49,21 +41,25 @@ class Promo extends Component {
 
 		if (typeof products !== 'undefined') {
 			const content = products.map((product, idx) => {
+				const linkToPdp = hyperlink('', ['product', product.product_id], null);
+
 				return listTypeGrid ?
 					(<Card.CatalogGrid
 						key={idx}
 						images={product.images}
 						productTitle={product.product_title}
-						brandName={product.brand}
+						brandName={product.brand.name}
 						pricing={product.pricing}
+						linkToPdp={linkToPdp}
 					/>) :
 					(<Card.Catalog
 						key={idx}
 						className={stylesCatalog.cardCatalog}
 						images={product.images}
 						productTitle={product.product_title}
-						brandName={product.brand}
+						brandName={product.brand.name}
 						pricing={product.pricing}
+						linkToPdp={linkToPdp}
 					/>);
 			});
 
@@ -90,36 +86,17 @@ class Promo extends Component {
 		}
 	}
 
-	renderForeverBanner() {
-		const { shared } = this.props;
-		if (!_.isEmpty(shared.foreverBanner)) {
-			return (
-				<ForeverBanner
-					color={shared.foreverBanner.text.background_color}
-					show={this.state.notification.show}
-					onClose={(e) => this.setState({ notification: { show: false } })}
-					text1={shared.foreverBanner.text.text1}
-					text2={shared.foreverBanner.text.text2}
-					textColor={shared.foreverBanner.text.text_color}
-					// linkValue={shared.foreverBanner.target.url}
-				/>
-			);
-		}
-
-		return null;
-	}
-
 	renderData(content) {
-		
+
 		const { listTypeGrid } = this.state;
 		const { discovery } = this.props;
 		const info = _.chain(discovery).get(`promo.${this.promoType}`).value().info;
+		const headerLabel = info ? `${info.title} <br /> ${info.product_count} Total Produk` : '';
 		const bannerInline = {
 			color: 'pink',
 			width: '100%',
 			height: '20%'
 		};
-		const headerLabel = info ? `${info.title} <br /> ${info.product_count} Total Produk` : '';
 		const HeaderPage = {
 			left: (
 				<Link to='/'>
@@ -134,23 +111,20 @@ class Promo extends Component {
 
 			)
 		};
-		const { shared } = this.props;
-		const foreverBannerData = shared.foreverBanner;
-		foreverBannerData.show = this.state.notification.show;
-		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+
+		const { shared, dispatch } = this.props;
+
 		return (
 			<div style={this.props.style}>
 				<Page>
 					{content}
+					{this.props.scroller.loading && <Spinner />}
 				</Page>
-				<Header.Modal {...HeaderPage} />
-				{
-					<ForeverBanner {...foreverBannerData} />
-				}
-				<Image alt='Product Terlaris' src='http://www.solidbackgrounds.com/images/950x350/950x350-light-pink-solid-color-background.jpg' style={bannerInline} />
-				<Navigation active='Promo' />
 
-				{this.props.scroller.loading}
+				<Header.Modal {...HeaderPage} />
+				{<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />}
+				<Image alt='Product Terlaris' src='http://www.solidbackgrounds.com/images/950x350/950x350-light-pink-solid-color-background.jpg' style={bannerInline} />
+				<Navigation active='Promo' scroll={this.props.scroll} />
 			</div>
 		);
 	}
@@ -182,7 +156,9 @@ const doAfterAnonymous = (props) => {
 	const filtr = home.segmen.filter((obj) => {
 		return obj.key === home.activeSegment;
 	});
+
 	const query = filtr && filtr[0] ? { segment_id: filtr[0].id } : {};
+
 	dispatch(actions.promoAction({
 		token: cookies.get('user.token'),
 		promoType: match.params.type,

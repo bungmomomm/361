@@ -19,19 +19,22 @@ const actions = createActions({
 	USER_GET_PROFILE: undefined,
 	USER_GET_PROFILE_FAIL: (error) => ({ profile: { error } }),
 	USER_GET_PROFILE_SUCCESS: (userProfile) => ({ userProfile }),
-	USER_FORGET_PASSWORD: undefined,
-	USER_FORGET_PASSWORD_FAIL: (error) => ({ forgot: { error } }),
-	USER_FORGET_PASSOWRD_SUCCESS: (message) => ({ forget: { message } }),
+	USER_CREDIT_CARD: (userCreditCard) => ({ userCreditCard }),
+	USER_FORGOT_PASSWORD: undefined,
+	USER_FORGOT_PASSWORD_FAIL: (error) => ({ forgot: { error } }),
+	USER_FORGOT_PASSWORD_SUCCESS: (message) => ({ forget: { message } }),
 	USER_NEW_PASSWORD: undefined,
 	USER_NEW_PASSWORD_FAIL: (error) => ({ newpassword: { error } }),
-	USER_NEW_PASSWORD_SUCCESS: (message) => ({ newpassword: { message } })
+	USER_NEW_PASSWORD_SUCCESS: (message) => ({ newpassword: { message } }),
+	USER_SOCIAL_LOGIN: undefined
 });
 
 const initialState = {
 	userProfile: false,
 	username: false,
 	isLoading: false,
-	isAnonymous: false
+	isAnonymous: false,
+	creditCard: {}
 };
 
 const reducer = handleActions({
@@ -66,6 +69,17 @@ const reducer = handleActions({
 			...action.payload
 		};
 	},
+	[actions.userCreditCard]: (state, action) => {
+		
+		return {
+			...state,
+			creditCard: {
+				...state.creditCard,
+				...action.payload.userCreditCard
+			},
+		};
+	},
+	[actions.userSocialLogin]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
 	[actions.userRegister]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
 	[actions.userRegisterFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
 	[actions.userRegisterSuccess]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
@@ -87,7 +101,10 @@ const reducer = handleActions({
 			isLoading: false,
 			isAnonymous: true
 		};
-	}
+	},
+	[actions.userForgotPassword]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
+	[actions.userForgotPasswordFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
+	[actions.userForgotPasswordSuccess]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
 }, initialState);
 export default {
 	actions,
