@@ -27,7 +27,7 @@ class UserProfile extends Component {
 
 		return (
 			<div>
-				<Page>
+				<Page style={{ paddingTop: 0 }}>
 					<Level className='bg--white'>
 						<Level.Left>
 							&nbsp;

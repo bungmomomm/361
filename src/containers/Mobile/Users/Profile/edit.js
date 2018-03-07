@@ -61,7 +61,7 @@ class UserProfileEdit extends Component {
 		);
 
 		return (
-			<Page>
+			<Page style={{ paddingTop: 0 }}>
 				<Level style={{ height: '55px' }}>
 					<Level.Left style={{ width: '80px' }}>
 						{

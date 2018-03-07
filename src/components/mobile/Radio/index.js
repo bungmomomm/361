@@ -8,7 +8,8 @@ class Radio extends PureComponent {
 		const radioClass = classNames(
 			className,
 			styles.container,
-			this.props.list ? styles.list : null
+			this.props.list ? styles.list : null,
+			this.props.variant ? styles[this.props.variant] : styles.bullet
 		);
 		return (
 			<div className={radioClass} style={this.props.style}>
