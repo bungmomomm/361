@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { infos, sellerProducts } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 import { to } from 'await-to-js';
+import { Promise } from 'es6-promise';
 // import { promo } from '@/data/translations';
 
 const configs = {
@@ -11,7 +12,8 @@ const configs = {
 
 const initSeller = (token, sellerId) => async (dispatch, getState) => {
 	const { shared } = getState();
-	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || process.env.MICROSERVICES_URL;
+	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 	const url = `${baseUrl}/sellerrating/${sellerId}`;
 
 	const [err, resp] = await to(request({
@@ -35,7 +37,8 @@ const getProducts = ({ token, query = {}, type = 'update' }) => async (dispatch,
 	dispatch(scrollerActions.onScroll({ loading: true }));
 
 	const { shared, scroller: { nextData } } = getState();
-	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || process.env.MICROSERVICES_URL;
+	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 	const url = `${baseUrl}/products/search`;
 
 	if (!query.page) {
