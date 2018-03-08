@@ -31,6 +31,7 @@ import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as searchActions } from '@/state/v4/SearchResults';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { Promise } from 'es6-promise';
+import Spinner from '../../../../components/mobile/Spinner';
 
 class Detail extends Component {
 	static queryObject(props) {
@@ -86,23 +87,39 @@ class Detail extends Component {
 		};
 	}
 	componentDidMount() {
-		const { cookies } = this.props;
 		window.addEventListener('scroll', this.handleScroll, true);
 
 		if ('serviceUrl' in this.props.shared) {
-			const { dispatch, shared } = this.props;
-			const searchService = _.chain(shared).get('serviceUrl.product').value() || false;
-			dispatch(brandAction.brandProductAction(cookies.get('user.token'), searchService, Detail.queryObject(this.props)));
-			dispatch(brandAction.brandBannerAction(cookies.get('user.token'), this.props.match.params.brandId));
+			const { dispatch, match: { params } } = this.props;
+			const qs = queryString.parse(location.search);
+			const data = {
+				token: this.userToken,
+				query: {
+					brand_id: params.brandId || 0,
+					...qs
+				}
+			};
+			console.log('data', data);
+			dispatch(brandAction.brandProductAction(data));
+			dispatch(brandAction.brandBannerAction(this.userToken, this.props.match.params.brandId));
 		}
 	}
 
 	componentWillReceiveProps(nextProps) {
 		const { cookies } = this.props;
 		if (!('serviceUrl' in this.props.shared) && 'serviceUrl' in nextProps.shared) {
-			const { dispatch, shared } = nextProps;
-			const searchService = _.chain(shared).get('serviceUrl.product').value() || false;
-			dispatch(brandAction.brandProductAction(cookies.get('user.token'), searchService, Detail.queryObject(nextProps)));
+			const { dispatch, match: { params } } = this.props;
+			const qs = queryString.parse(location.search);
+			const data = {
+				token: this.userToken,
+				query: {
+					brand_id: params.brandId || 0,
+					...qs
+				}
+			};
+			console.log('data', data);
+			dispatch(brandAction.brandProductAction(data));
+
 			dispatch(brandAction.brandBannerAction(cookies.get('user.token'), nextProps.match.params.brandId));
 		}
 
@@ -160,30 +177,31 @@ class Detail extends Component {
 		return this.props.brands.products_lovelist && this.props.brands.products_lovelist.filter(e => e.product_id === productId)[0];
 	}
 
-	update(params) {
-		const { shared, cookies, dispatch, location, history, match } = this.props;
+	update = (filters) => {
+		const { cookies, dispatch, match: { params }, location, history } = this.props;
 		const { query } = this.state;
 
 		const parsedUrl = queryString.parse(location.search);
 		const urlParam = {
-			query: query.q,
 			sort: query.sort,
-			per_page: query.per_page,
-			page: query.page,
 			...parsedUrl,
-			...params
+			...filters
 		};
 
 		const url = queryString.stringify(urlParam, {
 			encode: false
 		});
-		history.push(`${match.params.brandTitle}?${url}`);
-		const searchService = _.chain(shared).get('serviceUrl.product').value() || false;
-		const objParam = {
-			...query,
-			...params
+		history.push(`${params.brandTitle}?${url}`);
+		const data = {
+			token: cookies.get('user.token'),
+			query: {
+				...query,
+				...filters,
+				store_id: params.store_id || 0
+			},
+			type: 'init'
 		};
-		dispatch(brandAction.brandProductAction(cookies.get('user.token'), searchService, objParam));
+		dispatch(brandAction.brandProductAction(data));
 	}
 
 	handlePick(e) {
@@ -503,7 +521,7 @@ class Detail extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page color='white'>
 					<div style={{ marginTop: '-112px', marginBottom: '30px' }}>
 						{(showFilter) ? (
 							<Filter
@@ -520,6 +538,7 @@ class Detail extends Component {
 								{this.renderFilter()}
 								{this.renderTotalProduct()}
 								{this.renderProduct()}
+								{this.props.scroller.loading && (<Spinner />)}
 							</div>
 						)
 						}
@@ -558,7 +577,7 @@ const mapStateToProps = (state) => {
 			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`
 		};
 	});
-	
+
 	return {
 		...state,
 		brands

@@ -316,7 +316,7 @@ class Cart extends Component {
 
 		return (
 			<div>
-				<Page>
+				<Page color='white'>
 					<div style={{ backgroundColor: '#F5F5F5' }}>
 						{this.renderHeaderShopBag()}
 						{this.renderMessageNotProcedItems()}

@@ -11,6 +11,7 @@ import {
 
 import { userSocialLogin, userSocialLoginWithRedirect } from './social-action';
 import { getMyOrder, getMyOrderDetail, updateMyOrdersCurrent } from './myOrder-action';
+import { getTrackingInfo } from './tracking-action';
 
 const isSuccess = (response) => {
 	if (typeof response.data !== 'undefined' && typeof response.data.code !== 'undefined' && response.data.code === 200) {
@@ -309,5 +310,6 @@ export default {
 	getMyOrder,
 	getMyOrderDetail,
 	updateMyOrdersCurrent,
-	userOtp
+	userOtp,
+	getTrackingInfo,
 };
