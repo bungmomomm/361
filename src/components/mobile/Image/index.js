@@ -45,6 +45,7 @@ class Image extends Component {
 	onLoad() {
 		// Fix for carousel issue
 		this.triggerEvent(window, 'resize');
+		this.forceUpdate();
 	}
 
 	checkVisibility() {
