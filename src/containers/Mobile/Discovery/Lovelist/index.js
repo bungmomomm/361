@@ -196,7 +196,7 @@ class Lovelist extends Component {
 					</p>
 					<p className='margin--medium-v'>
 						<Link to='/'>
-							<Button to='/' inline size='medium' color='secondary'>BELANJA</Button>
+							<Button inline size='medium' color='secondary'>BELANJA</Button>
 						</Link>
 					</p>
 					<Image local className={styles.lovelistEmptyImg} alt='Tap the love icon' src='lovelist-guide.png' />

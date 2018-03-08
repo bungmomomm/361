@@ -432,7 +432,7 @@ class Products extends Component {
 
 		return (
 			<div>
-				<Page>
+				<Page color='#f9f9f9'>
 					<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
 						{status.pdpDataHasLoaded && (
 							<Card.Product
@@ -486,9 +486,6 @@ class Products extends Component {
 						{
 							status.pdpDataHasLoaded && <p className='padding--medium-h' dangerouslySetInnerHTML={{ __html: detail.description }} />
 						}
-						{/* <span className='margin--small-v padding--medium-h'>
-							<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
-						</span> */}
 						<div className='margin--medium-v --disable-flex padding--medium-h'>
 							{
 								(this.isLogin === 'true') &&
@@ -502,7 +499,7 @@ class Products extends Component {
 									<a href='/user/login'>Log in</a> / <a href='/user/register'>Register</a> untuk memberikan komentar
 								</span>
 							}
-							{(!_.isUndefined(comment.summary) && !_.isEmpty(comment.summary)) && (
+							{(!_.isUndefined(comment) && !_.isUndefined(comment.summary) && !_.isEmpty(comment.summary)) && (
 								<Comment type='lite-review' data={comment.summary} />
 							)}
 						</div>
@@ -530,7 +527,7 @@ class Products extends Component {
 													total={(typeof reviews.total !== 'undefined' && reviews.total > 0) ? reviews.total : 0}
 												/>
 												<div className='flex-row padding--small-h'>
-													<strong>{(typeof reviews.rating !== 'undefined' && reviews.rating > 0) ? reviews.rating : 0}</strong>/5
+													<strong>{(typeof reviews.rating !== 'undefined' && reviews.rating > 0) ? reviews.rating : 0}/5</strong>
 													<span className='font-color--primary-ext-2 padding--small-h'>
 														{(typeof reviews.total !== 'undefined' && reviews.total > 0) ? `(${reviews.total} Ulasan)` : 'Belum Ada Ulasan'}
 													</span>
@@ -547,12 +544,10 @@ class Products extends Component {
 										<SellerProfile
 											image={detail.seller.seller_logo}
 											status='gold'
-											isNewStore={false}
-											// successOrder={(!_.isUndefined(seller.success_order.rate)) ? (seller.success_order.rate || 0) : 0}
-											successOrder='98.9'
+											isNewStore={seller.is_new_seller}
+											successOrder={(!_.isUndefined(seller.success_order.rate)) ? (seller.success_order.rate || 0) : 0}
 											rating={seller.rating}
-											totalProduct='1920'
-											// totalProduct={(!_.isUndefined(seller.success_order.total)) ? (seller.success_order.total || 0) : 0}
+											totalProduct={(!_.isUndefined(seller.success_order.total)) ? (seller.success_order.total || 0) : 0}
 											name={detail.seller.seller}
 											location={detail.seller.seller_location}
 											description={(seller.description || '')}
