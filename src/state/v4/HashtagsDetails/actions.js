@@ -13,7 +13,7 @@ const hashtagDetailAction = (token, query = {}) => async (dispatch, getState) =>
 	const url = `${baseUrl}/campaign/post`;
 
 	const [err, resp] = await to(request({
-		token: token.token,
+		token,
 		path: url,
 		method: 'GET',
 		query,
