@@ -16,8 +16,6 @@ class CustomRoute extends PureComponent {
 		return <Route {...props} />;
 	}
 }
-export { CustomRoute };
-
 
 function mapStyles(styles) {
 	return {
