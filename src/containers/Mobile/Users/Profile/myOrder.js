@@ -110,14 +110,7 @@ class MyOrder extends Component {
 			right: null,
 			rows: [{
 				left: null,
-				center: (
-					<Tabs
-						type='minimal'
-						current={this.state.current}
-						variants={this.menu}
-						onPick={(e) => this.handlePick(e)}
-					/>
-				),
+				center: 'Pesanan Saya',
 				right: null
 			}]
 		});
@@ -126,6 +119,12 @@ class MyOrder extends Component {
 			<div style={this.props.style}>
 				<Page>
 					<div className='margin--medium'>
+						<Tabs
+							type='minimal'
+							current={this.state.current}
+							variants={this.menu}
+							onPick={(e) => this.handlePick(e)}
+						/>
 						{ this.renderOrders() }
 						{ this.props.scroller.loading && (<Spinner />)}
 					</div>
