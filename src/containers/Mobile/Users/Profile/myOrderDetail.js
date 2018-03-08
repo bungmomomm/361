@@ -26,9 +26,15 @@ class MyOrderDetail extends Component {
 					<small>No. Resi: {order.shipping.resi.resi}</small>
 					<small>Layanan Pengiriman: {order.shipping.shipping_method}</small>
 				</Level.Item>
-				<Level.Right style={{ alignItems: 'flex-end' }}>
-					<Button rounded inline size='small' color='white'>Lacak</Button>
-				</Level.Right>
+				{
+					order.shipping.resi.is_trackable === 1 && (
+						<Level.Right style={{ alignItems: 'flex-end' }}>
+							<Link to={`/track/${order.shipping.resi.provider}/${order.shipping.resi.resi}`}>
+								<Button rounded inline size='small' color='white'>Lacak</Button>
+							</Link>
+						</Level.Right>)
+				}
+
 			</Level>
 		);
 	}
@@ -40,6 +46,9 @@ class MyOrderDetail extends Component {
 		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
 		this.soNumber = this.props.match.params.so_number;
 
+		if (this.isLogin !== 'true') {
+			this.props.history.push('/');
+		}
 	}
 
 	componentWillMount() {

@@ -8,15 +8,75 @@ import {
 	Svg,
 	Level,
 	Page,
-	Timeline
+	Timeline,
+	Spinner
 } from '@/components/mobile';
-// import styles from './profile.scss';
+import { actions as userAction } from '@/state/v4/User';
 
 class MyOrderDetail extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {};
+		this.provider = this.props.match.params.provider;
+		this.so_number = this.props.match.params.so_number;
+
+		if (this.isLogin !== 'true') {
+			this.props.history.push('/');
+		}
+	}
+
+	componentWillMount() {
+		if ('serviceUrl' in this.props.shared) {
+			const { dispatch } = this.props;
+			dispatch(userAction.getTrackingInfo(this.userToken, this.provider, this.so_number));
+		}
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (!('serviceUrl' in this.props.shared) && 'serviceUrl' in nextProps.shared) {
+			const { dispatch } = this.props;
+			dispatch(userAction.getTrackingInfo(this.userToken, this.provider, this.so_number));
+		}
+
+		if (nextProps.user.trackingInfo !== this.props.user.trackingInfo && nextProps.user.trackingInfo === false) {
+			this.props.history.push('/profile-my-order');
+		}
+	}
+
+	renderTopInfo() {
+		const tracking = this.props.user.trackingInfo;
+		return tracking && (
+			<Level className='padding--none-h padding--medium-v' style={{ borderBottom: '1px solid #D8D8D8' }}>
+				<Level.Left className='padding--medium-r'><Svg src='ico_truck-2.svg' /></Level.Left>
+				<Level.Item>
+					<strong>Status {tracking.status}</strong>
+					<p><small>
+						No. Resi: {tracking.resi}<br />
+						Layanan Pengiriman: {tracking.shipping_method}
+					</small></p>
+				</Level.Item>
+			</Level>
+		);
+	}
+
+	renderTimeline() {
+		const tracking = this.props.user.trackingInfo;
+		const total = tracking && tracking.historical.length;
+		const timeline = total > 0 && tracking.historical.reverse().map((item, key) => {
+			const active = (key === 0) && ({ active: 'active' });
+			return (
+				<Timeline.Item {...active} key={key}>
+					<Timeline.Header>{item.status}</Timeline.Header>
+					<Timeline.Content><small>{item.time}</small></Timeline.Content>
+				</Timeline.Item>
+			);
+		});
+		return tracking && (
+			<Timeline className='margin--medium-v '>
+				{timeline}
+			</Timeline>
+		);
 	}
 
 	render() {
@@ -34,38 +94,9 @@ class MyOrderDetail extends Component {
 			<div style={this.props.style}>
 				<Page>
 					<div className='margin--medium-v padding--medium-h bg--white'>
-						<Level className='padding--none-h padding--medium-v' style={{ borderBottom: '1px solid #D8D8D8' }}>
-							<Level.Left className='padding--medium-r'><Svg src='ico_truck-2.svg' /></Level.Left>
-							<Level.Item>
-								<strong>Status Pengiriman</strong>
-								<p><small>
-									No. Resi: CGK-872365723652<br />
-									Layanan Pengiriman: JNE
-								</small></p>
-							</Level.Item>
-						</Level>
-						<Timeline className='margin--medium-v '>
-							<Timeline.Item>
-								<Timeline.Header>SERANG Paket akan dikirim ke alamat Penerima Penerima</Timeline.Header>
-								<Timeline.Content><small>8 April 2017 12:30</small></Timeline.Content>
-							</Timeline.Item>
-							<Timeline.Item active>
-								<Timeline.Header>SERANG Paket akan dikirim ke alamat Penerima Penerima</Timeline.Header>
-								<Timeline.Content><small>8 April 2017 12:30</small></Timeline.Content>
-							</Timeline.Item>
-							<Timeline.Item>
-								<Timeline.Header>SERANG Paket akan dikirim ke alamat Penerima Penerima</Timeline.Header>
-								<Timeline.Content><small>8 April 2017 12:30</small></Timeline.Content>
-							</Timeline.Item>
-							<Timeline.Item>
-								<Timeline.Header>TANGERANG Paket akan dikirim ke alamat Penerima Penerima</Timeline.Header>
-								<Timeline.Content><small>8 April 2017 12:30</small></Timeline.Content>
-							</Timeline.Item>
-							<Timeline.Item>
-								<Timeline.Header>TANGERANG Paket akan dikirim ke alamat Penerima Penerima</Timeline.Header>
-								<Timeline.Content><small>8 April 2017 12:30</small></Timeline.Content>
-							</Timeline.Item>
-						</Timeline>
+						{this.props.user.trackingInfo === null && <Spinner />}
+						{this.renderTopInfo()}
+						{this.renderTimeline()}
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />
@@ -76,7 +107,8 @@ class MyOrderDetail extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		shared: state.shared
+		shared: state.shared,
+		user: state.users
 	};
 };
 
