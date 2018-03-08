@@ -17,6 +17,9 @@ class EditPassword extends Component {
 		this.NEW_PWD_FIELD = CONST.USER_PROFILE_FIELD.newPwd;
 
 		this.state = {
+			visibleOldPassword: false,
+			visibleNewPassword: false,
+			visibleConfPassword: false,
 			[this.OLD_PWD_FIELD]: '',
 			[this.NEW_PWD_FIELD]: '',
 			formResult: {
@@ -31,6 +34,12 @@ class EditPassword extends Component {
 				formResult: nextProps.formResult
 			});
 		}
+	}
+
+	setVisiblePassword(type) {
+		this.setState({
+			[type]: !this.state[type]
+		});
 	}
 
 	inputHandler(e) {
@@ -89,19 +98,21 @@ class EditPassword extends Component {
 	}
 
 	renderPasswordForm() {
+		const { visibleOldPassword, visibleNewPassword, visibleConfPassword } = this.state;
+
 		return (
 			<form style={{ padding: '15px' }}>
 				<div className='margin--medium-v'>
 					<label className={styles.label} htmlFor='editPassword'>Password Saat Ini</label>
-					<Input name={this.OLD_PWD_FIELD} id='editPassword' type='password' flat onChange={(e) => this.inputHandler(e)} />
+					<Input name={this.OLD_PWD_FIELD} id='editPassword' flat onChange={(e) => this.inputHandler(e)} iconRight={<Button onClick={() => this.setVisiblePassword('visibleOldPassword')}>show</Button>} type={visibleOldPassword ? 'text' : 'password'} />
 				</div>
 				<div className='margin--medium-v'>
 					<label className={styles.label} htmlFor='editPasswordNew'>Password Baru</label>
-					<Input name={this.NEW_PWD_FIELD} id='editPasswordNew' type='password' flat onChange={(e) => this.inputHandler(e)} />
+					<Input name={this.NEW_PWD_FIELD} id='editPasswordNew' flat onChange={(e) => this.inputHandler(e)} iconRight={<Button onClick={() => this.setVisiblePassword('visibleNewPassword')}>show</Button>} type={visibleNewPassword ? 'text' : 'password'} />
 				</div>
 				<div className='margin--medium-v'>
 					<label className={styles.label} htmlFor='editPasswordNew'>Ulangi Password Baru</label>
-					<Input id='editPasswordNewConfirm' type='password' flat />
+					<Input id='editPasswordNewConfirm' flat iconRight={<Button onClick={() => this.setVisiblePassword('visibleConfPassword')}>show</Button>} type={visibleConfPassword ? 'text' : 'password'} />
 				</div>
 				{this.renderNotif()}
 				{this.renderSubmitButton()}

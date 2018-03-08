@@ -11,7 +11,7 @@ import Recaptcha from 'react-recaptcha';
 
 import Shared from '@/containers/Mobile/Shared';
 import EditEmail from './layouts/editEmail';
-import EditHp from './layouts/editHp';
+import EditHp from './layouts/editHP';
 import EditPassword from './layouts/editPassword';
 import EditOvo from './layouts/editOVO';
 
@@ -66,9 +66,13 @@ class UserProfileEdit extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
+		const { formData } = this.state;
 		if (nextProps.userProfile !== false) {
 			this.setState({
-				formData: nextProps.userProfile
+				formData: {
+					...formData,
+					...nextProps.userProfile
+				}
 			});
 		}
 	}
@@ -170,6 +174,11 @@ class UserProfileEdit extends Component {
 			} else if (layout === this.OVO_ID_FIELD) {
 				newData = {
 					[this.PHONE_FIELD]: formData[this.OVO_ID_FIELD]
+				};
+			} else if (layout === this.NEW_PWD_FIELD) {
+				newData = {
+					[this.NEW_PWD_FIELD]: formData[this.NEW_PWD_FIELD],
+					[this.OLD_PWD_FIELD]: formData[this.OLD_PWD_FIELD],
 				};
 			} else {
 				newData = {
@@ -512,7 +521,7 @@ class UserProfileEdit extends Component {
 		return (
 			<Recaptcha
 				ref={e => { this.recaptchaInstance = e; }}
-				sitekey='6LdMGksUAAAAADEJ2zoYsmw1f1gdXItTsUTDCWXe'
+				sitekey={process.env.GOOGLE_CAPTCHA_SITE_KEY}
 				size='invisible'
 				verifyCallback={(e) => this.submitFormData(e)}
 			/>
