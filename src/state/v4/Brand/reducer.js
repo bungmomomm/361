@@ -48,11 +48,18 @@ const reducer = handleActions({
 			loading
 		};
 	},
-	[brandProducts](state, { payload: { searchStatus, searchData, query } }) {
+	[brandProducts](state, { payload: { searchStatus, data, type } }) {
+		const products = type === 'update' ?
+			Array.from([...state.searchData.products, ...data.products].reduce((m, t) => m.set(t.product_id, t), new Map()).values())
+			: data.products;
 		return {
 			...state,
+			searchData: {
+				...state.data,
+				...data,
+				products
+			},
 			searchStatus,
-			searchData
 		};
 	},
 	[brandLoadingProducts](state, { payload: { loading_products } }) {

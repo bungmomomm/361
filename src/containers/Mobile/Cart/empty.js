@@ -21,7 +21,7 @@ class Empty extends Component {
 		};
 		return (
 			<div className='full-height'>
-				<Page>
+				<Page color='white'>
 					<div className='padding--medium-h text-center full-height'>
 						<div className='margin--large-v'>
 							<div className='font-large'>Shopping Bag Kamu Masih Kosong</div>
