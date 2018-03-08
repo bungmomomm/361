@@ -15,7 +15,10 @@ const Select = (props) => {
 					<div><Button onClick={() => props.onClose()}>SELESAI</Button></div>
 				</div>
 
-				<Picker onValueChange={(value) => props.onChange(value)}>
+				<Picker
+					onValueChange={(value) => props.onChange(value)}
+					defaultSelectedValue={props.defaultValue}
+				>
 					{
 						props.options.map((option, key) => {
 							const pickerItemClass = classNames(

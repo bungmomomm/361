@@ -15,22 +15,18 @@ class Address extends Component {
 		allowSubmit: false,
 		showSelect: {
 			province: false,
-			city: false,
 			district: false
 		},
 		disabled: {
 			province: false,
-			city: true,
 			district: true
 		},
 		selected: {
 			province: '',
-			city: '',
 			district: ''
 		},
 		type: 'shipping',
-		submitting: false,
-		default: 0
+		submitting: false
 	};
 
 	onChange = (v, which = 'province') => {
@@ -42,15 +38,14 @@ class Address extends Component {
 		});
 
 		if (which === 'province') {
+
 			this.setState({
 				disabled: {
 					...this.state.disabled,
-					city: true,
 					district: true
 				},
 				selected: {
 					...this.state.selected,
-					city: '',
 					district: ''
 				}
 			});
@@ -58,38 +53,13 @@ class Address extends Component {
 			if (v) {
 				(async () => {
 					const { dispatch, cookies } = this.props;
-					const [err, resp] = await to(dispatch(actions.getCity(cookies.get('user.token'), { province_id: v })));
-
-					if (err) {
-						return Promise.reject(err);
-					}
-
-					this.setState({
-						disabled: {
-							...this.state.disabled,
-							city: false
+					const [err, resp] = await to(dispatch(actions.getDistrict({
+						token: cookies.get('user.token'),
+						query: {
+							offset: 30,
+							province_id: v
 						}
-					});
-
-					return Promise.resolve(resp);
-				})();
-			}
-		} else if (which === 'city') {
-			this.setState({
-				disabled: {
-					...this.state.disabled,
-					district: true
-				},
-				selected: {
-					...this.state.selected,
-					district: ''
-				}
-			});
-
-			if (v) {
-				(async () => {
-					const { dispatch, cookies } = this.props;
-					const [err, resp] = await to(dispatch(actions.getDistrict(cookies.get('user.token'), { offset: 30 })));
+					})));
 
 					if (err) {
 						return Promise.reject(err);
@@ -129,10 +99,6 @@ class Address extends Component {
 		this.setState({ allowSubmit: true });
 	};
 
-	radioChange = (v) => {
-		this.setState({ default: v });
-	};
-
 	submit = async (model) => {
 		model = {
 			...model,
@@ -140,8 +106,7 @@ class Address extends Component {
 			country_id: 1,
 			is_supported_pin_point: 0,
 			latitude: '',
-			longitude: '',
-			default: this.state.default
+			longitude: ''
 		};
 
 		const { dispatch, cookies, history } = this.props;
@@ -154,15 +119,11 @@ class Address extends Component {
 	renderData = () => {
 		const { address } = this.props;
 		const provinces = address.options.provinces;
-		const cities = address.options.cities;
 		const districts = address.options.districts;
 
 		const selected = {
 			province: provinces.filter((obj) => {
 				return obj.value === this.state.selected.province;
-			}),
-			city: cities.filter((obj) => {
-				return obj.value === this.state.selected.city;
 			}),
 			district: districts.filter((obj) => {
 				return obj.value === this.state.selected.district;
@@ -180,18 +141,14 @@ class Address extends Component {
 				>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='default_address'>Jadikan Alamat Utama</label>
-						<input
-							id='default_address'
+						<Input
 							type='radio'
-							name='default_address'
-							onChange={this.radioChange}
+							name='default_address[]'
 							value={0}
 						/> Tidak
-						<input
-							id='default_address'
+						<Input
 							type='radio'
-							name='default_address'
-							onChange={this.radioChange}
+							name='default_address[]'
 							value={1}
 						/> Ya
 					</div>
@@ -243,7 +200,7 @@ class Address extends Component {
 					</div>
 
 					<div className='margin--medium'>
-						<label className={styles.label} htmlFor='province'>Provinsi</label>
+						<label className={styles.label} htmlFor='province'>Kota, Provinsi</label>
 						<Level
 							className='flex-row border-bottom'
 							onClick={
@@ -268,7 +225,7 @@ class Address extends Component {
 							name='province'
 							options={provinces}
 							onChange={this.onChange}
-							onClose={() => this.toggleShow()}
+							onClose={() => this.toggleShow('province')}
 							defaultValue={selected.province.length ? selected.province[0].value : ''}
 						/>
 						<Input
@@ -280,45 +237,6 @@ class Address extends Component {
 							}}
 							validationError='This field is required'
 							value={this.state.selected.province}
-							required
-						/>
-					</div>
-
-					<div className='margin--medium'>
-						<label className={styles.label} htmlFor='city'>Kota, Kabupaten</label>
-						<Level
-							className='flex-row border-bottom'
-							onClick={
-								(this.state.disabled.city || this.state.submitting) ? false : () => this.toggleShow('city')
-							}
-						>
-							<Level.Left>
-								<Button className='flex-center' disabled={(this.state.disabled.city || this.state.submitting)}>
-									<span style={{ marginRight: '10px' }}>
-										{selected.city.length ? selected.city[0].label : '- Select City -'}
-									</span>
-								</Button>
-							</Level.Left>
-							<Level.Right>
-								<Svg src='ico_chevron-down.svg' />
-							</Level.Right>
-						</Level>
-						<Select
-							horizontal
-							show={this.state.showSelect.city}
-							label='Kota, Kabupaten *'
-							name='city'
-							options={cities}
-							onChange={(v) => this.onChange(v, 'city')}
-							onClose={() => this.toggleShow('city')}
-							defaultValue={selected.city.length ? selected.city[0].value : ''}
-						/>
-						<Input
-							id='city_id'
-							name='city_id'
-							type='hidden'
-							validationError='This field is required'
-							value={this.state.selected.city}
 							required
 						/>
 					</div>
