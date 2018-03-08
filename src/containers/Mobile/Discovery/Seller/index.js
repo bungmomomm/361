@@ -7,13 +7,14 @@ import Scroller from '@/containers/Mobile/Shared/scroller';
 import { actions } from '@/state/v4/Seller';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 import Filter from '@/containers/Mobile/Shared/Filter';
+import Love from '@/containers/Mobile/Shared/Widget/Love';
 import Sort from '@/containers/Mobile/Shared/Sort';
 import { withRouter } from 'react-router-dom';
 import stylesCatalog from '../Category/Catalog/catalog.scss';
 import styles from './styles.scss';
 import Spinner from '@/components/mobile/Spinner';
 import Share from '@/components/mobile/Share';
-import { hyperlink, renderIf } from '@/utils';
+import { urlBuilder, renderIf } from '@/utils';
 import _ from 'lodash';
 import queryString from 'query-string';
 import SellerProfile from './components/SellerProfile';
@@ -118,6 +119,11 @@ class Seller extends Component {
 			showFilter: false
 		});
 	};
+
+	forceLoginNow() {
+		const { history } = this.props;
+		history.push(`/login?redirect_uri=${location.pathname}`);
+	}
 
 	update = (filters) => {
 		const { cookies, dispatch, match: { params }, location, history } = this.props;
@@ -245,8 +251,8 @@ class Seller extends Component {
 		);
 	};
 
-	renderList = (productData, index) => {
-		if (productData) {
+	renderList = (product, index) => {
+		if (product) {
 			const renderBlockComment = (
 				<div className={stylesCatalog.commentBlock}>
 					<Button>View 38 comments</Button>
@@ -263,11 +269,20 @@ class Seller extends Component {
 				return (
 					<div key={index} className={stylesCatalog.cardCatalog}>
 						<Card.Catalog
-							images={productData.images}
-							productTitle={productData.product_title}
-							brandName={productData.brand.name}
-							pricing={productData.pricing}
-							linkToPdp={hyperlink('', ['product', productData.product_id], null)}
+							images={product.images}
+							productTitle={product.product_title}
+							brandName={product.brand.name}
+							pricing={product.pricing}
+							linkToPdp={product.url}
+							love={(
+								<Love
+									status={product.lovelistStatus}
+									data={product.product_id}
+									total={product.lovelistTotal}
+									onNeedLogin={() => this.forceLoginNow()}
+									showNumber
+								/>
+							)}
 						/>
 						{renderBlockComment}
 					</div>
@@ -276,20 +291,28 @@ class Seller extends Component {
 				return (
 					<Card.CatalogGrid
 						key={index}
-						images={productData.images}
-						productTitle={productData.product_title}
-						brandName={productData.brand.name}
-						pricing={productData.pricing}
-						linkToPdp={hyperlink('', ['product', productData.product_id], null)}
+						images={product.images}
+						productTitle={product.product_title}
+						brandName={product.brand.name}
+						pricing={product.pricing}
+						linkToPdp={product.url}
+						love={(
+							<Love
+								status={product.lovelistStatus}
+								data={product.product_id}
+								total={product.lovelistTotal}
+								onNeedLogin={() => this.forceLoginNow()}
+							/>
+						)}
 					/>
 				);
 			case 'small':
 				return (
 					<Card.CatalogSmall
 						key={index}
-						images={productData.images}
-						pricing={productData.pricing}
-						linkToPdp={hyperlink('', ['product', productData.product_id], null)}
+						images={product.images}
+						pricing={product.pricing}
+						linkToPdp={product.url}
 					/>
 				);
 			default:
@@ -380,6 +403,23 @@ class Seller extends Component {
 }
 
 const mapStateToProps = (state) => {
+	const { comments, lovelist, seller } = state;
+	seller.data.products = _.map(seller.data.products, (product) => {
+		const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: product.product_id }) : false;
+		const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: product.product_id }) : false;
+		if (lovelistData) {
+			product.lovelistTotal = lovelistData.total;
+			product.lovelistStatus = lovelistData.status;
+		}
+		if (commentData) {
+			product.commentTotal = commentData.total;
+		}
+		return {
+			...product,
+			url: urlBuilder.buildPdp(product.product_title, product.product_id),
+			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`
+		};
+	});
 	return {
 		...state
 	};

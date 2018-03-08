@@ -11,6 +11,7 @@ import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Filter from '@/containers/Mobile/Shared/Filter';
 import Sort from '@/containers/Mobile/Shared/Sort';
+import Love from '@/containers/Mobile/Shared/Widget/Love';
 
 import {
 	Header,
@@ -23,7 +24,6 @@ import {
 	Input,
 	Navigation,
 	Spinner,
-	Modal,
 	Comment
 } from '@/components/mobile';
 
@@ -48,7 +48,6 @@ class Product extends Component {
 			mode: 1,
 			showFilter: false,
 			showSort: false,
-			showLoginPopup: false,
 			query: {
 				category_id: '',
 				page: 0,
@@ -149,47 +148,14 @@ class Product extends Component {
 		}
 	}
 
-	loginLater() {
-		this.setState({
-			showLoginPopup: false
-		});
-	}
-
-	loginNow() {
+	forceLoginNow() {
 		const { history } = this.props;
 		history.push(`/login?redirect_uri=${location.pathname}`);
-		this.setState({
-			showLoginPopup: false
-		});
-	}
-
-	async ilovethis(add, product) {
-		const { cookies, dispatch, productCategory } = this.props;
-		if (cookies.get('isLogin') === 'true') {
-			let response;
-			if (add) {
-				response = await to(dispatch(lovelistActions.addToLovelist(cookies.get('user.token'), product.product_id)));
-			} else {
-				response = await to(dispatch(lovelistActions.removeFromLovelist(cookies.get('user.token'), product.product_id)));
-			}
-			if (response[0] !== null) {
-				return response[0];
-			}
-			const productIdList = _.map(productCategory.pcpData.products, 'product_id') || null;
-			dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
-		} else {
-			this.setState({
-				showLoginPopup: true
-			});
-		}
-
-		return null;
 	}
 
 	renderPage() {
 		const { productCategory, isLoading } = this.props;
-		const { showFilter, showLoginPopup } = this.state;
+		const { showFilter } = this.state;
 		if (showFilter) {
 			return (
 				<Filter
@@ -211,24 +177,6 @@ class Product extends Component {
 				{this.renderHeader()}
 				{this.renderTabs()}
 				{this.renderForeverBanner()}
-				<Modal show={showLoginPopup}>
-					<div className='font-medium'>
-						<h3 className='text-center'>Lovelist</h3>
-						<Level style={{ padding: '0px' }} className='margin--medium-v'>
-							<Level.Left />
-							<Level.Item className='padding--medium-h'>
-								<div className='font-small'>Silahkan login/register untuk menambahkan produk ke Lovelist</div>
-							</Level.Item>
-						</Level>
-					</div>
-					<Modal.Action
-						closeButton={(
-							<Button onClick={(e) => this.loginLater()}>
-								<span className='font-color--primary-ext-2'>NANTI</span>
-							</Button>)}
-						confirmButton={(<Button onClick={(e) => this.loginNow()}>SEKARANG</Button>)}
-					/>
-				</Modal>
 				<Navigation active='Categories' scroll={this.props.scroll} />
 			</div>
 		);
@@ -277,9 +225,15 @@ class Product extends Component {
 							linkToPdp={product.url}
 							commentTotal={product.commentTotal}
 							commentUrl={product.commentUrl}
-							lovelistTotal={product.lovelistTotal}
-							lovelistStatus={product.lovelistStatus}
-							lovelistAddTo={(add) => this.ilovethis(add, product)}
+							love={(
+								<Love
+									status={product.lovelistStatus}
+									data={product.product_id}
+									total={product.lovelistTotal}
+									onNeedLogin={() => this.forceLoginNow()}
+									showNumber
+								/>
+							)}
 						/>
 						{comments && comments.loading ? this.renderLoading : this.renderComment(product.product_id) }
 					</div>
@@ -293,8 +247,15 @@ class Product extends Component {
 						brandName={product.brand.name}
 						pricing={product.pricing}
 						linkToPdp={product.url}
-						lovelistStatus={product.lovelistStatus}
-						lovelistAddTo={(add) => this.ilovethis(add, product)}
+						love={(
+							<Love
+								status={product.lovelistStatus}
+								data={product.product_id}
+								total={product.lovelistTotal}
+								onNeedLogin={() => this.forceLoginNow()}
+								showNumber
+							/>
+						)}
 					/>
 				);
 			case 3:
@@ -456,13 +417,17 @@ const mapStateToProps = (state) => {
 	productCategory.pcpData.products = _.map(productCategory.pcpData.products, (product) => {
 		const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: product.product_id }) : false;
 		const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: product.product_id }) : false;
+		if (lovelistData) {
+			product.lovelistTotal = lovelistData.total;
+			product.lovelistStatus = lovelistData.status;
+		}
+		if (commentData) {
+			product.commentTotal = commentData.total;
+		}
 		return {
 			...product,
 			url: urlBuilder.buildPdp(product.product_title, product.product_id),
-			commentTotal: commentData ? commentData.total : 0,
-			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`,
-			lovelistTotal: lovelistData ? lovelistData.total : 0,
-			lovelistStatus: lovelistData ? lovelistData.status : 0
+			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`
 		};
 	});
 

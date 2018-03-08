@@ -189,6 +189,7 @@ class Hashtags extends Component {
 }
 
 const mapStateToProps = (state) => {
+
 	return {
 		...state
 	};

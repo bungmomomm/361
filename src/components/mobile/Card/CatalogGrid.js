@@ -69,6 +69,7 @@ class CatalogGrid extends PureComponent {
 			lovelistStatus,
 			lovelistDisable,
 			lovelistAddTo,
+			love,
 			optimistic,
 			...props
 		} = this.props;
@@ -93,7 +94,14 @@ class CatalogGrid extends PureComponent {
 		const basePrice = pricing.discount !== '' && pricing.discount !== '0%' ? (
 			<div className={styles.discount}>{pricing.formatted.base_price}</div>
 		) : '';
-
+		let loveButton = (
+			<Button onClick={(e) => this.lovelistAddTo()} disabled={disableLovelist}>
+				<Svg src={lovelistIcon} />
+			</Button>
+		);
+		if (love) {
+			loveButton = love;
+		}
 		return (
 			<div className={createClassName} {...props} data-loved={lovelistStatus}>
 				<Link to={linkToPdp || '/'}>
@@ -109,9 +117,7 @@ class CatalogGrid extends PureComponent {
 						</Link>
 					</Level.Item>
 					<Level.Right>
-						<Button onClick={(e) => this.lovelistAddTo()} disabled={disableLovelist}>
-							<Svg src={lovelistIcon} />
-						</Button>
+						{loveButton}
 					</Level.Right>
 				</Level>
 				<Link to={linkToPdp || '/'}>
@@ -133,6 +139,7 @@ class CatalogGrid extends PureComponent {
 
 CatalogGrid.defaultProps = {
 	linkToPdp: '/',
+	love: null,
 	optimistic: true // set to false if lovelist using loading, true otherwise
 };
 
