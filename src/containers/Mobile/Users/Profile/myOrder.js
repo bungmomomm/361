@@ -30,6 +30,10 @@ class MyOrder extends Component {
 		];
 		this.isLogin = this.props.cookies.get('isLogin');
 		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
+
+		if (this.isLogin !== 'true') {
+			this.props.history.push('/');
+		}
 	}
 
 	componentWillMount() {
@@ -48,6 +52,9 @@ class MyOrder extends Component {
 		if (!('serviceUrl' in this.props.shared) && 'serviceUrl' in nextProps.shared) {
 			const { dispatch } = this.props;
 			dispatch(userAction.getMyOrder(this.userToken));
+		}
+		if (nextProps.user.myOrders !== this.props.user.myOrders && nextProps.user.myOrders === false) {
+			this.props.history.push('/profile');
 		}
 	}
 
@@ -73,7 +80,7 @@ class MyOrder extends Component {
 		return currentOrders && (
 			currentOrders.orders.map((order, key) => {
 				return (<List key={key}>
-					<Link style={{ flexFlow: 'row nowrap' }} to={`/profile-my-order/${order.so_number}`}>
+					<Link style={{ flexFlow: 'row nowrap' }} to={`/profile/my-order/${order.so_number}`}>
 						<List.Image>
 							<div className={styles.orderIconCtr}>
 								<Svg src='ico_money-time.svg' />
@@ -103,14 +110,7 @@ class MyOrder extends Component {
 			right: null,
 			rows: [{
 				left: null,
-				center: (
-					<Tabs
-						type='minimal'
-						current={this.state.current}
-						variants={this.menu}
-						onPick={(e) => this.handlePick(e)}
-					/>
-				),
+				center: 'Pesanan Saya',
 				right: null
 			}]
 		});
@@ -119,6 +119,12 @@ class MyOrder extends Component {
 			<div style={this.props.style}>
 				<Page>
 					<div className='margin--medium'>
+						<Tabs
+							type='minimal'
+							current={this.state.current}
+							variants={this.menu}
+							onPick={(e) => this.handlePick(e)}
+						/>
 						{ this.renderOrders() }
 						{ this.props.scroller.loading && (<Spinner />)}
 					</div>

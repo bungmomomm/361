@@ -156,7 +156,7 @@ export default {
 			component: ProductsGuide,
 			exact: true
 		}, {
-			path: '/product/:id',
+			path: '/([^/]+)-:id([0-9]+).html',
 			component: Products,
 			exact: true
 		},
@@ -196,6 +196,7 @@ export default {
 		},
 		{
 			path: '/profile',
+			exact: true,
 			component: UserProfile
 		},
 		{
@@ -247,16 +248,16 @@ export default {
 			component: UserProfileEditPassword
 		},
 		{
-			path: '/profile-my-order',
+			path: '/profile/my-order',
 			component: MyOrder,
 			exact: true,
 		},
 		{
-			path: '/profile-my-order/:so_number([a-zA-Z0-9-]+)',
+			path: '/profile/my-order/:so_number([a-zA-Z0-9-]+)',
 			component: MyOrderDetail
 		},
 		{
-			path: '/profile-my-order-tracking',
+			path: '/track/:provider/:so_number([a-zA-Z0-9-]+)',
 			component: MyOrderTracking
 		},
 		{
