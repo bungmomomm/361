@@ -11,7 +11,7 @@ import Recaptcha from 'react-recaptcha';
 
 import Shared from '@/containers/Mobile/Shared';
 import EditEmail from './layouts/editEmail';
-import EditHp from './layouts/editHp';
+import EditHp from './layouts/editHP';
 import EditPassword from './layouts/editPassword';
 import EditOvo from './layouts/editOVO';
 
@@ -263,7 +263,7 @@ class UserProfileEdit extends Component {
 				</Notification>
 			);
 		}
-		
+
 		return null;
 	}
 
@@ -397,7 +397,7 @@ class UserProfileEdit extends Component {
 				</Level>
 			</div>
 		);
-		
+
 		const birthdayValue = moment(formData[this.BIRTHDAY_FIELD]).isValid() === true ? moment(formData[this.BIRTHDAY_FIELD]).format('YYYY-MM-DD') : '';
 		const birthdayField = (
 			<div className='margin--medium-v'>
