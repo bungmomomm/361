@@ -1,7 +1,23 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { Route } from 'react-router-dom';
 import { spring, AnimatedSwitch } from 'react-router-transition';
 import routes from './routes';
+
+class CustomRoute extends PureComponent {
+	constructor(props) {
+		super(props);
+		this.props = props;
+	}
+	componentWillMount() {
+		window.mmLoading.play();
+	}
+	render() {
+		const { ...props } = this.props;
+		return <Route {...props} />;
+	}
+}
+export { CustomRoute };
+
 
 function mapStyles(styles) {
 	return {
@@ -37,7 +53,9 @@ export default () => (
 			mapStyles={mapStyles}
 			className='switch-wrapper'
 		>
-			{ routes.parent.map((route, i) => (<Route {...route} key={`parent-${i}`} />)) }
+			{ routes.parent.map((route, i) => (
+				<CustomRoute {...route} key={`parent-${i}`} />
+			))}
 		</AnimatedSwitch>
 	</div>
 );
