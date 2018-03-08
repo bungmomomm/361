@@ -102,8 +102,8 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (props) => {
-	props.dispatch(
+const doAfterAnonymous = async (props) => {
+	await props.dispatch(
 		new actions.recomendationAction(
 			props.cookies.get('user.token'),
 			_.chain(props).get('home.segmen').find(d => d.key === props.home.activeSegment).value(),

@@ -425,7 +425,7 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (props) => {
+const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies, match: { params }, location } = props;
 
 	if (isNaN(parseInt(params.store_id, 10))) {
@@ -441,8 +441,8 @@ const doAfterAnonymous = (props) => {
 		}
 	};
 
-	dispatch(actions.initSeller(data.token, data.query.store_id));
-	dispatch(actions.getProducts(data));
+	await dispatch(actions.initSeller(data.token, data.query.store_id));
+	await dispatch(actions.getProducts(data));
 };
 
 export default withRouter(withCookies(connect(mapStateToProps)(Scroller(Shared(Seller, doAfterAnonymous)))));

@@ -11,6 +11,7 @@ const Modal = props => {
 	);
 	const modalClass = classNames(
 		styles.modal,
+		props.rows ? styles.rows : null,
 		props.transparent ? styles.transparent : null
 	);
 	return (

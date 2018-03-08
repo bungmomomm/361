@@ -34,6 +34,7 @@ const getMyOrderMore = ({ token, query = {}, type }) => async (dispatch, getStat
 	);
 
 	if (err) {
+		dispatch(scrollerActions.onScroll({ loading: false, nextPage: false }));
 		return Promise.reject(err);
 	};
 
@@ -91,6 +92,7 @@ const getMyOrder = (token) => async (dispatch, getState) => {
 	dispatch(scrollerActions.onScroll({
 		nextData: {
 			...nextData,
+			token,
 			query: {
 				page: '2',
 				status: users.myOrdersCurrent
