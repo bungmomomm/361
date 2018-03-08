@@ -80,7 +80,7 @@ class MyOrder extends Component {
 		return currentOrders && (
 			currentOrders.orders.map((order, key) => {
 				return (<List key={key}>
-					<Link style={{ flexFlow: 'row nowrap' }} to={`/profile-my-order/${order.so_number}`}>
+					<Link style={{ flexFlow: 'row nowrap' }} to={`/profile/my-order/${order.so_number}`}>
 						<List.Image>
 							<div className={styles.orderIconCtr}>
 								<Svg src='ico_money-time.svg' />
