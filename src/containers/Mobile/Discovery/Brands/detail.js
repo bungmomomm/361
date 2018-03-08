@@ -31,6 +31,7 @@ import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as searchActions } from '@/state/v4/SearchResults';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { Promise } from 'es6-promise';
+import Spinner from '../../../../components/mobile/Spinner';
 
 class Detail extends Component {
 	static queryObject(props) {
@@ -580,6 +581,7 @@ class Detail extends Component {
 								{this.renderFilter()}
 								{this.renderTotalProduct()}
 								{this.renderProduct()}
+								{this.props.scroller.loading && (<Spinner />)}
 							</div>
 						)
 						}
