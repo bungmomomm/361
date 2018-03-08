@@ -410,7 +410,7 @@ class Products extends Component {
 						<Level.Right>
 							<Level className={styles.action}>
 								<Level.Right>
-									<Button color='secondary' size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
+									<Button color='secondary' disabled={(pdpData.cardProduct.productStock === 0)} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
 								</Level.Right>
 							</Level>
 						</Level.Right>
@@ -468,7 +468,9 @@ class Products extends Component {
 											data={pdpData.cardProduct.variants}
 										/>
 									</div>
-									<p className='font-color--red font-small'>Stock Habis</p>
+									{(pdpData.cardProduct.productStock === 0) && (
+										<p className='font-color--red font-small'>Stock Habis</p>
+									)}
 								</div>
 							</div>
 						)}

@@ -146,6 +146,7 @@ const productSocialSummaryAction = (token, productId) => async (dispatch, getSta
  */
 const getProductCardData = (details) => {
 	if (!_.isEmpty(details)) {
+		let productStock = 0;
 		const productVariants = [];
 		const images = details.images.map((img, idx) => {
 			return { mobile: img.original };
@@ -154,6 +155,7 @@ const getProductCardData = (details) => {
 		try {
 			if (!_.isEmpty(details.variants) && _.isArray(details.variants)) {
 				details.variants.forEach((variant, idx) => {
+					productStock += variant.stock;
 					const optionsSet = ((typeof variant.options !== 'undefined') && _.isArray(variant.options) && variant.options.length > 0);
 					if (optionsSet) {
 						const variantSize = variant.options.filter(item => (item.key === 'size'));
@@ -180,7 +182,8 @@ const getProductCardData = (details) => {
 			product_title: details.title,
 			totalLovelist: 0,
 			totalComments: 0,
-			variants: productVariants
+			variants: productVariants,
+			productStock
 		};
 	}
 	return details;
