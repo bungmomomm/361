@@ -288,12 +288,6 @@ class Home extends Component {
 		return (
 			<div style={this.props.style}>
 				<Page>
-					<Tabs
-						current={this.props.shared.current}
-						variants={this.props.home.segmen}
-						onPick={(e) => this.handlePick(e)}
-					/>
-
 					{ <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} /> }
 
 					{this.renderHeroBanner()}
@@ -314,7 +308,17 @@ class Home extends Component {
 
 					<Footer isShow={this.state.isFooterShow} />
 				</Page>
-				<Header lovelist={shared.totalLovelist} value={this.props.search.keyword} />
+				<Header 
+					rows={
+						<Tabs
+							current={this.props.shared.current}
+							variants={this.props.home.segmen}
+							onPick={(e) => this.handlePick(e)}
+						/>
+					} 
+					lovelist={shared.totalLovelist} 
+					value={this.props.search.keyword} 
+				/>
 				<Navigation active='Home' scroll={this.props.scroll} totalCartItems={shared.totalCart} />
 			</div>
 		);
