@@ -1,12 +1,16 @@
 import { request } from '@/utils';
 import { hashtagDetail, isLoading } from './reducer';
 import { to } from 'await-to-js';
+import _ from 'lodash';
+import { Promise } from 'es6-promise';
 
-const hashtagDetailAction = (token, query = {}) => async (dispatch) => {
+const hashtagDetailAction = (token, query = {}) => async (dispatch, getState) => {
 	dispatch(isLoading({ loading: true }));
 
-	const baseUrl = `${process.env.MICROSERVICES_URL}`;
-	const url = `${baseUrl}campaign/post`;
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	const url = `${baseUrl}/campaign/post`;
 
 	const [err, resp] = await to(request({
 		token: token.token,
