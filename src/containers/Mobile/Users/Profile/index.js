@@ -1,8 +1,17 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
-import { Page, Navigation, Svg, List, Level, Image, Panel } from '@/components/mobile';
+import _ from 'lodash';
+
+import Shared from '@/containers/Mobile/Shared';
+
+import { Header, Page, Navigation, Svg, List, Level, Image, Panel, Spinner } from '@/components/mobile';
+
+import CONST from '@/constants';
+import { splitString } from '@/utils';
+
 import styles from './profile.scss';
 
 class UserProfile extends Component {
@@ -13,52 +22,87 @@ class UserProfile extends Component {
 			hasPP: false,
 			isBuyer: true // buyer or seller
 		};
+		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
+		this.isLogin = this.props.cookies.get('isLogin') === 'true' && true;
+		this.loadingView = <div><Spinner /></div>;
 	}
 
-	render() {
+	componentWillMount() {
+		if (!this.isLogin) {
+			const { history } = this.props;
+			history.push('/login');
+		}
+	}
+
+	renderHeader() {
+		const { history } = this.props;
+		const HeaderPage = {
+			left: (
+				<button onClick={() => (history.length < 2 ? history.push('/') : history.go(-2))}> 
+					<Svg src={'ico_arrow-back-left.svg'} />
+				</button>
+			),
+			center: 'Profile',
+		};
+
+		return <Header.Modal {...HeaderPage} />;
+	}
+
+	renderProfile() {
+		const { users } = this.props;
+		const { isBuyer } = this.state;
+		const userProfile = users.userProfile;
+
+		if (!userProfile) {
+			return (
+				<form style={{ padding: '15px' }}>
+					{this.loadingView}
+				</form>
+			);
+		}
+
 		const ppClassName = classNames(
 			styles.tempPP,
-			this.state.isBuyer ? styles.buyer : styles.seller
+			isBuyer ? styles.buyer : styles.seller
 		);
-
 		const ppCtrClassName = classNames(
 			styles.tempPPContainer
 		);
 
+		const fullName = _.chain(userProfile.name).lowerCase().startCase().value() || '';
+		const avatar = userProfile && userProfile.avatar ? (
+			<Image width={60} height={60} avatar src={userProfile.avatar} alt={fullName} />
+		) : (
+			<div className={ppClassName}>{splitString(userProfile.name || '')}</div>
+		);
+
+		return (
+			<Link to='/profile-edit' className='bg--white'>
+				<Level>
+					<Level.Left>
+						<div className={ppCtrClassName}>
+							{avatar}
+						</div>
+					</Level.Left>
+					<Level.Item style={{ justifyContent: 'center', padding: '10px', color: '#191919' }}>
+						<div style={{ fontWeight: 'bold', fontSize: '15px' }}>{userProfile.name || ''}</div>
+						<div style={{ fontSize: '11px', color: '#A4A4A4' }}>Lihat informasi akun</div>
+					</Level.Item>
+					<Level.Right style={{ justifyContent: 'center' }}>
+						<Svg src='ico_chevron-right.svg' />
+					</Level.Right>
+				</Level>
+			</Link>
+		);
+	}
+
+	render() {
 		return (
 			<div>
-				<Page>
-					<Level>
-						<Level.Left>
-							&nbsp;
-						</Level.Left>
-						<Level.Right>
-							<Svg src='ico_setting.svg' />
-						</Level.Right>
-					</Level>
-					<Link to='/profile-edit'>
-						<Level>
-							<Level.Left>
-								<div className={ppCtrClassName}>
-									{
-										this.state.hasPP ?
-											<Image width={60} height={60} local avatar src='temp/thumb-2.jpg' alt='Rocky Syahputra' /> :
-											<div className={ppClassName}>RS</div>
-									}
-									{ this.state.edit ? <Link className={styles.editPP} to='#editPhoto'>UBAH</Link> : null }
-								</div>
-							</Level.Left>
-							<Level.Item style={{ justifyContent: 'center', padding: '10px', color: '#191919' }}>
-								<div style={{ fontWeight: 'bold', fontSize: '15px' }}>Rocky Syahputra</div>
-								<div style={{ fontSize: '11px', color: '#A4A4A4' }}>Lihat informasi akun</div>
-							</Level.Item>
-							<Level.Right style={{ justifyContent: 'center' }}>
-								<Svg src='ico_chevron-right.svg' />
-							</Level.Right>
-						</Level>
-					</Link>
+				<Page style={{ paddingTop: 0 }}>
+					{this.renderProfile()}
 					<Panel>Account</Panel>
-					<Link to='/profile-my-order'>
+					<Link to='/profile-my-order' className='bg--white'>
 						<Level style={{ padding: '0 0 0 15px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_order.svg' />
@@ -70,7 +114,7 @@ class UserProfile extends Component {
 							</Level.Item>
 						</Level>
 					</Link>
-					<Link to='/'>
+					<Link to='/' className='bg--white'>
 						<Level style={{ padding: '0 0 0 15px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_rating.svg' />
@@ -94,7 +138,7 @@ class UserProfile extends Component {
 							</Level.Item>
 						</Level>
 					</Link>
-					<Link to='/'>
+					<Link to='/' className='bg--white'>
 						<Level style={{ padding: '0 0 0 15px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_address.svg' />
@@ -107,7 +151,7 @@ class UserProfile extends Component {
 						</Level>
 					</Link>
 					<Panel>More</Panel>
-					<Link to='/'>
+					<Link to='/' className='bg--white'>
 						<Level style={{ padding: '0 0 0 15px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_help.svg' />
@@ -119,7 +163,7 @@ class UserProfile extends Component {
 							</Level.Item>
 						</Level>
 					</Link>
-					<Link to='/'>
+					<Link to='/' className='bg--white'>
 						<Level style={{ padding: '0 0 0 15px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_contact.svg' />
@@ -131,8 +175,9 @@ class UserProfile extends Component {
 							</Level.Item>
 						</Level>
 					</Link>
-					<Link to='/'>
-						<Level style={{ padding: '0 0 0 15px', minHeight: '80px' }}>
+					<Panel>&nbsp;</Panel>
+					<Link to='/' className='bg--white margin--medium-b'>
+						<Level style={{ padding: '0 0 0 15px', minHeight: '50px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_logout.svg' />
 							</Level.Left>
@@ -140,12 +185,18 @@ class UserProfile extends Component {
 						</Level>
 					</Link>
 				</Page>
+				{this.renderHeader()}
 				<Navigation active='Profile' />
 			</div>
 		);
 	}
 }
 
-UserProfile.defaultProps = {};
+const mapStateToProps = (state) => {
+	return {
+		...state,
+		isLoading: state.users.isLoading
+	};
+};
 
-export default withCookies(UserProfile);
+export default withCookies(connect(mapStateToProps)(Shared(UserProfile)));

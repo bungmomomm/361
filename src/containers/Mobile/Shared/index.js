@@ -31,6 +31,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 			this.userCookies = this.props.cookies.get('user.token');
 			this.userRFCookies = this.props.cookies.get('user.rf.token');
+			this.isLogin = this.props.cookies.get('isLogin') === 'true' && true;
 			this.handleScroll = this.handleScroll.bind(this);
 			this.docBody = null;
 		}
@@ -76,7 +77,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				}
 			}
 
-			dispatch(new users.userGetProfile(tokenBearer));
+			if (this.isLogin) {
+				dispatch(new users.userGetProfile(tokenBearer));
+			}
 
 			if (typeof doAfterAnonymousCall !== 'undefined') {
 				doAfterAnonymousCall.apply(this, [this.props]);

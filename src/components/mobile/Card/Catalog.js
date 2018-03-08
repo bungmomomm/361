@@ -11,6 +11,55 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 class Catalog extends PureComponent {
+	constructor(props) {
+		super(props);
+		this.state = {
+			optimistic: true,
+			loading: false,
+			prevLoved: props.lovelistStatus ? 0 : 1,
+			loved: props.lovelistStatus || 0
+		};
+	}
+
+	componentWillReceiveProps(nextProps) {
+		const { loading, prevLoved } = this.state;
+		const { optimistic } = this.props;
+		if (optimistic) {
+			if (typeof nextProps.lovelistStatus !== 'undefined' && !loading) {
+				this.setState({
+					loved: nextProps.lovelistStatus,
+					loading: false
+				});
+			} else if (prevLoved !== nextProps.lovelistStatus) {
+				this.setState({
+					loading: false
+				});
+			}
+		}
+	}
+
+	lovelistAddTo() {
+		const { loading } = this.state;
+		const { lovelistStatus, lovelistAddTo, optimistic } = this.props;
+		let loved = true;
+		if (lovelistStatus && lovelistStatus === 1) {
+			loved = false;
+		}
+		if (optimistic) {
+			if (loading) {
+				return;
+			}
+			lovelistAddTo(loved);
+			this.setState({
+				prevLoved: loved ? 0 : 1,
+				loved,
+				loading: true
+			});
+		} else {
+			lovelistAddTo(loved);
+		}
+	}
+	
 	render() {
 		const {
 			className,
@@ -26,19 +75,17 @@ class Catalog extends PureComponent {
 			lovelistStatus,
 			lovelistAddTo,
 			lovelistDisable,
+			optimistic,
 			...props
 		} = this.props;
+		const { loved } = this.state;
 
+		const disableLovelist = lovelistDisable && lovelistAddTo;
 		const createClassName = classNames(styles.container, styles[type], className);
-
-		const comment = commentTotal ? <span>{commentTotal} Komentar</span>
-			: <span>0 Komentar</span>;
-
-		const lovelist = lovelistTotal ? <span>{lovelistTotal} Suka</span>
-			: <span>0 Suka</span>;
-
-		const lovelistIcon = lovelistStatus && lovelistStatus === 1 ? 'ico_love-filled.svg' : 'ico_love.svg';
-
+		let lovelistIcon = lovelistStatus && lovelistStatus === 1 ? 'ico_love-filled.svg' : 'ico_love.svg';
+		if (optimistic) {
+			lovelistIcon = loved && loved === 1 ? 'ico_love-filled.svg' : 'ico_love.svg';
+		}
 		const discountBadge = pricing.discount !== '0%' ? (
 			<div style={{ marginLeft: '1.5rem' }}>
 				<Badge rounded color='red'>
@@ -52,12 +99,12 @@ class Catalog extends PureComponent {
 		) : '';
 
 		return (
-			<div className={createClassName} {...props}>
+			<div className={createClassName} {...props} data-loved={lovelistStatus}>
 				<Link to={linkToPdp}>
 					<Carousel>
 						{
 							images.map((image, index) => (
-								<Image key={index} src={image.thumbnail} lazyload alt={productTitle} />
+								<Image key={index} src={image.thumbnail} alt={productTitle} />
 							))
 						}
 					</Carousel>
@@ -67,16 +114,16 @@ class Catalog extends PureComponent {
 					style={{ borderBottom: '1px solid #D8D8D8' }}
 				>
 					<Level.Item>
-						<Button onClick={lovelistAddTo} disabled={lovelistDisable}>
+						<Button onClick={(e) => this.lovelistAddTo()} disabled={disableLovelist}>
 							<Svg src={lovelistIcon} />
-							{lovelist}
+							<span>{lovelistTotal} Suka</span>
 						</Button>
 					</Level.Item>
 					<Level.Item>
 						<Link to={(commentUrl) || '/'}>
-							<Button>
+							<Button wide>
 								<Svg src='ico_comment.svg' />
-								{comment}
+								<span>{commentTotal} Komentar</span>
 							</Button>
 						</Link>
 					</Level.Item>
@@ -104,7 +151,9 @@ class Catalog extends PureComponent {
 }
 
 Catalog.defaultProps = {
-	linkToPdp: '/'
+	commentTotal: 0,
+	lovelistTotal: 0,
+	optimistic: true // set to false if lovelist using loading, true otherwise
 };
 
 Catalog.propTypes = {

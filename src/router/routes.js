@@ -24,6 +24,7 @@ const SearchResults = loadable(() => import('@/containers/Mobile/Discovery/Searc
 const SearchNotFound = loadable(() => import('@/containers/Mobile/Discovery/SearchNotFound'));
 
 const Lovelist = loadable(() => import('@/containers/Mobile/Discovery/Lovelist'));
+const LovelistLogin = loadable(() => import('@/containers/Mobile/Discovery/Lovelist/login'));
 
 const Category = loadable(() => import('@/containers/Mobile/Discovery/Category'));
 const SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
@@ -58,11 +59,14 @@ const UserRegistered = loadable(() => import('@/containers/Mobile/Users/Register
 const UserRegisteredPhoneValidation = loadable(() => import('@/containers/Mobile/Users/Register/registeredPhoneValidation'));
 const UserProfile = loadable(() => import('@/containers/Mobile/Users/Profile'));
 const UserProfileEdit = loadable(() => import('@/containers/Mobile/Users/Profile/edit'));
-const UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'));
-const UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'));
-const UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'));
-const UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'));
+// const UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'));
+// const UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'));
+// const UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'));
+// const UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'));
 const MyOrder = loadable(() => import('@/containers/Mobile/Users/Profile/myOrder'));
+const MyOrderDetail = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderDetail'));
+const MyOrderTracking = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderTracking'));
+const MyOrderConfirm = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderConfirm'));
 const CreditCard = loadable(() => import('@/containers/Mobile/Users/Profile/creditCard'));
 
 
@@ -202,6 +206,10 @@ export default {
 			component: Lovelist
 		},
 		{
+			path: '/lovelist-login',
+			component: LovelistLogin
+		},
+		{
 			path: '/cart',
 			exact: true,
 			component: Cart
@@ -220,25 +228,38 @@ export default {
 			component: Seller,
 			exact: true
 		},
-		{
-			path: '/profile-edit-ovo',
-			component: UserProfileEditOVO
-		},
-		{
-			path: '/profile-edit-hp',
-			component: UserProfileEditHP
-		},
-		{
-			path: '/profile-edit-email',
-			component: UserProfileEditEmail
-		},
-		{
-			path: '/profile-edit-password',
-			component: UserProfileEditPassword
-		},
+		// {
+		// 	path: '/profile-edit-ovo',
+		// 	component: UserProfileEditOVO
+		// },
+		// {
+		// 	path: '/profile-edit-hp',
+		// 	component: UserProfileEditHP
+		// },
+		// {
+		// 	path: '/profile-edit-email',
+		// 	component: UserProfileEditEmail
+		// },
+		// {
+		// 	path: '/profile-edit-password',
+		// 	component: UserProfileEditPassword
+		// },
 		{
 			path: '/profile-my-order',
-			component: MyOrder
+			component: MyOrder,
+			exact: true,
+		},
+		{
+			path: '/profile-my-order/:so_number([a-zA-Z0-9-]+)',
+			component: MyOrderDetail
+		},
+		{
+			path: '/profile-my-order-tracking',
+			component: MyOrderTracking
+		},
+		{
+			path: '/profile-my-order-confirm',
+			component: MyOrderConfirm
 		},
 		{
 			path: '/profile-credit-card',

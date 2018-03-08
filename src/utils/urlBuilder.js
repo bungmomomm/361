@@ -79,6 +79,9 @@ class MMUrlBuilder {
 		return `/store/${temp.id}/${temp.name}`;
 	}
 
+	buildPcpCommentUrl = (productId) => {
+		return `product/comments/${productId}`;
+	}
 
 }
 

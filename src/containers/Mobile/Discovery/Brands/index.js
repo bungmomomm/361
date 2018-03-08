@@ -129,8 +129,8 @@ class Brands extends Component {
 			brands.brand_list.length > 0 &&
 			brands.brand_list.map((list, id) => {
 				return (
-					<div key={id} id={list.group} className='margin--medium'>
-						<Divider className='margin--none' size='small'>
+					<div key={id} id={list.group} className='margin--medium-v'>
+						<Divider className='margin--none-t margin--none-r' size='small'>
 							{list.group}
 						</Divider>
 						{
@@ -140,7 +140,7 @@ class Brands extends Component {
 									<List key={i}>
 										<Link to={urlBuilder.setId(Number(b.facetrange)).setName(b.facetdisplay).buildBrand()}>
 											<List.Content>
-												<p className='margin--medium'>
+												<p className='margin--medium-v'>
 													<span>{ b.facetdisplay.replace(/\b\w/g, (l) => (l.toUpperCase())) }</span>&nbsp;
 													<span style={{ color: 'grey' }} >({b.count})</span>
 												</p>

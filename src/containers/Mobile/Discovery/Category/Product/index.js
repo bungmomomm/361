@@ -4,7 +4,7 @@ import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import queryString from 'query-string';
-import { to } from 'await-to-js';
+import to from 'await-to-js';
 
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
@@ -23,14 +23,18 @@ import {
 	Input,
 	Navigation,
 	Spinner,
+	Modal,
 	Comment
 } from '@/components/mobile';
 
 import { actions as pcpActions } from '@/state/v4/ProductCategory';
-import { actions as commentActions } from '@/state/v4/Comment';
+import { actions as searchActions } from '@/state/v4/SearchResults';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 
-import { urlBuilder, renderIf } from '@/utils';
+import { 
+	urlBuilder,
+	renderIf
+} from '@/utils';
 import stylesCatalog from '../Catalog/catalog.scss';
 import Footer from '@/containers/Mobile/Shared/footer';
 
@@ -41,8 +45,10 @@ class Product extends Component {
 
 		const propsObject = _.chain(props.productCategory);
 		this.state = {
+			mode: 1,
 			showFilter: false,
 			showSort: false,
+			showLoginPopup: false,
 			query: {
 				category_id: '',
 				page: 0,
@@ -97,7 +103,7 @@ class Product extends Component {
 		}, {
 			encode: false
 		});
-
+		
 		history.replace(`?${url}`);
 
 		const pcpParam = {
@@ -112,7 +118,8 @@ class Product extends Component {
 		}
 		if (!_.isEmpty(response.pcpData.products)) {
 			const productIdList = _.map(response.products, 'product_id') || null;
-			dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+			dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 		}
 		return response;
 	}
@@ -129,9 +136,9 @@ class Product extends Component {
 
 	handlePick(e) {
 		const { showSort } = this.state;
-		console.log(showSort, e);
+		const { viewMode, dispatch } = this.props;
 		if (e === 'view') {
-			const { viewMode, dispatch } = this.props;
+			console.log('request');
 			const mode = viewMode.mode === 3 ? 1 : viewMode.mode + 1;
 			dispatch(pcpActions.viewModeAction(mode));
 		} else {
@@ -142,9 +149,47 @@ class Product extends Component {
 		}
 	}
 
+	loginLater() {
+		this.setState({
+			showLoginPopup: false
+		});
+	}
+
+	loginNow() {
+		const { history } = this.props;
+		history.push(`/login?redirect_uri=${location.pathname}`);
+		this.setState({
+			showLoginPopup: false
+		});
+	}
+
+	async ilovethis(add, product) {
+		const { cookies, dispatch, productCategory } = this.props;
+		if (cookies.get('isLogin') === 'true') {
+			let response;
+			if (add) {
+				response = await to(dispatch(lovelistActions.addToLovelist(cookies.get('user.token'), product.product_id)));
+			} else {
+				response = await to(dispatch(lovelistActions.removeFromLovelist(cookies.get('user.token'), product.product_id)));
+			}
+			if (response[0] !== null) {
+				return response[0];
+			}
+			const productIdList = _.map(productCategory.pcpData.products, 'product_id') || null;
+			dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+		} else {
+			this.setState({
+				showLoginPopup: true
+			});
+		}
+
+		return null;
+	}
+
 	renderPage() {
-		const { productCategory } = this.props;
-		const { showFilter } = this.state;
+		const { productCategory, isLoading } = this.props;
+		const { showFilter, showLoginPopup } = this.state;
 		if (showFilter) {
 			return (
 				<Filter
@@ -160,9 +205,30 @@ class Product extends Component {
 		return (
 			<div style={this.props.style}>
 				{this.renderPcp()}
+				{isLoading && (
+					<Spinner />
+				)}
 				{this.renderHeader()}
 				{this.renderTabs()}
 				{this.renderForeverBanner()}
+				<Modal show={showLoginPopup}>
+					<div className='font-medium'>
+						<h3 className='text-center'>Lovelist</h3>
+						<Level style={{ padding: '0px' }} className='margin--medium-v'>
+							<Level.Left />
+							<Level.Item className='padding--medium-h'>
+								<div className='font-small'>Silahkan login/register untuk menambahkan produk ke Lovelist</div>
+							</Level.Item>
+						</Level>
+					</div>
+					<Modal.Action
+						closeButton={(
+							<Button onClick={(e) => this.loginLater()}>
+								<span className='font-color--primary-ext-2'>NANTI</span>
+							</Button>)}
+						confirmButton={(<Button onClick={(e) => this.loginNow()}>SEKARANG</Button>)}
+					/>
+				</Modal>
 				<Navigation active='Categories' scroll={this.props.scroll} />
 			</div>
 		);
@@ -174,7 +240,7 @@ class Product extends Component {
 
 		if (isLoading) {
 			pcpView = this.loadingView;
-		}
+		} 
 
 		if (productCategory.pcpStatus !== '') {
 			if (productCategory.pcpStatus === 'success') {
@@ -196,78 +262,94 @@ class Product extends Component {
 	}
 
 	renderContent(productList) {
+		const { viewMode, comments } = this.props;
 		let contentView = null;
-		if (productList.length > 0) {
-			contentView = (
-				productList.map((product, index) =>
-					this.renderList(product, index)
-				)
-			);
-		}
-
-		return contentView;
-	}
-
-	renderList(productData, index) {
-		if (productData) {
-			const linkToPdpCreator = urlBuilder.buildPdp(productData.product_title, productData.product_id);
-			const { viewMode, comments, lovelist } = this.props;
-			const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: productData.product_id }) : false;
-			const commentTotal = commentData ? commentData.total : null;
-			const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: productData.product_id }) : false;
-			const lovelistTotal = lovelistData ? lovelistData.total : null;
-			const lovelistStatus = lovelistData ? lovelistData.status : null;
-
-			const listCardCatalogAttribute = {
-				images: productData.images,
-				productTitle: productData.product_title,
-				brandName: productData.brand.name,
-				pricing: productData.pricing,
-				linkToPdp: linkToPdpCreator,
-				commentTotal,
-				commentUrl: `/product/comments/${productData.product_id}`,
-				lovelistTotal,
-				lovelistStatus
-			};
-
-			const cardCatalogGridAttribute = {
-				key: index,
-				images: productData.images,
-				productTitle: productData.product_title,
-				brandName: productData.brand.name,
-				pricing: productData.pricing,
-				linkToPdp: linkToPdpCreator
-			};
-
-			const cardCatalogSmall = {
-				key: index,
-				images: productData.images,
-				pricing: productData.pricing,
-				linkToPdp: linkToPdpCreator
-			};
-
+		contentView = productList.map((product, index) => {
 			switch (viewMode.mode) {
 			case 1:
 				return (
 					<div key={index} className={stylesCatalog.cardCatalog}>
-						<Card.Catalog {...listCardCatalogAttribute} />
-						{comments && comments.loading ? this.renderLoading : this.renderComment(productData.product_id)}
+						<Card.Catalog
+							images={product.images}
+							productTitle={product.product_title}
+							brandName={product.brand.name}
+							pricing={product.pricing}
+							linkToPdp={product.url}
+							commentTotal={product.commentTotal}
+							commentUrl={product.commentUrl}
+							lovelistTotal={product.lovelistTotal}
+							lovelistStatus={product.lovelistStatus}
+							lovelistAddTo={(add) => this.ilovethis(add, product)}
+						/>
+						{comments && comments.loading ? this.renderLoading : this.renderComment(product.product_id) }
 					</div>
 				);
 			case 2:
 				return (
-					<Card.CatalogGrid {...cardCatalogGridAttribute} />
+					<Card.CatalogGrid
+						key={index}
+						images={product.images}
+						productTitle={product.product_title}
+						brandName={product.brand.name}
+						pricing={product.pricing}
+						linkToPdp={product.url}
+						lovelistStatus={product.lovelistStatus}
+						lovelistAddTo={(add) => this.ilovethis(add, product)}
+					/>
 				);
 			case 3:
 				return (
-					<Card.CatalogSmall {...cardCatalogSmall} />
+					<Card.CatalogSmall
+						key={index}
+						images={product.images}
+						pricing={product.pricing}
+						linkToPdp={product.url}
+					/>
 				);
 			default:
 				return null;
 			}
-		} else {
-			return null;
+		});
+		console.log('finish render');
+		return contentView;
+	}
+
+	renderList(productData, index) {
+		console.log(this.state);
+		if (productData) {
+			return (
+				<h1 key={index}>Test</h1>
+			);
+			// const cardCatalogSmall = {
+			// 	key: index,
+			// 	images: productData.images,
+			// 	pricing: productData.pricing,
+			// 	linkToPdp: linkToPdpCreator
+			// };
+			
+			// switch (viewMode.mode) {
+			// case 1:
+			// 	return (
+			// 		<div key={index} className={stylesCatalog.cardCatalog}>
+			// 			<Card.Catalog {...listCardCatalogAttribute} />
+			// 			{comments && comments.loading ? this.renderLoading : this.renderComment(productData.product_id)}
+			// 		</div>
+			// 	);
+			// case 2:
+			// 	return (
+			// 		<Card.CatalogGrid {...cardCatalogGridAttribute} />
+			// 	);
+			// case 3:
+			// 	return (
+			// 		<Card.CatalogSmall {...cardCatalogSmall} />
+			// 	);
+			// default:
+			// 	return null;
+			// }
+		// } else {
 		}
+		return null;
+		// }
 	}
 
 	renderComment(productId) {
@@ -342,7 +424,7 @@ class Product extends Component {
 							{
 								id: 'filter',
 								title: 'Filter',
-								disabled: typeof productCategory.pcpData === 'undefined'
+								disabled: typeof productCategory.pcpData === 'undefined'	
 							},
 							{
 								id: 'view',
@@ -370,21 +452,31 @@ class Product extends Component {
 }
 
 const mapStateToProps = (state) => {
+	const { comments, lovelist, productCategory } = state;
+	productCategory.pcpData.products = _.map(productCategory.pcpData.products, (product) => {
+		const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: product.product_id }) : false;
+		const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: product.product_id }) : false;
+		return {
+			...product,
+			url: urlBuilder.buildPdp(product.product_title, product.product_id),
+			commentTotal: commentData ? commentData.total : 0,
+			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`,
+			lovelistTotal: lovelistData ? lovelistData.total : 0,
+			lovelistStatus: lovelistData ? lovelistData.status : 0
+		};
+	});
+
 	return {
-		// ...state,
-		productCategory: state.productCategory,
+		...state,
+		productCategory,
 		query: state.productCategory.query,
-		comments: state.comments,
 		isLoading: state.productCategory.isLoading,
 		viewMode: state.productCategory.viewMode,
-		scroller: state.scroller,
-		shared: state.shared,
-		lovelist: state.lovelist
 	};
 };
 
 const doAfterAnonymous = async (props) => {
-	const { dispatch, cookies, match, location, productCategory } = props;
+	const { dispatch, cookies, match, location } = props;
 
 	const categoryId = _.chain(match).get('params.categoryId').value() || '';
 	const parsedUrl = queryString.parse(location.search);
@@ -395,12 +487,12 @@ const doAfterAnonymous = async (props) => {
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
-
-	dispatch(pcpActions.pcpAction({ token: cookies.get('user.token'), query: pcpParam }));
-
-	if (!_.isEmpty(productCategory.pcpData.products)) {
-		const productIdList = _.map(productCategory.pcpData.products, 'product_id') || null;
-		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+	
+	const response = await dispatch(pcpActions.pcpAction({ token: cookies.get('user.token'), query: pcpParam }));
+	
+	const productIdList = _.map(response.pcpData.products, 'product_id') || [];
+	if (productIdList.length > 0) {
+		dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 	}
 };
