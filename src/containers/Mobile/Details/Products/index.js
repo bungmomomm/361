@@ -634,17 +634,17 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (props) => {
+const doAfterAnonymous = async (props) => {
 	const { dispatch, match, cookies } = props;
 
 	const productId = _.toInteger(match.params.id);
 	const token = cookies.get('user.token');
 
-	dispatch(new productActions.productDetailAction(token, productId));
-	dispatch(new productActions.productRecommendationAction(token, productId));
-	dispatch(new productActions.productSimilarAction(token, productId));
-	dispatch(new productActions.productSocialSummaryAction(token, productId));
-	dispatch(new lovelistActions.bulkieCountByProduct(token, productId));
+	await dispatch(new productActions.productDetailAction(token, productId));
+	await dispatch(new productActions.productRecommendationAction(token, productId));
+	await dispatch(new productActions.productSimilarAction(token, productId));
+	await dispatch(new productActions.productSocialSummaryAction(token, productId));
+	await dispatch(new lovelistActions.bulkieCountByProduct(token, productId));
 
 };
 

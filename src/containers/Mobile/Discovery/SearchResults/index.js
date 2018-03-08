@@ -495,15 +495,15 @@ const doAfterAnonymous = async (props) => {
 	};
 	const [err, response] = await to(dispatch(searchActions.searchAction({ token: cookies.get('user.token'), query: searchParam })));
 	if (err) {
-		dispatch(searchActions.promoAction(cookies.get('user.token')));
+		await dispatch(searchActions.promoAction(cookies.get('user.token')));
 	}
 	if (response) {
 		if (!_.isEmpty(response.searchData.products)) {
 			const productIdList = _.map(response.searchData.products, 'product_id') || null;
-			dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+			await dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+			await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 		} else {
-			dispatch(searchActions.promoAction(cookies.get('user.token')));
+			await dispatch(searchActions.promoAction(cookies.get('user.token')));
 		}
 	}
 };
