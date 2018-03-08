@@ -114,7 +114,7 @@ class Home extends Component {
 						{
 							datas.value().map(({ images, pricing }, e) => (
 								<div key={e}>
-									<Image lazyload alt='thumbnail' src={images[0].thumbnail} />
+									<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
 									<div className={styles.btnThumbnail}>
 										<Button transparent color='secondary' size='small'>
 											{pricing.formatted.effective_price}
@@ -146,7 +146,7 @@ class Home extends Component {
 						{
 							datas.value().images.map(({ images }, e) => (
 								<div key={e}>
-									<Image lazyload alt='thumbnail' src={images.thumbnail} />
+									<Image lazyload shape='square' alt='thumbnail' src={images.thumbnail} />
 								</div>
 							))
 						}
