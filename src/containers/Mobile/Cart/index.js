@@ -219,7 +219,8 @@ class Cart extends Component {
 	}
 
 	renderTotal() {
-		return (this.props.shopBag.total !== null) && (
+		const shopBag = this.props.shopBag;
+		return (shopBag.total !== null && shopBag.total.count_item !== 0) && (
 			<div className='padding--medium-h' style={{ backgroundColor: '#fff' }}>
 				<div className='margin--medium-v'>
 					<div className='flex-row flex-spaceBetween'>
@@ -229,7 +230,7 @@ class Cart extends Component {
 					<div className='flex-row flex-spaceBetween'>
 						<div>
 							<div>Estimasi biaya pengiriman</div>
-							<div className='font-small'>({this.props.shopBag.location_default})</div>
+							{shopBag.location_default && (<div className='font-small'>({shopBag.location_default})</div>)}
 						</div>
 						<div className='font-medium'>{this.props.shopBag.total.formatted.shipping_estimation}</div>
 					</div>
@@ -310,7 +311,7 @@ class Cart extends Component {
 			right: null
 		};
 
-		if (this.props.shopBag.carts && this.props.shopBag.carts.length < 1) {
+		if ((this.props.shopBag.carts && this.props.shopBag.carts.length < 1) || this.props.shopBag.carts === null) {
 			return <CartEmpty />;
 		}
 
@@ -332,6 +333,7 @@ class Cart extends Component {
 				<Select
 					show={this.state.showSelect}
 					label='Pilih Ukuran'
+					defaultValue={this.state.qtyCurrent}
 					onChange={(e) => this.selectedNewQtyHander(e)}
 					onClose={this.updateCartHander}
 					options={this.state.selectList}
