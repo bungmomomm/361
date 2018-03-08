@@ -154,7 +154,7 @@ export default {
 			component: ProductsGuide,
 			exact: true
 		}, {
-			path: '/product/:id',
+			path: '/([^/]+)-:id([0-9]+).html',
 			component: Products,
 			exact: true
 		},
