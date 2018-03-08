@@ -19,14 +19,16 @@ const initialState = {
 		show: false,
 		onClose: false
 	},
-	current: 'wanita'
+	current: 'wanita',
+	errors: []
 };
 
-const { totalLoveList, totalBag, forEverBanner, currentTab } = createActions(
+const { totalLoveList, totalBag, forEverBanner, currentTab, errorHandler } = createActions(
 	'TOTAL_LOVE_LIST',
 	'TOTAL_BAG',
 	'FOR_EVER_BANNER',
-	'CURRENT_TAB'
+	'CURRENT_TAB',
+	'ERROR_HANDLER'
 );
 
 const reducer = handleActions({
@@ -54,6 +56,12 @@ const reducer = handleActions({
 			...state,
 			current
 		};
+	},
+	[errorHandler](state, { payload: { errors } }) {
+		return {
+			...state, 
+			errors
+		};
 	}
 }, initialState);
 
@@ -62,5 +70,6 @@ export default {
 	totalBag,
 	totalLoveList,
 	forEverBanner,
-	currentTab
+	currentTab,
+	errorHandler
 };

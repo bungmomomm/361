@@ -297,6 +297,31 @@ const userForgotPassword = (token, username) => async (dispatch, getState) => {
 	}
 };
 
+const refreshToken = (tokenRefresh, token) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	const path = `${baseUrl}/auth/refreshtoken?refresh_token=${tokenRefresh}`;
+
+	const response = await request({
+		method: 'POST',
+		token,
+		path,
+		fullpath: true,
+		body: {
+			refresh_token: tokenRefresh
+		}
+	});
+
+	if (isSuccess(response)) {
+		return Promise.resolve(response);
+	}
+
+	return Promise.reject(response);
+};
+
 // 	USER_GET_PROFILE_FAIL: (error) => ({ profile: { error } }),
 // 	USER_GET_PROFILE_SUCCESS: (userProfile) => ({ userProfile }),
 
@@ -315,4 +340,5 @@ export default {
 	updateMyOrdersCurrent,
 	userOtp,
 	getTrackingInfo,
+	refreshToken
 };

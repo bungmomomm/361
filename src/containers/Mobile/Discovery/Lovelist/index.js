@@ -215,11 +215,11 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (props) => {
+const doAfterAnonymous = async (props) => {
 
 	const { dispatch, cookies } = props;
 
-	dispatch(LoveListActionCreator.getLovelisItems(cookies.get('user.token')));
+	await dispatch(LoveListActionCreator.getLovelisItems(cookies.get('user.token')));
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Lovelist, doAfterAnonymous)));

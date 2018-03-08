@@ -457,8 +457,8 @@ const doAfterAnonymous = async (props) => {
 	
 	const productIdList = _.map(response.pcpData.products, 'product_id') || [];
 	if (productIdList.length > 0) {
-		dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+		await dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 	}
 };
 
