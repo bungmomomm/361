@@ -58,7 +58,7 @@ class MyOrder extends Component {
 			this.props.history.push('/profile');
 		}
 
-		this.isEmpty = Object.values(nextProps.user.myOrders).some(e => e.orders.length === 0);
+		this.isEmpty = Object.values(nextProps.user.myOrders).some(e => e && e.orders.length === 0);
 	}
 
 	componentDidUpdate() {
