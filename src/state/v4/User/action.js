@@ -144,24 +144,18 @@ const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 	const path = `${baseUrl}/auth/otp/validate?action=register`;
-
-	const dataForOtpValidate = {
-		hp_email: bodyData.phone,
-		pwd: base64.encode(bodyData.password),
-		fullname: bodyData.fullname,
-		otp: bodyData.otp
-	};
 	
 	dispatch(actions.userOtpValidate());
-    
+	bodyData.pwd = base64.encode(bodyData.pwd);
+	
 	const requestData = {
 		token,
 		path,
 		method: 'POST',
 		fullpath: true,
-		body: dataForOtpValidate
+		body: bodyData
 	};
-    
+ 
 	const [err, response] = await to(request(requestData));
 	
 	if (err) {
