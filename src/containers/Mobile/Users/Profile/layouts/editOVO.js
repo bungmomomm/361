@@ -17,7 +17,7 @@ class EditOvo extends Component {
 			formResult: {
 				...props.formResult
 			},
-			isLoading: false
+			isLoading: props.loading
 		};
 
 		this.OVO_ID_FIELD = CONST.USER_PROFILE_FIELD.ovoId;
@@ -28,12 +28,13 @@ class EditOvo extends Component {
 		if (nextProps.formResult !== false) {
 			if (nextProps.formResult.status === 'success') {
 				this.setState({
-					data: nextProps.data
+					data: nextProps.data,
+					isLoading: nextProps.loading
 				});
 			}
 			this.setState({
 				formResult: nextProps.formResult,
-				isLoading: false
+				isLoading: nextProps.loading
 			});
 		}
 	}
@@ -50,9 +51,6 @@ class EditOvo extends Component {
 		const { onSave } = this.props;
 		const { data } = this.state;
 		onSave(e, { [this.OVO_ID_FIELD]: data });
-		this.setState({
-			isLoading: true
-		});
 	}
 
 	renderHeader() {

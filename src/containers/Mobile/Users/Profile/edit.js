@@ -10,8 +10,10 @@ import { to } from 'await-to-js';
 import Recaptcha from 'react-recaptcha';
 
 import Shared from '@/containers/Mobile/Shared';
+import Otp from '@/containers/Mobile/Shared/Otp';
+
 import EditEmail from './layouts/editEmail';
-import EditHp from './layouts/editHP';
+import EditHp from './layouts/editHp';
 import EditPassword from './layouts/editPassword';
 import EditOvo from './layouts/editOVO';
 
@@ -33,6 +35,7 @@ class UserProfileEdit extends Component {
 			newGender: null,
 			isBuyer: true, // buyer or seller
 			layout: 'main',
+			submittingForm: false,
 			formResult: {
 				status: '',
 				message: ''
@@ -53,6 +56,8 @@ class UserProfileEdit extends Component {
 		this.USER_POINT_FIELD = CONST.USER_PROFILE_FIELD.userPoint;
 		this.OVO_ID_FIELD = CONST.USER_PROFILE_FIELD.ovoId;
 		this.OVO_VERIFIED_FIELD = CONST.USER_PROFILE_FIELD.ovoVerified;
+		this.HP_EMAIL_FIELD = CONST.USER_PROFILE_FIELD.hpEmail;
+		this.OTP_FIELD = CONST.USER_PROFILE_FIELD.otp;
 
 		this.loadingView = <div><Spinner /></div>;
 		this.recaptchaInstance = null;
@@ -89,14 +94,27 @@ class UserProfileEdit extends Component {
 		}, n);
 	}
 
-	switchLayoutHandler(e, layout) {
-		this.setState({
-			layout,
-			formResult: {
-				status: '',
-				message: ''
-			}
-		});
+	switchLayoutHandler(e, layout, data = null) {
+		const { formData } = this.state;
+		this.setState({ layout });
+
+		if (data !== null) {
+			this.setState({
+				formData: {
+					...formData,
+					...data
+				}
+			});
+		}
+
+		if (layout === 'main') {
+			this.setState({
+				formResult: {
+					status: '',
+					message: ''
+				}
+			});
+		}
 	}
 
 	inputHandler(e) {
@@ -147,15 +165,15 @@ class UserProfileEdit extends Component {
 		const { formData } = this.state;
 		if (this.recaptchaInstance !== null) {
 			this.recaptchaInstance.execute();
+		}
 
-			if (data !== null) {
-				this.setState({
-					formData: {
-						...formData,
-						...data
-					}
-				});
-			}
+		if (data !== null) {
+			this.setState({
+				formData: {
+					...formData,
+					...data
+				}
+			});
 		}
 	}
 
@@ -186,6 +204,8 @@ class UserProfileEdit extends Component {
 				};
 			}
 
+			this.setState({ submittingForm: true });
+
 			let dispatchAction = null;
 			if (layout === this.OVO_ID_FIELD) {
 				dispatchAction = dispatch(userActions.userValidateOvo(this.userToken, newData));
@@ -198,8 +218,13 @@ class UserProfileEdit extends Component {
 					formResult: {
 						status: 'failed',
 						message: err.error_message || 'Form failed'
-					}
+					},
+					submittingForm: false
 				});
+
+				if (this.recaptchaInstance !== null) {
+					this.recaptchaInstance.reset();
+				}
 				console.log(err);
 			} else if (response) {
 				this.setState({
@@ -210,7 +235,8 @@ class UserProfileEdit extends Component {
 					formData: {
 						...formData,
 						...newData
-					}
+					},
+					submittingForm: false
 				});
 				this.setTimeoutForm(5000);
 				console.log(response);
@@ -220,6 +246,7 @@ class UserProfileEdit extends Component {
 
 	renderHeader() {
 		const { isLoading } = this.props;
+		const { submittingForm } = this.state;
 		const styleHeader = {
 			parent: {
 				height: '55px'
@@ -240,7 +267,7 @@ class UserProfileEdit extends Component {
 		);
 		const centerHeader = 'Ubah Profil';
 		const rightHeader = (
-			<Button onClick={() => this.saveFormData()}>SIMPAN</Button>
+			<Button onClick={() => this.saveFormData()} disabled={submittingForm}>SIMPAN</Button>
 		);
 
 		return (
@@ -461,6 +488,7 @@ class UserProfileEdit extends Component {
 	}
 
 	renderLayout() {
+		const { isLoading } = this.props;
 		const { layout, formResult, formData } = this.state;
 		let layoutView;
 		switch (layout) {
@@ -471,6 +499,7 @@ class UserProfileEdit extends Component {
 					onClickBack={(e, value) => this.switchLayoutHandler(e, 'main')}
 					onSave={(e, data) => this.saveFormData(data)}
 					formResult={formResult}
+					loading={isLoading}
 				/>
 			);
 			break;
@@ -479,8 +508,9 @@ class UserProfileEdit extends Component {
 				<EditHp
 					data={formData[this.PHONE_FIELD]}
 					onClickBack={(e, value) => this.switchLayoutHandler(e, 'main')}
-					onSave={(e, data) => this.saveFormData(data)}
+					onSave={(e, data) => this.switchLayoutHandler(e, this.OTP_FIELD, data)}
 					formResult={formResult}
+					loading={isLoading}
 				/>
 			);
 			break;
@@ -490,6 +520,7 @@ class UserProfileEdit extends Component {
 					onClickBack={(e, value) => this.switchLayoutHandler(e, 'main')}
 					onSave={(e, data) => this.saveFormData(data)}
 					formResult={formResult}
+					loading={isLoading}
 				/>
 			);
 			break;
@@ -500,6 +531,16 @@ class UserProfileEdit extends Component {
 					onClickBack={(e, value) => this.switchLayoutHandler(e, 'main')}
 					onSave={(e, data) => this.saveFormData(data)}
 					formResult={formResult}
+					loading={isLoading}
+				/>
+			);
+			break;
+		case this.OTP_FIELD:
+			layoutView = (
+				<Otp
+					phoneEmail={formData[this.HP_EMAIL_FIELD]}
+					onClickBack={(e, value) => this.switchLayoutHandler(e, this.PHONE_FIELD)}
+					onSuccess={(e, value) => this.switchLayoutHandler(e, 'main')}
 				/>
 			);
 			break;

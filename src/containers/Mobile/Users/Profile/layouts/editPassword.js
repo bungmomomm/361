@@ -24,14 +24,16 @@ class EditPassword extends Component {
 			[this.NEW_PWD_FIELD]: '',
 			formResult: {
 				...props.formResult
-			}
+			},
+			isLoading: props.loading
 		};
 	}
 
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.formResult !== false) {
 			this.setState({
-				formResult: nextProps.formResult
+				formResult: nextProps.formResult,
+				isLoading: nextProps.loading
 			});
 		}
 	}
@@ -98,7 +100,7 @@ class EditPassword extends Component {
 	}
 
 	renderPasswordForm() {
-		const { visibleOldPassword, visibleNewPassword, visibleConfPassword } = this.state;
+		const { isLoading, visibleOldPassword, visibleNewPassword, visibleConfPassword } = this.state;
 
 		return (
 			<form style={{ padding: '15px' }}>
@@ -115,7 +117,7 @@ class EditPassword extends Component {
 					<Input id='editPasswordNewConfirm' flat iconRight={<Button onClick={() => this.setVisiblePassword('visibleConfPassword')}>show</Button>} type={visibleConfPassword ? 'text' : 'password'} />
 				</div>
 				{this.renderNotif()}
-				{this.renderSubmitButton()}
+				{isLoading ? this.loadingView : this.renderSubmitButton()}
 			</form>
 		);
 	}

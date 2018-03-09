@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import util from 'util';
 import _ from 'lodash';
+import validator from 'validator';
 
-import { Page, Input, Button, Level, Svg, Notification } from '@/components/mobile';
+import { Page, Input, Button, Level, Svg, Notification, Spinner } from '@/components/mobile';
 
 import CONST from '@/constants';
 
@@ -13,37 +14,50 @@ class EditHp extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			data: props.data || '',
+			newData: '',
 			formResult: {
 				...props.formResult
-			}
+			},
+			isLoading: props.loading,
+			validForm: false,
+			inputHint: ''
 		};
 
-		this.PHONE_FIELD = CONST.USER_PROFILE_FIELD.phone;
+		this.HP_EMAIL_FIELD = CONST.USER_PROFILE_FIELD.hpEmail;
+		this.loadingView = <div><Spinner /></div>;
 	}
 
 	componentWillReceiveProps(nextProps) {
-		console.log(nextProps);
 		if (nextProps.formResult !== false) {
 			this.setState({
 				data: nextProps.data,
-				formResult: nextProps.formResult
+				formResult: nextProps.formResult,
+				isLoading: nextProps.loading
 			});
 		}
 	}
-
+	
 	inputHandler(e) {
 		const value = util.format('%s', e.target.value);
 
+		let validForm = false;
+		if ((value.substring(0, 1) === '0' && _.parseInt(value) > 0 && validator.isMobilePhone(value, 'any')) && validator.isLength(value, { min: 10, max: 15 })) {
+			validForm = true;
+		}
+
+		const inputHint = value.length > 0 && validForm === false ? 'Format Nomor Handphone tidak sesuai. Silahkan cek kembali' : '';
+
 		this.setState({
-			data: value
+			newData: value,
+			validForm,
+			inputHint
 		});
 	}
 
 	saveData(e) {
 		const { onSave } = this.props;
-		const { data } = this.state;
-		onSave(e, { [this.PHONE_FIELD]: data });
+		const { newData } = this.state;
+		onSave(e, { [this.HP_EMAIL_FIELD]: newData });
 	}
 
 	renderHeader() {
@@ -94,23 +108,33 @@ class EditHp extends Component {
 	}
 
 	renderSubmitButton() {
+		const { validForm } = this.state;
+
 		return (
 			<div className='margin--medium-v'>
-				<Button color='primary' size='large' onClick={(e) => this.saveData(e)}>SIMPAN</Button>
+				<Button color='primary' size='large' disabled={!validForm} onClick={(e) => this.saveData(e)}>SIMPAN</Button>
 			</div>
 		);
 	}
 
 	renderPhoneForm() {
+		const { isLoading, validForm, inputHint } = this.state;
+
 		return (
 			<form style={{ padding: '15px' }}>
 				{this.renderOldPhone()}
 				<div className='margin--medium-v'>
 					<label className={styles.label} htmlFor='editCellPhoneNew'>No Handphone Baru</label>
-					<Input id='editCellPhoneNew' flat onChange={(e) => this.inputHandler(e)} />
+					<Input
+						id='editCellPhoneNew'
+						flat
+						onChange={(e) => this.inputHandler(e)}
+						error={!validForm}
+						hint={inputHint}
+					/>
 				</div>
 				{this.renderNotif()}
-				{this.renderSubmitButton()}
+				{isLoading ? this.loadingView : this.renderSubmitButton()}
 			</form>
 		);
 	}

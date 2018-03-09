@@ -115,7 +115,11 @@ class Home extends Component {
 							datas.value().map(({ images, pricing }, e) => (
 								<div key={e}>
 									<Image lazyload alt='thumbnail' src={images[0].thumbnail} />
-									<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
+									<div className={styles.btnThumbnail}>
+										<Button transparent color='secondary' size='small'>
+											{pricing.formatted.effective_price}
+										</Button>
+									</div>
 								</div>
 							))
 						}
@@ -287,7 +291,7 @@ class Home extends Component {
 		const recommendation2 = this.isLogin === 'true' ? 'best_seller_products' : 'recently_viewed_products';
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page color='white'>
 					<Tabs
 						current={this.props.shared.current}
 						variants={this.props.home.segmen}
@@ -315,7 +319,7 @@ class Home extends Component {
 					<Footer isShow={this.state.isFooterShow} />
 				</Page>
 				<Header lovelist={shared.totalLovelist} value={this.props.search.keyword} />
-				<Navigation active='Home' scroll={this.props.scroll} />
+				<Navigation active='Home' scroll={this.props.scroll} totalCartItems={shared.totalCart} />
 			</div>
 		);
 	}
@@ -329,15 +333,15 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (props) => {
+const doAfterAnonymous = async (props) => {
 	const { shared, home, dispatch, cookies } = props;
 
 	const activeSegment = home.segmen.find(e => e.key === home.activeSegment);
 
 	const promoService = _.chain(shared).get('serviceUrl.promo').value() || false;
 
-	dispatch(new actions.mainAction(cookies.get('user.token'), activeSegment, promoService));
-	dispatch(new actions.recomendationAction(cookies.get('user.token'), activeSegment, promoService));
+	await dispatch(new actions.mainAction(cookies.get('user.token'), activeSegment, promoService));
+	await dispatch(new actions.recomendationAction(cookies.get('user.token'), activeSegment, promoService));
 };
 
 

@@ -17,7 +17,7 @@ class EditEmail extends Component {
 			formResult: {
 				...props.formResult
 			},
-			isLoading: false
+			isLoading: props.loading
 		};
 
 		this.EMAIL_FIELD = CONST.USER_PROFILE_FIELD.email;
@@ -28,7 +28,7 @@ class EditEmail extends Component {
 		if (nextProps.formResult !== false) {
 			this.setState({
 				formResult: nextProps.formResult,
-				isLoading: false
+				isLoading: nextProps.loading
 			});
 		}
 	}
@@ -45,9 +45,6 @@ class EditEmail extends Component {
 		const { onSave } = this.props;
 		const { data } = this.state;
 		onSave(e, { [this.EMAIL_FIELD]: data });
-		this.setState({
-			isLoading: true
-		});
 	}
 
 	renderHeader() {

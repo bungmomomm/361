@@ -18,17 +18,24 @@ import { aux } from '@/utils';
 
 class MyOrderDetail extends Component {
 	static renderTrackingInfo(order) {
+		const isResiInfoExist = Object.prototype.hasOwnProperty.call(order.shipping, 'resi');
 		return (
 			<Level className='bg--mm-blue-ext-3' style={{ borderBottom: '1px solid #D8D8D8' }}>
 				<Level.Left><Svg src='ico_box.svg' /></Level.Left>
 				<Level.Item className='padding--medium'>
 					<strong>{order.status}</strong>
-					<small>No. Resi: {order.shipping.resi.resi}</small>
+					{ isResiInfoExist && (<small>No. Resi: {order.shipping.resi.resi}</small>) }
 					<small>Layanan Pengiriman: {order.shipping.shipping_method}</small>
 				</Level.Item>
-				<Level.Right style={{ alignItems: 'flex-end' }}>
-					<Button rounded inline size='small' color='white'>Lacak</Button>
-				</Level.Right>
+				{
+					(isResiInfoExist && order.shipping.resi.is_trackable === 1) && (
+						<Level.Right style={{ alignItems: 'flex-end' }}>
+							<Link to={`/track/${order.shipping.resi.provider}/${order.shipping.resi.resi}`}>
+								<Button rounded inline size='small' color='white'>Lacak</Button>
+							</Link>
+						</Level.Right>)
+				}
+
 			</Level>
 		);
 	}
@@ -40,6 +47,9 @@ class MyOrderDetail extends Component {
 		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
 		this.soNumber = this.props.match.params.so_number;
 
+		if (this.isLogin !== 'true') {
+			this.props.history.push('/');
+		}
 	}
 
 	componentWillMount() {
@@ -71,7 +81,7 @@ class MyOrderDetail extends Component {
 				{this.renderOrderList()}
 				{this.renderAddress()}
 				{this.renderPembayaran()}
-				{order.group !== 'konfirmasi' && (
+				{(order.group !== 'konfirmasi' && order.payment_status_id === 1) && (
 					<Link to={'/profile-my-order-confirm/'}>
 						<Button rounded size='medium' color='secondary'>Konfirmasi Pembayaran</Button>
 					</Link>
@@ -171,7 +181,7 @@ class MyOrderDetail extends Component {
 				<div className='bg--white padding--medium'>
 					<ul className={styles.orderPaymentList}>
 						<li><span>Subtotal</span><strong>{order.total.formatted.subtotal}</strong></li>
-						<li><span>Biaya Pengiriman (RCL)</span><strong>{order.total.formatted.shipping_cost}</strong></li>
+						<li><span>Biaya Pengiriman</span><strong>{order.total.formatted.shipping_cost}</strong></li>
 					</ul>
 					<div className={styles.orderPaymentTotal}>
 						<div>Total Pembayaran<br /><small className='font-color--primary-ext-2'>(Termasuk PPN)</small></div>
@@ -186,12 +196,16 @@ class MyOrderDetail extends Component {
 	render() {
 		const HeaderPage = ({
 			left: (
-				<Link to={'/profile-my-order/'}>
+				<span
+					onClick={() => this.props.history.goBack()}
+					role='button'
+					tabIndex='0'
+				>
 					<Svg src='ico_arrow-back-left.svg' />
-				</Link>
+				</span>
 			),
 			center: 'Detail Pesanan',
-			right: null
+			right: null,
 		});
 
 		return (

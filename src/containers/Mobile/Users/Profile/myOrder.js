@@ -30,6 +30,11 @@ class MyOrder extends Component {
 		];
 		this.isLogin = this.props.cookies.get('isLogin');
 		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
+
+		if (this.isLogin !== 'true') {
+			this.props.history.push('/');
+		}
+		this.isEmpty = false;
 	}
 
 	componentWillMount() {
@@ -49,6 +54,11 @@ class MyOrder extends Component {
 			const { dispatch } = this.props;
 			dispatch(userAction.getMyOrder(this.userToken));
 		}
+		if (nextProps.user.myOrders !== this.props.user.myOrders && nextProps.user.myOrders === false) {
+			this.props.history.push('/profile');
+		}
+
+		this.isEmpty = Object.values(nextProps.user.myOrders).some(e => e && e.orders.length === 0);
 	}
 
 	componentDidUpdate() {
@@ -73,7 +83,7 @@ class MyOrder extends Component {
 		return currentOrders && (
 			currentOrders.orders.map((order, key) => {
 				return (<List key={key}>
-					<Link style={{ flexFlow: 'row nowrap' }} to={`/profile-my-order/${order.so_number}`}>
+					<Link style={{ flexFlow: 'row nowrap' }} to={`/profile/my-order/${order.so_number}`}>
 						<List.Image>
 							<div className={styles.orderIconCtr}>
 								<Svg src='ico_money-time.svg' />
@@ -103,24 +113,31 @@ class MyOrder extends Component {
 			right: null,
 			rows: [{
 				left: null,
-				center: (
-					<Tabs
-						type='minimal'
-						current={this.state.current}
-						variants={this.menu}
-						onPick={(e) => this.handlePick(e)}
-					/>
-				),
+				center: (<Tabs
+					type='minimal'
+					current={this.state.current}
+					variants={this.menu}
+					onPick={(e) => this.handlePick(e)}
+				/>),
 				right: null
 			}]
 		});
+
+		const RenderEmptyOrders = (<div> Tidak ada elemet</div>);
 
 		return (
 			<div style={this.props.style}>
 				<Page>
 					<div className='margin--medium'>
-						{ this.renderOrders() }
-						{ this.props.scroller.loading && (<Spinner />)}
+						{this.isEmpty && RenderEmptyOrders}
+						{/* <Tabs
+							type='minimal'
+							current={this.state.current}
+							variants={this.menu}
+							onPick={(e) => this.handlePick(e)}
+						/> */}
+						{ !this.isEmpty && this.renderOrders() }
+						{ !this.isEmpty && this.props.scroller.loading && (<Spinner />)}
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />

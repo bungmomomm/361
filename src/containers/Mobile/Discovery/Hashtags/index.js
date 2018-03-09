@@ -189,14 +189,15 @@ class Hashtags extends Component {
 }
 
 const mapStateToProps = (state) => {
+
 	return {
 		...state
 	};
 };
 
-const doAfterAnonymous = (props) => {
+const doAfterAnonymous = async (props) => {
 	const { dispatch, location, cookies } = props;
-	dispatch(actions.initHashtags(cookies.get('user.token'), location.hash));
+	await dispatch(actions.initHashtags(cookies.get('user.token'), location.hash));
 };
 
 export default withRouter(withCookies(connect(mapStateToProps)(Scroller(Shared(Hashtags, doAfterAnonymous)))));

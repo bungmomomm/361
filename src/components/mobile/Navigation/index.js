@@ -12,7 +12,7 @@ class Navigation extends PureComponent {
 		this.currentScrollPos = 0;
 	}
 	render() {
-		const { className, active, scroll, ...props } = this.props;
+		const { className, active, scroll, totalCartItems } = this.props;
 
 		const isSticky = (oldPos = this.currentScrollPos) => {
 			if (!scroll) {
@@ -29,7 +29,7 @@ class Navigation extends PureComponent {
 		);
 
 		return (
-			<nav className={createClassName} {...props}>
+			<nav className={createClassName} >
 				<div className={styles.wrapper}>
 					<div className={styles.navigation}>
 						<Item
@@ -50,6 +50,7 @@ class Navigation extends PureComponent {
 							icon='ico_cart.svg'
 							label='Shopping Bag'
 							active={active === 'Shopping Bag'}
+							badge={(totalCartItems > 0) ? totalCartItems : null}
 						/>
 						<Item
 							to='/promo'

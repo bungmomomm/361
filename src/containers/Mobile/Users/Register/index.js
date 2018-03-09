@@ -62,7 +62,8 @@ class Register extends Component {
 			displayMessageOnValidateOtpForm: false,
 			messageType: 'SUCCESS',
 			textMessageOnValidateOtpForm: '',
-			captchaValue: ''
+			captchaValue: '',
+			isButtonResendOtpLoading: false
 		};
 		this.renderRegisterView = this.renderRegisterView.bind(this);
 		this.renderValidateOtpView = this.renderValidateOtpView.bind(this);
@@ -150,6 +151,7 @@ class Register extends Component {
 	async onSendOtp() {
   
 		this.setState({
+			isButtonResendOtpLoading: true,
 			disableOtpButton: true,
 			otpValue: ''
 		});
@@ -320,7 +322,8 @@ class Register extends Component {
 			validEmailOrMobile
 		} = this.state;
 		
-		const buttonLoginEnable = validLoginId && validPassword && validEmailOrMobile;
+		const { isLoading } = this.props.users;
+		const buttonLoginEnable = !isLoading && validLoginId && validPassword && validEmailOrMobile;
 		
 		const inputFullNameAttribute = {
 			value: loginId,
@@ -391,6 +394,10 @@ class Register extends Component {
 			disabled: !buttonLoginEnable
 		};
 		
+		if (isLoading === true) {
+			buttonRegisterAttribute.loading = true;
+		}
+		
 		const providerConfig = {
 			google: {
 				clientId: process.env.GOOGLEAPP_ID,
@@ -435,15 +442,21 @@ class Register extends Component {
 			otpButtonText,
             displayMessageOnValidateOtpForm,
 			textMessageOnValidateOtpForm,
-            messageType
+            messageType,
+			isButtonResendOtpLoading
 		} = this.state;
 		
+		const { isLoading } = this.props.users;
+  
 		const buttonPropertyResendOTP = {
 			color: 'secondary',
 			size: 'large',
 			onClick: (e) => this.onSendOtp()
 		};
-  
+		
+		if ((isButtonResendOtpLoading && isLoading) === true) {
+			buttonPropertyResendOTP.loading = true;
+		}
   
 		if (disableOtpButton === true) {
 			buttonPropertyResendOTP.disabled = true;
@@ -456,8 +469,12 @@ class Register extends Component {
 			disabled: true
 		};
 		
-		if (otpValue.length === 6) {
+		if (otpValue.length === 6 && !isLoading) {
 			buttonPropertyVerify.disabled = false;
+		}
+		
+		if ((!isButtonResendOtpLoading && isLoading) === true) {
+			buttonPropertyVerify.loading = true;
 		}
 		
 		const enterOtpVerification = {

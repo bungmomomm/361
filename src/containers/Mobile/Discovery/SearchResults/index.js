@@ -11,6 +11,7 @@ import SearchNotFound from '@/containers/Mobile/Discovery/SearchNotFound';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Filter from '@/containers/Mobile/Shared/Filter';
+import Love from '@/containers/Mobile/Shared/Widget/Love';
 import Sort from '@/containers/Mobile/Shared/Sort';
 
 import {
@@ -24,7 +25,6 @@ import {
 	Input,
 	Navigation,
 	Spinner,
-	Modal,
 	Comment
 } from '@/components/mobile';
 
@@ -51,7 +51,6 @@ class SearchResults extends Component {
 			},
 			showFilter: false,
 			showSort: false,
-			showLoginPopup: false,
 			loving: false,
 			query: {
 				q: '',
@@ -103,7 +102,7 @@ class SearchResults extends Component {
 
 		return keywordFromUrl;
 	}
-
+	
 	update = async (params) => {
 		const { cookies, dispatch, location, history } = this.props;
 		const { query } = this.state;
@@ -169,55 +168,15 @@ class SearchResults extends Component {
 		}
 	}
 
-	loginLater() {
-		this.setState({
-			showLoginPopup: false
-		});
-	}
-
-	loginNow() {
+	forceLoginNow() {
 		const { history } = this.props;
 		history.push(`/login?redirect_uri=${location.pathname}`);
-		this.setState({
-			showLoginPopup: false
-		});
-	}
-
-	async ilovethis(add, product) {
-		const { cookies, dispatch, searchResults } = this.props;
-		if (cookies.get('isLogin') === 'true') {
-			let response;
-			if (add) {
-				response = await to(dispatch(lovelistActions.addToLovelist(cookies.get('user.token'), product.product_id)));
-			} else {
-				response = await to(dispatch(lovelistActions.removeFromLovelist(cookies.get('user.token'), product.product_id)));
-			}
-			if (response[0] !== null) {
-				return response[0];
-			}
-			const productIdList = _.map(searchResults.searchData.products, 'product_id') || null;
-			dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-			this.setState({
-				loving: true
-			});
-			await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
-			this.setState({
-				loving: false
-			});
-		} else {
-			this.setState({
-				showLoginPopup: true
-			});
-		}
-
-		return null;
-	}
+	}	
 
 	writeComment(e) {
 		this.setState({
 			productComment: e.target.value
 		});
-
 	}
 
 	postComment = async (e, productId) => {
@@ -267,7 +226,7 @@ class SearchResults extends Component {
 
 	renderPage() {
 		const { searchResults } = this.props;
-		const { showFilter, showLoginPopup } = this.state;
+		const { showFilter } = this.state;
 
 		if (showFilter) {
 			return (
@@ -288,24 +247,6 @@ class SearchResults extends Component {
 				{this.renderHeader()}
 				{this.renderTabs()}
 				{this.renderForeverBanner()}
-				<Modal show={showLoginPopup}>
-					<div className='font-medium'>
-						<h3 className='text-center'>Lovelist</h3>
-						<Level style={{ padding: '0px' }} className='margin--medium-v'>
-							<Level.Left />
-							<Level.Item className='padding--medium-h'>
-								<div className='font-small'>Silahkan login/register untuk menambahkan produk ke Lovelist</div>
-							</Level.Item>
-						</Level>
-					</div>
-					<Modal.Action
-						closeButton={(
-							<Button onClick={(e) => this.loginLater()}>
-								<span className='font-color--primary-ext-2'>NANTI</span>
-							</Button>)}
-						confirmButton={(<Button onClick={(e) => this.loginNow()}>SEKARANG</Button>)}
-					/>
-				</Modal>
 				<Navigation scroll={this.props.scroll} />
 			</div>
 		);
@@ -329,9 +270,8 @@ class SearchResults extends Component {
 	}
 
 	renderList(product, index) {
-		const { loving } = this.state;
 		const { isLoading, viewMode } = this.props;
-		
+
 		const listCardCatalogAttribute = {
 			images: product.images,
 			productTitle: product.product_title,
@@ -340,11 +280,15 @@ class SearchResults extends Component {
 			linkToPdp: product.url,
 			commentTotal: product.commentTotal,
 			commentUrl: product.commentUrl,
-			lovelistTotal: product.lovelistTotal,
-			lovelistStatus: product.lovelistStatus,
-			optimistic: false,
-			lovelistDisable: loving,
-			lovelistAddTo: (add) => this.ilovethis(add, product)
+			love: (
+				<Love
+					status={product.lovelistStatus}
+					data={product.product_id}
+					total={product.lovelistTotal}
+					onNeedLogin={(e) => this.forceLoginNow()}
+					showNumber
+				/>
+			)
 		};
 
 		const cardCatalogGridAttribute = {
@@ -354,10 +298,14 @@ class SearchResults extends Component {
 			brandName: product.brand.name,
 			pricing: product.pricing,
 			linkToPdp: product.url,
-			lovelistStatus: product.lovelistStatus,
-			optimistic: false,
-			lovelistDisable: loving,
-			lovelistAddTo: (add) => this.ilovethis(add, product)
+			love: (
+				<Love
+					status={product.lovelistStatus}
+					data={product.product_id}
+					total={product.lovelistTotal}
+					onNeedLogin={(e) => this.forceLoginNow()}
+				/>
+			)
 		};
 
 		switch (viewMode.mode) {
@@ -507,13 +455,17 @@ const mapStateToProps = (state) => {
 	searchResults.searchData.products = _.map(searchResults.searchData.products, (product) => {
 		const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: product.product_id }) : false;
 		const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: product.product_id }) : false;
+		if (lovelistData) {
+			product.lovelistTotal = lovelistData.total;
+			product.lovelistStatus = lovelistData.status;
+		}
+		if (commentData) {
+			product.commentTotal = commentData.total;
+		}
 		return {
 			...product,
 			url: urlBuilder.buildPdp(product.product_title, product.product_id),
-			commentTotal: commentData ? commentData.total : 0,
-			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`,
-			lovelistTotal: lovelistData ? lovelistData.total : 0,
-			lovelistStatus: lovelistData ? lovelistData.status : 0
+			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`
 		};
 	});
 
@@ -543,15 +495,15 @@ const doAfterAnonymous = async (props) => {
 	};
 	const [err, response] = await to(dispatch(searchActions.searchAction({ token: cookies.get('user.token'), query: searchParam })));
 	if (err) {
-		dispatch(searchActions.promoAction(cookies.get('user.token')));
+		await dispatch(searchActions.promoAction(cookies.get('user.token')));
 	}
 	if (response) {
 		if (!_.isEmpty(response.searchData.products)) {
 			const productIdList = _.map(response.searchData.products, 'product_id') || null;
-			dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+			await dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+			await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 		} else {
-			dispatch(searchActions.promoAction(cookies.get('user.token')));
+			await dispatch(searchActions.promoAction(cookies.get('user.token')));
 		}
 	}
 };
