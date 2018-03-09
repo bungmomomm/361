@@ -1,9 +1,15 @@
 import { handleActions, createActions } from 'redux-actions';
 
 const actions = createActions({
-	USER_LOGIN: undefined,
-	USER_LOGIN_FAIL: (error) => ({ login: { error } }),
-	USER_LOGIN_SUCCESS: (userProfile) => ({ email: undefined, password: undefined, userProfile }),
+	USER_LOGIN: () => ({ login: undefined }),
+	USER_LOGIN_FAIL: (error) => {
+		return {
+			login: {
+				error
+			}
+		};
+	},
+	USER_LOGIN_SUCCESS: (userProfile) => ({ login: undefined, email: undefined, password: undefined, userProfile }),
 	USER_ANONYMOUS: undefined,
 	USER_ANONYMOUS_SUCCESS: (userProfile) => ({ userProfile }),
 	USER_NAME_CHANGE: (email) => ({ email }),
