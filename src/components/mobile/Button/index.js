@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 import Spinner from '../Spinner';
+import Love from './Love';
 import styles from './button.scss';
 
 class Button extends PureComponent {
@@ -93,5 +94,6 @@ Button.defaultProps = {
 	disabled: false
 };
 
+Button.Love = Love;
 
 export default Button;

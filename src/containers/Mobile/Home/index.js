@@ -315,7 +315,7 @@ class Home extends Component {
 					<Footer isShow={this.state.isFooterShow} />
 				</Page>
 				<Header lovelist={shared.totalLovelist} value={this.props.search.keyword} />
-				<Navigation active='Home' scroll={this.props.scroll} />
+				<Navigation active='Home' scroll={this.props.scroll} totalCartItems={shared.totalCart} />
 			</div>
 		);
 	}
@@ -329,15 +329,15 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (props) => {
+const doAfterAnonymous = async (props) => {
 	const { shared, home, dispatch, cookies } = props;
 
 	const activeSegment = home.segmen.find(e => e.key === home.activeSegment);
 
 	const promoService = _.chain(shared).get('serviceUrl.promo').value() || false;
 
-	dispatch(new actions.mainAction(cookies.get('user.token'), activeSegment, promoService));
-	dispatch(new actions.recomendationAction(cookies.get('user.token'), activeSegment, promoService));
+	await dispatch(new actions.mainAction(cookies.get('user.token'), activeSegment, promoService));
+	await dispatch(new actions.recomendationAction(cookies.get('user.token'), activeSegment, promoService));
 };
 
 

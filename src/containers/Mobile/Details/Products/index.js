@@ -7,10 +7,11 @@ import { urlBuilder } from '@/utils';
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as shopBagActions } from '@/state/v4/ShopBag';
-import { Modal, Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Rating, Spinner } from '@/components/mobile';
+import { Modal, Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Rating, Spinner, Badge } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
 import SellerProfile from '../../Discovery/Seller/components/SellerProfile';
+import { Promise } from 'es6-promise';
 
 class Products extends Component {
 	constructor(props) {
@@ -20,20 +21,22 @@ class Products extends Component {
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.source = this.props.cookies.get('user.source');
 		this.isLogin = this.props.cookies.get('isLogin');
+		this.defaultCount = 1;
 
 		this.closeZoomImage = this.closeZoomImage.bind(this);
 		this.goBackPreviousPage = this.goBackPreviousPage.bind(this);
 		this.handleScroll = this.handleScroll.bind(this);
 		this.handleLovelistClick = this.handleLovelistClick.bind(this);
 		this.handleImageItemClick = this.handleImageItemClick.bind(this);
-		this.handleCancelRemoveItem = this.handleCancelRemoveItem.bind(this);
-		this.handleAddItemToCart = this.handleAddItemToCart.bind(this);
+		this.handleCloseModalPopUp = this.handleCloseModalPopUp.bind(this);
+		this.handleBtnBeliClicked = this.handleBtnBeliClicked.bind(this);
+		this.handleSelectVariant = this.handleSelectVariant.bind(this);
 		this.redirectToComments = this.redirectToComments.bind(this);
 		this.removeAddItem = this.removeAddItem.bind(this);
 		this.setCarouselSlideIndex = this.setCarouselSlideIndex.bind(this);
 
 		this.state = {
-			size: 's',
+			size: '',
 			status: {
 				showScrollInfomation: false,
 				isLoved: false,
@@ -44,6 +47,10 @@ class Products extends Component {
 				recommendationSet: false,
 				reviewsSet: false,
 				bulkieSet: false,
+				hasVariantSize: false,
+				pendingAddProduct: false,
+				productAdded: false,
+				showModalSelectSize: false
 			},
 			pdpData: {
 				cardProduct: {},
@@ -54,10 +61,11 @@ class Products extends Component {
 			detail: {},
 			carousel: {
 				slideIndex: 0
-			}
+			},
+			selectedVariant: {},
+			btnBeliLabel: 'BELI AJA'
 		};
 
-		this.linkToPdpDisabled = true;
 		this.loadingContent = (
 			<div style={{ margin: '20% auto 20% auto' }}>
 				<Spinner size='large' />
@@ -73,12 +81,26 @@ class Products extends Component {
 		const { product, lovelist, dispatch } = nextProps;
 		const { detail, recommendation, similar, socialSummary } = product;
 		const { pdpData, status } = this.state;
+		const { selectedVariant } = this.state;
 
 		status.loading = product.loading;
 		// sets card product
 		if (!_.isEmpty(product.detail) && !status.pdpDataHasLoaded) {
 			pdpData.cardProduct = productActions.getProductCardData(detail);
 			status.pdpDataHasLoaded = true;
+			
+			if (!_.isEmpty(detail.spec) && _.isArray(detail.spec)) {
+				const selectedSize = product.detail.spec.filter(specItem => (specItem.key === 'size'));
+				// set default selected size
+				if (!_.isEmpty(selectedSize) && typeof selectedSize[0].value !== 'undefined') {
+					status.hasVariantSize = (!_.isEmpty(pdpData.cardProduct.variants));
+				}
+			}
+
+			// set defaults variant if the product has one product variant only ...
+			if (!_.isEmpty(detail.variants) && _.isArray(detail.variants) && detail.variants.length === 1) {
+				selectedVariant.data = detail.variants[0];
+			}
 		}
 
 		// sets lovelist data
@@ -137,7 +159,7 @@ class Products extends Component {
 		}
 
 		// updates states
-		this.setState({ detail, status, pdpData });
+		this.setState({ detail, status, pdpData, selectedVariant });
 	}
 
 	componentWillUnmount() {
@@ -192,25 +214,87 @@ class Products extends Component {
 		}
 	}
 
-	handleCancelRemoveItem(e) {
+	handleCloseModalPopUp(e, modal) {
 		const { status } = this.state;
-		status.showConfirmDelete = false;
+
+		switch (modal) {
+		case 'lovelist':
+			status.showConfirmDelete = false;
+			break;
+		case 'select-size':
+			status.showModalSelectSize = false;
+			break;
+		default:
+			break;
+		}
+
 		this.setState({ status });
 	}
 
-	handleAddItemToCart(e) {
-		const { dispatch, match } = this.props;
-		const productId = match.params.id;
-		const token = this.userCookies;
-		const defaultCount = 1;
+	addToShoppingBag(variantId) {
+		const { status } = this.state;
+		const { dispatch } = this.props;
 
-		dispatch(shopBagActions.updateAction(token, productId, defaultCount));
+		const handler = new Promise((resolve, reject) => {
+			resolve(dispatch(shopBagActions.updateAction(this.userCookies, variantId, this.defaultCount, 'add')));
+		});
+
+		handler.then((res) => {
+			// update carts
+			dispatch(shopBagActions.getAction(this.userToken));
+			status.pendingAddProduct = false;
+			status.productAdded = true;
+			this.setState({ btnBeliLabel: 'GO TO SHOPPING BAG' });
+		}).catch((err) => {
+			console.log('[BEN BEN] Error found while adding product to cart: ', err);
+		});
+
+		this.setState({ status });
+	}
+
+	handleBtnBeliClicked(e) {
+		const { selectedVariant, status } = this.state;
+
+		// product variants not found
+		if (!status.hasVariantSize && _.isEmpty(selectedVariant)) {
+			console.log('[BEN BEN]: Inccorect variants data: ', this.props.product);
+			return;
+		}
+
+		// Go to shopping back
+		if (status.productAdded) {
+			const { history } = this.props;
+			history.push('/cart');
+		}
+
+		if (status.hasVariantSize && _.isEmpty(selectedVariant)) {
+			status.showModalSelectSize = true;
+			status.pendingAddProduct = true;
+			this.setState({ status });
+		} else {
+			this.addToShoppingBag(selectedVariant.data.id);
+		}
 	}
 
 	handleImageItemClick() {
 		const { status } = this.state;
 		status.isZoomed = true;
 		this.setState({ status });
+	}
+
+	handleSelectVariant(size = '', selectedVariant = {}) {
+		if (!_.isUndefined(size) && !_.isUndefined(selectedVariant)) {
+			const { status, pdpData } = this.state;
+			pdpData.cardProduct.pricing = selectedVariant.data.pricing.formatted;
+			console.log('pdpData: ', pdpData);
+			this.setState({
+				size,
+				selectedVariant,
+				pdpData
+			});
+			// Add product to cart automatically after product variant size selected 
+			if (status.pendingAddProduct) this.addToShoppingBag(selectedVariant.data.id);
+		}
 	}
 
 	redirectToComments() {
@@ -296,22 +380,39 @@ class Products extends Component {
 	}
 
 	renderStickyAction() {
-		const { pdpData, status, detail } = this.state;
+		const { pdpData, status, detail, btnBeliLabel } = this.state;
 		if (status.pdpDataHasLoaded && status.showScrollInfomation && !status.loading) {
 			return (
 				<div className={styles.stickyAction}>
 					<Level style={{ padding: '10px' }} className='flex-center'>
 						<Level.Left>
-							<div className={styles.stickyActionImage}>
-								<img alt='product' src={detail.images[0].thumbnail} />
-							</div>
+							<Level className={styles.action}>
+								<Level.Left>
+									<div className={styles.stickyActionImage}>
+										<img alt='product' src={detail.images[0].thumbnail} />
+									</div>
+								</Level.Left>
+							</Level>
 						</Level.Left>
 						<Level.Item className='padding--medium-h'>
-							<div className='font-normal'>{pdpData.cardProduct.pricing.formatted.app_effective_price}</div>
-							<div className='font-small font-color--primary-ext-2'>{pdpData.cardProduct.pricing.formatted.effective_price}</div>
+							<Level className={styles.action}>
+								<Level.Item>
+									<div className='font-normal'>{pdpData.cardProduct.pricing.effective_price}</div>
+									<div className='font-small font-color--primary-ext-2'>{pdpData.cardProduct.pricing.effective_price}</div>
+								</Level.Item>
+								<Level.Right>
+									<Badge rounded color='red'>
+										<span className='font--lato-bold'>{pdpData.cardProduct.pricing.discount || '0%'}</span>
+									</Badge>
+								</Level.Right>
+							</Level>
 						</Level.Item>
 						<Level.Right>
-							<Button color='secondary' size='medium' onClick={this.handleAddItemToCart} >BELI AJA</Button>
+							<Level className={styles.action}>
+								<Level.Right>
+									<Button color='secondary' disabled={(pdpData.cardProduct.productStock === 0)} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
+								</Level.Right>
+							</Level>
 						</Level.Right>
 					</Level>
 				</div>
@@ -322,16 +423,16 @@ class Products extends Component {
 
 	render() {
 		const { detail, pdpData, status, carousel } = this.state;
-		const { match, product } = this.props;
+		const { match, product, shared } = this.props;
 		const { seller, comment, reviews } = product.socialSummary;
-
+		const linkToPdpDisabled = true;
 		if (status.isZoomed) {
 			return this.renderZoomImage();
 		}
 
 		return (
 			<div>
-				<Page>
+				<Page color='#f9f9f9'>
 					<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
 						{status.pdpDataHasLoaded && (
 							<Card.Product
@@ -342,41 +443,37 @@ class Products extends Component {
 								isLoved={status.isLoved}
 								onBtnLovelistClick={this.handleLovelistClick}
 								onBtnCommentClick={this.redirectToComments}
-								onBtnBeliClick={this.handleAddItemToCart}
-								linkToPdpDisabled={this.linkToPdpDisabled}
+								onBtnBeliClick={this.handleBtnBeliClicked}
+								linkToPdpDisabled={linkToPdpDisabled}
 							/>
 						)}
+						
 						{!status.pdpDataHasLoaded && this.loadingContent}
-						<div className='flex-center padding--medium-h border-top'>
-							<div className='margin--medium-v'>
-								<div className='flex-row flex-spaceBetween'>
-									<div>Pilih Ukuran</div>
-									<Link to='/product/guide' className='d-flex font-color--primary-ext-2 flex-row flex-middle'><Svg src='ico_sizeguide.svg' /> <span className='padding--small-h padding--none-r'>PANDUAN UKURAN</span></Link>
+
+						{status.pdpDataHasLoaded && status.hasVariantSize && (
+							<div className='flex-center padding--medium-h border-top'>
+								<div className='margin--medium-v'>
+									<div className='flex-row flex-spaceBetween'>
+										<div>Pilih Ukuran</div>
+										<Link to='/product/guide' className='d-flex font-color--primary-ext-2 flex-row flex-middle'>
+											<Svg src='ico_sizeguide.svg' /> <span className='padding--small-h padding--none-r'>PANDUAN UKURAN</span>
+										</Link>
+									</div>
+									<div className='margin--medium-v horizontal-scroll margin--none-b'>
+										<Radio
+											name='size'
+											checked={this.state.size}
+											style={{ marginTop: '10px', marginBottom: '10px' }}
+											onChange={this.handleSelectVariant}
+											data={pdpData.cardProduct.variants}
+										/>
+									</div>
+									{(pdpData.cardProduct.productStock === 0) && (
+										<p className='font-color--red font-small'>Stock Habis</p>
+									)}
 								</div>
-								<div className='margin--medium-v horizontal-scroll margin--none-b'>
-									<Radio
-										name='size'
-										checked={this.state.size}
-										style={{ marginBottom: '10px' }}
-										onChange={(e) => this.setState({ size: e })}
-										data={[
-											{ label: 'xs', value: 'xs', disabled: true },
-											{ label: 's', value: 's' },
-											{ label: 'm', value: 'm' },
-											{ label: 'l', value: 'l' },
-											{ label: 'xl', value: 'xl' },
-											{ label: '2xl', value: '2xl' },
-											{ label: 's', value: 's' },
-											{ label: 'm', value: 'm' },
-											{ label: 'l', value: 'l' },
-											{ label: 'xl', value: 'xl' },
-											{ label: '2xl', value: '2xl' }
-										]}
-									/>
-								</div>
-								<p className='font-color--red font-small'>Stock Habis</p>
 							</div>
-						</div>
+						)}
 						<Level className='font-color--primary-ext-2 border-top border-bottom'>
 							<Level.Item>
 								<div className='padding--small-h'>Dapatkan OVO Point: 300.000</div>
@@ -391,9 +488,6 @@ class Products extends Component {
 						{
 							status.pdpDataHasLoaded && <p className='padding--medium-h' dangerouslySetInnerHTML={{ __html: detail.description }} />
 						}
-						{/* <span className='margin--small-v padding--medium-h'>
-							<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
-						</span> */}
 						<div className='margin--medium-v --disable-flex padding--medium-h'>
 							{
 								(this.isLogin === 'true') &&
@@ -407,7 +501,7 @@ class Products extends Component {
 									<a href='/user/login'>Log in</a> / <a href='/user/register'>Register</a> untuk memberikan komentar
 								</span>
 							}
-							{(!_.isUndefined(comment.summary) && !_.isEmpty(comment.summary)) && (
+							{(!_.isUndefined(comment) && !_.isUndefined(comment.summary) && !_.isEmpty(comment.summary)) && (
 								<Comment type='lite-review' data={comment.summary} />
 							)}
 						</div>
@@ -435,7 +529,7 @@ class Products extends Component {
 													total={(typeof reviews.total !== 'undefined' && reviews.total > 0) ? reviews.total : 0}
 												/>
 												<div className='flex-row padding--small-h'>
-													<strong>{(typeof reviews.rating !== 'undefined' && reviews.rating > 0) ? reviews.rating : 0}</strong>/5
+													<strong>{(typeof reviews.rating !== 'undefined' && reviews.rating > 0) ? reviews.rating : 0}/5</strong>
 													<span className='font-color--primary-ext-2 padding--small-h'>
 														{(typeof reviews.total !== 'undefined' && reviews.total > 0) ? `(${reviews.total} Ulasan)` : 'Belum Ada Ulasan'}
 													</span>
@@ -452,12 +546,10 @@ class Products extends Component {
 										<SellerProfile
 											image={detail.seller.seller_logo}
 											status='gold'
-											isNewStore={false}
-											// successOrder={(!_.isUndefined(seller.success_order.rate)) ? (seller.success_order.rate || 0) : 0}
-											successOrder='98.9'
+											isNewStore={seller.is_new_seller}
+											successOrder={(!_.isUndefined(seller.success_order.rate)) ? (seller.success_order.rate || 0) : 0}
 											rating={seller.rating}
-											totalProduct='1920'
-											// totalProduct={(!_.isUndefined(seller.success_order.total)) ? (seller.success_order.total || 0) : 0}
+											totalProduct={(!_.isUndefined(seller.success_order.total)) ? (seller.success_order.total || 0) : 0}
 											name={detail.seller.seller}
 											location={detail.seller.seller_location}
 											description={(seller.description || '')}
@@ -506,13 +598,30 @@ class Products extends Component {
 					</div>
 					<Modal.Action
 						closeButton={(
-							<Button onClick={this.handleCancelRemoveItem}>
+							<Button onClick={(e) => this.handleCloseModalPopUp(e, 'lovelist')}>
 								<span className='font-color--primary-ext-2'>BATALKAN</span>
 							</Button>)}
 						confirmButton={(<Button onClick={this.removeAddItem}>YA, HAPUS</Button>)}
 					/>
 				</Modal>
-				<Navigation scroll={this.props.scroll} />
+				<Modal show={status.showModalSelectSize}>
+					<div className='font-medium'>
+						<h3>INFORMASI</h3>
+						<Level style={{ padding: '0px' }} className='margin--medium'>
+							<Level.Left />
+							<Level.Item className='padding--medium'>
+								<div className='font-small'>Silahkan pilih ukuran terlebih dahulu.</div>
+							</Level.Item>
+						</Level>
+					</div>
+					<Modal.Action
+						closeButton={(
+							<Button onClick={(e) => this.handleCloseModalPopUp(e, 'select-size')} >
+								<span className='font-color--primary-ext-2'>PILIH UKURAN</span>
+							</Button>)}
+					/>
+				</Modal>
+				<Navigation scroll={this.props.scroll} totalCartItems={shared.totalCart} />
 			</div>);
 	}
 }
@@ -525,17 +634,17 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (props) => {
+const doAfterAnonymous = async (props) => {
 	const { dispatch, match, cookies } = props;
 
 	const productId = _.toInteger(match.params.id);
 	const token = cookies.get('user.token');
 
-	dispatch(new productActions.productDetailAction(token, productId));
-	dispatch(new productActions.productRecommendationAction(token, productId));
-	dispatch(new productActions.productSimilarAction(token, productId));
-	dispatch(new productActions.productSocialSummaryAction(token, productId));
-	dispatch(new lovelistActions.bulkieCountByProduct(token, productId));
+	await dispatch(new productActions.productDetailAction(token, productId));
+	await dispatch(new productActions.productRecommendationAction(token, productId));
+	await dispatch(new productActions.productSimilarAction(token, productId));
+	await dispatch(new productActions.productSocialSummaryAction(token, productId));
+	await dispatch(new lovelistActions.bulkieCountByProduct(token, productId));
 
 };
 

@@ -19,6 +19,7 @@ const Select = (props) => {
 					onValueChange={(value) => props.onChange(value)}
 					defaultSelectedValue={props.defaultValue}
 				>
+
 					{
 						props.options.map((option, key) => {
 							const pickerItemClass = classNames(

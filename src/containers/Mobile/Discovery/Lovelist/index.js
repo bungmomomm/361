@@ -190,12 +190,15 @@ class Lovelist extends Component {
 		if (status.listEmpty) {
 			return (this.renderLovelistPage(
 				<div className='text-center --disable-flex'>
-					<p className={styles.lovelistEmpty}>Kamu belum memiliki Lovelist</p>
-					<div className={styles.lovelistEmptyDescription}>
-						Tekan&nbsp;<Svg width='20px' height='18px' src='ico_love.svg' />&nbsp;untuk menambahkan
-					</div>
-					<div className={styles.lovelistEmptyDescription}>produk ke Lovelist.</div>
-					<p className='margin--medium-v'><Button to='/' inline size='medium' color='secondary'>BELANJA</Button></p>
+					<p className={styles.lovelistEmpty}>Lovelist kamu masih kosong</p>
+					<p className={styles.lovelistEmptyDescription}>Tekan <Svg width='20px' height='18px' src='ico_love.svg' /> untuk menambahkan
+						<br />produk ke Lovelist.
+					</p>
+					<p className='margin--medium-v'>
+						<Link to='/'>
+							<Button inline size='medium' color='secondary'>BELANJA</Button>
+						</Link>
+					</p>
 					<Image local className={styles.lovelistEmptyImg} alt='Tap the love icon' src='lovelist-guide.png' />
 				</div>
 			));
@@ -212,11 +215,11 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (props) => {
+const doAfterAnonymous = async (props) => {
 
 	const { dispatch, cookies } = props;
 
-	dispatch(LoveListActionCreator.getLovelisItems(cookies.get('user.token')));
+	await dispatch(LoveListActionCreator.getLovelisItems(cookies.get('user.token')));
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Lovelist, doAfterAnonymous)));

@@ -3,23 +3,26 @@ import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { Header, Page, Navigation, Svg, Card, Grid } from '@/components/mobile';
 import { actions as recommendedActions } from '@/state/v4/RecommendedProducts';
+import Love from '@/containers/Mobile/Shared/Widget/Love';
 import { withRouter } from 'react-router-dom';
+import { urlBuilder } from '@/utils';
+import _ from 'lodash';
 
 class RecommendedProducts extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 
-		this.userCookies = this.props.cookies.get('user.token');
 		this.switchMode = this.switchMode.bind(this);
 		this.touchDown = this.touchDown.bind(this);
 	}
 
 	componentDidMount() {
+		const { cookies } = this.props;
 		window.addEventListener('scroll', this.touchDown, true);
 
 		const dataInit = {
-			token: this.userCookies,
+			token: cookies.get('user.token'),
 			page: this.props.nextPage,
 			docHeight: this.props.docHeight ? this.props.docHeight : 0
 		};
@@ -36,7 +39,13 @@ class RecommendedProducts extends Component {
 		this.props.switchMode(mode);
 	}
 
+	forceLoginNow() {
+		const { history } = this.props;
+		history.push(`/login?redirect_uri=${location.pathname}`);
+	}
+
 	touchDown(e) {
+		const { cookies } = this.props;
 		const body = document.body;
 		const html = document.documentElement;
 
@@ -48,7 +57,7 @@ class RecommendedProducts extends Component {
 			const nextLink = new URL(this.props.links.next).searchParams;
 
 			const dataInit = {
-				token: this.userCookies,
+				token: cookies.get('user.token'),
 				page: nextLink.get('page')
 			};
 
@@ -57,6 +66,8 @@ class RecommendedProducts extends Component {
 	};
 
 	render() {
+		const { isLoading, recommendedproducts, style, viewMode } = this.props;
+		
 		const HeaderPage = {
 			left: (
 				<button onClick={this.props.history.goBack}>
@@ -71,38 +82,48 @@ class RecommendedProducts extends Component {
 			)
 		};
 
-		const ProductCard = (productData) => {
+		const ProductCard = (product) => {
 			let productCard;
 
 			switch (this.props.viewMode) {
 			case 3:
 				productCard = (
 					<Card.CatalogSmall
-						key={productData.idx}
-						images={productData.images}
-						pricing={productData.pricing}
+						key={product.idx}
+						images={product.images}
+						pricing={product.pricing}
 					/>
 				);
 				break;
 			case 2:
 				productCard = (
 					<Card.CatalogGrid
-						key={productData.idx}
-						images={productData.images}
-						productTitle={productData.product_title}
-						brandName={productData.brand}
-						pricing={productData.pricing}
+						key={product.idx}
+						images={product.images}
+						productTitle={product.product_title}
+						brandName={product.brand}
+						pricing={product.pricing}
+						linkToPdp={product.url}
+						love={(
+							<Love
+								status={product.lovelistStatus}
+								data={product.product_id}
+								total={product.lovelistTotal}
+								onNeedLogin={() => this.forceLoginNow()}
+								showNumber
+							/>
+						)}
 					/>
 				);
 				break;
 			default:
 				productCard = (
 					<Card.Catalog
-						key={productData.idx}
-						images={productData.images}
-						productTitle={productData.product_title}
-						brandName={productData.brand}
-						pricing={productData.pricing}
+						key={product.idx}
+						images={product.images}
+						productTitle={product.product_title}
+						brandName={product.brand}
+						pricing={product.pricing}
 					/>
 				);
 			}
@@ -111,21 +132,21 @@ class RecommendedProducts extends Component {
 		};
 
 		return (
-			<div style={this.props.style}>
+			<div style={style}>
 				<Page>
-					<Grid split={this.props.viewMode} >
+					<Grid split={viewMode} >
 						{
-							this.props.products
+							recommendedproducts.products
 							&&
-							this.props.products.length
+							recommendedproducts.products.length
 							&&
-							this.props.products.map((product, i) => (
+							recommendedproducts.products.map((product, i) => (
 								<ProductCard {...product} idx={product.product_id} />
 							))
 						}
 					</Grid>
 
-					{this.props.isLoading && <button>&hellip;</button>}
+					{isLoading && <button>&hellip;</button>}
 				</Page>
 
 				<Header.Modal {...HeaderPage} />
@@ -135,8 +156,27 @@ class RecommendedProducts extends Component {
 }
 
 const mapStateToProps = (state) => {
+	const { comments, lovelist, recommendedproducts } = state;
+	recommendedproducts.products = _.map(recommendedproducts.products, (product) => {
+		const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: product.product_id }) : false;
+		const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: product.product_id }) : false;
+		if (lovelistData) {
+			product.lovelistTotal = lovelistData.total;
+			product.lovelistStatus = lovelistData.status;
+		}
+		if (commentData) {
+			product.commentTotal = commentData.total;
+		}
+		return {
+			...product,
+			url: urlBuilder.buildPdp(product.product_title, product.product_id),
+			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`
+		};
+	});
 	return {
-		...state.recommendedproducts
+		recommendedproducts: {
+			...recommendedproducts
+		}
 	};
 };
 
