@@ -10,9 +10,7 @@ import Shared from '@/containers/Mobile/Shared';
 import SearchNotFound from '@/containers/Mobile/Discovery/SearchNotFound';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-import Filter from '@/containers/Mobile/Shared/Filter';
-import Love from '@/containers/Mobile/Shared/Widget/Love';
-import Sort from '@/containers/Mobile/Shared/Sort';
+import { Filter, Love, Sort } from '@/containers/Mobile/Widget';
 
 import {
 	Header,

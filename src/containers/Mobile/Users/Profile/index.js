@@ -176,7 +176,7 @@ class UserProfile extends Component {
 						</Level>
 					</Link>
 					<Panel>&nbsp;</Panel>
-					<Link to='/' className='bg--white margin--medium-b'>
+					<Link to='/logout' className='bg--white margin--medium-b'>
 						<Level style={{ padding: '0 0 0 15px', minHeight: '50px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_logout.svg' />

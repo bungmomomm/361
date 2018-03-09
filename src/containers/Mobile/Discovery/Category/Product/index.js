@@ -9,8 +9,7 @@ import to from 'await-to-js';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-import Filter from '@/containers/Mobile/Shared/Filter';
-import Sort from '@/containers/Mobile/Shared/Sort';
+import { Filter, Sort } from '@/containers/Mobile/Widget';
 
 import { 
 	CatalogView, 
