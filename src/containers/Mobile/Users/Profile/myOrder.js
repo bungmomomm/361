@@ -10,13 +10,13 @@ import {
 	Page,
 	Navigation,
 	Tabs,
-	List
+	List,
+	Spinner
 } from '@/components/mobile';
 import styles from './profile.scss';
 import CONST from '@/constants';
 import Scroller from '@/containers/Mobile/Shared/scroller';
-import Spinner from '../../../../components/mobile/Spinner';
-import aux from '../../../../utils/aux';
+import { aux } from '@/utils';
 
 class MyOrder extends Component {
 	constructor(props) {
