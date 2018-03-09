@@ -13,6 +13,7 @@ import {
 import Action from './action';
 // import C from '@/constants';
 import styles from './brands.scss';
+import utils from './utils';
 
 class Brands extends Component {
 	constructor(props) {
@@ -25,14 +26,10 @@ class Brands extends Component {
 	}
 
 	onClick(e, value) {
-		console.log(this.state);
 		let { data } = this.state;
 
-		data = _.map(data, (facetData) => {
-			if (facetData.facetrange === value.facetrange) {
-				facetData.is_selected = facetData.is_selected === 1 ? 0 : 1;
-			}
-			return facetData;
+		data = utils.updateChilds(data, value, {
+			is_selected: value.is_selected === 1 ? 0 : 1
 		});
 
 		this.setState({
@@ -40,9 +37,18 @@ class Brands extends Component {
 		});
 	}
 
-	filterlist(key) {
-		this.setState({ 
-			filteredKey: key
+	onApply(e) {
+		const { data } = this.state;
+		const { onApply } = this.props;
+		const result = utils.getSelected(data);
+		onApply(e, result);
+	}
+
+	reset() {
+		const { data } = this.state;
+		this.setState({
+			keyword: '',
+			data: utils.resetChilds(data)
 		});
 	}
 
@@ -52,13 +58,10 @@ class Brands extends Component {
 		});
 	} 
 
-	applyFilter(e) {
-		const { data } = this.state;
-		const { onApply } = this.props;
-		const result = _.filter(data, (facetData) => {
-			return (facetData.is_selected === 1);
+	filterlist(key) {
+		this.setState({
+			filteredKey: key
 		});
-		onApply(e, result);
 	}
 
 	render() {
@@ -107,7 +110,7 @@ class Brands extends Component {
 					</List>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action hasApply onApply={(e) => this.applyFilter(e)} />
+				<Action hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}

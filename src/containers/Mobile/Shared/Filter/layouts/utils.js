@@ -1,9 +1,10 @@
 import querystring from 'querystring';
-import { find, forEach, filter, remove } from 'lodash';
+import _ from 'lodash';
+import currency from 'currency.js';
 
 const getCategoryFq = (categories, source) => {
 	source.forEach((category) => {
-		const isExist = find(categories, (c) => {
+		const isExist = _.find(categories, (c) => {
 			return c.facetrange === category.facetrange;
 		});
 		if (typeof isExist === 'undefined') {
@@ -21,7 +22,7 @@ const getFq = (filters) => {
 	const fqAll = [];
 	const fq = {};
 	let categories = [];
-	forEach(filters.facets, (facet) => {
+	_.forEach(filters.facets, (facet) => {
 		fq[facet.id] = [];
 		categories = [];
 		switch (facet.id) {
@@ -30,11 +31,11 @@ const getFq = (filters) => {
 		case 'size':
 			// child category
 			categories = getCategoryFq(categories, facet.data);
-			forEach(categories, (value) => {
+			_.forEach(categories, (value) => {
 				if (value.is_selected === 1) {
 					fq[facet.id].push(value.facetrange);
 				} else {
-					remove(fq[facet.id], (v) => {
+					_.remove(fq[facet.id], (v) => {
 						return v === value.facetrange;
 					});
 				}
@@ -44,11 +45,11 @@ const getFq = (filters) => {
 			if (facet.requested_range) {
 				fq[facet.id] = [(`${facet.requested_range.min}-${facet.requested_range.max}`)];
 			} else {
-				forEach(facet.data, (value) => {
+				_.forEach(facet.data, (value) => {
 					if (value.is_selected === 1) {
 						fq[facet.id].push(value.facetrange);
 					} else {
-						remove(fq[facet.id], (v) => {
+						_.remove(fq[facet.id], (v) => {
 							return v === value.facetrange;
 						});
 					}
@@ -56,11 +57,11 @@ const getFq = (filters) => {
 			}
 			break;
 		default:
-			forEach(facet.data, (value) => {
+			_.forEach(facet.data, (value) => {
 				if (value.is_selected === 1) {
 					fq[facet.id].push(value.facetrange);
 				} else {
-					remove(fq[facet.id], (v) => {
+					_.remove(fq[facet.id], (v) => {
 						return v === value.facetrange;
 					});
 				}
@@ -115,13 +116,75 @@ const parseFilter = (data) => {
 	}
 	data.facets = data.facets;
 	data.sorts = data.sorts;
-	const selectedSort = filter(data.sorts, (sort) => (sort.is_selected === 1)).shift();
+	const selectedSort = _.filter(data.sorts, (sort) => (sort.is_selected === 1)).shift();
 	data.sort = typeof selectedSort.q !== 'undefined' ? selectedSort.q : 'energy DESC';
 	data.q = data.info.title;
 
 	return data;
 };
 
+const resetChilds = (childs) => {
+	childs = _.map(childs, (facetData) => {
+		facetData.is_selected = 0;
+		if (facetData.childs) {
+			facetData.childs = resetChilds(facetData.childs);
+		}
+		return facetData;
+	});
+	return childs;
+};
+
+const isDescendantSelected = (childs, isSelected) => {
+	if (typeof isSelected === 'undefined') {
+		isSelected = false;
+	}
+	childs = _.forEach(childs, (facetData) => {
+		if (facetData.is_selected) {
+			isSelected = true;
+		}
+		if (facetData.childs && facetData.childs.length > 0) {
+			isSelected = isDescendantSelected(facetData.childs, isSelected);
+		}
+	});
+	return isSelected;
+};
+
+const updateChilds = (childs, item, fields) => {
+	childs = _.map(childs, (facetData) => {
+		if (facetData.facetrange === item.facetrange) {
+			_.forIn(fields, (value, key) => {
+				facetData[key] = value;
+			});
+		}
+		if (facetData.childs && facetData.childs.length > 0) {
+			facetData.childs = updateChilds(facetData.childs, item, fields);
+		}
+		return facetData;
+	});
+
+	return childs;
+};
+
+const getSelected = (childs, source) => {
+	if (typeof source === 'undefined') {
+		source = [];
+	}
+	_.forEach(childs, (facetData) => {
+		if (facetData.is_selected === 1) {
+			source.push(facetData);
+		}
+
+		if (facetData.childs && facetData.childs.length > 0) {
+			source = getSelected(facetData.childs, source);
+		}
+	});
+
+	return source;
+};
+
+const toIdr = (value) => {
+	return currency(value, { symbol: 'Rp', precision: 0, formatWithSymbol: true }).format();
+};
 export default {
 	getCategoryFq,
 	getFq,
@@ -129,5 +192,10 @@ export default {
 	getUrlFilterForCategory,
 	getUrlFilterForSearch,
 	parseFilter,
-	getFilter
+	getFilter,
+	updateChilds,
+	resetChilds,
+	isDescendantSelected,
+	getSelected,
+	toIdr
 };

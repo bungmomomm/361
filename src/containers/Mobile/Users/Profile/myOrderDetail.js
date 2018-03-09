@@ -81,7 +81,7 @@ class MyOrderDetail extends Component {
 				{this.renderOrderList()}
 				{this.renderAddress()}
 				{this.renderPembayaran()}
-				{(order.group !== 'konfirmasi' && order.payment_status_id === 1) && (
+				{(order.group === 'konfirmasi' && order.payment_status_id === 1) && (
 					<Link to={'/profile-my-order-confirm/'}>
 						<Button rounded size='medium' color='secondary'>Konfirmasi Pembayaran</Button>
 					</Link>

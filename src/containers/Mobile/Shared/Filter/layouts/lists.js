@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { Header, Page, Svg, List, Button } from '@/components/mobile';
 import Action from './action';
 import _ from 'lodash';
+import utils from './utils';
 
 class Lists extends PureComponent {
 	constructor(props) {
@@ -15,12 +16,9 @@ class Lists extends PureComponent {
 	onClick(e, value) {
 		let { data } = this.state;
 
-		data = _.map(data, (facetData) => {
-			if (facetData.facetrange === value.facetrange) {
-				facetData.is_selected = facetData.is_selected === 1 ? 0 : 1;
-			}
-			return facetData;
-		});
+		data = utils.updateChilds(data, value, {
+			is_selected: value.is_selected === 1 ? 0 : 1
+		});			
 
 		this.setState({
 			data
@@ -30,10 +28,15 @@ class Lists extends PureComponent {
 	onApply(e) {
 		const { data } = this.state;
 		const { onApply } = this.props;
-		const result = _.filter(data, (facetData) => {
-			return (facetData.is_selected === 1);
-		});
+		const result = utils.getSelected(data);
 		onApply(e, result);
+	}
+
+	reset(e) {
+		const { data } = this.state;
+		this.setState({
+			data: utils.resetChilds(data)
+		});
 	}
 	
 	render() {
@@ -64,7 +67,7 @@ class Lists extends PureComponent {
 					</List>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action hasApply onApply={(e) => this.onApply(e)} />
+				<Action hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}

@@ -70,7 +70,9 @@ const MyOrderDetail = loadable(() => import('@/containers/Mobile/Users/Profile/m
 const MyOrderTracking = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderTracking'), defaultOptions);
 const MyOrderConfirm = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderConfirm'), defaultOptions);
 const CreditCard = loadable(() => import('@/containers/Mobile/Users/Profile/creditCard'), defaultOptions);
-
+const Address = loadable(() => import('@/containers/Mobile/Users/Address'), defaultOptions);
+const AddAddress = loadable(() => import('@/containers/Mobile/Users/Address/add'), defaultOptions);
+const EditAddress = loadable(() => import('@/containers/Mobile/Users/Address/edit'), defaultOptions);
 
 // promo
 const Promo = loadable(() => import('@/containers/Mobile/Discovery/Promo'), defaultOptions);
@@ -267,6 +269,21 @@ export default {
 		{
 			path: '/profile-credit-card',
 			component: CreditCard
+		},
+		{
+			path: '/address',
+			exact: true,
+			component: Address,
+		},
+		{
+			path: '/address/add',
+			exact: true,
+			component: AddAddress,
+		},
+		{
+			path: '/address/edit/:id',
+			exact: true,
+			component: EditAddress,
 		},
 		{
 			path: '/*', // Page not found handling.

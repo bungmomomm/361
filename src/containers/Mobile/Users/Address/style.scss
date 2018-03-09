@@ -1,0 +1,96 @@
+@import '../../../../styles/mobile/variables';
+@import '../../../../styles/mobile/mixins';
+
+.label {
+  color: #A4A4A4;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.inputChange {
+  flex-flow: row nowrap;
+  &Input {
+	flex: 1 0 auto;
+  }
+  &Link {
+	flex: 0 0 auto;
+	height: 40px;
+	padding: 10px 0;
+	border-bottom: 1px solid #D8D8D8;
+	font-size: 11px;
+  }
+}
+
+.tempPPContainer {
+  display: inline-flex;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-family: font-family('Lato-Bold');
+  font-size: 32px;
+  text-transform: uppercase;
+  overflow: hidden;
+}
+.tempPP {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+}
+.buyer {
+  background: #191919;
+  color: #FFF;
+}
+.seller {
+  background: #D8D8D8;
+  color: #5A5A5A;
+}
+.big {
+  width: 80px;
+  height: 80px;
+  font-size: 44px;
+}
+.editPP {
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  text-align: center;
+  background: rgba(63,208,187,0.90);
+  color: #fff;
+  font-family: font-family('Lato-Bold');
+  font-size: 11px;
+  line-height: 2;
+}
+.orderIconCtr {
+  display: inline-flex;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+  background: #ECECEC;
+}
+.hint {
+  font-family: font-family(--lato-normal);
+  font-size: map-get($font-size, --small );
+  line-height: 1.4;
+  color: color(--primary-ext-2);
+  display: flex;
+}
+.hint{
+  font-size: map-get($font-size, --small );
+  justify-content: flex-end;
+  margin-top: 5px;
+}
+.error {
+  & .input {
+	border-color: #FF1B1B;
+	color: #FF1B1B;
+  }
+
+  & .hint {
+	color: #FF1B1B;
+  }
+}
