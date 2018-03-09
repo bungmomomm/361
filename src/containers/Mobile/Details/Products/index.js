@@ -293,43 +293,46 @@ class Products extends Component {
 
 	renderSimilarRecommendItems(type) {
 		const { product } = this.props;
-		let productsContent = null;
+		let fragment = [];
+		let items = {};
+		const itemsList = [];
 
 		switch (type) {
 		case 'recommendation':
-			productsContent = product.recommendation.products.map((item, idx) => {
-				const data = {
-					key: idx,
-					images: item.images,
-					productTitle: item.product_title,
-					brandName: item.brand.name,
-					pricing: item.pricing,
-					linkToPdp: '/'
-				};
-
-				return <Card.CatalogGrid {...data} />;
-			});
+			items = product.recommendation.products;
 			break;
 		case 'similar':
-			productsContent = product.similar.map((item, idx) => {
-				const data = {
-					key: idx,
-					images: item.images,
-					productTitle: item.product_title,
-					brandName: item.brand.name,
-					pricing: item.pricing,
-					linkToPdp: '/'
-				};
-
-				return <Card.CatalogGrid {...data} />;
-			});
+			items = product.similar;
 			break;
 		default:
 			break;
-
 		}
 
-		return productsContent;
+		// builds items
+		items.forEach((item, idx) => {
+			const data = {
+				key: idx,
+				images: item.images,
+				productTitle: item.product_title,
+				brandName: item.brand.name,
+				pricing: item.pricing,
+				linkToPdp: '/'
+			};
+
+			// set fragment value
+			fragment = ((idx + 1) % 2 !== 0) ? [<Card.CatalogGrid {...data} />] : [...fragment, <Card.CatalogGrid {...data} />];
+
+			// push fragment into 
+			if ((idx + 1) % 2 === 0 || items.length === (idx + 1)) {
+				itemsList.push(fragment);
+			}
+		});
+
+		return (
+			<Carousel className='margin--medium-v'>
+				{itemsList.map((item, i) => <Grid split={2} key={i}>{item}</Grid>)}
+			</Carousel>
+		);
 	}
 
 	renderZoomImage() {
@@ -521,7 +524,7 @@ class Products extends Component {
 						{status.recommendationSet && (
 							<div>
 								<div className='margin--small-v padding--medium-h font-medium'><strong>Anda Mungkin Suka</strong></div>
-								<div className='flex-row'>{(!status.loading) ? this.renderSimilarRecommendItems('recommendation') : this.loadingContent}</div>
+								<div className='flex'>{(!status.loading) ? this.renderSimilarRecommendItems('recommendation') : this.loadingContent}</div>
 							</div>
 						)}
 						<div style={{ backgroundColor: '#F5F5F5' }}>
@@ -590,7 +593,7 @@ class Products extends Component {
 							{status.similarSet && (
 								<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 									<div className='margin--small-v padding--medium-h font-medium'><strong>Product Serupa</strong></div>
-									<div className='flex-row'>{(!status.loading) ? this.renderSimilarRecommendItems('similar') : this.loadingContent}</div>
+									<div className='flex'>{(!status.loading) ? this.renderSimilarRecommendItems('similar') : this.loadingContent}</div>
 								</div>
 							)}
 						</div>
@@ -652,11 +655,11 @@ const doAfterAnonymous = async (props) => {
 	const productId = _.toInteger(match.params.id);
 	const token = cookies.get('user.token');
 
-	await dispatch(new productActions.productDetailAction(token, productId));
-	await dispatch(new productActions.productRecommendationAction(token, productId));
-	await dispatch(new productActions.productSimilarAction(token, productId));
-	await dispatch(new productActions.productSocialSummaryAction(token, productId));
-	await dispatch(new lovelistActions.bulkieCountByProduct(token, productId));
+	dispatch(new productActions.productDetailAction(token, productId));
+	dispatch(new productActions.productRecommendationAction(token, productId, 1, 10));
+	dispatch(new productActions.productSimilarAction(token, productId, 1, 10));
+	dispatch(new productActions.productSocialSummaryAction(token, productId));
+	dispatch(new lovelistActions.bulkieCountByProduct(token, productId));
 
 };
 
