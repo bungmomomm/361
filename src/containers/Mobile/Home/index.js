@@ -324,14 +324,12 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-	const { shared, home, dispatch } = props;
+	const { home, dispatch } = props;
 
-	const activeSegment = home.segmen.find(e => e.key === home.activeSegment);
+	const activeSegment = home.segmen.find(e => e.key === home.activeSegment.key);
 
-	const promoService = _.chain(shared).get('serviceUrl.promo').value() || false;
-
-	await dispatch(new actions.mainAction(activeSegment, promoService));
-	await dispatch(new actions.recomendationAction(activeSegment, promoService));
+	await dispatch(new actions.mainAction(activeSegment));
+	await dispatch(new actions.recomendationAction(activeSegment));
 };
 
 
