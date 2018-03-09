@@ -229,6 +229,7 @@ const userRegister = (token, bodyData) => async (dispatch, getState) => {
 const userGetProfile = (token) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+	// const baseUrl = 'https://private-2c527d-mmv4microservices.apiary-mock.com';
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
@@ -324,6 +325,60 @@ const refreshToken = (tokenRefresh, token) => async (dispatch, getState) => {
 // 	USER_GET_PROFILE_FAIL: (error) => ({ profile: { error } }),
 // 	USER_GET_PROFILE_SUCCESS: (userProfile) => ({ userProfile }),
 
+const userEditProfile = (token, data = []) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+	// const baseUrl = 'https://private-2c527d-mmv4microservices.apiary-mock.com';
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	const path = `${baseUrl}/me/edit`;
+
+	dispatch(actions.userEditProfile());
+	const [err, response] = await to(request({
+		token,
+		method: 'POST',
+		path,
+		fullpath: true,
+		body: data
+	}));
+
+	if (err) {
+		dispatch(actions.userEditProfileFail(err.response.data));
+		return Promise.reject(err.response.data);
+	}
+
+	dispatch(actions.userEditProfileSuccess(response.data.data));
+	return Promise.resolve(response.data.data);
+};
+
+const userValidateOvo = (token, data = []) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+	// const baseUrl = 'https://private-2c527d-mmv4microservices.apiary-mock.com';
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	const path = `${baseUrl}/ovo/validate`;
+
+	dispatch(actions.userValidateOvo());
+	const [err, response] = await to(request({
+		token,
+		method: 'POST',
+		path,
+		fullpath: true,
+		body: data
+	}));
+
+	if (err) {
+		dispatch(actions.userValidateOvoFail(err.response.data));
+		return Promise.reject(err.response.data);
+	}
+
+	dispatch(actions.userValidateOvoSuccess(response.data.data));
+	return Promise.resolve(response.data.data);
+};
+
 export default {
 	userSocialLoginWithRedirect,
 	userSocialLogin,
@@ -331,6 +386,8 @@ export default {
 	userAnonymous,
 	userNameChange,
 	userGetProfile,
+	userEditProfile,
+	userValidateOvo,
 	userRegister,
 	userForgotPassword,
 	userOtpValidate,

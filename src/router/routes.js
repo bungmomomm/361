@@ -61,10 +61,10 @@ const UserRegistered = loadable(() => import('@/containers/Mobile/Users/Register
 const UserRegisteredPhoneValidation = loadable(() => import('@/containers/Mobile/Users/Register/registeredPhoneValidation'), defaultOptions);
 const UserProfile = loadable(() => import('@/containers/Mobile/Users/Profile'), defaultOptions);
 const UserProfileEdit = loadable(() => import('@/containers/Mobile/Users/Profile/edit'), defaultOptions);
-const UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'), defaultOptions);
-const UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'), defaultOptions);
-const UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'), defaultOptions);
-const UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'), defaultOptions);
+// const UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'), defaultOptions);
+// const UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'), defaultOptions);
+// const UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'), defaultOptions);
+// const UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'), defaultOptions);
 const MyOrder = loadable(() => import('@/containers/Mobile/Users/Profile/myOrder'), defaultOptions);
 const MyOrderDetail = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderDetail'), defaultOptions);
 const MyOrderTracking = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderTracking'), defaultOptions);
@@ -233,22 +233,22 @@ export default {
 			component: Seller,
 			exact: true
 		},
-		{
-			path: '/profile-edit-ovo',
-			component: UserProfileEditOVO
-		},
-		{
-			path: '/profile-edit-hp',
-			component: UserProfileEditHP
-		},
-		{
-			path: '/profile-edit-email',
-			component: UserProfileEditEmail
-		},
-		{
-			path: '/profile-edit-password',
-			component: UserProfileEditPassword
-		},
+		// {
+		// 	path: '/profile-edit-ovo',
+		// 	component: UserProfileEditOVO
+		// },
+		// {
+		// 	path: '/profile-edit-hp',
+		// 	component: UserProfileEditHP
+		// },
+		// {
+		// 	path: '/profile-edit-email',
+		// 	component: UserProfileEditEmail
+		// },
+		// {
+		// 	path: '/profile-edit-password',
+		// 	component: UserProfileEditPassword
+		// },
 		{
 			path: '/profile/my-order',
 			component: MyOrder,

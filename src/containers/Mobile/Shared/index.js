@@ -33,6 +33,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 			this.userCookies = this.props.cookies.get('user.token');
 			this.userRFCookies = this.props.cookies.get('user.rf.token');
+			this.isLogin = this.props.cookies.get('isLogin') === 'true' && true;
 			this.handleScroll = this.handleScroll.bind(this);
 			this.docBody = null;
 		}
@@ -74,27 +75,29 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			}
 
 			const { data } = resp.data;
+
 			const isAnonymous = data.info.userid <= 1;
 			setUserCookie(this.props.cookies, data, isAnonymous);
+
 			tokenBearer = data.token;
 			rfT = data.refresh_token;
 
-			if (shared.totalCart === 0) { 
+			if (shared.totalCart === 0) {
 				dispatch(new actions.totalCartAction(tokenBearer))
 				.catch(error => {
 					this.withErrorHandling(error);
-				}); 
+				});
 			}
 
-			if (shared.totalLovelist === 0) { 
+			if (shared.totalLovelist === 0) {
 				dispatch(new actions.totalLovelistAction(tokenBearer))
 				.catch(error => {
 					this.withErrorHandling(error);
-				}); 
+				});
 			}
 			if (login && provider) {
 				const response = await to(dispatch(new users.userSocialLogin(tokenBearer, provider, login)));
-				
+
 				if (response[0]) {
 					this.withErrorHandling(response[0]);
 				}
@@ -107,11 +110,11 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			if (typeof doAfterAnonymousCall !== 'undefined') {
 				try {
 					await doAfterAnonymousCall.apply(this, [this.props]);
-					
+
 				} catch (err) {
 					return this.withErrorHandling(err);
 				}
-				
+
 			}
 			return null;
 		}
