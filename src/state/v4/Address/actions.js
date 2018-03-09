@@ -171,11 +171,11 @@ const addAddress = (token, body = {}) => async (dispatch, getState) => {
 	if (err) {
 		return Promise.reject(err);
 	}
-
+	console.log(resp);
 	if (defaultAddress) {
 		const [errDef, respDef] = await to(request({
 			token,
-			path: `${url}/me/addresses/setdefault/${resp.data.address_id || 0}`,
+			path: `${url}/me/addresses/setdefault/${resp.data.data.address_id || 0}`,
 			method: 'POST',
 			fullpath: true,
 			body: {}
