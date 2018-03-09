@@ -70,6 +70,7 @@ const MyOrderConfirm = loadable(() => import('@/containers/Mobile/Users/Profile/
 const CreditCard = loadable(() => import('@/containers/Mobile/Users/Profile/creditCard'));
 const Address = loadable(() => import('@/containers/Mobile/Users/Address'));
 const AddAddress = loadable(() => import('@/containers/Mobile/Users/Address/add'));
+const EditAddress = loadable(() => import('@/containers/Mobile/Users/Address/edit'));
 
 
 // promo
@@ -277,6 +278,11 @@ export default {
 			path: '/address/add',
 			exact: true,
 			component: AddAddress,
+		},
+		{
+			path: '/address/edit/:id',
+			exact: true,
+			component: EditAddress,
 		},
 		{
 			path: '/*', // Page not found handling.

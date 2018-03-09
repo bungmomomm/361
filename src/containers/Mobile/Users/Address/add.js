@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import Shared from '@/containers/Mobile/Shared';
-import { Page, Svg, Button, Header, Select, Level } from '@/components/mobile';
+import { Page, Svg, Button, Header, Select, Level, Radio } from '@/components/mobile';
 import { actions } from '@/state/v4/Address';
 import styles from './style.scss';
 import { Form, Input } from '@/components/mobile/Formsy';
@@ -89,7 +89,7 @@ class Address extends Component {
 			if (v) {
 				(async () => {
 					const { dispatch, cookies } = this.props;
-					const [err, resp] = await to(dispatch(actions.getDistrict(cookies.get('user.token'), { offset: 30 })));
+					const [err, resp] = await to(dispatch(actions.getDistrict(cookies.get('user.token'), { city_id: v })));
 
 					if (err) {
 						return Promise.reject(err);
@@ -180,20 +180,32 @@ class Address extends Component {
 				>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='default_address'>Jadikan Alamat Utama</label>
-						<input
-							id='default_address'
-							type='radio'
-							name='default_address'
-							onChange={this.radioChange}
-							value={0}
-						/> Tidak
-						<input
-							id='default_address'
-							type='radio'
-							name='default_address'
-							onChange={this.radioChange}
-							value={1}
-						/> Ya
+						<div style={{ marginTop: '10px' }}>
+							<Radio
+								list
+								name='default_address'
+								onChange={this.radioChange}
+								checked={this.state.default}
+								data={[
+									{
+										value: 0,
+										label: (
+											<div>
+												<span>Tidak</span>
+											</div>
+										)
+									},
+									{
+										value: 1,
+										label: (
+											<div>
+												<span>Ya</span>
+											</div>
+										)
+									}
+								]}
+							/>
+						</div>
 					</div>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='address_label'>Simpan Sebagai</label>
@@ -276,7 +288,7 @@ class Address extends Component {
 							name='province_id'
 							type='hidden'
 							validations={{
-								matchRegexp: /^[1-9]+$/
+								matchRegexp: /^[1-9][0-9]*$/
 							}}
 							validationError='This field is required'
 							value={this.state.selected.province}
@@ -317,6 +329,9 @@ class Address extends Component {
 							id='city_id'
 							name='city_id'
 							type='hidden'
+							validations={{
+								matchRegexp: /^[1-9][0-9]*$/
+							}}
 							validationError='This field is required'
 							value={this.state.selected.city}
 							required
@@ -357,7 +372,7 @@ class Address extends Component {
 							name='district_id'
 							type='hidden'
 							validations={{
-								matchRegexp: /^[1-9]+$/
+								matchRegexp: /^[1-9][0-9]*$/
 							}}
 							validationError='This field is required'
 							value={this.state.selected.district}
@@ -435,7 +450,7 @@ const doAfterAnonymous = (props) => {
 		history.push('/login');
 	}
 
-	dispatch(actions.initAddress(cookies.get('user.token')));
+	dispatch(actions.getProvinces(cookies.get('user.token')));
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Address, doAfterAnonymous)));

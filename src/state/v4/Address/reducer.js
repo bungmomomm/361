@@ -14,7 +14,8 @@ const initialState = {
 		provinces: [],
 		cities: [],
 		districts: []
-	}
+	},
+	edit: {}
 };
 
 const { address } = createActions(
