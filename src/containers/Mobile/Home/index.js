@@ -115,7 +115,11 @@ class Home extends Component {
 							datas.value().map(({ images, pricing }, e) => (
 								<div key={e}>
 									<Image lazyload alt='thumbnail' src={images[0].thumbnail} />
-									<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
+									<div className={styles.btnThumbnail}>
+										<Button transparent color='secondary' size='small'>
+											{pricing.formatted.effective_price}
+										</Button>
+									</div>
 								</div>
 							))
 						}
@@ -288,12 +292,6 @@ class Home extends Component {
 		return (
 			<div style={this.props.style}>
 				<Page>
-					<Tabs
-						current={this.props.shared.current}
-						variants={this.props.home.segmen}
-						onPick={(e) => this.handlePick(e)}
-					/>
-
 					{ <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} /> }
 
 					{this.renderHeroBanner()}
@@ -314,7 +312,17 @@ class Home extends Component {
 
 					<Footer isShow={this.state.isFooterShow} />
 				</Page>
-				<Header lovelist={shared.totalLovelist} value={this.props.search.keyword} />
+				<Header 
+					rows={
+						<Tabs
+							current={this.props.shared.current}
+							variants={this.props.home.segmen}
+							onPick={(e) => this.handlePick(e)}
+						/>
+					} 
+					lovelist={shared.totalLovelist} 
+					value={this.props.search.keyword} 
+				/>
 				<Navigation active='Home' scroll={this.props.scroll} totalCartItems={shared.totalCart} />
 			</div>
 		);
