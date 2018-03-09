@@ -277,7 +277,7 @@ class Home extends Component {
 		const recommendation2 = this.isLogin === 'false' ? 'best-seller' : 'recent-view';
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page color='white'>
 					{ <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} /> }
 
 					{this.renderHeroBanner()}
