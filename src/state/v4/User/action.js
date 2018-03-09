@@ -10,7 +10,7 @@ import {
 } from '@/utils';
 
 import { userSocialLogin, userSocialLoginWithRedirect } from './social-action';
-import { getMyOrder, getMyOrderDetail, updateMyOrdersCurrent } from './myOrder-action';
+import { checkMyOrders, getMyOrderDetail, updateMyOrdersCurrent, getMyOrderMore, cleanMyOrderData } from './myOrder-action';
 import { getTrackingInfo } from './tracking-action';
 
 const isSuccess = (response) => {
@@ -28,7 +28,7 @@ const userLogin = (token, email, password) => async (dispatch, getState) => {
 
 	dispatch(actions.userLogin());
 	const path = `${baseUrl}/auth/login`;
-	
+
 	const [err, response] = await to(request({
 		token,
 		method: 'POST',
@@ -307,9 +307,11 @@ export default {
 	userRegister,
 	userForgotPassword,
 	userOtpValidate,
-	getMyOrder,
 	getMyOrderDetail,
 	updateMyOrdersCurrent,
 	userOtp,
 	getTrackingInfo,
+	getMyOrderMore,
+	cleanMyOrderData,
+	checkMyOrders,
 };

@@ -16,14 +16,12 @@ import styles from './profile.scss';
 import CONST from '@/constants';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import Spinner from '../../../../components/mobile/Spinner';
+import aux from '../../../../utils/aux';
 
 class MyOrder extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.state = {
-			current: 'konfirmasi',
-		};
 		this.menu = [
 			{ id: 0, key: 'konfirmasi', title: 'Konfirmasi' }, { id: 1, key: 'dikirim', title: 'Dikirim' },
 			{ id: 2, key: 'selesai', title: 'Selesai' }, { id: 3, key: 'batal', title: 'Batal' }
@@ -39,8 +37,7 @@ class MyOrder extends Component {
 
 	componentWillMount() {
 		if ('serviceUrl' in this.props.shared) {
-			const { dispatch } = this.props;
-			dispatch(userAction.getMyOrder(this.userToken));
+			this.getCurrentOrdes(this.props);
 		}
 	}
 
@@ -48,39 +45,50 @@ class MyOrder extends Component {
 		window.addEventListener('scroll', this.handleScroll, true);
 	}
 
-
 	componentWillReceiveProps(nextProps) {
 		if (!('serviceUrl' in this.props.shared) && 'serviceUrl' in nextProps.shared) {
-			const { dispatch } = this.props;
-			dispatch(userAction.getMyOrder(this.userToken));
+			this.getCurrentOrdes(nextProps);
 		}
 		if (nextProps.user.myOrders !== this.props.user.myOrders && nextProps.user.myOrders === false) {
 			this.props.history.push('/profile');
 		}
-
-		this.isEmpty = Object.values(nextProps.user.myOrders).some(e => e && e.orders.length === 0);
-	}
-
-	componentDidUpdate() {
-		window.scrollTo(0, 0);
 	}
 
 	componentWillUnmount() {
 		window.removeEventListener('scroll', this.handleScroll, true);
+		const { dispatch } = this.props;
+		dispatch(userAction.cleanMyOrderData());
+	}
+
+	getCurrentOrdes(props, newState) {
+		const { dispatch, user } = this.props;
+
+		if (user.isNoOrders === null) {
+			dispatch(userAction.checkMyOrders(this.userToken));
+		}
+
+		const data = {
+			token: this.userToken,
+			query: {
+				page: 1,
+				per_page: 20,
+				status: newState || user.myOrdersCurrent
+			}
+		};
+		dispatch(userAction.getMyOrderMore(data));
 	}
 
 	handlePick(idStatus) {
 		const newState = this.menu.filter(tab => tab.id === idStatus)[0];
 		const { dispatch } = this.props;
 		dispatch(userAction.updateMyOrdersCurrent(newState.key));
-		this.setState({ current: newState.key });
-		window.scrollTo(0, 0);
+		this.getCurrentOrdes(this.props, newState);
+		dispatch(userAction.cleanMyOrderData());
 	}
 
 	renderOrders() {
-		const currentOrders = this.props.user.myOrders[this.state.current];
-
-		return currentOrders && (
+		const currentOrders = this.props.user.myOrders[this.props.user.myOrdersCurrent];
+		return currentOrders.orders && (
 			currentOrders.orders.map((order, key) => {
 				return (<List key={key}>
 					<Link style={{ flexFlow: 'row nowrap' }} to={`/profile/my-order/${order.so_number}`}>
@@ -115,7 +123,7 @@ class MyOrder extends Component {
 				left: null,
 				center: (<Tabs
 					type='minimal'
-					current={this.state.current}
+					current={this.props.user.myOrdersCurrent}
 					variants={this.menu}
 					onPick={(e) => this.handlePick(e)}
 				/>),
@@ -123,21 +131,20 @@ class MyOrder extends Component {
 			}]
 		});
 
-		const RenderEmptyOrders = (<div> Tidak ada elemet</div>);
+		const renderEmptyOrders = (<div> Tidak ada order</div>);
+
+		const content = (this.props.user.isNoOrders === false) ? (
+			<aux>
+				{ this.renderOrders() }
+				{ this.props.scroller.loading && (<Spinner />)}
+			</aux>
+		) : (<aux> {renderEmptyOrders} </aux>);
 
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page scroll='forcescroll'>
 					<div className='margin--medium'>
-						{this.isEmpty && RenderEmptyOrders}
-						{/* <Tabs
-							type='minimal'
-							current={this.state.current}
-							variants={this.menu}
-							onPick={(e) => this.handlePick(e)}
-						/> */}
-						{ !this.isEmpty && this.renderOrders() }
-						{ !this.isEmpty && this.props.scroller.loading && (<Spinner />)}
+						{content}
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />
