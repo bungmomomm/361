@@ -53,6 +53,7 @@ const reducer = handleActions({
 	[initNextPcp](state, { payload: { pcpStatus, pcpData, query } }) {
 		return {
 			...state,
+			isLoading: false,
 			pcpStatus,
 			pcpData: {
 				...state.pcpData,

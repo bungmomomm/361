@@ -34,6 +34,7 @@ class MyOrder extends Component {
 		if (this.isLogin !== 'true') {
 			this.props.history.push('/');
 		}
+		this.isEmpty = false;
 	}
 
 	componentWillMount() {
@@ -56,6 +57,8 @@ class MyOrder extends Component {
 		if (nextProps.user.myOrders !== this.props.user.myOrders && nextProps.user.myOrders === false) {
 			this.props.history.push('/profile');
 		}
+
+		this.isEmpty = Object.values(nextProps.user.myOrders).some(e => e && e.orders.length === 0);
 	}
 
 	componentDidUpdate() {
@@ -110,23 +113,31 @@ class MyOrder extends Component {
 			right: null,
 			rows: [{
 				left: null,
-				center: 'Pesanan Saya',
+				center: (<Tabs
+					type='minimal'
+					current={this.state.current}
+					variants={this.menu}
+					onPick={(e) => this.handlePick(e)}
+				/>),
 				right: null
 			}]
 		});
+
+		const RenderEmptyOrders = (<div> Tidak ada elemet</div>);
 
 		return (
 			<div style={this.props.style}>
 				<Page>
 					<div className='margin--medium'>
-						<Tabs
+						{this.isEmpty && RenderEmptyOrders}
+						{/* <Tabs
 							type='minimal'
 							current={this.state.current}
 							variants={this.menu}
 							onPick={(e) => this.handlePick(e)}
-						/>
-						{ this.renderOrders() }
-						{ this.props.scroller.loading && (<Spinner />)}
+						/> */}
+						{ !this.isEmpty && this.renderOrders() }
+						{ !this.isEmpty && this.props.scroller.loading && (<Spinner />)}
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />

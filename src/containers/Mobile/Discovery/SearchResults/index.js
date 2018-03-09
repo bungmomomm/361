@@ -211,6 +211,7 @@ class SearchResults extends Component {
 
 			return (
 				<Page>
+					{this.renderForeverBanner()}
 					<div className={stylesSearch.container} >
 						<div className={stylesCatalog.cardContainer}>
 							{productList}
@@ -245,8 +246,6 @@ class SearchResults extends Component {
 			<div style={this.props.style}>
 				{this.renderSearch()}
 				{this.renderHeader()}
-				{this.renderTabs()}
-				{this.renderForeverBanner()}
 				<Navigation scroll={this.props.scroll} />
 			</div>
 		);
@@ -388,6 +387,7 @@ class SearchResults extends Component {
 
 		return (
 			<Header.SearchResult
+				rows={this.renderTabs()}
 				back={back}
 				value={this.getKeyword() || ''}
 			/>
@@ -407,9 +407,7 @@ class SearchResults extends Component {
 						<Sort shown={showSort} isSticky sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
 					)}
 					<Tabs
-						className={stylesCatalog.filterBlockContainer}
 						type='segment'
-						isSticky
 						variants={[
 							{
 								id: 'sort',
@@ -495,15 +493,15 @@ const doAfterAnonymous = async (props) => {
 	};
 	const [err, response] = await to(dispatch(searchActions.searchAction({ token: cookies.get('user.token'), query: searchParam })));
 	if (err) {
-		dispatch(searchActions.promoAction(cookies.get('user.token')));
+		await dispatch(searchActions.promoAction(cookies.get('user.token')));
 	}
 	if (response) {
 		if (!_.isEmpty(response.searchData.products)) {
 			const productIdList = _.map(response.searchData.products, 'product_id') || null;
-			dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+			await dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+			await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 		} else {
-			dispatch(searchActions.promoAction(cookies.get('user.token')));
+			await dispatch(searchActions.promoAction(cookies.get('user.token')));
 		}
 	}
 };

@@ -193,7 +193,7 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (props) => {
+const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies, match, home } = props;
 	const filtr = home.segmen.filter((obj) => {
 		return obj.key === home.activeSegment;
@@ -201,7 +201,7 @@ const doAfterAnonymous = (props) => {
 
 	const query = filtr && filtr[0] ? { segment_id: filtr[0].id } : {};
 
-	dispatch(actions.promoAction({
+	await dispatch(actions.promoAction({
 		token: cookies.get('user.token'),
 		promoType: match.params.type,
 		query

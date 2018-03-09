@@ -45,6 +45,7 @@ class Image extends Component {
 	onLoad() {
 		// Fix for carousel issue
 		this.triggerEvent(window, 'resize');
+		this.forceUpdate();
 	}
 
 	checkVisibility() {
@@ -97,14 +98,20 @@ class Image extends Component {
 	render() {
 		const createClassName = classNames([
 			this.props.avatar ? styles.avatar : null,
+			this.props.shape ? styles[this.props.shape] : null,
 			this.props.className ? this.props.className : null
 		]);
+
+		// Use background for square image
+		let imgStyle = this.props.style ? this.props.style : {};
+		const backgroundImage = { backgroundImage: this.props.shape === 'square' ? `url(${this.src()})` : 'none' };
+		imgStyle = Object.assign(imgStyle, backgroundImage);
 
 		return (
 			<img
 				ref={(imgRef) => { this.imgRef = imgRef; }}
 				onLoad={this.onLoad}
-				style={this.props.style}
+				style={imgStyle}
 				className={createClassName}
 				height={this.props.height}
 				width={this.props.width}

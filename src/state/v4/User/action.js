@@ -14,7 +14,7 @@ import { getMyOrder, getMyOrderDetail, updateMyOrdersCurrent } from './myOrder-a
 import { getTrackingInfo } from './tracking-action';
 
 const isSuccess = (response) => {
-	if (typeof response.data !== 'undefined' && typeof response.data.code !== 'undefined' && response.data.code === 200) {
+	if (typeof response.data !== 'undefined' && typeof response.data.code !== 'undefined' && response.data.code >= 200 && response.data.code < 300) {
 		return true;
 	}
 	return false;
@@ -43,7 +43,7 @@ const userLogin = (token, email, password) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
-		dispatch(actions.userLoginFail(err));
+		dispatch(actions.userLoginFail(err.data));
 		return Promise.reject(err);
 	}
 
@@ -56,7 +56,6 @@ const userLogin = (token, email, password) => async (dispatch, getState) => {
 			refresh_token: response.data.data.refresh_token
 		}
 	});
-
 };
 
 const userAnonymous = (token) => async (dispatch, getState) => {
@@ -81,7 +80,7 @@ const userAnonymous = (token) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
-		dispatch(actions.userLoginFail(err));
+		dispatch(actions.userLoginFail(err.data));
 		return Promise.reject(err);
 	}
 
@@ -114,7 +113,9 @@ const userOtp = (token, phone) => async (dispatch, getState) => {
 	const dataForOtp = {
 		hp_email: phone
 	};
-
+	
+	dispatch(actions.userOtp());
+ 
 	const requestData = {
 		token,
 		path,
@@ -123,18 +124,16 @@ const userOtp = (token, phone) => async (dispatch, getState) => {
 		body: dataForOtp
 	};
 
-	const response = await request(requestData);
-
-	console.log('Otp data');
-	console.log(requestData);
-
-	if (isSuccess(response)) {
-		console.log('Send user otp');
-		return Promise.resolve(response);
+	const [err, response] = await to(request(requestData));
+	
+	if (err) {
+		dispatch(actions.userOtpFail(err.data));
+		return Promise.reject(err);
 	}
-
-	return Promise.reject(response);
-
+	console.log('out');
+	dispatch(actions.userOtpSuccess(response));
+	return Promise.resolve(response);
+	
 };
 
 const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
@@ -152,7 +151,9 @@ const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
 		fullname: bodyData.fullname,
 		otp: bodyData.otp
 	};
-
+	
+	dispatch(actions.userOtpValidate());
+    
 	const requestData = {
 		token,
 		path,
@@ -160,16 +161,17 @@ const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
 		fullpath: true,
 		body: dataForOtpValidate
 	};
-
-	const response = await request(requestData);
-
-	if (isSuccess(response)) {
-		console.log('User OTP validate');
-		return Promise.resolve(response);
+    
+	const [err, response] = await to(request(requestData));
+	
+	if (err) {
+		dispatch(actions.userOtpValidateFail(err.data));
+		return Promise.reject(err);
 	}
-
-	return Promise.reject(response);
-
+	
+	dispatch(actions.userOtpValidateSuccess(response));
+	return Promise.resolve(response);
+ 
 };
 
 //  USER_REGISTER: undefined,
@@ -203,7 +205,7 @@ const userRegister = (token, bodyData) => async (dispatch, getState) => {
 		const response = await request(requestData);
 
 		if (isSuccess(response)) {
-			dispatch(actions.userRegisterSuccess());
+			dispatch(actions.userRegisterSuccess(response));
 			return Promise.resolve(response);
 		}
 		const error = new Error('Error while calling api');
@@ -294,6 +296,31 @@ const userForgotPassword = (token, username) => async (dispatch, getState) => {
 	}
 };
 
+const refreshToken = (tokenRefresh, token) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	const path = `${baseUrl}/auth/refreshtoken?refresh_token=${tokenRefresh}`;
+
+	const response = await request({
+		method: 'POST',
+		token,
+		path,
+		fullpath: true,
+		body: {
+			refresh_token: tokenRefresh
+		}
+	});
+
+	if (isSuccess(response)) {
+		return Promise.resolve(response);
+	}
+
+	return Promise.reject(response);
+};
+
 // 	USER_GET_PROFILE_FAIL: (error) => ({ profile: { error } }),
 // 	USER_GET_PROFILE_SUCCESS: (userProfile) => ({ userProfile }),
 
@@ -312,4 +339,5 @@ export default {
 	updateMyOrdersCurrent,
 	userOtp,
 	getTrackingInfo,
+	refreshToken
 };

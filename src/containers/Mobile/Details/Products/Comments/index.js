@@ -174,14 +174,14 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (props) => {
+const doAfterAnonymous = async (props) => {
 	const { dispatch, product, cookies, match } = props;
 	const token = cookies.get('user.token');
 	const productId = match.params.id;
 	if (_.isEmpty(product.detail)) {
-		dispatch(new productActions.productDetailAction(token, productId));
+		await dispatch(new productActions.productDetailAction(token, productId));
 	}
-	dispatch(commentActions.productCommentAction(token, productId, 1));
+	await dispatch(commentActions.productCommentAction(token, productId, 1));
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Comments, doAfterAnonymous)));

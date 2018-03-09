@@ -50,7 +50,7 @@ class Navigation extends PureComponent {
 							icon='ico_cart.svg'
 							label='Shopping Bag'
 							active={active === 'Shopping Bag'}
-							badge={totalCartItems}
+							badge={(totalCartItems > 0) ? totalCartItems : null}
 						/>
 						<Item
 							to='/promo'

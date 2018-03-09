@@ -7,12 +7,14 @@ import { actions as initAction } from '@/state/v4/Home';
 import { setUserCookie } from '@/utils';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
+import ErrorHandler from '@/containers/Mobile/Shared/errorHandler';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 	WrappedComponent.contextTypes = {
 		router: React.PropTypes.object,
 		location: React.PropTypes.object
 	};
+
 	class SharedAction extends Component {
 
 		constructor(props) {
@@ -63,23 +65,53 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		async exeCall(token = null) {
 			const { shared, dispatch, cookies } = this.props;
 			const { login, provider } = this.state;
-			const tokenBearer = token === null ? this.userCookies : token.token;
+			let tokenBearer = token === null ? this.userCookies : token.token;
+			let rfT = token === null ? this.userRFCookies : token.refresh_token;
 
-			if (shared.totalCart === 0) { dispatch(new actions.totalCartAction(tokenBearer)); }
+			const [er, resp] = await to(dispatch(new users.refreshToken(rfT, tokenBearer)));
+			if (er) {
+				this.withErrorHandling(er);
+			}
 
-			if (shared.totalLovelist === 0) { dispatch(new actions.totalLovelistAction(tokenBearer)); }
+			const { data } = resp.data;
+			const isAnonymous = data.info.userid <= 1;
+			setUserCookie(this.props.cookies, data, isAnonymous);
+			tokenBearer = data.token;
+			rfT = data.refresh_token;
+
+			if (shared.totalCart === 0) { 
+				dispatch(new actions.totalCartAction(tokenBearer))
+				.catch(error => {
+					this.withErrorHandling(error);
+				}); 
+			}
+
+			if (shared.totalLovelist === 0) { 
+				dispatch(new actions.totalLovelistAction(tokenBearer))
+				.catch(error => {
+					this.withErrorHandling(error);
+				}); 
+			}
 			if (login && provider) {
-				const response = await to(dispatch(new users.userSocialLogin(cookies.get('user.token'), provider, login)));
-				console.log('login', response);
+				const response = await to(dispatch(new users.userSocialLogin(tokenBearer, provider, login)));
+				
 				if (response[0]) {
-					return response[0];
+					this.withErrorHandling(response[0]);
 				}
 			}
 
-			dispatch(new users.userGetProfile(tokenBearer));
+			if (cookies.get('isLogin') === 'true') {
+				dispatch(new users.userGetProfile(tokenBearer));
+			}
 
 			if (typeof doAfterAnonymousCall !== 'undefined') {
-				doAfterAnonymousCall.apply(this, [this.props]);
+				try {
+					await doAfterAnonymousCall.apply(this, [this.props]);
+					
+				} catch (err) {
+					return this.withErrorHandling(err);
+				}
+				
 			}
 			return null;
 		}
@@ -100,11 +132,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		async loginAnonymous() {
 			const [err, response] = await to(this.props.dispatch(new users.userAnonymous()));
 			if (err) {
-				this.withErrorHandling(err);
-				return Promise.reject(new Error({
-					status: 0,
-					msg: 'anonymous process failed'
-				}));
+				return this.withErrorHandling(err);
 			}
 
 			setUserCookie(this.props.cookies, response.token, true);
@@ -122,7 +150,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			if (!serviceUrl) {
 				const [err, response] = await to(this.props.dispatch(new initAction.initAction()));
 				if (err) {
-					this.withErrorHandling(err);
+					return this.withErrorHandling(err);
 				}
 
 				this.initApp();
@@ -133,19 +161,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		withErrorHandling(err) {
-			console.log(this.props);
-			console.log(err.response.data.code);
-			switch (err.response.data.code) {
-			case 200:
-				console.log('masuk');
-				break;
-			case 500:
-				console.log('error');
-				break;
-			default:
-				console.log('default');
-
-			}
+			const { dispatch } = this.props;
+			const { response } = err;
+			dispatch(actions.catchErrors(response));
 		}
 
 		handleScroll(e) {
@@ -161,8 +179,13 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		render() {
+			const { shared, dispatch } = this.props;
+
 			return (
-				<WrappedComponent {...this.props} scroll={this.state.scroll} />
+				<div>
+					<ErrorHandler errors={shared.errors} dispatch={dispatch} />
+					<WrappedComponent {...this.props} scroll={this.state.scroll} />
+				</div>
 			);
 		}
 	}
