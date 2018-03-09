@@ -171,7 +171,7 @@ const addAddress = (token, body = {}) => async (dispatch, getState) => {
 	if (err) {
 		return Promise.reject(err);
 	}
-	console.log(resp);
+
 	if (defaultAddress) {
 		const [errDef, respDef] = await to(request({
 			token,
