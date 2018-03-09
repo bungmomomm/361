@@ -4,20 +4,7 @@ import Action from './action';
 // import styles from './tree.scss';
 
 import _ from 'lodash';
-
-const updateChilds = (childs, value) => {
-	childs = _.map(childs, (facetData) => {
-		if (facetData.facetrange === value.facetrange) {
-			facetData.is_selected = facetData.is_selected === 1 ? 0 : 1;
-		}
-		if (facetData.childs && facetData.childs.length > 0) {
-			facetData.childs = updateChilds(facetData.childs, value);
-		}
-		return facetData;
-	});
-
-	return childs;
-};
+import utils from './utils';
 
 class Location extends PureComponent {
 	constructor(props) {
@@ -25,24 +12,31 @@ class Location extends PureComponent {
 		this.state = {
 			activeTree: null,
 			selected: null,
-			data: props.data || []
+			data: props.data || [],
+			resetData: props.data ? _.cloneDeep(props.data) : [],
 		};
 	}
 	
 	onApply(e) {
 		const { data } = this.state;
 		const { onApply } = this.props;
-		const result = _.filter(data, (facetData) => {
-			return (facetData.is_selected === 1);
-		});
-		console.log(result);
+		const result = utils.getSelected(data);
 		onApply(e, result);
 	}
 
 	onClick(e, value) {
 		const { data } = this.state;
 		this.setState({
-			data: updateChilds(data, value)
+			data: utils.updateChilds(data, value, {
+				is_selected: value.is_selected === 1 ? 0 : 1
+			})
+		});
+	}
+
+	reset() {
+		const { data } = this.state;
+		this.setState({
+			data: utils.resetChilds(data)
 		});
 	}
 
@@ -78,7 +72,7 @@ class Location extends PureComponent {
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action hasApply onApply={(e) => this.onApply(e)} />
+				<Action hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}
