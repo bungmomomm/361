@@ -63,11 +63,21 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		async exeCall(token = null) {
-			const { shared, dispatch } = this.props;
+			const { shared, dispatch, cookies } = this.props;
 			const { login, provider } = this.state;
-			const tokenBearer = token === null ? this.userCookies : token.token;
+			let tokenBearer = token === null ? this.userCookies : token.token;
+			let rfT = token === null ? this.userRFCookies : token.refresh_token;
 
-			dispatch(new users.refreshToken(this.userRFCookies, tokenBearer));
+			const [er, resp] = await to(dispatch(new users.refreshToken(rfT, tokenBearer)));
+			if (er) {
+				this.withErrorHandling(er);
+			}
+
+			const { data } = resp.data;
+			const isAnonymous = data.info.userid <= 1;
+			setUserCookie(this.props.cookies, data, isAnonymous);
+			tokenBearer = data.token;
+			rfT = data.refresh_token;
 
 			if (shared.totalCart === 0) { 
 				dispatch(new actions.totalCartAction(tokenBearer))
@@ -90,7 +100,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				}
 			}
 
-			dispatch(new users.userGetProfile(tokenBearer));
+			if (cookies.get('isLogin') === 'true') {
+				dispatch(new users.userGetProfile(tokenBearer));
+			}
 
 			if (typeof doAfterAnonymousCall !== 'undefined') {
 				try {

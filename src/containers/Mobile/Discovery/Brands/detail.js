@@ -31,7 +31,7 @@ import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as searchActions } from '@/state/v4/SearchResults';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { Promise } from 'es6-promise';
-import Spinner from '../../../../components/mobile/Spinner';
+import Spinner from '@/components/mobile/Spinner';
 
 class Detail extends Component {
 	static queryObject(props) {
@@ -99,7 +99,6 @@ class Detail extends Component {
 					...qs
 				}
 			};
-			console.log('data', data);
 			dispatch(brandAction.brandProductAction(data));
 			dispatch(brandAction.brandBannerAction(this.userToken, this.props.match.params.brandId));
 		}
@@ -117,9 +116,7 @@ class Detail extends Component {
 					...qs
 				}
 			};
-			console.log('data', data);
 			dispatch(brandAction.brandProductAction(data));
-
 			dispatch(brandAction.brandBannerAction(cookies.get('user.token'), nextProps.match.params.brandId));
 		}
 
