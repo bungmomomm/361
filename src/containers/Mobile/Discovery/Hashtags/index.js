@@ -99,8 +99,8 @@ class Hashtags extends Component {
 		const campaignId = _.chain(q).get('query.campaign_id').value() || 1;
 
 		const listHastags = (
-			<div className='horizontal-scroll padding--large-h'>
-				<div className='flex-row flex-centerflex-spaceBetween margin--medium-v'>
+			<div className='horizontal-scroll'>
+				<div className='flex-row flex-centerflex-spaceBetween margin--medium-v margin--none-t'>
 					{tags.map((tag, i) => (
 						<Link
 							to={tag.hashtag.indexOf('#') === -1 ? `/mau-gaya-itu-gampang#${tag.hashtag}` : `/mau-gaya-itu-gampang${tag.hashtag}`}
@@ -136,11 +136,7 @@ class Hashtags extends Component {
 					<Svg src={hashtag.viewMode === 3 ? 'ico_list.svg' : 'ico_grid-3x3.svg'} />
 				</Button>
 			),
-			rows: [{
-				left: null,
-				center: isSticky() ? listHastags : null,
-				right: null
-			}]
+			rows: isSticky() ? [{ left: null, center: listHastags, right: null }] : []
 		};
 
 		return (
@@ -189,14 +185,15 @@ class Hashtags extends Component {
 }
 
 const mapStateToProps = (state) => {
+
 	return {
 		...state
 	};
 };
 
-const doAfterAnonymous = (props) => {
+const doAfterAnonymous = async (props) => {
 	const { dispatch, location, cookies } = props;
-	dispatch(actions.initHashtags(cookies.get('user.token'), location.hash));
+	await dispatch(actions.initHashtags(cookies.get('user.token'), location.hash));
 };
 
 export default withRouter(withCookies(connect(mapStateToProps)(Scroller(Shared(Hashtags, doAfterAnonymous)))));
