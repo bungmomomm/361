@@ -41,6 +41,7 @@ class Login extends Component {
 		const { loginId, password, redirectUrl } = this.state;
 		const [err, response] = await to(dispatch(new users.userLogin(cookies.get('user.token'), loginId, password)));
 		if (err) {
+			
 			return err;
 		}
 		setUserCookie(this.props.cookies, response.token);
@@ -84,7 +85,7 @@ class Login extends Component {
 
 	render() {
 		const { style } = this.props;
-		const { isLoading, error } = this.props.users;
+		const { isLoading, login } = this.props.users;
 		const { visiblePassword, current, validLoginId, validLoginPassword, loginId, password } = this.state;
 		const buttonLoginEnable = !isLoading && validLoginId && validLoginPassword;
 		const register = (current === 'register');
@@ -96,7 +97,28 @@ class Login extends Component {
 			),
 			center: 'Login',
 			right: null,
-			shadow: false
+			shadow: false,
+			rows: [
+				{
+					center: (
+						<Tabs
+							type={'minimal'}
+							current={current}
+							variants={[
+								{
+									title: 'Login',
+									id: 'login'
+								},
+								{
+									title: 'register',
+									id: 'register'
+								}
+							]}
+							onPick={(e) => this.handlePick(e)}
+						/>
+					)
+				}
+			]
 		};
 
 		const providerConfig = {
@@ -114,21 +136,7 @@ class Login extends Component {
 				{renderIf(register)(
 					<Redirect to='/register' />
 				)}
-				<Page>
-					<Tabs
-						current={current}
-						variants={[
-							{
-								title: 'Login',
-								id: 'login'
-							},
-							{
-								title: 'register',
-								id: 'register'
-							}
-						]}
-						onPick={(e) => this.handlePick(e)}
-					/>
+				<Page hasTab>
 					<div className={styles.container}>
 						<div className='margin--medium-v'>Login Dengan</div>
 						<LoginWidget
@@ -137,12 +145,39 @@ class Login extends Component {
 							onFailure={(provider, e) => console.log(provider, e)}
 						/>
 						<div className={styles.divider}><span>Atau</span></div>
-						{ renderIf(error)(
+						{renderIf(login)(
 							<Notification style={{ marginBottom: '20px' }} disableClose color='pink' show><span className='font-color--secondary'>Email/No Handphone/Password yang Anda masukkan salah</span></Notification>
 						) }
 						<div>
-							<Input value={loginId} ref={c => { this.loginId = c; }} onChange={(event) => { this.onFieldChange(event, 'loginId'); this.setState({ loginId: event.target.value }); }} label='Nomor Handphone/Email' type='text' flat placeholder='Nomor Handphone/Email' />
-							<Input value={password} ref={c => { this.password = c; }} onChange={(event) => { this.onFieldChange(event, 'password'); this.setState({ password: event.target.value }); }} label='Password' iconRight={<Button onClick={() => this.setState({ visiblePassword: !visiblePassword })}>show</Button>} type={visiblePassword ? 'text' : 'password'} flat placeholder='Password minimal 6 karakter' />
+							<Input
+								value={loginId}
+								ref={c => { this.loginId = c; }} 
+								onChange={(event) => { 
+									this.onFieldChange(event, 'loginId'); 
+									this.setState({ loginId: event.target.value }); 
+								}}
+								label='Nomor Handphone/Email' 
+								type='text' 
+								placeholder='Nomor Handphone/Email'
+								error={!validLoginId && loginId !== ''}
+								hint={!validLoginId && 'Format Nomor Handphone/Email harus benar'}
+								flat 
+							/>
+							<Input
+								value={password}
+								ref={c => { this.password = c; }} 
+								onChange={(event) => { 
+									this.onFieldChange(event, 'password'); 
+									this.setState({ password: event.target.value }); 
+								}} 
+								label='Password' 
+								iconRight={<Button onClick={() => this.setState({ visiblePassword: !visiblePassword })}>show</Button>}
+								type={visiblePassword ? 'text' : 'password'} 
+								placeholder='Password minimal 6 karakter' 
+								error={!validLoginPassword && password !== ''}
+								hint={!validLoginPassword && 'Password minimal 6 karakter'}
+								flat 
+							/>
 						</div>
 						<div className='flex-row flex-center flex-spaceBetween'>
 							<div style={{ width: '45%' }}>

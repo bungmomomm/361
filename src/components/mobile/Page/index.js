@@ -6,6 +6,7 @@ class Page extends Component {
 	render() {
 		const pageClass = className(
 			styles.container,
+			this.props.hasTab ? styles.hasTab : null,
 			this.props.color ? styles[this.props.color] : styles.grey
 		);
 		return (
