@@ -3,7 +3,7 @@ import {
 	Card,
 	Spinner
 } from '@/components/mobile';
-import Love from '@/containers/Mobile/Shared/Widget/Love';
+import { Love } from '@/containers/Mobile/Widget';
 import stylesCatalog from './view.scss';
 
 class GridView extends Component {

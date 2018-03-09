@@ -14,7 +14,7 @@ import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import { urlBuilder } from '@/utils';
 import Spinner from '@/components/mobile/Spinner';
-import Love from '@/containers/Mobile/Shared/Widget/Love';
+import { Love } from '@/containers/Mobile/Widget';
 
 class Promo extends Component {
 

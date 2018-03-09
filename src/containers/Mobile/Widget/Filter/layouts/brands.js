@@ -8,7 +8,6 @@ import {
 	Svg,
 	Page,
 	List,
-	// Navigation
 } from '@/components/mobile';
 import Action from './action';
 // import C from '@/constants';
