@@ -4,7 +4,7 @@ import { Button, Header, Page, Svg, Slider, Input } from '@/components/mobile';
 import styles from './price.scss';
 import Action from './action';
 import _ from 'lodash';
-import currency from 'currency.js';
+import utils from './utils';
 
 class Price extends PureComponent {
 
@@ -16,8 +16,9 @@ class Price extends PureComponent {
 				max: parseInt(props.range.max, 10)
 			},
 			custom: false,
-			data: props.data || []
+			data: props.data || [],
 		};
+		this.state.resetData =	 _.cloneDeep(this.state.range);
 	}
 
 	onClick(e, value) {
@@ -42,7 +43,10 @@ class Price extends PureComponent {
 			return (facetData.is_selected === 1);
 		});
 		if (custom) {
-			return onApply(e, result, range);
+			return onApply(e, null, {
+				...range,
+				facetdisplay: `${utils.toIdr(range.min)} - ${utils.toIdr(range.max)}`
+			});
 		}
 		return onApply(e, result, false);
 	}
@@ -72,6 +76,13 @@ class Price extends PureComponent {
 		});
 	}
 
+	reset() {
+		const { resetData } = this.state;
+		this.setState({
+			range: _.cloneDeep(resetData)
+		});
+	}
+
 	render() {
 		const { onClose, range } = this.props;
 		const HeaderPage = {
@@ -89,8 +100,8 @@ class Price extends PureComponent {
 				<Page hideFooter>
 					<div className={styles.priceSlider}>
 						<div className={styles.sliderLabel}>
-							<span>{currency(this.state.range.min, { symbol: 'Rp', precision: 0, formatWithSymbol: true }).format()}</span>
-							<span>{currency(this.state.range.max, { symbol: 'Rp', precision: 0, formatWithSymbol: true }).format()}</span>
+							<span>{utils.toIdr(this.state.range.min)}</span>
+							<span>{utils.toIdr(this.state.range.max)}</span>
 						</div>
 						<Slider min={parseInt(range.min, 10)} max={parseInt(range.max, 10)} value={this.state.range} onChange={(value) => this.updateRange(value)} />
 						<div className={styles.sliderInfo}>
@@ -113,7 +124,7 @@ class Price extends PureComponent {
 					</div> */}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action hasApply onApply={(e) => this.onApply(e)} />
+				<Action hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}

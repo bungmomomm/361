@@ -17,18 +17,21 @@ import styles from './brands.scss';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import Filter from '@/containers/Mobile/Shared/Filter';
-import CONST from '@/constants';
 import { actions as brandAction } from '@/state/v4/Brand';
 import Shared from '@/containers/Mobile/Shared';
 import stylesCatalog from '@/containers/Mobile/Discovery/Category/Catalog/catalog.scss';
 import queryString from 'query-string';
-import renderIf from '../../../../utils/renderIf';
+import { urlBuilder, renderIf } from '@/utils';
 import Sort from '@/containers/Mobile/Shared/Sort';
+import Love from '@/containers/Mobile/Shared/Widget/Love';
+import Scroller from '@/containers/Mobile/Shared/scroller';
 import Share from '@/components/mobile/Share';
 import Footer from '@/containers/Mobile/Shared/footer';
 import { actions as commentActions } from '@/state/v4/Comment';
+import { actions as searchActions } from '@/state/v4/SearchResults';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { Promise } from 'es6-promise';
+import Spinner from '@/components/mobile/Spinner';
 
 class Detail extends Component {
 	static queryObject(props) {
@@ -82,33 +85,48 @@ class Detail extends Component {
 			newComment: { product_id: '', comment: '' },
 			lovelistProductId: null
 		};
-		this.isLogin = this.props.cookies.get('isLogin');
-		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
 	}
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 
 		if ('serviceUrl' in this.props.shared) {
-			const { dispatch, shared } = this.props;
-			const searchService = _.chain(shared).get('serviceUrl.product').value() || false;
-			dispatch(brandAction.brandProductAction(this.userToken, searchService, Detail.queryObject(this.props)));
+			const { dispatch, match: { params } } = this.props;
+			const qs = queryString.parse(location.search);
+			const data = {
+				token: this.userToken,
+				query: {
+					brand_id: params.brandId || 0,
+					...qs
+				}
+			};
+			dispatch(brandAction.brandProductAction(data));
 			dispatch(brandAction.brandBannerAction(this.userToken, this.props.match.params.brandId));
 		}
 	}
 
 	componentWillReceiveProps(nextProps) {
+		const { cookies } = this.props;
 		if (!('serviceUrl' in this.props.shared) && 'serviceUrl' in nextProps.shared) {
-			const { dispatch, shared } = nextProps;
-			const searchService = _.chain(shared).get('serviceUrl.product').value() || false;
-			dispatch(brandAction.brandProductAction(this.userToken, searchService, Detail.queryObject(nextProps)));
-			dispatch(brandAction.brandBannerAction(this.userToken, nextProps.match.params.brandId));
+			const { dispatch, match: { params } } = this.props;
+			const qs = queryString.parse(location.search);
+			const data = {
+				token: this.userToken,
+				query: {
+					brand_id: params.brandId || 0,
+					...qs
+				}
+			};
+			dispatch(brandAction.brandProductAction(data));
+			dispatch(brandAction.brandBannerAction(cookies.get('user.token'), nextProps.match.params.brandId));
 		}
 
 		if (this.props.brands.searchData.products !== nextProps.brands.searchData.products) {
 			const { dispatch } = this.props;
-			const productIds = nextProps.brands.searchData.products.map(e => (e.product_id));
-			dispatch(brandAction.brandProductsCommentsAction(this.userToken, productIds));
-			dispatch(brandAction.brandProductsLovelistAction(this.userToken, productIds));
+			const productIdList = _.map(nextProps.brands.searchData.products, 'product_id') || [];
+			if (productIdList.length > 0) {
+				dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+				dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+			}
 		}
 
 		if (nextProps.brands.products_lovelist !== this.props.brands.products_lovelist) {
@@ -142,38 +160,45 @@ class Detail extends Component {
 		});
 	}
 
+	onItemLoved(productId) {
+		const { cookies, dispatch } = this.props;
+		dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), [productId]));
+		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), [productId]));
+	}
+
 	getCommentOfProduct(productId) {
 		return this.props.brands.products_comments && this.props.brands.products_comments.filter(e => e.product_id === productId)[0];
 	}
-
+	
 	getLovelistOfProduct(productId) {
 		return this.props.brands.products_lovelist && this.props.brands.products_lovelist.filter(e => e.product_id === productId)[0];
 	}
 
-	update(params) {
-		const { shared, cookies, dispatch, location, history, match } = this.props;
+	update = (filters) => {
+		const { cookies, dispatch, match: { params }, location, history } = this.props;
 		const { query } = this.state;
 
 		const parsedUrl = queryString.parse(location.search);
 		const urlParam = {
-			query: query.q,
 			sort: query.sort,
-			per_page: query.per_page,
-			page: query.page,
 			...parsedUrl,
-			...params
+			...filters
 		};
 
 		const url = queryString.stringify(urlParam, {
 			encode: false
 		});
-		history.push(`${match.params.brandTitle}?${url}`);
-		const searchService = _.chain(shared).get('serviceUrl.product').value() || false;
-		const objParam = {
-			...query,
-			...params
+		history.push(`${params.brandTitle}?${url}`);
+		const data = {
+			token: cookies.get('user.token'),
+			query: {
+				...query,
+				...filters,
+				store_id: params.store_id || 0
+			},
+			type: 'init'
 		};
-		dispatch(brandAction.brandProductAction(cookies.get('user.token'), searchService, objParam));
+		dispatch(brandAction.brandProductAction(data));
 	}
 
 	handlePick(e) {
@@ -208,47 +233,28 @@ class Detail extends Component {
 		});
 	}
 
+	forceLoginNow() {
+		const { history, location } = this.props;
+		history.push(`/login?redirect_uri=${location.pathname}`);
+	}
+
 	addCommentHandler(event, productId) {
+		const { cookies } = this.props;
 		if (event.key === 'Enter') {
 			const { dispatch } = this.props;
 			const newComment = this.state.newComment;
 			const addingComment = new Promise((resolve, reject) => resolve(
-				dispatch(commentActions.commentAddAction(this.userToken, newComment.product_id, newComment.comment))
+				dispatch(commentActions.commentAddAction(cookies.get('user.token'), newComment.product_id, newComment.comment))
 			));
 			addingComment.then((res) => {
 				const productIds = [productId];
-				dispatch(brandAction.brandProductsCommentsAction(this.userToken, productIds));
+				dispatch(brandAction.brandProductsCommentsAction(cookies.get('user.token'), productIds));
 			}).catch((err) => this.setState({ newComment: { product_id: '', comment: '' } }));
 		}
 	}
 
 	addCommentOnChange(event, productId) {
 		this.setState({ newComment: { product_id: productId, comment: event.target.value } });
-	}
-
-	addLovelistHandler(productId) {
-		const { dispatch } = this.props;
-
-		const addingLovelist = new Promise((resolve, reject) => {
-			this.setState({ lovelistProductId: productId });
-			resolve(dispatch(lovelistActions.addToLovelist(this.userToken, productId)));
-		});
-		addingLovelist.then((res) => {
-			const productIds = this.props.brands.searchData.products.map(e => (e.product_id));
-			dispatch(brandAction.brandProductsLovelistAction(this.userToken, productIds));
-		}).catch((err) => this.setState({ lovelistProductId: '' }));
-	}
-
-	removeFromLovelistHandler(productId) {
-		const { dispatch } = this.props;
-		const removing = new Promise((resolve, reject) => {
-			this.setState({ lovelistProductId: productId });
-			resolve(dispatch(lovelistActions.removeFromLovelist(this.userToken, productId)));
-		});
-		removing.then((res) => {
-			const productIds = this.props.brands.searchData.products.map(e => (e.product_id));
-			dispatch(brandAction.brandProductsLovelistAction(this.userToken, productIds));
-		}).catch((err) => this.setState({ lovelistProductId: '' }));
 	}
 
 	renderTabs() {
@@ -290,6 +296,7 @@ class Detail extends Component {
 	}
 
 	renderComment(productId) {
+		const { cookies } = this.props;
 		const commentData = this.getCommentOfProduct(productId);
 		let lastComments = null;
 		if (commentData) {
@@ -312,7 +319,7 @@ class Detail extends Component {
 			<Level>
 				<Level.Item>
 					{
-						this.isLogin === 'true' ?
+						cookies.get('isLogin') === 'true' ?
 							this.props.comments.loading || this.props.brands.loading_prodcuts_comments ? <div>Sending comment...</div> :
 								(
 									<Input
@@ -400,16 +407,27 @@ class Detail extends Component {
 				return (
 					<div className='flex-row flex-wrap'>
 						{
-							brandProducts.value().map((product, e) => (
-								<Card.CatalogGrid
-									key={e}
-									images={product.images}
-									productTitle={product.product_title}
-									brandName={product.brand.name}
-									pricing={product.pricing}
-									linkToPdp={`/product/${product.product_id}`}
-								/>
-							))
+							brandProducts.value().map((product, e) => {
+								const loveButton = (
+									<Love
+										status={product.lovelistStatus}
+										data={product.product_id}
+										total={product.lovelistTotal}
+										onNeedLogin={() => this.forceLoginNow()}
+									/>
+								);
+								return (
+									<Card.CatalogGrid
+										key={e}
+										images={product.images}
+										productTitle={product.product_title}
+										brandName={product.brand.name}
+										pricing={product.pricing}
+										linkToPdp={product.url}
+										love={loveButton}
+									/>
+								);
+							})
 						}
 					</div>
 				);
@@ -422,7 +440,7 @@ class Detail extends Component {
 									key={e}
 									images={product.images}
 									pricing={product.pricing}
-									linkToPdp={`/product/${product.product_id}`}
+									linkToPdp={product.url}
 								/>
 							))
 						}
@@ -433,15 +451,15 @@ class Detail extends Component {
 					<div className='flex-row flex-wrap'>
 						{
 							brandProducts.value().map((product, e) => {
-								const lovelist = this.getLovelistOfProduct(product.product_id);
-								let lovelistHandler = null;
-								if (lovelist) {
-									lovelistHandler = (lovelist.status === 1) ?
-										() => (this.removeFromLovelistHandler(product.product_id)) :
-										() => (this.addLovelistHandler(product.product_id));
-								}
-								const lovelistDisable = (this.state.lovelistProductId === product.product_id);
-								const comment = this.getCommentOfProduct(product.product_id);
+								const loveButton = (
+									<Love
+										status={product.lovelistStatus}
+										data={product.product_id}
+										total={product.lovelistTotal}
+										onNeedLogin={() => this.forceLoginNow()}
+										showNumber
+									/>
+								);
 								return (
 									<div key={e} className={stylesCatalog.cardCatalog}>
 										<Card.Catalog
@@ -449,13 +467,10 @@ class Detail extends Component {
 											productTitle={product.product_title}
 											brandName={product.brand.name}
 											pricing={product.pricing}
-											lovelistTotal={lovelist && lovelist.total}
-											lovelistStatus={lovelist && lovelist.status}
-											lovelistAddTo={lovelistHandler}
-											commentTotal={comment && comment.total}
-											commentUrl={`/product/comments/${product.product_id}`}
-											linkToPdp={`/product/${product.product_id}`}
-											lovelistDisable={lovelistDisable}
+											commentTotal={product.commentTotal}
+											commentUrl={product.commentUrl}
+											linkToPdp={product.url}
+											love={loveButton}
 										/>
 										{this.renderComment(product.product_id)}
 									</div>
@@ -503,7 +518,7 @@ class Detail extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page color='white'>
 					<div style={{ marginTop: '-112px', marginBottom: '30px' }}>
 						{(showFilter) ? (
 							<Filter
@@ -520,6 +535,7 @@ class Detail extends Component {
 								{this.renderFilter()}
 								{this.renderTotalProduct()}
 								{this.renderProduct()}
+								{this.props.scroller.loading && (<Spinner />)}
 							</div>
 						)
 						}
@@ -540,12 +556,33 @@ class Detail extends Component {
 }
 
 const mapStateToProps = (state) => {
+	const { comments, lovelist, brands } = state;
+	brands.searchData.products = _.map(brands.searchData.products, (product) => {
+		const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: product.product_id }) : false;
+		const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: product.product_id }) : false;
+		if (lovelistData) {
+			product.lovelistTotal = lovelistData.total;
+			product.lovelistStatus = lovelistData.status;
+		}
+
+		if (commentData) {
+			product.commentTotal = commentData.total;
+		}
+		return {
+			...product,
+			url: urlBuilder.buildPdp(product.product_title, product.product_id),
+			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`
+		};
+	});
+
 	return {
-		category: state.category,
-		brands: state.brands,
-		shared: state.shared,
-		comments: state.comments
+		...state,
+		brands
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(Detail)));
+const doAfterAnonymous = async (props) => {
+
+};
+
+export default withCookies(connect(mapStateToProps)(Scroller(Shared(Detail, doAfterAnonymous))));

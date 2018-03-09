@@ -84,11 +84,11 @@ $size-list: (
 );
 
 $space-list: (
-  --none: 0px,
   --small: 5px,
   --normal: 10px,
   --medium: 15px,
-  --large: 30px
+  --large: 30px,
+  --none: 0px,
 );
 
 $border-radius: (

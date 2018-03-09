@@ -3,7 +3,7 @@ import to from 'await-to-js';
 import { Promise } from 'es6-promise';
 import _ from 'lodash';
 import { request } from '@/utils';
-import { totalBag, totalLoveList, currentTab, forEverBanner } from './reducer';
+import { totalBag, totalLoveList, currentTab, forEverBanner, errorHandler } from './reducer';
 
 const closeFB = () => (dispatch, getState) => {
 	const { shared } = getState();
@@ -73,9 +73,41 @@ const setCurrentSegment = (currentSegment) => (dispatch) => {
 	dispatch(currentTab({ current: currentSegment }));
 };
 
+const catchErrors = (errors) => (dispatch, getState) => {
+	const { shared } = getState();
+
+	const err = shared.errors;
+
+	const errorData = {
+		status: errors.data.status, 
+		app: errors.data.app, 
+		errorMessage: errors.data.error_message
+	};
+
+	if (errors.data.status === 401) {
+		errorData.errorMessage = 'token telah expired, mohon untuk refresh kembali';
+	}
+
+	if (errors.data.status === 405) {
+		errorData.errorMessage = `saat ini terdapat trouble di salah satu aplikasi kami (${errorData.app})`;
+	}
+
+	if (_.findIndex(err, { status: errorData.status, app: errorData.app }) === -1) {
+		err.push(errorData);
+	}
+
+	dispatch(errorHandler({ errors: err }));
+}; 
+
+const clearErrors = () => (dispatch) => {
+	dispatch(errorHandler({ errors: [] }));
+};
+
 export default {
 	totalLovelistAction,
 	totalCartAction,
 	setCurrentSegment,
-	closeFB
+	closeFB,
+	catchErrors,
+	clearErrors
 };

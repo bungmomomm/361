@@ -3,6 +3,7 @@ import { Header, Page, Svg, List, Button, Badge } from '@/components/mobile';
 import Action from './action';
 import _ from 'lodash';
 import { isHexColor, renderIf } from '@/utils';
+import utils from './utils';
 
 class Color extends PureComponent {
 
@@ -16,14 +17,9 @@ class Color extends PureComponent {
 
 	onClick(e, value) {
 		let { data } = this.state;
-
-		data = _.map(data, (facetData) => {
-			if (facetData.facetrange === value.facetrange) {
-				facetData.is_selected = facetData.is_selected === 1 ? 0 : 1;
-			}
-			return facetData;
+		data = utils.updateChilds(data, value, {
+			is_selected: value.is_selected === 1 ? 0 : 1
 		});
-
 		this.setState({
 			data
 		});
@@ -32,10 +28,15 @@ class Color extends PureComponent {
 	onApply(e) {
 		const { data } = this.state;
 		const { onApply } = this.props;
-		const result = _.filter(data, (facetData) => {
-			return (facetData.is_selected === 1);
-		});
+		const result = utils.getSelected(data);
 		onApply(e, result);
+	}
+
+	reset() {
+		const { data } = this.state;
+		this.setState({
+			data: utils.resetChilds(data)
+		});
 	}
 
 	render() {
@@ -76,7 +77,7 @@ class Color extends PureComponent {
 					</List>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action hasApply onApply={(e) => this.onApply(e)} />
+				<Action hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}

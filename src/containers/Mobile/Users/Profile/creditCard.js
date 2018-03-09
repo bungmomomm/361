@@ -11,12 +11,12 @@ import {
 	Svg,
 	Page,
 	Navigation,
-	List
+	Level,
+	Radio
 } from '@/components/mobile';
 
-
 class CreditCard extends Component {
-	
+
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -24,7 +24,7 @@ class CreditCard extends Component {
 		this.state = {
 			successMessage: ''
 		};
-		
+
 		this.data = [
 			{
 				id: 123,
@@ -37,66 +37,68 @@ class CreditCard extends Component {
 				creditCardNumber: '418-444-123-756'
 			}
 		];
-	
+
 	}
 
 	componentDidMount() {
-		
+
 		const { dispatch, cookies } = this.props;
 		dispatch(new actions.getCreditCard(cookies.get('user.token')));
-		
+
 	}
-	
-	
+
+
 	async setDefault(param) {
-		
+
 		const { dispatch, cookies } = this.props;
-		
+
 		const [err, response] = await to(dispatch(new actions.setCreditCard(cookies.get('user.token'), { card_id: param })));
-		
+
 		if (err) {
 			return false;
 		}
-		
+
 		const { data } = response;
-		
+
 		if (data.code === 200) {
 			this.setState({ successMessage: data.data.msg });
 		}
-		
+
 		return response;
-		
+
 	}
-	
+
 	renderCreditCardList() {
 		const { users } = this.props;
 		const { creditCard } = users;
 		const creditCardValue = _.chain(creditCard).value();
-		
+
 		console.log(creditCardValue);
-		
+
 		return this.data.map(({ id, name, creditCardNumber }, e) => (
-			<div>
-				<List key={e}>
-					<List.Image>
-						<button
-							onClick={() => this.setDefault({ id })}
-						>Click Here</button>
-					</List.Image>
-					<List.Content>
+			<div className='margin--medium-t'>
+				<Level className='bg--white' key={e} onClick={() => this.setDefault({ id })}>
+					<Level.Left>
+						<Radio name='size' variant='check' data={[{ value: 1 }]} />
+					</Level.Left>
+					<Level.Item className='padding--medium-l'>
 						<span>{name}</span>
 						<span>{creditCardNumber}</span>
-					</List.Content>
-				</List>
+					</Level.Item>
+					<Level.Right className='flex-row flex-center' style={{ alignItems: 'center' }}>
+						<Svg src='logo_mastercard.svg' />
+						<Svg className='padding--medium-l' src='ico_dots-3.svg' />
+					</Level.Right>
+				</Level>
 			</div>
-			
+
 		));
 	}
-	
+
 	render() {
-		
+
 		const { successMessage } = this.state;
-        
+
 		const HeaderPage = ({
 			left: (
 				<Link to={'/profile'}>

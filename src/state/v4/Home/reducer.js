@@ -6,10 +6,15 @@ const initialState = {
 	segmen: [
 		{
 			id: 1,
-			Title: 'Wanita'
+			title: 'Wanita',
+			key: 'wanita'
 		}
 	],
-	activeSegment: 'wanita',
+	activeSegment: {
+		id: 1,
+		title: 'Wanita',
+		key: 'wanita'
+	},
 	allSegmentData: {
 		wanita: {},
 		pria: {},

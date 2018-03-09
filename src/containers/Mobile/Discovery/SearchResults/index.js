@@ -11,6 +11,7 @@ import SearchNotFound from '@/containers/Mobile/Discovery/SearchNotFound';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Filter from '@/containers/Mobile/Shared/Filter';
+import Love from '@/containers/Mobile/Shared/Widget/Love';
 import Sort from '@/containers/Mobile/Shared/Sort';
 
 import {
@@ -50,6 +51,7 @@ class SearchResults extends Component {
 			},
 			showFilter: false,
 			showSort: false,
+			loving: false,
 			query: {
 				q: '',
 				brand_id: '',
@@ -100,7 +102,7 @@ class SearchResults extends Component {
 
 		return keywordFromUrl;
 	}
-
+	
 	update = async (params) => {
 		const { cookies, dispatch, location, history } = this.props;
 		const { query } = this.state;
@@ -129,7 +131,13 @@ class SearchResults extends Component {
 			if (!_.isEmpty(response.searchData.products)) {
 				const productIdList = _.map(response.searchData.products, 'product_id') || null;
 				dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-				dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+				this.setState({
+					loving: true
+				});
+				await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+				this.setState({
+					loving: false
+				});
 			} else {
 				dispatch(searchActions.promoAction(cookies.get('user.token')));
 			}
@@ -160,11 +168,15 @@ class SearchResults extends Component {
 		}
 	}
 
+	forceLoginNow() {
+		const { history } = this.props;
+		history.push(`/login?redirect_uri=${location.pathname}`);
+	}	
+
 	writeComment(e) {
 		this.setState({
 			productComment: e.target.value
 		});
-
 	}
 
 	postComment = async (e, productId) => {
@@ -199,6 +211,7 @@ class SearchResults extends Component {
 
 			return (
 				<Page>
+					{this.renderForeverBanner()}
 					<div className={stylesSearch.container} >
 						<div className={stylesCatalog.cardContainer}>
 							{productList}
@@ -233,8 +246,6 @@ class SearchResults extends Component {
 			<div style={this.props.style}>
 				{this.renderSearch()}
 				{this.renderHeader()}
-				{this.renderTabs()}
-				{this.renderForeverBanner()}
 				<Navigation scroll={this.props.scroll} />
 			</div>
 		);
@@ -257,68 +268,72 @@ class SearchResults extends Component {
 		return searchView;
 	}
 
-	renderList(productData, index) {
-		if (productData) {
-			const { isLoading, viewMode, searchResults, lovelist } = this.props;
-			const linkToPdp = urlBuilder.buildPdp(productData.product_title, productData.product_id);
-			const commentData = !_.isEmpty(searchResults.commentData) ? _.find(searchResults.commentData, { product_id: productData.product_id }) : false;
-			const commentTotal = commentData ? commentData.total : null;
-			const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: productData.product_id }) : false;
-			const lovelistTotal = lovelistData ? lovelistData.total : null;
-			const lovelistStatus = lovelistData ? lovelistData.status : null;
+	renderList(product, index) {
+		const { isLoading, viewMode } = this.props;
 
-			const listCardCatalogAttribute = {
-				images: productData.images,
-				productTitle: productData.product_title,
-				brandName: productData.brand.name,
-				pricing: productData.pricing,
-				linkToPdp,
-				commentTotal,
-				commentUrl: `/product/comments/${productData.product_id}`,
-				lovelistTotal,
-				lovelistStatus
-			};
+		const listCardCatalogAttribute = {
+			images: product.images,
+			productTitle: product.product_title,
+			brandName: product.brand.name,
+			pricing: product.pricing,
+			linkToPdp: product.url,
+			commentTotal: product.commentTotal,
+			commentUrl: product.commentUrl,
+			love: (
+				<Love
+					status={product.lovelistStatus}
+					data={product.product_id}
+					total={product.lovelistTotal}
+					onNeedLogin={(e) => this.forceLoginNow()}
+					showNumber
+				/>
+			)
+		};
 
-			const cardCatalogGridAttribute = {
-				key: index,
-				images: productData.images,
-				productTitle: productData.product_title,
-				brandName: productData.brand.name,
-				pricing: productData.pricing,
-				linkToPdp,
-				lovelistStatus
-			};
+		const cardCatalogGridAttribute = {
+			key: index,
+			images: product.images,
+			productTitle: product.product_title,
+			brandName: product.brand.name,
+			pricing: product.pricing,
+			linkToPdp: product.url,
+			love: (
+				<Love
+					status={product.lovelistStatus}
+					data={product.product_id}
+					total={product.lovelistTotal}
+					onNeedLogin={(e) => this.forceLoginNow()}
+				/>
+			)
+		};
 
-			switch (viewMode.mode) {
-			case 1:
-				return (
-					<div key={index} className={stylesCatalog.cardCatalog}>
-						<Card.Catalog {...listCardCatalogAttribute} />
-						{isLoading ? this.renderLoading : this.renderComment(productData.product_id)}
-					</div>
-				);
-			case 2:
-				return (
-					<Card.CatalogGrid {...cardCatalogGridAttribute} />
-				);
-			default:
-				return null;
-			}
-		} else {
+		switch (viewMode.mode) {
+		case 1:
+			return (
+				<div key={index} className={stylesCatalog.cardCatalog}>
+					<Card.Catalog {...listCardCatalogAttribute} />
+					{isLoading ? this.renderLoading : this.renderComment(product)}
+				</div>
+			);
+		case 2:
+			return (
+				<Card.CatalogGrid {...cardCatalogGridAttribute} />
+			);
+		default:
 			return null;
 		}
 	}
 
-	renderComment(productId) {
+	renderComment(product) {
 		const { isLoading, searchResults } = this.props;
 
 		if (isLoading) {
 			return this.loadingView;
 		}
 
-		const commentProduct = _.find(searchResults.commentData, { product_id: productId }) || false;
+		const commentProduct = _.find(searchResults.commentData, { product_id: product.product_id }) || false;
 		const commentLink = commentProduct ? (
-			<Link to={`/product/comments/${commentProduct.product_id}`}>
+			<Link to={product.commentUrl}>
 				<Button>View {commentProduct.total} comments</Button>
 			</Link>
 		) : '';
@@ -330,7 +345,7 @@ class SearchResults extends Component {
 			<div className={stylesCatalog.commentBlock}>
 				{commentLink}
 				{commentDetail}
-				{this.renderAddComment(productId)}
+				{this.renderAddComment(product.product_id)}
 			</div>
 		);
 	}
@@ -372,6 +387,7 @@ class SearchResults extends Component {
 
 		return (
 			<Header.SearchResult
+				rows={this.renderTabs()}
 				back={back}
 				value={this.getKeyword() || ''}
 			/>
@@ -391,9 +407,7 @@ class SearchResults extends Component {
 						<Sort shown={showSort} isSticky sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
 					)}
 					<Tabs
-						className={stylesCatalog.filterBlockContainer}
 						type='segment'
-						isSticky
 						variants={[
 							{
 								id: 'sort',
@@ -435,17 +449,31 @@ class SearchResults extends Component {
 }
 
 const mapStateToProps = (state) => {
-	console.log(state.scroller);
+	const { comments, lovelist, searchResults } = state;
+	searchResults.searchData.products = _.map(searchResults.searchData.products, (product) => {
+		const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: product.product_id }) : false;
+		const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: product.product_id }) : false;
+		if (lovelistData) {
+			product.lovelistTotal = lovelistData.total;
+			product.lovelistStatus = lovelistData.status;
+		}
+		if (commentData) {
+			product.commentTotal = commentData.total;
+		}
+		return {
+			...product,
+			url: urlBuilder.buildPdp(product.product_title, product.product_id),
+			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`
+		};
+	});
+
 	return {
 		...state,
-		shared: state.shared,
-		searchResults: state.searchResults,
+		searchResults,
 		promoData: state.searchResults.promoData,
 		query: state.searchResults.query,
-		comments: state.comments,
 		isLoading: state.searchResults.isLoading,
-		viewMode: state.searchResults.viewMode,
-		scroller: state.scroller
+		viewMode: state.searchResults.viewMode
 	};
 };
 
@@ -465,15 +493,15 @@ const doAfterAnonymous = async (props) => {
 	};
 	const [err, response] = await to(dispatch(searchActions.searchAction({ token: cookies.get('user.token'), query: searchParam })));
 	if (err) {
-		dispatch(searchActions.promoAction(cookies.get('user.token')));
+		await dispatch(searchActions.promoAction(cookies.get('user.token')));
 	}
 	if (response) {
 		if (!_.isEmpty(response.searchData.products)) {
 			const productIdList = _.map(response.searchData.products, 'product_id') || null;
-			dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+			await dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+			await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 		} else {
-			dispatch(searchActions.promoAction(cookies.get('user.token')));
+			await dispatch(searchActions.promoAction(cookies.get('user.token')));
 		}
 	}
 };

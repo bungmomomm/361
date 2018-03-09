@@ -10,6 +10,7 @@ import {
 } from '@/components/mobile';
 import styles from './tree.scss';
 import Action from './action';
+import utils from './utils';
 // import renderIf from '@/utils/renderIf';
 
 const treeIcon = (active, HasTree) => {
@@ -22,61 +23,14 @@ const treeIcon = (active, HasTree) => {
 	return <Svg src='ico_empty.svg' />;
 };
 
-const isDescendantSelected = (childs, isSelected) => {
-	if (typeof isSelected === 'undefined') {
-		isSelected = false;
-	}
-	childs = _.forEach(childs, (facetData) => {
-		if (facetData.is_selected) {
-			isSelected = true;
-		}
-		if (facetData.childs && facetData.childs.length > 0) {
-			isSelected = isDescendantSelected(facetData.childs, isSelected);
-		}
-	});
-	return isSelected;
-};
-
-const updateChilds = (childs, item, fields) => {
-	childs = _.map(childs, (facetData) => {
-		if (facetData.facetrange === item.facetrange) {
-			_.forIn(fields, (value, key) => {
-				facetData[key] = value;
-			});
-		}
-		if (facetData.childs && facetData.childs.length > 0) {
-			facetData.childs = updateChilds(facetData.childs, item, fields);
-		}
-		return facetData;
-	});
-
-	return childs;
-};
-
-const getSelected = (childs, source) => {
-	if (typeof source === 'undefined') {
-		source = [];
-	}
-	_.forEach(childs, (facetData) => {
-		if (facetData.is_selected === 1) {
-			source.push(facetData);
-		}
-
-		if (facetData.childs && facetData.childs.length > 0) {
-			source = getSelected(facetData.childs, source);
-		}
-	});
-
-	return source;
-};
-
 class TreeSegment extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			activeTree: [],
 			defaultOpen: true,
-			data: props.data || []
+			data: props.data || [],
+			resetData: props.data ? _.cloneDeep(props.data) : []
 		};
 	}
 
@@ -84,7 +38,7 @@ class TreeSegment extends Component {
 		const { data } = this.state;
 
 		this.setState({
-			data: updateChilds(data, value, {
+			data: utils.updateChilds(data, value, {
 				is_selected: value.is_selected === 1 ? 0 : 1
 			})
 		});
@@ -93,7 +47,7 @@ class TreeSegment extends Component {
 	onApply(e) {
 		const { data } = this.state;
 		const { onApply } = this.props;
-		const result = getSelected(data);
+		const result = utils.getSelected(data);
 		onApply(e, result);
 	}
 
@@ -104,13 +58,20 @@ class TreeSegment extends Component {
 		});
 		if (isParent) {
 			this.setState({
-				data: updateChilds(data, value, {
+				data: utils.updateChilds(data, value, {
 					open: !value.open
 				})
 			});
 		} else {
 			this.onClick(e, value);
 		}
+	}
+
+	reset() {
+		const { resetData } = this.state;
+		this.setState({
+			data: _.cloneDeep(resetData)
+		});
 	}
 
 	renderChild(category, firstLevel) {
@@ -125,7 +86,7 @@ class TreeSegment extends Component {
 					category.childs.map((child, id) => {
 						const hasChild = typeof child.childs !== 'undefined' && child.childs.length > 0;
 						const Label = hasChild ? <strong>{child.facetdisplay}</strong> : child.facetdisplay;
-						const isChildSelected = isDescendantSelected(child.childs);
+						const isChildSelected = utils.isDescendantSelected(child.childs);
 						let renderChild = false;
 						if ((defaultOpen && isChildSelected) || (!defaultOpen && hasChild && child.open)) {
 							renderChild = true;
@@ -185,7 +146,7 @@ class TreeSegment extends Component {
 					{/* {this.renderTree(categories)} */}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action hasApply onApply={(e) => this.onApply(e)} />
+				<Action hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}

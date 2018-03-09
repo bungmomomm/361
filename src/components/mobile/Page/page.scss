@@ -5,6 +5,7 @@
 	flex-grow: 1;
 	order: 4;
   	background-color: color(white);
+  	padding-top: 60px;
 }
 
 .page{
@@ -24,4 +25,8 @@
 
 .grey {
   	background-color: color(--primary-ext-6);
+}
+
+.hasTab {
+	margin-top: rem(96px);
 }

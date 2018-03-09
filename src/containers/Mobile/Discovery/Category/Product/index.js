@@ -12,22 +12,23 @@ import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Filter from '@/containers/Mobile/Shared/Filter';
 import Sort from '@/containers/Mobile/Shared/Sort';
 
+import { 
+	CatalogView, 
+	GridView, 
+	SmallGridView 
+} from '@/containers/Mobile/Discovery/View';
+
 import {
 	Header,
 	Page,
-	Card,
 	Svg,
 	Tabs,
-	Button,
-	Level,
-	Input,
 	Navigation,
 	Spinner,
-	Comment
 } from '@/components/mobile';
 
 import { actions as pcpActions } from '@/state/v4/ProductCategory';
-// import { actions as commentActions } from '@/state/v4/Comment';
+import { actions as searchActions } from '@/state/v4/SearchResults';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 
 import { 
@@ -116,7 +117,7 @@ class Product extends Component {
 		}
 		if (!_.isEmpty(response.pcpData.products)) {
 			const productIdList = _.map(response.products, 'product_id') || null;
-			// dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+			dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 		}
 		return response;
@@ -147,25 +148,9 @@ class Product extends Component {
 		}
 	}
 
-	async ilovethis(add, product) {
-		const { cookies, dispatch, productCategory } = this.props;
-		if (cookies.get('isLogin')) {
-			console.log(add, product);
-			let response;
-			if (add) {
-				response = await to(dispatch(lovelistActions.addToLovelist(cookies.get('user.token'), product.product_id)));
-			} else {
-				response = await to(dispatch(lovelistActions.removeFromLovelist(cookies.get('user.token'), product.product_id)));
-			}
-			if (response[0] !== null) {
-				return response[0];
-			}
-			const productIdList = _.map(productCategory.pcpData.products, 'product_id') || null;
-			// dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
-		}
-
-		return null;
+	forceLoginNow() {
+		const { history } = this.props;
+		history.push(`/login?redirect_uri=${encodeURIComponent(location.pathname + location.search)}`);
 	}
 
 	renderPage() {
@@ -185,7 +170,7 @@ class Product extends Component {
 		}
 		return (
 			<div style={this.props.style}>
-				{!isLoading && this.renderPcp()}
+				{this.renderPcp()}
 				{isLoading && (
 					<Spinner />
 				)}
@@ -198,21 +183,38 @@ class Product extends Component {
 	}
 
 	renderPcp() {
-		let pcpView = null;
-		const { isLoading, productCategory } = this.props;
+		const { comments, isLoading, productCategory, scroller, viewMode } = this.props;
 
 		if (isLoading) {
-			pcpView = this.loadingView;
+			return this.loadingView;
 		} 
 
 		if (productCategory.pcpStatus !== '') {
 			if (productCategory.pcpStatus === 'success') {
-				pcpView = (
+				let listView;
+				switch (viewMode.mode) {
+				case 1:
+					listView = (
+						<CatalogView comments={comments} loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={productCategory.pcpData.products} />
+					);
+					break;
+				case 2:
+					listView = (
+						<GridView loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={productCategory.pcpData.products} />
+					);
+					break;
+				case 3:
+					listView = (
+						<SmallGridView loading={scroller.loading} products={productCategory.pcpData.products} />
+					);
+					break;
+				default:
+					listView = null;
+					break;
+				}
+				return (
 					<Page>
-						<div className={stylesCatalog.cardContainer}>
-							{this.renderContent(productCategory.pcpData.products)}
-							{this.props.scroller.loading && this.loadingView}
-						</div>
+						{listView}
 						<Footer isShow={this.state.isFooterShow} />
 					</Page>
 				);
@@ -221,128 +223,7 @@ class Product extends Component {
 			}
 		}
 
-		return pcpView;
-	}
-
-	renderContent(productList) {
-		const { viewMode, comments } = this.props;
-		let contentView = null;
-		contentView = productList.map((product, index) => {
-			switch (viewMode.mode) {
-			case 1:
-				return (
-					<div key={index} className={stylesCatalog.cardCatalog}>
-						<Card.Catalog
-							images={product.images}
-							productTitle={product.product_title}
-							brandName={product.brand.name}
-							pricing={product.pricing}
-							linkToPdp={product.url}
-							commentTotal={product.commentTotal}
-							commentUrl={product.commentUrl}
-							lovelistTotal={product.lovelistTotal}
-							lovelistStatus={product.lovelistStatus}
-							lovelistAddTo={(add) => this.ilovethis(add, product)}
-						/>
-						{comments && comments.loading ? this.renderLoading : this.renderComment(product.product_id) }
-					</div>
-				);
-			case 2:
-				return (
-					<Card.CatalogGrid
-						key={index}
-						images={product.images}
-						productTitle={product.product_title}
-						brandName={product.brand.name}
-						pricing={product.pricing}
-						linkToPdp={product.url}
-						lovelistStatus={product.lovelistStatus}
-						lovelistAddTo={(add) => this.ilovethis(add, product)}
-					/>
-				);
-			case 3:
-				return (
-					<Card.CatalogSmall
-						key={index}
-						images={product.images}
-						pricing={product.pricing}
-						linkToPdp={product.url}
-					/>
-				);
-			default:
-				return null;
-			}
-		});
-		console.log('finish render');
-		return contentView;
-	}
-
-	renderList(productData, index) {
-		console.log(this.state);
-		if (productData) {
-			return (
-				<h1 key={index}>Test</h1>
-			);
-			// const cardCatalogSmall = {
-			// 	key: index,
-			// 	images: productData.images,
-			// 	pricing: productData.pricing,
-			// 	linkToPdp: linkToPdpCreator
-			// };
-			
-			// switch (viewMode.mode) {
-			// case 1:
-			// 	return (
-			// 		<div key={index} className={stylesCatalog.cardCatalog}>
-			// 			<Card.Catalog {...listCardCatalogAttribute} />
-			// 			{comments && comments.loading ? this.renderLoading : this.renderComment(productData.product_id)}
-			// 		</div>
-			// 	);
-			// case 2:
-			// 	return (
-			// 		<Card.CatalogGrid {...cardCatalogGridAttribute} />
-			// 	);
-			// case 3:
-			// 	return (
-			// 		<Card.CatalogSmall {...cardCatalogSmall} />
-			// 	);
-			// default:
-			// 	return null;
-			// }
-		// } else {
-		}
 		return null;
-		// }
-	}
-
-	renderComment(productId) {
-		let commentView = null;
-		const { isLoading, comments } = this.props;
-
-		if (isLoading) {
-			commentView = this.loadingView;
-		}
-
-		if (comments.status === 'success') {
-			const commentProduct = _.find(comments.data, { product_id: productId }) || false;
-			if (commentProduct) {
-				commentView = (
-					<div className={stylesCatalog.commentBlock}>
-						<Link to={`/product/comments/${commentProduct.product_id}`}>
-							<Button>View {commentProduct.total} comments</Button>
-						</Link>
-						<Comment data={commentProduct.last_comment} pcpComment />
-						<Level>
-							<Level.Item>
-								<Input color='white' placeholder='Write comment' />
-							</Level.Item>
-						</Level>
-					</div>
-				);
-			}
-		}
-
-		return commentView;
 	}
 
 	renderHeader() {
@@ -419,19 +300,23 @@ const mapStateToProps = (state) => {
 	productCategory.pcpData.products = _.map(productCategory.pcpData.products, (product) => {
 		const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: product.product_id }) : false;
 		const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: product.product_id }) : false;
+		if (lovelistData) {
+			product.lovelistTotal = lovelistData.total;
+			product.lovelistStatus = lovelistData.status;
+		}
+		if (commentData) {
+			product.commentTotal = commentData.total;
+		}
 		return {
 			...product,
 			url: urlBuilder.buildPdp(product.product_title, product.product_id),
-			commentTotal: commentData ? commentData.total : 0,
-			commentUrl: urlBuilder.buildPcpCommentUrl(product.product_id),
-			lovelistTotal: lovelistData ? lovelistData.total : 0,
-			lovelistStatus: lovelistData ? lovelistData.status : 0
+			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`
 		};
 	});
 
 	return {
 		...state,
-		productCategory: state.productCategory,
+		productCategory,
 		query: state.productCategory.query,
 		isLoading: state.productCategory.isLoading,
 		viewMode: state.productCategory.viewMode,
@@ -455,8 +340,8 @@ const doAfterAnonymous = async (props) => {
 	
 	const productIdList = _.map(response.pcpData.products, 'product_id') || [];
 	if (productIdList.length > 0) {
-		// dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+		await dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 	}
 };
 

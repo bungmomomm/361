@@ -48,8 +48,8 @@ class Home extends Component {
 		const willActiveSegment = segmen.find(e => e.id === current);
 		// this.setState({ current: willActiveSegment.key });
 		dispatch(new sharedActions.setCurrentSegment(willActiveSegment.key));
-		dispatch(new actions.mainAction(this.userCookies, willActiveSegment));
-		dispatch(new actions.recomendationAction(this.userCookies, willActiveSegment));
+		dispatch(new actions.mainAction(willActiveSegment));
+		dispatch(new actions.recomendationAction(willActiveSegment));
 	}
 
 	renderHeroBanner() {
@@ -74,36 +74,22 @@ class Home extends Component {
 	renderRecommendation(type = 'new_arrival_products') {
 		/**
 		 * Registered object
-		 * new_arrival_products,
-		 * best_seller_products,
-		 * recommended_products,
-		 * recently_viewed_products
+		 * new-arrival,
+		 * best-seller,
+		 * recommended-products,
+		 * recent-view
 		 * */
+		
 		const { home } = this.props;
 		const segment = home.activeSegment;
 		const title = 'LIHAT SEMUA';
-		let link = '';
-		let label = '';
-		switch (type) {
-		case 'best_seller_products':
-			link = `/promo/best_seller?segment_id=${segment.id}`; label = 'Produk Terlaris';
-			break;
-		case 'recommended_products':
-			link = `/promo/recommended_products?segment_id=${segment.id}`; label = 'Produk Rekomendasi';
-			break;
-		case 'recently_viewed_products':
-			link = `/promo/recent_view?segment_id=${segment.id}`; label = 'Terakhir Dilihat';
-			break;
-		default:
-			link = `/promo/new_arrival?segment_id=${segment.id}`; label = 'Produk Terbaru';
-		}
-
-		const obj = _.camelCase(type);
-		const datas = _.chain(home).get(`allSegmentData.${segment.key}`).get('recomendationData').get(obj);
-
-
+		const datas = _.chain(home).get(`allSegmentData.${segment.key}`).get('recomendationData').get(type);
+		
 		if (!datas.isEmpty().value()) {
-			const header = renderSectionHeader(label, {
+			const data = datas.value();
+			const link = `/promo/${type}?segment_id=${segment.id}`;
+
+			const header = renderSectionHeader(data.title, {
 				title,
 				url: link
 			});
@@ -112,10 +98,14 @@ class Home extends Component {
 					{ header }
 					<Grid split={3} bordered>
 						{
-							datas.value().map(({ images, pricing }, e) => (
+							data.data.map(({ images, pricing }, e) => (
 								<div key={e}>
-									<Image lazyload alt='thumbnail' src={images[0].thumbnail} />
-									<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
+									<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
+									<div className={styles.btnThumbnail}>
+										<Button transparent color='secondary' size='small'>
+											{pricing.formatted.effective_price}
+										</Button>
+									</div>
 								</div>
 							))
 						}
@@ -142,7 +132,7 @@ class Home extends Component {
 						{
 							datas.value().images.map(({ images }, e) => (
 								<div key={e}>
-									<Image lazyload alt='thumbnail' src={images.thumbnail} />
+									<Image lazyload shape='square' alt='thumbnail' src={images.thumbnail} />
 								</div>
 							))
 						}
@@ -283,17 +273,11 @@ class Home extends Component {
 	render() {
 		const { shared, dispatch } = this.props;
 
-		const recommendation1 = this.isLogin === 'true' ? 'new_arrival_products' : 'recommended_products';
-		const recommendation2 = this.isLogin === 'true' ? 'best_seller_products' : 'recently_viewed_products';
+		const recommendation1 = this.isLogin === 'false' ? 'new-arrival' : 'recommended-products';
+		const recommendation2 = this.isLogin === 'false' ? 'best-seller' : 'recent-view';
 		return (
 			<div style={this.props.style}>
 				<Page>
-					<Tabs
-						current={this.props.shared.current}
-						variants={this.props.home.segmen}
-						onPick={(e) => this.handlePick(e)}
-					/>
-
 					{ <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} /> }
 
 					{this.renderHeroBanner()}
@@ -314,8 +298,18 @@ class Home extends Component {
 
 					<Footer isShow={this.state.isFooterShow} />
 				</Page>
-				<Header lovelist={shared.totalLovelist} value={this.props.search.keyword} />
-				<Navigation active='Home' scroll={this.props.scroll} />
+				<Header 
+					rows={
+						<Tabs
+							current={this.props.shared.current}
+							variants={this.props.home.segmen}
+							onPick={(e) => this.handlePick(e)}
+						/>
+					} 
+					lovelist={shared.totalLovelist} 
+					value={this.props.search.keyword} 
+				/>
+				<Navigation active='Home' scroll={this.props.scroll} totalCartItems={shared.totalCart} />
 			</div>
 		);
 	}
@@ -329,15 +323,15 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (props) => {
-	const { shared, home, dispatch, cookies } = props;
+const doAfterAnonymous = async (props) => {
+	const { shared, home, dispatch } = props;
 
 	const activeSegment = home.segmen.find(e => e.key === home.activeSegment);
 
 	const promoService = _.chain(shared).get('serviceUrl.promo').value() || false;
 
-	dispatch(new actions.mainAction(cookies.get('user.token'), activeSegment, promoService));
-	dispatch(new actions.recomendationAction(cookies.get('user.token'), activeSegment, promoService));
+	await dispatch(new actions.mainAction(activeSegment, promoService));
+	await dispatch(new actions.recomendationAction(activeSegment, promoService));
 };
 
 

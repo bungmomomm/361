@@ -8,14 +8,25 @@ import { actions } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 
 const configs = {
-	defaultPage: 10
+	defaultPage: 20
 };
 
 const updateMyOrdersCurrent = (newStatus) => async (dispatch, getState) => {
 	dispatch(actions.userUpdateMyOrderCurrent({ myOrdersCurrent: newStatus }));
 };
 
-const getMyOrderMore = ({ token, query = {}, type }) => async (dispatch, getState) => {
+const cleanMyOrderData = () => async (dispatch) => {
+	dispatch(actions.userUpdateMyOrders({
+		myOrders: { konfirmasi: { orders: null },
+			dikirim: { orders: null },
+			batal: { orders: null },
+			selesai: { orders: null }
+		}
+	}));
+	dispatch(scrollerActions.onScroll({ loading: false, nextPage: false, nextData: {} }));
+};
+
+const getMyOrderMore = ({ token, query = {} }) => async (dispatch, getState) => {
 	dispatch(scrollerActions.onScroll({ loading: true }));
 
 	const { shared, users, scroller: { nextData } } = getState();
@@ -34,6 +45,7 @@ const getMyOrderMore = ({ token, query = {}, type }) => async (dispatch, getStat
 	);
 
 	if (err) {
+		dispatch(scrollerActions.onScroll({ loading: false, nextPage: false }));
 		return Promise.reject(err);
 	};
 
@@ -44,6 +56,7 @@ const getMyOrderMore = ({ token, query = {}, type }) => async (dispatch, getStat
 	dispatch(scrollerActions.onScroll({
 		nextData: {
 			...nextData,
+			token,
 			query: {
 				...query,
 				page: nextLink ? nextLink.get('page') : false,
@@ -58,8 +71,8 @@ const getMyOrderMore = ({ token, query = {}, type }) => async (dispatch, getStat
 	return Promise.resolve(response);
 };
 
-const getMyOrder = ({ token, query = {} }) => async (dispatch, getState) => {
-	const { shared, users, scroller: { nextData } } = getState();
+const checkMyOrders = (token) => async (dispatch, getState) => {
+	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
@@ -74,30 +87,17 @@ const getMyOrder = ({ token, query = {} }) => async (dispatch, getState) => {
 	);
 
 	if (err) {
+		dispatch(actions.userGetMyOrder({ myOrders: false }));
 		return Promise.reject(err);
 	};
 
-	const data = response.data.data;
-	const listOrder = {
-		konfirmasi: data.filter(e => e.info.status_id === 'konfirmasi')[0],
-		dikirim: data.filter(e => e.info.status_id === 'dikirim')[0],
-		batal: data.filter(e => e.info.status_id === 'batal')[0],
-		selesai: data.filter(e => e.info.status_id === 'selesai')[0]
-	};
-	dispatch(actions.userGetMyOrder({ myOrders: listOrder }));
+	const orders = response.data.data;
 
-	dispatch(scrollerActions.onScroll({
-		nextData: {
-			...nextData,
-			query: {
-				page: '2',
-				status: users.myOrdersCurrent
-			}
-		},
-		nextPage: true,
-		loading: false,
-		loader: getMyOrderMore
-	}));
+	const orderExist = orders.filter((order) => {
+		return order.info.total !== 0;
+	});
+
+	dispatch(actions.userCheckMyOrders({ isNoOrders: orderExist.length === 0 }));
 
 	return Promise.resolve(response);
 };
@@ -128,8 +128,9 @@ const getMyOrderDetail = (token, soNumber) => async (dispatch, getState) => {
 };
 
 export {
-	getMyOrder,
+	checkMyOrders,
 	getMyOrderMore,
 	getMyOrderDetail,
-	updateMyOrdersCurrent
+	updateMyOrdersCurrent,
+	cleanMyOrderData,
 };
