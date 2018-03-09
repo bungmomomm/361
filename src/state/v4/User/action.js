@@ -14,7 +14,7 @@ import { getMyOrder, getMyOrderDetail, updateMyOrdersCurrent } from './myOrder-a
 import { getTrackingInfo } from './tracking-action';
 
 const isSuccess = (response) => {
-	if (typeof response.data !== 'undefined' && typeof response.data.code !== 'undefined' && response.data.code === 200) {
+	if (typeof response.data !== 'undefined' && typeof response.data.code !== 'undefined' && response.data.code >= 200 && response.data.code < 300) {
 		return true;
 	}
 	return false;
@@ -43,7 +43,7 @@ const userLogin = (token, email, password) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
-		dispatch(actions.userLoginFail(err));
+		dispatch(actions.userLoginFail(err.data));
 		return Promise.reject(err);
 	}
 
@@ -56,7 +56,6 @@ const userLogin = (token, email, password) => async (dispatch, getState) => {
 			refresh_token: response.data.data.refresh_token
 		}
 	});
-
 };
 
 const userAnonymous = (token) => async (dispatch, getState) => {
@@ -81,7 +80,7 @@ const userAnonymous = (token) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
-		dispatch(actions.userLoginFail(err));
+		dispatch(actions.userLoginFail(err.data));
 		return Promise.reject(err);
 	}
 
@@ -128,7 +127,7 @@ const userOtp = (token, phone) => async (dispatch, getState) => {
 	const [err, response] = await to(request(requestData));
 	
 	if (err) {
-		dispatch(actions.userOtpFail(err));
+		dispatch(actions.userOtpFail(err.data));
 		return Promise.reject(err);
 	}
 	console.log('out');
@@ -166,7 +165,7 @@ const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
 	const [err, response] = await to(request(requestData));
 	
 	if (err) {
-		dispatch(actions.userOtpValidateFail(err));
+		dispatch(actions.userOtpValidateFail(err.data));
 		return Promise.reject(err);
 	}
 	

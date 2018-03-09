@@ -1,4 +1,4 @@
-
+import Loading from './loading';
 import loadable from 'loadable-components';
 
 /**
@@ -14,65 +14,67 @@ import loadable from 'loadable-components';
  */
 import('@/styles/mobile');
 
-const Home = loadable(() => import('@/containers/Mobile/Home'));
+const defaultOptions = { LoadingComponent: Loading };
 
-const Page404 = loadable(() => import('@/containers/Mobile/404'));
+const Home = loadable(() => import('@/containers/Mobile/Home'), defaultOptions);
+
+const Page404 = loadable(() => import('@/containers/Mobile/404'), defaultOptions);
 
 // Service Discovery
-const Search = loadable(() => import('@/containers/Mobile/Discovery/Search'));
-const SearchResults = loadable(() => import('@/containers/Mobile/Discovery/SearchResults'));
-const SearchNotFound = loadable(() => import('@/containers/Mobile/Discovery/SearchNotFound'));
+const Search = loadable(() => import('@/containers/Mobile/Discovery/Search'), defaultOptions);
+const SearchResults = loadable(() => import('@/containers/Mobile/Discovery/SearchResults'), defaultOptions);
+const SearchNotFound = loadable(() => import('@/containers/Mobile/Discovery/SearchNotFound'), defaultOptions);
 
-const Lovelist = loadable(() => import('@/containers/Mobile/Discovery/Lovelist'));
-const LovelistLogin = loadable(() => import('@/containers/Mobile/Discovery/Lovelist/login'));
+const Lovelist = loadable(() => import('@/containers/Mobile/Discovery/Lovelist'), defaultOptions);
+const LovelistLogin = loadable(() => import('@/containers/Mobile/Discovery/Lovelist/login'), defaultOptions);
 
-const Category = loadable(() => import('@/containers/Mobile/Discovery/Category'));
-const SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
-const ProductCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Product'));
-const CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
+const Category = loadable(() => import('@/containers/Mobile/Discovery/Category'), defaultOptions);
+const SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'), defaultOptions);
+const ProductCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Product'), defaultOptions);
+const CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'), defaultOptions);
 
-const Brands = loadable(() => import('@/containers/Mobile/Discovery/Brands'));
-const BrandsDetail = loadable(() => import('@/containers/Mobile/Discovery/Brands/detail'));
+const Brands = loadable(() => import('@/containers/Mobile/Discovery/Brands'), defaultOptions);
+const BrandsDetail = loadable(() => import('@/containers/Mobile/Discovery/Brands/detail'), defaultOptions);
 
-const Seller = loadable(() => import('@/containers/Mobile/Discovery/Seller'));
+const Seller = loadable(() => import('@/containers/Mobile/Discovery/Seller'), defaultOptions);
 
-const Hashtags = loadable(() => import('@/containers/Mobile/Discovery/Hashtags'));
-const HashtagsDetails = loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'));
+const Hashtags = loadable(() => import('@/containers/Mobile/Discovery/Hashtags'), defaultOptions);
+const HashtagsDetails = loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'), defaultOptions);
 
-const SampleFilters = loadable(() => import('@/containers/Mobile/SampleFilters')); // we used this ?
+const SampleFilters = loadable(() => import('@/containers/Mobile/SampleFilters'), defaultOptions); // we used this ?
 
 
 // PDP
-const Products = loadable(() => import('@/containers/Mobile/Details/Products'));
-const ProductsComments = loadable(() => import('@/containers/Mobile/Details/Products/Comments'));
-const ProductsGuide = loadable(() => import('@/containers/Mobile/Details/Products/Guide'));
+const Products = loadable(() => import('@/containers/Mobile/Details/Products'), defaultOptions);
+const ProductsComments = loadable(() => import('@/containers/Mobile/Details/Products/Comments'), defaultOptions);
+const ProductsGuide = loadable(() => import('@/containers/Mobile/Details/Products/Guide'), defaultOptions);
 
 // Shopping-bag
-const Cart = loadable(() => import('@/containers/Mobile/Cart'));
-const CartEmpty = loadable(() => import('@/containers/Mobile/Cart/empty'));
+const Cart = loadable(() => import('@/containers/Mobile/Cart'), defaultOptions);
+const CartEmpty = loadable(() => import('@/containers/Mobile/Cart/empty'), defaultOptions);
 
 // Users
-const UserLogin = loadable(() => import('@/containers/Mobile/Users/Login'));
-const ForgotPassword = loadable(() => import('@/containers/Mobile/Users/Login/forgotPassword'));
-const UserRegister = loadable(() => import('@/containers/Mobile/Users/Register'));
-const UserRegistered = loadable(() => import('@/containers/Mobile/Users/Register/registered'));
-const UserRegisteredPhoneValidation = loadable(() => import('@/containers/Mobile/Users/Register/registeredPhoneValidation'));
-const UserProfile = loadable(() => import('@/containers/Mobile/Users/Profile'));
-const UserProfileEdit = loadable(() => import('@/containers/Mobile/Users/Profile/edit'));
-// const UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'));
-// const UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'));
-// const UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'));
-// const UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'));
-const MyOrder = loadable(() => import('@/containers/Mobile/Users/Profile/myOrder'));
-const MyOrderDetail = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderDetail'));
-const MyOrderTracking = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderTracking'));
-const MyOrderConfirm = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderConfirm'));
-const CreditCard = loadable(() => import('@/containers/Mobile/Users/Profile/creditCard'));
+const UserLogin = loadable(() => import('@/containers/Mobile/Users/Login'), defaultOptions);
+const ForgotPassword = loadable(() => import('@/containers/Mobile/Users/Login/forgotPassword'), defaultOptions);
+const UserRegister = loadable(() => import('@/containers/Mobile/Users/Register'), defaultOptions);
+const UserRegistered = loadable(() => import('@/containers/Mobile/Users/Register/registered'), defaultOptions);
+const UserRegisteredPhoneValidation = loadable(() => import('@/containers/Mobile/Users/Register/registeredPhoneValidation'), defaultOptions);
+const UserProfile = loadable(() => import('@/containers/Mobile/Users/Profile'), defaultOptions);
+const UserProfileEdit = loadable(() => import('@/containers/Mobile/Users/Profile/edit'), defaultOptions);
+// const UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'), defaultOptions);
+// const UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'), defaultOptions);
+// const UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'), defaultOptions);
+// const UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'), defaultOptions);
+const MyOrder = loadable(() => import('@/containers/Mobile/Users/Profile/myOrder'), defaultOptions);
+const MyOrderDetail = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderDetail'), defaultOptions);
+const MyOrderTracking = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderTracking'), defaultOptions);
+const MyOrderConfirm = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderConfirm'), defaultOptions);
+const CreditCard = loadable(() => import('@/containers/Mobile/Users/Profile/creditCard'), defaultOptions);
 
 
 // promo
-const Promo = loadable(() => import('@/containers/Mobile/Discovery/Promo'));
-const PromoList = loadable(() => import('@/containers/Mobile/Discovery/Promo/PromoList'));
+const Promo = loadable(() => import('@/containers/Mobile/Discovery/Promo'), defaultOptions);
+const PromoList = loadable(() => import('@/containers/Mobile/Discovery/Promo/PromoList'), defaultOptions);
 
 export default {
 	parent: [

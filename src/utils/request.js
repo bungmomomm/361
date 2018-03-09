@@ -66,6 +66,9 @@ const request = (props) => {
 		headers = kongRequestHeader(props);
 	}
 	switch (props.method) {
+	case 'GETS': {
+		return axios.get(url);
+	}
 	case 'GET': {
 		let params = {};
 		if (props.query) {

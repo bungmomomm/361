@@ -17,7 +17,7 @@ const Header = props => {
 						<div>
 							<Link className='d-flex flex-middle' to='/lovelist'>
 								<Svg src='ico_lovelist.svg' />
-								<Badge circle attached size='small' className='bg--red font-color--white'>{props.lovelist}</Badge>
+								<Badge circle attached size='small' className='bg--secondary-ext-1 font-color--white'>{props.lovelist}</Badge>
 							</Link>
 						</div>
 						<div className={styles.center}>
