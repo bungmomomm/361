@@ -5,7 +5,7 @@ import Brands from './layouts/brands';
 import Color from './layouts/color';
 import Size from './layouts/size';
 import Price from './layouts/price';
-import Location from './layouts/locations';
+// import Location from './layouts/locations';
 import TreeSegment from './layouts/treeSegment';
 import Result from './layouts/result';
 import utils from './layouts/utils';
@@ -93,6 +93,9 @@ class Filter extends PureComponent {
 		const updateChilds = (c) => {
 			c = _.map(c, (facetData) => {
 				facetData.is_selected = 0;
+				if (facetData.childs) {
+					facetData.childs = updateChilds(facetData.childs);
+				}
 				return facetData;
 			});
 
@@ -173,8 +176,14 @@ class Filter extends PureComponent {
 				});
 				break;
 			}
+			if (selected[facet.id].length < 1) {
+				selected[facet.id].push({
+					facetdisplay: 'Semua'
+				});
+			}
 			return facet;
 		});
+		
 		this.setState({
 			selected
 		});
@@ -216,7 +225,7 @@ class Filter extends PureComponent {
 				case 'price':
 					selected[facet.id] = [];
 					if (custom) {
-						selected[facet.id] = [_.values(custom)];
+						selected[facet.id] = [custom];
 						facet.requested_range = custom;
 					} else {
 						delete facet.requested_range;
@@ -249,6 +258,12 @@ class Filter extends PureComponent {
 						return facetData;
 					});
 					break;
+				}
+
+				if (selected[facet.id].length < 1) {
+					selected[facet.id].push({
+						facetdisplay: 'Semua'
+					});
 				}
 			}
 			return facet;
@@ -316,7 +331,7 @@ class Filter extends PureComponent {
 				break;
 			case 'location':
 				filterView = (
-					<Location 
+					<TreeSegment 
 						{...state} 
 						data={locations.data} 
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
@@ -335,7 +350,7 @@ class Filter extends PureComponent {
 						onChange={(e, value) => this.onFilterSelected(e, 'pricerange', value)} 
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
 						onClose={(e) => this.onFilterSectionClose()}
-						onApply={(e, values) => this.applyFilter(layout, values)}
+						onApply={(e, values, custom) => this.applyFilter(layout, values, custom)}
 					/>
 				);			
 				break;

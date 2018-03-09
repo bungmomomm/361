@@ -16,17 +16,16 @@ class Slider extends PureComponent {
 
 	componentWillReceiveProps(nextProps) {
 		// console.log(nextProps.value);
-		// if (typeof nextProps.value.min !== 'undefined' && (this.state.value.min !== nextProps.value.min || this.state.value.max !== nextProps.value.max)) {
-		// 	this.setState({
-		// 		value: nextProps.value
-		// 	});
-		// }
+		if (typeof nextProps.value.min !== 'undefined' && (this.state.value.min !== nextProps.value.min || this.state.value.max !== nextProps.value.max)) {
+			this.setState({
+				value: nextProps.value
+			});
+		}
 	}
 
 	onChange(value) {
 		const { onChange } = this.props;
 		this.setState({ value });
-		console.log(value);
 		if (typeof onChange !== 'undefined') {
 			onChange.apply(this, [value]);
 		}
