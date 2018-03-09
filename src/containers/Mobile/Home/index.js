@@ -291,13 +291,7 @@ class Home extends Component {
 		const recommendation2 = this.isLogin === 'true' ? 'best_seller_products' : 'recently_viewed_products';
 		return (
 			<div style={this.props.style}>
-				<Page color='white'>
-					<Tabs
-						current={this.props.shared.current}
-						variants={this.props.home.segmen}
-						onPick={(e) => this.handlePick(e)}
-					/>
-
+				<Page>
 					{ <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} /> }
 
 					{this.renderHeroBanner()}
@@ -318,7 +312,17 @@ class Home extends Component {
 
 					<Footer isShow={this.state.isFooterShow} />
 				</Page>
-				<Header lovelist={shared.totalLovelist} value={this.props.search.keyword} />
+				<Header 
+					rows={
+						<Tabs
+							current={this.props.shared.current}
+							variants={this.props.home.segmen}
+							onPick={(e) => this.handlePick(e)}
+						/>
+					} 
+					lovelist={shared.totalLovelist} 
+					value={this.props.search.keyword} 
+				/>
 				<Navigation active='Home' scroll={this.props.scroll} totalCartItems={shared.totalCart} />
 			</div>
 		);

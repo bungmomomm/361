@@ -66,8 +66,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			const { shared, dispatch } = this.props;
 			const { login, provider } = this.state;
 			const tokenBearer = token === null ? this.userCookies : token.token;
+			const rfT = token === null ? this.userRFCookies : token.refresh_token;
 
-			dispatch(new users.refreshToken(this.userRFCookies, tokenBearer));
+			dispatch(new users.refreshToken(rfT, tokenBearer));
 
 			if (shared.totalCart === 0) { 
 				dispatch(new actions.totalCartAction(tokenBearer))

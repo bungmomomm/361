@@ -13,26 +13,36 @@ const Header = props => {
 		<nav className={styles.container}>
 			<div className={styles.wrapper}>
 				<div className={styles.header}>
-					<div className={styles.left}>
-						<Link to='/lovelist'>
-							<Svg src='ico_lovelist.svg' />
-							<Badge circle attached size='small' className='bg--secondary-ext-1 font-color--white'>{props.lovelist}</Badge>
-						</Link>
-					</div>
-					<div className={styles.center}>
-						<Input
-							onFocus={() => props.history.push('/search')}
-							placeholder=''
-							value={props.value}
-						/>
-						<div className={styles.dummyplaceholder}>
-							<span><Svg src='ico_search.svg' /></span>
-							<span className='padding--small-h'>Cari produk, #hashtags</span>
+					<div className='flex-row flex-spaceBetween padding--medium-h flex-middle'>
+						<div>
+							<Link className='d-flex flex-middle' to='/lovelist'>
+								<Svg src='ico_lovelist.svg' />
+								<Badge circle attached size='small' className='bg--secondary-ext-1 font-color--white'>{props.lovelist}</Badge>
+							</Link>
 						</div>
+						<div className={styles.center}>
+							<Input
+								onFocus={() => props.history.push('/search')}
+								placeholder=''
+								value={props.value}
+							/>
+							<div className={styles.dummyplaceholder}>
+								<span><Svg src='ico_search.svg' /></span>
+								<span className='padding--small-h'>Cari produk, #hashtags</span>
+							</div>
+						</div>
+						<Link className='d-flex flex-middle' to='/mau-gaya-itu-gampang'><Svg src='ico_hashtags.svg' /></Link>
 					</div>
-					<div className={styles.right}><Link to='/mau-gaya-itu-gampang'><Svg src='ico_hashtags.svg' /></Link></div>
 				</div>
 			</div>
+			{
+				props.rows &&
+				<div className={styles.subHeaderWrapper}>
+					<div className={styles.subHeader}>
+						{props.rows}
+					</div>
+				</div>
+			}
 		</nav>
 	);
 };
