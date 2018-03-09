@@ -83,7 +83,8 @@ class Seller extends Component {
 					width: '100%',
 					top: '60px',
 					zIndex: '1',
-					overflow: 'hidden'
+					overflow: 'hidden',
+					maxWidth: '480px'
 				}
 			});
 		} else {
@@ -342,6 +343,7 @@ class Seller extends Component {
 				<meta property='og:description' content={info.description} />
 				<meta property='og:image' content={info.seller_logo} />
 				<meta property='og:site_name' content='MatahariMall.com' />
+				<link rel='canonical' href={process.env.MOBILE_URL} />
 			</Helmet>
 		);
 	};
