@@ -30,7 +30,7 @@ const initAction = () => async (dispatch) => {
 
 };
 
-const mainAction = (token, activeSegment) => async (dispatch, getState) => {
+const mainAction = (activeSegment) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
@@ -39,9 +39,8 @@ const mainAction = (token, activeSegment) => async (dispatch, getState) => {
 	const path = `${baseUrl}/mainpromo?segment_id=${activeSegment.id}`;
 	
 	const [err, response] = await to(request({
-		token,
 		path,
-		method: 'GET',
+		method: 'GETS',
 		fullpath: true
 	}));
 
@@ -67,7 +66,7 @@ const mainAction = (token, activeSegment) => async (dispatch, getState) => {
 	return Promise.resolve(mainData);
 };
 
-const recomendationAction = (token, activeSegment, url = false) => async (dispatch, getState) => {
+const recomendationAction = (activeSegment, url = false) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
@@ -76,9 +75,8 @@ const recomendationAction = (token, activeSegment, url = false) => async (dispat
 	const path = `${baseUrl}/recommended_promo?segment_id=${activeSegment.id}`;
 
 	const [err, response] = await to(request({
-		token,
 		path,
-		method: 'GET',
+		method: 'GETS',
 		fullpath: true
 	}));
 

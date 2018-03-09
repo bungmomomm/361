@@ -48,8 +48,8 @@ class Home extends Component {
 		const willActiveSegment = segmen.find(e => e.id === current);
 		// this.setState({ current: willActiveSegment.key });
 		dispatch(new sharedActions.setCurrentSegment(willActiveSegment.key));
-		dispatch(new actions.mainAction(this.userCookies, willActiveSegment));
-		dispatch(new actions.recomendationAction(this.userCookies, willActiveSegment));
+		dispatch(new actions.mainAction(willActiveSegment));
+		dispatch(new actions.recomendationAction(willActiveSegment));
 	}
 
 	renderHeroBanner() {
@@ -79,6 +79,7 @@ class Home extends Component {
 		 * recommended_products,
 		 * recently_viewed_products
 		 * */
+		
 		const { home } = this.props;
 		const segment = home.activeSegment;
 		const title = 'LIHAT SEMUA';
@@ -100,7 +101,7 @@ class Home extends Component {
 
 		const obj = _.camelCase(type);
 		const datas = _.chain(home).get(`allSegmentData.${segment.key}`).get('recomendationData').get(obj);
-
+		
 
 		if (!datas.isEmpty().value()) {
 			const header = renderSectionHeader(label, {
@@ -287,8 +288,8 @@ class Home extends Component {
 	render() {
 		const { shared, dispatch } = this.props;
 
-		const recommendation1 = this.isLogin === 'true' ? 'new_arrival_products' : 'recommended_products';
-		const recommendation2 = this.isLogin === 'true' ? 'best_seller_products' : 'recently_viewed_products';
+		const recommendation1 = this.isLogin === 'false' ? 'new_arrival_products' : 'recommended_products';
+		const recommendation2 = this.isLogin === 'false' ? 'best_seller_products' : 'recently_viewed_products';
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -338,14 +339,14 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-	const { shared, home, dispatch, cookies } = props;
+	const { shared, home, dispatch } = props;
 
 	const activeSegment = home.segmen.find(e => e.key === home.activeSegment);
 
 	const promoService = _.chain(shared).get('serviceUrl.promo').value() || false;
 
-	await dispatch(new actions.mainAction(cookies.get('user.token'), activeSegment, promoService));
-	await dispatch(new actions.recomendationAction(cookies.get('user.token'), activeSegment, promoService));
+	await dispatch(new actions.mainAction(activeSegment, promoService));
+	await dispatch(new actions.recomendationAction(activeSegment, promoService));
 };
 
 
