@@ -4,7 +4,7 @@ import _ from 'lodash';
 import {
 	request,
 } from '@/utils';
-import { actions } from './reducer';
+import { actions, initialState } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 
 const configs = {
@@ -34,6 +34,7 @@ const getMyOrderMore = ({ token, query = {}, type }) => async (dispatch, getStat
 	);
 
 	if (err) {
+		dispatch(scrollerActions.onScroll({ loading: false, nextPage: false }));
 		return Promise.reject(err);
 	};
 
@@ -58,7 +59,8 @@ const getMyOrderMore = ({ token, query = {}, type }) => async (dispatch, getStat
 	return Promise.resolve(response);
 };
 
-const getMyOrder = ({ token, query = {} }) => async (dispatch, getState) => {
+const getMyOrder = (token) => async (dispatch, getState) => {
+	dispatch(actions.userGetMyOrder({ myOrders: initialState.myOrders }));
 	const { shared, users, scroller: { nextData } } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
 
@@ -74,6 +76,7 @@ const getMyOrder = ({ token, query = {} }) => async (dispatch, getState) => {
 	);
 
 	if (err) {
+		dispatch(actions.userGetMyOrder({ myOrders: false }));
 		return Promise.reject(err);
 	};
 
@@ -89,6 +92,7 @@ const getMyOrder = ({ token, query = {} }) => async (dispatch, getState) => {
 	dispatch(scrollerActions.onScroll({
 		nextData: {
 			...nextData,
+			token,
 			query: {
 				page: '2',
 				status: users.myOrdersCurrent

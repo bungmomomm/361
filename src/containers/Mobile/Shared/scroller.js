@@ -6,7 +6,6 @@ const Scroller = (WrappedComponent) => {
 			super(props);
 			this.props = props;
 			this.allowNext = false;
-			this.scroller = false;
 
 			this.touchDown = this.touchDown.bind(this);
 		}
@@ -16,16 +15,14 @@ const Scroller = (WrappedComponent) => {
 		}
 
 		componentWillReceiveProps(nextProps) {
-			if (this.props.scroller !== nextProps.scroller) {
-				this.scroller = nextProps.scroller;
-				this.allowNext = (
-					this.scroller
-					&& typeof this.scroller.loader === 'function'
-					&& this.scroller.nextPage
-					&& this.scroller.nextData
-					&& !this.scroller.loading
-				);
-			}
+			this.scroller = nextProps.scroller;
+			this.allowNext = (
+				this.scroller
+				&& typeof this.scroller.loader === 'function'
+				&& this.scroller.nextPage
+				&& this.scroller.nextData
+				&& !this.scroller.loading
+			);
 		}
 
 		componentWillUnmount() {
@@ -39,7 +36,7 @@ const Scroller = (WrappedComponent) => {
 			const docHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
 			const scrollY = e.srcElement.scrollTop;
 			const scrHeight = window.screen.height;
-			if ((scrollY + scrHeight) >= docHeight && this.scroller && this.allowNext) {
+			if ((scrollY + scrHeight) >= docHeight && this.allowNext) {
 				this.props.dispatch(this.scroller.loader(this.scroller.nextData));
 			}
 		};

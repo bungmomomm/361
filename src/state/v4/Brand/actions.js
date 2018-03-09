@@ -5,6 +5,11 @@ import to from 'await-to-js';
 import { Promise } from 'es6-promise';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 
+const configs = {
+	defaultPage: 36
+};
+
+
 const brandListAction = (token, segment = 1) => async (dispatch, getState) => {
 	dispatch(brandLoading({ loading: true }));
 
@@ -36,18 +41,22 @@ const brandListAction = (token, segment = 1) => async (dispatch, getState) => {
 	return Promise.resolve(response);
 };
 
-const brandProductAction = (token, url = false, query) => async (dispatch, getState) => {
+const brandProductAction = ({ token, query = {}, type = 'update' }) => async (dispatch, getState) => {
 	dispatch(brandLoadingProducts({ loading_products: true }));
 	dispatch(scrollerActions.onScroll({ loading: true }));
 
-	let path = `${process.env.MICROSERVICES_URL}products/search`;
-	if (url) {
-		path = `${url.url}/products/search`;
+	const { shared, scroller: { nextData } } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value();
+	const url = `${baseUrl}/products/search`;
+
+	if (!query.page) {
+		query.page = 1;
 	}
+	query.per_page = configs.defaultPage;
 
 	const [err, response] = await to(request({
 		token,
-		path,
+		path: url,
 		method: 'GET',
 		query,
 		fullpath: true
@@ -56,7 +65,7 @@ const brandProductAction = (token, url = false, query) => async (dispatch, getSt
 	if (err) {
 		dispatch(brandLoadingProducts({ loading_products: false }));
 		dispatch(brandProducts({ searchStatus: 'failed' }));
-
+		dispatch(scrollerActions.onScroll({ loading: false, nextPage: false }));
 		return Promise.reject(err);
 	}
 
@@ -65,19 +74,20 @@ const brandProductAction = (token, url = false, query) => async (dispatch, getSt
 	};
 
 	dispatch(brandLoadingProducts({ loading_products: false }));
+
+	const data = _.chain(response).get('data.data').value() || {};
 	dispatch(brandProducts({
-		searchStatus: 'success',
-		searchData,
-		query
+		searchStatus: 'success', data, type
 	}));
 
-	const nextLink = searchData.links && searchData.links.next ? new URL(searchData.links.next).searchParams : false;
+	const nextLink = data.links && data.links.next ? new URL(baseUrl + data.links.next).searchParams : false;
 	dispatch(scrollerActions.onScroll({
 		nextData: {
-			token,
+			...nextData,
+			type: type === 'init' ? 'update' : type,
 			query: {
 				...query,
-				page: nextLink ? parseInt(nextLink.get('page'), 10) : false,
+				page: nextLink ? nextLink.get('page') : false
 			}
 		},
 		nextPage: nextLink !== false,
@@ -166,7 +176,6 @@ const brandProductsLovelistAction = (token, productIds) => async (dispatch, getS
 	if (err) return Promise.reject(err);
 
 	const productsLovelist = response.data.data;
-	console.log('brandProductsLovelistAction productsLovelist ', productsLovelist);
 
 	dispatch(brandProductsLovelist({ products_lovelist: productsLovelist }));
 	return Promise.resolve(response);

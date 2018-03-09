@@ -12,8 +12,9 @@ import styles from './promo.scss';
 import { actions } from '@/state/v4/Discovery';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-import { hyperlink } from '@/utils';
+import { urlBuilder } from '@/utils';
 import Spinner from '@/components/mobile/Spinner';
+import Love from '@/containers/Mobile/Shared/Widget/Love';
 
 class Promo extends Component {
 
@@ -41,8 +42,6 @@ class Promo extends Component {
 
 		if (typeof products !== 'undefined') {
 			const content = products.map((product, idx) => {
-				const linkToPdp = hyperlink('', ['product', product.product_id], null);
-
 				return listTypeGrid ?
 					(<Card.CatalogGrid
 						key={idx}
@@ -50,7 +49,15 @@ class Promo extends Component {
 						productTitle={product.product_title}
 						brandName={product.brand.name}
 						pricing={product.pricing}
-						linkToPdp={linkToPdp}
+						linkToPdp={product.url}
+						love={(
+							<Love
+								status={product.lovelistStatus}
+								data={product.product_id}
+								total={product.lovelistTotal}
+								onNeedLogin={() => this.forceLoginNow()}
+							/>
+						)}
 					/>) :
 					(<Card.Catalog
 						key={idx}
@@ -59,7 +66,16 @@ class Promo extends Component {
 						productTitle={product.product_title}
 						brandName={product.brand.name}
 						pricing={product.pricing}
-						linkToPdp={linkToPdp}
+						linkToPdp={product.url}
+						love={(
+							<Love
+								status={product.lovelistStatus}
+								data={product.product_id}
+								total={product.lovelistTotal}
+								onNeedLogin={() => this.forceLoginNow()}
+								showNumber
+							/>
+						)}
 					/>);
 			});
 
@@ -67,6 +83,11 @@ class Promo extends Component {
 		}
 
 		return null;
+	}
+
+	forceLoginNow() {
+		const { history } = this.props;
+		history.push(`/login?redirect_uri=${location.pathname}`);
 	}
 
 	handlePick(event) {
@@ -140,10 +161,31 @@ class Promo extends Component {
 }
 
 const mapStateToProps = (state) => {
+	const { comments, lovelist, discovery } = state;
+	const products = _.chain(discovery).get(`promo.${this.promoType}`).value().products;
+
+	if (typeof products !== 'undefined') {
+		discovery.promo[this.promoType] = _.map(products, (product) => {
+			const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: product.product_id }) : false;
+			const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: product.product_id }) : false;
+			if (lovelistData) {
+				product.lovelistTotal = lovelistData.total;
+				product.lovelistStatus = lovelistData.status;
+			}
+			if (commentData) {
+				product.commentTotal = commentData.total;
+			}
+			return {
+				...product,
+				url: urlBuilder.buildPdp(product.product_title, product.product_id),
+				commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`
+			};
+		});
+	}
 	return {
 		discovery: {
-			loading: state.discovery.loading,
-			promo: state.discovery.promo
+			...discovery,
+			loading: state.discovery.loading
 		},
 		shared: state.shared,
 		home: state.home,
@@ -151,7 +193,7 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (props) => {
+const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies, match, home } = props;
 	const filtr = home.segmen.filter((obj) => {
 		return obj.key === home.activeSegment;
@@ -159,7 +201,7 @@ const doAfterAnonymous = (props) => {
 
 	const query = filtr && filtr[0] ? { segment_id: filtr[0].id } : {};
 
-	dispatch(actions.promoAction({
+	await dispatch(actions.promoAction({
 		token: cookies.get('user.token'),
 		promoType: match.params.type,
 		query

@@ -75,6 +75,7 @@ class Catalog extends PureComponent {
 			lovelistStatus,
 			lovelistAddTo,
 			lovelistDisable,
+			love,
 			optimistic,
 			...props
 		} = this.props;
@@ -98,6 +99,15 @@ class Catalog extends PureComponent {
 			<div className={styles.discount}>{pricing.formatted.base_price}</div>
 		) : '';
 
+		let loveButton = (
+			<Button onClick={(e) => this.lovelistAddTo()} disabled={disableLovelist}>
+				<Svg src={lovelistIcon} />
+				<span>{lovelistTotal} Suka</span>
+			</Button>
+		);
+		if (love) {
+			loveButton = love;
+		}
 		return (
 			<div className={createClassName} {...props} data-loved={lovelistStatus}>
 				<Link to={linkToPdp}>
@@ -114,10 +124,7 @@ class Catalog extends PureComponent {
 					style={{ borderBottom: '1px solid #D8D8D8' }}
 				>
 					<Level.Item>
-						<Button onClick={(e) => this.lovelistAddTo()} disabled={disableLovelist}>
-							<Svg src={lovelistIcon} />
-							<span>{lovelistTotal} Suka</span>
-						</Button>
+						{loveButton}
 					</Level.Item>
 					<Level.Item>
 						<Link to={(commentUrl) || '/'}>

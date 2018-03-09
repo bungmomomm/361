@@ -185,7 +185,7 @@ class Brands extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page color='white'>
 					{
 						<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />
 					}
