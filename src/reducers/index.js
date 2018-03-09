@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux';
 import { reducer as tracking } from '@/state/Tracking/';
 import { reducer as coupon } from '@/state/Coupon/';
-import { reducer as addresses } from '@/state/Adresses/';
 import { reducer as api } from '@/state/Api/';
 import { reducer as cart } from '@/state/Cart/';
 import { reducer as payments } from '@/state/Payment/';
@@ -24,12 +23,12 @@ import { reducer as hashtag } from '@/state/v4/Hashtag';
 import { reducer as seller } from '@/state/v4/Seller';
 import { reducer as shopBag } from '@/state/v4/ShopBag';
 import { reducer as hashtagdetails } from '@/state/v4/HashtagsDetails';
+import { reducer as address } from '@/state/v4/Address';
 
 export default combineReducers({
 	...global,
 	tracking,
 	coupon,
-	addresses,
 	api,
 	cart,
 	payments,
@@ -51,5 +50,6 @@ export default combineReducers({
 	hashtag,
 	seller,
 	shopBag,
-	hashtagdetails
+	hashtagdetails,
+	address
 });

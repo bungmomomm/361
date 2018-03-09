@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import {
-	Header, Page, Svg, Navigation, Card, Image, Button
+	Header, Page, Svg, Navigation, Card, Button
 } from '@/components/mobile';
 import _ from 'lodash';
 import stylesCatalog from '../Category/Catalog/catalog.scss';
@@ -35,11 +35,11 @@ class Promo extends Component {
 	}
 
 	getProductListContent() {
+		
 		const { discovery } = this.props;
 		const { listTypeGrid } = this.state;
-
 		const products = _.chain(discovery).get(`promo.${this.promoType}`).value().products;
-
+		
 		if (typeof products !== 'undefined') {
 			const content = products.map((product, idx) => {
 				return listTypeGrid ?
@@ -113,11 +113,7 @@ class Promo extends Component {
 		const { discovery } = this.props;
 		const info = _.chain(discovery).get(`promo.${this.promoType}`).value().info;
 		const headerLabel = info ? `${info.title} <br /> ${info.product_count} Total Produk` : '';
-		const bannerInline = {
-			color: 'pink',
-			width: '100%',
-			height: '20%'
-		};
+		
 		const HeaderPage = {
 			left: (
 				<Link to='/'>
@@ -144,28 +140,33 @@ class Promo extends Component {
 
 				<Header.Modal {...HeaderPage} />
 				{<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />}
-				<Image alt='Product Terlaris' src='http://www.solidbackgrounds.com/images/950x350/950x350-light-pink-solid-color-background.jpg' style={bannerInline} />
+				
 				<Navigation active='Promo' scroll={this.props.scroll} />
 			</div>
 		);
 	}
 
 	render() {
-		if (this.state.productEmpty) {
-			return this.renderData('');
-		}
-
 		const content = this.getProductListContent();
 		return this.renderData(content);
 	}
 }
 
-const mapStateToProps = (state) => {
-	const { comments, lovelist, discovery } = state;
-	const products = _.chain(discovery).get(`promo.${this.promoType}`).value().products;
+const mapStateToProps = (state, props) => {
+	const { 
+		comments, 
+		lovelist,
+		discovery } = state;
+	const { match } = props;
+	
+	const promoType = match.params.type;
 
-	if (typeof products !== 'undefined') {
-		discovery.promo[this.promoType] = _.map(products, (product) => {
+	const promoTypeData = _.chain(discovery).get(`promo.${promoType}`);
+
+	if (!promoTypeData.isEmpty().value()) {
+		const { products } = promoTypeData.value();
+
+		discovery.promo[promoType].products = _.map(products, (product) => {
 			const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: product.product_id }) : false;
 			const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: product.product_id }) : false;
 			if (lovelistData) {
@@ -182,6 +183,7 @@ const mapStateToProps = (state) => {
 			};
 		});
 	}
+	
 	return {
 		discovery: {
 			...discovery,
@@ -194,17 +196,10 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-	const { dispatch, cookies, match, home } = props;
-	const filtr = home.segmen.filter((obj) => {
-		return obj.key === home.activeSegment;
-	});
-
-	const query = filtr && filtr[0] ? { segment_id: filtr[0].id } : {};
-
+	const { dispatch, cookies, match, location } = props;
 	await dispatch(actions.promoAction({
 		token: cookies.get('user.token'),
-		promoType: match.params.type,
-		query
+		promoType: `${match.params.type}${location.search}`
 	}));
 };
 

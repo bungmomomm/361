@@ -87,6 +87,7 @@
     "dotenv-webpack": "^1.5.4",
     "es6-promise": "^4.2.4",
     "express": "4.15.3",
+    "formsy-react": "^1.1.4",
     "google-maps-react": "^1.1.2",
     "html-minifier": "3.5.2",
     "iso8601": "^1.1.1",

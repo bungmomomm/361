@@ -61,16 +61,18 @@ const UserRegistered = loadable(() => import('@/containers/Mobile/Users/Register
 const UserRegisteredPhoneValidation = loadable(() => import('@/containers/Mobile/Users/Register/registeredPhoneValidation'), defaultOptions);
 const UserProfile = loadable(() => import('@/containers/Mobile/Users/Profile'), defaultOptions);
 const UserProfileEdit = loadable(() => import('@/containers/Mobile/Users/Profile/edit'), defaultOptions);
-const UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'), defaultOptions);
-const UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'), defaultOptions);
-const UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'), defaultOptions);
-const UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'), defaultOptions);
+// const UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'), defaultOptions);
+// const UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'), defaultOptions);
+// const UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'), defaultOptions);
+// const UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'), defaultOptions);
 const MyOrder = loadable(() => import('@/containers/Mobile/Users/Profile/myOrder'), defaultOptions);
 const MyOrderDetail = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderDetail'), defaultOptions);
 const MyOrderTracking = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderTracking'), defaultOptions);
 const MyOrderConfirm = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderConfirm'), defaultOptions);
 const CreditCard = loadable(() => import('@/containers/Mobile/Users/Profile/creditCard'), defaultOptions);
-
+const Address = loadable(() => import('@/containers/Mobile/Users/Address'), defaultOptions);
+const AddAddress = loadable(() => import('@/containers/Mobile/Users/Address/add'), defaultOptions);
+const EditAddress = loadable(() => import('@/containers/Mobile/Users/Address/edit'), defaultOptions);
 
 // promo
 const Promo = loadable(() => import('@/containers/Mobile/Discovery/Promo'), defaultOptions);
@@ -231,22 +233,22 @@ export default {
 			component: Seller,
 			exact: true
 		},
-		{
-			path: '/profile-edit-ovo',
-			component: UserProfileEditOVO
-		},
-		{
-			path: '/profile-edit-hp',
-			component: UserProfileEditHP
-		},
-		{
-			path: '/profile-edit-email',
-			component: UserProfileEditEmail
-		},
-		{
-			path: '/profile-edit-password',
-			component: UserProfileEditPassword
-		},
+		// {
+		// 	path: '/profile-edit-ovo',
+		// 	component: UserProfileEditOVO
+		// },
+		// {
+		// 	path: '/profile-edit-hp',
+		// 	component: UserProfileEditHP
+		// },
+		// {
+		// 	path: '/profile-edit-email',
+		// 	component: UserProfileEditEmail
+		// },
+		// {
+		// 	path: '/profile-edit-password',
+		// 	component: UserProfileEditPassword
+		// },
 		{
 			path: '/profile/my-order',
 			component: MyOrder,
@@ -267,6 +269,21 @@ export default {
 		{
 			path: '/profile-credit-card',
 			component: CreditCard
+		},
+		{
+			path: '/address',
+			exact: true,
+			component: Address,
+		},
+		{
+			path: '/address/add',
+			exact: true,
+			component: AddAddress,
+		},
+		{
+			path: '/address/edit/:id',
+			exact: true,
+			component: EditAddress,
 		},
 		{
 			path: '/*', // Page not found handling.

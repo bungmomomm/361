@@ -10,7 +10,7 @@ import {
 } from '@/utils';
 
 import { userSocialLogin, userSocialLoginWithRedirect } from './social-action';
-import { getMyOrder, getMyOrderDetail, updateMyOrdersCurrent } from './myOrder-action';
+import { checkMyOrders, getMyOrderDetail, updateMyOrdersCurrent, getMyOrderMore, cleanMyOrderData } from './myOrder-action';
 import { getTrackingInfo } from './tracking-action';
 
 const isSuccess = (response) => {
@@ -28,7 +28,7 @@ const userLogin = (token, email, password) => async (dispatch, getState) => {
 
 	dispatch(actions.userLogin());
 	const path = `${baseUrl}/auth/login`;
-	
+
 	const [err, response] = await to(request({
 		token,
 		method: 'POST',
@@ -113,9 +113,9 @@ const userOtp = (token, phone) => async (dispatch, getState) => {
 	const dataForOtp = {
 		hp_email: phone
 	};
-	
+
 	dispatch(actions.userOtp());
- 
+
 	const requestData = {
 		token,
 		path,
@@ -125,7 +125,7 @@ const userOtp = (token, phone) => async (dispatch, getState) => {
 	};
 
 	const [err, response] = await to(request(requestData));
-	
+
 	if (err) {
 		dispatch(actions.userOtpFail(err.data));
 		return Promise.reject(err);
@@ -133,7 +133,7 @@ const userOtp = (token, phone) => async (dispatch, getState) => {
 	console.log('out');
 	dispatch(actions.userOtpSuccess(response));
 	return Promise.resolve(response);
-	
+
 };
 
 const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
@@ -143,35 +143,29 @@ const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
-	const path = `${baseUrl}/auth/otp/validate`;
-
-	const dataForOtpValidate = {
-		hp_email: bodyData.phone,
-		pwd: base64.encode(bodyData.password),
-		fullname: bodyData.fullname,
-		otp: bodyData.otp
-	};
+	const path = `${baseUrl}/auth/otp/validate?action=register`;
 	
 	dispatch(actions.userOtpValidate());
-    
+	bodyData.pwd = base64.encode(bodyData.pwd);
+	
 	const requestData = {
 		token,
 		path,
 		method: 'POST',
 		fullpath: true,
-		body: dataForOtpValidate
+		body: bodyData
 	};
-    
+
 	const [err, response] = await to(request(requestData));
-	
+
 	if (err) {
 		dispatch(actions.userOtpValidateFail(err.data));
 		return Promise.reject(err);
 	}
-	
+
 	dispatch(actions.userOtpValidateSuccess(response));
 	return Promise.resolve(response);
- 
+
 };
 
 //  USER_REGISTER: undefined,
@@ -229,6 +223,7 @@ const userRegister = (token, bodyData) => async (dispatch, getState) => {
 const userGetProfile = (token) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+	// const baseUrl = 'https://private-2c527d-mmv4microservices.apiary-mock.com';
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
@@ -324,6 +319,60 @@ const refreshToken = (tokenRefresh, token) => async (dispatch, getState) => {
 // 	USER_GET_PROFILE_FAIL: (error) => ({ profile: { error } }),
 // 	USER_GET_PROFILE_SUCCESS: (userProfile) => ({ userProfile }),
 
+const userEditProfile = (token, data = []) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+	// const baseUrl = 'https://private-2c527d-mmv4microservices.apiary-mock.com';
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	const path = `${baseUrl}/me/edit`;
+
+	dispatch(actions.userEditProfile());
+	const [err, response] = await to(request({
+		token,
+		method: 'POST',
+		path,
+		fullpath: true,
+		body: data
+	}));
+
+	if (err) {
+		dispatch(actions.userEditProfileFail(err.response.data));
+		return Promise.reject(err.response.data);
+	}
+
+	dispatch(actions.userEditProfileSuccess(response.data.data));
+	return Promise.resolve(response.data.data);
+};
+
+const userValidateOvo = (token, data = []) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+	// const baseUrl = 'https://private-2c527d-mmv4microservices.apiary-mock.com';
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	const path = `${baseUrl}/ovo/validate`;
+
+	dispatch(actions.userValidateOvo());
+	const [err, response] = await to(request({
+		token,
+		method: 'POST',
+		path,
+		fullpath: true,
+		body: data
+	}));
+
+	if (err) {
+		dispatch(actions.userValidateOvoFail(err.response.data));
+		return Promise.reject(err.response.data);
+	}
+
+	dispatch(actions.userValidateOvoSuccess(response.data.data));
+	return Promise.resolve(response.data.data);
+};
+
 export default {
 	userSocialLoginWithRedirect,
 	userSocialLogin,
@@ -331,13 +380,17 @@ export default {
 	userAnonymous,
 	userNameChange,
 	userGetProfile,
+	userEditProfile,
+	userValidateOvo,
 	userRegister,
 	userForgotPassword,
 	userOtpValidate,
-	getMyOrder,
 	getMyOrderDetail,
 	updateMyOrdersCurrent,
 	userOtp,
 	getTrackingInfo,
+	getMyOrderMore,
+	cleanMyOrderData,
+	checkMyOrders,
 	refreshToken
 };
