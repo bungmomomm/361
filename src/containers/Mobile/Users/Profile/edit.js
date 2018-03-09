@@ -13,7 +13,7 @@ import Shared from '@/containers/Mobile/Shared';
 import Otp from '@/containers/Mobile/Shared/Otp';
 
 import EditEmail from './layouts/editEmail';
-import EditHp from './layouts/editHP';
+import EditHp from './layouts/editHp';
 import EditPassword from './layouts/editPassword';
 import EditOvo from './layouts/editOVO';
 
@@ -244,6 +244,16 @@ class UserProfileEdit extends Component {
 		}
 	}
 
+	successValidateOtp(message) {
+		this.setState({
+			layout: 'main',
+			formResult: {
+				status: 'success',
+				message: ''
+			}
+		});
+	}
+
 	renderHeader() {
 		const { isLoading } = this.props;
 		const { submittingForm } = this.state;
@@ -299,7 +309,7 @@ class UserProfileEdit extends Component {
 				</Notification>
 			);
 		}
-
+		
 		return null;
 	}
 
@@ -433,7 +443,7 @@ class UserProfileEdit extends Component {
 				</Level>
 			</div>
 		);
-
+		
 		const birthdayValue = moment(formData[this.BIRTHDAY_FIELD]).isValid() === true ? moment(formData[this.BIRTHDAY_FIELD]).format('YYYY-MM-DD') : '';
 		const birthdayField = (
 			<div className='margin--medium-v'>
@@ -540,7 +550,7 @@ class UserProfileEdit extends Component {
 				<Otp
 					phoneEmail={formData[this.HP_EMAIL_FIELD]}
 					onClickBack={(e, value) => this.switchLayoutHandler(e, this.PHONE_FIELD)}
-					onSuccess={(e, value) => this.switchLayoutHandler(e, 'main')}
+					onSuccess={(message) => this.successValidateOtp(message)}
 				/>
 			);
 			break;

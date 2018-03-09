@@ -127,12 +127,12 @@ const userOtp = (token, phone) => async (dispatch, getState) => {
 	const [err, response] = await to(request(requestData));
 
 	if (err) {
-		dispatch(actions.userOtpFail(err.data));
-		return Promise.reject(err);
+		dispatch(actions.userOtpFail(err.response.data));
+		return Promise.reject(err.response.data);
 	}
 	console.log('out');
-	dispatch(actions.userOtpSuccess(response));
-	return Promise.resolve(response);
+	dispatch(actions.userOtpSuccess(response.data.data));
+	return Promise.resolve(response.data.data);
 
 };
 
@@ -146,7 +146,10 @@ const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
 	const path = `${baseUrl}/auth/otp/validate?action=register`;
 	
 	dispatch(actions.userOtpValidate());
-	bodyData.pwd = base64.encode(bodyData.pwd);
+
+	if (bodyData.pwd !== undefined && bodyData.pwd.length > 0) {
+		bodyData.pwd = base64.encode(bodyData.pwd);
+	}
 	
 	const requestData = {
 		token,
@@ -159,12 +162,12 @@ const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
 	const [err, response] = await to(request(requestData));
 
 	if (err) {
-		dispatch(actions.userOtpValidateFail(err.data));
-		return Promise.reject(err);
+		dispatch(actions.userOtpValidateFail(err.response.data));
+		return Promise.reject(err.response.data);
 	}
 
-	dispatch(actions.userOtpValidateSuccess(response));
-	return Promise.resolve(response);
+	dispatch(actions.userOtpValidateSuccess(response.data.data));
+	return Promise.resolve(response.data.data);
 
 };
 
