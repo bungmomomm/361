@@ -11,10 +11,10 @@ import {
 	Input,
 	Spinner
 } from '@/components/mobile';
-import Love from '@/containers/Mobile/Shared/Widget/Love';
+import { Love } from '@/containers/Mobile/Widget';
 import stylesCatalog from './view.scss';
 
-class CatagloView extends Component {
+class CatalogView extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -96,4 +96,4 @@ class CatagloView extends Component {
 	}
 }
 
-export default CatagloView;
+export default CatalogView;

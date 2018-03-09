@@ -1,14 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-import { Navigation, Svg, Tabs, Header, Page, Button, Level, Image, Input, Card } from '@/components/mobile';
+import { Navigation, 
+	Svg, 
+	Tabs, 
+	Header, 
+	Page, 
+	Button
+} from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import { actions } from '@/state/v4/Seller';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
-import Filter from '@/containers/Mobile/Shared/Filter';
-import Love from '@/containers/Mobile/Shared/Widget/Love';
-import Sort from '@/containers/Mobile/Shared/Sort';
+import { 
+	Filter,
+	Sort 
+} from '@/containers/Mobile/Widget';
 import { withRouter } from 'react-router-dom';
 import stylesCatalog from '../Category/Catalog/catalog.scss';
 import styles from './styles.scss';
@@ -19,6 +26,12 @@ import _ from 'lodash';
 import queryString from 'query-string';
 import SellerProfile from './components/SellerProfile';
 import Helmet from 'react-helmet';
+import {
+	CatalogView,
+	GridView,
+	SmallGridView
+} from '@/containers/Mobile/Discovery/View';
+
 
 class Seller extends Component {
 	constructor(props) {
@@ -238,89 +251,34 @@ class Seller extends Component {
 	};
 
 	loadProducts = () => {
-		const { seller: { data: { products } } } = this.props;
+		const { comments, scroller, seller: { data: { products } } } = this.props;
+		let listView;
+		switch (this.state.listTypeState.type) {
+		case 'list':
+			listView = (
+				<CatalogView comments={comments} loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={products} />
+			);
+			break;
+		case 'grid':
+			listView = (
+				<GridView loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={products} />
+			);
+			break;
+		case 'small':
+			listView = (
+				<SmallGridView loading={scroller.loading} products={products} />
+			);
+			break;
+		default:
+			listView = null;
+			break;
+		}
 
 		return (
 			<div className={styles.cardContainer}>
-				{
-					products.map((product, index) =>
-						this.renderList(product, index)
-					)
-				}
+				{listView}
 			</div>
 		);
-	};
-
-	renderList = (product, index) => {
-		if (product) {
-			const renderBlockComment = (
-				<div className={stylesCatalog.commentBlock}>
-					<Button>View 38 comments</Button>
-					<Level>
-						<Level.Left><div style={{ marginRight: '10px' }}><Image avatar width={25} height={25} local src='temp/pp.jpg' /></div></Level.Left>
-						<Level.Item>
-							<Input color='white' placeholder='Write comment' />
-						</Level.Item>
-					</Level>
-				</div>
-			);
-			switch (this.state.listTypeState.type) {
-			case 'list':
-				return (
-					<div key={index} className={stylesCatalog.cardCatalog}>
-						<Card.Catalog
-							images={product.images}
-							productTitle={product.product_title}
-							brandName={product.brand.name}
-							pricing={product.pricing}
-							linkToPdp={product.url}
-							love={(
-								<Love
-									status={product.lovelistStatus}
-									data={product.product_id}
-									total={product.lovelistTotal}
-									onNeedLogin={() => this.forceLoginNow()}
-									showNumber
-								/>
-							)}
-						/>
-						{renderBlockComment}
-					</div>
-				);
-			case 'grid':
-				return (
-					<Card.CatalogGrid
-						key={index}
-						images={product.images}
-						productTitle={product.product_title}
-						brandName={product.brand.name}
-						pricing={product.pricing}
-						linkToPdp={product.url}
-						love={(
-							<Love
-								status={product.lovelistStatus}
-								data={product.product_id}
-								total={product.lovelistTotal}
-								onNeedLogin={() => this.forceLoginNow()}
-							/>
-						)}
-					/>
-				);
-			case 'small':
-				return (
-					<Card.CatalogSmall
-						key={index}
-						images={product.images}
-						pricing={product.pricing}
-						linkToPdp={product.url}
-					/>
-				);
-			default:
-				return null;
-			}
-		} else {
-			return null;
-		}
 	};
 
 	renderHelmet = () => {

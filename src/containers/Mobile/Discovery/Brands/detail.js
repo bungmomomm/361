@@ -16,14 +16,12 @@ import {
 import styles from './brands.scss';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import Filter from '@/containers/Mobile/Shared/Filter';
+import { Filter, Love, Sort } from '@/containers/Mobile/Widget';
 import { actions as brandAction } from '@/state/v4/Brand';
 import Shared from '@/containers/Mobile/Shared';
 import stylesCatalog from '@/containers/Mobile/Discovery/Category/Catalog/catalog.scss';
 import queryString from 'query-string';
 import { urlBuilder, renderIf } from '@/utils';
-import Sort from '@/containers/Mobile/Shared/Sort';
-import Love from '@/containers/Mobile/Shared/Widget/Love';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import Share from '@/components/mobile/Share';
 import Footer from '@/containers/Mobile/Shared/footer';

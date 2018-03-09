@@ -20,7 +20,9 @@ import queryString from 'query-string';
 import validator from 'validator';
 import util from 'util';
 import _ from 'lodash';
-import LoginWidget from '@/containers/Mobile/Shared/Widget/Login';
+import { 
+	Login as LoginWidget 
+} from '@/containers/Mobile/Widget';
 import Helmet from 'react-helmet';
 import Recaptcha from 'react-recaptcha';
 

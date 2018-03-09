@@ -5,7 +5,9 @@ import { actions as users } from '@/state/v4/User';
 import { Link, Redirect } from 'react-router-dom';
 import { Header, Page, Button, Input, Tabs, Svg, Notification } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
-import LoginWidget from '@/containers/Mobile/Shared/Widget/Login';
+import {
+	Login as LoginWidget
+} from '@/containers/Mobile/Widget';
 import { setUserCookie, renderIf } from '@/utils';
 import styles from '../user.scss';
 import _ from 'lodash';
