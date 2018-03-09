@@ -27,7 +27,7 @@ class Action extends PureComponent {
 							this.props.hasApply && (
 								<Button className={styles.item} onClick={onApply}>
 									<Svg src='ico_check.svg' />
-									Apply
+									Terapkan
 								</Button>
 							)
 						}

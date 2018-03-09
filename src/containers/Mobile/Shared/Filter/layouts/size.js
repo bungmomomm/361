@@ -4,43 +4,14 @@ import Action from './action';
 import _ from 'lodash';
 import renderIf from '@/utils/renderIf';
 import Divider from '@/components/mobile/Divider';
-
-const updateChilds = (childs, value) => {
-	childs = _.map(childs, (facetData) => {
-		if (facetData.facetrange === value.facetrange) {
-			facetData.is_selected = facetData.is_selected === 1 ? 0 : 1;
-		}
-		if (facetData.childs && facetData.childs.length > 0) {
-			facetData.childs = updateChilds(facetData.childs, value);
-		}
-		return facetData;
-	});
-
-	return childs;
-};
-
-const getSelected = (childs, source = false) => {
-	if (!source) {
-		source = [];
-	}
-	_.forEach(childs, (facetData) => {
-		if (facetData.is_selected === 1) {
-			source.push(facetData);
-		}
-
-		if (facetData.childs && facetData.childs.length > 0) {
-			source = getSelected(facetData.childs, source);
-		}
-	});
-
-	return source;
-};
+import utils from './utils';
 
 class Size extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
-			data: props.data || []
+			data: props.data || [],
+			resetData: props.data ? _.cloneDeep(props.data) : []
 		};
 	}
 
@@ -48,15 +19,24 @@ class Size extends PureComponent {
 		const { data } = this.state;
 		
 		this.setState({
-			data: updateChilds(data, value)
+			data: utils.updateChilds(data, value, {
+				is_selected: value.is_selected === 1 ? 0 : 1
+			})
 		});
 	}
 
 	onApply(e) {
 		const { data } = this.state;
 		const { onApply } = this.props;
-		const result = getSelected(data);
+		const result = utils.getSelected(data);
 		onApply(e, result);
+	}
+
+	reset() {
+		const { data } = this.state;
+		this.setState({
+			data: utils.resetChilds(data)
+		});
 	}
 	
 	render() {
@@ -112,7 +92,7 @@ class Size extends PureComponent {
 					</List>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action hasApply onApply={(e) => this.onApply(e)} />
+				<Action hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}

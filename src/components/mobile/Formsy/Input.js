@@ -19,6 +19,8 @@ class Input extends Component {
 		if (typeof this.props.setValue === 'function') {
 			this.props.setValue(event.currentTarget.value);
 		}
+
+		if (this.props.onChange) this.props.onChange(event);
 	}
 
 	showLabel() {

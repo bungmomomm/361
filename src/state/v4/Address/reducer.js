@@ -7,12 +7,15 @@ const initialState = {
 	},
 	data: {
 		provinces: [],
+		cities: [],
 		districts: []
 	},
 	options: {
 		provinces: [],
+		cities: [],
 		districts: []
-	}
+	},
+	edit: {}
 };
 
 const { address } = createActions(

@@ -1,19 +1,19 @@
 @import '../../../../styles/mobile/variables';
 @import '../../../../styles/mobile/mixins';
 .filterNavigation {
-	position: absolute;
-	width: 100%;
-	top: 100%;
-	z-index: 11;
+    position: absolute;
+    width: 100%;
+    top: 100%;
+    z-index: 11;
 }
 
 .filterNavigationFixed {
-	position: fixed;
-	top: 115px;
-	z-index: 1;
-	width: 100%;
-	height: 100%;
-	bottom: 0;
-	background: rgba(128, 128, 128, 0.7);
-	max-width: 480px;
+    position: fixed;
+    top: 100px;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    bottom: 0;
+    background: rgba(128, 128, 128, 0.7);
+    max-width: 480px;
 }

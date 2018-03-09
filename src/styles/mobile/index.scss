@@ -51,7 +51,7 @@
 		display: flex;
 		flex-flow: column;
 		flex: 1 0 auto;
-		overflow-y: scroll;
+		overflow-y: auto;
 		color: color(--primary);
 		line-height: 20px;
 		background-color: #fff;

@@ -3,25 +3,6 @@ import { Header, Page, Svg, List, Button } from '@/components/mobile';
 import _ from 'lodash';
 import Action from './action';
 
-// DUMMY DATA
-// const DUMMY_RESULT_FILTER = {
-// 	data: [{
-// 		name: 'Kategori',
-// 		params: ['Sneakers'],
-// 	}, {
-// 		name: 'Style',
-// 		params: ['Casual'],
-// 	}, {
-// 		name: 'Brand',
-// 		params: ['3second', 'Arez', 'Cole', 'D&G', 'Nike', 'Hush Puppies'],
-// 	}, {
-// 		name: 'Warna',
-// 		params: ['Black', 'Navy', 'Pink'],
-// 	}]
-// };
-
-// END DUMMY DATA
-
 class Result extends PureComponent {
 
 	render() {
@@ -46,7 +27,7 @@ class Result extends PureComponent {
 										<List.Content style={{ minHeight: '50px' }}>
 											<div>
 												<div>{facet.title}</div>
-												<span className='font-color--secondary font-small text-elipsis' style={{ width: '200px' }}>{_.map(selected[facet.id], (s) => s.facetdisplay).join(',')}</span>
+												<span className='font-color--primary-ext-2 font-small text-elipsis' style={{ width: '200px' }}>{_.map(selected[facet.id], (s) => s.facetdisplay).join(', ')}</span>
 											</div>
 										</List.Content>
 									</Button>

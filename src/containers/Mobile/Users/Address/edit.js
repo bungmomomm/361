@@ -8,6 +8,7 @@ import styles from './style.scss';
 import { Form, Input } from '@/components/mobile/Formsy';
 import { to } from 'await-to-js';
 import { Promise } from 'es6-promise';
+import _ from 'lodash';
 
 class Address extends Component {
 
@@ -20,8 +21,8 @@ class Address extends Component {
 		},
 		disabled: {
 			province: false,
-			city: true,
-			district: true
+			city: false,
+			district: false
 		},
 		selected: {
 			province: '',
@@ -30,10 +31,55 @@ class Address extends Component {
 		},
 		type: 'shipping',
 		submitting: false,
-		default: 0
+		default: 0,
+		edit: {}
 	};
 
-	onChange = (v, which = 'province') => {
+	componentWillReceiveProps(nextProps) {
+		if (this.props.address.edit !== nextProps.address.edit) {
+			(async () => {
+				const { dispatch, cookies, address, address: { edit } } = nextProps;
+				const selected = { };
+
+				selected.province = address.data.provinces.filter((obj) => {
+					return obj.name === edit.province;
+				});
+
+				if (selected.province.length) {
+					const cities = await dispatch(actions.getCity(cookies.get('user.token'), { province_id: selected.province[0].id }));
+					selected.city = cities.data.data.cities.filter((obj) => {
+						return obj.name === edit.city;
+					});
+
+					if (selected.city.length) {
+						const districts = await dispatch(actions.getDistrict(cookies.get('user.token'), { city_id: selected.city[0].id }));
+						selected.district = districts.data.data.districts.filter((obj) => {
+							return obj.name === edit.district;
+						});
+					}
+				}
+
+				this.setState({
+					...this.state,
+					edit: address.edit,
+					selected: {
+						province: selected.province.length ? selected.province[0].id : '',
+						city: selected.city.length ? selected.city[0].id : '',
+						district: selected.district.length ? selected.district[0].id : '',
+					},
+					default: edit.fg_default
+				});
+
+			})();
+		}
+	}
+
+	componentWillUnmount() {
+		const { dispatch } = this.props;
+		dispatch(actions.mutateState({ edit: {} }));
+	}
+
+	onSelectChange = (v, which = 'province') => {
 		this.setState({
 			selected: {
 				...this.state.selected,
@@ -89,7 +135,7 @@ class Address extends Component {
 			if (v) {
 				(async () => {
 					const { dispatch, cookies } = this.props;
-					const [err, resp] = await to(dispatch(actions.getDistrict(cookies.get('user.token'), { city_id: v })));
+					const [err, resp] = await to(dispatch(actions.getDistrict(cookies.get('user.token'), { offset: 30 })));
 
 					if (err) {
 						return Promise.reject(err);
@@ -106,6 +152,15 @@ class Address extends Component {
 				})();
 			}
 		}
+	};
+
+	onTextChange = (e) => {
+		this.setState({
+			edit: {
+				...this.state.edit,
+				[e.currentTarget.name]: e.currentTarget.value
+			}
+		});
 	};
 
 	onSubmit = () => {
@@ -141,12 +196,13 @@ class Address extends Component {
 			is_supported_pin_point: 0,
 			latitude: '',
 			longitude: '',
-			default: this.state.default
+			default: this.state.default,
+			address_id: this.state.edit.id
 		};
 
 		const { dispatch, cookies, history } = this.props;
 		this.setState({ submitting: true });
-		await dispatch(actions.addAddress(cookies.get('user.token'), model));
+		await dispatch(actions.editAddress(cookies.get('user.token'), model));
 
 		history.push('/address');
 	};
@@ -178,7 +234,7 @@ class Address extends Component {
 					onInvalid={this.disableButton}
 					ref={(form) => { this.formsy = form; }}
 				>
-					<div className='margin--medium'>
+					<div className='margin--medium' style={{ marginTop: '50px' }}>
 						<label className={styles.label} htmlFor='default_address'>Jadikan Alamat Utama</label>
 						<div style={{ marginTop: '10px' }}>
 							<Radio
@@ -221,6 +277,8 @@ class Address extends Component {
 							disabled={this.state.submitting}
 							required
 							hint='This is hint'
+							value={this.state.edit.address_label || ''}
+							onChange={this.onTextChange}
 						/>
 					</div>
 
@@ -235,6 +293,8 @@ class Address extends Component {
 							validationError='Invalid character supplied'
 							disabled={this.state.submitting}
 							required
+							value={this.state.edit.fullname || ''}
+							onChange={this.onTextChange}
 						/>
 					</div>
 
@@ -251,6 +311,8 @@ class Address extends Component {
 							validationError='Invalid character supplied'
 							disabled={this.state.submitting}
 							required
+							value={this.state.edit.phone || ''}
+							onChange={this.onTextChange}
 						/>
 					</div>
 
@@ -279,7 +341,7 @@ class Address extends Component {
 							label='Kota, Provinsi *'
 							name='province'
 							options={provinces}
-							onChange={this.onChange}
+							onChange={this.onSelectChange}
 							onClose={() => this.toggleShow()}
 							defaultValue={selected.province.length ? selected.province[0].value : ''}
 						/>
@@ -321,7 +383,7 @@ class Address extends Component {
 							label='Kota, Kabupaten *'
 							name='city'
 							options={cities}
-							onChange={(v) => this.onChange(v, 'city')}
+							onChange={(v) => this.onSelectChange(v, 'city')}
 							onClose={() => this.toggleShow('city')}
 							defaultValue={selected.city.length ? selected.city[0].value : ''}
 						/>
@@ -363,7 +425,7 @@ class Address extends Component {
 							label='Kecamatan *'
 							name='district'
 							options={districts}
-							onChange={(v) => this.onChange(v, 'district')}
+							onChange={(v) => this.onSelectChange(v, 'district')}
 							onClose={() => this.toggleShow('district')}
 							defaultValue={selected.district.length ? selected.district[0].value : ''}
 						/>
@@ -393,6 +455,8 @@ class Address extends Component {
 							validationError='Invalid character supplied'
 							disabled={this.state.submitting}
 							required
+							value={this.state.edit.zipcode || ''}
+							onChange={this.onTextChange}
 						/>
 					</div>
 
@@ -406,6 +470,8 @@ class Address extends Component {
 							validationError='This field is required'
 							disabled={this.state.submitting}
 							required
+							value={this.state.edit.address || ''}
+							onChange={this.onTextChange}
 						/>
 					</div>
 				</Form>
@@ -421,7 +487,7 @@ class Address extends Component {
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</Button>
 			),
-			center: 'Alamat Baru',
+			center: 'Ubah Alamat',
 			right: (
 				<Button onClick={this.onSubmit} disabled={(!this.state.allowSubmit || this.state.submitting)}>
 					SIMPAN
@@ -444,13 +510,29 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (props) => {
-	const { dispatch, cookies, history } = props;
+const doAfterAnonymous = async (props) => {
+	const { dispatch, cookies, history, match: { params } } = props;
 	if (!cookies.get('isLogin')) {
 		history.push('/login');
 	}
 
-	dispatch(actions.getProvinces(cookies.get('user.token')));
+	await dispatch(actions.getProvinces(cookies.get('user.token')));
+	const address = await dispatch(actions.getAddress(cookies.get('user.token')));
+	const shipping = _.chain(address).get('data.data.shipping').value();
+
+	if (!shipping) {
+		return Promise.reject(new Error('Invalid, address not found.'));
+	}
+
+	const edit = shipping.filter((obj) => {
+		return parseInt(obj.id, 10) === parseInt(params.id, 10);
+	});
+
+	if (!edit.length) {
+		return Promise.reject(new Error('Invalid, address not found.'));
+	}
+
+	return dispatch(actions.mutateState({ edit: edit[0] }));
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Address, doAfterAnonymous)));
