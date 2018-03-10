@@ -1,4 +1,4 @@
-
+import Loading from './loading';
 import loadable from 'loadable-components';
 
 /**
@@ -14,261 +14,199 @@ import loadable from 'loadable-components';
  */
 import('@/styles/mobile');
 
-const Home = loadable(() => import('@/containers/Mobile/Home'));
-
-const Page404 = loadable(() => import('@/containers/Mobile/404'));
-
-// Service Discovery
-const Search = loadable(() => import('@/containers/Mobile/Discovery/Search'));
-const SearchResults = loadable(() => import('@/containers/Mobile/Discovery/SearchResults'));
-const SearchNotFound = loadable(() => import('@/containers/Mobile/Discovery/SearchNotFound'));
-
-const Lovelist = loadable(() => import('@/containers/Mobile/Discovery/Lovelist'));
-const LovelistLogin = loadable(() => import('@/containers/Mobile/Discovery/Lovelist/login'));
-
-const Category = loadable(() => import('@/containers/Mobile/Discovery/Category'));
-const SubCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'));
-const ProductCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Product'));
-const CatalogCategory = loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'));
-
-const Brands = loadable(() => import('@/containers/Mobile/Discovery/Brands'));
-const BrandsDetail = loadable(() => import('@/containers/Mobile/Discovery/Brands/detail'));
-
-const Seller = loadable(() => import('@/containers/Mobile/Discovery/Seller'));
-
-const Hashtags = loadable(() => import('@/containers/Mobile/Discovery/Hashtags'));
-const HashtagsDetails = loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'));
-
-const SampleFilters = loadable(() => import('@/containers/Mobile/SampleFilters')); // we used this ?
-
-
-// PDP
-const Products = loadable(() => import('@/containers/Mobile/Details/Products'));
-const ProductsComments = loadable(() => import('@/containers/Mobile/Details/Products/Comments'));
-const ProductsGuide = loadable(() => import('@/containers/Mobile/Details/Products/Guide'));
-
-// Shopping-bag
-const Cart = loadable(() => import('@/containers/Mobile/Cart'));
-const CartEmpty = loadable(() => import('@/containers/Mobile/Cart/empty'));
-
-// Users
-const UserLogin = loadable(() => import('@/containers/Mobile/Users/Login'));
-const ForgotPassword = loadable(() => import('@/containers/Mobile/Users/Login/forgotPassword'));
-const UserRegister = loadable(() => import('@/containers/Mobile/Users/Register'));
-const UserRegistered = loadable(() => import('@/containers/Mobile/Users/Register/registered'));
-const UserRegisteredPhoneValidation = loadable(() => import('@/containers/Mobile/Users/Register/registeredPhoneValidation'));
-const UserProfile = loadable(() => import('@/containers/Mobile/Users/Profile'));
-const UserProfileEdit = loadable(() => import('@/containers/Mobile/Users/Profile/edit'));
-// const UserProfileEditOVO = loadable(() => import('@/containers/Mobile/Users/Profile/editOVO'));
-// const UserProfileEditHP = loadable(() => import('@/containers/Mobile/Users/Profile/editHP'));
-// const UserProfileEditEmail = loadable(() => import('@/containers/Mobile/Users/Profile/editEmail'));
-// const UserProfileEditPassword = loadable(() => import('@/containers/Mobile/Users/Profile/editPassword'));
-const MyOrder = loadable(() => import('@/containers/Mobile/Users/Profile/myOrder'));
-const MyOrderDetail = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderDetail'));
-const MyOrderTracking = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderTracking'));
-const MyOrderConfirm = loadable(() => import('@/containers/Mobile/Users/Profile/myOrderConfirm'));
-const CreditCard = loadable(() => import('@/containers/Mobile/Users/Profile/creditCard'));
-
-
-// promo
-const Promo = loadable(() => import('@/containers/Mobile/Discovery/Promo'));
-const PromoList = loadable(() => import('@/containers/Mobile/Discovery/Promo/PromoList'));
+const defaultOptions = { LoadingComponent: Loading };
 
 export default {
 	parent: [
 		{
 			path: '/',
-			component: Home,
+			component: loadable(() => import('@/containers/Mobile/Home'), defaultOptions),
 			exact: true
 		},
 		{
 			path: '/mau-gaya-itu-gampang',
-			component: Hashtags,
+			component: loadable(() => import('@/containers/Mobile/Discovery/Hashtags'), defaultOptions),
 			exact: true
 		},
 		{
 			path: '/mau-gaya-itu-gampang/:campaign_id/:post_id',
-			component: HashtagsDetails
+			component: loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'), defaultOptions)
 		},
 		{
 			path: '/search',
-			component: Search
+			component: loadable(() => import('@/containers/Mobile/Discovery/Search'), defaultOptions)
 		},
 		{
 			path: '/products',
-			component: SearchResults
+			component: loadable(() => import('@/containers/Mobile/Discovery/SearchResults'), defaultOptions)
 		},
 		{
 			path: '/searchnotfound', // This path only for displaying search not found SearchNotFound Container
-			component: SearchNotFound
+			component: loadable(() => import('@/containers/Mobile/Discovery/SearchNotFound'), defaultOptions)
 		},
 		{
 			path: '/sub-category/',
-			component: SubCategory,
+			component: loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'), defaultOptions),
 		},
 		{
 			path: '/category/',
-			component: Category,
+			component: loadable(() => import('@/containers/Mobile/Discovery/Category'), defaultOptions),
 		},
 		{
 			path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9-]+)',
-			component: ProductCategory,
+			component: loadable(() => import('@/containers/Mobile/Discovery/Category/Product'), defaultOptions),
 			exact: true
 		},
 		{
 			path: '/p-:categoryId:([0-9]+)}/:categoryTitle([a-zA-Z0-9-]+):brandTitle(/[a-zA-Z0-9-]+)?',
-			component: ProductCategory
+			component: loadable(() => import('@/containers/Mobile/Discovery/Category/Product'), defaultOptions)
 		},
 		{
 			path: '/subcategory/:categoryId',
-			component: SubCategory,
+			component: loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'), defaultOptions),
 		},
 		{
 			path: '/brands',
-			component: Brands,
+			component: loadable(() => import('@/containers/Mobile/Discovery/Brands'), defaultOptions),
 			exact: true
 		},
 		{
 			path: '/brand/:brandId/:brandTitle',
-			component: BrandsDetail,
+			component: loadable(() => import('@/containers/Mobile/Discovery/Brands/detail'), defaultOptions),
 			exact: true
 		},
 		{
 			path: '/catalogcategory',
-			component: CatalogCategory
-		},
-		{
-			path: '/samplefilters',
-			component: SampleFilters
+			component: loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'), defaultOptions)
 		},
 		{
 			path: '/lovelist',
-			component: Lovelist,
+			component: loadable(() => import('@/containers/Mobile/Discovery/Lovelist'), defaultOptions),
 		},
 		{
 			path: '/product/comments/:id',
-			component: ProductsComments,
+			component: loadable(() => import('@/containers/Mobile/Details/Products/Comments'), defaultOptions),
 			exact: true
-		}, {
+		}, 
+		{
 			path: '/product/guide',
-			component: ProductsGuide,
+			component: loadable(() => import('@/containers/Mobile/Details/Products/Guide'), defaultOptions),
 			exact: true
 		}, {
 			path: '/([^/]+)-:id([0-9]+).html',
-			component: Products,
+			component: loadable(() => import('@/containers/Mobile/Details/Products'), defaultOptions),
 			exact: true
 		},
 		{
 			path: '/login',
-			component: UserLogin,
+			component: loadable(() => import('@/containers/Mobile/Users/Login'), defaultOptions),
 			exact: true
 		},
 		{
 			path: '/register',
-			component: UserRegister,
+			component: loadable(() => import('@/containers/Mobile/Users/Register'), defaultOptions),
 			exact: true
 		},
 		{
 			path: '/registered',
-			component: UserRegistered,
+			component: loadable(() => import('@/containers/Mobile/Users/Register/registered'), defaultOptions),
 			exact: true
 		},
 		{
 			path: '/phoneValidation',
-			component: UserRegisteredPhoneValidation,
+			component: loadable(() => import('@/containers/Mobile/Users/Register/registeredPhoneValidation'), defaultOptions),
 			exact: true
 		},
 		{
 			path: '/forgot-password',
-			component: ForgotPassword,
+			component: loadable(() => import('@/containers/Mobile/Users/Login/forgotPassword'), defaultOptions),
 			exact: true
 		},
 		{
 			path: '/promo',
-			component: PromoList,
+			component: loadable(() => import('@/containers/Mobile/Discovery/Promo/PromoList'), defaultOptions),
 			exact: true
 		},
 		{
 			path: '/promo/:type',
-			component: Promo
+			component: loadable(() => import('@/containers/Mobile/Discovery/Promo'), defaultOptions)
 		},
 		{
 			path: '/profile',
 			exact: true,
-			component: UserProfile
+			component: loadable(() => import('@/containers/Mobile/Users/Profile'), defaultOptions)
 		},
 		{
 			path: '/profile-edit',
 			exact: true,
-			component: UserProfileEdit,
+			component: loadable(() => import('@/containers/Mobile/Users/Profile/edit'), defaultOptions),
 		},
 		{
 			path: '/lovelist',
-			component: Lovelist
+			component: loadable(() => import('@/containers/Mobile/Discovery/Lovelist'), defaultOptions)
 		},
 		{
 			path: '/lovelist-login',
-			component: LovelistLogin
+			component: loadable(() => import('@/containers/Mobile/Discovery/Lovelist/login'), defaultOptions)
 		},
 		{
 			path: '/cart',
 			exact: true,
-			component: Cart
+			component: loadable(() => import('@/containers/Mobile/Cart'), defaultOptions)
 		},
 		{
 			path: '/cart/empty',
 			exact: true,
-			component: CartEmpty
+			component: loadable(() => import('@/containers/Mobile/Cart/empty'), defaultOptions)
 		},
 		{
 			path: '/lovelist',
-			component: Lovelist,
+			component: loadable(() => import('@/containers/Mobile/Discovery/Lovelist'), defaultOptions),
 		},
 		{
 			path: '/store/:store_id/:store_name',
-			component: Seller,
+			component: loadable(() => import('@/containers/Mobile/Discovery/Seller'), defaultOptions),
 			exact: true
 		},
-		// {
-		// 	path: '/profile-edit-ovo',
-		// 	component: UserProfileEditOVO
-		// },
-		// {
-		// 	path: '/profile-edit-hp',
-		// 	component: UserProfileEditHP
-		// },
-		// {
-		// 	path: '/profile-edit-email',
-		// 	component: UserProfileEditEmail
-		// },
-		// {
-		// 	path: '/profile-edit-password',
-		// 	component: UserProfileEditPassword
-		// },
 		{
 			path: '/profile/my-order',
-			component: MyOrder,
+			component: loadable(() => import('@/containers/Mobile/Users/Profile/myOrder'), defaultOptions),
 			exact: true,
 		},
 		{
 			path: '/profile/my-order/:so_number([a-zA-Z0-9-]+)',
-			component: MyOrderDetail
+			component: loadable(() => import('@/containers/Mobile/Users/Profile/myOrderDetail'), defaultOptions)
 		},
 		{
 			path: '/track/:provider/:so_number([a-zA-Z0-9-]+)',
-			component: MyOrderTracking
+			component: loadable(() => import('@/containers/Mobile/Users/Profile/myOrderTracking'), defaultOptions)
 		},
 		{
 			path: '/profile-my-order-confirm',
-			component: MyOrderConfirm
+			component: loadable(() => import('@/containers/Mobile/Users/Profile/myOrderConfirm'), defaultOptions)
 		},
 		{
 			path: '/profile-credit-card',
-			component: CreditCard
+			component: loadable(() => import('@/containers/Mobile/Users/Profile/creditCard'), defaultOptions)
+		},
+		{
+			path: '/address',
+			exact: true,
+			component: loadable(() => import('@/containers/Mobile/Users/Address'), defaultOptions),
+		},
+		{
+			path: '/address/add',
+			exact: true,
+			component: loadable(() => import('@/containers/Mobile/Users/Address/add'), defaultOptions),
+		},
+		{
+			path: '/address/edit/:id',
+			exact: true,
+			component: loadable(() => import('@/containers/Mobile/Users/Address/edit'), defaultOptions),
 		},
 		{
 			path: '/*', // Page not found handling.
-			component: Page404,
+			component: loadable(() => import('@/containers/Mobile/404'), defaultOptions),
 			exact: true
 		},
 	]

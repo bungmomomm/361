@@ -10,9 +10,7 @@ import Shared from '@/containers/Mobile/Shared';
 import SearchNotFound from '@/containers/Mobile/Discovery/SearchNotFound';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-import Filter from '@/containers/Mobile/Shared/Filter';
-import Love from '@/containers/Mobile/Shared/Widget/Love';
-import Sort from '@/containers/Mobile/Shared/Sort';
+import { Filter, Love, Sort } from '@/containers/Mobile/Widget';
 
 import {
 	Header,
@@ -211,6 +209,7 @@ class SearchResults extends Component {
 
 			return (
 				<Page>
+					{this.renderForeverBanner()}
 					<div className={stylesSearch.container} >
 						<div className={stylesCatalog.cardContainer}>
 							{productList}
@@ -245,8 +244,6 @@ class SearchResults extends Component {
 			<div style={this.props.style}>
 				{this.renderSearch()}
 				{this.renderHeader()}
-				{this.renderTabs()}
-				{this.renderForeverBanner()}
 				<Navigation scroll={this.props.scroll} />
 			</div>
 		);
@@ -388,6 +385,7 @@ class SearchResults extends Component {
 
 		return (
 			<Header.SearchResult
+				rows={this.renderTabs()}
 				back={back}
 				value={this.getKeyword() || ''}
 			/>
@@ -407,9 +405,7 @@ class SearchResults extends Component {
 						<Sort shown={showSort} isSticky sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
 					)}
 					<Tabs
-						className={stylesCatalog.filterBlockContainer}
 						type='segment'
-						isSticky
 						variants={[
 							{
 								id: 'sort',

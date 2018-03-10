@@ -9,22 +9,21 @@ import to from 'await-to-js';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-import Filter from '@/containers/Mobile/Shared/Filter';
-import Sort from '@/containers/Mobile/Shared/Sort';
-import Love from '@/containers/Mobile/Shared/Widget/Love';
+import { Filter, Sort } from '@/containers/Mobile/Widget';
+
+import { 
+	CatalogView, 
+	GridView, 
+	SmallGridView 
+} from '@/containers/Mobile/Discovery/View';
 
 import {
 	Header,
 	Page,
-	Card,
 	Svg,
 	Tabs,
-	Button,
-	Level,
-	Input,
 	Navigation,
 	Spinner,
-	Comment
 } from '@/components/mobile';
 
 import { actions as pcpActions } from '@/state/v4/ProductCategory';
@@ -150,7 +149,7 @@ class Product extends Component {
 
 	forceLoginNow() {
 		const { history } = this.props;
-		history.push(`/login?redirect_uri=${location.pathname}`);
+		history.push(`/login?redirect_uri=${encodeURIComponent(location.pathname + location.search)}`);
 	}
 
 	renderPage() {
@@ -183,21 +182,38 @@ class Product extends Component {
 	}
 
 	renderPcp() {
-		let pcpView = null;
-		const { isLoading, productCategory } = this.props;
+		const { comments, isLoading, productCategory, scroller, viewMode } = this.props;
 
 		if (isLoading) {
-			pcpView = this.loadingView;
+			return this.loadingView;
 		} 
 
 		if (productCategory.pcpStatus !== '') {
 			if (productCategory.pcpStatus === 'success') {
-				pcpView = (
+				let listView;
+				switch (viewMode.mode) {
+				case 1:
+					listView = (
+						<CatalogView comments={comments} loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={productCategory.pcpData.products} />
+					);
+					break;
+				case 2:
+					listView = (
+						<GridView loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={productCategory.pcpData.products} />
+					);
+					break;
+				case 3:
+					listView = (
+						<SmallGridView loading={scroller.loading} products={productCategory.pcpData.products} />
+					);
+					break;
+				default:
+					listView = null;
+					break;
+				}
+				return (
 					<Page>
-						<div className={stylesCatalog.cardContainer}>
-							{this.renderContent(productCategory.pcpData.products)}
-							{this.props.scroller.loading && this.loadingView}
-						</div>
+						{listView}
 						<Footer isShow={this.state.isFooterShow} />
 					</Page>
 				);
@@ -206,141 +222,7 @@ class Product extends Component {
 			}
 		}
 
-		return pcpView;
-	}
-
-	renderContent(productList) {
-		const { viewMode, comments } = this.props;
-		let contentView = null;
-		contentView = productList.map((product, index) => {
-			switch (viewMode.mode) {
-			case 1:
-				return (
-					<div key={index} className={stylesCatalog.cardCatalog}>
-						<Card.Catalog
-							images={product.images}
-							productTitle={product.product_title}
-							brandName={product.brand.name}
-							pricing={product.pricing}
-							linkToPdp={product.url}
-							commentTotal={product.commentTotal}
-							commentUrl={product.commentUrl}
-							love={(
-								<Love
-									status={product.lovelistStatus}
-									data={product.product_id}
-									total={product.lovelistTotal}
-									onNeedLogin={() => this.forceLoginNow()}
-									showNumber
-								/>
-							)}
-						/>
-						{comments && comments.loading ? this.renderLoading : this.renderComment(product.product_id) }
-					</div>
-				);
-			case 2:
-				return (
-					<Card.CatalogGrid
-						key={index}
-						images={product.images}
-						productTitle={product.product_title}
-						brandName={product.brand.name}
-						pricing={product.pricing}
-						linkToPdp={product.url}
-						love={(
-							<Love
-								status={product.lovelistStatus}
-								data={product.product_id}
-								total={product.lovelistTotal}
-								onNeedLogin={() => this.forceLoginNow()}
-								showNumber
-							/>
-						)}
-					/>
-				);
-			case 3:
-				return (
-					<Card.CatalogSmall
-						key={index}
-						images={product.images}
-						pricing={product.pricing}
-						linkToPdp={product.url}
-					/>
-				);
-			default:
-				return null;
-			}
-		});
-		console.log('finish render');
-		return contentView;
-	}
-
-	renderList(productData, index) {
-		console.log(this.state);
-		if (productData) {
-			return (
-				<h1 key={index}>Test</h1>
-			);
-			// const cardCatalogSmall = {
-			// 	key: index,
-			// 	images: productData.images,
-			// 	pricing: productData.pricing,
-			// 	linkToPdp: linkToPdpCreator
-			// };
-			
-			// switch (viewMode.mode) {
-			// case 1:
-			// 	return (
-			// 		<div key={index} className={stylesCatalog.cardCatalog}>
-			// 			<Card.Catalog {...listCardCatalogAttribute} />
-			// 			{comments && comments.loading ? this.renderLoading : this.renderComment(productData.product_id)}
-			// 		</div>
-			// 	);
-			// case 2:
-			// 	return (
-			// 		<Card.CatalogGrid {...cardCatalogGridAttribute} />
-			// 	);
-			// case 3:
-			// 	return (
-			// 		<Card.CatalogSmall {...cardCatalogSmall} />
-			// 	);
-			// default:
-			// 	return null;
-			// }
-		// } else {
-		}
 		return null;
-		// }
-	}
-
-	renderComment(productId) {
-		let commentView = null;
-		const { isLoading, comments } = this.props;
-
-		if (isLoading) {
-			commentView = this.loadingView;
-		}
-
-		if (comments.status === 'success') {
-			const commentProduct = _.find(comments.data, { product_id: productId }) || false;
-			if (commentProduct) {
-				commentView = (
-					<div className={stylesCatalog.commentBlock}>
-						<Link to={`/product/comments/${commentProduct.product_id}`}>
-							<Button>View {commentProduct.total} comments</Button>
-						</Link>
-						<Comment data={commentProduct.last_comment} pcpComment />
-						<Level>
-							<Level.Item>
-								<Input color='white' placeholder='Write comment' />
-							</Level.Item>
-						</Level>
-					</div>
-				);
-			}
-		}
-
-		return commentView;
 	}
 
 	renderHeader() {

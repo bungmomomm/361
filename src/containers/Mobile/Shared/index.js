@@ -64,45 +64,57 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		async exeCall(token = null) {
-			const { shared, dispatch } = this.props;
+			const { shared, dispatch, cookies } = this.props;
 			const { login, provider } = this.state;
-			const tokenBearer = token === null ? this.userCookies : token.token;
+			let tokenBearer = token === null ? this.userCookies : token.token;
+			let rfT = token === null ? this.userRFCookies : token.refresh_token;
 
-			dispatch(new users.refreshToken(this.userRFCookies, tokenBearer));
+			const [er, resp] = await to(dispatch(new users.refreshToken(rfT, tokenBearer)));
+			if (er) {
+				this.withErrorHandling(er);
+			}
 
-			if (shared.totalCart === 0) { 
+			const { data } = resp.data;
+
+			const isAnonymous = data.info.userid <= 1;
+			setUserCookie(this.props.cookies, data, isAnonymous);
+
+			tokenBearer = data.token;
+			rfT = data.refresh_token;
+
+			if (shared.totalCart === 0) {
 				dispatch(new actions.totalCartAction(tokenBearer))
 				.catch(error => {
 					this.withErrorHandling(error);
-				}); 
+				});
 			}
 
-			if (shared.totalLovelist === 0) { 
+			if (shared.totalLovelist === 0) {
 				dispatch(new actions.totalLovelistAction(tokenBearer))
 				.catch(error => {
 					this.withErrorHandling(error);
-				}); 
+				});
 			}
 			if (login && provider) {
 				const response = await to(dispatch(new users.userSocialLogin(tokenBearer, provider, login)));
-				
+
 				if (response[0]) {
 					this.withErrorHandling(response[0]);
 				}
 			}
 
-			if (this.isLogin) {
+			if (cookies.get('isLogin') === 'true') {
 				dispatch(new users.userGetProfile(tokenBearer));
 			}
 
 			if (typeof doAfterAnonymousCall !== 'undefined') {
 				try {
 					await doAfterAnonymousCall.apply(this, [this.props]);
-					
+
 				} catch (err) {
 					return this.withErrorHandling(err);
 				}
-				
+
 			}
 			return null;
 		}

@@ -73,7 +73,7 @@ const productCommentAction = (token, productId, page = 1) => async (dispatch, ge
 
 	const [err, response] = await to(request({
 		token,
-		path: `${baseUrl}/comment?product_id=${productId}&page=${page}&per_page=${perPage}`,
+		path: `${baseUrl}/comments?product_id=${productId}&page=${page}&per_page=${perPage}`,
 		method: 'GET',
 		fullpath: true
 	}));

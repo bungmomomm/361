@@ -10,11 +10,11 @@ import {
 } from '@/utils';
 
 import { userSocialLogin, userSocialLoginWithRedirect } from './social-action';
-import { getMyOrder, getMyOrderDetail, updateMyOrdersCurrent } from './myOrder-action';
+import { checkMyOrders, getMyOrderDetail, updateMyOrdersCurrent, getMyOrderMore, cleanMyOrderData } from './myOrder-action';
 import { getTrackingInfo } from './tracking-action';
 
 const isSuccess = (response) => {
-	if (typeof response.data !== 'undefined' && typeof response.data.code !== 'undefined' && response.data.code === 200) {
+	if (typeof response.data !== 'undefined' && typeof response.data.code !== 'undefined' && response.data.code >= 200 && response.data.code < 300) {
 		return true;
 	}
 	return false;
@@ -28,7 +28,7 @@ const userLogin = (token, email, password) => async (dispatch, getState) => {
 
 	dispatch(actions.userLogin());
 	const path = `${baseUrl}/auth/login`;
-	
+
 	const [err, response] = await to(request({
 		token,
 		method: 'POST',
@@ -43,7 +43,7 @@ const userLogin = (token, email, password) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
-		dispatch(actions.userLoginFail(err));
+		dispatch(actions.userLoginFail(err.data));
 		return Promise.reject(err);
 	}
 
@@ -56,7 +56,6 @@ const userLogin = (token, email, password) => async (dispatch, getState) => {
 			refresh_token: response.data.data.refresh_token
 		}
 	});
-
 };
 
 const userAnonymous = (token) => async (dispatch, getState) => {
@@ -81,7 +80,7 @@ const userAnonymous = (token) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
-		dispatch(actions.userLoginFail(err));
+		dispatch(actions.userLoginFail(err.data));
 		return Promise.reject(err);
 	}
 
@@ -114,9 +113,9 @@ const userOtp = (token, phone) => async (dispatch, getState) => {
 	const dataForOtp = {
 		hp_email: phone
 	};
-	
+
 	dispatch(actions.userOtp());
- 
+
 	const requestData = {
 		token,
 		path,
@@ -126,15 +125,15 @@ const userOtp = (token, phone) => async (dispatch, getState) => {
 	};
 
 	const [err, response] = await to(request(requestData));
-	
+
 	if (err) {
-		dispatch(actions.userOtpFail(err));
+		dispatch(actions.userOtpFail(err.data));
 		return Promise.reject(err);
 	}
 	console.log('out');
 	dispatch(actions.userOtpSuccess(response));
 	return Promise.resolve(response);
-	
+
 };
 
 const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
@@ -144,35 +143,29 @@ const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
-	const path = `${baseUrl}/auth/otp/validate`;
-
-	const dataForOtpValidate = {
-		hp_email: bodyData.phone,
-		pwd: base64.encode(bodyData.password),
-		fullname: bodyData.fullname,
-		otp: bodyData.otp
-	};
+	const path = `${baseUrl}/auth/otp/validate?action=register`;
 	
 	dispatch(actions.userOtpValidate());
-    
+	bodyData.pwd = base64.encode(bodyData.pwd);
+	
 	const requestData = {
 		token,
 		path,
 		method: 'POST',
 		fullpath: true,
-		body: dataForOtpValidate
+		body: bodyData
 	};
-    
+
 	const [err, response] = await to(request(requestData));
-	
+
 	if (err) {
-		dispatch(actions.userOtpValidateFail(err));
+		dispatch(actions.userOtpValidateFail(err.data));
 		return Promise.reject(err);
 	}
-	
+
 	dispatch(actions.userOtpValidateSuccess(response));
 	return Promise.resolve(response);
- 
+
 };
 
 //  USER_REGISTER: undefined,
@@ -392,10 +385,12 @@ export default {
 	userRegister,
 	userForgotPassword,
 	userOtpValidate,
-	getMyOrder,
 	getMyOrderDetail,
 	updateMyOrdersCurrent,
 	userOtp,
 	getTrackingInfo,
+	getMyOrderMore,
+	cleanMyOrderData,
+	checkMyOrders,
 	refreshToken
 };

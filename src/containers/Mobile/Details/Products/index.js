@@ -7,7 +7,7 @@ import { urlBuilder } from '@/utils';
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as shopBagActions } from '@/state/v4/ShopBag';
-import { Modal, Page, Header, Navigation, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Rating, Spinner, Badge } from '@/components/mobile';
+import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Rating, Spinner, Badge } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
 import SellerProfile from '../../Discovery/Seller/components/SellerProfile';
@@ -54,9 +54,7 @@ class Products extends Component {
 			},
 			pdpData: {
 				cardProduct: {},
-				reviewContent: {},
-				similarContent: {},
-				recommendationContent: {}
+				reviewContent: {}
 			},
 			detail: {},
 			carousel: {
@@ -112,38 +110,10 @@ class Products extends Component {
 		}
 
 		// sets recommendation products data
-		if (!_.isEmpty(recommendation.products) && !status.recommendationSet) {
-			status.recommendationSet = true;
-			pdpData.recommendationContent = recommendation.products.map((item, idx) => {
-				const data = {
-					key: idx,
-					images: item.images,
-					productTitle: item.product_title,
-					brandName: item.brand.name,
-					pricing: item.pricing,
-					linkToPdp: '/'
-				};
-
-				return <Card.CatalogGrid linkToPdp='/' {...data} key={idx} />;
-			});
-		}
+		if (!_.isEmpty(recommendation.products) && !status.recommendationSet) status.recommendationSet = true;
 
 		// sets similar products data
-		if (!_.isEmpty(similar) && !status.similarSet) {
-			status.similarSet = true;
-			pdpData.similarContent = similar.map((item, idx) => {
-				const data = {
-					key: idx,
-					images: item.images,
-					productTitle: item.product_title,
-					brandName: item.brand,
-					pricing: item.pricing,
-					linkToPdp: '/'
-				};
-
-				return <Card.CatalogGrid linkToPdp='/' {...data} key={idx} />;
-			});
-		}
+		if (!_.isEmpty(similar) && !status.similarSet) status.similarSet = true;
 
 		// sets product reviews data
 		if (!_.isEmpty(socialSummary.reviews) && !status.reviewsSet) {
@@ -246,7 +216,7 @@ class Products extends Component {
 			status.productAdded = true;
 			this.setState({ btnBeliLabel: 'GO TO SHOPPING BAG' });
 		}).catch((err) => {
-			console.log('[BEN BEN] Error found while adding product to cart: ', err);
+			throw err;
 		});
 
 		this.setState({ status });
@@ -265,6 +235,7 @@ class Products extends Component {
 		if (status.productAdded) {
 			const { history } = this.props;
 			history.push('/cart');
+			return;
 		}
 
 		if (status.hasVariantSize && _.isEmpty(selectedVariant)) {
@@ -320,6 +291,50 @@ class Products extends Component {
 		this.setState({ status, pdpData });
 	}
 
+	renderSimilarRecommendItems(type) {
+		const { product } = this.props;
+		let fragment = [];
+		let items = {};
+		const itemsList = [];
+
+		switch (type) {
+		case 'recommendation':
+			items = product.recommendation.products;
+			break;
+		case 'similar':
+			items = product.similar;
+			break;
+		default:
+			break;
+		}
+
+		// builds items
+		items.forEach((item, idx) => {
+			const data = {
+				key: idx,
+				images: item.images,
+				productTitle: item.product_title,
+				brandName: item.brand.name,
+				pricing: item.pricing,
+				linkToPdp: '/'
+			};
+
+			// set fragment value
+			fragment = ((idx + 1) % 2 !== 0) ? [<Card.CatalogGrid {...data} />] : [...fragment, <Card.CatalogGrid {...data} />];
+
+			// push fragment into 
+			if ((idx + 1) % 2 === 0 || items.length === (idx + 1)) {
+				itemsList.push(fragment);
+			}
+		});
+
+		return (
+			<Carousel className='margin--medium-v'>
+				{itemsList.map((item, i) => <Grid split={2} key={i}>{item}</Grid>)}
+			</Carousel>
+		);
+	}
+
 	renderZoomImage() {
 		const { carousel, pdpData } = this.state;
 		const header = {
@@ -352,13 +367,13 @@ class Products extends Component {
 		if (status.showScrollInfomation) {
 			return {
 				left: (
-					<Button onClick={this.switchMode} >
+					<Button onClick={this.goBackPreviousPage} >
 						<Svg src={'ico_arrow-back-left.svg'} />
 					</Button>
 				),
 				center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{pdpData.cardProduct.product_title}</div>,
 				right: (
-					<Button href={'/'} onClick={this.goBackPreviousPage}>
+					<Button href={'/'} onClick={this.switchMode}>
 						<Svg src={'ico_share.svg'} />
 					</Button>
 				)
@@ -423,7 +438,7 @@ class Products extends Component {
 
 	render() {
 		const { detail, pdpData, status, carousel } = this.state;
-		const { match, product, shared } = this.props;
+		const { match, product } = this.props;
 		const { seller, comment, reviews } = product.socialSummary;
 		const linkToPdpDisabled = true;
 		if (status.isZoomed) {
@@ -509,7 +524,7 @@ class Products extends Component {
 						{status.recommendationSet && (
 							<div>
 								<div className='margin--small-v padding--medium-h font-medium'><strong>Anda Mungkin Suka</strong></div>
-								<div className='flex-row'>{(!status.loading) ? pdpData.recommendationContent : this.loadingContent}</div>
+								<div className='flex'>{(!status.loading) ? this.renderSimilarRecommendItems('recommendation') : this.loadingContent}</div>
 							</div>
 						)}
 						<div style={{ backgroundColor: '#F5F5F5' }}>
@@ -578,7 +593,7 @@ class Products extends Component {
 							{status.similarSet && (
 								<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 									<div className='margin--small-v padding--medium-h font-medium'><strong>Product Serupa</strong></div>
-									{(!status.loading) ? (<div className='flex-row'>{pdpData.similarContent}</div>) : this.loadingContent}
+									<div className='flex'>{(!status.loading) ? this.renderSimilarRecommendItems('similar') : this.loadingContent}</div>
 								</div>
 							)}
 						</div>
@@ -621,7 +636,7 @@ class Products extends Component {
 							</Button>)}
 					/>
 				</Modal>
-				<Navigation scroll={this.props.scroll} totalCartItems={shared.totalCart} />
+				{/* <Navigation scroll={this.props.scroll} totalCartItems={shared.totalCart} /> */}
 			</div>);
 	}
 }
@@ -640,11 +655,11 @@ const doAfterAnonymous = async (props) => {
 	const productId = _.toInteger(match.params.id);
 	const token = cookies.get('user.token');
 
-	await dispatch(new productActions.productDetailAction(token, productId));
-	await dispatch(new productActions.productRecommendationAction(token, productId));
-	await dispatch(new productActions.productSimilarAction(token, productId));
-	await dispatch(new productActions.productSocialSummaryAction(token, productId));
-	await dispatch(new lovelistActions.bulkieCountByProduct(token, productId));
+	dispatch(new productActions.productDetailAction(token, productId));
+	dispatch(new productActions.productRecommendationAction(token, productId, 1, 10));
+	dispatch(new productActions.productSimilarAction(token, productId, 1, 10));
+	dispatch(new productActions.productSocialSummaryAction(token, productId));
+	dispatch(new lovelistActions.bulkieCountByProduct(token, productId));
 
 };
 

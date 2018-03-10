@@ -1,9 +1,15 @@
 import { handleActions, createActions } from 'redux-actions';
 
 const actions = createActions({
-	USER_LOGIN: undefined,
-	USER_LOGIN_FAIL: (error) => ({ login: { error } }),
-	USER_LOGIN_SUCCESS: (userProfile) => ({ email: undefined, password: undefined, userProfile }),
+	USER_LOGIN: () => ({ login: undefined }),
+	USER_LOGIN_FAIL: (error) => {
+		return {
+			login: {
+				error
+			}
+		};
+	},
+	USER_LOGIN_SUCCESS: (userProfile) => ({ login: undefined, email: undefined, password: undefined, userProfile }),
 	USER_ANONYMOUS: undefined,
 	USER_ANONYMOUS_SUCCESS: (userProfile) => ({ userProfile }),
 	USER_NAME_CHANGE: (email) => ({ email }),
@@ -36,11 +42,12 @@ const actions = createActions({
 	USER_NEW_PASSWORD_FAIL: (error) => ({ newpassword: { error } }),
 	USER_NEW_PASSWORD_SUCCESS: (message) => ({ newpassword: { message } }),
 	USER_SOCIAL_LOGIN: undefined,
-	USER_GET_MY_ORDER: undefined,
+	USER_UPDATE_MY_ORDERS: undefined,
 	USER_APPEND_MY_ORDER: undefined,
 	USER_GET_MY_ORDER_DETAIL: undefined,
 	USER_UPDATE_MY_ORDER_CURRENT: undefined,
-	USER_GET_TRACKING_INFO: undefined
+	USER_GET_TRACKING_INFO: undefined,
+	USER_CHECK_MY_ORDERS: undefined
 });
 
 const initialState = {
@@ -48,14 +55,16 @@ const initialState = {
 	username: false,
 	isLoading: false,
 	isAnonymous: false,
-	myOrders: { konfirmasi: { info: null, orders: [] },
-		dikirim: { info: null, orders: [] },
-		batal: { info: null, orders: [] },
-		selesai: { info: null, orders: [] } },
+	myOrders: { konfirmasi: { orders: null },
+		dikirim: { orders: null },
+		batal: { orders: null },
+		selesai: { orders: null }
+	},
 	myOrdersCurrent: 'konfirmasi',
 	myOrdersDetail: null,
 	creditCard: {},
-	trackingInfo: null
+	trackingInfo: null,
+	isNoOrders: null,
 };
 
 const reducer = handleActions({
@@ -132,26 +141,26 @@ const reducer = handleActions({
 	[actions.userForgotPassword]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
 	[actions.userForgotPasswordFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
 	[actions.userForgotPasswordSuccess]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
-	[actions.userGetMyOrder]: (state, action) => ({ ...state, ...action.payload }),
+	[actions.userUpdateMyOrders]: (state, action) => ({ ...state, ...action.payload }),
 	[actions.userGetMyOrderDetail]: (state, action) => ({ ...state, ...action.payload }),
 	[actions.userUpdateMyOrderCurrent]: (state, action) => ({ ...state, ...action.payload }),
 	[actions.userAppendMyOrder]: (state, action) => {
 		let allOrders = null;
-		let updated = null;
-		let currentOrders = null;
 		allOrders = state.myOrders;
-		currentOrders = state.myOrders[action.payload.type].orders;
-
-		if (action.payload.data.length > 0) {
+		const currentOrders = state.myOrders[action.payload.type].orders;
+		let updated = null;
+		if (currentOrders === null) {
+			updated = action.payload.data;
+		} else if (action.payload.data.length > 0) {
 			updated = currentOrders.concat(action.payload.data);
 		}
-
 		allOrders[action.payload.type].orders = updated;
 		return {
 			...state,
 			myOrders: allOrders };
 	},
 	[actions.userGetTrackingInfo]: (state, action) => ({ ...state, ...action.payload }),
+	[actions.userCheckMyOrders]: (state, action) => ({ ...state, ...action.payload }),
 }, initialState);
 export default {
 	actions,

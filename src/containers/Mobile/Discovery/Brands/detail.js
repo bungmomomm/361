@@ -16,14 +16,12 @@ import {
 import styles from './brands.scss';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import Filter from '@/containers/Mobile/Shared/Filter';
+import { Filter, Love, Sort } from '@/containers/Mobile/Widget';
 import { actions as brandAction } from '@/state/v4/Brand';
 import Shared from '@/containers/Mobile/Shared';
 import stylesCatalog from '@/containers/Mobile/Discovery/Category/Catalog/catalog.scss';
 import queryString from 'query-string';
 import { urlBuilder, renderIf } from '@/utils';
-import Sort from '@/containers/Mobile/Shared/Sort';
-import Love from '@/containers/Mobile/Shared/Widget/Love';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import Share from '@/components/mobile/Share';
 import Footer from '@/containers/Mobile/Shared/footer';
@@ -31,7 +29,7 @@ import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as searchActions } from '@/state/v4/SearchResults';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { Promise } from 'es6-promise';
-import Spinner from '../../../../components/mobile/Spinner';
+import Spinner from '@/components/mobile/Spinner';
 
 class Detail extends Component {
 	static queryObject(props) {
@@ -99,7 +97,6 @@ class Detail extends Component {
 					...qs
 				}
 			};
-			console.log('data', data);
 			dispatch(brandAction.brandProductAction(data));
 			dispatch(brandAction.brandBannerAction(this.userToken, this.props.match.params.brandId));
 		}
@@ -117,9 +114,7 @@ class Detail extends Component {
 					...qs
 				}
 			};
-			console.log('data', data);
 			dispatch(brandAction.brandProductAction(data));
-
 			dispatch(brandAction.brandBannerAction(cookies.get('user.token'), nextProps.match.params.brandId));
 		}
 
