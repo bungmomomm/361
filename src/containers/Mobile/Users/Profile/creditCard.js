@@ -34,7 +34,8 @@ class CreditCard extends Component {
 			successMessage: '',
 			checkedCreditCardValueForSetDefault: null,
 			checkedCreditCardValueForDelete: null,
-			showDeleteCreditCardPopUpConfirmation: false
+			showDeleteCreditCardPopUpConfirmation: false,
+			isCreditCardAllowedForDelete: false
 		};
 		
 	}
@@ -66,10 +67,19 @@ class CreditCard extends Component {
 	async deleteSingleCreditCardFromList() {
 		
 		const { dispatch, cookies } = this.props;
-		const { checkedCreditCardValueForDelete } = this.state;
+		const { checkedCreditCardValueForDelete, isCreditCardAllowedForDelete } = this.state;
 		const parameterDelete = {
 			card_id: checkedCreditCardValueForDelete
 		};
+		
+		// Prevent the default credit card to be deleted.
+		if (isCreditCardAllowedForDelete === false) {
+			const message = 'Kartu kredit tidak bisa di hapus. Silahkan terapkan default pada kartu kredit lainnya';
+			this.setState({
+				successMessage: message
+			});
+			return false;
+		}
 		
 		const [err, response] = await to(dispatch(new actions.deleteCreditCard(cookies.get('user.token'), parameterDelete)));
 		
@@ -181,7 +191,8 @@ class CreditCard extends Component {
 										this.setState(() => {
 											return {
 												checkedCreditCardValueForDelete: cc.id,
-												showDeleteCreditCardPopUpConfirmation: true
+												showDeleteCreditCardPopUpConfirmation: true,
+												isCreditCardAllowedForDelete: (cc.fg_default === 0)
 											};
 											
 										});
