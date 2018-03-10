@@ -155,7 +155,8 @@ class Register extends Component {
 		this.setState({
 			isButtonResendOtpLoading: true,
 			disableOtpButton: true,
-			otpValue: ''
+			otpValue: '',
+			messageType: 'SUCCESS'
 		});
 		
 		const { cookies, dispatch } = this.props;
