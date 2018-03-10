@@ -152,11 +152,14 @@ class Register extends Component {
 	}
 	
 	async onSendOtp() {
-  
-		this.setState({
-			isButtonResendOtpLoading: true,
-			disableOtpButton: true,
-			otpValue: ''
+		
+		this.setState((prevState) => {
+			return {
+				isButtonResendOtpLoading: true,
+				disableOtpButton: true,
+				otpValue: '',
+				messageType: (prevState.messageType === 'ERROR') ? 'SUCCESS' : 'ERROR'
+			};
 		});
 		
 		const { cookies, dispatch } = this.props;
@@ -219,11 +222,13 @@ class Register extends Component {
 		const { loginId, email, password, otpValue, redirectUrl, captchaValue } = this.state;
 		
 		if (captchaValue.length === 0) {
-
-			this.setState({
-				displayMessageOnValidateOtpForm: true,
-				textMessageOnValidateOtpForm: 'Mohon centang checkbox pada captcha. ',
-				messageType: 'ERROR'
+			
+			this.setState((prevState) => {
+				return {
+					displayMessageOnValidateOtpForm: true,
+					textMessageOnValidateOtpForm: 'Mohon centang checkbox pada captcha. ',
+					messageType: (prevState.messageType === 'SUCCESS') ? 'ERROR' : 'SUCCESS'
+				};
 			});
 			
 			return false;
