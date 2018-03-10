@@ -7,8 +7,8 @@ class Radio extends PureComponent {
 			<div className={`${this.props.className || ''} ${styles.container}`} style={this.props.style}>
 				{
 					this.props.data.map((list, idx) => (
-						<label htmlFor={`label-${idx}`} key={idx}>
-							<input disabled={list.disabled || false} onChange={() => this.props.onChange(list.value, list)} checked={this.props.checked === list.value} id={`label-${idx}`} type='radio' name={this.props.name} defaultValue={list.value} />
+						<label htmlFor={`${this.props.name}-${idx}`} key={idx}>
+							<input disabled={list.disabled || false} onChange={() => this.props.onChange(list.value, list)} checked={this.props.checked === list.value} id={`${this.props.name}-${idx}`} type='radio' name={this.props.name} defaultValue={list.value} />
 							<div className={styles.label}>{list.label}</div>
 						</label>
 					))
