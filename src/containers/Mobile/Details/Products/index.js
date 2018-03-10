@@ -373,9 +373,14 @@ class Products extends Component {
 				),
 				center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{pdpData.cardProduct.product_title}</div>,
 				right: (
-					<Button href={'/'} onClick={this.switchMode}>
-						<Svg src={'ico_share.svg'} />
-					</Button>
+					<div className='flex-row flex-middle'>
+						<Button href={'/'} onClick={this.switchMode}>
+							<Svg src={'ico_share.svg'} />
+						</Button>
+						<Button href={'/'} className='margin--medium-l'>
+							<Svg src={'ico_cart.svg'} />
+						</Button>
+					</div>
 				)
 			};
 		}
@@ -387,49 +392,39 @@ class Products extends Component {
 			),
 			center: '',
 			right: (
-				<Button href={'/'} onClick={this.switchMode}>
-					<Svg src={'ico_share.svg'} />
-				</Button>
+				<div className='flex-row flex-middle'>
+					<Button href={'/'} onClick={this.switchMode}>
+						<Svg src={'ico_share.svg'} />
+					</Button>
+					<Button href={'/'} className='margin--medium-l'>
+						<Svg src={'ico_cart.svg'} />
+					</Button>
+				</div>
 			)
 		};
 	}
 
 	renderStickyAction() {
-		const { pdpData, status, detail, btnBeliLabel } = this.state;
-		if (status.pdpDataHasLoaded && status.showScrollInfomation && !status.loading) {
+		const { pdpData, status, btnBeliLabel } = this.state;
+		if (status.pdpDataHasLoaded && !status.loading) {
 			return (
 				<div className={styles.stickyAction}>
-					<Level style={{ padding: '10px' }} className='flex-center'>
-						<Level.Left>
-							<Level className={styles.action}>
-								<Level.Left>
-									<div className={styles.stickyActionImage}>
-										<img alt='product' src={detail.images[0].thumbnail} />
-									</div>
-								</Level.Left>
-							</Level>
-						</Level.Left>
-						<Level.Item className='padding--medium-h'>
-							<Level className={styles.action}>
-								<Level.Item>
-									<div className='font-normal'>{pdpData.cardProduct.pricing.effective_price}</div>
-									<div className='font-small font-color--primary-ext-2'>{pdpData.cardProduct.pricing.effective_price}</div>
-								</Level.Item>
-								<Level.Right>
-									<Badge rounded color='red'>
-										<span className='font--lato-bold'>{pdpData.cardProduct.pricing.discount || '0%'}</span>
-									</Badge>
-								</Level.Right>
-							</Level>
-						</Level.Item>
-						<Level.Right>
-							<Level className={styles.action}>
-								<Level.Right>
-									<Button color='secondary' disabled={(pdpData.cardProduct.productStock === 0)} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
-								</Level.Right>
-							</Level>
-						</Level.Right>
-					</Level>
+					<div className='flex-row flex-spaceBetween padding--medium-h padding--medium-v border-top flex-middle'>
+						<div className='flex-row'>
+							<div>
+								<div className='font-medium font--lato-bold'>{pdpData.cardProduct.pricing.effective_price}</div>
+								<div className='font-small font-color--primary-ext-2'>{pdpData.cardProduct.pricing.effective_price}</div>
+							</div>
+							<div className='margin--medium-l'>
+								<Badge rounded color='red'>
+									<span className='font--lato-bold'>{pdpData.cardProduct.pricing.discount || '0%'}</span>
+								</Badge>
+							</div>
+						</div>
+						<div>
+							<Button color='secondary' disabled={(pdpData.cardProduct.productStock === 0)} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
+						</div>
+					</div>
 				</div>
 			);
 		};
@@ -520,7 +515,6 @@ class Products extends Component {
 								<Comment type='lite-review' data={comment.summary} />
 							)}
 						</div>
-						<hr className='margin--small-v' />
 						{status.recommendationSet && (
 							<div>
 								<div className='margin--small-v padding--medium-h font-medium'><strong>Anda Mungkin Suka</strong></div>
@@ -635,6 +629,33 @@ class Products extends Component {
 								<span className='font-color--primary-ext-2'>PILIH UKURAN</span>
 							</Button>)}
 					/>
+				</Modal>
+				<Modal position='bottom' show={false}>
+					<div className='padding--medium-v'>
+						<div className='padding--medium-h'>Pilih Ukuran</div>
+						<div className='margin--medium-v horizontal-scroll padding--medium-h  margin--medium-r'>
+							<Radio
+								name='size'
+								checked='x'
+								variant='rounded'
+								className='margin--small-v'
+								data={[
+									{ value: 'x', label: 'x' },
+									{ value: 'xl', label: 'xl', disabled: true },
+									{ value: 'm', label: 'm' },
+									{ value: 'x', label: 'x' },
+									{ value: 'xl', label: 'xl', disabled: true },
+									{ value: 'm', label: 'm' },
+									{ value: 'x', label: 'x' },
+									{ value: 'xl', label: 'xl', disabled: true },
+									{ value: 'm', label: 'm' },
+									{ value: 'x', label: 'x' },
+									{ value: 'xl', label: 'xl', disabled: true },
+									{ value: 'm', label: 'm' },
+								]}
+							/>
+						</div>
+					</div>
 				</Modal>
 				{/* <Navigation scroll={this.props.scroll} totalCartItems={shared.totalCart} /> */}
 			</div>);

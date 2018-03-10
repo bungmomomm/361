@@ -13,9 +13,17 @@ const Action = (props) => {
 const Modal = (props) => {
 	if (!props.show) {
 		return null;
-	}
+	};
+
+	const position = () => {
+		if (props.position) {
+			return styles[props.position];
+		}
+		return '';
+	};
+
 	return (
-		<div className={`${props.className || ''} ${styles.content}`}>
+		<div className={`${props.className || ''} ${position()} ${styles.content}`}>
 			<div className={styles.wrapper}>
 				{props.children}
 			</div>
