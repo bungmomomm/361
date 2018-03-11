@@ -14,7 +14,7 @@ class Catalog extends Component {
 			icon: 'ico_grid.svg'
 		}, {
 			type: 'grid',
-			icon: 'ico_three-line.svg'
+			icon: 'ico_grid-3x3.svg'
 		}, {
 			type: 'small',
 			icon: 'ico_list.svg'
@@ -80,7 +80,27 @@ class Catalog extends Component {
 				</Link>
 			),
 			center: 'Jaket & Coat',
-			right: null
+			right: null,
+			rows: (
+				<Tabs
+					type='segment'
+					variants={[
+						{
+							id: 'urutkan',
+							Title: 'Urutkan'
+						},
+						{
+							id: 'filter',
+							Title: 'filter'
+						},
+						{
+							id: 'view',
+							Title: <Svg src={listTypeState.icon} />
+						}
+					]}
+					onPick={e => this.handlePick(e)}
+				/>
+			)
 		};
 
 		return (
@@ -99,25 +119,6 @@ class Catalog extends Component {
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Tabs
-					className={styles.fixed}
-					type='segment'
-					variants={[
-						{
-							id: 'urutkan',
-							Title: 'Urutkan'
-						},
-						{
-							id: 'filter',
-							Title: 'filter'
-						},
-						{
-							id: 'view',
-							Title: <Svg src={listTypeState.icon} />
-						}
-					]}
-					onPick={e => this.handlePick(e)}
-				/>
 				<div className={styles.filterNavigation}>
 					<List>
 						<List.Content>

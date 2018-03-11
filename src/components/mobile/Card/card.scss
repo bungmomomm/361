@@ -26,11 +26,28 @@
 	min-height: rem(300px);
 }
 
+.imgContainer{
+	display: table;
+	vertical-align: middle;
+	text-align: center;
+	.imgWrapper{
+		display: table-cell;
+		vertical-align: middle;
+		font-size: 0px;
+		img{
+			width: auto;
+			height: auto;
+			display: block;
+			margin: 0 auto;
+		}
+	}
+}
+
 .grid{
 	width: 50%;
 	padding: rem(7px);
 	display: block;
-    text-align: center;
+	text-align: center;
 	&:nth-child(odd){
 		padding-left: rem(14px);
 	}
@@ -48,6 +65,18 @@
 		text-align: left;
 		padding-right: rem(10px);
 	}
+	.imgContainer{
+		width: 220px;
+    	height: 220px;
+		.imgWrapper{
+			height: 220px;
+			width: 220px;
+			img{
+				max-width: 220px;
+				max-height: 220px;
+			}
+		}
+	}
 }
 
 .small{
@@ -60,6 +89,18 @@
 		bottom: rem(10px);
 		width: 70%;
 		left: 15%;
+	}
+	.imgContainer{
+		width: 157px;
+    	height: 157px;
+		.imgWrapper{
+			height: 157px;
+			width: 157px;
+			img{
+				max-width: 157px;
+				max-height: 157px;
+			}
+		}
 	}
 }
 

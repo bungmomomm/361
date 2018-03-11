@@ -76,20 +76,17 @@ class Product extends PureComponent {
 						</Carousel>
 					)
 				}
-				<Level
-					className={styles.action}
-					style={{ borderBottom: '1px solid #D8D8D8' }}
-				>
-					<Level.Item>
+				<Level className={`${styles.action} border-top border-bottom`}>
+					<Level.Item className='flex-middle flex-center'>
 						<Button onClick={this.props.onBtnLovelistClick} data-id={data.id}>
 							<Svg src={loveIcon} />
-							<span>{data.totalLovelist}</span>
+							<span>{data.totalLovelist} Suka</span>
 						</Button>
 					</Level.Item>
-					<Level.Item>
+					<Level.Item className='flex-middle flex-center'>
 						<Button onClick={this.props.onBtnCommentClick}>
 							<Svg src='ico_comment.svg' />
-							<span>{data.totalComments || 0}</span>
+							<span>{data.totalComments || 0} Komentar</span>
 						</Button>
 					</Level.Item>
 				</Level>

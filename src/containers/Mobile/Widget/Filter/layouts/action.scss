@@ -28,7 +28,6 @@
 	max-width: 480px;
 }
 
-
 .item{
 	flex-grow: 1;
 	flex-basis: 0;
@@ -59,5 +58,14 @@
 	svg{
 		height: rem(40px);
 		margin-right: rem(5px);
+	}
+}
+
+.reset{
+	color: #A4A4A4;
+	svg{
+		g{
+			stroke: #A4A4A4;
+		}
 	}
 }

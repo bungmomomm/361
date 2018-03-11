@@ -224,7 +224,7 @@ class Seller extends Component {
 					onPick={e => this.handlePick(e)}
 				/>
 				{renderIf(sorts)(
-					<Sort shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+					<Sort shown={showSort} onCloseOverlay={() => this.setState({ showSort: false })} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
 				)}
 			</div>
 		);
@@ -335,7 +335,7 @@ class Seller extends Component {
 					/>
 				) : (
 					<div style={this.props.style}>
-						<Page>
+						<Page color='white'>
 							{seller.info.seller && this.renderHelmet()}
 							{this.sellerHeader()}
 							{this.filterTabs()}

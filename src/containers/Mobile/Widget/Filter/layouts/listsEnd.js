@@ -10,7 +10,7 @@ class ListsEnd extends PureComponent {
 		const HeaderPage = {
 			left: (
 				<Link to='/catalogcategory'>
-					<Svg src={'ico_arrow-back-left.svg'} />
+					<Svg src={'ico_close-large.svg'} />
 				</Link>
 			),
 			center: params.header.title,
@@ -19,7 +19,7 @@ class ListsEnd extends PureComponent {
 
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page color='white' style={{ marginTop: '15px' }}>
 					<List>
 						<List.Content>
 							Style

@@ -68,7 +68,7 @@ class Page404 extends Component {
 		};
 		return (
 			<div className='text-center' style={this.props.style}>
-				<Page>
+				<Page color='white'>
 					<div className={styles.container} >
 						<div className='margin--medium-v flex-center flex-middle'><Svg src='mm_ico_no_404_alt.svg' /></div>
 						<div className=' margin--small-v'>
