@@ -25,13 +25,10 @@ class Otp extends Component {
 		this.state = {
 			showNotif: false,
 			statusNotif: '',
-			messageNotif: '',
 			enableResend: false,
 			showVerifyButton: false,
 			phoneEmail: props.phoneEmail || '',
-			counterTimer: 0,
 			otpCount: 0,
-			inputValue: '',
 			inputHint: '',
 			validForm: false,
 			disabledInput: false,
@@ -67,6 +64,17 @@ class Otp extends Component {
 				this.countdownTimer(countdown);
 			}
 		}
+
+		this.setTimeoutNotif(5000);
+	}
+
+	setTimeoutNotif(n) {
+		window.setTimeout(() => {
+			this.setState({
+				showNotif: false,
+				statusNotif: ''
+			});
+		}, n);
 	}
 
 	resendOtp = async () => {
@@ -85,19 +93,19 @@ class Otp extends Component {
 			} else if (response) {
 				console.log('response resend', response);
 
-				const countdown = _.chain(response).get('countdown').value() || 60;
-
 				this.setState({
 					otpCount: otpCount + 1,
 					validForm: true,
-					inputValue: '',
 					showNotif: true,
 					statusNotif: 'success'
 				});
 
+				const countdown = _.chain(response).get('countdown').value() || 60;
 				this.countdownTimer(countdown);
 			}
 		}
+
+		this.setTimeoutNotif(5000);
 	}
 
 	countdownTimer = async (number) => {
@@ -105,6 +113,7 @@ class Otp extends Component {
 			if (number > 0) {
 				number -= 1;
 				this.setState({
+					enableResend: false,
 					resendButtonMessage: `Kirim Ulang Kode OTP Dalam ${number} detik`
 				});
 			}
@@ -148,10 +157,10 @@ class Otp extends Component {
 	}
 
 	validateOtp = async (data) => {
-		const { dispatch } = this.props;
+		const { dispatch, onSuccess } = this.props;
 
 		this.setState({ disabledInput: true });
-		const [err, response] = await to(dispatch(userActions.userOtpValidate(this.userToken, data)));
+		const [err, response] = await to(dispatch(userActions.userOtpValidate(this.userToken, data, 'edit')));
 		if (err) {
 			console.log('err validate', err);
 
@@ -163,9 +172,7 @@ class Otp extends Component {
 		} else if (response) {
 			console.log('response validate', response);
 
-			// send back to /edit-profile
-			// const message = response.msg || 'Form success';
-			// onSuccess(message);
+			onSuccess();
 		}
 	}
 
@@ -200,26 +207,19 @@ class Otp extends Component {
 			break;
 		}
 
-		renderIf(showNotif)(
-			<Notification color={color} show disableClose>
+		return (
+			<Notification color={color} show={showNotif} disableClose>
 				<span>{message}</span>
 			</Notification>
 		);
-
-		window.setTimeout(() => {
-			this.setState({
-				showNotif: false,
-				statusNotif: ''
-			});
-		}, 10000);
 	}
 
 	renderOtpForm() {
-		const { inputValue, inputHint, validForm, disabledInput } = this.state;
+		const { inputHint, validForm, disabledInput } = this.state;
 		return (
 			<div className='margin--medium-v text-center'>
 				<Input
-					value={inputValue}
+					value={null}
 					error={!validForm}
 					hint={inputHint}
 					partitioned 
@@ -235,16 +235,13 @@ class Otp extends Component {
 		const { isLoading } = this.props;
 		const { enableResend, resendButtonMessage } = this.state;
 
-		if (isLoading) {
-			return this.loadingView;
-		}
-
 		return (
-			<div className='margin--small-v'>
+			<div className='margin--medium-v'>
 				<Button
 					color='secondary'
 					size='large'
 					outline
+					loading={isLoading}
 					disabled={!enableResend}
 					onClick={() => this.resendOtp()}
 				>

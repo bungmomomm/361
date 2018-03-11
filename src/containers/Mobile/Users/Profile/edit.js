@@ -244,12 +244,12 @@ class UserProfileEdit extends Component {
 		}
 	}
 
-	successValidateOtp(message) {
+	successValidateOtp() {
 		this.setState({
 			layout: 'main',
 			formResult: {
 				status: 'success',
-				message: ''
+				message: 'Nomor Handphone berhasil diubah'
 			}
 		});
 	}
@@ -550,7 +550,7 @@ class UserProfileEdit extends Component {
 				<Otp
 					phoneEmail={formData[this.HP_EMAIL_FIELD]}
 					onClickBack={(e, value) => this.switchLayoutHandler(e, this.PHONE_FIELD)}
-					onSuccess={(message) => this.successValidateOtp(message)}
+					onSuccess={() => this.successValidateOtp()}
 				/>
 			);
 			break;

@@ -136,14 +136,14 @@ const userOtp = (token, phone) => async (dispatch, getState) => {
 
 };
 
-const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
+const userOtpValidate = (token, bodyData, type = 'register') => async (dispatch, getState) => {
 
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
-	const path = `${baseUrl}/auth/otp/validate?action=register`;
+	const path = `${baseUrl}/auth/otp/validate?action=${type}`;
 	
 	dispatch(actions.userOtpValidate());
 
