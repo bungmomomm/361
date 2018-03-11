@@ -24,6 +24,7 @@ const Modal = (props) => {
 
 	return (
 		<div className={`${props.className || ''} ${position()} ${styles.content}`}>
+			{ props.onCloseOverlay && <button onClick={() => props.onCloseOverlay()} className={styles.overlay} /> }
 			<div className={styles.wrapper}>
 				{props.children}
 			</div>

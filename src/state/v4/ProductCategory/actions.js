@@ -89,7 +89,7 @@ const viewModeAction = (mode) => (dispatch) => {
 		icon = 'ico_list.svg';
 		break;
 	default:
-		icon = 'ico_three-line.svg';
+		icon = 'ico_grid-3x3.svg';
 		break;
 	}
 

@@ -47,7 +47,7 @@ const Modal = props => {
 				<div style={props.style} className={modalClass}>
 					<div className='flex-row flex-spaceBetween flex-middle'>
 						<div className={styles.left}>{props.left}</div>
-						<div className={`${styles.center} font--lato-regular`}>{props.center}</div>
+						<div className={`${styles.center} font--lato-regular font-15`}>{props.center}</div>
 						<div className={styles.right}>{props.right}</div>
 					</div>
 				</div>

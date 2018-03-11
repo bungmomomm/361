@@ -626,7 +626,7 @@ class Products extends Component {
 							</Button>)}
 					/>
 				</Modal>
-				<Modal position='bottom' show={false}>
+				<Modal position='bottom' show={false} onCloseOverlay={() => console.log('close modal')}>
 					<div className='padding--medium-v'>
 						<div className='padding--medium-h'>Pilih Ukuran</div>
 						<div className='margin--medium-v horizontal-scroll padding--medium-h  margin--medium-r'>

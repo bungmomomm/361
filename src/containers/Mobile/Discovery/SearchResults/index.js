@@ -402,7 +402,7 @@ class SearchResults extends Component {
 			tabsView = (
 				<div>
 					{renderIf(sorts)(
-						<Sort shown={showSort} isSticky sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+						<Sort shown={showSort} onCloseOverlay={() => this.setState({ showSort: false })} isSticky sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
 					)}
 					<Tabs
 						type='segment'
