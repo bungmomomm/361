@@ -25,7 +25,6 @@ class Products extends Component {
 
 		this.closeZoomImage = this.closeZoomImage.bind(this);
 		this.goBackPreviousPage = this.goBackPreviousPage.bind(this);
-		this.handleScroll = this.handleScroll.bind(this);
 		this.handleLovelistClick = this.handleLovelistClick.bind(this);
 		this.handleImageItemClick = this.handleImageItemClick.bind(this);
 		this.handleCloseModalPopUp = this.handleCloseModalPopUp.bind(this);
@@ -69,10 +68,6 @@ class Products extends Component {
 				<Spinner size='large' />
 			</div>
 		);
-	}
-
-	componentDidMount() {
-		window.addEventListener('scroll', this.handleScroll, true);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -130,10 +125,7 @@ class Products extends Component {
 
 		// updates states
 		this.setState({ detail, status, pdpData, selectedVariant });
-	}
-
-	componentWillUnmount() {
-		window.removeEventListener('scroll', this.handleScroll, true);
+		this.handleScroll();
 	}
 
 	setCarouselSlideIndex(index) {
@@ -160,16 +152,18 @@ class Products extends Component {
 	}
 
 	handleScroll(e) {
+		if (!this.carouselEL) return;
 		const { status } = this.state;
-		if (e.target.scrollTop > 400 && !status.showScrollInfomation) {
+		const carouselHeight = this.carouselEL.getBoundingClientRect().height;
+		if (this.props.scroll.top > carouselHeight && !status.showScrollInfomation) {
 			status.showScrollInfomation = true;
+			this.setState({ status });
 		}
 
-		if (e.target.scrollTop < 400 && status.showScrollInfomation) {
+		if (this.props.scroll.top < carouselHeight && status.showScrollInfomation) {
 			status.showScrollInfomation = false;
+			this.setState({ status });
 		}
-
-		this.setState({ status });
 	}
 
 	handleLovelistClick(e) {
@@ -445,17 +439,19 @@ class Products extends Component {
 				<Page color='#f9f9f9'>
 					<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
 						{status.pdpDataHasLoaded && (
-							<Card.Product
-								setCarouselSlideIndex={this.setCarouselSlideIndex}
-								slideIndex={carousel.slideIndex}
-								onImageItemClick={this.handleImageItemClick}
-								data={pdpData.cardProduct || {}}
-								isLoved={status.isLoved}
-								onBtnLovelistClick={this.handleLovelistClick}
-								onBtnCommentClick={this.redirectToComments}
-								onBtnBeliClick={this.handleBtnBeliClicked}
-								linkToPdpDisabled={linkToPdpDisabled}
-							/>
+							<div ref={(n) => { this.carouselEL = n; }}>
+								<Card.Product
+									setCarouselSlideIndex={this.setCarouselSlideIndex}
+									slideIndex={carousel.slideIndex}
+									onImageItemClick={this.handleImageItemClick}
+									data={pdpData.cardProduct || {}}
+									isLoved={status.isLoved}
+									onBtnLovelistClick={this.handleLovelistClick}
+									onBtnCommentClick={this.redirectToComments}
+									onBtnBeliClick={this.handleBtnBeliClicked}
+									linkToPdpDisabled={linkToPdpDisabled}
+								/>
+							</div>
 						)}
 						
 						{!status.pdpDataHasLoaded && this.loadingContent}

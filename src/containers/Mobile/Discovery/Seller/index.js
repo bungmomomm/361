@@ -335,7 +335,7 @@ class Seller extends Component {
 					/>
 				) : (
 					<div style={this.props.style}>
-						<Page>
+						<Page color='white'>
 							{seller.info.seller && this.renderHelmet()}
 							{this.sellerHeader()}
 							{this.filterTabs()}

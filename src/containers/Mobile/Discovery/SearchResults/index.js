@@ -208,7 +208,7 @@ class SearchResults extends Component {
 			});
 
 			return (
-				<Page>
+				<Page color='white'>
 					{this.renderForeverBanner()}
 					<div className={stylesSearch.container} >
 						<div className={stylesCatalog.cardContainer}>
