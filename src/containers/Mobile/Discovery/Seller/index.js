@@ -93,7 +93,7 @@ class Seller extends Component {
 
 		if (!headerNameY) {
 			this.setState({
-				headerNameY: this.headerName.getBoundingClientRect().top ? this.headerName.getBoundingClientRect().top - 60 : 115
+				headerNameY: this.headerName.getBoundingClientRect().top ? this.headerName.getBoundingClientRect().top - 60 : 85
 			});
 		}
 
@@ -111,7 +111,7 @@ class Seller extends Component {
 			});
 		} else {
 			let o = 0;
-			const y = !headerNameY ? (this.headerName.getBoundingClientRect().top ? this.headerName.getBoundingClientRect().top - 60 : 115) : headerNameY;
+			const y = !headerNameY ? 85 : headerNameY;
 
 			if (scrollY > y && scrollY < (y + 13)) {
 				o = (((scrollY - y) * 12) / 12) / 10;
