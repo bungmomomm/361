@@ -2,9 +2,10 @@ import React, { PureComponent } from 'react';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 
-import { Page, Card, Notification, Image, Svg, Grid, Level, Carousel } from '@/components/mobile';
+import { Page, Card, Svg, Grid, Level, Carousel } from '@/components/mobile';
 import { hyperlink } from '@/utils';
 // import styles from './search.scss';
+import Parser from 'html-react-parser';
 
 class SearchNotFound extends PureComponent {
 	constructor(props) {
@@ -20,11 +21,7 @@ class SearchNotFound extends PureComponent {
 			if (banner) {
 				bannerView = (
 					<div style={this.inlineStyle}>
-						<hr />
-						<div>[Promo Banner]</div>
-						<p>{banner.title}</p>
-						{banner.data.thumbnail}
-						<hr />
+						{Parser(banner.data.original)}
 					</div>
 				);
 			}
@@ -91,16 +88,7 @@ class SearchNotFound extends PureComponent {
 						{'Mohon maaf hasil pencarian untuk "'}{keyword || ''}
 						{ '" tidak dapat ditemukan. Silakan periksa pengejaan kata, atau menggunakan kata kunci lain!'}
 					</div>
-					<div className='flex-row margin--large-v margin--none-b'>
-						<Link className='border-white-right' to='/'><Image local src='temp/promo404-1.jpg' /></Link>
-						<Link to='/'><Image local src='temp/promo404-2.jpg' /></Link>
-					</div>
-					<Notification color='yellow' show disableClose>
-						<div className='margin--medium-v padding--medium-h' style={{ color: '#F57C00' }}>
-							Jika anda mengalami kesulitan silahkan hubungi<br />
-							<strong>Customer Support kami di: 1500038</strong>
-						</div>
-					</Notification>
+					{this.bannerRender()}
 					{this.productRender()}
 				</div>
 			</Page>
