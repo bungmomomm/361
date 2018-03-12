@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import classNames from 'classnames';
 import styles from './article.scss';
-// import Carousel from '@/components/mobile';
 
 class Article extends PureComponent {
 	render() {
@@ -16,11 +15,15 @@ class Article extends PureComponent {
 		
 		return ( 
 			<div className={createClassName}>
-				<img src={posts.images.thumbnail} alt='article' />
-				<div className={`${styles.category} --disable-flex`}>
-					<span>{posts.category}</span>
-				</div>
-				<a className={styles.title} href={posts.link}>{posts.title}</a>
+				<a href={posts.link} target='_blank'>
+					<img src={posts.images.thumbnail} alt='article' />
+					<div className={`${styles.category} --disable-flex`}>
+						<span>{posts.category}</span>
+					</div>
+					<div className={styles.title}>
+						{posts.title}
+					</div>
+				</a>
 				<div className={styles.author}>by {posts.author}</div>
 			</div>
 		);
