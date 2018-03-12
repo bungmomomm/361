@@ -1,24 +1,23 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-import { Navigation, 
-	Svg, 
-	Tabs, 
-	Header, 
-	Page, 
+import { Navigation,
+	Svg,
+	Tabs,
+	Header,
+	Page,
 	Button
 } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import { actions } from '@/state/v4/Seller';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
-import { 
+import {
 	Filter,
-	Sort 
+	Sort
 } from '@/containers/Mobile/Widget';
 import { withRouter } from 'react-router-dom';
 import stylesCatalog from '../Category/Catalog/catalog.scss';
-import styles from './styles.scss';
 import Spinner from '@/components/mobile/Spinner';
 import Share from '@/components/mobile/Share';
 import { urlBuilder, renderIf } from '@/utils';
@@ -275,11 +274,7 @@ class Seller extends Component {
 			break;
 		}
 
-		return (
-			<div className={styles.cardContainer}>
-				{listView}
-			</div>
-		);
+		return listView;
 	};
 
 	renderHelmet = () => {
