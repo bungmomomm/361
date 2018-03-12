@@ -38,7 +38,7 @@ class Login extends Component {
 		const { provider } = this.props;
 		const { loading } = this.state;
 		return (
-			<div className='flex-row flex-center flex-spaceBetween'>
+			<div className='flex-row flex-middle flex-spaceBetween'>
 				<div style={{ width: '45%' }}>
 					<SocialLogin
 						provider={'facebook'}

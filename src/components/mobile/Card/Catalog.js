@@ -139,7 +139,7 @@ class Catalog extends PureComponent {
 					<div className={styles.title}>
 						{brandName} - <span>{productTitle}</span>
 					</div>
-					<Level className={styles.footer}>
+					<Level className='padding--none-t'>
 						<Level.Item>
 							<div className={styles.blockPrice}>
 								<div>

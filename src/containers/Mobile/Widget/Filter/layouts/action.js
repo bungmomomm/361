@@ -17,7 +17,7 @@ class Action extends PureComponent {
 					<div className={styles.navigation}>
 						{
 							this.props.hasReset && (
-								<Button className={styles.item} onClick={onReset}>
+								<Button className={`${styles.item} ${styles.reset}`} onClick={onReset}>
 									<Svg src='ico_reset.svg' />
 									Reset
 								</Button>

@@ -90,7 +90,7 @@ class Hashtags extends Component {
 			center: '#MauGayaItuGampang',
 			right: (
 				<Button onClick={() => this.setState({ gridSizeSmall: !this.state.gridSizeSmall })}>
-					<Svg src={this.state.gridSizeSmall ? 'ico_three-line.svg' : 'ico_grid.svg'} />
+					<Svg src={this.state.gridSizeSmall ? 'ico_grid-3x3.svg' : 'ico_grid.svg'} />
 				</Button>
 			)
 		};

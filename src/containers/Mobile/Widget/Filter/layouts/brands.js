@@ -80,7 +80,7 @@ class Brands extends Component {
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
-					<Svg src='ico_arrow-back-left.svg' />
+					<Svg src='ico_close-large.svg' />
 				</Button>
 			),
 			center: _.capitalize(title),
@@ -89,21 +89,34 @@ class Brands extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page hideFooter>
-					<div className={styles.filter}>
-						<Input
-							autoFocus
-							iconLeft={<Svg src='ico_search.svg' />}
-							placeholder={`cari nama ${title}`}
-							value={keyword}
-							onChange={(e) => this.searchData(e)}
-						/>
+				<Page hideFooter color='white'>
+					<div className={styles.filterSearch}>
+						<div className='margin--medium-v flex-row flex-middle'>
+							<div style={{ flex: 1 }}>
+								<Input
+									autoFocus
+									iconLeft={<Svg src='ico_search.svg' />}
+									placeholder={`cari nama ${title}`}
+									value={keyword}
+									onChange={(e) => this.searchData(e)}
+									iconRight={<button><Svg src='ico_close-grey.svg' /></button>}
+								/>
+							</div>
+							<Button className='font-bold margin--medium-l'>BATAL</Button>
+						</div>
 					</div>
 					<List>
 						{_.map(data, (value, id) => {
 							const icon = value.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
 							return (
-								<Button key={id} align='left' wide onClick={(e) => this.onClick(e, value)}><List.Content>{value.facetdisplay} ({value.count}) {icon}</List.Content></Button>
+								<Button key={id} align='left' wide onClick={(e) => this.onClick(e, value)}>
+									<List.Content className='padding--medium-v'>
+										<div className='flex-row flex-middle'>
+											<span>{value.facetdisplay}</span> <span className='font-color--primary-ext-2 margin--small-l'>({value.count})</span>
+										</div>
+										{icon}
+									</List.Content>
+								</Button>
 							);
 						})}
 					</List>

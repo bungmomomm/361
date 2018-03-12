@@ -96,7 +96,8 @@ class Seller extends Component {
 					width: '100%',
 					top: '60px',
 					zIndex: '1',
-					overflow: 'hidden'
+					overflow: 'hidden',
+					maxWidth: '480px'
 				}
 			});
 		} else {
@@ -224,7 +225,7 @@ class Seller extends Component {
 					onPick={e => this.handlePick(e)}
 				/>
 				{renderIf(sorts)(
-					<Sort shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+					<Sort shown={showSort} onCloseOverlay={() => this.setState({ showSort: false })} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
 				)}
 			</div>
 		);
@@ -300,6 +301,7 @@ class Seller extends Component {
 				<meta property='og:description' content={info.description} />
 				<meta property='og:image' content={info.seller_logo} />
 				<meta property='og:site_name' content='MatahariMall.com' />
+				<link rel='canonical' href={process.env.MOBILE_URL} />
 			</Helmet>
 		);
 	};
@@ -335,7 +337,7 @@ class Seller extends Component {
 					/>
 				) : (
 					<div style={this.props.style}>
-						<Page>
+						<Page color='white'>
 							{seller.info.seller && this.renderHelmet()}
 							{this.sellerHeader()}
 							{this.filterTabs()}

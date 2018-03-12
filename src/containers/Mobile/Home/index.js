@@ -300,11 +300,14 @@ class Home extends Component {
 				</Page>
 				<Header 
 					rows={
-						<Tabs
-							current={this.props.shared.current}
-							variants={this.props.home.segmen}
-							onPick={(e) => this.handlePick(e)}
-						/>
+						this.props.scroll.top > 60 ? null : (
+							<Tabs
+								current={this.props.shared.current}
+								variants={this.props.home.segmen}
+								onPick={(e) => this.handlePick(e)}
+								type='minimal'
+							/>
+						)
 					} 
 					lovelist={shared.totalLovelist} 
 					value={this.props.search.keyword} 

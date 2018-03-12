@@ -45,7 +45,7 @@ class Size extends PureComponent {
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
-					<Svg src='ico_arrow-back-left.svg' />
+					<Svg src='ico_close-large.svg' />
 				</Button>
 			),
 			center: 'Ukuran',
@@ -61,7 +61,14 @@ class Size extends PureComponent {
 				childSizes = _.map(size.childs, (childSize, key) => {
 					const icon = childSize.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
 					return (
-						<Button key={key} align='left' wide onClick={(e) => this.onClick(e, childSize)}><List.Content>{childSize.facetdisplay} {icon}</List.Content></Button>
+						<Button key={key} align='left' wide onClick={(e) => this.onClick(e, childSize)}>
+							<List.Content className='padding--medium-v'>
+								<div className='flex-row flex-middle'>
+									<span>{childSize.facetdisplay}</span> <span className='font-color--primary-ext-2 margin--small-l'>(111)</span>
+								</div>
+								{icon}
+							</List.Content>
+						</Button>
 					);
 				});
 
@@ -79,14 +86,21 @@ class Size extends PureComponent {
 			const icon = size.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
 			return (
 				<div>
-					<Button key={id} align='left' wide onClick={(e) => this.onClick(e, size)}><List.Content>{size.facetdisplay} {icon}</List.Content></Button>
+					<Button key={id} align='left' wide onClick={(e) => this.onClick(e, size)}>
+						<List.Content className='padding--medium-v'>
+							<div className='flex-row flex-middle'>
+								<span>{size.facetdisplay}</span> <span className='font-color--primary-ext-2 margin--small-l'>(111)</span>
+							</div>
+							{icon}
+						</List.Content>
+					</Button>
 				</div>
 			);
 		});
 
 		return (
 			<div style={this.props.style}>
-				<Page hideFooter>
+				<Page hideFooter color='white' style={{ marginTop: '15px' }}>
 					<List>
 						{sizeList}
 					</List>
