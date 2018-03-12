@@ -113,9 +113,14 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-	await props.dispatch(
+	const { dispatch, cookies } = props;
+
+	const tokenHeader = cookies.get('user.token');
+
+	await dispatch(
 		new actions.recomendationAction(
 			_.chain(props).get('home.segmen').find(d => d.key === props.home.activeSegment.key).value(),
+			tokenHeader,
 			_.chain(props).get('shared.serviceUrl.promo').value()
 		)
 	);
