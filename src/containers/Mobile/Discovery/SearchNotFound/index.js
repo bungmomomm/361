@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 import { Page, Card, Svg, Grid, Level, Carousel } from '@/components/mobile';
 import { hyperlink } from '@/utils';
 // import styles from './search.scss';
-import Parser from 'html-react-parser';
 
 class SearchNotFound extends PureComponent {
 	constructor(props) {
@@ -20,9 +19,7 @@ class SearchNotFound extends PureComponent {
 			const banner = _.find(data, { type: 'promo_banner' }) || false;
 			if (banner) {
 				bannerView = (
-					<div style={this.inlineStyle}>
-						{Parser(banner.data.original)}
-					</div>
+					<div dangerouslySetInnerHTML={{ __html: banner.data.original }} />
 				);
 			}
 		}

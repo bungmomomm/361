@@ -8,7 +8,6 @@ import { Header, Page, Navigation, Svg, Grid, Card, Spinner, Level, Carousel } f
 import styles from './search.scss';
 import { connect } from 'react-redux';
 import { urlBuilder } from '@/utils';
-import Parser from 'html-react-parser';
 
 class Page404 extends Component {
 	constructor(props) {
@@ -26,9 +25,7 @@ class Page404 extends Component {
 		const { promoData } = this.props;
 		const promoBanner = promoData.filter(e => e.type === 'promo_banner')[0].data;
 		return promoBanner && (
-			<div>
-				{ Parser(promoBanner.original)}
-			</div>
+			<div dangerouslySetInnerHTML={{ __html: promoBanner.original }} />
 		);
 	}
 

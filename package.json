@@ -90,7 +90,6 @@
     "formsy-react": "^1.1.4",
     "google-maps-react": "^1.1.2",
     "html-minifier": "3.5.2",
-    "html-react-parser": "^0.4.2",
     "iso8601": "^1.1.1",
     "jwt-decode": "^2.2.0",
     "kong-hmac": "^0.2.0",
