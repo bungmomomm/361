@@ -152,97 +152,19 @@ class Product extends Component {
 		history.push(`/login?redirect_uri=${encodeURIComponent(location.pathname + location.search)}`);
 	}
 
-	renderPage() {
-		const { productCategory } = this.props;
-		const { showFilter } = this.state;
-		if (showFilter) {
-			return (
-				<Filter
-					shown={showFilter}
-					filters={productCategory.pcpData}
-					onApply={(e, fq) => {
-						this.onApply(e, fq);
-					}}
-					onClose={(e) => this.onClose(e)}
-				/>
-			);
-		}
-		return (
-			<div style={this.props.style}>
-				{this.renderPcp()}
-				{this.renderHeader()}
-				<Navigation active='Categories' scroll={this.props.scroll} />
-			</div>
-		);
+	foreverBannerBlock() {
+		const { shared, dispatch } = this.props;
+
+		return <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />;
 	}
 
-	renderPcp() {
-		const { comments, productCategory, scroller, viewMode } = this.props;
-
-		if (productCategory.pcpStatus !== '') {
-			if (productCategory.pcpStatus === 'success') {
-				let listView;
-				switch (viewMode.mode) {
-				case 1:
-					listView = (
-						<CatalogView comments={comments} loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={productCategory.pcpData.products} />
-					);
-					break;
-				case 2:
-					listView = (
-						<GridView loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={productCategory.pcpData.products} />
-					);
-					break;
-				case 3:
-					listView = (
-						<SmallGridView loading={scroller.loading} products={productCategory.pcpData.products} />
-					);
-					break;
-				default:
-					listView = null;
-					break;
-				}
-				return (
-					<Page color='white'>
-						{this.renderForeverBanner()}
-						<div className='text-center margin--medium-v'>1111 Total Produk</div>
-						{listView}
-						<Footer isShow={this.state.isFooterShow} />
-					</Page>
-				);
-			} else if (productCategory.pcpStatus === 'failed') {
-				window.location.href = '/not-found';
-			}
-		}
-
-		return null;
-	}
-
-	renderHeader() {
-		const { isLoading, productCategory } = this.props;
-		const headerTitle = _.chain(productCategory).get('pcpData.info.title').value();
-		const HeaderPage = {
-			left: (
-				<Link to='/sub-category'>
-					<Svg src='ico_arrow-back-left.svg' />
-				</Link>
-			),
-			center: isLoading ? this.loadingView : headerTitle,
-			right: null,
-			rows: this.renderTabs()
-		};
-
-		return (
-			<Header.Modal {...HeaderPage} />
-		);
-	}
-
-	renderTabs() {
+	tabBlock() {
 		const { productCategory, viewMode } = this.props;
 		const { showSort } = this.state;
+		const productChain = _.chain(productCategory);
 		let tabsView = null;
-		if (!_.isEmpty(productCategory.pcpData.products)) {
-			const sorts = _.chain(productCategory).get('pcpData.sorts').value() || [];
+		if (!_.isEmpty(productChain.get('pcpData.products').value())) {
+			const sorts = productChain.get('pcpData.sorts').value() || [];
 			tabsView = (
 				<div className={'tabContainer'}>
 					{renderIf(sorts)(
@@ -260,7 +182,7 @@ class Product extends Component {
 							{
 								id: 'filter',
 								title: 'Filter',
-								disabled: typeof productCategory.pcpData === 'undefined'	
+								disabled: typeof productCategory.pcpData === 'undefined'
 							},
 							{
 								id: 'view',
@@ -276,10 +198,90 @@ class Product extends Component {
 		return tabsView;
 	}
 
-	renderForeverBanner() {
-		const { shared, dispatch } = this.props;
+	productsBlock() {
+		const { comments, productCategory, scroller, viewMode } = this.props;
+		if (productCategory.pcpStatus !== '') {
+			if (productCategory.pcpStatus === 'success') {
+				const products = productCategory.pcpData.products;
+				const info = productCategory.pcpData.info;
+				let listView;
+				switch (viewMode.mode) {
+				case 1:
+					listView = (
+						<CatalogView comments={comments} loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={products} />
+					);
+					break;
+				case 2:
+					listView = (
+						<GridView loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={products} />
+					);
+					break;
+				case 3:
+					listView = (
+						<SmallGridView loading={scroller.loading} products={products} />
+					);
+					break;
+				default:
+					listView = null;
+					break;
+				}
+				return (
+					<Page color='white'>
+						{this.foreverBannerBlock()}
+						<div className='text-center margin--medium-v'>{info.product_count} Total Produk</div>
+						{listView}
+						<Footer isShow={this.state.isFooterShow} />
+					</Page>
+				);
+			} else if (productCategory.pcpStatus === 'failed') {
+				window.location.href = '/not-found';
+			}
+		}
 
-		return <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />;
+		return null;
+	}
+
+	headerBlock() {
+		const { isLoading, productCategory } = this.props;
+		const headerTitle = _.chain(productCategory).get('pcpData.info.title').value();
+		const HeaderPage = {
+			left: (
+				<Link to='/sub-category'>
+					<Svg src='ico_arrow-back-left.svg' />
+				</Link>
+			),
+			center: isLoading ? this.loadingView : headerTitle,
+			right: null,
+			rows: this.tabBlock()
+		};
+
+		return (
+			<Header.Modal {...HeaderPage} />
+		);
+	}
+
+	renderPage() {
+		const { productCategory } = this.props;
+		const { showFilter } = this.state;
+		if (showFilter) {
+			return (
+				<Filter
+					shown={showFilter}
+					filters={productCategory.pcpData}
+					onApply={(e, fq) => {
+						this.onApply(e, fq);
+					}}
+					onClose={(e) => this.onClose(e)}
+				/>
+			);
+		}
+		return (
+			<div style={this.props.style}>
+				{this.productsBlock()}
+				{this.headerBlock()}
+				<Navigation active='Categories' scroll={this.props.scroll} />
+			</div>
+		);
 	}
 
 	render() {
