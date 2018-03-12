@@ -148,6 +148,7 @@ const getProductCardData = (details) => {
 	if (!_.isEmpty(details)) {
 		let productStock = 0;
 		const productVariants = [];
+		const variantsData = {};
 		const images = details.images.map((img, idx) => {
 			return { mobile: img.original };
 		});
@@ -167,6 +168,7 @@ const getProductCardData = (details) => {
 								disabled: (typeof variant.stock !== 'undefined' && variant.stock === 0),
 								data: variant
 							});
+							variantsData[val] = variant;
 						}
 					}
 				});
@@ -183,6 +185,7 @@ const getProductCardData = (details) => {
 			totalLovelist: 0,
 			totalComments: 0,
 			variants: productVariants,
+			variantsData,
 			productStock
 		};
 	}
