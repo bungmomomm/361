@@ -21,7 +21,7 @@ import { actions as brandAction } from '@/state/v4/Brand';
 import Shared from '@/containers/Mobile/Shared';
 import stylesCatalog from '@/containers/Mobile/Discovery/Category/Catalog/catalog.scss';
 import queryString from 'query-string';
-import { urlBuilder, renderIf } from '@/utils';
+import { renderIf } from '@/utils';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import Share from '@/components/mobile/Share';
 import Footer from '@/containers/Mobile/Shared/footer';
@@ -30,6 +30,7 @@ import { actions as searchActions } from '@/state/v4/SearchResults';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { Promise } from 'es6-promise';
 import Spinner from '@/components/mobile/Spinner';
+import Discovery from '../Utils';
 
 class Detail extends Component {
 	static queryObject(props) {
@@ -511,18 +512,18 @@ class Detail extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page color='white'>
-					<div style={{ marginTop: '-112px', marginBottom: '30px' }}>
-						{(showFilter) ? (
-							<Filter
-								shown={showFilter}
-								filters={this.props.brands.searchData}
-								onApply={(e, fq) => {
-									this.onApply(e, fq);
-								}}
-								onClose={(e) => this.onClose(e)}
-							/>
-						) : (
+				{(showFilter) ? (
+					<Filter
+						shown={showFilter}
+						filters={this.props.brands.searchData}
+						onApply={(e, fq) => {
+							this.onApply(e, fq);
+						}}
+						onClose={(e) => this.onClose(e)}
+					/>
+				) : (
+					<Page color='white'>
+						<div style={{ marginTop: '-112px', marginBottom: '30px' }}>
 							<div>
 								<div ref={(n) => { this.headerEl = n; }}>
 									{this.renderBenner()}
@@ -532,12 +533,10 @@ class Detail extends Component {
 								{this.renderProduct()}
 								{this.props.scroller.loading && (<Spinner />)}
 							</div>
-						)
-						}
-					</div>
-					<Footer isShow={this.state.isFooterShow} />
-				</Page>
-
+						</div>
+						<Footer isShow={this.state.isFooterShow} />
+					</Page>
+				)}
 				{(!showFilter) && (
 					<div>
 						{this.renderHeader()}
@@ -552,23 +551,7 @@ class Detail extends Component {
 
 const mapStateToProps = (state) => {
 	const { comments, lovelist, brands } = state;
-	brands.searchData.products = _.map(brands.searchData.products, (product) => {
-		const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: product.product_id }) : false;
-		const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: product.product_id }) : false;
-		if (lovelistData) {
-			product.lovelistTotal = lovelistData.total;
-			product.lovelistStatus = lovelistData.status;
-		}
-
-		if (commentData) {
-			product.commentTotal = commentData.total;
-		}
-		return {
-			...product,
-			url: urlBuilder.buildPdp(product.product_title, product.product_id),
-			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`
-		};
-	});
+	brands.searchData.products = Discovery.mapProducts(brands.searchData.products, comments, lovelist);
 
 	return {
 		...state,

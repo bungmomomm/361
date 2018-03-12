@@ -62,7 +62,7 @@ class CatalogView extends Component {
 	}
 
 	render() {
-		const { loading, comments, products } = this.props;
+		const { comments, products } = this.props;
 		return (
 			<div className={stylesCatalog.cardContainer}>
 				{products.map((product, index) => {
@@ -90,7 +90,6 @@ class CatalogView extends Component {
 						</div>
 					);
 				})}
-				{loading && this.loading}
 			</div>
 		);
 	}

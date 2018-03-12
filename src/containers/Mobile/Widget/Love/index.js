@@ -71,7 +71,7 @@ class Love extends PureComponent {
 			<div>
 				<Button.Love
 					onClick={(e) => this.loveClicked(e)}
-					disabled={loading && disabled} 
+					disabled={loading || disabled} 
 					showNumber={showNumber}
 					status={status}
 					total={total}

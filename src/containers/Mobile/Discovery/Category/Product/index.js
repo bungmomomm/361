@@ -153,7 +153,7 @@ class Product extends Component {
 	}
 
 	renderPage() {
-		const { productCategory, isLoading } = this.props;
+		const { productCategory } = this.props;
 		const { showFilter } = this.state;
 		if (showFilter) {
 			return (
@@ -170,9 +170,6 @@ class Product extends Component {
 		return (
 			<div style={this.props.style}>
 				{this.renderPcp()}
-				{isLoading && (
-					<Spinner />
-				)}
 				{this.renderHeader()}
 				<Navigation active='Categories' scroll={this.props.scroll} />
 			</div>
@@ -180,11 +177,7 @@ class Product extends Component {
 	}
 
 	renderPcp() {
-		const { comments, isLoading, productCategory, scroller, viewMode } = this.props;
-
-		if (isLoading) {
-			return this.loadingView;
-		} 
+		const { comments, productCategory, scroller, viewMode } = this.props;
 
 		if (productCategory.pcpStatus !== '') {
 			if (productCategory.pcpStatus === 'success') {
