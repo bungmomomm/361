@@ -22,9 +22,9 @@ const Header = props => {
 						</div>
 						<div className={styles.center}>
 							<Input
-								onFocus={() => props.history.push('/search')}
+								onFocus={() => props.history.push('/search?ref=home')}
 								placeholder=''
-								value={props.value}
+								value=''
 							/>
 							<div className={styles.dummyplaceholder}>
 								<span><Svg src='ico_search.svg' /></span>

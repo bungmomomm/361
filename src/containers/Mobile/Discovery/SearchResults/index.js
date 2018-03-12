@@ -11,6 +11,7 @@ import SearchNotFound from '@/containers/Mobile/Discovery/SearchNotFound';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import { Filter, Love, Sort } from '@/containers/Mobile/Widget';
+import { actions as actionSearch } from '@/state/v4/Search';
 
 import {
 	Header,
@@ -100,7 +101,7 @@ class SearchResults extends Component {
 
 		return keywordFromUrl;
 	}
-	
+
 	update = async (params) => {
 		const { cookies, dispatch, location, history } = this.props;
 		const { query } = this.state;
@@ -169,7 +170,7 @@ class SearchResults extends Component {
 	forceLoginNow() {
 		const { history } = this.props;
 		history.push(`/login?redirect_uri=${location.pathname}`);
-	}	
+	}
 
 	writeComment(e) {
 		this.setState({
@@ -378,9 +379,16 @@ class SearchResults extends Component {
 	}
 
 	renderHeader() {
-		let back = () => { this.props.history.go(-2); };
+		const { dispatch, cookies } = this.props;
+		let back = () => {
+			dispatch(actionSearch.updatedKeywordHandler('', cookies.get('user.token')));
+			this.props.history.go(-2);
+		};
 		if (this.props.history.length === 0) {
-			back = () => { this.props.history.push('/'); };
+			back = () => {
+				dispatch(actionSearch.updatedKeywordHandler('', cookies.get('user.token')));
+				this.props.history.push('/');
+			};
 		}
 
 		return (
