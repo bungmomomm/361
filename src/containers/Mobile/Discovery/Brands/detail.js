@@ -429,7 +429,7 @@ class Detail extends Component {
 	renderHeader() {
 		const { searchData } = this.props.brands;
 		const title = (searchData.info) ? searchData.info.title : '';
-		const url = `${process.env.MOBILE_URL}/${this.props.location.pathname}`;
+		const url = `${process.env.MOBILE_URL}${this.props.location.pathname}`;
 		const headerComponent = {
 			left: (
 				<span
