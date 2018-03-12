@@ -56,6 +56,7 @@ class Sort extends Component {
 			);
 			return (
 				<div className={cx}>
+					{this.props.onCloseOverlay && <button onClick={() => this.props.onCloseOverlay()} className={styles.overlay} />}
 					{_.map(sorts, (value, id) => {
 						const icon = value.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
 						return (

@@ -45,7 +45,7 @@ class Lists extends PureComponent {
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
-					<Svg src='ico_arrow-back-left.svg' />
+					<Svg src='ico_close-large.svg' />
 				</Button>
 			),
 			center: _.capitalize(title) || 'Default',
@@ -55,13 +55,20 @@ class Lists extends PureComponent {
 		const lists = _.map(data, (value, id) => {
 			const icon = value.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
 			return (
-				<Button key={id} align='left' wide onClick={(e) => this.onClick(e, value)}><List.Content>{value.facetdisplay} {icon}</List.Content></Button>
+				<Button key={id} align='left' wide onClick={(e) => this.onClick(e, value)}>
+					<List.Content className='padding--medium-v'>
+						<div className='flex-row flex-middle'>
+							<span>{value.facetdisplay}</span> <span className='font-color--primary-ext-2 margin--small-l'>(111)</span>
+						</div>
+						{icon}
+					</List.Content>
+				</Button>
 			);
 		});
 
 		return (
 			<div style={this.props.style}>
-				<Page hideFooter>
+				<Page color='white' hideFooter style={{ marginTop: '15px' }}>
 					<List>
 						{lists}
 					</List>

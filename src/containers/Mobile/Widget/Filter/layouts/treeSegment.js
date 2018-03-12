@@ -85,7 +85,7 @@ class TreeSegment extends Component {
 				{
 					category.childs.map((child, id) => {
 						const hasChild = typeof child.childs !== 'undefined' && child.childs.length > 0;
-						const Label = hasChild ? <strong>{child.facetdisplay}</strong> : child.facetdisplay;
+						const Label = hasChild ? child.facetdisplay : child.facetdisplay;
 						const isChildSelected = utils.isDescendantSelected(child.childs);
 						let renderChild = false;
 						if ((defaultOpen && isChildSelected) || (!defaultOpen && hasChild && child.open)) {
@@ -95,10 +95,9 @@ class TreeSegment extends Component {
 							return (
 								<List key={id} className={child.open ? styles.segment : styles.closed}>
 									<List.Content className={child.open && styles.selected} onClick={(e) => this.handleTree(e, child, hasChild)}>
-										<div className={styles.label}>{Label} <span> ({child.count}) produk</span></div>
+										<div className={styles.label}>{Label} <span className='font-color--primary-ext-2'> ({child.count}) produk</span></div>
 										{treeIcon(hasChild ? child.open : child.is_selected, hasChild)}
 									</List.Content>
-
 									{renderChild && this.renderChild(child)}
 								</List>
 							);
@@ -106,7 +105,7 @@ class TreeSegment extends Component {
 						return (
 							<List key={id} className={(hasChild && styles.parent)}>
 								<List.Content className={child.open && styles.segment} onClick={(e) => this.handleTree(e, child, hasChild)}>
-									{Label} ({child.count})
+									<div className={styles.label}>{Label} <span className='font-color--primary-ext-2'>({child.count})</span></div>
 									{treeIcon(hasChild ? child.open : child.is_selected, hasChild)}
 								</List.Content>
 								{renderChild && this.renderChild(child)}
@@ -128,7 +127,7 @@ class TreeSegment extends Component {
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
-					<Svg src='ico_arrow-back-left.svg' />
+					<Svg src='ico_close-large.svg' />
 				</Button>
 			),
 			center: 'Kategori',
@@ -141,7 +140,7 @@ class TreeSegment extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page hideFooter>
+				<Page color='white' hideFooter style={{ marginTop: '15px' }}>
 					{this.renderChild(categories, true)}
 					{/* {this.renderTree(categories)} */}
 				</Page>

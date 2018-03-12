@@ -358,6 +358,7 @@ class Filter extends PureComponent {
 				filterView = (
 					<Lists 
 						{...state} 
+						title='Layanan Pengiriman' 
 						data={shippings.data} 
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
 						onClose={(e) => this.onFilterSectionClose()}
@@ -405,7 +406,7 @@ class Filter extends PureComponent {
 			}
 		}
 		return (
-			<div className={styles.filterContainer}>
+			<div>
 				<div className={styles.filterBackground} />
 				{filterView}
 			</div>

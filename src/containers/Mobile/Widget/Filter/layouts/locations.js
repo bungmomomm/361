@@ -46,7 +46,7 @@ class Location extends PureComponent {
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
-					<Svg src='ico_arrow-back-left.svg' />
+					<Svg src='ico_close-large.svg' />
 				</Button>
 			),
 			center: title || 'Default',
@@ -62,11 +62,20 @@ class Location extends PureComponent {
 
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page color='white' style={{ marginTop: '15px' }}>
 					<div>
 						{_.map(data, (value, id) => {
 							return (
-								<List key={id}><Button onClick={(e) => this.onClick(e, value)}><List.Content>{value.facetdisplay} {Icon(value.is_selected)}</List.Content></Button></List>
+								<List key={id}>
+									<Button onClick={(e) => this.onClick(e, value)}>
+										<List.Content className='padding--medium-v'>
+											<div className='flex-row flex-middle'>
+												<span>{value.facetdisplay}</span> <span className='font-color--primary-ext-2 margin--small-l'>(111)</span>
+											</div>
+											{Icon(value.is_selected)}
+										</List.Content>
+									</Button>
+								</List>
 							);
 						})}
 					</div>

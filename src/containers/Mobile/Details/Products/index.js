@@ -25,7 +25,6 @@ class Products extends Component {
 
 		this.closeZoomImage = this.closeZoomImage.bind(this);
 		this.goBackPreviousPage = this.goBackPreviousPage.bind(this);
-		this.handleScroll = this.handleScroll.bind(this);
 		this.handleLovelistClick = this.handleLovelistClick.bind(this);
 		this.handleImageItemClick = this.handleImageItemClick.bind(this);
 		this.handleCloseModalPopUp = this.handleCloseModalPopUp.bind(this);
@@ -69,10 +68,6 @@ class Products extends Component {
 				<Spinner size='large' />
 			</div>
 		);
-	}
-
-	componentDidMount() {
-		window.addEventListener('scroll', this.handleScroll, true);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -130,10 +125,7 @@ class Products extends Component {
 
 		// updates states
 		this.setState({ detail, status, pdpData, selectedVariant });
-	}
-
-	componentWillUnmount() {
-		window.removeEventListener('scroll', this.handleScroll, true);
+		this.handleScroll();
 	}
 
 	setCarouselSlideIndex(index) {
@@ -160,16 +152,18 @@ class Products extends Component {
 	}
 
 	handleScroll(e) {
+		if (!this.carouselEL) return;
 		const { status } = this.state;
-		if (e.target.scrollTop > 400 && !status.showScrollInfomation) {
+		const carouselHeight = this.carouselEL.getBoundingClientRect().height;
+		if (this.props.scroll.top > carouselHeight && !status.showScrollInfomation) {
 			status.showScrollInfomation = true;
+			this.setState({ status });
 		}
 
-		if (e.target.scrollTop < 400 && status.showScrollInfomation) {
+		if (this.props.scroll.top < carouselHeight && status.showScrollInfomation) {
 			status.showScrollInfomation = false;
+			this.setState({ status });
 		}
-
-		this.setState({ status });
 	}
 
 	handleLovelistClick(e) {
@@ -373,9 +367,14 @@ class Products extends Component {
 				),
 				center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{pdpData.cardProduct.product_title}</div>,
 				right: (
-					<Button href={'/'} onClick={this.switchMode}>
-						<Svg src={'ico_share.svg'} />
-					</Button>
+					<div className='flex-row flex-middle'>
+						<Button href={'/'} onClick={this.switchMode}>
+							<Svg src={'ico_share.svg'} />
+						</Button>
+						<Button href={'/'} className='margin--medium-l'>
+							<Svg src={'ico_cart.svg'} />
+						</Button>
+					</div>
 				)
 			};
 		}
@@ -387,49 +386,39 @@ class Products extends Component {
 			),
 			center: '',
 			right: (
-				<Button href={'/'} onClick={this.switchMode}>
-					<Svg src={'ico_share.svg'} />
-				</Button>
+				<div className='flex-row flex-middle'>
+					<Button href={'/'} onClick={this.switchMode}>
+						<Svg src={'ico_share.svg'} />
+					</Button>
+					<Button href={'/'} className='margin--medium-l'>
+						<Svg src={'ico_cart.svg'} />
+					</Button>
+				</div>
 			)
 		};
 	}
 
 	renderStickyAction() {
-		const { pdpData, status, detail, btnBeliLabel } = this.state;
-		if (status.pdpDataHasLoaded && status.showScrollInfomation && !status.loading) {
+		const { pdpData, status, btnBeliLabel } = this.state;
+		if (status.pdpDataHasLoaded && !status.loading) {
 			return (
 				<div className={styles.stickyAction}>
-					<Level style={{ padding: '10px' }} className='flex-center'>
-						<Level.Left>
-							<Level className={styles.action}>
-								<Level.Left>
-									<div className={styles.stickyActionImage}>
-										<img alt='product' src={detail.images[0].thumbnail} />
-									</div>
-								</Level.Left>
-							</Level>
-						</Level.Left>
-						<Level.Item className='padding--medium-h'>
-							<Level className={styles.action}>
-								<Level.Item>
-									<div className='font-normal'>{pdpData.cardProduct.pricing.effective_price}</div>
-									<div className='font-small font-color--primary-ext-2'>{pdpData.cardProduct.pricing.effective_price}</div>
-								</Level.Item>
-								<Level.Right>
-									<Badge rounded color='red'>
-										<span className='font--lato-bold'>{pdpData.cardProduct.pricing.discount || '0%'}</span>
-									</Badge>
-								</Level.Right>
-							</Level>
-						</Level.Item>
-						<Level.Right>
-							<Level className={styles.action}>
-								<Level.Right>
-									<Button color='secondary' disabled={(pdpData.cardProduct.productStock === 0)} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
-								</Level.Right>
-							</Level>
-						</Level.Right>
-					</Level>
+					<div className='flex-row flex-spaceBetween padding--medium-h padding--medium-v border-top flex-middle'>
+						<div className='flex-row'>
+							<div>
+								<div className='font-medium font--lato-bold'>{pdpData.cardProduct.pricing.effective_price}</div>
+								<div className='font-small font-color--primary-ext-2'>{pdpData.cardProduct.pricing.effective_price}</div>
+							</div>
+							<div className='margin--medium-l'>
+								<Badge rounded color='red'>
+									<span className='font--lato-bold'>{pdpData.cardProduct.pricing.discount || '0%'}</span>
+								</Badge>
+							</div>
+						</div>
+						<div>
+							<Button color='secondary' disabled={(pdpData.cardProduct.productStock === 0)} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
+						</div>
+					</div>
 				</div>
 			);
 		};
@@ -450,17 +439,19 @@ class Products extends Component {
 				<Page color='#f9f9f9'>
 					<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
 						{status.pdpDataHasLoaded && (
-							<Card.Product
-								setCarouselSlideIndex={this.setCarouselSlideIndex}
-								slideIndex={carousel.slideIndex}
-								onImageItemClick={this.handleImageItemClick}
-								data={pdpData.cardProduct || {}}
-								isLoved={status.isLoved}
-								onBtnLovelistClick={this.handleLovelistClick}
-								onBtnCommentClick={this.redirectToComments}
-								onBtnBeliClick={this.handleBtnBeliClicked}
-								linkToPdpDisabled={linkToPdpDisabled}
-							/>
+							<div ref={(n) => { this.carouselEL = n; }}>
+								<Card.Product
+									setCarouselSlideIndex={this.setCarouselSlideIndex}
+									slideIndex={carousel.slideIndex}
+									onImageItemClick={this.handleImageItemClick}
+									data={pdpData.cardProduct || {}}
+									isLoved={status.isLoved}
+									onBtnLovelistClick={this.handleLovelistClick}
+									onBtnCommentClick={this.redirectToComments}
+									onBtnBeliClick={this.handleBtnBeliClicked}
+									linkToPdpDisabled={linkToPdpDisabled}
+								/>
+							</div>
 						)}
 						
 						{!status.pdpDataHasLoaded && this.loadingContent}
@@ -520,7 +511,6 @@ class Products extends Component {
 								<Comment type='lite-review' data={comment.summary} />
 							)}
 						</div>
-						<hr className='margin--small-v' />
 						{status.recommendationSet && (
 							<div>
 								<div className='margin--small-v padding--medium-h font-medium'><strong>Anda Mungkin Suka</strong></div>
@@ -635,6 +625,33 @@ class Products extends Component {
 								<span className='font-color--primary-ext-2'>PILIH UKURAN</span>
 							</Button>)}
 					/>
+				</Modal>
+				<Modal position='bottom' show={false} onCloseOverlay={() => console.log('close modal')}>
+					<div className='padding--medium-v'>
+						<div className='padding--medium-h'>Pilih Ukuran</div>
+						<div className='margin--medium-v horizontal-scroll padding--medium-h  margin--medium-r'>
+							<Radio
+								name='size'
+								checked='x'
+								variant='rounded'
+								className='margin--small-v'
+								data={[
+									{ value: 'x', label: 'x' },
+									{ value: 'xl', label: 'xl', disabled: true },
+									{ value: 'm', label: 'm' },
+									{ value: 'x', label: 'x' },
+									{ value: 'xl', label: 'xl', disabled: true },
+									{ value: 'm', label: 'm' },
+									{ value: 'x', label: 'x' },
+									{ value: 'xl', label: 'xl', disabled: true },
+									{ value: 'm', label: 'm' },
+									{ value: 'x', label: 'x' },
+									{ value: 'xl', label: 'xl', disabled: true },
+									{ value: 'm', label: 'm' },
+								]}
+							/>
+						</div>
+					</div>
 				</Modal>
 				{/* <Navigation scroll={this.props.scroll} totalCartItems={shared.totalCart} /> */}
 			</div>);

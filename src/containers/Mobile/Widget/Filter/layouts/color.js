@@ -44,7 +44,7 @@ class Color extends PureComponent {
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
-					<Svg src='ico_arrow-back-left.svg' />
+					<Svg src='ico_close-large.svg' />
 				</Button>
 			),
 			center: 'Warna',
@@ -54,16 +54,17 @@ class Color extends PureComponent {
 			const selected = color.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
 			return (
 				<Button key={key} align='left' wide onClick={(e) => this.onClick(e, color)}>
-					<List.Content>
-						{renderIf(isHexColor(color.colorcode))(
-							<Badge circle colorCode={color.colorcode} size='medium' filter={color} />
-						)}
-						{renderIf(!isHexColor(color.colorcode))(
-							<div>
-								img
-							</div>
-						)}
-						{color.facetdisplay} {selected}
+					<List.Content className='padding--medium-v'>
+						<div className='flex-row flex-middle'>
+							{renderIf(isHexColor(color.colorcode))(
+								<Badge circle colorCode={color.colorcode} size='medium' filter={color} />
+							)}
+							{renderIf(!isHexColor(color.colorcode))(
+								<img height='30px' width='30px' src={color.colorcode} alt='color' />
+							)}
+							<span className='margin--medium-l'>{color.facetdisplay}</span><span className='font-color--primary-ext-2 margin--small-l'>(111)</span>
+						</div>
+						{selected}
 					</List.Content>
 				</Button>
 			);
@@ -71,7 +72,7 @@ class Color extends PureComponent {
 
 		return (
 			<div style={this.props.style}>
-				<Page hideFooter>
+				<Page hideFooter color='white' style={{ marginTop: '15px' }}>
 					<List>
 						{dataList}
 					</List>

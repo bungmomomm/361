@@ -38,8 +38,8 @@ class Search extends PureComponent {
 	setCookieSearch(sText, sValue, sType) {
 		const usedCookie = (sText.charAt(0) === '#') ? this.searchHashtagListCookieName : this.searchListCookieName;
 		let cookies = this.props.cookies.get(usedCookie);
+		cookies = (!cookies || cookies === []) ? [] : cookies;
 		if (Search.isKeywordNotExistInHistory(cookies, sText)) {
-			cookies = (!cookies || cookies === []) ? [] : cookies;
 			const newSearch = { text: sText, value: sValue, type: sType };
 			cookies.unshift(newSearch);
 			this.props.cookies.set(usedCookie, cookies.filter((val, key) => (key <= 9)));
@@ -215,6 +215,16 @@ class Search extends PureComponent {
 
 		const displayLoading = (<div style={{ textAlign: 'center', padding: '20px 0px' }} > <Spinner /> </div>);
 
+		const backHandler = () => {
+			if (this.props.location.search === '?ref=home') {
+				const { dispatch } = this.props;
+				dispatch(actionSearch.updatedKeywordHandler('', this.userToken));
+				this.props.history.push('/');
+			} else {
+				this.props.history.goBack();
+			}
+		};
+
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -226,7 +236,7 @@ class Search extends PureComponent {
 					updatedKeywordHandler={this.searchKeywordUpdatedHandler}
 					onKeyPressHandler={this.enterSearchHandler}
 					value={this.state.keyword || ''}
-					back={this.props.history.goBack}
+					back={backHandler}
 				/>
 			</div>
 		);
