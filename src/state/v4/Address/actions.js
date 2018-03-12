@@ -175,7 +175,7 @@ const addAddress = (token, body = {}) => async (dispatch, getState) => {
 	if (defaultAddress) {
 		const [errDef, respDef] = await to(request({
 			token,
-			path: `${url}/me/addresses/setdefault/123`,
+			path: `${url}/me/addresses/setdefault/${_.chain(resp).get('data.data.address_id').value() || 0}`,
 			method: 'POST',
 			fullpath: true,
 			body: {}
