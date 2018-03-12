@@ -27,15 +27,15 @@ import {
 } from '@/components/mobile';
 
 import { actions as pcpActions } from '@/state/v4/ProductCategory';
-import { actions as searchActions } from '@/state/v4/SearchResults';
+import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 
 import { 
-	urlBuilder,
 	renderIf
 } from '@/utils';
 // import stylesCatalog from '../Catalog/catalog.scss';
 import Footer from '@/containers/Mobile/Shared/footer';
+import Discovery from '../../Utils';
 
 class Product extends Component {
 	constructor(props) {
@@ -116,7 +116,7 @@ class Product extends Component {
 		}
 		if (!_.isEmpty(response.pcpData.products)) {
 			const productIdList = _.map(response.products, 'product_id') || null;
-			dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+			dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 		}
 		return response;
@@ -289,22 +289,7 @@ class Product extends Component {
 
 const mapStateToProps = (state) => {
 	const { comments, lovelist, productCategory } = state;
-	productCategory.pcpData.products = _.map(productCategory.pcpData.products, (product) => {
-		const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: product.product_id }) : false;
-		const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: product.product_id }) : false;
-		if (lovelistData) {
-			product.lovelistTotal = lovelistData.total;
-			product.lovelistStatus = lovelistData.status;
-		}
-		if (commentData) {
-			product.commentTotal = commentData.total;
-		}
-		return {
-			...product,
-			url: urlBuilder.buildPdp(product.product_title, product.product_id),
-			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`
-		};
-	});
+	productCategory.pcpData.products = Discovery.mapProducts(productCategory.pcpData.products, comments, lovelist);
 
 	return {
 		...state,
@@ -332,7 +317,7 @@ const doAfterAnonymous = async (props) => {
 	
 	const productIdList = _.map(response.pcpData.products, 'product_id') || [];
 	if (productIdList.length > 0) {
-		await dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		await dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 	}
 };

@@ -32,7 +32,7 @@ import {
 } from '@/containers/Mobile/Discovery/View';
 
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
-import { actions as searchActions } from '@/state/v4/SearchResults';
+import { actions as commentActions } from '@/state/v4/Comment';
 import to from 'await-to-js';
 
 
@@ -173,7 +173,7 @@ class Seller extends Component {
 		const response = await to(dispatch(actions.getProducts(data)));
 
 		const productIdList = _.map(response[1].data.products, 'product_id') || [];
-		dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 	};
 
@@ -409,7 +409,7 @@ const doAfterAnonymous = async (props) => {
 	const response = await to(dispatch(actions.getProducts(data)));
 
 	const productIdList = _.map(response[1].data.products, 'product_id') || [];
-	dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+	dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 	dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 
 };

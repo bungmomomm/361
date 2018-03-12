@@ -8,6 +8,7 @@ const mapProducts = (products, comments, lovelists) => {
 		const lovelistExists = !_.isEmpty(lovelists.bulkieCountProducts) ? _.find(lovelists.bulkieCountProducts, { product_id: product.product_id }) : false;
 		if (commentExists) {
 			product.commentTotal = commentExists.total;
+			product.comments = commentExists;
 		}
 
 		if (lovelistExists) {
