@@ -47,7 +47,7 @@ class Register extends Component {
 			validPassword: false,
 			validEmailOrMobile: false,
 			registerWith: 'EMAIL',
-			whatIShouldRender: 'REGISTER',
+			whatIShouldRender: 'EMAIL_MOBILE_HAS_BEEN_REGISTERED',
 			redirectUrl: query.redirect_url || false,
 			disableOtpButton: false,
 			otpButtonText: OTP_BUTTON_TEXT,
@@ -383,7 +383,7 @@ class Register extends Component {
 		}
   
 		const buttonRegisterAttribute = {
-			color: 'secondary',
+			color: 'primary',
 			size: 'large',
 			onClick: (e) => this.onRegister(e),
 			disabled: !buttonLoginEnable
@@ -614,7 +614,6 @@ class Register extends Component {
 					{renderIf(register)(
 						<Redirect to='/login' />
 					)}
-					<Tabs {...tabProperty} />
 					{View}
 				</Page>
 				<Header.Modal {...HeaderPage} />
