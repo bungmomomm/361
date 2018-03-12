@@ -16,14 +16,12 @@ import {
 import styles from './brands.scss';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import Filter from '@/containers/Mobile/Shared/Filter';
+import { Filter, Love, Sort } from '@/containers/Mobile/Widget';
 import { actions as brandAction } from '@/state/v4/Brand';
 import Shared from '@/containers/Mobile/Shared';
 import stylesCatalog from '@/containers/Mobile/Discovery/Category/Catalog/catalog.scss';
 import queryString from 'query-string';
 import { urlBuilder, renderIf } from '@/utils';
-import Sort from '@/containers/Mobile/Shared/Sort';
-import Love from '@/containers/Mobile/Shared/Widget/Love';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import Share from '@/components/mobile/Share';
 import Footer from '@/containers/Mobile/Shared/footer';
@@ -64,7 +62,6 @@ class Detail extends Component {
 		}];
 		const propsObject = _.chain(props.searchResults);
 		this.currentListState = 0;
-		this.handleScroll = this.handleScroll.bind(this);
 		this.state = {
 			listTypeState: this.listType[this.currentListState],
 			styleHeader: true,
@@ -87,8 +84,6 @@ class Detail extends Component {
 		};
 	}
 	componentDidMount() {
-		window.addEventListener('scroll', this.handleScroll, true);
-
 		if ('serviceUrl' in this.props.shared) {
 			const { dispatch, match: { params } } = this.props;
 			const qs = queryString.parse(location.search);
@@ -135,13 +130,10 @@ class Detail extends Component {
 		if (nextProps.brands.products_comments !== this.props.brands.products_comments) {
 			this.setState({ newComment: { product_id: '', comment: '' } });
 		}
+		this.handleScroll();
 
 	}
-
-	componentWillUnmount() {
-		window.removeEventListener('scroll', this.handleScroll, true);
-	}
-
+	
 	async onApply(e, fq) {
 		const { query } = this.state;
 		query.fq = fq;
@@ -213,12 +205,14 @@ class Detail extends Component {
 		}
 	}
 
-	handleScroll(e) {
+	handleScroll() {
 		const { styleHeader } = this.state;
-		if (e.target.scrollTop > 300 && styleHeader) {
+		if (!this.headerEl) return;
+		const headerHeight = this.headerEl.getBoundingClientRect().height;
+		if (this.props.scroll.top > headerHeight && styleHeader) {
 			this.setState({ styleHeader: false });
 		}
-		if (e.target.scrollTop < 300 && !styleHeader) {
+		if (this.props.scroll.top < headerHeight && !styleHeader) {
 			this.setState({ styleHeader: true });
 		}
 	}
@@ -288,7 +282,7 @@ class Detail extends Component {
 					onPick={e => this.handlePick(e)}
 				/>
 				{renderIf(sorts)(
-					<Sort shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+					<Sort onCloseOverlay={() => this.setState({ showSort: false })} shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
 				)}
 			</div>
 		);
@@ -362,10 +356,8 @@ class Detail extends Component {
 		const sorts = _.chain(this.props.brands).get('searchData.sorts').value() || [];
 		if (isProductSet) {
 			return (
-				<div>
+				<div className='padding--medium-t'>
 					<Tabs
-						isSticky
-						className='margin--medium-v'
 						type='segment'
 						variants={[
 							{
@@ -387,7 +379,7 @@ class Detail extends Component {
 						onPick={e => this.handlePick(e)}
 					/>
 					{renderIf(sorts)(
-						<Sort shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+						<Sort onCloseOverlay={() => this.setState({ showSort: false })} shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
 					)}
 				</div>
 			);
@@ -501,7 +493,8 @@ class Detail extends Component {
 			),
 
 			center: !this.state.styleHeader && 'Brand',
-			right: <Share title={title} url={url} />
+			right: <Share title={title} url={url} />,
+			rows: !this.state.styleHeader && this.renderFilter()
 		};
 		return <Header.Modal className={this.state.styleHeader ? styles.headerClear : ''} {...headerComponent} />;
 	}
@@ -509,7 +502,7 @@ class Detail extends Component {
 	renderTotalProduct() {
 		const productCount = this.props.brands.searchData.info && this.props.brands.searchData.info.product_count;
 		return productCount && (
-			<div className='margin--medium-v margin--none-t text-center'>{productCount} Total Produk</div>
+			<div className='margin--medium-v text-center'>{productCount} Total Produk</div>
 		);
 	}
 
@@ -531,8 +524,10 @@ class Detail extends Component {
 							/>
 						) : (
 							<div>
-								{this.renderBenner()}
-								{this.renderFilter()}
+								<div ref={(n) => { this.headerEl = n; }}>
+									{this.renderBenner()}
+									{this.renderFilter()}
+								</div>
 								{this.renderTotalProduct()}
 								{this.renderProduct()}
 								{this.props.scroller.loading && (<Spinner />)}

@@ -10,9 +10,7 @@ import Shared from '@/containers/Mobile/Shared';
 import SearchNotFound from '@/containers/Mobile/Discovery/SearchNotFound';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-import Filter from '@/containers/Mobile/Shared/Filter';
-import Love from '@/containers/Mobile/Shared/Widget/Love';
-import Sort from '@/containers/Mobile/Shared/Sort';
+import { Filter, Love, Sort } from '@/containers/Mobile/Widget';
 import { actions as actionSearch } from '@/state/v4/Search';
 
 import {
@@ -211,7 +209,7 @@ class SearchResults extends Component {
 			});
 
 			return (
-				<Page>
+				<Page color='white'>
 					{this.renderForeverBanner()}
 					<div className={stylesSearch.container} >
 						<div className={stylesCatalog.cardContainer}>
@@ -412,7 +410,7 @@ class SearchResults extends Component {
 			tabsView = (
 				<div>
 					{renderIf(sorts)(
-						<Sort shown={showSort} isSticky sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+						<Sort shown={showSort} onCloseOverlay={() => this.setState({ showSort: false })} isSticky sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
 					)}
 					<Tabs
 						type='segment'

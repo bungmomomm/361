@@ -5,6 +5,7 @@ import renderIf from './renderIf';
 import modalController from './modalController';
 import isMobile from './isMobile';
 import componentState from './componentState';
+import splitString from './splitString';
 import { request, getCancelToken } from './request';
 import { setUserCookie } from './cookie';
 import urlBuilder from './urlBuilder';
@@ -52,6 +53,7 @@ export default {
 	modalController,
 	componentState,
 	hyperlink,
+	splitString,
 	urlBuilder,
 	isHexColor,
 	loading,

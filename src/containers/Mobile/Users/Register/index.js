@@ -20,20 +20,12 @@ import queryString from 'query-string';
 import validator from 'validator';
 import util from 'util';
 import _ from 'lodash';
-import LoginWidget from '@/containers/Mobile/Shared/Widget/Login';
+import { 
+	Login as LoginWidget 
+} from '@/containers/Mobile/Widget';
 import Helmet from 'react-helmet';
 import Recaptcha from 'react-recaptcha';
 
-const DUMMY_TAB = [
-	{
-		Title: 'Login',
-		id: 'login'
-	},
-	{
-		Title: 'Daftar',
-		id: 'register'
-	}
-];
 const OTP_BUTTON_TEXT = 'Kirim ulang kode otp';
 
 class Register extends Component {
@@ -335,7 +327,7 @@ class Register extends Component {
 			label: 'Nama Lengkap',
 			type: 'text',
 			flat: true,
-			placeholder: 'Nama Lengkap'
+			placeholder: ''
 		};
 		
 		if (loginId.length > 0 && validLoginId === false) {
@@ -352,7 +344,7 @@ class Register extends Component {
 			},
 			label: 'Nomor Handphone /  Email',
 			flat: true,
-			placeholder: 'Nomor Handphone /  Email'
+			placeholder: ''
 		};
 		
 		if (email.length > 0 && validEmailOrMobile === false) {
@@ -360,9 +352,9 @@ class Register extends Component {
 			inputMobileEmailAttribute.hint = 'Format Email/Nomor Handphone tidak sesuai. Silahkan cek kembali';
 		}
         
-		let iconRightPasswordContent = 'ico_eye.svg';
+		let iconRightPasswordContent = 'ico_password_hide.svg';
 		if (visiblePassword === true) {
-			iconRightPasswordContent = 'ico_eye-off.svg';
+			iconRightPasswordContent = 'ico_password_show.svg';
 		}
 
 		const inputPasswordAttribute = {
@@ -374,7 +366,7 @@ class Register extends Component {
 			},
 			label: 'Password',
 			flat: true,
-			placeholder: 'Password minimal 6 karakter',
+			placeholder: '',
 			type: (visiblePassword) ? 'text' : 'password',
 			iconRight: (
 				<Button onClick={() => this.setState({ visiblePassword: !visiblePassword })}>
@@ -388,7 +380,7 @@ class Register extends Component {
 		}
   
 		const buttonRegisterAttribute = {
-			color: 'primary',
+			color: 'secondary',
 			size: 'large',
 			onClick: (e) => this.onRegister(e),
 			disabled: !buttonLoginEnable
@@ -410,7 +402,7 @@ class Register extends Component {
 		
 		return (
 			<div>
-				<div className='margin--medium'>Daftar Dengan</div>
+				<div className='margin--medium font-medium'>Daftar Dengan</div>
 				<LoginWidget
 					provider={providerConfig}
 					onSuccess={(provider, token) => this.onSocialRegister(provider, token)}
@@ -424,10 +416,10 @@ class Register extends Component {
 					<Input {...inputMobileEmailAttribute} />
 					<Input {...inputPasswordAttribute} />
 				</div>
-				<div className='margin--medium text-left'>
-					<p><small>Dengan membuka Akun, Anda telah membaca, mengerti dan menyetujui <Link to='/'>Syarat & Ketentuan dan Kebijakan Privasi</Link> MatahariMall.com</small></p>
+				<div className='margin--medium-v text-left'>
+					<p>Dengan membuka Akun, Anda telah membaca, mengerti dan menyetujui <Link to='/'>Syarat & Ketentuan dan Kebijakan Privasi</Link> MatahariMall.com</p>
 				</div>
-				<div className='margin--medium'>
+				<div className='margin--medium-v'>
 					<Button {...buttonRegisterAttribute}>Daftar</Button>
 				</div>
 			</div>
@@ -481,7 +473,7 @@ class Register extends Component {
 			value: otpValue,
 			label: 'Masukan kode verifikasi',
 			flat: true,
-			placeholder: 'Masukan kode verifikasi',
+			placeholder: '',
 			onChange: (event) => { this.setState({ otpValue: event.target.value }); }
 		};
 		
@@ -557,6 +549,23 @@ class Register extends Component {
 	
 	render() {
 		const { current } = this.state;
+
+
+		const tabProperty = {
+			current: this.state.current,
+			variants: [
+				{
+					title: 'Login',
+					id: 'login',
+				},
+				{
+					title: 'Daftar',
+					id: 'Daftar'
+				}
+			],
+			onPick: (e) => this.handlePick(e)
+		};
+
 		const HeaderPage = {
 			left: (
 				<Link to='/'>
@@ -565,15 +574,10 @@ class Register extends Component {
 			),
 			center: 'Daftar',
 			right: null,
+			rows: <Tabs {...tabProperty} />,
 			shadow: false
 		};
-		
-		const tabProperty = {
-			current: this.state.current,
-			variants: DUMMY_TAB,
-			onPick: (e) => this.handlePick(e)
-		};
-		
+
 		const register = (current === 'login');
 		
 		const {
@@ -592,11 +596,10 @@ class Register extends Component {
         
 		return (
 			<div className='full-height' style={this.props.style}>
-				<Page>
+				<Page color='white'>
 					{renderIf(register)(
 						<Redirect to='/login' />
 					)}
-					<Tabs {...tabProperty} />
 					<div className={styles.container}>
 						{View}
 					</div>

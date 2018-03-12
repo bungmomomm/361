@@ -57,6 +57,7 @@ class SearchNotFound extends PureComponent {
 										return (
 											<Card.CatalogGrid
 												key={index}
+												style={{ width: '100%' }}
 												images={product.images}
 												productTitle={product.product_title}
 												brandName={product.brand.name}
@@ -80,7 +81,7 @@ class SearchNotFound extends PureComponent {
 		const { keyword } = this.props;
 
 		return (
-			<Page>
+			<Page color='white'>
 				<div className='text-center' >
 					<div className='margin--medium-v flex-center flex-middle'><Svg src='mm_ico_no_404_alt.svg' /></div>
 					<div className=' margin--small-v'>

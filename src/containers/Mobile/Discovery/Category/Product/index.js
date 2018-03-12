@@ -9,8 +9,7 @@ import to from 'await-to-js';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-import Filter from '@/containers/Mobile/Shared/Filter';
-import Sort from '@/containers/Mobile/Shared/Sort';
+import { Filter, Sort } from '@/containers/Mobile/Widget';
 
 import { 
 	CatalogView, 
@@ -35,7 +34,7 @@ import {
 	urlBuilder,
 	renderIf
 } from '@/utils';
-import stylesCatalog from '../Catalog/catalog.scss';
+// import stylesCatalog from '../Catalog/catalog.scss';
 import Footer from '@/containers/Mobile/Shared/footer';
 
 class Product extends Component {
@@ -175,8 +174,6 @@ class Product extends Component {
 					<Spinner />
 				)}
 				{this.renderHeader()}
-				{this.renderTabs()}
-				{this.renderForeverBanner()}
 				<Navigation active='Categories' scroll={this.props.scroll} />
 			</div>
 		);
@@ -213,7 +210,9 @@ class Product extends Component {
 					break;
 				}
 				return (
-					<Page>
+					<Page color='white'>
+						{this.renderForeverBanner()}
+						<div className='text-center margin--medium-v'>1111 Total Produk</div>
 						{listView}
 						<Footer isShow={this.state.isFooterShow} />
 					</Page>
@@ -236,7 +235,8 @@ class Product extends Component {
 				</Link>
 			),
 			center: isLoading ? this.loadingView : headerTitle,
-			right: null
+			right: null,
+			rows: this.renderTabs()
 		};
 
 		return (
@@ -253,12 +253,11 @@ class Product extends Component {
 			tabsView = (
 				<div className={'tabContainer'}>
 					{renderIf(sorts)(
-						<Sort shown={showSort} isSticky sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+						<Sort shown={showSort} onCloseOverlay={() => this.setState({ showSort: false })} isSticky sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
 					)}
 					<Tabs
-						className={stylesCatalog.filterBlockContainer}
 						type='segment'
-						isSticky
+						className='margin--medium-t'
 						variants={[
 							{
 								id: 'sort',

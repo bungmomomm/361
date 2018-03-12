@@ -1,0 +1,71 @@
+@import '../styles/mobile/variables';
+@import '../styles/mobile/mixins';
+
+
+.container{
+	order: 5;
+}
+
+
+.wrapper{
+	height: rem(51px);
+}
+
+.navigation{
+	user-select: none;
+	z-index: 10;
+	background-color: color(--white);
+	border: 0;
+	bottom: 0;
+	height: rem(50px);
+	position: fixed;
+	top: auto;
+	display: flex;
+	flex-direction: row;
+	border-top:1px solid #DBDBDB;
+	padding-bottom: rem(5px);
+	width: 100%;
+	max-width: 480px;
+}
+
+.item{
+	flex-grow: 1;
+	flex-basis: 0;
+	height: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	font-size: map-get($font-size, --small);
+	text-transform: uppercase;
+	text-decoration: none;
+	color: color(--primary);
+	align-items: center;
+	opacity: 1;
+	position: relative;
+	overflow: hidden;
+	&:not(:last-child):after{
+		content: '\2807';
+		font-size: 25px;
+		width: 0px;
+		height: 100%;
+		position: absolute;
+		right: 8px;
+		display: flex;
+		align-items: center;
+		top: 0px;
+		opacity: 0.4;
+	}	
+	svg{
+		height: rem(40px);
+		margin-right: rem(5px);
+	}
+}
+
+.reset{
+	color: #A4A4A4;
+	svg{
+		g{
+			stroke: #A4A4A4;
+		}
+	}
+}
