@@ -47,7 +47,7 @@ class Register extends Component {
 			validPassword: false,
 			validEmailOrMobile: false,
 			registerWith: 'EMAIL',
-			whatIShouldRender: 'EMAIL_MOBILE_HAS_BEEN_REGISTERED',
+			whatIShouldRender: 'REGISTER',
 			redirectUrl: query.redirect_url || false,
 			disableOtpButton: false,
 			otpButtonText: OTP_BUTTON_TEXT,
