@@ -4,9 +4,10 @@ import { Link } from 'react-router-dom';
 import { withCookies } from 'react-cookie';
 import { actions } from '@/state/v4/Home';
 import Shared from '@/containers/Mobile/Shared';
-import { Header, Page, Navigation, Svg, Notification, Image, Grid, Button, Spinner, Level } from '@/components/mobile';
+import { Header, Page, Navigation, Svg, Notification, Image, Grid, Card, Spinner, Level, Carousel } from '@/components/mobile';
 import styles from './search.scss';
 import { connect } from 'react-redux';
+import { urlBuilder } from '@/utils';
 
 class Page404 extends Component {
 	constructor(props) {
@@ -21,9 +22,9 @@ class Page404 extends Component {
 	}
 
 	renderRecomendation() {
-		const recommendation = this.isLogin === 'true' ? 'bestSellerProducts' : 'recommendedProducts';
+		const recommendation = this.isLogin === 'true' ? 'best-seller' : 'recommended-products';
 		const activeSegment = _.chain(this.props).get('home.activeSegment');
-		const listData = _.chain(this.props).get(`home.allSegmentData.${activeSegment.value()}.recomendationData.${recommendation}`);
+		const listData = _.chain(this.props).get(`home.allSegmentData.${activeSegment.value().key}.recomendationData.${recommendation}.data`);
 		if (listData.isEmpty().value()) {
 			return (
 				<div className='margin--large-v'>
@@ -31,7 +32,6 @@ class Page404 extends Component {
 				</div>
 			);
 		};
-
 		return (
 			<div className='margin--large-v margin--none-t'>
 				<Level>
@@ -42,15 +42,25 @@ class Page404 extends Component {
 						</Link>
 					</Level.Right>
 				</Level>
-				<Grid split={3}>
-					{
-						listData.value().map(({ images, pricing }, e) => (
-							<div className='thumbnail-small' key={e}>
-								<Image lazyload alt='thumbnail' src={images[0].thumbnail} />
-								<Button className={styles.btnThumbnail} transparent color='secondary' size='small'>{pricing.formatted.effective_price}</Button>
-							</div>
-						))
-					}
+				<Grid split={1}>
+					<Carousel slidesToShow={2}>
+						{
+							_.map(listData.value(), (product, index) => {
+								const linkToPdp = urlBuilder.buildPdp(product.product_title, product.product_id);
+								return (
+									<Card.CatalogGrid
+										key={index}
+										style={{ width: '100%' }}
+										images={product.images}
+										productTitle={product.product_title}
+										brandName={product.brand.name}
+										pricing={product.pricing}
+										linkToPdp={linkToPdp}
+									/>
+								);
+							})
+						}
+					</Carousel>
 				</Grid>
 			</div>
 		);
@@ -105,8 +115,7 @@ const mapStateToProps = (state) => {
 const doAfterAnonymous = async (props) => {
 	await props.dispatch(
 		new actions.recomendationAction(
-			props.cookies.get('user.token'),
-			_.chain(props).get('home.segmen').find(d => d.key === props.home.activeSegment).value(),
+			_.chain(props).get('home.segmen').find(d => d.key === props.home.activeSegment.key).value(),
 			_.chain(props).get('shared.serviceUrl.promo').value()
 		)
 	);
