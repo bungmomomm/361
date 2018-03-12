@@ -127,10 +127,74 @@ const getMyOrderDetail = (token, soNumber) => async (dispatch, getState) => {
 	return Promise.resolve(response);
 };
 
+const PostOrderConfirmation = (token, bodyData) => async (dispatch, getState) => {
+
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	
+	const requestData = {
+		token,
+		path: `${baseUrl}/order/paymentconfirm/add`,
+		method: 'POST',
+		fullpath: true,
+		body: bodyData
+	};
+	
+	console.log(requestData);
+	
+	const [err, response] = await to(
+		request(requestData)
+	);
+	
+	if (err) {
+		console.log('error');
+		return Promise.reject(err);
+	}
+	console.log('success');
+	return Promise.resolve(response);
+
+};
+
+
+const ListBankConfirmation = (token) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
+
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	
+	const requestData = {
+		token,
+		path: `${baseUrl}/order/paymentconfirm/banklist`,
+		method: 'GET',
+		fullpath: true
+	};
+    
+	
+	console.log('requestData confirmation');
+	console.log(requestData);
+	
+	const [err, response] = await to(request(requestData));
+	
+	console.log('Request data');
+	console.log(requestData);
+	
+	if (err) {
+		return Promise.reject(err);
+	}
+
+	return Promise.resolve(response);
+};
+
+
 export {
 	checkMyOrders,
 	getMyOrderMore,
 	getMyOrderDetail,
 	updateMyOrdersCurrent,
-	cleanMyOrderData,
+    cleanMyOrderData,
+    PostOrderConfirmation,
+    ListBankConfirmation
 };

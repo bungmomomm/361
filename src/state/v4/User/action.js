@@ -10,7 +10,15 @@ import {
 } from '@/utils';
 
 import { userSocialLogin, userSocialLoginWithRedirect } from './social-action';
-import { checkMyOrders, getMyOrderDetail, updateMyOrdersCurrent, getMyOrderMore, cleanMyOrderData } from './myOrder-action';
+import {
+	checkMyOrders,
+	getMyOrderDetail,
+	updateMyOrdersCurrent,
+	getMyOrderMore,
+	cleanMyOrderData,
+	PostOrderConfirmation,
+    ListBankConfirmation
+} from './myOrder-action';
 import { getTrackingInfo } from './tracking-action';
 
 const isSuccess = (response) => {
@@ -392,5 +400,7 @@ export default {
 	getMyOrderMore,
 	cleanMyOrderData,
 	checkMyOrders,
-	refreshToken
+	refreshToken,
+	PostOrderConfirmation,
+	ListBankConfirmation
 };

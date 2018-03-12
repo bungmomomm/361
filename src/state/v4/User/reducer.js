@@ -47,6 +47,7 @@ const actions = createActions({
 	USER_GET_MY_ORDER_DETAIL: undefined,
 	USER_UPDATE_MY_ORDER_CURRENT: undefined,
 	USER_GET_TRACKING_INFO: undefined,
+	USER_BANK_LIST: (userBankList) => ({ userBankList }),
 	USER_CHECK_MY_ORDERS: undefined
 });
 
@@ -63,6 +64,7 @@ const initialState = {
 	myOrdersCurrent: 'konfirmasi',
 	myOrdersDetail: null,
 	creditCard: {},
+	bankList: {},
 	trackingInfo: null,
 	isNoOrders: null,
 };
@@ -106,6 +108,15 @@ const reducer = handleActions({
 			creditCard: {
 				...state.creditCard,
 				...action.payload.userCreditCard
+			},
+		};
+	},
+	[actions.userBankList]: (state, action) => {
+		return {
+			...state,
+			bankList: {
+				...state.creditCard,
+				...action.payload.userBankList
 			},
 		};
 	},

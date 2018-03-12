@@ -87,7 +87,7 @@ export default {
 			path: '/product/comments/:id',
 			component: loadable(() => import('@/containers/Mobile/Details/Products/Comments'), defaultOptions),
 			exact: true
-		}, 
+		},
 		{
 			path: '/product/guide',
 			component: loadable(() => import('@/containers/Mobile/Details/Products/Guide'), defaultOptions),
@@ -203,6 +203,10 @@ export default {
 			path: '/address/edit/:id',
 			exact: true,
 			component: loadable(() => import('@/containers/Mobile/Users/Address/edit'), defaultOptions),
+		},
+		{
+			path: '/order-confirmation',
+			component: loadable(() => import('@/containers/Mobile/Order/Confirmation'), defaultOptions),
 		},
 		{
 			path: '/*', // Page not found handling.
