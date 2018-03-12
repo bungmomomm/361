@@ -4,7 +4,6 @@ import { withCookies } from 'react-cookie';
 import {
 	Page,
 	Navigation,
-	Card,
 	Svg,
 	Header,
 	Button,
@@ -16,20 +15,25 @@ import {
 import styles from './brands.scss';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import { Filter, Love, Sort } from '@/containers/Mobile/Widget';
+import { Filter, Sort } from '@/containers/Mobile/Widget';
 import { actions as brandAction } from '@/state/v4/Brand';
 import Shared from '@/containers/Mobile/Shared';
 import stylesCatalog from '@/containers/Mobile/Discovery/Category/Catalog/catalog.scss';
 import queryString from 'query-string';
-import { urlBuilder, renderIf } from '@/utils';
+import { renderIf } from '@/utils';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import Share from '@/components/mobile/Share';
 import Footer from '@/containers/Mobile/Shared/footer';
 import { actions as commentActions } from '@/state/v4/Comment';
-import { actions as searchActions } from '@/state/v4/SearchResults';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { Promise } from 'es6-promise';
 import Spinner from '@/components/mobile/Spinner';
+import Discovery from '../Utils';
+import {
+	CatalogView,
+	GridView,
+	SmallGridView
+} from '@/containers/Mobile/Discovery/View';
 
 class Detail extends Component {
 	static queryObject(props) {
@@ -119,7 +123,7 @@ class Detail extends Component {
 			const { dispatch } = this.props;
 			const productIdList = _.map(nextProps.brands.searchData.products, 'product_id') || [];
 			if (productIdList.length > 0) {
-				dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+				dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 				dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 			}
 		}
@@ -154,7 +158,7 @@ class Detail extends Component {
 
 	onItemLoved(productId) {
 		const { cookies, dispatch } = this.props;
-		dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), [productId]));
+		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), [productId]));
 		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), [productId]));
 	}
 
@@ -194,13 +198,14 @@ class Detail extends Component {
 	}
 
 	handlePick(e) {
+		const { showSort } = this.state;
 		if (e === 'view') {
 			this.currentListState = this.currentListState === 2 ? 0 : this.currentListState + 1;
 			this.setState({ listTypeState: this.listType[this.currentListState] });
 		} else {
 			this.setState({
 				showFilter: e === 'filter',
-				showSort: e === 'sort'
+				showSort: showSort ? false : (e === 'sort')
 			});
 		}
 	}
@@ -389,92 +394,36 @@ class Detail extends Component {
 	}
 
 	renderProduct() {
-		const { brands } = this.props;
+		const { brands, comments, scroller } = this.props;
 		const { listTypeState } = this.state;
-		const brandProducts = _.chain(brands.searchData).get('products');
+		const products = _.chain(brands).get('searchData.products').value() || [];
 
-		if (!brandProducts.isEmpty().value()) {
-			switch (listTypeState.type) {
-			case 'grid':
-				return (
-					<div className='flex-row flex-wrap'>
-						{
-							brandProducts.value().map((product, e) => {
-								const loveButton = (
-									<Love
-										status={product.lovelistStatus}
-										data={product.product_id}
-										total={product.lovelistTotal}
-										onNeedLogin={() => this.forceLoginNow()}
-									/>
-								);
-								return (
-									<Card.CatalogGrid
-										key={e}
-										images={product.images}
-										productTitle={product.product_title}
-										brandName={product.brand.name}
-										pricing={product.pricing}
-										linkToPdp={product.url}
-										love={loveButton}
-									/>
-								);
-							})
-						}
-					</div>
-				);
-			case 'small':
-				return (
-					<div className='flex-row flex-wrap'>
-						{
-							brandProducts.value().map((product, e) => (
-								<Card.CatalogSmall
-									key={e}
-									images={product.images}
-									pricing={product.pricing}
-									linkToPdp={product.url}
-								/>
-							))
-						}
-					</div>
-				);
-			default:
-				return (
-					<div className='flex-row flex-wrap'>
-						{
-							brandProducts.value().map((product, e) => {
-								const loveButton = (
-									<Love
-										status={product.lovelistStatus}
-										data={product.product_id}
-										total={product.lovelistTotal}
-										onNeedLogin={() => this.forceLoginNow()}
-										showNumber
-									/>
-								);
-								return (
-									<div key={e} className={stylesCatalog.cardCatalog}>
-										<Card.Catalog
-											images={product.images}
-											productTitle={product.product_title}
-											brandName={product.brand.name}
-											pricing={product.pricing}
-											commentTotal={product.commentTotal}
-											commentUrl={product.commentUrl}
-											linkToPdp={product.url}
-											love={loveButton}
-										/>
-										{this.renderComment(product.product_id)}
-									</div>
-								);
-							})
-						}
-					</div>
-				);
-			}
+		switch (listTypeState.type) {
+		case 'grid':
+			return (
+				<GridView 
+					loading={scroller.loading} 
+					forceLoginNow={() => this.forceLoginNow()} 
+					products={products} 
+				/>
+			);
+		case 'small':
+			return (
+				<SmallGridView 
+					loading={scroller.loading} 
+					products={products} 
+				/>
+			);
+		default:
+			return (
+				<CatalogView
+					comments={comments}
+					loading={scroller.loading}
+					forceLoginNow={() => this.forceLoginNow()}
+					products={products}
+				/>
+			);
 		}
-
-		return null;
 	}
 
 	renderHeader() {
@@ -511,18 +460,18 @@ class Detail extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page color='white'>
-					<div style={{ marginTop: '-112px', marginBottom: '30px' }}>
-						{(showFilter) ? (
-							<Filter
-								shown={showFilter}
-								filters={this.props.brands.searchData}
-								onApply={(e, fq) => {
-									this.onApply(e, fq);
-								}}
-								onClose={(e) => this.onClose(e)}
-							/>
-						) : (
+				{(showFilter) ? (
+					<Filter
+						shown={showFilter}
+						filters={this.props.brands.searchData}
+						onApply={(e, fq) => {
+							this.onApply(e, fq);
+						}}
+						onClose={(e) => this.onClose(e)}
+					/>
+				) : (
+					<Page color='white'>
+						<div style={{ marginTop: '-112px', marginBottom: '30px' }}>
 							<div>
 								<div ref={(n) => { this.headerEl = n; }}>
 									{this.renderBenner()}
@@ -532,12 +481,10 @@ class Detail extends Component {
 								{this.renderProduct()}
 								{this.props.scroller.loading && (<Spinner />)}
 							</div>
-						)
-						}
-					</div>
-					<Footer isShow={this.state.isFooterShow} />
-				</Page>
-
+						</div>
+						<Footer isShow={this.state.isFooterShow} />
+					</Page>
+				)}
 				{(!showFilter) && (
 					<div>
 						{this.renderHeader()}
@@ -552,23 +499,7 @@ class Detail extends Component {
 
 const mapStateToProps = (state) => {
 	const { comments, lovelist, brands } = state;
-	brands.searchData.products = _.map(brands.searchData.products, (product) => {
-		const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: product.product_id }) : false;
-		const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: product.product_id }) : false;
-		if (lovelistData) {
-			product.lovelistTotal = lovelistData.total;
-			product.lovelistStatus = lovelistData.status;
-		}
-
-		if (commentData) {
-			product.commentTotal = commentData.total;
-		}
-		return {
-			...product,
-			url: urlBuilder.buildPdp(product.product_title, product.product_id),
-			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`
-		};
-	});
+	brands.searchData.products = Discovery.mapProducts(brands.searchData.products, comments, lovelist);
 
 	return {
 		...state,

@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { to } from 'await-to-js';
 
 import { request } from '@/utils';
-import { initLoading, initViewMode, initSearch, initNextSearch, commentListLoad, commentListLoaded, commentListFailed, initPromo } from './reducer';
+import { initLoading, initViewMode, initSearch, initNextSearch, initPromo } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 
 const searchAction = ({ token, query = {}, loadNext = false }) => async (dispatch, getState) => {
@@ -127,44 +127,8 @@ const viewModeAction = (mode) => (dispatch) => {
 	}));
 };
 
-const bulkieCommentAction = (token, productId) => async (dispatch, getState) => {
-	if ((_.isArray(productId) && productId.length > 0) || (_.toInteger(productId) > 0)) {
-		dispatch(commentListLoad({ isLoading: true }));
-		
-		const { shared } = getState();
-		const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
-
-		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
-
-		const path = `${baseUrl}/commentcount/bulkie/byproduct`;
-		
-		const [err, response] = await to(request({
-			token,
-			path,
-			method: 'POST',
-			fullpath: true,
-			body: {
-				product_id: _.isArray(productId) ? productId : [productId]
-			}
-		}));
-
-		if (err) {
-			dispatch(commentListFailed());
-			return Promise.reject(err);
-		}
-
-		const commentData = response.data.data;
-		dispatch(commentListLoaded({ commentData }));
-		
-		return Promise.resolve(commentData);
-	}
-
-	return false;
-};
-
 export default {
 	searchAction,
 	promoAction,
-	viewModeAction,
-	bulkieCommentAction
+	viewModeAction
 };

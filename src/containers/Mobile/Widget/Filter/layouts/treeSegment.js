@@ -30,7 +30,8 @@ class TreeSegment extends Component {
 			activeTree: [],
 			defaultOpen: true,
 			data: props.data || [],
-			resetData: props.data ? _.cloneDeep(props.data) : []
+			resetData: props.data ? _.cloneDeep(props.data) : [],
+			resetDisabled: utils.getSelected(props.data).length < 1
 		};
 	}
 
@@ -38,6 +39,7 @@ class TreeSegment extends Component {
 		const { data } = this.state;
 
 		this.setState({
+			resetDisabled: utils.getSelected(data).length < 1,
 			data: utils.updateChilds(data, value, {
 				is_selected: value.is_selected === 1 ? 0 : 1
 			})
@@ -70,6 +72,7 @@ class TreeSegment extends Component {
 	reset() {
 		const { resetData } = this.state;
 		this.setState({
+			resetDisabled: true,
 			data: _.cloneDeep(resetData)
 		});
 	}
@@ -123,7 +126,7 @@ class TreeSegment extends Component {
 
 	render() {
 		const { onClose } = this.props;
-		const { data } = this.state;
+		const { data, resetDisabled } = this.state;
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
@@ -140,12 +143,12 @@ class TreeSegment extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page color='white' hideFooter style={{ marginTop: '15px' }}>
+				<Page color='white' style={{ marginTop: '15px' }}>
 					{this.renderChild(categories, true)}
 					{/* {this.renderTree(categories)} */}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
+				<Action resetDisabled={resetDisabled} hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}

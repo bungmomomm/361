@@ -76,7 +76,9 @@ const getProducts = ({ token, query = {}, type = 'update' }) => async (dispatch,
 		loader: getProducts
 	}));
 
-	return Promise.resolve(resp);
+	return Promise.resolve({
+		data
+	});
 };
 
 export default {

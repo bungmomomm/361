@@ -18,7 +18,7 @@ class Result extends PureComponent {
 		};
 		return (
 			<div style={this.props.style}>
-				<Page color='white' hideFooter style={{ marginTop: '15px' }}>
+				<Page color='white' style={{ marginTop: '15px' }}>
 					{
 						filters.facets.map((facet, idx) => {
 							return (

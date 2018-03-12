@@ -5,7 +5,7 @@ import { Header, Page, Navigation, Svg, Card, Grid } from '@/components/mobile';
 import { actions as recommendedActions } from '@/state/v4/RecommendedProducts';
 import Love from '@/containers/Mobile/Shared/Widget/Love';
 import { withRouter } from 'react-router-dom';
-import { urlBuilder } from '@/utils';
+import Discovery from '../Utils';
 import _ from 'lodash';
 
 class RecommendedProducts extends Component {
@@ -157,22 +157,7 @@ class RecommendedProducts extends Component {
 
 const mapStateToProps = (state) => {
 	const { comments, lovelist, recommendedproducts } = state;
-	recommendedproducts.products = _.map(recommendedproducts.products, (product) => {
-		const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: product.product_id }) : false;
-		const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: product.product_id }) : false;
-		if (lovelistData) {
-			product.lovelistTotal = lovelistData.total;
-			product.lovelistStatus = lovelistData.status;
-		}
-		if (commentData) {
-			product.commentTotal = commentData.total;
-		}
-		return {
-			...product,
-			url: urlBuilder.buildPdp(product.product_title, product.product_id),
-			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`
-		};
-	});
+	recommendedproducts.products = Discovery.mapProducts(recommendedproducts.products, comments, lovelist);
 	return {
 		recommendedproducts: {
 			...recommendedproducts
