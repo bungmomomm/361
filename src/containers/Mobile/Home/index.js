@@ -20,7 +20,16 @@ const renderSectionHeader = (title, options) => {
 	return (
 		<Level>
 			<Level.Left><div className={styles.headline}>{title}</div></Level.Left>
-			<Level.Right><Link to={options.url || '/'} className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></Link></Level.Right>
+			<Level.Right>
+				{
+					options.isMozaic ? 
+						<a href={options.url || '/'} target='_blank' className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></a>
+						:
+						<Link to={options.url || '/'} className={styles.readmore}>
+							{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' />
+						</Link>
+				}
+			</Level.Right>
 		</Level>
 	);
 };
@@ -248,7 +257,8 @@ class Home extends Component {
 		if (!mozaic.isEmpty().value()) {
 			const header = renderSectionHeader('Artikel Mozaic', {
 				title: mozaic.value().mainlink.text,
-				url: mozaic.value().mainlink.link
+				url: mozaic.value().mainlink.link,
+				isMozaic: true
 			});
 			return (
 				<div className='border-top margin--medium-v'>
