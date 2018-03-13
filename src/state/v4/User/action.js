@@ -10,7 +10,7 @@ import {
 } from '@/utils';
 
 import { userSocialLogin, userSocialLoginWithRedirect } from './social-action';
-import { checkMyOrders, getMyOrderDetail, updateMyOrdersCurrent, getMyOrderMore, cleanMyOrderData } from './myOrder-action';
+import { checkMyOrders, getMyOrderDetail, updateMyOrdersCurrent, getMyOrderMore, cleanMyOrderData, keepReviewInfo, submitReview } from './myOrder-action';
 import { getTrackingInfo } from './tracking-action';
 
 const isSuccess = (response) => {
@@ -144,10 +144,10 @@ const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 	const path = `${baseUrl}/auth/otp/validate?action=register`;
-	
+
 	dispatch(actions.userOtpValidate());
 	bodyData.pwd = base64.encode(bodyData.pwd);
-	
+
 	const requestData = {
 		token,
 		path,
@@ -392,5 +392,7 @@ export default {
 	getMyOrderMore,
 	cleanMyOrderData,
 	checkMyOrders,
-	refreshToken
+	refreshToken,
+	keepReviewInfo,
+	submitReview,
 };

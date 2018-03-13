@@ -142,7 +142,7 @@ class MyOrder extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page scroll='forcescroll'>
+				<Page>
 					<div className='margin--medium'>
 						{content}
 					</div>

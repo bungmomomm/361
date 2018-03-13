@@ -174,6 +174,10 @@ export default {
 			exact: true,
 		},
 		{
+			path: '/profile/my-order/add-review',
+			component: loadable(() => import('@/containers/Mobile/Users/Profile/addReview'), defaultOptions)
+		},
+		{
 			path: '/profile/my-order/:so_number([a-zA-Z0-9-]+)',
 			component: loadable(() => import('@/containers/Mobile/Users/Profile/myOrderDetail'), defaultOptions)
 		},
