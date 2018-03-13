@@ -8,6 +8,7 @@ import moment from 'moment';
 import util from 'util';
 import { to } from 'await-to-js';
 import Recaptcha from 'react-recaptcha';
+import validator from 'validator';
 
 import Shared from '@/containers/Mobile/Shared';
 import Otp from '@/containers/Mobile/Shared/Otp';
@@ -36,6 +37,10 @@ class UserProfileEdit extends Component {
 			isBuyer: true, // buyer or seller
 			layout: 'main',
 			submittingForm: false,
+			validName: true,
+			nameHint: '',
+			validBirthday: true,
+			birthdayHint: '',
 			formResult: {
 				status: '',
 				message: ''
@@ -123,12 +128,33 @@ class UserProfileEdit extends Component {
 		const name = e.target.name;
 		const value = util.format('%s', e.target.value);
 
+		if (name === this.NAME_FIELD) {
+			this.inputValidation(this.NAME_FIELD, value);
+		}
+
 		this.setState({
 			formData: {
 				...formData,
 				[name]: value
 			}
 		});
+	}
+
+	inputValidation(type, value) {
+		if (type === this.NAME_FIELD) {
+			let validName = false;
+			let nameHint = '';
+
+			if (value.length > 0 && value.length <= 3) {
+				nameHint = 'Nama Lengkap harus lebih dari 3 karakter';
+			} else if (validator.isEmpty(value)) {
+				nameHint = 'Nama Lengkap wajib diisi';
+			} else {
+				validName = true;
+			}
+
+			this.setState({ validName, nameHint });
+		}
 	}
 
 	showSelectGender() {
@@ -178,6 +204,7 @@ class UserProfileEdit extends Component {
 	}
 
 	submitFormData = async (e) => {
+		console.log('captcha response', e);
 		const { dispatch } = this.props;
 		const { layout, formData } = this.state;
 
@@ -222,9 +249,6 @@ class UserProfileEdit extends Component {
 					submittingForm: false
 				});
 
-				if (this.recaptchaInstance !== null) {
-					this.recaptchaInstance.reset();
-				}
 				console.log(err);
 			} else if (response) {
 				this.setState({
@@ -241,6 +265,10 @@ class UserProfileEdit extends Component {
 				this.setTimeoutForm(5000);
 				console.log(response);
 			}
+
+			if (this.recaptchaInstance !== null) {
+				this.recaptchaInstance.reset();
+			}
 		}
 	}
 
@@ -256,7 +284,7 @@ class UserProfileEdit extends Component {
 
 	renderHeader() {
 		const { isLoading } = this.props;
-		const { submittingForm } = this.state;
+		const { validName, validBirthday, submittingForm } = this.state;
 		const styleHeader = {
 			parent: {
 				height: '55px'
@@ -277,7 +305,7 @@ class UserProfileEdit extends Component {
 		);
 		const centerHeader = 'Ubah Profil';
 		const rightHeader = (
-			<Button onClick={() => this.saveFormData()} disabled={submittingForm}>SIMPAN</Button>
+			<Button onClick={() => this.saveFormData()} disabled={submittingForm || !validName || !validBirthday}>SIMPAN</Button>
 		);
 
 		return (
@@ -381,9 +409,20 @@ class UserProfileEdit extends Component {
 		);
 	}
 
+	renderRecaptcha() {
+		return (
+			<Recaptcha
+				ref={e => { this.recaptchaInstance = e; }}
+				sitekey={process.env.GOOGLE_CAPTCHA_SITE_KEY}
+				size='invisible'
+				verifyCallback={(e) => this.submitFormData(e)}
+			/>
+		);
+	}
+
 	renderForm() {
 		const { userProfile } = this.props;
-		const { formData } = this.state;
+		const { formData, validName, nameHint } = this.state;
 
 		if (_.isEmpty(userProfile)) {
 			return (
@@ -397,7 +436,15 @@ class UserProfileEdit extends Component {
 		const nameField = (
 			<div className='margin--medium-v'>
 				<label className={styles.label} htmlFor='fullName'>Nama Lengkap</label>
-				<Input name='name' id='fullName' flat defaultValue={fullName} onChange={(e) => this.inputHandler(e)} />
+				<Input
+					name={this.NAME_FIELD}
+					id='fullName'
+					flat
+					defaultValue={fullName}
+					onChange={(e) => this.inputHandler(e)}
+					error={!validName}
+					hint={nameHint}
+				/>
 			</div>
 		);
 
@@ -427,7 +474,7 @@ class UserProfileEdit extends Component {
 			</div>
 		);
 
-		const genderValue = !_.isEmpty(formData[this.GENDER_FIELD]) ? _.capitalize(formData[this.GENDER_FIELD]) : 'Pria';
+		const genderValue = !_.isEmpty(formData[this.GENDER_FIELD]) ? _.capitalize(formData[this.GENDER_FIELD]) : 'male';
 		const genderField = (
 			<div className='margin--medium-v'>
 				<label className={styles.label} htmlFor='gender'>Jenis Kelamin</label>
@@ -444,11 +491,18 @@ class UserProfileEdit extends Component {
 			</div>
 		);
 		
-		const birthdayValue = moment(formData[this.BIRTHDAY_FIELD]).isValid() === true ? moment(formData[this.BIRTHDAY_FIELD]).format('YYYY-MM-DD') : '';
+		const birthdayValue = moment(formData[this.BIRTHDAY_FIELD]).isValid() === true ? moment(formData[this.BIRTHDAY_FIELD]).format('YYYY-MM-DD') : '1990-01-01';
 		const birthdayField = (
 			<div className='margin--medium-v'>
 				<label className={styles.label} htmlFor='dob'>Tanggal Lahir</label>
-				<Input type='date' name='birthday' autoComplete='off' id='dob' flat value={birthdayValue} onChange={(e) => this.inputHandler(e)} />
+				<Input
+					type='date'
+					name={this.BIRTHDAY_FIELD}
+					id='dob'
+					flat
+					value={birthdayValue}
+					onChange={(e) => this.inputHandler(e)}
+				/>
 			</div>
 		);
 
@@ -568,23 +622,12 @@ class UserProfileEdit extends Component {
 		return layoutView;
 	}
 
-	renderRecaptcha() {
-		return (
-			<Recaptcha
-				ref={e => { this.recaptchaInstance = e; }}
-				sitekey={process.env.GOOGLE_CAPTCHA_SITE_KEY}
-				size='invisible'
-				verifyCallback={(e) => this.submitFormData(e)}
-			/>
-		);
-	}
-
 	render() {
 		return (
 			<div>
 				{this.renderLayout()}
-				{this.renderGenderSelect()}
 				{this.renderRecaptcha()}
+				{this.renderGenderSelect()}
 			</div>
 		);
 	}

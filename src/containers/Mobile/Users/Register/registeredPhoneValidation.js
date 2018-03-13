@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { Header, Page, Button, Svg, Input, Notification } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import styles from '../user.scss';
+import Recaptcha from 'react-recaptcha';
 
 
 class RegisteredPhoneValidation extends Component {
@@ -48,7 +49,13 @@ class RegisteredPhoneValidation extends Component {
 							<span>Pengiriman kode verifikasi sukses!</span>
 						</Notification>
 						<div className='margin--medium-v text-center'>
-							<Input value='123123' error hint='Kode verifikasi salah' partitioned maxLength={6} />
+							<Input value='' error hint='Kode verifikasi salah' partitioned maxLength={6} />
+						</div>
+						<div className='margin--small-v text-center'>
+							<Recaptcha
+								size='normal'
+								sitekey={process.env.GOOGLE_CAPTCHA_SITE_KEY}
+							/>
 						</div>
 						<div className='margin--small-v'>
 							<Button

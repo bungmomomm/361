@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import util from 'util';
 import _ from 'lodash';
+import validator from 'validator';
 
 import { Page, Level, Input, Svg, Button, Notification, Spinner } from '@/components/mobile';
 
@@ -17,17 +18,21 @@ class EditOvo extends Component {
 			formResult: {
 				...props.formResult
 			},
-			isLoading: props.loading
+			isLoading: props.loading,
+			showNotif: false,
+			validForm: false,
+			inputHint: ''
 		};
 
 		this.OVO_ID_FIELD = CONST.USER_PROFILE_FIELD.ovoId;
-		this.loadingView = <div><Spinner /></div>;
+		this.loadingView = <Spinner />;
 	}
 
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.formResult !== false) {
 			if (nextProps.formResult.status === 'success') {
 				this.setState({
+					showNotif: true,
 					data: nextProps.data,
 					isLoading: nextProps.loading
 				});
@@ -42,8 +47,17 @@ class EditOvo extends Component {
 	inputHandler(e) {
 		const value = util.format('%s', e.target.value);
 
+		let validForm = false;
+		if ((value.substring(0, 1) === '0' && _.parseInt(value) > 0 && validator.isMobilePhone(value, 'any')) && validator.isLength(value, { min: 10, max: 15 })) {
+			validForm = true;
+		}
+
+		const inputHint = value.length > 0 && validForm === false ? 'Format Nomor Handphone tidak sesuai. Silahkan cek kembali' : '';
+
 		this.setState({
-			data: value
+			data: value,
+			validForm,
+			inputHint
 		});
 	}
 
@@ -69,39 +83,60 @@ class EditOvo extends Component {
 	}
 
 	renderNotif() {
-		const { formResult } = this.state;
-		if (!_.isEmpty(formResult.status) && !_.isEmpty(formResult.message)) {
-			const notifColor = formResult.status === 'success' ? 'green' : 'pink';
-			return (
-				<Notification
-					color={notifColor}
-					disableClose
-					show
-				>
-					<span>{formResult.message}</span>
-				</Notification>
-			);
+		const { showNotif, formResult } = this.state;
+		
+		if (showNotif) {
+			if (!_.isEmpty(formResult.status) && !_.isEmpty(formResult.message)) {
+				const notifColor = formResult.status === 'success' ? 'green' : 'pink';
+				return (
+					<Notification
+						color={notifColor}
+						disableClose
+						show
+					>
+						<span>{formResult.message}</span>
+					</Notification>
+				);
+			}
 		}
 		
 		return null;
 	}
 
 	renderSubmitButton() {
+		const { validForm } = this.state;
+
 		return (
 			<div className='margin--medium-v'>
-				<Button color='primary' size='large' onClick={(e) => this.saveData(e)}>VERIFIKASI OVO ID</Button>
+				<Button
+					color='primary'
+					size='large'
+					onClick={(e) => this.saveData(e)}
+					disabled={!validForm}
+				>
+					VERIFIKASI OVO ID
+				</Button>
 			</div>
 		);
 	}
 
 	renderOvoForm() {
-		const { isLoading, data } = this.state;
+		const { isLoading, validForm, inputHint, data } = this.state;
 
 		return (
 			<form style={{ padding: '15px' }}>
 				<div className='margin--medium-v'>
 					<label className={styles.label} htmlFor='ovoID'>OVO ID</label>
-					<Input id='ovoID' flat placeholder='No. Handphone yang terdaftar di OVO' defaultValue={data} onChange={(e) => this.inputHandler(e)} />
+					<Input
+						id='ovoID'
+						flat
+						placeholder='No. Handphone yang terdaftar di OVO'
+						defaultValue={data}
+						onChange={(e) => this.inputHandler(e)}
+						error={!validForm}
+						hint={inputHint}
+						onFocus={() => this.setState({ showNotif: false })}
+					/>
 				</div>
 				{this.renderNotif()}
 				{isLoading ? this.loadingView : this.renderSubmitButton()}

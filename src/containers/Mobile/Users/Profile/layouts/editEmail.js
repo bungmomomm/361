@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import util from 'util';
 import _ from 'lodash';
+import validator from 'validator';
 
 import { Page, Input, Button, Level, Svg, Notification, Spinner } from '@/components/mobile';
 
@@ -17,16 +18,20 @@ class EditEmail extends Component {
 			formResult: {
 				...props.formResult
 			},
-			isLoading: props.loading
+			isLoading: props.loading,
+			showNotif: false,
+			validForm: false,
+			inputHint: ''
 		};
 
 		this.EMAIL_FIELD = CONST.USER_PROFILE_FIELD.email;
-		this.loadingView = <div><Spinner /></div>;
+		this.loadingView = <Spinner />;
 	}
 
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.formResult !== false) {
 			this.setState({
+				showNotif: true,
 				formResult: nextProps.formResult,
 				isLoading: nextProps.loading
 			});
@@ -36,19 +41,30 @@ class EditEmail extends Component {
 	inputHandler(e) {
 		const value = util.format('%s', e.target.value);
 
+		let validForm = false;
+		if (validator.isEmail(value)) {
+			validForm = true;
+		}
+
+		const inputHint = value.length > 0 && validForm === false ? 'Format email tidak sesuai.' : '';
+
 		this.setState({
-			data: value
+			data: value,
+			validForm,
+			inputHint
 		});
 	}
 
 	saveData(e) {
 		const { onSave } = this.props;
 		const { data } = this.state;
+
 		onSave(e, { [this.EMAIL_FIELD]: data });
 	}
 
 	renderHeader() {
 		const { onClickBack } = this.props;
+
 		const headerView = (
 			<Level style={{ height: '55px' }}>
 				<Level.Left style={{ width: '80px' }}>
@@ -63,33 +79,45 @@ class EditEmail extends Component {
 	}
 
 	renderNotif() {
-		const { formResult } = this.state;
-		if (!_.isEmpty(formResult.status) && !_.isEmpty(formResult.message)) {
-			const notifColor = formResult.status === 'success' ? 'green' : 'pink';
-			return (
-				<Notification
-					color={notifColor}
-					disableClose
-					show
-				>
-					<span>{formResult.message}</span>
-				</Notification>
-			);
+		const { showNotif, formResult } = this.state;
+
+		if (showNotif) {
+			if (!_.isEmpty(formResult.status) && !_.isEmpty(formResult.message)) {
+				const notifColor = formResult.status === 'success' ? 'green' : 'pink';
+				return (
+					<Notification
+						color={notifColor}
+						disableClose
+						show
+					>
+						<span>{formResult.message}</span>
+					</Notification>
+				);
+			}
 		}
 		
 		return null;
 	}
 
 	renderSubmitButton() {
+		const { validForm } = this.state;
+
 		return (
 			<div className='margin--medium-v'>
-				<Button color='primary' size='large' onClick={(e) => this.saveData(e)}>SIMPAN</Button>
+				<Button
+					color='primary'
+					size='large'
+					onClick={(e) => this.saveData(e)}
+					disabled={!validForm}
+				>
+					SIMPAN
+				</Button>
 			</div>
 		);
 	}
 
 	renderEmailForm() {
-		const { isLoading, data } = this.state;
+		const { isLoading, validForm, inputHint, data } = this.state;
 
 		return (
 			<form style={{ padding: '15px' }}>
@@ -99,7 +127,14 @@ class EditEmail extends Component {
 				</div>
 				<div className='margin--medium-v'>
 					<label className={styles.label} htmlFor='editEmailNew'>Alamat Email Baru</label>
-					<Input id='editEmailNew' flat onChange={(e) => this.inputHandler(e)} />
+					<Input
+						id='editEmailNew'
+						flat
+						onChange={(e) => this.inputHandler(e)}
+						error={!validForm}
+						hint={inputHint}
+						onFocus={() => this.setState({ showNotif: false })}
+					/>
 				</div>
 				{this.renderNotif()}
 				{isLoading ? this.loadingView : this.renderSubmitButton()}
@@ -108,7 +143,6 @@ class EditEmail extends Component {
 	}
 
 	render() {
-		console.log(this.props);
 		return (
 			<Page style={{ paddingTop: 0 }} color='white'>
 				{this.renderHeader()}

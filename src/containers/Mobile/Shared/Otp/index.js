@@ -5,13 +5,13 @@ import _ from 'lodash';
 import util from 'util';
 import { to } from 'await-to-js';
 import validator from 'validator';
+import Recaptcha from 'react-recaptcha';
 
 import { Header, Page, Button, Svg, Input, Notification, Spinner } from '@/components/mobile';
 
 import { actions as userActions } from '@/state/v4/User';
 
 import CONST from '@/constants';
-import { renderIf } from '@/utils';
 
 import styles from './otp.scss';
 
@@ -26,10 +26,12 @@ class Otp extends Component {
 			showNotif: false,
 			statusNotif: '',
 			enableResend: false,
-			showVerifyButton: false,
 			phoneEmail: props.phoneEmail || '',
+			otp: '',
 			otpCount: 0,
+			inputValue: null,
 			inputHint: '',
+			captchaValid: false,
 			validForm: false,
 			disabledInput: false,
 			resendButtonMessage: ''
@@ -38,6 +40,7 @@ class Otp extends Component {
 		this.HP_EMAIL_FIELD = CONST.USER_PROFILE_FIELD.hpEmail;
 		this.OTP_FIELD = CONST.USER_PROFILE_FIELD.otp;
 		this.loadingView = <Spinner />;
+		this.recaptchaInstance = null;
 	}
 
 	componentWillMount = async () => {
@@ -88,7 +91,8 @@ class Otp extends Component {
 
 				this.setState({
 					showNotif: true,
-					statusNotif: 'failed'
+					statusNotif: 'failed',
+					inputValue: ''
 				});
 			} else if (response) {
 				console.log('response resend', response);
@@ -97,12 +101,24 @@ class Otp extends Component {
 					otpCount: otpCount + 1,
 					validForm: true,
 					showNotif: true,
-					statusNotif: 'success'
+					statusNotif: 'success',
+					inputValue: ''
 				});
 
 				const countdown = _.chain(response).get('countdown').value() || 60;
 				this.countdownTimer(countdown);
 			}
+
+			if (this.recaptchaInstance !== null) {
+				this.recaptchaInstance.reset();
+			}
+		}
+
+		if (otpCount > 2) {
+			this.setState({
+				showVerifyButton: true,
+				autoSubmit: false
+			});
 		}
 
 		this.setTimeoutNotif(5000);
@@ -132,20 +148,19 @@ class Otp extends Component {
 	}
 	
 	inputHandler(e) {
-		const { phoneEmail } = this.state;
 		const value = util.format('%s', e.target.value);
 
-		let validForm = false;
-		if (validator.isNumeric(value) && validator.isLength(value, { min: 6 })) {
-			validForm = true;
-		}
+		this.setState({
+			otp: value
+		});
 
+		let validForm = false;
 		let inputHint = '';
-		if (validForm) {
-			this.validateOtp({
-				[this.HP_EMAIL_FIELD]: phoneEmail,
-				[this.OTP_FIELD]: value
-			});
+		if (validator.isNumeric(value) && validator.isLength(value, { min: 6 })) {
+			if (this.recaptchaInstance !== null) {
+				this.recaptchaInstance.execute();
+			}
+			validForm = true;
 		} else {
 			inputHint = value.length > 0 && validForm === false ? 'Format Kode OTP tidak sesuai. Silahkan cek kembali' : '';
 		}
@@ -156,11 +171,19 @@ class Otp extends Component {
 		});
 	}
 
-	validateOtp = async (data) => {
+	validateOtp = async (e) => {
+		console.log('captcha response', e);
 		const { dispatch, onSuccess } = this.props;
+		const { phoneEmail, otp } = this.state;
+
+		const otpData = {
+			action: 'edit',
+			[this.HP_EMAIL_FIELD]: phoneEmail,
+			[this.OTP_FIELD]: otp
+		};
 
 		this.setState({ disabledInput: true });
-		const [err, response] = await to(dispatch(userActions.userOtpValidate(this.userToken, data, 'edit')));
+		const [err, response] = await to(dispatch(userActions.userOtpValidate(this.userToken, otpData)));
 		if (err) {
 			console.log('err validate', err);
 
@@ -173,6 +196,10 @@ class Otp extends Component {
 			console.log('response validate', response);
 
 			onSuccess();
+		}
+
+		if (this.recaptchaInstance !== null) {
+			this.recaptchaInstance.reset();
 		}
 	}
 
@@ -219,13 +246,25 @@ class Otp extends Component {
 		return (
 			<div className='margin--medium-v text-center'>
 				<Input
-					value={null}
 					error={!validForm}
 					hint={inputHint}
 					partitioned 
 					maxLength={6}
 					disabled={disabledInput}
 					onChange={(e) => this.inputHandler(e)}
+				/>
+			</div>
+		);
+	}
+
+	renderRecaptcha() {
+		return (
+			<div className='margin--small-v'>
+				<Recaptcha
+					size='invisible'
+					ref={e => { this.recaptchaInstance = e; }}
+					sitekey={process.env.GOOGLE_CAPTCHA_SITE_KEY}
+					verifyCallback={(e) => this.validateOtp(e)}
 				/>
 			</div>
 		);
@@ -251,21 +290,6 @@ class Otp extends Component {
 		);
 	}
 
-	renderVerifyButton() {
-		const { showVerifyButton } = this.state;
-		renderIf(showVerifyButton)(
-			<div className='margin--medium-v'>
-				<Button
-					color='primary'
-					size='large'
-					onClick={e => this.onClickVerify(e)}
-				>
-					VERIFIKASI
-				</Button>
-			</div>
-		);
-	}
-
 	render() {
 		const { phoneEmail } = this.state;
 
@@ -276,8 +300,8 @@ class Otp extends Component {
 						<div className='margin--medium-v'>Kami telah mengirimkan kode verifikasi ke no {phoneEmail}. Silakan masukan kode verifikasi.</div>
 						{this.renderNotification()}
 						{this.renderOtpForm()}
+						{this.renderRecaptcha()}
 						{this.renderResendButton()}
-						{this.renderVerifyButton()}
 					</div>
 				</Page>
 				{this.renderHeader()}
