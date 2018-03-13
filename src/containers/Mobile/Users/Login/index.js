@@ -16,6 +16,8 @@ import util from 'util';
 import to from 'await-to-js';
 import queryString from 'query-string';
 
+import LoginPage from './Page';
+
 class Login extends Component {
 	constructor(props) {
 		super(props);
@@ -108,11 +110,11 @@ class Login extends Component {
 							variants={[
 								{
 									title: 'Login',
-									id: 'login',
+									id: 'login'
 								},
 								{
 									title: 'Daftar',
-									id: 'Daftar'
+									id: 'register'
 								}
 							]}
 							onPick={(e) => this.handlePick(e)}
@@ -218,5 +220,7 @@ const doAfterAnonymous = (props) => {
 		// props.history.push('/dashboard');
 	}
 };
+
+Login.Page = LoginPage;
 
 export default withCookies(connect(mapStateToProps)(Shared(Login, doAfterAnonymous)));

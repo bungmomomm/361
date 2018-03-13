@@ -27,14 +27,16 @@ class CreditCard extends Component {
 		this.setDefaultCreditCard = this.setDefaultCreditCard.bind(this);
 		this.deleteSingleCreditCardFromList = this.deleteSingleCreditCardFromList.bind(this);
 		this.makeCreditCardRadioChecked = this.makeCreditCardRadioChecked.bind(this);
-		this.deleteCreditCardPopUpConfirmation = this.deleteCreditCardPopUpConfirmation.bind(this);
+		this.renderDeleteCreditCardPopUpConfirmation = this.renderDeleteCreditCardPopUpConfirmation.bind(this);
 		this.renderCreditCardList = this.renderCreditCardList.bind(this);
 		
 		this.state = {
 			successMessage: '',
+			temporaryCheckedCreditCardValueForSetDefault: null,
 			checkedCreditCardValueForSetDefault: null,
 			checkedCreditCardValueForDelete: null,
 			showDeleteCreditCardPopUpConfirmation: false,
+			showSetDefaultCreditCardPopUpConfirmation: false,
 			isCreditCardAllowedForDelete: false
 		};
 		
@@ -90,6 +92,9 @@ class CreditCard extends Component {
 		const { data } = response;
 		
 		if (data.code === 200) {
+			
+			await to(dispatch(new actions.getCreditCard(cookies.get('user.token'))));
+			
 			this.setState({
 				successMessage: data.data.msg,
 				showDeleteCreditCardPopUpConfirmation: false
@@ -105,7 +110,7 @@ class CreditCard extends Component {
 		this.setState({ checkedCreditCardValueForSetDefault: id }, () => { this.setDefaultCreditCard(); });
 	}
 	
-	deleteCreditCardPopUpConfirmation() {
+	renderDeleteCreditCardPopUpConfirmation() {
 		
 		const { showDeleteCreditCardPopUpConfirmation } = this.state;
 		
@@ -161,11 +166,10 @@ class CreditCard extends Component {
 				const isCheckedByDefault = (fgDefault === 1 && !checkedCreditCardValueForSetDefault);
 				const isCheckedByUser = (checkedCreditCardValueForSetDefault && (checkedCreditCardValueForSetDefault === cc.id));
 				
-				const isChecked = isCheckedByDefault || isCheckedByUser ? id : null;
+				const isChecked = isCheckedByDefault || isCheckedByUser ? cc.id : null;
 				
-				const creditCardLogo = 'logo_mastercard.svg';
-                
-                
+				const creditCardLogo = `logo_${cc.credit_card_type}.svg`;
+				
 				return (
 					<div className='margin--medium-t' key={id}>
 						<Level className='bg--white' key={id}>
@@ -207,6 +211,42 @@ class CreditCard extends Component {
 		return view;
 		
 	}
+    
+	renderSetDefaultCreditCardPopUpConfirmation() {
+ 
+		const { showSetDefaultCreditCardPopUpConfirmation } = this.state;
+		
+		const modalAttribute = {
+			show: false
+		};
+		
+		if (showSetDefaultCreditCardPopUpConfirmation === true) {
+			modalAttribute.show = true;
+		}
+		
+		return (
+			<Modal {...modalAttribute}>
+				<div className='font-medium'>
+					<h3>Jadikan Kartu Utama</h3>
+					<Level style={{ padding: '0px' }} className='margin--medium-v'>
+						<Level.Left />
+						<Level.Item className='padding--medium-h'>
+							<div className='font-small'>
+								Apakah anda yakin ingin menjadikan kartu ini sebagai kartu utama ?
+							</div>
+						</Level.Item>
+					</Level>
+				</div>
+				<Modal.Action
+					closeButton={(
+						<Button onClick={() => this.setState({ showSetDefaultCreditCardPopUpConfirmation: false })}>
+							<span className='font-color--primary-ext-2'>BATALKAN</span>
+						</Button>)}
+					confirmButton={(<Button onClick={() => { console.log(this.state.temporaryCheckedCreditCardValueForSetDefault); }}>YA</Button>)}
+				/>
+			</Modal>
+		);
+	}
 
 	render() {
 
@@ -239,8 +279,8 @@ class CreditCard extends Component {
 					) }
 					
 					{ this.renderCreditCardList() }
-					{ this.deleteCreditCardPopUpConfirmation() }
-					
+					{ this.renderDeleteCreditCardPopUpConfirmation() }
+					{ this.renderSetDefaultCreditCardPopUpConfirmation() }
 				</Page>
 				<Header.Modal {...HeaderPage} />
 				<Navigation active='Profile' />

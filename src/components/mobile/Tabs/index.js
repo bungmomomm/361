@@ -13,7 +13,7 @@ class Tabs extends PureComponent {
 		);
 
 		const tabs = variants.map(({ id, title, key, disabled }, idx) => {
-			const active = key === current;
+			const active = id === current;
 			return (
 				<Tab
 					id={id}

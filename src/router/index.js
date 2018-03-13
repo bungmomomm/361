@@ -35,7 +35,7 @@ const transition = {
 		opacity: 0
 	},
 	atLeave: {
-		opacity: bounce(0)
+		opacity: bounce(1)
 	},
 	atActive: {
 		opacity: bounce(1)

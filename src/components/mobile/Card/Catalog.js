@@ -114,7 +114,7 @@ class Catalog extends PureComponent {
 					<Carousel>
 						{
 							images.map((image, index) => (
-								<Image key={index} src={image.thumbnail} alt={productTitle} />
+								<Image key={index} src={image.thumbnail} lazyload alt={productTitle} />
 							))
 						}
 					</Carousel>

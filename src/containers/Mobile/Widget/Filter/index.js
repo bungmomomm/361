@@ -37,6 +37,7 @@ class Filter extends PureComponent {
 			filters: props.filters,
 			selected: {},
 			layout: 'result',
+			resetDisabled: true,
 			params: {
 				header: {
 					title: 'Title'
@@ -90,6 +91,7 @@ class Filter extends PureComponent {
 
 	onReset(e) {
 		const { filters } = this.state;
+		let resetDisabled = false;
 		const updateChilds = (c) => {
 			c = _.map(c, (facetData) => {
 				facetData.is_selected = 0;
@@ -120,10 +122,12 @@ class Filter extends PureComponent {
 			selected[facet.id] = [{
 				facetdisplay: 'Semua'
 			}];
+			resetDisabled = true;
 			return facet;
 		});
 
 		this.setState({
+			resetDisabled,
 			filters,
 			selected
 		});
@@ -149,7 +153,7 @@ class Filter extends PureComponent {
 
 	mapFilters(newFilters) {
 		const { selected } = this.state;
-		let { filters } = this.state;
+		let { filters, resetDisabled } = this.state;
 		if (newFilters) {
 			filters = newFilters;
 		}
@@ -164,6 +168,7 @@ class Filter extends PureComponent {
 
 			return [c, s];
 		};
+		resetDisabled = true;
 		filters.facets = _.map(filters.facets, (facet) => {
 			switch (facet.id) {
 			case 'category':
@@ -186,11 +191,14 @@ class Filter extends PureComponent {
 				selected[facet.id].push({
 					facetdisplay: 'Semua'
 				});
+			} else {
+				resetDisabled = false;
 			}
 			return facet;
 		});
 		
 		this.setState({
+			resetDisabled,
 			selected
 		});
 		this.forceUpdate();
@@ -198,6 +206,7 @@ class Filter extends PureComponent {
 
 	applyFilter(type, values, custom) {
 		const { selected, filters } = this.state;
+		let { resetDisabled } = this.state;
 		const results = _.map(values, (value) => {
 			return value.facetrange;
 		});
@@ -216,7 +225,7 @@ class Filter extends PureComponent {
 			});
 			return [c, s];
 		};
-
+		resetDisabled = true;
 		filters.facets = _.map(filters.facets, (facet) => {
 			if (facet.id === type) {
 				switch (facet.id) {
@@ -265,17 +274,20 @@ class Filter extends PureComponent {
 					});
 					break;
 				}
-
+				
 				if (selected[facet.id].length < 1) {
 					selected[facet.id].push({
 						facetdisplay: 'Semua'
 					});
+				} else {	
+					resetDisabled = false;
 				}
 			}
 			return facet;
 		});
-
+		console.log(resetDisabled);
 		this.setState({
+			resetDisabled,
 			filters,
 			selected,
 			layout: 'result'
@@ -283,7 +295,7 @@ class Filter extends PureComponent {
 	}
 
 	render() {
-		const { layout, filters, selected, ...state } = this.state;
+		const { layout, filters, selected, resetDisabled, ...state } = this.state;
 		const { shown } = this.props;
 
 		const brands = this.getFacet('brand');
@@ -399,6 +411,7 @@ class Filter extends PureComponent {
 					<Result 
 						{...state} 
 						filters={filters}
+						resetDisabled={resetDisabled}
 						onReset={(e) => this.onReset(e)} 
 						selected={selected}
 						onApply={(e) => this.onApply(e)} 

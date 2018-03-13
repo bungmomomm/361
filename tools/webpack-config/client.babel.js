@@ -12,9 +12,8 @@ import Dotenv from 'dotenv-webpack';
 const config = Object.assign(commonConfig, {
 	
 	entry: {
-
-		main: ['babel-polyfill', './src/client'],
-		vendors: ['./src/vendors']
+		main: './src/client',
+		vendors: './src/vendors'
 	},
 
 	output: {
@@ -85,6 +84,7 @@ if (
 	process.env.NODE_ENV === 'production'
 	|| process.env.STATIC
 ) {
+	config.entry.main = ['babel-polyfill', './src/client'];
 
 	config.module.rules.push(
 

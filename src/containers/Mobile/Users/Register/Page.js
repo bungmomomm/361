@@ -2,26 +2,25 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { actions as users } from '@/state/v4/User';
-import { Link, Redirect } from 'react-router-dom';
+import { 
+	Link
+} from 'react-router-dom';
 import {
-	Header,
-	Page,
 	Button,
 	Input,
-	Tabs,
 	Svg,
 	Notification
 } from '@/components/mobile';
-import Shared from '@/containers/Mobile/Shared';
-import { setUserCookie, renderIf } from '@/utils';
+import { 
+	setUserCookie
+} from '@/utils';
 import styles from '../user.scss';
 import { to } from 'await-to-js';
-import queryString from 'query-string';
 import validator from 'validator';
 import util from 'util';
 import _ from 'lodash';
-import { 
-	Login as LoginWidget 
+import {
+	Login as LoginWidget
 } from '@/containers/Mobile/Widget';
 import Helmet from 'react-helmet';
 import Recaptcha from 'react-recaptcha';
@@ -31,11 +30,8 @@ const OTP_BUTTON_TEXT = 'Kirim ulang kode otp';
 class Register extends Component {
 	constructor(props) {
 		super(props);
-		this.userCookies = this.props.cookies.get('user.token');
-		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.source = this.props.cookies.get('user.source');
 		this.props = props;
-		const query = queryString.parse(props.location.search);
 		this.state = {
 			current: 'register',
 			visiblePassword: false,
@@ -48,50 +44,49 @@ class Register extends Component {
 			validEmailOrMobile: false,
 			registerWith: 'EMAIL',
 			whatIShouldRender: 'REGISTER',
-			redirectUrl: query.redirect_url || false,
+			redirectUri: props.redirectUri || false,
 			disableOtpButton: false,
 			otpButtonText: OTP_BUTTON_TEXT,
 			displayMessageOnValidateOtpForm: false,
 			messageType: 'SUCCESS',
 			textMessageOnValidateOtpForm: '',
 			captchaValue: '',
-			isButtonResendOtpLoading: false,
-			showInvalidOtpText: false
+			isButtonResendOtpLoading: false
 		};
 		this.renderRegisterView = this.renderRegisterView.bind(this);
 		this.renderValidateOtpView = this.renderValidateOtpView.bind(this);
 		this.renderMobileOrEmailHasBeenRegistered = this.renderMobileOrEmailHasBeenRegistered.bind(this);
-		
+
 	}
-	
+
 	async onSocialRegister(provider, e) {
 		const { cookies, dispatch, history } = this.props;
-		const { redirectUrl } = this.state;
+		const { redirectUri } = this.state;
 		const { accessToken } = e;
-		
+
 		const [err, response] = await to(dispatch(new users.userSocialLogin(cookies.get('user.token'), provider, accessToken)));
 		if (err) {
 			return err;
 		}
 		setUserCookie(this.props.cookies, response.token);
-		history.push(redirectUrl || '/');
+		history.push(redirectUri || '/');
 		return response;
 	}
-	
+
 	async onRegister(e) {
-		
+
 		// Extract some props.
 		const { cookies, dispatch, history } = this.props;
-		
+
 		// Extract some state.
-		const { loginId, email, password, redirectUrl, registerWith } = this.state;
-		
+		const { loginId, email, password, redirectUri, registerWith } = this.state;
+
 		// Prepare data for register.
 		const dataForRegister = { fullname: loginId, hp_email: email, pwd: password };
-		
+
 		// Call register action.
 		const [errorRegister, responseRegister] = await to(dispatch(new users.userRegister(cookies.get('user.token'), dataForRegister)));
-		
+
 		// Throw error if any.
 		if (errorRegister) {
 			const { code } = errorRegister.response.data;
@@ -99,13 +94,13 @@ class Register extends Component {
 				this.setState({ whatIShouldRender: 'EMAIL_MOBILE_HAS_BEEN_REGISTERED' });
 				return false;
 			}
-			
+
 			return false;
 		}
 		// Extract response from register
 		const { data } = responseRegister;
 		const { code } = data;
-		
+
 		// Response from register is success
 		if (code === 200 && data.data.id) {
 			// Check if we register via mobile.
@@ -120,62 +115,63 @@ class Register extends Component {
 				this.setState({
 					whatIShouldRender: 'VALIDATE_OTP'
 				});
-				
+
 				return responseUserOtp;
-				
+
 			}
-			
+
 			const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get('user.token'), email, password)));
-			
+
 			if (errorUserLogin) {
 				return false;
 			}
-			
+
 			// Set the cookie for the page.
 			setUserCookie(cookies, responseUserLogin.token);
-			history.push(redirectUrl || '/');
-			
+			history.push(redirectUri || '/');
+
 		}
-		
+
 		return responseRegister;
-  
+
 	}
-	
+
 	async onSendOtp() {
-		
-		this.setState((prevState) => {
-			return {
-				isButtonResendOtpLoading: true,
-				disableOtpButton: true,
-				otpValue: '',
-				messageType: (prevState.messageType === 'ERROR') ? 'SUCCESS' : 'ERROR'
-			};
+
+		this.setState({
+			isButtonResendOtpLoading: true,
+			disableOtpButton: true,
+			otpValue: ''
 		});
-		
+
 		const { cookies, dispatch } = this.props;
 		const { email } = this.state;
-  
+
 		// Send the OTP again.
-		
+
 		const [error, response] = await to(dispatch(new users.userOtp(cookies.get('user.token'), email)));
-		
+
 		if (error) {
 			return false;
 		}
-		
+
 		// Extract response from send OTP
-		if (response.code === 200) {
+		const { data } = response;
+
+		const { code } = data;
+
+		if (code === 200) {
 			this.setState({
 				displayMessageOnValidateOtpForm: true,
 				textMessageOnValidateOtpForm: 'Pengiriman kode OTP berhasil'
 			});
 		}
-		
+
 		// Set the initial number for OTP to 10.
 		let number = 301;
-		
+
 		const counterDown = () => {
-			
+
 			if (number > 0) {
 				number -= 1;
 				this.setState({
@@ -183,7 +179,7 @@ class Register extends Component {
 				});
 			}
 		};
-		
+
 		const doCounter = setInterval(() => {
 			counterDown();
 			if (number === 0) {
@@ -195,84 +191,84 @@ class Register extends Component {
 			}
 		}, 1000);
 
-		
+
 		doCounter();
-		
+
 		return response;
-		
+
 	}
-	
+
 	async onVerifyOtp() {
-		
+
 		const { cookies, dispatch, history } = this.props;
-		const { loginId, email, password, otpValue, redirectUrl, captchaValue } = this.state;
-		
+		const { loginId, email, password, otpValue, redirectUri, captchaValue } = this.state;
+
 		if (captchaValue.length === 0) {
-			
-			this.setState((prevState) => {
-				return {
-					displayMessageOnValidateOtpForm: true,
-					textMessageOnValidateOtpForm: 'Mohon centang checkbox pada captcha. ',
-					messageType: (prevState.messageType === 'SUCCESS') ? 'ERROR' : 'SUCCESS'
-				};
+
+			this.setState({
+				displayMessageOnValidateOtpForm: true,
+				textMessageOnValidateOtpForm: 'Mohon centang checkbox pada captcha. ',
+				messageType: 'ERROR'
 			});
-			
+
 			return false;
 		}
-		
+
 		const dataForVerify = {
-			action: 'register',
 			hp_email: email,
 			pwd: password,
 			fullname: loginId,
 			otp: otpValue
 		};
-		
+
 		const [err, response] = await to(dispatch(new users.userOtpValidate(cookies.get('user.token'), dataForVerify)));
-		
+
 		if (err) {
+
 			this.setState({
-				showInvalidOtpText: true
+				displayMessageOnValidateOtpForm: true,
+				textMessageOnValidateOtpForm: 'Kode OTP tidak valid.',
+				messageType: 'ERROR'
 			});
-   
+
 			return err;
 		}
-		
+
 		const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get('user.token'), email, password)));
-		
+
 		if (errorUserLogin) {
 			console.log('error on user login');
 			return false;
 		}
-		
+
 		// Set the cookie for the page.
 		setUserCookie(cookies, responseUserLogin.token);
-		history.push(redirectUrl || '/');
-  
+		history.push(redirectUri || '/');
+
 		return response;
 	}
 
 	onFieldChange(e, type) {
-		
+
 		const value = util.format('%s', e.target.value);
-		
+
 		if (type === 'email') {
 
 			let valueId = false;
 			this.setState({ registerWith: 'EMAIL' });
-			
+
 			if ((value.substring(0, 1) === '0' && _.parseInt(value) > 0 && validator.isMobilePhone(value, 'any')) || validator.isEmail(value)) {
 				valueId = true;
 			}
-			
+
 			if (validator.isMobilePhone(value, 'any') === true) {
 				this.setState({ registerWith: 'MOBILE' });
 			}
-			
+
 			this.setState({
 				validEmailOrMobile: valueId
 			});
-			
+
 		} else if (type === 'loginId') {
 			this.setState({
 				validLoginId: !validator.isEmpty(value)
@@ -282,16 +278,11 @@ class Register extends Component {
 				validPassword: !validator.isEmpty(value) && validator.isLength(value, { min: 6, max: undefined })
 			});
 		}
-		
+
 	}
- 
- 
-	handlePick(current) {
-		this.setState({ current });
-	}
-	
+
 	renderHelmet = () => {
-  
+
 		return (
 			<Helmet>
 				<script
@@ -302,21 +293,21 @@ class Register extends Component {
 			</Helmet>
 		);
 	};
-	
+
 	renderRegisterView() {
 		const {
-            email,
-            password,
-            loginId,
+			email,
+			password,
+			loginId,
 			visiblePassword,
 			validLoginId,
 			validPassword,
 			validEmailOrMobile
 		} = this.state;
-		
+
 		const { isLoading } = this.props.users;
 		const buttonLoginEnable = !isLoading && validLoginId && validPassword && validEmailOrMobile;
-		
+
 		const inputFullNameAttribute = {
 			value: loginId,
 			ref: (c) => { this.loginId = c; },
@@ -329,12 +320,12 @@ class Register extends Component {
 			flat: true,
 			placeholder: ''
 		};
-		
+
 		if (loginId.length > 0 && validLoginId === false) {
 			inputFullNameAttribute.error = true;
 			inputFullNameAttribute.hint = 'Nama Lengkap Harus Di isi';
 		}
-  
+
 		const inputMobileEmailAttribute = {
 			value: email,
 			ref: (c) => { this.email = c; },
@@ -346,12 +337,12 @@ class Register extends Component {
 			flat: true,
 			placeholder: ''
 		};
-		
+
 		if (email.length > 0 && validEmailOrMobile === false) {
 			inputMobileEmailAttribute.error = true;
 			inputMobileEmailAttribute.hint = 'Format Email/Nomor Handphone tidak sesuai. Silahkan cek kembali';
 		}
-        
+
 		let iconRightPasswordContent = 'ico_password_hide.svg';
 		if (visiblePassword === true) {
 			iconRightPasswordContent = 'ico_password_show.svg';
@@ -373,23 +364,23 @@ class Register extends Component {
 					<Svg src={iconRightPasswordContent} />
 				</Button>)
 		};
-		
+
 		if (password.length > 0 && validPassword === false) {
 			inputPasswordAttribute.error = true;
 			inputPasswordAttribute.hint = 'Password tidak valid';
 		}
-  
+
 		const buttonRegisterAttribute = {
-			color: 'primary',
+			color: 'secondary',
 			size: 'large',
 			onClick: (e) => this.onRegister(e),
 			disabled: !buttonLoginEnable
 		};
-		
+
 		if (isLoading === true) {
 			buttonRegisterAttribute.loading = true;
 		}
-		
+
 		const providerConfig = {
 			google: {
 				clientId: process.env.GOOGLEAPP_ID,
@@ -399,10 +390,10 @@ class Register extends Component {
 				appId: process.env.FBAPP_ID
 			}
 		};
-		
+
 		return (
-			<div className={styles.container}>
-				<div className='margin--medium'>Daftar Dengan</div>
+			<div>
+				<div className='margin--medium font-medium'>Daftar Dengan</div>
 				<LoginWidget
 					provider={providerConfig}
 					onSuccess={(provider, token) => this.onSocialRegister(provider, token)}
@@ -425,81 +416,82 @@ class Register extends Component {
 			</div>
 		);
 	}
-	
+
 	renderValidateOtpView() {
-		
+
 		const {
 			disableOtpButton,
 			otpValue,
 			otpButtonText,
-            displayMessageOnValidateOtpForm,
+			displayMessageOnValidateOtpForm,
 			textMessageOnValidateOtpForm,
-            messageType,
-			isButtonResendOtpLoading,
-            showInvalidOtpText
+			messageType,
+			isButtonResendOtpLoading
 		} = this.state;
-		
+
 		const { isLoading } = this.props.users;
-  
+
 		const buttonPropertyResendOTP = {
 			color: 'secondary',
 			size: 'large',
-			outline: true,
 			onClick: (e) => this.onSendOtp()
 		};
-		
+
 		if ((isButtonResendOtpLoading && isLoading) === true) {
 			buttonPropertyResendOTP.loading = true;
 		}
-  
+
 		if (disableOtpButton === true) {
 			buttonPropertyResendOTP.disabled = true;
 		}
-		
+
 		const buttonPropertyVerify = {
 			color: 'secondary',
 			size: 'large',
 			onClick: (e) => this.onVerifyOtp(),
 			disabled: true
 		};
-		
+
 		if (otpValue.length === 6 && !isLoading) {
 			buttonPropertyVerify.disabled = false;
 		}
-		
+
 		if ((!isButtonResendOtpLoading && isLoading) === true) {
 			buttonPropertyVerify.loading = true;
 		}
-		
+
 		const enterOtpVerification = {
 			value: otpValue,
-			partitioned: true,
-			maxLength: 6,
-			onChange: (event) => { this.setState({ otpValue: event.target.value, showInvalidOtpText: false }); }
+			label: 'Masukan kode verifikasi',
+			flat: true,
+			placeholder: '',
+			onChange: (event) => { this.setState({ otpValue: event.target.value }); }
 		};
-		
-		if (showInvalidOtpText === true) {
-			enterOtpVerification.error = true;
-			enterOtpVerification.hint = 'Kode verifikasi salah';
-		}
-		
+
 		return (
-			<div className={styles.container}>
+			<div>
 				{this.renderHelmet()}
-				<div className='margin--medium-v'>Kami telah mengirimkan kode verifikasi ke no XXXXXXXX. Silakan masukan kode verifikasi.</div>
-				{ displayMessageOnValidateOtpForm && (
-					<Notification color={(messageType === 'SUCCESS') ? 'green' : 'pink'} show disableClose>
-						<span>{ textMessageOnValidateOtpForm }</span>
-					</Notification>
-				)}
-				
-				<div className='margin--medium-v text-center'>
+				<div>
+					<p>Kami telah mengirimkan kode verifikasi ke no XXXXXXX</p>
+					<p>Silahkan masukan kode verifikasi</p>
+
+					{displayMessageOnValidateOtpForm && (
+						<Notification color={(messageType === 'SUCCESS') ? 'green' : 'red'} show disableClose>
+							<span>{textMessageOnValidateOtpForm}</span>
+						</Notification>
+					)}
 					<Input {...enterOtpVerification} />
 				</div>
-				<div className='margin--medium-v text-center'>
+				<p>
+					<Button {...buttonPropertyResendOTP}>
+						{otpButtonText}
+					</Button>
+				</p>
+
+				<p>
 					<Recaptcha
 						sitekey={`${process.env.GOOGLE_CAPTCHA_SITE_KEY}`}
-						size='normal'
+						size='compact'
 						render='explicit'
 						verifyCallback={
 							(response) => {
@@ -513,107 +505,57 @@ class Register extends Component {
 							}
 						}
 					/>
-				</div>
-				<div className='margin--small-v'>
-					<Button {...buttonPropertyResendOTP}>
-						{otpButtonText}
-					</Button>
-				</div>
-				<div className='margin--medium-v'>
+				</p>
+
+				<p>
 					<Button {...buttonPropertyVerify}>
 						Verifikasi
 					</Button>
-				</div>
+				</p>
 
 			</div>
 		);
 	}
- 
+
 	renderMobileOrEmailHasBeenRegistered() {
-		
+
 		const { email } = this.state;
-		
+
 		const buttonProperty = {
-			color: 'primary',
+			color: 'secondary',
 			size: 'large'
 		};
-		
+
 		return (
-			<div className={styles.container}>
-				<div className='margin--medium-v'>Akun ini sudah terdaftar. Silahkan lakukan log in untuk mengakses akun.</div>
-				<div className='margin--medium-v text-center'>
-					<p>
-						MASUK DENGAN <strong>{email}</strong>
-					</p>
-				</div>
-				<div className='margin--small-v'>
-					<Link to='/login'>
-						<Button {...buttonProperty}> Login </Button>
-					</Link>
-				</div>
-				<div className='margin--medium-v text-center'>
-					<Link to='/forgotPassword'>Lupa Password</Link>
-				</div>
+			<div>
+				<p>Akun ini sudah terdafatar. Silahkan lakukan log in untuk mengakses akun</p>
+				<p>Masuk dengan {email} </p>
+				<Link to='/login'>
+					<Button {...buttonProperty}>Login</Button>
+				</Link>
+				<Link to='/forgotPassword'>Lupa Password</Link>
 			</div>
 		);
 	}
-	
+
 	render() {
-		const { current } = this.state;
-
-
-		const tabProperty = {
-			current: this.state.current,
-			variants: [
-				{
-					title: 'Login',
-					id: 'login',
-				},
-				{
-					title: 'Daftar',
-					id: 'Daftar'
-				}
-			],
-			onPick: (e) => this.handlePick(e)
-		};
-
-		const HeaderPage = {
-			left: (
-				<Link to='/'>
-					<Svg src='ico_arrow-back-left.svg' />
-				</Link>
-			),
-			center: 'Daftar',
-			right: null,
-			rows: <Tabs {...tabProperty} />,
-			shadow: false
-		};
-
-		const register = (current === 'login');
-		
 		const {
 			whatIShouldRender
 		} = this.state;
-		
+
 		let View = this.renderRegisterView();
-		
+
 		if (whatIShouldRender === 'VALIDATE_OTP') {
 			View = this.renderValidateOtpView();
 		}
-  
+
 		if (whatIShouldRender === 'EMAIL_MOBILE_HAS_BEEN_REGISTERED') {
 			View = this.renderMobileOrEmailHasBeenRegistered();
 		}
-        
+
 		return (
-			<div className='full-height' style={this.props.style}>
-				<Page>
-					{renderIf(register)(
-						<Redirect to='/login' />
-					)}
-					{View}
-				</Page>
-				<Header.Modal {...HeaderPage} />
+			<div className={styles.container}>
+				{View}
 			</div>
 		);
 	}
@@ -625,10 +567,7 @@ const mapStateToProps = state => {
 		isLoginLoading: state.users.isLoading
 	};
 };
-const doAfterAnonymous = props => {
-	console.log('code here if you need anon token or token');
-};
 
 export default withCookies(
-	connect(mapStateToProps)(Shared(Register, doAfterAnonymous))
+	connect(mapStateToProps)(Register)
 );
