@@ -123,6 +123,11 @@ export default {
 			exact: true
 		},
 		{
+			path: '/user/newpassword',
+			component: loadable(() => import('@/containers/Mobile/Users/Login/newPassword'), defaultOptions),
+			exact: true
+		},
+		{
 			path: '/promo',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Promo/PromoList'), defaultOptions),
 			exact: true
