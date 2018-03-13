@@ -1,7 +1,6 @@
 import React, {
 	Component 
 } from 'react';
-import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import { 
 	Button,
@@ -14,12 +13,18 @@ import {
 import { Love } from '@/containers/Mobile/Widget';
 import stylesCatalog from './view.scss';
 
+import { connect } from 'react-redux';
+import { withCookies } from 'react-cookie';
+import { actions as commentActions } from '@/state/v4/Comment';
+
+// @TODO cleanup code and move it as independence Component
+
 class CatalogView extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
-
+			commentLoading: false
 		};
 
 		this.loading = <div style={{ margin: '20px auto 20px auto' }}><Spinner /></div>;
@@ -31,38 +36,81 @@ class CatalogView extends Component {
 			forceLoginNow();
 		}
 	}
+	
+	// @TODO refractor and move addcomment outside this component
+	async addComment(event, productId) {
+		const { cookies, dispatch } = this.props;
+		const { newComment } = this.state;
+		if (event.key === 'Enter') {
+			this.setState({
+				commentLoading: true
+			});
+			await dispatch(commentActions.commentAddAction(cookies.get('user.token'), newComment.product_id, newComment.comment));
+			await dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), [productId]));
+			this.setState({
+				commentLoading: false
+			});
+		}
+	}
+
+	commentOnChange(event, productId) {
+		this.setState({ newComment: { product_id: productId, comment: event.target.value } });
+	}
 
 	renderComment(product) {
-		const { comments } = this.props;
+		const { comments, cookies } = this.props;
+		const { commentLoading } = this.state;
 
 		if (comments.loading) {
 			return this.loading;
 		}
 
-		if (comments.status === 'success') {
-			const commentProduct = _.find(comments.data, { product_id: product.product_id }) || false;
-			if (commentProduct) {
-				return (
-					<div className={stylesCatalog.commentBlock}>
-						<Link to={product.commentUrl}>
-							<Button>View {commentProduct.total} comments</Button>
-						</Link>
-						<Comment data={commentProduct.last_comment} pcpComment />
-						<Level>
-							<Level.Item>
-								<Input color='white' placeholder='Write comment' />
-							</Level.Item>
-						</Level>
-					</div>
-				);
-			}
-		}
-
-		return null;
+		
+		const commentProduct = product.comments || false;
+		return (
+			<div className={stylesCatalog.commentBlock}>
+				{(commentProduct) && (
+					<Link to={product.commentUrl}>
+						<Button>View {commentProduct.total} comments</Button>
+					</Link>
+				)}
+				{(commentProduct) && (
+					<Comment
+						data={commentProduct.last_comment} 
+						type='lite-review'
+						loading={comments.loading} 
+					/>
+				)}
+				<Level>
+					<Level.Item>
+						{
+							cookies.get('isLogin') === 'true' ?
+								comments.loading || commentLoading ? <div>Sending comment...</div> :
+									(
+										<Input
+											color='white'
+											placeholder='Write comment'
+											onKeyPress={(e) => this.addComment(e, product.product_id)}
+											onChange={(e) => this.commentOnChange(e, product.product_id)}
+										/>)
+								: (
+									<span><Link to='/login'>Login / Register</Link> untuk memberikan komentar</span>
+								)
+						}
+					</Level.Item>
+				</Level>
+			</div>
+		);
 	}
 
 	render() {
-		const { loading, comments, products } = this.props;
+		const { 
+			comments, 
+			products, 
+			loveIsLogin,
+			loveClick,
+			loveLoading
+		} = this.props;
 		return (
 			<div className={stylesCatalog.cardContainer}>
 				{products.map((product, index) => {
@@ -78,10 +126,13 @@ class CatalogView extends Component {
 								commentUrl={product.commentUrl}
 								love={(
 									<Love
+										isLogin={loveIsLogin}
+										loading={loveLoading}
 										status={product.lovelistStatus}
 										data={product.product_id}
 										total={product.lovelistTotal}
 										onNeedLogin={() => this.forceLoginNow()}
+										onClick={loveClick}
 										showNumber
 									/>
 								)}
@@ -90,10 +141,9 @@ class CatalogView extends Component {
 						</div>
 					);
 				})}
-				{loading && this.loading}
 			</div>
 		);
 	}
 }
 
-export default CatalogView;
+export default withCookies(connect()(CatalogView));

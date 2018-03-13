@@ -57,8 +57,8 @@ class Home extends Component {
 		const willActiveSegment = segmen.find(e => e.id === current);
 		// this.setState({ current: willActiveSegment.key });
 		dispatch(new sharedActions.setCurrentSegment(willActiveSegment.key));
-		dispatch(new actions.mainAction(willActiveSegment));
-		dispatch(new actions.recomendationAction(willActiveSegment));
+		dispatch(new actions.mainAction(willActiveSegment, this.userCookies));
+		dispatch(new actions.recomendationAction(willActiveSegment, this.userCookies));
 	}
 
 	renderHeroBanner() {
@@ -337,12 +337,14 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-	const { home, dispatch } = props;
+	const { home, dispatch, cookies } = props;
 
 	const activeSegment = home.segmen.find(e => e.key === home.activeSegment.key);
 
-	await dispatch(new actions.mainAction(activeSegment));
-	await dispatch(new actions.recomendationAction(activeSegment));
+	const tokenHeader = cookies.get('user.token');
+
+	await dispatch(new actions.mainAction(activeSegment, tokenHeader));
+	await dispatch(new actions.recomendationAction(activeSegment, tokenHeader));
 };
 
 

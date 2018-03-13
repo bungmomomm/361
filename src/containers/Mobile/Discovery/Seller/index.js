@@ -18,7 +18,6 @@ import {
 } from '@/containers/Mobile/Widget';
 import { withRouter } from 'react-router-dom';
 import stylesCatalog from '../Category/Catalog/catalog.scss';
-import styles from './styles.scss';
 import Spinner from '@/components/mobile/Spinner';
 import Share from '@/components/mobile/Share';
 import { urlBuilder, renderIf } from '@/utils';
@@ -31,6 +30,10 @@ import {
 	GridView,
 	SmallGridView
 } from '@/containers/Mobile/Discovery/View';
+
+import { actions as lovelistActions } from '@/state/v4/Lovelist';
+import { actions as commentActions } from '@/state/v4/Comment';
+import to from 'await-to-js';
 
 
 class Seller extends Component {
@@ -136,10 +139,11 @@ class Seller extends Component {
 
 	forceLoginNow() {
 		const { history } = this.props;
-		history.push(`/login?redirect_uri=${location.pathname}`);
+		const currentUrl = encodeURIComponent(`${location.pathname}${location.search}`);
+		history.push(`/login?redirect_uri=${currentUrl}`);
 	}
 
-	update = (filters) => {
+	update = async (filters) => {
 		const { cookies, dispatch, match: { params }, location, history } = this.props;
 		const { query } = this.state;
 
@@ -166,7 +170,11 @@ class Seller extends Component {
 			type: 'init'
 		};
 
-		dispatch(actions.getProducts(data));
+		const response = await to(dispatch(actions.getProducts(data)));
+
+		const productIdList = _.map(response[1].data.products, 'product_id') || [];
+		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 	};
 
 	handlePick = (val) => {
@@ -275,11 +283,7 @@ class Seller extends Component {
 			break;
 		}
 
-		return (
-			<div className={styles.cardContainer}>
-				{listView}
-			</div>
-		);
+		return listView;
 	};
 
 	renderHelmet = () => {
@@ -402,7 +406,12 @@ const doAfterAnonymous = async (props) => {
 	};
 
 	await dispatch(actions.initSeller(data.token, data.query.store_id));
-	await dispatch(actions.getProducts(data));
+	const response = await to(dispatch(actions.getProducts(data)));
+
+	const productIdList = _.map(response[1].data.products, 'product_id') || [];
+	dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+	dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+
 };
 
 export default withRouter(withCookies(connect(mapStateToProps)(Scroller(Shared(Seller, doAfterAnonymous)))));
