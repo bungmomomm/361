@@ -132,7 +132,7 @@ class Home extends Component {
 		if (!datas.isEmpty().value() && datas.value().id !== '') {
 			const header = renderSectionHeader(datas.value().hashtag, {
 				title: datas.value().mainlink.text,
-				url: '/hashtags'
+				url: '/mau-gaya-itu-gampang'
 			});
 			return (
 				<div>

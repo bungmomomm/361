@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import _ from 'lodash';
 import { Notification } from '@/components/mobile';
 import { actions as sharedActions } from '@/state/v4/Shared';
 
@@ -9,6 +10,11 @@ const onClose = (dispatch) => {
 
 const foreverBanner = (params) => {
 	const { close_button, text, show, dispatch, link } = params;
+	const isHide = _.isEmpty(text.text1) && _.isEmpty(text.text2);
+
+	if (isHide) {
+		return null;
+	}
 
 	const inlineStyle = {
 		color: params.text_color
@@ -17,7 +23,7 @@ const foreverBanner = (params) => {
 	const disableCloseFilter = (close_button.fg_show === '0');
 
 	let content = <div>Loading...</div>;
-	if (text.text1 && text.text2 !== '') {
+	if (!isHide) {
 		content = (
 			<div className='margin--medium-v'>
 				<Link to={link.target}>
