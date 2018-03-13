@@ -12,11 +12,9 @@ import Dotenv from 'dotenv-webpack';
 const config = Object.assign(commonConfig, {
 	
 	entry: {
-		
-		main: './src/client',
-		vendors: './src/vendors',
-		babel: 'babel-polyfill'
-	
+
+		main: ['babel-polyfill', './src/client'],
+		vendors: ['./src/vendors']
 	},
 
 	output: {
