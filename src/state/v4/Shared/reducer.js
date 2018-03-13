@@ -70,13 +70,19 @@ const reducer = handleActions({
 	[rrsShowSnack](state, { payload }) {
 		snackQueue = state.snackQueue.slice();
 		snackQueue.push({ id: payload.id, data: payload.data });
-		return { snackQueue };
+		return {
+			...state,
+			snackQueue
+		};
 	},
 	[rrsDismissSnack](state, { payload }) {
 		snackQueue = state.snackQueue.filter((snack) => {
 			return snack.id !== payload.id;
 		});
-		return { snackQueue };
+		return {
+			...state,
+			snackQueue
+		};
 	}
 }, initialState);
 
