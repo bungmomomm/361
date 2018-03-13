@@ -99,12 +99,12 @@ export default {
 		},
 		{
 			path: '/login',
-			component: loadable(() => import('@/containers/Mobile/Users/Login'), defaultOptions),
+			component: loadable(() => import('@/containers/Mobile/Users'), defaultOptions),
 			exact: true
 		},
 		{
 			path: '/register',
-			component: loadable(() => import('@/containers/Mobile/Users/Register'), defaultOptions),
+			component: loadable(() => import('@/containers/Mobile/Users'), defaultOptions),
 			exact: true
 		},
 		{

@@ -6,7 +6,7 @@ import Action from './action';
 class Result extends PureComponent {
 
 	render() {
-		const { onClose, onApply, onReset, selected, onListClick, filters } = this.props;
+		const { onClose, onApply, onReset, selected, onListClick, filters, resetDisabled } = this.props;
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
@@ -37,7 +37,7 @@ class Result extends PureComponent {
 					}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action hasApply hasReset onReset={onReset} onApply={onApply} />
+				<Action resetDisabled={resetDisabled} hasApply hasReset onReset={onReset} onApply={onApply} />
 			</div>
 		);
 	}
