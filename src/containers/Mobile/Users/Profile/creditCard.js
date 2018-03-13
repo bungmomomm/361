@@ -92,6 +92,9 @@ class CreditCard extends Component {
 		const { data } = response;
 		
 		if (data.code === 200) {
+			
+			await to(dispatch(new actions.getCreditCard(cookies.get('user.token'))));
+			
 			this.setState({
 				successMessage: data.data.msg,
 				showDeleteCreditCardPopUpConfirmation: false
