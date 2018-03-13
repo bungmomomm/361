@@ -78,6 +78,7 @@ class CreditCard extends Component {
 		if (isCreditCardAllowedForDelete === false) {
 			const message = 'Kartu kredit tidak bisa di hapus. Silahkan terapkan default pada kartu kredit lainnya';
 			this.setState({
+				showDeleteCreditCardPopUpConfirmation: false,
 				successMessage: message
 			});
 			return false;
