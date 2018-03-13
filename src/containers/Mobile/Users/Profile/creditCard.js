@@ -28,6 +28,7 @@ class CreditCard extends Component {
 		this.deleteSingleCreditCardFromList = this.deleteSingleCreditCardFromList.bind(this);
 		this.makeCreditCardRadioChecked = this.makeCreditCardRadioChecked.bind(this);
 		this.renderDeleteCreditCardPopUpConfirmation = this.renderDeleteCreditCardPopUpConfirmation.bind(this);
+		this.renderSetDefaultCreditCardPopUpConfirmation = this.renderSetDefaultCreditCardPopUpConfirmation.bind(this);
 		this.renderCreditCardList = this.renderCreditCardList.bind(this);
 		
 		this.state = {
@@ -59,7 +60,13 @@ class CreditCard extends Component {
 		const { data } = response;
 
 		if (data.code === 200) {
-			this.setState({ successMessage: data.data.msg });
+			this.setState(
+				{
+					successMessage: data.data.msg,
+					showSetDefaultCreditCardPopUpConfirmation: false,
+					temporaryCheckedCreditCardValueForSetDefault: null
+				}
+			);
 		}
 
 		return response;
@@ -187,7 +194,14 @@ class CreditCard extends Component {
 									name={id}
 									variant='check'
 									data={[{ value: cc.id }]}
-									onChange={this.makeCreditCardRadioChecked}
+									onChange={() => {
+										this.setState(() => {
+											return {
+												showSetDefaultCreditCardPopUpConfirmation: true,
+												temporaryCheckedCreditCardValueForSetDefault: cc.id
+											};
+										});
+									}}
 								/>
 							</Level.Left>
 							<Level.Item className='padding--medium-l'>
@@ -222,7 +236,7 @@ class CreditCard extends Component {
     
 	renderSetDefaultCreditCardPopUpConfirmation() {
  
-		const { showSetDefaultCreditCardPopUpConfirmation } = this.state;
+		const { showSetDefaultCreditCardPopUpConfirmation, temporaryCheckedCreditCardValueForSetDefault } = this.state;
 		
 		const modalAttribute = {
 			show: false
@@ -250,7 +264,7 @@ class CreditCard extends Component {
 						<Button onClick={() => this.setState({ showSetDefaultCreditCardPopUpConfirmation: false })}>
 							<span className='font-color--primary-ext-2'>BATALKAN</span>
 						</Button>)}
-					confirmButton={(<Button onClick={() => { console.log(this.state.temporaryCheckedCreditCardValueForSetDefault); }}>YA</Button>)}
+					confirmButton={(<Button onClick={() => { this.makeCreditCardRadioChecked(temporaryCheckedCreditCardValueForSetDefault); }}>YA</Button>)}
 				/>
 			</Modal>
 		);
