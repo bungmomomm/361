@@ -8,6 +8,7 @@ import { actions as productActions } from '@/state/v4/Product';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as shopBagActions } from '@/state/v4/ShopBag';
 import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Rating, Spinner, Badge } from '@/components/mobile';
+import Share from '@/components/mobile/Share';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
 import SellerProfile from '../../Discovery/Seller/components/SellerProfile';
@@ -22,6 +23,7 @@ class Products extends Component {
 		this.source = this.props.cookies.get('user.source');
 		this.isLogin = this.props.cookies.get('isLogin');
 		this.defaultCount = 1;
+		this.slideWrapAround = true;
 
 		this.closeZoomImage = this.closeZoomImage.bind(this);
 		this.goBackPreviousPage = this.goBackPreviousPage.bind(this);
@@ -30,7 +32,7 @@ class Products extends Component {
 		this.handleCloseModalPopUp = this.handleCloseModalPopUp.bind(this);
 		this.handleBtnBeliClicked = this.handleBtnBeliClicked.bind(this);
 		this.handleSelectVariant = this.handleSelectVariant.bind(this);
-		this.redirectToComments = this.redirectToComments.bind(this);
+		this.redirectToPage = this.redirectToPage.bind(this);
 		this.removeAddItem = this.removeAddItem.bind(this);
 		this.setCarouselSlideIndex = this.setCarouselSlideIndex.bind(this);
 
@@ -72,27 +74,22 @@ class Products extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		const { product, lovelist, dispatch } = nextProps;
-		const { detail, recommendation, similar, socialSummary } = product;
-		const { pdpData, status } = this.state;
-		const { selectedVariant } = this.state;
+		const { detail, socialSummary, promo } = product;
+		const { pdpData, status, selectedVariant } = this.state;
 
 		status.loading = product.loading;
 		// sets card product
 		if (!_.isEmpty(product.detail) && !status.pdpDataHasLoaded) {
 			pdpData.cardProduct = productActions.getProductCardData(detail);
 			status.pdpDataHasLoaded = true;
-			
-			if (!_.isEmpty(detail.spec) && _.isArray(detail.spec)) {
-				const selectedSize = product.detail.spec.filter(specItem => (specItem.key === 'size'));
-				// set default selected size
-				if (!_.isEmpty(selectedSize) && typeof selectedSize[0].value !== 'undefined') {
-					status.hasVariantSize = (!_.isEmpty(pdpData.cardProduct.variants));
-				}
-			}
 
-			// set defaults variant if the product has one product variant only ...
-			if (!_.isEmpty(detail.variants) && _.isArray(detail.variants) && detail.variants.length === 1) {
-				selectedVariant.data = detail.variants[0];
+			// Sets whether product has variants size or set defaults variant 
+			// if the product has one product variant only ...
+			if (!_.isEmpty(pdpData.cardProduct.variants) && _.isArray(pdpData.cardProduct.variants)) {
+				status.hasVariantSize = true;
+				if (pdpData.cardProduct.variants.length === 1) {
+					selectedVariant.data = pdpData.cardProduct.variants[0];
+				}
 			}
 		}
 
@@ -105,10 +102,11 @@ class Products extends Component {
 		}
 
 		// sets recommendation products data
-		if (!_.isEmpty(recommendation.products) && !status.recommendationSet) status.recommendationSet = true;
+		// if (!_.isEmpty(recommendation.products) && !status.recommendationSet) status.recommendationSet = true;
+		if (!_.isEmpty(promo.recommended_items.products) && !status.recommendationSet) status.recommendationSet = true;
 
 		// sets similar products data
-		if (!_.isEmpty(similar) && !status.similarSet) status.similarSet = true;
+		if (!_.isEmpty(promo.similar_items.products) && !status.similarSet) status.similarSet = true;
 
 		// sets product reviews data
 		if (!_.isEmpty(socialSummary.reviews) && !status.reviewsSet) {
@@ -187,6 +185,7 @@ class Products extends Component {
 			break;
 		case 'select-size':
 			status.showModalSelectSize = false;
+			status.pendingAddProduct = false;
 			break;
 		default:
 			break;
@@ -208,6 +207,7 @@ class Products extends Component {
 			dispatch(shopBagActions.getAction(this.userToken));
 			status.pendingAddProduct = false;
 			status.productAdded = true;
+			status.showModalSelectSize = false;
 			this.setState({ btnBeliLabel: 'GO TO SHOPPING BAG' });
 		}).catch((err) => {
 			throw err;
@@ -237,7 +237,7 @@ class Products extends Component {
 			status.pendingAddProduct = true;
 			this.setState({ status });
 		} else {
-			this.addToShoppingBag(selectedVariant.data.id);
+			this.addToShoppingBag(selectedVariant.id);
 		}
 	}
 
@@ -247,24 +247,41 @@ class Products extends Component {
 		this.setState({ status });
 	}
 
-	handleSelectVariant(size = '', selectedVariant = {}) {
-		if (!_.isUndefined(size) && !_.isUndefined(selectedVariant)) {
+	handleSelectVariant(size) {
+		if (!_.isUndefined(size) && size !== '') {
 			const { status, pdpData } = this.state;
-			pdpData.cardProduct.pricing = selectedVariant.data.pricing.formatted;
-			console.log('pdpData: ', pdpData);
+			const selectedVariant = pdpData.cardProduct.variantsData[size];
+			pdpData.cardProduct.pricing = selectedVariant.pricing.formatted;
 			this.setState({
 				size,
 				selectedVariant,
 				pdpData
 			});
 			// Add product to cart automatically after product variant size selected 
-			if (status.pendingAddProduct) this.addToShoppingBag(selectedVariant.data.id);
+			if (status.pendingAddProduct) this.addToShoppingBag(selectedVariant.id);
 		}
 	}
 
-	redirectToComments() {
-		const { match, history } = this.props;
-		history.push(`/product/comments/${match.params.id}`);
+	redirectToPage(page = '') {
+		const { history } = this.props;
+		const { detail } = this.state;
+		let destUri = null;
+
+		switch (page) {
+		case 'comments':
+			destUri = `/product/comments/${detail.id}`;
+			break;
+		case 'carts':
+			destUri = '/cart';
+			break;
+		default:
+			break;
+		}
+
+		console.log(destUri);
+		if (!_.isEmpty(destUri) && !_.isNull(destUri) && !_.isEmpty(page)) {
+			history.push(destUri);
+		}
 	}
 
 	removeAddItem(e) {
@@ -286,17 +303,17 @@ class Products extends Component {
 	}
 
 	renderSimilarRecommendItems(type) {
-		const { product } = this.props;
+		const { promo } = this.props.product;
 		let fragment = [];
 		let items = {};
 		const itemsList = [];
 
 		switch (type) {
 		case 'recommendation':
-			items = product.recommendation.products;
+			items = promo.recommended_items.products;
 			break;
 		case 'similar':
-			items = product.similar;
+			items = promo.similar_items.products;
 			break;
 		default:
 			break;
@@ -339,25 +356,37 @@ class Products extends Component {
 
 		return (
 			<div>
+				<Header.Modal style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }} {...header} />
 				<Carousel
 					slideIndex={carousel.slideIndex}
 					afterSlide={newSlideIndex => this.setCarouselSlideIndex(newSlideIndex)}
+					wrapAround={this.slideWrapAround}
 				>
 					{
 						pdpData.cardProduct.images.map((image, idx) => (
-							<div tabIndex='0' role='button' onClick={this.props.onImageItemClick} key={idx} data-img={image.mobile}>
+							<div tabIndex='0' role='button' onClick={this.closeZoomImage} key={idx} data-img={image.mobile}>
 								<Image src={image.mobile} alt='product' />
 							</div>
 						))
 					}
 				</Carousel>
-				<Header.Modal style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }} {...header} />
 			</div>
 		);
 	}
 
 	renderHeaderPage() {
+		const url = `${process.env.MOBILE_URL}${this.props.location.pathname}`;
 		const { pdpData, status } = this.state;
+		const { title } = this.state.detail;
+		const shopBageContent = (
+			<Button onClick={() => this.redirectToPage('carts')} className='margin--medium-l'>
+				<Svg src={'ico_cart.svg'} />
+				{(this.props.shared.totalCart > 0) && 
+					<Badge circle attached size='small' className='bg--secondary-ext-1 font-color--white'>{this.props.shared.totalCart}</Badge>
+				}
+			</Button>
+		);
+
 		if (status.showScrollInfomation) {
 			return {
 				left: (
@@ -368,12 +397,8 @@ class Products extends Component {
 				center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{pdpData.cardProduct.product_title}</div>,
 				right: (
 					<div className='flex-row flex-middle'>
-						<Button href={'/'} onClick={this.switchMode}>
-							<Svg src={'ico_share.svg'} />
-						</Button>
-						<Button href={'/'} className='margin--medium-l'>
-							<Svg src={'ico_cart.svg'} />
-						</Button>
+						<Share title={title} url={url} />
+						{shopBageContent}
 					</div>
 				)
 			};
@@ -387,12 +412,8 @@ class Products extends Component {
 			center: '',
 			right: (
 				<div className='flex-row flex-middle'>
-					<Button href={'/'} onClick={this.switchMode}>
-						<Svg src={'ico_share.svg'} />
-					</Button>
-					<Button href={'/'} className='margin--medium-l'>
-						<Svg src={'ico_cart.svg'} />
-					</Button>
+					<Share title={title} url={url} />
+					{shopBageContent}
 				</div>
 			)
 		};
@@ -426,7 +447,7 @@ class Products extends Component {
 	}
 
 	render() {
-		const { detail, pdpData, status, carousel } = this.state;
+		const { detail, pdpData, status, carousel, selectedVariant } = this.state;
 		const { match, product } = this.props;
 		const { seller, comment, reviews } = product.socialSummary;
 		const linkToPdpDisabled = true;
@@ -436,7 +457,7 @@ class Products extends Component {
 
 		return (
 			<div>
-				<Page color='#f9f9f9'>
+				<Page color='white'>
 					<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
 						{status.pdpDataHasLoaded && (
 							<div ref={(n) => { this.carouselEL = n; }}>
@@ -447,7 +468,7 @@ class Products extends Component {
 									data={pdpData.cardProduct || {}}
 									isLoved={status.isLoved}
 									onBtnLovelistClick={this.handleLovelistClick}
-									onBtnCommentClick={this.redirectToComments}
+									onBtnCommentClick={this.redirectToPage}
 									onBtnBeliClick={this.handleBtnBeliClicked}
 									linkToPdpDisabled={linkToPdpDisabled}
 								/>
@@ -469,27 +490,30 @@ class Products extends Component {
 										<Radio
 											name='size'
 											checked={this.state.size}
+											variant='rounded'
 											style={{ marginTop: '10px', marginBottom: '10px' }}
 											onChange={this.handleSelectVariant}
 											data={pdpData.cardProduct.variants}
 										/>
 									</div>
-									{(pdpData.cardProduct.productStock === 0) && (
-										<p className='font-color--red font-small'>Stock Habis</p>
+									{(status.hasVariantSize && !_.isEmpty(status.selectedVariant) && (status.selectedVariant.warning_stock_text !== '')) && (
+										<p className='font-color--red font-small'>{selectedVariant.warning_stock_text}</p>
 									)}
 								</div>
 							</div>
 						)}
-						<Level className='font-color--primary-ext-2 border-top border-bottom'>
-							<Level.Item>
-								<div className='padding--small-h'>Dapatkan OVO Point: 300.000</div>
-							</Level.Item>
-							<Level.Right>
-								<Button>
-									<Svg src='ico_warning.svg' />
-								</Button>
-							</Level.Right>
-						</Level>
+						{(!_.isEmpty(product.promo.meta_data.ovo_reward)) && (
+							<Level className='font-color--primary-ext-2 border-top border-bottom'>
+								<Level.Item>
+									<div className='padding--small-h'>{product.promo.meta_data.ovo_reward}</div>
+								</Level.Item>
+								<Level.Right>
+									<Button>
+										<Svg src='ico_warning.svg' />
+									</Button>
+								</Level.Right>
+							</Level>
+						)}
 						<div className='font-medium margin--medium-v padding--medium-h'><strong>Details</strong></div>
 						{
 							status.pdpDataHasLoaded && <p className='padding--medium-h' dangerouslySetInnerHTML={{ __html: detail.description }} />
@@ -609,51 +633,21 @@ class Products extends Component {
 						confirmButton={(<Button onClick={this.removeAddItem}>YA, HAPUS</Button>)}
 					/>
 				</Modal>
-				<Modal show={status.showModalSelectSize}>
-					<div className='font-medium'>
-						<h3>INFORMASI</h3>
-						<Level style={{ padding: '0px' }} className='margin--medium'>
-							<Level.Left />
-							<Level.Item className='padding--medium'>
-								<div className='font-small'>Silahkan pilih ukuran terlebih dahulu.</div>
-							</Level.Item>
-						</Level>
-					</div>
-					<Modal.Action
-						closeButton={(
-							<Button onClick={(e) => this.handleCloseModalPopUp(e, 'select-size')} >
-								<span className='font-color--primary-ext-2'>PILIH UKURAN</span>
-							</Button>)}
-					/>
-				</Modal>
-				<Modal position='bottom' show={false} onCloseOverlay={() => console.log('close modal')}>
+				<Modal position='bottom' show={status.showModalSelectSize} onCloseOverlay={(e) => this.handleCloseModalPopUp(e, 'select-size')}>
 					<div className='padding--medium-v'>
-						<div className='padding--medium-h'>Pilih Ukuran</div>
+						<div className='padding--medium-h'><strong>PILIH UKURAN</strong></div>
 						<div className='margin--medium-v horizontal-scroll padding--medium-h  margin--medium-r'>
 							<Radio
 								name='size'
-								checked='x'
+								checked={this.state.size}
 								variant='rounded'
 								className='margin--small-v'
-								data={[
-									{ value: 'x', label: 'x' },
-									{ value: 'xl', label: 'xl', disabled: true },
-									{ value: 'm', label: 'm' },
-									{ value: 'x', label: 'x' },
-									{ value: 'xl', label: 'xl', disabled: true },
-									{ value: 'm', label: 'm' },
-									{ value: 'x', label: 'x' },
-									{ value: 'xl', label: 'xl', disabled: true },
-									{ value: 'm', label: 'm' },
-									{ value: 'x', label: 'x' },
-									{ value: 'xl', label: 'xl', disabled: true },
-									{ value: 'm', label: 'm' },
-								]}
+								onChange={this.handleSelectVariant}
+								data={pdpData.cardProduct.variants}
 							/>
 						</div>
 					</div>
 				</Modal>
-				{/* <Navigation scroll={this.props.scroll} totalCartItems={shared.totalCart} /> */}
 			</div>);
 	}
 }
@@ -673,8 +667,7 @@ const doAfterAnonymous = async (props) => {
 	const token = cookies.get('user.token');
 
 	dispatch(new productActions.productDetailAction(token, productId));
-	dispatch(new productActions.productRecommendationAction(token, productId, 1, 10));
-	dispatch(new productActions.productSimilarAction(token, productId, 1, 10));
+	dispatch(new productActions.productPromoAction(token, productId));
 	dispatch(new productActions.productSocialSummaryAction(token, productId));
 	dispatch(new lovelistActions.bulkieCountByProduct(token, productId));
 

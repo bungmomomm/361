@@ -18,6 +18,7 @@ class Product extends PureComponent {
 		};
 
 		this.setCarouselSlideIndex = this.setCarouselSlideIndex.bind(this);
+		this.slideWrapAround = true;
 	}
 
 	setCarouselSlideIndex(newSlideIndex) {
@@ -50,6 +51,7 @@ class Product extends PureComponent {
 						<Carousel
 							slideIndex={slideIndex}
 							afterSlide={this.setCarouselSlideIndex}
+							wrapAround={this.slideWrapAround}
 						>
 							{
 								data.images.map((image, idx) => (
@@ -65,6 +67,7 @@ class Product extends PureComponent {
 						<Carousel
 							slideIndex={slideIndex}
 							afterSlide={this.setCarouselSlideIndex}
+							wrapAround={this.slideWrapAround}
 						>
 							{
 								data.images.map((image, idx) => (
@@ -84,7 +87,7 @@ class Product extends PureComponent {
 						</Button>
 					</Level.Item>
 					<Level.Item className='flex-middle flex-center'>
-						<Button onClick={this.props.onBtnCommentClick}>
+						<Button onClick={() => this.props.onBtnCommentClick('comments')}>
 							<Svg src='ico_comment.svg' />
 							<span>{data.totalComments || 0} Komentar</span>
 						</Button>
