@@ -166,7 +166,7 @@ class CreditCard extends Component {
 				const isCheckedByDefault = (fgDefault === 1 && !checkedCreditCardValueForSetDefault);
 				const isCheckedByUser = (checkedCreditCardValueForSetDefault && (checkedCreditCardValueForSetDefault === cc.id));
 				
-				const isChecked = isCheckedByDefault || isCheckedByUser ? id : null;
+				const isChecked = isCheckedByDefault || isCheckedByUser ? cc.id : null;
 				
 				const creditCardLogo = `logo_${cc.credit_card_type}.svg`;
 				
