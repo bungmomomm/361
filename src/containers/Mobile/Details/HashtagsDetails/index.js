@@ -6,7 +6,7 @@ import { Header, Page, Navigation, Svg, Grid, Card, Carousel, Image } from '@/co
 import { actions } from '@/state/v4/HashtagsDetails';
 import Shared from '@/containers/Mobile/Shared';
 import Spinner from '@/components/mobile/Spinner';
-import { hyperlink } from '@/utils';
+import { urlBuilder } from '@/utils';
 import moment from 'moment';
 import currency from 'currency.js';
 
@@ -21,22 +21,24 @@ class HashtagsDetails extends PureComponent {
 			[
 				<Card.CatalogGrid
 					key={i}
+					split={2}
 					images={product.images}
 					productTitle={product.product_title}
 					brandName={product.brand.name}
 					pricing={product.pricing}
-					linkToPdp={hyperlink('', ['product', product.product_id], null)}
+					linkToPdp={urlBuilder.buildPdp(product.product_title, product.product_id)}
 				/>
 			] :
 			[
 				...fragment,
 				<Card.CatalogGrid
 					key={i}
+					split={2}
 					images={product.images}
 					productTitle={product.product_title}
 					brandName={product.brand.name}
 					pricing={product.pricing}
-					linkToPdp={hyperlink('', ['product', product.product_id], null)}
+					linkToPdp={urlBuilder.buildPdp(product.product_title, product.product_id)}
 				/>
 			];
 
@@ -92,9 +94,6 @@ class HashtagsDetails extends PureComponent {
 							<div className='padding--medium-h border-bottom'>
 								<div className='margin--medium-v'>
 									<div className='margin--medium-v margin--none-t'>{ent.data.post.caption}</div>
-									{/* <div className='font-color--primary-ext-2'> */}
-									{/* #nike #supplierbangkok #pobkkfirsthand #pobkk #pohk #grosirbaju #premiumquaity #readytowear #ootdindo #olshop #trustedseller #supplierbaju #pochina */}
-									{/* </div> */}
 								</div>
 							</div>
 						</span>
@@ -103,7 +102,7 @@ class HashtagsDetails extends PureComponent {
 					{looks.length > 0 && (
 						<div className='margin--medium-v'>
 							<div className='padding--medium-h font-medium'><strong>Get The Look</strong></div>
-							<Carousel className='margin--medium-v'>
+							<Carousel>
 								{looks.map((chunk, i) => <Grid split={2} key={i}>{chunk}</Grid>)}
 							</Carousel>
 						</div>
