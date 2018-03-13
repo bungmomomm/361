@@ -160,11 +160,7 @@ class Register extends Component {
 		}
 		
 		// Extract response from send OTP
-		const { data } = response;
-		
-		const { code } = data;
-		
-		if (code === 200) {
+		if (response.code === 200) {
 			this.setState({
 				displayMessageOnValidateOtpForm: true,
 				textMessageOnValidateOtpForm: 'Pengiriman kode OTP berhasil'
@@ -219,6 +215,7 @@ class Register extends Component {
 		}
 		
 		const dataForVerify = {
+			action: 'register',
 			hp_email: email,
 			pwd: password,
 			fullname: loginId,
