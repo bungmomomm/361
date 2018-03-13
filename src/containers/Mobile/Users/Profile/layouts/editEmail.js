@@ -57,7 +57,6 @@ class EditEmail extends Component {
 
 		this.setState({
 			inputValue: value,
-			data: value,
 			validForm,
 			inputHint
 		});
@@ -65,7 +64,7 @@ class EditEmail extends Component {
 
 	saveData(e) {
 		const { onSave } = this.props;
-		const { data } = this.state;
+		const { inputValue } = this.state;
 
 		this.setState({
 			isLoading: true,
@@ -75,7 +74,7 @@ class EditEmail extends Component {
 			}
 		});
 
-		onSave(e, { [this.EMAIL_FIELD]: data });
+		onSave(e, { [this.EMAIL_FIELD]: inputValue });
 	}
 
 	renderHeader() {

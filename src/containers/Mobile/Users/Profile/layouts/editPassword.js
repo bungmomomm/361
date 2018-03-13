@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import util from 'util';
 import _ from 'lodash';
 import base64 from 'base-64';
-import validator from 'validator';
 
 import { Page, Input, Button, Level, Svg, Notification } from '@/components/mobile';
 
@@ -28,8 +27,7 @@ class EditPassword extends Component {
 			formResult: {
 				...props.formResult
 			},
-			isLoading: props.loading,
-			showNotif: false,
+			isLoading: false,
 			validOldPass: false,
 			validNewPass: false,
 			validConfPass: false,
@@ -40,11 +38,10 @@ class EditPassword extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.formResult !== false) {
+		if (nextProps.formResult !== this.props.formResult) {
 			this.setState({
-				showNotif: true,
 				formResult: nextProps.formResult,
-				isLoading: nextProps.loading
+				isLoading: false
 			});
 		}
 	}
@@ -69,42 +66,33 @@ class EditPassword extends Component {
 	inputValidation(type, value) {
 		if (type === this.OLD_PWD_FIELD) {
 			let validOldPass = false;
-			let oldPassHint = '';
-
-			if (value.length > 0 && value.length <= 6) {
-				oldPassHint = 'Password harus lebih dari 6 karakter';
-			} else if (validator.isEmpty(value)) {
-				oldPassHint = 'Password wajib diisi';
-			} else {
+			if (value !== '' && value.length > 6) {
 				validOldPass = true;
 			}
+
+			const oldPassHint = value.length > 0 && value.length <= 6 ? 'Password harus lebih dari 6 karakter' : '';
 
 			this.setState({ validOldPass, oldPassHint });
 		} else if (type === this.NEW_PWD_FIELD) {
 			let validNewPass = false;
-			let newPassHint = '';
-
-			if (value.length > 0 && value.length <= 6) {
-				newPassHint = 'Password harus lebih dari 6 karakter';
-			} else if (validator.isEmpty(value)) {
-				newPassHint = 'Password wajib diisi';
-			} else {
+			if (value !== '' && value.length > 6) {
 				validNewPass = true;
 			}
+
+			const newPassHint = value.length > 0 && value.length <= 6 ? 'Password harus lebih dari 6 karakter' : '';
 
 			this.setState({ validNewPass, newPassHint });
 		} else if (type === this.CONF_PWD_FIELD) {
 			let validConfPass = false;
-			let confPassHint = '';
+			if (value !== '' && value.length > 6 && base64.encode(value) === this.state[this.NEW_PWD_FIELD]) {
+				validConfPass = true;
+			}
 
+			let confPassHint = '';
 			if (value.length > 0 && value.length <= 6) {
 				confPassHint = 'Konfirmasi password harus lebih dari 6 karakter';
-			} else if (validator.isEmpty(value)) {
-				confPassHint = 'Konfirmasi password wajib diisi';
-			} else if (value !== this.state[this.NEW_PWD_FIELD]) {
+			} else if (base64.encode(value) !== this.state[this.NEW_PWD_FIELD]) {
 				confPassHint = 'Konfirmasi password tidak sesuai dengan password baru';
-			} else {
-				validConfPass = true;
 			}
 
 			this.setState({ validConfPass, confPassHint });
@@ -113,6 +101,15 @@ class EditPassword extends Component {
 
 	saveData(e) {
 		const { onSave } = this.props;
+
+		this.setState({
+			isLoading: true,
+			formResult: {
+				status: '',
+				message: ''
+			}
+		});
+
 		onSave(e, { [this.OLD_PWD_FIELD]: this.state[this.OLD_PWD_FIELD], [this.NEW_PWD_FIELD]: this.state[this.NEW_PWD_FIELD] });
 	}
 
@@ -128,6 +125,7 @@ class EditPassword extends Component {
 
 	renderHeader() {
 		const { onClickBack } = this.props;
+
 		const headerView = (
 			<Level style={{ height: '55px' }}>
 				<Level.Left style={{ width: '80px' }}>
@@ -142,21 +140,19 @@ class EditPassword extends Component {
 	}
 
 	renderNotif() {
-		const { showNotif, formResult } = this.state;
+		const { formResult } = this.state;
 		
-		if (showNotif) {
-			if (!_.isEmpty(formResult.status) && !_.isEmpty(formResult.message)) {
-				const notifColor = formResult.status === 'success' ? 'green' : 'pink';
-				return (
-					<Notification
-						color={notifColor}
-						disableClose
-						show
-					>
-						<span>{formResult.message}</span>
-					</Notification>
-				);
-			}
+		if (!_.isEmpty(formResult.status) && !_.isEmpty(formResult.message)) {
+			const notifColor = formResult.status === 'success' ? 'green' : 'pink';
+			return (
+				<Notification
+					color={notifColor}
+					disableClose
+					show
+				>
+					<span>{formResult.message}</span>
+				</Notification>
+			);
 		}
 		
 		return null;
@@ -164,6 +160,7 @@ class EditPassword extends Component {
 
 	renderSubmitButton() {
 		const { validOldPass, validNewPass, validConfPass } = this.state;
+		const setDisabled = !(validOldPass && validNewPass && validConfPass);
 
 		return (
 			<div className='margin--medium-v'>
@@ -171,7 +168,7 @@ class EditPassword extends Component {
 					color='primary'
 					size='large'
 					onClick={(e) => this.saveData(e)}
-					disabled={!validOldPass && !validNewPass && validConfPass}
+					disabled={setDisabled}
 				>
 					SIMPAN
 				</Button>
@@ -198,9 +195,14 @@ class EditPassword extends Component {
 						onChange={(e) => this.inputHandler(e)}
 						iconRight={<Button onClick={() => this.setVisiblePassword('visibleOldPassword')}>{this.showPasswordButton('visibleOldPassword')}</Button>}
 						type={visibleOldPassword ? 'text' : 'password'}
-						error={!validOldPass && !_.isEmpty(this.state[this.OLD_PWD_FIELD])}
+						error={!validOldPass && this.state[this.OLD_PWD_FIELD] !== ''}
 						hint={oldPassHint}
-						onFocus={() => this.setState({ showNotif: false })}
+						onFocus={() => this.setState({
+							formResult: {
+								status: '',
+								message: ''
+							}
+						})}
 					/>
 				</div>
 				<div className='margin--medium-v'>
@@ -212,9 +214,14 @@ class EditPassword extends Component {
 						onChange={(e) => this.inputHandler(e)}
 						iconRight={<Button onClick={() => this.setVisiblePassword('visibleNewPassword')}>{this.showPasswordButton('visibleNewPassword')}</Button>}
 						type={visibleNewPassword ? 'text' : 'password'}
-						error={!validNewPass && !_.isEmpty(this.state[this.NEW_PWD_FIELD])}
+						error={!validNewPass && this.state[this.NEW_PWD_FIELD] !== ''}
 						hint={newPassHint}
-						onFocus={() => this.setState({ showNotif: false })}
+						onFocus={() => this.setState({
+							formResult: {
+								status: '',
+								message: ''
+							}
+						})}
 					/>
 				</div>
 				<div className='margin--medium-v'>
@@ -226,9 +233,14 @@ class EditPassword extends Component {
 						onChange={(e) => this.inputHandler(e)}
 						iconRight={<Button onClick={() => this.setVisiblePassword('visibleConfPassword')}>{this.showPasswordButton('visibleConfPassword')}</Button>}
 						type={visibleConfPassword ? 'text' : 'password'}
-						error={!validConfPass && !_.isEmpty(this.state[this.CONF_PWD_FIELD])}
+						error={!validConfPass && this.state[this.CONF_PWD_FIELD] !== ''}
 						hint={confPassHint}
-						onFocus={() => this.setState({ showNotif: false })}
+						onFocus={() => this.setState({
+							formResult: {
+								status: '',
+								message: ''
+							}
+						})}
 					/>
 				</div>
 				{this.renderNotif()}
