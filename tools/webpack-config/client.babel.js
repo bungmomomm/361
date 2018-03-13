@@ -4,6 +4,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import WebpackAssetsManifest from 'webpack-assets-manifest';
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 import path from 'path';
+import 'babel-polyfill';
 import commonConfig from './common.babel';
 import stylesLoaders from '../loaders/styles';
 import Dotenv from 'dotenv-webpack';
@@ -11,10 +12,8 @@ import Dotenv from 'dotenv-webpack';
 const config = Object.assign(commonConfig, {
 	
 	entry: {
-		
 		main: './src/client',
 		vendors: './src/vendors'
-	
 	},
 
 	output: {
@@ -85,6 +84,7 @@ if (
 	process.env.NODE_ENV === 'production'
 	|| process.env.STATIC
 ) {
+	config.entry.main = ['babel-polyfill', './src/client'];
 
 	config.module.rules.push(
 

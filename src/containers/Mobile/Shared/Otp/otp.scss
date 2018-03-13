@@ -1,0 +1,30 @@
+.container{
+    text-align: center;
+    padding: 0px 25px;
+    margin-top: 10px;
+}
+
+.divider{
+    position: relative;
+    display: block;
+    margin: 25px 0px;
+    &:after{
+        content: '';
+        position: absolute;
+        top: 50%;
+        height: 1px;
+        background: #E9E9E9;
+        width: 100%;
+        left: 0px;
+    }
+    span{
+        font-size: 10px;
+        font-family: 'Lato-Regular';
+        color: #191919;
+        background: #fff;
+        padding: 0px 20px;
+        position: relative;
+        z-index: 1;
+        display: inline-block;
+    }
+}

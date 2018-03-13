@@ -101,7 +101,7 @@ const userNameChange = (username) => dispatch => {
 
 // 	USER_OTP: undefined,
 
-const userOtp = (token, phone) => async (dispatch, getState) => {
+const userOtp = (token, data) => async (dispatch, getState) => {
 
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
@@ -111,7 +111,7 @@ const userOtp = (token, phone) => async (dispatch, getState) => {
 	const path = `${baseUrl}/auth/otp/send`;
 
 	const dataForOtp = {
-		hp_email: phone
+		hp_email: data
 	};
 
 	dispatch(actions.userOtp());
@@ -127,12 +127,11 @@ const userOtp = (token, phone) => async (dispatch, getState) => {
 	const [err, response] = await to(request(requestData));
 
 	if (err) {
-		dispatch(actions.userOtpFail(err.data));
-		return Promise.reject(err);
+		dispatch(actions.userOtpFail(err.response.data));
+		return Promise.reject(err.response.data);
 	}
-	console.log('out');
-	dispatch(actions.userOtpSuccess(response));
-	return Promise.resolve(response);
+	dispatch(actions.userOtpSuccess(response.data.data));
+	return Promise.resolve(response.data.data);
 
 };
 
@@ -143,10 +142,13 @@ const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
-	const path = `${baseUrl}/auth/otp/validate?action=register`;
+	const path = `${baseUrl}/auth/otp/validate`;
 
 	dispatch(actions.userOtpValidate());
-	bodyData.pwd = base64.encode(bodyData.pwd);
+
+	if (bodyData.pwd !== undefined && bodyData.pwd.length > 0) {
+		bodyData.pwd = base64.encode(bodyData.pwd);
+	}
 
 	const requestData = {
 		token,
@@ -159,12 +161,12 @@ const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
 	const [err, response] = await to(request(requestData));
 
 	if (err) {
-		dispatch(actions.userOtpValidateFail(err.data));
-		return Promise.reject(err);
+		dispatch(actions.userOtpValidateFail(err.response.data));
+		return Promise.reject(err.response.data);
 	}
 
-	dispatch(actions.userOtpValidateSuccess(response));
-	return Promise.resolve(response);
+	dispatch(actions.userOtpValidateSuccess(response.data.data));
+	return Promise.resolve(response.data.data);
 
 };
 
@@ -291,6 +293,45 @@ const userForgotPassword = (token, username) => async (dispatch, getState) => {
 	}
 };
 
+const userNewPassword = (token, pass1, pass2, passtoken) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	const path = `${baseUrl}/auth/newpwd`;
+
+	dispatch(actions.userNewPassword());
+	const [err, response] = await to(request({
+		token,
+		method: 'POST',
+		path,
+		fullpath: true,
+		body: {
+			client_secret: getClientSecret(),
+			pass1: base64.encode(pass1),
+			pass2: base64.encode(pass2),
+			token: passtoken
+		}
+	}));
+
+	if (err) {
+		dispatch(actions.userNewPasswordFail(err));
+		return Promise.reject(err);
+	}
+
+	if (isSuccess(response)) {
+		dispatch(actions.userNewPasswordSuccess(response.data.data));
+		return Promise.resolve({
+			data: response.data.data
+		});
+	}
+
+	const error = new Error('Error while calling api');
+	dispatch(actions.userNewPasswordFail(error));
+	return Promise.reject(error);
+};
+
 const refreshToken = (tokenRefresh, token) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
@@ -384,6 +425,7 @@ export default {
 	userValidateOvo,
 	userRegister,
 	userForgotPassword,
+	userNewPassword,
 	userOtpValidate,
 	getMyOrderDetail,
 	updateMyOrdersCurrent,

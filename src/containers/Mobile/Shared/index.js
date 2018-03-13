@@ -39,7 +39,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		componentWillMount() {
-			window.mmLoading.stop();
+			window.mmLoading.destroy();
 
 			this.initProcess().then(shouldInit => {
 				if (!shouldInit) {
