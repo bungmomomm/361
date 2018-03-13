@@ -65,7 +65,7 @@ class Detail extends Component {
 			icon: 'ico_list.svg'
 		}];
 		const propsObject = _.chain(props.searchResults);
-		this.currentListState = 0;
+		this.currentListState = 1;
 		this.state = {
 			listTypeState: this.listType[this.currentListState],
 			styleHeader: true,
@@ -137,7 +137,7 @@ class Detail extends Component {
 		this.handleScroll();
 
 	}
-	
+
 	async onApply(e, fq) {
 		const { query } = this.state;
 		query.fq = fq;
@@ -165,7 +165,7 @@ class Detail extends Component {
 	getCommentOfProduct(productId) {
 		return this.props.brands.products_comments && this.props.brands.products_comments.filter(e => e.product_id === productId)[0];
 	}
-	
+
 	getLovelistOfProduct(productId) {
 		return this.props.brands.products_lovelist && this.props.brands.products_lovelist.filter(e => e.product_id === productId)[0];
 	}
@@ -401,17 +401,17 @@ class Detail extends Component {
 		switch (listTypeState.type) {
 		case 'grid':
 			return (
-				<GridView 
-					loading={scroller.loading} 
-					forceLoginNow={() => this.forceLoginNow()} 
-					products={products} 
+				<GridView
+					loading={scroller.loading}
+					forceLoginNow={() => this.forceLoginNow()}
+					products={products}
 				/>
 			);
 		case 'small':
 			return (
-				<SmallGridView 
-					loading={scroller.loading} 
-					products={products} 
+				<SmallGridView
+					loading={scroller.loading}
+					products={products}
 				/>
 			);
 		default:
@@ -429,7 +429,7 @@ class Detail extends Component {
 	renderHeader() {
 		const { searchData } = this.props.brands;
 		const title = (searchData.info) ? searchData.info.title : '';
-		const url = `${process.env.MOBILE_URL}/${this.props.location.pathname}`;
+		const url = `${process.env.MOBILE_URL}${this.props.location.pathname}`;
 		const headerComponent = {
 			left: (
 				<span
