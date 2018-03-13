@@ -8,7 +8,7 @@ const initialState = {
 			summary: [],
 			total: 0
 		},
-		comment: {
+		comments: {
 			summary: [],
 			total: 0
 		},
@@ -38,6 +38,7 @@ const initialState = {
 		}
 
 	},
+	store: {},
 	loading: false
 };
 
@@ -45,14 +46,16 @@ const {
 	productDetail, 
 	productSocialSummary,
 	productLoading,
-	productPromotion
+	productPromotion,
+	productStore
 } = createActions(
 	'PRODUCT_DETAIL', 
 	'PRODUCT_RECOMMENDATION', 
 	'PRODUCT_SIMILAR',
 	'PRODUCT_SOCIAL_SUMMARY',
 	'PRODUCT_LOADING',
-	'PRODUCT_PROMOTION'
+	'PRODUCT_PROMOTION',
+	'PRODUCT_STORE'
 );
 
 const reducer = handleActions({
@@ -74,6 +77,12 @@ const reducer = handleActions({
 			promo,
 		};
 	},
+	[productStore](state, { payload: { store } }) {
+		return {
+			...state,
+			store,
+		};
+	},
 	[productLoading](state, { payload: { loading } }) {
 		return {
 			...state,
@@ -87,5 +96,6 @@ export default {
 	productDetail,
 	productSocialSummary,
 	productLoading,
-	productPromotion
+	productPromotion,
+	productStore
 };
