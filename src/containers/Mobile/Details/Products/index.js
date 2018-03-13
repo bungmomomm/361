@@ -496,7 +496,7 @@ class Products extends Component {
 											data={pdpData.cardProduct.variants}
 										/>
 									</div>
-									{(status.hasVariantSize && !_.isEmpty(status.selectedVariant) && (status.selectedVariant.warning_stock_text !== '')) && (
+									{(status.hasVariantSize && !_.isEmpty(selectedVariant) && (selectedVariant.warning_stock_text !== '')) && (
 										<p className='font-color--red font-small'>{selectedVariant.warning_stock_text}</p>
 									)}
 								</div>
