@@ -293,6 +293,45 @@ const userForgotPassword = (token, username) => async (dispatch, getState) => {
 	}
 };
 
+const userNewPassword = (token, pass1, pass2, passtoken) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	const path = `${baseUrl}/auth/newpwd`;
+
+	dispatch(actions.userNewPassword());
+	const [err, response] = await to(request({
+		token,
+		method: 'POST',
+		path,
+		fullpath: true,
+		body: {
+			client_secret: getClientSecret(),
+			pass1: base64.encode(pass1),
+			pass2: base64.encode(pass2),
+			token: passtoken
+		}
+	}));
+	
+	if (err) {
+		dispatch(actions.userNewPasswordFail(err));
+		return Promise.reject(err);
+	}
+
+	if (isSuccess(response)) {
+		dispatch(actions.userNewPasswordSuccess(response.data.data));
+		return Promise.resolve({
+			data: response.data.data
+		});
+	}
+
+	const error = new Error('Error while calling api');
+	dispatch(actions.userNewPasswordFail(error));
+	return Promise.reject(error);
+};
+
 const refreshToken = (tokenRefresh, token) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
@@ -386,6 +425,7 @@ export default {
 	userValidateOvo,
 	userRegister,
 	userForgotPassword,
+	userNewPassword,
 	userOtpValidate,
 	getMyOrderDetail,
 	updateMyOrdersCurrent,

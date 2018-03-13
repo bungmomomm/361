@@ -182,7 +182,8 @@ class Product extends Component {
 							{
 								id: 'filter',
 								title: 'Filter',
-								disabled: typeof productCategory.pcpData === 'undefined'
+								disabled: typeof productCategory.pcpData === 'undefined',
+								checked: true
 							},
 							{
 								id: 'view',

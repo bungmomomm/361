@@ -107,7 +107,7 @@ class CatalogGrid extends PureComponent {
 			<div className={createClassName} {...props} data-loved={lovelistStatus}>
 				<Link to={linkToPdp || '/'} className={styles.imgContainer}>
 					<div className={styles.imgWrapper}>
-						<Image src={images[0].thumbnail} alt={productTitle} />
+						<Image src={images[0].thumbnail} lazyload alt={productTitle} />
 					</div>
 				</Link>
 				<Level className={styles.action}>
