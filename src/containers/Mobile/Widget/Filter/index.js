@@ -101,6 +101,7 @@ class Filter extends PureComponent {
 
 			return c;
 		};
+		const selected = {};
 		filters.facets = _.map(filters.facets, (facet) => {
 			switch (facet.id) {
 			case 'category':
@@ -115,11 +116,16 @@ class Filter extends PureComponent {
 				});
 				break;
 			}
+			
+			selected[facet.id] = [{
+				facetdisplay: 'Semua'
+			}];
 			return facet;
 		});
+
 		this.setState({
 			filters,
-			selected: []
+			selected
 		});
 		this.forceUpdate();
 	}

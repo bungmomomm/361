@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {
-	Card,
-	Spinner
+	Card
 } from '@/components/mobile';
 import { Love } from '@/containers/Mobile/Widget';
 import stylesCatalog from './view.scss';
@@ -23,7 +22,7 @@ class GridView extends Component {
 	}
 
 	render() {
-		const { loading, products } = this.props;
+		const { products } = this.props;
 		return (
 			<div className={stylesCatalog.cardContainer}>
 				{products.map((product, index) => {
@@ -46,9 +45,6 @@ class GridView extends Component {
 						/>
 					);
 				})}
-				{loading && (
-					<div style={{ margin: '20px auto 20px auto' }}><Spinner /></div>
-				)}
 			</div>
 		);
 	}
