@@ -163,9 +163,8 @@ class CreditCard extends Component {
 				
 				const isChecked = isCheckedByDefault || isCheckedByUser ? id : null;
 				
-				const creditCardLogo = 'logo_mastercard.svg';
-                
-                
+				const creditCardLogo = `logo_${cc.credit_card_type}.svg`;
+				
 				return (
 					<div className='margin--medium-t' key={id}>
 						<Level className='bg--white' key={id}>
