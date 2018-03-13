@@ -51,7 +51,9 @@ class Products extends Component {
 				hasVariantSize: false,
 				pendingAddProduct: false,
 				productAdded: false,
-				showModalSelectSize: false
+				showModalSelectSize: false,
+				btnBeliDisabled: false,
+				forceLogin: false,
 			},
 			pdpData: {
 				cardProduct: {},
@@ -79,7 +81,7 @@ class Products extends Component {
 
 		status.loading = product.loading;
 		// sets card product
-		if (!_.isEmpty(product.detail) && !status.pdpDataHasLoaded) {
+		if (!_.isEmpty(detail) && !status.pdpDataHasLoaded) {
 			pdpData.cardProduct = productActions.getProductCardData(detail);
 			status.pdpDataHasLoaded = true;
 
@@ -90,6 +92,11 @@ class Products extends Component {
 				if (pdpData.cardProduct.variants.length === 1) {
 					selectedVariant.data = pdpData.cardProduct.variants[0];
 				}
+			}
+
+			if (_.isEmpty(pdpData.cardProduct.variants) || 
+				pdpData.cardProduct.productStock === 0 || detail.is_product_available !== 1) {
+				status.btnBeliDisabled = true;
 			}
 		}
 
@@ -166,6 +173,14 @@ class Products extends Component {
 
 	handleLovelistClick(e) {
 		const { status } = this.state;
+
+		// customer must be logged in first
+		if (!this.isLogin) {
+			status.forceLogin = true;
+			this.setState({ status });
+			return;
+		}
+
 		// remove product from loved list
 		if (status.isLoved) {
 			status.showConfirmDelete = !status.showConfirmDelete;
@@ -262,8 +277,21 @@ class Products extends Component {
 		}
 	}
 
+	loginLater() {
+		const { status } = this.state;
+		status.forceLogin = false;
+		this.setState({ status });
+	}
+
+	loginNow() {
+		const { status } = this.state;
+		status.forceLogin = false;
+		this.setState({ status });
+		this.redirectToPage('login');
+	}
+
 	redirectToPage(page = '') {
-		const { history } = this.props;
+		const { history, location } = this.props;
 		const { detail } = this.state;
 		let destUri = null;
 
@@ -273,6 +301,9 @@ class Products extends Component {
 			break;
 		case 'carts':
 			destUri = '/cart';
+			break;
+		case 'login':
+			destUri = `/login?redirect_uri=${location.pathname}`;
 			break;
 		default:
 			break;
@@ -284,24 +315,43 @@ class Products extends Component {
 		}
 	}
 
+	/**
+	 * Handles removes/adds item into/from Loved list. 
+	 * @param {*} e 
+	 */
 	removeAddItem(e) {
 		const { dispatch } = this.props;
 		const { pdpData, status, detail } = this.state;
+		const handler = new Promise((resolve, reject) => {
+			if (!status.isLoved) resolve(dispatch(lovelistActions.addToLovelist(this.userCookies, detail.id))); 
+			else resolve(dispatch(lovelistActions.removeFromLovelist(this.userCookies, detail.id)));
+		});
 
-		if (!status.isLoved) {
-			status.isLoved = true;
-			pdpData.cardProduct.totalLovelist += 1;
-			dispatch(lovelistActions.addToLovelist(this.userCookies, detail.id));
-		} else {
-			status.isLoved = false;
-			pdpData.cardProduct.totalLovelist -= 1;
-			dispatch(lovelistActions.removeFromLovelist(this.userCookies, detail.id));
-		}
+		handler.then((res) => {
+			// Updating product lovelist state ...
+			if (res.status === 200 && res.statusText === 'OK') {
+				if (!status.isLoved) {
+					status.isLoved = true;
+					pdpData.cardProduct.totalLovelist += 1;
+				} else {
+					status.isLoved = false;
+					pdpData.cardProduct.totalLovelist -= 1;
+				}
+			}
+			status.showConfirmDelete = false;
+			this.setState({ status, pdpData });
 
-		status.showConfirmDelete = false;
-		this.setState({ status, pdpData });
+		}).catch((err) => {
+			status.showConfirmDelete = false;
+			this.setState({ status, pdpData });
+			throw err;
+		});
 	}
 
+	/**
+	 * Rendering recommendation, similar and best seller items
+	 * @param {*} type 
+	 */
 	renderSimilarRecommendItems(type) {
 		const { promo } = this.props.product;
 		let fragment = [];
@@ -314,6 +364,9 @@ class Products extends Component {
 			break;
 		case 'similar':
 			items = promo.similar_items.products;
+			break;
+		case 'best_seller':
+			items = promo.best_seller_items.products;
 			break;
 		default:
 			break;
@@ -437,7 +490,7 @@ class Products extends Component {
 							</div>
 						</div>
 						<div>
-							<Button color='secondary' disabled={(pdpData.cardProduct.productStock === 0)} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
+							<Button color='secondary' disabled={status.btnBeliDisabled} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
 						</div>
 					</div>
 				</div>
@@ -467,6 +520,8 @@ class Products extends Component {
 									onImageItemClick={this.handleImageItemClick}
 									data={pdpData.cardProduct || {}}
 									isLoved={status.isLoved}
+									disabledLovelist={false}
+									optimistic={false}
 									onBtnLovelistClick={this.handleLovelistClick}
 									onBtnCommentClick={this.redirectToPage}
 									onBtnBeliClick={this.handleBtnBeliClicked}
@@ -610,6 +665,12 @@ class Products extends Component {
 									<div className='flex'>{(!status.loading) ? this.renderSimilarRecommendItems('similar') : this.loadingContent}</div>
 								</div>
 							)}
+							{!status.similarSet && !_.isEmpty(product.promo.best_seller_items.products) && (
+								<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
+									<div className='margin--small-v padding--medium-h font-medium'><strong>Product Terlaris</strong></div>
+									<div className='flex'>{(!status.loading) ? this.renderSimilarRecommendItems('best_seller') : this.loadingContent}</div>
+								</div>
+							)}
 						</div>
 					</div>
 					{this.renderStickyAction()}
@@ -633,6 +694,7 @@ class Products extends Component {
 						confirmButton={(<Button onClick={this.removeAddItem}>YA, HAPUS</Button>)}
 					/>
 				</Modal>
+
 				<Modal position='bottom' show={status.showModalSelectSize} onCloseOverlay={(e) => this.handleCloseModalPopUp(e, 'select-size')}>
 					<div className='padding--medium-v'>
 						<div className='padding--medium-h'><strong>PILIH UKURAN</strong></div>
@@ -648,6 +710,27 @@ class Products extends Component {
 						</div>
 					</div>
 				</Modal>
+
+				{status.forceLogin && (
+					<Modal show>
+						<div className='font-medium'>
+							<h3 className='text-center'>Lovelist</h3>
+							<Level style={{ padding: '0px' }} className='margin--medium-v'>
+								<Level.Left />
+								<Level.Item className='padding--medium-h'>
+									<div className='font-small'>Silahkan login/register untuk menambahkan produk ke Lovelist</div>
+								</Level.Item>
+							</Level>
+						</div>
+						<Modal.Action
+							closeButton={(
+								<Button onClick={(e) => this.loginLater()}>
+									<span className='font-color--primary-ext-2'>NANTI</span>
+								</Button>)}
+							confirmButton={(<Button onClick={(e) => this.loginNow()}>SEKARANG</Button>)}
+						/>
+					</Modal>
+				)}
 			</div>);
 	}
 }
