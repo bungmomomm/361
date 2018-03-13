@@ -74,27 +74,14 @@ class Products extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		const { product, lovelist, dispatch } = nextProps;
-		const { detail, recommendation, similar, socialSummary } = product;
-		const { pdpData, status } = this.state;
-		const { selectedVariant } = this.state;
+		const { detail, socialSummary, promo } = product;
+		const { pdpData, status, selectedVariant } = this.state;
 
 		status.loading = product.loading;
 		// sets card product
 		if (!_.isEmpty(product.detail) && !status.pdpDataHasLoaded) {
 			pdpData.cardProduct = productActions.getProductCardData(detail);
 			status.pdpDataHasLoaded = true;
-			
-			// if (!_.isEmpty(detail.spec) && _.isArray(detail.spec)) {
-			// 	const selectedSize = product.detail.spec.filter(specItem => (specItem.key === 'size'));
-			// 	// set default selected size
-			// 	if (!_.isEmpty(selectedSize) && typeof selectedSize[0].value !== 'undefined') {
-			// 		status.hasVariantSize = (!_.isEmpty(pdpData.cardProduct.variants));
-			// 	}
-			// }
-
-			// if (!_.isEmpty(detail.variants) && _.isArray(detail.variants) && detail.variants.length === 1) {
-			// 	selectedVariant.data = detail.variants[0];
-			// }
 
 			// Sets whether product has variants size or set defaults variant 
 			// if the product has one product variant only ...
@@ -115,10 +102,11 @@ class Products extends Component {
 		}
 
 		// sets recommendation products data
-		if (!_.isEmpty(recommendation.products) && !status.recommendationSet) status.recommendationSet = true;
+		// if (!_.isEmpty(recommendation.products) && !status.recommendationSet) status.recommendationSet = true;
+		if (!_.isEmpty(promo.recommended_items.products) && !status.recommendationSet) status.recommendationSet = true;
 
 		// sets similar products data
-		if (!_.isEmpty(similar) && !status.similarSet) status.similarSet = true;
+		if (!_.isEmpty(promo.similar_items.products) && !status.similarSet) status.similarSet = true;
 
 		// sets product reviews data
 		if (!_.isEmpty(socialSummary.reviews) && !status.reviewsSet) {
@@ -249,7 +237,7 @@ class Products extends Component {
 			status.pendingAddProduct = true;
 			this.setState({ status });
 		} else {
-			this.addToShoppingBag(selectedVariant.data.id);
+			this.addToShoppingBag(selectedVariant.id);
 		}
 	}
 
@@ -260,7 +248,7 @@ class Products extends Component {
 	}
 
 	handleSelectVariant(size) {
-		if (!_.isUndefined(size)) {
+		if (!_.isUndefined(size) && size !== '') {
 			const { status, pdpData } = this.state;
 			const selectedVariant = pdpData.cardProduct.variantsData[size];
 			pdpData.cardProduct.pricing = selectedVariant.pricing.formatted;
@@ -315,17 +303,17 @@ class Products extends Component {
 	}
 
 	renderSimilarRecommendItems(type) {
-		const { product } = this.props;
+		const { promo } = this.props.product;
 		let fragment = [];
 		let items = {};
 		const itemsList = [];
 
 		switch (type) {
 		case 'recommendation':
-			items = product.recommendation.products;
+			items = promo.recommended_items.products;
 			break;
 		case 'similar':
-			items = product.similar;
+			items = promo.similar_items.products;
 			break;
 		default:
 			break;
@@ -368,6 +356,7 @@ class Products extends Component {
 
 		return (
 			<div>
+				<Header.Modal style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }} {...header} />
 				<Carousel
 					slideIndex={carousel.slideIndex}
 					afterSlide={newSlideIndex => this.setCarouselSlideIndex(newSlideIndex)}
@@ -381,15 +370,22 @@ class Products extends Component {
 						))
 					}
 				</Carousel>
-				<Header.Modal style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }} {...header} />
 			</div>
 		);
 	}
 
 	renderHeaderPage() {
-		const url = `${process.env.MOBILE_URL}/${this.props.location.pathname}`;
+		const url = `${process.env.MOBILE_URL}${this.props.location.pathname}`;
 		const { pdpData, status } = this.state;
 		const { title } = this.state.detail;
+		const shopBageContent = (
+			<Button onClick={() => this.redirectToPage('carts')} className='margin--medium-l'>
+				<Svg src={'ico_cart.svg'} />
+				{(this.props.shared.totalCart > 0) && 
+					<Badge circle attached size='small' className='bg--secondary-ext-1 font-color--white'>{this.props.shared.totalCart}</Badge>
+				}
+			</Button>
+		);
 
 		if (status.showScrollInfomation) {
 			return {
@@ -402,9 +398,7 @@ class Products extends Component {
 				right: (
 					<div className='flex-row flex-middle'>
 						<Share title={title} url={url} />
-						<Button onClick={() => this.redirectToPage('carts')} className='margin--medium-l'>
-							<Svg src={'ico_cart.svg'} />
-						</Button>
+						{shopBageContent}
 					</div>
 				)
 			};
@@ -419,9 +413,7 @@ class Products extends Component {
 			right: (
 				<div className='flex-row flex-middle'>
 					<Share title={title} url={url} />
-					<Button onClick={() => this.redirectToPage('carts')} className='margin--medium-l'>
-						<Svg src={'ico_cart.svg'} />
-					</Button>
+					{shopBageContent}
 				</div>
 			)
 		};
@@ -455,7 +447,7 @@ class Products extends Component {
 	}
 
 	render() {
-		const { detail, pdpData, status, carousel } = this.state;
+		const { detail, pdpData, status, carousel, selectedVariant } = this.state;
 		const { match, product } = this.props;
 		const { seller, comment, reviews } = product.socialSummary;
 		const linkToPdpDisabled = true;
@@ -465,7 +457,7 @@ class Products extends Component {
 
 		return (
 			<div>
-				<Page color='#f9f9f9'>
+				<Page color='white'>
 					<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
 						{status.pdpDataHasLoaded && (
 							<div ref={(n) => { this.carouselEL = n; }}>
@@ -498,27 +490,30 @@ class Products extends Component {
 										<Radio
 											name='size'
 											checked={this.state.size}
+											variant='rounded'
 											style={{ marginTop: '10px', marginBottom: '10px' }}
 											onChange={this.handleSelectVariant}
 											data={pdpData.cardProduct.variants}
 										/>
 									</div>
-									{(pdpData.cardProduct.productStock === 0) && (
-										<p className='font-color--red font-small'>Stock Habis</p>
+									{(status.hasVariantSize && !_.isEmpty(status.selectedVariant) && (status.selectedVariant.warning_stock_text !== '')) && (
+										<p className='font-color--red font-small'>{selectedVariant.warning_stock_text}</p>
 									)}
 								</div>
 							</div>
 						)}
-						<Level className='font-color--primary-ext-2 border-top border-bottom'>
-							<Level.Item>
-								<div className='padding--small-h'>Dapatkan OVO Point: 300.000</div>
-							</Level.Item>
-							<Level.Right>
-								<Button>
-									<Svg src='ico_warning.svg' />
-								</Button>
-							</Level.Right>
-						</Level>
+						{(!_.isEmpty(product.promo.meta_data.ovo_reward)) && (
+							<Level className='font-color--primary-ext-2 border-top border-bottom'>
+								<Level.Item>
+									<div className='padding--small-h'>{product.promo.meta_data.ovo_reward}</div>
+								</Level.Item>
+								<Level.Right>
+									<Button>
+										<Svg src='ico_warning.svg' />
+									</Button>
+								</Level.Right>
+							</Level>
+						)}
 						<div className='font-medium margin--medium-v padding--medium-h'><strong>Details</strong></div>
 						{
 							status.pdpDataHasLoaded && <p className='padding--medium-h' dangerouslySetInnerHTML={{ __html: detail.description }} />
@@ -638,23 +633,6 @@ class Products extends Component {
 						confirmButton={(<Button onClick={this.removeAddItem}>YA, HAPUS</Button>)}
 					/>
 				</Modal>
-				<Modal show={false}>
-					<div className='font-medium'>
-						<h3>INFORMASI</h3>
-						<Level style={{ padding: '0px' }} className='margin--medium'>
-							<Level.Left />
-							<Level.Item className='padding--medium'>
-								<div className='font-small'>Silahkan pilih ukuran terlebih dahulu.</div>
-							</Level.Item>
-						</Level>
-					</div>
-					<Modal.Action
-						closeButton={(
-							<Button onClick={(e) => this.handleCloseModalPopUp(e, 'select-size')} >
-								<span className='font-color--primary-ext-2'>PILIH UKURAN</span>
-							</Button>)}
-					/>
-				</Modal>
 				<Modal position='bottom' show={status.showModalSelectSize} onCloseOverlay={(e) => this.handleCloseModalPopUp(e, 'select-size')}>
 					<div className='padding--medium-v'>
 						<div className='padding--medium-h'><strong>PILIH UKURAN</strong></div>
@@ -670,7 +648,6 @@ class Products extends Component {
 						</div>
 					</div>
 				</Modal>
-				{/* <Navigation scroll={this.props.scroll} totalCartItems={shared.totalCart} /> */}
 			</div>);
 	}
 }
@@ -690,8 +667,7 @@ const doAfterAnonymous = async (props) => {
 	const token = cookies.get('user.token');
 
 	dispatch(new productActions.productDetailAction(token, productId));
-	dispatch(new productActions.productRecommendationAction(token, productId, 1, 10));
-	dispatch(new productActions.productSimilarAction(token, productId, 1, 10));
+	dispatch(new productActions.productPromoAction(token, productId));
 	dispatch(new productActions.productSocialSummaryAction(token, productId));
 	dispatch(new lovelistActions.bulkieCountByProduct(token, productId));
 
