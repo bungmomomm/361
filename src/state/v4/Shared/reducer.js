@@ -20,17 +20,21 @@ const initialState = {
 		onClose: false
 	},
 	current: 'wanita',
-	errors: []
+	errors: [],
+	snackQueue: []
 };
 
-const { totalLoveList, totalBag, forEverBanner, currentTab, errorHandler } = createActions(
+const { totalLoveList, totalBag, forEverBanner, currentTab, errorHandler, rrsShowSnack, rrsDismissSnack } = createActions(
 	'TOTAL_LOVE_LIST',
 	'TOTAL_BAG',
 	'FOR_EVER_BANNER',
 	'CURRENT_TAB',
-	'ERROR_HANDLER'
+	'ERROR_HANDLER',
+	'RRS_SHOW_SNACK',
+	'RRS_DISMISS_SNACK'
 );
 
+let snackQueue;
 const reducer = handleActions({
 	[totalLoveList](state, { payload: { totalLovelist } }) {
 		return {
@@ -59,9 +63,20 @@ const reducer = handleActions({
 	},
 	[errorHandler](state, { payload: { errors } }) {
 		return {
-			...state, 
+			...state,
 			errors
 		};
+	},
+	[rrsShowSnack](state, { payload }) {
+		snackQueue = state.snackQueue.slice();
+		snackQueue.push({ id: payload.id, data: payload.data });
+		return { snackQueue };
+	},
+	[rrsDismissSnack](state, { payload }) {
+		snackQueue = state.snackQueue.filter((snack) => {
+			return snack.id !== payload.id;
+		});
+		return { snackQueue };
 	}
 }, initialState);
 
@@ -71,5 +86,7 @@ export default {
 	totalLoveList,
 	forEverBanner,
 	currentTab,
-	errorHandler
+	errorHandler,
+	rrsShowSnack,
+	rrsDismissSnack
 };

@@ -7,7 +7,8 @@ import { actions as initAction } from '@/state/v4/Home';
 import { setUserCookie } from '@/utils';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
-import ErrorHandler from '@/containers/Mobile/Shared/errorHandler';
+import Snackbar from '@/containers/Mobile/Shared/snackbar';
+import uniqid from 'uniqid';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 	WrappedComponent.contextTypes = {
@@ -164,8 +165,23 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		withErrorHandling(err) {
-			const { dispatch } = this.props;
+			const { dispatch, location } = this.props;
 			const { response } = err;
+
+			const errMessage = _.chain(response).get('data.error_message').value() || false;
+
+			if (errMessage) {
+				dispatch(actions.showSnack(uniqid('err-'), {
+					label: errMessage,
+					timeout: false,
+					button: {
+						label: 'COBA LAGI',
+						action: 'redirect',
+						href: location.pathname
+					}
+				}));
+			}
+
 			dispatch(actions.catchErrors(response));
 		}
 
@@ -182,11 +198,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		render() {
-			const { shared, dispatch } = this.props;
-
 			return (
 				<div>
-					<ErrorHandler errors={shared.errors} dispatch={dispatch} />
+					<Snackbar />
 					<WrappedComponent {...this.props} scroll={this.state.scroll} />
 				</div>
 			);
