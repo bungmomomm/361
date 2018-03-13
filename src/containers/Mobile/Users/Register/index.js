@@ -55,7 +55,8 @@ class Register extends Component {
 			messageType: 'SUCCESS',
 			textMessageOnValidateOtpForm: '',
 			captchaValue: '',
-			isButtonResendOtpLoading: false
+			isButtonResendOtpLoading: false,
+			showInvalidOtpText: false
 		};
 		this.renderRegisterView = this.renderRegisterView.bind(this);
 		this.renderValidateOtpView = this.renderValidateOtpView.bind(this);
@@ -141,11 +142,14 @@ class Register extends Component {
 	}
 	
 	async onSendOtp() {
-  
-		this.setState({
-			isButtonResendOtpLoading: true,
-			disableOtpButton: true,
-			otpValue: ''
+		
+		this.setState((prevState) => {
+			return {
+				isButtonResendOtpLoading: true,
+				disableOtpButton: true,
+				otpValue: '',
+				messageType: (prevState.messageType === 'ERROR') ? 'SUCCESS' : 'ERROR'
+			};
 		});
 		
 		const { cookies, dispatch } = this.props;
@@ -208,11 +212,13 @@ class Register extends Component {
 		const { loginId, email, password, otpValue, redirectUrl, captchaValue } = this.state;
 		
 		if (captchaValue.length === 0) {
-
-			this.setState({
-				displayMessageOnValidateOtpForm: true,
-				textMessageOnValidateOtpForm: 'Mohon centang checkbox pada captcha. ',
-				messageType: 'ERROR'
+			
+			this.setState((prevState) => {
+				return {
+					displayMessageOnValidateOtpForm: true,
+					textMessageOnValidateOtpForm: 'Mohon centang checkbox pada captcha. ',
+					messageType: (prevState.messageType === 'SUCCESS') ? 'ERROR' : 'SUCCESS'
+				};
 			});
 			
 			return false;
@@ -228,11 +234,8 @@ class Register extends Component {
 		const [err, response] = await to(dispatch(new users.userOtpValidate(cookies.get('user.token'), dataForVerify)));
 		
 		if (err) {
-			
 			this.setState({
-				displayMessageOnValidateOtpForm: true,
-				textMessageOnValidateOtpForm: 'Kode OTP tidak valid.',
-				messageType: 'ERROR'
+				showInvalidOtpText: true
 			});
    
 			return err;
@@ -380,7 +383,7 @@ class Register extends Component {
 		}
   
 		const buttonRegisterAttribute = {
-			color: 'secondary',
+			color: 'primary',
 			size: 'large',
 			onClick: (e) => this.onRegister(e),
 			disabled: !buttonLoginEnable
@@ -401,8 +404,8 @@ class Register extends Component {
 		};
 		
 		return (
-			<div>
-				<div className='margin--medium font-medium'>Daftar Dengan</div>
+			<div className={styles.container}>
+				<div className='margin--medium'>Daftar Dengan</div>
 				<LoginWidget
 					provider={providerConfig}
 					onSuccess={(provider, token) => this.onSocialRegister(provider, token)}
@@ -435,7 +438,8 @@ class Register extends Component {
             displayMessageOnValidateOtpForm,
 			textMessageOnValidateOtpForm,
             messageType,
-			isButtonResendOtpLoading
+			isButtonResendOtpLoading,
+            showInvalidOtpText
 		} = this.state;
 		
 		const { isLoading } = this.props.users;
@@ -443,6 +447,7 @@ class Register extends Component {
 		const buttonPropertyResendOTP = {
 			color: 'secondary',
 			size: 'large',
+			outline: true,
 			onClick: (e) => this.onSendOtp()
 		};
 		
@@ -471,36 +476,33 @@ class Register extends Component {
 		
 		const enterOtpVerification = {
 			value: otpValue,
-			label: 'Masukan kode verifikasi',
-			flat: true,
-			placeholder: '',
-			onChange: (event) => { this.setState({ otpValue: event.target.value }); }
+			partitioned: true,
+			maxLength: 6,
+			onChange: (event) => { this.setState({ otpValue: event.target.value, showInvalidOtpText: false }); }
 		};
 		
+		if (showInvalidOtpText === true) {
+			enterOtpVerification.error = true;
+			enterOtpVerification.hint = 'Kode verifikasi salah';
+		}
+		
 		return (
-			<div>
+			<div className={styles.container}>
 				{this.renderHelmet()}
-				<div>
-					<p>Kami telah mengirimkan kode verifikasi ke no XXXXXXX</p>
-					<p>Silahkan masukan kode verifikasi</p>
-					
-					{ displayMessageOnValidateOtpForm && (
-						<Notification color={(messageType === 'SUCCESS') ? 'green' : 'red'} show disableClose>
-							<span>{ textMessageOnValidateOtpForm }</span>
-						</Notification>
-					)}
+				<div className='margin--medium-v'>Kami telah mengirimkan kode verifikasi ke no XXXXXXXX. Silakan masukan kode verifikasi.</div>
+				{ displayMessageOnValidateOtpForm && (
+					<Notification color={(messageType === 'SUCCESS') ? 'green' : 'pink'} show disableClose>
+						<span>{ textMessageOnValidateOtpForm }</span>
+					</Notification>
+				)}
+				
+				<div className='margin--medium-v text-center'>
 					<Input {...enterOtpVerification} />
 				</div>
-				<p>
-					<Button {...buttonPropertyResendOTP}>
-						{otpButtonText}
-					</Button>
-				</p>
-				
-				<p>
+				<div className='margin--medium-v text-center'>
 					<Recaptcha
 						sitekey={`${process.env.GOOGLE_CAPTCHA_SITE_KEY}`}
-						size='compact'
+						size='normal'
 						render='explicit'
 						verifyCallback={
 							(response) => {
@@ -514,14 +516,18 @@ class Register extends Component {
 							}
 						}
 					/>
-				</p>
-				
-				<p>
+				</div>
+				<div className='margin--small-v'>
+					<Button {...buttonPropertyResendOTP}>
+						{otpButtonText}
+					</Button>
+				</div>
+				<div className='margin--medium-v'>
 					<Button {...buttonPropertyVerify}>
 						Verifikasi
 					</Button>
-				</p>
-				
+				</div>
+
 			</div>
 		);
 	}
@@ -531,18 +537,26 @@ class Register extends Component {
 		const { email } = this.state;
 		
 		const buttonProperty = {
-			color: 'secondary',
+			color: 'primary',
 			size: 'large'
 		};
 		
 		return (
-			<div>
-				<p>Akun ini sudah terdafatar. Silahkan lakukan log in untuk mengakses akun</p>
-				<p>Masuk dengan {email} </p>
-				<Link to='/login'>
-					<Button {...buttonProperty}>Login</Button>
-				</Link>
-				<Link to='/forgotPassword'>Lupa Password</Link>
+			<div className={styles.container}>
+				<div className='margin--medium-v'>Akun ini sudah terdaftar. Silahkan lakukan log in untuk mengakses akun.</div>
+				<div className='margin--medium-v text-center'>
+					<p>
+						MASUK DENGAN <strong>{email}</strong>
+					</p>
+				</div>
+				<div className='margin--small-v'>
+					<Link to='/login'>
+						<Button {...buttonProperty}> Login </Button>
+					</Link>
+				</div>
+				<div className='margin--medium-v text-center'>
+					<Link to='/forgotPassword'>Lupa Password</Link>
+				</div>
 			</div>
 		);
 	}
@@ -596,13 +610,11 @@ class Register extends Component {
         
 		return (
 			<div className='full-height' style={this.props.style}>
-				<Page color='white'>
+				<Page>
 					{renderIf(register)(
 						<Redirect to='/login' />
 					)}
-					<div className={styles.container}>
-						{View}
-					</div>
+					{View}
 				</Page>
 				<Header.Modal {...HeaderPage} />
 			</div>
