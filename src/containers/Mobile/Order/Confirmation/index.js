@@ -16,7 +16,9 @@ import {
     Button,
 	Radio,
 	Image,
-	Select
+	Select,
+	Level,
+    Notification
 } from '@/components/mobile';
 
 class OrderConfirmation extends Component {
@@ -26,12 +28,13 @@ class OrderConfirmation extends Component {
 		this.props = props;
 		this.state = {
 			amountTransfer: '',
-			bankSenderName: '',
+			bankSenderID: null,
 			bankHolderName: '',
 			dateSender: '',
 			timeSender: '',
 			checkedTransferTo: null,
-			sendSuccess: false
+			displayBankTransferFromList: false,
+			displayErrorNotification: false
 		};
 		this.bankList = {
 			from_banks: [
@@ -74,18 +77,21 @@ class OrderConfirmation extends Component {
 			]
 		};
 		
-		this.orderId = '';
+		this.orderId = null;
 		this.getRadioDataTransferTo = this.getRadioDataTransferTo.bind(this);
 		this.makeRadioTransferToChecked = this.makeRadioTransferToChecked.bind(this);
+		this.makeBankFromListVisible = this.makeBankFromListVisible.bind(this);
 	};
-
+	
 	componentDidMount() {
 		
-		const { location, history } = this.props;
+		const { location, history, dispatch, cookies } = this.props;
 		const query = queryString.parse(location.search);
 		const orderId = query.order_id;
-		
-		if (!orderId) {
+		dispatch(users.getMyOrderDetail(cookies.get('user.token'), cookies.get('user.token')));
+        
+        // If no order id or there is no order detail exist then throw them to homepage
+		if (!orderId || !this.props.users.myOrdersDetail) {
 			history.push('/');
 		}
 		
@@ -95,6 +101,7 @@ class OrderConfirmation extends Component {
 	getRadioDataTransferTo() {
 		
 		const radioDataTransferTo = [];
+		
 		if (_.isEmpty(this.bankList.to_banks) === false) {
 			_.map(this.bankList.to_banks, (value) => {
 				
@@ -104,15 +111,17 @@ class OrderConfirmation extends Component {
 					src: value.image_url
 				};
 				
-				const objectData = {};
-				objectData.value = value.id;
-				objectData.label = (
+				const dataForBankTransferTo = {};
+				dataForBankTransferTo.value = value.id;
+				dataForBankTransferTo.label = (
 					<div>
 						<Image style={{ alignSelf: 'flex-start' }} {...imageAttribute} />
 						<span>No. Rek: <strong>{value.rekening}</strong></span>
 					</div>
 				);
-				radioDataTransferTo.push(objectData);
+				
+				radioDataTransferTo.push(dataForBankTransferTo);
+				
 			});
 		}
 		
@@ -121,27 +130,51 @@ class OrderConfirmation extends Component {
 	}
  
 	makeRadioTransferToChecked(id) {
-		
 		this.setState({
 			checkedTransferTo: id
 		});
-		
+	}
+	
+	makeBankFromListVisible() {
+		this.setState({
+			displayBankTransferFromList: true
+		});
 	}
 	
 	async sendPostOrderConfirmation(e) {
 
-		const { amountTransfer, bankSenderName, bankHolderName, dateSender, timeSender, checkedTransferTo } = this.state;
+		const { amountTransfer, bankSenderID, bankHolderName, dateSender, timeSender, checkedTransferTo } = this.state;
 		
 		const { dispatch, cookies } = this.props;
 		
-		const [error, response] = await to(dispatch(new users.PostOrderConfirmation(cookies.get('user.token'))));
+		if (
+			amountTransfer === ''
+			&& bankSenderID === null
+			&& bankHolderName === ''
+			&& dateSender === ''
+			&& timeSender === ''
+			&& checkedTransferTo === null
+		) {
+			
+			this.setState({
+				displayErrorNotification: true
+			});
+			
+		}
+
+		const postData = {
+			amountTransfer,
+			bankSenderID,
+			bankHolderName,
+			dateSender,
+			timeSender,
+			checkedTransferTo
+		};
 		
-		console.log(amountTransfer);
-		console.log(bankSenderName);
-		console.log(bankHolderName);
-		console.log(dateSender);
-		console.log(timeSender);
-		console.log(checkedTransferTo);
+		const [error, response] = await to(dispatch(new users.PostOrderConfirmation(cookies.get('user.token'), postData)));
+  
+		console.log('postData');
+		console.log(postData);
         
 		console.log('error');
 		console.log(error);
@@ -158,8 +191,8 @@ class OrderConfirmation extends Component {
  
 	render() {
 		
-		const { checkedTransferTo } = this.state;
-  
+		const { displayErrorNotification, displayBankTransferFromList, checkedTransferTo, bankSenderID } = this.state;
+		
 		const HeaderPage = ({
 			left: (
 				<Link to={'/profile'}>
@@ -190,18 +223,6 @@ class OrderConfirmation extends Component {
 					});
 					
 				}
-			}
-		};
-		
-		const inputSenderBankNameAttribute = {
-			label: 'Nama Bank Pengirim',
-			type: 'text',
-			flat: true,
-			placeholder: 'Nama Bank Pengirim',
-			onChange: (event) => {
-				this.setState({
-					bankSenderName: event.target.value
-				});
 			}
 		};
 		
@@ -252,10 +273,22 @@ class OrderConfirmation extends Component {
 			horizontal: true,
 			options: this.bankList.from_banks,
 			show: false,
-			onClick: () => { console.log('Yes'); }
+			onClose: () => {
+				this.setState({
+					displayBankTransferFromList: false
+				});
+			},
+			onChange: (e) => {
+				this.setState({
+					bankSenderID: e
+				});
+			}
 		};
 		
-		
+		if (displayBankTransferFromList === true) {
+			selectFromBankAttribute.show = true;
+		}
+
 		const radioTransferToAttribute = {
 			list: true,
 			name: 'transfer-to',
@@ -267,7 +300,12 @@ class OrderConfirmation extends Component {
 		console.log('My Props');
 		console.log(this.props);
 		
-
+		let selectedBankText = '- Nama Bank Pengirim -';
+		const selectedBank = _.find(this.bankList.from_banks, { value: bankSenderID }) || null;
+		if (selectedBank !== null) {
+			selectedBankText = selectedBank.label;
+		}
+		
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -275,17 +313,51 @@ class OrderConfirmation extends Component {
 						<div className='margin--medium-b'>
 							Pemesanan dengan Bank Transfer akan otomatis dibatalkan oleh sistem kami jika pembayaran tidak diterima dalam waktu 24 jam.
 						</div>
-						<Panel color='blue' className='padding--normal flex-row flex-spaceBetween'>
-							<span>Order ID</span><strong>{this.orderId}</strong>
+						
+						<Panel
+							color='blue'
+							className='padding--normal flex-row flex-spaceBetween'
+							style={{ marginBottom: '10px' }}
+						>
+							<span>Order ID</span>
+							<strong>
+								{this.orderId}
+							</strong>
 						</Panel>
+						{
+							displayErrorNotification
+							&& (
+								<Notification style={{ marginBottom: '10px' }} disableClose color='pink' show>
+									<span className='font-color--secondary'>
+										Mohon pastikan semua field terisi !
+									</span>
+								</Notification>
+							)
+						}
+						
+						
 						<form className='margin--large flex-column'>
-							
 							<Input {...inputAmountTransferAttribute} />
-							<Input {...inputSenderBankNameAttribute} />
+							<Level
+								className='flex-row border-bottom'
+								onClick={this.makeBankFromListVisible}
+							>
+								<Level.Left>
+									<Button className='flex-center'>
+										<span style={{ marginRight: '10px' }}>
+											{ selectedBankText }
+										</span>
+									</Button>
+								</Level.Left>
+								<Level.Right>
+									<Svg src='ico_chevron-down.svg' />
+								</Level.Right>
+							</Level>
 							<Select {...selectFromBankAttribute} />
 							<Input {...inputHolderBankNameAttribute} />
 							<Input {...inputDateAttribute} />
 							<Input {...inputTimeAttribute} />
+							
 							<strong className='font-medium margin--medium-v'>Pilih Bank Transfer Tujuan</strong>
 							<Radio {...radioTransferToAttribute} />
 							
