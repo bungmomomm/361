@@ -90,8 +90,12 @@ class Snackbar extends React.Component {
 			button.action(snack);
 		} else if (button.action && typeof button.action.type === 'string') {
 			this.props.dispatch(button.action);
+		} else if (button.action === 'reload') {
+			window.location.href = this.props.location.pathname;
 		} else if (button.action === 'redirect' && button.href) {
 			window.location.href = button.href;
+		} else if (button.action === 'to' && button.path) {
+			this.props.history.push(button.path);
 		}
 
 		this.props.dispatch(actions.dismissSnack(id));

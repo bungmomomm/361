@@ -165,7 +165,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		withErrorHandling(err) {
-			const { dispatch, location } = this.props;
+			const { dispatch } = this.props;
 			const { response } = err;
 
 			const errMessage = _.chain(response).get('data.error_message').value() || false;
@@ -176,8 +176,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 					timeout: false,
 					button: {
 						label: 'COBA LAGI',
-						action: 'redirect',
-						href: location.pathname
+						action: 'reload'
 					}
 				}));
 			}
@@ -200,7 +199,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		render() {
 			return (
 				<div>
-					<Snackbar />
+					<Snackbar history={this.props.history} location={this.props.location} />
 					<WrappedComponent {...this.props} scroll={this.state.scroll} />
 				</div>
 			);
