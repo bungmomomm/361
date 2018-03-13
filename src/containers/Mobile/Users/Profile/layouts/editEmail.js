@@ -18,28 +18,35 @@ class EditEmail extends Component {
 			formResult: {
 				...props.formResult
 			},
-			isLoading: props.loading,
-			showNotif: false,
+			isLoading: false,
+			showClearButton: false,
 			validForm: false,
+			inputValue: '',
 			inputHint: ''
 		};
 
 		this.EMAIL_FIELD = CONST.USER_PROFILE_FIELD.email;
 		this.loadingView = <Spinner />;
+		this.clearButton = <Svg src='ico_clear.svg' />;
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.formResult !== false) {
+		if (nextProps.formResult !== this.props.formResult) {
 			this.setState({
-				showNotif: true,
 				formResult: nextProps.formResult,
-				isLoading: nextProps.loading
+				isLoading: false
 			});
 		}
 	}
 
 	inputHandler(e) {
 		const value = util.format('%s', e.target.value);
+
+		if (value.length > 0) {
+			this.setState({ showClearButton: true });
+		} else {
+			this.setState({ showClearButton: false });
+		}
 
 		let validForm = false;
 		if (validator.isEmail(value)) {
@@ -49,6 +56,7 @@ class EditEmail extends Component {
 		const inputHint = value.length > 0 && validForm === false ? 'Format email tidak sesuai.' : '';
 
 		this.setState({
+			inputValue: value,
 			data: value,
 			validForm,
 			inputHint
@@ -58,6 +66,14 @@ class EditEmail extends Component {
 	saveData(e) {
 		const { onSave } = this.props;
 		const { data } = this.state;
+
+		this.setState({
+			isLoading: true,
+			formResult: {
+				status: '',
+				message: ''
+			}
+		});
 
 		onSave(e, { [this.EMAIL_FIELD]: data });
 	}
@@ -79,21 +95,19 @@ class EditEmail extends Component {
 	}
 
 	renderNotif() {
-		const { showNotif, formResult } = this.state;
+		const { formResult } = this.state;
 
-		if (showNotif) {
-			if (!_.isEmpty(formResult.status) && !_.isEmpty(formResult.message)) {
-				const notifColor = formResult.status === 'success' ? 'green' : 'pink';
-				return (
-					<Notification
-						color={notifColor}
-						disableClose
-						show
-					>
-						<span>{formResult.message}</span>
-					</Notification>
-				);
-			}
+		if (!_.isEmpty(formResult.status) && !_.isEmpty(formResult.message)) {
+			const notifColor = formResult.status === 'success' ? 'green' : 'pink';
+			return (
+				<Notification
+					color={notifColor}
+					disableClose
+					show
+				>
+					<span>{formResult.message}</span>
+				</Notification>
+			);
 		}
 		
 		return null;
@@ -107,8 +121,8 @@ class EditEmail extends Component {
 				<Button
 					color='primary'
 					size='large'
-					onClick={(e) => this.saveData(e)}
 					disabled={!validForm}
+					onClick={(e) => this.saveData(e)}
 				>
 					SIMPAN
 				</Button>
@@ -116,8 +130,35 @@ class EditEmail extends Component {
 		);
 	}
 
+	renderClearButton() {
+		const { showClearButton } = this.state;
+
+		if (showClearButton) {
+			return (
+				<Button
+					onClick={() => {
+						this.setState({
+							inputValue: '',
+							showClearButton: false,
+							formResult: {
+								status: '',
+								message: ''
+							},
+							validForm: false,
+							inputHint: ''
+						});
+					}}
+				>
+					{this.clearButton}
+				</Button>
+			);
+		}
+
+		return null;
+	}
+
 	renderEmailForm() {
-		const { isLoading, validForm, inputHint, data } = this.state;
+		const { isLoading, validForm, inputValue, inputHint, data } = this.state;
 
 		return (
 			<form style={{ padding: '15px' }}>
@@ -128,12 +169,19 @@ class EditEmail extends Component {
 				<div className='margin--medium-v'>
 					<label className={styles.label} htmlFor='editEmailNew'>Alamat Email Baru</label>
 					<Input
+						value={inputValue}
 						id='editEmailNew'
 						flat
 						onChange={(e) => this.inputHandler(e)}
-						error={!validForm}
+						error={!validForm && inputValue !== ''}
 						hint={inputHint}
-						onFocus={() => this.setState({ showNotif: false })}
+						onFocus={() => this.setState({
+							formResult: {
+								status: '',
+								message: ''
+							}
+						})}
+						iconRight={this.renderClearButton()}
 					/>
 				</div>
 				{this.renderNotif()}

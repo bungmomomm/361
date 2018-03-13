@@ -32,12 +32,11 @@ class EditOvo extends Component {
 		if (nextProps.formResult !== false) {
 			if (nextProps.formResult.status === 'success') {
 				this.setState({
-					showNotif: true,
 					data: nextProps.data,
-					isLoading: nextProps.loading
 				});
 			}
 			this.setState({
+				showNotif: true,
 				formResult: nextProps.formResult,
 				isLoading: nextProps.loading
 			});

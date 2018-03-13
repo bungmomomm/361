@@ -18,27 +18,36 @@ class EditHp extends Component {
 			formResult: {
 				...props.formResult
 			},
-			isLoading: props.loading,
+			isLoading: false,
+			showClearButton: false,
 			validForm: false,
+			inputValue: '',
 			inputHint: ''
 		};
 
 		this.HP_EMAIL_FIELD = CONST.USER_PROFILE_FIELD.hpEmail;
-		this.loadingView = <div><Spinner /></div>;
+		this.loadingView = <Spinner />;
+		this.clearButton = <Svg src='ico_clear.svg' />;
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.formResult !== false) {
+		if (nextProps.formResult !== this.props.formResult) {
 			this.setState({
 				data: nextProps.data,
 				formResult: nextProps.formResult,
-				isLoading: nextProps.loading
+				isLoading: false
 			});
 		}
 	}
 	
 	inputHandler(e) {
 		const value = util.format('%s', e.target.value);
+
+		if (value.length > 0) {
+			this.setState({ showClearButton: true });
+		} else {
+			this.setState({ showClearButton: false });
+		}
 
 		let validForm = false;
 		if ((value.substring(0, 1) === '0' && _.parseInt(value) > 0 && validator.isMobilePhone(value, 'any')) && validator.isLength(value, { min: 10, max: 15 })) {
@@ -48,6 +57,7 @@ class EditHp extends Component {
 		const inputHint = value.length > 0 && validForm === false ? 'Format Nomor Handphone tidak sesuai. Silahkan cek kembali' : '';
 
 		this.setState({
+			inputValue: value,
 			newData: value,
 			validForm,
 			inputHint
@@ -57,11 +67,21 @@ class EditHp extends Component {
 	saveData(e) {
 		const { onSave } = this.props;
 		const { newData } = this.state;
+
+		this.setState({
+			isLoading: true,
+			formResult: {
+				status: '',
+				message: ''
+			}
+		});
+
 		onSave(e, { [this.HP_EMAIL_FIELD]: newData });
 	}
 
 	renderHeader() {
 		const { onClickBack } = this.props;
+
 		const headerView = (
 			<Level style={{ height: '55px' }}>
 				<Level.Left style={{ width: '80px' }}>
@@ -91,6 +111,7 @@ class EditHp extends Component {
 
 	renderNotif() {
 		const { formResult } = this.state;
+
 		if (!_.isEmpty(formResult.status) && !_.isEmpty(formResult.message)) {
 			const notifColor = formResult.status === 'success' ? 'green' : 'pink';
 			return (
@@ -112,13 +133,47 @@ class EditHp extends Component {
 
 		return (
 			<div className='margin--medium-v'>
-				<Button color='primary' size='large' disabled={!validForm} onClick={(e) => this.saveData(e)}>SIMPAN</Button>
+				<Button
+					color='primary'
+					size='large'
+					disabled={!validForm}
+					onClick={(e) => this.saveData(e)}
+				>
+					SIMPAN
+				</Button>
 			</div>
 		);
 	}
 
+	renderClearButton() {
+		const { showClearButton } = this.state;
+
+		if (showClearButton) {
+			return (
+				<Button
+					onClick={() => {
+						this.setState({
+							inputValue: '',
+							showClearButton: false,
+							formResult: {
+								status: '',
+								message: ''
+							},
+							validForm: false,
+							inputHint: ''
+						});
+					}}
+				>
+					{this.clearButton}
+				</Button>
+			);
+		}
+
+		return null;
+	}
+
 	renderPhoneForm() {
-		const { isLoading, validForm, inputHint } = this.state;
+		const { isLoading, validForm, inputValue, inputHint } = this.state;
 
 		return (
 			<form style={{ padding: '15px' }}>
@@ -126,11 +181,19 @@ class EditHp extends Component {
 				<div className='margin--medium-v'>
 					<label className={styles.label} htmlFor='editCellPhoneNew'>No Handphone Baru</label>
 					<Input
+						value={inputValue}
 						id='editCellPhoneNew'
 						flat
 						onChange={(e) => this.inputHandler(e)}
-						error={!validForm}
+						error={!validForm && inputValue !== ''}
 						hint={inputHint}
+						onFocus={() => this.setState({
+							formResult: {
+								status: '',
+								message: ''
+							}
+						})}
+						iconRight={this.renderClearButton()}
 					/>
 				</div>
 				{this.renderNotif()}

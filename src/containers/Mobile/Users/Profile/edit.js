@@ -64,7 +64,8 @@ class UserProfileEdit extends Component {
 		this.HP_EMAIL_FIELD = CONST.USER_PROFILE_FIELD.hpEmail;
 		this.OTP_FIELD = CONST.USER_PROFILE_FIELD.otp;
 
-		this.loadingView = <div><Spinner /></div>;
+		this.loadingView = <Spinner />;
+		this.editIcon = <Svg src='ico_edit.svg' />;
 		this.recaptchaInstance = null;
 	}
 
@@ -128,9 +129,7 @@ class UserProfileEdit extends Component {
 		const name = e.target.name;
 		const value = util.format('%s', e.target.value);
 
-		if (name === this.NAME_FIELD) {
-			this.inputValidation(this.NAME_FIELD, value);
-		}
+		this.inputValidation(name, value);
 
 		this.setState({
 			formData: {
@@ -154,6 +153,17 @@ class UserProfileEdit extends Component {
 			}
 
 			this.setState({ validName, nameHint });
+		} else if (type === this.BIRTHDAY_FIELD) {
+			let validBirthday = false;
+			let birthdayHint = '';
+
+			if (moment(value).isValid() === false) {
+				birthdayHint = 'Format tanggal lahir tidak sesuai';
+			} else {
+				validBirthday = true;
+			}
+
+			this.setState({ validBirthday, birthdayHint });
 		}
 	}
 
@@ -265,10 +275,10 @@ class UserProfileEdit extends Component {
 				this.setTimeoutForm(5000);
 				console.log(response);
 			}
+		}
 
-			if (this.recaptchaInstance !== null) {
-				this.recaptchaInstance.reset();
-			}
+		if (this.recaptchaInstance !== null) {
+			this.recaptchaInstance.reset();
 		}
 	}
 
@@ -410,19 +420,25 @@ class UserProfileEdit extends Component {
 	}
 
 	renderRecaptcha() {
-		return (
-			<Recaptcha
-				ref={e => { this.recaptchaInstance = e; }}
-				sitekey={process.env.GOOGLE_CAPTCHA_SITE_KEY}
-				size='invisible'
-				verifyCallback={(e) => this.submitFormData(e)}
-			/>
-		);
+		const { layout } = this.state;
+
+		if (layout !== this.OTP_FIELD) {
+			return (
+				<Recaptcha
+					ref={e => { this.recaptchaInstance = e; }}
+					sitekey={process.env.GOOGLE_CAPTCHA_SITE_KEY}
+					size='invisible'
+					verifyCallback={(e) => this.submitFormData(e)}
+				/>
+			);
+		}
+
+		return null;
 	}
 
 	renderForm() {
 		const { userProfile } = this.props;
-		const { formData, validName, nameHint } = this.state;
+		const { formData, validName, nameHint, validBirthday, birthdayHint } = this.state;
 
 		if (_.isEmpty(userProfile)) {
 			return (
@@ -456,7 +472,7 @@ class UserProfileEdit extends Component {
 					<div className={styles.inputChangeInput}>
 						<Input autoComplete='off' readOnly id='email' flat defaultValue={emailValue} />
 					</div>
-					<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.EMAIL_FIELD)}>UBAH</Button>
+					<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.EMAIL_FIELD)}>{this.editIcon}</Button>
 				</div>
 			</div>
 		);
@@ -469,7 +485,7 @@ class UserProfileEdit extends Component {
 					<div className={styles.inputChangeInput}>
 						<Input autoComplete='off' readOnly id='cellPhone' flat defaultValue={phoneValue} />
 					</div>
-					<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.PHONE_FIELD)}>UBAH</Button>
+					<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.PHONE_FIELD)}>{this.editIcon}</Button>
 				</div>
 			</div>
 		);
@@ -502,6 +518,8 @@ class UserProfileEdit extends Component {
 					flat
 					value={birthdayValue}
 					onChange={(e) => this.inputHandler(e)}
+					error={!validBirthday}
+					hint={birthdayHint}
 				/>
 			</div>
 		);
@@ -513,7 +531,7 @@ class UserProfileEdit extends Component {
 					<div className={styles.inputChangeInput}>
 						<Input autoComplete='off' readOnly id='password' type='password' flat defaultValue='password' />
 					</div>
-					<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.NEW_PWD_FIELD)}>UBAH</Button>
+					<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.NEW_PWD_FIELD)}>{this.editIcon}</Button>
 				</div>
 			</div>
 		);
@@ -552,7 +570,6 @@ class UserProfileEdit extends Component {
 	}
 
 	renderLayout() {
-		const { isLoading } = this.props;
 		const { layout, formResult, formData } = this.state;
 		let layoutView;
 		switch (layout) {
@@ -563,7 +580,6 @@ class UserProfileEdit extends Component {
 					onClickBack={(e, value) => this.switchLayoutHandler(e, 'main')}
 					onSave={(e, data) => this.saveFormData(data)}
 					formResult={formResult}
-					loading={isLoading}
 				/>
 			);
 			break;
@@ -574,7 +590,6 @@ class UserProfileEdit extends Component {
 					onClickBack={(e, value) => this.switchLayoutHandler(e, 'main')}
 					onSave={(e, data) => this.switchLayoutHandler(e, this.OTP_FIELD, data)}
 					formResult={formResult}
-					loading={isLoading}
 				/>
 			);
 			break;
@@ -584,7 +599,6 @@ class UserProfileEdit extends Component {
 					onClickBack={(e, value) => this.switchLayoutHandler(e, 'main')}
 					onSave={(e, data) => this.saveFormData(data)}
 					formResult={formResult}
-					loading={isLoading}
 				/>
 			);
 			break;
@@ -595,7 +609,6 @@ class UserProfileEdit extends Component {
 					onClickBack={(e, value) => this.switchLayoutHandler(e, 'main')}
 					onSave={(e, data) => this.saveFormData(data)}
 					formResult={formResult}
-					loading={isLoading}
 				/>
 			);
 			break;
