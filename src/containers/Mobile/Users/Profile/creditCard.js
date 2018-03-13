@@ -171,6 +171,13 @@ class CreditCard extends Component {
 				
 				const creditCardLogo = `logo_${cc.credit_card_type}.svg`;
 				
+				// Make condition if credit card allowed for delete or not.
+				let allowDeleteValue = true;
+				
+				if (checkedCreditCardValueForSetDefault === cc.id || cc.fg_default !== 0) {
+					allowDeleteValue = false;
+				}
+				
 				return (
 					<div className='margin--medium-t' key={id}>
 						<Level className='bg--white' key={id}>
@@ -197,7 +204,7 @@ class CreditCard extends Component {
 											return {
 												checkedCreditCardValueForDelete: cc.id,
 												showDeleteCreditCardPopUpConfirmation: true,
-												isCreditCardAllowedForDelete: (cc.fg_default === 0)
+												isCreditCardAllowedForDelete: allowDeleteValue
 											};
 											
 										});
