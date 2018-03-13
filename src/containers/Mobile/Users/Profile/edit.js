@@ -14,7 +14,7 @@ import Shared from '@/containers/Mobile/Shared';
 import Otp from '@/containers/Mobile/Shared/Otp';
 
 import EditEmail from './layouts/editEmail';
-import EditHp from './layouts/editHp';
+import EditHp from './layouts/editHP';
 import EditPassword from './layouts/editPassword';
 import EditOvo from './layouts/editOVO';
 
