@@ -3,9 +3,23 @@ import { handleActions, createActions } from 'redux-actions';
 const initialState = {
 	detail: {},
 	socialSummary: {
-		reviews: {},
-		comment: {},
-		seller: {}
+		reviews: {
+			rating: 0,
+			summary: [],
+			total: 0
+		},
+		comment: {
+			summary: [],
+			total: 0
+		},
+		seller: {
+			is_new_seller: 0,
+			rating: 0,
+			success_order: {
+				rate: 0,
+				total: 0
+			}
+		}
 	},
 	promo: {
 		meta_data: {
