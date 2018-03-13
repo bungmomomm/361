@@ -206,6 +206,9 @@
 		.font-medium {
 			font-size: 14px;
 		}
+		.font-15 {
+			font-size: 15px;
+		}
 		.font-large {
 			font-size: 18px;
 		}
@@ -223,6 +226,9 @@
 		}
 		.text-left {
 			text-align: left;
+		}
+		.text-no-wrap{
+			white-space: nowrap;
 		}
 		.pull-left {
 			float: left;

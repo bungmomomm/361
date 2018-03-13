@@ -104,16 +104,15 @@ class Login extends Component {
 				{
 					center: (
 						<Tabs
-							type={'minimal'}
 							current={current}
 							variants={[
 								{
 									title: 'Login',
-									id: 'login'
+									id: 'login',
 								},
 								{
-									title: 'register',
-									id: 'register'
+									title: 'Daftar',
+									id: 'Daftar'
 								}
 							]}
 							onPick={(e) => this.handlePick(e)}
@@ -138,9 +137,9 @@ class Login extends Component {
 				{renderIf(register)(
 					<Redirect to='/register' />
 				)}
-				<Page hasTab>
+				<Page color='white'>
 					<div className={styles.container}>
-						<div className='margin--medium-v'>Login Dengan</div>
+						<div className='margin--medium-v font-medium'>Login Dengan</div>
 						<LoginWidget
 							provider={providerConfig}
 							onSuccess={(provider, token, profile) => this.onSocialLogin(provider, token, profile)}
@@ -160,7 +159,7 @@ class Login extends Component {
 								}}
 								label='Nomor Handphone/Email' 
 								type='text' 
-								placeholder='Nomor Handphone/Email'
+								placeholder=''
 								error={!validLoginId && loginId !== ''}
 								hint={!validLoginId && 'Format Nomor Handphone/Email harus benar'}
 								flat 
@@ -173,28 +172,26 @@ class Login extends Component {
 									this.setState({ password: event.target.value }); 
 								}} 
 								label='Password' 
-								iconRight={<Button onClick={() => this.setState({ visiblePassword: !visiblePassword })}>show</Button>}
+								iconRight={
+									<Button onClick={() => this.setState({ visiblePassword: !visiblePassword })}>
+										<Svg src='ico_password_hide.svg' />
+										{
+											// <Svg src='ico_password_show.svg' />
+										}
+									</Button>
+								}
 								type={visiblePassword ? 'text' : 'password'} 
-								placeholder='Password minimal 6 karakter' 
+								placeholder='' 
 								error={!validLoginPassword && password !== ''}
 								hint={!validLoginPassword && 'Password minimal 6 karakter'}
 								flat 
 							/>
 						</div>
-						<div className='flex-row flex-center flex-spaceBetween'>
-							<div style={{ width: '45%' }}>
-								<div className='margin--medium-v text-left'>
-									<Link to='/forgot-password'>LUPA PASSWORD</Link>
-								</div>
-							</div>
-							<div style={{ width: '45%' }}>
-								<div className='margin--medium-v text-right'>
-									<Link to='/register'>DAFTAR</Link>
-								</div>
-							</div>
+						<div className='text-right margin--medium-v'>
+							<Link className='pull-right' to='/forgot-password'>LUPA PASSWORD</Link>
 						</div>
 						<div className='margin--medium-v'>
-							<Button color='primary' size='large' disabled={!buttonLoginEnable} loading={isLoading} onClick={(e) => this.onLogin(e)} >LOGIN</Button>
+							<Button color='secondary' size='large' disabled={!buttonLoginEnable} loading={isLoading} onClick={(e) => this.onLogin(e)} >LOGIN</Button>
 						</div>
 					</div>
 				</Page>

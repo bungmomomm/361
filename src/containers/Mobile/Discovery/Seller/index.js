@@ -1,36 +1,41 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-import { Navigation, 
-	Svg, 
-	Tabs, 
-	Header, 
-	Page, 
-	Button
+import { Navigation,
+	Svg,
+	Tabs,
+	Header,
+	Page,
+	Button,
+	Level,
+	Image,
+	Badge
 } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import { actions } from '@/state/v4/Seller';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
-import { 
+import {
 	Filter,
-	Sort 
+	Sort
 } from '@/containers/Mobile/Widget';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import stylesCatalog from '../Category/Catalog/catalog.scss';
-import styles from './styles.scss';
 import Spinner from '@/components/mobile/Spinner';
 import Share from '@/components/mobile/Share';
 import { urlBuilder, renderIf } from '@/utils';
 import _ from 'lodash';
 import queryString from 'query-string';
-import SellerProfile from './components/SellerProfile';
 import Helmet from 'react-helmet';
 import {
 	CatalogView,
 	GridView,
 	SmallGridView
 } from '@/containers/Mobile/Discovery/View';
+
+import { actions as lovelistActions } from '@/state/v4/Lovelist';
+import { actions as commentActions } from '@/state/v4/Comment';
+import to from 'await-to-js';
 
 
 class Seller extends Component {
@@ -63,7 +68,8 @@ class Seller extends Component {
 				...propsObject.get('query').value()
 			},
 			filterStyle: {},
-			centerStyle: { opacity: 0 }
+			centerStyle: { opacity: 0 },
+			headerNameY: false
 		};
 	}
 
@@ -84,9 +90,16 @@ class Seller extends Component {
 	}
 
 	onScroll = (e) => {
+		const { headerNameY } = this.state;
 		const header = document.getElementById('store-filter');
 		const sticky = header.offsetTop;
 		const scrollY = e.srcElement.scrollTop;
+
+		if (!headerNameY) {
+			this.setState({
+				headerNameY: this.headerName.getBoundingClientRect().top ? this.headerName.getBoundingClientRect().top - 60 : 85
+			});
+		}
 
 		if (scrollY >= sticky) {
 			this.setState({
@@ -96,14 +109,17 @@ class Seller extends Component {
 					width: '100%',
 					top: '60px',
 					zIndex: '1',
-					overflow: 'hidden'
+					overflow: 'hidden',
+					maxWidth: '480px'
 				}
 			});
 		} else {
 			let o = 0;
-			if (scrollY > 115 && scrollY < 128) {
-				o = (((scrollY - 115) * 12) / 12) / 10;
-			} else if (scrollY > 127) {
+			const y = !headerNameY ? 85 : headerNameY;
+
+			if (scrollY > y && scrollY < (y + 13)) {
+				o = (((scrollY - y) * 12) / 12) / 10;
+			} else if (scrollY > (y + 12)) {
 				o = 1;
 			}
 
@@ -135,10 +151,11 @@ class Seller extends Component {
 
 	forceLoginNow() {
 		const { history } = this.props;
-		history.push(`/login?redirect_uri=${location.pathname}`);
+		const currentUrl = encodeURIComponent(`${location.pathname}${location.search}`);
+		history.push(`/login?redirect_uri=${currentUrl}`);
 	}
 
-	update = (filters) => {
+	update = async (filters) => {
 		const { cookies, dispatch, match: { params }, location, history } = this.props;
 		const { query } = this.state;
 
@@ -165,7 +182,11 @@ class Seller extends Component {
 			type: 'init'
 		};
 
-		dispatch(actions.getProducts(data));
+		const response = await to(dispatch(actions.getProducts(data)));
+
+		const productIdList = _.map(response[1].data.products, 'product_id') || [];
+		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 	};
 
 	handlePick = (val) => {
@@ -224,7 +245,7 @@ class Seller extends Component {
 					onPick={e => this.handlePick(e)}
 				/>
 				{renderIf(sorts)(
-					<Sort shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+					<Sort shown={showSort} onCloseOverlay={() => this.setState({ showSort: false })} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
 				)}
 			</div>
 		);
@@ -234,18 +255,53 @@ class Seller extends Component {
 		const { seller, location } = this.props;
 		return (seller.info.seller && (
 			<div className='border-bottom'>
-				<SellerProfile
-					image={seller.info.seller_logo || ''}
-					badgeImage={seller.info.seller_badge_image}
-					isNewStore={seller.info.is_new_seller || 0}
-					successOrder={_.chain(seller).get('info.success_order.rate').value() || ''}
-					rating={seller.info.rating || ''}
-					totalProduct={seller.info.product || ''}
-					name={seller.info.seller || ''}
-					location={seller.info.seller_location || ''}
-					description={seller.info.description || ''}
-					storeAddress={`${location.pathname}${location.search}`}
-				/>
+				<div className='margin--medium-v'>
+					<div className='padding--small-h flex-row flex-spaceBetween'>
+						<div className='padding--small-h'>
+							<div className='avatar'>
+								<Link to={`${location.pathname}${location.search}`} >
+									<Image avatar width={60} height={60} src={seller.info.seller_logo || ''} />
+									<Badge attached position='bottom-right'><Image src={seller.info.seller_badge_image} width={12} /></Badge>
+								</Link>
+							</div>
+						</div>
+						<Level divider>
+							{
+								seller.info.is_new_seller !== 0 && (
+									<Level.Item className='text-center'>
+										<div className='font-large flex-row flex-center'>
+											<Svg src='ico_newstore.svg' />
+										</div>
+										<div className='font-small font-color--primary-ext-2'>New Store</div>
+									</Level.Item>
+								)
+							}
+							<Level.Item className='text-center'>
+								<div className='font-large flex-row flex-center flex-middle'>
+									<Svg src='ico_successorder.svg' />
+									<span className='padding--small-h padding--none-r'>{_.chain(seller).get('info.success_order.rate').value() || ''}%</span>
+								</div>
+								<div className='font-small font-color--primary-ext-2 text-no-wrap'>Order Sukses</div>
+							</Level.Item>
+							<Level.Item className='text-center'>
+								<div className='font-large flex-row flex-middle'>
+									<Svg src='ico_reviews_solid_selected_small.svg' />
+									<span className='padding--small-h padding--none-r'>{seller.info.rating || ''}</span>
+								</div>
+								<div className='font-small font-color--primary-ext-2'>Rating</div>
+							</Level.Item>
+							<Level.Item className='text-center'>
+								<div className='font-large'>{seller.info.product || ''}</div>
+								<div className='font-small font-color--primary-ext-2'>Produk</div>
+							</Level.Item>
+						</Level>
+					</div>
+					<div className='padding--medium-h margin--small-v'>
+						<div className='font-medium' ref={(el) => { this.headerName = el; }}>{seller.info.seller || ''}</div>
+						<div className='font-small flex-row flex-middle'><Svg src='ico_pinlocation-black.svg' /> <span>{seller.info.seller_location || ''}</span></div>
+						<div className='font-small'>{seller.info.description || ''}</div>
+					</div>
+				</div>
 			</div>
 		)) || '';
 	};
@@ -274,11 +330,7 @@ class Seller extends Component {
 			break;
 		}
 
-		return (
-			<div className={styles.cardContainer}>
-				{listView}
-			</div>
-		);
+		return listView;
 	};
 
 	renderHelmet = () => {
@@ -300,6 +352,7 @@ class Seller extends Component {
 				<meta property='og:description' content={info.description} />
 				<meta property='og:image' content={info.seller_logo} />
 				<meta property='og:site_name' content='MatahariMall.com' />
+				<link rel='canonical' href={process.env.MOBILE_URL} />
 			</Helmet>
 		);
 	};
@@ -335,7 +388,7 @@ class Seller extends Component {
 					/>
 				) : (
 					<div style={this.props.style}>
-						<Page>
+						<Page color='white'>
 							{seller.info.seller && this.renderHelmet()}
 							{this.sellerHeader()}
 							{this.filterTabs()}
@@ -400,7 +453,12 @@ const doAfterAnonymous = async (props) => {
 	};
 
 	await dispatch(actions.initSeller(data.token, data.query.store_id));
-	await dispatch(actions.getProducts(data));
+	const response = await to(dispatch(actions.getProducts(data)));
+
+	const productIdList = _.map(response[1].data.products, 'product_id') || [];
+	dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+	dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+
 };
 
 export default withRouter(withCookies(connect(mapStateToProps)(Scroller(Shared(Seller, doAfterAnonymous)))));

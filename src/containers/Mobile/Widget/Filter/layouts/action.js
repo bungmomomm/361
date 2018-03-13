@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Svg, Button } from '@/components/mobile';
 import styles from './action.scss';
+import classNames from 'classnames';
 
 class Action extends PureComponent {
 	constructor(props) {
@@ -10,14 +11,20 @@ class Action extends PureComponent {
 	}
 
 	render() {
-		const { onApply, onReset } = this.props;
+		const { resetDisabled, onApply, onReset } = this.props;
+
+		const cx = classNames(
+			styles.item,
+			resetDisabled ? styles.reset : null
+		);
+
 		return (
 			<div className={styles.container}>
 				<div className={styles.wrapper}>
 					<div className={styles.navigation}>
 						{
 							this.props.hasReset && (
-								<Button className={styles.item} onClick={onReset}>
+								<Button className={cx} disabled={resetDisabled} onClick={onReset}>
 									<Svg src='ico_reset.svg' />
 									Reset
 								</Button>

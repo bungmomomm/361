@@ -88,14 +88,14 @@ class ForgotPassword extends Component {
 		return (
 
 			<div className='full-height' style={this.props.style}>
-				<Page>
+				<Page color='white'>
 					<div className={styles.container}>
-						<div className='margin--medium-v'>Masukkan alamat email atau nomer telepon Anda dan kami akan mengirimkan link untuk mengubah password lama Anda.</div>
+						<div className='margin--medium-v text-left'>Masukkan alamat email atau nomer telepon Anda dan kami akan mengirimkan link untuk mengubah password lama Anda.</div>
 						<div className='margin--medium-v text-center'>
 							<Input
 								disabled={isLoginLoading}
 								flat
-								placeholder='Email / Nomor Handphone'
+								placeholder=''
 								label='Email / Nomor Handphone'
 								onChange={(e) => this.onUserChange(e.target.value)}
 								error={error}
@@ -105,13 +105,13 @@ class ForgotPassword extends Component {
 						<div className='margin--medium-v'>
 							<Button
 								className={'error'}
-								color='primary'
+								color='yellow'
 								size='large'
 								disabled={!isValidUsername}
 								loading={isLoginLoading}
 								onClick={e => this.onResetPassword(e)}
 							>
-								RESET
+								RESET PASSWORD
 							</Button>
 						</div>
 					</div>

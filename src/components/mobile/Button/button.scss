@@ -112,6 +112,12 @@
   color: color(--primary);
 }
 
+.yellow{
+  border-color: #F57C00;
+  background-color: #F57C00;
+  color: #fff;
+}
+
 .blue{
   border-color: color(--mm-blue);
   background-color: color(--mm-blue);
@@ -119,7 +125,7 @@
 }
 
 .transparent{
-  opacity: 0.7;
+  opacity: 0.4;
 }
 
 .outline{

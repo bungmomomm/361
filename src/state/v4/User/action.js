@@ -101,7 +101,7 @@ const userNameChange = (username) => dispatch => {
 
 // 	USER_OTP: undefined,
 
-const userOtp = (token, phone) => async (dispatch, getState) => {
+const userOtp = (token, data) => async (dispatch, getState) => {
 
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
@@ -111,7 +111,7 @@ const userOtp = (token, phone) => async (dispatch, getState) => {
 	const path = `${baseUrl}/auth/otp/send`;
 
 	const dataForOtp = {
-		hp_email: phone
+		hp_email: data
 	};
 
 	dispatch(actions.userOtp());
@@ -127,12 +127,11 @@ const userOtp = (token, phone) => async (dispatch, getState) => {
 	const [err, response] = await to(request(requestData));
 
 	if (err) {
-		dispatch(actions.userOtpFail(err.data));
-		return Promise.reject(err);
+		dispatch(actions.userOtpFail(err.response.data));
+		return Promise.reject(err.response.data);
 	}
-	console.log('out');
-	dispatch(actions.userOtpSuccess(response));
-	return Promise.resolve(response);
+	dispatch(actions.userOtpSuccess(response.data.data));
+	return Promise.resolve(response.data.data);
 
 };
 
@@ -143,10 +142,13 @@ const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
-	const path = `${baseUrl}/auth/otp/validate?action=register`;
+	const path = `${baseUrl}/auth/otp/validate`;
 	
 	dispatch(actions.userOtpValidate());
-	bodyData.pwd = base64.encode(bodyData.pwd);
+
+	if (bodyData.pwd !== undefined && bodyData.pwd.length > 0) {
+		bodyData.pwd = base64.encode(bodyData.pwd);
+	}
 	
 	const requestData = {
 		token,
@@ -159,12 +161,12 @@ const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
 	const [err, response] = await to(request(requestData));
 
 	if (err) {
-		dispatch(actions.userOtpValidateFail(err.data));
-		return Promise.reject(err);
+		dispatch(actions.userOtpValidateFail(err.response.data));
+		return Promise.reject(err.response.data);
 	}
 
-	dispatch(actions.userOtpValidateSuccess(response));
-	return Promise.resolve(response);
+	dispatch(actions.userOtpValidateSuccess(response.data.data));
+	return Promise.resolve(response.data.data);
 
 };
 

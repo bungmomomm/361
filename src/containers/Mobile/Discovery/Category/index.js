@@ -101,7 +101,7 @@ class Category extends PureComponent {
 
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page color='white'>
 					<div>
 						{ category.loading ? loading : this.renderCategories() }
 					</div>

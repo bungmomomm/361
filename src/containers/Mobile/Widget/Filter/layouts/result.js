@@ -10,7 +10,7 @@ class Result extends PureComponent {
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
-					<Svg src='ico_close.svg' />
+					<Svg src='ico_close-large.svg' />
 				</Button>
 			),
 			center: 'Filter',
@@ -18,7 +18,7 @@ class Result extends PureComponent {
 		};
 		return (
 			<div style={this.props.style}>
-				<Page hideFooter>
+				<Page color='white' style={{ marginTop: '15px' }}>
 					{
 						filters.facets.map((facet, idx) => {
 							return (
@@ -27,7 +27,7 @@ class Result extends PureComponent {
 										<List.Content style={{ minHeight: '50px' }}>
 											<div>
 												<div>{facet.title}</div>
-												<span className='font-color--primary-ext-2 font-small text-elipsis' style={{ width: '200px' }}>{_.map(selected[facet.id], (s) => s.facetdisplay).join(', ')}</span>
+												<span className='font-color--primary-ext-2 font-small text-elipsis margin--small-t' style={{ width: '200px' }}>{_.map(selected[facet.id], (s) => s.facetdisplay).join(', ')}</span>
 											</div>
 										</List.Content>
 									</Button>

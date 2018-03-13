@@ -44,16 +44,17 @@ class Hashtags extends Component {
 		dispatch(actions.switchViewMode(mode));
 	};
 
-	renderGridSmall = (campaignId) => {
+	renderGridSmall = (campaign) => {
 		const { hashtag } = this.props;
 		const items = hashtag.products[hashtag.active.node] && hashtag.products[hashtag.active.node].items
 					? hashtag.products[hashtag.active.node].items : [];
+		const campaignName = campaign.hashtag.replace('#', '');
 
 		return (
 			<Grid bordered split={3}>
 				{items.map((product, i) => (
 					<div key={i}>
-						<Link to={`/mau-gaya-itu-gampang/${campaignId}/${product.id}`}>
+						<Link to={`/mau-gaya-itu-gampang/${campaignName}-${campaign.campaign_id}/${product.id}`}>
 							<Image src={product.image} />
 						</Link>
 					</div>
@@ -62,16 +63,17 @@ class Hashtags extends Component {
 		);
 	};
 
-	renderGridLarge = (campaignId) => {
+	renderGridLarge = (campaign) => {
 		const { hashtag } = this.props;
 		const items = hashtag.products[hashtag.active.node] && hashtag.products[hashtag.active.node].items
 					? hashtag.products[hashtag.active.node].items : [];
+		const campaignName = campaign.hashtag.replace('#', '');
 
 		return (
 			<div>
 				{items.map((product, i) => (
 					<div key={i}>
-						<Link to={`/mau-gaya-itu-gampang/${campaignId}/${product.id}`}>
+						<Link to={`/mau-gaya-itu-gampang/${campaignName}-${campaign.campaign_id}/${product.id}`}>
 							<Image src={product.image} width='100%' />
 						</Link>
 						<div className='margin--medium-v flex-row flex-spaceBetween flex-middle'>
@@ -96,7 +98,7 @@ class Hashtags extends Component {
 		const { hashtag, history, scroller, location, dispatch } = this.props;
 		const tags = hashtag.tags;
 		const q = dispatch(actions.getQuery());
-		const campaignId = _.chain(q).get('query.campaign_id').value() || 1;
+		const campaign = _.chain(q).get('query.campaign').value() || false;
 
 		const listHastags = (
 			<div className='horizontal-scroll'>
@@ -157,6 +159,7 @@ class Hashtags extends Component {
 						<meta property='og:type' content='website' />
 						<meta property='og:description' content='Mau Gaya Itu Gampang' />
 						<meta property='og:image' content='https://assets.mataharimall.co/images/favicon.ico' />
+						<link rel='canonical' url={process.env.MOBILE_URL} />
 					</Helmet>
 
 					<div className='margin--medium-v text-center padding--large-h'>
@@ -167,10 +170,10 @@ class Hashtags extends Component {
 					</div>
 
 					{
-						campaignId && hashtag.viewMode === 3
-						? this.renderGridSmall(campaignId)
-						: campaignId && hashtag.viewMode === 1
-						? this.renderGridLarge(campaignId)
+						campaign && hashtag.viewMode === 3
+						? this.renderGridSmall(campaign)
+						: campaign && hashtag.viewMode === 1
+						? this.renderGridLarge(campaign)
 						: ''
 					}
 					{scroller.loading && <Spinner />}

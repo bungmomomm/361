@@ -5,7 +5,7 @@ const initialState = {
 	pcpStatus: '',
 	viewMode: {
 		mode: 2,
-		icon: 'ico_three-line.svg'
+		icon: 'ico_grid-3x3.svg'
 	},
 	pcpData: {
 		links: [],
