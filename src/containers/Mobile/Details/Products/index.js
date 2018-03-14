@@ -48,7 +48,6 @@ class Products extends Component {
 				pdpDataHasLoaded: false,
 				similarSet: false,
 				recommendationSet: false,
-				reviewsSet: false,
 				bulkieSet: false,
 				hasVariantSize: false,
 				pendingAddProduct: false,
@@ -60,7 +59,6 @@ class Products extends Component {
 			},
 			pdpData: {
 				cardProduct: {},
-				reviewContent: {}
 			},
 			detail: {},
 			carousel: {
@@ -79,7 +77,7 @@ class Products extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		const { product, lovelist, dispatch } = nextProps;
-		const { detail, socialSummary, promo } = product;
+		const { detail, promo } = product;
 		const { pdpData, status } = this.state;
 		let { selectedVariant, size } = this.state;
 
@@ -122,23 +120,10 @@ class Products extends Component {
 		}
 
 		// sets recommendation products data
-		// if (!_.isEmpty(recommendation.products) && !status.recommendationSet) status.recommendationSet = true;
 		if (!_.isEmpty(promo.recommended_items.products) && !status.recommendationSet) status.recommendationSet = true;
 
 		// sets similar products data
 		if (!_.isEmpty(promo.similar_items.products) && !status.similarSet) status.similarSet = true;
-
-		// sets product reviews data
-		if (!_.isEmpty(socialSummary.reviews) && !status.reviewsSet) {
-			status.reviewsSet = true;
-			if (socialSummary.comments.total > 0 || socialSummary.comments.summary.length > 0) {
-				pdpData.cardProduct.totalComments = socialSummary.comments.total || 0;
-			}
-
-			pdpData.reviewContent = socialSummary.reviews.summary.map((item, idx) => {
-				return <Comment key={idx} type='review' data={item} />;
-			});
-		}
 
 		// updates states
 		this.setState({ detail, status, pdpData, selectedVariant, size });
@@ -639,30 +624,35 @@ class Products extends Component {
 							</div>
 						)}
 						<div style={{ backgroundColor: '#F5F5F5' }}>
-							{status.reviewsSet && (
+							{(reviews.total > 0) && (
 								<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 									<div className='margin--medium-v'>
 										<div className='padding--small-h margin--small-v margin--none-t flex-row flex-spaceBetween'>
 											<div className='font-medium'><strong>Ulasan</strong></div>
-											{(typeof reviews.total !== 'undefined' && reviews.total > 0) && (
+											{reviews.total > 2 && (
 												<Link className='font-small flex-middle d-flex flex-row font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
 											)}
 										</div>
 										<div className='border-bottom'>
 											<div className='padding--small-h margin--medium-v margin--none-t flex-row flex-middle'>
 												<Rating
-													active={(typeof reviews.rating !== 'undefined' && reviews.rating > 0) ? reviews.rating : 0}
-													total={(typeof reviews.total !== 'undefined' && reviews.total > 0) ? reviews.total : 0}
+													active={(reviews.rating > 0) ? Number.parseFloat(reviews.rating).toFixed(1) : 0}
+													total={5}
 												/>
 												<div className='flex-row padding--small-h'>
-													<strong>{(typeof reviews.rating !== 'undefined' && reviews.rating > 0) ? reviews.rating : 0}/5</strong>
+													<strong>{(reviews.rating > 0) ? Number.parseFloat(reviews.rating).toFixed(1) : 0} / 5</strong>
 													<span className='font-color--primary-ext-2 padding--small-h'>
-														{(typeof reviews.total !== 'undefined' && reviews.total > 0) ? `(${reviews.total} Ulasan)` : 'Belum Ada Ulasan'}
+														{(reviews.total > 0) ? `(${reviews.total} Ulasan)` : 'Belum Ada Ulasan'}
 													</span>
 												</div>
 											</div>
 										</div>
-										{(!status.loading) ? pdpData.reviewContent : this.loadingContent}
+										{status.loading && this.loadingContent}
+										{(!status.loading) && 
+											(reviews.summary.map((item, idx) => {
+												return <Comment key={idx} type='review' data={item} />;
+											}))
+										}
 									</div>
 								</div>
 							)}
