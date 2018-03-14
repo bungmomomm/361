@@ -275,7 +275,7 @@ class Cart extends Component {
 				link = (<a href={process.env.CHECKOUT_URL}>{wording}</a>);
 			}
 		} else {
-			link = (<Link to='redirect_uri=/cart'>{wording}</Link>);
+			link = (<Link to='login?redirect_uri=/cart'>{wording}</Link>);
 		}
 		return (
 			<div className={styles.paymentLink}>

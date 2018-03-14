@@ -9,7 +9,8 @@ import {
 	Level,
 	Button,
 	Input,
-	Image
+	Image,
+	Modal
 } from '@/components/mobile';
 import CONST from '@/constants';
 import { actions as userAction } from '@/state/v4/User';
@@ -31,7 +32,8 @@ class AddReview extends Component {
 				product_rating: null,
 				seller_rating: null,
 			},
-			isSubmiting: false
+			isSubmiting: false,
+			isSubmitSuccess: false
 		};
 
 		if (this.isLogin !== 'true') {
@@ -73,7 +75,10 @@ class AddReview extends Component {
 			dispatch(userAction.submitReview(this.userToken, this.state.payload))
 		));
 		submiting.then((res) => {
-			this.setState({ isSubmiting: false });
+			this.setState({ isSubmiting: false, isSubmitSuccess: true });
+			setTimeout(() => {
+				this.props.history.goBack();
+			}, 2000);
 		}).catch((err) => this.setState({ isSubmiting: false }));
 	}
 
@@ -175,6 +180,17 @@ class AddReview extends Component {
 					</Level>
 				</Page>
 				<Header.Modal {...HeaderPage} />
+				<Modal show={this.state.isSubmitSuccess}>
+					<div className='font-medium'>
+						<h3 className='text-center'>Ulasan Diterima</h3>
+						<Level style={{ padding: '0px' }} className='margin--medium-v'>
+							<Level.Left />
+							<Level.Item className='padding--medium-h'>
+								<center>Terima kasih atas penilaian anda</center>
+							</Level.Item>
+						</Level>
+					</div>
+				</Modal>
 			</div>
 		);
 	}
