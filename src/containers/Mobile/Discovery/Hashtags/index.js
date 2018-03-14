@@ -44,17 +44,19 @@ class Hashtags extends Component {
 		dispatch(actions.switchViewMode(mode));
 	};
 
-	renderGridSmall = (campaign) => {
+	renderGridSmall = (campaignId) => {
 		const { hashtag } = this.props;
 		const items = hashtag.products[hashtag.active.node] && hashtag.products[hashtag.active.node].items
 					? hashtag.products[hashtag.active.node].items : [];
-		const campaignName = campaign.hashtag.replace('#', '');
+		const filtr = hashtag.tags.filter((obj) => {
+			return (obj.campaign_id === campaignId);
+		});
 
 		return (
 			<Grid bordered split={3}>
 				{items.map((product, i) => (
 					<div key={i}>
-						<Link to={`/mau-gaya-itu-gampang/${campaignName}-${campaign.campaign_id}/${product.id}`}>
+						<Link to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}`}>
 							<Image src={product.image} />
 						</Link>
 					</div>
@@ -63,17 +65,19 @@ class Hashtags extends Component {
 		);
 	};
 
-	renderGridLarge = (campaign) => {
+	renderGridLarge = (campaignId) => {
 		const { hashtag } = this.props;
 		const items = hashtag.products[hashtag.active.node] && hashtag.products[hashtag.active.node].items
 					? hashtag.products[hashtag.active.node].items : [];
-		const campaignName = campaign.hashtag.replace('#', '');
+		const filtr = hashtag.tags.filter((obj) => {
+			return (obj.campaign_id === campaignId);
+		});
 
 		return (
 			<div>
 				{items.map((product, i) => (
 					<div key={i}>
-						<Link to={`/mau-gaya-itu-gampang/${campaignName}-${campaign.campaign_id}/${product.id}`}>
+						<Link to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}`}>
 							<Image src={product.image} width='100%' />
 						</Link>
 						<div className='margin--medium-v flex-row flex-spaceBetween flex-middle'>
@@ -98,7 +102,7 @@ class Hashtags extends Component {
 		const { hashtag, history, scroller, location, dispatch } = this.props;
 		const tags = hashtag.tags;
 		const q = dispatch(actions.getQuery());
-		const campaign = _.chain(q).get('query.campaign').value() || false;
+		const campaignId = _.chain(q).get('query.campaign_id').value() || false;
 
 		const listHastags = (
 			<div className='horizontal-scroll'>
@@ -170,10 +174,10 @@ class Hashtags extends Component {
 					</div>
 
 					{
-						campaign && hashtag.viewMode === 3
-						? this.renderGridSmall(campaign)
-						: campaign && hashtag.viewMode === 1
-						? this.renderGridLarge(campaign)
+						campaignId && hashtag.viewMode === 3
+						? this.renderGridSmall(campaignId)
+						: campaignId && hashtag.viewMode === 1
+						? this.renderGridLarge(campaignId)
 						: ''
 					}
 					{scroller.loading && <Spinner />}
