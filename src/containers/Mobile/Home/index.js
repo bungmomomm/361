@@ -107,14 +107,16 @@ class Home extends Component {
 					{ header }
 					<Grid split={3} bordered>
 						{
-							data.data.map(({ images, pricing }, e) => (
+							data.data.map(({ images, pricing, path }, e) => (
 								<div key={e}>
-									<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
-									<div className={styles.btnThumbnail}>
-										<Button transparent color='secondary' size='small'>
-											{pricing.formatted.effective_price}
-										</Button>
-									</div>
+									<Link to={`/${path}`}>
+										<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
+										<div className={styles.btnThumbnail}>
+											<Button transparent color='secondary' size='small'>
+												{pricing.formatted.effective_price}
+											</Button>
+										</div>
+									</Link>
 								</div>
 							))
 						}
@@ -129,20 +131,28 @@ class Home extends Component {
 		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}.hashtag`);
+		const baseHashtagUrl = '/mau-gaya-itu-gampang';
 		if (!datas.isEmpty().value() && datas.value().id !== '') {
-			const header = renderSectionHeader(datas.value().hashtag, {
-				title: datas.value().mainlink.text,
-				url: '/mau-gaya-itu-gampang'
+			const datanya = datas.value();
+			const header = renderSectionHeader(datanya.hashtag, {
+				title: datanya.mainlink.text,
+				url: baseHashtagUrl
 			});
+			
+			const detailHashTag = `${baseHashtagUrl}/${datanya.hashtag.replace('#', '')}-${datanya.campaign_id}`;
+
 			return (
 				<div>
 					{ header }
 					<Grid split={3} bordered>
 						{
-							datas.value().images.map(({ images }, e) => (
+							datanya.images.map((gambar, e) => (
 								<div key={e}>
-									<Image lazyload shape='square' alt='thumbnail' src={images.thumbnail} />
+									<Link to={`${detailHashTag}/${gambar.content_id}`}>
+										<Image lazyload shape='square' alt='thumbnail' src={gambar.images.thumbnail} />
+									</Link>
 								</div>
+								
 							))
 						}
 					</Grid>
@@ -283,8 +293,8 @@ class Home extends Component {
 	render() {
 		const { shared, dispatch } = this.props;
 
-		const recommendation1 = this.isLogin === 'false' ? 'new-arrival' : 'recommended-products';
-		const recommendation2 = this.isLogin === 'false' ? 'best-seller' : 'recent-view';
+		const recommendation1 = this.isLogin === 'false' ? 'best-seller' : 'recommended-products';
+		const recommendation2 = this.isLogin === 'false' ? 'new-arrival' : 'recent-view';
 		return (
 			<div style={this.props.style}>
 				<Page color='white'>
