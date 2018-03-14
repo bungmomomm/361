@@ -20,16 +20,14 @@ class Snackbar extends React.Component {
 		const snack = this.props.snack;
 		const nextSnack = nextProps.snack;
 		const visibleSnack = this.state.snack;
-		const isInactive = this.props.inactive;
-		const willInactivate = nextProps.inactive;
-		if (!willInactivate && ((nextSnack && !snack) || (nextSnack && (nextSnack.id !== (snack || {}).id)))) {
-			this.showSnack(nextSnack); // Active, and a new snack stands in line in the queue. Show it!
-		} else if (isInactive && !willInactivate && (snack && !visibleSnack)) {
-			this.showSnack(snack); // Will be active, and we have a snack. Show it!
-		} else if (!isInactive && willInactivate && visibleSnack) {
-			this.hideSnack(); // Will deactivate, remove the snack until we become active again
+		if ((nextSnack && !snack) || (nextSnack && (nextSnack.id !== (snack || {}).id))) {
+			this.showSnack(nextSnack);
+		} else if (snack && !visibleSnack) {
+			this.showSnack(snack);
+		} else if (visibleSnack) {
+			this.hideSnack();
 		} else if (!nextSnack && snack) {
-			this.hideSnack(); // The current snack has been removed from the queue, no one stands in line. Hide it!
+			this.hideSnack();
 		}
 	}
 
