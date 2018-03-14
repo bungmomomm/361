@@ -369,7 +369,7 @@ class Seller extends Component {
 		const url = `${process.env.MOBILE_URL}${location.pathname}${location.search}`;
 		const storename = (!title) ? '' : (title.length > 30) ? `${title.substring(0, 30)}&hellip;` : title;
 		const prevLocation = _.chain(window.prevLocation).get('pathname').value();
-		const activeNav = prevLocation.indexOf('.html') > -1 ? 'Categories' : ['', '/'].includes(prevLocation) ? 'Home' : null;
+		const activeNav = prevLocation && prevLocation.indexOf('.html') > -1 ? 'Categories' : ['', '/'].includes(prevLocation) ? 'Home' : null;
 
 		const HeaderPage = {
 			left: (
