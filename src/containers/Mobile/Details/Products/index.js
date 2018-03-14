@@ -96,12 +96,9 @@ class Products extends Component {
 				}
 			}
 
-			console.log('checking variants empty: ', _.isEmpty(pdpData.cardProduct.variants));
-			console.log('checking productstock: ', (pdpData.cardProduct.productStock === 0));
-			console.log('checking detail is_product_available: ', (detail.is_product_available === 0));
+			// disable enabled button BELI AJA
 			if (_.isEmpty(pdpData.cardProduct.variants) || 
 				pdpData.cardProduct.productStock === 0 || detail.is_product_available === 0) {
-				console.log('enter here...');
 				status.btnBeliDisabled = true;
 			} else {
 				status.btnBeliDisabled = false;
@@ -246,7 +243,6 @@ class Products extends Component {
 			status.pendingAddProduct = false;
 			status.productAdded = true;
 			status.showModalSelectSize = false;
-			this.setState({ btnBeliLabel: 'GO TO SHOPPING BAG' });
 		}).catch((err) => {
 			throw err;
 		});
@@ -487,7 +483,7 @@ class Products extends Component {
 						<Svg src={'ico_arrow-back-left.svg'} />
 					</Button>
 				),
-				center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{pdpData.cardProduct.product_title}</div>,
+				center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{pdpData.cardProduct.brand.name}</div>,
 				right: (
 					<div className='flex-row flex-middle'>
 						<Share title={title} url={url} />
@@ -771,7 +767,7 @@ class Products extends Component {
 							<Level style={{ padding: '0px' }} className='margin--medium-v'>
 								<Level.Left />
 								<Level.Item className='padding--medium-h'>
-									<span>{product.promo.meta_data.ovo_info}</span>
+									<center>{product.promo.meta_data.ovo_info}</center>
 								</Level.Item>
 							</Level>
 						</div>
