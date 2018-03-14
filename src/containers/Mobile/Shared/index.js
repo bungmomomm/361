@@ -71,10 +71,10 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			check().then(con);
 			const unwatch = watch(con);
 			this.unwatchConnection = unwatch;
-			
+
 			if (typeof this.uniqueId === 'undefined') {
 				const uuid = uuidv4();
-				
+
 				setUniqeCookie(this.props.cookies, uuid);
 			}
 		}
@@ -227,9 +227,15 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		render() {
+			const navbar = document.querySelector('.navigation__navigation');
+
 			return (
 				<div>
-					<Snackbar history={this.props.history} location={this.props.location} />
+					<Snackbar
+						history={this.props.history}
+						location={this.props.location}
+						customStyles={{ snack: { bottom: navbar !== null ? 51 : 0, zIndex: navbar !== null ? 2 : 999 } }}
+					/>
 					<WrappedComponent {...this.props} scroll={this.state.scroll} />
 				</div>
 			);
