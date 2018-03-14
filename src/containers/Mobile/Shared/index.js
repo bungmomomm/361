@@ -4,10 +4,10 @@ import to from 'await-to-js';
 import { actions } from '@/state/v4/Shared';
 import { actions as users } from '@/state/v4/User';
 import { actions as initAction } from '@/state/v4/Home';
-import { setUserCookie } from '@/utils';
+import { setUserCookie, uniqid } from '@/utils';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
-import ErrorHandler from '@/containers/Mobile/Shared/errorHandler';
+import Snackbar from '@/containers/Mobile/Shared/snackbar';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 	WrappedComponent.contextTypes = {
@@ -166,6 +166,20 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		withErrorHandling(err) {
 			const { dispatch } = this.props;
 			const { response } = err;
+
+			const errMessage = _.chain(response).get('data.error_message').value() || false;
+
+			if (errMessage) {
+				dispatch(actions.showSnack(uniqid('err-'), {
+					label: errMessage,
+					timeout: false,
+					button: {
+						label: 'COBA LAGI',
+						action: 'reload'
+					}
+				}));
+			}
+
 			dispatch(actions.catchErrors(response));
 		}
 
@@ -182,11 +196,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		render() {
-			const { shared, dispatch } = this.props;
-
 			return (
 				<div>
-					<ErrorHandler errors={shared.errors} dispatch={dispatch} />
+					<Snackbar history={this.props.history} location={this.props.location} />
 					<WrappedComponent {...this.props} scroll={this.state.scroll} />
 				</div>
 			);

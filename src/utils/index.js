@@ -11,6 +11,7 @@ import { setUserCookie } from './cookie';
 import urlBuilder from './urlBuilder';
 import loading from './loading';
 import { request as emarsysRequest } from './emarsys';
+import uniqid from './uniqid';
 
 const isHexColor = (color) => {
 	return /(^#[0-9A-F]{3}|^#[0-9A-F]{6})$/i.test(color);
@@ -57,5 +58,6 @@ export default {
 	urlBuilder,
 	isHexColor,
 	loading,
-	emarsysRequest
+	emarsysRequest,
+	uniqid
 };
