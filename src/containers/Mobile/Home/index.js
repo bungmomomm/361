@@ -342,6 +342,7 @@ class Home extends Component {
 					appStore='1033108124'
 					isShow={this.state.showSmartBanner}
 					onCloseBanner={this.sbClose}
+					scroll={this.props.scroll}
 				/>
 
 				<Header 

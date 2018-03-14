@@ -24,6 +24,7 @@ class SmartB extends Component {
 			price: 'FREE', 
 			atStore: 'In Google Play'
 		};
+		this.currentScrollPos = 0;
 	}
 
 	componentWillMount() {
@@ -46,7 +47,12 @@ class SmartB extends Component {
 	}
 
 	render() {
-		const { title, iconSrc, author, isShow } = this.props;
+		const { title, iconSrc, author, isShow, scroll } = this.props;
+		
+		if ((scroll.top < scroll.docHeight && scroll.top !== 0) || (scroll.top === scroll.docHeight && scroll.top !== 0)) {
+			return null;
+		}
+
 		// prevent mobile user 
 		if (!isMobile() || !isShow) {
 			return null;
