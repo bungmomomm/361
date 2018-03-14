@@ -8,6 +8,7 @@ import { setUserCookie, uniqid } from '@/utils';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
 import Snackbar from '@/containers/Mobile/Shared/snackbar';
+import { check, watch } from 'is-offline';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 	WrappedComponent.contextTypes = {
@@ -36,6 +37,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			this.isLogin = this.props.cookies.get('isLogin') === 'true' && true;
 			this.handleScroll = this.handleScroll.bind(this);
 			this.docBody = null;
+			this.unwatchConnection = null;
 		}
 
 		componentWillMount() {
@@ -51,11 +53,33 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		componentDidMount() {
 			window.addEventListener('scroll', this.handleScroll, true);
 			this.docBody = document.body;
+
+			const { dispatch } = this.props;
+			const con = (bool) => {
+				if (bool) {
+					dispatch(actions.showSnack(uniqid('off-'), {
+						label: 'You\'re now offline, please check your internet connection.',
+						timeout: 5000,
+						button: {
+							label: 'TUTUP'
+						}
+					}));
+				}
+			};
+
+			check().then(con);
+			const unwatch = watch(con);
+			this.unwatchConnection = unwatch;
 		}
 
 		componentWillUnmount() {
 			window.mmLoading.play();
 			window.removeEventListener('scroll', this.handleScroll, true);
+			window.prevLocation = this.props.location;
+
+			if (this.unwatchConnection) {
+				this.unwatchConnection();
+			}
 		}
 
 		shouldLoginAnonymous() {
@@ -172,7 +196,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			if (errMessage) {
 				dispatch(actions.showSnack(uniqid('err-'), {
 					label: errMessage,
-					timeout: false,
+					timeout: 5000,
 					button: {
 						label: 'COBA LAGI',
 						action: 'reload'

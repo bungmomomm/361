@@ -16,7 +16,7 @@ function getDefaultStyles(theming) {
 				left: '50%',
 				transform: 'translate(-50%, 100%)',
 				borderRadius: '2px',
-				padding: '30px 24px',
+				padding: '20px 24px',
 				minWidth: '400px',
 				maxWidth: '600px',
 			}
@@ -31,13 +31,13 @@ function getDefaultStyles(theming) {
 		},
 		button: {
 			flex: 1,
-			textAlign: 'right',
+			float: 'right',
 			font: theming.buttonFont || 'bold 14px arial, sans-serif',
 			color: theming.buttonColor || '#494949',
 			border: 'none',
 			background: 'none',
 			padding: 0,
-			margin: 0,
+			margin: 0
 		},
 	};
 }
