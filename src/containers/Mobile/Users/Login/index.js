@@ -106,7 +106,7 @@ class Login extends Component {
 				{
 					center: (
 						<Tabs
-							current={current}
+							activeTab={current}
 							variants={[
 								{
 									title: 'Login',
