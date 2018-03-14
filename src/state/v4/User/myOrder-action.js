@@ -128,12 +128,14 @@ const getMyOrderDetail = (token, soNumber) => async (dispatch, getState) => {
 };
 
 const PostOrderConfirmation = (token, bodyData) => async (dispatch, getState) => {
-
-	const { shared } = getState();
-	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
-
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 	
+	/* const { shared } = getState();
+	   const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
+	   if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	*/
+	
+	const baseUrl = 'https://private-9802b-mmv4microservices.apiary-mock.com';
+    
 	const requestData = {
 		token,
 		path: `${baseUrl}/order/paymentconfirm/add`,
@@ -142,28 +144,29 @@ const PostOrderConfirmation = (token, bodyData) => async (dispatch, getState) =>
 		body: bodyData
 	};
 	
-	console.log(requestData);
-	
 	const [err, response] = await to(
 		request(requestData)
 	);
 	
 	if (err) {
-		console.log('error');
+		
 		return Promise.reject(err);
 	}
-	console.log('success');
+	
 	return Promise.resolve(response);
 
 };
 
 
-const ListBankConfirmation = (token) => async (dispatch, getState) => {
-	const { shared } = getState();
-	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
-
-
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+const getListBankConfirmation = (token) => async (dispatch, getState) => {
+	
+	
+	/* const { shared } = getState();
+	   const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
+	   if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	*/
+	
+	const baseUrl = 'https://private-9802b-mmv4microservices.apiary-mock.com';
 	
 	const requestData = {
 		token,
@@ -171,20 +174,14 @@ const ListBankConfirmation = (token) => async (dispatch, getState) => {
 		method: 'GET',
 		fullpath: true
 	};
-    
-	
-	console.log('requestData confirmation');
-	console.log(requestData);
 	
 	const [err, response] = await to(request(requestData));
-	
-	console.log('Request data');
-	console.log(requestData);
 	
 	if (err) {
 		return Promise.reject(err);
 	}
-
+    
+	dispatch(actions.userBankList(response.data.data));
 	return Promise.resolve(response);
 };
 
@@ -196,5 +193,5 @@ export {
 	updateMyOrdersCurrent,
     cleanMyOrderData,
     PostOrderConfirmation,
-    ListBankConfirmation
+    getListBankConfirmation
 };

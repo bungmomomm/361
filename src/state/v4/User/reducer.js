@@ -114,7 +114,6 @@ const reducer = handleActions({
 		return {
 			...state,
 			bankList: {
-				...state.creditCard,
 				...action.payload.userBankList
 			},
 		};

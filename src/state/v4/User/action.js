@@ -17,7 +17,7 @@ import {
 	getMyOrderMore,
 	cleanMyOrderData,
 	PostOrderConfirmation,
-    ListBankConfirmation
+    getListBankConfirmation
 } from './myOrder-action';
 import { getTrackingInfo } from './tracking-action';
 
@@ -444,5 +444,5 @@ export default {
 	checkMyOrders,
 	refreshToken,
 	PostOrderConfirmation,
-	ListBankConfirmation
+	getListBankConfirmation
 };
