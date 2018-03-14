@@ -24,7 +24,8 @@ class Share extends PureComponent {
 	};
 
 	state = {
-		isOpen: false
+		isOpen: false,
+		shareCountEnabled: false
 	};
 
 	modalStyle = {
@@ -67,12 +68,14 @@ class Share extends PureComponent {
 											>
 												<FacebookIcon size={32} round />
 											</FacebookShareButton>
-											<FacebookShareCount
-												url={url}
-												className={style.share_count}
-											>
-												{count => count}
-											</FacebookShareCount>
+											{this.state.shareCountEnabled &&
+												<FacebookShareCount
+													url={url}
+													className={style.share_count}
+												>
+													{count => count}
+												</FacebookShareCount>
+											}
 										</div>
 										<div className={style.network}>
 											<TwitterShareButton
@@ -90,12 +93,14 @@ class Share extends PureComponent {
 											>
 												<GooglePlusIcon size={32} round />
 											</GooglePlusShareButton>
-											<GooglePlusShareCount
-												url={url}
-												className={style.share_count}
-											>
-												{count => count}
-											</GooglePlusShareCount>
+											{this.state.shareCountEnabled && 
+												<GooglePlusShareCount
+													url={url}
+													className={style.share_count}
+												>
+													{count => count}
+												</GooglePlusShareCount>
+											}
 										</div>
 										<div className={style.network}>
 											<WhatsappShareButton

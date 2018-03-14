@@ -8,7 +8,8 @@ import {
 	productDetail,
 	productSocialSummary,
 	productPromotion,
-	productLoading
+	productLoading,
+	productStore
 } from './reducer';
 
 const productDetailAction = (token, productId) => async (dispatch, getState) => {
@@ -34,6 +35,37 @@ const productDetailAction = (token, productId) => async (dispatch, getState) => 
 	dispatch(productDetail({ detail: product.detail }));
 	dispatch(productLoading({ loading: false }));
 	
+	return Promise.resolve(response);
+};
+
+const productStoreAction = (token, storeId, page = 1, perPage = 4) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	dispatch(productLoading({ loading: true }));
+
+	const [err, response] = await to(request({
+		token,
+		path: `${baseUrl}/products/search`,
+		method: 'GET',
+		fullpath: true,
+		query: {
+			store_id: storeId,
+			page,
+			per_page: perPage
+		}
+	}));
+
+	if (err) {
+		return Promise.reject(err);
+	}
+
+	const store = response.data.data;
+	dispatch(productStore({ store }));
+	dispatch(productLoading({ loading: false }));
+
 	return Promise.resolve(response);
 };
 
@@ -136,7 +168,7 @@ const getProductCardData = (details) => {
 				});
 			}
 		} catch (error) {
-			console.log('error: ', error);
+			throw error;
 		}
 
 		return {
@@ -145,7 +177,6 @@ const getProductCardData = (details) => {
 			pricing: details.price_range,
 			product_title: details.title,
 			totalLovelist: 0,
-			totalComments: 0,
 			variants: productVariants,
 			variantsData,
 			productStock
@@ -158,5 +189,6 @@ export default {
 	productDetailAction,
 	productSocialSummaryAction,
 	productPromoAction,
+	productStoreAction,
 	getProductCardData
 };
