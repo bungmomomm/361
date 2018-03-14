@@ -314,6 +314,12 @@ class Home extends Component {
 		return (
 			<div style={this.props.style}>
 				<Page color='white'>
+					<Tabs
+						current={this.props.shared.current}
+						variants={this.props.home.segmen}
+						onPick={(e) => this.handlePick(e)}
+						type='minimal'
+					/>
 					{ <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} /> }
 
 					{this.renderHeroBanner()}
@@ -346,16 +352,6 @@ class Home extends Component {
 				/>
 
 				<Header 
-					rows={
-						this.props.scroll.top > 60 ? null : (
-							<Tabs
-								current={this.props.shared.current}
-								variants={this.props.home.segmen}
-								onPick={(e) => this.handlePick(e)}
-								type='minimal'
-							/>
-						)
-					} 
 					lovelist={shared.totalLovelist} 
 					value={this.props.search.keyword} 
 				/>

@@ -84,7 +84,7 @@ class Product extends PureComponent {
 					</Level.Item>
 				</Level>
 				<div className={styles.title}>
-					{data.brand.name}
+					<span className='font-small text-uppercase'>{data.brand.name}</span>
 					<span>{data.product_title}</span>
 				</div>
 			</div>

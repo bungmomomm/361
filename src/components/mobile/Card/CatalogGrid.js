@@ -114,7 +114,7 @@ class CatalogGrid extends PureComponent {
 					<Level.Item>
 						<Link to={linkToPdp || '/'}>
 							<div className={styles.title}>
-								{brandName}
+								<span className='font-small text-uppercase'>{brandName}</span>
 								<span>{productTitle}</span>
 							</div>
 						</Link>

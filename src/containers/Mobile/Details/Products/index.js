@@ -487,7 +487,7 @@ class Products extends Component {
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</Button>
 			),
-			center: '',
+			center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{pdpData.cardProduct.brand.name}</div>,
 			right: (
 				<div className='flex-row flex-middle'>
 					<Share title={title} url={url} />
