@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import { urlBuilder } from '@/utils';
 import { actions as productActions } from '@/state/v4/Product';
+import { actions as sharedActions } from '@/state/v4/Shared';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as shopBagActions } from '@/state/v4/ShopBag';
 import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Rating, Spinner, Badge } from '@/components/mobile';
@@ -79,7 +80,8 @@ class Products extends Component {
 	componentWillReceiveProps(nextProps) {
 		const { product, lovelist, dispatch } = nextProps;
 		const { detail, socialSummary, promo } = product;
-		const { pdpData, status, selectedVariant } = this.state;
+		const { pdpData, status } = this.state;
+		let { selectedVariant, size } = this.state;
 
 		status.loading = product.loading;
 		// sets card product
@@ -92,7 +94,9 @@ class Products extends Component {
 			if (!_.isEmpty(pdpData.cardProduct.variants) && _.isArray(pdpData.cardProduct.variants)) {
 				status.hasVariantSize = true;
 				if (pdpData.cardProduct.variants.length === 1) {
-					selectedVariant.data = pdpData.cardProduct.variants[0];
+					const variant = pdpData.cardProduct.variants[0];
+					size = variant.value;
+					selectedVariant = pdpData.cardProduct.variantsData[variant.value];
 				}
 			}
 
@@ -137,7 +141,7 @@ class Products extends Component {
 		}
 
 		// updates states
-		this.setState({ detail, status, pdpData, selectedVariant });
+		this.setState({ detail, status, pdpData, selectedVariant, size });
 		this.handleScroll();
 	}
 
@@ -238,8 +242,8 @@ class Products extends Component {
 		});
 
 		handler.then((res) => {
-			// update carts
-			dispatch(shopBagActions.getAction(this.userToken));
+			// updates carts badge
+			dispatch(new sharedActions.totalCartAction(this.userCookies));
 			status.pendingAddProduct = false;
 			status.productAdded = true;
 			status.showModalSelectSize = false;
@@ -261,11 +265,11 @@ class Products extends Component {
 		}
 
 		// Go to shopping back
-		if (status.productAdded) {
-			const { history } = this.props;
-			history.push('/cart');
-			return;
-		}
+		// if (status.productAdded) {
+		// 	const { history } = this.props;
+		// 	history.push('/cart');
+		// 	return;
+		// }
 
 		if (status.hasVariantSize && _.isEmpty(selectedVariant)) {
 			status.showModalSelectSize = true;
@@ -621,7 +625,7 @@ class Products extends Component {
 							{
 								(!this.isLogin) &&
 								<span>
-									<a href='/user/login'>Log in</a> / <a href='/user/register'>Register</a> untuk memberikan komentar
+									<a href='/login'>Log in</a> / <a href='/user/register'>Register</a> untuk memberikan komentar
 								</span>
 							}
 							{(!_.isUndefined(comments) && !_.isUndefined(comments.summary) && !_.isEmpty(comments.summary)) && (
