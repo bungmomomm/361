@@ -127,6 +127,7 @@
     "rmc-picker": "^5.0.4",
     "sass-mq": "^3.3.2",
     "sw-precache-webpack-plugin": "^0.11.4",
+    "uuid": "^3.2.1",
     "validator": "^9.4.1"
   },
   "devDependencies": {

@@ -4,10 +4,11 @@ import to from 'await-to-js';
 import { actions } from '@/state/v4/Shared';
 import { actions as users } from '@/state/v4/User';
 import { actions as initAction } from '@/state/v4/Home';
-import { setUserCookie } from '@/utils';
+import { setUserCookie, uniqid, setUniqeCookie } from '@/utils';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
-import ErrorHandler from '@/containers/Mobile/Shared/errorHandler';
+import Snackbar from '@/containers/Mobile/Shared/snackbar';
+import uuidv4 from 'uuid/v4';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 	WrappedComponent.contextTypes = {
@@ -34,6 +35,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			this.userCookies = this.props.cookies.get('user.token');
 			this.userRFCookies = this.props.cookies.get('user.rf.token');
 			this.isLogin = this.props.cookies.get('isLogin') === 'true' && true;
+			this.uniqueId = this.props.cookies.get('uniqueid');
 			this.handleScroll = this.handleScroll.bind(this);
 			this.docBody = null;
 		}
@@ -51,6 +53,13 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		componentDidMount() {
 			window.addEventListener('scroll', this.handleScroll, true);
 			this.docBody = document.body;
+			
+
+			if (typeof this.uniqueId === 'undefined') {
+				const uuid = uuidv4();
+				
+				setUniqeCookie(this.props.cookies, uuid);
+			}
 		}
 
 		componentWillUnmount() {
@@ -166,6 +175,20 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		withErrorHandling(err) {
 			const { dispatch } = this.props;
 			const { response } = err;
+
+			const errMessage = _.chain(response).get('data.error_message').value() || false;
+
+			if (errMessage) {
+				dispatch(actions.showSnack(uniqid('err-'), {
+					label: errMessage,
+					timeout: false,
+					button: {
+						label: 'COBA LAGI',
+						action: 'reload'
+					}
+				}));
+			}
+
 			dispatch(actions.catchErrors(response));
 		}
 
@@ -182,11 +205,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		render() {
-			const { shared, dispatch } = this.props;
-
 			return (
 				<div>
-					<ErrorHandler errors={shared.errors} dispatch={dispatch} />
+					<Snackbar history={this.props.history} location={this.props.location} />
 					<WrappedComponent {...this.props} scroll={this.state.scroll} />
 				</div>
 			);
