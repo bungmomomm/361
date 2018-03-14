@@ -2,7 +2,7 @@ import generateRequestHeaders from 'kong-hmac';
 import ES6Promise from 'es6-promise';
 ES6Promise.polyfill();
 import axios from 'axios';
-import isMobile from './isMobile';
+import utils from '@/utils';
 
 const isKongActive = () => {
 	return (process.env.KONG_ENABLED === 'true') || false;
@@ -48,13 +48,12 @@ const getCancelToken = () => {
 const request = (props) => {
 	
 	const url = buildRequestURL(props);
-	const mode = isMobile() ? 'mweb' : 'web';
 	
 	let headers = {
-		client_id: isMobile() ? 'mweb' : 'web',
-		session_id: 'beliajaaaa',
-		client_version: '4.0',
-		'X-Mode': mode,
+		client_id: utils.getClientID(),
+		session_id: utils.getSessionID('uniqueid'),
+		client_version: utils.getClientVersion(),
+		'X-Mode': utils.getClientID(),
 		'Content-Type': 'application/json'
 	};
 	
