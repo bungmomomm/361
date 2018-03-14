@@ -151,19 +151,19 @@ const getProductCardData = (details) => {
 			if (!_.isEmpty(details.variants) && _.isArray(details.variants)) {
 				details.variants.forEach((variant, idx) => {
 					productStock += variant.stock;
-					const optionsSet = ((typeof variant.options !== 'undefined') && _.isArray(variant.options) && variant.options.length > 0);
+					const optionsSet = ((typeof variant.options !== 'undefined') && _.isArray(variant.options) && variant.options.length === 1);
 					if (optionsSet) {
-						const variantSize = variant.options.filter(item => (item.key === 'size'));
-						if (!_.isEmpty(variantSize) && variantSize.length > 0) {
-							const val = variantSize[0].value.toLowerCase();
-							productVariants.push({
-								label: val,
-								value: val,
-								disabled: (typeof variant.stock !== 'undefined' && variant.stock === 0),
-								data: variant
-							});
-							variantsData[val] = variant;
-						}
+						// As discussed with YK and Meiliana that each variant has one option (size) only
+						// Except 'size' options it will be put on 'spec' => see API product detail response.
+						const variantSize = variant.options[0];
+						const val = variantSize.value.toLowerCase();
+						productVariants.push({
+							label: val,
+							value: val,
+							disabled: (typeof variant.stock !== 'undefined' && variant.stock === 0),
+							data: variant
+						});
+						variantsData[val] = variant;
 					}
 				});
 			}

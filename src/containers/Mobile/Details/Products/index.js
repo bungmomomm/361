@@ -388,7 +388,8 @@ class Products extends Component {
 				productTitle: item.product_title,
 				brandName: item.brand.name,
 				pricing: item.pricing,
-				linkToPdp: '/'
+				linkToPdp: '/',
+				split: 2
 			};
 
 			// set fragment value
@@ -610,7 +611,8 @@ class Products extends Component {
 							{
 								(!this.isLogin) &&
 								<span>
-									<a href='/login'>Log in</a> / <a href='/user/register'>Register</a> untuk memberikan komentar
+									<a href={`/login?redirect_uri=${this.props.location.pathname}`}>Log in</a> / 
+									<a href={`/rergister?redirect_uri=${this.props.location.pathname}`}>Register</a> untuk memberikan komentar
 								</span>
 							}
 							{(!_.isUndefined(comments) && !_.isUndefined(comments.summary) && !_.isEmpty(comments.summary)) && (
@@ -624,38 +626,39 @@ class Products extends Component {
 							</div>
 						)}
 						<div style={{ backgroundColor: '#F5F5F5' }}>
-							{(reviews.total > 0) && (
-								<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
-									<div className='margin--medium-v'>
-										<div className='padding--small-h margin--small-v margin--none-t flex-row flex-spaceBetween'>
-											<div className='font-medium'><strong>Ulasan</strong></div>
-											{reviews.total > 2 && (
-												<Link className='font-small flex-middle d-flex flex-row font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
-											)}
-										</div>
+							<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
+								<div className='margin--medium-v'>
+									<div className='padding--small-h margin--small-v margin--none-t flex-row flex-spaceBetween'>
+										<div className='font-medium'><strong>{reviews.total > 0 ? 'Ulasan' : 'Belum Ada Ulasan'}</strong></div>
+										{reviews.total > 2 && (
+											<Link className='font-small flex-middle d-flex flex-row font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
+										)}
+									</div>
+									{reviews.total > 0 && (
 										<div className='border-bottom'>
 											<div className='padding--small-h margin--medium-v margin--none-t flex-row flex-middle'>
 												<Rating
-													active={(reviews.rating > 0) ? Number.parseFloat(reviews.rating).toFixed(1) : 0}
+													active={(reviews.rating < 5) ? Number.parseFloat(reviews.rating).toFixed(1) : reviews.rating}
 													total={5}
 												/>
 												<div className='flex-row padding--small-h'>
-													<strong>{(reviews.rating > 0) ? Number.parseFloat(reviews.rating).toFixed(1) : 0} / 5</strong>
-													<span className='font-color--primary-ext-2 padding--small-h'>
-														{(reviews.total > 0) ? `(${reviews.total} Ulasan)` : 'Belum Ada Ulasan'}
-													</span>
+													<strong>{(reviews.rating < 5) ? Number.parseFloat(reviews.rating).toFixed(1) : reviews.rating} / 5</strong>
+													<span className='font-color--primary-ext-2 padding--small-h'>{`${reviews.total} Ulasan)`}</span>
 												</div>
 											</div>
 										</div>
-										{status.loading && this.loadingContent}
-										{(!status.loading) && 
+									)}
+									{reviews.total > 0 && (
+										<div>
+											{status.loading && this.loadingContent}
+											{!status.loading && 
 											(reviews.summary.map((item, idx) => {
 												return <Comment key={idx} type='review' data={item} />;
-											}))
-										}
-									</div>
+											})
+										)}</div>
+									)}
 								</div>
-							)}
+							</div>
 							<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								{status.pdpDataHasLoaded && (
 									<SellerProfile
