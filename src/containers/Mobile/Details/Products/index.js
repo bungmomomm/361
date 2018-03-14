@@ -316,6 +316,9 @@ class Products extends Component {
 		case 'comments':
 			destUri = `/product/comments/${detail.id}`;
 			break;
+		case 'reviews':
+			destUri = `/product/reviews/${detail.id}`;
+			break;
 		case 'carts':
 			destUri = '/cart';
 			break;
@@ -532,6 +535,15 @@ class Products extends Component {
 		return null;
 	}
 
+	renderViewAllReviews() {
+		const { reviews } = this.props.product.socialSummary;
+		const reviewsContent = reviews.summary.map((item, idx) => {
+			return <Comment key={idx} type='review' data={item} />;
+		});
+
+		return (<Page color='white'>{reviewsContent}</Page>);
+	}
+
 	render() {
 		const { detail, pdpData, status, carousel, selectedVariant } = this.state;
 		const { match, product } = this.props;
@@ -638,7 +650,7 @@ class Products extends Component {
 									<div className='padding--small-h margin--small-v margin--none-t flex-row flex-spaceBetween'>
 										<div className='font-medium'><strong>{reviews.total > 0 ? 'Ulasan' : 'Belum Ada Ulasan'}</strong></div>
 										{reviews.total > 2 && (
-											<Link className='font-small flex-middle d-flex flex-row font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
+											<Button onClick={() => this.redirectToPage('reviews')} className='font-small flex-middle d-flex flex-row font-color--primary-ext-2' ><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Button>
 										)}
 									</div>
 									{reviews.total > 0 && (

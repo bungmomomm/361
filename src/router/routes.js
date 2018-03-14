@@ -89,6 +89,11 @@ export default {
 			exact: true
 		},
 		{
+			path: '/product/reviews/:id',
+			component: loadable(() => import('@/containers/Mobile/Details/Products/Reviews'), defaultOptions),
+			exact: true
+		},
+		{
 			path: '/product/guide',
 			component: loadable(() => import('@/containers/Mobile/Details/Products/Guide'), defaultOptions),
 			exact: true

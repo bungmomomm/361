@@ -9,7 +9,8 @@ import {
 	productSocialSummary,
 	productPromotion,
 	productLoading,
-	productStore
+	productStore,
+	allProductReviews
 } from './reducer';
 
 const productDetailAction = (token, productId) => async (dispatch, getState) => {
@@ -96,6 +97,37 @@ const productSocialSummaryAction = (token, productId) => async (dispatch, getSta
 	const socialSummary = response.data.data;
 
 	dispatch(productSocialSummary({ socialSummary }));
+	dispatch(productLoading({ loading: false }));
+
+	return Promise.resolve(response);
+};
+
+const allProductReviewsAction = (token, productId, page = 1, perPage = 10) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	dispatch(productLoading({ loading: true }));
+
+	const [err, response] = await to(request({
+		token,
+		path: `${baseUrl}/reviews/byproductid/${productId}`,
+		method: 'GET',
+		fullpath: true,
+		query: {
+			product_id: productId,
+			page,
+			per_page: perPage
+		}
+	}));
+
+	if (err) {
+		return Promise.reject(err);
+	}
+
+	const allReviews = response.data.data;
+	dispatch(allProductReviews({ allReviews }));
 	dispatch(productLoading({ loading: false }));
 
 	return Promise.resolve(response);
@@ -216,5 +248,6 @@ export default {
 	productSocialSummaryAction,
 	productPromoAction,
 	productStoreAction,
-	getProductCardData
+	getProductCardData,
+	allProductReviewsAction
 };
