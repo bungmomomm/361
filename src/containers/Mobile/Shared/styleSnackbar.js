@@ -3,9 +3,9 @@ function getDefaultStyles(theming) {
 		snack: {
 			display: 'flex',
 			position: 'fixed',
-			bottom: 0,
+			bottom: 51,
 			left: 0,
-			zIndex: 999,
+			zIndex: 2,
 			width: '100%',
 			transition: 'transform 200ms ease-out',
 			willChange: 'transform',
