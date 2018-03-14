@@ -55,7 +55,8 @@ class Products extends Component {
 				showModalSelectSize: false,
 				btnBeliDisabled: false,
 				forceLogin: false,
-				showOvoInfo: false
+				showOvoInfo: false,
+				sellerDataSet: false,
 			},
 			pdpData: {
 				cardProduct: {},
@@ -86,15 +87,17 @@ class Products extends Component {
 		if (!_.isEmpty(detail) && !status.pdpDataHasLoaded) {
 			pdpData.cardProduct = productActions.getProductCardData(detail);
 			status.pdpDataHasLoaded = true;
+			status.hasVariantSize = pdpData.cardProduct.hasVariantSize;
 
 			// Sets whether product has variants size or set defaults variant 
 			// if the product has one product variant only ...
 			if (!_.isEmpty(pdpData.cardProduct.variants) && _.isArray(pdpData.cardProduct.variants)) {
-				status.hasVariantSize = true;
-				if (pdpData.cardProduct.variants.length === 1) {
+				if (pdpData.cardProduct.variants.length === 1 && pdpData.cardProduct.hasVariantSize) {
 					const variant = pdpData.cardProduct.variants[0];
-					size = variant.value;
 					selectedVariant = pdpData.cardProduct.variantsData[variant.value];
+					size = variant.value;
+				} else if (pdpData.cardProduct.variants.length === 1 && !pdpData.cardProduct.hasVariantSize) {
+					selectedVariant = pdpData.cardProduct.variants[0];
 				}
 			}
 
@@ -106,8 +109,9 @@ class Products extends Component {
 				status.btnBeliDisabled = false;
 			}
 
-			if (typeof detail.seller !== 'undefined' && typeof detail.seller.seller_id !== 'undefined') {
+			if (typeof detail.seller !== 'undefined' && typeof detail.seller.seller_id !== 'undefined' && !status.sellerDataSet) {
 				dispatch(new productActions.productStoreAction(this.userCookies, detail.seller.seller_id));
+				status.sellerDataSet = true;
 			}
 		}
 
@@ -220,7 +224,7 @@ class Products extends Component {
 
 	addToShoppingBag(variantId) {
 		const { status } = this.state;
-		const { dispatch } = this.props;
+		const { dispatch, product } = this.props;
 
 		const handler = new Promise((resolve, reject) => {
 			resolve(dispatch(shopBagActions.updateAction(this.userCookies, variantId, this.defaultCount, 'add')));
@@ -232,6 +236,10 @@ class Products extends Component {
 			status.pendingAddProduct = false;
 			status.productAdded = true;
 			status.showModalSelectSize = false;
+
+			// get product data
+			status.pdpDataHasLoaded = false;
+			dispatch(new productActions.productDetailAction(this.userCookies, product.detail.id));
 		}).catch((err) => {
 			throw err;
 		});
@@ -388,8 +396,7 @@ class Products extends Component {
 				productTitle: item.product_title,
 				brandName: item.brand.name,
 				pricing: item.pricing,
-				linkToPdp: '/',
-				split: 2
+				linkToPdp: '/'
 			};
 
 			// set fragment value
@@ -612,7 +619,7 @@ class Products extends Component {
 								(!this.isLogin) &&
 								<span>
 									<a href={`/login?redirect_uri=${this.props.location.pathname}`}>Log in</a> / 
-									<a href={`/rergister?redirect_uri=${this.props.location.pathname}`}>Register</a> untuk memberikan komentar
+									<a href={`/register?redirect_uri=${this.props.location.pathname}`}>Register</a> untuk memberikan komentar
 								</span>
 							}
 							{(!_.isUndefined(comments) && !_.isUndefined(comments.summary) && !_.isEmpty(comments.summary)) && (
@@ -676,7 +683,7 @@ class Products extends Component {
 									)
 								}
 
-								{(status.pdpDataHasLoaded && !_.isEmpty(product.store.products)) && (
+								{(status.sellerDataSet && !_.isEmpty(product.store.products)) && (
 									<div className='margin--medium-v margin--none-t'>
 										<Link to={urlBuilder.setId(detail.seller.seller_id).setName(detail.seller.seller).buildStore()} >
 											{this.renderStoreProducts()}
