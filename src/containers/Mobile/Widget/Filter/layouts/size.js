@@ -11,19 +11,19 @@ class Size extends PureComponent {
 		super(props);
 		this.state = {
 			data: props.data || [],
-			resetData: props.data ? _.cloneDeep(props.data) : [],
 			resetDisabled: utils.getSelected(props.data).length < 1
 		};
 	}
 
 	onClick(e, value) {
-		const { data } = this.state;
-		
+		let { data } = this.state;
+		data = utils.updateChilds(data, value, {
+			is_selected: value.is_selected === 1 ? 0 : 1
+		});
+		const selected = utils.getSelected(data);
 		this.setState({
-			resetDisabled: utils.getSelected(data).length < 1,
-			data: utils.updateChilds(data, value, {
-				is_selected: value.is_selected === 1 ? 0 : 1
-			})
+			resetDisabled: selected.length < 1,
+			data
 		});
 	}
 
@@ -48,7 +48,7 @@ class Size extends PureComponent {
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
-					<Svg src='ico_close-large.svg' />
+					<Svg src='ico_arrow-back-left.svg' />
 				</Button>
 			),
 			center: 'Ukuran',

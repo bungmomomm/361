@@ -9,6 +9,10 @@ import {
 	getClientSecret
 } from '@/utils';
 
+import { 
+	afterLogin,
+	addAfterLogin
+ } from './after-login-action';
 import { userSocialLogin, userSocialLoginWithRedirect } from './social-action';
 import { checkMyOrders, getMyOrderDetail, updateMyOrdersCurrent, getMyOrderMore, cleanMyOrderData } from './myOrder-action';
 import { getTrackingInfo } from './tracking-action';
@@ -434,5 +438,7 @@ export default {
 	getMyOrderMore,
 	cleanMyOrderData,
 	checkMyOrders,
-	refreshToken
+	refreshToken,
+	afterLogin,
+	addAfterLogin
 };

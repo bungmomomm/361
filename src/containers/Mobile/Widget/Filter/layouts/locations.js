@@ -13,7 +13,6 @@ class Location extends PureComponent {
 			activeTree: null,
 			selected: null,
 			data: props.data || [],
-			resetData: props.data ? _.cloneDeep(props.data) : [],
 			resetDisabled: utils.getSelected(props.data).length < 1
 		};
 	}
@@ -26,12 +25,14 @@ class Location extends PureComponent {
 	}
 
 	onClick(e, value) {
-		const { data } = this.state;
+		let { data } = this.state;
+		data = utils.updateChilds(data, value, {
+			is_selected: value.is_selected === 1 ? 0 : 1
+		});
+		const selected = utils.getSelected(data);
 		this.setState({
-			resetDisabled: utils.getSelected(data).length < 1,
-			data: utils.updateChilds(data, value, {
-				is_selected: value.is_selected === 1 ? 0 : 1
-			})
+			resetDisabled: selected.length < 1,
+			data
 		});
 	}
 
@@ -49,7 +50,7 @@ class Location extends PureComponent {
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
-					<Svg src='ico_close-large.svg' />
+					<Svg src='ico_arrow-back-left.svg' />
 				</Button>
 			),
 			center: title || 'Default',
