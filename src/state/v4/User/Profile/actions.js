@@ -36,7 +36,7 @@ const setCreditCard = (token, bodyData) => async (dispatch, getState) => {
 	
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 	
-	const path = `${baseUrl}/me/cards/setdefault`;
+	const path = `${baseUrl}/me/cards/setdefault/${bodyData.card_id}`;
 	
 	const requestData = {
 		token,
@@ -63,7 +63,7 @@ const deleteCreditCard = (token, bodyData) => async (dispatch, getState) => {
 	
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 	
-	const path = `${baseUrl}/me/cards/delete`;
+	const path = `${baseUrl}/me/cards/delete/${bodyData.card_id}`;
 	
 	const requestData = {
 		token,

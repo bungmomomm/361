@@ -11,7 +11,8 @@ class Size extends PureComponent {
 		super(props);
 		this.state = {
 			data: props.data || [],
-			resetData: props.data ? _.cloneDeep(props.data) : []
+			resetData: props.data ? _.cloneDeep(props.data) : [],
+			resetDisabled: utils.getSelected(props.data).length < 1
 		};
 	}
 
@@ -19,6 +20,7 @@ class Size extends PureComponent {
 		const { data } = this.state;
 		
 		this.setState({
+			resetDisabled: utils.getSelected(data).length < 1,
 			data: utils.updateChilds(data, value, {
 				is_selected: value.is_selected === 1 ? 0 : 1
 			})
@@ -35,13 +37,14 @@ class Size extends PureComponent {
 	reset() {
 		const { data } = this.state;
 		this.setState({
+			resetDisabled: true,
 			data: utils.resetChilds(data)
 		});
 	}
 	
 	render() {
 		const { onClose } = this.props;
-		const { data } = this.state;
+		const { data, resetDisabled } = this.state;
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
@@ -100,13 +103,13 @@ class Size extends PureComponent {
 
 		return (
 			<div style={this.props.style}>
-				<Page hideFooter color='white' style={{ marginTop: '15px' }}>
+				<Page color='white' style={{ marginTop: '15px' }}>
 					<List>
 						{sizeList}
 					</List>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
+				<Action resetDisabled={resetDisabled} hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}

@@ -8,8 +8,11 @@ import moment from 'moment';
 import util from 'util';
 import { to } from 'await-to-js';
 import Recaptcha from 'react-recaptcha';
+import validator from 'validator';
 
 import Shared from '@/containers/Mobile/Shared';
+import Otp from '@/containers/Mobile/Shared/Otp';
+
 import EditEmail from './layouts/editEmail';
 import EditHp from './layouts/editHP';
 import EditPassword from './layouts/editPassword';
@@ -33,6 +36,11 @@ class UserProfileEdit extends Component {
 			newGender: null,
 			isBuyer: true, // buyer or seller
 			layout: 'main',
+			submittingForm: false,
+			validName: true,
+			nameHint: '',
+			validBirthday: true,
+			birthdayHint: '',
 			formResult: {
 				status: '',
 				message: ''
@@ -53,8 +61,11 @@ class UserProfileEdit extends Component {
 		this.USER_POINT_FIELD = CONST.USER_PROFILE_FIELD.userPoint;
 		this.OVO_ID_FIELD = CONST.USER_PROFILE_FIELD.ovoId;
 		this.OVO_VERIFIED_FIELD = CONST.USER_PROFILE_FIELD.ovoVerified;
+		this.HP_EMAIL_FIELD = CONST.USER_PROFILE_FIELD.hpEmail;
+		this.OTP_FIELD = CONST.USER_PROFILE_FIELD.otp;
 
-		this.loadingView = <div><Spinner /></div>;
+		this.loadingView = <Spinner />;
+		this.editIcon = <Svg src='ico_edit.svg' />;
 		this.recaptchaInstance = null;
 	}
 
@@ -66,9 +77,13 @@ class UserProfileEdit extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
+		const { formData } = this.state;
 		if (nextProps.userProfile !== false) {
 			this.setState({
-				formData: nextProps.userProfile
+				formData: {
+					...formData,
+					...nextProps.userProfile
+				}
 			});
 		}
 	}
@@ -85,14 +100,27 @@ class UserProfileEdit extends Component {
 		}, n);
 	}
 
-	switchLayoutHandler(e, layout) {
-		this.setState({
-			layout,
-			formResult: {
-				status: '',
-				message: ''
-			}
-		});
+	switchLayoutHandler(e, layout, data = null) {
+		const { formData } = this.state;
+		this.setState({ layout });
+
+		if (data !== null) {
+			this.setState({
+				formData: {
+					...formData,
+					...data
+				}
+			});
+		}
+
+		if (layout === 'main') {
+			this.setState({
+				formResult: {
+					status: '',
+					message: ''
+				}
+			});
+		}
 	}
 
 	inputHandler(e) {
@@ -101,12 +129,42 @@ class UserProfileEdit extends Component {
 		const name = e.target.name;
 		const value = util.format('%s', e.target.value);
 
+		this.inputValidation(name, value);
+
 		this.setState({
 			formData: {
 				...formData,
 				[name]: value
 			}
 		});
+	}
+
+	inputValidation(type, value) {
+		if (type === this.NAME_FIELD) {
+			let validName = false;
+			let nameHint = '';
+
+			if (value.length > 0 && value.length <= 3) {
+				nameHint = 'Nama Lengkap harus lebih dari 3 karakter';
+			} else if (validator.isEmpty(value)) {
+				nameHint = 'Nama Lengkap wajib diisi';
+			} else {
+				validName = true;
+			}
+
+			this.setState({ validName, nameHint });
+		} else if (type === this.BIRTHDAY_FIELD) {
+			let validBirthday = false;
+			let birthdayHint = '';
+
+			if (moment(value).isValid() === false) {
+				birthdayHint = 'Format tanggal lahir tidak sesuai';
+			} else {
+				validBirthday = true;
+			}
+
+			this.setState({ validBirthday, birthdayHint });
+		}
 	}
 
 	showSelectGender() {
@@ -143,19 +201,20 @@ class UserProfileEdit extends Component {
 		const { formData } = this.state;
 		if (this.recaptchaInstance !== null) {
 			this.recaptchaInstance.execute();
+		}
 
-			if (data !== null) {
-				this.setState({
-					formData: {
-						...formData,
-						...data
-					}
-				});
-			}
+		if (data !== null) {
+			this.setState({
+				formData: {
+					...formData,
+					...data
+				}
+			});
 		}
 	}
 
 	submitFormData = async (e) => {
+		console.log('captcha response', e);
 		const { dispatch } = this.props;
 		const { layout, formData } = this.state;
 
@@ -171,11 +230,18 @@ class UserProfileEdit extends Component {
 				newData = {
 					[this.PHONE_FIELD]: formData[this.OVO_ID_FIELD]
 				};
+			} else if (layout === this.NEW_PWD_FIELD) {
+				newData = {
+					[this.NEW_PWD_FIELD]: formData[this.NEW_PWD_FIELD],
+					[this.OLD_PWD_FIELD]: formData[this.OLD_PWD_FIELD],
+				};
 			} else {
 				newData = {
 					[layout]: formData[layout]
 				};
 			}
+
+			this.setState({ submittingForm: true });
 
 			let dispatchAction = null;
 			if (layout === this.OVO_ID_FIELD) {
@@ -189,8 +255,10 @@ class UserProfileEdit extends Component {
 					formResult: {
 						status: 'failed',
 						message: err.error_message || 'Form failed'
-					}
+					},
+					submittingForm: false
 				});
+
 				console.log(err);
 			} else if (response) {
 				this.setState({
@@ -201,16 +269,32 @@ class UserProfileEdit extends Component {
 					formData: {
 						...formData,
 						...newData
-					}
+					},
+					submittingForm: false
 				});
 				this.setTimeoutForm(5000);
 				console.log(response);
 			}
 		}
+
+		if (this.recaptchaInstance !== null) {
+			this.recaptchaInstance.reset();
+		}
+	}
+
+	successValidateOtp() {
+		this.setState({
+			layout: 'main',
+			formResult: {
+				status: 'success',
+				message: 'Nomor Handphone berhasil diubah'
+			}
+		});
 	}
 
 	renderHeader() {
 		const { isLoading } = this.props;
+		const { validName, validBirthday, submittingForm } = this.state;
 		const styleHeader = {
 			parent: {
 				height: '55px'
@@ -231,7 +315,7 @@ class UserProfileEdit extends Component {
 		);
 		const centerHeader = 'Ubah Profil';
 		const rightHeader = (
-			<Button onClick={() => this.saveFormData()}>SIMPAN</Button>
+			<Button onClick={() => this.saveFormData()} disabled={submittingForm || !validName || !validBirthday}>SIMPAN</Button>
 		);
 
 		return (
@@ -263,7 +347,7 @@ class UserProfileEdit extends Component {
 				</Notification>
 			);
 		}
-
+		
 		return null;
 	}
 
@@ -335,9 +419,26 @@ class UserProfileEdit extends Component {
 		);
 	}
 
+	renderRecaptcha() {
+		const { layout } = this.state;
+
+		if (layout !== this.OTP_FIELD) {
+			return (
+				<Recaptcha
+					ref={e => { this.recaptchaInstance = e; }}
+					sitekey={process.env.GOOGLE_CAPTCHA_SITE_KEY}
+					size='invisible'
+					verifyCallback={(e) => this.submitFormData(e)}
+				/>
+			);
+		}
+
+		return null;
+	}
+
 	renderForm() {
 		const { userProfile } = this.props;
-		const { formData } = this.state;
+		const { formData, validName, nameHint, validBirthday, birthdayHint } = this.state;
 
 		if (_.isEmpty(userProfile)) {
 			return (
@@ -351,7 +452,15 @@ class UserProfileEdit extends Component {
 		const nameField = (
 			<div className='margin--medium-v'>
 				<label className={styles.label} htmlFor='fullName'>Nama Lengkap</label>
-				<Input name='name' id='fullName' flat defaultValue={fullName} onChange={(e) => this.inputHandler(e)} />
+				<Input
+					name={this.NAME_FIELD}
+					id='fullName'
+					flat
+					defaultValue={fullName}
+					onChange={(e) => this.inputHandler(e)}
+					error={!validName}
+					hint={nameHint}
+				/>
 			</div>
 		);
 
@@ -363,7 +472,7 @@ class UserProfileEdit extends Component {
 					<div className={styles.inputChangeInput}>
 						<Input autoComplete='off' readOnly id='email' flat defaultValue={emailValue} />
 					</div>
-					<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.EMAIL_FIELD)}>UBAH</Button>
+					<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.EMAIL_FIELD)}>{this.editIcon}</Button>
 				</div>
 			</div>
 		);
@@ -376,12 +485,12 @@ class UserProfileEdit extends Component {
 					<div className={styles.inputChangeInput}>
 						<Input autoComplete='off' readOnly id='cellPhone' flat defaultValue={phoneValue} />
 					</div>
-					<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.PHONE_FIELD)}>UBAH</Button>
+					<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.PHONE_FIELD)}>{this.editIcon}</Button>
 				</div>
 			</div>
 		);
 
-		const genderValue = !_.isEmpty(formData[this.GENDER_FIELD]) ? _.capitalize(formData[this.GENDER_FIELD]) : 'Pria';
+		const genderValue = !_.isEmpty(formData[this.GENDER_FIELD]) ? _.capitalize(formData[this.GENDER_FIELD]) : 'male';
 		const genderField = (
 			<div className='margin--medium-v'>
 				<label className={styles.label} htmlFor='gender'>Jenis Kelamin</label>
@@ -397,12 +506,21 @@ class UserProfileEdit extends Component {
 				</Level>
 			</div>
 		);
-
-		const birthdayValue = moment(formData[this.BIRTHDAY_FIELD]).isValid() === true ? moment(formData[this.BIRTHDAY_FIELD]).format('YYYY-MM-DD') : '';
+		
+		const birthdayValue = moment(formData[this.BIRTHDAY_FIELD]).isValid() === true ? moment(formData[this.BIRTHDAY_FIELD]).format('YYYY-MM-DD') : '1990-01-01';
 		const birthdayField = (
 			<div className='margin--medium-v'>
 				<label className={styles.label} htmlFor='dob'>Tanggal Lahir</label>
-				<Input type='date' name='birthday' autoComplete='off' id='dob' flat value={birthdayValue} onChange={(e) => this.inputHandler(e)} />
+				<Input
+					type='date'
+					name={this.BIRTHDAY_FIELD}
+					id='dob'
+					flat
+					value={birthdayValue}
+					onChange={(e) => this.inputHandler(e)}
+					error={!validBirthday}
+					hint={birthdayHint}
+				/>
 			</div>
 		);
 
@@ -413,7 +531,7 @@ class UserProfileEdit extends Component {
 					<div className={styles.inputChangeInput}>
 						<Input autoComplete='off' readOnly id='password' type='password' flat defaultValue='password' />
 					</div>
-					<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.NEW_PWD_FIELD)}>UBAH</Button>
+					<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.NEW_PWD_FIELD)}>{this.editIcon}</Button>
 				</div>
 			</div>
 		);
@@ -470,7 +588,7 @@ class UserProfileEdit extends Component {
 				<EditHp
 					data={formData[this.PHONE_FIELD]}
 					onClickBack={(e, value) => this.switchLayoutHandler(e, 'main')}
-					onSave={(e, data) => this.saveFormData(data)}
+					onSave={(e, data) => this.switchLayoutHandler(e, this.OTP_FIELD, data)}
 					formResult={formResult}
 				/>
 			);
@@ -494,6 +612,15 @@ class UserProfileEdit extends Component {
 				/>
 			);
 			break;
+		case this.OTP_FIELD:
+			layoutView = (
+				<Otp
+					phoneEmail={formData[this.HP_EMAIL_FIELD]}
+					onClickBack={(e, value) => this.switchLayoutHandler(e, this.PHONE_FIELD)}
+					onSuccess={() => this.successValidateOtp()}
+				/>
+			);
+			break;
 		default:
 			layoutView = (
 				<Page style={{ paddingTop: 0 }} color='white'>
@@ -508,23 +635,12 @@ class UserProfileEdit extends Component {
 		return layoutView;
 	}
 
-	renderRecaptcha() {
-		return (
-			<Recaptcha
-				ref={e => { this.recaptchaInstance = e; }}
-				sitekey='6LdMGksUAAAAADEJ2zoYsmw1f1gdXItTsUTDCWXe'
-				size='invisible'
-				verifyCallback={(e) => this.submitFormData(e)}
-			/>
-		);
-	}
-
 	render() {
 		return (
 			<div>
 				{this.renderLayout()}
-				{this.renderGenderSelect()}
 				{this.renderRecaptcha()}
+				{this.renderGenderSelect()}
 			</div>
 		);
 	}

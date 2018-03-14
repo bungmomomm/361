@@ -57,8 +57,8 @@ class Home extends Component {
 		const willActiveSegment = segmen.find(e => e.id === current);
 		// this.setState({ current: willActiveSegment.key });
 		dispatch(new sharedActions.setCurrentSegment(willActiveSegment.key));
-		dispatch(new actions.mainAction(willActiveSegment));
-		dispatch(new actions.recomendationAction(willActiveSegment));
+		dispatch(new actions.mainAction(willActiveSegment, this.userCookies));
+		dispatch(new actions.recomendationAction(willActiveSegment, this.userCookies));
 	}
 
 	renderHeroBanner() {
@@ -107,14 +107,16 @@ class Home extends Component {
 					{ header }
 					<Grid split={3} bordered>
 						{
-							data.data.map(({ images, pricing }, e) => (
+							data.data.map(({ images, pricing, path }, e) => (
 								<div key={e}>
-									<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
-									<div className={styles.btnThumbnail}>
-										<Button transparent color='secondary' size='small'>
-											{pricing.formatted.effective_price}
-										</Button>
-									</div>
+									<Link to={`/${path}`}>
+										<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
+										<div className={styles.btnThumbnail}>
+											<Button transparent color='secondary' size='small'>
+												{pricing.formatted.effective_price}
+											</Button>
+										</div>
+									</Link>
 								</div>
 							))
 						}
@@ -129,20 +131,28 @@ class Home extends Component {
 		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}.hashtag`);
+		const baseHashtagUrl = '/mau-gaya-itu-gampang';
 		if (!datas.isEmpty().value() && datas.value().id !== '') {
-			const header = renderSectionHeader(datas.value().hashtag, {
-				title: datas.value().mainlink.text,
-				url: '/hashtags'
+			const datanya = datas.value();
+			const header = renderSectionHeader(datanya.hashtag, {
+				title: datanya.mainlink.text,
+				url: baseHashtagUrl
 			});
+			
+			const detailHashTag = `${baseHashtagUrl}/${datanya.hashtag.replace('#', '')}-${datanya.campaign_id}`;
+
 			return (
 				<div>
 					{ header }
 					<Grid split={3} bordered>
 						{
-							datas.value().images.map(({ images }, e) => (
+							datanya.images.map((gambar, e) => (
 								<div key={e}>
-									<Image lazyload shape='square' alt='thumbnail' src={images.thumbnail} />
+									<Link to={`${detailHashTag}/${gambar.content_id}`}>
+										<Image lazyload shape='square' alt='thumbnail' src={gambar.images.thumbnail} />
+									</Link>
 								</div>
+								
 							))
 						}
 					</Grid>
@@ -283,8 +293,8 @@ class Home extends Component {
 	render() {
 		const { shared, dispatch } = this.props;
 
-		const recommendation1 = this.isLogin === 'false' ? 'new-arrival' : 'recommended-products';
-		const recommendation2 = this.isLogin === 'false' ? 'best-seller' : 'recent-view';
+		const recommendation1 = this.isLogin === 'false' ? 'best-seller' : 'recommended-products';
+		const recommendation2 = this.isLogin === 'false' ? 'new-arrival' : 'recent-view';
 		return (
 			<div style={this.props.style}>
 				<Page color='white'>
@@ -337,12 +347,14 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-	const { home, dispatch } = props;
+	const { home, dispatch, cookies } = props;
 
 	const activeSegment = home.segmen.find(e => e.key === home.activeSegment.key);
 
-	await dispatch(new actions.mainAction(activeSegment));
-	await dispatch(new actions.recomendationAction(activeSegment));
+	const tokenHeader = cookies.get('user.token');
+
+	await dispatch(new actions.mainAction(activeSegment, tokenHeader));
+	await dispatch(new actions.recomendationAction(activeSegment, tokenHeader));
 };
 
 

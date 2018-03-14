@@ -10,12 +10,18 @@ const {
 	commentTotal, 
 	commentList,
 	commentLoading,
-	addComment
+	addComment,
+	commentListLoad, 
+	commentListLoadFail, 
+	commentListLoaded 
 } = createActions(
 	'COMMENT_TOTAL', 
 	'COMMENT_LIST',
 	'COMMENT_LOADING',
-	'ADD_COMMENT'
+	'ADD_COMMENT',
+	'COMMENT_LIST_LOAD',
+	'COMMENT_LIST_LOAD_FAIL',
+	'COMMENT_LIST_LOADED'
 );
 
 const reducer = handleActions({
@@ -46,7 +52,26 @@ const reducer = handleActions({
 
 		};
 
-	}
+	},
+	[commentListLoad](state, { payload: { isLoading, data } }) {
+		return {
+			...state,
+			isLoading: true
+		};
+	},
+	[commentListLoaded](state, { payload: { isLoading, data } }) {
+		return {
+			...state,
+			isLoading: false,
+			data
+		};
+	},
+	[commentListLoadFail](state, { payload: { isLoading, data } }) {
+		return {
+			...state,
+			isLoading: false
+		};
+	},
 }, initialState);
 
 export default {
@@ -54,5 +79,8 @@ export default {
 	commentTotal,
 	commentList,
 	commentLoading,
-	addComment
+	addComment,
+	commentListLoad,
+	commentListLoadFail,
+	commentListLoaded 
 };

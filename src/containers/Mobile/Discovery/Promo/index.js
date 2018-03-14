@@ -12,9 +12,10 @@ import styles from './promo.scss';
 import { actions } from '@/state/v4/Discovery';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-import { urlBuilder } from '@/utils';
 import Spinner from '@/components/mobile/Spinner';
 import { Love } from '@/containers/Mobile/Widget';
+
+import Discovery from '../Utils';
 
 class Promo extends Component {
 
@@ -166,22 +167,7 @@ const mapStateToProps = (state, props) => {
 	if (!promoTypeData.isEmpty().value()) {
 		const { products } = promoTypeData.value();
 
-		discovery.promo[promoType].products = _.map(products, (product) => {
-			const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: product.product_id }) : false;
-			const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: product.product_id }) : false;
-			if (lovelistData) {
-				product.lovelistTotal = lovelistData.total;
-				product.lovelistStatus = lovelistData.status;
-			}
-			if (commentData) {
-				product.commentTotal = commentData.total;
-			}
-			return {
-				...product,
-				url: urlBuilder.buildPdp(product.product_title, product.product_id),
-				commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`
-			};
-		});
+		discovery.promo[promoType].products = Discovery.mapProducts(products, comments, lovelist);
 	}
 	
 	return {

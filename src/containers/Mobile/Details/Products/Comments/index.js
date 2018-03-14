@@ -134,7 +134,7 @@ class Comments extends Component {
 
 		return (
 			<span className={styles.commentbox}>
-				<a href='/user/login'>Log in</a> / <a href='/user/register'>Register</a> untuk memberi komentar
+				<a href='/login'>Log in</a> / <a href='/register'>Register</a> untuk memberi komentar
 			</span>
 		);
 	}

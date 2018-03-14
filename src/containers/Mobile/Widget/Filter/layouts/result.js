@@ -6,7 +6,7 @@ import Action from './action';
 class Result extends PureComponent {
 
 	render() {
-		const { onClose, onApply, onReset, selected, onListClick, filters } = this.props;
+		const { onClose, onApply, onReset, selected, onListClick, filters, resetDisabled } = this.props;
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
@@ -18,7 +18,7 @@ class Result extends PureComponent {
 		};
 		return (
 			<div style={this.props.style}>
-				<Page color='white' hideFooter style={{ marginTop: '15px' }}>
+				<Page color='white' style={{ marginTop: '15px' }}>
 					{
 						filters.facets.map((facet, idx) => {
 							return (
@@ -37,7 +37,7 @@ class Result extends PureComponent {
 					}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action hasApply hasReset onReset={onReset} onApply={onApply} />
+				<Action resetDisabled={resetDisabled} hasApply hasReset onReset={onReset} onApply={onApply} />
 			</div>
 		);
 	}

@@ -20,7 +20,8 @@ class Brands extends Component {
 		this.props = props;
 		this.state = {
 			data: props.data || [],
-			keyword: ''
+			keyword: '',
+			resetDisabled: utils.getSelected(props.data).length < 1
 		};
 	}
 
@@ -31,7 +32,10 @@ class Brands extends Component {
 			is_selected: value.is_selected === 1 ? 0 : 1
 		});
 
+		const resetDisabled = utils.getSelected(data).length < 1;
+
 		this.setState({
+			resetDisabled,
 			data
 		});
 	}
@@ -46,6 +50,7 @@ class Brands extends Component {
 	reset() {
 		const { data } = this.state;
 		this.setState({
+			resetDisabled: true,
 			keyword: '',
 			data: utils.resetChilds(data)
 		});
@@ -65,7 +70,7 @@ class Brands extends Component {
 
 	render() {
 		const { onClose, title } = this.props;
-		const { keyword } = this.state;
+		const { keyword, resetDisabled } = this.state;
 		
 		let data = this.state.data;
 		if (data.length > 0) {
@@ -89,7 +94,7 @@ class Brands extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page hideFooter color='white'>
+				<Page color='white'>
 					<div className={styles.filterSearch}>
 						<div className='margin--medium-v flex-row flex-middle'>
 							<div style={{ flex: 1 }}>
@@ -122,7 +127,7 @@ class Brands extends Component {
 					</List>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
+				<Action resetDisabled={resetDisabled} hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}
