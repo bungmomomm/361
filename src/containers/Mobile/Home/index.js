@@ -193,7 +193,6 @@ class Home extends Component {
 		if (!dataTop.isEmpty().value() && !dataBottm.isEmpty().value()) {
 			bottomBanner = position === 'top' ? dataTop.value() : dataBottm.value();
 		}
-		console.log(bottomBanner);
 		if (bottomBanner.length > 0) {
 			return (
 				<div className='margin--medium-v'>
@@ -294,8 +293,8 @@ class Home extends Component {
 	render() {
 		const { shared, dispatch } = this.props;
 
-		const recommendation1 = this.isLogin === 'false' ? 'new-arrival' : 'recommended-products';
-		const recommendation2 = this.isLogin === 'false' ? 'best-seller' : 'recent-view';
+		const recommendation1 = this.isLogin === 'false' ? 'best-seller' : 'recommended-products';
+		const recommendation2 = this.isLogin === 'false' ? 'new-arrival' : 'recent-view';
 		return (
 			<div style={this.props.style}>
 				<Page color='white'>
