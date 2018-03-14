@@ -8,7 +8,8 @@
         state                   : null,
         markup                  : '',
         manifest                : {
-			'bodymovin': require('@/assets/javascripts/bodymovin-light-4.13.0.min.js')
+            'bodymovin': require('@/assets/javascripts/bodymovin-light-4.13.0.min.js'),
+            'ico': require('@/assets/images/app-icon.png')
 		},
         manifestFileContents    : ''
     }, params);
@@ -38,10 +39,14 @@
         <% } %>
         <link rel="canonical" href="https://www.mataharimall.com" />
         <link rel="alternate" media="only screen and (max-width: 640px)" href="https://m.mataharimall.com" />
-        <link rel="shortcut icon" href="https://assets.mataharimall.co/images/favicon.ico" type="image/vnd.microsoft.icon" />
+        <link rel="shortcut icon" href="<%=params.manifest['ico']%>" type="image/vnd.microsoft.icon" />
         <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
-        <link rel="icon" href="https://assets.mataharimall.co/images/favicon.ico" type="image/x-icon" />
+        <link rel="icon" href="<%=params.manifest['ico']%>" type="image/x-icon" />
         <meta name="theme-color" content="#DA1818" />
+        <!-- Smart Banner --> 
+        <meta name="apple-itunes-app" content="app-id=1033108124">
+        <meta name="google-play-app" content="app-id=com.mataharimall.mmandroid">
+        <link rel="apple-touch-icon" href="<%=params.manifest['ico']%>">
     </head>
     <body <% if (params.helmet.htmlAttributes) { %><%= params.helmet.bodyAttributes.toString() %><% } %>>
         <noscript>
