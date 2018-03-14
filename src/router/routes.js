@@ -29,7 +29,7 @@ export default {
 			exact: true
 		},
 		{
-			path: '/mau-gaya-itu-gampang/:campaign_id/:post_id',
+			path: '/mau-gaya-itu-gampang/:campaign_name-:campaign_id/:post_id',
 			component: loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'), defaultOptions)
 		},
 		{
@@ -99,12 +99,12 @@ export default {
 		},
 		{
 			path: '/login',
-			component: loadable(() => import('@/containers/Mobile/Users/Login'), defaultOptions),
+			component: loadable(() => import('@/containers/Mobile/Users'), defaultOptions),
 			exact: true
 		},
 		{
 			path: '/register',
-			component: loadable(() => import('@/containers/Mobile/Users/Register'), defaultOptions),
+			component: loadable(() => import('@/containers/Mobile/Users'), defaultOptions),
 			exact: true
 		},
 		{
@@ -120,6 +120,11 @@ export default {
 		{
 			path: '/forgot-password',
 			component: loadable(() => import('@/containers/Mobile/Users/Login/forgotPassword'), defaultOptions),
+			exact: true
+		},
+		{
+			path: '/user/newpassword',
+			component: loadable(() => import('@/containers/Mobile/Users/Login/newPassword'), defaultOptions),
 			exact: true
 		},
 		{

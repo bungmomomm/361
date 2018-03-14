@@ -17,6 +17,7 @@ class Price extends PureComponent {
 			},
 			custom: false,
 			data: props.data || [],
+			resetDisabled: utils.getSelected(props.data).length < 1
 		};
 		this.state.resetData =	 _.cloneDeep(this.state.range);
 	}
@@ -68,6 +69,7 @@ class Price extends PureComponent {
 			...value
 		};
 		this.setState({
+			resetDisabled: false,
 			custom: true,
 			range: {
 				min: Math.abs(updatedValue.min) < parseInt(range.max, 10) ? Math.abs(updatedValue.min) : parseInt(range.min, 10),
@@ -79,16 +81,18 @@ class Price extends PureComponent {
 	reset() {
 		const { resetData } = this.state;
 		this.setState({
+			resetDisabled: true,
 			range: _.cloneDeep(resetData)
 		});
 	}
 
 	render() {
 		const { onClose, range } = this.props;
+		const { resetDisabled } = this.state;
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
-					<Svg src='ico_arrow-back-left.svg' />
+					<Svg src='ico_close-large.svg' />
 				</Button>
 			),
 			center: 'Harga',
@@ -97,23 +101,22 @@ class Price extends PureComponent {
 
 		return (
 			<div style={this.props.style}>
-				<Page hideFooter>
+				<Page color='white' style={{ marginTop: '15px' }}>
 					<div className={styles.priceSlider}>
-						<div className={styles.sliderLabel}>
-							<span>{utils.toIdr(this.state.range.min)}</span>
-							<span>{utils.toIdr(this.state.range.max)}</span>
-						</div>
-						<Slider min={parseInt(range.min, 10)} max={parseInt(range.max, 10)} value={this.state.range} onChange={(value) => this.updateRange(value)} />
-						<div className={styles.sliderInfo}>
-							<span>min</span>
-							<span>max</span>
+						<div className='padding--medium-h'>
+							<Slider min={parseInt(range.min, 10)} max={parseInt(range.max, 10)} value={this.state.range} onChange={(value) => this.updateRange(value)} />
+							<div className={styles.sliderInfo}>
+								<span>min</span>
+								<span>max</span>
+							</div>
 						</div>
 					</div>
 					<div className={styles.priceInput}>
-						<div className='flex-row flex-center flex-spaceBetween'>
+						<div className='flex-row padding--medium-h flex-spaceBetween margin--medium-v margin--none-t flex-middle'>
 							<div style={{ width: '45%' }}>
 								<Input value={this.state.range.min} ref={c => { this.rangeMin = c; }} onChange={(event) => { this.updateRange({ min: parseInt(event.target.value, 10) }, 'min'); }} type='number' placeholder='Min price' />
 							</div>
+							<div>-</div>
 							<div style={{ width: '45%' }}>
 								<Input value={this.state.range.max} ref={c => { this.rangeMax = c; }} onChange={(event) => { this.updateRange({ max: parseInt(event.target.value, 10) }, 'max'); }} type='number' placeholder='Max price' />
 							</div>
@@ -124,7 +127,7 @@ class Price extends PureComponent {
 					</div> */}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
+				<Action resetDisabled={resetDisabled} hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}

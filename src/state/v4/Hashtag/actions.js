@@ -30,9 +30,10 @@ const getQuery = () => (dispatch, getState) => {
 	let query = { per_page: limit };
 	query = (nextLink) ? { ...query, page: nextLink.get('page') } : query;
 	if (tagId) {
-		query = { ...query, campaign_id: tagId };
+		query = { ...query, campaign_id: tagId, campaign: filtr[0] };
 	} else if (!tagId && query.campaign_id) {
 		delete query.campaign_id;
+		delete query.campaign;
 	}
 
 	return {

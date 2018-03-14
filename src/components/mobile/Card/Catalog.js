@@ -114,7 +114,7 @@ class Catalog extends PureComponent {
 					<Carousel>
 						{
 							images.map((image, index) => (
-								<Image key={index} src={image.thumbnail} alt={productTitle} />
+								<Image key={index} src={image.thumbnail} lazyload alt={productTitle} />
 							))
 						}
 					</Carousel>
@@ -139,7 +139,7 @@ class Catalog extends PureComponent {
 					<div className={styles.title}>
 						{brandName} - <span>{productTitle}</span>
 					</div>
-					<Level className={styles.footer}>
+					<Level className='padding--none-t'>
 						<Level.Item>
 							<div className={styles.blockPrice}>
 								<div>

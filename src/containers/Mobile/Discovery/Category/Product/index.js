@@ -27,15 +27,15 @@ import {
 } from '@/components/mobile';
 
 import { actions as pcpActions } from '@/state/v4/ProductCategory';
-import { actions as searchActions } from '@/state/v4/SearchResults';
+import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 
 import { 
-	urlBuilder,
 	renderIf
 } from '@/utils';
-import stylesCatalog from '../Catalog/catalog.scss';
+// import stylesCatalog from '../Catalog/catalog.scss';
 import Footer from '@/containers/Mobile/Shared/footer';
+import Discovery from '../../Utils';
 
 class Product extends Component {
 	constructor(props) {
@@ -116,7 +116,7 @@ class Product extends Component {
 		}
 		if (!_.isEmpty(response.pcpData.products)) {
 			const productIdList = _.map(response.products, 'product_id') || null;
-			dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+			dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 		}
 		return response;
@@ -152,112 +152,27 @@ class Product extends Component {
 		history.push(`/login?redirect_uri=${encodeURIComponent(location.pathname + location.search)}`);
 	}
 
-	renderPage() {
-		const { productCategory, isLoading } = this.props;
-		const { showFilter } = this.state;
-		if (showFilter) {
-			return (
-				<Filter
-					shown={showFilter}
-					filters={productCategory.pcpData}
-					onApply={(e, fq) => {
-						this.onApply(e, fq);
-					}}
-					onClose={(e) => this.onClose(e)}
-				/>
-			);
-		}
-		return (
-			<div style={this.props.style}>
-				{this.renderPcp()}
-				{isLoading && (
-					<Spinner />
-				)}
-				{this.renderHeader()}
-				{this.renderTabs()}
-				{this.renderForeverBanner()}
-				<Navigation active='Categories' scroll={this.props.scroll} />
-			</div>
-		);
+	foreverBannerBlock() {
+		const { shared, dispatch } = this.props;
+
+		return <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />;
 	}
 
-	renderPcp() {
-		const { comments, isLoading, productCategory, scroller, viewMode } = this.props;
-
-		if (isLoading) {
-			return this.loadingView;
-		} 
-
-		if (productCategory.pcpStatus !== '') {
-			if (productCategory.pcpStatus === 'success') {
-				let listView;
-				switch (viewMode.mode) {
-				case 1:
-					listView = (
-						<CatalogView comments={comments} loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={productCategory.pcpData.products} />
-					);
-					break;
-				case 2:
-					listView = (
-						<GridView loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={productCategory.pcpData.products} />
-					);
-					break;
-				case 3:
-					listView = (
-						<SmallGridView loading={scroller.loading} products={productCategory.pcpData.products} />
-					);
-					break;
-				default:
-					listView = null;
-					break;
-				}
-				return (
-					<Page>
-						{listView}
-						<Footer isShow={this.state.isFooterShow} />
-					</Page>
-				);
-			} else if (productCategory.pcpStatus === 'failed') {
-				window.location.href = '/not-found';
-			}
-		}
-
-		return null;
-	}
-
-	renderHeader() {
-		const { isLoading, productCategory } = this.props;
-		const headerTitle = _.chain(productCategory).get('pcpData.info.title').value();
-		const HeaderPage = {
-			left: (
-				<Link to='/sub-category'>
-					<Svg src='ico_arrow-back-left.svg' />
-				</Link>
-			),
-			center: isLoading ? this.loadingView : headerTitle,
-			right: null
-		};
-
-		return (
-			<Header.Modal {...HeaderPage} />
-		);
-	}
-
-	renderTabs() {
+	tabBlock() {
 		const { productCategory, viewMode } = this.props;
 		const { showSort } = this.state;
+		const productChain = _.chain(productCategory);
 		let tabsView = null;
-		if (!_.isEmpty(productCategory.pcpData.products)) {
-			const sorts = _.chain(productCategory).get('pcpData.sorts').value() || [];
+		if (!_.isEmpty(productChain.get('pcpData.products').value())) {
+			const sorts = productChain.get('pcpData.sorts').value() || [];
 			tabsView = (
 				<div className={'tabContainer'}>
 					{renderIf(sorts)(
-						<Sort shown={showSort} isSticky sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+						<Sort shown={showSort} onCloseOverlay={() => this.setState({ showSort: false })} isSticky sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
 					)}
 					<Tabs
-						className={stylesCatalog.filterBlockContainer}
 						type='segment'
-						isSticky
+						className='margin--medium-t'
 						variants={[
 							{
 								id: 'sort',
@@ -267,7 +182,8 @@ class Product extends Component {
 							{
 								id: 'filter',
 								title: 'Filter',
-								disabled: typeof productCategory.pcpData === 'undefined'	
+								disabled: typeof productCategory.pcpData === 'undefined',
+								checked: true
 							},
 							{
 								id: 'view',
@@ -283,10 +199,90 @@ class Product extends Component {
 		return tabsView;
 	}
 
-	renderForeverBanner() {
-		const { shared, dispatch } = this.props;
+	productsBlock() {
+		const { comments, productCategory, scroller, viewMode } = this.props;
+		if (productCategory.pcpStatus !== '') {
+			if (productCategory.pcpStatus === 'success') {
+				const products = productCategory.pcpData.products;
+				const info = productCategory.pcpData.info;
+				let listView;
+				switch (viewMode.mode) {
+				case 1:
+					listView = (
+						<CatalogView comments={comments} loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={products} />
+					);
+					break;
+				case 2:
+					listView = (
+						<GridView loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={products} />
+					);
+					break;
+				case 3:
+					listView = (
+						<SmallGridView loading={scroller.loading} products={products} />
+					);
+					break;
+				default:
+					listView = null;
+					break;
+				}
+				return (
+					<Page color='white'>
+						{this.foreverBannerBlock()}
+						<div className='text-center margin--medium-v'>{info.product_count} Total Produk</div>
+						{listView}
+						<Footer isShow={this.state.isFooterShow} />
+					</Page>
+				);
+			} else if (productCategory.pcpStatus === 'failed') {
+				window.location.href = '/not-found';
+			}
+		}
 
-		return <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />;
+		return null;
+	}
+
+	headerBlock() {
+		const { isLoading, productCategory } = this.props;
+		const headerTitle = _.chain(productCategory).get('pcpData.info.title').value();
+		const HeaderPage = {
+			left: (
+				<Link to='/sub-category'>
+					<Svg src='ico_arrow-back-left.svg' />
+				</Link>
+			),
+			center: isLoading ? this.loadingView : headerTitle,
+			right: null,
+			rows: this.tabBlock()
+		};
+
+		return (
+			<Header.Modal {...HeaderPage} />
+		);
+	}
+
+	renderPage() {
+		const { productCategory } = this.props;
+		const { showFilter } = this.state;
+		if (showFilter) {
+			return (
+				<Filter
+					shown={showFilter}
+					filters={productCategory.pcpData}
+					onApply={(e, fq) => {
+						this.onApply(e, fq);
+					}}
+					onClose={(e) => this.onClose(e)}
+				/>
+			);
+		}
+		return (
+			<div style={this.props.style}>
+				{this.productsBlock()}
+				{this.headerBlock()}
+				<Navigation active='Categories' scroll={this.props.scroll} />
+			</div>
+		);
 	}
 
 	render() {
@@ -296,22 +292,7 @@ class Product extends Component {
 
 const mapStateToProps = (state) => {
 	const { comments, lovelist, productCategory } = state;
-	productCategory.pcpData.products = _.map(productCategory.pcpData.products, (product) => {
-		const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: product.product_id }) : false;
-		const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: product.product_id }) : false;
-		if (lovelistData) {
-			product.lovelistTotal = lovelistData.total;
-			product.lovelistStatus = lovelistData.status;
-		}
-		if (commentData) {
-			product.commentTotal = commentData.total;
-		}
-		return {
-			...product,
-			url: urlBuilder.buildPdp(product.product_title, product.product_id),
-			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`
-		};
-	});
+	productCategory.pcpData.products = Discovery.mapProducts(productCategory.pcpData.products, comments, lovelist);
 
 	return {
 		...state,
@@ -339,7 +320,7 @@ const doAfterAnonymous = async (props) => {
 	
 	const productIdList = _.map(response.pcpData.products, 'product_id') || [];
 	if (productIdList.length > 0) {
-		await dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		await dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 	}
 };

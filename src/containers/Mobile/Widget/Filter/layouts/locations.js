@@ -14,6 +14,7 @@ class Location extends PureComponent {
 			selected: null,
 			data: props.data || [],
 			resetData: props.data ? _.cloneDeep(props.data) : [],
+			resetDisabled: utils.getSelected(props.data).length < 1
 		};
 	}
 	
@@ -27,6 +28,7 @@ class Location extends PureComponent {
 	onClick(e, value) {
 		const { data } = this.state;
 		this.setState({
+			resetDisabled: utils.getSelected(data).length < 1,
 			data: utils.updateChilds(data, value, {
 				is_selected: value.is_selected === 1 ? 0 : 1
 			})
@@ -36,17 +38,18 @@ class Location extends PureComponent {
 	reset() {
 		const { data } = this.state;
 		this.setState({
+			resetDisabled: true,
 			data: utils.resetChilds(data)
 		});
 	}
 
 	render() {
 		const { onClose, title } = this.props;
-		const { data } = this.state;
+		const { data, resetDisabled } = this.state;
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
-					<Svg src='ico_arrow-back-left.svg' />
+					<Svg src='ico_close-large.svg' />
 				</Button>
 			),
 			center: title || 'Default',
@@ -62,17 +65,26 @@ class Location extends PureComponent {
 
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page color='white' style={{ marginTop: '15px' }}>
 					<div>
 						{_.map(data, (value, id) => {
 							return (
-								<List key={id}><Button onClick={(e) => this.onClick(e, value)}><List.Content>{value.facetdisplay} {Icon(value.is_selected)}</List.Content></Button></List>
+								<List key={id}>
+									<Button onClick={(e) => this.onClick(e, value)}>
+										<List.Content className='padding--medium-v'>
+											<div className='flex-row flex-middle'>
+												<span>{value.facetdisplay}</span> <span className='font-color--primary-ext-2 margin--small-l'>(111)</span>
+											</div>
+											{Icon(value.is_selected)}
+										</List.Content>
+									</Button>
+								</List>
 							);
 						})}
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
+				<Action resetDisabled={resetDisabled} hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}

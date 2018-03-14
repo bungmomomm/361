@@ -106,7 +106,6 @@ const reducer = handleActions({
 		return {
 			...state,
 			creditCard: {
-				...state.creditCard,
 				...action.payload.userCreditCard
 			},
 		};
@@ -152,6 +151,9 @@ const reducer = handleActions({
 	[actions.userForgotPassword]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
 	[actions.userForgotPasswordFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
 	[actions.userForgotPasswordSuccess]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
+	[actions.userNewPassword]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
+	[actions.userNewPasswordFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
+	[actions.userNewPasswordSuccess]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
 	[actions.userUpdateMyOrders]: (state, action) => ({ ...state, ...action.payload }),
 	[actions.userGetMyOrderDetail]: (state, action) => ({ ...state, ...action.payload }),
 	[actions.userUpdateMyOrderCurrent]: (state, action) => ({ ...state, ...action.payload }),

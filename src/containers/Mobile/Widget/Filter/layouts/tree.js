@@ -27,7 +27,7 @@ class Tree extends PureComponent {
 		const HeaderPage = {
 			left: (
 				<Link to='/catalogcategory'>
-					<Svg src='ico_arrow-back-left.svg' />
+					<Svg src='ico_close-large.svg' />
 				</Link>
 			),
 			center: 'Lokasi',
@@ -48,7 +48,7 @@ class Tree extends PureComponent {
 
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page color='white' style={{ marginTop: '15px' }}>
 					<div>
 						<List><Button onClick={() => this.handleTree('mancanegara')}><List.Content>Mancanegara {treeIcon()}</List.Content></Button></List>
 						<List><Button onClick={() => this.handleTree('bali', true)}><List.Content>bali {treeIcon(activeTree === 'bali', true)}</List.Content></Button></List>

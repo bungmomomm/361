@@ -9,7 +9,7 @@ import {
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
-import { actions as searchActions } from '@/state/v4/SearchResults';
+import { actions as commentActions } from '@/state/v4/Comment';
 
 class Love extends PureComponent {
 	constructor(props) {
@@ -41,7 +41,7 @@ class Love extends PureComponent {
 		} else {
 			await dispatch(lovelistActions.removeFromLovelist(cookies.get('user.token'), data));
 		}
-		dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), [data]));
+		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), [data]));
 		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), [data]));
 		this.setState({
 			loading: false
@@ -71,7 +71,7 @@ class Love extends PureComponent {
 			<div>
 				<Button.Love
 					onClick={(e) => this.loveClicked(e)}
-					disabled={loading && disabled} 
+					disabled={loading || disabled} 
 					showNumber={showNumber}
 					status={status}
 					total={total}
