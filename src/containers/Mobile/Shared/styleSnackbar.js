@@ -25,7 +25,7 @@ function getDefaultStyles(theming) {
 			flex: 4,
 			font: theming.labelFont || 'normal 14px arial, sans-serif',
 			color: theming.labelColor || '#494949',
-			maxWidth: '75%',
+			width: '75%',
 			display: 'inline-block',
 			paddingRight: '20px'
 		},
