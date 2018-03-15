@@ -26,6 +26,7 @@ import Rating from './Rating';
 import Spinner from './Spinner';
 import SocialLogin from './SocialLogin';
 import Timeline from './Timeline';
+import SmartBanner from './SmartBanner';
 
 // Alphabetically sort (^_^)
 export default {
@@ -57,4 +58,5 @@ export default {
 	Tabs,
 	Table,
 	Timeline,
+	SmartBanner
 };

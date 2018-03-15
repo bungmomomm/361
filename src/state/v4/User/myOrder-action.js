@@ -127,10 +127,39 @@ const getMyOrderDetail = (token, soNumber) => async (dispatch, getState) => {
 	return Promise.resolve(response);
 };
 
+const keepReviewInfo = (info) => async (dispatch, getState) => {
+	dispatch(actions.userKeepReviewInfo({ reviewInfo: info }));
+};
+
+const submitReview = (token, data) => async (dispatch, getState) => {
+	console.log('action submitReview');
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	const [err, response] = await to(
+		request({
+			token,
+			path: `${baseUrl}/review/add`,
+			method: 'POST',
+			fullpath: true,
+			body: data
+		})
+	);
+
+	if (err) {
+		return Promise.reject(err);
+	};
+
+	return Promise.resolve(response);
+};
+
 export {
 	checkMyOrders,
 	getMyOrderMore,
 	getMyOrderDetail,
 	updateMyOrdersCurrent,
 	cleanMyOrderData,
+	keepReviewInfo,
+	submitReview
 };

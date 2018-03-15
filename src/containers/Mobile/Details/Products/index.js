@@ -55,7 +55,8 @@ class Products extends Component {
 				showModalSelectSize: false,
 				btnBeliDisabled: false,
 				forceLogin: false,
-				showOvoInfo: false
+				showOvoInfo: false,
+				sellerDataSet: false,
 			},
 			pdpData: {
 				cardProduct: {},
@@ -86,15 +87,17 @@ class Products extends Component {
 		if (!_.isEmpty(detail) && !status.pdpDataHasLoaded) {
 			pdpData.cardProduct = productActions.getProductCardData(detail);
 			status.pdpDataHasLoaded = true;
+			status.hasVariantSize = pdpData.cardProduct.hasVariantSize;
 
 			// Sets whether product has variants size or set defaults variant 
 			// if the product has one product variant only ...
 			if (!_.isEmpty(pdpData.cardProduct.variants) && _.isArray(pdpData.cardProduct.variants)) {
-				status.hasVariantSize = true;
-				if (pdpData.cardProduct.variants.length === 1) {
+				if (pdpData.cardProduct.variants.length === 1 && pdpData.cardProduct.hasVariantSize) {
 					const variant = pdpData.cardProduct.variants[0];
-					size = variant.value;
 					selectedVariant = pdpData.cardProduct.variantsData[variant.value];
+					size = variant.value;
+				} else if (pdpData.cardProduct.variants.length === 1 && !pdpData.cardProduct.hasVariantSize) {
+					selectedVariant = pdpData.cardProduct.variants[0];
 				}
 			}
 
@@ -106,8 +109,9 @@ class Products extends Component {
 				status.btnBeliDisabled = false;
 			}
 
-			if (typeof detail.seller !== 'undefined' && typeof detail.seller.seller_id !== 'undefined') {
+			if (typeof detail.seller !== 'undefined' && typeof detail.seller.seller_id !== 'undefined' && !status.sellerDataSet) {
 				dispatch(new productActions.productStoreAction(this.userCookies, detail.seller.seller_id));
+				status.sellerDataSet = true;
 			}
 		}
 
@@ -220,7 +224,7 @@ class Products extends Component {
 
 	addToShoppingBag(variantId) {
 		const { status } = this.state;
-		const { dispatch } = this.props;
+		const { dispatch, product } = this.props;
 
 		const handler = new Promise((resolve, reject) => {
 			resolve(dispatch(shopBagActions.updateAction(this.userCookies, variantId, this.defaultCount, 'add')));
@@ -232,6 +236,10 @@ class Products extends Component {
 			status.pendingAddProduct = false;
 			status.productAdded = true;
 			status.showModalSelectSize = false;
+
+			// get product data
+			status.pdpDataHasLoaded = false;
+			dispatch(new productActions.productDetailAction(this.userCookies, product.detail.id));
 		}).catch((err) => {
 			throw err;
 		});
@@ -307,6 +315,9 @@ class Products extends Component {
 		switch (page) {
 		case 'comments':
 			destUri = `/product/comments/${detail.id}`;
+			break;
+		case 'reviews':
+			destUri = `/product/reviews/${detail.id}`;
 			break;
 		case 'carts':
 			destUri = '/cart';
@@ -487,7 +498,7 @@ class Products extends Component {
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</Button>
 			),
-			center: '',
+			center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{pdpData.cardProduct.brand.name}</div>,
 			right: (
 				<div className='flex-row flex-middle'>
 					<Share title={title} url={url} />
@@ -522,6 +533,15 @@ class Products extends Component {
 			);
 		};
 		return null;
+	}
+
+	renderViewAllReviews() {
+		const { reviews } = this.props.product.socialSummary;
+		const reviewsContent = reviews.summary.map((item, idx) => {
+			return <Comment key={idx} type='review' data={item} />;
+		});
+
+		return (<Page color='white'>{reviewsContent}</Page>);
 	}
 
 	render() {
@@ -610,7 +630,8 @@ class Products extends Component {
 							{
 								(!this.isLogin) &&
 								<span>
-									<a href='/login'>Log in</a> / <a href='/user/register'>Register</a> untuk memberikan komentar
+									<a href={`/login?redirect_uri=${this.props.location.pathname}`}>Log in</a> / 
+									<a href={`/register?redirect_uri=${this.props.location.pathname}`}>Register</a> untuk memberikan komentar
 								</span>
 							}
 							{(!_.isUndefined(comments) && !_.isUndefined(comments.summary) && !_.isEmpty(comments.summary)) && (
@@ -624,38 +645,39 @@ class Products extends Component {
 							</div>
 						)}
 						<div style={{ backgroundColor: '#F5F5F5' }}>
-							{(reviews.total > 0) && (
-								<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
-									<div className='margin--medium-v'>
-										<div className='padding--small-h margin--small-v margin--none-t flex-row flex-spaceBetween'>
-											<div className='font-medium'><strong>Ulasan</strong></div>
-											{reviews.total > 2 && (
-												<Link className='font-small flex-middle d-flex flex-row font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
-											)}
-										</div>
+							<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
+								<div className='margin--medium-v'>
+									<div className='padding--small-h margin--small-v margin--none-t flex-row flex-spaceBetween'>
+										<div className='font-medium'><strong>{reviews.total > 0 ? 'Ulasan' : 'Belum Ada Ulasan'}</strong></div>
+										{reviews.total > 2 && (
+											<Button onClick={() => this.redirectToPage('reviews')} className='font-small flex-middle d-flex flex-row font-color--primary-ext-2' ><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Button>
+										)}
+									</div>
+									{reviews.total > 0 && (
 										<div className='border-bottom'>
 											<div className='padding--small-h margin--medium-v margin--none-t flex-row flex-middle'>
 												<Rating
-													active={(reviews.rating > 0) ? Number.parseFloat(reviews.rating).toFixed(1) : 0}
+													active={(reviews.rating < 5) ? Number.parseFloat(reviews.rating).toFixed(1) : reviews.rating}
 													total={5}
 												/>
 												<div className='flex-row padding--small-h'>
-													<strong>{(reviews.rating > 0) ? Number.parseFloat(reviews.rating).toFixed(1) : 0} / 5</strong>
-													<span className='font-color--primary-ext-2 padding--small-h'>
-														{(reviews.total > 0) ? `(${reviews.total} Ulasan)` : 'Belum Ada Ulasan'}
-													</span>
+													<strong>{(reviews.rating < 5) ? Number.parseFloat(reviews.rating).toFixed(1) : reviews.rating} / 5</strong>
+													<span className='font-color--primary-ext-2 padding--small-h'>{`${reviews.total} Ulasan)`}</span>
 												</div>
 											</div>
 										</div>
-										{status.loading && this.loadingContent}
-										{(!status.loading) && 
+									)}
+									{reviews.total > 0 && (
+										<div>
+											{status.loading && this.loadingContent}
+											{!status.loading && 
 											(reviews.summary.map((item, idx) => {
 												return <Comment key={idx} type='review' data={item} />;
-											}))
-										}
-									</div>
+											})
+										)}</div>
+									)}
 								</div>
-							)}
+							</div>
 							<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								{status.pdpDataHasLoaded && (
 									<SellerProfile
@@ -673,7 +695,7 @@ class Products extends Component {
 									)
 								}
 
-								{(status.pdpDataHasLoaded && !_.isEmpty(product.store.products)) && (
+								{(status.sellerDataSet && !_.isEmpty(product.store.products)) && (
 									<div className='margin--medium-v margin--none-t'>
 										<Link to={urlBuilder.setId(detail.seller.seller_id).setName(detail.seller.seller).buildStore()} >
 											{this.renderStoreProducts()}

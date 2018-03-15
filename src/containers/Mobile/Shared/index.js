@@ -8,6 +8,7 @@ import { setUserCookie, uniqid, setUniqeCookie } from '@/utils';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
 import Snackbar from '@/containers/Mobile/Shared/snackbar';
+import { check, watch } from 'is-offline';
 import uuidv4 from 'uuid/v4';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
@@ -38,10 +39,11 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			this.uniqueId = this.props.cookies.get('uniqueid');
 			this.handleScroll = this.handleScroll.bind(this);
 			this.docBody = null;
+			this.unwatchConnection = null;
 		}
 
 		componentWillMount() {
-			window.mmLoading.destroy();
+			// window.mmLoading.destroy();
 
 			this.initProcess().then(shouldInit => {
 				if (!shouldInit) {
@@ -51,13 +53,29 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		componentDidMount() {
+			window.mmLoading.destroy();
 			window.addEventListener('scroll', this.handleScroll, true);
 			this.docBody = document.body;
-			
+			const { dispatch } = this.props;
+			const con = (bool) => {
+				if (bool) {
+					dispatch(actions.showSnack(uniqid('off-'), {
+						label: 'You\'re now offline, please check your internet connection.',
+						timeout: 5000,
+						button: {
+							label: 'TUTUP'
+						}
+					}));
+				}
+			};
+
+			check().then(con);
+			const unwatch = watch(con);
+			this.unwatchConnection = unwatch;
 
 			if (typeof this.uniqueId === 'undefined') {
 				const uuid = uuidv4();
-				
+
 				setUniqeCookie(this.props.cookies, uuid);
 			}
 		}
@@ -65,6 +83,11 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		componentWillUnmount() {
 			window.mmLoading.play();
 			window.removeEventListener('scroll', this.handleScroll, true);
+			window.prevLocation = this.props.location;
+
+			if (this.unwatchConnection) {
+				this.unwatchConnection();
+			}
 		}
 
 		shouldLoginAnonymous() {
@@ -181,7 +204,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			if (errMessage) {
 				dispatch(actions.showSnack(uniqid('err-'), {
 					label: errMessage,
-					timeout: false,
+					timeout: 5000,
 					button: {
 						label: 'COBA LAGI',
 						action: 'reload'
@@ -205,9 +228,15 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		render() {
+			const navbar = document.querySelector('.navigation__navigation');
+
 			return (
 				<div>
-					<Snackbar history={this.props.history} location={this.props.location} />
+					<Snackbar
+						history={this.props.history}
+						location={this.props.location}
+						customStyles={{ snack: { bottom: navbar !== null ? 50 : 0, zIndex: navbar !== null ? 2 : 999 } }}
+					/>
 					<WrappedComponent {...this.props} scroll={this.state.scroll} />
 				</div>
 			);

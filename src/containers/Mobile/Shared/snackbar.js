@@ -122,7 +122,7 @@ class Snackbar extends React.Component {
 					<div style={this.populateStyles('label')}>
 						{snack.data.label}
 					</div>
-					<div style={{ display: 'inline-block' }}>
+					<div style={{ display: 'inline-block', width: '25%' }}>
 						{button && (
 							<button
 								style={this.populateStyles('button')}

@@ -27,18 +27,19 @@
 }
 
 .imgContainer{
-	display: table;
-	vertical-align: middle;
-	text-align: center;
+	position: relative;
+	overflow: hidden;
 	.imgWrapper{
-		display: table-cell;
-		vertical-align: middle;
+		position: relative;
+		overflow: hidden;
 		font-size: 0px;
 		img{
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			height: 100%;
 			width: auto;
-			height: auto;
-			display: block;
-			margin: 0 auto;
+			transform: translate(-50%, -50%);
 		}
 	}
 }
@@ -71,10 +72,6 @@
 		.imgWrapper{
 			height: 220px;
 			width: 220px;
-			img{
-				max-width: 220px;
-				max-height: 220px;
-			}
 		}
 	}
 }
@@ -96,10 +93,6 @@
 		.imgWrapper{
 			height: 157px;
 			width: 157px;
-			img{
-				max-width: 157px;
-				max-height: 157px;
-			}
 		}
 	}
 }
