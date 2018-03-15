@@ -15,6 +15,12 @@ import Shared from '@/containers/Mobile/Shared';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Footer from '@/containers/Mobile/Shared/footer';
 import CONST from '@/constants';
+import {
+	TrackingRequest,
+	homepageViewBuilder,
+	impressionsPushedBuilder,
+	sendGtm,
+} from '@/utils/tracking';
 
 const renderSectionHeader = (title, options) => {
 	return (
@@ -22,7 +28,7 @@ const renderSectionHeader = (title, options) => {
 			<Level.Left><div className={styles.headline}>{title}</div></Level.Left>
 			<Level.Right>
 				{
-					options.isMozaic ? 
+					options.isMozaic ?
 						<a href={options.url || '/'} target='_blank' className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></a>
 						:
 						<Link to={options.url || '/'} className={styles.readmore}>
@@ -36,6 +42,24 @@ const renderSectionHeader = (title, options) => {
 
 
 class Home extends Component {
+
+	static trackImpresionHandler(homeData, keySegment) {
+		homeData = _.chain(homeData);
+		const ImpressionsReq = new TrackingRequest();
+		const promotions = [];
+		promotions.push(homeData.get('heroBanner[0].impression').value());
+		promotions.push(homeData.get('squareBanner[0].impression').value());
+		promotions.push(homeData.get('squareBanner[1].impression').value());
+		promotions.push(homeData.get('topLanscape[0].impression').value());
+		promotions.push(homeData.get('topLanscape[1].impression').value());
+		promotions.push(homeData.get('bottomLanscape[0].impression').value());
+		promotions.push(homeData.get('bottomLanscape[1].impression').value());
+		ImpressionsReq.setPromotions(promotions);
+		const impressionsPayload = ImpressionsReq.getPayload(impressionsPushedBuilder);
+		if (impressionsPayload) sendGtm(impressionsPayload);
+	}
+
+
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -47,23 +71,33 @@ class Home extends Component {
 		this.isLogin = this.props.cookies.get('isLogin');
 
 		this.state = {
-			isFooterShow: true, 
+			isFooterShow: true,
 			showSmartBanner: this.props.cookies.get('sb-show') !== '0' && true
 		};
 
 		this.sbClose = this.sbClose.bind(this);
 	}
 
-	handlePick(current) {
+	componentDidMount() {
+		this.trackPageViewHandler();
+	}
+
+	trackPageViewHandler() {
+		const PageViewReq = new TrackingRequest();
+		PageViewReq.setEmailHash('email@satu').setUserId('999').setCurrentUrl(this.props.location.pathname);
+		const pageViewPayload = PageViewReq.getPayload(homepageViewBuilder);
+		if (pageViewPayload) sendGtm(pageViewPayload);
+	}
+
+	async handlePick(current) {
 		const { segmen } = this.props.home;
 		const { dispatch } = this.props;
 		const willActiveSegment = segmen.find(e => e.id === current);
-		// this.setState({ current: willActiveSegment.key });
 		dispatch(new sharedActions.setCurrentSegment(willActiveSegment.key));
-		dispatch(new actions.mainAction(willActiveSegment, this.userCookies));
+		const mainPageData = await dispatch(new actions.mainAction(willActiveSegment, this.userCookies));
+		Home.trackImpresionHandler(mainPageData, willActiveSegment.key);
 		dispatch(new actions.recomendationAction(willActiveSegment, this.userCookies));
 	}
-
 
 	sbClose() {
 		const { cookies } = this.props;
@@ -104,12 +138,12 @@ class Home extends Component {
 		 * recommended-products,
 		 * recent-view
 		 * */
-		
+
 		const { home } = this.props;
 		const segment = home.activeSegment;
 		const title = 'LIHAT SEMUA';
 		const datas = _.chain(home).get(`allSegmentData.${segment.key}`).get('recomendationData').get(type);
-		
+
 		if (!datas.isEmpty().value()) {
 			const data = datas.value();
 			const link = `/promo/${type}?segment_id=${segment.id}`;
@@ -154,7 +188,7 @@ class Home extends Component {
 				title: datanya.mainlink.text,
 				url: baseHashtagUrl
 			});
-			
+
 			const detailHashTag = `${baseHashtagUrl}/${datanya.hashtag.replace('#', '')}-${datanya.campaign_id}`;
 
 			return (
@@ -168,7 +202,7 @@ class Home extends Component {
 										<Image lazyload shape='square' alt='thumbnail' src={gambar.images.thumbnail} />
 									</Link>
 								</div>
-								
+
 							))
 						}
 					</Grid>
@@ -340,10 +374,10 @@ class Home extends Component {
 
 					<Footer isShow={this.state.isFooterShow} />
 				</Page>
-				<SmartBanner 
-					title='MatahariMall' 
-					iconSrc='app-icon.png' 
-					author='PT Solusi Ecommerce Global' 
+				<SmartBanner
+					title='MatahariMall'
+					iconSrc='app-icon.png'
+					author='PT Solusi Ecommerce Global'
 					googlePlay='com.mataharimall.mmandroid'
 					appStore='1033108124'
 					isShow={this.state.showSmartBanner}
@@ -351,9 +385,9 @@ class Home extends Component {
 					scroll={this.props.scroll}
 				/>
 
-				<Header 
-					lovelist={shared.totalLovelist} 
-					value={this.props.search.keyword} 
+				<Header
+					lovelist={shared.totalLovelist}
+					value={this.props.search.keyword}
 				/>
 				<Navigation active='Home' scroll={this.props.scroll} totalCartItems={shared.totalCart} />
 			</div>
@@ -376,8 +410,9 @@ const doAfterAnonymous = async (props) => {
 
 	const tokenHeader = cookies.get('user.token');
 
-	await dispatch(new actions.mainAction(activeSegment, tokenHeader));
+	const mainPageData = await dispatch(new actions.mainAction(activeSegment, tokenHeader));
 	await dispatch(new actions.recomendationAction(activeSegment, tokenHeader));
+	Home.trackImpresionHandler(mainPageData, activeSegment.key);
 };
 
 
