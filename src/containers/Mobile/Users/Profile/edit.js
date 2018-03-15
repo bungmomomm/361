@@ -67,12 +67,10 @@ class UserProfileEdit extends Component {
 		this.loadingView = <Spinner />;
 		this.editIcon = <Svg src='ico_edit.svg' />;
 		this.recaptchaInstance = null;
-	}
 
-	componentWillMount() {
 		if (!this.isLogin) {
 			const { history } = this.props;
-			history.push('/login');
+			history.push('/login?redirect_uri=profile');
 		}
 	}
 
@@ -402,19 +400,21 @@ class UserProfileEdit extends Component {
 
 		const ovoId = formData[this.OVO_ID_FIELD] || '';
 		return (
-			formData[this.OVO_VERIFIED_FIELD] === '1' ?
+			formData[this.OVO_VERIFIED_FIELD] === 1 && formData[this.OVO_ID_FIELD] !== 0 ?
 				<div className='margin--medium-v'>
 					<label className={styles.label} htmlFor='ovoID'><span style={{ color: '#4E2688' }}>OVO ID</span></label>
 					<div className={styles.inputChange}>
 						<div className={styles.inputChangeInput}>
 							<Input readOnly id='ovoID' flat defaultValue={ovoId} />
 						</div>
-						<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.OVO_ID_FIELD)}>UBAH</Button>
+						<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.OVO_ID_FIELD)}>{this.editIcon}</Button>
 					</div>
-					<span style={{ color: '#4E2688', fontSize: '12px' }}>OVO ID anda telah terhubung</span>
+					<span style={{ color: '#4E2688', fontSize: '12px' }}>
+						<Svg src='ico_ovo_verified.svg' /> OVO ID anda telah terhubung
+					</span>
 				</div> :
 				<div className='margin--medium-v'>
-					<Button color='primary' size='large' onClick={(e, value) => this.switchLayoutHandler(e, this.OVO_ID_FIELD)}>VERIFIKASI OVO ID</Button>
+					<Button color='purple' size='large' onClick={(e, value) => this.switchLayoutHandler(e, this.OVO_ID_FIELD)}>VERIFIKASI OVO ID</Button>
 				</div>
 		);
 	}
@@ -637,7 +637,7 @@ class UserProfileEdit extends Component {
 
 	render() {
 		return (
-			<div>
+			<div className='edit-profile'>
 				{this.renderLayout()}
 				{this.renderRecaptcha()}
 				{this.renderGenderSelect()}
@@ -654,4 +654,13 @@ const mapStateToProps = (state) => {
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(UserProfileEdit)));
+const doAfterAnonymous = async (props) => {
+	const { dispatch, cookies, shared, userProfile } = props;
+
+	const serviceUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+	if (serviceUrl && !userProfile) {
+		dispatch(userActions.userGetProfile(cookies.get('user.token')));
+	}
+};
+
+export default withCookies(connect(mapStateToProps)(Shared(UserProfileEdit, doAfterAnonymous)));

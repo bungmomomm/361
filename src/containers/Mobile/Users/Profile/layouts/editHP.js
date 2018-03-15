@@ -134,7 +134,7 @@ class EditHp extends Component {
 		return (
 			<div className='margin--medium-v'>
 				<Button
-					color='primary'
+					color='secondary'
 					size='large'
 					disabled={!validForm}
 					onClick={(e) => this.saveData(e)}

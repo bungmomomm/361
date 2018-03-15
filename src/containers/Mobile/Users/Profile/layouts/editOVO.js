@@ -18,27 +18,23 @@ class EditOvo extends Component {
 			formResult: {
 				...props.formResult
 			},
-			isLoading: props.loading,
-			showNotif: false,
+			isLoading: false,
+			showClearButton: false,
 			validForm: false,
+			inputValue: '',
 			inputHint: ''
 		};
 
 		this.OVO_ID_FIELD = CONST.USER_PROFILE_FIELD.ovoId;
 		this.loadingView = <Spinner />;
+		this.clearButton = <Svg src='ico_clear.svg' />;
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.formResult !== false) {
-			if (nextProps.formResult.status === 'success') {
-				this.setState({
-					data: nextProps.data,
-				});
-			}
+		if (nextProps.formResult !== this.props.formResult) {
 			this.setState({
-				showNotif: true,
 				formResult: nextProps.formResult,
-				isLoading: nextProps.loading
+				isLoading: false
 			});
 		}
 	}
@@ -46,15 +42,21 @@ class EditOvo extends Component {
 	inputHandler(e) {
 		const value = util.format('%s', e.target.value);
 
+		if (value.length > 0) {
+			this.setState({ showClearButton: true });
+		} else {
+			this.setState({ showClearButton: false });
+		}
+
 		let validForm = false;
 		if ((value.substring(0, 1) === '0' && _.parseInt(value) > 0 && validator.isMobilePhone(value, 'any')) && validator.isLength(value, { min: 10, max: 15 })) {
 			validForm = true;
 		}
 
-		const inputHint = value.length > 0 && validForm === false ? 'Format Nomor Handphone tidak sesuai. Silahkan cek kembali' : '';
+		const inputHint = value.length > 0 && validForm === false ? 'Format Nomor Handphone tidak sesuai' : '';
 
 		this.setState({
-			data: value,
+			inputValue: value,
 			validForm,
 			inputHint
 		});
@@ -62,12 +64,22 @@ class EditOvo extends Component {
 
 	saveData(e) {
 		const { onSave } = this.props;
-		const { data } = this.state;
-		onSave(e, { [this.OVO_ID_FIELD]: data });
+		const { inputValue } = this.state;
+
+		this.setState({
+			isLoading: true,
+			formResult: {
+				status: '',
+				message: ''
+			}
+		});
+
+		onSave(e, { [this.OVO_ID_FIELD]: inputValue });
 	}
 
 	renderHeader() {
 		const { onClickBack } = this.props;
+
 		const headerView = (
 			<Level style={{ height: '55px' }}>
 				<Level.Left style={{ width: '80px' }}>
@@ -82,21 +94,19 @@ class EditOvo extends Component {
 	}
 
 	renderNotif() {
-		const { showNotif, formResult } = this.state;
+		const { formResult } = this.state;
 		
-		if (showNotif) {
-			if (!_.isEmpty(formResult.status) && !_.isEmpty(formResult.message)) {
-				const notifColor = formResult.status === 'success' ? 'green' : 'pink';
-				return (
-					<Notification
-						color={notifColor}
-						disableClose
-						show
-					>
-						<span>{formResult.message}</span>
-					</Notification>
-				);
-			}
+		if (!_.isEmpty(formResult.status) && !_.isEmpty(formResult.message)) {
+			const notifColor = formResult.status === 'success' ? 'green' : 'pink';
+			return (
+				<Notification
+					color={notifColor}
+					disableClose
+					show
+				>
+					<span>{formResult.message}</span>
+				</Notification>
+			);
 		}
 		
 		return null;
@@ -108,7 +118,7 @@ class EditOvo extends Component {
 		return (
 			<div className='margin--medium-v'>
 				<Button
-					color='primary'
+					color='purple'
 					size='large'
 					onClick={(e) => this.saveData(e)}
 					disabled={!validForm}
@@ -119,22 +129,55 @@ class EditOvo extends Component {
 		);
 	}
 
+	renderClearButton() {
+		const { showClearButton } = this.state;
+
+		if (showClearButton) {
+			return (
+				<Button
+					onClick={() => {
+						this.setState({
+							inputValue: '',
+							showClearButton: false,
+							formResult: {
+								status: '',
+								message: ''
+							},
+							validForm: false,
+							inputHint: ''
+						});
+					}}
+				>
+					{this.clearButton}
+				</Button>
+			);
+		}
+
+		return null;
+	}
+
 	renderOvoForm() {
-		const { isLoading, validForm, inputHint, data } = this.state;
+		const { isLoading, validForm, inputValue, inputHint } = this.state;
 
 		return (
 			<form style={{ padding: '15px' }}>
 				<div className='margin--medium-v'>
 					<label className={styles.label} htmlFor='ovoID'>OVO ID</label>
 					<Input
+						value={inputValue}
 						id='ovoID'
 						flat
 						placeholder='No. Handphone yang terdaftar di OVO'
-						defaultValue={data}
 						onChange={(e) => this.inputHandler(e)}
-						error={!validForm}
+						error={!validForm && inputValue !== ''}
 						hint={inputHint}
-						onFocus={() => this.setState({ showNotif: false })}
+						onFocus={() => this.setState({
+							formResult: {
+								status: '',
+								message: ''
+							}
+						})}
+						iconRight={this.renderClearButton()}
 					/>
 				</div>
 				{this.renderNotif()}

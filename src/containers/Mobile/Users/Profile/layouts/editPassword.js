@@ -165,7 +165,7 @@ class EditPassword extends Component {
 		return (
 			<div className='margin--medium-v'>
 				<Button
-					color='primary'
+					color='secondary'
 					size='large'
 					onClick={(e) => this.saveData(e)}
 					disabled={setDisabled}
