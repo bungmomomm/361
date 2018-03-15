@@ -230,7 +230,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 					<Snackbar
 						history={this.props.history}
 						location={this.props.location}
-						customStyles={{ snack: { bottom: navbar !== null ? 51 : 0, zIndex: navbar !== null ? 2 : 999 } }}
+						customStyles={{ snack: { bottom: navbar !== null ? 50 : 0, zIndex: navbar !== null ? 2 : 999 } }}
 					/>
 					<WrappedComponent {...this.props} scroll={this.state.scroll} />
 				</div>

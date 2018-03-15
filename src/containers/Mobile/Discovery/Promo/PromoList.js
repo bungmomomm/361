@@ -33,8 +33,8 @@ class PromoList extends Component {
 					<Iframe
 						url='https://super.mataharimall.com/promo/new/mobileapps.html'
 						id='myId'
-						width='355'
-						height='530'
+						width='100%'
+						height='100vh'
 						allowFullScreen
 					/>
 				</Page>

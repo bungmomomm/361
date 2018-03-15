@@ -467,10 +467,12 @@ class Products extends Component {
 		const url = `${process.env.MOBILE_URL}${this.props.location.pathname}`;
 		const { pdpData, status } = this.state;
 		const { title } = this.state.detail;
+		const brandName = !_.isEmpty(pdpData.cardProduct) ? pdpData.cardProduct.brand.name : '';
+
 		const shopBageContent = (
 			<Button onClick={() => this.redirectToPage('carts')} className='margin--medium-l'>
 				<Svg src={'ico_cart.svg'} />
-				{(this.props.shared.totalCart > 0) && 
+				{(this.props.shared.totalCart > 0) &&
 					<Badge circle attached size='small' className='bg--secondary-ext-1 font-color--white'>{this.props.shared.totalCart}</Badge>
 				}
 			</Button>
@@ -483,7 +485,7 @@ class Products extends Component {
 						<Svg src={'ico_arrow-back-left.svg'} />
 					</Button>
 				),
-				center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{pdpData.cardProduct.brand.name}</div>,
+				center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{brandName}</div>,
 				right: (
 					<div className='flex-row flex-middle'>
 						<Share title={title} url={url} />
@@ -498,7 +500,7 @@ class Products extends Component {
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</Button>
 			),
-			center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{pdpData.cardProduct.brand.name}</div>,
+			center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{brandName}</div>,
 			right: (
 				<div className='flex-row flex-middle'>
 					<Share title={title} url={url} />
