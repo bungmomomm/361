@@ -58,11 +58,17 @@ class Lists extends PureComponent {
 
 		const lists = _.map(data, (value, id) => {
 			const icon = value.is_selected ? <Svg src='ico_check.svg' /> : <Svg src='ico_empty.svg' />;
+			let label = value.facetdisplay;
+			if (parseInt(value.facetrange, 10) === 19) {
+				label = (
+					<Svg src='mm_ico_gojek.svg' />
+				);
+			}
 			return (
 				<Button key={id} align='left' wide onClick={(e) => this.onClick(e, value)}>
 					<List.Content className='padding--medium-v'>
 						<div className='flex-row flex-middle'>
-							<span>{value.facetdisplay}</span> <span className='font-color--primary-ext-2 margin--small-l'>(111)</span>
+							<span>{label}</span> <span className='font-color--primary-ext-2 margin--small-l'>({value.count})</span>
 						</div>
 						{icon}
 					</List.Content>

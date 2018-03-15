@@ -2,6 +2,142 @@ import querystring from 'querystring';
 import _ from 'lodash';
 import currency from 'currency.js';
 
+const applyAndGetSelected = (facets, selected, disabled, type, values, custom) => {
+	const results = _.map(values, (value) => {
+		return value.facetrange;
+	});
+	const updateChilds = (c, r, s) => {
+		c = _.map(c, (facetData) => {
+			const isExist = _.find(r, (v) => {
+				return v === facetData.facetrange;
+			});
+			facetData.is_selected = 0;
+			if (isExist) {
+				s.push(facetData);
+				facetData.is_selected = 1;
+			}
+			[c, s] = updateChilds(facetData.childs, r, s);
+			return facetData;
+		});
+		return [c, s];
+	};
+	disabled = true;
+	facets = _.map(facets, (facet) => {
+		if (facet.id === type) {
+			switch (facet.id) {
+			case 'category':
+			case 'custom_category_ids':
+			case 'location':
+			case 'size':
+				if (facet.id === type) {
+					selected[facet.id] = [];
+					[facet.data, selected[facet.id]] = updateChilds(facet.data, results, selected[facet.id]);
+				}
+				break;
+			case 'price':
+				selected[facet.id] = [];
+				if (custom) {
+					selected[facet.id] = [custom];
+					facet.requested_range = custom;
+				} else {
+					delete facet.requested_range;
+					facet.data = _.map(facet.data, (facetData) => {
+						const isExist = _.find(results, (v) => {
+							return v === facetData.facetrange;
+						});
+						facetData.is_selected = 0;
+						if (isExist) {
+							selected[facet.id].push(facetData);
+							facetData.is_selected = 1;
+						}
+						return facetData;
+					});
+				}
+				break;
+			default:
+				selected[facet.id] = [];
+				facet.data = _.map(facet.data, (facetData) => {
+					if (facet.id === type) {
+						const isExist = _.find(results, (v) => {
+							return v === facetData.facetrange;
+						});
+						facetData.is_selected = 0;
+						if (isExist) {
+							selected[facet.id].push(facetData);
+							facetData.is_selected = 1;
+						}
+					}
+					return facetData;
+				});
+				break;
+			}
+
+			if (selected[facet.id].length < 1) {
+				selected[facet.id].push({
+					facetdisplay: 'Semua'
+				});
+			} else {
+				disabled = false;
+			}
+		}
+		return facet;
+	});
+
+	return {
+		facets,
+		selected,
+		disabled
+	};
+};
+
+const mapFilters = (facets, selected, disabled) => {
+	const updateChilds = (c, s) => {
+		c = _.map(c, (facetData) => {
+			if (facetData.is_selected) {
+				s.push(facetData);
+			}
+			[c, s] = updateChilds(facetData.childs, s);
+			return facetData;
+		});
+
+		return [c, s];
+	};
+	disabled = true;
+	facets = _.map(facets, (facet) => {
+		switch (facet.id) {
+		case 'category':
+		case 'custom_category_ids':
+		case 'location':
+		case 'size':
+			selected[facet.id] = [];
+			[facet.data, selected[facet.id]] = updateChilds(facet.data, selected[facet.id]);
+			break;
+		default:
+			selected[facet.id] = [];
+			facet.data = _.map(facet.data, (facetData) => {
+				if (facetData.is_selected) {
+					selected[facet.id].push(facetData);
+				}
+				return facetData;
+			});
+			break;
+		}
+		if (selected[facet.id].length < 1) {
+			selected[facet.id].push({
+				facetdisplay: 'Semua'
+			});
+		} else {
+			disabled = false;
+		}
+		return facet;
+	});
+	return {
+		facets,
+		selected,
+		disabled
+	};
+};
+
 const getCategoryFq = (categories, source) => {
 	source.forEach((category) => {
 		const isExist = _.find(categories, (c) => {
@@ -28,6 +164,7 @@ const getFq = (filters) => {
 		switch (facet.id) {
 		case 'category':
 		case 'custom_category_ids':
+		case 'location':
 		case 'size':
 			// child category
 			categories = getCategoryFq(categories, facet.data);
@@ -149,8 +286,11 @@ const isDescendantSelected = (childs, isSelected) => {
 	return isSelected;
 };
 
-const updateChilds = (childs, item, fields) => {
+const updateChilds = (childs, item, fields, fieldAll = []) => {
 	childs = _.map(childs, (facetData) => {
+		_.forIn(fieldAll, (value, key) => {
+			facetData[key] = value;
+		});
 		if (facetData.facetrange === item.facetrange) {
 			_.forIn(fields, (value, key) => {
 				facetData[key] = value;
@@ -197,5 +337,7 @@ export default {
 	resetChilds,
 	isDescendantSelected,
 	getSelected,
+	applyAndGetSelected,
+	mapFilters,
 	toIdr
 };
