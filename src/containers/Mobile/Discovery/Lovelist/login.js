@@ -13,7 +13,6 @@ class LovelistLogin extends Component {
 	}
 
 	componentWillMount() {
-		console.log('islogin:', this.isLogin);
 		if (this.isLogin) {
 			const { history } = this.props;
 			history.push('/lovelist');
@@ -53,7 +52,7 @@ class LovelistLogin extends Component {
 		};
 		return (
 			<div>
-				<Page>
+				<Page style={{ marginTop: '-60px' }}>
 					<div className={styles.lovelistLogin} style={{ backgroundImage: `url(${loginBg})` }}>
 						<Svg width='50px' height='50px' style={{ justifyContent: 'center' }} src='ico_home-white.svg' />
 						<p className='margin--medium' style={{ color: '#fff' }}>Unlock the Full Experience</p>
@@ -67,7 +66,7 @@ class LovelistLogin extends Component {
 						</Level>
 					</div>
 				</Page>
-				<Header.Modal {...HeaderPage} />
+				<Header.Modal transparent {...HeaderPage} />
 			</div>
 		);
 	}

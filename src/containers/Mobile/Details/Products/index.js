@@ -117,7 +117,7 @@ class Products extends Component {
 
 		// sets lovelist data
 		if (!_.isEmpty(lovelist.bulkieCountProducts) && status.pdpDataHasLoaded && !status.bulkieSet) {
-			const lovelistProduct = dispatch(lovelistActions.getProductBulk(_.toInteger(detail.id)));
+			const lovelistProduct = lovelistActions.getBulkItem(lovelist.bulkieCountProducts, detail.id);
 			status.bulkieSet = true;
 			pdpData.cardProduct.totalLovelist = lovelistProduct.total || 0;
 			status.isLoved = (lovelistProduct.status === 1);
@@ -399,7 +399,7 @@ class Products extends Component {
 				productTitle: item.product_title,
 				brandName: item.brand.name,
 				pricing: item.pricing,
-				linkToPdp: '/'
+				linkToPdp: urlBuilder.buildPdp(item.product_title, item.product_id)
 			};
 
 			// set fragment value
@@ -500,7 +500,7 @@ class Products extends Component {
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</Button>
 			),
-			center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{brandName}</div>,
+			center: '',
 			right: (
 				<div className='flex-row flex-middle'>
 					<Share title={title} url={url} />
