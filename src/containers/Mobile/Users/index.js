@@ -22,8 +22,14 @@ class Users extends Component {
 		const query = queryString.parse(props.location.search);
 		this.state = {
 			current: location.pathname.substring(1),
-			redirectUri: query.redirect_uri || false
+			redirectUri: query.redirect_uri || false,
+			callback: {
+				register: {
+					view: ''
+				}
+			}
 		};
+		this.callbackRegisterComponent = this.callbackRegisterComponent.bind(this);
 	}
 
 	handlePick(current) {
@@ -33,10 +39,21 @@ class Users extends Component {
 		});
 		history.replace(`/${current}`);
 	}
-
+    
+	callbackRegisterComponent(value) {
+		this.setState({
+			callback: {
+				register: {
+					view: value
+				}
+			}
+		});
+	};
+    
 	render() {
 		const { style, users, history } = this.props;
 		const { current, redirectUri } = this.state;
+		const { callback } = this.state;
 		let layout = null;
 		const HeaderPage = {
 			left: (
@@ -74,7 +91,12 @@ class Users extends Component {
 			);
 		} else {
 			layout = (
-				<Register history={history} users={users} redirectUri={redirectUri} />
+				<Register
+					history={history}
+					users={users}
+					redirectUri={redirectUri}
+					callback={this.callbackRegisterComponent}
+				/>
 			);
 		}
 		return (
@@ -82,7 +104,7 @@ class Users extends Component {
 				<Page color='white'>
 					{layout}
 				</Page>
-				<Header.Modal {...HeaderPage} />
+				{(callback.register.view !== 'VALIDATE_OTP') ? <Header.Modal {...HeaderPage} /> : null}
 			</div>
 		);
 	}
