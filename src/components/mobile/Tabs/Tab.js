@@ -8,6 +8,9 @@ class Tab extends PureComponent {
 		if (!disabled) {
 			this.props.onPick(this.props.id);
 		}
+		setTimeout(() => {
+			window.scrollTo(0, 0);
+		}, 200);
 	}
 
 	render() {

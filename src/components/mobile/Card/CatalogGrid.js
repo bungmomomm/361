@@ -71,18 +71,19 @@ class CatalogGrid extends PureComponent {
 			lovelistAddTo,
 			love,
 			optimistic,
+			split,
 			...props
 		} = this.props;
 		const { loved } = this.state;
 
 		const disableLovelist = lovelistDisable && lovelistAddTo;
-		const createClassName = classNames(styles.container, styles.grid, className);
+		const createClassName = classNames(styles.container, (split) ? styles.grid[`split--${split}`] : styles.grid, className);
 
 		let lovelistIcon = lovelistStatus && lovelistStatus === 1 ? 'ico_love-filled.svg' : 'ico_love.svg';
 		if (optimistic) {
 			lovelistIcon = loved && loved === 1 ? 'ico_love-filled.svg' : 'ico_love.svg';
 		}
-		
+
 		const discountBadge = pricing.discount !== '' && pricing.discount !== '0%' ? (
 			<Level.Right>
 				<Badge rounded color='red'>
@@ -106,14 +107,14 @@ class CatalogGrid extends PureComponent {
 			<div className={createClassName} {...props} data-loved={lovelistStatus}>
 				<Link to={linkToPdp || '/'} className={styles.imgContainer}>
 					<div className={styles.imgWrapper}>
-						<Image src={images[0].thumbnail} alt={productTitle} />
+						<Image src={images[0].thumbnail} lazyload alt={productTitle} />
 					</div>
 				</Link>
 				<Level className={styles.action}>
 					<Level.Item>
 						<Link to={linkToPdp || '/'}>
 							<div className={styles.title}>
-								{brandName}
+								<span className='font-small text-uppercase'>{brandName}</span>
 								<span>{productTitle}</span>
 							</div>
 						</Link>

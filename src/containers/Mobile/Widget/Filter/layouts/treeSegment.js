@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import _ from 'lodash';
 import {
 	Header, 
 	// Divider, 
@@ -30,17 +29,19 @@ class TreeSegment extends Component {
 			activeTree: [],
 			defaultOpen: true,
 			data: props.data || [],
-			resetData: props.data ? _.cloneDeep(props.data) : []
+			resetDisabled: utils.getSelected(props.data).length < 1
 		};
 	}
 
 	onClick(e, value) {
-		const { data } = this.state;
-
+		let { data } = this.state;
+		data = utils.updateChilds(data, value, {
+			is_selected: value.is_selected === 1 ? 0 : 1
+		});
+		const selected = utils.getSelected(data);
 		this.setState({
-			data: utils.updateChilds(data, value, {
-				is_selected: value.is_selected === 1 ? 0 : 1
-			})
+			resetDisabled: selected.length < 1,
+			data
 		});
 	}
 
@@ -68,9 +69,10 @@ class TreeSegment extends Component {
 	}
 
 	reset() {
-		const { resetData } = this.state;
+		const { data } = this.state;
 		this.setState({
-			data: _.cloneDeep(resetData)
+			resetDisabled: true,
+			data: utils.resetChilds(data)
 		});
 	}
 
@@ -85,7 +87,7 @@ class TreeSegment extends Component {
 				{
 					category.childs.map((child, id) => {
 						const hasChild = typeof child.childs !== 'undefined' && child.childs.length > 0;
-						const Label = hasChild ? child.facetdisplay : child.facetdisplay;
+						const Label = child.facetdisplay;
 						const isChildSelected = utils.isDescendantSelected(child.childs);
 						let renderChild = false;
 						if ((defaultOpen && isChildSelected) || (!defaultOpen && hasChild && child.open)) {
@@ -123,11 +125,11 @@ class TreeSegment extends Component {
 
 	render() {
 		const { onClose } = this.props;
-		const { data } = this.state;
+		const { data, resetDisabled } = this.state;
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
-					<Svg src='ico_close-large.svg' />
+					<Svg src='ico_arrow-back-left.svg' />
 				</Button>
 			),
 			center: 'Kategori',
@@ -140,12 +142,12 @@ class TreeSegment extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page color='white' hideFooter style={{ marginTop: '15px' }}>
+				<Page color='white' style={{ marginTop: '15px' }}>
 					{this.renderChild(categories, true)}
 					{/* {this.renderTree(categories)} */}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
+				<Action resetDisabled={resetDisabled} hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}

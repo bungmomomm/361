@@ -7,17 +7,16 @@ import Button from '../Button';
 import Level from '../Level';
 import styles from './card.scss';
 import { Link } from 'react-router-dom';
-import { hyperlink } from '@/utils';
 import _ from 'lodash';
 
 class Product extends PureComponent {
 	constructor(props) {
 		super(props);
+		this.setCarouselSlideIndex = this.setCarouselSlideIndex.bind(this);
+		this.slideWrapAround = true;
 		this.state = {
 			slideIndex: 0
 		};
-
-		this.setCarouselSlideIndex = this.setCarouselSlideIndex.bind(this);
 	}
 
 	setCarouselSlideIndex(newSlideIndex) {
@@ -36,62 +35,56 @@ class Product extends PureComponent {
 		return this.state.slideIndex;
 	}
 
-	render() {
-		const { className, type, data, isLoved, linkToPdpDisabled } = this.props;
-		const createClassName = classNames(styles.container, styles[type], className);
-		const linkToPdpCreator = hyperlink('', ['product', data.id], null);
-		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
+	renderCarousel(pdpLinkDisabled = true) {
+		const { data, onImageItemClick } = this.props;
 		const slideIndex = this.getSlideIndex();
+		const carouselContent = (
+			<Carousel
+				slideIndex={slideIndex}
+				afterSlide={this.setCarouselSlideIndex}
+				wrapAround={this.slideWrapAround}
+			>
+				{
+					data.images.map((image, idx) => (
+						<div tabIndex='0' role='button' onClick={onImageItemClick} key={idx} data-img={image.mobile}>
+							<Image lazyload src={image.mobile} alt={data.product_title} />
+						</div>
+					))
+				}
+			</Carousel>
+		);
+
+		if (pdpLinkDisabled) return carouselContent;
+
+		return (<Link to={this.props.linkToPdp}>{carouselContent}</Link>);
+	}
+
+	render() {
+		const { className, type, data, isLoved, disabledLovelist, totalComments } = this.props;
+		const createClassName = classNames(styles.container, styles[type], className);
+		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
 
 		return (
 			<div className={createClassName}>
-				{(!linkToPdpDisabled) ? (
-					<Link to={linkToPdpCreator}>
-						<Carousel
-							slideIndex={slideIndex}
-							afterSlide={this.setCarouselSlideIndex}
-						>
-							{
-								data.images.map((image, idx) => (
-									<div tabIndex='0' role='button' onClick={this.props.onImageItemClick} key={idx} data-img={image.mobile}>
-										<Image lazyload src={image.mobile} alt={data.product_title} />
-									</div>
-								))
-							}
-						</Carousel>
-					</Link>
-				) : 
-					(
-						<Carousel
-							slideIndex={slideIndex}
-							afterSlide={this.setCarouselSlideIndex}
-						>
-							{
-								data.images.map((image, idx) => (
-									<div tabIndex='0' role='button' onClick={this.props.onImageItemClick} key={idx} data-img={image.mobile}>
-										<Image src={image.mobile} alt={data.product_title} />
-									</div>
-								))
-							}
-						</Carousel>
-					)
-				}
+				
+				{this.renderCarousel()}
+
 				<Level className={`${styles.action} border-top border-bottom`}>
 					<Level.Item className='flex-middle flex-center'>
-						<Button onClick={this.props.onBtnLovelistClick} data-id={data.id}>
+						<Button onClick={this.props.onBtnLovelistClick} data-id={data.id} disabled={disabledLovelist}>
 							<Svg src={loveIcon} />
 							<span>{data.totalLovelist} Suka</span>
 						</Button>
 					</Level.Item>
 					<Level.Item className='flex-middle flex-center'>
-						<Button onClick={this.props.onBtnCommentClick}>
+						<Button onClick={() => this.props.onBtnCommentClick('comments')}>
 							<Svg src='ico_comment.svg' />
-							<span>{data.totalComments || 0} Komentar</span>
+							<span>{totalComments || 0} Komentar</span>
 						</Button>
 					</Level.Item>
 				</Level>
 				<div className={styles.title}>
-					{data.brand.name}
+					<span className='font-small text-uppercase'>{data.brand.name}</span>
 					<span>{data.product_title}</span>
 				</div>
 			</div>

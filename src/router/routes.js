@@ -55,10 +55,9 @@ export default {
 		{
 			path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9-]+)',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Category/Product'), defaultOptions),
-			exact: true
 		},
 		{
-			path: '/p-:categoryId:([0-9]+)}/:categoryTitle([a-zA-Z0-9-]+):brandTitle(/[a-zA-Z0-9-]+)?',
+			path: '/p-:categoryId:([0-9]+)}/:categoryTitle([a-zA-Z0-9-]+)/:brandTitle([a-zA-Z0-9-]+)',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Category/Product'), defaultOptions)
 		},
 		{
@@ -89,6 +88,11 @@ export default {
 			exact: true
 		},
 		{
+			path: '/product/reviews/:id',
+			component: loadable(() => import('@/containers/Mobile/Details/Products/Reviews'), defaultOptions),
+			exact: true
+		},
+		{
 			path: '/product/guide',
 			component: loadable(() => import('@/containers/Mobile/Details/Products/Guide'), defaultOptions),
 			exact: true
@@ -99,12 +103,12 @@ export default {
 		},
 		{
 			path: '/login',
-			component: loadable(() => import('@/containers/Mobile/Users/Login'), defaultOptions),
+			component: loadable(() => import('@/containers/Mobile/Users'), defaultOptions),
 			exact: true
 		},
 		{
 			path: '/register',
-			component: loadable(() => import('@/containers/Mobile/Users/Register'), defaultOptions),
+			component: loadable(() => import('@/containers/Mobile/Users'), defaultOptions),
 			exact: true
 		},
 		{
@@ -120,6 +124,11 @@ export default {
 		{
 			path: '/forgot-password',
 			component: loadable(() => import('@/containers/Mobile/Users/Login/forgotPassword'), defaultOptions),
+			exact: true
+		},
+		{
+			path: '/user/newpassword',
+			component: loadable(() => import('@/containers/Mobile/Users/Login/newPassword'), defaultOptions),
 			exact: true
 		},
 		{
@@ -172,6 +181,10 @@ export default {
 			path: '/profile/my-order',
 			component: loadable(() => import('@/containers/Mobile/Users/Profile/myOrder'), defaultOptions),
 			exact: true,
+		},
+		{
+			path: '/profile/my-order/add-review',
+			component: loadable(() => import('@/containers/Mobile/Users/Profile/addReview'), defaultOptions)
 		},
 		{
 			path: '/profile/my-order/:so_number([a-zA-Z0-9-]+)',

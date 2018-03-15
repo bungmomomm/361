@@ -3,13 +3,13 @@ import to from 'await-to-js';
 import { Promise } from 'es6-promise';
 import _ from 'lodash';
 import { request } from '@/utils';
-import { totalBag, totalLoveList, currentTab, forEverBanner, errorHandler } from './reducer';
+import { totalBag, totalLoveList, currentTab, forEverBanner, errorHandler, rrsDismissSnack, rrsShowSnack } from './reducer';
 
 const closeFB = () => (dispatch, getState) => {
 	const { shared } = getState();
 	let { foreverBanner } = shared;
 	foreverBanner = {
-		...foreverBanner, 
+		...foreverBanner,
 		show: false
 	};
 
@@ -35,7 +35,7 @@ const totalCartAction = (token) => async (dispatch, getState) => {
 	if (err) {
 		return Promise.reject(err);
 	}
-	
+
 	const total = response.data.data.total || 0;
 	dispatch(totalBag({ totalCart: total }));
 
@@ -51,14 +51,14 @@ const totalLovelistAction = (token, url = false) => async (dispatch, getState) =
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 	const path = `${baseUrl}/total/bycustomer`;
-	
+
 	const [err, response] = await to(request({
 		token,
 		path,
 		method: 'GET',
 		fullpath: true
 	}));
-	
+
 	if (err) {
 		return Promise.reject(err);
 	}
@@ -79,8 +79,8 @@ const catchErrors = (errors) => (dispatch, getState) => {
 	const err = shared.errors;
 
 	const errorData = {
-		status: errors.data.status, 
-		app: errors.data.app, 
+		status: errors.data.status,
+		app: errors.data.app,
 		errorMessage: errors.data.error_message
 	};
 
@@ -97,10 +97,18 @@ const catchErrors = (errors) => (dispatch, getState) => {
 	}
 
 	dispatch(errorHandler({ errors: err }));
-}; 
+};
 
 const clearErrors = () => (dispatch) => {
 	dispatch(errorHandler({ errors: [] }));
+};
+
+const showSnack = (id, data = { label: '', timeout: 7000, button: {} }) => (dispatch) => {
+	dispatch(rrsShowSnack({ id, data }));
+};
+
+export const dismissSnack = (id) => (dispatch) => {
+	dispatch(rrsDismissSnack({ id }));
 };
 
 export default {
@@ -109,5 +117,7 @@ export default {
 	setCurrentSegment,
 	closeFB,
 	catchErrors,
-	clearErrors
+	clearErrors,
+	showSnack,
+	dismissSnack
 };

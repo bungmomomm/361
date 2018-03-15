@@ -13,7 +13,7 @@ class Location extends PureComponent {
 			activeTree: null,
 			selected: null,
 			data: props.data || [],
-			resetData: props.data ? _.cloneDeep(props.data) : [],
+			resetDisabled: utils.getSelected(props.data).length < 1
 		};
 	}
 	
@@ -25,28 +25,32 @@ class Location extends PureComponent {
 	}
 
 	onClick(e, value) {
-		const { data } = this.state;
+		let { data } = this.state;
+		data = utils.updateChilds(data, value, {
+			is_selected: value.is_selected === 1 ? 0 : 1
+		});
+		const selected = utils.getSelected(data);
 		this.setState({
-			data: utils.updateChilds(data, value, {
-				is_selected: value.is_selected === 1 ? 0 : 1
-			})
+			resetDisabled: selected.length < 1,
+			data
 		});
 	}
 
 	reset() {
 		const { data } = this.state;
 		this.setState({
+			resetDisabled: true,
 			data: utils.resetChilds(data)
 		});
 	}
 
 	render() {
 		const { onClose, title } = this.props;
-		const { data } = this.state;
+		const { data, resetDisabled } = this.state;
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
-					<Svg src='ico_close-large.svg' />
+					<Svg src='ico_arrow-back-left.svg' />
 				</Button>
 			),
 			center: title || 'Default',
@@ -81,7 +85,7 @@ class Location extends PureComponent {
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
+				<Action resetDisabled={resetDisabled} hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}

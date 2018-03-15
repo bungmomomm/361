@@ -78,6 +78,7 @@
   "dependencies": {
     "await-to-js": "^2.0.1",
     "axios": "^0.16.2",
+    "babel-polyfill": "^6.26.0",
     "base-64": "^0.1.0",
     "classnames": "^2.2.5",
     "compression": "^1.7.2",
@@ -90,6 +91,7 @@
     "formsy-react": "^1.1.4",
     "google-maps-react": "^1.1.2",
     "html-minifier": "3.5.2",
+    "is-offline": "^2.1.0",
     "iso8601": "^1.1.1",
     "jwt-decode": "^2.2.0",
     "kong-hmac": "^0.2.0",
@@ -115,6 +117,7 @@
     "react-router-dom": "^4.1.2",
     "react-router-transition": "^1.2.1",
     "react-share": "^2.0.0",
+    "react-smartbanner": "^5.0.5",
     "react-svg-inline": "^2.0.1",
     "redux": "^3.7.2",
     "redux-actions": "^2.2.1",
@@ -126,6 +129,7 @@
     "rmc-picker": "^5.0.4",
     "sass-mq": "^3.3.2",
     "sw-precache-webpack-plugin": "^0.11.4",
+    "uuid": "^3.2.1",
     "validator": "^9.4.1"
   },
   "devDependencies": {

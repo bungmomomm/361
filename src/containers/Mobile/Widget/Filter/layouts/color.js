@@ -10,7 +10,8 @@ class Color extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
-			data: props.data || []
+			data: props.data || [],
+			resetDisabled: utils.getSelected(props.data).length < 1
 		};
 		this.props = props;
 	}
@@ -20,7 +21,11 @@ class Color extends PureComponent {
 		data = utils.updateChilds(data, value, {
 			is_selected: value.is_selected === 1 ? 0 : 1
 		});
+
+		const selected = utils.getSelected(data);
+		const resetDisabled = selected.length < 1;
 		this.setState({
+			resetDisabled,
 			data
 		});
 	}
@@ -35,16 +40,18 @@ class Color extends PureComponent {
 	reset() {
 		const { data } = this.state;
 		this.setState({
+			resetDisabled: true,
 			data: utils.resetChilds(data)
 		});
 	}
 
 	render() {
 		const { onClose, data } = this.props;
+		const { resetDisabled } = this.state;
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
-					<Svg src='ico_close-large.svg' />
+					<Svg src='ico_arrow-back-left.svg' />
 				</Button>
 			),
 			center: 'Warna',
@@ -72,13 +79,13 @@ class Color extends PureComponent {
 
 		return (
 			<div style={this.props.style}>
-				<Page hideFooter color='white' style={{ marginTop: '15px' }}>
+				<Page color='white' style={{ marginTop: '15px' }}>
 					<List>
 						{dataList}
 					</List>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
+				<Action resetDisabled={resetDisabled} hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}

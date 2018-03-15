@@ -17,6 +17,7 @@ class Price extends PureComponent {
 			},
 			custom: false,
 			data: props.data || [],
+			resetDisabled: utils.getSelected(props.data).length < 1
 		};
 		this.state.resetData =	 _.cloneDeep(this.state.range);
 	}
@@ -68,6 +69,7 @@ class Price extends PureComponent {
 			...value
 		};
 		this.setState({
+			resetDisabled: false,
 			custom: true,
 			range: {
 				min: Math.abs(updatedValue.min) < parseInt(range.max, 10) ? Math.abs(updatedValue.min) : parseInt(range.min, 10),
@@ -79,16 +81,18 @@ class Price extends PureComponent {
 	reset() {
 		const { resetData } = this.state;
 		this.setState({
+			resetDisabled: true,
 			range: _.cloneDeep(resetData)
 		});
 	}
 
 	render() {
 		const { onClose, range } = this.props;
+		const { resetDisabled } = this.state;
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
-					<Svg src='ico_close-large.svg' />
+					<Svg src='ico_arrow-back-left.svg' />
 				</Button>
 			),
 			center: 'Harga',
@@ -97,7 +101,7 @@ class Price extends PureComponent {
 
 		return (
 			<div style={this.props.style}>
-				<Page color='white' hideFooter style={{ marginTop: '15px' }}>
+				<Page color='white' style={{ marginTop: '15px' }}>
 					<div className={styles.priceSlider}>
 						<div className='padding--medium-h'>
 							<Slider min={parseInt(range.min, 10)} max={parseInt(range.max, 10)} value={this.state.range} onChange={(value) => this.updateRange(value)} />
@@ -123,7 +127,7 @@ class Price extends PureComponent {
 					</div> */}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
+				<Action resetDisabled={resetDisabled} hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}
