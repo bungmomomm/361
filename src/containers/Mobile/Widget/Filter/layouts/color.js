@@ -22,7 +22,8 @@ class Color extends PureComponent {
 			is_selected: value.is_selected === 1 ? 0 : 1
 		});
 
-		const resetDisabled = utils.getSelected(data).length < 1;
+		const selected = utils.getSelected(data);
+		const resetDisabled = selected.length < 1;
 		this.setState({
 			resetDisabled,
 			data
@@ -50,7 +51,7 @@ class Color extends PureComponent {
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
-					<Svg src='ico_close-large.svg' />
+					<Svg src='ico_arrow-back-left.svg' />
 				</Button>
 			),
 			center: 'Warna',

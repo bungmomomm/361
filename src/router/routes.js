@@ -55,10 +55,9 @@ export default {
 		{
 			path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9-]+)',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Category/Product'), defaultOptions),
-			exact: true
 		},
 		{
-			path: '/p-:categoryId:([0-9]+)}/:categoryTitle([a-zA-Z0-9-]+):brandTitle(/[a-zA-Z0-9-]+)?',
+			path: '/p-:categoryId:([0-9]+)}/:categoryTitle([a-zA-Z0-9-]+)/:brandTitle([a-zA-Z0-9-]+)',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Category/Product'), defaultOptions)
 		},
 		{
@@ -86,6 +85,11 @@ export default {
 		{
 			path: '/product/comments/:id',
 			component: loadable(() => import('@/containers/Mobile/Details/Products/Comments'), defaultOptions),
+			exact: true
+		},
+		{
+			path: '/product/reviews/:id',
+			component: loadable(() => import('@/containers/Mobile/Details/Products/Reviews'), defaultOptions),
 			exact: true
 		},
 		{
@@ -177,6 +181,10 @@ export default {
 			path: '/profile/my-order',
 			component: loadable(() => import('@/containers/Mobile/Users/Profile/myOrder'), defaultOptions),
 			exact: true,
+		},
+		{
+			path: '/profile/my-order/add-review',
+			component: loadable(() => import('@/containers/Mobile/Users/Profile/addReview'), defaultOptions)
 		},
 		{
 			path: '/profile/my-order/:so_number([a-zA-Z0-9-]+)',

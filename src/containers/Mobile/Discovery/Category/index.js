@@ -102,18 +102,16 @@ class Category extends PureComponent {
 		return (
 			<div style={this.props.style}>
 				<Page color='white'>
+					<Tabs
+						current={this.props.shared.current}
+						variants={this.props.home.segmen}
+						onPick={(e) => this.handlePick(e)}
+					/>
 					<div>
 						{ category.loading ? loading : this.renderCategories() }
 					</div>
 				</Page>
-				<Header 
-					rows={
-						<Tabs
-							current={this.props.shared.current}
-							variants={this.props.home.segmen}
-							onPick={(e) => this.handlePick(e)}
-						/>
-					} 
+				<Header
 					lovelist={this.props.shared.totalLovelist} 
 					value={this.props.search.keyword} 
 				/>

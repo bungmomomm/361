@@ -60,7 +60,7 @@ class Product extends PureComponent {
 	}
 
 	render() {
-		const { className, type, data, isLoved, disabledLovelist } = this.props;
+		const { className, type, data, isLoved, disabledLovelist, totalComments } = this.props;
 		const createClassName = classNames(styles.container, styles[type], className);
 		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
 
@@ -79,12 +79,12 @@ class Product extends PureComponent {
 					<Level.Item className='flex-middle flex-center'>
 						<Button onClick={() => this.props.onBtnCommentClick('comments')}>
 							<Svg src='ico_comment.svg' />
-							<span>{data.totalComments || 0} Komentar</span>
+							<span>{totalComments || 0} Komentar</span>
 						</Button>
 					</Level.Item>
 				</Level>
 				<div className={styles.title}>
-					{data.brand.name}
+					<span className='font-small text-uppercase'>{data.brand.name}</span>
 					<span>{data.product_title}</span>
 				</div>
 			</div>

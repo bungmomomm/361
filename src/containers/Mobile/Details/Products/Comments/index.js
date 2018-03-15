@@ -54,11 +54,11 @@ class Comments extends Component {
 		const { dispatch } = this.props;
 		const { productComment } = this.state;
 
+		dispatch(commentActions.commentAddAction(this.userCookies, this.productId, productComment));
+
 		this.setState({
 			productComment: ''
 		});
-
-		dispatch(commentActions.commentAddAction(this.userCookies, this.productId, productComment));
 	}
 
 	renderComments() {

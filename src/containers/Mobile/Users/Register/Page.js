@@ -8,8 +8,7 @@ import {
 import {
 	Button,
 	Input,
-	Svg,
-	Notification
+	Svg
 } from '@/components/mobile';
 import { 
 	setUserCookie
@@ -22,8 +21,7 @@ import _ from 'lodash';
 import {
 	Login as LoginWidget
 } from '@/containers/Mobile/Widget';
-import Helmet from 'react-helmet';
-import Recaptcha from 'react-recaptcha';
+import Otp from '@/containers/Mobile/Shared/Otp';
 
 const OTP_BUTTON_TEXT = 'Kirim ulang kode otp';
 
@@ -197,57 +195,7 @@ class Register extends Component {
 		return response;
 
 	}
-
-	async onVerifyOtp() {
-
-		const { cookies, dispatch, history } = this.props;
-		const { loginId, email, password, otpValue, redirectUri, captchaValue } = this.state;
-
-		if (captchaValue.length === 0) {
-
-			this.setState({
-				displayMessageOnValidateOtpForm: true,
-				textMessageOnValidateOtpForm: 'Mohon centang checkbox pada captcha. ',
-				messageType: 'ERROR'
-			});
-
-			return false;
-		}
-
-		const dataForVerify = {
-			hp_email: email,
-			pwd: password,
-			fullname: loginId,
-			otp: otpValue
-		};
-
-		const [err, response] = await to(dispatch(new users.userOtpValidate(cookies.get('user.token'), dataForVerify)));
-
-		if (err) {
-
-			this.setState({
-				displayMessageOnValidateOtpForm: true,
-				textMessageOnValidateOtpForm: 'Kode OTP tidak valid.',
-				messageType: 'ERROR'
-			});
-
-			return err;
-		}
-
-		const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get('user.token'), email, password)));
-
-		if (errorUserLogin) {
-			console.log('error on user login');
-			return false;
-		}
-
-		// Set the cookie for the page.
-		setUserCookie(cookies, responseUserLogin.token);
-		history.push(redirectUri || '/');
-
-		return response;
-	}
-
+	
 	onFieldChange(e, type) {
 
 		const value = util.format('%s', e.target.value);
@@ -280,20 +228,26 @@ class Register extends Component {
 		}
 
 	}
-
-	renderHelmet = () => {
-
-		return (
-			<Helmet>
-				<script
-					src={process.env.GOOGLE_CAPTCHA_END_POINT}
-					async
-					defer
-				/>
-			</Helmet>
-		);
-	};
-
+	
+	async successValidateOtp() {
+		
+		const { cookies, dispatch, history } = this.props;
+		const { email, password, redirectUri } = this.state;
+		
+		const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get('user.token'), email, password)));
+		
+		if (errorUserLogin) {
+			console.log('error on user login');
+			return false;
+		}
+		
+		// Set the cookie for the page.
+		setUserCookie(cookies, responseUserLogin.token);
+		history.push(redirectUri || '/');
+		
+		return responseUserLogin;
+	}
+ 
 	renderRegisterView() {
 		const {
 			email,
@@ -418,102 +372,15 @@ class Register extends Component {
 	}
 
 	renderValidateOtpView() {
-
-		const {
-			disableOtpButton,
-			otpValue,
-			otpButtonText,
-			displayMessageOnValidateOtpForm,
-			textMessageOnValidateOtpForm,
-			messageType,
-			isButtonResendOtpLoading
-		} = this.state;
-
-		const { isLoading } = this.props.users;
-
-		const buttonPropertyResendOTP = {
-			color: 'secondary',
-			size: 'large',
-			onClick: (e) => this.onSendOtp()
-		};
-
-		if ((isButtonResendOtpLoading && isLoading) === true) {
-			buttonPropertyResendOTP.loading = true;
-		}
-
-		if (disableOtpButton === true) {
-			buttonPropertyResendOTP.disabled = true;
-		}
-
-		const buttonPropertyVerify = {
-			color: 'secondary',
-			size: 'large',
-			onClick: (e) => this.onVerifyOtp(),
-			disabled: true
-		};
-
-		if (otpValue.length === 6 && !isLoading) {
-			buttonPropertyVerify.disabled = false;
-		}
-
-		if ((!isButtonResendOtpLoading && isLoading) === true) {
-			buttonPropertyVerify.loading = true;
-		}
-
-		const enterOtpVerification = {
-			value: otpValue,
-			label: 'Masukan kode verifikasi',
-			flat: true,
-			placeholder: '',
-			onChange: (event) => { this.setState({ otpValue: event.target.value }); }
-		};
-
+		
+		const { email } = this.state;
+		
 		return (
-			<div>
-				{this.renderHelmet()}
-				<div>
-					<p>Kami telah mengirimkan kode verifikasi ke no XXXXXXX</p>
-					<p>Silahkan masukan kode verifikasi</p>
-
-					{displayMessageOnValidateOtpForm && (
-						<Notification color={(messageType === 'SUCCESS') ? 'green' : 'red'} show disableClose>
-							<span>{textMessageOnValidateOtpForm}</span>
-						</Notification>
-					)}
-					<Input {...enterOtpVerification} />
-				</div>
-				<p>
-					<Button {...buttonPropertyResendOTP}>
-						{otpButtonText}
-					</Button>
-				</p>
-
-				<p>
-					<Recaptcha
-						sitekey={`${process.env.GOOGLE_CAPTCHA_SITE_KEY}`}
-						size='compact'
-						render='explicit'
-						verifyCallback={
-							(response) => {
-								if (response.length !== 0) {
-									this.setState(
-										{
-											captchaValue: response
-										}
-									);
-								}
-							}
-						}
-					/>
-				</p>
-
-				<p>
-					<Button {...buttonPropertyVerify}>
-						Verifikasi
-					</Button>
-				</p>
-
-			</div>
+			<Otp
+				phoneEmail={email}
+				onClickBack={(e, value) => this.setState({ whatIShouldRender: 'REGISTER' })}
+				onSuccess={() => this.successValidateOtp()}
+			/>
 		);
 	}
 

@@ -7,10 +7,11 @@ import isMobile from './isMobile';
 import componentState from './componentState';
 import splitString from './splitString';
 import { request, getCancelToken } from './request';
-import { setUserCookie } from './cookie';
+import { setUserCookie, setUniqeCookie } from './cookie';
 import urlBuilder from './urlBuilder';
 import loading from './loading';
 import { request as emarsysRequest } from './emarsys';
+import uniqid from './uniqid';
 
 const isHexColor = (color) => {
 	return /(^#[0-9A-F]{3}|^#[0-9A-F]{6})$/i.test(color);
@@ -37,12 +38,23 @@ const getClientVersion = () => {
 	return '2.22.0'; // process.env.BASE_URL;
 };
 
+const getSessionID = (cname) => {
+	const name = `${cname}=`;
+	const decodedCookie = decodeURIComponent(document.cookie);
+	const ca = decodedCookie.split(';');
+	const cookieWithValue = ca.find((e) => e.includes(name));
+
+	return cookieWithValue.replace(name, '');
+};
+
 export default {
 	getDeviceID,
 	getClientID,
+	getSessionID,
 	getClientSecret,
 	getClientVersion,
 	setUserCookie,
+	setUniqeCookie,
 	newId,
 	renderIf,
 	currency,
@@ -57,5 +69,6 @@ export default {
 	urlBuilder,
 	isHexColor,
 	loading,
-	emarsysRequest
+	emarsysRequest,
+	uniqid
 };

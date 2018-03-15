@@ -8,7 +8,7 @@ const initialState = {
 			summary: [],
 			total: 0
 		},
-		comment: {
+		comments: {
 			summary: [],
 			total: 0
 		},
@@ -38,6 +38,11 @@ const initialState = {
 		}
 
 	},
+	store: {},
+	allReviews: {
+		info: {},
+		items: []
+	},
 	loading: false
 };
 
@@ -45,14 +50,16 @@ const {
 	productDetail, 
 	productSocialSummary,
 	productLoading,
-	productPromotion
+	productPromotion,
+	productStore,
+	allProductReviews
 } = createActions(
-	'PRODUCT_DETAIL', 
-	'PRODUCT_RECOMMENDATION', 
-	'PRODUCT_SIMILAR',
+	'PRODUCT_DETAIL',  
 	'PRODUCT_SOCIAL_SUMMARY',
 	'PRODUCT_LOADING',
-	'PRODUCT_PROMOTION'
+	'PRODUCT_PROMOTION',
+	'PRODUCT_STORE',
+	'ALL_PRODUCT_REVIEWS'
 );
 
 const reducer = handleActions({
@@ -74,6 +81,18 @@ const reducer = handleActions({
 			promo,
 		};
 	},
+	[productStore](state, { payload: { store } }) {
+		return {
+			...state,
+			store,
+		};
+	},
+	[allProductReviews](state, { payload: { allReviews } }) {
+		return {
+			...state,
+			allReviews
+		};
+	},
 	[productLoading](state, { payload: { loading } }) {
 		return {
 			...state,
@@ -87,5 +106,7 @@ export default {
 	productDetail,
 	productSocialSummary,
 	productLoading,
-	productPromotion
+	productPromotion,
+	productStore,
+	allProductReviews
 };
