@@ -443,6 +443,6 @@ export default {
 	submitReview,
 	afterLogin,
 	addAfterLogin,
-    PostOrderConfirmation,
-    getListBankConfirmation
+	PostOrderConfirmation,
+	getListBankConfirmation
 };

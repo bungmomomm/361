@@ -155,61 +155,61 @@ const submitReview = (token, data) => async (dispatch, getState) => {
 };
 
 const PostOrderConfirmation = (token, bodyData) => async (dispatch, getState) => {
-    
-    /* const { shared } = getState();
-     const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
-     if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
-     */
-    
-    const baseUrl = 'https://private-9802b-mmv4microservices.apiary-mock.com';
-    
-    const requestData = {
-        token,
-        path: `${baseUrl}/order/paymentconfirm/add`,
-        method: 'POST',
-        fullpath: true,
-        body: bodyData
-    };
-    
-    const [err, response] = await to(
-        request(requestData)
-    );
-    
-    if (err) {
-        
-        return Promise.reject(err);
-    }
-    
-    return Promise.resolve(response);
-    
+	
+	/* const { shared } = getState();
+	 const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
+	 if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	 */
+	
+	const baseUrl = 'https://private-9802b-mmv4microservices.apiary-mock.com';
+	
+	const requestData = {
+		token,
+		path: `${baseUrl}/order/paymentconfirm/add`,
+		method: 'POST',
+		fullpath: true,
+		body: bodyData
+	};
+	
+	const [err, response] = await to(
+		request(requestData)
+	);
+	
+	if (err) {
+		
+		return Promise.reject(err);
+	}
+	
+	return Promise.resolve(response);
+	
 };
 
 
 const getListBankConfirmation = (token) => async (dispatch, getState) => {
-    
-    
-    /* const { shared } = getState();
-     const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
-     if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
-     */
-    
-    const baseUrl = 'https://private-9802b-mmv4microservices.apiary-mock.com';
-    
-    const requestData = {
-        token,
-        path: `${baseUrl}/order/paymentconfirm/banklist`,
-        method: 'GET',
-        fullpath: true
-    };
-    
-    const [err, response] = await to(request(requestData));
-    
-    if (err) {
-        return Promise.reject(err);
-    }
-    
-    dispatch(actions.userBankList(response.data.data));
-    return Promise.resolve(response);
+	
+	
+	/* const { shared } = getState();
+	 const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
+	 if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	 */
+	
+	const baseUrl = 'https://private-9802b-mmv4microservices.apiary-mock.com';
+	
+	const requestData = {
+		token,
+		path: `${baseUrl}/order/paymentconfirm/banklist`,
+		method: 'GET',
+		fullpath: true
+	};
+	
+	const [err, response] = await to(request(requestData));
+	
+	if (err) {
+		return Promise.reject(err);
+	}
+	
+	dispatch(actions.userBankList(response.data.data));
+	return Promise.resolve(response);
 };
 
 
@@ -221,6 +221,6 @@ export {
 	cleanMyOrderData,
 	keepReviewInfo,
 	submitReview,
-    PostOrderConfirmation,
-    getListBankConfirmation
+	PostOrderConfirmation,
+	getListBankConfirmation
 };

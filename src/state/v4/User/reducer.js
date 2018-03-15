@@ -51,7 +51,7 @@ const actions = createActions({
 	USER_KEEP_REVIEW_INFO: undefined,
 	USER_AFTER_LOGIN: (state, action, param) => ({ state, action, param }),
 	USER_AFTER_LOGIN_CLEAR: undefined,
-    USER_BANK_LIST: (userBankList) => ({ userBankList })
+	USER_BANK_LIST: (userBankList) => ({ userBankList })
 });
 
 const initialState = {
