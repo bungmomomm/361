@@ -21,17 +21,19 @@ const initialState = {
 	},
 	current: 'wanita',
 	errors: [],
-	snackQueue: []
+	snackQueue: [],
+	userPreviousPage: ''
 };
 
-const { totalLoveList, totalBag, forEverBanner, currentTab, errorHandler, rrsShowSnack, rrsDismissSnack } = createActions(
+const { totalLoveList, totalBag, forEverBanner, currentTab, errorHandler, rrsShowSnack, rrsDismissSnack, userPreviousPage } = createActions(
 	'TOTAL_LOVE_LIST',
 	'TOTAL_BAG',
 	'FOR_EVER_BANNER',
 	'CURRENT_TAB',
 	'ERROR_HANDLER',
 	'RRS_SHOW_SNACK',
-	'RRS_DISMISS_SNACK'
+	'RRS_DISMISS_SNACK',
+	'USER_PREVIOUS_PAGE'
 );
 
 let snackQueue;
@@ -83,6 +85,12 @@ const reducer = handleActions({
 			...state,
 			snackQueue
 		};
+	},
+	[userPreviousPage](state, { payload }) {
+		return {
+			...state,
+			userPreviousPage: payload
+		};
 	}
 }, initialState);
 
@@ -94,5 +102,6 @@ export default {
 	currentTab,
 	errorHandler,
 	rrsShowSnack,
-	rrsDismissSnack
+	rrsDismissSnack,
+	userPreviousPage
 };
