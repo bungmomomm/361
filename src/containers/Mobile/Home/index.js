@@ -6,7 +6,7 @@ import _ from 'lodash';
 import {
 	Header, Carousel, Tabs,
 	Page, Level, Button, Grid, Article,
-	Navigation, Svg, Image
+	Navigation, Svg, Image, SmartBanner
 } from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
@@ -47,8 +47,11 @@ class Home extends Component {
 		this.isLogin = this.props.cookies.get('isLogin');
 
 		this.state = {
-			isFooterShow: true
+			isFooterShow: true, 
+			showSmartBanner: this.props.cookies.get('sb-show') !== '0' && true
 		};
+
+		this.sbClose = this.sbClose.bind(this);
 	}
 
 	handlePick(current) {
@@ -59,6 +62,19 @@ class Home extends Component {
 		dispatch(new sharedActions.setCurrentSegment(willActiveSegment.key));
 		dispatch(new actions.mainAction(willActiveSegment, this.userCookies));
 		dispatch(new actions.recomendationAction(willActiveSegment, this.userCookies));
+	}
+
+
+	sbClose() {
+		const { cookies } = this.props;
+		const currentDate = new Date();
+		const limitDate = 1 * 30;
+		currentDate.setDate(currentDate.getDate() + limitDate);
+
+		cookies.set('sb-show', 0, { domain: process.env.SESSION_DOMAIN, path: '/', expires: currentDate });
+		this.setState({
+			showSmartBanner: false
+		});
 	}
 
 	renderHeroBanner() {
@@ -193,7 +209,6 @@ class Home extends Component {
 		if (!dataTop.isEmpty().value() && !dataBottm.isEmpty().value()) {
 			bottomBanner = position === 'top' ? dataTop.value() : dataBottm.value();
 		}
-		console.log(bottomBanner);
 		if (bottomBanner.length > 0) {
 			return (
 				<div className='margin--medium-v'>
@@ -294,8 +309,8 @@ class Home extends Component {
 	render() {
 		const { shared, dispatch } = this.props;
 
-		const recommendation1 = this.isLogin === 'false' ? 'new-arrival' : 'recommended-products';
-		const recommendation2 = this.isLogin === 'false' ? 'best-seller' : 'recent-view';
+		const recommendation1 = this.isLogin === 'false' ? 'best-seller' : 'recommended-products';
+		const recommendation2 = this.isLogin === 'false' ? 'new-arrival' : 'recent-view';
 		return (
 			<div style={this.props.style}>
 				<Page color='white'>
@@ -319,6 +334,17 @@ class Home extends Component {
 
 					<Footer isShow={this.state.isFooterShow} />
 				</Page>
+				<SmartBanner 
+					title='MatahariMall' 
+					iconSrc='app-icon.png' 
+					author='PT Solusi Ecommerce Global' 
+					googlePlay='com.mataharimall.mmandroid'
+					appStore='1033108124'
+					isShow={this.state.showSmartBanner}
+					onCloseBanner={this.sbClose}
+					scroll={this.props.scroll}
+				/>
+
 				<Header 
 					rows={
 						this.props.scroll.top > 60 ? null : (

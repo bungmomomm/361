@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import { urlBuilder } from '@/utils';
 import { actions as productActions } from '@/state/v4/Product';
+import { actions as sharedActions } from '@/state/v4/Shared';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as shopBagActions } from '@/state/v4/ShopBag';
 import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Rating, Spinner, Badge } from '@/components/mobile';
@@ -21,7 +22,7 @@ class Products extends Component {
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.source = this.props.cookies.get('user.source');
-		this.isLogin = this.props.cookies.get('isLogin');
+		this.isLogin = (typeof this.props.cookies.get('isLogin') === 'string' && this.props.cookies.get('isLogin') === 'true');
 		this.defaultCount = 1;
 		this.slideWrapAround = true;
 
@@ -32,6 +33,7 @@ class Products extends Component {
 		this.handleCloseModalPopUp = this.handleCloseModalPopUp.bind(this);
 		this.handleBtnBeliClicked = this.handleBtnBeliClicked.bind(this);
 		this.handleSelectVariant = this.handleSelectVariant.bind(this);
+		this.onOvoInfoClick = this.onOvoInfoClick.bind(this);
 		this.redirectToPage = this.redirectToPage.bind(this);
 		this.removeAddItem = this.removeAddItem.bind(this);
 		this.setCarouselSlideIndex = this.setCarouselSlideIndex.bind(this);
@@ -46,7 +48,6 @@ class Products extends Component {
 				pdpDataHasLoaded: false,
 				similarSet: false,
 				recommendationSet: false,
-				reviewsSet: false,
 				bulkieSet: false,
 				hasVariantSize: false,
 				pendingAddProduct: false,
@@ -54,10 +55,11 @@ class Products extends Component {
 				showModalSelectSize: false,
 				btnBeliDisabled: false,
 				forceLogin: false,
+				showOvoInfo: false,
+				sellerDataSet: false,
 			},
 			pdpData: {
 				cardProduct: {},
-				reviewContent: {}
 			},
 			detail: {},
 			carousel: {
@@ -76,27 +78,40 @@ class Products extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		const { product, lovelist, dispatch } = nextProps;
-		const { detail, socialSummary, promo } = product;
-		const { pdpData, status, selectedVariant } = this.state;
+		const { detail, promo } = product;
+		const { pdpData, status } = this.state;
+		let { selectedVariant, size } = this.state;
 
 		status.loading = product.loading;
 		// sets card product
 		if (!_.isEmpty(detail) && !status.pdpDataHasLoaded) {
 			pdpData.cardProduct = productActions.getProductCardData(detail);
 			status.pdpDataHasLoaded = true;
+			status.hasVariantSize = pdpData.cardProduct.hasVariantSize;
 
 			// Sets whether product has variants size or set defaults variant 
 			// if the product has one product variant only ...
 			if (!_.isEmpty(pdpData.cardProduct.variants) && _.isArray(pdpData.cardProduct.variants)) {
-				status.hasVariantSize = true;
-				if (pdpData.cardProduct.variants.length === 1) {
-					selectedVariant.data = pdpData.cardProduct.variants[0];
+				if (pdpData.cardProduct.variants.length === 1 && pdpData.cardProduct.hasVariantSize) {
+					const variant = pdpData.cardProduct.variants[0];
+					selectedVariant = pdpData.cardProduct.variantsData[variant.value];
+					size = variant.value;
+				} else if (pdpData.cardProduct.variants.length === 1 && !pdpData.cardProduct.hasVariantSize) {
+					selectedVariant = pdpData.cardProduct.variants[0];
 				}
 			}
 
+			// disable enabled button BELI AJA
 			if (_.isEmpty(pdpData.cardProduct.variants) || 
-				pdpData.cardProduct.productStock === 0 || detail.is_product_available !== 1) {
+				pdpData.cardProduct.productStock === 0 || detail.is_product_available === 0) {
 				status.btnBeliDisabled = true;
+			} else {
+				status.btnBeliDisabled = false;
+			}
+
+			if (typeof detail.seller !== 'undefined' && typeof detail.seller.seller_id !== 'undefined' && !status.sellerDataSet) {
+				dispatch(new productActions.productStoreAction(this.userCookies, detail.seller.seller_id));
+				status.sellerDataSet = true;
 			}
 		}
 
@@ -109,28 +124,23 @@ class Products extends Component {
 		}
 
 		// sets recommendation products data
-		// if (!_.isEmpty(recommendation.products) && !status.recommendationSet) status.recommendationSet = true;
 		if (!_.isEmpty(promo.recommended_items.products) && !status.recommendationSet) status.recommendationSet = true;
 
 		// sets similar products data
 		if (!_.isEmpty(promo.similar_items.products) && !status.similarSet) status.similarSet = true;
 
-		// sets product reviews data
-		if (!_.isEmpty(socialSummary.reviews) && !status.reviewsSet) {
-			status.reviewsSet = true;
-			const commentsSet = (!_.isUndefined(socialSummary.comment) && !_.isEmpty(socialSummary.comment));
-			if (commentsSet && (typeof socialSummary.comment.total !== 'undefined')) {
-				pdpData.cardProduct.totalComments = socialSummary.comment.total || 0;
-			}
-
-			pdpData.reviewContent = socialSummary.reviews.summary.map((item, idx) => {
-				return <Comment key={idx} type='review' data={item} />;
-			});
-		}
-
 		// updates states
-		this.setState({ detail, status, pdpData, selectedVariant });
+		this.setState({ detail, status, pdpData, selectedVariant, size });
 		this.handleScroll();
+	}
+
+	onOvoInfoClick(e) {
+		const { promo } = this.props.product;
+		const { status } = this.state;
+		status.showOvoInfo = false;
+		if (!_.isEmpty(promo.meta_data.ovo_info)) status.showOvoInfo = true;
+
+		this.setState({ status });
 	}
 
 	setCarouselSlideIndex(index) {
@@ -202,6 +212,9 @@ class Products extends Component {
 			status.showModalSelectSize = false;
 			status.pendingAddProduct = false;
 			break;
+		case 'ovo-points':
+			status.showOvoInfo = false;
+			break;
 		default:
 			break;
 		}
@@ -211,19 +224,22 @@ class Products extends Component {
 
 	addToShoppingBag(variantId) {
 		const { status } = this.state;
-		const { dispatch } = this.props;
+		const { dispatch, product } = this.props;
 
 		const handler = new Promise((resolve, reject) => {
 			resolve(dispatch(shopBagActions.updateAction(this.userCookies, variantId, this.defaultCount, 'add')));
 		});
 
 		handler.then((res) => {
-			// update carts
-			dispatch(shopBagActions.getAction(this.userToken));
+			// updates carts badge
+			dispatch(new sharedActions.totalCartAction(this.userCookies));
 			status.pendingAddProduct = false;
 			status.productAdded = true;
 			status.showModalSelectSize = false;
-			this.setState({ btnBeliLabel: 'GO TO SHOPPING BAG' });
+
+			// get product data
+			status.pdpDataHasLoaded = false;
+			dispatch(new productActions.productDetailAction(this.userCookies, product.detail.id));
 		}).catch((err) => {
 			throw err;
 		});
@@ -236,16 +252,17 @@ class Products extends Component {
 
 		// product variants not found
 		if (!status.hasVariantSize && _.isEmpty(selectedVariant)) {
-			console.log('[BEN BEN]: Inccorect variants data: ', this.props.product);
-			return;
+			status.btnBeliDisabled = true;
+			this.setState({ status });
+			throw new Error('Invalid variants data');
 		}
 
 		// Go to shopping back
-		if (status.productAdded) {
-			const { history } = this.props;
-			history.push('/cart');
-			return;
-		}
+		// if (status.productAdded) {
+		// 	const { history } = this.props;
+		// 	history.push('/cart');
+		// 	return;
+		// }
 
 		if (status.hasVariantSize && _.isEmpty(selectedVariant)) {
 			status.showModalSelectSize = true;
@@ -299,6 +316,9 @@ class Products extends Component {
 		case 'comments':
 			destUri = `/product/comments/${detail.id}`;
 			break;
+		case 'reviews':
+			destUri = `/product/reviews/${detail.id}`;
+			break;
 		case 'carts':
 			destUri = '/cart';
 			break;
@@ -309,7 +329,6 @@ class Products extends Component {
 			break;
 		}
 
-		console.log(destUri);
 		if (!_.isEmpty(destUri) && !_.isNull(destUri) && !_.isEmpty(page)) {
 			history.push(destUri);
 		}
@@ -427,6 +446,23 @@ class Products extends Component {
 		);
 	}
 
+	renderStoreProducts() {
+		const { products } = this.props.product.store;
+		const length = products.length;
+		const storeProductListContent = products.map((product, idx) => {
+			if (idx === (length - 1)) {
+				return (
+					<div key={`storePNH-${idx}`} className='padding--normal-h'>
+						<Image src={product.images[0].thumbnail} key={idx} />
+						<div className={styles.seeAll}>SEE ALL</div>
+					</div>
+				);
+			}
+			return <div key={`storePNH-${idx}`} className='padding--normal-h'><Image key={idx} src={product.images[0].thumbnail} /></div>;
+		});
+		return <Grid split={4} className='padding--small-h'>{storeProductListContent}</Grid>;
+	}
+
 	renderHeaderPage() {
 		const url = `${process.env.MOBILE_URL}${this.props.location.pathname}`;
 		const { pdpData, status } = this.state;
@@ -447,7 +483,7 @@ class Products extends Component {
 						<Svg src={'ico_arrow-back-left.svg'} />
 					</Button>
 				),
-				center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{pdpData.cardProduct.product_title}</div>,
+				center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{pdpData.cardProduct.brand.name}</div>,
 				right: (
 					<div className='flex-row flex-middle'>
 						<Share title={title} url={url} />
@@ -499,10 +535,19 @@ class Products extends Component {
 		return null;
 	}
 
+	renderViewAllReviews() {
+		const { reviews } = this.props.product.socialSummary;
+		const reviewsContent = reviews.summary.map((item, idx) => {
+			return <Comment key={idx} type='review' data={item} />;
+		});
+
+		return (<Page color='white'>{reviewsContent}</Page>);
+	}
+
 	render() {
 		const { detail, pdpData, status, carousel, selectedVariant } = this.state;
 		const { match, product } = this.props;
-		const { seller, comment, reviews } = product.socialSummary;
+		const { seller, comments, reviews } = product.socialSummary;
 		const linkToPdpDisabled = true;
 		if (status.isZoomed) {
 			return this.renderZoomImage();
@@ -521,11 +566,11 @@ class Products extends Component {
 									data={pdpData.cardProduct || {}}
 									isLoved={status.isLoved}
 									disabledLovelist={false}
-									optimistic={false}
 									onBtnLovelistClick={this.handleLovelistClick}
 									onBtnCommentClick={this.redirectToPage}
 									onBtnBeliClick={this.handleBtnBeliClicked}
 									linkToPdpDisabled={linkToPdpDisabled}
+									totalComments={comments.total}
 								/>
 							</div>
 						)}
@@ -563,7 +608,7 @@ class Products extends Component {
 									<div className='padding--small-h'>{product.promo.meta_data.ovo_reward}</div>
 								</Level.Item>
 								<Level.Right>
-									<Button>
+									<Button onClick={this.onOvoInfoClick}>
 										<Svg src='ico_warning.svg' />
 									</Button>
 								</Level.Right>
@@ -574,20 +619,23 @@ class Products extends Component {
 							status.pdpDataHasLoaded && <p className='padding--medium-h' dangerouslySetInnerHTML={{ __html: detail.description }} />
 						}
 						<div className='margin--medium-v --disable-flex padding--medium-h'>
-							{
-								(this.isLogin === 'true') &&
+							{this.isLogin && (
 								<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
-									{(status.pdpDataHasLoaded && pdpData.cardProduct.totalComments > 0) ? `Lihat semua ${pdpData.cardProduct.totalComments} komentar` : 'Belum ada komentar'}
+									{(comments.total === 0) && 'Belum Ada Komentar'}
+									{(comments.total > 0 && comments.total <= 2) && `${comments.total} Komentar`}
+									{(comments.total > 2) && `Lihat Semua ${comments.total} Komentar`}
 								</Link>
-							}
+							)}
+
 							{
-								(this.isLogin !== 'true') &&
+								(!this.isLogin) &&
 								<span>
-									<a href='/user/login'>Log in</a> / <a href='/user/register'>Register</a> untuk memberikan komentar
+									<a href={`/login?redirect_uri=${this.props.location.pathname}`}>Log in</a> / 
+									<a href={`/register?redirect_uri=${this.props.location.pathname}`}>Register</a> untuk memberikan komentar
 								</span>
 							}
-							{(!_.isUndefined(comment) && !_.isUndefined(comment.summary) && !_.isEmpty(comment.summary)) && (
-								<Comment type='lite-review' data={comment.summary} />
+							{(!_.isUndefined(comments) && !_.isUndefined(comments.summary) && !_.isEmpty(comments.summary)) && (
+								<Comment type='lite-review' data={comments.summary} />
 							)}
 						</div>
 						{status.recommendationSet && (
@@ -597,66 +645,62 @@ class Products extends Component {
 							</div>
 						)}
 						<div style={{ backgroundColor: '#F5F5F5' }}>
-							{status.reviewsSet && (
-								<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
-									<div className='margin--medium-v'>
-										<div className='padding--small-h margin--small-v margin--none-t flex-row flex-spaceBetween'>
-											<div className='font-medium'><strong>Ulasan</strong></div>
-											{(typeof reviews.total !== 'undefined' && reviews.total > 0) && (
-												<Link className='font-small flex-middle d-flex flex-row font-color--primary-ext-2' to='/'><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Link>
-											)}
-										</div>
+							<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
+								<div className='margin--medium-v'>
+									<div className='padding--small-h margin--small-v margin--none-t flex-row flex-spaceBetween'>
+										<div className='font-medium'><strong>{reviews.total > 0 ? 'Ulasan' : 'Belum Ada Ulasan'}</strong></div>
+										{reviews.total > 2 && (
+											<Button onClick={() => this.redirectToPage('reviews')} className='font-small flex-middle d-flex flex-row font-color--primary-ext-2' ><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Button>
+										)}
+									</div>
+									{reviews.total > 0 && (
 										<div className='border-bottom'>
 											<div className='padding--small-h margin--medium-v margin--none-t flex-row flex-middle'>
 												<Rating
-													active={(typeof reviews.rating !== 'undefined' && reviews.rating > 0) ? reviews.rating : 0}
-													total={(typeof reviews.total !== 'undefined' && reviews.total > 0) ? reviews.total : 0}
+													active={(reviews.rating < 5) ? Number.parseFloat(reviews.rating).toFixed(1) : reviews.rating}
+													total={5}
 												/>
 												<div className='flex-row padding--small-h'>
-													<strong>{(typeof reviews.rating !== 'undefined' && reviews.rating > 0) ? reviews.rating : 0}/5</strong>
-													<span className='font-color--primary-ext-2 padding--small-h'>
-														{(typeof reviews.total !== 'undefined' && reviews.total > 0) ? `(${reviews.total} Ulasan)` : 'Belum Ada Ulasan'}
-													</span>
+													<strong>{(reviews.rating < 5) ? Number.parseFloat(reviews.rating).toFixed(1) : reviews.rating} / 5</strong>
+													<span className='font-color--primary-ext-2 padding--small-h'>{`${reviews.total} Ulasan)`}</span>
 												</div>
 											</div>
 										</div>
-										{(!status.loading) ? pdpData.reviewContent : this.loadingContent}
-									</div>
+									)}
+									{reviews.total > 0 && (
+										<div>
+											{status.loading && this.loadingContent}
+											{!status.loading && 
+											(reviews.summary.map((item, idx) => {
+												return <Comment key={idx} type='review' data={item} />;
+											})
+										)}</div>
+									)}
 								</div>
-							)}
+							</div>
 							<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
-								{
-									status.pdpDataHasLoaded && (
-										<SellerProfile
-											image={detail.seller.seller_logo}
-											status='gold'
-											isNewStore={seller.is_new_seller}
-											successOrder={(!_.isUndefined(seller.success_order.rate)) ? (seller.success_order.rate || 0) : 0}
-											rating={seller.rating}
-											totalProduct={(!_.isUndefined(seller.success_order.total)) ? (seller.success_order.total || 0) : 0}
-											name={detail.seller.seller}
-											location={detail.seller.seller_location}
-											description={(seller.description || '')}
-											storeAddress={urlBuilder.setId(detail.seller.seller_id).setName(detail.seller.seller).buildStore()}
-										/>
+								{status.pdpDataHasLoaded && (
+									<SellerProfile
+										image={detail.seller.seller_logo}
+										status='gold'
+										isNewStore={seller.is_new_seller}
+										successOrder={(!_.isUndefined(seller.success_order.rate)) ? (seller.success_order.rate || 0) : 0}
+										rating={seller.rating}
+										totalProduct={(!_.isUndefined(seller.success_order.total)) ? (seller.success_order.total || 0) : 0}
+										name={detail.seller.seller}
+										location={detail.seller.seller_location}
+										description={(seller.description || '')}
+										storeAddress={urlBuilder.setId(detail.seller.seller_id).setName(detail.seller.seller).buildStore()}
+									/>
 									)
 								}
 
-								{
-									status.pdpDataHasLoaded && (
-										<div className='margin--medium-v margin--none-t'>
-											<Grid split={4} className='padding--small-h'>
-												<div className='padding--normal-h'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
-												<div className='padding--normal-h'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
-												<div className='padding--normal-h'><Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' /></div>
-												<div className='padding--normal-h'>
-													<Image src='https://cms.souqcdn.com/spring/cms/en/ae/2017_LP/women-clothing/images/women-clothing-skirts.jpg' />
-													<div className={styles.seeAll}>
-														SEE ALL
-													</div>
-												</div>
-											</Grid>
-										</div>
+								{(status.sellerDataSet && !_.isEmpty(product.store.products)) && (
+									<div className='margin--medium-v margin--none-t'>
+										<Link to={urlBuilder.setId(detail.seller.seller_id).setName(detail.seller.seller).buildStore()} >
+											{this.renderStoreProducts()}
+										</Link>
+									</div>
 								)}
 							</div>
 							{status.similarSet && (
@@ -728,6 +772,26 @@ class Products extends Component {
 									<span className='font-color--primary-ext-2'>NANTI</span>
 								</Button>)}
 							confirmButton={(<Button onClick={(e) => this.loginNow()}>SEKARANG</Button>)}
+						/>
+					</Modal>
+				)}
+
+				{status.showOvoInfo && (
+					<Modal show>
+						<div className='font-medium'>
+							<h3 className='text-center'>OVO Points</h3>
+							<Level style={{ padding: '0px' }} className='margin--medium-v'>
+								<Level.Left />
+								<Level.Item className='padding--medium-h'>
+									<center>{product.promo.meta_data.ovo_info}</center>
+								</Level.Item>
+							</Level>
+						</div>
+						<Modal.Action
+							closeButton={(
+								<Button onClick={(e) => this.handleCloseModalPopUp(e, 'ovo-points')}>
+									<strong className='font-color--primary-ext-2'>TUTUP</strong>
+								</Button>)}
 						/>
 					</Modal>
 				)}

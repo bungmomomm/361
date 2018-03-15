@@ -5,7 +5,7 @@ import styles from './tab.scss';
 
 class Tabs extends PureComponent {
 	render() {
-		const { current, variants, className, type, onPick, style } = this.props;
+		const { activeTab, current, variants, className, type, onPick, style } = this.props;
 		const createClassName = classNames(
 			styles.container,
 			className,
@@ -13,13 +13,13 @@ class Tabs extends PureComponent {
 		);
 
 		const tabs = variants.map(({ id, title, key, disabled }, idx) => {
-			const active = id === current;
+			const activeId = activeTab ? (activeTab === id) : (key === current);
 			return (
 				<Tab
 					id={id}
 					key={idx}
 					title={title}
-					active={active}
+					active={activeId}
 					disabled={disabled}
 					onPick={onPick}
 				/>

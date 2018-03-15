@@ -51,10 +51,10 @@ class LoginPage extends Component {
 		const { loginId, password, redirectUri } = this.state;
 		const [err, response] = await to(dispatch(new users.userLogin(cookies.get('user.token'), loginId, password)));
 		if (err) {
-
 			return err;
 		}
 		setUserCookie(this.props.cookies, response.token);
+		dispatch(new users.afterLogin(cookies.get('user.token')));
 		history.push(redirectUri || '/');
 		return response;
 	}
@@ -68,6 +68,7 @@ class LoginPage extends Component {
 			return err;
 		}
 		setUserCookie(this.props.cookies, response.token);
+		dispatch(new users.afterLogin(cookies.get('user.token')));
 		history.push(redirectUri || '/');
 		return response;
 	}

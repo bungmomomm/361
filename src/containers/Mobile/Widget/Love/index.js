@@ -10,6 +10,9 @@ import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as commentActions } from '@/state/v4/Comment';
+import { actions as usersActions } from '@/state/v4/User';
+import { actions as sharedActions } from '@/state/v4/Shared';
+import { uniqid } from '@/utils';
 
 class Love extends PureComponent {
 	constructor(props) {
@@ -24,6 +27,7 @@ class Love extends PureComponent {
 	async loveClicked(e) {
 		const { cookies, data, dispatch, onClick, status } = this.props;
 		const { loading } = this.state;
+		let message = '';
 		if (cookies.get('isLogin') === 'false') {
 			this.setState({
 				showModal: true
@@ -37,8 +41,10 @@ class Love extends PureComponent {
 			loading: true
 		});
 		if (status === 0) {
+			message = 'Produk berhasil disimpan ke Lovelist';
 			await dispatch(lovelistActions.addToLovelist(cookies.get('user.token'), data));
 		} else {
+			message = 'Produk berhasil dihapus dari Lovelist';
 			await dispatch(lovelistActions.removeFromLovelist(cookies.get('user.token'), data));
 		}
 		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), [data]));
@@ -46,6 +52,11 @@ class Love extends PureComponent {
 		this.setState({
 			loading: false
 		});
+		dispatch(sharedActions.showSnack(uniqid('err-'), {
+			label: message,
+			timeout: 3000
+		}));
+
 		if (onClick) {
 			onClick(data);
 		}
@@ -58,6 +69,8 @@ class Love extends PureComponent {
 	}
 
 	loginNow() {
+		const { data, dispatch } = this.props;
+		dispatch(new usersActions.addAfterLogin('Lovelist', 'addToLovelist', [data]));
 		this.setState({
 			showModal: false
 		});

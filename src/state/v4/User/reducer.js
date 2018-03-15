@@ -49,6 +49,8 @@ const actions = createActions({
 	USER_GET_TRACKING_INFO: undefined,
 	USER_CHECK_MY_ORDERS: undefined,
 	USER_KEEP_REVIEW_INFO: undefined,
+	USER_AFTER_LOGIN: (state, action, param) => ({ state, action, param }),
+	USER_AFTER_LOGIN_CLEAR: undefined
 });
 
 const initialState = {
@@ -67,6 +69,7 @@ const initialState = {
 	trackingInfo: null,
 	isNoOrders: null,
 	reviewInfo: null,
+	queue: []
 };
 
 const reducer = handleActions({
@@ -166,6 +169,14 @@ const reducer = handleActions({
 	[actions.userGetTrackingInfo]: (state, action) => ({ ...state, ...action.payload }),
 	[actions.userCheckMyOrders]: (state, action) => ({ ...state, ...action.payload }),
 	[actions.userKeepReviewInfo]: (state, action) => ({ ...state, ...action.payload }),
+	[actions.userAfterLogin]: (state, action) => {
+		state.queue.push(action.payload);
+		return state;
+	},
+	[actions.userAfterLoginClear]: (state, action) => {
+		state.queue = [];
+		return state;
+	}
 }, initialState);
 export default {
 	actions,

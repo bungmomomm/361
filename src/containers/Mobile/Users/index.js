@@ -51,7 +51,7 @@ class Users extends Component {
 				{
 					center: (
 						<Tabs
-							current={current}
+							activeTab={current}
 							variants={[
 								{
 									title: 'Login',
