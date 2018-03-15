@@ -142,12 +142,12 @@ class Hashtags extends Component {
 					<Svg src={hashtag.viewMode === 3 ? 'ico_list.svg' : 'ico_grid-3x3.svg'} />
 				</Button>
 			),
-			rows: isSticky() ? [{ left: null, center: listHastags, right: null }] : []
+			rows: isSticky() ? [{ left: null, center: listHastags, right: null }] : null
 		};
 
 		return (
 			<div>
-				<Page>
+				<Page color='white'>
 
 					<Helmet>
 						<title>{'Mau Gaya Itu Gampang | MatahariMall.com'}</title>
