@@ -7,7 +7,7 @@ import queryString from 'query-string';
 
 import Shared from '@/containers/Mobile/Shared';
 import Login from './Login/Page';
-import Register from './Register/Page';
+import Register from './Register';
 import {
 	Header,
 	Page,

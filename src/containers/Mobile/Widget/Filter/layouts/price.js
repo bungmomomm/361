@@ -87,7 +87,7 @@ class Price extends PureComponent {
 	}
 
 	render() {
-		const { onClose, range } = this.props;
+		const { onClose, range, title } = this.props;
 		const { resetDisabled } = this.state;
 		const HeaderPage = {
 			left: (
@@ -95,7 +95,7 @@ class Price extends PureComponent {
 					<Svg src='ico_arrow-back-left.svg' />
 				</Button>
 			),
-			center: 'Harga',
+			center: _.capitalize(title) || 'Default',
 			right: null
 		};
 

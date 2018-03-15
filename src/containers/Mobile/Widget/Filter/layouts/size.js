@@ -43,7 +43,7 @@ class Size extends PureComponent {
 	}
 	
 	render() {
-		const { onClose } = this.props;
+		const { onClose, title } = this.props;
 		const { data, resetDisabled } = this.state;
 		const HeaderPage = {
 			left: (
@@ -51,7 +51,7 @@ class Size extends PureComponent {
 					<Svg src='ico_arrow-back-left.svg' />
 				</Button>
 			),
-			center: 'Ukuran',
+			center: _.capitalize(title) || 'Default',
 			right: null
 		};
 
@@ -67,7 +67,7 @@ class Size extends PureComponent {
 						<Button key={key} align='left' wide onClick={(e) => this.onClick(e, childSize)}>
 							<List.Content className='padding--medium-v'>
 								<div className='flex-row flex-middle'>
-									<span>{childSize.facetdisplay}</span> <span className='font-color--primary-ext-2 margin--small-l'>(111)</span>
+									<span>{childSize.facetdisplay}</span> <span className='font-color--primary-ext-2 margin--small-l'>({childSize.count})</span>
 								</div>
 								{icon}
 							</List.Content>
@@ -92,7 +92,7 @@ class Size extends PureComponent {
 					<Button key={id} align='left' wide onClick={(e) => this.onClick(e, size)}>
 						<List.Content className='padding--medium-v'>
 							<div className='flex-row flex-middle'>
-								<span>{size.facetdisplay}</span> <span className='font-color--primary-ext-2 margin--small-l'>(111)</span>
+								<span>{size.facetdisplay}</span> <span className='font-color--primary-ext-2 margin--small-l'>({size.count})</span>
 							</div>
 							{icon}
 						</List.Content>

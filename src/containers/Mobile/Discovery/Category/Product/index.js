@@ -31,7 +31,8 @@ import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 
 import {
-	renderIf
+	renderIf,
+	urlBuilder
 } from '@/utils';
 // import stylesCatalog from '../Catalog/catalog.scss';
 import Footer from '@/containers/Mobile/Shared/footer';
@@ -92,17 +93,14 @@ class Product extends Component {
 
 		const parsedUrl = queryString.parse(location.search);
 
-		const url = queryString.stringify({
-			sort: query.sort,
-			per_page: query.per_page,
+		urlBuilder.replace(history, {
+			query: query.q,
 			page: query.page,
+			per_page: query.per_page,
+			sort: query.sort,
 			...parsedUrl,
 			...params
-		}, {
-			encode: false
 		});
-
-		history.replace(`?${url}`);
 
 		const pcpParam = {
 			...query,
