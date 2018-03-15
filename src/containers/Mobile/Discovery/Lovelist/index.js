@@ -66,14 +66,16 @@ class Lovelist extends Component {
 			if (!_.isEmpty(lovelist.bulkieCountProducts)) {
 				lovelist.items.list = lovelist.items.list.map((item, idx) => {
 					const productFound = LoveListActionCreator.getBulkItem(lovelist.bulkieCountProducts, item.original.product_id);
-					const commentFound = LoveListActionCreator.getBulkItem(comments.data, item.original.product_id);
 					item.last_comments = [];
 					item.totalComments = 0;
-					if (productFound) item.totalLovelist = productFound.total;
-					if (commentFound) {
-						item.totalComments = commentFound.total || 0;
-						item.last_comments = commentFound.last_comment || [];
+					if (!_.isEmpty(comments.data)) {
+						const commentFound = LoveListActionCreator.getBulkItem(comments.data, item.original.product_id);
+						if (commentFound) {
+							item.totalComments = commentFound.total || 0;
+							item.last_comments = commentFound.last_comment || [];
+						}
 					}
+					if (productFound) item.totalLovelist = productFound.total;
 					return item;
 				});
 

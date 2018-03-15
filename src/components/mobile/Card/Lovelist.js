@@ -43,6 +43,7 @@ class Lovelist extends PureComponent {
 		const createClassName = classNames(styles.container, styles[type], className);
 		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
 
+		console.log('data: ', data.last_comments);
 		const discountBadge = data.pricing.discount !== '0%' ? (
 			<div style={{ marginLeft: '1.5rem' }}>
 				<Badge rounded color='red'>
@@ -111,7 +112,7 @@ class Lovelist extends PureComponent {
 					<Link to={linkToComments} className='font--lato-normal font-color--primary-ext-2'>
 						{(data.totalComments > 0) ? `Lihat ${data.totalComments} Komentar` : 'Belum Ada Komentar'}
 					</Link>
-					{(data.last_comments.length > 0) && (
+					{((typeof data.last_comments !== 'undefined') && data.last_comments.length > 0) && (
 						<Comment type='lite-review' data={data.last_comments} />
 					)}
 				</div>
