@@ -8,7 +8,6 @@ import Level from '../Level';
 import Badge from '../Badge';
 import styles from './card.scss';
 import { Link } from 'react-router-dom';
-import { urlBuilder } from '@/utils';
 import _ from 'lodash';
 
 class Lovelist extends PureComponent {
@@ -38,15 +37,14 @@ class Lovelist extends PureComponent {
 	}
 
 	render() {
-		const { className, type, data, isLoved } = this.props;
+		const { className, type, data, isLoved, linkToPdp } = this.props;
 		const createClassName = classNames(styles.container, styles[type], className);
-		const linkToPdpCreator = urlBuilder.buildPdp(data.product_title, data.id);
 		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
 		const slideIndex = this.getSlideIndex();
 
 		return (
 			<div className={createClassName}>
-				<Link to={linkToPdpCreator}>
+				<Link to={linkToPdp}>
 					<Carousel
 						slideIndex={slideIndex}
 						afterSlide={this.setCarouselSlideIndex}

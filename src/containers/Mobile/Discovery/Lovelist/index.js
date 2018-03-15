@@ -2,23 +2,26 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { withCookies } from 'react-cookie';
-import { Header, Page, Card, Button, Svg, Image, Level, Modal, Spinner } from '@/components/mobile';
 import _ from 'lodash';
+import { Header, Page, Card, Button, Svg, Image, Level, Modal, Spinner } from '@/components/mobile';
 import styles from './lovelist.scss';
+
 import { actions as LoveListActionCreator } from '@/state/v4/Lovelist';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Shared from '@/containers/Mobile/Shared';
+import { urlBuilder } from '@/utils';
 
 class Lovelist extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.isLogin = (typeof this.props.cookies.get('isLogin') === 'string' && this.props.cookies.get('isLogin') === 'true');
 		this.state = {
 			status: {
 				listTypeGrid: true,
 				listEmpty: true,
 				loading: true,
-				loggedIn: true, // should be adjust when user-login has done...,
+				loggedIn: false,
 				isBulkSet: false,
 				showConfirmDelete: false
 			},
@@ -29,7 +32,22 @@ class Lovelist extends Component {
 		this.renderLovelistPage = this.renderLovelistPage.bind(this);
 		this.handleLovelistClicked = this.handleLovelistClicked.bind(this);
 		this.handleCancelRemoveItem = this.handleCancelRemoveItem.bind(this);
+		this.onGridViewModeClick = this.onGridViewModeClick.bind(this);
 		this.removeItem = this.removeItem.bind(this);
+	}
+
+	componentWillMount() {
+		// should be redirected to lovelist-login page
+		if (!this.isLogin) {
+			const { history } = this.props;
+			history.push('/lovelist-login');
+		}
+
+		const { status } = this.state;
+		status.loggedIn = this.isLogin;
+		this.setState({
+			status
+		});
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -61,22 +79,32 @@ class Lovelist extends Component {
 		this.setState({ status });
 	}
 
+	onGridViewModeClick(e) {
+		const { status } = this.state;
+		status.listTypeGrid = (!status.listTypeGrid);
+		this.setState({ status });
+	}
+
 	getLovelistCardsContent() {
 		const { items } = this.props.lovelist;
 		const isLoved = true;
 		const content = items.list.map((product, idx) => {
+			console.log('product: ', product);
+			console.log('title: ', product.product_title);
 			return !this.state.status.listTypeGrid ?
 				(<Card.Lovelist
 					isLoved={isLoved}
 					key={idx}
 					data={product}
 					onBtnLovelistClick={this.handleLovelistClicked}
+					linkToPdp={urlBuilder.buildPdp(product.product_title, product.product_id)}
 				/>) :
 				(<Card.LovelistGrid
 					key={idx}
 					data={product}
 					isLoved={isLoved}
 					onBtnLovelistClick={this.handleLovelistClicked}
+					linkToPdp={urlBuilder.buildPdp(product.product_title, product.product_id)}
 				/>);
 		});
 
@@ -128,11 +156,7 @@ class Lovelist extends Component {
 			left: (
 				<Button
 					className={status.loggedIn || !status.listEmpty ? null : 'd-none'}
-					onClick={() => {
-						status.listTypeGrid = (!status.listTypeGrid);
-						this.setState({ status });
-						this.setState({ status: { listEmpty: true } });
-					}}
+					onClick={this.onGridViewModeClick}
 				>
 					<Svg src={status.listTypeGrid ? 'ico_grid.svg' : 'ico_list.svg'} />
 				</Button>
@@ -149,7 +173,7 @@ class Lovelist extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page color='white'>
 					{ <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} /> }
 					{content}
 				</Page>
@@ -179,6 +203,7 @@ class Lovelist extends Component {
 
 	render() {
 		const { status } = this.state;
+		
 		if (status.loading) {
 			return this.renderLovelistPage(
 				<div style={{ marginTop: '50%' }} className='text-center'>

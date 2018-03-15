@@ -7,19 +7,16 @@ import Level from '../Level';
 import Badge from '../Badge';
 import styles from './card.scss';
 import { Link } from 'react-router-dom';
-import { hyperlink } from '@/utils';
 
 class LovelistGrid extends PureComponent {
 	render() {
-		const { className, data, isLoved } = this.props;
+		const { className, data, isLoved, linkToPdp } = this.props;
 		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
 		const createClassName = classNames(styles.container, styles.grid, className);
-		
-		const linkToPdpCreator = hyperlink('', ['product', data.id], null);
   
 		return (
 			<div className={createClassName}>
-				<Link to={linkToPdpCreator}>
+				<Link to={linkToPdp}>
 					<Image src={data.images[0].thumbnail} alt={data.product_title} />
 				</Link>
 				<Level className={styles.action}>
@@ -47,9 +44,9 @@ class LovelistGrid extends PureComponent {
 						</Badge>
 					</Level.Right>
 				</Level>
-				<Button color='secondary' size='medium' outline rounded>
-					Beli aja
-				</Button>
+				{/* <Button color='secondary' size='medium' outline rounded>
+					BELI AJA
+				</Button> */}
 			</div>
 		);
 	}
