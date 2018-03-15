@@ -226,7 +226,7 @@ class SearchResults extends Component {
 	}
 
 	renderPage() {
-		const { searchResults } = this.props;
+		const { searchResults, shared } = this.props;
 		const { showFilter } = this.state;
 
 		if (showFilter) {
@@ -241,12 +241,22 @@ class SearchResults extends Component {
 				/>
 			);
 		}
-
+		
+		const navigationAttribute = {
+			scroll: this.props.scroll
+		};
+		
+		if (shared.userPreviousPage !== 'HOME') {
+			navigationAttribute.active = 'Categories';
+		}
+			
+		navigationAttribute.active = 'Categories';
+		
 		return (
 			<div style={this.props.style}>
 				{this.renderSearch()}
 				{this.renderHeader()}
-				<Navigation scroll={this.props.scroll} />
+				<Navigation {...navigationAttribute} />
 			</div>
 		);
 	}
