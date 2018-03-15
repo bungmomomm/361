@@ -4,7 +4,7 @@ import { withCookies } from 'react-cookie';
 import Shared from '@/containers/Mobile/Shared';
 import queryString from 'query-string';
 import { Link } from 'react-router-dom';
-import { actions as users } from '@/state/v4/user';
+import { actions as users } from '@/state/v4/User';
 import _ from 'lodash';
 import { to } from 'await-to-js';
 import {
