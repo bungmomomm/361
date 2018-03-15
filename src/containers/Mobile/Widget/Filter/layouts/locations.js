@@ -53,7 +53,7 @@ class Location extends PureComponent {
 					<Svg src='ico_arrow-back-left.svg' />
 				</Button>
 			),
-			center: title || 'Default',
+			center: _.capitalize(title) || 'Default',
 			right: null
 		};
 
@@ -74,7 +74,7 @@ class Location extends PureComponent {
 									<Button onClick={(e) => this.onClick(e, value)}>
 										<List.Content className='padding--medium-v'>
 											<div className='flex-row flex-middle'>
-												<span>{value.facetdisplay}</span> <span className='font-color--primary-ext-2 margin--small-l'>(111)</span>
+												<span>{value.facetdisplay}</span> <span className='font-color--primary-ext-2 margin--small-l'>({value.count})</span>
 											</div>
 											{Icon(value.is_selected)}
 										</List.Content>
