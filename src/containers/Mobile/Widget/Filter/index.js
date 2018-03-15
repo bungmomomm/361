@@ -39,6 +39,7 @@ class Filter extends PureComponent {
 			selected: {},
 			layout: 'result',
 			resetDisabled: true,
+			resetCliked: false,
 			params: {
 				header: {
 					title: 'Title'
@@ -66,13 +67,15 @@ class Filter extends PureComponent {
 	}
 
 	onFilterSectionClose(e) {
-		const { layout } = this.state;
+		const { layout, resetCliked } = this.state;
 		if (layout !== 'result') {
 			this.setState({
 				layout: 'result'
 			});
 		} else {
-			this.onApply(undefined);
+			if (resetCliked) {
+				this.onApply(undefined);
+			}
 			this.props.onClose(e);
 		}
 	}
@@ -131,7 +134,8 @@ class Filter extends PureComponent {
 		this.setState({
 			resetDisabled,
 			filters,
-			selected
+			selected,
+			resetCliked: true
 		});
 		this.forceUpdate();
 	}
@@ -187,7 +191,8 @@ class Filter extends PureComponent {
 			resetDisabled,
 			filters,
 			selected,
-			layout: 'result'
+			layout: 'result',
+			resetCliked: false
 		});
 	}
 
