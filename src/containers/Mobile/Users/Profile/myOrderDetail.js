@@ -64,7 +64,11 @@ class MyOrderDetail extends Component {
 			const { dispatch } = this.props;
 			dispatch(userAction.getMyOrderDetail(this.userToken, this.soNumber));
 		}
-
+	}
+	onAddReview(soStoreNumber, seller, item) {
+		console.log('MyOrder Detail item', { soStoreNumber, seller, item });
+		const { dispatch } = this.props;
+		dispatch(userAction.keepReviewInfo({ soStoreNumber, seller, item }));
 	}
 
 	renderDetail() {
@@ -81,7 +85,7 @@ class MyOrderDetail extends Component {
 				{this.renderOrderList()}
 				{this.renderAddress()}
 				{this.renderPembayaran()}
-				{(order.group !== 'konfirmasi' && order.payment_status_id === 1) && (
+				{(order.group === 'konfirmasi' && order.payment_status_id === 1) && (
 					<Link to={'/profile-my-order-confirm/'}>
 						<Button rounded size='medium' color='secondary'>Konfirmasi Pembayaran</Button>
 					</Link>
@@ -109,14 +113,11 @@ class MyOrderDetail extends Component {
 								<strong>{item.pricing.formatted.price}</strong>
 							</Level.Right>
 						</Level>
-						{/* <Level className='bg--white' style={{ borderBottom: '1px solid #D8D8D8' }}>
-							<Level.Item className='padding--normal-r'>
-								<Button rounded size='medium' color='secondary'><Svg src='ico_download.svg' /> Beri Ulasan</Button>
-							</Level.Item>
-							<Level.Item className='padding--normal-l'>
-								<Button rounded size='medium' color='white'><Svg src='ico_download.svg' /> Beli Lagi</Button>
-							</Level.Item>
-						</Level> */}
+						{(item.fg_have_review === 0 && myOrdersDetail.group === 'selesai') && (
+							<Link to={'/profile/my-order/add-review'} onClick={() => this.onAddReview(order.so_store_number, order.seller, item)}>
+								<Button rounded size='medium' color='secondary'>BERI ULASAN</Button>
+							</Link>
+						)}
 					</div>
 				);
 			});
@@ -182,6 +183,12 @@ class MyOrderDetail extends Component {
 					<ul className={styles.orderPaymentList}>
 						<li><span>Subtotal</span><strong>{order.total.formatted.subtotal}</strong></li>
 						<li><span>Biaya Pengiriman</span><strong>{order.total.formatted.shipping_cost}</strong></li>
+						{(order.coupon) && (
+							<li><span>Kode Kupon</span><strong>{order.coupon}</strong></li>
+						)}
+						{order.discount && (
+							<li><span>Diskon</span><strong>{order.discount}</strong></li>
+						)}
 					</ul>
 					<div className={styles.orderPaymentTotal}>
 						<div>Total Pembayaran<br /><small className='font-color--primary-ext-2'>(Termasuk PPN)</small></div>

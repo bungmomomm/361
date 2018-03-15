@@ -22,6 +22,22 @@ const C = {
 		brand: 'brand',
 		newarrival: 'newarrival',
 		digital: 'digital'
+	},
+	USER_PROFILE_FIELD: {
+		avatar: 'avatar',
+		name: 'name',
+		phone: 'phone',
+		gender: 'gender',
+		birthday: 'birthday',
+		email: 'email',
+		oldPwd: 'old_pwd',
+		newPwd: 'new_pwd',
+		confPwd: 'conf_pwd',
+		userPoint: 'user_point',
+		ovoId: 'ovo_id',
+		ovoVerified: 'fg_ovo_verified',
+		hpEmail: 'hp_email',
+		otp: 'otp'
 	}
 };
 

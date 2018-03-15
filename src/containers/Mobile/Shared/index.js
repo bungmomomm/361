@@ -4,10 +4,12 @@ import to from 'await-to-js';
 import { actions } from '@/state/v4/Shared';
 import { actions as users } from '@/state/v4/User';
 import { actions as initAction } from '@/state/v4/Home';
-import { setUserCookie } from '@/utils';
+import { setUserCookie, uniqid, setUniqeCookie } from '@/utils';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
-import ErrorHandler from '@/containers/Mobile/Shared/errorHandler';
+import Snackbar from '@/containers/Mobile/Shared/snackbar';
+import { check, watch } from 'is-offline';
+import uuidv4 from 'uuid/v4';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 	WrappedComponent.contextTypes = {
@@ -33,12 +35,15 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 			this.userCookies = this.props.cookies.get('user.token');
 			this.userRFCookies = this.props.cookies.get('user.rf.token');
+			this.isLogin = this.props.cookies.get('isLogin') === 'true' && true;
+			this.uniqueId = this.props.cookies.get('uniqueid');
 			this.handleScroll = this.handleScroll.bind(this);
 			this.docBody = null;
+			this.unwatchConnection = null;
 		}
 
 		componentWillMount() {
-			window.mmLoading.stop();
+			// window.mmLoading.destroy();
 
 			this.initProcess().then(shouldInit => {
 				if (!shouldInit) {
@@ -48,13 +53,41 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		componentDidMount() {
+			window.mmLoading.destroy();
 			window.addEventListener('scroll', this.handleScroll, true);
 			this.docBody = document.body;
+			const { dispatch } = this.props;
+			const con = (bool) => {
+				if (bool) {
+					dispatch(actions.showSnack(uniqid('off-'), {
+						label: 'You\'re now offline, please check your internet connection.',
+						timeout: 5000,
+						button: {
+							label: 'TUTUP'
+						}
+					}));
+				}
+			};
+
+			check().then(con);
+			const unwatch = watch(con);
+			this.unwatchConnection = unwatch;
+
+			if (typeof this.uniqueId === 'undefined') {
+				const uuid = uuidv4();
+
+				setUniqeCookie(this.props.cookies, uuid);
+			}
 		}
 
 		componentWillUnmount() {
 			window.mmLoading.play();
 			window.removeEventListener('scroll', this.handleScroll, true);
+			window.prevLocation = this.props.location;
+
+			if (this.unwatchConnection) {
+				this.unwatchConnection();
+			}
 		}
 
 		shouldLoginAnonymous() {
@@ -74,27 +107,29 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			}
 
 			const { data } = resp.data;
+
 			const isAnonymous = data.info.userid <= 1;
 			setUserCookie(this.props.cookies, data, isAnonymous);
+
 			tokenBearer = data.token;
 			rfT = data.refresh_token;
 
-			if (shared.totalCart === 0) { 
+			if (shared.totalCart === 0) {
 				dispatch(new actions.totalCartAction(tokenBearer))
 				.catch(error => {
 					this.withErrorHandling(error);
-				}); 
+				});
 			}
 
-			if (shared.totalLovelist === 0) { 
+			if (shared.totalLovelist === 0) {
 				dispatch(new actions.totalLovelistAction(tokenBearer))
 				.catch(error => {
 					this.withErrorHandling(error);
-				}); 
+				});
 			}
 			if (login && provider) {
 				const response = await to(dispatch(new users.userSocialLogin(tokenBearer, provider, login)));
-				
+
 				if (response[0]) {
 					this.withErrorHandling(response[0]);
 				}
@@ -107,11 +142,11 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			if (typeof doAfterAnonymousCall !== 'undefined') {
 				try {
 					await doAfterAnonymousCall.apply(this, [this.props]);
-					
+
 				} catch (err) {
 					return this.withErrorHandling(err);
 				}
-				
+
 			}
 			return null;
 		}
@@ -163,6 +198,20 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		withErrorHandling(err) {
 			const { dispatch } = this.props;
 			const { response } = err;
+
+			const errMessage = _.chain(response).get('data.error_message').value() || false;
+
+			if (errMessage) {
+				dispatch(actions.showSnack(uniqid('err-'), {
+					label: errMessage,
+					timeout: 5000,
+					button: {
+						label: 'COBA LAGI',
+						action: 'reload'
+					}
+				}));
+			}
+
 			dispatch(actions.catchErrors(response));
 		}
 
@@ -179,11 +228,15 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		render() {
-			const { shared, dispatch } = this.props;
+			const navbar = document.querySelector('.navigation__navigation');
 
 			return (
 				<div>
-					<ErrorHandler errors={shared.errors} dispatch={dispatch} />
+					<Snackbar
+						history={this.props.history}
+						location={this.props.location}
+						customStyles={{ snack: { bottom: navbar !== null ? 51 : 0, zIndex: navbar !== null ? 2 : 999 } }}
+					/>
 					<WrappedComponent {...this.props} scroll={this.state.scroll} />
 				</div>
 			);

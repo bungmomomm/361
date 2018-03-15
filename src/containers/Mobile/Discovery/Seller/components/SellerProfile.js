@@ -54,7 +54,7 @@ const SellerProfile = ({
 							<Svg src='ico_successorder.svg' />
 							<span className='padding--small-h padding--none-r'>{successOrder}%</span>
 						</div>
-						<div className='font-small font-color--primary-ext-2'>Order Sukses</div>
+						<div className='font-small font-color--primary-ext-2 text-no-wrap'>Order Sukses</div>
 					</Level.Item>
 					<Level.Item className='text-center'>
 						<div className='font-large flex-row flex-middle'>

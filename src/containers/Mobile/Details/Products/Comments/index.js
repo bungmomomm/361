@@ -54,11 +54,11 @@ class Comments extends Component {
 		const { dispatch } = this.props;
 		const { productComment } = this.state;
 
+		dispatch(commentActions.commentAddAction(this.userCookies, this.productId, productComment));
+
 		this.setState({
 			productComment: ''
 		});
-
-		dispatch(commentActions.commentAddAction(this.userCookies, this.productId, productComment));
 	}
 
 	renderComments() {
@@ -134,7 +134,7 @@ class Comments extends Component {
 
 		return (
 			<span className={styles.commentbox}>
-				<a href='/user/login'>Log in</a> / <a href='/user/register'>Register</a> untuk memberi komentar
+				<a href='/login'>Log in</a> / <a href='/register'>Register</a> untuk memberi komentar
 			</span>
 		);
 	}

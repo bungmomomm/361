@@ -21,14 +21,12 @@ const getCreditCard = (token) => async (dispatch, getState) => {
 		fullpath: true
 	}));
 	
-	if (response.data.code === 200) {
-		dispatch(actions.userCreditCard(response.data.data));
-		return Promise.resolve(response);
+	if (err) {
+		return Promise.reject(err);
 	}
 	
-	const error = new Error(err);
-	return Promise.reject(error);
-	
+	dispatch(actions.userCreditCard(response.data.data));
+	return Promise.resolve(response);
 };
 
 const setCreditCard = (token, bodyData) => async (dispatch, getState) => {
@@ -38,25 +36,57 @@ const setCreditCard = (token, bodyData) => async (dispatch, getState) => {
 	
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 	
-	const path = `${baseUrl}/me/cards/setdefault`;
+	const path = `${baseUrl}/me/cards/setdefault/${bodyData.card_id}`;
 	
-	const [err, response] = await to(request({
+	const requestData = {
 		token,
 		path,
 		method: 'POST',
 		fullpath: true,
 		body: bodyData
-	}));
+	};
 	
-	if (response.data.code === 200) {
-		return Promise.resolve(response);
+	const [err, response] = await to(request(requestData));
+	
+	if (err) {
+		return Promise.reject(err);
 	}
 	
-	const error = new Error(err);
-	return Promise.reject(error);
+	return Promise.resolve(response);
+	
 };
+
+const deleteCreditCard = (token, bodyData) => async (dispatch, getState) => {
+	
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+	
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	
+	const path = `${baseUrl}/me/cards/delete/${bodyData.card_id}`;
+	
+	const requestData = {
+		token,
+		path,
+		method: 'POST',
+		fullpath: true,
+		body: bodyData
+	};
+	
+	const [err, response] = await to(request(requestData));
+
+	if (err) {
+		return Promise.reject(err);
+	}
+	
+	return Promise.resolve(response);
+	
+};
+
 
 export default {
 	getCreditCard,
-	setCreditCard
+	setCreditCard,
+	deleteCreditCard
 };
+

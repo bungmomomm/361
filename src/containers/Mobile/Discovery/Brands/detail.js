@@ -4,7 +4,6 @@ import { withCookies } from 'react-cookie';
 import {
 	Page,
 	Navigation,
-	Card,
 	Svg,
 	Header,
 	Button,
@@ -16,22 +15,25 @@ import {
 import styles from './brands.scss';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import Filter from '@/containers/Mobile/Shared/Filter';
+import { Filter, Sort } from '@/containers/Mobile/Widget';
 import { actions as brandAction } from '@/state/v4/Brand';
 import Shared from '@/containers/Mobile/Shared';
 import stylesCatalog from '@/containers/Mobile/Discovery/Category/Catalog/catalog.scss';
 import queryString from 'query-string';
-import { urlBuilder, renderIf } from '@/utils';
-import Sort from '@/containers/Mobile/Shared/Sort';
-import Love from '@/containers/Mobile/Shared/Widget/Love';
+import { renderIf } from '@/utils';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import Share from '@/components/mobile/Share';
 import Footer from '@/containers/Mobile/Shared/footer';
 import { actions as commentActions } from '@/state/v4/Comment';
-import { actions as searchActions } from '@/state/v4/SearchResults';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { Promise } from 'es6-promise';
 import Spinner from '@/components/mobile/Spinner';
+import Discovery from '../Utils';
+import {
+	CatalogView,
+	GridView,
+	SmallGridView
+} from '@/containers/Mobile/Discovery/View';
 
 class Detail extends Component {
 	static queryObject(props) {
@@ -63,8 +65,7 @@ class Detail extends Component {
 			icon: 'ico_list.svg'
 		}];
 		const propsObject = _.chain(props.searchResults);
-		this.currentListState = 0;
-		this.handleScroll = this.handleScroll.bind(this);
+		this.currentListState = 1;
 		this.state = {
 			listTypeState: this.listType[this.currentListState],
 			styleHeader: true,
@@ -87,8 +88,6 @@ class Detail extends Component {
 		};
 	}
 	componentDidMount() {
-		window.addEventListener('scroll', this.handleScroll, true);
-
 		if ('serviceUrl' in this.props.shared) {
 			const { dispatch, match: { params } } = this.props;
 			const qs = queryString.parse(location.search);
@@ -124,7 +123,7 @@ class Detail extends Component {
 			const { dispatch } = this.props;
 			const productIdList = _.map(nextProps.brands.searchData.products, 'product_id') || [];
 			if (productIdList.length > 0) {
-				dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+				dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 				dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 			}
 		}
@@ -135,11 +134,8 @@ class Detail extends Component {
 		if (nextProps.brands.products_comments !== this.props.brands.products_comments) {
 			this.setState({ newComment: { product_id: '', comment: '' } });
 		}
+		this.handleScroll();
 
-	}
-
-	componentWillUnmount() {
-		window.removeEventListener('scroll', this.handleScroll, true);
 	}
 
 	async onApply(e, fq) {
@@ -162,14 +158,14 @@ class Detail extends Component {
 
 	onItemLoved(productId) {
 		const { cookies, dispatch } = this.props;
-		dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), [productId]));
+		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), [productId]));
 		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), [productId]));
 	}
 
 	getCommentOfProduct(productId) {
 		return this.props.brands.products_comments && this.props.brands.products_comments.filter(e => e.product_id === productId)[0];
 	}
-	
+
 	getLovelistOfProduct(productId) {
 		return this.props.brands.products_lovelist && this.props.brands.products_lovelist.filter(e => e.product_id === productId)[0];
 	}
@@ -202,23 +198,26 @@ class Detail extends Component {
 	}
 
 	handlePick(e) {
+		const { showSort } = this.state;
 		if (e === 'view') {
 			this.currentListState = this.currentListState === 2 ? 0 : this.currentListState + 1;
 			this.setState({ listTypeState: this.listType[this.currentListState] });
 		} else {
 			this.setState({
 				showFilter: e === 'filter',
-				showSort: e === 'sort'
+				showSort: showSort ? false : (e === 'sort')
 			});
 		}
 	}
 
-	handleScroll(e) {
+	handleScroll() {
 		const { styleHeader } = this.state;
-		if (e.target.scrollTop > 300 && styleHeader) {
+		if (!this.headerEl) return;
+		const headerHeight = this.headerEl.getBoundingClientRect().height;
+		if (this.props.scroll.top > headerHeight && styleHeader) {
 			this.setState({ styleHeader: false });
 		}
-		if (e.target.scrollTop < 300 && !styleHeader) {
+		if (this.props.scroll.top < headerHeight && !styleHeader) {
 			this.setState({ styleHeader: true });
 		}
 	}
@@ -288,7 +287,7 @@ class Detail extends Component {
 					onPick={e => this.handlePick(e)}
 				/>
 				{renderIf(sorts)(
-					<Sort shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+					<Sort onCloseOverlay={() => this.setState({ showSort: false })} shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
 				)}
 			</div>
 		);
@@ -362,10 +361,8 @@ class Detail extends Component {
 		const sorts = _.chain(this.props.brands).get('searchData.sorts').value() || [];
 		if (isProductSet) {
 			return (
-				<div>
+				<div className='padding--medium-t'>
 					<Tabs
-						isSticky
-						className='margin--medium-v'
 						type='segment'
 						variants={[
 							{
@@ -387,7 +384,7 @@ class Detail extends Component {
 						onPick={e => this.handlePick(e)}
 					/>
 					{renderIf(sorts)(
-						<Sort shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+						<Sort onCloseOverlay={() => this.setState({ showSort: false })} shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
 					)}
 				</div>
 			);
@@ -397,98 +394,42 @@ class Detail extends Component {
 	}
 
 	renderProduct() {
-		const { brands } = this.props;
+		const { brands, comments, scroller } = this.props;
 		const { listTypeState } = this.state;
-		const brandProducts = _.chain(brands.searchData).get('products');
+		const products = _.chain(brands).get('searchData.products').value() || [];
 
-		if (!brandProducts.isEmpty().value()) {
-			switch (listTypeState.type) {
-			case 'grid':
-				return (
-					<div className='flex-row flex-wrap'>
-						{
-							brandProducts.value().map((product, e) => {
-								const loveButton = (
-									<Love
-										status={product.lovelistStatus}
-										data={product.product_id}
-										total={product.lovelistTotal}
-										onNeedLogin={() => this.forceLoginNow()}
-									/>
-								);
-								return (
-									<Card.CatalogGrid
-										key={e}
-										images={product.images}
-										productTitle={product.product_title}
-										brandName={product.brand.name}
-										pricing={product.pricing}
-										linkToPdp={product.url}
-										love={loveButton}
-									/>
-								);
-							})
-						}
-					</div>
-				);
-			case 'small':
-				return (
-					<div className='flex-row flex-wrap'>
-						{
-							brandProducts.value().map((product, e) => (
-								<Card.CatalogSmall
-									key={e}
-									images={product.images}
-									pricing={product.pricing}
-									linkToPdp={product.url}
-								/>
-							))
-						}
-					</div>
-				);
-			default:
-				return (
-					<div className='flex-row flex-wrap'>
-						{
-							brandProducts.value().map((product, e) => {
-								const loveButton = (
-									<Love
-										status={product.lovelistStatus}
-										data={product.product_id}
-										total={product.lovelistTotal}
-										onNeedLogin={() => this.forceLoginNow()}
-										showNumber
-									/>
-								);
-								return (
-									<div key={e} className={stylesCatalog.cardCatalog}>
-										<Card.Catalog
-											images={product.images}
-											productTitle={product.product_title}
-											brandName={product.brand.name}
-											pricing={product.pricing}
-											commentTotal={product.commentTotal}
-											commentUrl={product.commentUrl}
-											linkToPdp={product.url}
-											love={loveButton}
-										/>
-										{this.renderComment(product.product_id)}
-									</div>
-								);
-							})
-						}
-					</div>
-				);
-			}
+		switch (listTypeState.type) {
+		case 'grid':
+			return (
+				<GridView
+					loading={scroller.loading}
+					forceLoginNow={() => this.forceLoginNow()}
+					products={products}
+				/>
+			);
+		case 'small':
+			return (
+				<SmallGridView
+					loading={scroller.loading}
+					products={products}
+				/>
+			);
+		default:
+			return (
+				<CatalogView
+					comments={comments}
+					loading={scroller.loading}
+					forceLoginNow={() => this.forceLoginNow()}
+					products={products}
+				/>
+			);
 		}
-
-		return null;
 	}
 
 	renderHeader() {
 		const { searchData } = this.props.brands;
 		const title = (searchData.info) ? searchData.info.title : '';
-		const url = `${process.env.MOBILE_URL}/${this.props.location.pathname}`;
+		const url = `${process.env.MOBILE_URL}${this.props.location.pathname}`;
 		const headerComponent = {
 			left: (
 				<span
@@ -501,7 +442,8 @@ class Detail extends Component {
 			),
 
 			center: !this.state.styleHeader && 'Brand',
-			right: <Share title={title} url={url} />
+			right: <Share title={title} url={url} />,
+			rows: !this.state.styleHeader && this.renderFilter()
 		};
 		return <Header.Modal className={this.state.styleHeader ? styles.headerClear : ''} {...headerComponent} />;
 	}
@@ -509,7 +451,7 @@ class Detail extends Component {
 	renderTotalProduct() {
 		const productCount = this.props.brands.searchData.info && this.props.brands.searchData.info.product_count;
 		return productCount && (
-			<div className='margin--medium-v margin--none-t text-center'>{productCount} Total Produk</div>
+			<div className='margin--medium-v text-center'>{productCount} Total Produk</div>
 		);
 	}
 
@@ -518,31 +460,31 @@ class Detail extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page color='white'>
-					<div style={{ marginTop: '-112px', marginBottom: '30px' }}>
-						{(showFilter) ? (
-							<Filter
-								shown={showFilter}
-								filters={this.props.brands.searchData}
-								onApply={(e, fq) => {
-									this.onApply(e, fq);
-								}}
-								onClose={(e) => this.onClose(e)}
-							/>
-						) : (
+				{(showFilter) ? (
+					<Filter
+						shown={showFilter}
+						filters={this.props.brands.searchData}
+						onApply={(e, fq) => {
+							this.onApply(e, fq);
+						}}
+						onClose={(e) => this.onClose(e)}
+					/>
+				) : (
+					<Page color='white'>
+						<div style={{ marginTop: '-112px', marginBottom: '30px' }}>
 							<div>
-								{this.renderBenner()}
-								{this.renderFilter()}
+								<div ref={(n) => { this.headerEl = n; }}>
+									{this.renderBenner()}
+									{this.renderFilter()}
+								</div>
 								{this.renderTotalProduct()}
 								{this.renderProduct()}
 								{this.props.scroller.loading && (<Spinner />)}
 							</div>
-						)
-						}
-					</div>
-					<Footer isShow={this.state.isFooterShow} />
-				</Page>
-
+						</div>
+						<Footer isShow={this.state.isFooterShow} />
+					</Page>
+				)}
 				{(!showFilter) && (
 					<div>
 						{this.renderHeader()}
@@ -557,23 +499,7 @@ class Detail extends Component {
 
 const mapStateToProps = (state) => {
 	const { comments, lovelist, brands } = state;
-	brands.searchData.products = _.map(brands.searchData.products, (product) => {
-		const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: product.product_id }) : false;
-		const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: product.product_id }) : false;
-		if (lovelistData) {
-			product.lovelistTotal = lovelistData.total;
-			product.lovelistStatus = lovelistData.status;
-		}
-
-		if (commentData) {
-			product.commentTotal = commentData.total;
-		}
-		return {
-			...product,
-			url: urlBuilder.buildPdp(product.product_title, product.product_id),
-			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`
-		};
-	});
+	brands.searchData.products = Discovery.mapProducts(brands.searchData.products, comments, lovelist);
 
 	return {
 		...state,

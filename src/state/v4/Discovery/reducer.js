@@ -4,10 +4,10 @@ import { handleActions, createActions } from 'redux-actions';
 
 const initialState = {
 	promo: {
-		new_arrival: {},
-		best_seller: {},
-		recommended_products: {},
-		recent_view: {}
+		'new-arrival': {},
+		'best-seller': {},
+		'recommended-products': {},
+		'recent-view': {}
 	},
 	loading: false
 };
@@ -26,13 +26,11 @@ const reducer = handleActions({
 				...promo,
 				[keys[0]]: {
 					...promo[keys[0]],
-					products:
-						state.promo[keys[0]].products ?
-						[
-							...state.promo[keys[0]].products,
-							...promo[keys[0]].products
-						] :
-						promo[keys[0]].products
+					products: state.promo[keys[0]].products ? 
+					[
+						...state.promo[keys[0]].products,
+						...promo[keys[0]].products
+					] : promo[keys[0]].products
 				}
 			}
 		};

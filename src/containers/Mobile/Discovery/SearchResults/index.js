@@ -10,9 +10,9 @@ import Shared from '@/containers/Mobile/Shared';
 import SearchNotFound from '@/containers/Mobile/Discovery/SearchNotFound';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-import Filter from '@/containers/Mobile/Shared/Filter';
-import Love from '@/containers/Mobile/Shared/Widget/Love';
-import Sort from '@/containers/Mobile/Shared/Sort';
+import { Filter, Love, Sort } from '@/containers/Mobile/Widget';
+import { actions as actionSearch } from '@/state/v4/Search';
+import Discovery from '../Utils';
 
 import {
 	Header,
@@ -102,7 +102,7 @@ class SearchResults extends Component {
 
 		return keywordFromUrl;
 	}
-	
+
 	update = async (params) => {
 		const { cookies, dispatch, location, history } = this.props;
 		const { query } = this.state;
@@ -130,7 +130,7 @@ class SearchResults extends Component {
 		if (response) {
 			if (!_.isEmpty(response.searchData.products)) {
 				const productIdList = _.map(response.searchData.products, 'product_id') || null;
-				dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+				dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 				this.setState({
 					loving: true
 				});
@@ -171,7 +171,7 @@ class SearchResults extends Component {
 	forceLoginNow() {
 		const { history } = this.props;
 		history.push(`/login?redirect_uri=${location.pathname}`);
-	}	
+	}
 
 	writeComment(e) {
 		this.setState({
@@ -187,7 +187,7 @@ class SearchResults extends Component {
 			dispatch(commentActions.commentAddAction(cookies.get('user.token'), productId, productComment));
 
 			const productIdList = _.map(searchResults.searchData.products, 'product_id') || null;
-			dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+			dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 		}
 	}
 
@@ -210,7 +210,7 @@ class SearchResults extends Component {
 			});
 
 			return (
-				<Page>
+				<Page color='white'>
 					{this.renderForeverBanner()}
 					<div className={stylesSearch.container} >
 						<div className={stylesCatalog.cardContainer}>
@@ -325,13 +325,13 @@ class SearchResults extends Component {
 	}
 
 	renderComment(product) {
-		const { isLoading, searchResults } = this.props;
+		const { isLoading, comments } = this.props;
 
 		if (isLoading) {
 			return this.loadingView;
 		}
 
-		const commentProduct = _.find(searchResults.commentData, { product_id: product.product_id }) || false;
+		const commentProduct = _.find(comments.data, { product_id: product.product_id }) || false;
 		const commentLink = commentProduct ? (
 			<Link to={product.commentUrl}>
 				<Button>View {commentProduct.total} comments</Button>
@@ -380,9 +380,16 @@ class SearchResults extends Component {
 	}
 
 	renderHeader() {
-		let back = () => { this.props.history.go(-2); };
+		const { dispatch, cookies } = this.props;
+		let back = () => {
+			dispatch(actionSearch.updatedKeywordHandler('', cookies.get('user.token')));
+			this.props.history.go(-2);
+		};
 		if (this.props.history.length === 0) {
-			back = () => { this.props.history.push('/'); };
+			back = () => {
+				dispatch(actionSearch.updatedKeywordHandler('', cookies.get('user.token')));
+				this.props.history.push('/');
+			};
 		}
 
 		return (
@@ -404,7 +411,7 @@ class SearchResults extends Component {
 			tabsView = (
 				<div>
 					{renderIf(sorts)(
-						<Sort shown={showSort} isSticky sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+						<Sort shown={showSort} onCloseOverlay={() => this.setState({ showSort: false })} isSticky sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
 					)}
 					<Tabs
 						type='segment'
@@ -450,22 +457,7 @@ class SearchResults extends Component {
 
 const mapStateToProps = (state) => {
 	const { comments, lovelist, searchResults } = state;
-	searchResults.searchData.products = _.map(searchResults.searchData.products, (product) => {
-		const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: product.product_id }) : false;
-		const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: product.product_id }) : false;
-		if (lovelistData) {
-			product.lovelistTotal = lovelistData.total;
-			product.lovelistStatus = lovelistData.status;
-		}
-		if (commentData) {
-			product.commentTotal = commentData.total;
-		}
-		return {
-			...product,
-			url: urlBuilder.buildPdp(product.product_title, product.product_id),
-			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`
-		};
-	});
+	searchResults.searchData.products = Discovery.mapProducts(searchResults.searchData.products, comments, lovelist);
 
 	return {
 		...state,

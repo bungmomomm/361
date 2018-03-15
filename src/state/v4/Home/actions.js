@@ -30,7 +30,7 @@ const initAction = () => async (dispatch) => {
 
 };
 
-const mainAction = (activeSegment) => async (dispatch, getState) => {
+const mainAction = (activeSegment, token) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
@@ -39,8 +39,9 @@ const mainAction = (activeSegment) => async (dispatch, getState) => {
 	const path = `${baseUrl}/mainpromo?segment_id=${activeSegment.id}`;
 	
 	const [err, response] = await to(request({
+		token,
 		path,
-		method: 'GETS',
+		method: 'GET',
 		fullpath: true
 	}));
 
@@ -66,7 +67,7 @@ const mainAction = (activeSegment) => async (dispatch, getState) => {
 	return Promise.resolve(mainData);
 };
 
-const recomendationAction = (activeSegment, url = false) => async (dispatch, getState) => {
+const recomendationAction = (activeSegment, token, url = false) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
@@ -75,8 +76,9 @@ const recomendationAction = (activeSegment, url = false) => async (dispatch, get
 	const path = `${baseUrl}/recommended_promo?segment_id=${activeSegment.id}`;
 
 	const [err, response] = await to(request({
+		token,
 		path,
-		method: 'GETS',
+		method: 'GET',
 		fullpath: true
 	}));
 
@@ -84,15 +86,15 @@ const recomendationAction = (activeSegment, url = false) => async (dispatch, get
 		return Promise.reject(err);
 	}
 	
-	const bestSellerProducts = response.data.data.find(e => e.type === 'bestseller') || false;
-	const newArrivalProducts = response.data.data.find(e => e.type === 'newarrival') || false;
-	const recommendedProducts = response.data.data.find(e => e.type === 'recommended') || false;
-	const recentlyViewedProducts = response.data.data.find(e => e.type === 'recentlyviewed') || false;
+	const bestSellerProducts = response.data.data.find(e => e.type === 'bestseller') || {};
+	const newArrivalProducts = response.data.data.find(e => e.type === 'newarrival') || {};
+	const recommendedProducts = response.data.data.find(e => e.type === 'recommended') || {};
+	const recentlyViewedProducts = response.data.data.find(e => e.type === 'recentlyviewed') || {};
 	const promoRecommendationData = {
-		bestSellerProducts: bestSellerProducts ? _.take(bestSellerProducts.data, 3) : {},
-		newArrivalProducts: newArrivalProducts ? _.take(newArrivalProducts.data, 3) : {},
-		recommendedProducts: recommendedProducts ? _.take(recommendedProducts.data, 3) : {},
-		recentlyViewedProducts: recentlyViewedProducts ? _.take(recentlyViewedProducts.data, 3) : {}
+		'new-arrival': bestSellerProducts,
+		'best-seller': newArrivalProducts,
+		'recommended-products': recommendedProducts,
+		'recent-view': recentlyViewedProducts
 	};
 
 	dispatch(recomendation({ recomendationData: promoRecommendationData, activeSegment: activeSegment.key }));

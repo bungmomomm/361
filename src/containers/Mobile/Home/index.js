@@ -6,7 +6,7 @@ import _ from 'lodash';
 import {
 	Header, Carousel, Tabs,
 	Page, Level, Button, Grid, Article,
-	Navigation, Svg, Image
+	Navigation, Svg, Image, SmartBanner
 } from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
@@ -20,7 +20,16 @@ const renderSectionHeader = (title, options) => {
 	return (
 		<Level>
 			<Level.Left><div className={styles.headline}>{title}</div></Level.Left>
-			<Level.Right><Link to={options.url || '/'} className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></Link></Level.Right>
+			<Level.Right>
+				{
+					options.isMozaic ? 
+						<a href={options.url || '/'} target='_blank' className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></a>
+						:
+						<Link to={options.url || '/'} className={styles.readmore}>
+							{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' />
+						</Link>
+				}
+			</Level.Right>
 		</Level>
 	);
 };
@@ -38,8 +47,11 @@ class Home extends Component {
 		this.isLogin = this.props.cookies.get('isLogin');
 
 		this.state = {
-			isFooterShow: true
+			isFooterShow: true, 
+			showSmartBanner: this.props.cookies.get('sb-show') !== '0' && true
 		};
+
+		this.sbClose = this.sbClose.bind(this);
 	}
 
 	handlePick(current) {
@@ -48,8 +60,21 @@ class Home extends Component {
 		const willActiveSegment = segmen.find(e => e.id === current);
 		// this.setState({ current: willActiveSegment.key });
 		dispatch(new sharedActions.setCurrentSegment(willActiveSegment.key));
-		dispatch(new actions.mainAction(willActiveSegment));
-		dispatch(new actions.recomendationAction(willActiveSegment));
+		dispatch(new actions.mainAction(willActiveSegment, this.userCookies));
+		dispatch(new actions.recomendationAction(willActiveSegment, this.userCookies));
+	}
+
+
+	sbClose() {
+		const { cookies } = this.props;
+		const currentDate = new Date();
+		const limitDate = 1 * 30;
+		currentDate.setDate(currentDate.getDate() + limitDate);
+
+		cookies.set('sb-show', 0, { domain: process.env.SESSION_DOMAIN, path: '/', expires: currentDate });
+		this.setState({
+			showSmartBanner: false
+		});
 	}
 
 	renderHeroBanner() {
@@ -74,37 +99,22 @@ class Home extends Component {
 	renderRecommendation(type = 'new_arrival_products') {
 		/**
 		 * Registered object
-		 * new_arrival_products,
-		 * best_seller_products,
-		 * recommended_products,
-		 * recently_viewed_products
+		 * new-arrival,
+		 * best-seller,
+		 * recommended-products,
+		 * recent-view
 		 * */
 		
 		const { home } = this.props;
 		const segment = home.activeSegment;
 		const title = 'LIHAT SEMUA';
-		let link = '';
-		let label = '';
-		switch (type) {
-		case 'best_seller_products':
-			link = `/promo/best_seller?segment_id=${segment.id}`; label = 'Produk Terlaris';
-			break;
-		case 'recommended_products':
-			link = `/promo/recommended_products?segment_id=${segment.id}`; label = 'Produk Rekomendasi';
-			break;
-		case 'recently_viewed_products':
-			link = `/promo/recent_view?segment_id=${segment.id}`; label = 'Terakhir Dilihat';
-			break;
-		default:
-			link = `/promo/new_arrival?segment_id=${segment.id}`; label = 'Produk Terbaru';
-		}
-
-		const obj = _.camelCase(type);
-		const datas = _.chain(home).get(`allSegmentData.${segment.key}`).get('recomendationData').get(obj);
+		const datas = _.chain(home).get(`allSegmentData.${segment.key}`).get('recomendationData').get(type);
 		
-
 		if (!datas.isEmpty().value()) {
-			const header = renderSectionHeader(label, {
+			const data = datas.value();
+			const link = `/promo/${type}?segment_id=${segment.id}`;
+
+			const header = renderSectionHeader(data.title, {
 				title,
 				url: link
 			});
@@ -113,14 +123,16 @@ class Home extends Component {
 					{ header }
 					<Grid split={3} bordered>
 						{
-							datas.value().map(({ images, pricing }, e) => (
+							data.data.map(({ images, pricing, path }, e) => (
 								<div key={e}>
-									<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
-									<div className={styles.btnThumbnail}>
-										<Button transparent color='secondary' size='small'>
-											{pricing.formatted.effective_price}
-										</Button>
-									</div>
+									<Link to={`/${path}`}>
+										<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
+										<div className={styles.btnThumbnail}>
+											<Button transparent color='secondary' size='small'>
+												{pricing.formatted.effective_price}
+											</Button>
+										</div>
+									</Link>
 								</div>
 							))
 						}
@@ -135,20 +147,28 @@ class Home extends Component {
 		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}.hashtag`);
+		const baseHashtagUrl = '/mau-gaya-itu-gampang';
 		if (!datas.isEmpty().value() && datas.value().id !== '') {
-			const header = renderSectionHeader(datas.value().hashtag, {
-				title: datas.value().mainlink.text,
-				url: '/hashtags'
+			const datanya = datas.value();
+			const header = renderSectionHeader(datanya.hashtag, {
+				title: datanya.mainlink.text,
+				url: baseHashtagUrl
 			});
+			
+			const detailHashTag = `${baseHashtagUrl}/${datanya.hashtag.replace('#', '')}-${datanya.campaign_id}`;
+
 			return (
 				<div>
 					{ header }
 					<Grid split={3} bordered>
 						{
-							datas.value().images.map(({ images }, e) => (
+							datanya.images.map((gambar, e) => (
 								<div key={e}>
-									<Image lazyload shape='square' alt='thumbnail' src={images.thumbnail} />
+									<Link to={`${detailHashTag}/${gambar.content_id}`}>
+										<Image lazyload shape='square' alt='thumbnail' src={gambar.images.thumbnail} />
+									</Link>
 								</div>
+								
 							))
 						}
 					</Grid>
@@ -263,7 +283,8 @@ class Home extends Component {
 		if (!mozaic.isEmpty().value()) {
 			const header = renderSectionHeader('Artikel Mozaic', {
 				title: mozaic.value().mainlink.text,
-				url: mozaic.value().mainlink.link
+				url: mozaic.value().mainlink.link,
+				isMozaic: true
 			});
 			return (
 				<div className='border-top margin--medium-v'>
@@ -288,11 +309,17 @@ class Home extends Component {
 	render() {
 		const { shared, dispatch } = this.props;
 
-		const recommendation1 = this.isLogin === 'false' ? 'new_arrival_products' : 'recommended_products';
-		const recommendation2 = this.isLogin === 'false' ? 'best_seller_products' : 'recently_viewed_products';
+		const recommendation1 = this.isLogin === 'false' ? 'best-seller' : 'recommended-products';
+		const recommendation2 = this.isLogin === 'false' ? 'new-arrival' : 'recent-view';
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page color='white'>
+					<Tabs
+						current={this.props.shared.current}
+						variants={this.props.home.segmen}
+						onPick={(e) => this.handlePick(e)}
+						type='minimal'
+					/>
 					{ <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} /> }
 
 					{this.renderHeroBanner()}
@@ -313,14 +340,18 @@ class Home extends Component {
 
 					<Footer isShow={this.state.isFooterShow} />
 				</Page>
+				<SmartBanner 
+					title='MatahariMall' 
+					iconSrc='app-icon.png' 
+					author='PT Solusi Ecommerce Global' 
+					googlePlay='com.mataharimall.mmandroid'
+					appStore='1033108124'
+					isShow={this.state.showSmartBanner}
+					onCloseBanner={this.sbClose}
+					scroll={this.props.scroll}
+				/>
+
 				<Header 
-					rows={
-						<Tabs
-							current={this.props.shared.current}
-							variants={this.props.home.segmen}
-							onPick={(e) => this.handlePick(e)}
-						/>
-					} 
 					lovelist={shared.totalLovelist} 
 					value={this.props.search.keyword} 
 				/>
@@ -339,14 +370,14 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-	const { shared, home, dispatch } = props;
+	const { home, dispatch, cookies } = props;
 
-	const activeSegment = home.segmen.find(e => e.key === home.activeSegment);
+	const activeSegment = home.segmen.find(e => e.key === home.activeSegment.key);
 
-	const promoService = _.chain(shared).get('serviceUrl.promo').value() || false;
+	const tokenHeader = cookies.get('user.token');
 
-	await dispatch(new actions.mainAction(activeSegment, promoService));
-	await dispatch(new actions.recomendationAction(activeSegment, promoService));
+	await dispatch(new actions.mainAction(activeSegment, tokenHeader));
+	await dispatch(new actions.recomendationAction(activeSegment, tokenHeader));
 };
 
 

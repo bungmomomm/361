@@ -11,6 +11,7 @@
 
 .subHeaderWrapper{
 	height: rem(40px);
+	margin-top: -1px;
 }
 
 .header, .search, .modal, .subHeader{
@@ -50,6 +51,8 @@
 	color: #A4A4A4;
 	font-style: italic;
 	font-family: font-family('lato-regular');
+	font-size: 12px;
+
 }
 
 .modal{

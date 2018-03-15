@@ -25,6 +25,15 @@ const actions = createActions({
 	USER_GET_PROFILE: undefined,
 	USER_GET_PROFILE_FAIL: (error) => ({ profile: { error } }),
 	USER_GET_PROFILE_SUCCESS: (userProfile) => ({ userProfile }),
+	USER_EDIT_PROFILE: undefined,
+	USER_EDIT_PROFILE_FAIL: (error) => ({ editProfile: { error } }),
+	USER_EDIT_PROFILE_SUCCESS: (message) => ({ editProfile: { message } }),
+	USER_VALIDATE_OVO: undefined,
+	USER_VALIDATE_OVO_FAIL: (error) => ({ validateOvo: { error } }),
+	USER_VALIDATE_OVO_SUCCESS: (message) => ({ validateOvo: { message } }),
+	USER_FORGET_PASSWORD: undefined,
+	USER_FORGET_PASSWORD_FAIL: (error) => ({ forgot: { error } }),
+	USER_FORGET_PASSOWRD_SUCCESS: (message) => ({ forget: { message } }),
 	USER_CREDIT_CARD: (userCreditCard) => ({ userCreditCard }),
 	USER_FORGOT_PASSWORD: undefined,
 	USER_FORGOT_PASSWORD_FAIL: (error) => ({ forgot: { error } }),
@@ -33,11 +42,15 @@ const actions = createActions({
 	USER_NEW_PASSWORD_FAIL: (error) => ({ newpassword: { error } }),
 	USER_NEW_PASSWORD_SUCCESS: (message) => ({ newpassword: { message } }),
 	USER_SOCIAL_LOGIN: undefined,
-	USER_GET_MY_ORDER: undefined,
+	USER_UPDATE_MY_ORDERS: undefined,
 	USER_APPEND_MY_ORDER: undefined,
 	USER_GET_MY_ORDER_DETAIL: undefined,
 	USER_UPDATE_MY_ORDER_CURRENT: undefined,
-	USER_GET_TRACKING_INFO: undefined
+	USER_GET_TRACKING_INFO: undefined,
+	USER_CHECK_MY_ORDERS: undefined,
+	USER_KEEP_REVIEW_INFO: undefined,
+	USER_AFTER_LOGIN: (state, action, param) => ({ state, action, param }),
+	USER_AFTER_LOGIN_CLEAR: undefined
 });
 
 const initialState = {
@@ -45,14 +58,18 @@ const initialState = {
 	username: false,
 	isLoading: false,
 	isAnonymous: false,
-	myOrders: { konfirmasi: { info: null, orders: [] },
-		dikirim: { info: null, orders: [] },
-		batal: { info: null, orders: [] },
-		selesai: { info: null, orders: [] } },
+	myOrders: { konfirmasi: { orders: null },
+		dikirim: { orders: null },
+		batal: { orders: null },
+		selesai: { orders: null }
+	},
 	myOrdersCurrent: 'konfirmasi',
 	myOrdersDetail: null,
 	creditCard: {},
-	trackingInfo: null
+	trackingInfo: null,
+	isNoOrders: null,
+	reviewInfo: null,
+	queue: []
 };
 
 const reducer = handleActions({
@@ -92,7 +109,6 @@ const reducer = handleActions({
 		return {
 			...state,
 			creditCard: {
-				...state.creditCard,
 				...action.payload.userCreditCard
 			},
 		};
@@ -120,29 +136,47 @@ const reducer = handleActions({
 			isAnonymous: true
 		};
 	},
+	[actions.userEditProfile]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
+	[actions.userEditProfileFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
+	[actions.userEditProfileSuccess]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
+	[actions.userValidateOvo]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
+	[actions.userValidateOvoFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
+	[actions.userValidateOvoSuccess]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
 	[actions.userForgotPassword]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
 	[actions.userForgotPasswordFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
 	[actions.userForgotPasswordSuccess]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
-	[actions.userGetMyOrder]: (state, action) => ({ ...state, ...action.payload }),
+	[actions.userNewPassword]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
+	[actions.userNewPasswordFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
+	[actions.userNewPasswordSuccess]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
+	[actions.userUpdateMyOrders]: (state, action) => ({ ...state, ...action.payload }),
 	[actions.userGetMyOrderDetail]: (state, action) => ({ ...state, ...action.payload }),
 	[actions.userUpdateMyOrderCurrent]: (state, action) => ({ ...state, ...action.payload }),
 	[actions.userAppendMyOrder]: (state, action) => {
 		let allOrders = null;
-		let updated = null;
-		let currentOrders = null;
 		allOrders = state.myOrders;
-		currentOrders = state.myOrders[action.payload.type].orders;
-
-		if (action.payload.data.length > 0) {
+		const currentOrders = state.myOrders[action.payload.type].orders;
+		let updated = null;
+		if (currentOrders === null) {
+			updated = action.payload.data;
+		} else if (action.payload.data.length > 0) {
 			updated = currentOrders.concat(action.payload.data);
 		}
-
 		allOrders[action.payload.type].orders = updated;
 		return {
 			...state,
 			myOrders: allOrders };
 	},
 	[actions.userGetTrackingInfo]: (state, action) => ({ ...state, ...action.payload }),
+	[actions.userCheckMyOrders]: (state, action) => ({ ...state, ...action.payload }),
+	[actions.userKeepReviewInfo]: (state, action) => ({ ...state, ...action.payload }),
+	[actions.userAfterLogin]: (state, action) => {
+		state.queue.push(action.payload);
+		return state;
+	},
+	[actions.userAfterLoginClear]: (state, action) => {
+		state.queue = [];
+		return state;
+	}
 }, initialState);
 export default {
 	actions,

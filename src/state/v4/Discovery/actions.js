@@ -16,26 +16,30 @@ const promoAction = ({ token, promoType, query = {} }) => async (dispatch, getSt
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 	
-	const url = `${baseUrl}/${promoType}`;
+	let type = promoType.replace('-', '_');
 
+	const url = `${baseUrl}/${type}`;
+	
 	if (!query.page) {
 		query.page = 1;
 	}
 	query.per_page = configs.defaultPage;
-
+	
 	const [err, response] = await to(request({ token, path: url, method: 'GET', query, fullpath: true }));
 
 	if (err) {
 		return Promise.reject(err);
 	}
+	type = type.split('?')[0].replace('_', '-');
 	
 	const promo = {};
-	promo[promoType] = response.data.data;
+	promo[type] = response.data.data;
+	
 	dispatch(promos({ promo }));
 
-	const nextLink = promo[promoType].links && promo[promoType].links.next ? new URL(baseUrl + promo[promoType].links.next).searchParams : false;
+	const nextLink = promo[type].links && promo[type].links.next ? new URL(baseUrl + promo[type].links.next).searchParams : false;
 	dispatch(scrollerActions.onScroll({
-		nextData: { token, promoType, query: { ...query, page: nextLink ? nextLink.get('page') : false } },
+		nextData: { token, type, query: { ...query, page: nextLink ? nextLink.get('page') : false } },
 		nextPage: nextLink !== false,
 		loading: false,
 		loader: promoAction
