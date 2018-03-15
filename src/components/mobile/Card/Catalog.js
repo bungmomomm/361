@@ -137,7 +137,7 @@ class Catalog extends PureComponent {
 				</Level>
 				<Link to={(linkToPdp) || '/'}>
 					<div className={styles.title}>
-						{brandName} - <span>{productTitle}</span>
+						<span className='font-small text-uppercase'>{brandName}</span> - <span>{productTitle}</span>
 					</div>
 					<Level className='padding--none-t'>
 						<Level.Item>

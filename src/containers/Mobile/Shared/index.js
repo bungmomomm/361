@@ -43,7 +43,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		componentWillMount() {
-			window.mmLoading.destroy();
+			// window.mmLoading.destroy();
 
 			this.initProcess().then(shouldInit => {
 				if (!shouldInit) {
@@ -53,6 +53,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		componentDidMount() {
+			window.mmLoading.destroy();
 			window.addEventListener('scroll', this.handleScroll, true);
 			this.docBody = document.body;
 			const { dispatch } = this.props;

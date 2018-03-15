@@ -78,7 +78,7 @@ class Lovelist extends PureComponent {
 					</Level.Item>
 				</Level>
 				<div className={styles.title}>
-					{data.brand.brand_name}
+					<span className='font-small text-uppercase'>{data.brand.brand_name}</span>
 					<span>{data.product_title}</span>
 				</div>
 				<Level className={styles.footer}>
