@@ -3,6 +3,7 @@ import {
 	homepageViewBuilder,
 	impressionsPushedBuilder,
 	loginSuccessBuilder,
+	registerSuccessBuilder,
 } from './gtmPayloadBuilder';
 import {
 	sendGtm,
@@ -14,6 +15,7 @@ export default {
 	homepageViewBuilder,
 	impressionsPushedBuilder,
 	loginSuccessBuilder,
+	registerSuccessBuilder,
 	sendGtm,
 	sendLucidWork
 };

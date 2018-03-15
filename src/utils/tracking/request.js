@@ -46,8 +46,8 @@ class TrackingRequest {
 		this.userAgent = userAgent;
 		return this;
 	}
-	setLoginMethod = (loginMethod) => {
-		this.loginMethod = loginMethod;
+	loginRegisterMethod = (method) => {
+		this.loginRegisterMethod = method;
 		return this;
 	}
 

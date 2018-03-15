@@ -50,6 +50,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 					this.initApp();
 				}
 			});
+
+			const location = this.props.location;
+			if (!window.previousLocation) window.previousLocation = location.pathname + location.search;
 		}
 
 		componentDidMount() {
@@ -88,6 +91,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			if (this.unwatchConnection) {
 				this.unwatchConnection();
 			}
+
+			const location = this.props.location;
+			window.previousLocation = location.pathname + location.search;
 		}
 
 		shouldLoginAnonymous() {

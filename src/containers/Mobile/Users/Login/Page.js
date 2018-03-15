@@ -2,28 +2,33 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { actions as users } from '@/state/v4/User';
-import { 
-	Link 
+import {
+	Link
 } from 'react-router-dom';
-import { 
-	Button, 
-	Input, 
-	Svg, 
-	Notification 
+import {
+	Button,
+	Input,
+	Svg,
+	Notification
 } from '@/components/mobile';
 // import Shared from '@/containers/Mobile/Shared';
 import {
 	Login as LoginWidget
 } from '@/containers/Mobile/Widget';
-import { 
-	setUserCookie, 
-	renderIf 
+import {
+	setUserCookie,
+	renderIf
 } from '@/utils';
 import styles from '../user.scss';
 import _ from 'lodash';
 import validator from 'validator';
 import util from 'util';
 import to from 'await-to-js';
+import {
+	TrackingRequest,
+	loginSuccessBuilder,
+	sendGtm,
+} from '@/utils/tracking';
 
 class LoginPage extends Component {
 	constructor(props) {
@@ -56,6 +61,9 @@ class LoginPage extends Component {
 		setUserCookie(this.props.cookies, response.token);
 		dispatch(new users.afterLogin(cookies.get('user.token')));
 		history.push(redirectUri || '/');
+
+		this.trackingHandler(response);
+
 		return response;
 	}
 
@@ -70,6 +78,9 @@ class LoginPage extends Component {
 		setUserCookie(this.props.cookies, response.token);
 		dispatch(new users.afterLogin(cookies.get('user.token')));
 		history.push(redirectUri || '/');
+
+		this.trackingHandler(response, provider);
+
 		return response;
 	}
 
@@ -90,21 +101,29 @@ class LoginPage extends Component {
 		}
 	}
 
+	trackingHandler(response, method = 'onsite') {
+		const request = new TrackingRequest();
+		request.setEmailHash('').setUserId(response.userid).setCurrentUrl(`/${this.state.current}`);
+		request.setFusionSessionId('').setUserIdEncrypted('').setIpAddress('').loginRegisterMethod(method);
+		const requestPayload = request.getPayload(loginSuccessBuilder);
+		if (requestPayload) sendGtm(requestPayload);
+	}
+
 	handlePick(current) {
 		this.setState({ current });
 	}
 
 	render() {
-		const { 
-			isLoading, 
-			login 
+		const {
+			isLoading,
+			login
 		} = this.props.users;
-		const { 
-			visiblePassword, 
-			validLoginId, 
-			validLoginPassword, 
-			loginId, 
-			password 
+		const {
+			visiblePassword,
+			validLoginId,
+			validLoginPassword,
+			loginId,
+			password
 		} = this.state;
 		const buttonLoginEnable = !isLoading && validLoginId && validLoginPassword;
 
