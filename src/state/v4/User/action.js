@@ -14,7 +14,7 @@ import {
 	addAfterLogin
  } from './after-login-action';
 import { userSocialLogin, userSocialLoginWithRedirect } from './social-action';
-import { checkMyOrders, getMyOrderDetail, updateMyOrdersCurrent, getMyOrderMore, cleanMyOrderData } from './myOrder-action';
+import { checkMyOrders, getMyOrderDetail, updateMyOrdersCurrent, getMyOrderMore, cleanMyOrderData, keepReviewInfo, submitReview } from './myOrder-action';
 import { getTrackingInfo } from './tracking-action';
 
 const isSuccess = (response) => {
@@ -147,13 +147,13 @@ const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 	const path = `${baseUrl}/auth/otp/validate`;
-	
+
 	dispatch(actions.userOtpValidate());
 
 	if (bodyData.pwd !== undefined && bodyData.pwd.length > 0) {
 		bodyData.pwd = base64.encode(bodyData.pwd);
 	}
-	
+
 	const requestData = {
 		token,
 		path,
@@ -318,7 +318,7 @@ const userNewPassword = (token, pass1, pass2, passtoken) => async (dispatch, get
 			token: passtoken
 		}
 	}));
-	
+
 	if (err) {
 		dispatch(actions.userNewPasswordFail(err));
 		return Promise.reject(err);
@@ -439,6 +439,8 @@ export default {
 	cleanMyOrderData,
 	checkMyOrders,
 	refreshToken,
+	keepReviewInfo,
+	submitReview,
 	afterLogin,
 	addAfterLogin
 };
