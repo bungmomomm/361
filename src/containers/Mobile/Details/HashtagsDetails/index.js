@@ -1,16 +1,15 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Header, Page, Navigation, Svg, Grid, Card, Carousel, Image } from '@/components/mobile';
+import { Header, Page, Navigation, Svg, Grid, Card, Carousel } from '@/components/mobile';
 import { actions } from '@/state/v4/HashtagsDetails';
 import Shared from '@/containers/Mobile/Shared';
 import Spinner from '@/components/mobile/Spinner';
 import { urlBuilder } from '@/utils';
-import moment from 'moment';
-import currency from 'currency.js';
+import InstagramEmbed from 'react-instagram-embed';
 
-class HashtagsDetails extends PureComponent {
+class HashtagsDetails extends Component {
 
 	bufferCarousel = (products) => {
 		const buffer = [];
@@ -67,40 +66,39 @@ class HashtagsDetails extends PureComponent {
 
 		return (
 			<div>
-				<Page>
-					{ent.data.post.image && (
-						<span>
-							<div>
-								<Image src={ent.data.post.image} />
-							</div>
-							<div className='padding--medium-h padding--none-r'>
-								<div className='border-bottom'>
-									<div className='margin--medium-v flex-row flex-spaceBetween flex-middle'>
-										<div>
-											<div>{ent.data.post.username}</div>
-											<div className='font-color--primary-ext-2 font-small'>{moment(ent.data.post.created_time, 'DD MMM YYYY').format('DD/MM/YY')}</div>
-										</div>
-										{(
-											<div className='padding--medium-h'>
-												<div className='flex-row flex-middle'>
-													<Svg src='ico_lovelist.svg' />
-													<span>{currency(ent.data.post.like, { separator: '.', decimal: ',', precision: 0 }).format()}</span>
-												</div>
-											</div>
-										)}
-									</div>
-								</div>
-							</div>
-							<div className='padding--medium-h border-bottom'>
-								<div className='margin--medium-v'>
-									<div className='margin--medium-v margin--none-t'>{ent.data.post.caption}</div>
-								</div>
-							</div>
-						</span>
+
+				<Page color='white'>
+					{ent.data.post.embed_url && (
+						<div
+							style={{
+								marginTop: '-3px',
+								marginLeft: '-3px',
+								width: 'calc(100% + 8px)'
+							}}
+						>
+							<InstagramEmbed
+								url={ent.data.post.embed_url.replace('embed/captioned/', '')}
+								maxWidth='auto'
+								hideCaption={false}
+								containerTagName='div'
+								protocol=''
+								onLoading={() => {}}
+								onSuccess={() => {}}
+								onAfterRender={() => {
+									// document.getElementsByClassName('instagram-media')[0].removeAttribute('style');
+								}}
+								onFailure={() => {}}
+							/>
+						</div>
 					)}
 
 					{looks.length > 0 && (
-						<div className='margin--medium-v'>
+						<div
+							style={{
+								marginTop: '-15px',
+								borderTop: '15px solid #ffffff'
+							}}
+						>
 							<div className='padding--medium-h font-medium'><strong>Get The Look</strong></div>
 							<Carousel>
 								{looks.map((chunk, i) => <Grid split={2} key={i}>{chunk}</Grid>)}
