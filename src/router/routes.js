@@ -196,7 +196,7 @@ export default {
 		},
 		{
 			path: '/profile-my-order-confirm',
-			component: loadable(() => import('@/containers/Mobile/Users/Profile/myOrderConfirm'), defaultOptions)
+			component: loadable(() => import('@/containers/Mobile/Order/Confirmation'), defaultOptions)
 		},
 		{
 			path: '/profile-credit-card',
@@ -216,10 +216,6 @@ export default {
 			path: '/address/edit/:id',
 			exact: true,
 			component: loadable(() => import('@/containers/Mobile/Users/Address/edit'), defaultOptions),
-		},
-		{
-			path: '/order-confirmation',
-			component: loadable(() => import('@/containers/Mobile/Order/Confirmation'), defaultOptions),
 		},
 		{
 			path: '/*', // Page not found handling.

@@ -55,7 +55,7 @@ class OrderConfirmation extends Component {
 		const orderId = query.order_id;
 		dispatch(users.getMyOrderDetail(cookies.get('user.token'), cookies.get('user.token')));
 		// If no order id or there is no order detail exist then throw them to homepage
-		if (!orderId /* || !this.props.users.myOrdersDetail */) {
+		if (!orderId || !this.props.users.myOrdersDetail) {
 			history.push('/');
 		}
 		
