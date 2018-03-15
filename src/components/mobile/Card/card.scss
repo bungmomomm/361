@@ -35,10 +35,10 @@
 		font-size: 0px;
 		img{
 			position: absolute;
-			left: 50%;
-			top: 50%;
-			height: 100%;
-			width: auto;
+	    left: 50%;
+	    top: 50%;
+	    height: auto;
+	    width: 100%;
 			transform: translate(-50%, -50%);
 		}
 	}
@@ -67,11 +67,11 @@
 		padding-right: rem(10px);
 	}
 	.imgContainer{
-		width: 220px;
+		width: 100%;
     	height: 220px;
 		.imgWrapper{
 			height: 220px;
-			width: 220px;
+			width: 100%;
 		}
 	}
 }
@@ -88,27 +88,23 @@
 		left: 15%;
 	}
 	.imgContainer{
-		width: 157px;
-    	height: 157px;
+		width: 100%;
+    	height: 122px;
 		.imgWrapper{
-			height: 157px;
-			width: 157px;
+			height: 122px;
+			width: 100%;
 		}
 	}
 }
 
 .title{
-	font-family: font-family('Lato-Bold');
 	font-size: map-get($font-size, --small );
-	color: color(--primary);
 	letter-spacing: 0.56px;
 	line-height: 1.4;
 	text-transform: uppercase;
 	padding: rem(10px);
 	span{
-		color: #A4A4A4;
 		text-transform: initial;
-		font-family: font-family('Lato-Regular');
 		letter-spacing: 0.56px;
 		line-height: 1.4;
 	}

@@ -13,7 +13,7 @@ const SearchResult = props => {
 		<nav className={styles.container}>
 			<div className={styles.wrapper}>
 				<div className={modalClass}>
-					<div className='flex-row flex-spaceBetween padding--medium-h flex-middle'>
+					<div className='flex-row flex-spaceBetween padding--small-h flex-middle'>
 						<div className={styles.back}>
 							<button onClick={props.back}> <Svg src='ico_arrow-back-left.svg' /> </button>
 						</div>
