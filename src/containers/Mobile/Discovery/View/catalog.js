@@ -27,7 +27,7 @@ class CatalogView extends Component {
 			commentLoading: false
 		};
 
-		this.loading = <div style={{ margin: '20px auto 20px auto' }}><Spinner /></div>;
+		this.loadingView = <Spinner />;
 	}
 
 	forceLoginNow() {
@@ -62,7 +62,7 @@ class CatalogView extends Component {
 		const { commentLoading } = this.state;
 
 		if (comments.loading) {
-			return this.loading;
+			return this.loadingView;
 		}
 
 		
@@ -85,7 +85,7 @@ class CatalogView extends Component {
 					<Level.Item>
 						{
 							cookies.get('isLogin') === 'true' ?
-								comments.loading || commentLoading ? <div>Sending comment...</div> :
+								comments.loading || commentLoading ? this.loadingView :
 									(
 										<Input
 											color='white'
@@ -137,7 +137,7 @@ class CatalogView extends Component {
 									/>
 								)}
 							/>
-							{comments && comments.loading ? this.loading : this.renderComment(product)}
+							{comments && comments.loading ? this.loadingView : this.renderComment(product)}
 						</div>
 					);
 				})}
