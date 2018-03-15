@@ -244,10 +244,10 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-	const { dispatch, cookies, shared, userProfile } = props;
+	const { dispatch, cookies, shared } = props;
 
 	const serviceUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
-	if (serviceUrl && !userProfile) {
+	if (serviceUrl) {
 		dispatch(userActions.userGetProfile(cookies.get('user.token')));
 	}
 };
