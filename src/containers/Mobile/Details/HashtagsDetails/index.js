@@ -20,7 +20,6 @@ class HashtagsDetails extends Component {
 			[
 				<Card.CatalogGrid
 					key={i}
-					split={2}
 					images={product.images}
 					productTitle={product.product_title}
 					brandName={product.brand.name}
@@ -32,7 +31,6 @@ class HashtagsDetails extends Component {
 				...fragment,
 				<Card.CatalogGrid
 					key={i}
-					split={2}
 					images={product.images}
 					productTitle={product.product_title}
 					brandName={product.brand.name}
