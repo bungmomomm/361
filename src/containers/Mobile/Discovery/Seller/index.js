@@ -272,27 +272,31 @@ class Seller extends Component {
 										<div className='font-large flex-row flex-center'>
 											<Svg src='ico_newstore.svg' />
 										</div>
-										<div className='font-small font-color--primary-ext-2'>New Store</div>
+										<div className='font-small font-color--primary-ext-2' style={{ minWidth: '50px' }}>New Store</div>
+									</Level.Item>
+								)
+							}
+							{
+								seller.info.is_new_seller === 0 && (
+									<Level.Item className='text-center'>
+										<div className='font-large flex-row flex-center flex-middle'>
+											<Svg src='ico_successorder.svg' />
+											<span className='padding--small-h padding--none-r'>{_.chain(seller).get('info.success_order.rate').value() || 0}%</span>
+										</div>
+										<div className='font-small font-color--primary-ext-2 text-no-wrap' style={{ minWidth: '50px' }}>Order Sukses</div>
 									</Level.Item>
 								)
 							}
 							<Level.Item className='text-center'>
-								<div className='font-large flex-row flex-center flex-middle'>
-									<Svg src='ico_successorder.svg' />
-									<span className='padding--small-h padding--none-r'>{_.chain(seller).get('info.success_order.rate').value() || ''}%</span>
-								</div>
-								<div className='font-small font-color--primary-ext-2 text-no-wrap'>Order Sukses</div>
-							</Level.Item>
-							<Level.Item className='text-center'>
 								<div className='font-large flex-row flex-middle'>
 									<Svg src='ico_reviews_solid_selected_small.svg' />
-									<span className='padding--small-h padding--none-r'>{seller.info.rating || ''}</span>
+									<span className='padding--small-h padding--none-r'>{seller.info.rating || 0}</span>
 								</div>
-								<div className='font-small font-color--primary-ext-2'>Rating</div>
+								<div className='font-small font-color--primary-ext-2' style={{ minWidth: '50px' }}>Rating</div>
 							</Level.Item>
 							<Level.Item className='text-center'>
-								<div className='font-large'>{seller.info.product || ''}</div>
-								<div className='font-small font-color--primary-ext-2'>Produk</div>
+								<div className='font-large'>{seller.info.product || 0}</div>
+								<div className='font-small font-color--primary-ext-2' style={{ minWidth: '50px' }}>Produk</div>
 							</Level.Item>
 						</Level>
 					</div>
@@ -364,6 +368,8 @@ class Seller extends Component {
 		const title = seller.info.seller;
 		const url = `${process.env.MOBILE_URL}${location.pathname}${location.search}`;
 		const storename = (!title) ? '' : (title.length > 30) ? `${title.substring(0, 30)}&hellip;` : title;
+		const prevLocation = _.chain(window.prevLocation).get('pathname').value();
+		const activeNav = prevLocation && prevLocation.indexOf('.html') > -1 ? 'Categories' : ['', '/'].includes(prevLocation) ? 'Home' : null;
 
 		const HeaderPage = {
 			left: (
@@ -397,7 +403,7 @@ class Seller extends Component {
 						</Page>
 
 						<Header.Modal {...HeaderPage} style={{ zIndex: 1 }} />
-						<Navigation scroll={this.props.scroll} />
+						<Navigation scroll={this.props.scroll} active={activeNav} />
 					</div>
 				)}
 			</span>
