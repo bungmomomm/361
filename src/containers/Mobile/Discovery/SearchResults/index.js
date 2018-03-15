@@ -249,8 +249,6 @@ class SearchResults extends Component {
 		if (shared.userPreviousPage !== 'HOME') {
 			navigationAttribute.active = 'Categories';
 		}
-			
-		navigationAttribute.active = 'Categories';
 		
 		return (
 			<div style={this.props.style}>
