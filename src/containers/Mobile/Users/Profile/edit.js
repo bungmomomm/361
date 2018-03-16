@@ -76,7 +76,7 @@ class UserProfileEdit extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		const { formData } = this.state;
-		if (nextProps.userProfile !== false) {
+		if (nextProps.userProfile !== this.props.userProfile) {
 			this.setState({
 				formData: {
 					...formData,
