@@ -30,15 +30,15 @@ class LovelistGrid extends PureComponent {
 			<div className={createClassName}>
 				<Link to={linkToPdp || '/'} className={styles.imgContainer}>
 					<div className={styles.imgWrapper}>
-						<Image lazyload src={data.images[0].thumbnail} alt={data.productt_title} />
+						<Image lazyload src={data.images[0].thumbnail} alt={data.product_title} />
 					</div>
 				</Link>
 				<Level className={styles.action}>
 					<Level.Item>
 						<Link to={linkToPdp || '/'}>
 							<div className={styles.title}>
-								<span className='font-small text-uppercase'>{data.brand.name}</span>
-								<span>{data.product_title}</span>
+								<span className='font-small text-uppercase font--lato-bold font-color--primary'>{data.brand.name}</span>
+								<span className='text-elipsis-two-line font-color--primary-ext-2'>{data.product_title}</span>
 							</div>
 						</Link>
 					</Level.Item>

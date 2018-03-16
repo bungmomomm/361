@@ -43,7 +43,6 @@ class Lovelist extends PureComponent {
 		const createClassName = classNames(styles.container, styles[type], className);
 		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
 
-		console.log('data: ', data.last_comments);
 		const discountBadge = data.pricing.discount !== '0%' ? (
 			<div style={{ marginLeft: '1.5rem' }}>
 				<Badge rounded color='red'>
