@@ -45,6 +45,7 @@ class Hashtags extends Component {
 	};
 
 	renderGridSmall = (campaignId) => {
+
 		const { hashtag } = this.props;
 		const items = hashtag.products[hashtag.active.node] && hashtag.products[hashtag.active.node].items
 					? hashtag.products[hashtag.active.node].items : [];
@@ -54,13 +55,18 @@ class Hashtags extends Component {
 
 		return (
 			<Grid bordered split={3}>
-				{items.map((product, i) => (
-					<div key={i}>
-						<Link to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}`}>
-							<Image src={product.image} />
-						</Link>
-					</div>
-				))}
+				{items.map((product, i) => {
+					const embedUrl = _.chain(product).get('embed_url').value();
+					const icode = (embedUrl.substr(embedUrl.indexOf('/p/')).split('/') || [])[2];
+
+					return (
+						<div key={i}>
+							<Link to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode}`}>
+								<Image src={product.image} />
+							</Link>
+						</div>
+					);
+				})}
 			</Grid>
 		);
 	};
@@ -75,25 +81,35 @@ class Hashtags extends Component {
 
 		return (
 			<div>
-				{items.map((product, i) => (
-					<div key={i}>
-						<Link to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}`}>
-							<Image src={product.image} width='100%' />
-						</Link>
-						<div className='margin--medium-v flex-row flex-spaceBetween flex-middle'>
-							<div className='padding--medium-h'>
-								<div><Link className='font-color--primary' to='/'>@{product.username}</Link></div>
-								<div><em className='font-small font--lato-normal font-color--grey'>{product.created_time}</em></div>
-							</div>
-							<div className='padding--medium-h'>
-								<div className='flex-row flex-middle'>
-									<Svg src='ico_lovelist.svg' />
-									<span>{currency(product.like, { separator: '.', decimal: ',', precision: 0 }).format()}</span>
+				{items.map((product, i) => {
+					const embedUrl = _.chain(product).get('embed_url').value();
+					const icode = (embedUrl.substr(embedUrl.indexOf('/p/')).split('/') || [])[2];
+
+					return (
+						<div key={i}>
+							<Link to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode || ''}`}>
+								<Image src={product.image} width='100%' />
+							</Link>
+							<div className='margin--medium-v flex-row flex-spaceBetween flex-middle'>
+								<div className='padding--medium-h'>
+									<div><Link className='font-color--primary' to='/'>@{product.username}</Link></div>
+									<div><em className='font-small font--lato-normal font-color--grey'>{product.created_time}</em>
+									</div>
+								</div>
+								<div className='padding--medium-h'>
+									<div className='flex-row flex-middle'>
+										<Svg src='ico_lovelist.svg' />
+										<span>{currency(product.like, {
+											separator: '.',
+											decimal: ',',
+											precision: 0
+										}).format()}</span>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-				))}
+					);
+				})}
 			</div>
 		);
 	};
@@ -105,7 +121,7 @@ class Hashtags extends Component {
 		const campaignId = _.chain(q).get('query.campaign_id').value() || false;
 
 		const listHastags = (
-			<div className='horizontal-scroll'>
+			<div className='horizontal-scroll' style={{ overflowX: 'none' }}>
 				<div className='flex-row flex-centerflex-spaceBetween margin--medium-v margin--none-t'>
 					{tags.map((tag, i) => (
 						<Link
