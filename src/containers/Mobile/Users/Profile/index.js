@@ -141,7 +141,9 @@ class UserProfile extends Component {
 	render() {
 		return this.isLogin ? (
 			<div>
+				<div className={styles.profileBackground} />
 				<Page style={{ paddingTop: 0 }}>
+					<Panel style={{ padding: 0 }}>&nbsp;</Panel>
 					{this.renderProfile()}
 					<Panel>Account</Panel>
 					<Link to='/profile/my-order' className='bg--white'>

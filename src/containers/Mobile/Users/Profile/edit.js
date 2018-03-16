@@ -212,7 +212,6 @@ class UserProfileEdit extends Component {
 	}
 
 	submitFormData = async (e) => {
-		console.log('captcha response', e);
 		const { dispatch } = this.props;
 		const { layout, formData } = this.state;
 
@@ -256,8 +255,6 @@ class UserProfileEdit extends Component {
 					},
 					submittingForm: false
 				});
-
-				console.log(err);
 			} else if (response) {
 				this.setState({
 					formResult: {
@@ -271,7 +268,6 @@ class UserProfileEdit extends Component {
 					submittingForm: false
 				});
 				this.setTimeoutForm(5000);
-				console.log(response);
 			}
 		}
 
@@ -402,15 +398,15 @@ class UserProfileEdit extends Component {
 		return (
 			formData[this.OVO_VERIFIED_FIELD] === 1 && formData[this.OVO_ID_FIELD] !== 0 ?
 				<div className='margin--medium-v'>
-					<label className={styles.label} htmlFor='ovoID'><span style={{ color: '#4E2688' }}>OVO ID</span></label>
+					<label className={styles.label} htmlFor='ovoID'><span style={{ color: '#4E2688', fontWeight: 'bold' }}>OVO ID</span></label>
 					<div className={styles.inputChange}>
 						<div className={styles.inputChangeInput}>
 							<Input readOnly id='ovoID' flat defaultValue={ovoId} />
 						</div>
 						<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.OVO_ID_FIELD)}>{this.editIcon}</Button>
 					</div>
-					<span style={{ color: '#4E2688', fontSize: '12px' }}>
-						<Svg src='ico_ovo_verified.svg' /> OVO ID anda telah terhubung
+					<span style={{ color: '#4E2688', fontSize: '12px', marginTop: '10px' }}>
+						<Svg src='ico_ovo_verified.svg' style={{ verticalAlign: 'text-bottom' }} /> OVO ID anda telah terhubung
 					</span>
 				</div> :
 				<div className='margin--medium-v'>
@@ -637,7 +633,7 @@ class UserProfileEdit extends Component {
 
 	render() {
 		return (
-			<div className='edit-profile'>
+			<div>
 				{this.renderLayout()}
 				{this.renderRecaptcha()}
 				{this.renderGenderSelect()}

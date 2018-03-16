@@ -3,7 +3,7 @@ import util from 'util';
 import _ from 'lodash';
 import validator from 'validator';
 
-import { Page, Level, Input, Svg, Button, Notification, Spinner } from '@/components/mobile';
+import { Page, Input, Svg, Button, Notification, Spinner, Header, Panel } from '@/components/mobile';
 
 import CONST from '@/constants';
 
@@ -80,17 +80,30 @@ class EditOvo extends Component {
 	renderHeader() {
 		const { onClickBack } = this.props;
 
-		const headerView = (
-			<Level style={{ height: '55px' }}>
-				<Level.Left style={{ width: '80px' }}>
-					<Button onClick={onClickBack}><Svg src='ico_arrow-back-left.svg' /></Button>
-				</Level.Left>
-				<Level.Item style={{ alignItems: 'center' }}>OVO</Level.Item>
-				<Level.Right style={{ width: '80px' }}>&nbsp;</Level.Right>
-			</Level>
-		);
+		const HeaderPage = {
+			left: (
+				<button onClick={onClickBack}> 
+					<Svg src={'ico_arrow-back-left.svg'} />
+				</button>
+			),
+			center: 'OVO',
+		};
 
-		return headerView;
+		return <Header.Modal {...HeaderPage} />;
+	}
+
+	renderInfoText() {
+		const { formResult } = this.state;
+
+		if (formResult.status === 'success') {
+			return (
+				<span style={{ color: '#4E2688', fontSize: '12px' }}>
+					<Svg src='ico_ovo_verified.svg' style={{ verticalAlign: 'text-bottom' }} /> OVO ID anda telah terhubung
+				</span>
+			);
+		}
+
+		return null;
 	}
 
 	renderNotif() {
@@ -113,20 +126,24 @@ class EditOvo extends Component {
 	}
 
 	renderSubmitButton() {
-		const { validForm } = this.state;
+		const { validForm, formResult } = this.state;
 
-		return (
-			<div className='margin--medium-v'>
-				<Button
-					color='purple'
-					size='large'
-					onClick={(e) => this.saveData(e)}
-					disabled={!validForm}
-				>
-					VERIFIKASI OVO ID
-				</Button>
-			</div>
-		);
+		if (formResult.status !== 'success') {
+			return (
+				<div className='margin--medium-v'>
+					<Button
+						color='purple'
+						size='large'
+						onClick={(e) => this.saveData(e)}
+						disabled={!validForm}
+					>
+						VERIFIKASI OVO ID
+					</Button>
+				</div>
+			);
+		}
+
+		return null;
 	}
 
 	renderClearButton() {
@@ -160,7 +177,7 @@ class EditOvo extends Component {
 		const { isLoading, validForm, inputValue, inputHint } = this.state;
 
 		return (
-			<form style={{ padding: '15px' }}>
+			<form style={{ padding: '15px' }} className='bg--white'>
 				<div className='margin--medium-v'>
 					<label className={styles.label} htmlFor='ovoID'>OVO ID</label>
 					<Input
@@ -179,6 +196,7 @@ class EditOvo extends Component {
 						})}
 						iconRight={this.renderClearButton()}
 					/>
+					{this.renderInfoText()}
 				</div>
 				{this.renderNotif()}
 				{isLoading ? this.loadingView : this.renderSubmitButton()}
@@ -189,10 +207,14 @@ class EditOvo extends Component {
 	render() {
 
 		return (
-			<Page style={{ paddingTop: 0 }} color='white'>
+			<div>
+				<div className={styles.profileBackground} />
+				<Page style={{ paddingTop: 0 }}>
+					<Panel style={{ padding: 0 }}>&nbsp;</Panel>
+					{this.renderOvoForm()}
+				</Page>
 				{this.renderHeader()}
-				{this.renderOvoForm()}
-			</Page>
+			</div>
 		);
 	}
 }

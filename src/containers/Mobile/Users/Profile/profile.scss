@@ -99,3 +99,12 @@
   justify-content: space-between;
   margin-bottom: 15px;
 }
+
+.profileBackground{
+	position: fixed;
+	background: #F5F5F5;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	max-width: 480px;
+}

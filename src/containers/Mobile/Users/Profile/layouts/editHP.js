@@ -3,7 +3,7 @@ import util from 'util';
 import _ from 'lodash';
 import validator from 'validator';
 
-import { Page, Input, Button, Level, Svg, Notification, Spinner } from '@/components/mobile';
+import { Page, Input, Button, Svg, Notification, Spinner, Header, Panel } from '@/components/mobile';
 
 import CONST from '@/constants';
 
@@ -82,17 +82,16 @@ class EditHp extends Component {
 	renderHeader() {
 		const { onClickBack } = this.props;
 
-		const headerView = (
-			<Level style={{ height: '55px' }}>
-				<Level.Left style={{ width: '80px' }}>
-					<Button onClick={onClickBack}><Svg src='ico_arrow-back-left.svg' /></Button>
-				</Level.Left>
-				<Level.Item style={{ alignItems: 'center' }}>Ubah No. Handphone</Level.Item>
-				<Level.Right style={{ width: '80px' }}>&nbsp;</Level.Right>
-			</Level>
-		);
+		const HeaderPage = {
+			left: (
+				<button onClick={onClickBack}> 
+					<Svg src={'ico_arrow-back-left.svg'} />
+				</button>
+			),
+			center: 'Ubah No. Handphone',
+		};
 
-		return headerView;
+		return <Header.Modal {...HeaderPage} />;
 	}
 
 	renderOldPhone() {
@@ -176,7 +175,7 @@ class EditHp extends Component {
 		const { isLoading, validForm, inputValue, inputHint } = this.state;
 
 		return (
-			<form style={{ padding: '15px' }}>
+			<form style={{ padding: '15px' }} className='bg--white'>
 				{this.renderOldPhone()}
 				<div className='margin--medium-v'>
 					<label className={styles.label} htmlFor='editCellPhoneNew'>No Handphone Baru</label>
@@ -204,10 +203,14 @@ class EditHp extends Component {
 
 	render() {
 		return (
-			<Page style={{ paddingTop: 0 }} color='white'>
+			<div>
+				<div className={styles.profileBackground} />
+				<Page style={{ paddingTop: 0 }}>
+					<Panel style={{ padding: 0 }}>&nbsp;</Panel>
+					{this.renderPhoneForm()}
+				</Page>
 				{this.renderHeader()}
-				{this.renderPhoneForm()}
-			</Page>
+			</div>
 		);
 	}
 }

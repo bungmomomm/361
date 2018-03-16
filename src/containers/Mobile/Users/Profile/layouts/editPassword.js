@@ -3,7 +3,7 @@ import util from 'util';
 import _ from 'lodash';
 import base64 from 'base-64';
 
-import { Page, Input, Button, Level, Svg, Notification } from '@/components/mobile';
+import { Page, Input, Button, Svg, Notification, Header, Panel } from '@/components/mobile';
 
 import CONST from '@/constants';
 
@@ -126,17 +126,16 @@ class EditPassword extends Component {
 	renderHeader() {
 		const { onClickBack } = this.props;
 
-		const headerView = (
-			<Level style={{ height: '55px' }}>
-				<Level.Left style={{ width: '80px' }}>
-					<Button onClick={onClickBack}><Svg src='ico_arrow-back-left.svg' /></Button>
-				</Level.Left>
-				<Level.Item style={{ alignItems: 'center' }}>Ubah Password</Level.Item>
-				<Level.Right style={{ width: '80px' }}>&nbsp;</Level.Right>
-			</Level>
-		);
+		const HeaderPage = {
+			left: (
+				<button onClick={onClickBack}> 
+					<Svg src={'ico_arrow-back-left.svg'} />
+				</button>
+			),
+			center: 'Ubah Password',
+		};
 
-		return headerView;
+		return <Header.Modal {...HeaderPage} />;
 	}
 
 	renderNotif() {
@@ -159,21 +158,25 @@ class EditPassword extends Component {
 	}
 
 	renderSubmitButton() {
-		const { validOldPass, validNewPass, validConfPass } = this.state;
+		const { validOldPass, validNewPass, validConfPass, formResult } = this.state;
 		const setDisabled = !(validOldPass && validNewPass && validConfPass);
 
-		return (
-			<div className='margin--medium-v'>
-				<Button
-					color='secondary'
-					size='large'
-					onClick={(e) => this.saveData(e)}
-					disabled={setDisabled}
-				>
-					SIMPAN
-				</Button>
-			</div>
-		);
+		if (formResult.status !== 'success') {
+			return (
+				<div className='margin--medium-v'>
+					<Button
+						color='secondary'
+						size='large'
+						onClick={(e) => this.saveData(e)}
+						disabled={setDisabled}
+					>
+						SIMPAN
+					</Button>
+				</div>
+			);
+		}
+
+		return null;
 	}
 
 	renderPasswordForm() {
@@ -185,7 +188,7 @@ class EditPassword extends Component {
 		} = this.state;
 
 		return (
-			<form style={{ padding: '15px' }}>
+			<form style={{ padding: '15px' }} className='bg--white'>
 				<div className='margin--medium-v'>
 					<label className={styles.label} htmlFor='editPassword'>Password Saat Ini</label>
 					<Input
@@ -251,10 +254,14 @@ class EditPassword extends Component {
 
 	render() {
 		return (
-			<Page style={{ paddingTop: 0 }} color='white'>
+			<div>
+				<div className={styles.profileBackground} />
+				<Page style={{ paddingTop: 0 }}>
+					<Panel style={{ padding: 0 }}>&nbsp;</Panel>
+					{this.renderPasswordForm()}
+				</Page>
 				{this.renderHeader()}
-				{this.renderPasswordForm()}
-			</Page>
+			</div>
 		);
 	}
 }
