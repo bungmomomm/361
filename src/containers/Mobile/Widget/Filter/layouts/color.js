@@ -46,7 +46,7 @@ class Color extends PureComponent {
 	}
 
 	render() {
-		const { onClose, data } = this.props;
+		const { onClose, data, title } = this.props;
 		const { resetDisabled } = this.state;
 		const HeaderPage = {
 			left: (
@@ -54,7 +54,7 @@ class Color extends PureComponent {
 					<Svg src='ico_arrow-back-left.svg' />
 				</Button>
 			),
-			center: 'Warna',
+			center: _.capitalize(title) || 'Default',
 			right: null
 		};
 		const dataList = _.map(data, (color, key) => {
@@ -69,7 +69,7 @@ class Color extends PureComponent {
 							{renderIf(!isHexColor(color.colorcode))(
 								<img height='30px' width='30px' src={color.colorcode} alt='color' />
 							)}
-							<span className='margin--medium-l'>{color.facetdisplay}</span><span className='font-color--primary-ext-2 margin--small-l'>(111)</span>
+							<span className='margin--medium-l'>{color.facetdisplay}</span><span className='font-color--primary-ext-2 margin--small-l'>({color.count})</span>
 						</div>
 						{selected}
 					</List.Content>

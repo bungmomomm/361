@@ -74,6 +74,18 @@
 		}
 	}
 
+  .font-color--black{
+      color: #191919;
+  }
+
+  .font-color--grey{
+      color: #A4A4A4;
+  }
+
+  .font-color--blue{
+    color: #005BB6;
+  }
+
 	@each $value in $font-lists {
 		.font#{nth($value, 1)} {
 			font-family: font-family(nth($value, 2));
@@ -256,6 +268,17 @@
 			text-overflow: ellipsis;
 		}
 
+    .text-elipsis-two-line{
+      overflow: hidden;
+      height: 30px;
+    }
+
+    .content--no-img{
+      img{
+        display: none;
+      }
+    }
+
 		.text-muted{
 			font-family: 'Lato-Regular';
 			color: #A4A4A4;
@@ -269,6 +292,25 @@
 				margin-left: 5px;
 			}
 		}
+
+    .comment-reply{
+      padding-left: 40px;
+      position: relative;
+      &:before{
+        content: "";
+        position: absolute;
+        top: -1px;
+        left: 22px;
+        height: 1px;
+        width: 100%;
+        background-color: #DBDBDB;
+      }
+      > div:first-child{
+        position: absolute;
+        left: 20px;
+        top: -10px;
+      }
+    }
 
 		.full-height {
 			height: 100%;

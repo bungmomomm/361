@@ -5,7 +5,8 @@ const replace = (history, obj) => {
 	const url = queryString.stringify(obj, {
 		encode: false
 	});
-	history.push(`?${url}`);
+	console.log(obj, url);
+	history.replace(`?${url}`);
 };
 
 class MMUrlBuilder {

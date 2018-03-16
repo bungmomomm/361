@@ -10,11 +10,16 @@ import {
 import styles from './tree.scss';
 import Action from './action';
 import utils from './utils';
-// import renderIf from '@/utils/renderIf';
 
-const treeIcon = (active, HasTree) => {
+import classNames from 'classnames';
+import _ from 'lodash';
+
+const treeIcon = (active, HasTree, isChildSelected) => {
 	if (HasTree) {
-		return active ? <Svg src='ico_chevron-up.svg' /> : <Svg src='ico_chevron-down.svg' />;
+		if (active) {
+			return isChildSelected ? <Svg src='ico_check_chevron-up.svg' /> : <Svg src='ico_chevron-up.svg' />;
+		}
+		return isChildSelected ? <Svg src='ico_check_chevron-down.svg' /> : <Svg src='ico_chevron-down.svg' />;
 	}
 	if (active) {
 		return <Svg src='ico_check.svg' />;
@@ -27,7 +32,7 @@ class TreeSegment extends Component {
 		super(props);
 		this.state = {
 			activeTree: [],
-			defaultOpen: true,
+			defaultOpen: false,
 			data: props.data || [],
 			resetDisabled: utils.getSelected(props.data).length < 1
 		};
@@ -52,17 +57,28 @@ class TreeSegment extends Component {
 		onApply(e, result);
 	}
 
-	handleTree(e, value, isParent) {
+	handleTree(e, value, isParent, firstLevel) {
 		const { data } = this.state;
 		this.setState({
 			defaultOpen: false
 		});
 		if (isParent) {
-			this.setState({
-				data: utils.updateChilds(data, value, {
-					open: !value.open
-				})
-			});
+			if (firstLevel) {
+				this.setState({
+					data: utils.updateChilds(data, value, {
+						open: !value.open
+					}, {
+						open: false
+					})
+				});
+			} else {
+				this.setState({
+					data: utils.updateChilds(data, value, {
+						open: !value.open
+					})
+				});
+			}
+			
 		} else {
 			this.onClick(e, value);
 		}
@@ -82,8 +98,12 @@ class TreeSegment extends Component {
 		if (typeof category.childs === 'undefined') {
 			return null;
 		}
+
+		const filterBox = classNames(
+			!firstLevel ? styles.childs : null
+		);
 		return (
-			<div className={!firstLevel && styles.childs}>
+			<div className={filterBox}>
 				{
 					category.childs.map((child, id) => {
 						const hasChild = typeof child.childs !== 'undefined' && child.childs.length > 0;
@@ -96,9 +116,9 @@ class TreeSegment extends Component {
 						if (firstLevel && hasChild) {
 							return (
 								<List key={id} className={child.open ? styles.segment : styles.closed}>
-									<List.Content className={child.open && styles.selected} onClick={(e) => this.handleTree(e, child, hasChild)}>
+									<List.Content className={child.open && styles.selected} onClick={(e) => this.handleTree(e, child, hasChild, firstLevel)}>
 										<div className={styles.label}>{Label} <span className='font-color--primary-ext-2'> ({child.count}) produk</span></div>
-										{treeIcon(hasChild ? child.open : child.is_selected, hasChild)}
+										{treeIcon(hasChild ? child.open : child.is_selected, hasChild, isChildSelected)}
 									</List.Content>
 									{renderChild && this.renderChild(child)}
 								</List>
@@ -106,9 +126,9 @@ class TreeSegment extends Component {
 						}
 						return (
 							<List key={id} className={(hasChild && styles.parent)}>
-								<List.Content className={child.open && styles.segment} onClick={(e) => this.handleTree(e, child, hasChild)}>
+								<List.Content className={child.open && styles.segment} onClick={(e) => this.handleTree(e, child, hasChild, firstLevel)}>
 									<div className={styles.label}>{Label} <span className='font-color--primary-ext-2'>({child.count})</span></div>
-									{treeIcon(hasChild ? child.open : child.is_selected, hasChild)}
+									{treeIcon(hasChild ? child.open : child.is_selected, hasChild, isChildSelected)}
 								</List.Content>
 								{renderChild && this.renderChild(child)}
 							</List>
@@ -124,7 +144,7 @@ class TreeSegment extends Component {
 	}
 
 	render() {
-		const { onClose } = this.props;
+		const { onClose, title } = this.props;
 		const { data, resetDisabled } = this.state;
 		const HeaderPage = {
 			left: (
@@ -132,7 +152,7 @@ class TreeSegment extends Component {
 					<Svg src='ico_arrow-back-left.svg' />
 				</Button>
 			),
-			center: 'Kategori',
+			center: _.capitalize(title) || 'Default',
 			right: null
 		};
 
