@@ -28,7 +28,8 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				login: query.code || false,
 				scroll: {
 					top: 0,
-					docHeight: 0
+					docHeight: 0,
+					isNavSticky: false
 				},
 				provider: (query.code || query.state) ? (query.code ? 'facebook' : 'google') : false
 			};
@@ -40,6 +41,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			this.handleScroll = this.handleScroll.bind(this);
 			this.docBody = null;
 			this.unwatchConnection = null;
+			this.currentScrollPos = 0;
 		}
 
 		componentWillMount() {
@@ -60,10 +62,11 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			const con = (bool) => {
 				if (bool) {
 					dispatch(actions.showSnack(uniqid('off-'), {
-						label: 'You\'re now offline, please check your internet connection.',
+						label: 'Oops, koneksi Internet kamu sepertinya terputus.',
 						timeout: 5000,
 						button: {
-							label: 'TUTUP'
+							label: 'COBA LAGI',
+							action: 'reload'
 						}
 					}));
 				}
@@ -221,21 +224,26 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				this.setState({
 					scroll: {
 						top: e.target.scrollTop,
-						docHeight
+						docHeight,
+						isNavSticky: ((oldPos = this.currentScrollPos) => {
+							if (!scroll) {
+								return false;
+							}
+							this.currentScrollPos = this.state.scroll.top;
+							return this.state.scroll.top > oldPos && this.state.scroll.top < this.state.scroll.docHeight;
+						})()
 					}
 				});
 			}
 		}
 
 		render() {
-			const navbar = document.querySelector('.navigation__navigation');
-
 			return (
 				<div>
 					<Snackbar
 						history={this.props.history}
 						location={this.props.location}
-						customStyles={{ snack: { bottom: navbar !== null ? 50 : 0, zIndex: navbar !== null ? 2 : 999 } }}
+						customStyles={{ snack: { bottom: !this.state.scroll.isNavSticky ? 50 : 0, zIndex: !this.state.scroll.isNavSticky ? 2 : 999 } }}
 					/>
 					<WrappedComponent {...this.props} scroll={this.state.scroll} />
 				</div>
