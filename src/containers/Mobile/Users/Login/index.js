@@ -16,7 +16,7 @@ import util from 'util';
 import to from 'await-to-js';
 import queryString from 'query-string';
 
-import LoginPage from './Page';
+import Logout from './Logout';
 
 class Login extends Component {
 	constructor(props) {
@@ -221,6 +221,6 @@ const doAfterAnonymous = (props) => {
 	}
 };
 
-Login.Page = LoginPage;
+Login.Logout = Logout;
 
 export default withCookies(connect(mapStateToProps)(Shared(Login, doAfterAnonymous)));
