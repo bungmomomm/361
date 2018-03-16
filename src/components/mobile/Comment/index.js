@@ -65,7 +65,7 @@ class Comment extends Component {
 							<Rating active={data.review.rating} total={5} />
 						</Level.Right>
 					</Level>
-					<div className='padding--normal-h' style={{ marginLeft: '45px' }}>
+					<div className='padding--normal-h border-bottom padding--small-b' style={{ marginLeft: '45px' }}>
 						<div>{data.review.review}</div>
 						<div className='margin--small-v font-small font-color--primary-ext-2'>Post updated: {data.review.created_time}</div>
 					</div>

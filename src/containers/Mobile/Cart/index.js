@@ -131,71 +131,67 @@ class Cart extends Component {
 			const items = cart.items.map((item, keyItem) => {
 				return (
 					<div key={keyItem}>
-						<Level style={{ paddingLeft: '0px' }} className='flex-row border-bottom'>
+						<Level style={{ paddingLeft: '0px' }} className='flex-row'>
 							<Level.Item>
-								<Link to={urlBuilder.setId(item.product_id).setName(item.product_title).buildPdp()}>
+								<Link className='font-color--black' to={urlBuilder.setId(item.product_id).setName(item.product_title).buildPdp()}>
 									<Image width='100%' src={item.images[0].original} />
 									{(item.max_qty < item.qty) && (
 										<div style={{ backgroundColor: '#ffaeae', padding: '5px 10px', textAlign: 'center', fontSize: '12px' }}>SUDAH TIDAK DIJUAL</div>
 									)}
 								</Link>
 							</Level.Item>
-							<Level.Item className='padding--medium-h'>
+							<Level.Item className='padding--medium-l'>
 								<div>
-									<Link to={urlBuilder.setId(item.brand.id).setName(item.brand.brand_name).buildBrand()}>
+									<Link className='font-color--black' to={urlBuilder.setId(item.brand.id).setName(item.brand.brand_name).buildBrand()}>
 										{item.brand.brand_name}
 									</Link>
 								</div>
-								<div className='font-color--primary-ext-1'>
-									<Link to={urlBuilder.setId(item.product_id).setName(item.product_title).buildPdp()}>
+								<div className='font-color--primary-ext-1 flex-row'>
+									<Link className='font-color--black' to={urlBuilder.setId(item.product_id).setName(item.product_title).buildPdp()}>
 										{item.product_title}
 									</Link>
+									<Button
+										onClick={() => this.deleteConfirmationItemHandler(
+											item.variant_id, item.brand.brand_name, item.product_title, item.images[0].thumbnail
+										)}
+										className='font-color--primary-ext-1 margin--medium-l margin--small-r'
+									>
+										<Svg src='ico_trash.svg' />
+									</Button>
 								</div>
 								<div className='margin--medium-v'>
-									<div>{item.pricing.formatted.effective_price}</div>
+									<div className='font--lato-bold'>{item.pricing.formatted.effective_price}</div>
 									{(item.pricing.formatted.effective_price !== item.pricing.formatted.base_price) && (
 										<div className='font-color--primary-ext-1 font-small text-line-through'>
 											{item.pricing.formatted.base_price}
 										</div>
 									) }
 								</div>
-								<Level className='flex-row border-bottom'>
+								<Level className='flex-row flex-middle padding--none-l'>
 									<Level.Left>
-										<div>Jumlah</div>
+										<div>Jumlah: </div>
 									</Level.Left>
 									<Level.Item>
 										<Button
 											onClick={() => this.selectItemHandler(
 												item.variant_id, item.max_qty, item.qty
 											)}
-											className='flex-center'
+											className='flex-middle'
 										>
-											<span style={{ marginRight: '10px' }}>{item.qty}</span>
+											<span className='margin--medium-r'>{item.qty}</span>
 											<Svg src='ico_chevron-down.svg' />
 										</Button>
 									</Level.Item>
 								</Level>
 							</Level.Item>
 						</Level>
-						<div className='flex-row flex-center flex-spaceBetween margin--medium-v'>
+						<div className='flex-row flex-center flex-spaceBetween margin--medium-b'>
 							<div>
 								<Button
 									onClick={() => this.addToLovelistHandler(item.product_id, item.variant_id)}
-									outline
-									color='secondary'
 									size='medium'
 								>
-									<Svg src='ico_reply.svg' /> &nbsp; Pindahkan ke Lovelist
-								</Button>
-							</div>
-							<div className='padding--large-h'>
-								<Button
-									onClick={() => this.deleteConfirmationItemHandler(
-										item.variant_id, item.brand.brand_name, item.product_title, item.images[0].thumbnail
-									)}
-									className='font-color--primary-ext-1'
-								>
-									<Svg src='ico_trash.svg' /> &nbsp; Hapus
+									<Svg src='ico_move_lovelist.svg' /> &nbsp; <span className='font-color--blue text-uppercase'>Pindahkan ke Lovelist</span>
 								</Button>
 							</div>
 						</div>
@@ -208,7 +204,7 @@ class Cart extends Component {
 					style={{ paddingLeft: '15px', paddingTop: '15px', marginBottom: '20px', background: '#fff' }}
 				>
 					<div>
-						<Link to={urlBuilder.setId(cart.seller.seller_id).setName(cart.seller.seller).buildStore()} >
+						<Link className='font-color--black' to={urlBuilder.setId(cart.seller.seller_id).setName(cart.seller.seller).buildStore()} >
 							{cart.seller.seller}
 						</Link>
 					</div>
@@ -234,14 +230,6 @@ class Cart extends Component {
 						</div>
 						<div className='font-medium'>{this.props.shopBag.total.formatted.shipping_estimation}</div>
 					</div>
-					<hr className='margin--medium-v' />
-					<div className='flex-row flex-spaceBetween'>
-						<div>
-							<div>Total Pembayaran</div>
-							<div className='font-color--primary-ext-1 font-small'>(Termasuk PPN)</div>
-						</div>
-						<div className='font-medium'>{this.props.shopBag.total.formatted.total}</div>
-					</div>
 				</div>
 			</div>
 		);
@@ -257,9 +245,6 @@ class Cart extends Component {
 				<div className='flex-row'>
 					<span className='font-color--primary'>Total:</span>
 					<span className='padding--medium-h'>{(totalItem)} ITEM(S)</span>
-				</div>
-				<div className='font-medium font-color--primary'>
-					{this.props.shopBag.total.formatted.total}
 				</div>
 			</Panel>
 		);
@@ -281,6 +266,13 @@ class Cart extends Component {
 			<div className={styles.paymentLink}>
 				<div>
 					<div>
+						<div className={styles.totalPayment}>
+							<div>
+								<div>Total Pembayaran</div>
+								<div className='font-color--grey font-small'>(Termasuk PPN)</div>
+							</div>
+							<div className='font-medium font--lato-bold'>{this.props.shopBag.total.formatted.total}</div>
+						</div>
 						{link}
 					</div>
 				</div>

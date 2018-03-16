@@ -73,7 +73,7 @@ const SellerProfile = ({
 				<div className='font-medium'>{name}</div>
 				<div className='font-small flex-row flex-middle'><Svg src='ico_pinlocation-black.svg' /> <span>{location}</span></div>
 				{
-					description && <div className='font-small'>{description}</div>
+					description && <div className='font-small'><div className='content--no-img'>{description}</div></div>
 				}
 
 			</div>

@@ -128,6 +128,14 @@
   opacity: 0.4;
 }
 
+.secondary{
+  &.transparent{
+    opacity: 1;
+    background-color: rgba(0,0,0,0.4);
+    border-color: transparent;
+  }
+}
+
 .outline{
   background-color: color(--white);
   &.secondary{

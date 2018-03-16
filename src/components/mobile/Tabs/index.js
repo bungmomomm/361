@@ -12,7 +12,7 @@ class Tabs extends PureComponent {
 			styles[type]
 		);
 
-		const tabs = variants.map(({ id, title, key, disabled }, idx) => {
+		const tabs = variants.map(({ id, title, key, disabled, checked }, idx) => {
 			const activeId = activeTab ? (activeTab === id) : (key === current);
 			return (
 				<Tab
@@ -22,6 +22,7 @@ class Tabs extends PureComponent {
 					active={activeId}
 					disabled={disabled}
 					onPick={onPick}
+					checked={checked}
 				/>
 			);
 		});

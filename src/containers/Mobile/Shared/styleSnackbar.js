@@ -17,8 +17,8 @@ function getDefaultStyles(theming) {
 				transform: 'translate(-50%, 100%)',
 				borderRadius: '2px',
 				padding: '20px 24px',
-				minWidth: '400px',
-				maxWidth: '600px',
+				minWidth: '320px',
+				maxWidth: '480px',
 			}
 		},
 		label: {
