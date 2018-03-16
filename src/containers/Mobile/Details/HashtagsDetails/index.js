@@ -69,9 +69,9 @@ class HashtagsDetails extends Component {
 					{ent.data.post.embed_url && (
 						<div
 							style={{
-								marginTop: '-3px',
-								marginLeft: '-3px',
-								width: 'calc(100% + 8px)'
+								marginTop: '-2px',
+								marginLeft: '-1px',
+								width: 'calc(100% + 4px)'
 							}}
 						>
 							<InstagramEmbed
@@ -118,7 +118,7 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (props) => {
+const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies, match: { params } } = props;
 	if (isNaN(parseInt(params.post_id, 10)) || isNaN(parseInt(params.campaign_id, 10))) {
 		window.location.href = '/404';
@@ -127,9 +127,10 @@ const doAfterAnonymous = (props) => {
 	const ids = {
 		post_id: params.post_id,
 		campaign_id: params.campaign_id,
+		icode: params.icode
 	};
 
-	dispatch(actions.hashtagDetailAction(cookies.get('user.token'), ids));
+	await dispatch(actions.hashtagDetailAction(cookies.get('user.token'), ids));
 };
 
 export default withRouter(withCookies(connect(mapStateToProps)(Shared(HashtagsDetails, doAfterAnonymous))));
