@@ -6,27 +6,20 @@ import {
 	Navigation,
 	Svg,
 	Header,
-	Button,
 	Tabs,
-	Level,
-	Input,
-	Comment
 } from '@/components/mobile';
 import styles from './brands.scss';
-import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import { Filter, Sort } from '@/containers/Mobile/Widget';
 import { actions as brandAction } from '@/state/v4/Brand';
 import Shared from '@/containers/Mobile/Shared';
-import stylesCatalog from '@/containers/Mobile/Discovery/Category/Catalog/catalog.scss';
 import queryString from 'query-string';
-import { renderIf } from '@/utils';
+import { renderIf, urlBuilder } from '@/utils';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import Share from '@/components/mobile/Share';
 import Footer from '@/containers/Mobile/Shared/footer';
 import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
-import { Promise } from 'es6-promise';
 import Spinner from '@/components/mobile/Spinner';
 import Discovery from '../Utils';
 import {
@@ -115,6 +108,9 @@ class Detail extends Component {
 					...qs
 				}
 			};
+			this.setState({
+				query: data.query
+			});
 			dispatch(brandAction.brandProductAction(data));
 			dispatch(brandAction.brandBannerAction(cookies.get('user.token'), nextProps.match.params.brandId));
 		}
@@ -162,35 +158,26 @@ class Detail extends Component {
 		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), [productId]));
 	}
 
-	getCommentOfProduct(productId) {
-		return this.props.brands.products_comments && this.props.brands.products_comments.filter(e => e.product_id === productId)[0];
-	}
-
-	getLovelistOfProduct(productId) {
-		return this.props.brands.products_lovelist && this.props.brands.products_lovelist.filter(e => e.product_id === productId)[0];
-	}
-
 	update = (filters) => {
-		const { cookies, dispatch, match: { params }, location, history } = this.props;
+		const { cookies, dispatch, location, history } = this.props;
 		const { query } = this.state;
 
 		const parsedUrl = queryString.parse(location.search);
-		const urlParam = {
+
+		urlBuilder.replace(history, {
+			query: query.q,
+			page: query.page,
+			per_page: query.per_page,
 			sort: query.sort,
 			...parsedUrl,
 			...filters
-		};
-
-		const url = queryString.stringify(urlParam, {
-			encode: false
 		});
-		history.push(`${params.brandTitle}?${url}`);
+		
 		const data = {
 			token: cookies.get('user.token'),
 			query: {
 				...query,
-				...filters,
-				store_id: params.store_id || 0
+				...filters
 			},
 			type: 'init'
 		};
@@ -235,105 +222,6 @@ class Detail extends Component {
 	forceLoginNow() {
 		const { history, location } = this.props;
 		history.push(`/login?redirect_uri=${location.pathname}`);
-	}
-
-	addCommentHandler(event, productId) {
-		const { cookies } = this.props;
-		if (event.key === 'Enter') {
-			const { dispatch } = this.props;
-			const newComment = this.state.newComment;
-			const addingComment = new Promise((resolve, reject) => resolve(
-				dispatch(commentActions.commentAddAction(cookies.get('user.token'), newComment.product_id, newComment.comment))
-			));
-			addingComment.then((res) => {
-				const productIds = [productId];
-				dispatch(brandAction.brandProductsCommentsAction(cookies.get('user.token'), productIds));
-			}).catch((err) => this.setState({ newComment: { product_id: '', comment: '' } }));
-		}
-	}
-
-	addCommentOnChange(event, productId) {
-		this.setState({ newComment: { product_id: productId, comment: event.target.value } });
-	}
-
-	renderTabs() {
-		const { searchResults } = this.props;
-		const { showSort } = this.state;
-		let tabsView = null;
-		const sorts = _.chain(searchResults).get('searchData.sorts').value() || [];
-		tabsView = (
-			<div>
-				<Tabs
-					isSticky
-					className={stylesCatalog.filterBlockContainer}
-					type='segment'
-					variants={[
-						{
-							id: 'sort',
-							title: 'Urutkan',
-							disabled: typeof searchResults.searchData === 'undefined'
-						},
-						{
-							id: 'filter',
-							title: 'Filter',
-							disabled: typeof searchResults.searchData === 'undefined'
-						},
-						{
-							id: 'view',
-							title: <Svg src={this.state.listTypeState.icon} />,
-							disabled: searchResults.isLoading
-						}
-					]}
-					onPick={e => this.handlePick(e)}
-				/>
-				{renderIf(sorts)(
-					<Sort onCloseOverlay={() => this.setState({ showSort: false })} shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
-				)}
-			</div>
-		);
-		return tabsView;
-	}
-
-	renderComment(productId) {
-		const { cookies } = this.props;
-		const commentData = this.getCommentOfProduct(productId);
-		let lastComments = null;
-		if (commentData) {
-			const lastCommentShorted = _.orderBy(commentData.last_comment, ['id']);
-			lastComments = (
-				<div>
-					<Link to={`/product/comments/${commentData.product_id}`}>
-						<Button>View {commentData.total} comments</Button>
-					</Link>
-					<Comment
-						data={lastCommentShorted}
-						type='lite-review'
-						loading={this.props.brands.loading_prodcuts_comments}
-					/>
-				</div>
-			);
-		}
-		return (<div className={stylesCatalog.commentBlock}>
-			{lastComments}
-			<Level>
-				<Level.Item>
-					{
-						cookies.get('isLogin') === 'true' ?
-							this.props.comments.loading || this.props.brands.loading_prodcuts_comments ? <div>Sending comment...</div> :
-								(
-									<Input
-										color='white'
-										placeholder='Write comment'
-										onKeyPress={(e) => this.addCommentHandler(e, productId)}
-										onChange={(e) => this.addCommentOnChange(e, productId)}
-									/>)
-						: (
-							<span><Link to='/login'>Login / Register</Link> untuk memberikan komentar</span>
-						)
-					}
-				</Level.Item>
-			</Level>
-		</div>);
 	}
 
 	renderBenner() {

@@ -19,9 +19,9 @@ class SmartB extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			button: 'BUKA', 
+			button: 'BUKA',
 			link: '',
-			price: 'FREE', 
+			price: 'FREE',
 			atStore: 'In Google Play'
 		};
 		this.currentScrollPos = 0;
@@ -48,12 +48,12 @@ class SmartB extends Component {
 
 	render() {
 		const { title, iconSrc, author, isShow, scroll } = this.props;
-		
-		if ((scroll.top < scroll.docHeight && scroll.top !== 0) || (scroll.top === scroll.docHeight && scroll.top !== 0)) {
+
+		if ((scroll.top < scroll.docHeight && scroll.top > 80) || (scroll.top === scroll.docHeight && scroll.top > 80)) {
 			return null;
 		}
 
-		// prevent mobile user 
+		// prevent mobile user
 		if (!isMobile() || !isShow) {
 			return null;
 		}
@@ -79,7 +79,6 @@ class SmartB extends Component {
 						<span>{author}</span>
 						<span>{this.state.price} - {this.state.atStore}</span>
 					</div>
-					
 				</div>
 			</div>
 		);

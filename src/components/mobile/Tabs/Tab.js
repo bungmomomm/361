@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import classNames from 'classnames';
+import Svg from '../Svg';
 import styles from './tab.scss';
 
 class Tab extends PureComponent {
@@ -14,7 +15,7 @@ class Tab extends PureComponent {
 	}
 
 	render() {
-		const { title, active, disabled, id } = this.props;
+		const { title, active, disabled, id, checked } = this.props;
 		const className = classNames(styles.tab, {
 			[styles.active]: active,
 			[styles.disabled]: disabled
@@ -27,6 +28,10 @@ class Tab extends PureComponent {
 				id={`tabs_tab_${id}`}
 			>
 				<span>{title}</span>
+				{
+					checked && <span className='margin--medium-l'><Svg src='ico_check.svg' /></span>
+				}
+
 			</li>
 		);
 	}
