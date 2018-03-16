@@ -22,7 +22,7 @@ class Login extends Component {
 	}
 
 	onFailure(provider, e) {
-		if(this.props.onFailure){
+		if (this.props.onFailure) {
 			this.props.onFailure(provider, e);
 		} else {
 			this.props.callback(provider, e);

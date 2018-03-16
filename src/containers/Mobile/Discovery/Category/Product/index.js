@@ -112,11 +112,9 @@ class Product extends Component {
 			console.log(err);
 			return err;
 		}
-		if (!_.isEmpty(response.pcpData.products)) {
-			const productIdList = _.map(response.products, 'product_id') || null;
-			dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
-		}
+		const productIdList = _.map(response.pcpData.products, 'product_id') || [];
+		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 		return response;
 	}
 
