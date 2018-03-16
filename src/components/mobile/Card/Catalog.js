@@ -59,7 +59,7 @@ class Catalog extends PureComponent {
 			lovelistAddTo(loved);
 		}
 	}
-	
+
 	render() {
 		const {
 			className,
@@ -137,7 +137,8 @@ class Catalog extends PureComponent {
 				</Level>
 				<Link to={(linkToPdp) || '/'}>
 					<div className={styles.title}>
-						<span className='font-small text-uppercase'>{brandName}</span> - <span>{productTitle}</span>
+						<span className='font-small text-uppercase font--lato-bold font-color--primary'>{brandName}</span> -
+						<span className='text-elipsis-two-line font-color--primary-ext-2'>{productTitle}</span>
 					</div>
 					<Level className='padding--none-t'>
 						<Level.Item>
