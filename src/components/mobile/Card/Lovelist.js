@@ -91,7 +91,7 @@ class Lovelist extends PureComponent {
 				</Level>
 				<Link to={(linkToPdp) || '/'}>
 					<div className={styles.title}>
-						<span className='font-small text-uppercase font--lato-bold font-color--primary'>{data.brand.brand_name}</span>
+						<span className='font-small text-uppercase font--lato-bold font-color--primary'>{data.brand.name}</span>
 						<span className='text-elipsis-two-line font-color--primary-ext-2'>{data.product_title}</span>
 					</div>
 					<Level className='padding--none-t'>
