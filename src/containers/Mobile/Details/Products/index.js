@@ -398,7 +398,10 @@ class Products extends Component {
 				images: item.images,
 				productTitle: item.product_title,
 				brandName: item.brand.name,
-				pricing: item.pricing,
+				pricing: {
+					discount: item.pricing.formatted.discount,
+					...item.pricing
+				},
 				linkToPdp: urlBuilder.buildPdp(item.product_title, item.product_id)
 			};
 
@@ -583,9 +586,9 @@ class Products extends Component {
 							<div className='flex-center padding--medium-h border-top'>
 								<div className='margin--medium-v'>
 									<div className='flex-row flex-spaceBetween'>
-										<div>Pilih Ukuran</div>
-										<Link to='/product/guide' className='d-flex font-color--primary-ext-2 flex-row flex-middle'>
-											<Svg src='ico_sizeguide.svg' /> <span className='padding--small-h padding--none-r'>PANDUAN UKURAN</span>
+										<div className='font-medium'>Pilih Ukuran</div>
+										<Link to='/product/guide' className='d-flex font-color--primary font--lato-bold font-color-primary flex-row flex-middle'>
+											<Svg src='ico_sizeguide.svg' /> <span className='padding--small-h font--lato-bold font-color--primary padding--none-r'>PANDUAN UKURAN</span>
 										</Link>
 									</div>
 									<div className='margin--medium-v horizontal-scroll margin--none-b'>
@@ -618,12 +621,12 @@ class Products extends Component {
 						)}
 						<div className='font-medium margin--medium-v padding--medium-h'><strong>Details</strong></div>
 						{
-							status.pdpDataHasLoaded && <p className='padding--medium-h' dangerouslySetInnerHTML={{ __html: detail.description }} />
+							status.pdpDataHasLoaded && <div className='padding--medium-h' dangerouslySetInnerHTML={{ __html: detail.description }} />
 						}
 						<div className='margin--medium-v --disable-flex padding--medium-h'>
 							{this.isLogin && (
 								<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
-									{(comments.total === 0) && 'Belum Ada Komentar'}
+									{(comments.total === 0) && 'Tulis Komentar'}
 									{(comments.total > 0 && comments.total <= 2) && `${comments.total} Komentar`}
 									{(comments.total > 2) && `Lihat Semua ${comments.total} Komentar`}
 								</Link>
@@ -640,46 +643,49 @@ class Products extends Component {
 								<Comment type='lite-review' data={comments.summary} />
 							)}
 						</div>
-						{status.recommendationSet && (
-							<div>
-								<div className='margin--small-v padding--medium-h font-medium'><strong>Anda Mungkin Suka</strong></div>
-								<div className='flex'>{(!status.loading) ? this.renderSimilarRecommendItems('recommendation') : this.loadingContent}</div>
-							</div>
-						)}
+						{/* ----------------------------	END OF PDP MAIN CONTENT (CARD PRODUCT) ---------------------------- */}
+
 						<div style={{ backgroundColor: '#F5F5F5' }}>
-							<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
-								<div className='margin--medium-v'>
-									<div className='padding--small-h margin--small-v margin--none-t flex-row flex-spaceBetween'>
-										<div className='font-medium'><strong>{reviews.total > 0 ? 'Ulasan' : 'Belum Ada Ulasan'}</strong></div>
-										{reviews.total > 2 && (
-											<Button onClick={() => this.redirectToPage('reviews')} className='font-small flex-middle d-flex flex-row font-color--primary-ext-2' ><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Button>
-										)}
-									</div>
-									{reviews.total > 0 && (
-										<div className='border-bottom'>
-											<div className='padding--small-h margin--medium-v margin--none-t flex-row flex-middle'>
-												<Rating
-													active={(reviews.rating < 5) ? Number.parseFloat(reviews.rating).toFixed(1) : reviews.rating}
-													total={5}
-												/>
-												<div className='flex-row padding--small-h'>
-													<strong>{(reviews.rating < 5) ? Number.parseFloat(reviews.rating).toFixed(1) : reviews.rating} / 5</strong>
-													<span className='font-color--primary-ext-2 padding--small-h'>{`${reviews.total} Ulasan)`}</span>
+							{/* ----------------------------	PRODUCT REVIEWS ---------------------------- */}
+							{reviews.total > 0 && (
+								<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
+									<div className='margin--medium-v'>
+										<div className='padding--small-h margin--small-v margin--none-t flex-row flex-spaceBetween'>
+											<div className='font-medium'><strong>Penilaian Produk</strong></div>
+											{reviews.total > 2 && (
+												<Button onClick={() => this.redirectToPage('reviews')} className='font-small flex-middle d-flex flex-row font-color--primary-ext-2' ><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Button>
+											)}
+										</div>
+										{reviews.total > 0 && (
+											<div className='border-bottom'>
+												<div className='padding--small-h margin--medium-v margin--none-t flex-row flex-middle'>
+													<Rating
+														active={(reviews.rating < 5) ? Number.parseFloat(reviews.rating).toFixed(1) : reviews.rating}
+														total={5}
+													/>
+													<div className='flex-row padding--small-h'>
+														<strong>{(reviews.rating < 5) ? Number.parseFloat(reviews.rating).toFixed(1) : reviews.rating} / 5</strong>
+														<span className='font-color--primary-ext-2 padding--small-h'>{`${reviews.total} Ulasan)`}</span>
+													</div>
 												</div>
 											</div>
-										</div>
-									)}
-									{reviews.total > 0 && (
-										<div>
-											{status.loading && this.loadingContent}
-											{!status.loading &&
-											(reviews.summary.map((item, idx) => {
-												return <Comment key={idx} type='review' data={item} />;
-											})
-										)}</div>
-									)}
+										)}
+										{reviews.total > 0 && (
+											<div>
+												{status.loading && this.loadingContent}
+												{!status.loading &&
+													(reviews.summary.map((item, idx) => {
+														return <Comment key={idx} type='review' data={item} />;
+													})
+													)}</div>
+										)}
+									</div>
 								</div>
-							</div>
+							)}
+							{/* ----------------------------	END OF REVIEW ---------------------------- */}
+
+
+							{/* ----------------------------	SELLER PROFILE ---------------------------- */}							
 							<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 								{status.pdpDataHasLoaded && (
 									<SellerProfile
@@ -691,7 +697,7 @@ class Products extends Component {
 										totalProduct={(!_.isUndefined(seller.success_order.total)) ? (seller.success_order.total || 0) : 0}
 										name={detail.seller.seller}
 										location={detail.seller.seller_location}
-										description={(seller.description || '')}
+										description=''
 										storeAddress={urlBuilder.setId(detail.seller.seller_id).setName(detail.seller.seller).buildStore()}
 									/>
 									)
@@ -705,23 +711,41 @@ class Products extends Component {
 									</div>
 								)}
 							</div>
-							{status.similarSet && (
-								<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
-									<div className='margin--small-v padding--medium-h font-medium'><strong>Product Serupa</strong></div>
-									<div className='flex'>{(!status.loading) ? this.renderSimilarRecommendItems('similar') : this.loadingContent}</div>
-								</div>
-							)}
-							{!status.similarSet && !_.isEmpty(product.promo.best_seller_items.products) && (
-								<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
-									<div className='margin--small-v padding--medium-h font-medium'><strong>Product Terlaris</strong></div>
-									<div className='flex'>{(!status.loading) ? this.renderSimilarRecommendItems('best_seller') : this.loadingContent}</div>
-								</div>
-							)}
+							{/* ----------------------------	END OF SELLER PROFILE ---------------------------- */}
+
+							<div className='flex' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
+								{/* ----------------------------	RECOMMENDATION PRODUCTS---------------------------- */}
+								{status.recommendationSet && (
+									<div className='padding--medium-h margin--medium-v'>
+										<div className='font-medium'><strong>Anda Mungkin Suka</strong></div>
+										<div className='flex'>{(!status.loading) ? this.renderSimilarRecommendItems('recommendation') : this.loadingContent}</div>
+									</div>
+								)}
+								{/* ----------------------------	END OF RECOMMENDATION ---------------------------- */}
+
+								{/* ----------------------------	SIMILAR / BEST SELLER ---------------------------- */}
+								{status.similarSet && (
+									<div className='border-top padding--medium-h margin--medium-v'>
+										<div className='margin--medium-v padding--small-h font-medium'><strong>Produk Serupa</strong></div>
+										<div className='flex'>{(!status.loading) ? this.renderSimilarRecommendItems('similar') : this.loadingContent}</div>
+									</div>
+								)}
+								{!status.similarSet && !_.isEmpty(product.promo.best_seller_items.products) && (
+									<div className='border-top padding--medium-h margin--medium-v '>
+										<div className='margin--medium-v padding--small-h font-medium'><strong>Produk Terlaris</strong></div>
+										<div className='flex'>{(!status.loading) ? this.renderSimilarRecommendItems('best_seller') : this.loadingContent}</div>
+									</div>
+								)}
+								{/* ----------------------------	END OF SIMILAR / BEST SELLER ---------------------------- */}
+							</div>
+
 						</div>
 					</div>
 					{this.renderStickyAction()}
 				</Page>
 				<Header.Modal style={!status.showScrollInfomation ? { backgroundColor: 'transparent', border: 'none', boxShadow: 'none' } : {}} {...this.renderHeaderPage()} />
+
+				{/* MODALS */}
 				<Modal show={status.showConfirmDelete}>
 					<div className='font-medium'>
 						<h3>Hapus Lovelist</h3>
