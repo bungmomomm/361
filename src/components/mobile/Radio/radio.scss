@@ -136,9 +136,10 @@
 		label {
 				input {
 						+div {
-								border-radius: 6px;
-								width: 45px;
-								height: 30px;
+							width: auto;
+							height: 30px;
+							padding: 0px 15px;
+							min-width: 45px;
 						}
 						&:checked {
 								+div {
