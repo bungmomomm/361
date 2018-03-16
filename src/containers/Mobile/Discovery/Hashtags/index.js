@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { actions } from '@/state/v4/Hashtag';
-import { Header, Page, Navigation, Svg, Grid, Button, Image } from '@/components/mobile';
+import { Header, Page, Svg, Grid, Button, Image } from '@/components/mobile';
 import { Link, withRouter } from 'react-router-dom';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
@@ -16,7 +16,7 @@ import currency from 'currency.js';
 class Hashtags extends Component {
 
 	state = {
-		isFooterShow: true,
+		isFooterShow: false,
 	};
 
 	switchTag = (tag) => {
@@ -201,7 +201,6 @@ class Hashtags extends Component {
 				</Page>
 
 				<Header.Modal {...HeaderPage} />
-				<Navigation scroll={this.props.scroll} />
 			</div>
 		);
 	}
