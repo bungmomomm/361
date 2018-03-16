@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Header, Page, Navigation, Svg, Carousel } from '@/components/mobile';
+import { Header, Page, Svg, Carousel } from '@/components/mobile';
 import { actions } from '@/state/v4/HashtagsDetails';
 import Shared from '@/containers/Mobile/Shared';
 import Spinner from '@/components/mobile/Spinner';
@@ -28,6 +28,7 @@ class HashtagsDetails extends Component {
 			if ((i + 1) % 2 === 0 || products.length === (i + 1)) {
 				buffer.push(
 					<GridView
+						key={i}
 						loading={scroller.loading}
 						forceLoginNow={() => this.forceLoginNow()}
 						products={products}
@@ -73,9 +74,7 @@ class HashtagsDetails extends Component {
 								protocol=''
 								onLoading={() => {}}
 								onSuccess={() => {}}
-								onAfterRender={() => {
-									// document.getElementsByClassName('instagram-media')[0].removeAttribute('style');
-								}}
+								onAfterRender={() => {}}
 								onFailure={() => {}}
 							/>
 						</div>
@@ -98,7 +97,6 @@ class HashtagsDetails extends Component {
 				</Page>
 
 				<Header.Modal {...HeaderPage} />
-				<Navigation scroll={this.props.scroll} />
 			</div>);
 	}
 }
