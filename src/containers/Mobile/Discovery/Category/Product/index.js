@@ -157,7 +157,7 @@ class Product extends Component {
 	}
 
 	tabBlock() {
-		const { productCategory, viewMode } = this.props;
+		const { isFiltered, productCategory, viewMode } = this.props;
 		const { showSort } = this.state;
 		const productChain = _.chain(productCategory);
 		let tabsView = null;
@@ -180,7 +180,7 @@ class Product extends Component {
 								id: 'filter',
 								title: 'Filter',
 								disabled: typeof productCategory.pcpData === 'undefined',
-								checked: true
+								checked: isFiltered
 							},
 							{
 								id: 'view',
@@ -289,10 +289,13 @@ class Product extends Component {
 
 const mapStateToProps = (state) => {
 	const { comments, lovelist, productCategory } = state;
-	productCategory.pcpData.products = Discovery.mapProducts(productCategory.pcpData.products, comments, lovelist);
+	const { products, facets } = _.chain(productCategory).get('pcpData').value() || { products: [], facets: [] };
+	productCategory.pcpData.products = Discovery.mapProducts(products, comments, lovelist);
+	const isFiltered = Filter.utils.isFiltered(facets);
 
 	return {
 		...state,
+		isFiltered,
 		productCategory,
 		query: state.productCategory.query,
 		isLoading: state.productCategory.isLoading,

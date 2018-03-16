@@ -339,4 +339,6 @@ class Filter extends PureComponent {
 	}
 }
 
+Filter.utils = utils;
+
 export default Filter;

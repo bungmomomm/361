@@ -322,6 +322,14 @@ const getSelected = (childs, source) => {
 	return source;
 };
 
+const isFiltered = (facets) => {
+	let filtered = [];
+	_.forEach(facets, (facet) => {
+		filtered = getSelected(facet.data, filtered);
+	});
+	return filtered.length > 0;
+};
+
 const toIdr = (value) => {
 	return currency(value, { symbol: 'Rp', precision: 0, formatWithSymbol: true }).format();
 };
@@ -337,6 +345,7 @@ export default {
 	resetChilds,
 	isDescendantSelected,
 	getSelected,
+	isFiltered,
 	applyAndGetSelected,
 	mapFilters,
 	toIdr
