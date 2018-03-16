@@ -6,7 +6,7 @@ import _ from 'lodash';
 import {
 	Header, Carousel, Tabs,
 	Page, Level, Button, Grid, Article,
-	Navigation, Svg, Image, SmartBanner
+	Navigation, Svg, Image, SmartBanner, SEO
 } from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
@@ -314,6 +314,12 @@ class Home extends Component {
 		return (
 			<div style={this.props.style}>
 				<Page color='white'>
+					<SEO 
+						title='testing okeee'
+						description='Beli aja coooooy'
+						path='mataharimall.com'
+						image={require('@/assets/images/app-icon.png')}
+					/>
 					<Tabs
 						current={this.props.shared.current}
 						variants={this.props.home.segmen}

@@ -29,24 +29,20 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, minimum-scale=1, maximum-scale=1" />
         <meta name="theme-color" content="#DA1818"  />
-        <meta name="full-screen" content="yes" />
+        <!-- <meta name="full-screen" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="#DA1818" />
-        <meta name="apple-mobile-web-app-title" content="MatahariMall" />
+        <meta name="apple-mobile-web-app-title" content="MatahariMall" /> -->
         <% if (params.manifest['main.css']) { %>
             <link rel="stylesheet" href="<%= params.manifest['main.css'] %>" />
         <% } %>
-        <link rel="canonical" href="https://www.mataharimall.com" />
+        <!-- <link rel="canonical" href="https://www.mataharimall.com" />
         <link rel="alternate" media="only screen and (max-width: 640px)" href="https://m.mataharimall.com" />
         <link rel="shortcut icon" href="<%=params.manifest['ico']%>" type="image/vnd.microsoft.icon" />
         <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
-        <link rel="icon" href="<%=params.manifest['ico']%>" type="image/x-icon" />
+        <link rel="icon" href="<%=params.manifest['ico']%>" type="image/x-icon" /> -->
         <meta name="theme-color" content="#DA1818" />
-        <!-- Smart Banner --> 
-        <meta name="apple-itunes-app" content="app-id=1033108124">
-        <meta name="google-play-app" content="app-id=com.mataharimall.mmandroid">
-        <link rel="apple-touch-icon" href="<%=params.manifest['ico']%>">
     </head>
     <body <% if (params.helmet.htmlAttributes) { %><%= params.helmet.bodyAttributes.toString() %><% } %>>
         <noscript>
