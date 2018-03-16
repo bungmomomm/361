@@ -14,6 +14,46 @@ import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
 import SellerProfile from '../../Discovery/Seller/components/SellerProfile';
 import { Promise } from 'es6-promise';
+import {
+	TrackingRequest,
+	pdpViewBuilder,
+	addToCartBuilder,
+	sendGtm,
+} from '@/utils/tracking';
+
+const trackAddToCart = (data, props, variant) => {
+	const products = {
+		name: data.detail.title,
+		id: data.detail.id,
+		price: data.detail.price_range.effective_price,
+		brand: data.detail.brand.name,
+		category: data.detail.product_category_names.join('/'),
+		variant: variant.options[0].value,
+		variant_id: variant.id,
+		quantity: 1
+	};
+	const request = new TrackingRequest();
+	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
+	request.setFusionSessionId('').setIpAddress('').setProducts([products]);
+	const requestPayload = request.getPayload(addToCartBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
+
+const trackPdpView = (data, props) => {
+	const products = {
+		name: data.detail.title,
+		id: data.detail.id,
+		price: data.detail.price_range.effective_price,
+		brand: data.detail.brand.name,
+		category: data.detail.product_category_names.join('/'),
+	};
+	const request = new TrackingRequest();
+	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
+	request.setFusionSessionId('').setIpAddress('').setProducts([products]);
+	request.setStoreName(data.detail.seller.seller);
+	const requestPayload = request.getPayload(pdpViewBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
 
 class Products extends Component {
 	constructor(props) {
@@ -222,12 +262,12 @@ class Products extends Component {
 		this.setState({ status });
 	}
 
-	addToShoppingBag(variantId) {
+	addToShoppingBag(variant) {
 		const { status } = this.state;
 		const { dispatch, product } = this.props;
 
 		const handler = new Promise((resolve, reject) => {
-			resolve(dispatch(shopBagActions.updateAction(this.userCookies, variantId, this.defaultCount, 'add')));
+			resolve(dispatch(shopBagActions.updateAction(this.userCookies, variant.id, this.defaultCount, 'add')));
 		});
 
 		handler.then((res) => {
@@ -240,6 +280,7 @@ class Products extends Component {
 			// get product data
 			status.pdpDataHasLoaded = false;
 			dispatch(new productActions.productDetailAction(this.userCookies, product.detail.id));
+			trackAddToCart(product, this.props, variant);
 		}).catch((err) => {
 			throw err;
 		});
@@ -269,7 +310,7 @@ class Products extends Component {
 			status.pendingAddProduct = true;
 			this.setState({ status });
 		} else {
-			this.addToShoppingBag(selectedVariant.id);
+			this.addToShoppingBag(selectedVariant);
 		}
 	}
 
@@ -290,7 +331,7 @@ class Products extends Component {
 				pdpData
 			});
 			// Add product to cart automatically after product variant size selected 
-			if (status.pendingAddProduct) this.addToShoppingBag(selectedVariant.id);
+			if (status.pendingAddProduct) this.addToShoppingBag(selectedVariant);
 		}
 	}
 
@@ -815,7 +856,8 @@ const doAfterAnonymous = async (props) => {
 	const productId = _.toInteger(match.params.id);
 	const token = cookies.get('user.token');
 
-	dispatch(new productActions.productDetailAction(token, productId));
+	const productDetail = await dispatch(new productActions.productDetailAction(token, productId));
+	trackPdpView(productDetail, props);
 	dispatch(new productActions.productPromoAction(token, productId));
 	dispatch(new productActions.productSocialSummaryAction(token, productId));
 	dispatch(new lovelistActions.bulkieCountByProduct(token, productId));

@@ -25,7 +25,7 @@ const homepageViewBuilder = (data) => {
 };
 
 
-const loginSuccessBuilder = (data, eventName) => {
+const loginSuccessBuilder = (data) => {
 	try {
 		return {
 			event: 'loginSuccess',
@@ -37,7 +37,7 @@ const loginSuccessBuilder = (data, eventName) => {
 	}
 };
 
-const registerSuccessBuilder = (data, eventName) => {
+const registerSuccessBuilder = (data) => {
 	try {
 		return {
 			event: 'registerSuccess',
@@ -48,6 +48,24 @@ const registerSuccessBuilder = (data, eventName) => {
 		return false;
 	}
 };
+
+const pdpViewBuilder = (data) => {
+	try {
+		return {
+			event: 'pdpView',
+			...repeatedPayload(data),
+			store_name: data.storeName,
+			ecommerce: {
+				detail: {
+					products: data.products
+				}
+			},
+		};
+	} catch (error) {
+		return false;
+	}
+};
+
 
 const impressionsPushedBuilder = (data) => {
 	return {
@@ -60,9 +78,29 @@ const impressionsPushedBuilder = (data) => {
 	};
 };
 
+const addToCartBuilder = (data) => {
+	return {
+		event: 'addToCart',
+		email_address: data.emailHash,
+		fusion_session_id: data.fusionSessionId,
+		user_id: data.userIdEncrypted,
+		logged_in: data.userId,
+		site_type: 'd',
+		ecommerce: {
+			currencyCode: 'IDR',
+			add: {
+				products: data.products
+			}
+		}
+	};
+};
+
+
 export default {
 	homepageViewBuilder,
 	impressionsPushedBuilder,
 	loginSuccessBuilder,
-	registerSuccessBuilder
+	registerSuccessBuilder,
+	pdpViewBuilder,
+	addToCartBuilder,
 };

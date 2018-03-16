@@ -50,7 +50,14 @@ class TrackingRequest {
 		this.loginRegisterMethod = method;
 		return this;
 	}
-
+	setProducts = (products) => {
+		this.products = products;
+		return this;
+	}
+	setStoreName = (store) => {
+		this.storeName = store;
+		return this;
+	}
 }
 
 export default {

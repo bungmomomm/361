@@ -240,7 +240,7 @@ class Register extends Component {
 	trackingHandler(response, method = 'onsite') {
 		const request = new TrackingRequest();
 		request.setEmailHash('').setUserId(response.userid).setCurrentUrl(`/${this.state.current}`);
-		request.setFusionSessionId('').setUserIdEncrypted('').setIpAddress('').loginRegisterMethod(method);
+		request.setFusionSessionId('').setUserIdEncrypted('').setIpAddress('').setLoginRegisterMethod(method);
 		const requestPayload = request.getPayload(registerSuccessBuilder);
 		if (requestPayload) sendGtm(requestPayload);
 	}

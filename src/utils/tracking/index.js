@@ -4,6 +4,8 @@ import {
 	impressionsPushedBuilder,
 	loginSuccessBuilder,
 	registerSuccessBuilder,
+	pdpViewBuilder,
+	addToCartBuilder,
 } from './gtmPayloadBuilder';
 import {
 	sendGtm,
@@ -11,11 +13,13 @@ import {
 } from './send';
 
 export default {
+	sendGtm,
+	sendLucidWork,
 	TrackingRequest,
 	homepageViewBuilder,
 	impressionsPushedBuilder,
 	loginSuccessBuilder,
 	registerSuccessBuilder,
-	sendGtm,
-	sendLucidWork
+	pdpViewBuilder,
+	addToCartBuilder,
 };
