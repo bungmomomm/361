@@ -10,10 +10,10 @@ const setUserCookie = (cookies, token, isAnonymous = false) => {
 };
 
 const removeUserCookie = (cookies, token, isAnonymous = false) => {
-	cookies.set('user.exp', { domain: process.env.SESSION_DOMAIN, path: '/' });
-	cookies.set('user.rf.token', { domain: process.env.SESSION_DOMAIN, path: '/' });
-	cookies.set('user.token', { domain: process.env.SESSION_DOMAIN, path: '/' });
-	cookies.set('isLogin', { domain: process.env.SESSION_DOMAIN, path: '/' });
+	cookies.remove('user.exp', { domain: process.env.SESSION_DOMAIN, path: '/' });
+	cookies.remove('user.rf.token', { domain: process.env.SESSION_DOMAIN, path: '/' });
+	cookies.remove('user.token', { domain: process.env.SESSION_DOMAIN, path: '/' });
+	cookies.remove('isLogin', { domain: process.env.SESSION_DOMAIN, path: '/' });
 };
 
 const setUniqeCookie = (cookies, uuid) => {

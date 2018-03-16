@@ -51,7 +51,7 @@ class GoogleLogin extends PureComponent {
 	}
 
 	login() {
-		const { prompt, onFailure } = this.props;
+		const { prompt, callback } = this.props;
 		if (this.state.sdkLoaded && !this.state.loading) {
 			const auth2 = window.gapi.auth2.getAuthInstance();
 			const options = {
@@ -59,7 +59,7 @@ class GoogleLogin extends PureComponent {
 			};
 			auth2.signIn(options).then(res => {
 				this.proccessLogin(res);
-			}, err => onFailure(err));
+			}, err => callback(err));
 		}
 	}
 
@@ -99,7 +99,6 @@ GoogleLogin.propTypes = {
 	clientId: PropTypes.string,
 	onSuccess: PropTypes.func,
 	callback: PropTypes.func,
-	onFailure: PropTypes.func,
 	wide: PropTypes.bool
 };
 

@@ -67,6 +67,7 @@ class Register extends Component {
 			return err;
 		}
 		setUserCookie(this.props.cookies, response.token);
+		dispatch(new users.afterLogin(cookies.get('user.token')));
 		history.push(redirectUri || '/');
 		return response;
 	}
@@ -126,6 +127,7 @@ class Register extends Component {
 
 			// Set the cookie for the page.
 			setUserCookie(cookies, responseUserLogin.token);
+			dispatch(new users.afterLogin(cookies.get('user.token')));
 			history.push(redirectUri || '/');
 
 		}
@@ -243,6 +245,7 @@ class Register extends Component {
 		
 		// Set the cookie for the page.
 		setUserCookie(cookies, responseUserLogin.token);
+		dispatch(new users.afterLogin(cookies.get('user.token')));
 		history.push(redirectUri || '/');
 		
 		return responseUserLogin;
