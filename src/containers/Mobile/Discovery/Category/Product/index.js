@@ -11,10 +11,10 @@ import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import { Filter, Sort } from '@/containers/Mobile/Widget';
 
-import { 
-	CatalogView, 
-	GridView, 
-	SmallGridView 
+import {
+	CatalogView,
+	GridView,
+	SmallGridView
 } from '@/containers/Mobile/Discovery/View';
 
 import {
@@ -30,7 +30,7 @@ import { actions as pcpActions } from '@/state/v4/ProductCategory';
 import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 
-import { 
+import {
 	renderIf,
 	urlBuilder
 } from '@/utils';
@@ -101,7 +101,7 @@ class Product extends Component {
 			...parsedUrl,
 			...params
 		});
-		
+
 		const pcpParam = {
 			...query,
 			...params
@@ -170,7 +170,6 @@ class Product extends Component {
 					)}
 					<Tabs
 						type='segment'
-						className='margin--medium-t'
 						variants={[
 							{
 								id: 'sort',
@@ -313,9 +312,9 @@ const doAfterAnonymous = async (props) => {
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
-	
+
 	const response = await dispatch(pcpActions.pcpAction({ token: cookies.get('user.token'), query: pcpParam }));
-	
+
 	const productIdList = _.map(response.pcpData.products, 'product_id') || [];
 	if (productIdList.length > 0) {
 		await dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
