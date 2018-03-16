@@ -7,7 +7,8 @@ import {
 	pdpViewBuilder,
 	addToCartBuilder,
 	categoryViewBuilder,
-	productClickBuilder
+	productClickBuilder,
+	cartViewBuilder,
 } from './gtmPayloadBuilder';
 import {
 	sendGtm,
@@ -26,4 +27,5 @@ export default {
 	addToCartBuilder,
 	categoryViewBuilder,
 	productClickBuilder,
+	cartViewBuilder,
 };

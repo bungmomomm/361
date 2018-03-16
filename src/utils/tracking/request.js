@@ -74,6 +74,14 @@ class TrackingRequest {
 		this.sourceName = sourceName;
 		return this;
 	}
+	setListPrice = (listPrice) => {
+		this.listPrice = listPrice;
+		return this;
+	}
+	setListQuantity = (listQuantity) => {
+		this.listQuantity = listQuantity;
+		return this;
+	}
 }
 
 export default {

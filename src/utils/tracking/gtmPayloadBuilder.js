@@ -125,6 +125,16 @@ const productClickBuilder = (data) => {
 	};
 };
 
+const cartViewBuilder = (data) => {
+	return {
+		event: 'cartView',
+		...repeatedPayload(data),
+		product_id: data.listProductId,
+		prices: data.listPrice,
+		quantities: data.listQuantity
+	};
+};
+
 export default {
 	homepageViewBuilder,
 	impressionsPushedBuilder,
@@ -133,5 +143,6 @@ export default {
 	pdpViewBuilder,
 	addToCartBuilder,
 	categoryViewBuilder,
-	productClickBuilder
+	productClickBuilder,
+	cartViewBuilder
 };
