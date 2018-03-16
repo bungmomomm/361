@@ -440,7 +440,7 @@ class Products extends Component {
 					{
 						pdpData.cardProduct.images.map((image, idx) => (
 							<div tabIndex='0' role='button' onClick={this.closeZoomImage} key={idx} data-img={image.mobile}>
-								<Image src={image.mobile} alt='product' />
+								<Image lazyload src={image.mobile} alt='product' />
 							</div>
 						))
 					}
@@ -620,9 +620,16 @@ class Products extends Component {
 							</Level>
 						)}
 						<div className='font-medium margin--medium-v padding--medium-h'><strong>Details</strong></div>
-						{
-							status.pdpDataHasLoaded && <div className='padding--medium-h' dangerouslySetInnerHTML={{ __html: detail.description }} />
-						}
+						{!_.isEmpty(detail.description) && <div className='padding--medium-h' dangerouslySetInnerHTML={{ __html: detail.description.replace(/(?:\r\n|\r|\n)/g, '<br />') }} />}
+						{!_.isEmpty(detail.spec) && (
+							<div className='margin--medium-v --disable-flex padding--medium-h'>
+								{(detail.spec.map((item, idx) => {
+									item.value = item.value.replace(/(?:\r\n|\r|\n)/g, '<br />');
+									if (/^/.test(item.value)) return <div key={idx} className='margin--small-v font-medium font-color--primary' dangerouslySetInnerHTML={{ __html: item.value }} />;
+									return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
+								}))}
+							</div>
+						)}
 						<div className='margin--medium-v --disable-flex padding--medium-h'>
 							{this.isLogin && (
 								<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
@@ -651,9 +658,11 @@ class Products extends Component {
 								<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 									<div className='margin--medium-v'>
 										<div className='padding--small-h margin--small-v margin--none-t flex-row flex-spaceBetween'>
-											<div className='font-medium'><strong>Penilaian Produk</strong></div>
+											<div className='font-medium'><strong>Ulasan Produk</strong></div>
 											{reviews.total > 2 && (
-												<Button onClick={() => this.redirectToPage('reviews')} className='font-small flex-middle d-flex flex-row font-color--primary-ext-2' ><span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' /></Button>
+												<Button onClick={() => this.redirectToPage('reviews')} className='font-small flex-middle d-flex flex-row font-color--primary-ext-2' >
+													<span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' />
+												</Button>
 											)}
 										</div>
 										{reviews.total > 0 && (
@@ -665,7 +674,7 @@ class Products extends Component {
 													/>
 													<div className='flex-row padding--small-h'>
 														<strong>{(reviews.rating < 5) ? Number.parseFloat(reviews.rating).toFixed(1) : reviews.rating} / 5</strong>
-														<span className='font-color--primary-ext-2 padding--small-h'>{`${reviews.total} Ulasan)`}</span>
+														<span className='font-color--primary-ext-2 padding--small-h'>{`(${reviews.total} Ulasan)`}</span>
 													</div>
 												</div>
 											</div>
@@ -675,7 +684,17 @@ class Products extends Component {
 												{status.loading && this.loadingContent}
 												{!status.loading &&
 													(reviews.summary.map((item, idx) => {
-														return <Comment key={idx} type='review' data={item} />;
+														return (
+															<div key={`pdp-rvd-${idx + 1}`}>
+																<Comment key={idx} type='review' data={item} />
+																{!_.isEmpty(item.reply.reply) &&
+																	<div className='comment-reply' key={`pdp-rvd-${idx + 2}`} >
+																		<div><Svg src='ico_review_reply.svg' /></div>
+																		<Comment key={idx} type='review-reply' replyData={item.reply} sellerData={seller} />
+																	</div>
+																}
+															</div>
+														);
 													})
 													)}</div>
 										)}
@@ -751,17 +770,17 @@ class Products extends Component {
 						<h3>Hapus Lovelist</h3>
 						<Level style={{ padding: '0px' }} className='margin--medium-v'>
 							<Level.Left />
-							<Level.Item className='padding--medium-h'>
-								<div className='font-small'>Kamu yakin mau hapus produk ini dari Lovelist kamu?</div>
+							<Level.Item className='padding--medium-h margin--medium-h'>
+								<div className='font-medium'>Kamu yakin mau hapus produk ini dari Lovelist kamu?</div>
 							</Level.Item>
 						</Level>
 					</div>
 					<Modal.Action
 						closeButton={(
 							<Button onClick={(e) => this.handleCloseModalPopUp(e, 'lovelist')}>
-								<span className='font-color--primary-ext-2'>BATALKAN</span>
+								<strong className='font-color--primary-ext-2'>BATALKAN</strong>
 							</Button>)}
-						confirmButton={(<Button onClick={this.removeAddItem}>YA, HAPUS</Button>)}
+						confirmButton={(<Button onClick={this.removeAddItem}><strong className='font-color--primary'>YA, HAPUS</strong></Button>)}
 					/>
 				</Modal>
 
@@ -787,24 +806,24 @@ class Products extends Component {
 							<h3 className='text-center'>Lovelist</h3>
 							<Level style={{ padding: '0px' }} className='margin--medium-v'>
 								<Level.Left />
-								<Level.Item className='padding--medium-h'>
-									<div className='font-small'>Silahkan login/register untuk menambahkan produk ke Lovelist</div>
+								<Level.Item className='padding--medium-h margin--medium-h'>
+									<center className='font-medium'>Silahkan login/register untuk menambahkan produk ke Lovelist</center>
 								</Level.Item>
 							</Level>
 						</div>
 						<Modal.Action
 							closeButton={(
 								<Button onClick={(e) => this.loginLater()}>
-									<span className='font-color--primary-ext-2'>NANTI</span>
+									<strong className='font-color--primary-ext-2'>NANTI</strong>
 								</Button>)}
-							confirmButton={(<Button onClick={(e) => this.loginNow()}>SEKARANG</Button>)}
+							confirmButton={(<Button onClick={(e) => this.loginNow()}><strong className='font-color--primary'>SEKARANG</strong></Button>)}
 						/>
 					</Modal>
 				)}
 
 				{status.showOvoInfo && (
 					<Modal show>
-						<div className='font-medium'>
+						<div className='font-medium padding--medium-h margin--medium-h'>
 							<h3 className='text-center'>OVO Points</h3>
 							<Level style={{ padding: '0px' }} className='margin--medium-v'>
 								<Level.Left />
@@ -816,7 +835,7 @@ class Products extends Component {
 						<Modal.Action
 							closeButton={(
 								<Button onClick={(e) => this.handleCloseModalPopUp(e, 'ovo-points')}>
-									<strong className='font-color--primary-ext-2'>TUTUP</strong>
+									<strong className='font-color--primary'>TUTUP</strong>
 								</Button>)}
 						/>
 					</Modal>

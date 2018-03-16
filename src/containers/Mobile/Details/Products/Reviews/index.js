@@ -48,12 +48,14 @@ class Reviews extends Component {
 		const { allReviews } = this.props.product;
 		const reviewsContent = allReviews.items.map((item, idx) => {
 			return (
-				<div className='padding--small-h'>
+				<div className='padding--small-h' key={`rvd-${idx + 1}`}>
 					<Comment key={idx} type='review' data={item} />
-					<div className='comment-reply'>
-						<div><Svg src='ico_review_reply.svg' /></div>
-						<Comment key={idx} type='review' data={item} />
-					</div>
+					{!_.isEmpty(item.reply.reply) && 
+						<div className='comment-reply'>
+							<div><Svg src='ico_review_reply.svg' /></div>
+							<Comment key={idx} type='review-reply' replyData={item.reply} sellerData={allReviews.seller} />
+						</div>
+					}
 				</div>
 			);
 		});
@@ -148,49 +150,6 @@ class Reviews extends Component {
 										</div>
 										<div className='padding--small-h'>{this.toFixDecimal(rating.rating1.percentage, 100)} %</div>
 									</div>
-
-									{/* <div className='flex-row flex-spaceBetween flex-middle'>
-										<Rating total={1} active={0} />
-										<div className='margin--small-h'>5</div>
-										<div className={styles.slider}>
-											<span />
-										</div>
-										<div className='padding--small-h'>100 %</div>
-									</div>
-									<div className='flex-row flex-spaceBetween flex-middle'>
-										<Rating total={1} active={0} />
-										<div className='margin--small-h'>5</div>
-										<div className={styles.slider}>
-											<span />
-										</div>
-										<div className='padding--small-h'>100 %</div>
-									</div>
-									<div className='flex-row flex-spaceBetween flex-middle'>
-										<Rating total={1} active={0} />
-										<div className='margin--small-h'>5</div>
-										<div className={styles.slider}>
-											<span />
-										</div>
-										<div className='padding--small-h'>100 %</div>
-									</div>
-									<div className='flex-row flex-spaceBetween flex-middle'>
-										<Rating total={1} active={0} />
-										<div className='margin--small-h'>5</div>
-										<div className={styles.slider}>
-											<span />
-										</div>
-										<div className='padding--small-h'>100 %</div>
-									</div>
-									<div className='flex-row flex-spaceBetween flex-middle'>
-										<Rating total={1} active={0} />
-										<div className='margin--small-h'>5</div>
-										<div className={styles.slider}>
-											<span />
-										</div>
-										<div className='padding--small-h'>100 %</div>
-									</div> */}
-
-
 								</div>
 							</div>
 						</div>
