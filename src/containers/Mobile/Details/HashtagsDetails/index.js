@@ -2,45 +2,37 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Header, Page, Navigation, Svg, Grid, Card, Carousel } from '@/components/mobile';
+import { Header, Page, Navigation, Svg, Carousel } from '@/components/mobile';
 import { actions } from '@/state/v4/HashtagsDetails';
 import Shared from '@/containers/Mobile/Shared';
 import Spinner from '@/components/mobile/Spinner';
-import { urlBuilder } from '@/utils';
 import InstagramEmbed from 'react-instagram-embed';
+import { GridView } from '@/containers/Mobile/Discovery/View';
 
 class HashtagsDetails extends Component {
 
+	forceLoginNow = () => {
+		const { history, location } = this.props;
+		const currentUrl = encodeURIComponent(`${location.pathname}${location.search}`);
+		history.push(`/login?redirect_uri=${currentUrl}`);
+	};
+
 	bufferCarousel = (products) => {
+		const { scroller } = this.props;
 		const buffer = [];
 		let fragment = [];
 
 		products.forEach((product, i) => {
-			fragment = ((i + 1) % 2 !== 0) ?
-			[
-				<Card.CatalogGrid
-					key={i}
-					images={product.images}
-					productTitle={product.product_title}
-					brandName={product.brand.name}
-					pricing={product.pricing}
-					linkToPdp={urlBuilder.buildPdp(product.product_title, product.product_id)}
-				/>
-			] :
-			[
-				...fragment,
-				<Card.CatalogGrid
-					key={i}
-					images={product.images}
-					productTitle={product.product_title}
-					brandName={product.brand.name}
-					pricing={product.pricing}
-					linkToPdp={urlBuilder.buildPdp(product.product_title, product.product_id)}
-				/>
-			];
+			fragment = ((i + 1) % 2 !== 0) ? [product] : [...fragment, product];
 
 			if ((i + 1) % 2 === 0 || products.length === (i + 1)) {
-				buffer.push(fragment);
+				buffer.push(
+					<GridView
+						loading={scroller.loading}
+						forceLoginNow={() => this.forceLoginNow()}
+						products={products}
+					/>
+				);
 			}
 		});
 
@@ -64,7 +56,6 @@ class HashtagsDetails extends Component {
 
 		return (
 			<div>
-
 				<Page color='white'>
 					{ent.data.post.embed_url && (
 						<div
@@ -99,7 +90,7 @@ class HashtagsDetails extends Component {
 						>
 							<div className='padding--medium-h font-medium'><strong>Get The Look</strong></div>
 							<Carousel>
-								{looks.map((chunk, i) => <Grid split={2} key={i}>{chunk}</Grid>)}
+								{looks.map((chunk, i) => chunk)}
 							</Carousel>
 						</div>
 					)}
