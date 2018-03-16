@@ -8,6 +8,10 @@ import Shared from '@/containers/Mobile/Shared';
 import Spinner from '@/components/mobile/Spinner';
 import InstagramEmbed from 'react-instagram-embed';
 import { GridView } from '@/containers/Mobile/Discovery/View';
+import Discovery from '@/containers/Mobile/Discovery/Utils';
+import { actions as commentActions } from '@/state/v4/Comment';
+import { actions as lovelistActions } from '@/state/v4/Lovelist';
+import _ from 'lodash';
 
 class HashtagsDetails extends Component {
 
@@ -24,14 +28,13 @@ class HashtagsDetails extends Component {
 
 		products.forEach((product, i) => {
 			fragment = ((i + 1) % 2 !== 0) ? [product] : [...fragment, product];
-
 			if ((i + 1) % 2 === 0 || products.length === (i + 1)) {
 				buffer.push(
 					<GridView
 						key={i}
 						loading={scroller.loading}
 						forceLoginNow={() => this.forceLoginNow()}
-						products={products}
+						products={fragment}
 					/>
 				);
 			}
@@ -102,8 +105,12 @@ class HashtagsDetails extends Component {
 }
 
 const mapStateToProps = (state) => {
+	const { comments, lovelist, hashtagdetails } = state;
+	hashtagdetails.data.products = Discovery.mapProducts(hashtagdetails.data.products, comments, lovelist);
+
 	return {
-		...state
+		...state,
+		hashtagdetails
 	};
 };
 
@@ -119,7 +126,12 @@ const doAfterAnonymous = async (props) => {
 		icode: params.icode
 	};
 
-	await dispatch(actions.hashtagDetailAction(cookies.get('user.token'), ids));
+	const resp = await dispatch(actions.hashtagDetailAction(cookies.get('user.token'), ids));
+	const productIdList = _.map(resp.data.data.products, 'product_id') || [];
+	if (productIdList.length > 0) {
+		await dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+	}s
 };
 
 export default withRouter(withCookies(connect(mapStateToProps)(Shared(HashtagsDetails, doAfterAnonymous))));
