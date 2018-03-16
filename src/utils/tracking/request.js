@@ -58,6 +58,22 @@ class TrackingRequest {
 		this.storeName = store;
 		return this;
 	}
+	setImpressions = (impressions) => {
+		this.impressions = impressions;
+		return this;
+	}
+	setCategoryInfo = (info) => {
+		this.categoryInfo = info;
+		return this;
+	}
+	setListProductId = (ids) => {
+		this.listProductId = ids;
+		return this;
+	}
+	setSourceName = (sourceName) => {
+		this.sourceName = sourceName;
+		return this;
+	}
 }
 
 export default {

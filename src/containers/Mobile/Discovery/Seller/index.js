@@ -37,6 +37,54 @@ import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as commentActions } from '@/state/v4/Comment';
 import to from 'await-to-js';
 
+import {
+	TrackingRequest,
+	sendGtm,
+	categoryViewBuilder,
+	productClickBuilder
+} from '@/utils/tracking';
+
+const trackSellerPageView = (products, info, props) => {
+	const productId = _.map(products, 'product_id') || [];
+	const brandInfo = {
+		id: props.match.params.store_id,
+		name: info.title,
+		url_path: props.location.pathname
+	};
+	const impressions = _.map(products, (product, key) => {
+		return {
+			name: product.product_title,
+			id: product.product_id,
+			price: product.pricing.original.effective_price,
+			brand: product.brand.name,
+			category: product.product_category_names.join('/'),
+			position: key + 1,
+			list: 'mm'
+		};
+	}) || [];
+	const request = new TrackingRequest();
+	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
+	request.setFusionSessionId('').setIpAddress('').setImpressions(impressions).setCategoryInfo(brandInfo);
+	request.setListProductId(productId.join('|'));
+	const requestPayload = request.getPayload(categoryViewBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
+
+const trackProductOnClick = (product, position, source = 'mm') => {
+	const productData = {
+		name: product.product_title,
+		id: product.product_id,
+		price: product.pricing.original.effective_price,
+		brand: product.brand.name,
+		category: product.product_category_names.join('/'),
+		position
+	};
+	const request = new TrackingRequest();
+	request.setFusionSessionId('').setProducts([productData]).setSourceName(source);
+	const requestPayload = request.getPayload(productClickBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
+
 
 class Seller extends Component {
 	constructor(props) {
@@ -82,6 +130,11 @@ class Seller extends Component {
 			this.setState({
 				query: nextProps.query
 			});
+		}
+
+		if (nextProps.seller.data !== this.props.seller.data) {
+			const data = nextProps.seller.data;
+			trackSellerPageView(data.products, data.info, nextProps);
 		}
 	}
 
@@ -316,17 +369,32 @@ class Seller extends Component {
 		switch (this.state.listTypeState.type) {
 		case 'list':
 			listView = (
-				<CatalogView comments={comments} loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={products} />
+				<CatalogView
+					comments={comments}
+					loading={scroller.loading}
+					forceLoginNow={() => this.forceLoginNow()}
+					products={products}
+					productOnClick={trackProductOnClick}
+				/>
 			);
 			break;
 		case 'grid':
 			listView = (
-				<GridView loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={products} />
+				<GridView
+					loading={scroller.loading}
+					forceLoginNow={() => this.forceLoginNow()}
+					products={products}
+					productOnClick={trackProductOnClick}
+				/>
 			);
 			break;
 		case 'small':
 			listView = (
-				<SmallGridView loading={scroller.loading} products={products} />
+				<SmallGridView
+					loading={scroller.loading}
+					products={products}
+					productOnClick={trackProductOnClick}
+				/>
 			);
 			break;
 		default:

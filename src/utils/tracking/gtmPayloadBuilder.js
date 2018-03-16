@@ -95,6 +95,35 @@ const addToCartBuilder = (data) => {
 	};
 };
 
+const categoryViewBuilder = (data) => {
+	return {
+		event: 'categoryView',
+		search_terms: '',
+		product_id: data.listProductId,
+		...repeatedPayload(data),
+		category_info: data.categoryInfo,
+		ecommerce: {
+			currencyCode: 'IDR',
+			impressions: data.impressions
+		}
+	};
+};
+
+const productClickBuilder = (data) => {
+	return {
+		event: 'productClick',
+		ecommerce: {
+			click: {
+				actionField: {
+					list: data.sourceName
+				},
+				products: data.products
+			}
+		},
+		eventCallback: '',
+		fusion_session_id: data.fusionSessionId
+	};
+};
 
 export default {
 	homepageViewBuilder,
@@ -103,4 +132,6 @@ export default {
 	registerSuccessBuilder,
 	pdpViewBuilder,
 	addToCartBuilder,
+	categoryViewBuilder,
+	productClickBuilder
 };

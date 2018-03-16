@@ -6,6 +6,8 @@ import {
 	registerSuccessBuilder,
 	pdpViewBuilder,
 	addToCartBuilder,
+	categoryViewBuilder,
+	productClickBuilder
 } from './gtmPayloadBuilder';
 import {
 	sendGtm,
@@ -22,4 +24,6 @@ export default {
 	registerSuccessBuilder,
 	pdpViewBuilder,
 	addToCartBuilder,
+	categoryViewBuilder,
+	productClickBuilder,
 };
