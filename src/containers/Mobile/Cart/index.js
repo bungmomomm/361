@@ -129,6 +129,7 @@ class Cart extends Component {
 	renderList(shopBagData) {
 		return (this.props.shopBag.carts !== null) && (this.props.shopBag.carts.map((cart, key) => {
 			const items = cart.items.map((item, keyItem) => {
+				console.log('item', item);
 				return (
 					<div key={keyItem}>
 						<Level style={{ paddingLeft: '0px' }} className='flex-row'>
@@ -142,12 +143,12 @@ class Cart extends Component {
 							</Level.Item>
 							<Level.Item className='padding--medium-l'>
 								<div>
-									<Link className='font-color--black' to={urlBuilder.setId(item.brand.id).setName(item.brand.brand_name).buildBrand()}>
-										{item.brand.brand_name}
+									<Link className='font-color--black text-uppercase' to={urlBuilder.setId(item.brand.id).setName(item.brand.brand_name).buildBrand()}>
+										{item.brand.name}
 									</Link>
 								</div>
 								<div className='font-color--primary-ext-1 flex-row'>
-									<Link className='font-color--black' to={urlBuilder.setId(item.product_id).setName(item.product_title).buildPdp()}>
+									<Link className='font-color--grey' to={urlBuilder.setId(item.product_id).setName(item.product_title).buildPdp()}>
 										{item.product_title}
 									</Link>
 									<Button
@@ -158,6 +159,9 @@ class Cart extends Component {
 									>
 										<Svg src='ico_trash.svg' />
 									</Button>
+								</div>
+								<div className='font-color--black'>
+									{item.variant.title} : {item.variant.value}
 								</div>
 								<div className='margin--medium-v'>
 									<div className='font--lato-bold'>{item.pricing.formatted.effective_price}</div>
@@ -198,6 +202,7 @@ class Cart extends Component {
 					</div>
 				);
 			});
+			console.log('cart', cart);
 			return (
 				<div
 					key={key}
