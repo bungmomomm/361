@@ -295,9 +295,13 @@ class Cart extends Component {
 	render() {
 		const headerOption = {
 			left: (
-				<Link to='/'>
-					<Svg src={'ico_close-large.svg'} />
-				</Link>
+				<span
+					onClick={() => this.props.history.goBack()}
+					role='button'
+					tabIndex='0'
+				>
+					<Svg src='ico_arrow-back-left.svg' />
+				</span>
 			),
 			center: (<div><span> Tas Belanja {this.props.shopBag.loading ? (<Spinner />) : ''}</span></div>),
 			right: null

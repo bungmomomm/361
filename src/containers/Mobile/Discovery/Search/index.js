@@ -7,6 +7,7 @@ import { actions as actionSearch } from '@/state/v4/Search';
 import { Link } from 'react-router-dom';
 import CONST from '@/constants';
 import Shared from '@/containers/Mobile/Shared';
+import { aux } from '@/utils';
 class Search extends PureComponent {
 	static isKeywordNotExistInHistory(cookies, text) {
 		const foundKeyword = cookies.filter(e => e.text === text);
@@ -109,12 +110,38 @@ class Search extends PureComponent {
 				return (
 					<li key={Math.random()} >
 						<Link to={pathProd} onClick={() => this.setCookieSearch(list.text, list.value, cookieType)}>
-							{list.text}
+							{this.titleMaker(type, list.text)}
 						</Link>
 					</li>);
 			})}
 		</div>);
 	};
+
+	titleMaker(type, text) {
+		let display = <aux>{text}</aux>;
+		let updated = null;
+		switch (type) {
+		case this.SUGGEST_CATEGORY:
+			display = (<aux>{this.state.keyword} di <span id={styles.capitalize}>{text}</span></aux>);
+			break;
+		case this.SUGGEST_KEYWORD:
+			updated = `<span>${text}<span>`;
+			updated = updated.replace(this.state.keyword, `</span>${this.state.keyword}<span>`);
+			display = (<aux dangerouslySetInnerHTML={{ __html: updated }} />);
+			break;
+		case this.SUGGEST_HASTAG:
+			display = (<aux><span id={styles.fontBlue}>{text}</span></aux>);
+			break;
+		case this.SUGGEST_HISTORY:
+			if (text.charAt(0) === '#') {
+				display = (<aux><span id={styles.fontBlue}>{text}</span></aux>);
+			}
+			break;
+		default:
+			break;
+		}
+		return display;
+	}
 
 	renderHistory() {
 		const cookieSearch = this.props.cookies.get(this.searchListCookieName);
@@ -163,7 +190,7 @@ class Search extends PureComponent {
 	renderRelatedCategory() {
 		return (this.props.relatedCategory) && (
 			<section className={styles.section}>
-				<div className={styles.heading}>Related Categories</div>
+				<div className={styles.heading}>Kategori</div>
 				<ul className={styles.list}>
 					{this.listSugestionMaker(this.props.relatedCategory, this.SUGGEST_CATEGORY)}
 				</ul>
@@ -174,7 +201,7 @@ class Search extends PureComponent {
 	renderRelatedKeyword() {
 		return (this.props.relatedKeyword) && (
 			<section className={styles.section}>
-				<div className={styles.heading}>Related Keywords</div>
+				<div className={styles.heading}>Search Suggestion</div>
 				<ul className={styles.list}>
 					{this.listSugestionMaker(this.props.relatedKeyword, this.SUGGEST_KEYWORD)}
 				</ul>
@@ -185,7 +212,7 @@ class Search extends PureComponent {
 	renderRelatedHashtag() {
 		return (this.props.relatedHashtag) && (
 			<section className={styles.section}>
-				<div className={styles.heading}>Related Hastag</div>
+				<div className={styles.heading}>Popular #hashtags</div>
 				<ul className={styles.list}>
 					{this.listSugestionMaker(this.props.relatedHashtag, this.SUGGEST_HASTAG)}
 				</ul>
