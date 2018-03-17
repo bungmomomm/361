@@ -43,7 +43,7 @@ const renderSectionHeader = (title, options) => {
 
 class Home extends Component {
 
-	static trackImpresionHandler(homeData, keySegment) {
+	static trackImpresionHandler(homeData) {
 		homeData = _.chain(homeData);
 		const ImpressionsReq = new TrackingRequest();
 		const promotions = [];
@@ -95,7 +95,7 @@ class Home extends Component {
 		const willActiveSegment = segmen.find(e => e.id === current);
 		dispatch(new sharedActions.setCurrentSegment(willActiveSegment.key));
 		const mainPageData = await dispatch(new actions.mainAction(willActiveSegment, this.userCookies));
-		Home.trackImpresionHandler(mainPageData, willActiveSegment.key);
+		Home.trackImpresionHandler(mainPageData);
 		dispatch(new actions.recomendationAction(willActiveSegment, this.userCookies));
 	}
 
@@ -412,7 +412,7 @@ const doAfterAnonymous = async (props) => {
 
 	const mainPageData = await dispatch(new actions.mainAction(activeSegment, tokenHeader));
 	await dispatch(new actions.recomendationAction(activeSegment, tokenHeader));
-	Home.trackImpresionHandler(mainPageData, activeSegment.key);
+	Home.trackImpresionHandler(mainPageData);
 };
 
 
