@@ -9,6 +9,7 @@ import { actions as sharedActions } from '@/state/v4/Shared';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as shopBagActions } from '@/state/v4/ShopBag';
 import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Rating, Spinner, Badge } from '@/components/mobile';
+import Promos from '@/containers/Mobile/Details/Products/Promos';
 import Share from '@/components/mobile/Share';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
@@ -169,7 +170,7 @@ class Products extends Component {
 		const { promo } = this.props.product;
 		const { status } = this.state;
 		status.showOvoInfo = false;
-		console.log('promo: ', promo);
+		console.log('promo: ', Promos);
 		if (!_.isEmpty(promo.meta_data.ovo_info)) status.showOvoInfo = true;
 
 		this.setState({ status });
@@ -201,13 +202,14 @@ class Products extends Component {
 	handleScroll(e) {
 		if (!this.carouselEL) return;
 		const { status } = this.state;
+		const { top } = this.props.scroll;
 		const carouselHeight = this.carouselEL.getBoundingClientRect().height;
-		if (this.props.scroll.top > carouselHeight && !status.showScrollInfomation) {
+		if (top > carouselHeight && !status.showScrollInfomation) {
 			status.showScrollInfomation = true;
 			this.setState({ status });
 		}
 
-		if (this.props.scroll.top < carouselHeight && status.showScrollInfomation) {
+		if ((top === 0 || top < carouselHeight) && status.showScrollInfomation) {
 			status.showScrollInfomation = false;
 			this.setState({ status });
 		}
@@ -423,7 +425,6 @@ class Products extends Component {
 
 		// builds items
 		items.forEach((item, idx) => {
-			console.log('rendering promo item: ', item);
 			const data = {
 				key: idx,
 				images: item.images,
@@ -470,11 +471,14 @@ class Products extends Component {
 					wrapAround={this.slideWrapAround}
 				>
 					{
-						detail.images.map((image, idx) => (
-							<div tabIndex='0' role='button' onClick={this.closeZoomImage} key={idx}>
-								<Image lazyload src={image.original} alt='product' />
-							</div>
-						))
+						detail.images.map((image, idx) => {
+							console.log('rendering zoom image item....');
+							return (
+								<div tabIndex='0' role='button' onClick={this.closeZoomImage} key={idx}>
+									<Image lazyload src={image.original} alt='product' />
+								</div>
+							);
+						})
 					}
 				</Carousel>
 			</div>
@@ -485,6 +489,7 @@ class Products extends Component {
 		const { products } = this.props.product.store;
 		const length = products.length;
 		const storeProductListContent = products.map((product, idx) => {
+			console.log('rendering store product item: ', product);
 			if (idx === (length - 1)) {
 				return (
 					<div key={`storePNH-${idx}`} className='padding--small-h'>
@@ -501,13 +506,10 @@ class Products extends Component {
 	renderHeaderPage() {
 		try {
 			const url = `${process.env.MOBILE_URL}${this.props.location.pathname}`;
-			// const { status } = this.state;
 			const { detail } = this.props.product;
 
 			if (!_.isEmpty(detail)) {
-				console.log('carousel: ', this.carouselEL);
-				console.log('scroll top: ', this.props.scroll.top);
-				const carouselHeight = this.carouselEL.getBoundingClientRect().height;
+				const { status } = this.state;
 				const brandName = !_.isEmpty(detail.brand.name) ? detail.brand.name : '';
 				const shopBageContent = (
 					<Button onClick={() => this.redirectToPage('carts')} className='margin--medium-l'>
@@ -518,8 +520,7 @@ class Products extends Component {
 					</Button>
 				);
 
-				if (this.props.scroll.top > carouselHeight) {
-					console.log('showing scroll info');
+				if (status.showScrollInfomation) {
 					return {
 						left: (
 							<Button onClick={this.goBackPreviousPage} >
@@ -560,7 +561,7 @@ class Products extends Component {
 	renderStickyAction() {
 		const { cardProduct, status, btnBeliLabel } = this.state;
 
-		if (!_.isEmpty(cardProduct)) {
+		if (!_.isEmpty(cardProduct) && _.has(cardProduct, 'pricing')) {
 			return (
 				<div className={styles.stickyAction}>
 					<div className='flex-row flex-spaceBetween padding--medium-h padding--medium-v border-top flex-middle'>
@@ -783,31 +784,7 @@ class Products extends Component {
 								</div>
 								{/* ----------------------------	END OF SELLER PROFILE ---------------------------- */}
 
-								<div className='flex' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
-									{/* ----------------------------	RECOMMENDATION PRODUCTS---------------------------- */}
-									{!_.isEmpty(promo.recommended_items.products) && (
-										<div className='padding--medium-h margin--medium-v'>
-											<div className='font-medium'><strong>Anda Mungkin Suka</strong></div>
-											<div className='flex'>{(!status.loading) ? this.renderSimilarRecommendItems('recommendation') : this.loadingContent}</div>
-										</div>
-									)}
-									{/* ----------------------------	END OF RECOMMENDATION ---------------------------- */}
-
-									{/* ----------------------------	SIMILAR / BEST SELLER ---------------------------- */}
-									{!_.isEmpty(promo.similar_items.products) && (
-										<div className='border-top padding--medium-h margin--medium-v'>
-											<div className='margin--medium-v padding--small-h font-medium'><strong>Produk Serupa</strong></div>
-											<div className='flex'>{(!status.loading) ? this.renderSimilarRecommendItems('similar') : this.loadingContent}</div>
-										</div>
-									)}
-									{_.isEmpty(promo.similar_items.products) && !_.isEmpty(promo.best_seller_items.products) && (
-										<div className='border-top padding--medium-h margin--medium-v '>
-											<div className='margin--medium-v padding--small-h font-medium'><strong>Produk Terlaris</strong></div>
-											<div className='flex'>{(!status.loading) ? this.renderSimilarRecommendItems('best_seller') : this.loadingContent}</div>
-										</div>
-									)}
-									{/* ----------------------------	END OF SIMILAR / BEST SELLER ---------------------------- */}
-								</div>
+								<Promos promo={promo} loading={status.loading} />
 
 							</div>
 						</div>
