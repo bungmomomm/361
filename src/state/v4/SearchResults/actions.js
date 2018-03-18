@@ -2,14 +2,14 @@ import _ from 'lodash';
 import { to } from 'await-to-js';
 
 import { request } from '@/utils';
-import { initLoading, initViewMode, initSearch, initNextSearch, initPromo } from './reducer';
+import { searchLoading, searchViewMode, initSearch, initNextSearch, searchPromo } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 
 const searchAction = ({ token, query = {}, loadNext = false }) => async (dispatch, getState) => {
 	if (loadNext) {
 		dispatch(scrollerActions.onScroll({ loading: true }));
 	} else {
-		dispatch(initLoading({ isLoading: true }));
+		dispatch(searchLoading({ isLoading: true }));
 	}
 
 	const { shared } = getState();
@@ -74,7 +74,7 @@ const searchAction = ({ token, query = {}, loadNext = false }) => async (dispatc
 };
 
 const promoAction = (token) => async (dispatch, getState) => {
-	dispatch(initLoading({ isLoading: true }));
+	dispatch(searchLoading({ isLoading: true }));
 
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
@@ -96,7 +96,7 @@ const promoAction = (token) => async (dispatch, getState) => {
 	}
 
 	const promoData = response.data.data;
-	dispatch(initPromo({
+	dispatch(searchPromo({
 		searchStatus: 'failed',
 		promoData
 	}));
@@ -107,7 +107,7 @@ const promoAction = (token) => async (dispatch, getState) => {
 };
 
 const viewModeAction = (mode) => (dispatch) => {
-	dispatch(initLoading({ isLoading: true }));
+	dispatch(searchLoading({ isLoading: true }));
 
 	let icon = null;
 	switch (mode) {
@@ -119,7 +119,7 @@ const viewModeAction = (mode) => (dispatch) => {
 		break;
 	}
 
-	dispatch(initViewMode({
+	dispatch(searchViewMode({
 		viewMode: {
 			mode,
 			icon
