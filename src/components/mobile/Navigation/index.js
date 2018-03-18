@@ -14,17 +14,17 @@ class Navigation extends PureComponent {
 	render() {
 		const { className, active, scroll, totalCartItems } = this.props;
 
-		const isSticky = (oldPos = this.currentScrollPos) => {
-			if (!scroll) {
-				return false;
-			}
-			this.currentScrollPos = scroll.top;
-			return scroll.top > oldPos && scroll.top < scroll.docHeight;
-		};
+		// const isSticky = (oldPos = this.currentScrollPos) => {
+		// 	if (!scroll) {
+		// 		return false;
+		// 	}
+		// 	this.currentScrollPos = scroll.top;
+		// 	return scroll.top > oldPos && scroll.top < scroll.docHeight;
+		// };
 
 		const createClassName = classNames(
 			styles.container,
-			isSticky() ? styles.hide : '',
+			scroll.isNavSticky ? styles.hide : '',
 			className
 		);
 

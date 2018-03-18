@@ -3,12 +3,24 @@ import Input from '../Input';
 import classNames from 'classnames';
 import styles from './header.scss';
 import Svg from '../Svg';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 
 const SearchResult = props => {
 	const modalClass = classNames(
 		styles.search
 	);
+
+	let rightIcon;
+	if (props.iconRightAction) {
+		rightIcon = (
+			<button onClick={props.iconRightAction}>
+				<Svg src='ico_close-grey.svg' />
+			</button>
+		);
+	} else {
+		rightIcon = <button><Svg src='ico_close-grey.svg' /></button>;
+	}
+
 	return (
 		<nav className={styles.container}>
 			<div className={styles.wrapper}>
@@ -18,14 +30,13 @@ const SearchResult = props => {
 							<button onClick={props.back}> <Svg src='ico_arrow-back-left.svg' /> </button>
 						</div>
 						<div className={styles.center}>
-							<Link to='/search' >
-								<Input
-									iconLeft={<Svg src='ico_search.svg' />}
-									iconRight={<button><Svg src='ico_close-grey.svg' /></button>}
-									placeholder='Cari produk, #hashtags'
-									value={props.value}
-								/>
-							</Link>
+							<Input
+								iconLeft={<Svg src='ico_search.svg' />}
+								iconRight={rightIcon}
+								placeholder='Cari produk, #hashtags'
+								value={props.value}
+								onClickInputAction={props.onClickInputAction}
+							/>
 						</div>
 					</div>
 				</div>

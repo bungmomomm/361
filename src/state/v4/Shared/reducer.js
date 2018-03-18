@@ -21,17 +21,31 @@ const initialState = {
 	},
 	current: 'wanita',
 	errors: [],
-	snackQueue: []
+	snackbar: [],
+	watchConnection: false
 };
 
-const { totalLoveList, totalBag, forEverBanner, currentTab, errorHandler, rrsShowSnack, rrsDismissSnack } = createActions(
+const {
+	totalLoveList,
+	totalBag,
+	forEverBanner,
+	currentTab,
+	errorHandler,
+	rrsShowSnack,
+	rrsDismissSnack,
+	rrsClearSnackQueue,
+	connectionWatch
+
+} = createActions(
 	'TOTAL_LOVE_LIST',
 	'TOTAL_BAG',
 	'FOR_EVER_BANNER',
 	'CURRENT_TAB',
 	'ERROR_HANDLER',
 	'RRS_SHOW_SNACK',
-	'RRS_DISMISS_SNACK'
+	'RRS_DISMISS_SNACK',
+	'RRS_CLEAR_SNACK_QUEUE',
+	'CONNECTION_WATCH'
 );
 
 let snackQueue;
@@ -68,20 +82,33 @@ const reducer = handleActions({
 		};
 	},
 	[rrsShowSnack](state, { payload }) {
-		snackQueue = state.snackQueue.slice();
-		snackQueue.push({ id: payload.id, data: payload.data });
+		snackQueue = state.snackbar.slice();
+		snackQueue.push({ id: payload.id, data: payload.data, style: payload.style });
 		return {
 			...state,
-			snackQueue
+			snackbar: snackQueue
 		};
 	},
 	[rrsDismissSnack](state, { payload }) {
-		snackQueue = state.snackQueue.filter((snack) => {
+		snackQueue = state.snackbar.filter((snack) => {
 			return snack.id !== payload.id;
 		});
 		return {
 			...state,
-			snackQueue
+			snackbar: snackQueue
+		};
+	},
+	[rrsClearSnackQueue](state) {
+		delete state.snackbar;
+		return {
+			...state,
+			snackbar: []
+		};
+	},
+	[connectionWatch](state, { payload }) {
+		return {
+			...state,
+			watchConnection: payload.state
 		};
 	}
 }, initialState);
@@ -94,5 +121,7 @@ export default {
 	currentTab,
 	errorHandler,
 	rrsShowSnack,
-	rrsDismissSnack
+	rrsDismissSnack,
+	rrsClearSnackQueue,
+	connectionWatch
 };

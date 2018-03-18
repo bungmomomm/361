@@ -40,12 +40,12 @@ class Love extends PureComponent {
 		this.setState({
 			loading: true
 		});
-		if (status === 0) {
-			message = 'Produk berhasil disimpan ke Lovelist';
-			await dispatch(lovelistActions.addToLovelist(cookies.get('user.token'), data));
-		} else {
+		if (status === 1) {
 			message = 'Produk berhasil dihapus dari Lovelist';
 			await dispatch(lovelistActions.removeFromLovelist(cookies.get('user.token'), data));
+		} else {
+			message = 'Produk berhasil disimpan ke Lovelist';
+			await dispatch(lovelistActions.addToLovelist(cookies.get('user.token'), data));
 		}
 		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), [data]));
 		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), [data]));

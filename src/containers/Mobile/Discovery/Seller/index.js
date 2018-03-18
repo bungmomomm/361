@@ -23,7 +23,7 @@ import { withRouter, Link } from 'react-router-dom';
 import stylesCatalog from '../Category/Catalog/catalog.scss';
 import Spinner from '@/components/mobile/Spinner';
 import Share from '@/components/mobile/Share';
-import { urlBuilder, renderIf } from '@/utils';
+import { renderIf } from '@/utils';
 import _ from 'lodash';
 import queryString from 'query-string';
 import Helmet from 'react-helmet';
@@ -37,6 +37,7 @@ import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as commentActions } from '@/state/v4/Comment';
 import to from 'await-to-js';
 
+import Discovery from '../Utils';
 
 class Seller extends Component {
 	constructor(props) {
@@ -216,7 +217,7 @@ class Seller extends Component {
 	};
 
 	filterTabs = () => {
-		const { seller } = this.props;
+		const { seller, isFiltered } = this.props;
 		const { listTypeState, showSort, filterStyle } = this.state;
 		const sorts = _.chain(seller).get('data.sorts').value() || [];
 
@@ -234,7 +235,8 @@ class Seller extends Component {
 						{
 							id: 'filter',
 							title: 'Filter',
-							disabled: _.isEmpty(seller.data.facets)
+							disabled: _.isEmpty(seller.data.facets),
+							checked: isFiltered
 						},
 						{
 							id: 'view',
@@ -421,24 +423,13 @@ class Seller extends Component {
 
 const mapStateToProps = (state) => {
 	const { comments, lovelist, seller } = state;
-	seller.data.products = _.map(seller.data.products, (product) => {
-		const commentData = !_.isEmpty(comments.data) ? _.find(comments.data, { product_id: product.product_id }) : false;
-		const lovelistData = !_.isEmpty(lovelist.bulkieCountProducts) ? _.find(lovelist.bulkieCountProducts, { product_id: product.product_id }) : false;
-		if (lovelistData) {
-			product.lovelistTotal = lovelistData.total;
-			product.lovelistStatus = lovelistData.status;
-		}
-		if (commentData) {
-			product.commentTotal = commentData.total;
-		}
-		return {
-			...product,
-			url: urlBuilder.buildPdp(product.product_title, product.product_id),
-			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`
-		};
-	});
+	const { products, facets } = _.chain(seller).get('data').value() || { products: [], facets: [] };
+	seller.data.products = Discovery.mapProducts(products, comments, lovelist);
+	const isFiltered = Filter.utils.isFiltered(facets);
 	return {
-		...state
+		...state,
+		seller,
+		isFiltered
 	};
 };
 
