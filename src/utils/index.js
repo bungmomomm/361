@@ -6,6 +6,7 @@ import modalController from './modalController';
 import isMobile from './isMobile';
 import componentState from './componentState';
 import splitString from './splitString';
+import trimString from './trimString';
 import { request, getCancelToken } from './request';
 import { setUserCookie, setUniqeCookie, removeUserCookie } from './cookie';
 import urlBuilder from './urlBuilder';
@@ -67,6 +68,7 @@ export default {
 	componentState,
 	hyperlink,
 	splitString,
+	trimString,
 	urlBuilder,
 	isHexColor,
 	loading,

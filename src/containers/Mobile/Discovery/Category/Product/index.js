@@ -9,8 +9,8 @@ import to from 'await-to-js';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
+import Footer from '@/containers/Mobile/Shared/footer';
 import { Filter, Sort } from '@/containers/Mobile/Widget';
-
 import {
 	CatalogView,
 	GridView,
@@ -34,8 +34,7 @@ import {
 	renderIf,
 	urlBuilder
 } from '@/utils';
-// import stylesCatalog from '../Catalog/catalog.scss';
-import Footer from '@/containers/Mobile/Shared/footer';
+
 import Discovery from '../../Utils';
 
 class Product extends Component {
@@ -45,7 +44,6 @@ class Product extends Component {
 
 		const propsObject = _.chain(props.productCategory);
 		this.state = {
-			mode: 1,
 			showFilter: false,
 			showSort: false,
 			query: {
@@ -58,7 +56,7 @@ class Product extends Component {
 			},
 			isFooterShow: true
 		};
-		this.loadingView = <div style={{ margin: '20px auto 20px auto' }}><Spinner /></div>;
+		this.loadingView = <Spinner />;
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -309,7 +307,7 @@ const doAfterAnonymous = async (props) => {
 	const pcpParam = {
 		category_id: parseInt(categoryId, 10),
 		page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
-		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 36,
+		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 30,
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
