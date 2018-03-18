@@ -25,7 +25,6 @@ class Promos extends Component {
 		let fragment = [];
 		const itemsList = [];
 
-		console.log('building promo products...');
 		// builds items
 		products.forEach((item, idx) => {
 			const data = {

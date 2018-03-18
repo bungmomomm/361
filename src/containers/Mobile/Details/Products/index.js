@@ -10,6 +10,7 @@ import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as shopBagActions } from '@/state/v4/ShopBag';
 import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Rating, Spinner, Badge } from '@/components/mobile';
 import Promos from '@/containers/Mobile/Details/Products/Promos';
+import ProductStore from '@/containers/Mobile/Details/Products/Store';
 import Share from '@/components/mobile/Share';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
@@ -170,7 +171,6 @@ class Products extends Component {
 		const { promo } = this.props.product;
 		const { status } = this.state;
 		status.showOvoInfo = false;
-		console.log('promo: ', Promos);
 		if (!_.isEmpty(promo.meta_data.ovo_info)) status.showOvoInfo = true;
 
 		this.setState({ status });
@@ -399,60 +399,6 @@ class Products extends Component {
 		});
 	}
 
-	/**
-	 * Rendering recommendation, similar and best seller items
-	 * @param {*} type
-	 */
-	renderSimilarRecommendItems(type) {
-		const { promo } = this.props.product;
-		let fragment = [];
-		let items = {};
-		const itemsList = [];
-
-		switch (type) {
-		case 'recommendation':
-			items = promo.recommended_items.products;
-			break;
-		case 'similar':
-			items = promo.similar_items.products;
-			break;
-		case 'best_seller':
-			items = promo.best_seller_items.products;
-			break;
-		default:
-			break;
-		}
-
-		// builds items
-		items.forEach((item, idx) => {
-			const data = {
-				key: idx,
-				images: item.images,
-				productTitle: item.product_title,
-				brandName: item.brand.name,
-				pricing: {
-					discount: item.pricing.formatted.discount,
-					...item.pricing
-				},
-				linkToPdp: urlBuilder.buildPdp(item.product_title, item.product_id)
-			};
-
-			// set fragment value
-			fragment = ((idx + 1) % 2 !== 0) ? [<Card.CatalogGrid {...data} />] : [...fragment, <Card.CatalogGrid {...data} />];
-
-			// push fragment into
-			if ((idx + 1) % 2 === 0 || items.length === (idx + 1)) {
-				itemsList.push(fragment);
-			}
-		});
-
-		return (
-			<Carousel className='margin--medium-v'>
-				{itemsList.map((item, i) => <Grid split={2} key={i}>{item}</Grid>)}
-			</Carousel>
-		);
-	}
-
 	renderZoomImage() {
 		const { detail } = this.props.product;
 		const { carousel } = this.state;
@@ -608,7 +554,7 @@ class Products extends Component {
 			const { cardProduct, status, carousel, selectedVariant } = this.state;
 
 			if (status.isZoomed) return this.renderZoomImage();
-			if (status.loading) return this.loadingContent;
+			if (_.isEmpty(detail) || _.isEmpty(cardProduct) || !_.has(cardProduct, 'images')) return this.loadingContent;
 
 			return (
 				<div>
@@ -774,16 +720,19 @@ class Products extends Component {
 										)
 									}
 
-									{(!_.isEmpty(store.products)) && (
-										<div className='margin--medium-v margin--none-t'>
-											<Link to={urlBuilder.setId(detail.seller.seller_id).setName(detail.seller.seller).buildStore()} >
-												{this.renderStoreProducts()}
-											</Link>
-										</div>
-									)}
+									{/* ----------------------------	END OF SELLER PROFILE ---------------------------- */}
+									{!_.isEmpty(store.product) && 
+										<ProductStore
+											store={store}
+											linkToStore={urlBuilder.setId(detail.seller.seller_id).setName(detail.seller.seller).buildStore()}
+											loading={status.loading}
+											storeStyles={styles}
+										/>
+									}
 								</div>
 								{/* ----------------------------	END OF SELLER PROFILE ---------------------------- */}
 
+								{/* ----------------------------	PROMOS PRODUCTs ---------------------------- */}
 								<Promos promo={promo} loading={status.loading} />
 
 							</div>
@@ -795,7 +744,7 @@ class Products extends Component {
 					{/* MODALS */}
 					<Modal show={status.showConfirmDelete}>
 						<div className='font-medium'>
-							<h3>Hapus Lovelist</h3>
+							<h3 className='text-center'>Hapus Lovelist</h3>
 							<Level style={{ padding: '0px' }} className='margin--medium-v'>
 								<Level.Left />
 								<Level.Item className='padding--medium-h margin--medium-h'>
