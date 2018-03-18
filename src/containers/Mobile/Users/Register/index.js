@@ -23,8 +23,6 @@ import {
 } from '@/containers/Mobile/Widget';
 import Otp from '@/containers/Mobile/Shared/Otp';
 
-const OTP_BUTTON_TEXT = 'Kirim ulang kode otp';
-
 class Register extends Component {
 	constructor(props) {
 		super(props);
@@ -44,16 +42,13 @@ class Register extends Component {
 			whatIShouldRender: 'REGISTER',
 			redirectUri: props.redirectUri || false,
 			disableOtpButton: false,
-			otpButtonText: OTP_BUTTON_TEXT,
-			displayMessageOnValidateOtpForm: false,
 			messageType: 'SUCCESS',
-			textMessageOnValidateOtpForm: '',
-			captchaValue: '',
 			isButtonResendOtpLoading: false
 		};
 		this.renderRegisterView = this.renderRegisterView.bind(this);
 		this.renderValidateOtpView = this.renderValidateOtpView.bind(this);
 		this.renderMobileOrEmailHasBeenRegistered = this.renderMobileOrEmailHasBeenRegistered.bind(this);
+		this.otpClickBack = this.otpClickBack.bind(this);
 
 	}
 
@@ -135,68 +130,6 @@ class Register extends Component {
 		return responseRegister;
 
 	}
-
-	async onSendOtp() {
-
-		this.setState({
-			isButtonResendOtpLoading: true,
-			disableOtpButton: true,
-			otpValue: ''
-		});
-
-		const { cookies, dispatch } = this.props;
-		const { email } = this.state;
-
-		// Send the OTP again.
-
-		const [error, response] = await to(dispatch(new users.userOtp(cookies.get('user.token'), email)));
-
-		if (error) {
-			return false;
-		}
-
-		// Extract response from send OTP
-		const { data } = response;
-
-		const { code } = data;
-
-		if (code === 200) {
-			this.setState({
-				displayMessageOnValidateOtpForm: true,
-				textMessageOnValidateOtpForm: 'Pengiriman kode OTP berhasil'
-			});
-		}
-
-		// Set the initial number for OTP to 10.
-		let number = 301;
-
-		const counterDown = () => {
-
-			if (number > 0) {
-				number -= 1;
-				this.setState({
-					otpButtonText: number
-				});
-			}
-		};
-
-		const doCounter = setInterval(() => {
-			counterDown();
-			if (number === 0) {
-				this.setState({
-					disableOtpButton: false,
-					otpButtonText: OTP_BUTTON_TEXT
-				});
-				clearInterval(doCounter);
-			}
-		}, 1000);
-
-
-		doCounter();
-
-		return response;
-
-	}
 	
 	onFieldChange(e, type) {
 
@@ -231,6 +164,17 @@ class Register extends Component {
 
 	}
 	
+	otpClickBack() {
+		const { callback } = this.props;
+		// Also clear state from previous page.
+		this.setState({
+			whatIShouldRender: 'REGISTER',
+			loginId: '',
+			email: '',
+			password: ''
+		}, callback('REGISTER'));
+	}
+ 
 	async successValidateOtp() {
 		
 		const { cookies, dispatch, history } = this.props;
@@ -381,7 +325,7 @@ class Register extends Component {
 		return (
 			<Otp
 				phoneEmail={email}
-				onClickBack={(e, value) => this.setState({ whatIShouldRender: 'REGISTER' })}
+				onClickBack={this.otpClickBack}
 				onSuccess={() => this.successValidateOtp()}
 			/>
 		);
@@ -412,11 +356,14 @@ class Register extends Component {
 		const {
 			whatIShouldRender
 		} = this.state;
-
+		
+		const { callback } = this.props;
+  
 		let View = this.renderRegisterView();
 
 		if (whatIShouldRender === 'VALIDATE_OTP') {
 			View = this.renderValidateOtpView();
+			callback(whatIShouldRender);
 		}
 
 		if (whatIShouldRender === 'EMAIL_MOBILE_HAS_BEEN_REGISTERED') {
