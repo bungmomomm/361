@@ -123,6 +123,7 @@
     "redux": "^3.7.2",
     "redux-actions": "^2.2.1",
     "redux-api-middleware": "^2.2.0",
+    "redux-catch-promise": "^1.0.3",
     "redux-devtools-extension": "^2.13.2",
     "redux-thunk": "2.2.0",
     "regenerator": "^0.12.3",
