@@ -131,7 +131,7 @@ const doAfterAnonymous = async (props) => {
 	if (productIdList.length > 0) {
 		await dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
-	}s
+	}
 };
 
 export default withRouter(withCookies(connect(mapStateToProps)(Shared(HashtagsDetails, doAfterAnonymous))));
