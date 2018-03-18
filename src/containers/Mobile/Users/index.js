@@ -6,7 +6,7 @@ import _ from 'lodash';
 import queryString from 'query-string';
 
 import Shared from '@/containers/Mobile/Shared';
-import Login from './Login/Page';
+import Login from './Login';
 import Register from './Register';
 import {
 	Header,

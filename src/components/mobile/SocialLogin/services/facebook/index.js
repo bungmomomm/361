@@ -84,8 +84,6 @@ class FacebookLogin extends PureComponent {
 				loading: true
 			});
 			this.getProfile(response.authResponse, response);
-		} else if (this.props.onFailure) {
-			this.props.onFailure(response);
 		} else {
 			this.props.callback(response);
 		}
@@ -107,7 +105,6 @@ FacebookLogin.propTypes = {
 	clientId: PropTypes.string,
 	onSuccess: PropTypes.func,
 	callback: PropTypes.func,
-	onFailure: PropTypes.func,
 	wide: PropTypes.bool
 };
 

@@ -107,6 +107,11 @@ export default {
 			exact: true
 		},
 		{
+			path: '/logout',
+			component: loadable(() => import('@/containers/Mobile/Users/Login/Logout'), defaultOptions),
+			exact: true
+		},
+		{
 			path: '/register',
 			component: loadable(() => import('@/containers/Mobile/Users'), defaultOptions),
 			exact: true

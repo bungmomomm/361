@@ -7,7 +7,7 @@ import isMobile from './isMobile';
 import componentState from './componentState';
 import splitString from './splitString';
 import { request, getCancelToken } from './request';
-import { setUserCookie, setUniqeCookie } from './cookie';
+import { setUserCookie, setUniqeCookie, removeUserCookie } from './cookie';
 import urlBuilder from './urlBuilder';
 import loading from './loading';
 import { request as emarsysRequest } from './emarsys';
@@ -54,6 +54,7 @@ export default {
 	getClientSecret,
 	getClientVersion,
 	setUserCookie,
+	removeUserCookie,
 	setUniqeCookie,
 	newId,
 	renderIf,
