@@ -228,13 +228,13 @@ class Cart extends Component {
 						<div>Subtotal</div>
 						<div className='font-medium'>{this.props.shopBag.total.formatted.subtotal}</div>
 					</div>
-					<div className='flex-row flex-spaceBetween'>
+					{/* <div className='flex-row flex-spaceBetween'>
 						<div>
 							<div>Estimasi biaya pengiriman</div>
 							{shopBag.location_default && (<div className='font-small'>({shopBag.location_default})</div>)}
 						</div>
 						<div className='font-medium'>{this.props.shopBag.total.formatted.shipping_estimation}</div>
-					</div>
+					</div> */}
 				</div>
 			</div>
 		);
