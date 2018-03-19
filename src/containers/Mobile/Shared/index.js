@@ -185,8 +185,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 							}
 							this.currentScrollPos = this.state.scroll.top;
 							return this.state.scroll.top > oldPos && this.state.scroll.top < this.state.scroll.docHeight;
-						})(),
-						isNavExists: document.querySelector('.navigation__navigation')
+						})()
 					}
 				});
 			}
@@ -197,8 +196,8 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			const snackStyle = _.chain(this.props.shared.snackbar).get('[0].style').value() || { css: {}, sticky: true };
 			const snackCss = _.chain(snackStyle).get('css.snack').value() || {};
 			const snackSticky = !snackStyle.sticky ? {} : {
-				bottom: !scroll.isNavSticky && scroll.isNavExists ? 50 : 0,
-				zIndex: !scroll.isNavSticky && scroll.isNavExists ? 2 : 999
+				bottom: !scroll.isNavSticky && document.querySelector('.navigation__navigation') ? 50 : 0,
+				zIndex: !scroll.isNavSticky && document.querySelector('.navigation__navigation') ? 2 : 999
 			};
 			const customStylesCss = { ...snackStyle.css, snack: { ...snackCss, ...snackSticky } };
 
