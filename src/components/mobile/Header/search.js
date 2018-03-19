@@ -14,7 +14,7 @@ const Search = props => {
 		<nav className={styles.container}>
 			<div className={styles.wrapper}>
 				<div className={styles.search}>
-					<div className='flex-row flex-spaceBetween padding--medium-h flex-middle'>
+					<div className='flex-row flex-spaceBetween padding--small-h flex-middle'>
 						<div className={styles.center}>
 							<Input
 								autoFocus
@@ -29,7 +29,7 @@ const Search = props => {
 								value={props.value}
 							/>
 						</div>
-						<div className='d-flex flex-middle' ><button onClick={props.back}>BATAL</button></div>
+						<div className='d-flex flex-middle padding--small-r' ><button onClick={props.back}>BATAL</button></div>
 					</div>
 				</div>
 			</div>

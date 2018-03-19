@@ -29,7 +29,7 @@ export default {
 			exact: true
 		},
 		{
-			path: '/mau-gaya-itu-gampang/:campaign_name-:campaign_id/:post_id',
+			path: '/mau-gaya-itu-gampang/:campaign_name-:campaign_id/:post_id/:icode',
 			component: loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'), defaultOptions)
 		},
 		{
@@ -100,6 +100,11 @@ export default {
 		{
 			path: '/login',
 			component: loadable(() => import('@/containers/Mobile/Users'), defaultOptions),
+			exact: true
+		},
+		{
+			path: '/logout',
+			component: loadable(() => import('@/containers/Mobile/Users/Login/Logout'), defaultOptions),
 			exact: true
 		},
 		{

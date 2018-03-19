@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { actions } from '@/state/v4/Hashtag';
-import { Header, Page, Navigation, Svg, Grid, Button, Image } from '@/components/mobile';
+import { Header, Page, Svg, Grid, Button, Image } from '@/components/mobile';
 import { Link, withRouter } from 'react-router-dom';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
@@ -16,7 +16,7 @@ import currency from 'currency.js';
 class Hashtags extends Component {
 
 	state = {
-		isFooterShow: true,
+		isFooterShow: false,
 	};
 
 	switchTag = (tag) => {
@@ -44,52 +44,72 @@ class Hashtags extends Component {
 		dispatch(actions.switchViewMode(mode));
 	};
 
-	renderGridSmall = (campaign) => {
+	renderGridSmall = (campaignId) => {
+
 		const { hashtag } = this.props;
 		const items = hashtag.products[hashtag.active.node] && hashtag.products[hashtag.active.node].items
 					? hashtag.products[hashtag.active.node].items : [];
-		const campaignName = campaign.hashtag.replace('#', '');
+		const filtr = hashtag.tags.filter((obj) => {
+			return (obj.campaign_id === campaignId);
+		});
 
 		return (
 			<Grid bordered split={3}>
-				{items.map((product, i) => (
-					<div key={i}>
-						<Link to={`/mau-gaya-itu-gampang/${campaignName}-${campaign.campaign_id}/${product.id}`}>
-							<Image src={product.image} />
-						</Link>
-					</div>
-				))}
+				{items.map((product, i) => {
+					const embedUrl = _.chain(product).get('embed_url').value();
+					const icode = (embedUrl.substr(embedUrl.indexOf('/p/')).split('/') || [])[2];
+
+					return (
+						<div key={i}>
+							<Link to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode}`}>
+								<Image src={product.image} />
+							</Link>
+						</div>
+					);
+				})}
 			</Grid>
 		);
 	};
 
-	renderGridLarge = (campaign) => {
+	renderGridLarge = (campaignId) => {
 		const { hashtag } = this.props;
 		const items = hashtag.products[hashtag.active.node] && hashtag.products[hashtag.active.node].items
 					? hashtag.products[hashtag.active.node].items : [];
-		const campaignName = campaign.hashtag.replace('#', '');
+		const filtr = hashtag.tags.filter((obj) => {
+			return (obj.campaign_id === campaignId);
+		});
 
 		return (
 			<div>
-				{items.map((product, i) => (
-					<div key={i}>
-						<Link to={`/mau-gaya-itu-gampang/${campaignName}-${campaign.campaign_id}/${product.id}`}>
-							<Image src={product.image} width='100%' />
-						</Link>
-						<div className='margin--medium-v flex-row flex-spaceBetween flex-middle'>
-							<div className='padding--medium-h'>
-								<div><Link className='font-color--primary' to='/'>@{product.username}</Link></div>
-								<div><em className='font-small font--lato-normal font-color--grey'>{product.created_time}</em></div>
-							</div>
-							<div className='padding--medium-h'>
-								<div className='flex-row flex-middle'>
-									<Svg src='ico_lovelist.svg' />
-									<span>{currency(product.like, { separator: '.', decimal: ',', precision: 0 }).format()}</span>
+				{items.map((product, i) => {
+					const embedUrl = _.chain(product).get('embed_url').value();
+					const icode = (embedUrl.substr(embedUrl.indexOf('/p/')).split('/') || [])[2];
+
+					return (
+						<div key={i}>
+							<Link to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode || ''}`}>
+								<Image src={product.image} width='100%' />
+							</Link>
+							<div className='margin--medium-v flex-row flex-spaceBetween flex-middle'>
+								<div className='padding--medium-h'>
+									<div><Link className='font-color--primary' to='/'>@{product.username}</Link></div>
+									<div><em className='font-small font--lato-normal font-color--grey'>{product.created_time}</em>
+									</div>
+								</div>
+								<div className='padding--medium-h'>
+									<div className='flex-row flex-middle'>
+										<Svg src='ico_lovelist.svg' />
+										<span>{currency(product.like, {
+											separator: '.',
+											decimal: ',',
+											precision: 0
+										}).format()}</span>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-				))}
+					);
+				})}
 			</div>
 		);
 	};
@@ -98,10 +118,10 @@ class Hashtags extends Component {
 		const { hashtag, history, scroller, location, dispatch } = this.props;
 		const tags = hashtag.tags;
 		const q = dispatch(actions.getQuery());
-		const campaign = _.chain(q).get('query.campaign').value() || false;
+		const campaignId = _.chain(q).get('query.campaign_id').value() || false;
 
 		const listHastags = (
-			<div className='horizontal-scroll'>
+			<div className='horizontal-scroll' style={{ overflowX: 'none' }}>
 				<div className='flex-row flex-centerflex-spaceBetween margin--medium-v margin--none-t'>
 					{tags.map((tag, i) => (
 						<Link
@@ -138,12 +158,12 @@ class Hashtags extends Component {
 					<Svg src={hashtag.viewMode === 3 ? 'ico_list.svg' : 'ico_grid-3x3.svg'} />
 				</Button>
 			),
-			rows: isSticky() ? [{ left: null, center: listHastags, right: null }] : []
+			rows: isSticky() ? [{ left: null, center: listHastags, right: null }] : null
 		};
 
 		return (
 			<div>
-				<Page>
+				<Page color='white'>
 
 					<Helmet>
 						<title>{'Mau Gaya Itu Gampang | MatahariMall.com'}</title>
@@ -170,10 +190,10 @@ class Hashtags extends Component {
 					</div>
 
 					{
-						campaign && hashtag.viewMode === 3
-						? this.renderGridSmall(campaign)
-						: campaign && hashtag.viewMode === 1
-						? this.renderGridLarge(campaign)
+						campaignId && hashtag.viewMode === 3
+						? this.renderGridSmall(campaignId)
+						: campaignId && hashtag.viewMode === 1
+						? this.renderGridLarge(campaignId)
 						: ''
 					}
 					{scroller.loading && <Spinner />}
@@ -181,7 +201,6 @@ class Hashtags extends Component {
 				</Page>
 
 				<Header.Modal {...HeaderPage} />
-				<Navigation scroll={this.props.scroll} />
 			</div>
 		);
 	}

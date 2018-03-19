@@ -12,6 +12,7 @@ import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, G
 import Share from '@/components/mobile/Share';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
+import { Love } from '@/containers/Mobile/Widget';
 import SellerProfile from '../../Discovery/Seller/components/SellerProfile';
 import { Promise } from 'es6-promise';
 
@@ -89,7 +90,7 @@ class Products extends Component {
 			status.pdpDataHasLoaded = true;
 			status.hasVariantSize = pdpData.cardProduct.hasVariantSize;
 
-			// Sets whether product has variants size or set defaults variant 
+			// Sets whether product has variants size or set defaults variant
 			// if the product has one product variant only ...
 			if (!_.isEmpty(pdpData.cardProduct.variants) && _.isArray(pdpData.cardProduct.variants)) {
 				if (pdpData.cardProduct.variants.length === 1 && pdpData.cardProduct.hasVariantSize) {
@@ -102,7 +103,7 @@ class Products extends Component {
 			}
 
 			// disable enabled button BELI AJA
-			if (_.isEmpty(pdpData.cardProduct.variants) || 
+			if (_.isEmpty(pdpData.cardProduct.variants) ||
 				pdpData.cardProduct.productStock === 0 || detail.is_product_available === 0) {
 				status.btnBeliDisabled = true;
 			} else {
@@ -289,7 +290,7 @@ class Products extends Component {
 				selectedVariant,
 				pdpData
 			});
-			// Add product to cart automatically after product variant size selected 
+			// Add product to cart automatically after product variant size selected
 			if (status.pendingAddProduct) this.addToShoppingBag(selectedVariant.id);
 		}
 	}
@@ -335,14 +336,14 @@ class Products extends Component {
 	}
 
 	/**
-	 * Handles removes/adds item into/from Loved list. 
-	 * @param {*} e 
+	 * Handles removes/adds item into/from Loved list.
+	 * @param {*} e
 	 */
 	removeAddItem(e) {
 		const { dispatch } = this.props;
 		const { pdpData, status, detail } = this.state;
 		const handler = new Promise((resolve, reject) => {
-			if (!status.isLoved) resolve(dispatch(lovelistActions.addToLovelist(this.userCookies, detail.id))); 
+			if (!status.isLoved) resolve(dispatch(lovelistActions.addToLovelist(this.userCookies, detail.id)));
 			else resolve(dispatch(lovelistActions.removeFromLovelist(this.userCookies, detail.id)));
 		});
 
@@ -369,7 +370,7 @@ class Products extends Component {
 
 	/**
 	 * Rendering recommendation, similar and best seller items
-	 * @param {*} type 
+	 * @param {*} type
 	 */
 	renderSimilarRecommendItems(type) {
 		const { promo } = this.props.product;
@@ -399,13 +400,21 @@ class Products extends Component {
 				productTitle: item.product_title,
 				brandName: item.brand.name,
 				pricing: item.pricing,
-				linkToPdp: '/'
+				linkToPdp: item.url,
+				love: (
+					<Love
+						status={item.lovelistStatus}
+						data={item.product_id}
+						total={item.lovelistTotal}
+						onNeedLogin={() => this.loginNow()}
+					/>
+				)
 			};
 
 			// set fragment value
 			fragment = ((idx + 1) % 2 !== 0) ? [<Card.CatalogGrid {...data} />] : [...fragment, <Card.CatalogGrid {...data} />];
 
-			// push fragment into 
+			// push fragment into
 			if ((idx + 1) % 2 === 0 || items.length === (idx + 1)) {
 				itemsList.push(fragment);
 			}
@@ -452,15 +461,15 @@ class Products extends Component {
 		const storeProductListContent = products.map((product, idx) => {
 			if (idx === (length - 1)) {
 				return (
-					<div key={`storePNH-${idx}`} className='padding--normal-h'>
+					<div key={`storePNH-${idx}`} className='padding--small-h'>
 						<Image src={product.images[0].thumbnail} key={idx} />
 						<div className={styles.seeAll}>SEE ALL</div>
 					</div>
 				);
 			}
-			return <div key={`storePNH-${idx}`} className='padding--normal-h'><Image key={idx} src={product.images[0].thumbnail} /></div>;
+			return <div key={`storePNH-${idx}`} className='padding--small-h'><Image key={idx} src={product.images[0].thumbnail} /></div>;
 		});
-		return <Grid split={4} className='padding--small-h'>{storeProductListContent}</Grid>;
+		return <Grid split={4} className={`${styles.gridList} padding--small-h`}>{storeProductListContent}</Grid>;
 	}
 
 	renderHeaderPage() {
@@ -576,7 +585,7 @@ class Products extends Component {
 								/>
 							</div>
 						)}
-						
+
 						{!status.pdpDataHasLoaded && this.loadingContent}
 
 						{status.pdpDataHasLoaded && status.hasVariantSize && (
@@ -632,7 +641,7 @@ class Products extends Component {
 							{
 								(!this.isLogin) &&
 								<span>
-									<a href={`/login?redirect_uri=${this.props.location.pathname}`}>Log in</a> / 
+									<a href={`/login?redirect_uri=${this.props.location.pathname}`}>Log in</a> /
 									<a href={`/register?redirect_uri=${this.props.location.pathname}`}>Register</a> untuk memberikan komentar
 								</span>
 							}
@@ -672,7 +681,7 @@ class Products extends Component {
 									{reviews.total > 0 && (
 										<div>
 											{status.loading && this.loadingContent}
-											{!status.loading && 
+											{!status.loading &&
 											(reviews.summary.map((item, idx) => {
 												return <Comment key={idx} type='review' data={item} />;
 											})

@@ -66,7 +66,7 @@ class Product extends PureComponent {
 
 		return (
 			<div className={createClassName}>
-				
+
 				{this.renderCarousel()}
 
 				<Level className={`${styles.action} border-top border-bottom`}>
@@ -84,8 +84,8 @@ class Product extends PureComponent {
 					</Level.Item>
 				</Level>
 				<div className={styles.title}>
-					<span className='font-small text-uppercase'>{data.brand.name}</span>
-					<span>{data.product_title}</span>
+					<span className='font-small text-uppercase font--lato-bold font-color--primary'>{data.brand.name}</span>
+					<span className='text-elipsis-two-line font-color--primary-ext-2'>{data.product_title}</span>
 				</div>
 			</div>
 		);
