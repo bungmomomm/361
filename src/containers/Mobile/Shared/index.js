@@ -9,7 +9,6 @@ import { Promise } from 'es6-promise';
 import queryString from 'query-string';
 import Snackbar from '@/containers/Mobile/Shared/snackbar';
 import { check as checkConnection, watch as watchConnection } from 'is-offline';
-import uuidv4 from 'uuid/v4';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 	WrappedComponent.contextTypes = {
@@ -81,9 +80,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			this.docBody = document.body;
 
 			if (typeof this.uniqueId === 'undefined') {
-				const uuid = uuidv4();
-
-				setUniqeCookie(this.props.cookies, uuid);
+				setUniqeCookie(this.props.cookies);
 			}
 		}
 
