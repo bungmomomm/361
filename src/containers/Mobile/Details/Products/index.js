@@ -3,7 +3,7 @@ import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
-import { urlBuilder } from '@/utils';
+import { urlBuilder, stringHelper } from '@/utils';
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
@@ -14,6 +14,7 @@ import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
 import SellerProfile from '../../Discovery/Seller/components/SellerProfile';
 import { Promise } from 'es6-promise';
+import classNames from 'classnames';
 
 class Products extends Component {
 	constructor(props) {
@@ -37,6 +38,8 @@ class Products extends Component {
 		this.redirectToPage = this.redirectToPage.bind(this);
 		this.removeAddItem = this.removeAddItem.bind(this);
 		this.setCarouselSlideIndex = this.setCarouselSlideIndex.bind(this);
+		this.handleShowMoreProductDescription = this.handleShowMoreProductDescription.bind(this);
+		this.handleShowLessProductDescription = this.handleShowLessProductDescription.bind(this);
 
 		this.state = {
 			size: '',
@@ -57,6 +60,7 @@ class Products extends Component {
 				forceLogin: false,
 				showOvoInfo: false,
 				sellerDataSet: false,
+				showFullProductDescription: false
 			},
 			pdpData: {
 				cardProduct: {},
@@ -293,7 +297,19 @@ class Products extends Component {
 			if (status.pendingAddProduct) this.addToShoppingBag(selectedVariant.id);
 		}
 	}
-
+	
+	handleShowLessProductDescription() {
+		this.setState({
+			showFullProductDescription: false
+		});
+	}
+	
+	handleShowMoreProductDescription() {
+		this.setState({
+			showFullProductDescription: true
+		});
+	}
+	
 	loginLater() {
 		const { status } = this.state;
 		status.forceLogin = false;
@@ -550,14 +566,34 @@ class Products extends Component {
 	}
 
 	render() {
-		const { detail, pdpData, status, carousel, selectedVariant } = this.state;
+		const {
+			detail,
+			pdpData,
+			status,
+			carousel,
+			selectedVariant,
+			showFullProductDescription
+		} = this.state;
 		const { match, product } = this.props;
 		const { seller, comments, reviews } = product.socialSummary;
 		const linkToPdpDisabled = true;
 		if (status.isZoomed) {
 			return this.renderZoomImage();
 		}
-
+        
+		const buttonProductDescriptionAttribute = {
+			onClick: this.handleShowMoreProductDescription
+		};
+		
+		let fullProductDescriptionButtonText = 'More';
+		let classNameProductDescription = classNames('padding--medium-h', styles.textOnlyShowTwoLines);
+		
+		if (showFullProductDescription === true) {
+			classNameProductDescription = classNames('padding--medium-h');
+			buttonProductDescriptionAttribute.onClick = this.handleShowLessProductDescription;
+			fullProductDescriptionButtonText = 'Hide';
+		}
+		
 		return (
 			<div>
 				<Page color='white'>
@@ -620,7 +656,14 @@ class Products extends Component {
 							</Level>
 						)}
 						<div className='font-medium margin--medium-v padding--medium-h'><strong>Details</strong></div>
-						{!_.isEmpty(detail.description) && <div className='padding--medium-h' dangerouslySetInnerHTML={{ __html: detail.description.replace(/(?:\r\n|\r|\n)/g, '<br />') }} />}
+						{!_.isEmpty(detail.description)
+							&&
+							<div>
+								<div style={{ transition: 'all 1.5s ease' }} className={classNameProductDescription} dangerouslySetInnerHTML={{ __html: stringHelper.removeHtmlTag(detail.description) }} />
+								<span className='padding--medium-h font-color--grey' {...buttonProductDescriptionAttribute}>{ fullProductDescriptionButtonText }</span>
+							</div>
+							
+						}
 						{!_.isEmpty(detail.spec) && (
 							<div className='margin--medium-v --disable-flex padding--medium-h'>
 								{(detail.spec.map((item, idx) => {
