@@ -3,7 +3,7 @@ import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
-import { urlBuilder } from '@/utils';
+import { urlBuilder, stringHelper } from '@/utils';
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
@@ -17,6 +17,7 @@ import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
 import SellerProfile from '../../Discovery/Seller/components/SellerProfile';
 import { Promise } from 'es6-promise';
+import classNames from 'classnames';
 
 const doAfterAnonymous = async (props) => {
 	const { dispatch, match, cookies } = props;
@@ -55,6 +56,8 @@ class Products extends Component {
 		this.redirectToPage = this.redirectToPage.bind(this);
 		this.removeAddItem = this.removeAddItem.bind(this);
 		this.setCarouselSlideIndex = this.setCarouselSlideIndex.bind(this);
+		this.handleShowMoreProductDescription = this.handleShowMoreProductDescription.bind(this);
+		this.handleShowLessProductDescription = this.handleShowLessProductDescription.bind(this);
 
 		this.state = {
 			size: '',
@@ -71,6 +74,7 @@ class Products extends Component {
 				showConfirmDelete: false,
 				showModalSelectSize: false,
 				showScrollInfomation: false,
+				showFullProductDescription: false
 			},
 			cardProduct: {},
 			carousel: {
@@ -103,7 +107,7 @@ class Products extends Component {
 		let { cardProduct, selectedVariant, size } = this.state;
 
 		status.loading = product.loading;
-		if ((_.toInteger(this.props.match.params.id) !== _.toInteger(nextProps.match.params.id)) || 
+		if ((_.toInteger(this.props.match.params.id) !== _.toInteger(nextProps.match.params.id)) ||
 		(this.props.match.url !== nextProps.match.url)) {
 			this.updateCard = true;
 			doAfterAnonymous(nextProps);
@@ -313,7 +317,19 @@ class Products extends Component {
 			// if (status.pendingAddProduct) this.addToShoppingBag(selectedVariant.id);
 		}
 	}
-
+	
+	handleShowLessProductDescription() {
+		this.setState({
+			showFullProductDescription: false
+		});
+	}
+	
+	handleShowMoreProductDescription() {
+		this.setState({
+			showFullProductDescription: true
+		});
+	}
+	
 	loginLater() {
 		const { status } = this.state;
 		status.forceLogin = false;
@@ -499,9 +515,22 @@ class Products extends Component {
 			const { match, product } = this.props;
 			const { detail, socialSummary, promo } = product;
 			const { seller, comments, reviews } = socialSummary;
-			const { cardProduct, status, carousel, selectedVariant } = this.state;
+			const { cardProduct, status, carousel, selectedVariant, showFullProductDescription } = this.state;
 			const { id } = detail;
-
+			
+			const buttonProductDescriptionAttribute = {
+				onClick: this.handleShowMoreProductDescription
+			};
+			
+			let fullProductDescriptionButtonText = 'More';
+			let classNameProductDescription = classNames('padding--medium-h', styles.textOnlyShowTwoLines);
+			
+			if (showFullProductDescription === true) {
+				classNameProductDescription = classNames('padding--medium-h');
+				buttonProductDescriptionAttribute.onClick = this.handleShowLessProductDescription;
+				fullProductDescriptionButtonText = 'Hide';
+			}
+			
 			if (status.isZoomed && _.has(detail, 'images')) {
 				return (
 					<div>
@@ -590,7 +619,13 @@ class Products extends Component {
 								</Level>
 							)}
 							<div className='font-medium margin--medium-v padding--medium-h'><strong>Details</strong></div>
-							{!_.isEmpty(detail.description) && <div className='padding--medium-h' dangerouslySetInnerHTML={{ __html: detail.description.replace(/(?:\n)/g, '<br />') }} />}
+							{!_.isEmpty(detail.description)
+							&&
+								<div>
+									<div className={classNameProductDescription} dangerouslySetInnerHTML={{ __html: stringHelper.removeHtmlTag(detail.description) }} />
+									<span className='padding--medium-h font-color--grey' {...buttonProductDescriptionAttribute}>{ fullProductDescriptionButtonText }</span>
+								</div>
+							}
 							{!_.isEmpty(detail.spec) && (
 								<div className='margin--medium-v --disable-flex padding--medium-h'>
 									{(detail.spec.map((item, idx) => {
@@ -624,20 +659,20 @@ class Products extends Component {
 
 							<div style={{ backgroundColor: '#F5F5F5' }}>
 								{/* ----------------------------	PRODUCT REVIEWS ---------------------------- */}
-								{!_.isEmpty(reviews.summary) && 
-									<ReviewSummary 
+								{!_.isEmpty(reviews.summary) &&
+									<ReviewSummary
 										productId={id}
-										reviews={reviews} 
-										seller={seller} 
-										onBtnSeeAllReviewClick={() => this.redirectToPage('reviews')} 
-									/> 
+										reviews={reviews}
+										seller={seller}
+										onBtnSeeAllReviewClick={() => this.redirectToPage('reviews')}
+									/>
 								}
 
 								{/* MOVED TEMPORALLY ON NOTES ... */}
 								{/* ----------------------------	END OF REVIEW ---------------------------- */}
 
 
-								{/* ----------------------------	SELLER PROFILE ---------------------------- */}							
+								{/* ----------------------------	SELLER PROFILE ---------------------------- */}
 								<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 									{!_.isEmpty(detail) && (
 										<SellerProfile
@@ -666,10 +701,10 @@ class Products extends Component {
 								</div>
 
 								{/* ----------------------------	PROMOS PRODUCTs ---------------------------- */}
-								<Promos 
-									promo={promo} 
+								<Promos
+									promo={promo}
 									loading={status.loading}
-									loginNow={() => this.loginNow()} 
+									loginNow={() => this.loginNow()}
 								/>
 
 							</div>
