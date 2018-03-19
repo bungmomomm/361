@@ -56,7 +56,6 @@ class Search extends PureComponent {
 
 	urlBuilder(type, text, value) {
 		let pathProd = null;
-		const eText = encodeURIComponent(text);
 		const eVal = encodeURIComponent(value);
 		switch (type) {
 		case this.SUGGEST_KEYWORD || this.SUGGEST_HASTAG:
@@ -66,7 +65,7 @@ class Search extends PureComponent {
 			pathProd = `/products?category_id=&query=${eVal.toLowerCase()}`;
 			break;
 		case this.SUGGEST_CATEGORY:
-			pathProd = `/products?category_id=${value}&query=${eText.toLowerCase()}`;
+			pathProd = `/products?category_id=${value}&query=${this.state.keyword}`;
 			break;
 		default:
 			pathProd = `/products?category_id=&query=${eVal}`;
