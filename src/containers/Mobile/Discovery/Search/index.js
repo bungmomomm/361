@@ -57,6 +57,7 @@ class Search extends PureComponent {
 	urlBuilder(type, text, value) {
 		let pathProd = null;
 		const eVal = encodeURIComponent(value);
+		const eText = encodeURIComponent(text);
 		switch (type) {
 		case this.SUGGEST_KEYWORD || this.SUGGEST_HASTAG:
 			pathProd = `/products?category_id=&query=${eVal.toLowerCase()}`;
@@ -68,7 +69,7 @@ class Search extends PureComponent {
 			pathProd = `/products?category_id=${value}&query=${this.state.keyword}`;
 			break;
 		default:
-			pathProd = `/products?category_id=&query=${eVal}`;
+			pathProd = `/products?category_id=&query=${eText}`;
 		}
 		return pathProd;
 	}
@@ -103,12 +104,12 @@ class Search extends PureComponent {
 	listSugestionMaker(lists, type) {
 		return (<div>
 			{lists.map(list => {
-				const pathProd = (type === this.SUGGEST_HISTORY) ? this.urlBuilder(list.type, list.text, list.value)
-					: this.urlBuilder(type, list.text, list.value);
+				const pathProd = this.urlBuilder(type, list.text, list.value);
 				const cookieType = (type === this.SUGGEST_HISTORY) ? list.type : type;
+				const keywordForHistory = (type === this.SUGGEST_CATEGORY) ? this.state.keyword : list.text;
 				return (
 					<li key={Math.random()} >
-						<Link to={pathProd} onClick={() => this.setCookieSearch(list.text, list.value, cookieType)}>
+						<Link to={pathProd} onClick={() => this.setCookieSearch(keywordForHistory, list.text, list.value, cookieType)}>
 							{this.titleMaker(type, list.text)}
 						</Link>
 					</li>);
