@@ -522,7 +522,7 @@ class Products extends Component {
 				onClick: this.handleShowMoreProductDescription
 			};
 			
-			let fullProductDescriptionButtonText = 'More';
+			let fullProductDescriptionButtonText = '[...]';
 			let classNameProductDescription = classNames('padding--medium-h', styles.textOnlyShowTwoLines);
 			
 			if (showFullProductDescription === true) {
