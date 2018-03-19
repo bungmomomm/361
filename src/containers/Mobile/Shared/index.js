@@ -106,7 +106,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 			const resp = await to(dispatch(new users.refreshToken(rfT, tokenBearer)));
 
-			const { data } = resp[1].data;
+			const data = resp[1].data.data;
 
 			const isAnonymous = data.info.userid <= 1;
 			setUserCookie(this.props.cookies, data, isAnonymous);
