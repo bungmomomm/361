@@ -19,7 +19,7 @@ class Reviews extends Component {
 
 		this.goToPreviousPage = this.goToPreviousPage.bind(this);
 		this.loadingContent = (
-			<div style={{ margin: '20% auto 20% auto' }}>
+			<div style={{ margin: '70% auto 20% auto' }}>
 				<Spinner size='large' />
 			</div>
 		);
