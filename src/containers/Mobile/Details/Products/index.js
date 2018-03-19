@@ -8,12 +8,14 @@ import { actions as productActions } from '@/state/v4/Product';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as shopBagActions } from '@/state/v4/ShopBag';
-import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Rating, Spinner, Badge } from '@/components/mobile';
-import Promos from '@/containers/Mobile/Details/Products/Promos';
+import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Spinner, Badge, Notification } from '@/components/mobile';
+import Promos from './Promos';
+import ReviewSummary from './Reviews/summary';
+
 import Share from '@/components/mobile/Share';
+import SellerProfile from '../../Discovery/Seller/components/SellerProfile';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
-import SellerProfile from '../../Discovery/Seller/components/SellerProfile';
 import { Promise } from 'es6-promise';
 
 const doAfterAnonymous = async (props) => {
@@ -74,7 +76,11 @@ class Products extends Component {
 				slideIndex: 0
 			},
 			selectedVariant: {},
-			btnBeliLabel: 'BELI AJA'
+			btnBeliLabel: 'BELI AJA',
+			notif: {
+				show: false,
+				content: ''
+			}
 		};
 
 		this.loadingContent = (
@@ -96,14 +102,13 @@ class Products extends Component {
 		let { cardProduct, selectedVariant, size } = this.state;
 
 		status.loading = product.loading;
-		// sets card product
-		if (_.toInteger(this.props.match.params.id) !== _.toInteger(nextProps.match.params.id)) {
-			console.log('reloading data ...');
+		if ((_.toInteger(this.props.match.params.id) !== _.toInteger(nextProps.match.params.id)) || 
+		(this.props.match.url !== nextProps.match.url)) {
 			doAfterAnonymous(nextProps);
 		}
 
-		if (!_.isEmpty(detail) && (this.props.product.detail !== detail) &&
-			(this.props.product.detail.id !== detail.id)) {
+		// sets card product
+		if (!_.isEmpty(detail) && (this.props.product.detail !== detail) && !_.has(cardProduct, 'images')) {
 			console.log('updating data....');
 			cardProduct = productActions.getProductCardData(detail);
 			status.hasVariantSize = cardProduct.hasVariantSize;
@@ -145,32 +150,6 @@ class Products extends Component {
 		this.handleScroll();
 	}
 
-	// shouldComponentUpdate(nextProps, nextState) {
-	// 	const { detail, promo, socialSummary } = this.props.product;
-
-	// 	if (detail.id !== nextProps.product.detail.id) {
-	// 		console.log('updating detail.id');
-	// 		return true;
-	// 	}
-
-	// 	if (promo !== nextProps.product.promo) {
-	// 		console.log('updating promo');
-	// 		return true;
-	// 	}
-
-	// 	if (socialSummary !== nextProps.product.socialSummary) {
-	// 		console.log('updating socialSummary');
-	// 		return true;
-	// 	}
-
-	// 	if (_.toInteger(this.props.match.params.id) !== _.toInteger(nextProps.match.params.id)) {
-	// 		console.log('do after anonymous');
-	// 		doAfterAnonymous(nextProps);
-	// 		return true;
-	// 	}
-	// 	return false;
-	// }
-
 	onOvoInfoClick(e) {
 		const { promo } = this.props.product;
 		const { status } = this.state;
@@ -204,22 +183,18 @@ class Products extends Component {
 	}
 
 	handleScroll(e) {
-		try {
-			if (!this.carouselEL) return;
-			const { status } = this.state;
-			const { top } = this.props.scroll;
-			const carouselHeight = this.carouselEL.getBoundingClientRect().height;
-			if (top > carouselHeight && !status.showScrollInfomation) {
-				status.showScrollInfomation = true;
-				this.setState({ status });
-			}
+		if (!this.carouselEL) return;
+		const { status } = this.state;
+		const { top } = this.props.scroll;
+		const carouselHeight = this.carouselEL.getBoundingClientRect().height;
+		if (top > carouselHeight && !status.showScrollInfomation) {
+			status.showScrollInfomation = true;
+			this.setState({ status });
+		}
 
-			if ((top === 0 || top < carouselHeight) && status.showScrollInfomation) {
-				status.showScrollInfomation = false;
-				this.setState({ status });
-			}
-		} catch (error) {
-			console.log('handle scroll error: ', error);
+		if ((top === 0 || top < carouselHeight) && status.showScrollInfomation) {
+			status.showScrollInfomation = false;
+			this.setState({ status });
 		}
 	}
 
@@ -265,8 +240,13 @@ class Products extends Component {
 	}
 
 	addToShoppingBag(variantId) {
-		const { status } = this.state;
-		const { dispatch, product } = this.props;
+		const { status, notif } = this.state;
+		const { dispatch } = this.props;
+
+		
+		status.showModalSelectSize = false;
+		notif.show = false;
+		this.setState({ status, notif });
 
 		const handler = new Promise((resolve, reject) => {
 			resolve(dispatch(shopBagActions.updateAction(this.userCookies, variantId, this.defaultCount, 'add')));
@@ -278,14 +258,16 @@ class Products extends Component {
 			status.pendingAddProduct = false;
 			status.productAdded = true;
 			status.showModalSelectSize = false;
-
+			notif.show = true;
+			notif.content = 'Produk Berhasil ditambahkan';
+			this.setState({ status, notif });
 			// get product data
-			dispatch(new productActions.productDetailAction(this.userCookies, product.detail.id));
+			// dispatch(new productActions.productDetailAction(this.userCookies, product.detail.id));
 		}).catch((err) => {
+			status.showModalSelectSize = false;
+			this.setState({ status, notif });
 			throw err;
 		});
-
-		this.setState({ status });
 	}
 
 	handleBtnBeliClicked(e) {
@@ -315,7 +297,7 @@ class Products extends Component {
 
 	handleSelectVariant(size) {
 		if (!_.isUndefined(size) && size !== '') {
-			const { status, cardProduct } = this.state;
+			const { cardProduct } = this.state;
 			const selectedVariant = cardProduct.variantsData[size];
 			cardProduct.pricing = selectedVariant.pricing.formatted;
 			this.setState({
@@ -325,7 +307,7 @@ class Products extends Component {
 			});
 
 			// Add product to cart cardProduct after product variant size selected
-			if (status.pendingAddProduct) this.addToShoppingBag(selectedVariant.id);
+			// if (status.pendingAddProduct) this.addToShoppingBag(selectedVariant.id);
 		}
 	}
 
@@ -374,29 +356,36 @@ class Products extends Component {
 	 */
 	removeAddItem(e) {
 		const { dispatch, product } = this.props;
-		const { cardProduct, status } = this.state;
+		const { cardProduct, status, notif } = this.state;
 		const handler = new Promise((resolve, reject) => {
 			if (!status.isLoved) resolve(dispatch(lovelistActions.addToLovelist(this.userCookies, product.detail.id)));
 			else resolve(dispatch(lovelistActions.removeFromLovelist(this.userCookies, product.detail.id)));
 		});
 
+		status.showConfirmDelete = false;
+		notif.show = false;
+		this.setState({ status, notif });
+
 		handler.then((res) => {
 			// Updating product lovelist state ...
 			if (res.status === 200 && res.statusText === 'OK') {
 				if (!status.isLoved) {
+					notif.content = 'Lovelist ditambahkan';
 					status.isLoved = true;
 					cardProduct.totalLovelist += 1;
 				} else {
+					notif.content = 'Produk dihapus dari Lovelist';
 					status.isLoved = false;
 					cardProduct.totalLovelist -= 1;
 				}
 			}
-			status.showConfirmDelete = false;
-			this.setState({ status, cardProduct });
+			notif.show = true;
+			this.setState({ status, cardProduct, notif });
 
 		}).catch((err) => {
 			status.showConfirmDelete = false;
-			this.setState({ status, cardProduct });
+			notif.show = false;
+			this.setState({ status, cardProduct, notif });
 			throw err;
 		});
 	}
@@ -405,7 +394,7 @@ class Products extends Component {
 		const { products } = this.props.product.store;
 		const length = products.length;
 		const storeProductListContent = products.map((product, idx) => {
-			console.log('rendering store product item: ', product);
+			// console.log('rendering store product item: ', product);
 			if (idx === (length - 1)) {
 				return (
 					<div key={`storePNH-${idx}`} className='padding--small-h'>
@@ -420,45 +409,29 @@ class Products extends Component {
 	}
 
 	renderHeaderPage() {
-		try {
-			const url = `${process.env.MOBILE_URL}${this.props.location.pathname}`;
-			const { detail } = this.props.product;
+		const url = `${process.env.MOBILE_URL}${this.props.location.pathname}`;
+		const { detail } = this.props.product;
 
-			if (!_.isEmpty(detail)) {
-				const { status } = this.state;
-				const brandName = !_.isEmpty(detail.brand.name) ? detail.brand.name : '';
-				const shopBageContent = (
-					<Button onClick={() => this.redirectToPage('carts')} className='margin--medium-l'>
-						<Svg src={'ico_cart.svg'} />
-						{(this.props.shared.totalCart > 0) &&
-							<Badge circle attached size='small' className='bg--secondary-ext-1 font-color--white'>{this.props.shared.totalCart}</Badge>
-						}
-					</Button>
-				);
+		if (!_.isEmpty(detail)) {
+			const { status } = this.state;
+			const brandName = !_.isEmpty(detail.brand.name) ? detail.brand.name : '';
+			const shopBageContent = (
+				<Button onClick={() => this.redirectToPage('carts')} className='margin--medium-l'>
+					<Svg src={'ico_cart.svg'} />
+					{(this.props.shared.totalCart > 0) &&
+						<Badge circle attached size='small' className='bg--secondary-ext-1 font-color--white'>{this.props.shared.totalCart}</Badge>
+					}
+				</Button>
+			);
 
-				if (status.showScrollInfomation) {
-					return {
-						left: (
-							<Button onClick={this.goBackPreviousPage} >
-								<Svg src={'ico_arrow-back-left.svg'} />
-							</Button>
-						),
-						center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{brandName}</div>,
-						right: (
-							<div className='flex-row flex-middle'>
-								<Share title={detail.title} url={url} />
-								{shopBageContent}
-							</div>
-						)
-					};
-				}
+			if (status.showScrollInfomation) {
 				return {
 					left: (
-						<Button onClick={this.goBackPreviousPage}>
+						<Button onClick={this.goBackPreviousPage} >
 							<Svg src={'ico_arrow-back-left.svg'} />
 						</Button>
 					),
-					center: '',
+					center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{brandName}</div>,
 					right: (
 						<div className='flex-row flex-middle'>
 							<Share title={detail.title} url={url} />
@@ -467,11 +440,22 @@ class Products extends Component {
 					)
 				};
 			}
-			return { left: null, center: null, right: null };
-		} catch (error) {
-			console.log('header error: ', error);
-			return 'header error';
+			return {
+				left: (
+					<Button onClick={this.goBackPreviousPage}>
+						<Svg src={'ico_arrow-back-left.svg'} />
+					</Button>
+				),
+				center: '',
+				right: (
+					<div className='flex-row flex-middle'>
+						<Share title={detail.title} url={url} />
+						{shopBageContent}
+					</div>
+				)
+			};
 		}
+		return { left: null, center: null, right: null };
 	}
 
 	renderStickyAction() {
@@ -506,23 +490,14 @@ class Products extends Component {
 		return this.loadingContent;
 	}
 
-	renderViewAllReviews() {
-		const { reviews } = this.props.product.socialSummary;
-		const reviewsContent = reviews.summary.map((item, idx) => {
-			return <Comment key={idx} type='review' data={item} />;
-		});
-
-		return (<Page color='white'>{reviewsContent}</Page>);
-	}
-
 	render() {
 		try {
 
 			const { match, product } = this.props;
 			const { detail, socialSummary, promo } = product;
-			// const { detail, socialSummary, promo, storeInfo } = product;
 			const { seller, comments, reviews } = socialSummary;
 			const { cardProduct, status, carousel, selectedVariant } = this.state;
+			const { id } = detail;
 
 			if (status.isZoomed && _.has(detail, 'images')) {
 				return (
@@ -548,7 +523,7 @@ class Products extends Component {
 				);
 			}
 
-			if (_.isEmpty(detail) || _.isEmpty(cardProduct) || !_.has(cardProduct, 'images')) return this.loadingContent;
+			if (_.isEmpty(detail) || status.loading) return this.loadingContent;
 
 			return (
 				<div>
@@ -646,53 +621,16 @@ class Products extends Component {
 
 							<div style={{ backgroundColor: '#F5F5F5' }}>
 								{/* ----------------------------	PRODUCT REVIEWS ---------------------------- */}
-								{reviews.total > 0 && (
-									<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
-										<div className='margin--medium-v'>
-											<div className='padding--small-h margin--small-v margin--none-t flex-row flex-spaceBetween'>
-												<div className='font-medium'><strong>Ulasan Produk</strong></div>
-												{reviews.total > 2 && (
-													<Button onClick={() => this.redirectToPage('reviews')} className='font-small flex-middle d-flex flex-row font-color--primary-ext-2' >
-														<span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' />
-													</Button>
-												)}
-											</div>
-											{reviews.total > 0 && (
-												<div className='border-bottom'>
-													<div className='padding--small-h margin--medium-v margin--none-t flex-row flex-middle'>
-														<Rating
-															active={(reviews.rating < 5) ? Number.parseFloat(reviews.rating).toFixed(1) : reviews.rating}
-															total={5}
-														/>
-														<div className='flex-row padding--small-h'>
-															<strong>{(reviews.rating < 5) ? Number.parseFloat(reviews.rating).toFixed(1) : reviews.rating} / 5</strong>
-															<span className='font-color--primary-ext-2 padding--small-h'>{`(${reviews.total} Ulasan)`}</span>
-														</div>
-													</div>
-												</div>
-											)}
-											{reviews.total > 0 && (
-												<div>
-													{status.loading && this.loadingContent}
-													{!status.loading &&
-														(reviews.summary.map((item, idx) => {
-															return (
-																<div key={`pdp-rvd-${idx + 1}`}>
-																	<Comment key={idx} type='review' data={item} />
-																	{!_.isEmpty(item.reply.reply) &&
-																		<div className='comment-reply' key={`pdp-rvd-${idx + 2}`} >
-																			<div><Svg src='ico_review_reply.svg' /></div>
-																			<Comment key={idx} type='review-reply' replyData={item.reply} sellerData={seller} />
-																		</div>
-																	}
-																</div>
-															);
-														})
-														)}</div>
-											)}
-										</div>
-									</div>
-								)}
+								{!_.isEmpty(reviews.summary) && 
+									<ReviewSummary 
+										productId={id}
+										reviews={reviews} 
+										seller={seller} 
+										onBtnSeeAllReviewClick={() => this.redirectToPage('reviews')} 
+									/> 
+								}
+
+								{/* MOVED TEMPORALLY ON NOTES ... */}
 								{/* ----------------------------	END OF REVIEW ---------------------------- */}
 
 
@@ -756,15 +694,23 @@ class Products extends Component {
 					<Modal position='bottom' show={status.showModalSelectSize} onCloseOverlay={(e) => this.handleCloseModalPopUp(e, 'select-size')}>
 						<div className='padding--medium-v'>
 							<div className='padding--medium-h'><strong>PILIH UKURAN</strong></div>
-							<div className='margin--medium-v horizontal-scroll padding--medium-h  margin--medium-r'>
-								<Radio
-									name='size'
-									checked={this.state.size}
-									variant='rounded'
-									className='margin--small-v'
-									onChange={this.handleSelectVariant}
-									data={cardProduct.variants}
-								/>
+							<div className='horizontal-scroll padding--medium-h  margin--medium-r'>
+								<Level style={{ padding: '0px' }} className='margin--medium-v'>
+									<Level.Left />
+									<Level.Item>
+										<Radio
+											name='size'
+											checked={this.state.size}
+											variant='rounded'
+											className='margin--small-v'
+											onChange={this.handleSelectVariant}
+											data={cardProduct.variants}
+										/>
+									</Level.Item>
+									<Level.Right className='padding--small-v' >
+										<Button color='secondary' disabled={status.btnBeliDisabled || _.isEmpty(selectedVariant)} size='medium' onClick={this.handleBtnBeliClicked}>{this.state.btnBeliLabel}</Button>
+									</Level.Right>
+								</Level>
 							</div>
 						</div>
 					</Modal>
@@ -809,6 +755,10 @@ class Products extends Component {
 							/>
 						</Modal>
 					)}
+
+					<Notification style={{ marginTop: '90%' }} show={this.state.notif.show} toast disableClose onClose={this.onNotifClose}>
+						<span>{this.state.notif.content}</span>
+					</Notification>
 				</div>);
 		} catch (error) {
 			console.log('PDP ERROR: ', error);
