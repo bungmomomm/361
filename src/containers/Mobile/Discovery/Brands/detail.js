@@ -348,6 +348,8 @@ class Detail extends Component {
 	render() {
 		const { showFilter } = this.state;
 
+		const activeNav = (window.prevLocation) ? (window.prevLocation.pathname === '/') ? 'Home' : 'Categories' : 'Categories';
+
 		return (
 			<div style={this.props.style}>
 				{(showFilter) ? (
@@ -369,7 +371,7 @@ class Detail extends Component {
 								</div>
 								{this.renderTotalProduct()}
 								{this.renderProduct()}
-								{this.props.scroller.loading && (<Spinner />)}
+								{this.props.scroller.loading && (<div style={{ paddingTop: '20px' }}> <Spinner /></div>)}
 							</div>
 						</div>
 						<Footer isShow={this.state.isFooterShow} />
@@ -378,7 +380,7 @@ class Detail extends Component {
 				{(!showFilter) && (
 					<div>
 						{this.renderHeader()}
-						<Navigation active='Categories' scroll={this.props.scroll} />
+						<Navigation active={activeNav} scroll={this.props.scroll} />
 					</div>
 				)}
 			</div>
