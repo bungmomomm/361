@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import { Page, Header, Svg, Comment, Spinner, Button } from '@/components/mobile';
+import { Page, Header, Svg, Comment, Spinner, Button, Rating } from '@/components/mobile';
 import { actions as productActions } from '@/state/v4/Product';
 import Shared from '@/containers/Mobile/Shared';
+import styles from './reviews.scss';
 
 class Reviews extends Component {
 	constructor(props) {
@@ -43,10 +44,18 @@ class Reviews extends Component {
 		const { allReviews } = this.props.product;
 		const reviewsNotReady = _.isEmpty(allReviews.items);
 
-		if (reviewsNotReady) return this.loadingContent; 
+		if (reviewsNotReady) return this.loadingContent;
 
 		const reviewsContent = allReviews.items.map((item, idx) => {
-			return <Comment key={idx} type='review' data={item} />;
+			return (
+				<div>
+					<Comment key={idx} type='review' data={item} />
+					<div className='comment-reply'>
+						<div><Svg src='ico_review_reply.svg' /></div>
+						<Comment key={idx} type='review' data={item} />
+					</div>
+				</div>
+			);
 		});
 
 		return (
@@ -69,14 +78,66 @@ class Reviews extends Component {
 		};
 		return (
 			<div>
-				<Page color='white'>
-					<div style={{ backgroundColor: '#F5F5F5' }}>
-						<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px', minHeight: 150, maxHeight: 200, wordWrap: 'break-word' }}>
+				<Page>
+					<div>
+						<div style={{ backgroundColor: '#ffffff' }}>
+							<div className='flex-row padding--medium-h margin--medium-v'>
+								<div>
+									<div className={styles.starCon}>
+										<Svg src='ico_circle_review.svg' />
+										<div className={styles.num}>4.8</div>
+									</div>
+									<Rating total={5} active={3} />
+									<div className='text-center font-color--grey'>Ulasan (99)</div>
+								</div>
+								<div style={{ flex: 1 }} className='margin--large-l font-color--grey'>
+									<div className='flex-row flex-spaceBetween flex-middle'>
+										<Rating total={1} active={0} />
+										<div className='margin--small-h'>5</div>
+										<div className={styles.slider}>
+											<span />
+										</div>
+										<div className='padding--small-h'>100 %</div>
+									</div>
+									<div className='flex-row flex-spaceBetween flex-middle'>
+										<Rating total={1} active={0} />
+										<div className='margin--small-h'>5</div>
+										<div className={styles.slider}>
+											<span />
+										</div>
+										<div className='padding--small-h'>100 %</div>
+									</div>
+									<div className='flex-row flex-spaceBetween flex-middle'>
+										<Rating total={1} active={0} />
+										<div className='margin--small-h'>5</div>
+										<div className={styles.slider}>
+											<span />
+										</div>
+										<div className='padding--small-h'>100 %</div>
+									</div>
+									<div className='flex-row flex-spaceBetween flex-middle'>
+										<Rating total={1} active={0} />
+										<div className='margin--small-h'>5</div>
+										<div className={styles.slider}>
+											<span />
+										</div>
+										<div className='padding--small-h'>100 %</div>
+									</div>
+									<div className='flex-row flex-spaceBetween flex-middle'>
+										<Rating total={1} active={0} />
+										<div className='margin--small-h'>5</div>
+										<div className={styles.slider}>
+											<span />
+										</div>
+										<div className='padding--small-h'>100 %</div>
+									</div>
+								</div>
+							</div>
 							{JSON.stringify(allReviews.info)}
 						</div>
 						{this.renderReviews()}
 					</div>
-					
+
 				</Page>
 				<Header.Modal {...HeaderOption} />
 			</div>);
@@ -95,7 +156,7 @@ const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies, match } = props;
 	const token = cookies.get('user.token');
 	const productId = match.params.id;
-	
+
 	dispatch(productActions.allProductReviewsAction(token, productId));
 };
 

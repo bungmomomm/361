@@ -3,7 +3,18 @@ import to from 'await-to-js';
 import { Promise } from 'es6-promise';
 import _ from 'lodash';
 import { request } from '@/utils';
-import { totalBag, totalLoveList, currentTab, forEverBanner, errorHandler, rrsDismissSnack, rrsShowSnack, userPreviousPage } from './reducer';
+import {
+	totalBag,
+	totalLoveList,
+	currentTab,
+	forEverBanner,
+	errorHandler,
+	rrsDismissSnack,
+	rrsShowSnack,
+	rrsClearSnackQueue,
+	connectionWatch,
+    userPreviousPage
+} from './reducer';
 
 const closeFB = () => (dispatch, getState) => {
 	const { shared } = getState();
@@ -103,20 +114,27 @@ const clearErrors = () => (dispatch) => {
 	dispatch(errorHandler({ errors: [] }));
 };
 
+const showSnack = (id, data = { label: '', timeout: 7000, button: {} }, style = { css: {} }) => (dispatch) => {
+	style = { ...style, sticky: style.sticky || true };
+	dispatch(rrsShowSnack({ id, data, style }));
+};
+
 const logSinglePage = (pageName) => (dispatch) => {
-	dispatch(userPreviousPage(pageName));
+    dispatch(userPreviousPage(pageName));
 };
 
 const removeLogSinglePage = (pageName = '') => (dispatch) => {
-	dispatch(userPreviousPage(pageName));
-};
-
-const showSnack = (id, data = { label: '', timeout: 7000, button: {} }) => (dispatch) => {
-	dispatch(rrsShowSnack({ id, data }));
+    dispatch(userPreviousPage(pageName));
 };
 
 export const dismissSnack = (id) => (dispatch) => {
 	dispatch(rrsDismissSnack({ id }));
+};
+export const clearSnackQueue = () => (dispatch) => {
+	dispatch(rrsClearSnackQueue());
+};
+export const watchConnection = (state = true) => (dispatch) => {
+	dispatch(connectionWatch({ state }));
 };
 
 export default {
@@ -128,6 +146,8 @@ export default {
 	clearErrors,
 	showSnack,
 	dismissSnack,
-	logSinglePage,
-	removeLogSinglePage
+	clearSnackQueue,
+	watchConnection,
+    logSinglePage,
+    removeLogSinglePage
 };

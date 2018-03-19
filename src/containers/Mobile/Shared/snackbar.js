@@ -139,4 +139,4 @@ class Snackbar extends React.Component {
 
 }
 
-export default connect(state => ({ snack: state.shared.snackQueue[0] || null }))(Snackbar);
+export default connect(state => ({ snack: state.shared.snackbar[0] || null }))(Snackbar);

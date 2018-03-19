@@ -7,6 +7,7 @@ import Size from './layouts/size';
 import Price from './layouts/price';
 // import Location from './layouts/locations';
 import TreeSegment from './layouts/treeSegment';
+import Tree from './layouts/tree';
 import Result from './layouts/result';
 import utils from './layouts/utils';
 import styles from './filter.scss';
@@ -38,6 +39,7 @@ class Filter extends PureComponent {
 			selected: {},
 			layout: 'result',
 			resetDisabled: true,
+			resetCliked: false,
 			params: {
 				header: {
 					title: 'Title'
@@ -65,12 +67,15 @@ class Filter extends PureComponent {
 	}
 
 	onFilterSectionClose(e) {
-		const { layout } = this.state;
+		const { layout, resetCliked } = this.state;
 		if (layout !== 'result') {
 			this.setState({
 				layout: 'result'
 			});
 		} else {
+			if (resetCliked) {
+				this.onApply(undefined);
+			}
 			this.props.onClose(e);
 		}
 	}
@@ -129,7 +134,8 @@ class Filter extends PureComponent {
 		this.setState({
 			resetDisabled,
 			filters,
-			selected
+			selected,
+			resetCliked: true
 		});
 		this.forceUpdate();
 	}
@@ -152,145 +158,41 @@ class Filter extends PureComponent {
 	}
 
 	mapFilters(newFilters) {
-		const { selected } = this.state;
-		let { filters, resetDisabled } = this.state;
+		const { resetDisabled, selected } = this.state;
+		let { filters } = this.state;
 		if (newFilters) {
 			filters = newFilters;
 		}
-		const updateChilds = (c, s) => {
-			c = _.map(c, (facetData) => {
-				if (facetData.is_selected) {
-					s.push(facetData);
-				}
-				[c, s] = updateChilds(facetData.childs, s);
-				return facetData;
-			});
-
-			return [c, s];
-		};
-		resetDisabled = true;
-		filters.facets = _.map(filters.facets, (facet) => {
-			switch (facet.id) {
-			case 'category':
-			case 'custom_category_ids':
-			case 'size':
-				selected[facet.id] = [];
-				[facet.data, selected[facet.id]] = updateChilds(facet.data, selected[facet.id]);
-				break;
-			default:
-				selected[facet.id] = [];
-				facet.data = _.map(facet.data, (facetData) => {
-					if (facetData.is_selected) {
-						selected[facet.id].push(facetData);
-					}
-					return facetData;
-				});
-				break;
-			}
-			if (selected[facet.id].length < 1) {
-				selected[facet.id].push({
-					facetdisplay: 'Semua'
-				});
-			} else {
-				resetDisabled = false;
-			}
-			return facet;
-		});
-		
+		const response = utils.mapFilters(filters.facets, selected, resetDisabled);
 		this.setState({
-			resetDisabled,
-			selected
+			resetDisabled: response.disabled,
+			selected: response.selected
 		});
 		this.forceUpdate();
 	}
 
 	applyFilter(type, values, custom) {
-		const { selected, filters } = this.state;
-		let { resetDisabled } = this.state;
-		const results = _.map(values, (value) => {
-			return value.facetrange;
-		});
-		const updateChilds = (c, r, s) => {
-			c = _.map(c, (facetData) => {
-				const isExist = _.find(r, (v) => {
-					return v === facetData.facetrange;
-				});
-				facetData.is_selected = 0;
-				if (isExist) {
-					s.push(facetData);
-					facetData.is_selected = 1;
-				}
-				[c, s] = updateChilds(facetData.childs, r, s);
-				return facetData;
-			});
-			return [c, s];
-		};
-		resetDisabled = true;
-		filters.facets = _.map(filters.facets, (facet) => {
-			if (facet.id === type) {
-				switch (facet.id) {
-				case 'category':
-				case 'custom_category_ids':
-				case 'size':
-					if (facet.id === type) {
-						selected[facet.id] = [];
-						[facet.data, selected[facet.id]] = updateChilds(facet.data, results, selected[facet.id]);
-					}
-					break;
-				case 'price':
-					selected[facet.id] = [];
-					if (custom) {
-						selected[facet.id] = [custom];
-						facet.requested_range = custom;
-					} else {
-						delete facet.requested_range;
-						facet.data = _.map(facet.data, (facetData) => {
-							const isExist = _.find(results, (v) => {
-								return v === facetData.facetrange;
-							});
-							facetData.is_selected = 0;
-							if (isExist) {
-								selected[facet.id].push(facetData);
-								facetData.is_selected = 1;
-							}
-							return facetData;
-						});
-					}
-					break;
-				default:
-					selected[facet.id] = [];
-					facet.data = _.map(facet.data, (facetData) => {
-						if (facet.id === type) {
-							const isExist = _.find(results, (v) => {
-								return v === facetData.facetrange;
-							});
-							facetData.is_selected = 0;
-							if (isExist) {
-								selected[facet.id].push(facetData);
-								facetData.is_selected = 1;
-							}
-						}
-						return facetData;
-					});
-					break;
-				}
-				
-				if (selected[facet.id].length < 1) {
-					selected[facet.id].push({
-						facetdisplay: 'Semua'
-					});
-				} else {	
-					resetDisabled = false;
-				}
-			}
-			return facet;
-		});
-		console.log(resetDisabled);
+		const { filters } = this.state;
+		let { resetDisabled, selected } = this.state;
+		const response = utils.applyAndGetSelected(
+			filters.facets,
+			selected,
+			resetDisabled,
+			type,
+			values,
+			custom
+		);
+
+		filters.facets = response.facets;
+		resetDisabled = response.disabled;
+		selected = response.selected;
+
 		this.setState({
 			resetDisabled,
 			filters,
 			selected,
-			layout: 'result'
+			layout: 'result',
+			resetCliked: false
 		});
 	}
 
@@ -298,26 +200,17 @@ class Filter extends PureComponent {
 		const { layout, filters, selected, resetDisabled, ...state } = this.state;
 		const { shown } = this.props;
 
-		const brands = this.getFacet('brand');
-		const colors = this.getFacet('color');
-		const sizes = this.getFacet('size');
-		const locations = this.getFacet('location');
-		const priceData = this.getFacet('price');
-		const prices = priceData.data;
-		const range = priceData.range;
-		const shippings = this.getFacet('shipping_methods');
-		const categories = this.getFacet('category');
-		const customCategoryType = this.getFacet('custom_category_ids');
-
+		let data;
 		let filterView;
 		if (shown) {
 			switch (layout) {
 			case 'brand':
+				data = this.getFacet('brand');
 				filterView = (
 					<Brands 
 						{...state} 
-						title='brands' 
-						data={brands.data} 
+						title={data.title} 
+						data={data.data} 
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
@@ -325,10 +218,12 @@ class Filter extends PureComponent {
 				);
 				break;
 			case 'color':
+				data = this.getFacet('color');
 				filterView = (
 					<Color 
 						{...state} 
-						data={colors.data} 
+						title={data.title}
+						data={data.data} 
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
@@ -337,10 +232,12 @@ class Filter extends PureComponent {
 			
 				break;
 			case 'size':
+				data = this.getFacet('size');
 				filterView = (
 					<Size 
 						{...state} 
-						data={sizes.data} 
+						title={data.title}
+						data={data.data} 
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
@@ -348,10 +245,12 @@ class Filter extends PureComponent {
 				);			
 				break;
 			case 'location':
+				data = this.getFacet('location');
 				filterView = (
-					<TreeSegment 
+					<Tree 
 						{...state} 
-						data={locations.data} 
+						title={data.title}
+						data={data.data} 
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values, custom) => this.applyFilter(layout, values, custom)}
@@ -360,11 +259,13 @@ class Filter extends PureComponent {
 			
 				break;
 			case 'price':
+				data = this.getFacet('price');
 				filterView = (
 					<Price 
 						{...state} 
-						data={prices} 
-						range={range} 
+						title={data.title}
+						data={data.data} 
+						range={data.range} 
 						onChange={(e, value) => this.onFilterSelected(e, 'pricerange', value)} 
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
 						onClose={(e) => this.onFilterSectionClose()}
@@ -373,11 +274,12 @@ class Filter extends PureComponent {
 				);			
 				break;
 			case 'shipping_methods':
+				data = this.getFacet('shipping_methods');
 				filterView = (
 					<Lists 
 						{...state} 
-						title='Layanan Pengiriman' 
-						data={shippings.data} 
+						title={data.title}
+						data={data.data} 
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
@@ -385,10 +287,12 @@ class Filter extends PureComponent {
 				);
 				break;
 			case 'custom_category_ids':
+				data = this.getFacet('custom_category_ids');
 				filterView = (
 					<TreeSegment 
 						{...state} 
-						data={customCategoryType.data} 
+						title={data.title}
+						data={data.data} 
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
@@ -396,10 +300,12 @@ class Filter extends PureComponent {
 				);		
 				break;
 			case 'category':
+				data = this.getFacet('category');
 				filterView = (
 					<TreeSegment 
 						{...state} 
-						data={categories.data} 
+						title={data.title}
+						data={data.data} 
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
@@ -432,5 +338,7 @@ class Filter extends PureComponent {
 		);
 	}
 }
+
+Filter.utils = utils;
 
 export default Filter;
