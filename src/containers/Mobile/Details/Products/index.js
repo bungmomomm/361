@@ -12,6 +12,7 @@ import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, G
 import Share from '@/components/mobile/Share';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
+import { Love } from '@/containers/Mobile/Widget';
 import SellerProfile from '../../Discovery/Seller/components/SellerProfile';
 import { Promise } from 'es6-promise';
 import {
@@ -440,7 +441,15 @@ class Products extends Component {
 				productTitle: item.product_title,
 				brandName: item.brand.name,
 				pricing: item.pricing,
-				linkToPdp: '/'
+				linkToPdp: item.url,
+				love: (
+					<Love
+						status={item.lovelistStatus}
+						data={item.product_id}
+						total={item.lovelistTotal}
+						onNeedLogin={() => this.loginNow()}
+					/>
+				)
 			};
 
 			// set fragment value

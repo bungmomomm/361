@@ -88,15 +88,15 @@ class Catalog extends PureComponent {
 		if (optimistic) {
 			lovelistIcon = loved && loved === 1 ? 'ico_love-filled.svg' : 'ico_love.svg';
 		}
-		const discountBadge = pricing.discount !== '0%' ? (
+		const discountBadge = pricing.formatted.discount !== '' ? (
 			<div style={{ marginLeft: '1.5rem' }}>
 				<Badge rounded color='red'>
-					<span className='font--lato-bold'>{pricing.discount}</span>
+					<span className='font--lato-bold'>{pricing.formatted.discount}</span>
 				</Badge>
 			</div>
 		) : '';
 
-		const basePrice = pricing.discount !== '0%' ? (
+		const basePrice = pricing.formatted.discount !== '' ? (
 			<div className={styles.discount}>{pricing.formatted.base_price}</div>
 		) : '';
 

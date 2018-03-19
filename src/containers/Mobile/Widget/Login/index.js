@@ -22,7 +22,11 @@ class Login extends Component {
 	}
 
 	onFailure(provider, e) {
-		this.props.onFailure(provider, e);
+		if (this.props.onFailure) {
+			this.props.onFailure(provider, e);
+		} else {
+			this.props.callback(provider, e);
+		}
 		this.setState({
 			loading: false
 		});
@@ -49,6 +53,7 @@ class Login extends Component {
 						onClick={(e) => this.onLoading(e)}
 						onSuccess={(e, profile) => this.onSocialLogin('facebook', e, profile)}
 						callback={(e) => this.onFailure('facebook', e)}
+
 					>
 						Facebook
 					</SocialLogin>
@@ -63,7 +68,7 @@ class Login extends Component {
 						appId={provider.google.appId}
 						onClick={(e) => this.onLoading(e)}
 						onSuccess={(e, profile) => this.onSocialLogin('google', e, profile)}
-						callback={(e) => this.onFailure('facebook', e)}
+						callback={(e) => this.onFailure('google', e)}
 					>
 						<Svg src='ico_google.svg' style={{ marginRight: '10px' }} />Google
 					</SocialLogin>

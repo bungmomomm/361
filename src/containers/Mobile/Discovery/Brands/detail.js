@@ -298,6 +298,7 @@ class Detail extends Component {
 	}
 
 	renderFilter() {
+		const { isFiltered } = this.props;
 		const isProductSet = this.props.brands.searchData.products.length >= 1;
 		const { showSort } = this.state;
 		const sorts = _.chain(this.props.brands).get('searchData.sorts').value() || [];
@@ -315,7 +316,8 @@ class Detail extends Component {
 							{
 								id: 'filter',
 								title: 'Filter',
-								disabled: !isProductSet
+								disabled: !isProductSet,
+								checked: isFiltered
 							},
 							{
 								id: 'view',
@@ -442,10 +444,12 @@ class Detail extends Component {
 
 const mapStateToProps = (state) => {
 	const { comments, lovelist, brands } = state;
-	brands.searchData.products = Discovery.mapProducts(brands.searchData.products, comments, lovelist);
-
+	const { products, facets } = _.chain(brands).get('searchData').value() || { products: [], facets: [] };
+	brands.searchData.products = Discovery.mapProducts(products, comments, lovelist);
+	const isFiltered = Filter.utils.isFiltered(facets);
 	return {
 		...state,
+		isFiltered,
 		brands
 	};
 };
