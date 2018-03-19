@@ -4,7 +4,7 @@ import to from 'await-to-js';
 import { actions } from '@/state/v4/Shared';
 import { actions as users } from '@/state/v4/User';
 import { actions as initAction } from '@/state/v4/Home';
-import { setUserCookie, uniqid, setUniqeCookie } from '@/utils';
+import { setUserCookie, setUniqeCookie } from '@/utils';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
 import Snackbar from '@/containers/Mobile/Shared/snackbar';
@@ -104,12 +104,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			let tokenBearer = token === null ? this.userCookies : token.token;
 			let rfT = token === null ? this.userRFCookies : token.refresh_token;
 
-			const [er, resp] = await to(dispatch(new users.refreshToken(rfT, tokenBearer)));
-			if (er) {
-				this.withErrorHandling(er);
-			}
+			const resp = await to(dispatch(new users.refreshToken(rfT, tokenBearer)));
 
-			const { data } = resp.data;
+			const { data } = resp[1].data;
 
 			const isAnonymous = data.info.userid <= 1;
 			setUserCookie(this.props.cookies, data, isAnonymous);
@@ -118,24 +115,14 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			rfT = data.refresh_token;
 
 			if (shared.totalCart === 0) {
-				dispatch(new actions.totalCartAction(tokenBearer))
-				.catch(error => {
-					this.withErrorHandling(error);
-				});
+				dispatch(new actions.totalCartAction(tokenBearer));
 			}
 
 			if (shared.totalLovelist === 0) {
-				dispatch(new actions.totalLovelistAction(tokenBearer))
-				.catch(error => {
-					this.withErrorHandling(error);
-				});
+				dispatch(new actions.totalLovelistAction(tokenBearer));
 			}
 			if (login && provider) {
-				const response = await to(dispatch(new users.userSocialLogin(tokenBearer, provider, login)));
-
-				if (response[0]) {
-					this.withErrorHandling(response[0]);
-				}
+				await to(dispatch(new users.userSocialLogin(tokenBearer, provider, login)));
 			}
 
 			if (cookies.get('isLogin') === 'true') {
@@ -143,13 +130,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			}
 
 			if (typeof doAfterAnonymousCall !== 'undefined') {
-				try {
-					await doAfterAnonymousCall.apply(this, [this.props]);
-
-				} catch (err) {
-					return this.withErrorHandling(err);
-				}
-
+				await doAfterAnonymousCall.apply(this, [this.props]);
 			}
 			return null;
 		}
@@ -168,16 +149,13 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		async loginAnonymous() {
-			const [err, response] = await to(this.props.dispatch(new users.userAnonymous()));
-			if (err) {
-				return this.withErrorHandling(err);
-			}
+			const response = await to(this.props.dispatch(new users.userAnonymous()));
 
-			setUserCookie(this.props.cookies, response.token, true);
+			setUserCookie(this.props.cookies, response[1].token, true);
 			return Promise.resolve({
 				status: 1,
 				msg: '',
-				token: response.token
+				token: response[1].token
 			});
 		}
 
@@ -186,35 +164,13 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			const { shared } = this.props;
 			const serviceUrl = _.chain(shared).get('serviceUrl').value() || false;
 			if (!serviceUrl) {
-				const [err, response] = await to(this.props.dispatch(new initAction.initAction()));
-				if (err) {
-					return this.withErrorHandling(err);
-				}
+				const response = await to(this.props.dispatch(new initAction.initAction()));
 
 				this.initApp();
-				return response;
+				return response[1];
 			}
 
 			return false;
-		}
-
-		withErrorHandling(err) {
-			const { dispatch } = this.props;
-			const { response } = err;
-
-			const errMessage = _.chain(response).get('data.error_message').value() || false;
-
-			if (errMessage) {
-				dispatch(actions.showSnack(uniqid('err-'), {
-					label: errMessage,
-					button: {
-						label: 'COBA LAGI',
-						action: 'reload'
-					}
-				}));
-			}
-
-			dispatch(actions.catchErrors(response));
 		}
 
 		handleScroll(e) {
