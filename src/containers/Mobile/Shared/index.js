@@ -102,8 +102,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			const { shared, dispatch, cookies } = this.props;
 			const { login, provider } = this.state;
 			let tokenBearer = token === null ? this.userCookies : token.token;
-			let rfT = token === null ? this.userRFCookies : token.refresh_token;
-
+			const rfT = token === null ? this.userRFCookies : token.refresh_token;
 			const resp = await to(dispatch(new users.refreshToken(rfT, tokenBearer)));
 
 			const data = resp[1].data.data;
@@ -112,7 +111,6 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			setUserCookie(this.props.cookies, data, isAnonymous);
 
 			tokenBearer = data.token;
-			rfT = data.refresh_token;
 
 			if (shared.totalCart === 0) {
 				dispatch(new actions.totalCartAction(tokenBearer));
