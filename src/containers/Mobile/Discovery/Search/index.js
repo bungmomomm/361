@@ -134,6 +134,8 @@ class Search extends PureComponent {
 		case this.SUGGEST_HISTORY:
 			if (text.charAt(0) === '#') {
 				display = (<aux><span id={styles.fontBlue}>{text}</span></aux>);
+			} else {
+				display = (<aux><span>{text}</span></aux>);
 			}
 			break;
 		default:
