@@ -28,7 +28,8 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				scroll: {
 					top: 0,
 					docHeight: 0,
-					isNavSticky: false
+					isNavSticky: false,
+					isNavExists: false
 				},
 				provider: (query.code || query.state) ? (query.code ? 'facebook' : 'google') : false,
 				watchConnection: false
@@ -184,18 +185,20 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 							}
 							this.currentScrollPos = this.state.scroll.top;
 							return this.state.scroll.top > oldPos && this.state.scroll.top < this.state.scroll.docHeight;
-						})()
+						})(),
+						isNavExists: document.querySelector('.navigation__navigation')
 					}
 				});
 			}
 		}
 
 		render() {
+			const { scroll } = this.state;
 			const snackStyle = _.chain(this.props.shared.snackbar).get('[0].style').value() || { css: {}, sticky: true };
 			const snackCss = _.chain(snackStyle).get('css.snack').value() || {};
 			const snackSticky = !snackStyle.sticky ? {} : {
-				bottom: !this.state.scroll.isNavSticky ? 50 : 0,
-				zIndex: !this.state.scroll.isNavSticky ? 2 : 999
+				bottom: !scroll.isNavSticky && scroll.isNavExists ? 50 : 0,
+				zIndex: !scroll.isNavSticky && scroll.isNavExists ? 2 : 999
 			};
 			const customStylesCss = { ...snackStyle.css, snack: { ...snackCss, ...snackSticky } };
 
