@@ -9,12 +9,12 @@ import to from 'await-to-js';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
+import Footer from '@/containers/Mobile/Shared/footer';
 import { Filter, Sort } from '@/containers/Mobile/Widget';
-
-import { 
-	CatalogView, 
-	GridView, 
-	SmallGridView 
+import {
+	CatalogView,
+	GridView,
+	SmallGridView
 } from '@/containers/Mobile/Discovery/View';
 
 import {
@@ -30,11 +30,11 @@ import { actions as pcpActions } from '@/state/v4/ProductCategory';
 import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 
-import { 
-	renderIf
+import {
+	renderIf,
+	urlBuilder
 } from '@/utils';
-// import stylesCatalog from '../Catalog/catalog.scss';
-import Footer from '@/containers/Mobile/Shared/footer';
+
 import Discovery from '../../Utils';
 
 class Product extends Component {
@@ -44,7 +44,6 @@ class Product extends Component {
 
 		const propsObject = _.chain(props.productCategory);
 		this.state = {
-			mode: 1,
 			showFilter: false,
 			showSort: false,
 			query: {
@@ -57,7 +56,7 @@ class Product extends Component {
 			},
 			isFooterShow: true
 		};
-		this.loadingView = <div style={{ margin: '20px auto 20px auto' }}><Spinner /></div>;
+		this.loadingView = <Spinner />;
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -92,17 +91,14 @@ class Product extends Component {
 
 		const parsedUrl = queryString.parse(location.search);
 
-		const url = queryString.stringify({
-			sort: query.sort,
-			per_page: query.per_page,
+		urlBuilder.replace(history, {
+			query: query.q,
 			page: query.page,
+			per_page: query.per_page,
+			sort: query.sort,
 			...parsedUrl,
 			...params
-		}, {
-			encode: false
 		});
-		
-		history.replace(`?${url}`);
 
 		const pcpParam = {
 			...query,
@@ -114,11 +110,9 @@ class Product extends Component {
 			console.log(err);
 			return err;
 		}
-		if (!_.isEmpty(response.pcpData.products)) {
-			const productIdList = _.map(response.products, 'product_id') || null;
-			dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-			dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
-		}
+		const productIdList = _.map(response.pcpData.products, 'product_id') || [];
+		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 		return response;
 	}
 
@@ -159,7 +153,7 @@ class Product extends Component {
 	}
 
 	tabBlock() {
-		const { productCategory, viewMode } = this.props;
+		const { isFiltered, productCategory, viewMode } = this.props;
 		const { showSort } = this.state;
 		const productChain = _.chain(productCategory);
 		let tabsView = null;
@@ -172,7 +166,6 @@ class Product extends Component {
 					)}
 					<Tabs
 						type='segment'
-						className='margin--medium-t'
 						variants={[
 							{
 								id: 'sort',
@@ -183,7 +176,7 @@ class Product extends Component {
 								id: 'filter',
 								title: 'Filter',
 								disabled: typeof productCategory.pcpData === 'undefined',
-								checked: true
+								checked: isFiltered
 							},
 							{
 								id: 'view',
@@ -292,10 +285,13 @@ class Product extends Component {
 
 const mapStateToProps = (state) => {
 	const { comments, lovelist, productCategory } = state;
-	productCategory.pcpData.products = Discovery.mapProducts(productCategory.pcpData.products, comments, lovelist);
+	const { products, facets } = _.chain(productCategory).get('pcpData').value() || { products: [], facets: [] };
+	productCategory.pcpData.products = Discovery.mapProducts(products, comments, lovelist);
+	const isFiltered = Filter.utils.isFiltered(facets);
 
 	return {
 		...state,
+		isFiltered,
 		productCategory,
 		query: state.productCategory.query,
 		isLoading: state.productCategory.isLoading,
@@ -311,13 +307,13 @@ const doAfterAnonymous = async (props) => {
 	const pcpParam = {
 		category_id: parseInt(categoryId, 10),
 		page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
-		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 36,
+		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 30,
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
-	
+
 	const response = await dispatch(pcpActions.pcpAction({ token: cookies.get('user.token'), query: pcpParam }));
-	
+
 	const productIdList = _.map(response.pcpData.products, 'product_id') || [];
 	if (productIdList.length > 0) {
 		await dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));

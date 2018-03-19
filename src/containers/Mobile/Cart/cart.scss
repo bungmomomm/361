@@ -6,15 +6,25 @@
 	background: #fff;
 }
 
+.totalPayment{
+	background: #fff;
+	height: 60px;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	border-top: 1px solid #DBDBDB;
+	padding: 0px 15px;
+}
+
 .paymentLink{
 	order: 5;
 	> div{
-		height: 50px;
+		height: 120px;
 		> div{
 			z-index: 10;
 			position: fixed;
 			background: #000;
-			height: 50px;
+			height: 110px;
 			bottom: 0px;
 			width: 100%;
 			a{

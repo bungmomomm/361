@@ -88,7 +88,7 @@ class Brands extends Component {
 					<Svg src='ico_arrow-back-left.svg' />
 				</Button>
 			),
-			center: _.capitalize(title),
+			center: _.capitalize(title) || 'Default',
 			right: null
 		};
 

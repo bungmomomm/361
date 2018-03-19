@@ -28,23 +28,22 @@ const initialState = {
 	promoData: []
 };
 
-const { initLoading, initViewMode, initSearch, initNextSearch, initBulkieComment, initPromo } = createActions(
-	'INIT_LOADING',
-	'INIT_VIEW_MODE',
+const { searchLoading, searchViewMode, initSearch, initNextSearch, searchPromo } = createActions(
+	'SEARCH_LOADING',
+	'SEARCH_VIEW_MODE',
 	'INIT_SEARCH',
 	'INIT_NEXT_SEARCH',
-	'INIT_BULKIE_COMMENT',
-	'INIT_PROMO'
+	'SEARCH_PROMO'
 );
 
 const reducer = handleActions({
-	[initLoading](state, { payload: { isLoading } }) {
+	[searchLoading](state, { payload: { isLoading } }) {
 		return {
 			...state,
 			isLoading
 		};
 	},
-	[initViewMode](state, { payload: { isLoading, viewMode } }) {
+	[searchViewMode](state, { payload: { isLoading, viewMode } }) {
 		return {
 			...state,
 			isLoading: false,
@@ -75,16 +74,10 @@ const reducer = handleActions({
 			query
 		};
 	},
-	[initBulkieComment](state, { payload: { isLoading, commentData } }) {
+	[searchPromo](state, { payload: { isLoading, searchStatus, promoData } }) {
 		return {
 			...state,
 			isLoading: false,
-			commentData
-		};
-	},
-	[initPromo](state, { payload: { isLoading, searchStatus, promoData } }) {
-		return {
-			...state,
 			searchStatus,
 			promoData
 		};
@@ -93,10 +86,9 @@ const reducer = handleActions({
 
 export default {
 	reducer, 
-	initLoading,
-	initViewMode,
+	searchLoading,
+	searchViewMode,
 	initSearch,
 	initNextSearch,
-	initBulkieComment,
-	initPromo
+	searchPromo
 };
