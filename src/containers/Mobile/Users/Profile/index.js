@@ -36,6 +36,11 @@ class UserProfile extends Component {
 			const { history } = this.props;
 			history.push('/login?redirect_uri=profile');
 		}
+
+		this.AVATAR_FIELD = CONST.USER_PROFILE_FIELD.avatar;
+		this.NAME_FIELD = CONST.USER_PROFILE_FIELD.name;
+		this.EMAIL_FIELD = CONST.USER_PROFILE_FIELD.email;
+		this.PHONE_FIELD = CONST.USER_PROFILE_FIELD.phone;
 	}
 
 	onLogout = async () => {
@@ -63,7 +68,7 @@ class UserProfile extends Component {
 		return <Header.Modal {...HeaderPage} />;
 	}
 
-	renderProfile() {
+	renderProfile(source = 'local') {
 		const { userProfile } = this.props;
 		const { isBuyer } = this.state;
 
@@ -83,12 +88,16 @@ class UserProfile extends Component {
 			styles.tempPPContainer
 		);
 
-		const fullName = _.chain(userProfile.name).lowerCase().startCase().value() || '';
-		const avatar = userProfile && userProfile.avatar ? (
-			<Image width={60} height={60} avatar src={userProfile.avatar} alt={fullName} />
-		) : (
-			<div className={ppClassName}>{splitString(userProfile.name || '')}</div>
-		);
+		let avatar;
+		if (source === 'api') {
+			avatar = userProfile && userProfile[this.AVATAR_FIELD] ? (
+				<Image width={60} height={60} avatar src={userProfile[this.AVATAR_FIELD]} alt={_.capitalize(userProfile[this.NAME_FIELD]) || ''} />
+			) : (
+				<div className={ppClassName}>{splitString(userProfile[this.NAME_FIELD].trim() || '')}</div>
+			);
+		} else {
+			avatar = <div className={ppClassName}>{splitString(userProfile[this.NAME_FIELD].trim() || '')}</div>;
+		}
 
 		return (
 			<Link to='/profile-edit' className='bg--white'>
@@ -99,8 +108,8 @@ class UserProfile extends Component {
 						</div>
 					</Level.Left>
 					<Level.Item style={{ justifyContent: 'center', padding: '10px', color: '#191919' }}>
-						<div style={{ fontWeight: 'bold', fontSize: '15px' }}>{userProfile.name || ''}</div>
-						<div style={{ fontSize: '11px', color: '#A4A4A4' }}>Lihat informasi akun</div>
+						<div style={{ fontWeight: 'bold', fontSize: '15px' }}>{userProfile[this.NAME_FIELD] || ''}</div>
+						<div style={{ fontSize: '11px', color: '#A4A4A4' }}>{userProfile[this.EMAIL_FIELD] || userProfile[this.PHONE_FIELD]}</div>
 					</Level.Item>
 					<Level.Right style={{ justifyContent: 'center' }}>
 						<Svg src='ico_chevron-right.svg' />
@@ -139,6 +148,8 @@ class UserProfile extends Component {
 	}
 
 	render() {
+		const { shared } = this.props;
+
 		return this.isLogin ? (
 			<div>
 				<div className={styles.profileBackground} />
@@ -201,7 +212,7 @@ class UserProfile extends Component {
 							</Level.Left>
 							<Level.Item>
 								<List>
-									<List.Content style={{ minHeight: '50px' }}>Return & Refund</List.Content>
+									<List.Content style={{ minHeight: '50px', borderBottom: 'none' }}>Return & Refund</List.Content>
 								</List>
 							</Level.Item>
 						</Level>
@@ -214,7 +225,7 @@ class UserProfile extends Component {
 							</Level.Left>
 							<Level.Item>
 								<List>
-									<List.Content style={{ minHeight: '50px' }}>Pusat Bantuan</List.Content>
+									<List.Content style={{ minHeight: '50px', borderBottom: 'none' }}>Pusat Bantuan</List.Content>
 								</List>
 							</Level.Item>
 						</Level>
@@ -231,7 +242,7 @@ class UserProfile extends Component {
 				</Page>
 				{this.renderHeader()}
 				{this.renderLogoutModal()}
-				<Navigation active='Profile' />
+				<Navigation active='Profile' scroll={this.props.scroll} totalCartItems={shared.totalCart} />
 			</div>
 		) : this.loadingView;
 	}

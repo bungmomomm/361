@@ -291,13 +291,16 @@ class UserProfileEdit extends Component {
 		const { validName, validBirthday, submittingForm } = this.state;
 		const styleHeader = {
 			parent: {
-				height: '55px'
+				height: '55px',
+				marginBottom: '20px'
 			},
 			left: {
 				width: '80px'
 			},
 			center: {
-				alignItems: 'center'
+				alignItems: 'center',
+				fontFamily: 'Lato-Regular',
+				fontSize: '15px'
 			},
 			right: {
 				width: '80px'
@@ -309,7 +312,7 @@ class UserProfileEdit extends Component {
 		);
 		const centerHeader = 'Ubah Profil';
 		const rightHeader = (
-			<Button onClick={() => this.saveFormData()} disabled={submittingForm || !validName || !validBirthday}>SIMPAN</Button>
+			<Button onClick={() => this.saveFormData()} disabled={submittingForm || !validName || !validBirthday} className={styles.saveButton}>SIMPAN</Button>
 		);
 
 		return (
@@ -345,11 +348,10 @@ class UserProfileEdit extends Component {
 		return null;
 	}
 
-	renderAvatar() {
-		const { userProfile } = this.props;
-		const { isBuyer } = this.state;
+	renderAvatar(source = 'local') {
+		const { formData, isBuyer } = this.state;
 
-		if (_.isEmpty(userProfile)) {
+		if (_.isEmpty(formData)) {
 			return (
 				<form style={{ padding: '15px' }}>
 					{this.loadingView}
@@ -367,11 +369,16 @@ class UserProfileEdit extends Component {
 			styles.big
 		);
 
-		const avatar = userProfile && userProfile[this.AVATAR_FIELD] ? (
-			<Image width={80} height={80} avatar src={userProfile[this.AVATAR_FIELD]} alt={_.capitalize(userProfile[this.NAME_FIELD]) || ''} />
-		) : (
-			<div className={ppClassName}>{splitString(userProfile[this.NAME_FIELD] || '')}</div>
-		);
+		let avatar;
+		if (source === 'api') {
+			avatar = formData && formData[this.AVATAR_FIELD] ? (
+				<Image width={80} height={80} avatar src={formData[this.AVATAR_FIELD]} alt={_.capitalize(formData[this.NAME_FIELD]) || ''} />
+			) : (
+				<div className={ppClassName}>{splitString(formData[this.NAME_FIELD].trim() || '')}</div>
+			);
+		} else {
+			avatar = <div className={ppClassName}>{splitString(formData[this.NAME_FIELD].trim() || '')}</div>;
+		}
 
 		return (
 			<div style={{ alignItems: 'center' }}>
