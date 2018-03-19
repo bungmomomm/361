@@ -74,7 +74,7 @@ class Products extends Component {
 				showConfirmDelete: false,
 				showModalSelectSize: false,
 				showScrollInfomation: false,
-                showFullProductDescription: false
+				showFullProductDescription: false
 			},
 			cardProduct: {},
 			carousel: {
@@ -517,20 +517,20 @@ class Products extends Component {
 			const { seller, comments, reviews } = socialSummary;
 			const { cardProduct, status, carousel, selectedVariant, showFullProductDescription } = this.state;
 			const { id } = detail;
-            
-            const buttonProductDescriptionAttribute = {
-                onClick: this.handleShowMoreProductDescription
-            };
-            
-            let fullProductDescriptionButtonText = 'More';
-            let classNameProductDescription = classNames('padding--medium-h', styles.textOnlyShowTwoLines);
-            
-            if (showFullProductDescription === true) {
-                classNameProductDescription = classNames('padding--medium-h');
-                buttonProductDescriptionAttribute.onClick = this.handleShowLessProductDescription;
-                fullProductDescriptionButtonText = 'Hide';
-            }
-            
+			
+			const buttonProductDescriptionAttribute = {
+				onClick: this.handleShowMoreProductDescription
+			};
+			
+			let fullProductDescriptionButtonText = 'More';
+			let classNameProductDescription = classNames('padding--medium-h', styles.textOnlyShowTwoLines);
+			
+			if (showFullProductDescription === true) {
+				classNameProductDescription = classNames('padding--medium-h');
+				buttonProductDescriptionAttribute.onClick = this.handleShowLessProductDescription;
+				fullProductDescriptionButtonText = 'Hide';
+			}
+			
 			if (status.isZoomed && _.has(detail, 'images')) {
 				return (
 					<div>
@@ -620,12 +620,12 @@ class Products extends Component {
 							)}
 							<div className='font-medium margin--medium-v padding--medium-h'><strong>Details</strong></div>
 							{!_.isEmpty(detail.description)
-                            &&
-                                <div>
-                                    <div style={{ transition: 'all 1.5s ease' }} className={classNameProductDescription} dangerouslySetInnerHTML={{ __html: stringHelper.removeHtmlTag(detail.description) }} />
-                                    <span className='padding--medium-h font-color--grey' {...buttonProductDescriptionAttribute}>{ fullProductDescriptionButtonText }</span>
-                                </div>
-                            }
+							&&
+								<div>
+									<div className={classNameProductDescription} dangerouslySetInnerHTML={{ __html: stringHelper.removeHtmlTag(detail.description) }} />
+									<span className='padding--medium-h font-color--grey' {...buttonProductDescriptionAttribute}>{ fullProductDescriptionButtonText }</span>
+								</div>
+							}
 							{!_.isEmpty(detail.spec) && (
 								<div className='margin--medium-v --disable-flex padding--medium-h'>
 									{(detail.spec.map((item, idx) => {
