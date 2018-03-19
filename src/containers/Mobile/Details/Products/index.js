@@ -10,7 +10,6 @@ import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as shopBagActions } from '@/state/v4/ShopBag';
 import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Rating, Spinner, Badge } from '@/components/mobile';
 import Promos from '@/containers/Mobile/Details/Products/Promos';
-import ProductStore from '@/containers/Mobile/Details/Products/Store';
 import Share from '@/components/mobile/Share';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
@@ -83,6 +82,11 @@ class Products extends Component {
 				<Spinner size='large' />
 			</div>
 		);
+		this.headerZoom = {
+			left: (<Button onClick={this.closeZoomImage} ><Svg src={'ico_close-large.svg'} /></Button>),
+			center: '',
+			right: ''
+		};
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -200,18 +204,22 @@ class Products extends Component {
 	}
 
 	handleScroll(e) {
-		if (!this.carouselEL) return;
-		const { status } = this.state;
-		const { top } = this.props.scroll;
-		const carouselHeight = this.carouselEL.getBoundingClientRect().height;
-		if (top > carouselHeight && !status.showScrollInfomation) {
-			status.showScrollInfomation = true;
-			this.setState({ status });
-		}
+		try {
+			if (!this.carouselEL) return;
+			const { status } = this.state;
+			const { top } = this.props.scroll;
+			const carouselHeight = this.carouselEL.getBoundingClientRect().height;
+			if (top > carouselHeight && !status.showScrollInfomation) {
+				status.showScrollInfomation = true;
+				this.setState({ status });
+			}
 
-		if ((top === 0 || top < carouselHeight) && status.showScrollInfomation) {
-			status.showScrollInfomation = false;
-			this.setState({ status });
+			if ((top === 0 || top < carouselHeight) && status.showScrollInfomation) {
+				status.showScrollInfomation = false;
+				this.setState({ status });
+			}
+		} catch (error) {
+			console.log('handle scroll error: ', error);
 		}
 	}
 
@@ -290,13 +298,6 @@ class Products extends Component {
 			throw new Error('Invalid variants data');
 		}
 
-		// Go to shopping back
-		// if (status.productAdded) {
-		// 	const { history } = this.props;
-		// 	history.push('/cart');
-		// 	return;
-		// }
-
 		if (status.hasVariantSize && _.isEmpty(selectedVariant)) {
 			status.showModalSelectSize = true;
 			status.pendingAddProduct = true;
@@ -322,6 +323,7 @@ class Products extends Component {
 				selectedVariant,
 				cardProduct
 			});
+
 			// Add product to cart cardProduct after product variant size selected
 			if (status.pendingAddProduct) this.addToShoppingBag(selectedVariant.id);
 		}
@@ -397,38 +399,6 @@ class Products extends Component {
 			this.setState({ status, cardProduct });
 			throw err;
 		});
-	}
-
-	renderZoomImage() {
-		const { detail } = this.props.product;
-		const { carousel } = this.state;
-		const header = {
-			left: (<Button onClick={this.closeZoomImage} ><Svg src={'ico_close-large.svg'} /></Button>),
-			center: '',
-			right: ''
-		};
-
-		return (
-			<div>
-				<Header.Modal style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }} {...header} />
-				<Carousel
-					slideIndex={carousel.slideIndex}
-					afterSlide={newSlideIndex => this.setCarouselSlideIndex(newSlideIndex)}
-					wrapAround={this.slideWrapAround}
-				>
-					{
-						detail.images.map((image, idx) => {
-							console.log('rendering zoom image item....');
-							return (
-								<div tabIndex='0' role='button' onClick={this.closeZoomImage} key={idx}>
-									<Image lazyload src={image.original} alt='product' />
-								</div>
-							);
-						})
-					}
-				</Carousel>
-			</div>
-		);
 	}
 
 	renderStoreProducts() {
@@ -549,11 +519,35 @@ class Products extends Component {
 		try {
 
 			const { match, product } = this.props;
-			const { detail, socialSummary, promo, store } = product;
+			const { detail, socialSummary, promo } = product;
+			// const { detail, socialSummary, promo, storeInfo } = product;
 			const { seller, comments, reviews } = socialSummary;
 			const { cardProduct, status, carousel, selectedVariant } = this.state;
 
-			if (status.isZoomed) return this.renderZoomImage();
+			if (status.isZoomed && _.has(detail, 'images')) {
+				return (
+					<div>
+						<Header.Modal style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }} {...this.headerZoom} />
+						<Carousel
+							slideIndex={carousel.slideIndex}
+							afterSlide={newSlideIndex => this.setCarouselSlideIndex(newSlideIndex)}
+							wrapAround={this.slideWrapAround}
+						>
+							{
+								detail.images.map((image, idx) => {
+									console.log('rendering zoom image item....');
+									return (
+										<div tabIndex='0' role='button' onClick={this.closeZoomImage} key={idx}>
+											<Image lazyload src={image.original} alt='product' />
+										</div>
+									);
+								})
+							}
+						</Carousel>
+					</div>
+				);
+			}
+
 			if (_.isEmpty(detail) || _.isEmpty(cardProduct) || !_.has(cardProduct, 'images')) return this.loadingContent;
 
 			return (
@@ -720,17 +714,15 @@ class Products extends Component {
 										)
 									}
 
+									{(!_.isEmpty(product.store.products)) && (
+										<div className='margin--medium-v margin--none-t'>
+											<Link to={urlBuilder.setId(detail.seller.seller_id).setName(detail.seller.seller).buildStore()} >
+												{this.renderStoreProducts()}
+											</Link>
+										</div>
+									)}
 									{/* ----------------------------	END OF SELLER PROFILE ---------------------------- */}
-									{!_.isEmpty(store.product) && 
-										<ProductStore
-											store={store}
-											linkToStore={urlBuilder.setId(detail.seller.seller_id).setName(detail.seller.seller).buildStore()}
-											loading={status.loading}
-											storeStyles={styles}
-										/>
-									}
 								</div>
-								{/* ----------------------------	END OF SELLER PROFILE ---------------------------- */}
 
 								{/* ----------------------------	PROMOS PRODUCTs ---------------------------- */}
 								<Promos promo={promo} loading={status.loading} />

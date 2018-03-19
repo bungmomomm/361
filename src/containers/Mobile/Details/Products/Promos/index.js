@@ -18,7 +18,9 @@ class Promos extends Component {
 
 	componentWillReceiveProps(nextProps) {}
 	shouldComponentUpdate(nextProps, nextState) {
-		return (this.props.promo !== nextProps.promo);
+		return (this.props.promo.recommended_items !== nextProps.promo.recommended_items || 
+			this.props.promo.recommended_items !== nextProps.promo.similar || 
+			this.props.promo.recommended_items !== nextProps.promo.best_seller_items);
 	}
 
 	getBuiltItems = (products) => {
