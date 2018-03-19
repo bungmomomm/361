@@ -82,7 +82,7 @@ class Detail extends Component {
 	}
 	componentDidMount() {
 		if ('serviceUrl' in this.props.shared) {
-			const { dispatch, match: { params } } = this.props;
+			const { dispatch, match: { params }, cookies } = this.props;
 			const qs = queryString.parse(location.search);
 			const data = {
 				token: this.userToken,
@@ -92,7 +92,7 @@ class Detail extends Component {
 				}
 			};
 			dispatch(brandAction.brandProductAction(data));
-			dispatch(brandAction.brandBannerAction(this.userToken, this.props.match.params.brandId));
+			dispatch(brandAction.brandBannerAction(cookies.get('user.token'), this.props.match.params.brandId));
 		}
 	}
 
