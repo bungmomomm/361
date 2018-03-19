@@ -86,7 +86,7 @@ class OrderConfirmation extends Component {
 		const { bankList } = this.props.users;
 		const radioDataTransferTo = [];
 		
-		if (_.isEmpty(bankList.to_banks) === false) {
+		if (!_.isEmpty(bankList.to_banks)) {
 			_.map(bankList.to_banks, (value) => {
 				
 				const imageAttribute = {
