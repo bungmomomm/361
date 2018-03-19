@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Card, Grid, Carousel, Spinner } from '@/components/mobile';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { urlBuilder } from '@/utils';
 import _ from 'lodash';
+import { Card, Grid, Carousel, Spinner } from '@/components/mobile';
+import { Love } from '@/containers/Mobile/Widget';
 
 class Promos extends Component {
 	constructor(props) {
@@ -38,7 +39,15 @@ class Promos extends Component {
 					discount: item.pricing.formatted.discount,
 					...item.pricing
 				},
-				linkToPdp: urlBuilder.buildPdp(item.product_title, item.product_id)
+				linkToPdp: urlBuilder.buildPdp(item.product_title, item.product_id),
+				love: (
+					<Love
+						status={item.lovelistStatus}
+						data={item.product_id}
+						total={item.lovelistTotal}
+						onNeedLogin={this.props.loginNow}
+					/>
+				)
 			};
 
 				// set fragment value

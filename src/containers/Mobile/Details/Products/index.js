@@ -13,9 +13,9 @@ import Promos from './Promos';
 import ReviewSummary from './Reviews/summary';
 
 import Share from '@/components/mobile/Share';
-import SellerProfile from '../../Discovery/Seller/components/SellerProfile';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
+import SellerProfile from '../../Discovery/Seller/components/SellerProfile';
 import { Promise } from 'es6-promise';
 
 const doAfterAnonymous = async (props) => {
@@ -42,6 +42,7 @@ class Products extends Component {
 		this.defaultCount = 1;
 		this.slideWrapAround = true;
 		this.linkToPdpDisabled = true;
+		this.updateCard = false;
 
 		this.closeZoomImage = this.closeZoomImage.bind(this);
 		this.goBackPreviousPage = this.goBackPreviousPage.bind(this);
@@ -104,12 +105,14 @@ class Products extends Component {
 		status.loading = product.loading;
 		if ((_.toInteger(this.props.match.params.id) !== _.toInteger(nextProps.match.params.id)) || 
 		(this.props.match.url !== nextProps.match.url)) {
+			this.updateCard = true;
 			doAfterAnonymous(nextProps);
 		}
 
 		// sets card product
-		if (!_.isEmpty(detail) && (this.props.product.detail !== detail) && !_.has(cardProduct, 'images')) {
+		if ((!_.isEmpty(detail) && (this.props.product.detail !== detail)) || this.updateCard) {
 			console.log('updating data....');
+			this.updateCard = false;
 			cardProduct = productActions.getProductCardData(detail);
 			status.hasVariantSize = cardProduct.hasVariantSize;
 
@@ -663,7 +666,11 @@ class Products extends Component {
 								</div>
 
 								{/* ----------------------------	PROMOS PRODUCTs ---------------------------- */}
-								<Promos promo={promo} loading={status.loading} />
+								<Promos 
+									promo={promo} 
+									loading={status.loading}
+									loginNow={() => this.loginNow()} 
+								/>
 
 							</div>
 						</div>
