@@ -13,7 +13,7 @@ import {
 	rrsShowSnack,
 	rrsClearSnackQueue,
 	connectionWatch,
-    userPreviousPage
+	userPreviousPage
 } from './reducer';
 
 const closeFB = () => (dispatch, getState) => {
@@ -120,11 +120,11 @@ const showSnack = (id, data = { label: '', timeout: 7000, button: {} }, style = 
 };
 
 const logSinglePage = (pageName) => (dispatch) => {
-    dispatch(userPreviousPage(pageName));
+	dispatch(userPreviousPage(pageName));
 };
 
 const removeLogSinglePage = (pageName = '') => (dispatch) => {
-    dispatch(userPreviousPage(pageName));
+	dispatch(userPreviousPage(pageName));
 };
 
 export const dismissSnack = (id) => (dispatch) => {
@@ -148,6 +148,6 @@ export default {
 	dismissSnack,
 	clearSnackQueue,
 	watchConnection,
-    logSinglePage,
-    removeLogSinglePage
+	logSinglePage,
+	removeLogSinglePage
 };

@@ -23,7 +23,7 @@ const initialState = {
 	errors: [],
 	snackbar: [],
 	watchConnection: false,
-    userPreviousPage: ''
+	userPreviousPage: ''
 };
 
 const {
@@ -36,7 +36,7 @@ const {
 	rrsDismissSnack,
 	rrsClearSnackQueue,
 	connectionWatch,
-    userPreviousPage
+	userPreviousPage
 
 } = createActions(
 	'TOTAL_LOVE_LIST',
@@ -48,7 +48,7 @@ const {
 	'RRS_DISMISS_SNACK',
 	'RRS_CLEAR_SNACK_QUEUE',
 	'CONNECTION_WATCH',
-    'USER_PREVIOUS_PAGE'
+	'USER_PREVIOUS_PAGE'
 );
 
 let snackQueue;
@@ -133,5 +133,5 @@ export default {
 	rrsDismissSnack,
 	rrsClearSnackQueue,
 	connectionWatch,
-    userPreviousPage
+	userPreviousPage
 };

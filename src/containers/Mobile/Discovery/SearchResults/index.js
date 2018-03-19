@@ -203,8 +203,7 @@ class SearchResults extends Component {
 	}
 
 	renderPage() {
-		const { isLoading, searchResults } = this.props;
-		const { searchResults, shared } = this.props;
+		const { isLoading, searchResults, shared } = this.props;
 		const { showFilter } = this.state;
 
 		if (showFilter) {
