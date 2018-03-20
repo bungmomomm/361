@@ -63,10 +63,13 @@ const reducer = handleActions({
 			loadingLoadMore
 		};
 	},
-	[addComment](state, { payload: { data } }) {
+	[addComment](state, { payload: { newComment } }) {
 		return {
 			...state,
-			data,
+			data: {
+				...state.data,
+				comments: newComment
+			},
 			loading: false
 		};
 

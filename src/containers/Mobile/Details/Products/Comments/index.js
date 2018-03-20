@@ -223,7 +223,7 @@ class Comments extends Component {
 				<Page style={{ paddingTop: 0 }} color='white'>
 					<div className='margin--medium-v'>
 						{isLoading ? this.renderLoading : this.renderDetail()}
-						{isLoading || isLoadingLoadMore ? this.renderLoading : this.renderComments()}
+						{isLoadingLoadMore ? this.renderLoading : this.renderComments()}
 					</div>
 				</Page>
 				{this.renderHeader()}

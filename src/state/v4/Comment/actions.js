@@ -37,7 +37,7 @@ const newCommentData = (commentState, newComment) => {
 		commentState.push(newC);
 		commentData = commentState;
 	}
-
+	
 	return commentData;
 };
 
@@ -64,12 +64,13 @@ const commentAddAction = (token, productId, comment) => async (dispatch, getStat
 		dispatch(commentLoading({ loading: false }));
 		return Promise.reject(err);
 	}
-	
-	const firstNewComment = _.head(response.data.data);
-	const newComment = newCommentData(comments.data, firstNewComment);
-	
-	dispatch(addComment({ data: newComment }));
-	return Promise.resolve(response);
+
+	const data = response.data.data;
+	const firstNewComment = _.head(data);
+	const newComment = newCommentData(comments.data.comments, firstNewComment);
+	dispatch(addComment({ newComment }));
+
+	return Promise.resolve(data);
 };
 
 const productCommentAction = (token, productId, page = 1) => async (dispatch, getState) => {
