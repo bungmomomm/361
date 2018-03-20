@@ -79,10 +79,6 @@ export default {
 			component: loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'), defaultOptions)
 		},
 		{
-			path: '/lovelist',
-			component: loadable(() => import('@/containers/Mobile/Discovery/Lovelist'), defaultOptions),
-		},
-		{
 			path: '/product/comments/:id',
 			component: loadable(() => import('@/containers/Mobile/Details/Products/Comments'), defaultOptions),
 			exact: true
@@ -119,11 +115,6 @@ export default {
 		{
 			path: '/registered',
 			component: loadable(() => import('@/containers/Mobile/Users/Register/registered'), defaultOptions),
-			exact: true
-		},
-		{
-			path: '/phoneValidation',
-			component: loadable(() => import('@/containers/Mobile/Users/Register/registeredPhoneValidation'), defaultOptions),
 			exact: true
 		},
 		{
@@ -172,10 +163,6 @@ export default {
 			path: '/cart/empty',
 			exact: true,
 			component: loadable(() => import('@/containers/Mobile/Cart/empty'), defaultOptions)
-		},
-		{
-			path: '/lovelist',
-			component: loadable(() => import('@/containers/Mobile/Discovery/Lovelist'), defaultOptions),
 		},
 		{
 			path: '/store/:store_id/:store_name',

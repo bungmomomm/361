@@ -39,6 +39,7 @@ class Otp extends Component {
 		this.OTP_FIELD = CONST.USER_PROFILE_FIELD.otp;
 		this.loadingView = <Spinner />;
 		this.recaptchaInstance = null;
+		this.resendIcon = <Svg src='ico_resend_otp.svg' />;
 	}
 
 	componentWillMount = async () => {
@@ -49,16 +50,12 @@ class Otp extends Component {
 		if (phoneEmail !== undefined && phoneEmail !== '') {
 			const [err, response] = await to(dispatch(userActions.userOtp(this.userToken, phoneEmail)));
 			if (err) {
-				console.log('err mount', err);
-
 				this.setState({
 					showNotif: true,
 					statusNotif: 'failed',
 					isLoading: false
 				});
 			} else if (response) {
-				console.log('response mount', response);
-
 				this.setState({ isLoading: false });
 
 				const countdown = _.chain(response).get('countdown').value() || 60;
@@ -86,8 +83,6 @@ class Otp extends Component {
 		if (phoneEmail !== undefined && phoneEmail !== '') {
 			const [err, response] = await to(dispatch(userActions.userOtp(this.userToken, phoneEmail)));
 			if (err) {
-				console.log('err resend', err);
-
 				this.setState({
 					showNotif: true,
 					statusNotif: 'failed',
@@ -95,8 +90,6 @@ class Otp extends Component {
 					isLoading: false
 				});
 			} else if (response) {
-				console.log('response resend', response);
-
 				this.setState({
 					validForm: true,
 					showNotif: true,
@@ -171,16 +164,12 @@ class Otp extends Component {
 		this.setState({ disabledInput: true });
 		const [err, response] = await to(dispatch(userActions.userOtpValidate(this.userToken, otpData)));
 		if (err) {
-			console.log('err validate', err);
-
 			this.setState({
 				validForm: false,
 				disabledInput: false,
 				inputHint: err.error_message || 'Invalid OTP'
 			});
 		} else if (response) {
-			console.log('response validate', response);
-
 			onSuccess();
 		}
 
@@ -276,7 +265,7 @@ class Otp extends Component {
 						this.setState({ inputHint: '' });
 					}}
 				>
-					{resendButtonMessage}
+					{enableResend ? this.resendIcon : ''}{resendButtonMessage}
 				</Button>
 			</div>
 		);

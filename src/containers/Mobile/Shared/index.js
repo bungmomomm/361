@@ -36,7 +36,6 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 			this.userCookies = this.props.cookies.get('user.token');
 			this.userRFCookies = this.props.cookies.get('user.rf.token');
-			this.isLogin = this.props.cookies.get('isLogin') === 'true' && true;
 			this.uniqueId = this.props.cookies.get('uniqueid');
 			this.handleScroll = this.handleScroll.bind(this);
 			this.docBody = null;
@@ -97,7 +96,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		async exeCall(token = null) {
-			const { shared, dispatch, cookies } = this.props;
+			const { shared, dispatch } = this.props;
 			const { login, provider } = this.state;
 			let tokenBearer = token === null ? this.userCookies : token.token;
 			const rfT = token === null ? this.userRFCookies : token.refresh_token;
@@ -119,10 +118,6 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			}
 			if (login && provider) {
 				await to(dispatch(new users.userSocialLogin(tokenBearer, provider, login)));
-			}
-
-			if (cookies.get('isLogin') === 'true') {
-				dispatch(new users.userGetProfile(tokenBearer));
 			}
 
 			if (typeof doAfterAnonymousCall !== 'undefined') {

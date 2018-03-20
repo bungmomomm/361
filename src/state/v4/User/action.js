@@ -229,7 +229,6 @@ const userRegister = (token, bodyData) => async (dispatch, getState) => {
 const userGetProfile = (token) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
-	// const baseUrl = 'https://private-2c527d-mmv4microservices.apiary-mock.com';
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
@@ -367,7 +366,6 @@ const refreshToken = (tokenRefresh, token) => async (dispatch, getState) => {
 const userEditProfile = (token, data = []) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
-	// const baseUrl = 'https://private-2c527d-mmv4microservices.apiary-mock.com';
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
@@ -394,7 +392,6 @@ const userEditProfile = (token, data = []) => async (dispatch, getState) => {
 const userValidateOvo = (token, data = []) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
-	// const baseUrl = 'https://private-2c527d-mmv4microservices.apiary-mock.com';
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
@@ -418,6 +415,40 @@ const userValidateOvo = (token, data = []) => async (dispatch, getState) => {
 	return Promise.resolve(response.data.data);
 };
 
+const userLogout = (token) => async (dispatch, getState) => {
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	const path = `${baseUrl}/auth/logout`;
+
+	dispatch(actions.userLogout());
+	const [err, response] = await to(request({
+		token,
+		method: 'POST',
+		path,
+		fullpath: true,
+		body: {
+			action: 'logout'
+		}
+	}));
+
+	if (err) {
+		dispatch(actions.userLogoutFail(err.response.data));
+		return Promise.reject(err.response.data);
+	}
+
+	dispatch(actions.userLogoutSuccess(response.data.data));
+	return Promise.resolve({
+		token: {
+			token: response.data.data.token,
+			expires_in: response.data.data.expires_in,
+			refresh_token: response.data.data.refresh_token
+		}
+	});
+};
+
 export default {
 	userSocialLoginWithRedirect,
 	userSocialLogin,
@@ -431,6 +462,7 @@ export default {
 	userForgotPassword,
 	userNewPassword,
 	userOtpValidate,
+	userLogout,
 	getMyOrderDetail,
 	updateMyOrdersCurrent,
 	userOtp,

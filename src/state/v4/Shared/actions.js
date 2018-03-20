@@ -43,6 +43,7 @@ const totalCartAction = (token) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
+		console.log(err.response);
 		return Promise.reject(err);
 	}
 
