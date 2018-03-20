@@ -65,6 +65,12 @@ class MyOrderDetail extends Component {
 			dispatch(userAction.getMyOrderDetail(this.userToken, this.soNumber));
 		}
 	}
+
+	componentWillUnmount() {
+		const { dispatch } = this.props;
+		dispatch(userAction.cleanMyOrderDetail(this.userToken, this.soNumber));
+	}
+
 	onAddReview(soStoreNumber, seller, item) {
 		console.log('MyOrder Detail item', { soStoreNumber, seller, item });
 		const { dispatch } = this.props;

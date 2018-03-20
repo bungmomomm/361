@@ -26,6 +26,10 @@ const cleanMyOrderData = () => async (dispatch) => {
 	dispatch(scrollerActions.onScroll({ loading: false, nextPage: false, nextData: {} }));
 };
 
+const cleanMyOrderDetail = () => async (dispatch) => {
+	dispatch(actions.userGetMyOrderDetail({ myOrdersDetail: null }));
+};
+
 const getMyOrderMore = ({ token, query = {} }) => async (dispatch, getState) => {
 	dispatch(scrollerActions.onScroll({ loading: true }));
 
@@ -211,5 +215,6 @@ export {
 	keepReviewInfo,
 	submitReview,
 	PostOrderConfirmation,
-	getListBankConfirmation
+	getListBankConfirmation,
+	cleanMyOrderDetail
 };
