@@ -18,6 +18,46 @@ import styles from './products.scss';
 import SellerProfile from '../../Discovery/Seller/components/SellerProfile';
 import { Promise } from 'es6-promise';
 import classNames from 'classnames';
+import {
+	TrackingRequest,
+	pdpViewBuilder,
+	addToCartBuilder,
+	sendGtm,
+} from '@/utils/tracking';
+
+const trackAddToCart = (data, props, variant) => {
+	const products = {
+		name: data.detail.title,
+		id: data.detail.id,
+		price: data.detail.price_range.effective_price,
+		brand: data.detail.brand.name,
+		category: data.detail.product_category_names.join('/'),
+		variant: variant.options[0].value,
+		variant_id: variant.id,
+		quantity: 1
+	};
+	const request = new TrackingRequest();
+	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
+	request.setFusionSessionId('').setIpAddress('').setProducts([products]);
+	const requestPayload = request.getPayload(addToCartBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
+
+const trackPdpView = (data, props) => {
+	const products = {
+		name: data.detail.title,
+		id: data.detail.id,
+		price: data.detail.price_range.effective_price,
+		brand: data.detail.brand.name,
+		category: data.detail.product_category_names.join('/'),
+	};
+	const request = new TrackingRequest();
+	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
+	request.setFusionSessionId('').setIpAddress('').setProducts([products]);
+	request.setStoreName(data.detail.seller.seller);
+	const requestPayload = request.getPayload(pdpViewBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
 
 const doAfterAnonymous = async (props) => {
 	const { dispatch, match, cookies } = props;
@@ -25,11 +65,12 @@ const doAfterAnonymous = async (props) => {
 	const productId = _.toInteger(match.params.id);
 	const token = cookies.get('user.token');
 
-	dispatch(new productActions.productDetailAction(token, productId));
+	const productDetail = await dispatch(new productActions.productDetailAction(token, productId));
+	trackPdpView(productDetail, props);
+
 	dispatch(new productActions.productPromoAction(token, productId));
 	dispatch(new productActions.productSocialSummaryAction(token, productId));
 	dispatch(new lovelistActions.bulkieCountByProduct(token, productId));
-
 };
 
 class Products extends Component {
@@ -246,17 +287,17 @@ class Products extends Component {
 		this.setState({ status });
 	}
 
-	addToShoppingBag(variantId) {
+	addToShoppingBag(variant) {
 		const { status, notif } = this.state;
-		const { dispatch } = this.props;
+		const { dispatch, product } = this.props;
 
-		
+
 		status.showModalSelectSize = false;
 		notif.show = false;
 		this.setState({ status, notif });
 
 		const handler = new Promise((resolve, reject) => {
-			resolve(dispatch(shopBagActions.updateAction(this.userCookies, variantId, this.defaultCount, 'add')));
+			resolve(dispatch(shopBagActions.updateAction(this.userCookies, variant.id, this.defaultCount, 'add')));
 		});
 
 		handler.then((res) => {
@@ -268,6 +309,10 @@ class Products extends Component {
 			notif.show = true;
 			notif.content = 'Produk Berhasil ditambahkan';
 			this.setState({ status, notif });
+			status.pdpDataHasLoaded = false;
+			dispatch(new productActions.productDetailAction(this.userCookies, product.detail.id));
+			trackAddToCart(product, this.props, variant);
+
 			// get product data
 			// dispatch(new productActions.productDetailAction(this.userCookies, product.detail.id));
 		}).catch((err) => {
@@ -292,7 +337,7 @@ class Products extends Component {
 			status.pendingAddProduct = true;
 			this.setState({ status });
 		} else {
-			this.addToShoppingBag(selectedVariant.id);
+			this.addToShoppingBag(selectedVariant);
 		}
 	}
 
@@ -317,19 +362,19 @@ class Products extends Component {
 			// if (status.pendingAddProduct) this.addToShoppingBag(selectedVariant.id);
 		}
 	}
-	
+
 	handleShowLessProductDescription() {
 		this.setState({
 			showFullProductDescription: false
 		});
 	}
-	
+
 	handleShowMoreProductDescription() {
 		this.setState({
 			showFullProductDescription: true
 		});
 	}
-	
+
 	loginLater() {
 		const { status } = this.state;
 		status.forceLogin = false;
@@ -517,20 +562,20 @@ class Products extends Component {
 			const { seller, comments, reviews } = socialSummary;
 			const { cardProduct, status, carousel, selectedVariant, showFullProductDescription } = this.state;
 			const { id } = detail;
-			
+
 			const buttonProductDescriptionAttribute = {
 				onClick: this.handleShowMoreProductDescription
 			};
-			
+
 			let fullProductDescriptionButtonText = '[...]';
 			let classNameProductDescription = classNames('padding--medium-h', styles.textOnlyShowTwoLines);
-			
+
 			if (showFullProductDescription === true) {
 				classNameProductDescription = classNames('padding--medium-h');
 				buttonProductDescriptionAttribute.onClick = this.handleShowLessProductDescription;
 				fullProductDescriptionButtonText = 'Hide';
 			}
-			
+
 			if (status.isZoomed && _.has(detail, 'images')) {
 				return (
 					<div>

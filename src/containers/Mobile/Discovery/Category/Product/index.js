@@ -37,6 +37,54 @@ import {
 
 import Discovery from '../../Utils';
 
+import {
+	TrackingRequest,
+	sendGtm,
+	categoryViewBuilder,
+	productClickBuilder
+} from '@/utils/tracking';
+
+const trackCategoryPageView = (products, info, props) => {
+	const productId = _.map(products, 'product_id') || [];
+	const categoryInfo = {
+		id: props.match.params.categoryId,
+		name: info.title,
+		url_path: props.location.pathname
+	};
+	const impressions = _.map(products, (product, key) => {
+		return {
+			name: product.product_title,
+			id: product.product_id,
+			price: product.pricing.original.effective_price,
+			brand: product.brand.name,
+			category: product.product_category_names.join('/'),
+			position: key + 1,
+			list: 'mm'
+		};
+	}) || [];
+	const request = new TrackingRequest();
+	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
+	request.setFusionSessionId('').setIpAddress('').setImpressions(impressions).setCategoryInfo(categoryInfo);
+	request.setListProductId(productId.join('|'));
+	const requestPayload = request.getPayload(categoryViewBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
+
+const trackProductOnClick = (product, position, source = 'mm') => {
+	const productData = {
+		name: product.product_title,
+		id: product.product_id,
+		price: product.pricing.original.effective_price,
+		brand: product.brand.name,
+		category: product.product_category_names.join('/'),
+		position
+	};
+	const request = new TrackingRequest();
+	request.setFusionSessionId('').setProducts([productData]).setSourceName(source);
+	const requestPayload = request.getPayload(productClickBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
+
 class Product extends Component {
 	constructor(props) {
 		super(props);
@@ -64,6 +112,11 @@ class Product extends Component {
 			this.setState({
 				query: nextProps.query
 			});
+		}
+
+		if (nextProps.productCategory.pcpData !== this.props.productCategory.pcpData) {
+			const pcpData = nextProps.productCategory.pcpData;
+			trackCategoryPageView(pcpData.products, pcpData.info, nextProps);
 		}
 	}
 
@@ -110,9 +163,12 @@ class Product extends Component {
 			console.log(err);
 			return err;
 		}
+
 		const productIdList = _.map(response.pcpData.products, 'product_id') || [];
 		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+		trackCategoryPageView(response.pcpData.products, response.pcpData.info, this.props);
+
 		return response;
 	}
 
@@ -202,17 +258,32 @@ class Product extends Component {
 				switch (viewMode.mode) {
 				case 1:
 					listView = (
-						<CatalogView comments={comments} loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={products} />
+						<CatalogView
+							comments={comments}
+							loading={scroller.loading}
+							forceLoginNow={() => this.forceLoginNow()}
+							products={products}
+							productOnClick={trackProductOnClick}
+						/>
 					);
 					break;
 				case 2:
 					listView = (
-						<GridView loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={products} />
+						<GridView
+							loading={scroller.loading}
+							forceLoginNow={() => this.forceLoginNow()}
+							products={products}
+							productOnClick={trackProductOnClick}
+						/>
 					);
 					break;
 				case 3:
 					listView = (
-						<SmallGridView loading={scroller.loading} products={products} />
+						<SmallGridView
+							loading={scroller.loading}
+							products={products}
+							productOnClick={trackProductOnClick}
+						/>
 					);
 					break;
 				default:
