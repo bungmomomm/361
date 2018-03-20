@@ -6,9 +6,6 @@ import _ from 'lodash';
 import { Card, Grid, Carousel, Spinner } from '@/components/mobile';
 import { Love } from '@/containers/Mobile/Widget';
 
-// import { actions } from '@/state/v4/Lovelist';
-// import { Promise } from 'es6-promise';
-
 class Promos extends Component {
 	constructor(props) {
 		super(props);
@@ -22,42 +19,11 @@ class Promos extends Component {
 		);
 	}
 
-	componentWillReceiveProps(nextProps) {
-
-		// console.log('doing promo will receive....');
-		// if ((this.props.promo.recommended_items !== nextProps.promo.recommended_items &&
-		// 	this.props.promo.similar_items !== nextProps.promo.similar_items &&
-		// 	this.props.promo.best_seller_items !== nextProps.promo.best_seller_items) && (!_.isEmpty(nextProps.promo.recommended_items))) {
-		// 	// const { recommended_items } = this.props.promo;
-		// 	const { recommended_items, similar_items, best_seller_items } = nextProps.promo;
-		// 	const ids = recommended_items.products.map((item) => item.product_id);
-		// 	if (!_.isEmpty(similar_items.products)) {
-		// 		similar_items.products.forEach((item) => ids.push(item.product_id));
-		// 	} else if (_.isEmpty(similar_items.products) && !_.isEmpty(best_seller_items.products)) {
-		// 		best_seller_items.products.forEach((item) => ids.push(item.product_id));
-		// 	}
-			
-		// 	if (!_.isEmpty(ids) && this.isLogin) {
-		// 		ids.push(nextProps.productId);
-		// 		const { dispatch } = nextProps;
-		// 		const updateBulkieLovelist = async (productsIds) => {
-		// 			const res = await dispatch(actions.bulkieCountByProduct(this.token, productsIds));
-		// 			if (res.status === 200 && !_.isEmpty(res.data.data)) {
-		// 				recommended_items.products.forEach((item) => {
-		// 					const productFound = actions.getBulkItem(res.data.data, item.product_id);
-		// 					console.log('productFound: ', productFound);
-		// 					if (productFound) item.lovelistStatus = productFound.status;
-		// 				});
-		// 			}
-		// 		};
-		// 		updateBulkieLovelist(ids);
-		// 	}
-		// }
-	}
 	shouldComponentUpdate(nextProps, nextState) {
-		return (this.props.promo.recommended_items !== nextProps.promo.recommended_items && 
-			this.props.promo.similar_items !== nextProps.promo.similar_items && 
-			this.props.promo.best_seller_items !== nextProps.promo.best_seller_items);
+		const { recommended_items, similar_items, best_seller_items } = nextProps.promo;
+		return (this.props.promo.recommended_items.products !== recommended_items.products && 
+			this.props.promo.similar_items.products !== similar_items.products && 
+			this.props.promo.best_seller_items !== best_seller_items.products);
 	}
 
 	getBuiltItems = (products) => {

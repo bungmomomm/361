@@ -19,17 +19,27 @@ import SellerProfile from '../../Discovery/Seller/components/SellerProfile';
 import { Promise } from 'es6-promise';
 import classNames from 'classnames';
 
+import Discovery from '@/containers/Mobile/Discovery/Utils';
+
 const doAfterAnonymous = async (props) => {
 	const { dispatch, match, cookies } = props;
-
 	const productId = _.toInteger(match.params.id);
 	const token = cookies.get('user.token');
 
-	dispatch(new productActions.productDetailAction(token, productId));
-	dispatch(new productActions.productPromoAction(token, productId));
-	dispatch(new productActions.productSocialSummaryAction(token, productId));
-	dispatch(new lovelistActions.bulkieCountByProduct(token, productId));
-
+	await dispatch(productActions.productDetailAction(token, productId));
+	const res = await dispatch(productActions.productPromoAction(token, productId));
+	if (res.status === 200 && res.statusText === 'OK') {
+		const ids = [productId];
+		const { recommended_items, similar_items, best_seller_items } = res.data.data;
+		recommended_items.products.forEach((item) => ids.push(item.product_id));
+		if (!_.isEmpty(similar_items.products)) {
+			similar_items.products.forEach((item) => ids.push(item.product_id));
+		} else if (_.isEmpty(similar_items.products) && !_.isEmpty(best_seller_items.products)) {
+			best_seller_items.products.forEach((item) => ids.push(item.product_id));
+		}
+		await dispatch(lovelistActions.bulkieCountByProduct(token, ids));
+	}
+	await dispatch(productActions.productSocialSummaryAction(token, productId));
 };
 
 class Products extends Component {
@@ -62,7 +72,6 @@ class Products extends Component {
 		this.state = {
 			size: '',
 			status: {
-				bulkieSet: false,
 				btnBeliDisabled: false,
 				forceLogin: false,
 				hasVariantSize: false,
@@ -115,7 +124,6 @@ class Products extends Component {
 
 		// sets card product
 		if ((!_.isEmpty(detail) && (this.props.product.detail !== detail)) || this.updateCard) {
-			console.log('updating data....');
 			this.updateCard = false;
 			cardProduct = productActions.getProductCardData(detail);
 			status.hasVariantSize = cardProduct.hasVariantSize;
@@ -141,7 +149,7 @@ class Products extends Component {
 			}
 
 			if (typeof detail.seller !== 'undefined' && typeof detail.seller.seller_id !== 'undefined') {
-				dispatch(new productActions.productStoreAction(this.userCookies, detail.seller.seller_id));
+				dispatch(productActions.productStoreAction(this.userCookies, detail.seller.seller_id));
 			}
 		}
 
@@ -172,6 +180,18 @@ class Products extends Component {
 				slideIndex: index || 0
 			}
 		});
+	}
+
+	productsMapper = (products = [], bulkies = []) => {
+		if (!_.isEmpty(products) && !_.isEmpty(bulkies)) {
+			products = products.map((product) => {
+				const productFound = lovelistActions.getBulkItem(bulkies, product.product_id);
+				product.lovelistStatus = 0;
+				if (productFound) product.lovelistStatus = productFound.status;
+				return product;
+			});
+		}
+		return products;
 	}
 
 	closeZoomImage(e) {
@@ -261,7 +281,7 @@ class Products extends Component {
 
 		handler.then((res) => {
 			// updates carts badge
-			dispatch(new sharedActions.totalCartAction(this.userCookies));
+			dispatch(sharedActions.totalCartAction(this.userCookies));
 			status.pendingAddProduct = false;
 			status.productAdded = true;
 			status.showModalSelectSize = false;
@@ -269,7 +289,7 @@ class Products extends Component {
 			notif.content = 'Produk Berhasil ditambahkan';
 			this.setState({ status, notif });
 			// get product data
-			// dispatch(new productActions.productDetailAction(this.userCookies, product.detail.id));
+			// dispatch(productActions.productDetailAction(this.userCookies, product.detail.id));
 		}).catch((err) => {
 			status.showModalSelectSize = false;
 			this.setState({ status, notif });
@@ -314,7 +334,7 @@ class Products extends Component {
 			});
 
 			// Add product to cart cardProduct after product variant size selected
-			// if (status.pendingAddProduct) this.addToShoppingBag(selectedVariant.id);
+			if (status.pendingAddProduct) this.addToShoppingBag(selectedVariant.id);
 		}
 	}
 	
@@ -407,13 +427,16 @@ class Products extends Component {
 			this.setState({ status, cardProduct, notif });
 			throw err;
 		});
+
+		notif.show = false;
+		notif.content = '';
+		this.setState({ notif });
 	}
 
 	renderStoreProducts() {
 		const { products } = this.props.product.store;
 		const length = products.length;
 		const storeProductListContent = products.map((product, idx) => {
-			// console.log('rendering store product item: ', product);
 			if (idx === (length - 1)) {
 				return (
 					<div key={`storePNH-${idx}`} className='padding--small-h'>
@@ -513,7 +536,7 @@ class Products extends Component {
 		try {
 
 			const { match, product } = this.props;
-			const { detail, socialSummary, promo } = product;
+			const { detail, socialSummary, promo, loading } = product;
 			const { seller, comments, reviews } = socialSummary;
 			const { cardProduct, status, carousel, selectedVariant, showFullProductDescription } = this.state;
 			const { id } = detail;
@@ -530,7 +553,7 @@ class Products extends Component {
 				buttonProductDescriptionAttribute.onClick = this.handleShowLessProductDescription;
 				fullProductDescriptionButtonText = 'Hide';
 			}
-			
+
 			if (status.isZoomed && _.has(detail, 'images')) {
 				return (
 					<div>
@@ -542,7 +565,6 @@ class Products extends Component {
 						>
 							{
 								detail.images.map((image, idx) => {
-									console.log('rendering zoom image item....');
 									return (
 										<div tabIndex='0' role='button' onClick={this.closeZoomImage} key={idx}>
 											<Image lazyload src={image.original} alt='product' />
@@ -570,12 +592,13 @@ class Products extends Component {
 										onImageItemClick={this.handleImageItemClick}
 										data={cardProduct || {}}
 										isLoved={status.isLoved}
-										disabledLovelist={false}
+										disabledLovelist={loading}
 										onBtnLovelistClick={this.handleLovelistClick}
 										onBtnCommentClick={this.redirectToPage}
 										onBtnBeliClick={this.handleBtnBeliClicked}
 										linkToPdpDisabled={this.linkToPdpDisabled}
 										totalComments={comments.total}
+										totalLovelist={cardProduct.totalLovelist}
 									/>
 								</div>
 							)}
@@ -708,6 +731,7 @@ class Products extends Component {
 									loginNow={() => this.loginNow()}
 									productId={detail.id}
 								/>
+								{/* } */}
 
 							</div>
 						</div>
@@ -739,7 +763,15 @@ class Products extends Component {
 						<div className='padding--medium-v'>
 							<div className='padding--medium-h'><strong>PILIH UKURAN</strong></div>
 							<div className='horizontal-scroll padding--medium-h  margin--medium-r'>
-								<Level style={{ padding: '0px' }} className='margin--medium-v'>
+								<Radio
+									name='size'
+									checked={this.state.size}
+									variant='rounded'
+									className='margin--small-v'
+									onChange={this.handleSelectVariant}
+									data={cardProduct.variants}
+								/>
+								{/* <Level style={{ padding: '0px' }} className='margin--medium-v'>
 									<Level.Left />
 									<Level.Item>
 										<Radio
@@ -754,7 +786,7 @@ class Products extends Component {
 									<Level.Right className='padding--small-v' >
 										<Button color='secondary' disabled={status.btnBeliDisabled || _.isEmpty(selectedVariant)} size='medium' onClick={this.handleBtnBeliClicked}>{this.state.btnBeliLabel}</Button>
 									</Level.Right>
-								</Level>
+								</Level> */}
 							</div>
 						</div>
 					</Modal>
@@ -812,6 +844,12 @@ class Products extends Component {
 }
 
 const mapStateToProps = (state) => {
+	const { promo } = state.product;
+	const { recommended_items, similar_items, best_seller_items } = promo;
+	promo.recommended_items.products = Discovery.mapPromoProducts(recommended_items.products, state.lovelist);
+	promo.similar_items.products = Discovery.mapPromoProducts(similar_items.products, state.lovelist);
+	promo.best_seller_items.products = Discovery.mapPromoProducts(best_seller_items.products, state.lovelist);
+
 	return {
 		product: state.product,
 		shared: state.shared,
