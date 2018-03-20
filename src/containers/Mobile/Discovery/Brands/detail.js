@@ -80,7 +80,7 @@ class Detail extends Component {
 			lovelistProductId: null
 		};
 	}
-	componentDidMount() {
+	componentWillMount() {
 		if ('serviceUrl' in this.props.shared) {
 			const { dispatch, match: { params }, cookies } = this.props;
 			const qs = queryString.parse(location.search);
@@ -91,6 +91,9 @@ class Detail extends Component {
 					...qs
 				}
 			};
+			this.setState({
+				query: data.query
+			});
 			dispatch(brandAction.brandProductAction(data));
 			dispatch(brandAction.brandBannerAction(cookies.get('user.token'), this.props.match.params.brandId));
 		}
