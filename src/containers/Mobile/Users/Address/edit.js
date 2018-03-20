@@ -38,14 +38,14 @@ class Address extends Component {
 				const { dispatch, cookies, address, address: { edit } } = nextProps;
 				const selected = { };
 
-				const cities = await dispatch(actions.getCity(cookies.get('user.token'), { q: `${edit.city.split(' ')[0]}` }));
-				selected.city = cities.data.data.cities.filter((obj) => {
+				const cities = await to(dispatch(actions.getCity(cookies.get('user.token'), { q: `${edit.city.split(' ').pop().replace(/[,.]/i, '')}` })));
+				selected.city = cities[1].data.data.cities.filter((obj) => {
 					return obj.name === `${edit.city}, ${edit.province}`;
 				});
 
 				if (selected.city.length) {
-					const districts = await dispatch(actions.getDistrict(cookies.get('user.token'), { city_id: selected.city[0].city_id }));
-					selected.district = districts.data.data.districts.filter((obj) => {
+					const districts = await to(dispatch(actions.getDistrict(cookies.get('user.token'), { city_id: selected.city[0].city_id })));
+					selected.district = districts[1].data.data.districts.filter((obj) => {
 						return obj.name === edit.district;
 					});
 				}
@@ -92,11 +92,7 @@ class Address extends Component {
 			if (v) {
 				(async () => {
 					const { dispatch, cookies } = this.props;
-					const [err, resp] = await to(dispatch(actions.getDistrict(cookies.get('user.token'), { city_id: v.split('_')[1] })));
-
-					if (err) {
-						return Promise.reject(err);
-					}
+					const resp = await to(dispatch(actions.getDistrict(cookies.get('user.token'), { city_id: v.split('_')[1] })));
 
 					this.setState({
 						disabled: {
@@ -105,7 +101,7 @@ class Address extends Component {
 						}
 					});
 
-					return Promise.resolve(resp);
+					return Promise.resolve(resp[1]);
 				})();
 			}
 		}
