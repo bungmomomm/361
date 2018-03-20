@@ -11,7 +11,24 @@ import { urlBuilder, aux } from '@/utils';
 import CartEmpty from '@/containers/Mobile/Cart/empty';
 import { actions as actionShared } from '@/state/v4/Shared';
 import _ from 'lodash';
+import {
+	TrackingRequest,
+	sendGtm,
+	cartViewBuilder
+} from '@/utils/tracking';
 
+const trackBrandPageView = (data, props) => {
+	const items = _.flatMap(data, (e) => (e.items));
+	const productId = _.map(items, 'product_id');
+	const pricingList = _.map(items, 'pricing.original.effective_price');
+	const quantityList = _.map(items, 'qty');
+	const request = new TrackingRequest();
+	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
+	request.setFusionSessionId('').setIpAddress('');
+	request.setListProductId(productId.join('|')).setListPrice(pricingList.join('|')).setListQuantity(quantityList.join('|'));
+	const requestPayload = request.getPayload(cartViewBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
 class Cart extends Component {
 	constructor(props) {
 		super(props);
@@ -56,6 +73,11 @@ class Cart extends Component {
 			const { dispatch } = this.props;
 			dispatch(shopBagAction.getAction(this.userToken));
 		}
+
+		if (nextProps.shopBag.carts !== this.props.shopBag.carts) {
+			trackBrandPageView(nextProps.shopBag.carts, nextProps);
+		}
+
 		this.checkNotProcedItem(nextProps);
 	}
 
@@ -127,9 +149,9 @@ class Cart extends Component {
 	}
 
 	renderList(shopBagData) {
-		return (this.props.shopBag.carts !== null) && (this.props.shopBag.carts.map((cart, key) => {
+		const sortedCart = _.sortBy(this.props.shopBag.carts, 'seller_id');
+		return (this.props.shopBag.carts !== null) && (sortedCart.map((cart, key) => {
 			const items = cart.items.map((item, keyItem) => {
-				console.log('item', item);
 				return (
 					<div key={keyItem}>
 						<Level style={{ paddingLeft: '0px' }} className='flex-row'>
@@ -202,7 +224,6 @@ class Cart extends Component {
 					</div>
 				);
 			});
-			console.log('cart', cart);
 			return (
 				<div
 					key={key}
@@ -267,7 +288,7 @@ class Cart extends Component {
 		} else {
 			link = (<Link to='login?redirect_uri=/cart'>{wording}</Link>);
 		}
-		return (
+		return this.props.shopBag.carts !== null && (
 			<div className={styles.paymentLink}>
 				<div>
 					<div>
@@ -312,7 +333,7 @@ class Cart extends Component {
 			right: null
 		};
 
-		if ((this.props.shopBag.carts && this.props.shopBag.carts.length < 1) || this.props.shopBag.carts === null) {
+		if ((this.props.shopBag.carts && this.props.shopBag.carts.length < 1)) {
 			return <CartEmpty />;
 		}
 

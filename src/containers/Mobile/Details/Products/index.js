@@ -18,6 +18,46 @@ import styles from './products.scss';
 import SellerProfile from '../../Discovery/Seller/components/SellerProfile';
 import { Promise } from 'es6-promise';
 import classNames from 'classnames';
+import {
+	TrackingRequest,
+	pdpViewBuilder,
+	addToCartBuilder,
+	sendGtm,
+} from '@/utils/tracking';
+
+const trackAddToCart = (data, props, variant) => {
+	const products = {
+		name: data.detail.title,
+		id: data.detail.id,
+		price: data.detail.price_range.effective_price,
+		brand: data.detail.brand.name,
+		category: data.detail.product_category_names.join('/'),
+		variant: variant.options[0].value,
+		variant_id: variant.id,
+		quantity: 1
+	};
+	const request = new TrackingRequest();
+	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
+	request.setFusionSessionId('').setIpAddress('').setProducts([products]);
+	const requestPayload = request.getPayload(addToCartBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
+
+const trackPdpView = (data, props) => {
+	const products = {
+		name: data.detail.title,
+		id: data.detail.id,
+		price: data.detail.price_range.effective_price,
+		brand: data.detail.brand.name,
+		category: data.detail.product_category_names.join('/'),
+	};
+	const request = new TrackingRequest();
+	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
+	request.setFusionSessionId('').setIpAddress('').setProducts([products]);
+	request.setStoreName(data.detail.seller.seller);
+	const requestPayload = request.getPayload(pdpViewBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
 
 import Discovery from '@/containers/Mobile/Discovery/Utils';
 
@@ -26,7 +66,9 @@ const doAfterAnonymous = async (props) => {
 	const productId = _.toInteger(match.params.id);
 	const token = cookies.get('user.token');
 
-	await dispatch(productActions.productDetailAction(token, productId));
+	const productDetail = await dispatch(productActions.productDetailAction(token, productId));
+	trackPdpView(productDetail, props);
+
 	const res = await dispatch(productActions.productPromoAction(token, productId));
 	if (res.status === 200 && res.statusText === 'OK') {
 		const ids = [productId];
@@ -266,17 +308,17 @@ class Products extends Component {
 		this.setState({ status });
 	}
 
-	addToShoppingBag(variantId) {
+	addToShoppingBag(variant) {
 		const { status, notif } = this.state;
-		const { dispatch } = this.props;
+		const { dispatch, product } = this.props;
 
-		
+
 		status.showModalSelectSize = false;
 		notif.show = false;
 		this.setState({ status, notif });
 
 		const handler = new Promise((resolve, reject) => {
-			resolve(dispatch(shopBagActions.updateAction(this.userCookies, variantId, this.defaultCount, 'add')));
+			resolve(dispatch(shopBagActions.updateAction(this.userCookies, variant.id, this.defaultCount, 'add')));
 		});
 
 		handler.then((res) => {
@@ -288,6 +330,10 @@ class Products extends Component {
 			notif.show = true;
 			notif.content = 'Produk Berhasil ditambahkan';
 			this.setState({ status, notif });
+			status.pdpDataHasLoaded = false;
+			dispatch(productActions.productDetailAction(this.userCookies, product.detail.id));
+			trackAddToCart(product, this.props, variant);
+
 			// get product data
 			// dispatch(productActions.productDetailAction(this.userCookies, product.detail.id));
 		}).catch((err) => {
@@ -312,7 +358,7 @@ class Products extends Component {
 			status.pendingAddProduct = true;
 			this.setState({ status });
 		} else {
-			this.addToShoppingBag(selectedVariant.id);
+			this.addToShoppingBag(selectedVariant);
 		}
 	}
 
@@ -337,19 +383,19 @@ class Products extends Component {
 			if (status.pendingAddProduct) this.addToShoppingBag(selectedVariant.id);
 		}
 	}
-	
+
 	handleShowLessProductDescription() {
 		this.setState({
 			showFullProductDescription: false
 		});
 	}
-	
+
 	handleShowMoreProductDescription() {
 		this.setState({
 			showFullProductDescription: true
 		});
 	}
-	
+
 	loginLater() {
 		const { status } = this.state;
 		status.forceLogin = false;
@@ -540,14 +586,14 @@ class Products extends Component {
 			const { seller, comments, reviews } = socialSummary;
 			const { cardProduct, status, carousel, selectedVariant, showFullProductDescription } = this.state;
 			const { id } = detail;
-			
+
 			const buttonProductDescriptionAttribute = {
 				onClick: this.handleShowMoreProductDescription
 			};
-			
+
 			let fullProductDescriptionButtonText = '[...]';
 			let classNameProductDescription = classNames('padding--medium-h', styles.textOnlyShowTwoLines);
-			
+
 			if (showFullProductDescription === true) {
 				classNameProductDescription = classNames('padding--medium-h');
 				buttonProductDescriptionAttribute.onClick = this.handleShowLessProductDescription;
@@ -728,7 +774,7 @@ class Products extends Component {
 								<Promos
 									promo={promo}
 									loading={status.loading}
-									loginNow={() => this.loginNow()}
+									loginNow={this.loginNow}
 									productId={detail.id}
 								/>
 								{/* } */}
@@ -819,7 +865,10 @@ class Products extends Component {
 								<Level style={{ padding: '0px' }} className='margin--medium-v'>
 									<Level.Left />
 									<Level.Item className='padding--medium-h'>
-										<center>{product.promo.meta_data.ovo_info}</center>
+										<center>
+											{(/^/.test(promo.meta_data.ovo_info)) && <div dangerouslySetInnerHTML={{ __html: promo.meta_data.ovo_info }} />}
+											{!(/^/.test(promo.meta_data.ovo_info)) && <div>{promo.meta_data.ovo_info}</div>}
+										</center>
 									</Level.Item>
 								</Level>
 							</div>

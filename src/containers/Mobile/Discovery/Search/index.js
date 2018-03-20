@@ -196,11 +196,16 @@ class Search extends PureComponent {
 	}
 
 	renderRelatedCategory() {
+		const { relatedCategory } = this.props;
+		const firstSuggestion = { text: 'Semua kategori', value: '' };
+		if (relatedCategory[0].text !== firstSuggestion.text) {
+			relatedCategory.unshift(firstSuggestion);
+		}
 		return (this.props.relatedCategory) && (
 			<section className={styles.section}>
 				<div className={styles.heading}>Kategori</div>
 				<ul className={styles.list}>
-					{this.listSugestionMaker(this.props.relatedCategory, this.SUGGEST_CATEGORY)}
+					{this.listSugestionMaker(relatedCategory, this.SUGGEST_CATEGORY)}
 				</ul>
 			</section>
 		);

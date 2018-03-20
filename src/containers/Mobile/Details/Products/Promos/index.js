@@ -29,6 +29,7 @@ class Promos extends Component {
 	getBuiltItems = (products) => {
 		let fragment = [];
 		const itemsList = [];
+		const productClicked = (e) => console.log('Ouch, don\'t do that!!!');
 
 		// builds items
 		products.forEach((item, idx) => {
@@ -41,11 +42,13 @@ class Promos extends Component {
 					discount: item.pricing.formatted.discount,
 					...item.pricing
 				},
+				productOnClick: productClicked,
 				linkToPdp: urlBuilder.buildPdp(item.product_title, item.product_id),
 				love: (
 					<Love
 						status={item.lovelistStatus}
 						data={item.product_id}
+						inline={false}
 						total={item.lovelistTotal}
 						onNeedLogin={this.props.loginNow}
 					/>

@@ -77,6 +77,7 @@ class Catalog extends PureComponent {
 			lovelistDisable,
 			love,
 			optimistic,
+			productOnClick,
 			...props
 		} = this.props;
 		const { loved } = this.state;
@@ -114,7 +115,9 @@ class Catalog extends PureComponent {
 					<Carousel>
 						{
 							images.map((image, index) => (
-								<Image key={index} src={image.thumbnail} lazyload alt={productTitle} />
+								<div key={index} tabIndex='0' role='button' onClick={() => productOnClick()}>
+									<Image src={image.thumbnail} lazyload alt={productTitle} />
+								</div>
 							))
 						}
 					</Carousel>
@@ -136,8 +139,8 @@ class Catalog extends PureComponent {
 					</Level.Item>
 				</Level>
 				<Link to={(linkToPdp) || '/'}>
-					<div className={styles.title}>
-						<span className='font-small text-uppercase font--lato-bold font-color--primary'>{brandName}</span>
+					<div className={styles.title} tabIndex='0' role='button' onClick={() => productOnClick()}>
+						<span className='font-small text-uppercase font--lato-bold font-color--primary'>{brandName}</span> -
 						<span className='text-elipsis-two-line font-color--primary-ext-2'>{productTitle}</span>
 					</div>
 					<Level className='padding--none-t'>
