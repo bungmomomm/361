@@ -11,7 +11,24 @@ import { urlBuilder, aux } from '@/utils';
 import CartEmpty from '@/containers/Mobile/Cart/empty';
 import { actions as actionShared } from '@/state/v4/Shared';
 import _ from 'lodash';
+import {
+	TrackingRequest,
+	sendGtm,
+	cartViewBuilder
+} from '@/utils/tracking';
 
+const trackBrandPageView = (data, props) => {
+	const items = _.flatMap(data, (e) => (e.items));
+	const productId = _.map(items, 'product_id');
+	const pricingList = _.map(items, 'pricing.original.effective_price');
+	const quantityList = _.map(items, 'qty');
+	const request = new TrackingRequest();
+	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
+	request.setFusionSessionId('').setIpAddress('');
+	request.setListProductId(productId.join('|')).setListPrice(pricingList.join('|')).setListQuantity(quantityList.join('|'));
+	const requestPayload = request.getPayload(cartViewBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
 class Cart extends Component {
 	constructor(props) {
 		super(props);
@@ -56,6 +73,11 @@ class Cart extends Component {
 			const { dispatch } = this.props;
 			dispatch(shopBagAction.getAction(this.userToken));
 		}
+
+		if (nextProps.shopBag.carts !== this.props.shopBag.carts) {
+			trackBrandPageView(nextProps.shopBag.carts, nextProps);
+		}
+
 		this.checkNotProcedItem(nextProps);
 	}
 

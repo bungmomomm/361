@@ -13,7 +13,7 @@ class SmallGridView extends Component {
 	}
 
 	render() {
-		const { products } = this.props;
+		const { products, productOnClick } = this.props;
 		return (
 			<div className={stylesCatalog.cardContainer}>
 				{products.map((product, index) => {
@@ -23,6 +23,7 @@ class SmallGridView extends Component {
 							images={product.images}
 							pricing={product.pricing}
 							linkToPdp={product.url}
+							productOnClick={() => productOnClick(product, index + 1)}
 						/>
 					);
 				})}

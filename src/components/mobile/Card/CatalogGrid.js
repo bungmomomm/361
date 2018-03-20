@@ -14,6 +14,7 @@ import { trimString } from '@/utils';
 class CatalogGrid extends PureComponent {
 	constructor(props) {
 		super(props);
+		this.props = props;
 		this.state = {
 			loading: false,
 			prevLoved: props.lovelistStatus ? 0 : 1,
@@ -74,6 +75,7 @@ class CatalogGrid extends PureComponent {
 			love,
 			optimistic,
 			split,
+			productOnClick,
 			...props
 		} = this.props;
 		const { loved } = this.state;
@@ -110,14 +112,14 @@ class CatalogGrid extends PureComponent {
 		return (
 			<div className={createClassName} {...props} data-loved={lovelistStatus}>
 				<Link to={linkToPdp || '/'} className={styles.imgContainer}>
-					<div className={styles.imgWrapper}>
+					<div className={styles.imgWrapper} tabIndex='0' role='button' onClick={() => productOnClick()}>
 						<Image src={images[0].thumbnail} lazyload alt={productTitle} />
 					</div>
 				</Link>
 				<Level className={styles.action}>
 					<Level.Item>
-						<Link to={linkToPdp || '/'}>
-							<div className={styles.title}>
+						<Link to={linkToPdp || '/'} >
+							<div className={styles.title} tabIndex='0' role='button' onClick={() => productOnClick()}>
 								<span className='font-small text-uppercase font--lato-bold font-color--primary'>{brandName}</span>
 								<span className='text-elipsis-two-line font-color--primary-ext-2'>{trimString(productTitle)}</span>
 							</div>

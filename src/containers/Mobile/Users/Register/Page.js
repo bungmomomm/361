@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { actions as users } from '@/state/v4/User';
-import { 
+import {
 	Link
 } from 'react-router-dom';
 import {
@@ -10,7 +10,7 @@ import {
 	Input,
 	Svg
 } from '@/components/mobile';
-import { 
+import {
 	setUserCookie
 } from '@/utils';
 import styles from '../user.scss';
@@ -22,6 +22,11 @@ import {
 	Login as LoginWidget
 } from '@/containers/Mobile/Widget';
 import Otp from '@/containers/Mobile/Shared/Otp';
+import {
+	TrackingRequest,
+	registerSuccessBuilder,
+	sendGtm,
+} from '@/utils/tracking';
 
 class Register extends Component {
 	constructor(props) {
@@ -62,6 +67,7 @@ class Register extends Component {
 			return err;
 		}
 		setUserCookie(this.props.cookies, response.token);
+		this.trackingHandler(response, provider);
 		history.push(redirectUri || '/');
 		return response;
 	}
@@ -119,6 +125,8 @@ class Register extends Component {
 				return false;
 			}
 
+			this.trackingHandler(responseRegister);
+
 			// Set the cookie for the page.
 			setUserCookie(cookies, responseUserLogin.token);
 			history.push(redirectUri || '/');
@@ -128,7 +136,7 @@ class Register extends Component {
 		return responseRegister;
 
 	}
-	
+
 	onFieldChange(e, type) {
 
 		const value = util.format('%s', e.target.value);
@@ -161,7 +169,15 @@ class Register extends Component {
 		}
 
 	}
- 
+
+	trackingHandler(response, method = 'onsite') {
+		const request = new TrackingRequest();
+		request.setEmailHash('').setUserId(response.userid).setCurrentUrl(`/${this.state.current}`);
+		request.setFusionSessionId('').setUserIdEncrypted('').setIpAddress('').setLoginRegisterMethod(method);
+		const requestPayload = request.getPayload(registerSuccessBuilder);
+		if (requestPayload) sendGtm(requestPayload);
+	}
+
 	otpClickBack() {
 		const { callback } = this.props;
 		// Also clear state from previous page.
@@ -172,26 +188,26 @@ class Register extends Component {
 			password: ''
 		}, callback('REGISTER'));
 	}
- 
+
 	async successValidateOtp() {
-		
+
 		const { cookies, dispatch, history } = this.props;
 		const { email, password, redirectUri } = this.state;
-		
+
 		const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get('user.token'), email, password)));
-		
+
 		if (errorUserLogin) {
 			console.log('error on user login');
 			return false;
 		}
-		
+
 		// Set the cookie for the page.
 		setUserCookie(cookies, responseUserLogin.token);
 		history.push(redirectUri || '/');
-		
+
 		return responseUserLogin;
 	}
- 
+
 	renderRegisterView() {
 		const {
 			email,
@@ -316,9 +332,9 @@ class Register extends Component {
 	}
 
 	renderValidateOtpView() {
-		
+
 		const { email } = this.state;
-		
+
 		return (
 			<Otp
 				phoneEmail={email}
@@ -350,7 +366,7 @@ class Register extends Component {
 	}
 
 	render() {
-		
+
 		const { callback } = this.props;
 		const {
 			whatIShouldRender
