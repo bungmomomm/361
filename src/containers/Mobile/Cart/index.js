@@ -127,9 +127,9 @@ class Cart extends Component {
 	}
 
 	renderList(shopBagData) {
-		return (this.props.shopBag.carts !== null) && (this.props.shopBag.carts.map((cart, key) => {
+		const sortedCart = _.sortBy(this.props.shopBag.carts, 'seller_id');
+		return (this.props.shopBag.carts !== null) && (sortedCart.map((cart, key) => {
 			const items = cart.items.map((item, keyItem) => {
-				console.log('item', item);
 				return (
 					<div key={keyItem}>
 						<Level style={{ paddingLeft: '0px' }} className='flex-row'>
@@ -202,7 +202,6 @@ class Cart extends Component {
 					</div>
 				);
 			});
-			console.log('cart', cart);
 			return (
 				<div
 					key={key}
@@ -267,7 +266,7 @@ class Cart extends Component {
 		} else {
 			link = (<Link to='login?redirect_uri=/cart'>{wording}</Link>);
 		}
-		return (
+		return this.props.shopBag.carts !== null && (
 			<div className={styles.paymentLink}>
 				<div>
 					<div>
@@ -312,7 +311,7 @@ class Cart extends Component {
 			right: null
 		};
 
-		if ((this.props.shopBag.carts && this.props.shopBag.carts.length < 1) || this.props.shopBag.carts === null) {
+		if ((this.props.shopBag.carts && this.props.shopBag.carts.length < 1)) {
 			return <CartEmpty />;
 		}
 
