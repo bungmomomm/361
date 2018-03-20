@@ -9,6 +9,8 @@ import Level from '../Level';
 import Badge from '../Badge';
 import styles from './card.scss';
 
+import { trimString } from '@/utils';
+
 class CatalogGrid extends PureComponent {
 	constructor(props) {
 		super(props);
@@ -84,17 +86,18 @@ class CatalogGrid extends PureComponent {
 			lovelistIcon = loved && loved === 1 ? 'ico_love-filled.svg' : 'ico_love.svg';
 		}
 
-		const discountBadge = pricing.discount !== '' && pricing.discount !== '0%' ? (
+		const discountBadge = pricing.formatted.discount !== '' ? (
 			<Level.Right>
 				<Badge rounded color='red'>
-					<span className='font--lato-bold'>{pricing.discount}</span>
+					<span className='font--lato-bold'>{pricing.formatted.discount}</span>
 				</Badge>
 			</Level.Right>
 		) : '';
 
-		const basePrice = pricing.discount !== '' && pricing.discount !== '0%' ? (
+		const basePrice = pricing.formatted.discount !== '' ? (
 			<div className={styles.discount}>{pricing.formatted.base_price}</div>
 		) : '';
+
 		let loveButton = (
 			<Button onClick={(e) => this.lovelistAddTo()} disabled={disableLovelist}>
 				<Svg src={lovelistIcon} />
@@ -103,6 +106,7 @@ class CatalogGrid extends PureComponent {
 		if (love) {
 			loveButton = love;
 		}
+
 		return (
 			<div className={createClassName} {...props} data-loved={lovelistStatus}>
 				<Link to={linkToPdp || '/'} className={styles.imgContainer}>
@@ -115,7 +119,7 @@ class CatalogGrid extends PureComponent {
 						<Link to={linkToPdp || '/'}>
 							<div className={styles.title}>
 								<span className='font-small text-uppercase font--lato-bold font-color--primary'>{brandName}</span>
-								<span className='text-elipsis-two-line font-color--primary-ext-2'>{productTitle}</span>
+								<span className='text-elipsis-two-line font-color--primary-ext-2'>{trimString(productTitle)}</span>
 							</div>
 						</Link>
 					</Level.Item>

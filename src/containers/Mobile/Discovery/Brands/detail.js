@@ -82,7 +82,7 @@ class Detail extends Component {
 	}
 	componentDidMount() {
 		if ('serviceUrl' in this.props.shared) {
-			const { dispatch, match: { params } } = this.props;
+			const { dispatch, match: { params }, cookies } = this.props;
 			const qs = queryString.parse(location.search);
 			const data = {
 				token: this.userToken,
@@ -92,7 +92,7 @@ class Detail extends Component {
 				}
 			};
 			dispatch(brandAction.brandProductAction(data));
-			dispatch(brandAction.brandBannerAction(this.userToken, this.props.match.params.brandId));
+			dispatch(brandAction.brandBannerAction(cookies.get('user.token'), this.props.match.params.brandId));
 		}
 	}
 
@@ -172,7 +172,7 @@ class Detail extends Component {
 			...parsedUrl,
 			...filters
 		});
-		
+
 		const data = {
 			token: cookies.get('user.token'),
 			query: {
@@ -244,41 +244,37 @@ class Detail extends Component {
 	}
 
 	renderFilter() {
-		const isProductSet = this.props.brands.searchData.products.length >= 1;
+		const { brands } = this.props;
 		const { showSort } = this.state;
 		const sorts = _.chain(this.props.brands).get('searchData.sorts').value() || [];
-		if (isProductSet) {
-			return (
-				<div className='padding--medium-t'>
-					<Tabs
-						type='segment'
-						variants={[
-							{
-								id: 'sort',
-								title: 'Urutkan',
-								disabled: !isProductSet
-							},
-							{
-								id: 'filter',
-								title: 'Filter',
-								disabled: !isProductSet
-							},
-							{
-								id: 'view',
-								title: <Svg src={this.state.listTypeState.icon} />,
-								disabled: !isProductSet
-							}
-						]}
-						onPick={e => this.handlePick(e)}
-					/>
-					{renderIf(sorts)(
-						<Sort onCloseOverlay={() => this.setState({ showSort: false })} shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
-					)}
-				</div>
-			);
-		}
-
-		return null;
+		return (
+			<div className='padding--medium-t'>
+				<Tabs
+					type='segment'
+					variants={[
+						{
+							id: 'sort',
+							title: 'Urutkan',
+							disabled: brands.loading_products
+						},
+						{
+							id: 'filter',
+							title: 'Filter',
+							disabled: brands.loading_products
+						},
+						{
+							id: 'view',
+							title: <Svg src={this.state.listTypeState.icon} />,
+							disabled: brands.loading_products
+						}
+					]}
+					onPick={e => this.handlePick(e)}
+				/>
+				{renderIf(sorts)(
+					<Sort onCloseOverlay={() => this.setState({ showSort: false })} shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+				)}
+			</div>
+		);
 	}
 
 	renderProduct() {
@@ -329,7 +325,7 @@ class Detail extends Component {
 				</span>
 			),
 
-			center: !this.state.styleHeader && 'Brand',
+			center: !this.state.styleHeader && _.chain(searchData).get('info.title').value(),
 			right: <Share title={title} url={url} />,
 			rows: !this.state.styleHeader && this.renderFilter()
 		};
@@ -338,13 +334,21 @@ class Detail extends Component {
 
 	renderTotalProduct() {
 		const productCount = this.props.brands.searchData.info && this.props.brands.searchData.info.product_count;
-		return productCount && (
-			<div className='margin--medium-v text-center'>{productCount} Total Produk</div>
-		);
+
+		if (productCount === 0) {
+			return (<div className='margin--medium-v text-center'>
+				Tidak ada Produk yang sesuai dengan Filter yang Anda inginkan. <br />
+				Silahkan Reset Filter untuk melakukan pencarian baru.
+			</div>);
+		}
+
+		return productCount && (<div className='margin--medium-v text-center'>{productCount} Total Produk</div>);
 	}
 
 	render() {
 		const { showFilter } = this.state;
+
+		const activeNav = (window.prevLocation) ? (window.prevLocation.pathname === '/') ? 'Home' : 'Categories' : 'Categories';
 
 		return (
 			<div style={this.props.style}>
@@ -367,7 +371,7 @@ class Detail extends Component {
 								</div>
 								{this.renderTotalProduct()}
 								{this.renderProduct()}
-								{this.props.scroller.loading && (<Spinner />)}
+								{this.props.scroller.loading && (<div style={{ paddingTop: '20px' }}> <Spinner /></div>)}
 							</div>
 						</div>
 						<Footer isShow={this.state.isFooterShow} />
@@ -376,7 +380,7 @@ class Detail extends Component {
 				{(!showFilter) && (
 					<div>
 						{this.renderHeader()}
-						<Navigation active='Categories' scroll={this.props.scroll} />
+						<Navigation active={activeNav} scroll={this.props.scroll} />
 					</div>
 				)}
 			</div>
@@ -387,10 +391,12 @@ class Detail extends Component {
 
 const mapStateToProps = (state) => {
 	const { comments, lovelist, brands } = state;
-	brands.searchData.products = Discovery.mapProducts(brands.searchData.products, comments, lovelist);
-
+	const { products, facets } = _.chain(brands).get('searchData').value() || { products: [], facets: [] };
+	brands.searchData.products = Discovery.mapProducts(products, comments, lovelist);
+	const isFiltered = Filter.utils.isFiltered(facets);
 	return {
 		...state,
+		isFiltered,
 		brands
 	};
 };

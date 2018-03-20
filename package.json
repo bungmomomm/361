@@ -123,6 +123,7 @@
     "redux": "^3.7.2",
     "redux-actions": "^2.2.1",
     "redux-api-middleware": "^2.2.0",
+    "redux-catch-promise": "^1.0.3",
     "redux-devtools-extension": "^2.13.2",
     "redux-thunk": "2.2.0",
     "regenerator": "^0.12.3",
@@ -130,7 +131,6 @@
     "rmc-picker": "^5.0.4",
     "sass-mq": "^3.3.2",
     "sw-precache-webpack-plugin": "^0.11.4",
-    "uuid": "^3.2.1",
     "validator": "^9.4.1"
   },
   "devDependencies": {

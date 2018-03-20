@@ -46,6 +46,7 @@ class Input extends PureComponent {
 			error,
 			iconRight,
 			partitioned,
+			onClickInputAction,
 			...props,
 		} = this.props;
 
@@ -95,6 +96,15 @@ class Input extends PureComponent {
 			return null;
 		};
 
+		let onClickAction;
+		if (onClickInputAction) {
+			onClickAction = onClickInputAction;
+		} else {
+			onClickAction = () => {
+				this.showLabel();
+			};
+		}
+
 
 		return (
 			<div className={className}>
@@ -107,7 +117,7 @@ class Input extends PureComponent {
 						className={CreateinputClassName}
 						ref={this.setInput}
 						{...valueData()}
-						onClick={() => this.showLabel()}
+						onClick={onClickAction}
 					/>
 				</div>
 				{renderHint()}

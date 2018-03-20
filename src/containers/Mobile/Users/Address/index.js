@@ -56,7 +56,7 @@ class Address extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page color='white'>
 					<div className='margin--small'>
 						<p style={{ textAlign: 'center' }}>
 							<Link to='/address/add'>Tambah alamat baru +</Link>
@@ -112,13 +112,13 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (props) => {
+const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies, history } = props;
 	if (!cookies.get('isLogin')) {
 		history.push('/login');
 	}
 
-	dispatch(actions.getAddress(cookies.get('user.token')));
+	await dispatch(actions.getAddress(cookies.get('user.token')));
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Address, doAfterAnonymous)));

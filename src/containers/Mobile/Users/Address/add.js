@@ -14,17 +14,14 @@ class Address extends Component {
 	state = {
 		allowSubmit: false,
 		showSelect: {
-			province: false,
 			city: false,
 			district: false
 		},
 		disabled: {
-			province: false,
-			city: true,
+			city: false,
 			district: true
 		},
 		selected: {
-			province: '',
 			city: '',
 			district: ''
 		},
@@ -33,7 +30,7 @@ class Address extends Component {
 		default: 0
 	};
 
-	onChange = (v, which = 'province') => {
+	onChange = (v, which = 'city') => {
 		this.setState({
 			selected: {
 				...this.state.selected,
@@ -41,40 +38,7 @@ class Address extends Component {
 			}
 		});
 
-		if (which === 'province') {
-			this.setState({
-				disabled: {
-					...this.state.disabled,
-					city: true,
-					district: true
-				},
-				selected: {
-					...this.state.selected,
-					city: '',
-					district: ''
-				}
-			});
-
-			if (v) {
-				(async () => {
-					const { dispatch, cookies } = this.props;
-					const [err, resp] = await to(dispatch(actions.getCity(cookies.get('user.token'), { province_id: v })));
-
-					if (err) {
-						return Promise.reject(err);
-					}
-
-					this.setState({
-						disabled: {
-							...this.state.disabled,
-							city: false
-						}
-					});
-
-					return Promise.resolve(resp);
-				})();
-			}
-		} else if (which === 'city') {
+		if (which === 'city') {
 			this.setState({
 				disabled: {
 					...this.state.disabled,
@@ -89,7 +53,7 @@ class Address extends Component {
 			if (v) {
 				(async () => {
 					const { dispatch, cookies } = this.props;
-					const [err, resp] = await to(dispatch(actions.getDistrict(cookies.get('user.token'), { city_id: v })));
+					const [err, resp] = await to(dispatch(actions.getDistrict(cookies.get('user.token'), { city_id: v.split('_')[1] })));
 
 					if (err) {
 						return Promise.reject(err);
@@ -108,11 +72,18 @@ class Address extends Component {
 		}
 	};
 
+	onCitySearch = (el) => {
+		const { cookies, dispatch } = this.props;
+		if (el.target.value.length > 2) {
+			dispatch(actions.getCity(cookies.get('user.token'), { q: el.target.value }));
+		}
+	};
+
 	onSubmit = () => {
 		this.formsy.submit();
 	};
 
-	toggleShow = (which = 'province') => {
+	toggleShow = (which = 'city') => {
 		this.setState({
 			showSelect: {
 				...this.state.showSelect,
@@ -134,8 +105,13 @@ class Address extends Component {
 	};
 
 	submit = async (model) => {
+		const { city_id } = model;
+		const splitr = city_id.split('-');
+
 		model = {
 			...model,
+			province_id: splitr[0],
+			city_id: splitr[1],
 			type: this.state.type,
 			country_id: 1,
 			is_supported_pin_point: 0,
@@ -153,14 +129,10 @@ class Address extends Component {
 
 	renderData = () => {
 		const { address } = this.props;
-		const provinces = address.options.provinces;
 		const cities = address.options.cities;
 		const districts = address.options.districts;
 
 		const selected = {
-			province: provinces.filter((obj) => {
-				return obj.value === this.state.selected.province;
-			}),
 			city: cities.filter((obj) => {
 				return obj.value === this.state.selected.city;
 			}),
@@ -170,7 +142,7 @@ class Address extends Component {
 		};
 
 		return (
-			<Page>
+			<Page color='white'>
 				<Form
 					style={{ padding: '15px' }}
 					onValidSubmit={this.submit}
@@ -207,6 +179,7 @@ class Address extends Component {
 							/>
 						</div>
 					</div>
+
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='address_label'>Simpan Sebagai</label>
 						<Input
@@ -255,53 +228,11 @@ class Address extends Component {
 					</div>
 
 					<div className='margin--medium'>
-						<label className={styles.label} htmlFor='province'>Provinsi</label>
+						<label className={styles.label} htmlFor='city'>Kota, Provinsi *</label>
 						<Level
 							className='flex-row border-bottom'
 							onClick={
-								(this.state.disabled.province || this.state.submitting) ? false : () => this.toggleShow()
-							}
-						>
-							<Level.Left>
-								<Button className='flex-center' disabled={(this.state.disabled.province || this.state.submitting)}>
-									<span style={{ marginRight: '10px' }}>
-										{selected.province.length ? selected.province[0].label : '- Select Province -'}
-									</span>
-								</Button>
-							</Level.Left>
-							<Level.Right>
-								<Svg src='ico_chevron-down.svg' />
-							</Level.Right>
-						</Level>
-						<Select
-							horizontal
-							show={this.state.showSelect.province}
-							label='Kota, Provinsi *'
-							name='province'
-							options={provinces}
-							onChange={this.onChange}
-							onClose={() => this.toggleShow()}
-							defaultValue={selected.province.length ? selected.province[0].value : ''}
-						/>
-						<Input
-							id='province_id'
-							name='province_id'
-							type='hidden'
-							validations={{
-								matchRegexp: /^[1-9][0-9]*$/
-							}}
-							validationError='This field is required'
-							value={this.state.selected.province}
-							required
-						/>
-					</div>
-
-					<div className='margin--medium'>
-						<label className={styles.label} htmlFor='city'>Kota, Kabupaten</label>
-						<Level
-							className='flex-row border-bottom'
-							onClick={
-								(this.state.disabled.city || this.state.submitting) ? false : () => this.toggleShow('city')
+								(this.state.disabled.city || this.state.submitting) ? false : () => this.toggleShow()
 							}
 						>
 							<Level.Left>
@@ -318,11 +249,13 @@ class Address extends Component {
 						<Select
 							horizontal
 							show={this.state.showSelect.city}
-							label='Kota, Kabupaten *'
+							label='Kota, Provinsi *'
 							name='city'
 							options={cities}
-							onChange={(v) => this.onChange(v, 'city')}
-							onClose={() => this.toggleShow('city')}
+							search
+							onSearch={this.onCitySearch}
+							onChange={this.onChange}
+							onClose={() => this.toggleShow()}
 							defaultValue={selected.city.length ? selected.city[0].value : ''}
 						/>
 						<Input
@@ -330,7 +263,7 @@ class Address extends Component {
 							name='city_id'
 							type='hidden'
 							validations={{
-								matchRegexp: /^[1-9][0-9]*$/
+								matchRegexp: /^[1-9][0-9]*_[1-9][0-9]*$/
 							}}
 							validationError='This field is required'
 							value={this.state.selected.city}
@@ -445,12 +378,10 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = (props) => {
-	const { dispatch, cookies, history } = props;
+	const { cookies, history } = props;
 	if (!cookies.get('isLogin')) {
 		history.push('/login');
 	}
-
-	dispatch(actions.getProvinces(cookies.get('user.token')));
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Address, doAfterAnonymous)));

@@ -154,6 +154,54 @@ const submitReview = (token, data) => async (dispatch, getState) => {
 	return Promise.resolve(response);
 };
 
+const PostOrderConfirmation = (token, bodyData) => async (dispatch, getState) => {
+	
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
+	const requestData = {
+		token,
+		path: `${baseUrl}/order/paymentconfirm/add`,
+		method: 'POST',
+		fullpath: true,
+		body: bodyData
+	};
+	
+	const [err, response] = await to(
+		request(requestData)
+	);
+	
+	if (err) {
+		
+		return Promise.reject(err);
+	}
+	
+	return Promise.resolve(response);
+	
+};
+
+
+const getListBankConfirmation = (token) => async (dispatch, getState) => {
+ 
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
+	const requestData = {
+		token,
+		path: `${baseUrl}/order/paymentconfirm/banklist`,
+		method: 'GET',
+		fullpath: true
+	};
+	
+	const [err, response] = await to(request(requestData));
+	
+	if (err) {
+		return Promise.reject(err);
+	}
+	
+	dispatch(actions.userBankList(response.data.data));
+	return Promise.resolve(response);
+};
+
+
 export {
 	checkMyOrders,
 	getMyOrderMore,
@@ -161,5 +209,7 @@ export {
 	updateMyOrdersCurrent,
 	cleanMyOrderData,
 	keepReviewInfo,
-	submitReview
+	submitReview,
+	PostOrderConfirmation,
+	getListBankConfirmation
 };

@@ -4,12 +4,11 @@ import to from 'await-to-js';
 import { actions } from '@/state/v4/Shared';
 import { actions as users } from '@/state/v4/User';
 import { actions as initAction } from '@/state/v4/Home';
-import { setUserCookie, uniqid, setUniqeCookie } from '@/utils';
+import { setUserCookie, setUniqeCookie } from '@/utils';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
 import Snackbar from '@/containers/Mobile/Shared/snackbar';
-import { check, watch } from 'is-offline';
-import uuidv4 from 'uuid/v4';
+import { check as checkConnection, watch as watchConnection } from 'is-offline';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 	WrappedComponent.contextTypes = {
@@ -18,7 +17,6 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 	};
 
 	class SharedAction extends Component {
-
 		constructor(props) {
 			super(props);
 			this.props = props;
@@ -28,23 +26,47 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				login: query.code || false,
 				scroll: {
 					top: 0,
-					docHeight: 0
+					docHeight: 0,
+					isNavSticky: false,
+					isNavExists: false
 				},
-				provider: (query.code || query.state) ? (query.code ? 'facebook' : 'google') : false
+				provider: (query.code || query.state) ? (query.code ? 'facebook' : 'google') : false,
+				watchConnection: false
 			};
 
 			this.userCookies = this.props.cookies.get('user.token');
 			this.userRFCookies = this.props.cookies.get('user.rf.token');
-			this.isLogin = this.props.cookies.get('isLogin') === 'true' && true;
 			this.uniqueId = this.props.cookies.get('uniqueid');
 			this.handleScroll = this.handleScroll.bind(this);
 			this.docBody = null;
-			this.unwatchConnection = null;
+			this.currentScrollPos = 0;
 		}
 
 		componentWillMount() {
 			// window.mmLoading.destroy();
-			
+			const { dispatch, shared } = this.props;
+			dispatch(actions.clearSnackQueue());
+
+			const offline = async (bool) => {
+				if (bool) {
+					await dispatch(actions.dismissSnack('offline'));
+					dispatch(actions.showSnack('offline', {
+						label: 'Oops, koneksi Internet kamu sepertinya terputus.',
+						timeout: 7000,
+						button: {
+							label: 'COBA LAGI',
+							action: 'reload'
+						}
+					}));
+				}
+			};
+
+			if (!shared.watchConnection) {
+				dispatch(actions.watchConnection());
+				checkConnection().then(offline);
+				watchConnection(offline);
+			}
+
 			this.initProcess().then(shouldInit => {
 				if (!shouldInit) {
 					this.initApp();
@@ -56,27 +78,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			// window.mmLoading.destroy();
 			window.addEventListener('scroll', this.handleScroll, true);
 			this.docBody = document.body;
-			const { dispatch } = this.props;
-			const con = (bool) => {
-				if (bool) {
-					dispatch(actions.showSnack(uniqid('off-'), {
-						label: 'You\'re now offline, please check your internet connection.',
-						timeout: 5000,
-						button: {
-							label: 'TUTUP'
-						}
-					}));
-				}
-			};
-
-			check().then(con);
-			const unwatch = watch(con);
-			this.unwatchConnection = unwatch;
 
 			if (typeof this.uniqueId === 'undefined') {
-				const uuid = uuidv4();
-
-				setUniqeCookie(this.props.cookies, uuid);
+				setUniqeCookie(this.props.cookies);
 			}
 		}
 
@@ -84,10 +88,6 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			window.mmLoading.play();
 			window.removeEventListener('scroll', this.handleScroll, true);
 			window.prevLocation = this.props.location;
-
-			if (this.unwatchConnection) {
-				this.unwatchConnection();
-			}
 		}
 
 		shouldLoginAnonymous() {
@@ -96,57 +96,32 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		async exeCall(token = null) {
-			const { shared, dispatch, cookies } = this.props;
+			const { shared, dispatch } = this.props;
 			const { login, provider } = this.state;
 			let tokenBearer = token === null ? this.userCookies : token.token;
-			let rfT = token === null ? this.userRFCookies : token.refresh_token;
+			const rfT = token === null ? this.userRFCookies : token.refresh_token;
+			const resp = await to(dispatch(new users.refreshToken(rfT, tokenBearer)));
 
-			const [er, resp] = await to(dispatch(new users.refreshToken(rfT, tokenBearer)));
-			if (er) {
-				this.withErrorHandling(er);
-			}
-
-			const { data } = resp.data;
+			const data = resp[1].data.data;
 
 			const isAnonymous = data.info.userid <= 1;
 			setUserCookie(this.props.cookies, data, isAnonymous);
 
 			tokenBearer = data.token;
-			rfT = data.refresh_token;
 
 			if (shared.totalCart === 0) {
-				dispatch(new actions.totalCartAction(tokenBearer))
-				.catch(error => {
-					this.withErrorHandling(error);
-				});
+				dispatch(new actions.totalCartAction(tokenBearer));
 			}
 
 			if (shared.totalLovelist === 0) {
-				dispatch(new actions.totalLovelistAction(tokenBearer))
-				.catch(error => {
-					this.withErrorHandling(error);
-				});
+				dispatch(new actions.totalLovelistAction(tokenBearer));
 			}
 			if (login && provider) {
-				const response = await to(dispatch(new users.userSocialLogin(tokenBearer, provider, login)));
-
-				if (response[0]) {
-					this.withErrorHandling(response[0]);
-				}
-			}
-
-			if (cookies.get('isLogin') === 'true') {
-				dispatch(new users.userGetProfile(tokenBearer));
+				await to(dispatch(new users.userSocialLogin(tokenBearer, provider, login)));
 			}
 
 			if (typeof doAfterAnonymousCall !== 'undefined') {
-				try {
-					await doAfterAnonymousCall.apply(this, [this.props]);
-
-				} catch (err) {
-					return this.withErrorHandling(err);
-				}
-
+				await doAfterAnonymousCall.apply(this, [this.props]);
 			}
 			return null;
 		}
@@ -165,16 +140,13 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		async loginAnonymous() {
-			const [err, response] = await to(this.props.dispatch(new users.userAnonymous()));
-			if (err) {
-				return this.withErrorHandling(err);
-			}
+			const response = await to(this.props.dispatch(new users.userAnonymous()));
 
-			setUserCookie(this.props.cookies, response.token, true);
+			setUserCookie(this.props.cookies, response[1].token, true);
 			return Promise.resolve({
 				status: 1,
 				msg: '',
-				token: response.token
+				token: response[1].token
 			});
 		}
 
@@ -183,36 +155,13 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			const { shared } = this.props;
 			const serviceUrl = _.chain(shared).get('serviceUrl').value() || false;
 			if (!serviceUrl) {
-				const [err, response] = await to(this.props.dispatch(new initAction.initAction()));
-				if (err) {
-					return this.withErrorHandling(err);
-				}
+				const response = await to(this.props.dispatch(new initAction.initAction()));
 
 				this.initApp();
-				return response;
+				return response[1];
 			}
 
 			return false;
-		}
-
-		withErrorHandling(err) {
-			const { dispatch } = this.props;
-			const { response } = err;
-
-			const errMessage = _.chain(response).get('data.error_message').value() || false;
-
-			if (errMessage) {
-				dispatch(actions.showSnack(uniqid('err-'), {
-					label: errMessage,
-					timeout: 5000,
-					button: {
-						label: 'COBA LAGI',
-						action: 'reload'
-					}
-				}));
-			}
-
-			dispatch(actions.catchErrors(response));
 		}
 
 		handleScroll(e) {
@@ -221,22 +170,33 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				this.setState({
 					scroll: {
 						top: e.target.scrollTop,
-						docHeight
+						docHeight,
+						isNavSticky: ((oldPos = this.currentScrollPos) => {
+							if (!scroll) {
+								return false;
+							}
+							this.currentScrollPos = this.state.scroll.top;
+							return this.state.scroll.top > oldPos && this.state.scroll.top < this.state.scroll.docHeight;
+						})()
 					}
 				});
 			}
 		}
 
 		render() {
-			const navbar = document.querySelector('.navigation__navigation');
+			const { scroll } = this.state;
+			const snackStyle = _.chain(this.props.shared.snackbar).get('[0].style').value() || { css: {}, sticky: true };
+			const snackCss = _.chain(snackStyle).get('css.snack').value() || {};
+			const snackSticky = !snackStyle.sticky ? {} : {
+				bottom: !scroll.isNavSticky && document.querySelector('.navigation__navigation') ? 50 : 0,
+				zIndex: !scroll.isNavSticky && document.querySelector('.navigation__navigation') ? 2 : 999
+			};
+			const customStylesCss = { ...snackStyle.css, snack: { ...snackCss, ...snackSticky } };
+
 
 			return (
 				<div>
-					<Snackbar
-						history={this.props.history}
-						location={this.props.location}
-						customStyles={{ snack: { bottom: navbar !== null ? 50 : 0, zIndex: navbar !== null ? 2 : 999 } }}
-					/>
+					<Snackbar history={this.props.history} location={this.props.location} customStyles={customStylesCss} />
 					<WrappedComponent {...this.props} scroll={this.state.scroll} />
 				</div>
 			);

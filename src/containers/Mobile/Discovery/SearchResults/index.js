@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import { to } from 'await-to-js';
 import queryString from 'query-string';
@@ -10,32 +9,30 @@ import Shared from '@/containers/Mobile/Shared';
 import SearchNotFound from '@/containers/Mobile/Discovery/SearchNotFound';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
-import { Filter, Love, Sort } from '@/containers/Mobile/Widget';
-import { actions as actionSearch } from '@/state/v4/Search';
-import Discovery from '../Utils';
+import Footer from '@/containers/Mobile/Shared/footer';
+import { Filter, Sort } from '@/containers/Mobile/Widget';
+import {
+	CatalogView,
+	GridView,
+} from '@/containers/Mobile/Discovery/View';
 
 import {
 	Header,
 	Page,
-	Card,
 	Svg,
 	Tabs,
-	Button,
-	Level,
-	Input,
 	Navigation,
 	Spinner,
-	Comment
 } from '@/components/mobile';
 
+import { actions as actionSearch } from '@/state/v4/Search';
 import { actions as searchActions } from '@/state/v4/SearchResults';
 import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 
 // TODO util management
+import Discovery from '../Utils';
 import { urlBuilder, renderIf } from '@/utils';
-import stylesSearch from '../Search/search.scss';
-import stylesCatalog from '../Category/Catalog/catalog.scss';
 
 
 class SearchResults extends Component {
@@ -46,12 +43,8 @@ class SearchResults extends Component {
 
 		const propsObject = _.chain(props.searchResults);
 		this.state = {
-			notification: {
-				show: true
-			},
 			showFilter: false,
 			showSort: false,
-			loving: false,
 			query: {
 				q: '',
 				brand_id: '',
@@ -63,14 +56,14 @@ class SearchResults extends Component {
 				sort: '',
 				...propsObject.get('query').value()
 			},
-			productComment: ''
+			isFooterShow: false
 		};
 
-		this.loadingView = <div style={{ margin: '20px auto 20px auto' }}><Spinner /></div>;
+		this.loadingView = <Spinner />;
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.query) {
+		if (nextProps.query !== this.props.query) {
 			this.setState({
 				query: nextProps.query
 			});
@@ -131,13 +124,7 @@ class SearchResults extends Component {
 			if (!_.isEmpty(response.searchData.products)) {
 				const productIdList = _.map(response.searchData.products, 'product_id') || null;
 				dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-				this.setState({
-					loving: true
-				});
-				await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
-				this.setState({
-					loving: false
-				});
+				dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 			} else {
 				dispatch(searchActions.promoAction(cookies.get('user.token')));
 			}
@@ -170,25 +157,7 @@ class SearchResults extends Component {
 
 	forceLoginNow() {
 		const { history } = this.props;
-		history.push(`/login?redirect_uri=${location.pathname}`);
-	}
-
-	writeComment(e) {
-		this.setState({
-			productComment: e.target.value
-		});
-	}
-
-	postComment = async (e, productId) => {
-		if (e.key === 'Enter') {
-			const { dispatch, cookies, searchResults } = this.props;
-			const { productComment } = this.state;
-
-			dispatch(commentActions.commentAddAction(cookies.get('user.token'), productId, productComment));
-
-			const productIdList = _.map(searchResults.searchData.products, 'product_id') || null;
-			dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-		}
+		history.push(`/login?redirect_uri=${encodeURIComponent(location.pathname + location.search)}`);
 	}
 
 	searchNotFound() {
@@ -202,31 +171,39 @@ class SearchResults extends Component {
 		);
 	}
 
-	searchFound(products) {
-		if (products.length > 0) {
-			const { scroller } = this.props;
-			const productList = _.map(products, (product, index) => {
-				return this.renderList(product, index);
-			});
+	searchFound(searchData) {
+		const { comments, scroller, viewMode } = this.props;
+		const products = searchData.products;
+		const info = searchData.info;
 
-			return (
-				<Page color='white'>
-					{this.renderForeverBanner()}
-					<div className={stylesSearch.container} >
-						<div className={stylesCatalog.cardContainer}>
-							{productList}
-							{scroller.loading && this.loadingView}
-						</div>
-					</div>
-				</Page>
+		let listView;
+		switch (viewMode.mode) {
+		case 1:
+			listView = (
+				<CatalogView comments={comments} loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={products} />
 			);
+			break;
+		case 2:
+			listView = (
+				<GridView loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={products} />
+			);
+			break;
+		default:
+			listView = null;
+			break;
 		}
-
-		return null;
+		return (
+			<Page color='white'>
+				{this.renderForeverBanner()}
+				<div className='text-center margin--medium-v'>{info.product_count} Total Produk</div>
+				{listView}
+				<Footer isShow={this.state.isFooterShow} />
+			</Page>
+		);
 	}
 
 	renderPage() {
-		const { searchResults } = this.props;
+		const { isLoading, searchResults, shared } = this.props;
 		const { showFilter } = this.state;
 
 		if (showFilter) {
@@ -241,142 +218,22 @@ class SearchResults extends Component {
 				/>
 			);
 		}
-
+		
+		const navigationAttribute = {
+			scroll: this.props.scroll
+		};
+		
+		if (shared.userPreviousPage !== 'HOME') {
+			navigationAttribute.active = 'Categories';
+		}
+		
 		return (
 			<div style={this.props.style}>
-				{this.renderSearch()}
+				{isLoading ? this.loadingView : this.renderSearch()}
 				{this.renderHeader()}
-				<Navigation scroll={this.props.scroll} />
+				<Navigation {...navigationAttribute} />
 			</div>
 		);
-	}
-
-	renderSearch() {
-		let searchView = null;
-		const { isLoading, searchResults } = this.props;
-
-		if (isLoading) {
-			searchView = this.loadingView;
-		}
-
-		if (searchResults.searchStatus === 'success' && !_.isEmpty(searchResults.searchData.products)) {
-			searchView = this.searchFound(searchResults.searchData.products);
-		} else if (searchResults.searchStatus === 'failed' || (searchResults.searchStatus === 'success' && _.isEmpty(searchResults.searchData.products))) {
-			searchView = this.searchNotFound();
-		}
-
-		return searchView;
-	}
-
-	renderList(product, index) {
-		const { isLoading, viewMode } = this.props;
-
-		const listCardCatalogAttribute = {
-			images: product.images,
-			productTitle: product.product_title,
-			brandName: product.brand.name,
-			pricing: product.pricing,
-			linkToPdp: product.url,
-			commentTotal: product.commentTotal,
-			commentUrl: product.commentUrl,
-			love: (
-				<Love
-					status={product.lovelistStatus}
-					data={product.product_id}
-					total={product.lovelistTotal}
-					onNeedLogin={(e) => this.forceLoginNow()}
-					showNumber
-				/>
-			)
-		};
-
-		const cardCatalogGridAttribute = {
-			key: index,
-			images: product.images,
-			productTitle: product.product_title,
-			brandName: product.brand.name,
-			pricing: product.pricing,
-			linkToPdp: product.url,
-			love: (
-				<Love
-					status={product.lovelistStatus}
-					data={product.product_id}
-					total={product.lovelistTotal}
-					onNeedLogin={(e) => this.forceLoginNow()}
-				/>
-			)
-		};
-
-		switch (viewMode.mode) {
-		case 1:
-			return (
-				<div key={index} className={stylesCatalog.cardCatalog}>
-					<Card.Catalog {...listCardCatalogAttribute} />
-					{isLoading ? this.renderLoading : this.renderComment(product)}
-				</div>
-			);
-		case 2:
-			return (
-				<Card.CatalogGrid {...cardCatalogGridAttribute} />
-			);
-		default:
-			return null;
-		}
-	}
-
-	renderComment(product) {
-		const { isLoading, comments } = this.props;
-
-		if (isLoading) {
-			return this.loadingView;
-		}
-
-		const commentProduct = _.find(comments.data, { product_id: product.product_id }) || false;
-		const commentLink = commentProduct ? (
-			<Link to={product.commentUrl}>
-				<Button>View {commentProduct.total} comments</Button>
-			</Link>
-		) : '';
-		const commentDetail = commentProduct ? (
-			<Comment data={commentProduct.last_comment} type='lite-review' />
-		) : '';
-
-		return (
-			<div className={stylesCatalog.commentBlock}>
-				{commentLink}
-				{commentDetail}
-				{this.renderAddComment(product.product_id)}
-			</div>
-		);
-	}
-
-	renderAddComment(productId) {
-		let addCommentView = null;
-		// if (this.isLogin === 'true') {
-		// 	addCommentView = (
-		// 		<Level>
-		// 			<Level.Item>
-		// 				<Input color='white' placeholder='Write comment' />
-		// 			</Level.Item>
-		// 		</Level>
-		// 	);
-		// } else {
-		// 	addCommentView = (
-		// 		<Level>
-		// 			<Link to='/user/login'>Log in</Link> / <Link to='/user/register'>Register</Link> untuk memberi komentar
-		// 		</Level>
-		// 	);
-		// }
-
-		addCommentView = (
-			<Level>
-				<Level.Item>
-					<Input color='white' placeholder='Write comment' onChange={(e) => this.writeComment(e)} onKeyPress={(e) => this.postComment(e, productId)} />
-				</Level.Item>
-			</Level>
-		);
-
-		return addCommentView;
 	}
 
 	renderHeader() {
@@ -392,11 +249,23 @@ class SearchResults extends Component {
 			};
 		}
 
+		const iconRightAction = () => {
+			dispatch(actionSearch.updatedKeywordHandler('', cookies.get('user.token')));
+			this.props.history.push('/search');
+		};
+
+		const onClickInputAction = () => {
+			dispatch(actionSearch.updatedKeywordHandler(this.getKeyword(), cookies.get('user.token')));
+			this.props.history.push('/search');
+		};
+
 		return (
 			<Header.SearchResult
 				rows={this.renderTabs()}
 				back={back}
 				value={this.getKeyword() || ''}
+				iconRightAction={iconRightAction}
+				onClickInputAction={onClickInputAction}
 			/>
 		);
 	}
@@ -404,8 +273,8 @@ class SearchResults extends Component {
 	renderTabs() {
 		const { searchResults, viewMode } = this.props;
 		const { showSort } = this.state;
-		let tabsView = null;
 
+		let tabsView = null;
 		if (searchResults.searchData && !_.isEmpty(searchResults.searchData.products)) {
 			const sorts = _.chain(searchResults).get('searchData.sorts').value() || [];
 			tabsView = (
@@ -442,12 +311,22 @@ class SearchResults extends Component {
 	}
 
 	renderForeverBanner() {
-		const { shared } = this.props;
-		const foreverBannerData = shared.foreverBanner;
-		foreverBannerData.show = this.state.notification.show;
-		foreverBannerData.onClose = () => this.setState({ notification: { show: false } });
+		const { shared, dispatch } = this.props;
 
-		return <ForeverBanner {...foreverBannerData} />;
+		return <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />;
+	}
+
+	renderSearch() {
+		const { searchResults } = this.props;
+
+		let searchView = null;
+		if (searchResults.searchStatus === 'success' && !_.isEmpty(searchResults.searchData.products)) {
+			searchView = this.searchFound(searchResults.searchData);
+		} else if (searchResults.searchStatus === 'failed' || (searchResults.searchStatus === 'success' && _.isEmpty(searchResults.searchData.products))) {
+			searchView = this.searchNotFound();
+		}
+
+		return searchView;
 	}
 
 	render() {
@@ -479,7 +358,7 @@ const doAfterAnonymous = async (props) => {
 		store_id: parsedUrl.store_id !== undefined && !_.isEmpty(parsedUrl.store_id) ? parseInt(parsedUrl.store_id, 10) : '',
 		category_id: parsedUrl.category_id !== undefined && !_.isEmpty(parsedUrl.category_id) ? parseInt(parsedUrl.category_id, 10) : '',
 		page: parsedUrl.page !== undefined && !_.isEmpty(parsedUrl.page) ? parseInt(parsedUrl.page, 10) : 1,
-		per_page: parsedUrl.per_page !== undefined && !_.isEmpty(parsedUrl.per_page) ? parseInt(parsedUrl.per_page, 10) : 36,
+		per_page: parsedUrl.per_page !== undefined && !_.isEmpty(parsedUrl.per_page) ? parseInt(parsedUrl.per_page, 10) : 30,
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};

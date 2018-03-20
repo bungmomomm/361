@@ -15,6 +15,7 @@ import {
 import { actions as categoryActions } from '@/state/v4/Category';
 import Shared from '@/containers/Mobile/Shared';
 import CONST from '@/constants';
+import { actions as sharedActions } from '@/state/v4/Shared';
 import { urlBuilder } from '@/utils';
 
 const buildUrl = (stringCategory = '') => {
@@ -67,10 +68,19 @@ class SubCategory extends PureComponent {
 	}
 
 	renderListCategory() {
+		const { dispatch } = this.props;
 		return (this.state.selectedCategory) && this.state.selectedCategory.sub_categories.map((cat, key) => {
 			return (
 				<List key={key}>
-					<Link style={{ flexFlow: 'row nowrap' }} to={urlBuilder.setId(cat.id).setName(cat.title).buildPcp()}>
+					<Link
+						style={{ flexFlow: 'row nowrap' }}
+						to={urlBuilder.setId(cat.id).setName(cat.title).buildPcp()}
+						onClick={
+							() => {
+								dispatch(new sharedActions.removeLogSinglePage());
+							}
+						}
+					>
 						<List.Image><Image width={40} height={40} avatar src={cat.image_url} /></List.Image>
 						<List.Content>{cat.title}</List.Content>
 					</Link>

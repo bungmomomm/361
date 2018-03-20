@@ -70,7 +70,9 @@ const SellerProfile = ({
 				</Level>
 			</div>
 			<div className='padding--medium-h margin--small-v'>
-				<div className='font-medium'>{name}</div>
+				<Link to={storeAddress} >
+					<div className='font-medium font-color--primary'>{name}</div>
+				</Link>
 				<div className='font-small flex-row flex-middle'><Svg src='ico_pinlocation-black.svg' /> <span>{location}</span></div>
 				{
 					description && <div className='font-small'><div className='content--no-img'>{description}</div></div>

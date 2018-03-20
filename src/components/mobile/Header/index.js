@@ -9,6 +9,15 @@ import Modal from './modal';
 import { withRouter, Link } from 'react-router-dom';
 
 const Header = props => {
+	
+	const { location } = props;
+	
+	let searchReference = 'home';
+	
+	if (location.pathname === '/category') {
+		searchReference = 'category';
+	}
+	
 	return (
 		<nav className={styles.container}>
 			<div className={styles.wrapper}>
@@ -22,7 +31,7 @@ const Header = props => {
 						</div>
 						<div className={styles.center}>
 							<Input
-								onFocus={() => props.history.push('/search?ref=home')}
+								onFocus={() => props.history.push(`/search?ref=${searchReference}`)}
 								placeholder=''
 								value=''
 							/>
