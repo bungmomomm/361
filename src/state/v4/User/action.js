@@ -9,12 +9,12 @@ import {
 	getClientSecret
 } from '@/utils';
 
-import { 
+import {
 	afterLogin,
 	addAfterLogin
  } from './after-login-action';
 import { userSocialLogin, userSocialLoginWithRedirect } from './social-action';
-import { checkMyOrders, getMyOrderDetail, updateMyOrdersCurrent, getMyOrderMore, cleanMyOrderData, keepReviewInfo, submitReview } from './myOrder-action';
+import { checkMyOrders, getMyOrderDetail, updateMyOrdersCurrent, getMyOrderMore, cleanMyOrderData, keepReviewInfo, submitReview, PostOrderConfirmation, getListBankConfirmation } from './myOrder-action';
 import { getTrackingInfo } from './tracking-action';
 
 const isSuccess = (response) => {
@@ -474,5 +474,7 @@ export default {
 	keepReviewInfo,
 	submitReview,
 	afterLogin,
-	addAfterLogin
+	addAfterLogin,
+	PostOrderConfirmation,
+	getListBankConfirmation
 };

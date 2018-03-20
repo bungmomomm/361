@@ -15,6 +15,7 @@ import Shared from '@/containers/Mobile/Shared';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Footer from '@/containers/Mobile/Shared/footer';
 import CONST from '@/constants';
+import { urlBuilder } from '@/utils';
 
 const renderSectionHeader = (title, options) => {
 	return (
@@ -22,7 +23,7 @@ const renderSectionHeader = (title, options) => {
 			<Level.Left><div className={styles.headline}>{title}</div></Level.Left>
 			<Level.Right>
 				{
-					options.isMozaic ? 
+					options.isMozaic ?
 						<a href={options.url || '/'} target='_blank' className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></a>
 						:
 						<Link to={options.url || '/'} className={styles.readmore}>
@@ -47,7 +48,7 @@ class Home extends Component {
 		this.isLogin = this.props.cookies.get('isLogin');
 
 		this.state = {
-			isFooterShow: true, 
+			isFooterShow: true,
 			showSmartBanner: this.props.cookies.get('sb-show') !== '0' && true
 		};
 
@@ -78,7 +79,7 @@ class Home extends Component {
 	}
 
 	renderHeroBanner() {
-		const { home } = this.props;
+		const { home, dispatch } = this.props;
 		const segment = home.activeSegment.key;
 		const featuredBanner = _.chain(home).get(`allSegmentData.${segment}`).get('heroBanner');
 		if (!featuredBanner.isEmpty().value()) {
@@ -86,7 +87,14 @@ class Home extends Component {
 			const images = featuredBanner.value()[0].images;
 			const link = featuredBanner.value()[0].link.target;
 			return (
-				<Link to={link}>
+				<Link
+					to={link}
+					onClick={
+						() => {
+							dispatch(new sharedActions.logSinglePage('HOME'));
+						}
+					}
+				>
 					<div>
 						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
 					</div>
@@ -104,12 +112,12 @@ class Home extends Component {
 		 * recommended-products,
 		 * recent-view
 		 * */
-		
+
 		const { home } = this.props;
 		const segment = home.activeSegment;
 		const title = 'LIHAT SEMUA';
 		const datas = _.chain(home).get(`allSegmentData.${segment.key}`).get('recomendationData').get(type);
-		
+
 		if (!datas.isEmpty().value()) {
 			const data = datas.value();
 			const link = `/promo/${type}?segment_id=${segment.id}`;
@@ -154,7 +162,7 @@ class Home extends Component {
 				title: datanya.mainlink.text,
 				url: baseHashtagUrl
 			});
-			
+
 			const detailHashTag = `${baseHashtagUrl}/${datanya.hashtag.replace('#', '')}-${datanya.campaign_id}`;
 
 			return (
@@ -168,7 +176,7 @@ class Home extends Component {
 										<Image lazyload shape='square' alt='thumbnail' src={gambar.images.thumbnail} />
 									</Link>
 								</div>
-								
+
 							))
 						}
 					</Grid>
@@ -179,7 +187,7 @@ class Home extends Component {
 	}
 
 	renderSquareBanner() {
-		const { home } = this.props;
+		const { home, dispatch } = this.props;
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}.squareBanner`);
 		if (!datas.isEmpty().value()) {
@@ -187,7 +195,15 @@ class Home extends Component {
 				<div className='margin--medium-v'>
 					{
 						datas.value().map(({ images, link }, c) => (
-							<Link to={link.target || '/'} key={c}>
+							<Link
+								to={link.target || '/'}
+								key={c}
+								onClick={
+									() => {
+										dispatch(new sharedActions.logSinglePage('HOME'));
+									}
+								}
+							>
 								<div>
 									<Image lazyload alt='banner' src={images.thumbnail} />
 								</div>
@@ -201,7 +217,7 @@ class Home extends Component {
 	}
 
 	renderBottomBanner(position = 'top') {
-		const { home } = this.props;
+		const { home, dispatch } = this.props;
 		const segment = home.activeSegment.key;
 		let bottomBanner = [];
 		const dataTop = _.chain(home).get(`allSegmentData.${segment}.topLanscape`);
@@ -214,7 +230,15 @@ class Home extends Component {
 				<div className='margin--medium-v'>
 					{
 						bottomBanner.map(({ images, link }, d) => (
-							<Link to={link.target || '/'} key={d}>
+							<Link
+								to={link.target || '/'}
+								key={d}
+								onClick={
+									() => {
+										dispatch(new sharedActions.logSinglePage('HOME'));
+									}
+								}
+							>
 								<div>
 									<Image lazyload alt='banner' src={images.thumbnail} />
 								</div>
@@ -249,10 +273,10 @@ class Home extends Component {
 								let url = '/';
 								switch (brand.link.type) {
 								case CONST.CATEGORY_TYPE.brand:
-									url = `/brand/${brand.brand_id}/${encodeURIComponent(brand.brand_name.toLowerCase())}`;
+									url = urlBuilder.setId(brand.brand_id).setName(brand.brand_name).buildBrand();
 									break;
-								case CONST.CATEGORY_TYPE.category: // TODO : must change if api ready
-									url = `/brand/${brand.brand_id}/${encodeURIComponent(brand.brand_name.toLowerCase())}`;
+								case CONST.CATEGORY_TYPE.category:
+									url = `${brand.link.target}/${brand.brand_name}`;
 									break;
 								default:
 									url = `/category/${CONST.SEGMENT_DEFAULT_SELECTED.key}`;
@@ -340,10 +364,10 @@ class Home extends Component {
 
 					<Footer isShow={this.state.isFooterShow} />
 				</Page>
-				<SmartBanner 
-					title='MatahariMall' 
-					iconSrc='app-icon.png' 
-					author='PT Solusi Ecommerce Global' 
+				<SmartBanner
+					title='MatahariMall'
+					iconSrc='app-icon.png'
+					author='PT Solusi Ecommerce Global'
 					googlePlay='com.mataharimall.mmandroid'
 					appStore='1033108124'
 					isShow={this.state.showSmartBanner}
@@ -351,9 +375,9 @@ class Home extends Component {
 					scroll={this.props.scroll}
 				/>
 
-				<Header 
-					lovelist={shared.totalLovelist} 
-					value={this.props.search.keyword} 
+				<Header
+					lovelist={shared.totalLovelist}
+					value={this.props.search.keyword}
 				/>
 				<Navigation active='Home' scroll={this.props.scroll} totalCartItems={shared.totalCart} />
 			</div>

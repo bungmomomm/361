@@ -6,9 +6,9 @@ import Carousel from '../Carousel';
 import Button from '../Button';
 import Level from '../Level';
 import Badge from '../Badge';
+import Comment from '../Comment';
 import styles from './card.scss';
 import { Link } from 'react-router-dom';
-import { urlBuilder } from '@/utils';
 import _ from 'lodash';
 
 class Lovelist extends PureComponent {
@@ -18,6 +18,7 @@ class Lovelist extends PureComponent {
 			slideIndex: 0
 		};
 
+		this.slideWrapAround = true;
 		this.setCarouselSlideIndex = this.setCarouselSlideIndex.bind(this);
 	}
 
@@ -38,24 +39,36 @@ class Lovelist extends PureComponent {
 	}
 
 	render() {
-		const { className, type, data, isLoved } = this.props;
+		const { className, type, data, isLoved, linkToPdp, linkToComments, lovelistDisabled } = this.props;
 		const createClassName = classNames(styles.container, styles[type], className);
-		const linkToPdpCreator = urlBuilder.buildPdp(data.product_title, data.id);
 		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
-		const slideIndex = this.getSlideIndex();
+
+		const discountBadge = data.pricing.discount !== '0%' ? (
+			<div style={{ marginLeft: '1.5rem' }}>
+				<Badge rounded color='red'>
+					<span className='font--lato-bold'>{data.pricing.discount}</span>
+				</Badge>
+			</div>
+		) : '';
+
+		const basePrice = data.pricing.discount !== '0%' ? (
+			<div className={styles.discount}>{data.pricing.formatted.base_price}</div>
+		) : '';
+
+		const loveButton = (
+			<Button onClick={this.props.onBtnLovelistClick} data-id={data.id} disabled={lovelistDisabled} >
+				<Svg src={loveIcon} />
+				<span>{data.totalLovelist} Suka</span>
+			</Button>
+		);
 
 		return (
-			<div className={createClassName}>
-				<Link to={linkToPdpCreator}>
-					<Carousel
-						slideIndex={slideIndex}
-						afterSlide={this.setCarouselSlideIndex}
-					>
+			<div className={createClassName} >
+				<Link to={linkToPdp}>
+					<Carousel wrapAround={this.slideWrapAround} >
 						{
-							data.images.map((image, idx) => (
-								<div tabIndex='0' role='button' onClick={this.props.onImageItemClick} key={idx} data-img={image.mobile}>
-									<Image src={image.mobile} alt={data.product_title} />
-								</div>
+							data.images.map((image, index) => (
+								<Image key={index} src={image.thumbnail} lazyload alt={data.product_title} />
 							))
 						}
 					</Carousel>
@@ -65,42 +78,43 @@ class Lovelist extends PureComponent {
 					style={{ borderBottom: '1px solid #D8D8D8' }}
 				>
 					<Level.Item>
-						<Button onClick={this.props.onBtnLovelistClick} data-id={data.id}>
-							<Svg src={loveIcon} />
-							{data.totalLovelist}
-						</Button>
+						{loveButton}
 					</Level.Item>
 					<Level.Item>
-						<Button onClick={this.props.onBtnCommentClick}>
-							<Svg src='ico_comment.svg' />
-							{data.totalComments || 0}
-						</Button>
+						<Link to={(linkToComments) || '/'}>
+							<Button wide>
+								<Svg src='ico_comment.svg' />
+								<span>{data.totalComments} Komentar</span>
+							</Button>
+						</Link>
 					</Level.Item>
 				</Level>
-				<div className={styles.title}>
-					<span className='font-small text-uppercase font--lato-bold font-color--primary'>{data.brand.brand_name}</span>
-					<span className='text-elipsis-two-line font-color--primary-ext-2'>{data.product_title}</span>
+				<Link to={(linkToPdp) || '/'}>
+					<div className={styles.title}>
+						<span className='font-small text-uppercase font--lato-bold font-color--primary'>{data.brand.name}</span>
+						<span className='text-elipsis-two-line font-color--primary-ext-2'>{data.product_title}</span>
+					</div>
+					<Level className='padding--none-t'>
+						<Level.Item>
+							<div className={styles.blockPrice}>
+								<div>
+									<div className={styles.price}>{data.pricing.formatted.effective_price}</div>
+									{basePrice}
+								</div>
+								{discountBadge}
+							</div>
+						</Level.Item>
+						<Level.Right>&nbsp;</Level.Right>
+					</Level>
+				</Link>
+				<div className='margin--medium-v --disable-flex padding--medium-h'>
+					<Link to={linkToComments} className='font--lato-normal font-color--primary-ext-2'>
+						{(data.totalComments > 0) ? `Lihat ${data.totalComments} Komentar` : 'Belum Ada Komentar'}
+					</Link>
+					{((typeof data.last_comments !== 'undefined') && data.last_comments.length > 0) && (
+						<Comment type='lite-review' data={data.last_comments} />
+					)}
 				</div>
-				<Level className={styles.footer}>
-					<Level.Item>
-						<div className={styles.blockPrice}>
-							<div>
-								<div className={styles.price}>{data.pricing.formatted.effective_price}</div>
-								<div className={styles.discount}>{data.pricing.formatted.base_price}</div>
-							</div>
-							<div style={{ marginLeft: '1.5rem' }}>
-								<Badge rounded color='red'>
-									<span className='font--lato-bold'>{data.pricing.discount}</span>
-								</Badge>
-							</div>
-						</div>
-					</Level.Item>
-					<Level.Right>
-						<Button color='secondary' size='medium' rounded onClick={this.props.onBtnBeliClick}>
-							Beli aja
-						</Button>
-					</Level.Right>
-				</Level>
 			</div>
 		);
 	}

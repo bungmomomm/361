@@ -255,7 +255,7 @@ class Product extends Component {
 	}
 
 	renderPage() {
-		const { productCategory } = this.props;
+		const { productCategory, shared } = this.props;
 		const { showFilter } = this.state;
 		if (showFilter) {
 			return (
@@ -269,11 +269,22 @@ class Product extends Component {
 				/>
 			);
 		}
+		
+		const navigationAttribute = {
+			scroll: this.props.scroll
+		};
+		
+		if (shared.userPreviousPage !== 'HOME') {
+			navigationAttribute.active = 'Categories';
+		}
+		
 		return (
 			<div style={this.props.style}>
 				{this.productsBlock()}
 				{this.headerBlock()}
-				<Navigation active='Categories' scroll={this.props.scroll} />
+				<Navigation
+					{...navigationAttribute}
+				/>
 			</div>
 		);
 	}

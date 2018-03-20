@@ -173,7 +173,7 @@ const getLovelisItems = (token) => async (dispatch, getState) => {
 	dispatch(getList(response.data.data));
 	dispatch(setLoadingState({ loading: false }));
 
-	return Promise.resolve(response);
+	return Promise.resolve(response.data.data);
 };
 
 /**
@@ -212,11 +212,8 @@ const bulkieCountByProduct = (token, productId) => async (dispatch, getState) =>
 	return Promise.reject(new Error('Invalid ProductIds'));
 };
 
-const getProductBulk = (productId) => (dispatch, getState) => {
-	const { lovelist } = getState();
-	const { bulkieCountProducts } = lovelist;
-	const product = bulkieCountProducts.find((item) => (item.product_id === productId));
-
+const getBulkItem = (bulkies, productId) => {
+	const product = bulkies.find((item) => (item.product_id === productId));
 	return !_.isUndefined(product) ? product : false;
 };
 
@@ -227,6 +224,6 @@ export default {
 	bulkieCountByProduct,
 	getLovelisItems,
 	setLoadingState,
-	getProductBulk,
+	getBulkItem,
 	sendLovedItemToEmarsys
 };

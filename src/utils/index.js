@@ -13,6 +13,7 @@ import urlBuilder from './urlBuilder';
 import loading from './loading';
 import { request as emarsysRequest } from './emarsys';
 import uniqid from './uniqid';
+import stringHelper from './stringHelper';
 
 const isHexColor = (color) => {
 	return /(^#[0-9A-F]{3}|^#[0-9A-F]{6})$/i.test(color);
@@ -72,5 +73,6 @@ export default {
 	isHexColor,
 	loading,
 	emarsysRequest,
-	uniqid
+	uniqid,
+	stringHelper
 };

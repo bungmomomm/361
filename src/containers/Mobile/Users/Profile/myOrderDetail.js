@@ -113,7 +113,7 @@ class MyOrderDetail extends Component {
 								<strong>{item.pricing.formatted.price}</strong>
 							</Level.Right>
 						</Level>
-						{(item.fg_have_review === 0 && myOrdersDetail.group === 'selesai') && (
+						{(order.is_digital_order !== 0 && item.fg_have_review === 0 && myOrdersDetail.group === 'selesai') && (
 							<Link to={'/profile/my-order/add-review'} onClick={() => this.onAddReview(order.so_store_number, order.seller, item)}>
 								<Button rounded size='medium' color='secondary'>BERI ULASAN</Button>
 							</Link>

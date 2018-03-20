@@ -4,7 +4,7 @@ import { createStore, compose, applyMiddleware } from 'redux';
 import { apiMiddleware } from 'redux-api-middleware';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { Provider } from 'react-redux';
-import thunkMiddleware from 'redux-thunk';
+import thunkMiddleware from '@/thunk';
 import reducers from '@/reducers';
 import { CookiesProvider } from 'react-cookie';
 
@@ -18,13 +18,13 @@ const Router = require('react-router-dom').BrowserRouter;
 // eslint-disable-next-line
 const initialState = window.__REDUX_STATE__;
 
-const store = process.env.NODE_ENV === 'development' ? 
+const store = process.env.NODE_ENV === 'development' ?
 	createStore(reducers, initialState, composeWithDevTools(
 		applyMiddleware(thunkMiddleware, apiMiddleware)
-	)) : 
+	)) :
 	createStore(reducers, initialState, compose(
 		applyMiddleware(thunkMiddleware, apiMiddleware)
-	)); 
+	));
 
 /**
  * Render App component
@@ -41,11 +41,11 @@ const renderComponent = () => {
 				<Router>
 					<App />
 				</Router>
-			</CookiesProvider>	
+			</CookiesProvider>
 		</Provider>
 
 	);
-	
+
 };
 
 /**
@@ -58,7 +58,7 @@ render(renderComponent(), document.getElementById('root'));
  */
 
 if (module.hot) {
-	
+
 	module.hot.accept('@/containers/App', () => render(renderComponent(), document.getElementById('root')));
 	module.hot.accept('@/reducers', () => store.replaceReducer(require('@/reducers')));
 
