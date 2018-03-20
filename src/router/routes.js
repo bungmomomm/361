@@ -188,7 +188,7 @@ export default {
 		},
 		{
 			path: '/profile-my-order-confirm',
-			component: loadable(() => import('@/containers/Mobile/Users/Profile/myOrderConfirm'), defaultOptions)
+			component: loadable(() => import('@/containers/Mobile/Order/Confirmation'), defaultOptions)
 		},
 		{
 			path: '/profile-credit-card',
