@@ -48,7 +48,6 @@ const reducer = handleActions({
 		};
 	},
 	[setSubCategory](state, { payload: { sub_category } }) {
-		console.log('redux ', sub_category);
 		return {
 			...state,
 			sub_category
