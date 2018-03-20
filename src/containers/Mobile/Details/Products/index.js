@@ -561,6 +561,7 @@ class Products extends Component {
 				<div>
 					<Page color='white'>
 						<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
+							{(_.isEmpty(cardProduct) || !_.has(cardProduct, 'images')) && this.loadingContent}
 							{!_.isEmpty(cardProduct) && (
 								<div ref={(n) => { this.carouselEL = n; }}>
 									<Card.Product
@@ -705,6 +706,7 @@ class Products extends Component {
 									promo={promo}
 									loading={status.loading}
 									loginNow={() => this.loginNow()}
+									productId={detail.id}
 								/>
 
 							</div>
