@@ -109,7 +109,7 @@ class Search extends PureComponent {
 				const keywordForHistory = (type === this.SUGGEST_CATEGORY) ? this.state.keyword : list.text;
 				return (
 					<li key={Math.random()} >
-						<Link to={pathProd} onClick={() => this.setCookieSearch(keywordForHistory, list.text, list.value, cookieType)}>
+						<Link to={pathProd} onClick={() => this.setCookieSearch(keywordForHistory, list.value, cookieType)}>
 							{this.titleMaker(type, list.text)}
 						</Link>
 					</li>);
