@@ -4,6 +4,7 @@ import { Header, Page, Spinner } from '@/components/mobile';
 import styles from './search.scss';
 import { connect } from 'react-redux';
 import { actions as actionSearch } from '@/state/v4/Search';
+import { actions as sharedActions } from '@/state/v4/Shared';
 import { Link } from 'react-router-dom';
 import CONST from '@/constants';
 import Shared from '@/containers/Mobile/Shared';
@@ -76,6 +77,11 @@ class Search extends PureComponent {
 
 	enterSearchHandler(event) {
 		if (event.key === 'Enter') {
+			const { location, dispatch } = this.props;
+			dispatch(new sharedActions.removeLogSinglePage());
+			if (location.search === '?ref=home') {
+				dispatch(new sharedActions.logSinglePage('HOME'));
+			}
 			this.setCookieSearch(event.target.value, event.target.value, this.SUGGEST_KEYWORD);
 			const pathProd = `/products?category_id=&query=${encodeURIComponent(event.target.value)}`;
 			this.props.history.push(pathProd);
@@ -248,6 +254,7 @@ class Search extends PureComponent {
 			if (this.props.location.search === '?ref=home') {
 				const { dispatch } = this.props;
 				dispatch(actionSearch.updatedKeywordHandler('', this.userToken));
+				dispatch(sharedActions.logSinglePage('HOME'));
 				this.props.history.push('/');
 			} else {
 				this.props.history.goBack();
