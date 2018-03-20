@@ -72,7 +72,6 @@ class MyOrderDetail extends Component {
 	}
 
 	onAddReview(soStoreNumber, seller, item) {
-		console.log('MyOrder Detail item', { soStoreNumber, seller, item });
 		const { dispatch } = this.props;
 		dispatch(userAction.keepReviewInfo({ soStoreNumber, seller, item }));
 	}
@@ -105,9 +104,7 @@ class MyOrderDetail extends Component {
 	renderOrderList() {
 		const myOrdersDetail = this.props.user.myOrdersDetail;
 		const listOrderDetail = myOrdersDetail && (myOrdersDetail.sales_orders.map((order, key) => {
-			console.log('order', order);
 			const items = order.items.map((item, iKey) => {
-				console.log('item', item);
 				return (
 					<div key={iKey}>
 						<Level className='bg--white border-bottom'>
