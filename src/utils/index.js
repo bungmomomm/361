@@ -13,6 +13,7 @@ import urlBuilder from './urlBuilder';
 import loading from './loading';
 import { request as emarsysRequest } from './emarsys';
 import uniqid from './uniqid';
+import stringHelper from './stringHelper';
 
 const isHexColor = (color) => {
 	return /(^#[0-9A-F]{3}|^#[0-9A-F]{6})$/i.test(color);
@@ -44,8 +45,7 @@ const getSessionID = (cname) => {
 	const decodedCookie = decodeURIComponent(document.cookie);
 	const ca = decodedCookie.split(';');
 	const cookieWithValue = ca.find((e) => e.includes(name));
-
-	return cookieWithValue.replace(name, '');
+	return cookieWithValue !== undefined ? cookieWithValue.replace(name, '') : Date.now();
 };
 
 export default {
@@ -73,5 +73,6 @@ export default {
 	isHexColor,
 	loading,
 	emarsysRequest,
-	uniqid
+	uniqid,
+	stringHelper
 };

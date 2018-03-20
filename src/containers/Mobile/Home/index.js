@@ -21,6 +21,7 @@ import {
 	impressionsPushedBuilder,
 	sendGtm,
 } from '@/utils/tracking';
+import { urlBuilder } from '@/utils';
 
 const renderSectionHeader = (title, options) => {
 	return (
@@ -112,7 +113,7 @@ class Home extends Component {
 	}
 
 	renderHeroBanner() {
-		const { home } = this.props;
+		const { home, dispatch } = this.props;
 		const segment = home.activeSegment.key;
 		const featuredBanner = _.chain(home).get(`allSegmentData.${segment}`).get('heroBanner');
 		if (!featuredBanner.isEmpty().value()) {
@@ -120,7 +121,14 @@ class Home extends Component {
 			const images = featuredBanner.value()[0].images;
 			const link = featuredBanner.value()[0].link.target;
 			return (
-				<Link to={link}>
+				<Link
+					to={link}
+					onClick={
+						() => {
+							dispatch(new sharedActions.logSinglePage('HOME'));
+						}
+					}
+				>
 					<div>
 						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
 					</div>
@@ -213,7 +221,7 @@ class Home extends Component {
 	}
 
 	renderSquareBanner() {
-		const { home } = this.props;
+		const { home, dispatch } = this.props;
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}.squareBanner`);
 		if (!datas.isEmpty().value()) {
@@ -221,7 +229,15 @@ class Home extends Component {
 				<div className='margin--medium-v'>
 					{
 						datas.value().map(({ images, link }, c) => (
-							<Link to={link.target || '/'} key={c}>
+							<Link
+								to={link.target || '/'}
+								key={c}
+								onClick={
+									() => {
+										dispatch(new sharedActions.logSinglePage('HOME'));
+									}
+								}
+							>
 								<div>
 									<Image lazyload alt='banner' src={images.thumbnail} />
 								</div>
@@ -235,7 +251,7 @@ class Home extends Component {
 	}
 
 	renderBottomBanner(position = 'top') {
-		const { home } = this.props;
+		const { home, dispatch } = this.props;
 		const segment = home.activeSegment.key;
 		let bottomBanner = [];
 		const dataTop = _.chain(home).get(`allSegmentData.${segment}.topLanscape`);
@@ -248,7 +264,15 @@ class Home extends Component {
 				<div className='margin--medium-v'>
 					{
 						bottomBanner.map(({ images, link }, d) => (
-							<Link to={link.target || '/'} key={d}>
+							<Link
+								to={link.target || '/'}
+								key={d}
+								onClick={
+									() => {
+										dispatch(new sharedActions.logSinglePage('HOME'));
+									}
+								}
+							>
 								<div>
 									<Image lazyload alt='banner' src={images.thumbnail} />
 								</div>
@@ -283,10 +307,10 @@ class Home extends Component {
 								let url = '/';
 								switch (brand.link.type) {
 								case CONST.CATEGORY_TYPE.brand:
-									url = `/brand/${brand.brand_id}/${encodeURIComponent(brand.brand_name.toLowerCase())}`;
+									url = urlBuilder.setId(brand.brand_id).setName(brand.brand_name).buildBrand();
 									break;
-								case CONST.CATEGORY_TYPE.category: // TODO : must change if api ready
-									url = `/brand/${brand.brand_id}/${encodeURIComponent(brand.brand_name.toLowerCase())}`;
+								case CONST.CATEGORY_TYPE.category:
+									url = `${brand.link.target}/${brand.brand_name}`;
 									break;
 								default:
 									url = `/category/${CONST.SEGMENT_DEFAULT_SELECTED.key}`;

@@ -27,49 +27,6 @@ const getAddress = (token) => async (dispatch, getState) => {
 	return Promise.resolve(resp);
 };
 
-const getProvinces = (token) => async (dispatch, getState) => {
-	const st = getState();
-
-	if (!st.address.data.provinces.length) {
-		const url = _.chain(st.shared).get('serviceUrl.account.url').value() || false;
-		if (!url) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
-
-		const [err, resp] = await to(request({
-			token,
-			path: `${url}/location/provinces`,
-			method: 'GET',
-			fullpath: true
-		}));
-
-		if (err) {
-			return Promise.reject(err);
-		}
-
-		const optProvinces = resp.data.data.provinces.filter((v) => {
-			return v.id || false;
-		}).map((prov) => {
-			return {
-				label: prov.name,
-				value: prov.id
-			};
-		});
-		optProvinces.unshift({ label: '- Select Province -', value: '' });
-
-		dispatch(address({
-			data: {
-				...st.address.data,
-				provinces: resp.data.data.provinces,
-			},
-			options: {
-				...st.address.options,
-				provinces: optProvinces,
-			}
-		}));
-	}
-
-	return Promise.resolve(st.address);
-};
-
 const getCity = (token, query = {}) => async (dispatch, getState) => {
 	const st = getState();
 	const url = _.chain(st.shared).get('serviceUrl.account.url').value() || false;
@@ -88,11 +45,11 @@ const getCity = (token, query = {}) => async (dispatch, getState) => {
 	}
 
 	const optCities = resp.data.data.cities.filter((v) => {
-		return v.id || false;
+		return (v.city_id && `${v.province_id}_${v.city_id}`) || false;
 	}).map((city) => {
 		return {
 			label: city.name,
-			value: city.id
+			value: `${city.province_id}_${city.city_id}`
 		};
 	});
 	optCities.unshift({ label: '- Select City -', value: '' });
@@ -257,7 +214,6 @@ const mutateState = (data) => async (dispatch) => {
 
 export default {
 	getAddress,
-	getProvinces,
 	getCity,
 	getDistrict,
 	addAddress,
