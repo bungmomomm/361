@@ -156,7 +156,8 @@ const submitReview = (token, data) => async (dispatch, getState) => {
 
 const PostOrderConfirmation = (token, bodyData) => async (dispatch, getState) => {
 	
-	const baseUrl = 'https://private-9802b-mmv4microservices.apiary-mock.com';
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
 	const requestData = {
 		token,
 		path: `${baseUrl}/order/paymentconfirm/add`,
@@ -180,8 +181,9 @@ const PostOrderConfirmation = (token, bodyData) => async (dispatch, getState) =>
 
 
 const getListBankConfirmation = (token) => async (dispatch, getState) => {
-	
-	const baseUrl = 'https://private-9802b-mmv4microservices.apiary-mock.com';
+ 
+	const { shared } = getState();
+	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
 	const requestData = {
 		token,
 		path: `${baseUrl}/order/paymentconfirm/banklist`,
