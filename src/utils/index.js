@@ -44,8 +44,7 @@ const getSessionID = (cname) => {
 	const decodedCookie = decodeURIComponent(document.cookie);
 	const ca = decodedCookie.split(';');
 	const cookieWithValue = ca.find((e) => e.includes(name));
-
-	return cookieWithValue.replace(name, '');
+	return cookieWithValue !== undefined ? cookieWithValue.replace(name, '') : Date.now();
 };
 
 export default {
