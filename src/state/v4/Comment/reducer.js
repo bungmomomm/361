@@ -6,16 +6,15 @@ const initialState = {
 		links: '',
 		product: ''
 	},
-	loading: false,
-	loadingLoadMore: false
+	isLoading: false
 };
 
 const {
 	commentList,
 	commentListNext,
 	commentLoading,
-	commentLoadingLoadMore,
 	addComment,
+	addCommentDetail,
 	commentListLoad, 
 	commentListLoadFail, 
 	commentListLoaded 
@@ -23,8 +22,8 @@ const {
 	'COMMENT_LIST',
 	'COMMENT_LIST_NEXT',
 	'COMMENT_LOADING',
-	'COMMENT_LOADING_LOAD_MORE',
 	'ADD_COMMENT',
+	'ADD_COMMENT_DETAIL',
 	'COMMENT_LIST_LOAD',
 	'COMMENT_LIST_LOAD_FAIL',
 	'COMMENT_LIST_LOADED'
@@ -35,7 +34,7 @@ const reducer = handleActions({
 		return {
 			...state,
 			data,
-			loading: false
+			isLoading: false
 		};
 	},
 	[commentListNext](state, { payload: { data } }) {
@@ -48,31 +47,31 @@ const reducer = handleActions({
 					...state.data.comments
 				]
 			},
-			loadingLoadMore: false
+			isLoading: false
 		};
 	},
-	[commentLoading](state, { payload: { loading } }) {
+	[commentLoading](state, { payload: { isLoading } }) {
 		return {
 			...state,
-			loading
+			isLoading
 		};
 	},
-	[commentLoadingLoadMore](state, { payload: { loadingLoadMore } }) {
+	[addComment](state, { payload: { data } }) {
 		return {
 			...state,
-			loadingLoadMore
+			data,
+			isLoading: false
 		};
 	},
-	[addComment](state, { payload: { newComment } }) {
+	[addCommentDetail](state, { payload: { newComment } }) {
 		return {
 			...state,
 			data: {
 				...state.data,
 				comments: newComment
 			},
-			loading: false
+			isLoading: false
 		};
-
 	},
 	[commentListLoad](state, { payload: { isLoading, data } }) {
 		return {
@@ -100,8 +99,8 @@ export default {
 	commentList,
 	commentListNext,
 	commentLoading,
-	commentLoadingLoadMore,
 	addComment,
+	addCommentDetail,
 	commentListLoad,
 	commentListLoadFail,
 	commentListLoaded 

@@ -6,8 +6,8 @@ import {
 	commentList,
 	commentListNext,
 	commentLoading, 
-	commentLoadingLoadMore, 
 	addComment,
+	addCommentDetail,
 	commentListLoaded,
 	commentListLoad,
 	commentListFailed
@@ -41,13 +41,13 @@ const newCommentData = (commentState, newComment) => {
 	return commentData;
 };
 
-const commentAddAction = (token, productId, comment) => async (dispatch, getState) => {
+const commentAddAction = (token, productId, comment, source = null) => async (dispatch, getState) => {
 	const { shared, comments } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
-	dispatch(commentLoading({ loading: true }));
+	dispatch(commentLoading({ isLoading: true }));
 
 	const [err, response] = await to(request({
 		token,
@@ -61,14 +61,18 @@ const commentAddAction = (token, productId, comment) => async (dispatch, getStat
 	}));
 
 	if (err) {
-		dispatch(commentLoading({ loading: false }));
+		dispatch(commentLoading({ isLoading: false }));
 		return Promise.reject(err);
 	}
 
 	const data = response.data.data;
-	const firstNewComment = _.head(data);
-	const newComment = newCommentData(comments.data.comments, firstNewComment);
-	dispatch(addComment({ newComment }));
+	if (source === null) {
+		const firstNewComment = _.head(data);
+		const newComment = newCommentData(comments.data.comments, firstNewComment);
+		dispatch(addCommentDetail({ newComment }));
+	} else {
+		dispatch(addComment({ data }));
+	}
 
 	return Promise.resolve(data);
 };
@@ -79,11 +83,7 @@ const productCommentAction = (token, productId, page = 1) => async (dispatch, ge
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
-	if (page > 1) {
-		dispatch(commentLoadingLoadMore({ loadingLoadMore: true }));
-	} else {
-		dispatch(commentLoading({ loading: true }));
-	}
+	dispatch(commentLoading({ isLoading: true }));
 
 	const perPage = 10;
 	const [err, response] = await to(request({
@@ -94,8 +94,7 @@ const productCommentAction = (token, productId, page = 1) => async (dispatch, ge
 	}));
 
 	if (err) {
-		dispatch(commentLoading({ loading: false }));
-		dispatch(commentLoadingLoadMore({ loadingLoadMore: false }));
+		dispatch(commentLoading({ isLoading: false }));
 		return Promise.reject(err);
 	}
 

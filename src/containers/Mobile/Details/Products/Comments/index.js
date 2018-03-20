@@ -215,15 +215,15 @@ class Comments extends Component {
 	}
 
 	render() {
-		const { isLoading, isLoadingLoadMore, isLoadingProfile } = this.props;
+		const { isLoadingProfile } = this.props;
 
 		return (
 			<div>
 				<div className={styles.commentsBackground} />
 				<Page style={{ paddingTop: 0 }} color='white'>
 					<div className='margin--medium-v'>
-						{isLoading ? this.renderLoading : this.renderDetail()}
-						{isLoadingLoadMore ? this.renderLoading : this.renderComments()}
+						{this.renderDetail()}
+						{this.renderComments()}
 					</div>
 				</Page>
 				{this.renderHeader()}
@@ -237,8 +237,7 @@ const mapStateToProps = (state) => {
 		...state,
 		comments: state.comments.data || '',
 		product: state.comments.data.product || '',
-		isLoading: state.comments.loading,
-		isLoadingLoadMore: state.comments.loadingLoadMore,
+		isLoading: state.comments.isLoading,
 		isLoadingProfile: state.users.isLoading,
 		userProfile: state.users.userProfile
 	};
