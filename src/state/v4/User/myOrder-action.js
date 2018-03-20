@@ -8,7 +8,7 @@ import { actions } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 
 const configs = {
-	defaultPage: 20
+	defaultPage: 10
 };
 
 const updateMyOrdersCurrent = (newStatus) => async (dispatch, getState) => {
@@ -155,7 +155,7 @@ const submitReview = (token, data) => async (dispatch, getState) => {
 };
 
 const PostOrderConfirmation = (token, bodyData) => async (dispatch, getState) => {
-	
+
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
 	const requestData = {
@@ -165,23 +165,23 @@ const PostOrderConfirmation = (token, bodyData) => async (dispatch, getState) =>
 		fullpath: true,
 		body: bodyData
 	};
-	
+
 	const [err, response] = await to(
 		request(requestData)
 	);
-	
+
 	if (err) {
-		
+
 		return Promise.reject(err);
 	}
-	
+
 	return Promise.resolve(response);
-	
+
 };
 
 
 const getListBankConfirmation = (token) => async (dispatch, getState) => {
- 
+
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
 	const requestData = {
@@ -190,13 +190,13 @@ const getListBankConfirmation = (token) => async (dispatch, getState) => {
 		method: 'GET',
 		fullpath: true
 	};
-	
+
 	const [err, response] = await to(request(requestData));
-	
+
 	if (err) {
 		return Promise.reject(err);
 	}
-	
+
 	dispatch(actions.userBankList(response.data.data));
 	return Promise.resolve(response);
 };

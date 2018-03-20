@@ -85,13 +85,20 @@ class MyOrder extends Component {
 		dispatch(userAction.updateMyOrdersCurrent(newState.key));
 		this.getCurrentOrdes(this.props, newState);
 		dispatch(userAction.cleanMyOrderData());
-		
+
 	}
 
 	renderOrders() {
-		const currentOrders = this.props.user.myOrders[this.props.user.myOrdersCurrent];
+		const { user } = this.props;
+		const currentOrders = user.myOrders[user.myOrdersCurrent];
 		const className = classNames('orderStatus');
 
+		let styleStatus = styles.orderStatusProcess;
+		if (user.myOrdersCurrent === 'batal') {
+			styleStatus = styles.orderStatusCancel;
+		} else if (user.myOrdersCurrent === 'selesai') {
+			styleStatus = styles.orderStatusSuccess;
+		}
 		return currentOrders.orders && (
 			currentOrders.orders.map((order, key) => {
 				return (<List className={styles.orderMenu} key={key}>
@@ -100,9 +107,7 @@ class MyOrder extends Component {
 							<div className={className}>
 								<span>Pesanan <b>#{order.so_number}</b></span>
 								<small className='font-color--primary-ext-3'>{order.created_time}</small>
-								<div className={styles.orderStatus}><span className={styles.orderStatusProcess}>{order.status}</span></div>
-								{/* <div className={styles.orderStatus}><span className={styles.orderStatusSuccess}>{order.status}</span></div> */}
-								{/* <div className={styles.orderStatus}><span  className={styles.orderStatusCancel}>{order.status}</span></div> */}
+								<div className={styles.orderStatus}><span className={styleStatus}>{order.status}</span></div>
 							</div>
 						</List.Content>
 					</Link>
@@ -137,7 +142,9 @@ class MyOrder extends Component {
 		const content = (this.props.user.isNoOrders === false) ? (
 			<aux>
 				{ this.renderOrders() }
-				{ this.props.scroller.loading && (<Spinner />)}
+				<div className='text-center'>
+					{ this.props.scroller.loading && (<Spinner />)}
+				</div>
 			</aux>
 		) : (<aux> {renderEmptyOrders} </aux>);
 

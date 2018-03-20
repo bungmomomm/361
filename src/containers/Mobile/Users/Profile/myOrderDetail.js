@@ -118,9 +118,12 @@ class MyOrderDetail extends Component {
 											<strong className='margin--small-t'>{item.pricing.formatted.price}</strong>
 										</div>
 									</div>
-									{ /* <div>
-										<Button rounded size='medium' color='secondary' className='margin--medium-t text-uppercase'>BELI AJA</Button>
-									</div> */ }
+									{ myOrdersDetail.group === 'batal' && (
+										<div>
+											<Button rounded size='medium' color='secondary' className='margin--medium-t text-uppercase'>BELI AJA</Button>
+										</div>
+									)}
+
 								</div>
 							</Level.Item>
 						</Level>
