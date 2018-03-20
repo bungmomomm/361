@@ -1,13 +1,22 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Page, Header, Image, Svg, Table } from '@/components/mobile';
+import { Page, Header, Image, Svg, Table, Button } from '@/components/mobile';
 
-const Comments = () => {
+const Comments = (props) => {
+	
+	const goToPreviousPage = (e) => {
+		const { history } = props;
+		if ((history.length - 1 >= 0)) {
+			history.goBack();
+		} else {
+			history.push('/');
+		}
+	};
+
 	const HeaderOption = {
 		left: (
-			<Link to='/'>
+			<Button onClick={goToPreviousPage} >
 				<Svg src={'ico_arrow-back-left.svg'} />
-			</Link>
+			</Button>
 		),
 		center: 'Panduan Ukuran',
 		right: null

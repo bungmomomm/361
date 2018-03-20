@@ -197,6 +197,7 @@ const getProductCardData = (details) => {
 							disabled: (typeof variant.stock !== 'undefined' && variant.stock === 0),
 							data: variant
 						});
+						variantsData[val] = variant;
 					} else {
 						productVariants.push(variant);
 					}

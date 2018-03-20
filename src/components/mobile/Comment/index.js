@@ -51,6 +51,31 @@ class Comment extends Component {
 		const { className, data, ...props } = this.props;
 		const createClassName = classNames(styles.container, className);
 
+		if (this.props.type === 'review-reply') {
+			try {
+				
+				const { sellerData, replyData } = this.props;
+				return (
+					<div className={createClassName} >
+						<Level style={{ paddingBottom: '5px' }} className='flex-center'>
+							<Level.Left>
+								<Image height={30} width={30} avatar src={sellerData.seller_logo} />
+							</Level.Left>
+							<Level.Item>
+								<div className='padding--medium-h font--lato-bold'>{sellerData.seller}</div>
+							</Level.Item>
+						</Level>
+						<div className='padding--normal-h border-bottom padding--small-b' style={{ marginLeft: '45px' }}>
+							<div>{replyData.reply}</div>
+							<div className='margin--small-v font-small font-color--primary-ext-2'>Post updated: {replyData.created_time}</div>
+						</div>
+					</div>
+				);
+			} catch (error) {
+				console.log('error: ', error);
+			}
+		}
+
 		if (this.props.type === 'review') {
 			return (
 				<div className={createClassName} {...props}>
@@ -59,7 +84,7 @@ class Comment extends Component {
 							<Image height={30} width={30} avatar src={data.customer.customer_avatar} />
 						</Level.Left>
 						<Level.Item>
-							<div className='padding--medium-h'>{data.customer.customer_name}</div>
+							<div className='padding--medium-h font--lato-bold'>{data.customer.customer_name}</div>
 						</Level.Item>
 						<Level.Right>
 							<Rating active={data.review.rating} total={5} />
