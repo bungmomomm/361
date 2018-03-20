@@ -1,9 +1,14 @@
-const splitString = (string, count = 2, separator = ' ') => {
+const splitString = (string, separator = ' ') => {
 	if (string === '') {
 		return '';
 	}
-	
-	return string.split(separator).slice(0, count).map(x => x[0]).join('');
+
+	const arr = string.split(separator).slice(0);
+	const getInitial = arr.map((x, index) => {
+		return index === 0 || index === (arr.length - 1) ? x.slice(0, 1).toUpperCase() : null;
+	}).join('');
+
+	return getInitial;
 };
 
 export default splitString;

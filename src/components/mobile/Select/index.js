@@ -1,11 +1,13 @@
 import React from 'react';
 import Button from '../Button';
+import Input from '../Input';
 import Picker from 'rmc-picker'; // Docs https://github.com/react-component/m-picker/tree/3.x
 import styles from './select.scss';
 import classNames from 'classnames';
 
 const Select = (props) => {
 	if (!props.show) return null;
+	const { search, onSearch } = props;
 
 	return (
 		<div className={`${props.className || ''} ${styles.content}`}>
@@ -14,6 +16,21 @@ const Select = (props) => {
 					<div>{props.label}</div>
 					<div><Button onClick={() => props.onClose()}>SELESAI</Button></div>
 				</div>
+
+				{(search && onSearch) && (
+					<Input
+						id='search'
+						name='search'
+						flat
+						placeholder='Quick search'
+						style={{
+							textAlign: 'left',
+							padding: '20px 20px',
+							backgroundColor: '#efefef'
+						}}
+						onChange={onSearch}
+					/>
+				)}
 
 				<Picker
 					onValueChange={(value) => props.onChange(value)}

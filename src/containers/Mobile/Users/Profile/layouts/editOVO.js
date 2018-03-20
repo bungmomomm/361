@@ -3,7 +3,7 @@ import util from 'util';
 import _ from 'lodash';
 import validator from 'validator';
 
-import { Page, Level, Input, Svg, Button, Notification, Spinner } from '@/components/mobile';
+import { Page, Input, Svg, Button, Notification, Spinner, Header, Panel } from '@/components/mobile';
 
 import CONST from '@/constants';
 
@@ -18,27 +18,23 @@ class EditOvo extends Component {
 			formResult: {
 				...props.formResult
 			},
-			isLoading: props.loading,
-			showNotif: false,
+			isLoading: false,
+			showClearButton: false,
 			validForm: false,
+			inputValue: '',
 			inputHint: ''
 		};
 
 		this.OVO_ID_FIELD = CONST.USER_PROFILE_FIELD.ovoId;
 		this.loadingView = <Spinner />;
+		this.clearButton = <Svg src='ico_clear.svg' />;
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.formResult !== false) {
-			if (nextProps.formResult.status === 'success') {
-				this.setState({
-					data: nextProps.data,
-				});
-			}
+		if (nextProps.formResult !== this.props.formResult) {
 			this.setState({
-				showNotif: true,
 				formResult: nextProps.formResult,
-				isLoading: nextProps.loading
+				isLoading: false
 			});
 		}
 	}
@@ -46,15 +42,21 @@ class EditOvo extends Component {
 	inputHandler(e) {
 		const value = util.format('%s', e.target.value);
 
+		if (value.length > 0) {
+			this.setState({ showClearButton: true });
+		} else {
+			this.setState({ showClearButton: false });
+		}
+
 		let validForm = false;
 		if ((value.substring(0, 1) === '0' && _.parseInt(value) > 0 && validator.isMobilePhone(value, 'any')) && validator.isLength(value, { min: 10, max: 15 })) {
 			validForm = true;
 		}
 
-		const inputHint = value.length > 0 && validForm === false ? 'Format Nomor Handphone tidak sesuai. Silahkan cek kembali' : '';
+		const inputHint = value.length > 0 && validForm === false ? 'Format Nomor Handphone tidak sesuai' : '';
 
 		this.setState({
-			data: value,
+			inputValue: value,
 			validForm,
 			inputHint
 		});
@@ -62,80 +64,139 @@ class EditOvo extends Component {
 
 	saveData(e) {
 		const { onSave } = this.props;
-		const { data } = this.state;
-		onSave(e, { [this.OVO_ID_FIELD]: data });
+		const { inputValue } = this.state;
+
+		this.setState({
+			isLoading: true,
+			formResult: {
+				status: '',
+				message: ''
+			}
+		});
+
+		onSave(e, { [this.OVO_ID_FIELD]: inputValue });
 	}
 
 	renderHeader() {
 		const { onClickBack } = this.props;
-		const headerView = (
-			<Level style={{ height: '55px' }}>
-				<Level.Left style={{ width: '80px' }}>
-					<Button onClick={onClickBack}><Svg src='ico_arrow-back-left.svg' /></Button>
-				</Level.Left>
-				<Level.Item style={{ alignItems: 'center' }}>OVO</Level.Item>
-				<Level.Right style={{ width: '80px' }}>&nbsp;</Level.Right>
-			</Level>
-		);
 
-		return headerView;
+		const HeaderPage = {
+			left: (
+				<button onClick={onClickBack}> 
+					<Svg src={'ico_arrow-back-left.svg'} />
+				</button>
+			),
+			center: 'OVO',
+		};
+
+		return <Header.Modal {...HeaderPage} />;
+	}
+
+	renderInfoText() {
+		const { formResult } = this.state;
+
+		if (formResult.status === 'success') {
+			return (
+				<span style={{ color: '#4E2688', fontSize: '12px' }}>
+					<Svg src='ico_ovo_verified.svg' style={{ verticalAlign: 'text-bottom' }} /> OVO ID anda telah terhubung
+				</span>
+			);
+		}
+
+		return null;
 	}
 
 	renderNotif() {
-		const { showNotif, formResult } = this.state;
+		const { formResult } = this.state;
 		
-		if (showNotif) {
-			if (!_.isEmpty(formResult.status) && !_.isEmpty(formResult.message)) {
-				const notifColor = formResult.status === 'success' ? 'green' : 'pink';
-				return (
-					<Notification
-						color={notifColor}
-						disableClose
-						show
-					>
-						<span>{formResult.message}</span>
-					</Notification>
-				);
-			}
+		if (!_.isEmpty(formResult.status) && !_.isEmpty(formResult.message)) {
+			const notifColor = formResult.status === 'success' ? 'green' : 'pink';
+			return (
+				<Notification
+					color={notifColor}
+					disableClose
+					show
+				>
+					<span>{formResult.message}</span>
+				</Notification>
+			);
 		}
 		
 		return null;
 	}
 
 	renderSubmitButton() {
-		const { validForm } = this.state;
+		const { validForm, formResult } = this.state;
 
-		return (
-			<div className='margin--medium-v'>
+		if (formResult.status !== 'success') {
+			return (
+				<div className='margin--medium-v'>
+					<Button
+						color='purple'
+						size='large'
+						onClick={(e) => this.saveData(e)}
+						disabled={!validForm}
+					>
+						VERIFIKASI OVO ID
+					</Button>
+				</div>
+			);
+		}
+
+		return null;
+	}
+
+	renderClearButton() {
+		const { showClearButton } = this.state;
+
+		if (showClearButton) {
+			return (
 				<Button
-					color='primary'
-					size='large'
-					onClick={(e) => this.saveData(e)}
-					disabled={!validForm}
+					onClick={() => {
+						this.setState({
+							inputValue: '',
+							showClearButton: false,
+							formResult: {
+								status: '',
+								message: ''
+							},
+							validForm: false,
+							inputHint: ''
+						});
+					}}
 				>
-					VERIFIKASI OVO ID
+					{this.clearButton}
 				</Button>
-			</div>
-		);
+			);
+		}
+
+		return null;
 	}
 
 	renderOvoForm() {
-		const { isLoading, validForm, inputHint, data } = this.state;
+		const { isLoading, validForm, inputValue, inputHint } = this.state;
 
 		return (
-			<form style={{ padding: '15px' }}>
+			<form style={{ padding: '15px' }} className='bg--white'>
 				<div className='margin--medium-v'>
 					<label className={styles.label} htmlFor='ovoID'>OVO ID</label>
 					<Input
+						value={inputValue}
 						id='ovoID'
 						flat
 						placeholder='No. Handphone yang terdaftar di OVO'
-						defaultValue={data}
 						onChange={(e) => this.inputHandler(e)}
-						error={!validForm}
+						error={!validForm && inputValue !== ''}
 						hint={inputHint}
-						onFocus={() => this.setState({ showNotif: false })}
+						onFocus={() => this.setState({
+							formResult: {
+								status: '',
+								message: ''
+							}
+						})}
+						iconRight={this.renderClearButton()}
 					/>
+					{this.renderInfoText()}
 				</div>
 				{this.renderNotif()}
 				{isLoading ? this.loadingView : this.renderSubmitButton()}
@@ -146,10 +207,14 @@ class EditOvo extends Component {
 	render() {
 
 		return (
-			<Page style={{ paddingTop: 0 }} color='white'>
+			<div>
+				<div className={styles.profileBackground} />
+				<Page style={{ paddingTop: 0 }}>
+					<Panel style={{ padding: 0 }}>&nbsp;</Panel>
+					{this.renderOvoForm()}
+				</Page>
 				{this.renderHeader()}
-				{this.renderOvoForm()}
-			</Page>
+			</div>
 		);
 	}
 }

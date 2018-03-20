@@ -22,7 +22,8 @@ const initialState = {
 	current: 'wanita',
 	errors: [],
 	snackbar: [],
-	watchConnection: false
+	watchConnection: false,
+	userPreviousPage: ''
 };
 
 const {
@@ -34,7 +35,8 @@ const {
 	rrsShowSnack,
 	rrsDismissSnack,
 	rrsClearSnackQueue,
-	connectionWatch
+	connectionWatch,
+	userPreviousPage
 
 } = createActions(
 	'TOTAL_LOVE_LIST',
@@ -45,7 +47,8 @@ const {
 	'RRS_SHOW_SNACK',
 	'RRS_DISMISS_SNACK',
 	'RRS_CLEAR_SNACK_QUEUE',
-	'CONNECTION_WATCH'
+	'CONNECTION_WATCH',
+	'USER_PREVIOUS_PAGE'
 );
 
 let snackQueue;
@@ -110,6 +113,12 @@ const reducer = handleActions({
 			...state,
 			watchConnection: payload.state
 		};
+	},
+	[userPreviousPage](state, { payload }) {
+		return {
+			...state,
+			userPreviousPage: payload
+		};
 	}
 }, initialState);
 
@@ -123,5 +132,6 @@ export default {
 	rrsShowSnack,
 	rrsDismissSnack,
 	rrsClearSnackQueue,
-	connectionWatch
+	connectionWatch,
+	userPreviousPage
 };

@@ -41,6 +41,12 @@ const brandListAction = (token, segment = 1) => async (dispatch, getState) => {
 	return Promise.resolve(response);
 };
 
+const brandProductCleanUp = () => async (dispatch, getState) => {
+	dispatch(brandProducts({
+		searchStatus: null, data: [], type: 'init'
+	}));
+};
+
 const brandProductAction = ({ token, query = {}, type = 'update' }) => async (dispatch, getState) => {
 	dispatch(brandLoadingProducts({ loading_products: true }));
 	dispatch(scrollerActions.onScroll({ loading: true }));
@@ -186,5 +192,6 @@ export default {
 	brandProductAction,
 	brandBannerAction,
 	brandProductsCommentsAction,
-	brandProductsLovelistAction
+	brandProductsLovelistAction,
+	brandProductCleanUp,
 };
