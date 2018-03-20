@@ -34,12 +34,13 @@ class Lovelist extends Component {
 		};
 
 		this.getLovelistCardsContent = this.getLovelistCardsContent.bind(this);
-		this.renderLovelistPage = this.renderLovelistPage.bind(this);
+		this.goBackPreviousPage = this.goBackPreviousPage.bind(this);
 		this.handleLovelistClicked = this.handleLovelistClicked.bind(this);
 		this.handleCancelRemoveItem = this.handleCancelRemoveItem.bind(this);
 		this.onGridViewModeClick = this.onGridViewModeClick.bind(this);
-		this.removeItem = this.removeItem.bind(this);
 		this.onNotifClose = this.onNotifClose.bind(this);
+		this.removeItem = this.removeItem.bind(this);
+		this.renderLovelistPage = this.renderLovelistPage.bind(this);
 		
 	}
 
@@ -129,6 +130,15 @@ class Lovelist extends Component {
 		return <div className={styles.cardContainer}>{content}</div>;
 	}
 
+	goBackPreviousPage(e) {
+		const { history } = this.props;
+		if ((history.length - 1 >= 0)) {
+			history.goBack();
+		} else {
+			history.push('/');
+		}
+	}
+
 	handleLovelistClicked(e) {
 		const { status, notif } = this.state;
 		const { id } = e.currentTarget.dataset;
@@ -200,9 +210,9 @@ class Lovelist extends Component {
 			)),
 			center: <strong>Lovelist</strong>,
 			right: (
-				<Link to='/'>
+				<Button onClick={this.goBackPreviousPage}>
 					<Svg src='ico_arrow-back.svg' />
-				</Link>
+				</Button>
 			)
 		};
 
