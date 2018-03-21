@@ -23,37 +23,36 @@ const initialState = {
 	}
 };
 
-const { initLoading, initViewMode, initPcp, initNextPcp, pcpUpdateSingleItem } = createActions(
-	'INIT_LOADING', 'INIT_VIEW_MODE', 'INIT_PCP', 'INIT_NEXT_PCP', 'PCP_UPDATE_SINGLE_ITEM'
+const { pcpLoading, pcpViewMode, pcpInit, pcpNextInit, pcpUpdateSingleItem } = createActions(
+	'PCP_LOADING', 'PCP_VIEW_MODE', 'PCP_INIT', 'PCP_NEXT_INIT', 'PCP_UPDATE_SINGLE_ITEM'
 );
 
 const reducer = handleActions({
-	[initLoading](state, { payload: { isLoading } }) {
+	[pcpLoading](state, { payload: { isLoading } }) {
 		return {
 			...state,
 			isLoading
 		};
 	},
-	[initViewMode](state, { payload: { isLoading, viewMode } }) {
+	[pcpViewMode](state, { payload: { isLoading, viewMode } }) {
 		return {
 			...state,
-			isLoading,
+			isLoading: false,
 			viewMode
 		};
 	},
-	[initPcp](state, { payload: { isLoading, pcpStatus, pcpData, query } }) {
+	[pcpInit](state, { payload: { isLoading, pcpStatus, pcpData, query } }) {
 		return {
 			...state,
-			isLoading,
+			isLoading: false,
 			pcpStatus,
 			pcpData,
 			query
 		};
 	},
-	[initNextPcp](state, { payload: { pcpStatus, pcpData, query } }) {
+	[pcpNextInit](state, { payload: { pcpStatus, pcpData, query } }) {
 		return {
 			...state,
-			isLoading: false,
 			pcpStatus,
 			pcpData: {
 				...state.pcpData,
@@ -82,9 +81,9 @@ const reducer = handleActions({
 
 export default {
 	reducer,
-	initLoading,
-	initViewMode,
-	initPcp,
-	initNextPcp,
+	pcpLoading,
+	pcpViewMode,
+	pcpInit,
+	pcpNextInit,
 	pcpUpdateSingleItem
 };
