@@ -30,7 +30,8 @@ const getAction = (token) => async (dispatch, getState) => {
 	const cartsData = response.data.data.carts;
 	const totalData = response.data.data.total;
 	const locationData = response.data.data.default_shipping_destination;
-	dispatch(shopBagGet({ carts: cartsData, total: totalData, location_default: locationData }));
+	const emptyState = response.data.data.empty_state;
+	dispatch(shopBagGet({ carts: cartsData, total: totalData, location_default: locationData, empty_state: emptyState }));
 	dispatch(shopBagLoading({ loading: false }));
 
 	return Promise.resolve(response);
