@@ -83,6 +83,10 @@ const config = {
 						outputPath: 'assets/media/'
 					})
 				]
+			},
+			{
+				test: /\.json$/,
+				loader: 'json-loader'
 			}
 		]
 

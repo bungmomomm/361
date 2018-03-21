@@ -7,6 +7,7 @@ import queryString from 'query-string';
 import to from 'await-to-js';
 
 import Shared from '@/containers/Mobile/Shared';
+import EmptyState from '@/containers/Mobile/Shared/emptyState';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Footer from '@/containers/Mobile/Shared/footer';
@@ -24,6 +25,7 @@ import {
 	Tabs,
 	Navigation,
 	Spinner,
+	SEO
 } from '@/components/mobile';
 
 import { actions as pcpActions } from '@/state/v4/ProductCategory';
@@ -36,6 +38,54 @@ import {
 } from '@/utils';
 
 import Discovery from '../../Utils';
+
+import {
+	TrackingRequest,
+	sendGtm,
+	categoryViewBuilder,
+	productClickBuilder
+} from '@/utils/tracking';
+
+const trackCategoryPageView = (products, info, props) => {
+	const productId = _.map(products, 'product_id') || [];
+	const categoryInfo = {
+		id: props.match.params.categoryId,
+		name: info.title,
+		url_path: props.location.pathname
+	};
+	const impressions = _.map(products, (product, key) => {
+		return {
+			name: product.product_title,
+			id: product.product_id,
+			price: product.pricing.original.effective_price,
+			brand: product.brand.name,
+			category: product.product_category_names.join('/'),
+			position: key + 1,
+			list: 'mm'
+		};
+	}) || [];
+	const request = new TrackingRequest();
+	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
+	request.setFusionSessionId('').setIpAddress('').setImpressions(impressions).setCategoryInfo(categoryInfo);
+	request.setListProductId(productId.join('|'));
+	const requestPayload = request.getPayload(categoryViewBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
+
+const trackProductOnClick = (product, position, source = 'mm') => {
+	const productData = {
+		name: product.product_title,
+		id: product.product_id,
+		price: product.pricing.original.effective_price,
+		brand: product.brand.name,
+		category: product.product_category_names.join('/'),
+		position
+	};
+	const request = new TrackingRequest();
+	request.setFusionSessionId('').setProducts([productData]).setSourceName(source);
+	const requestPayload = request.getPayload(productClickBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
 
 class Product extends Component {
 	constructor(props) {
@@ -65,6 +115,16 @@ class Product extends Component {
 				query: nextProps.query
 			});
 		}
+
+		if (nextProps.productCategory.pcpData !== this.props.productCategory.pcpData) {
+			const pcpData = nextProps.productCategory.pcpData;
+			trackCategoryPageView(pcpData.products, pcpData.info, nextProps);
+		}
+	}
+
+	componentWillUnmount() {
+		const { dispatch } = this.props;
+		dispatch(pcpActions.loadingAction(true));
 	}
 
 	async onApply(e, fq) {
@@ -107,12 +167,16 @@ class Product extends Component {
 
 		const [err, response] = await to(dispatch(pcpActions.pcpAction({ token: cookies.get('user.token'), query: pcpParam })));
 		if (err) {
-			console.log(err);
 			return err;
 		}
+
 		const productIdList = _.map(response.pcpData.products, 'product_id') || [];
-		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+		if (!_.isEmpty(productIdList)) {
+			dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+			await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+			trackCategoryPageView(response.pcpData.products, response.pcpData.info, this.props);
+		}
+
 		return response;
 	}
 
@@ -130,7 +194,6 @@ class Product extends Component {
 		const { showSort } = this.state;
 		const { viewMode, dispatch } = this.props;
 		if (e === 'view') {
-			console.log('request');
 			const mode = viewMode.mode === 3 ? 1 : viewMode.mode + 1;
 			dispatch(pcpActions.viewModeAction(mode));
 		} else {
@@ -157,73 +220,102 @@ class Product extends Component {
 		const { showSort } = this.state;
 		const productChain = _.chain(productCategory);
 		let tabsView = null;
-		if (!_.isEmpty(productChain.get('pcpData.products').value())) {
-			const sorts = productChain.get('pcpData.sorts').value() || [];
-			tabsView = (
-				<div className={'tabContainer'}>
-					{renderIf(sorts)(
-						<Sort shown={showSort} onCloseOverlay={() => this.setState({ showSort: false })} isSticky sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
-					)}
-					<Tabs
-						type='segment'
-						variants={[
-							{
-								id: 'sort',
-								title: 'Urutkan',
-								disabled: typeof productCategory.pcpData === 'undefined'
-							},
-							{
-								id: 'filter',
-								title: 'Filter',
-								disabled: typeof productCategory.pcpData === 'undefined',
-								checked: isFiltered
-							},
-							{
-								id: 'view',
-								title: <Svg src={viewMode.icon} />,
-								disabled: productCategory.isLoading
-							}
-						]}
-						onPick={e => this.handlePick(e)}
-					/>
-				</div>
-			);
-		}
+		const sorts = productChain.get('pcpData.sorts').value() || [];
+		tabsView = (
+			<div className={'tabContainer'}>
+				{renderIf(sorts)(
+					<Sort shown={showSort} onCloseOverlay={() => this.setState({ showSort: false })} isSticky sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+				)}
+				<Tabs
+					type='segment'
+					variants={[
+						{
+							id: 'sort',
+							title: 'Urutkan',
+							disabled: typeof productCategory.pcpData === 'undefined'
+						},
+						{
+							id: 'filter',
+							title: 'Filter',
+							disabled: typeof productCategory.pcpData === 'undefined',
+							checked: isFiltered
+						},
+						{
+							id: 'view',
+							title: <Svg src={viewMode.icon} />,
+							disabled: productCategory.isLoading
+						}
+					]}
+					onPick={e => this.handlePick(e)}
+				/>
+			</div>
+		);
 		return tabsView;
 	}
 
 	productsBlock() {
-		const { comments, productCategory, scroller, viewMode } = this.props;
+		const { isLoading, comments, productCategory, scroller, viewMode } = this.props;
 		if (productCategory.pcpStatus !== '') {
 			if (productCategory.pcpStatus === 'success') {
 				const products = productCategory.pcpData.products;
-				const info = productCategory.pcpData.info;
-				let listView;
-				switch (viewMode.mode) {
-				case 1:
-					listView = (
-						<CatalogView comments={comments} loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={products} />
+				
+				let productsView;
+				if (!_.isEmpty(products)) {
+					const info = productCategory.pcpData.info;
+					let listView;
+					switch (viewMode.mode) {
+					case 1:
+						listView = (
+							<CatalogView
+								comments={comments}
+								loading={scroller.loading}
+								forceLoginNow={() => this.forceLoginNow()}
+								products={products}
+								productOnClick={trackProductOnClick}
+							/>
+						);
+						break;
+					case 2:
+						listView = (
+							<GridView
+								loading={scroller.loading}
+								forceLoginNow={() => this.forceLoginNow()}
+								products={products}
+								productOnClick={trackProductOnClick}
+							/>
+						);
+						break;
+					case 3:
+						listView = (
+							<SmallGridView
+								loading={scroller.loading}
+								products={products}
+								productOnClick={trackProductOnClick}
+							/>
+						);
+						break;
+					default:
+						listView = null;
+						break;
+					}
+
+					productsView = (
+						<div>
+							<div className='text-center margin--medium-v'>{info.product_count} Total Produk</div>
+							{listView}
+						</div>
 					);
-					break;
-				case 2:
-					listView = (
-						<GridView loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={products} />
-					);
-					break;
-				case 3:
-					listView = (
-						<SmallGridView loading={scroller.loading} products={products} />
-					);
-					break;
-				default:
-					listView = null;
-					break;
+				} else {
+					productsView = <EmptyState />;
 				}
+
 				return (
 					<Page color='white'>
+						<SEO 
+							paramCanonical={process.env.MOBILE_UR}
+						/>
 						{this.foreverBannerBlock()}
-						<div className='text-center margin--medium-v'>{info.product_count} Total Produk</div>
-						{listView}
+						{isLoading ? this.loadingView : productsView}
 						<Footer isShow={this.state.isFooterShow} />
 					</Page>
 				);
@@ -276,6 +368,8 @@ class Product extends Component {
 		
 		if (shared.userPreviousPage !== 'HOME') {
 			navigationAttribute.active = 'Categories';
+		} else {
+			navigationAttribute.active = 'Home';
 		}
 		
 		return (
@@ -318,7 +412,7 @@ const doAfterAnonymous = async (props) => {
 	const pcpParam = {
 		category_id: parseInt(categoryId, 10),
 		page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
-		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 30,
+		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 36,
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};

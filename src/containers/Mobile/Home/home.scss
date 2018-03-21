@@ -1,12 +1,11 @@
 .headline{
-    font-family: 'Lato-Bold';
+    font-family: 'Lato-Bold', sans-serif;
     color: #191919;
     letter-spacing: 1px;
 }
 
 .readmore{
-    font-family: 'Lato-Regular';
-    font-size: 10px;
+    font-family: 'Lato-Regular', sans-serif;
     color: #A4A4A4;
     letter-spacing: 1px;
     text-transform: uppercase;
@@ -25,9 +24,10 @@
   	left: 0;
   	width: 100%;
   	button {
-		margin: 0 auto;
-		max-width: 95%;
-		min-width: 70%;
+      font-family: 'Lato-Regular', sans-serif;
+  		margin: 0 auto;
+  		max-width: 95%;
+  		min-width: 70%;
 	}
 }
 

@@ -1,57 +1,77 @@
 import { handleActions, createActions } from 'redux-actions';
 
 const initialState = {
-	total: 0,
-	data: [],
-	loading: false
+	data: {
+		comments: [],
+		links: '',
+		product: ''
+	},
+	isLoading: false
 };
 
-const { 
-	commentTotal, 
+const {
 	commentList,
+	commentListNext,
 	commentLoading,
 	addComment,
+	addCommentDetail,
 	commentListLoad, 
 	commentListLoadFail, 
 	commentListLoaded 
 } = createActions(
-	'COMMENT_TOTAL', 
 	'COMMENT_LIST',
+	'COMMENT_LIST_NEXT',
 	'COMMENT_LOADING',
 	'ADD_COMMENT',
+	'ADD_COMMENT_DETAIL',
 	'COMMENT_LIST_LOAD',
 	'COMMENT_LIST_LOAD_FAIL',
 	'COMMENT_LIST_LOADED'
 );
 
 const reducer = handleActions({
-	[commentTotal](state, { payload: { total } }) {
-		return {
-			...state,
-			total,
-			loading: false
-		};
-	},
 	[commentList](state, { payload: { data } }) {
 		return {
 			...state,
 			data,
-			loading: false
+			isLoading: false
 		};
 	},
-	[commentLoading](state, { payload: { loading } }) {
+	[commentListNext](state, { payload: { data } }) {
 		return {
 			...state,
-			loading
+			data: {
+				...data,
+				comments: [
+					...data.comments,
+					...state.data.comments
+				]
+			},
+			isLoading: false
+		};
+	},
+	[commentLoading](state, { payload: { isLoading } }) {
+		return {
+			...state,
+			isLoading
 		};
 	},
 	[addComment](state, { payload: { data } }) {
 		return {
 			...state,
-			data
-
+			data,
+			isLoading: false
 		};
-
+	},
+	[addCommentDetail](state, { payload: { newComment } }) {
+		return {
+			...state,
+			data: {
+				...state.data,
+				comments: newComment
+			},
+			isLoading: false
+		};
 	},
 	[commentListLoad](state, { payload: { isLoading, data } }) {
 		return {
@@ -75,11 +95,12 @@ const reducer = handleActions({
 }, initialState);
 
 export default {
-	reducer, 
-	commentTotal,
+	reducer,
 	commentList,
+	commentListNext,
 	commentLoading,
 	addComment,
+	addCommentDetail,
 	commentListLoad,
 	commentListLoadFail,
 	commentListLoaded 

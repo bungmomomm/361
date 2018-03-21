@@ -72,6 +72,39 @@
   align-items: center;
   background: #ECECEC;
 }
+
+// Order Menu List
+
+.orderMenu {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.10);
+
+  .orderStatus {
+    padding-top: 8px;
+    margin-top: 8px;
+    border-top: 1px solid #D8D8D8;
+  }
+}
+
+.orderMenuList {
+  border-bottom: none !important;
+}
+
+.orderStatus {
+  padding-top: 8px;
+  border-top: 1px solid #e8e8e8;
+
+  font-weight: 600;
+}
+
+.orderStatusProcess {color: #F57C00;}
+.orderStatusSuccess {color: #3FD0BB;}
+.orderStatusCancel {color: #EB0029;}
+
 .orderList {
   > li {
 	margin-bottom: 15px;
@@ -79,6 +112,14 @@
 	  margin-bottom: 0;
 	}
   }
+}
+
+.red{
+
+}
+
+.green{
+
 }
 
 .orderPaymentList {

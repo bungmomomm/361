@@ -6,7 +6,7 @@ import _ from 'lodash';
 import {
 	Header, Carousel, Tabs,
 	Page, Level, Button, Grid, Article,
-	Navigation, Svg, Image, SmartBanner
+	Navigation, Svg, Image, SmartBanner, SEO
 } from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
@@ -14,7 +14,12 @@ import { actions as sharedActions } from '@/state/v4/Shared';
 import Shared from '@/containers/Mobile/Shared';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Footer from '@/containers/Mobile/Shared/footer';
-import CONST from '@/constants';
+import {
+	TrackingRequest,
+	homepageViewBuilder,
+	impressionsPushedBuilder,
+	sendGtm,
+} from '@/utils/tracking';
 import { urlBuilder } from '@/utils';
 
 const renderSectionHeader = (title, options) => {
@@ -37,6 +42,24 @@ const renderSectionHeader = (title, options) => {
 
 
 class Home extends Component {
+
+	static trackImpresionHandler(homeData) {
+		homeData = _.chain(homeData);
+		const ImpressionsReq = new TrackingRequest();
+		const promotions = [];
+		promotions.push(homeData.get('heroBanner[0].impression').value());
+		promotions.push(homeData.get('squareBanner[0].impression').value());
+		promotions.push(homeData.get('squareBanner[1].impression').value());
+		promotions.push(homeData.get('topLanscape[0].impression').value());
+		promotions.push(homeData.get('topLanscape[1].impression').value());
+		promotions.push(homeData.get('bottomLanscape[0].impression').value());
+		promotions.push(homeData.get('bottomLanscape[1].impression').value());
+		ImpressionsReq.setPromotions(promotions);
+		const impressionsPayload = ImpressionsReq.getPayload(impressionsPushedBuilder);
+		if (impressionsPayload) sendGtm(impressionsPayload);
+	}
+
+
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -55,16 +78,26 @@ class Home extends Component {
 		this.sbClose = this.sbClose.bind(this);
 	}
 
-	handlePick(current) {
+	componentDidMount() {
+		this.trackPageViewHandler();
+	}
+
+	trackPageViewHandler() {
+		const PageViewReq = new TrackingRequest();
+		PageViewReq.setEmailHash('email@satu').setUserId('999').setCurrentUrl(this.props.location.pathname);
+		const pageViewPayload = PageViewReq.getPayload(homepageViewBuilder);
+		if (pageViewPayload) sendGtm(pageViewPayload);
+	}
+
+	async handlePick(current) {
 		const { segmen } = this.props.home;
 		const { dispatch } = this.props;
 		const willActiveSegment = segmen.find(e => e.id === current);
-		// this.setState({ current: willActiveSegment.key });
 		dispatch(new sharedActions.setCurrentSegment(willActiveSegment.key));
-		dispatch(new actions.mainAction(willActiveSegment, this.userCookies));
+		const mainPageData = await dispatch(new actions.mainAction(willActiveSegment, this.userCookies));
+		Home.trackImpresionHandler(mainPageData);
 		dispatch(new actions.recomendationAction(willActiveSegment, this.userCookies));
 	}
-
 
 	sbClose() {
 		const { cookies } = this.props;
@@ -270,18 +303,7 @@ class Home extends Component {
 					<Grid split={3}>
 						{
 							featuredBrand.value().map((brand, e) => {
-								let url = '/';
-								switch (brand.link.type) {
-								case CONST.CATEGORY_TYPE.brand:
-									url = urlBuilder.setId(brand.brand_id).setName(brand.brand_name).buildBrand();
-									break;
-								case CONST.CATEGORY_TYPE.category:
-									url = `${brand.link.target}/${brand.brand_name}`;
-									break;
-								default:
-									url = `/category/${CONST.SEGMENT_DEFAULT_SELECTED.key}`;
-									break;
-								}
+								const url = urlBuilder.setId(brand.brand_id).setName(brand.brand_name).buildBrand();
 								return (
 									<div className={styles.brandsImage} key={e}>
 										<Link to={url} >
@@ -338,6 +360,9 @@ class Home extends Component {
 		return (
 			<div style={this.props.style}>
 				<Page color='white'>
+					<SEO 
+						paramCanonical={process.env.MOBILE_UR}
+					/>
 					<Tabs
 						current={this.props.shared.current}
 						variants={this.props.home.segmen}
@@ -400,8 +425,9 @@ const doAfterAnonymous = async (props) => {
 
 	const tokenHeader = cookies.get('user.token');
 
-	await dispatch(new actions.mainAction(activeSegment, tokenHeader));
+	const mainPageData = await dispatch(new actions.mainAction(activeSegment, tokenHeader));
 	await dispatch(new actions.recomendationAction(activeSegment, tokenHeader));
+	Home.trackImpresionHandler(mainPageData);
 };
 
 

@@ -72,10 +72,13 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 					this.initApp();
 				}
 			});
+
+			const location = this.props.location;
+			if (!window.previousLocation) window.previousLocation = location.pathname + location.search;
 		}
 
 		componentDidMount() {
-			window.mmLoading.destroy();
+			// window.mmLoading.destroy();
 			window.addEventListener('scroll', this.handleScroll, true);
 			this.docBody = document.body;
 
@@ -88,6 +91,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			window.mmLoading.play();
 			window.removeEventListener('scroll', this.handleScroll, true);
 			window.prevLocation = this.props.location;
+			window.previousLocation = location.pathname + location.search;
 		}
 
 		shouldLoginAnonymous() {
