@@ -8,7 +8,6 @@ import { connect } from 'react-redux';
 import { actions as shopBagAction } from '@/state/v4/ShopBag';
 import CONST from '@/constants';
 import { urlBuilder, aux } from '@/utils';
-import CartEmpty from '@/containers/Mobile/Cart/empty';
 import { actions as actionShared } from '@/state/v4/Shared';
 import _ from 'lodash';
 import {
@@ -333,19 +332,18 @@ class Cart extends Component {
 			right: null
 		};
 
-		if ((this.props.shopBag.carts && this.props.shopBag.carts.length < 1)) {
-			return <CartEmpty />;
-		}
-
 		return (
 			<div>
 				<Page color='white'>
-					<div style={{ backgroundColor: '#F5F5F5' }}>
-						{this.renderHeaderShopBag()}
-						{this.renderMessageNotProcedItems()}
-						{this.renderList()}
-						{this.renderTotal()}
-					</div>
+					{ (!this.props.shopBag.empty_state === '') ?
+						(<div style={{ backgroundColor: '#F5F5F5' }}>
+							{this.renderHeaderShopBag()}
+							{this.renderMessageNotProcedItems()}
+							{this.renderList()}
+							{this.renderTotal()}
+						</div>) :
+						(<div dangerouslySetInnerHTML={{ __html: this.props.shopBag.empty_state }} />)
+					}
 				</Page>
 
 				<Header.Modal {...headerOption} />
