@@ -14,7 +14,6 @@ import { actions as sharedActions } from '@/state/v4/Shared';
 import Shared from '@/containers/Mobile/Shared';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Footer from '@/containers/Mobile/Shared/footer';
-import CONST from '@/constants';
 import {
 	TrackingRequest,
 	homepageViewBuilder,
@@ -304,18 +303,7 @@ class Home extends Component {
 					<Grid split={3}>
 						{
 							featuredBrand.value().map((brand, e) => {
-								let url = '/';
-								switch (brand.link.type) {
-								case CONST.CATEGORY_TYPE.brand:
-									url = urlBuilder.setId(brand.brand_id).setName(brand.brand_name).buildBrand();
-									break;
-								case CONST.CATEGORY_TYPE.category:
-									url = `${brand.link.target}/${brand.brand_name}`;
-									break;
-								default:
-									url = `/category/${CONST.SEGMENT_DEFAULT_SELECTED.key}`;
-									break;
-								}
+								const url = urlBuilder.setId(brand.brand_id).setName(brand.brand_name).buildBrand();
 								return (
 									<div className={styles.brandsImage} key={e}>
 										<Link to={url} >

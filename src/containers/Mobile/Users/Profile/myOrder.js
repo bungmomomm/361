@@ -17,6 +17,7 @@ import styles from './profile.scss';
 import CONST from '@/constants';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import { aux } from '@/utils';
+import classNames from 'classnames';
 
 class MyOrder extends Component {
 	constructor(props) {
@@ -84,24 +85,24 @@ class MyOrder extends Component {
 		dispatch(userAction.updateMyOrdersCurrent(newState.key));
 		this.getCurrentOrdes(this.props, newState);
 		dispatch(userAction.cleanMyOrderData());
+		
 	}
 
 	renderOrders() {
 		const currentOrders = this.props.user.myOrders[this.props.user.myOrdersCurrent];
+		const className = classNames('orderStatus');
+
 		return currentOrders.orders && (
 			currentOrders.orders.map((order, key) => {
-				return (<List key={key}>
+				return (<List className={styles.orderMenu} key={key}>
 					<Link style={{ flexFlow: 'row nowrap' }} to={`/profile/my-order/${order.so_number}`}>
-						<List.Image>
-							<div className={styles.orderIconCtr}>
-								<Svg src='ico_money-time.svg' />
-							</div>
-						</List.Image>
-						<List.Content>
-							<div className='orderDesc'>
+						<List.Content className={styles.orderMenuList} >
+							<div className={className}>
 								<span>Pesanan <b>#{order.so_number}</b></span>
 								<small className='font-color--primary-ext-3'>{order.created_time}</small>
-								<small className='font-color--primary-ext-2'>{order.status}</small>
+								<div className={styles.orderStatus}><span className={styles.orderStatusProcess}>{order.status}</span></div>
+								{/* <div className={styles.orderStatus}><span className={styles.orderStatusSuccess}>{order.status}</span></div> */}
+								{/* <div className={styles.orderStatus}><span  className={styles.orderStatusCancel}>{order.status}</span></div> */}
 							</div>
 						</List.Content>
 					</Link>

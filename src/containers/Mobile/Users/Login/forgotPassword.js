@@ -3,6 +3,9 @@ import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { actions as users } from '@/state/v4/User';
 // import { Link } from 'react-router-dom';
+// import {
+// 	setUserCookie
+// } from '@/utils';
 import {
 	Header,
 	Page,
@@ -16,7 +19,9 @@ import styles from '../user.scss';
 import { to } from 'await-to-js';
 import validator from 'validator';
 import _ from 'lodash';
+import queryString from 'query-string';
 
+import Otp from '@/containers/Mobile/Shared/Otp';
 
 class ForgotPassword extends Component {
 	constructor(props) {
@@ -25,18 +30,23 @@ class ForgotPassword extends Component {
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.source = this.props.cookies.get('user.source');
 		this.props = props;
+
+		const query = queryString.parse(props.location.search);
 		this.state = {
+			redirectUri: query.redirect_uri || false,
 			error: false,
 			isValidUsername: false,
 			showModal: false,
 			userName: '',
+			showOtp: false,
+			useOtp: false
 		};
 	}
 
 	async onResetPassword(e) {
 		const { dispatch, cookies } = this.props;
-		const { username } = this.state;
-		const [err, response] = await to(dispatch(new users.userForgotPassword(cookies.get('user.token'), username)));
+		const { userName, useOtp } = this.state;
+		const [err, response] = await to(dispatch(new users.userForgotPassword(cookies.get('user.token'), userName)));
 		if (err) {
 			this.setState({
 				error: true,
@@ -46,25 +56,39 @@ class ForgotPassword extends Component {
 		this.setState({
 			error: false,
 			message: response.data,
-			showModal: true
+			showModal: !useOtp,
+			showOtp: useOtp
 		});
 		return response;
 	}
 
 	onBack(e) {
 		const { history } = this.props;
-		history.goBack();
+		const { showOtp } = this.state;
+		if (showOtp) {
+			this.setState({
+				showOtp: false
+			});
+		} else {
+			history.goBack();
+		}
 	}
 
 	onUserChange(value) {
 		let isValidUsername = false;
+		let useOtp = false;
 		if ((value.substring(0, 1) === '0' && _.parseInt(value) > 0 && validator.isMobilePhone(value, 'any')) || validator.isEmail(value)) {
 			isValidUsername = true;
+		}
+
+		if (validator.isMobilePhone(value, 'any')) {
+			useOtp = true;
 		}
 		this.setState({
 			error: false,
 			userName: value,
-			isValidUsername
+			isValidUsername,
+			useOtp
 		});
 	}
 
@@ -72,9 +96,18 @@ class ForgotPassword extends Component {
 		this.setState({ current });
 	}
 
+	async successValidateOtp(response) {
+
+		const { cookies } = this.props;
+		// const { userName, password, redirectUri } = this.state;
+		console.log(response, cookies.get('isLogin'));
+
+		// redirect to token
+	}
+
 	render() {
 		const { isLoginLoading } = this.props;
-		const { error, isValidUsername, userName } = this.state;
+		const { error, isValidUsername, userName, showOtp } = this.state;
 		const HeaderPage = {
 			left: (
 				<Button onClick={(e) => this.onBack(e)}>
@@ -85,8 +118,17 @@ class ForgotPassword extends Component {
 			right: null
 		};
 
+		if (showOtp) {
+			return (
+				<Otp
+					type={'forgot'}
+					phoneEmail={userName}
+					onClickBack={() => this.onBack()}
+					onSuccess={(response) => this.successValidateOtp(response)}
+				/>
+			);
+		};
 		return (
-
 			<div className='full-height' style={this.props.style}>
 				<Page color='white'>
 					<div className={styles.container}>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="15px" height="14px" viewBox="0 0 15 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.1 (51147) - http://www.bohemiancoding.com/sketch -->
+    <title>reviews-icon</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="beri-ulasan" transform="translate(1.000000, -1.000000)" stroke="#005BB6">
+            <g id="reviews-icon">
+                <g transform="translate(0.000000, 2.000000)">
+                    <path d="M12.2683273,9.90764211 L6.11978182,9.90764211 L3.45469091,11.7114316 L3.67932727,9.90764211 L1.52269091,9.90764211 C0.857690909,9.90764211 0.318690909,9.37206316 0.318690909,8.71143158 L0.318690909,1.51143158 C0.318690909,0.851431579 0.857690909,0.315852632 1.52269091,0.315852632 L12.2683273,0.315852632 C12.9339636,0.315852632 13.4736,0.851431579 13.4736,1.51143158 L13.4736,8.71143158 C13.4736,9.37206316 12.9339636,9.90764211 12.2683273,9.90764211 Z" id="Stroke-1"></path>
+                    <path d="M2.72471818,2.84185263 L11.0668091,2.84185263" id="Stroke-3"></path>
+                    <path d="M2.72471818,4.97311579 L11.0668091,4.97311579" id="Stroke-5"></path>
+                    <path d="M2.72471818,7.10437895 L11.0668091,7.10437895" id="Stroke-7"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

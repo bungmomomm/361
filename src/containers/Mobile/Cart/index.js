@@ -8,7 +8,6 @@ import { connect } from 'react-redux';
 import { actions as shopBagAction } from '@/state/v4/ShopBag';
 import CONST from '@/constants';
 import { urlBuilder, aux } from '@/utils';
-import CartEmpty from '@/containers/Mobile/Cart/empty';
 import { actions as actionShared } from '@/state/v4/Shared';
 import _ from 'lodash';
 import {
@@ -65,7 +64,7 @@ class Cart extends Component {
 
 	componentDidMount() {
 		const { dispatch } = this.props;
-		dispatch(new actionShared.totalLovelistAction(this.userToken));
+		dispatch(actionShared.totalCartAction(this.userToken));
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -79,6 +78,11 @@ class Cart extends Component {
 		}
 
 		this.checkNotProcedItem(nextProps);
+	}
+
+	componentWillUnmount() {
+		const { dispatch } = this.props;
+		dispatch(actionShared.totalCartAction(this.userToken));
 	}
 
 	checkNotProcedItem(props) {
@@ -175,7 +179,7 @@ class Cart extends Component {
 									</Link>
 									<Button
 										onClick={() => this.deleteConfirmationItemHandler(
-											item.variant_id, item.brand.brand_name, item.product_title, item.images[0].thumbnail
+											item.variant_id, item.brand.name, item.product_title, item.images[0].thumbnail
 										)}
 										className='font-color--primary-ext-1 margin--medium-l margin--small-r'
 									>
@@ -333,19 +337,18 @@ class Cart extends Component {
 			right: null
 		};
 
-		if ((this.props.shopBag.carts && this.props.shopBag.carts.length < 1)) {
-			return <CartEmpty />;
-		}
-
 		return (
 			<div>
 				<Page color='white'>
-					<div style={{ backgroundColor: '#F5F5F5' }}>
-						{this.renderHeaderShopBag()}
-						{this.renderMessageNotProcedItems()}
-						{this.renderList()}
-						{this.renderTotal()}
-					</div>
+					{ (this.props.shopBag.total && this.props.shopBag.total.count_item === 0) ?
+						(<div dangerouslySetInnerHTML={{ __html: this.props.shopBag.empty_state }} />) :
+						(<div style={{ backgroundColor: '#F5F5F5' }}>
+							{this.renderHeaderShopBag()}
+							{this.renderMessageNotProcedItems()}
+							{this.renderList()}
+							{this.renderTotal()}
+						</div>)
+					}
 				</Page>
 
 				<Header.Modal {...headerOption} />
