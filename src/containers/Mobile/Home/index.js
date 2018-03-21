@@ -361,10 +361,7 @@ class Home extends Component {
 			<div style={this.props.style}>
 				<Page color='white'>
 					<SEO 
-						title='testing okeee'
-						description='Beli aja coooooy'
-						path='mataharimall.com'
-						image={require('@/assets/images/app-icon.png')}
+						paramCanonical={process.env.MOBILE_UR}
 					/>
 					<Tabs
 						current={this.props.shared.current}

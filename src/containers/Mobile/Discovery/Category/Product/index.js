@@ -24,6 +24,7 @@ import {
 	Tabs,
 	Navigation,
 	Spinner,
+	SEO
 } from '@/components/mobile';
 
 import { actions as pcpActions } from '@/state/v4/ProductCategory';
@@ -292,6 +293,9 @@ class Product extends Component {
 				}
 				return (
 					<Page color='white'>
+						<SEO 
+							paramCanonical={process.env.MOBILE_UR}
+						/>
 						{this.foreverBannerBlock()}
 						<div className='text-center margin--medium-v'>{info.product_count} Total Produk</div>
 						{listView}
