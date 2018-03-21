@@ -256,6 +256,7 @@ class UserProfileEdit extends Component {
 					submittingForm: false
 				});
 			} else if (response) {
+				dispatch(userActions.userGetProfile(this.userToken));
 				this.setState({
 					formResult: {
 						status: 'success',
@@ -629,7 +630,7 @@ class UserProfileEdit extends Component {
 				<Page style={{ paddingTop: 0 }} color='white'>
 					{this.renderHeader()}
 					{this.renderNotif()}
-					{this.renderAvatar()}
+					{this.renderAvatar('api')}
 					{this.renderForm()}
 				</Page>
 			);
