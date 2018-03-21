@@ -72,7 +72,8 @@ class HashtagsDetails extends Component {
 					{ent.data.post.embed_url && (
 						<div
 							style={{
-								marginBottom: '10px'
+								marginBottom: '10px',
+								maxWidth: '480px'
 							}}
 						>
 							<iframe
@@ -82,7 +83,8 @@ class HashtagsDetails extends Component {
 								frameBorder={0}
 								style={{
 									pointerEvents: 'none',
-									cursor: 'default !important'
+									cursor: 'default !important',
+									maxWidth: '480px'
 								}}
 							/>
 						</div>
