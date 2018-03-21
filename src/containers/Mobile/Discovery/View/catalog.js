@@ -1,8 +1,8 @@
 import React, {
-	Component 
+	Component
 } from 'react';
 import { Link } from 'react-router-dom';
-import { 
+import {
 	Button,
 	Card,
 	Comment,
@@ -36,7 +36,7 @@ class CatalogView extends Component {
 			forceLoginNow();
 		}
 	}
-	
+
 	// @TODO refractor and move addcomment outside this component
 	async addComment(event, productId) {
 		const { cookies, dispatch } = this.props;
@@ -45,7 +45,7 @@ class CatalogView extends Component {
 			this.setState({
 				commentLoading: true
 			});
-			await dispatch(commentActions.commentAddAction(cookies.get('user.token'), newComment.product_id, newComment.comment));
+			await dispatch(commentActions.commentAddAction(cookies.get('user.token'), newComment.product_id, newComment.comment, 'pcp'));
 			await dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), [productId]));
 			this.setState({
 				commentLoading: false
@@ -61,11 +61,11 @@ class CatalogView extends Component {
 		const { comments, cookies } = this.props;
 		const { commentLoading } = this.state;
 
-		if (comments.loading) {
+		if (comments.isLoading) {
 			return this.loadingView;
 		}
 
-		
+
 		const commentProduct = product.comments || false;
 		return (
 			<div className={stylesCatalog.commentBlock}>
@@ -76,16 +76,16 @@ class CatalogView extends Component {
 				)}
 				{(commentProduct) && (
 					<Comment
-						data={commentProduct.last_comment} 
+						data={commentProduct.last_comment}
 						type='lite-review'
-						loading={comments.loading} 
+						loading={comments.loading}
 					/>
 				)}
 				<Level>
 					<Level.Item>
 						{
 							cookies.get('isLogin') === 'true' ?
-								comments.loading || commentLoading ? this.loadingView :
+								comments.isLoading || commentLoading ? this.loadingView :
 									(
 										<Input
 											color='white'
@@ -104,12 +104,13 @@ class CatalogView extends Component {
 	}
 
 	render() {
-		const { 
-			comments, 
-			products, 
+		const {
+			comments,
+			products,
 			loveIsLogin,
 			loveClick,
-			loveLoading
+			loveLoading,
+			productOnClick
 		} = this.props;
 		return (
 			<div className={stylesCatalog.cardContainer}>
@@ -136,6 +137,7 @@ class CatalogView extends Component {
 										showNumber
 									/>
 								)}
+								productOnClick={() => productOnClick(product, index + 1)}
 							/>
 							{comments && comments.loading ? this.loadingView : this.renderComment(product)}
 						</div>

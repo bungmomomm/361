@@ -25,8 +25,56 @@ import Discovery from '../Utils';
 import {
 	CatalogView,
 	GridView,
-	SmallGridView
+	SmallGridView,
 } from '@/containers/Mobile/Discovery/View';
+
+import {
+	TrackingRequest,
+	sendGtm,
+	categoryViewBuilder,
+	productClickBuilder
+} from '@/utils/tracking';
+
+const trackBrandPageView = (products, info, props) => {
+	const productId = _.map(products, 'product_id') || [];
+	const brandInfo = {
+		id: props.match.params.brandId,
+		name: info.title,
+		url_path: props.location.pathname
+	};
+	const impressions = _.map(products, (product, key) => {
+		return {
+			name: product.product_title,
+			id: product.product_id,
+			price: product.pricing.original.effective_price,
+			brand: product.brand.name,
+			category: product.product_category_names.join('/'),
+			position: key + 1,
+			list: 'mm'
+		};
+	}) || [];
+	const request = new TrackingRequest();
+	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
+	request.setFusionSessionId('').setIpAddress('').setImpressions(impressions).setCategoryInfo(brandInfo);
+	request.setListProductId(productId.join('|'));
+	const requestPayload = request.getPayload(categoryViewBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
+
+const trackProductOnClick = (product, position, source = 'mm') => {
+	const productData = {
+		name: product.product_title,
+		id: product.product_id,
+		price: product.pricing.original.effective_price,
+		brand: product.brand.name,
+		category: product.product_category_names.join('/'),
+		position
+	};
+	const request = new TrackingRequest();
+	request.setFusionSessionId('').setProducts([productData]).setSourceName(source);
+	const requestPayload = request.getPayload(productClickBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
 
 class Detail extends Component {
 	static queryObject(props) {
@@ -80,7 +128,7 @@ class Detail extends Component {
 			lovelistProductId: null
 		};
 	}
-	componentDidMount() {
+	componentWillMount() {
 		if ('serviceUrl' in this.props.shared) {
 			const { dispatch, match: { params }, cookies } = this.props;
 			const qs = queryString.parse(location.search);
@@ -91,6 +139,9 @@ class Detail extends Component {
 					...qs
 				}
 			};
+			this.setState({
+				query: data.query
+			});
 			dispatch(brandAction.brandProductAction(data));
 			dispatch(brandAction.brandBannerAction(cookies.get('user.token'), this.props.match.params.brandId));
 		}
@@ -130,6 +181,12 @@ class Detail extends Component {
 		if (nextProps.brands.products_comments !== this.props.brands.products_comments) {
 			this.setState({ newComment: { product_id: '', comment: '' } });
 		}
+
+		if (nextProps.brands.searchData !== this.props.brands.searchData) {
+			const data = nextProps.brands.searchData;
+			trackBrandPageView(data.products, data.info, nextProps);
+		}
+
 		this.handleScroll();
 
 	}
@@ -288,6 +345,7 @@ class Detail extends Component {
 				<GridView
 					loading={scroller.loading}
 					forceLoginNow={() => this.forceLoginNow()}
+					productOnClick={trackProductOnClick}
 					products={products}
 				/>
 			);

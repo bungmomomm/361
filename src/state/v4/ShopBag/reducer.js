@@ -4,7 +4,8 @@ const initialState = {
 	loading: false,
 	carts: null,
 	total: null,
-	location_default: null
+	location_default: null,
+	empty_state: ''
 };
 
 const { shopBagLoading, shopBagGet } = createActions(
@@ -19,12 +20,13 @@ const reducer = handleActions({
 			loading
 		};
 	},
-	[shopBagGet](state, { payload: { carts, total, location_default } }) {
+	[shopBagGet](state, { payload: { carts, total, location_default, empty_state } }) {
 		return {
 			...state,
 			carts,
 			total,
-			location_default
+			location_default,
+			empty_state
 		};
 	},
 }, initialState);

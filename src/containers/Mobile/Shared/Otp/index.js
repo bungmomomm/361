@@ -152,11 +152,11 @@ class Otp extends Component {
 	}
 
 	validateOtp = async (data) => {
-		const { dispatch, onSuccess } = this.props;
+		const { dispatch, onSuccess, type } = this.props;
 		const { phoneEmail } = this.state;
 
 		const otpData = {
-			action: 'edit',
+			action: type,
 			[this.HP_EMAIL_FIELD]: phoneEmail,
 			[this.OTP_FIELD]: data
 		};
@@ -170,7 +170,7 @@ class Otp extends Component {
 				inputHint: err.error_message || 'Invalid OTP'
 			});
 		} else if (response) {
-			onSuccess();
+			onSuccess(response);
 		}
 
 		if (this.recaptchaInstance !== null) {
@@ -296,6 +296,10 @@ const mapStateToProps = (state) => {
 		...state,
 		isLoading: state.users.isLoading
 	};
+};
+
+Otp.defaultProps = {
+	type: 'edit'
 };
 
 export default withCookies(connect(mapStateToProps)(Otp));

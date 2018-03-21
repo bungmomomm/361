@@ -2,31 +2,35 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { actions as users } from '@/state/v4/User';
-import { 
-	Link 
+import {
+	Link
 } from 'react-router-dom';
-import { 
-	Button, 
-	Input, 
-	Svg, 
-	Notification 
+import {
+	Button,
+	Input,
+	Svg,
+	Notification
 } from '@/components/mobile';
+// import Shared from '@/containers/Mobile/Shared';
 import {
 	Login as LoginWidget
 } from '@/containers/Mobile/Widget';
-import { 
-	setUserCookie, 
-	renderIf 
+import {
+	setUserCookie,
+	renderIf
 } from '@/utils';
 import styles from '../user.scss';
 import _ from 'lodash';
 import validator from 'validator';
 import util from 'util';
 import to from 'await-to-js';
+import {
+	TrackingRequest,
+	loginSuccessBuilder,
+	sendGtm,
+} from '@/utils/tracking';
 
-import Logout from './Logout';
-
-class Login extends Component {
+class LoginPage extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -57,6 +61,9 @@ class Login extends Component {
 		setUserCookie(this.props.cookies, response.token);
 		dispatch(new users.afterLogin(cookies.get('user.token')));
 		history.push(redirectUri || '/');
+
+		this.trackingHandler(response);
+
 		return response;
 	}
 
@@ -71,6 +78,9 @@ class Login extends Component {
 		setUserCookie(this.props.cookies, response.token);
 		dispatch(new users.afterLogin(cookies.get('user.token')));
 		history.push(redirectUri || '/');
+
+		this.trackingHandler(response, provider);
+
 		return response;
 	}
 
@@ -91,22 +101,29 @@ class Login extends Component {
 		}
 	}
 
+	trackingHandler(response, method = 'onsite') {
+		const request = new TrackingRequest();
+		request.setEmailHash('').setUserId(response.userid).setCurrentUrl(`/${this.state.current}`);
+		request.setFusionSessionId('').setUserIdEncrypted('').setIpAddress('').setLoginRegisterMethod(method);
+		const requestPayload = request.getPayload(loginSuccessBuilder);
+		if (requestPayload) sendGtm(requestPayload);
+	}
+
 	handlePick(current) {
 		this.setState({ current });
 	}
 
 	render() {
-		const { 
-			isLoading, 
-			login 
+		const {
+			isLoading,
+			login
 		} = this.props.users;
-		const { 
-			visiblePassword, 
-			validLoginId, 
-			validLoginPassword, 
-			loginId, 
-			redirectUri,
-			password 
+		const {
+			visiblePassword,
+			validLoginId,
+			validLoginPassword,
+			loginId,
+			password
 		} = this.state;
 		const buttonLoginEnable = !isLoading && validLoginId && validLoginPassword;
 
@@ -157,7 +174,10 @@ class Login extends Component {
 						label='Password'
 						iconRight={
 							<Button onClick={() => this.setState({ visiblePassword: !visiblePassword })}>
-								<Svg src={visiblePassword ? 'ico_password_hide.svg' : 'ico_password_show.svg'} />
+								<Svg src='ico_password_hide.svg' />
+								{
+									// <Svg src='ico_password_show.svg' />
+								}
 							</Button>
 						}
 						type={visiblePassword ? 'text' : 'password'}
@@ -168,7 +188,7 @@ class Login extends Component {
 					/>
 				</div>
 				<div className='text-right margin--medium-v'>
-					<Link className='pull-right' to={`/forgot-password?redirectUri=${redirectUri}`}>LUPA PASSWORD</Link>
+					<Link className='pull-right' to='/forgot-password'>LUPA PASSWORD</Link>
 				</div>
 				<div className='margin--medium-v'>
 					<Button color='secondary' size='large' disabled={!buttonLoginEnable} loading={isLoading} onClick={(e) => this.onLogin(e)} >LOGIN</Button>
@@ -178,6 +198,4 @@ class Login extends Component {
 	}
 }
 
-Login.Logout = Logout;
-
-export default withCookies(connect()(Login));
+export default withCookies(connect()(LoginPage));
