@@ -104,6 +104,7 @@ class Products extends Component {
 		this.handleCloseModalPopUp = this.handleCloseModalPopUp.bind(this);
 		this.handleBtnBeliClicked = this.handleBtnBeliClicked.bind(this);
 		this.handleSelectVariant = this.handleSelectVariant.bind(this);
+		this.loginNow = this.loginNow.bind(this);
 		this.onOvoInfoClick = this.onOvoInfoClick.bind(this);
 		this.redirectToPage = this.redirectToPage.bind(this);
 		this.removeAddItem = this.removeAddItem.bind(this);
@@ -402,7 +403,7 @@ class Products extends Component {
 		this.setState({ status });
 	}
 
-	loginNow() {
+	loginNow(e) {
 		const { status } = this.state;
 		status.forceLogin = false;
 		this.setState({ status });
@@ -774,7 +775,7 @@ class Products extends Component {
 								<Promos
 									promo={promo}
 									loading={status.loading}
-									loginNow={this.loginNow}
+									loginNow={this.handleLovelistClick}
 									productId={detail.id}
 								/>
 								{/* } */}
