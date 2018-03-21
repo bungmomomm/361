@@ -36,18 +36,18 @@ class Address extends Component {
 		if (this.props.address.edit !== nextProps.address.edit) {
 			(async () => {
 				const { dispatch, cookies, address, address: { edit } } = nextProps;
-				const selected = { };
+				const selected = { city: [], district: [] };
 
 				const cities = await to(dispatch(actions.getCity(cookies.get('user.token'), { q: `${edit.city.split(' ').pop().replace(/[,.]/i, '')}` })));
-				selected.city = cities[1].data.data.cities.filter((obj) => {
+				selected.city = cities[1] ? cities[1].data.data.cities.filter((obj) => {
 					return obj.name === `${edit.city}, ${edit.province}`;
-				});
+				}) : [];
 
 				if (selected.city.length) {
 					const districts = await to(dispatch(actions.getDistrict(cookies.get('user.token'), { city_id: selected.city[0].city_id })));
-					selected.district = districts[1].data.data.districts.filter((obj) => {
+					selected.district = districts[1] ? districts[1].data.data.districts.filter((obj) => {
 						return obj.name === edit.district;
-					});
+					}) : [];
 				}
 
 				this.setState({
