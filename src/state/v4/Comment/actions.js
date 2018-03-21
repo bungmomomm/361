@@ -1,12 +1,13 @@
-// this actions for PDP page
 import { Promise } from 'es6-promise';
 import to from 'await-to-js';
 import _ from 'lodash';
 import { request } from '@/utils';
 import {
 	commentList,
+	commentListNext,
 	commentLoading, 
 	addComment,
+	addCommentDetail,
 	commentListLoaded,
 	commentListLoad,
 	commentListFailed
@@ -36,17 +37,17 @@ const newCommentData = (commentState, newComment) => {
 		commentState.push(newC);
 		commentData = commentState;
 	}
-
+	
 	return commentData;
 };
 
-const commentAddAction = (token, productId, comment) => async (dispatch, getState) => {
-	dispatch(commentLoading({ loading: true }));
-
+const commentAddAction = (token, productId, comment, source = null) => async (dispatch, getState) => {
 	const { shared, comments } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+
+	dispatch(commentLoading({ isLoading: true }));
 
 	const [err, response] = await to(request({
 		token,
@@ -60,16 +61,20 @@ const commentAddAction = (token, productId, comment) => async (dispatch, getStat
 	}));
 
 	if (err) {
-		dispatch(commentLoading({ loading: false }));
+		dispatch(commentLoading({ isLoading: false }));
 		return Promise.reject(err);
 	}
-	
-	const firstNewComment = _.head(response.data.data);
-	const newComment = newCommentData(comments.data, firstNewComment);
-	
-	dispatch(addComment({ data: newComment }));
-	dispatch(commentLoading({ loading: false }));
-	return Promise.resolve(response);
+
+	const data = response.data.data;
+	if (source === null) {
+		const firstNewComment = _.head(data);
+		const newComment = newCommentData(comments.data.comments, firstNewComment);
+		dispatch(addCommentDetail({ newComment }));
+	} else {
+		dispatch(addComment({ data }));
+	}
+
+	return Promise.resolve(data);
 };
 
 const productCommentAction = (token, productId, page = 1) => async (dispatch, getState) => {
@@ -78,8 +83,9 @@ const productCommentAction = (token, productId, page = 1) => async (dispatch, ge
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
-	const perPage = 10;
+	dispatch(commentLoading({ isLoading: true }));
 
+	const perPage = 10;
 	const [err, response] = await to(request({
 		token,
 		path: `${baseUrl}/comments?product_id=${productId}&page=${page}&per_page=${perPage}`,
@@ -88,15 +94,21 @@ const productCommentAction = (token, productId, page = 1) => async (dispatch, ge
 	}));
 
 	if (err) {
+		dispatch(commentLoading({ isLoading: false }));
 		return Promise.reject(err);
 	}
 
-	const data = response.data.data;
-	const comments = data.comments;
-	dispatch(commentList({ data: comments }));
-	dispatch(commentLoading({ loading: false }));
+	const data = {
+		...response.data.data
+	};
 
-	return Promise.resolve(comments);
+	if (page > 1) {
+		dispatch(commentListNext({ data }));	
+	} else {
+		dispatch(commentList({ data }));
+	}
+
+	return Promise.resolve(data);
 };
 
 const bulkieCommentAction = (token, productId) => async (dispatch, getState) => {

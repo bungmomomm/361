@@ -105,6 +105,7 @@ class Login extends Component {
 			validLoginId, 
 			validLoginPassword, 
 			loginId, 
+			redirectUri,
 			password 
 		} = this.state;
 		const buttonLoginEnable = !isLoading && validLoginId && validLoginPassword;
@@ -167,7 +168,7 @@ class Login extends Component {
 					/>
 				</div>
 				<div className='text-right margin--medium-v'>
-					<Link className='pull-right' to='/forgot-password'>LUPA PASSWORD</Link>
+					<Link className='pull-right' to={`/forgot-password?redirectUri=${redirectUri}`}>LUPA PASSWORD</Link>
 				</div>
 				<div className='margin--medium-v'>
 					<Button color='secondary' size='large' disabled={!buttonLoginEnable} loading={isLoading} onClick={(e) => this.onLogin(e)} >LOGIN</Button>

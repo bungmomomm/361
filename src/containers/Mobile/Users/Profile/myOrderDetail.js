@@ -20,7 +20,7 @@ class MyOrderDetail extends Component {
 	static renderTrackingInfo(order) {
 		const isResiInfoExist = Object.prototype.hasOwnProperty.call(order.shipping, 'resi');
 		return (
-			<Level className='bg--mm-blue-ext-3' style={{ borderBottom: '1px solid #D8D8D8' }}>
+			<Level style={{ borderBottom: '1px solid #D8D8D8' }}>
 				<Level.Left><Svg src='ico_box.svg' /></Level.Left>
 				<Level.Item className='padding--medium'>
 					<strong>{order.status}</strong>
@@ -78,8 +78,10 @@ class MyOrderDetail extends Component {
 				<Level>
 					<Level.Left>
 						<strong>Pesanan #{order.so_number}</strong>
-						<small className='font-color--primary-ext-2'>Dipesan {order.created_time}</small>
 					</Level.Left>
+					<Level.Right>
+						<small className='font-color--primary-ext-2'>{order.created_time}</small>
+					</Level.Right>
 				</Level>
 				{order.group !== 'dikirim' && this.renderTopOrderInfo()}
 				{this.renderOrderList()}
@@ -97,26 +99,41 @@ class MyOrderDetail extends Component {
 	renderOrderList() {
 		const myOrdersDetail = this.props.user.myOrdersDetail;
 		const listOrderDetail = myOrdersDetail && (myOrdersDetail.sales_orders.map((order, key) => {
+			console.log('order', order);
 			const items = order.items.map((item, iKey) => {
+				console.log('item', item);
 				return (
 					<div key={iKey}>
-						<Level className='bg--white'>
+						<Level className='bg--white border-bottom'>
 							<Level.Left>
-								<Image width={60} height={77} src={item.images[0].mobile} />
+								<Image width={60} height={77} src={item.images[0].thumbnail} />
 							</Level.Left>
-							<Level.Item>
-								<span className='font-xsmall text-uppercase'>{item.brand.brand_name}</span>
-								<span className='margin--small font-color--primary-ext-2'>{item.product_title}</span>
-								<span className='font-small margin--small-t'>Jumlah <strong>{item.qty}</strong></span>
+							<Level.Item className='margin--medium no-margin-v'>
+								<span className='font-small text-uppercase'>{item.brand.name}</span>
+								<span className='font-color--primary-ext-2'>{item.product_title}</span>
+								<div className='flex-row flex-spaceBetween flex-middle margin--medium-t'>
+									<div className='flex-row'>
+										<div>
+											<span className='font-small'>Jumlah <strong>{item.qty}</strong></span>
+											<strong className='margin--small-t'>{item.pricing.formatted.price}</strong>
+										</div>
+									</div>
+									{ /* <div>
+										<Button rounded size='medium' color='secondary' className='margin--medium-t text-uppercase'>BELI AJA</Button>
+									</div> */ }
+								</div>
 							</Level.Item>
-							<Level.Right>
-								<strong>{item.pricing.formatted.price}</strong>
-							</Level.Right>
 						</Level>
-						{(order.is_digital_order !== 0 && item.fg_have_review === 0 && myOrdersDetail.group === 'selesai') && (
-							<Link to={'/profile/my-order/add-review'} onClick={() => this.onAddReview(order.so_store_number, order.seller, item)}>
-								<Button rounded size='medium' color='secondary'>BERI ULASAN</Button>
-							</Link>
+						{(item.fg_have_review === 0 && myOrdersDetail.group === 'selesai') && (
+							<div className='padding--normal bg--white'>
+								<div className='flex-row flex-center flex-spaceBetween'>
+									<Link to={'/profile/my-order/add-review'} onClick={() => this.onAddReview(order.so_store_number, order.seller, item)}>
+										<Button size='medium'>
+											<Svg src='ico_reviews.svg' className='SVGInline' />&nbsp;&nbsp;<span className='font-color--blue text-uppercase'>BERI ULASAN</span>
+										</Button>
+									</Link>
+								</div>
+							</div>
 						)}
 					</div>
 				);
@@ -126,11 +143,11 @@ class MyOrderDetail extends Component {
 					<div>
 						{myOrdersDetail.group === 'dikirim' && MyOrderDetail.renderTrackingInfo(order)}
 						<Level className='bg--white'>
-							<Level.Item className='padding--normal-b' style={{ borderBottom: '1px solid #D8D8D8' }}>
+							<Level.Item className='padding--normal-b border-bottom'>
 								<strong>{order.seller.seller}</strong>
 							</Level.Item>
-							<Level.Item className='padding--normal-b' style={{ borderBottom: '1px solid #D8D8D8', alignItems: 'flex-end' }}>
-								<span className='font-color--mm-blue'>#{order.so_store_number}</span>
+							<Level.Item className='padding--normal-b border-bottom' style={{ alignItems: 'flex-end' }}>
+								<span className='font-color--primary-ext-2'>#{order.so_store_number}</span>
 							</Level.Item>
 						</Level>
 						{items}
@@ -148,11 +165,10 @@ class MyOrderDetail extends Component {
 
 	renderTopOrderInfo() {
 		const order = this.props.user.myOrdersDetail;
-		const styleClass = order.group === 'batal' ? 'bg--mm-blue-ext-2' : 'bg--mm-blue-ext-3';
+		const styleClass = order.group === 'batal';
 		return (
-			<Level className={styleClass} style={{ borderBottom: '1px solid #D8D8D8' }}>
-				<Level.Left><Svg src='ico_box.svg' /></Level.Left>
-				<Level.Item className='padding--medium'>
+			<Level className={styleClass} style={{ borderBottom: '1px solid #D8D8D8', backgroundColor: '#fff' }}>
+				<Level.Item>
 					<strong>{order.status}</strong>
 				</Level.Item>
 			</Level>
@@ -163,7 +179,7 @@ class MyOrderDetail extends Component {
 		const shipping = this.props.user.myOrdersDetail.sales_orders[0].shipping;
 		return (
 			<aux>
-				<div>Alamat Pengiriman</div>
+				<div className='panel__container'>Alamat Pengiriman</div>
 				<div className='bg--white padding--medium margin--medium-b'>
 					<strong className='margin--small-b'>{shipping.name}</strong>
 					<div className='font-color--primary-ext-2'>
@@ -178,7 +194,7 @@ class MyOrderDetail extends Component {
 		const order = this.props.user.myOrdersDetail;
 		return (
 			<aux>
-				<div>Pembayaran</div>
+				<div className='panel__container'>Pembayaran</div>
 				<div className='bg--white padding--medium'>
 					<ul className={styles.orderPaymentList}>
 						<li><span>Subtotal</span><strong>{order.total.formatted.subtotal}</strong></li>
