@@ -25,6 +25,7 @@ import {
 	Tabs,
 	Navigation,
 	Spinner,
+	SEO
 } from '@/components/mobile';
 
 import { actions as pcpActions } from '@/state/v4/ProductCategory';
@@ -310,6 +311,9 @@ class Product extends Component {
 
 				return (
 					<Page color='white'>
+						<SEO 
+							paramCanonical={process.env.MOBILE_UR}
+						/>
 						{this.foreverBannerBlock()}
 						{isLoading ? this.loadingView : productsView}
 						<Footer isShow={this.state.isFooterShow} />

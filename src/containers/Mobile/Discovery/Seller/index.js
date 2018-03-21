@@ -9,7 +9,8 @@ import { Navigation,
 	Button,
 	Level,
 	Image,
-	Badge
+	Badge,
+	SEO
 } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
@@ -465,7 +466,9 @@ class Seller extends Component {
 				) : (
 					<div style={this.props.style}>
 						<Page color='white'>
-							{seller.info.seller && this.renderHelmet()}
+							<SEO 
+								paramCanonical={process.env.MOBILE_UR}
+							/>
 							{this.sellerHeader()}
 							{this.filterTabs()}
 							{this.loadProducts()}

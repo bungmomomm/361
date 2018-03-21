@@ -78,7 +78,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		componentDidMount() {
-			window.mmLoading.destroy();
+			// window.mmLoading.destroy();
 			window.addEventListener('scroll', this.handleScroll, true);
 			this.docBody = document.body;
 
