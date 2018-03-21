@@ -27,8 +27,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				scroll: {
 					top: 0,
 					docHeight: 0,
-					isNavSticky: false,
-					isNavExists: false
+					isNavSticky: false
 				},
 				provider: (query.code || query.state) ? (query.code ? 'facebook' : 'google') : false,
 				watchConnection: false
@@ -37,9 +36,6 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			this.userCookies = this.props.cookies.get('user.token');
 			this.userRFCookies = this.props.cookies.get('user.rf.token');
 			this.uniqueId = this.props.cookies.get('uniqueid');
-			this.handleScroll = this.handleScroll.bind(this);
-			this.docBody = null;
-			this.currentScrollPos = 0;
 		}
 
 		componentWillMount() {
@@ -79,8 +75,6 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		componentDidMount() {
 			// window.mmLoading.destroy();
-			window.addEventListener('scroll', this.handleScroll, true);
-			this.docBody = document.body;
 
 			if (typeof this.uniqueId === 'undefined') {
 				setUniqeCookie(this.props.cookies);
@@ -89,7 +83,6 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		componentWillUnmount() {
 			window.mmLoading.play();
-			window.removeEventListener('scroll', this.handleScroll, true);
 			window.prevLocation = this.props.location;
 			window.previousLocation = location.pathname + location.search;
 		}
@@ -104,9 +97,13 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			const { login, provider } = this.state;
 			let tokenBearer = token === null ? this.userCookies : token.token;
 			const rfT = token === null ? this.userRFCookies : token.refresh_token;
-			const resp = await to(dispatch(new users.refreshToken(rfT, tokenBearer)));
 
-			const data = resp[1].data.data;
+			const [er, resp] = await to(dispatch(new users.refreshToken(rfT, tokenBearer)));
+			if (er) {
+				return null;
+			}
+
+			const { data } = resp.data;
 
 			const isAnonymous = data.info.userid <= 1;
 			setUserCookie(this.props.cookies, data, isAnonymous);
@@ -125,7 +122,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			}
 
 			if (typeof doAfterAnonymousCall !== 'undefined') {
-				await doAfterAnonymousCall.apply(this, [this.props]);
+				doAfterAnonymousCall.apply(this, [this.props]);
 			}
 			return null;
 		}
@@ -146,6 +143,10 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		async loginAnonymous() {
 			const response = await to(this.props.dispatch(new users.userAnonymous()));
 
+			if (response[0]) {
+				return null;
+			}
+
 			setUserCookie(this.props.cookies, response[1].token, true);
 			return Promise.resolve({
 				status: 1,
@@ -160,6 +161,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			const serviceUrl = _.chain(shared).get('serviceUrl').value() || false;
 			if (!serviceUrl) {
 				const response = await to(this.props.dispatch(new initAction.initAction()));
+				if (response[0]) {
+					return null;
+				}
 
 				this.initApp();
 				return response[1];
@@ -168,39 +172,10 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			return false;
 		}
 
-		handleScroll(e) {
-			if (e.target.tagName === 'BODY') {
-				const docHeight = this.docBody ? this.docBody.scrollHeight - window.innerHeight : 0;
-				this.setState({
-					scroll: {
-						top: e.target.scrollTop,
-						docHeight,
-						isNavSticky: ((oldPos = this.currentScrollPos) => {
-							if (!scroll) {
-								return false;
-							}
-							this.currentScrollPos = this.state.scroll.top;
-							return this.state.scroll.top > oldPos && this.state.scroll.top < this.state.scroll.docHeight;
-						})()
-					}
-				});
-			}
-		}
-
 		render() {
-			const { scroll } = this.state;
-			const snackStyle = _.chain(this.props.shared.snackbar).get('[0].style').value() || { css: {}, sticky: true };
-			const snackCss = _.chain(snackStyle).get('css.snack').value() || {};
-			const snackSticky = !snackStyle.sticky ? {} : {
-				bottom: !scroll.isNavSticky && document.querySelector('.navigation__navigation') ? 50 : 0,
-				zIndex: !scroll.isNavSticky && document.querySelector('.navigation__navigation') ? 2 : 999
-			};
-			const customStylesCss = { ...snackStyle.css, snack: { ...snackCss, ...snackSticky } };
-
-
 			return (
 				<div>
-					<Snackbar history={this.props.history} location={this.props.location} customStyles={customStylesCss} />
+					<Snackbar {...this.props} />
 					<WrappedComponent {...this.props} scroll={this.state.scroll} />
 				</div>
 			);
