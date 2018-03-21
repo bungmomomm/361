@@ -65,8 +65,13 @@ class MyOrderDetail extends Component {
 			dispatch(userAction.getMyOrderDetail(this.userToken, this.soNumber));
 		}
 	}
+
+	componentWillUnmount() {
+		const { dispatch } = this.props;
+		dispatch(userAction.cleanMyOrderDetail(this.userToken, this.soNumber));
+	}
+
 	onAddReview(soStoreNumber, seller, item) {
-		console.log('MyOrder Detail item', { soStoreNumber, seller, item });
 		const { dispatch } = this.props;
 		dispatch(userAction.keepReviewInfo({ soStoreNumber, seller, item }));
 	}
@@ -99,9 +104,7 @@ class MyOrderDetail extends Component {
 	renderOrderList() {
 		const myOrdersDetail = this.props.user.myOrdersDetail;
 		const listOrderDetail = myOrdersDetail && (myOrdersDetail.sales_orders.map((order, key) => {
-			console.log('order', order);
 			const items = order.items.map((item, iKey) => {
-				console.log('item', item);
 				return (
 					<div key={iKey}>
 						<Level className='bg--white border-bottom'>
@@ -118,9 +121,12 @@ class MyOrderDetail extends Component {
 											<strong className='margin--small-t'>{item.pricing.formatted.price}</strong>
 										</div>
 									</div>
-									{ /* <div>
-										<Button rounded size='medium' color='secondary' className='margin--medium-t text-uppercase'>BELI AJA</Button>
-									</div> */ }
+									{ myOrdersDetail.group === 'batal' && (
+										<div>
+											<Button rounded size='medium' color='secondary' className='margin--medium-t text-uppercase'>BELI AJA</Button>
+										</div>
+									)}
+
 								</div>
 							</Level.Item>
 						</Level>
