@@ -45,7 +45,7 @@ class CatalogView extends Component {
 			this.setState({
 				commentLoading: true
 			});
-			await dispatch(commentActions.commentAddAction(cookies.get('user.token'), newComment.product_id, newComment.comment));
+			await dispatch(commentActions.commentAddAction(cookies.get('user.token'), newComment.product_id, newComment.comment, 'pcp'));
 			await dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), [productId]));
 			this.setState({
 				commentLoading: false
@@ -61,7 +61,7 @@ class CatalogView extends Component {
 		const { comments, cookies } = this.props;
 		const { commentLoading } = this.state;
 
-		if (comments.loading) {
+		if (comments.isLoading) {
 			return this.loadingView;
 		}
 
@@ -85,7 +85,7 @@ class CatalogView extends Component {
 					<Level.Item>
 						{
 							cookies.get('isLogin') === 'true' ?
-								comments.loading || commentLoading ? this.loadingView :
+								comments.isLoading || commentLoading ? this.loadingView :
 									(
 										<Input
 											color='white'

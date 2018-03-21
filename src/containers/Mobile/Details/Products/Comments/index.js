@@ -1,136 +1,211 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import { Page, Header, Svg, Comment, Input, Button, Level, Spinner } from '@/components/mobile';
-import styles from './comments.scss';
-import { actions as commentActions } from '@/state/v4/Comment';
-import { actions as productActions } from '@/state/v4/Product';
+import util from 'util';
+import validator from 'validator';
+import queryString from 'query-string';
+
+import { Page, Header, Svg, Comment, Input, Button, Level, Spinner, Image } from '@/components/mobile';
+
 import Shared from '@/containers/Mobile/Shared';
-import { loading } from '@/utils';
+
+import { actions as commentActions } from '@/state/v4/Comment';
+import { actions as userActions } from '@/state/v4/User';
+
+import styles from './comments.scss';
 
 class Comments extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-
-		this.userCookies = this.props.cookies.get('user.token');
-		this.userRFCookies = this.props.cookies.get('user.rf.token');
-		this.productId = this.props.match.params.id;
 		this.isLogin = this.props.cookies.get('isLogin') || false;
-		this.renderLoading = <div><Spinner /></div>;
-		this.writeComment = this.writeComment.bind(this);
-		this.postComment = this.postComment.bind(this);
 
+		this.state = {
+			validForm: false,
+			commentValue: '',
+			showClearButton: false
+		};
+
+		this.renderLoading = <Spinner />;
+		this.clearButton = <Svg src='ico_clear.svg' />;
 	}
 
-	componentWillMount() {
+	inputHandler(e) {
+		const value = util.format('%s', e.target.value);
+
+		if (value.length > 0) {
+			this.setState({ showClearButton: true });
+		} else {
+			this.setState({ showClearButton: false });
+		}
+
+		let validForm = false;
+		if (!validator.isEmpty(value) && value.length <= 300) {
+			validForm = true;
+		}
+
 		this.setState({
-			detail: {
-				isLoading: true,
-				firstLoad: this.renderLoading
-			},
-			comment: {
-				isLoading: true,
-				firstLoad: this.renderLoading
-			},
-			hashtag: {
-				isLoading: true,
-				firstLoad: this.renderLoading
-			},
-			productComment: ''
+			validForm,
+			commentValue: value
 		});
 	}
 
-	writeComment(e) {
-		this.setState({
-			productComment: e.target.value
-		});
+	loadNextComments = async () => {
+		const { dispatch, comments, cookies } = this.props;
 
+		if (!_.isEmpty(comments.links.next)) {
+			const getParam = queryString.extract(comments.links.next);
+			const parsedUrl = queryString.parse(getParam);
+			const commentsParam = {
+				product_id: parsedUrl.product_id !== undefined ? parseInt(parsedUrl.product_id, 10) : '',
+				page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : ''
+			};
+			await dispatch(commentActions.productCommentAction(cookies.get('user.token'), commentsParam.product_id, commentsParam.page));
+		}
 	}
 
 	postComment() {
-		const { dispatch } = this.props;
-		const { productComment } = this.state;
+		const { dispatch, match, cookies } = this.props;
+		const { commentValue } = this.state;
 
-		dispatch(commentActions.commentAddAction(this.userCookies, this.productId, productComment));
+		const productId = _.chain(match).get('params.id').value() || false;
+		if (productId) {
+			dispatch(commentActions.commentAddAction(cookies.get('user.token'), productId, commentValue));
+		}
 
 		this.setState({
-			productComment: ''
+			commentValue: ''
 		});
 	}
 
-	renderComments() {
-		const { comments } = this.props;
+	renderHeader() {
+		const { history } = this.props;
 
-		const commentReady = _.isEmpty(comments.data);
-
-		if (commentReady) {
-			const me = this;
-			loading().then((response) => {
-				if (me.state.comment.isLoading) {
-					me.setState({
-						comment: {
-							isLoading: false,
-							firstLoad: null
-						}
-					});
-				}
-
-			});
-			return this.state.comment.firstLoad;
+		let back;
+		if (this.props.history.length === 0) {
+			back = () => history.push('/');
+		} else {
+			back = () => history.goBack();
 		}
 
-		return (
-			<div style={{ marginBottom: '100px' }}>
-				{ <Comment data={comments.data} loading={comments.loading} /> }
-			</div>
-		);
+		const HeaderOption = {
+			left: (
+				<Button onClick={back}>
+					<Svg src={'ico_arrow-back-left.svg'} />
+				</Button>
+			),
+			center: 'Komentar',
+			right: null
+		};
 
+		return <Header.Modal {...HeaderOption} />;
 	}
 
 	renderDetail() {
 		const { product } = this.props;
-		const detailReady = _.isEmpty(product.detail);
 
-		if (detailReady) {
-			const me = this;
-			loading().then((response) => {
-				if (me.state.detail.isLoading) {
-					me.setState({
-						detail: {
-							isLoading: false,
-							firstLoad: null
-						}
-					});
-				}
-			});
-
-			return this.state.detail.firstLoad;
+		if (!_.isEmpty(product)) {
+			return (
+				<div
+					className='margin--small-v padding--medium-h'
+					dangerouslySetInnerHTML={{ __html: product.description }}
+				/>
+			);
 		}
-
-		return (
-			<div>
-				<p className='margin--small-v padding--medium-h' dangerouslySetInnerHTML={{ __html: product.detail.description }} />
-				{/* <span className='margin--small-v padding--medium-h'>
-					<a>#jualbajubangkok</a> <a>#supplierbangkok</a> <a>#pobkkfirsthand</a> <a>#pobkk</a> <a>#pohk</a> <a>#grosirbaju</a> <a>#premiumquaity</a> <a>#readytowear</a> <a>#ootdindo</a> <a>#olshop</a> <a>#trustedseller</a> <a>#supplierbaju</a> <a>#pochina</a>
-				</span> */}
-			</div>
-		);
+		
+		return null;
 	}
 
-	renderAvailComment() {
-		const { comments } = this.props;
-		if (this.isLogin === 'true') {
+	renderComments() {
+		const { isLoading, comments } = this.props;
+		
+		if (!_.isEmpty(comments.comments)) {
+			const loadMore = !_.isEmpty(comments.links.next) ? (
+				<Button
+					className={styles.loadMore}
+					onClick={() => this.loadNextComments()}
+					loading={isLoading}
+				>
+					Lihat komentar sebelumnya
+				</Button>
+			) : '';
 			return (
-				<Level className={styles.commentbox}>
-					<Level.Item><Input color='white' placeholder='Type a message ...' value={this.state.productComment} onChange={this.writeComment} /></Level.Item>
-					<Level.Right><Button className='padding--small-h font--lato-normal' style={{ marginLeft: '15px' }} onClick={this.postComment} loading={comments.loading}>KIRIM</Button></Level.Right>
-				</Level>
+				<div style={{ marginBottom: '100px' }}>
+					{loadMore}
+					{<Comment data={comments.comments} loading={isLoading} />}
+				</div>
 			);
 		}
 
+		return null;
+	}
+
+	renderClearButton() {
+		const { showClearButton } = this.state;
+
+		if (showClearButton) {
+			return (
+				<Button
+					onClick={() => {
+						this.setState({
+							commentValue: '',
+							showClearButton: false,
+							validForm: false
+						});
+					}}
+				>
+					{this.clearButton}
+				</Button>
+			);
+		}
+
+		return null;
+	}
+
+	renderAvailComment() {
+		const { isLoading, userProfile } = this.props;
+		const { validForm, commentValue } = this.state;
+
+		if (this.isLogin === 'true') {
+			const userAvatar = !_.isEmpty(userProfile) ? (
+				<Level.Left>
+					<Image
+						height={30}
+						width={30}
+						avatar
+						src={userProfile.avatar}
+						style={{ marginRight: '8px' }}
+					/>
+				</Level.Left>
+			) : '';
+
+			return (
+				<Level className={styles.commentbox}>
+					{userAvatar}
+					<Level.Item>
+						<Input
+							color='white'
+							placeholder='Tulis komentar..'
+							value={commentValue}
+							onChange={(e) => this.inputHandler(e)}
+							iconRight={this.renderClearButton()}
+						/>
+					</Level.Item>
+					<Level.Right>
+						<Button
+							className='padding--small-h font--lato-bold'
+							style={{ marginLeft: '5px' }}
+							onClick={() => this.postComment()}
+							loading={isLoading}
+							disabled={!validForm}
+						>
+							KIRIM
+						</Button>
+					</Level.Right>
+				</Level>
+			);
+		}
 
 		return (
 			<span className={styles.commentbox}>
@@ -140,48 +215,46 @@ class Comments extends Component {
 	}
 
 	render() {
-		const { match } = this.props;
-		const HeaderOption = {
-			left: (
-				<Link to={`/product/${match.params.id}`}>
-					<Svg src={'ico_arrow-back-left.svg'} />
-				</Link>
-			),
-			center: 'Comments',
-			right: null
-		};
+		const { isLoadingProfile } = this.props;
+
 		return (
 			<div>
-				<Page>
+				<div className={styles.commentsBackground} />
+				<Page style={{ paddingTop: 0 }} color='white'>
 					<div className='margin--medium-v'>
-						{ this.renderDetail() }
+						{this.renderDetail()}
+						{this.renderComments()}
 					</div>
-					{ this.renderComments() }
 				</Page>
-				<Header.Modal {...HeaderOption} />
-
-				{ this.renderAvailComment() }
+				{this.renderHeader()}
+				{isLoadingProfile ? this.renderLoading : this.renderAvailComment()}
 			</div>);
 	}
 }
 
 const mapStateToProps = (state) => {
 	return {
-		comments: state.comments,
-		product: state.product,
-		shared: state.shared,
-		users: state.users
+		...state,
+		comments: state.comments.data || '',
+		product: state.comments.data.product || '',
+		isLoading: state.comments.isLoading,
+		isLoadingProfile: state.users.isLoading,
+		userProfile: state.users.userProfile
 	};
 };
 
 const doAfterAnonymous = async (props) => {
-	const { dispatch, product, cookies, match } = props;
-	const token = cookies.get('user.token');
-	const productId = match.params.id;
-	if (_.isEmpty(product.detail)) {
-		await dispatch(new productActions.productDetailAction(token, productId));
+	const { dispatch, cookies, match, shared } = props;
+
+	const productId = _.chain(match).get('params.id').value() || false;
+	if (productId) {
+		await dispatch(commentActions.productCommentAction(cookies.get('user.token'), productId, 1));
 	}
-	await dispatch(commentActions.productCommentAction(token, productId, 1));
+
+	const serviceUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+	if (serviceUrl) {
+		await dispatch(userActions.userGetProfile(cookies.get('user.token')));
+	}
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Comments, doAfterAnonymous)));
