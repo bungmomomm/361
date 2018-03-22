@@ -108,4 +108,8 @@ FacebookLogin.propTypes = {
 	wide: PropTypes.bool
 };
 
+FacebookLogin.defaultProps = {
+	scope: 'email',
+};
+
 export default FacebookLogin;
