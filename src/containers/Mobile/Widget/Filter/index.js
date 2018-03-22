@@ -194,6 +194,8 @@ class Filter extends PureComponent {
 			layout: 'result',
 			resetCliked: false
 		});
+		const obj = utils.getFq(filters);
+		this.props.onApply(null, obj);
 	}
 
 	render() {

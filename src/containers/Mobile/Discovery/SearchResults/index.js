@@ -338,7 +338,7 @@ class SearchResults extends Component {
 const mapStateToProps = (state) => {
 	const { comments, lovelist, searchResults } = state;
 	searchResults.searchData.products = Discovery.mapProducts(searchResults.searchData.products, comments, lovelist);
-	const isFiltered = Filter.utils.isFiltered(searchResults.searchData.products.facets);
+	const isFiltered = Filter.utils.isFiltered(searchResults.searchData.facets);
 
 	return {
 		...state,
