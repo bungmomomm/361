@@ -25,6 +25,8 @@ import {
 	sendGtm,
 } from '@/utils/tracking';
 
+import { Payload } from '@/utils/tracking/lucidworks';
+
 const trackAddToCart = (data, props, variant) => {
 	const products = {
 		name: data.detail.title,
@@ -150,6 +152,8 @@ class Products extends Component {
 			center: '',
 			right: ''
 		};
+
+		this.fusion = new Payload(this.props.cookies);
 	}
 
 	componentDidMount() {
@@ -198,6 +202,13 @@ class Products extends Component {
 			if (typeof detail.seller !== 'undefined' && typeof detail.seller.seller_id !== 'undefined') {
 				dispatch(productActions.productStoreAction(this.userCookies, detail.seller.seller_id));
 			}
+
+			// Fusion PDP tracking...
+			this.fusion.trackPdp({
+				product_id: detail.id,
+				item_price: detail.price_range.effective_price,
+				item_disc: detail.price_range.discount,
+			}).push();
 		}
 
 		// sets lovelist data

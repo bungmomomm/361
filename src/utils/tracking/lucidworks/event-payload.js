@@ -12,15 +12,15 @@ class EventPayload extends Fusion {
 		};
 	}
 
-	setPdpEvent(data) {
-		const event = Events.NEW_SESSION;
+	trackPdp(data) {
+		const event = Events.PRODUCT_DETAIL_PAGE;
 		this.Payloads = {
 			event,
 			...this.commons,
 			...data,
 			reference: 'not-set-yet',
 			query: 'not-set-yet',
-			page: 'not-set-yet',
+			page: 1,
 			limit: 1
 		};
 

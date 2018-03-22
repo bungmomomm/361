@@ -1,7 +1,7 @@
 import { uniqid } from '@/utils';
 import axios from 'axios';
 import { config } from './config';
-import { NEW_SESSION as event } from './event';
+import { NEW_SESSION } from './event';
 
 class Fusion {
 
@@ -58,7 +58,7 @@ class Fusion {
 	initNewSessionEvent() {
 		this.Payloads = {
 			...this.getCommons(),
-			event,
+			event: NEW_SESSION,
 		};
 	}
 
@@ -72,8 +72,6 @@ class Fusion {
 				this.savesData(config.sessionName, data);
 				this.initNewSessionEvent();
 				this.push();
-			} else {
-				console.log('New session has been pushed before...');
 			}
 		} catch (error) {
 			console.log(error);
@@ -106,6 +104,11 @@ class Fusion {
 	push = () => {
 		try {	
 			this.Payloads.google_session_id = this.gaClientId;
+
+			if (this.Payloads.event !== NEW_SESSION && !this.hasSession()) {
+				this.bindSession();
+			}
+
 			const request = () => {
 				const requestConfig = {
 					headers: {
