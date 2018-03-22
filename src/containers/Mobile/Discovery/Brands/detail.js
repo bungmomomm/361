@@ -302,7 +302,7 @@ class Detail extends Component {
 	}
 
 	renderFilter() {
-		// const { brands } = this.props;
+		const { brands, isFiltered } = this.props;
 		const { showSort } = this.state;
 		const sorts = _.chain(this.props.brands).get('searchData.sorts').value() || [];
 		return (
@@ -313,17 +313,18 @@ class Detail extends Component {
 						{
 							id: 'sort',
 							title: 'Urutkan',
-							// disabled: brands.loading_products
+							disabled: brands.loading_products
 						},
 						{
 							id: 'filter',
 							title: 'Filter',
-							// disabled: brands.loading_products
+							disabled: brands.loading_products,
+							checked: isFiltered
 						},
 						{
 							id: 'view',
 							title: <Svg src={this.state.listTypeState.icon} />,
-							// disabled: brands.loading_products
+							disabled: brands.loading_products
 						}
 					]}
 					onPick={e => this.handlePick(e)}

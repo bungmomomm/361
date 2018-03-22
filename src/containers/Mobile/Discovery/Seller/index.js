@@ -271,7 +271,7 @@ class Seller extends Component {
 	};
 
 	filterTabs = () => {
-		const { seller, isFiltered } = this.props;
+		const { seller, scroller, isFiltered } = this.props;
 		const { listTypeState, showSort, filterStyle } = this.state;
 		const sorts = _.chain(seller).get('data.sorts').value() || [];
 
@@ -284,18 +284,18 @@ class Seller extends Component {
 						{
 							id: 'sort',
 							title: 'Urutkan',
-							disabled: _.isEmpty(seller.data.sorts)
+							disabled: scroller.loading
 						},
 						{
 							id: 'filter',
 							title: 'Filter',
-							disabled: _.isEmpty(seller.data.facets),
+							disabled: scroller.loading,
 							checked: isFiltered
 						},
 						{
 							id: 'view',
 							title: <Svg src={listTypeState.icon} />,
-							disabled: _.isEmpty(seller.data.products)
+							disabled: scroller.loading
 						}
 					]}
 					onPick={e => this.handlePick(e)}

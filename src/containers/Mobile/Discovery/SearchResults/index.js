@@ -271,7 +271,7 @@ class SearchResults extends Component {
 	}
 
 	renderTabs() {
-		const { searchResults, viewMode } = this.props;
+		const { searchResults, viewMode, isLoading, isFiltered } = this.props;
 		const { showSort } = this.state;
 
 		let tabsView = null;
@@ -288,12 +288,13 @@ class SearchResults extends Component {
 							{
 								id: 'sort',
 								title: 'Urutkan',
-								disabled: typeof searchResults.searchData === 'undefined'
+								disabled: isLoading
 							},
 							{
 								id: 'filter',
 								title: 'Filter',
-								disabled: typeof searchResults.searchData === 'undefined'
+								disabled: isLoading,
+								checked: isFiltered
 							},
 							{
 								id: 'view',
@@ -337,10 +338,12 @@ class SearchResults extends Component {
 const mapStateToProps = (state) => {
 	const { comments, lovelist, searchResults } = state;
 	searchResults.searchData.products = Discovery.mapProducts(searchResults.searchData.products, comments, lovelist);
+	const isFiltered = Filter.utils.isFiltered(searchResults.searchData.products.facets);
 
 	return {
 		...state,
 		searchResults,
+		isFiltered,
 		promoData: state.searchResults.promoData,
 		query: state.searchResults.query,
 		isLoading: state.searchResults.isLoading,
