@@ -27,11 +27,8 @@ class SmartB extends Component {
 				top: 0,
 				docHeight: 0,
 				isNavSticky: false,
-				isNavExists: false
 			},
 		};
-		this.docBody = null;
-		this.currentScrollPos = 0;
 	}
 
 	componentWillMount() {
@@ -50,7 +47,6 @@ class SmartB extends Component {
 
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
-		this.docBody = document.body;
 	}
 
 	componentWillUnmount() {
@@ -61,23 +57,14 @@ class SmartB extends Component {
 		this.props.onCloseBanner();
 	};
 
-	handleScroll = (e) => {
-		if (e.target.tagName === 'BODY') {
-			const docHeight = this.docBody ? this.docBody.scrollHeight - window.innerHeight : 0;
-			this.setState({
-				scroll: {
-					top: e.target.scrollTop,
-					docHeight,
-					isNavSticky: ((oldPos = this.currentScrollPos) => {
-						if (!scroll) {
-							return false;
-						}
-						this.currentScrollPos = this.state.scroll.top;
-						return this.state.scroll.top > oldPos && this.state.scroll.top < this.state.scroll.docHeight;
-					})()
-				}
-			});
-		}
+	handleScroll = () => {
+		this.setState({
+			scroll: {
+				top: window.props.scroll.top,
+				docHeight: window.props.scroll.docHeight,
+				isNavSticky: window.props.scroll.isNavSticky
+			}
+		});
 	};
 
 	render() {

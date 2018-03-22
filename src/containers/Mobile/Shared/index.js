@@ -30,12 +30,22 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 					isNavSticky: false
 				},
 				provider: (query.code || query.state) ? (query.code ? 'facebook' : 'google') : false,
-				watchConnection: false
+				watchConnection: false,
 			};
 
 			this.userCookies = this.props.cookies.get('user.token');
 			this.userRFCookies = this.props.cookies.get('user.rf.token');
 			this.uniqueId = this.props.cookies.get('uniqueid');
+			this.docBody = null;
+			this.currentScrollPos = 0;
+
+			window.props = {
+				scroll: {
+					top: 0,
+					docHeight: 0,
+					isNavSticky: false
+				}
+			};
 		}
 
 		componentWillMount() {
@@ -75,7 +85,8 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		componentDidMount() {
 			// window.mmLoading.destroy();
-
+			window.addEventListener('scroll', this.handleScroll, true);
+			this.docBody = document.body;
 			if (typeof this.uniqueId === 'undefined') {
 				setUniqeCookie(this.props.cookies);
 			}
@@ -85,6 +96,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			window.mmLoading.play();
 			window.prevLocation = this.props.location;
 			window.previousLocation = location.pathname + location.search;
+			window.removeEventListener('scroll', this.handleScroll, true);
 		}
 
 		shouldLoginAnonymous() {
@@ -168,6 +180,23 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 			return false;
 		}
+
+		handleScroll = (e) => {
+			if (e.target.tagName === 'BODY') {
+				const docHeight = this.docBody ? this.docBody.scrollHeight - window.innerHeight : 0;
+				window.props.scroll = {
+					top: e.target.scrollTop,
+					docHeight,
+					isNavSticky: ((oldPos = this.currentScrollPos) => {
+						if (!scroll) {
+							return false;
+						}
+						this.currentScrollPos = window.props.scroll.top;
+						return window.props.scroll.top > oldPos && window.props.scroll.top < window.props.scroll.docHeight;
+					})()
+				};
+			}
+		};
 
 		render() {
 			return (
