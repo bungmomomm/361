@@ -44,14 +44,18 @@ class Fusion {
 	}
 
 	checkForNewSession() {
-		if (this.trackEnable && !this.hasNewSession()) {
-			this.sessionId = uniqid();
-			const fusionSession = `${this.sessionId}|${this.customerId}`;
-			this.cookies.set(config.sessionName, fusionSession, { domain: config.domain, path: '/', expires: 0 });
-			console.log('new session has been generated succesfully!');
-		} else {
-			this.push();
-			console.log('new session has been pushed: ');
+		try {
+			if (this.trackEnable && !this.hasNewSession()) {
+				this.sessionId = uniqid();
+				const fusionSession = `${this.sessionId}|${this.customerId}`;
+				this.cookies.set(config.sessionName, fusionSession, { domain: config.domain, path: '/', expires: 0 });
+				console.log('new session has been generated succesfully!');
+			} else {
+				this.push();
+				console.log('new session has been pushed: ');
+			}
+		} catch (error) {
+			console.log('error: ', error);
 		}
 	}
 

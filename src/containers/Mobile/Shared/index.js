@@ -5,7 +5,6 @@ import { actions } from '@/state/v4/Shared';
 import { actions as users } from '@/state/v4/User';
 import { actions as initAction } from '@/state/v4/Home';
 import { setUserCookie, setUniqeCookie } from '@/utils';
-import { Fusion } from '@/utils/tracking/lucidworks';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
 import Snackbar from '@/containers/Mobile/Shared/snackbar';
@@ -37,14 +36,6 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			this.userCookies = this.props.cookies.get('user.token');
 			this.userRFCookies = this.props.cookies.get('user.rf.token');
 			this.uniqueId = this.props.cookies.get('uniqueid');
-			this.handleScroll = this.handleScroll.bind(this);
-			this.docBody = null;
-			this.currentScrollPos = 0;
-			
-
-			// initialize Fusion Tracking...
-			const f = new Fusion(this.props.cookies);
-			f.checkForNewSession();
 		}
 
 		componentWillMount() {
