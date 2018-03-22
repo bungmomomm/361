@@ -141,10 +141,6 @@ class Products extends Component {
 		};
 	}
 
-	componentDidMount() {
-		addEventListener('scroll', this.handleScroll, true);
-	}
-
 	componentWillReceiveProps(nextProps) {
 		const { product, lovelist, dispatch } = nextProps;
 		const { detail } = product;
@@ -199,10 +195,7 @@ class Products extends Component {
 
 		// updates states
 		this.setState({ status, cardProduct, selectedVariant, size });
-	}
-
-	componentWillUnmount() {
-		removeEventListener('scroll', this.handleScroll, true);
+		this.handleScroll();
 	}
 
 	onOvoInfoClick(e) {
@@ -237,10 +230,10 @@ class Products extends Component {
 		}
 	}
 
-	handleScroll = () => {
+	handleScroll(e) {
 		if (!this.carouselEL) return;
 		const { status } = this.state;
-		const { top } = window.props.scroll;
+		const { top } = this.props.scroll;
 		const carouselHeight = this.carouselEL.getBoundingClientRect().height;
 		if (top > carouselHeight && !status.showScrollInfomation) {
 			status.showScrollInfomation = true;

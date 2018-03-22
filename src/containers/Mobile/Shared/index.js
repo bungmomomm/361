@@ -36,16 +36,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			this.userCookies = this.props.cookies.get('user.token');
 			this.userRFCookies = this.props.cookies.get('user.rf.token');
 			this.uniqueId = this.props.cookies.get('uniqueid');
+			this.handleScroll = this.handleScroll.bind(this);
 			this.docBody = null;
 			this.currentScrollPos = 0;
-
-			window.props = {
-				scroll: {
-					top: 0,
-					docHeight: 0,
-					isNavSticky: false
-				}
-			};
 		}
 
 		componentWillMount() {
@@ -84,9 +77,10 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		componentDidMount() {
-			// window.mmLoading.destroy();
+			window.mmLoading.destroy();
 			window.addEventListener('scroll', this.handleScroll, true);
 			this.docBody = document.body;
+
 			if (typeof this.uniqueId === 'undefined') {
 				setUniqeCookie(this.props.cookies);
 			}
@@ -131,7 +125,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			}
 
 			if (typeof doAfterAnonymousCall !== 'undefined') {
-				doAfterAnonymousCall.apply(this, [this.props]);
+				await to(doAfterAnonymousCall.apply(this, [this.props]));
 			}
 			return null;
 		}
@@ -181,27 +175,38 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			return false;
 		}
 
-		handleScroll = (e) => {
+		handleScroll(e) {
 			if (e.target.tagName === 'BODY') {
 				const docHeight = this.docBody ? this.docBody.scrollHeight - window.innerHeight : 0;
-				window.props.scroll = {
-					top: e.target.scrollTop,
-					docHeight,
-					isNavSticky: ((oldPos = this.currentScrollPos) => {
-						if (!scroll) {
-							return false;
-						}
-						this.currentScrollPos = window.props.scroll.top;
-						return window.props.scroll.top > oldPos && window.props.scroll.top < window.props.scroll.docHeight;
-					})()
-				};
+				this.setState({
+					scroll: {
+						top: e.target.scrollTop,
+						docHeight,
+						isNavSticky: ((oldPos = this.currentScrollPos) => {
+							if (!scroll) {
+								return false;
+							}
+							this.currentScrollPos = this.state.scroll.top;
+							return this.state.scroll.top > oldPos && this.state.scroll.top < this.state.scroll.docHeight;
+						})()
+					}
+				});
 			}
-		};
+		}
 
 		render() {
+			const snackStyle = _.chain(this.props.shared.snackbar).get('[0].style').value() || { css: {}, sticky: true };
+			const snackCss = _.chain(snackStyle).get('css.snack').value() || {};
+			const snackSticky = !snackStyle.sticky ? {} : {
+				bottom: !this.state.scroll.isNavSticky ? 50 : 0,
+				zIndex: !this.state.scroll.isNavSticky ? 2 : 999
+			};
+			const customStylesCss = { ...snackStyle.css, snack: { ...snackCss, ...snackSticky } };
+
+
 			return (
 				<div>
-					<Snackbar {...this.props} />
+					<Snackbar history={this.props.history} location={this.props.location} customStyles={customStylesCss} />
 					<WrappedComponent {...this.props} scroll={this.state.scroll} />
 				</div>
 			);
