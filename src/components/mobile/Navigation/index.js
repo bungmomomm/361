@@ -24,7 +24,7 @@ class Navigation extends PureComponent {
 
 		const createClassName = classNames(
 			styles.container,
-			scroll.isNavSticky ? styles.hide : '',
+			scroll && scroll.isNavSticky ? styles.hide : '',
 			className
 		);
 
