@@ -757,6 +757,7 @@ class Products extends Component {
 											location={detail.seller.seller_location}
 											description=''
 											storeAddress={urlBuilder.setId(detail.seller.seller_id).setName(detail.seller.seller).buildStore()}
+											badgeImage={seller.seller_badge_image}
 										/>
 										)
 									}
