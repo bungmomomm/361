@@ -1,29 +1,33 @@
 import { uniqid } from '@/utils';
 import axios from 'axios';
 import { config } from './config';
+import { NEW_SESSION as event } from './event';
 
 class Fusion {
 
 	constructor(cookies) {
 		this.Payloads = {};
 		this.cookies = cookies;
-		this.trackEnable = config.enabled;
+		this.enabled = config.enabled;
 		this.sessionName = config.sessionName;
 		this.gaClientId = this.getGaClientId(); 
+		this.sessionId = null;
+		this.isLoggedIn = (typeof this.getData(config.loggedInSession) === 'string' && this.getData(config.loggedInSession) === 'true');
 	}
 
 	get customerId() {
-		if (this.hasCustomerSession()) return Number(this.cookies.get(config.userSession));
-		return config.userSession;
+		if (this.hasCustomerSession()) return Number(this.getData(config.userSession));
+		return config.defaultCustomerId;
 	}
 
-	get sessionId() {
-		const storedSession = this.cookies.get(config.sessionName);
+	getSessionId() {
+		const storedSession = this.getData(config.sessionName).split('|');
 		if (Array.isArray(storedSession) && storedSession.length === config.sessionLength) {
 			return storedSession[0];
 		}
 		return '';
 	}
+
 	getSource = () => {
 		return config.defaultSource;
 	}
@@ -43,45 +47,78 @@ class Fusion {
 		return clientId;
 	}
 
-	checkForNewSession() {
+	getCommons() {
+		return {
+			source: this.getSource(),
+			session_id: this.getSessionId(),
+			customer_id: this.customerId
+		};
+	}
+
+	initNewSessionEvent() {
+		this.Payloads = {
+			...this.getCommons(),
+			event,
+		};
+	}
+
+	bindSession() {
 		try {
-			if (this.trackEnable && !this.hasNewSession()) {
+			console.log('tracking enabled: ', config.enabled);
+			console.log('has session: ', this.hasSession());
+			if (config.enabled && !this.hasSession()) {
 				this.sessionId = uniqid();
-				const fusionSession = `${this.sessionId}|${this.customerId}`;
-				this.cookies.set(config.sessionName, fusionSession, { domain: config.domain, path: '/', expires: 0 });
-				console.log('new session has been generated succesfully!');
-			} else {
+				const data = `${this.sessionId}|${this.customerId}`;
+				this.savesData(config.sessionName, data);
+				this.initNewSessionEvent();
 				this.push();
-				console.log('new session has been pushed: ');
+			} else {
+				console.log('New session has been pushed before...');
 			}
 		} catch (error) {
-			console.log('error: ', error);
+			console.log(error);
 		}
 	}
 
-	hasNewSession() {
-		const sessionExists = this.cookies.get(config.sessionName);
+	hasSession() {
+		const sessionExists = this.getData(config.sessionName);
 		return (typeof sessionExists !== 'undefined' && (sessionExists !== '' || sessionExists !== null));
 	}
 
+	// check existing customer session
 	hasCustomerSession() {
-		const sessionExists = this.cookies.get(config.userSession);
-		return (typeof sessionExists !== 'undefined' && (sessionExists !== '' || sessionExists !== null));
+		if (this.isLoggedIn) {
+			const sessionExists = this.getData(config.userSession);
+			return (typeof sessionExists !== 'undefined' && (sessionExists !== '' || sessionExists !== null));
+		}
+		return false;
 	}
 
-	push = (Payload) => {
+	savesData(name, data, expires = 0) {
+		this.cookies.set(name, data, { domain: config.domain, path: '/', expires });
+		return true;
+	}
+
+	getData(name) {
+		return this.cookies.get(name);
+	}
+
+	push = () => {
 		try {	
-			Payload.google_session_id = this.gaClientId;
+			this.Payloads.google_session_id = this.gaClientId;
 			const request = () => {
-				const url = process.env.LUCID_TRACKING_URI;
 				const requestConfig = {
 					headers: {
 						'Content-Type': 'text/plain; charset=utf-8'
 					}
 				};
-				const requestSent = axios.post(url, JSON.stringify(Payload), requestConfig);
+				const data = (typeof this.Payloads === 'object') ? JSON.stringify(this.Payloads) : '';
+				const requestSent = axios.post(config.trackingUrl, data, requestConfig);
+
+				// sending request...
 				requestSent.then((res) => {
 					console.log('fusion response: ', res);
+					console.log('Payloads pushed: ', this.Payloads);
 				}).catch((err) => {
 					console.log(err);
 				});

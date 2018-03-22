@@ -1,24 +1,17 @@
 import { Fusion } from './fusion';
-import { Event } from './event';
+// import { Event } from './event';
 
 class EventPayload extends Fusion {
 
 	constructor(cookies) {
 		super(cookies);
 		this.commons = {
-			source: this.getSource(),
-			customer_id: this.customerId,
-			session_id: this.sessionId
+			source: super.getSource(),
+			session_id: super.getSessionId(),
+			customer_id: super.customerId
 		};
 	}
 
-	newSession() {
-		const self = this;
-		this.Payloads = {
-			event: Event.newSession,
-			...self.commons,
-		};
-	}
 }
 
 

@@ -6,7 +6,7 @@ const DECREASE_CART = 'decrease_cart_item';
 const REMOVE_CART_ITEM = 'remove_cart_item';
 const CHECKOUT = 'checkout';
 
-export default {
+export {
 	NEW_SESSION,
 	PRODUCT_DETAIL_PAGE,
 	ADD_TO_CART,
