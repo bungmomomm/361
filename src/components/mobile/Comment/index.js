@@ -76,7 +76,7 @@ class Comment extends Component {
 								<Image height={30} width={30} avatar src={sellerData.seller_logo} />
 							</Level.Left>
 							<Level.Item>
-								<div className='padding--medium-h font--lato-bold'>{sellerData.seller}</div>
+								<div className='padding--medium-h font--lato-bold flex-row'>{sellerData.seller}<span className={styles.sellerBadge}>Penjual</span></div>
 							</Level.Item>
 						</Level>
 						<div className='padding--normal-h border-bottom padding--small-b' style={{ marginLeft: '45px' }}>
@@ -104,7 +104,7 @@ class Comment extends Component {
 							<Rating active={data.review.rating} total={5} />
 						</Level.Right>
 					</Level>
-					<div className='padding--normal-h border-bottom padding--small-b' style={{ marginLeft: '45px' }}>
+					<div className='padding--normal-h padding--small-b' style={{ marginLeft: '45px' }}>
 						<div>{data.review.review}</div>
 						<div className='margin--small-v font-small font-color--primary-ext-2'>Post updated: {data.review.created_time}</div>
 					</div>
