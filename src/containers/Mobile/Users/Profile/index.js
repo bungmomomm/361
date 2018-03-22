@@ -155,7 +155,7 @@ class UserProfile extends Component {
 				<div className={styles.profileBackground} />
 				<Page style={{ paddingTop: 0 }}>
 					<Panel style={{ padding: 0 }}>&nbsp;</Panel>
-					{this.renderProfile()}
+					{this.renderProfile('api')}
 					<Panel>Account</Panel>
 					<Link to='/profile/my-order' className='bg--white'>
 						<Level style={{ padding: '0 0 0 15px' }}>

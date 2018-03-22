@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { to } from 'await-to-js';
 
 import { request } from '@/utils';
-import { initLoading, initViewMode, initPcp, initNextPcp, pcpUpdateSingleItem } from './reducer';
+import { pcpLoading, pcpViewMode, pcpInit, pcpNextInit, pcpUpdateSingleItem } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 
 const updateSingleItem = (item) => async (dispatch, getState) => {
@@ -10,13 +10,16 @@ const updateSingleItem = (item) => async (dispatch, getState) => {
 };
 
 const pcpAction = ({ token, query = {}, loadNext = false }) => async (dispatch, getState) => {
-	dispatch(initLoading({ isLoading: true }));
 	if (loadNext) {
 		dispatch(scrollerActions.onScroll({ loading: true }));
+	} else {
+		dispatch(pcpLoading({ isLoading: true }));
 	}
 
 	const { shared } = getState();
-	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || process.env.MICROSERVICES_URL;
+	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
+
+	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 
 	const path = `${baseUrl}/products/search`;
 
@@ -29,8 +32,7 @@ const pcpAction = ({ token, query = {}, loadNext = false }) => async (dispatch, 
 	}));
 
 	if (err) {
-		dispatch(initPcp({
-			isLoading: false,
+		dispatch(pcpInit({
 			pcpStatus: 'failed'
 		}));
 		return Promise.reject(err);
@@ -41,14 +43,13 @@ const pcpAction = ({ token, query = {}, loadNext = false }) => async (dispatch, 
 	};
 
 	if (loadNext) {
-		dispatch(initNextPcp({
+		dispatch(pcpNextInit({
 			pcpStatus: 'success',
 			pcpData,
 			query
 		}));
 	} else {
-		dispatch(initPcp({
-			isLoading: false,
+		dispatch(pcpInit({
 			pcpStatus: 'success',
 			pcpData,
 			query
@@ -78,7 +79,7 @@ const pcpAction = ({ token, query = {}, loadNext = false }) => async (dispatch, 
 };
 
 const viewModeAction = (mode) => (dispatch) => {
-	dispatch(initLoading({ isLoading: true }));
+	dispatch(pcpLoading({ isLoading: true }));
 
 	let icon = null;
 	switch (mode) {
@@ -93,8 +94,7 @@ const viewModeAction = (mode) => (dispatch) => {
 		break;
 	}
 
-	dispatch(initViewMode({
-		isLoading: false,
+	dispatch(pcpViewMode({
 		viewMode: {
 			mode,
 			icon
@@ -102,8 +102,13 @@ const viewModeAction = (mode) => (dispatch) => {
 	}));
 };
 
+const loadingAction = (value) => (dispatch) => {
+	dispatch(pcpLoading({ isLoading: value }));
+};
+
 export default {
 	pcpAction,
 	updateSingleItem,
-	viewModeAction
+	viewModeAction,
+	loadingAction
 };

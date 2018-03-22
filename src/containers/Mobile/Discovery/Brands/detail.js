@@ -13,6 +13,7 @@ import _ from 'lodash';
 import { Filter, Sort } from '@/containers/Mobile/Widget';
 import { actions as brandAction } from '@/state/v4/Brand';
 import Shared from '@/containers/Mobile/Shared';
+import EmptyState from '@/containers/Mobile/Shared/emptyState';
 import queryString from 'query-string';
 import { renderIf, urlBuilder } from '@/utils';
 import Scroller from '@/containers/Mobile/Shared/scroller';
@@ -394,10 +395,7 @@ class Detail extends Component {
 		const productCount = this.props.brands.searchData.info && this.props.brands.searchData.info.product_count;
 
 		if (productCount === 0) {
-			return (<div className='margin--medium-v text-center'>
-				Tidak ada Produk yang sesuai dengan Filter yang Anda inginkan. <br />
-				Silahkan Reset Filter untuk melakukan pencarian baru.
-			</div>);
+			return <EmptyState />;
 		}
 
 		return productCount && (<div className='margin--medium-v text-center'>{productCount} Total Produk</div>);

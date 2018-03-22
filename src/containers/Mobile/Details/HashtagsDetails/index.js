@@ -6,7 +6,6 @@ import { Header, Page, Svg, Carousel } from '@/components/mobile';
 import { actions } from '@/state/v4/HashtagsDetails';
 import Shared from '@/containers/Mobile/Shared';
 import Spinner from '@/components/mobile/Spinner';
-import InstagramEmbed from 'react-instagram-embed';
 import { GridView } from '@/containers/Mobile/Discovery/View';
 import Discovery from '@/containers/Mobile/Discovery/Utils';
 import { actions as commentActions } from '@/state/v4/Comment';
@@ -14,6 +13,15 @@ import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import _ from 'lodash';
 
 class HashtagsDetails extends Component {
+
+	componentDidMount() {
+		const script = document.createElement('script');
+		script.src = '//www.instagram.com/embed.js';
+		script.async = true;
+		script.defer = true;
+
+		document.body.appendChild(script);
+	}
 
 	forceLoginNow = () => {
 		const { history, location } = this.props;
@@ -64,21 +72,20 @@ class HashtagsDetails extends Component {
 					{ent.data.post.embed_url && (
 						<div
 							style={{
-								marginTop: '-2px',
-								marginLeft: '-1px',
-								width: 'calc(100% + 4px)'
+								marginBottom: '10px',
+								maxWidth: '480px'
 							}}
 						>
-							<InstagramEmbed
-								url={ent.data.post.embed_url.replace('embed/captioned/', '')}
-								maxWidth='auto'
-								hideCaption={false}
-								containerTagName='div'
-								protocol=''
-								onLoading={() => {}}
-								onSuccess={() => {}}
-								onAfterRender={() => {}}
-								onFailure={() => {}}
+							<iframe
+								src={ent.data.post.embed_url}
+								title='sgdsgs'
+								className={'instagram-media'}
+								frameBorder={0}
+								style={{
+									pointerEvents: 'none',
+									cursor: 'default !important',
+									maxWidth: '480px'
+								}}
 							/>
 						</div>
 					)}
@@ -129,8 +136,8 @@ const doAfterAnonymous = async (props) => {
 	const resp = await dispatch(actions.hashtagDetailAction(cookies.get('user.token'), ids));
 	const productIdList = _.map(resp.data.data.products, 'product_id') || [];
 	if (productIdList.length > 0) {
-		await dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
 	}
 };
 
