@@ -56,11 +56,18 @@ class SearchResults extends Component {
 				sort: '',
 				...propsObject.get('query').value()
 			},
-			isFooterShow: false
+			isFooterShow: false,
+			scroll: {
+				top: 0
+			}
 		};
 
 		this.loadingView = <Spinner />;
 	}
+
+	componentDidMount() {
+		addEventListener('scroll', this.handleScroll, true);
+	};
 
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.query !== this.props.query) {
@@ -69,6 +76,10 @@ class SearchResults extends Component {
 			});
 		}
 	}
+
+	componentWillUnmount() {
+		removeEventListener('scroll', this.handleScroll, true);
+	};
 
 	async onApply(e, fq) {
 		const { query } = this.state;
@@ -202,6 +213,14 @@ class SearchResults extends Component {
 		);
 	}
 
+	handleScroll = () => {
+		this.setState({
+			scroll: {
+				top: window.props.scroll
+			}
+		});
+	};
+
 	renderPage() {
 		const { isLoading, searchResults, shared } = this.props;
 		const { showFilter } = this.state;
@@ -218,15 +237,15 @@ class SearchResults extends Component {
 				/>
 			);
 		}
-		
+
 		const navigationAttribute = {
-			scroll: this.props.scroll
+			scroll: window.props.scroll
 		};
-		
+
 		if (shared.userPreviousPage !== 'HOME') {
 			navigationAttribute.active = 'Categories';
 		}
-		
+
 		return (
 			<div style={this.props.style}>
 				{isLoading ? this.loadingView : this.renderSearch()}
