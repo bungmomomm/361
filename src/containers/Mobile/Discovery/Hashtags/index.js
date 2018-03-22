@@ -2,14 +2,13 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { actions } from '@/state/v4/Hashtag';
-import { Header, Page, Svg, Grid, Button, Image } from '@/components/mobile';
+import { Header, Page, Svg, Grid, Button, Image, SEO } from '@/components/mobile';
 import { Link, withRouter } from 'react-router-dom';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import Spinner from '@/components/mobile/Spinner';
 import Footer from '@/containers/Mobile/Shared/footer';
 // import styles from './Hashtags.scss';
-import Helmet from 'react-helmet';
 import _ from 'lodash';
 import currency from 'currency.js';
 
@@ -115,7 +114,7 @@ class Hashtags extends Component {
 	};
 
 	render() {
-		const { hashtag, history, scroller, location, dispatch } = this.props;
+		const { hashtag, history, scroller, dispatch } = this.props;
 		const tags = hashtag.tags;
 		const q = dispatch(actions.getQuery());
 		const campaignId = _.chain(q).get('query.campaign_id').value() || false;
@@ -164,24 +163,9 @@ class Hashtags extends Component {
 		return (
 			<div>
 				<Page color='white'>
-
-					<Helmet>
-						<title>{'Mau Gaya Itu Gampang | MatahariMall.com'}</title>
-						<meta name='twitter:card' content='summary' />
-						<meta name='twitter:site' content='@MatahariMallCom' />
-						<meta name='twitter:creator' content='@MatahariMallCom' />
-						<meta name='twitter:title' content='Mau Gaya Itu Gampang' />
-						<meta name='twitter:url' content={`${process.env.MOBILE_URL}${location.pathname}${location.search}`} />
-						<meta name='twitter:description' content='Mau Gaya Itu Gampang' />
-						<meta name='twitter:image' content='https://assets.mataharimall.co/images/favicon.ico' />
-						<meta property='og:title' content='Mau Gaya Itu Gampang' />
-						<meta property='og:url' content={`${process.env.MOBILE_URL}${location.pathname}${location.search}`} />
-						<meta property='og:type' content='website' />
-						<meta property='og:description' content='Mau Gaya Itu Gampang' />
-						<meta property='og:image' content='https://assets.mataharimall.co/images/favicon.ico' />
-						<link rel='canonical' url={process.env.MOBILE_URL} />
-					</Helmet>
-
+					<SEO 
+						paramCanonical={process.env.MOBILE_UR}
+					/>
 					<div className='margin--medium-v text-center padding--large-h'>
 						{hashtag.header.description}
 					</div>

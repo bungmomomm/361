@@ -8,6 +8,7 @@ const Scroller = (WrappedComponent) => {
 			this.allowNext = false;
 
 			this.touchDown = this.touchDown.bind(this);
+			this.startInfScroll = (3 / 4); // start get new data once reach this page percentage
 		}
 
 		componentDidMount() {
@@ -36,7 +37,7 @@ const Scroller = (WrappedComponent) => {
 			const docHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
 			const scrollY = e.srcElement.scrollTop;
 			const scrHeight = window.screen.height;
-			if ((scrollY + scrHeight) >= docHeight && this.allowNext) {
+			if ((scrollY + scrHeight) >= (this.startInfScroll * docHeight) && this.allowNext) {
 				this.props.dispatch(this.scroller.loader(this.scroller.nextData));
 			}
 		};

@@ -90,7 +90,7 @@ class SubCategory extends PureComponent {
 	}
 
 	renderFeaturedBrands(categoryName) {
-		return (this.props.category.brands.length > 1)
+		return (this.props.category.brands.length > 0)
 			&& this.props.category.brands.map((brand, key) => {
 				return (
 					<List key={key}>
@@ -132,7 +132,7 @@ class SubCategory extends PureComponent {
 							</div>)
 					}
 					{
-						this.props.category.brands.length > 1 && (
+						this.props.category.brands.length > 0 && (
 							<div>
 								<Divider>Featured Brands</Divider>
 								{this.renderFeaturedBrands(selectedCategory.title)}

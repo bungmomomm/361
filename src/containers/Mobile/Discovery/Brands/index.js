@@ -12,7 +12,8 @@ import {
 	List,
 	Navigation,
 	Level,
-	Spinner
+	Spinner,
+	SEO
 } from '@/components/mobile';
 import C from '@/constants';
 import styles from './brands.scss';
@@ -193,6 +194,9 @@ class Brands extends Component {
 		return (
 			<div style={this.props.style}>
 				<Page color='white'>
+					<SEO 
+						paramCanonical={process.env.MOBILE_UR}
+					/>
 					{
 						<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />
 					}

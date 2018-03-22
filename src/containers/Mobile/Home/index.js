@@ -6,7 +6,7 @@ import _ from 'lodash';
 import {
 	Header, Carousel, Tabs,
 	Page, Level, Button, Grid, Article,
-	Navigation, Svg, Image, SmartBanner
+	Navigation, Svg, Image, SmartBanner, SEO
 } from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
@@ -203,14 +203,18 @@ class Home extends Component {
 					{ header }
 					<Grid split={3} bordered>
 						{
-							datanya.images.map((gambar, e) => (
-								<div key={e}>
-									<Link to={`${detailHashTag}/${gambar.content_id}`}>
-										<Image lazyload shape='square' alt='thumbnail' src={gambar.images.thumbnail} />
-									</Link>
-								</div>
+							datanya.images.map((gambar, e) => {
+								const embedUrl = _.chain(gambar).get('embed_url').value();
+								const icode = (embedUrl.substr(embedUrl.indexOf('/p/')).split('/') || [])[2];
 
-							))
+								return (
+									<div key={e}>
+										<Link to={`${detailHashTag}/${gambar.content_id}/${icode || ''}`}>
+											<Image lazyload shape='square' alt='thumbnail' src={gambar.images.thumbnail} />
+										</Link>
+									</div>
+								);
+							})
 						}
 					</Grid>
 				</div>
@@ -360,6 +364,9 @@ class Home extends Component {
 		return (
 			<div style={this.props.style}>
 				<Page color='white'>
+					<SEO
+						paramCanonical={process.env.MOBILE_UR}
+					/>
 					<Tabs
 						current={this.props.shared.current}
 						variants={this.props.home.segmen}
