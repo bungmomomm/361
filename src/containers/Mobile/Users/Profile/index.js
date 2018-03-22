@@ -149,6 +149,8 @@ class UserProfile extends Component {
 
 	render() {
 		const { shared } = this.props;
+		const { webViewUrl } = shared;
+		const returnRefund = webViewUrl ? webViewUrl.return_refund : '/';
 
 		return this.isLogin ? (
 			<div>
@@ -205,7 +207,7 @@ class UserProfile extends Component {
 							</Level.Item>
 						</Level>
 					</Link>
-					<Link to='#return-refund' className='bg--white'>
+					<a href={returnRefund} className='bg--white' target='_blank'>
 						<Level style={{ padding: '0 0 0 15px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_return.svg' />
@@ -216,9 +218,9 @@ class UserProfile extends Component {
 								</List>
 							</Level.Item>
 						</Level>
-					</Link>
+					</a>
 					<Panel>More</Panel>
-					<Link to='#bantuan' className='bg--white'>
+					<Link to='/bantuan' className='bg--white'>
 						<Level style={{ padding: '0 0 0 15px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_help.svg' />

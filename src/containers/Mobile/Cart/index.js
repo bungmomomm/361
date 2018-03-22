@@ -292,7 +292,7 @@ class Cart extends Component {
 		} else {
 			link = (<Link to='login?redirect_uri=/cart'>{wording}</Link>);
 		}
-		return this.props.shopBag.carts !== null && (
+		return this.props.shopBag.total !== null && (
 			<div className={styles.paymentLink}>
 				<div>
 					<div>

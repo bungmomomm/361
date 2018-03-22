@@ -22,8 +22,15 @@ class SmartB extends Component {
 			button: 'BUKA',
 			link: '',
 			price: 'FREE',
-			atStore: 'In Google Play'
+			atStore: 'In Google Play',
+			scroll: {
+				top: 0,
+				docHeight: 0,
+				isNavSticky: false,
+				isNavExists: false
+			},
 		};
+		this.docBody = null;
 		this.currentScrollPos = 0;
 	}
 
@@ -41,13 +48,41 @@ class SmartB extends Component {
 		});
 	}
 
-
-	onCloseBanner() {
-		this.props.onCloseBanner();
+	componentDidMount() {
+		window.addEventListener('scroll', this.handleScroll, true);
+		this.docBody = document.body;
 	}
 
+	componentWillUnmount() {
+		window.removeEventListener('scroll', this.handleScroll, true);
+	}
+
+	onCloseBanner = () => {
+		this.props.onCloseBanner();
+	};
+
+	handleScroll = (e) => {
+		if (e.target.tagName === 'BODY') {
+			const docHeight = this.docBody ? this.docBody.scrollHeight - window.innerHeight : 0;
+			this.setState({
+				scroll: {
+					top: e.target.scrollTop,
+					docHeight,
+					isNavSticky: ((oldPos = this.currentScrollPos) => {
+						if (!scroll) {
+							return false;
+						}
+						this.currentScrollPos = this.state.scroll.top;
+						return this.state.scroll.top > oldPos && this.state.scroll.top < this.state.scroll.docHeight;
+					})()
+				}
+			});
+		}
+	};
+
 	render() {
-		const { title, iconSrc, author, isShow, scroll } = this.props;
+		const { title, iconSrc, author, isShow } = this.props;
+		const { scroll } = this.state;
 
 		if ((scroll.top < scroll.docHeight && scroll.top > 80) || (scroll.top === scroll.docHeight && scroll.top > 80)) {
 			return null;
