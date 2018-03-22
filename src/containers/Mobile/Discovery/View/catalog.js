@@ -58,14 +58,14 @@ class CatalogView extends Component {
 	}
 
 	renderComment(product) {
-		const { comments, cookies, redirect } = this.props;
+		const { comments, cookies } = this.props;
 		const { commentLoading } = this.state;
 
 		if (comments.isLoading) {
 			return this.loadingView;
 		}
 
-		const redirectUri = redirect && redirect !== '' ? `?redirect_uri=${redirect}` : '';
+		const redirectUri = `?redirect_uri=product/comments/${product.product_id}`;
 
 		const commentProduct = product.comments || false;
 		return (

@@ -80,15 +80,13 @@ class Promo extends Component {
 	}
 
 	renderProductList() {
-		const { discovery, comments, scroller, location } = this.props;
+		const { discovery, comments, scroller } = this.props;
 		const products = _.chain(discovery).get(`promo.${this.promoType}.products`).value();
 		
 		if (products) {
 			let productsView;
 			if (!_.isEmpty(products)) {
 				const productCount = _.chain(discovery).get(`promo.${this.promoType}.info.product_count`).value() || 0;
-				const redirectPath = location.pathname;
-				const redirectParam = location.search !== '' ? location.search : '';
 				
 				let listView;
 				switch (discovery.viewMode.mode) {
@@ -99,7 +97,6 @@ class Promo extends Component {
 							loading={scroller.loading}
 							forceLoginNow={() => this.forceLoginNow()}
 							products={products}
-							redirect={redirectPath + redirectParam}
 						/>
 					);
 					break;
@@ -109,7 +106,6 @@ class Promo extends Component {
 							loading={scroller.loading}
 							forceLoginNow={() => this.forceLoginNow()}
 							products={products}
-							redirect={redirectPath + redirectParam}
 						/>
 					);
 					break;
