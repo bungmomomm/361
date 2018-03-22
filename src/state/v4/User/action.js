@@ -14,7 +14,7 @@ import {
 	addAfterLogin
  } from './after-login-action';
 import { userSocialLogin, userSocialLoginWithRedirect } from './social-action';
-import { checkMyOrders, getMyOrderDetail, updateMyOrdersCurrent, getMyOrderMore, cleanMyOrderData, keepReviewInfo, submitReview, PostOrderConfirmation, getListBankConfirmation } from './myOrder-action';
+import { checkMyOrders, getMyOrderDetail, updateMyOrdersCurrent, getMyOrderMore, cleanMyOrderData, keepReviewInfo, submitReview, PostOrderConfirmation, getListBankConfirmation, cleanMyOrderDetail } from './myOrder-action';
 import { getTrackingInfo } from './tracking-action';
 
 const isSuccess = (response) => {
@@ -476,5 +476,6 @@ export default {
 	afterLogin,
 	addAfterLogin,
 	PostOrderConfirmation,
-	getListBankConfirmation
+	getListBankConfirmation,
+	cleanMyOrderDetail
 };

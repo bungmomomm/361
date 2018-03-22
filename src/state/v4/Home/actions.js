@@ -91,8 +91,8 @@ const recomendationAction = (activeSegment, token, url = false) => async (dispat
 	const recommendedProducts = response.data.data.find(e => e.type === 'recommended') || {};
 	const recentlyViewedProducts = response.data.data.find(e => e.type === 'recentlyviewed') || {};
 	const promoRecommendationData = {
-		'new-arrival': bestSellerProducts,
-		'best-seller': newArrivalProducts,
+		'new-arrival': newArrivalProducts,
+		'best-seller': bestSellerProducts,
 		'recommended-products': recommendedProducts,
 		'recent-view': recentlyViewedProducts
 	};
