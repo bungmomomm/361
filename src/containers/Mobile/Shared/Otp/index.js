@@ -43,23 +43,24 @@ class Otp extends Component {
 	}
 
 	componentWillMount = async () => {
-		const { dispatch, phoneEmail } = this.props;
+		const { dispatch, phoneEmail, autoSend } = this.props;
 
 		this.setState({ isLoading: true });
+		if (autoSend) {
+			if (phoneEmail !== undefined && phoneEmail !== '') {
+				const [err, response] = await to(dispatch(userActions.userOtp(this.userToken, phoneEmail)));
+				if (err) {
+					this.setState({
+						showNotif: true,
+						statusNotif: 'failed',
+						isLoading: false
+					});
+				} else if (response) {
+					this.setState({ isLoading: false });
 
-		if (phoneEmail !== undefined && phoneEmail !== '') {
-			const [err, response] = await to(dispatch(userActions.userOtp(this.userToken, phoneEmail)));
-			if (err) {
-				this.setState({
-					showNotif: true,
-					statusNotif: 'failed',
-					isLoading: false
-				});
-			} else if (response) {
-				this.setState({ isLoading: false });
-
-				const countdown = _.chain(response).get('countdown').value() || 60;
-				this.countdownTimer(countdown);
+					const countdown = _.chain(response).get('countdown').value() || 60;
+					this.countdownTimer(countdown);
+				}
 			}
 		}
 
@@ -299,7 +300,8 @@ const mapStateToProps = (state) => {
 };
 
 Otp.defaultProps = {
-	type: 'edit'
+	type: 'edit',
+	autoSend: true
 };
 
 export default withCookies(connect(mapStateToProps)(Otp));
