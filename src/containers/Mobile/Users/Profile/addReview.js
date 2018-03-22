@@ -10,10 +10,13 @@ import {
 	Button,
 	Input,
 	Image,
-	Modal
+	Modal,
+	RatingAdd
 } from '@/components/mobile';
 import CONST from '@/constants';
 import { actions as userAction } from '@/state/v4/User';
+import styles from './profile.scss';
+import classNames from 'classnames';
 
 class AddReview extends Component {
 	constructor(props) {
@@ -26,7 +29,7 @@ class AddReview extends Component {
 			payload: {
 				product_id: null,
 				product_variant_id: null,
-				sales_order_item_id: null,
+				so_store_number: null,
 				subject: null,
 				review: null,
 				product_rating: null,
@@ -52,7 +55,7 @@ class AddReview extends Component {
 				...this.state.payload,
 				product_id: reviewInfo.item.product_id,
 				product_variant_id: reviewInfo.item.product_variant_id,
-				so_store_number: reviewInfo.so_store_number
+				so_store_number: reviewInfo.soStoreNumber
 			};
 			this.setState({ payload });
 		}
@@ -97,44 +100,44 @@ class AddReview extends Component {
 			center: 'Ulasan',
 			right: null,
 		});
-
+		const className = classNames('sellerReviewInfo');
 		return (
 			<div style={this.props.style}>
 				<Page>
 					<Level>
 						<Level.Left>
-							<strong>Penilaian Penjual</strong>
+							Penilaian Penjual
 						</Level.Left>
 					</Level>
 					<Level className='bg--white flex-center text-center'>
 						<div className='padding--small-h '>
-							<div>
+							<div style={{ marginBottom: '10px' }}>
 								<Image avatar width={60} height={60} src={reviewInfo.seller.seller_avatar} />
 							</div>
-							<div className='font--lato font-medium'>
+							<div className={`font--lato font-medium ${className}`}>
 								<strong>{reviewInfo.seller.seller}</strong>
 							</div>
-							<div>
+							<div className={styles.sellerReviewInfo}>
 								Jadikan ulasanmu lebih bermanfaat
 							</div>
-							<div>
-								* * * * *
+							<div className={styles.sellerReviewInfo}>
+								<RatingAdd name='seller' active='3' total='5' />
 							</div>
 						</div>
 					</Level>
 					<Level>
 						<Level.Left>
-							<strong>Ulasan Produk</strong>
+							Ulasan Produk
 						</Level.Left>
 					</Level>
 					<Level className='bg--white'>
 						<Level.Left>
-							<Image width={60} height={77} src={reviewInfo.item.images[0].mobile} />
+							<Image width={60} height={77} src={reviewInfo.item.images[0].thumbnail} />
 						</Level.Left>
 						<Level.Item>
-							<span className='font-xsmall text-uppercase'>{reviewInfo.item.brand.brand_name}</span>
+							<span className='margin--small text-uppercase'>{reviewInfo.item.brand.name}</span>
 							<span className='margin--small font-color--primary-ext-2'>{reviewInfo.item.product_title}</span>
-							<span className='font-small margin--small-t'>* * * * *</span>
+							<span className='margin--small'><RatingAdd name='product' active='3' total='5' /></span>
 						</Level.Item>
 						<Level.Right>
 							<strong>{reviewInfo.item.pricing.formatted.price}</strong>
