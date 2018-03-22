@@ -65,11 +65,12 @@ const reducer = handleActions({
 			totalCart
 		};
 	},
-	[forEverBanner](state, { payload: { foreverBanner, serviceUrl } }) {
+	[forEverBanner](state, { payload: { foreverBanner, serviceUrl, webViewUrl } }) {
 		return {
 			...state,
 			foreverBanner,
-			serviceUrl
+			serviceUrl,
+			webViewUrl
 		};
 	},
 	[currentTab](state, { payload: { current } }) {
