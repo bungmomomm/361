@@ -91,7 +91,7 @@ class Filter extends PureComponent {
 			layout: 'result'
 		});
 		const obj = utils.getFq(filters);
-		this.props.onApply(e, obj);
+		this.props.onApply(e, obj, true);
 	}
 
 	onReset(e) {
@@ -114,6 +114,7 @@ class Filter extends PureComponent {
 			case 'category':
 			case 'custom_category_ids':
 			case 'size':
+			case 'location':
 				facet.data = updateChilds(facet.data);
 				break;
 			default:
@@ -137,6 +138,10 @@ class Filter extends PureComponent {
 			selected,
 			resetCliked: true
 		});
+		if (this.props.autoUpdateFacets) {
+			const obj = utils.getFq(filters);
+			this.props.onApply(null, obj, false);
+		}
 		this.forceUpdate();
 	}
 
@@ -194,8 +199,10 @@ class Filter extends PureComponent {
 			layout: 'result',
 			resetCliked: false
 		});
-		const obj = utils.getFq(filters);
-		this.props.onApply(null, obj);
+		if (this.props.autoUpdateFacets) {
+			const obj = utils.getFq(filters);
+			this.props.onApply(null, obj, false);
+		}
 	}
 
 	render() {
@@ -342,5 +349,9 @@ class Filter extends PureComponent {
 }
 
 Filter.utils = utils;
+
+Filter.defaultProps = {
+	autoUpdateFacets: true
+};
 
 export default Filter;
