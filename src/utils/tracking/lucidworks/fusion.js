@@ -117,7 +117,7 @@ class Fusion {
 
 				// sending request...
 				requestSent.then((res) => {
-					console.log('fusion response: ', res);
+					console.log('An event has been pushed: ', res);
 					console.log('Payloads pushed: ', this.Payloads);
 				}).catch((err) => {
 					console.log(err);
