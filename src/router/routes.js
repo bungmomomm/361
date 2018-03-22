@@ -210,6 +210,11 @@ export default {
 			component: loadable(() => import('@/containers/Mobile/Users/Address/edit'), defaultOptions),
 		},
 		{
+			path: '/bantuan',
+			exact: true,
+			component: loadable(() => import('@/containers/Mobile/Static'), defaultOptions),
+		},
+		{
 			path: '/*', // Page not found handling.
 			component: loadable(() => import('@/containers/Mobile/404'), defaultOptions),
 			exact: true
