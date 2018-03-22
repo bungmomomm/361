@@ -98,12 +98,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			let tokenBearer = token === null ? this.userCookies : token.token;
 			const rfT = token === null ? this.userRFCookies : token.refresh_token;
 
-			const [er, resp] = await to(dispatch(new users.refreshToken(rfT, tokenBearer)));
-			if (er) {
-				return null;
-			}
+			const resp = await to(dispatch(new users.refreshToken(rfT, tokenBearer)));
 
-			const { data } = resp.data;
+			const { data } = resp[1].data;
 
 			const isAnonymous = data.info.userid <= 1;
 			setUserCookie(this.props.cookies, data, isAnonymous);
