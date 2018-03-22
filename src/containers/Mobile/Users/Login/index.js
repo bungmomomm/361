@@ -16,7 +16,8 @@ import {
 } from '@/containers/Mobile/Widget';
 import { 
 	setUserCookie, 
-	renderIf 
+	renderIf,
+	setUserInfoCookie
 } from '@/utils';
 import styles from '../user.scss';
 import _ from 'lodash';
@@ -55,6 +56,7 @@ class Login extends Component {
 			return err;
 		}
 		setUserCookie(this.props.cookies, response.token);
+		setUserInfoCookie(cookies, _.toInteger(response.userprofile.userid));
 		dispatch(new users.afterLogin(cookies.get('user.token')));
 		history.push(redirectUri || '/');
 		return response;

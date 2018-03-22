@@ -25,8 +25,6 @@ import {
 	sendGtm,
 } from '@/utils/tracking';
 
-import { Fusion } from '@/utils/tracking/lucidworks';
-
 const trackAddToCart = (data, props, variant) => {
 	const products = {
 		name: data.detail.title,
@@ -113,13 +111,6 @@ class Products extends Component {
 		this.setCarouselSlideIndex = this.setCarouselSlideIndex.bind(this);
 		this.handleShowMoreProductDescription = this.handleShowMoreProductDescription.bind(this);
 		this.handleShowLessProductDescription = this.handleShowLessProductDescription.bind(this);
-
-		try {
-			const test = new Fusion(this.props.cookies);
-			console.log('check fusion session: ', test.hasNewSession());
-		} catch (error) {
-			console.log('fusion error: ', error);
-		}
 
 		this.state = {
 			size: '',

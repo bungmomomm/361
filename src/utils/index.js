@@ -8,7 +8,7 @@ import componentState from './componentState';
 import splitString from './splitString';
 import trimString from './trimString';
 import { request, getCancelToken } from './request';
-import { setUserCookie, setUniqeCookie, removeUserCookie } from './cookie';
+import { setUserCookie, setUniqeCookie, removeUserCookie, setUserInfoCookie } from './cookie';
 import urlBuilder from './urlBuilder';
 import loading from './loading';
 import { request as emarsysRequest } from './emarsys';
@@ -55,6 +55,7 @@ export default {
 	getClientSecret,
 	getClientVersion,
 	setUserCookie,
+	setUserInfoCookie,
 	removeUserCookie,
 	setUniqeCookie,
 	newId,
