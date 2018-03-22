@@ -9,10 +9,12 @@ import styles from './card.scss';
 import { Link } from 'react-router-dom';
 
 class LovelistGrid extends PureComponent {
+	
 	render() {
 		const { className, data, isLoved, linkToPdp, lovelistDisabled } = this.props;
 		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
 		const createClassName = classNames(styles.container, styles.grid, className);
+		const loveListEmpty = classNames(styles.imgWrapper, styles.lovelistEmpty, className);
 
 		const basePrice = data.pricing.discount !== '' && data.pricing.discount !== '0%' ? (
 			<div className={styles.discount}>{data.pricing.formatted.base_price}</div>
@@ -29,7 +31,7 @@ class LovelistGrid extends PureComponent {
 		return (
 			<div className={createClassName}>
 				<Link to={linkToPdp || '/'} className={styles.imgContainer}>
-					<div className={styles.imgWrapper}>
+					<div className={loveListEmpty}>
 						<Image lazyload src={data.images[0].thumbnail} alt={data.product_title} />
 					</div>
 				</Link>

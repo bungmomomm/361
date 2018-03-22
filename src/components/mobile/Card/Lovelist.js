@@ -41,6 +41,7 @@ class Lovelist extends PureComponent {
 	render() {
 		const { className, type, data, isLoved, linkToPdp, linkToComments, lovelistDisabled } = this.props;
 		const createClassName = classNames(styles.container, styles[type], className);
+		const loveListEmpty = classNames(styles.lovelistEmpty, className);
 		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
 
 		const discountBadge = data.pricing.discount !== '0%' ? (
@@ -64,7 +65,7 @@ class Lovelist extends PureComponent {
 
 		return (
 			<div className={createClassName} >
-				<Link to={linkToPdp}>
+				<Link to={linkToPdp} className={loveListEmpty}>
 					<Carousel wrapAround={this.slideWrapAround} >
 						{
 							data.images.map((image, index) => (

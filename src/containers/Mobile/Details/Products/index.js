@@ -313,7 +313,6 @@ class Products extends Component {
 		const { status, notif } = this.state;
 		const { dispatch, product } = this.props;
 
-
 		status.showModalSelectSize = false;
 		notif.show = false;
 		this.setState({ status, notif });
@@ -370,10 +369,11 @@ class Products extends Component {
 	}
 
 	handleSelectVariant(size) {
-		if (!_.isUndefined(size) && size !== '') {
-			const { cardProduct } = this.state;
+		if (!_.isUndefined(size) && !_.isEmpty(size)) {
+			const { cardProduct, status } = this.state;
 			const selectedVariant = cardProduct.variantsData[size];
 			cardProduct.pricing = selectedVariant.pricing.formatted;
+
 			this.setState({
 				size,
 				selectedVariant,
@@ -381,7 +381,7 @@ class Products extends Component {
 			});
 
 			// Add product to cart cardProduct after product variant size selected
-			if (status.pendingAddProduct) this.addToShoppingBag(selectedVariant.id);
+			if (status.pendingAddProduct) this.addToShoppingBag(selectedVariant);
 		}
 	}
 
@@ -570,7 +570,7 @@ class Products extends Component {
 							</div>
 						</div>
 						<div>
-							<Button color='secondary' disabled={status.btnBeliDisabled} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
+							<Button color='secondary' disabled={(status.btnBeliDisabled || status.loading)} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
 						</div>
 					</div>
 				</div>
@@ -583,7 +583,7 @@ class Products extends Component {
 		try {
 
 			const { match, product } = this.props;
-			const { detail, socialSummary, promo, loading } = product;
+			const { detail, socialSummary, promo, loading, store } = product;
 			const { seller, comments, reviews } = socialSummary;
 			const { cardProduct, status, carousel, selectedVariant, showFullProductDescription } = this.state;
 			const { id } = detail;
@@ -600,6 +600,8 @@ class Products extends Component {
 				buttonProductDescriptionAttribute.onClick = this.handleShowLessProductDescription;
 				fullProductDescriptionButtonText = 'Hide';
 			}
+
+			// if (_.isEmpty(detail) || status.loading) return this.loadingContent;
 
 			if (status.isZoomed && _.has(detail, 'images')) {
 				return (
@@ -624,13 +626,11 @@ class Products extends Component {
 				);
 			}
 
-			if (_.isEmpty(detail) || status.loading) return this.loadingContent;
-
 			return (
 				<div>
 					<Page color='white'>
 						<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
-							{(_.isEmpty(cardProduct) || !_.has(cardProduct, 'images')) && this.loadingContent}
+							{((_.isEmpty(cardProduct) || !_.has(cardProduct, 'images')) && status.loading) && this.loadingContent}
 							{!_.isEmpty(cardProduct) && (
 								<div ref={(n) => { this.carouselEL = n; }}>
 									<Card.Product
@@ -752,11 +752,12 @@ class Products extends Component {
 											isNewStore={seller.is_new_seller}
 											successOrder={(!_.isUndefined(seller.success_order.rate)) ? (seller.success_order.rate || 0) : 0}
 											rating={seller.rating}
-											totalProduct={(!_.isUndefined(seller.success_order.total)) ? (seller.success_order.total || 0) : 0}
+											totalProduct={(!_.isUndefined(store.info.product_count)) ? (store.info.product_count || 0) : 0}
 											name={detail.seller.seller}
 											location={detail.seller.seller_location}
 											description=''
 											storeAddress={urlBuilder.setId(detail.seller.seller_id).setName(detail.seller.seller).buildStore()}
+											badgeImage={seller.seller_badge_image}
 										/>
 										)
 									}
