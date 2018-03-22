@@ -2,18 +2,28 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
-import {
-	Header, Page, Svg, Navigation, Card, Button
-} from '@/components/mobile';
 import _ from 'lodash';
-import stylesCatalog from '../Category/Catalog/catalog.scss';
+import queryString from 'query-string';
+
 import Shared from '@/containers/Mobile/Shared';
-import styles from './promo.scss';
-import { actions } from '@/state/v4/Discovery';
+import EmptyState from '@/containers/Mobile/Shared/emptyState';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
+import {
+	CatalogView,
+	GridView,
+	SmallGridView
+} from '@/containers/Mobile/Discovery/View';
+
+import {
+	Header, Page, Svg, Navigation, Button
+} from '@/components/mobile';
+
 import Spinner from '@/components/mobile/Spinner';
-import { Love } from '@/containers/Mobile/Widget';
+
+import { actions as promoActions } from '@/state/v4/Discovery';
+import { actions as commentActions } from '@/state/v4/Comment';
+import { actions as lovelistActions } from '@/state/v4/Lovelist';
 
 import Discovery from '../Utils';
 
@@ -22,134 +32,133 @@ class Promo extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-
-		this.state = {
-			listTypeGrid: false,
-			productEmpty: false
-		};
-		this.handlePick = this.handlePick.bind(this);
-		this.getProductListContent = this.getProductListContent.bind(this);
-
-		this.userCookies = this.props.cookies.get('user.token');
-		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.promoType = this.props.match.params.type;
+
+		this.loadingView = <Spinner />;
 	}
 
-	getProductListContent() {
-		
-		const { discovery } = this.props;
-		const { listTypeGrid } = this.state;
-		const products = _.chain(discovery).get(`promo.${this.promoType}`).value().products;
-		
-		if (typeof products !== 'undefined') {
-			const content = products.map((product, idx) => {
-				return listTypeGrid ?
-					(<Card.CatalogGrid
-						key={idx}
-						images={product.images}
-						productTitle={product.product_title}
-						brandName={product.brand.name}
-						pricing={product.pricing}
-						linkToPdp={product.url}
-						love={(
-							<Love
-								status={product.lovelistStatus}
-								data={product.product_id}
-								total={product.lovelistTotal}
-								onNeedLogin={() => this.forceLoginNow()}
-							/>
-						)}
-					/>) :
-					(<Card.Catalog
-						key={idx}
-						className={stylesCatalog.cardCatalog}
-						images={product.images}
-						productTitle={product.product_title}
-						brandName={product.brand.name}
-						pricing={product.pricing}
-						linkToPdp={product.url}
-						love={(
-							<Love
-								status={product.lovelistStatus}
-								data={product.product_id}
-								total={product.lovelistTotal}
-								onNeedLogin={() => this.forceLoginNow()}
-								showNumber
-							/>
-						)}
-					/>);
-			});
+	componentWillUnmount() {
+		const { dispatch } = this.props;
+		dispatch(promoActions.loadingAction(true));
+	}
 
-			return <div className={styles.cardContainer}>{content}</div>;
-		}
-
-		return null;
+	handlePick(e) {
+		const { dispatch, discovery } = this.props;
+		const mode = discovery.viewMode.mode === 3 ? 1 : discovery.viewMode.mode + 1;
+		dispatch(promoActions.viewModeAction(mode));
 	}
 
 	forceLoginNow() {
 		const { history } = this.props;
-		history.push(`/login?redirect_uri=${location.pathname}`);
+		history.push(`/login?redirect_uri=${encodeURIComponent(location.pathname + location.search)}`);
 	}
 
-	handlePick(event) {
-		const { listTypeGrid } = this.state;
-
-		switch (event) {
-		case 'view':
-			this.setState({ listTypeGrid: !listTypeGrid });
-			break;
-		case 'filter':
-			// TODO: implement filter handler
-			this.props.history.push('/filterCategory');
-			break;
-		default:
-			// TODO: implement sorting handler
-			break;
-		}
-	}
-
-	renderData(content) {
-
-		const { listTypeGrid } = this.state;
+	renderHeader() {
 		const { discovery } = this.props;
-		const info = _.chain(discovery).get(`promo.${this.promoType}`).value().info;
-		const headerLabel = info ? `${info.title} <br /> ${info.product_count} Total Produk` : '';
-		
-		const HeaderPage = {
+		const headerTitle = _.chain(discovery).get(`promo.${this.promoType}.info.title`).value() || '';
+		const headerPage = {
 			left: (
 				<Link to='/'>
 					<Svg src='ico_arrow-back-left.svg' />
 				</Link>
 			),
-			center: <div dangerouslySetInnerHTML={{ __html: headerLabel }} />,
+			center: discovery.isLoading ? this.loadingView : headerTitle,
 			right: (
-				<Button onClick={() => this.setState({ listTypeGrid: !listTypeGrid })}>
-					<Svg src={listTypeGrid ? 'ico_list.svg' : 'ico_grid.svg'} />
+				<Button onClick={(e) => this.handlePick(e)}>
+					<Svg src={discovery.viewMode.icon} />
 				</Button>
-
 			)
 		};
 
+		return <Header.Modal {...headerPage} />;
+	}
+
+	renderForeverBanner() {
 		const { shared, dispatch } = this.props;
 
+		return <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />;
+	}
+
+	renderProductList() {
+		const { discovery, comments, scroller, location } = this.props;
+		const products = _.chain(discovery).get(`promo.${this.promoType}.products`).value();
+		
+		if (products) {
+			let productsView;
+			if (!_.isEmpty(products)) {
+				const productCount = _.chain(discovery).get(`promo.${this.promoType}.info.product_count`).value() || 0;
+				const redirectPath = location.pathname;
+				const redirectParam = location.search !== '' ? location.search : '';
+				
+				let listView;
+				switch (discovery.viewMode.mode) {
+				case 1:
+					listView = (
+						<CatalogView
+							comments={comments}
+							loading={scroller.loading}
+							forceLoginNow={() => this.forceLoginNow()}
+							products={products}
+							redirect={redirectPath + redirectParam}
+						/>
+					);
+					break;
+				case 2:
+					listView = (
+						<GridView
+							loading={scroller.loading}
+							forceLoginNow={() => this.forceLoginNow()}
+							products={products}
+							redirect={redirectPath + redirectParam}
+						/>
+					);
+					break;
+				case 3:
+					listView = (
+						<SmallGridView
+							loading={scroller.loading}
+							products={products}
+						/>
+					);
+					break;
+				default:
+					listView = null;
+					break;
+				}
+
+				productsView = (
+					<div>
+						<div className='text-center margin--medium-v'>{productCount} Total Produk</div>
+						{listView}
+					</div>
+				);
+			} else {
+				productsView = <EmptyState />;
+			}
+
+			return (
+				<Page color='white'>
+					{discovery.isLoading ? this.loadingView : productsView}
+				</Page>
+			);
+		}
+
+		return null;
+	}
+
+	renderPage() {
 		return (
 			<div style={this.props.style}>
-				<Page>
-					{content}
-					{this.props.scroller.loading && <Spinner />}
-				</Page>
-
-				<Header.Modal {...HeaderPage} />
-				{<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />}
-				
+				{this.renderProductList()}
+				{this.renderHeader()}
+				{this.renderForeverBanner()}
 				<Navigation active='Promo' scroll={this.props.scroll} />
 			</div>
 		);
 	}
 
 	render() {
-		const content = this.getProductListContent();
-		return this.renderData(content);
+		return this.renderPage();
 	}
 }
 
@@ -159,34 +168,45 @@ const mapStateToProps = (state, props) => {
 		lovelist,
 		discovery } = state;
 	const { match } = props;
-	
 	const promoType = match.params.type;
 
 	const promoTypeData = _.chain(discovery).get(`promo.${promoType}`);
-
 	if (!promoTypeData.isEmpty().value()) {
 		const { products } = promoTypeData.value();
-
 		discovery.promo[promoType].products = Discovery.mapProducts(products, comments, lovelist);
 	}
 	
 	return {
-		discovery: {
-			...discovery,
-			loading: state.discovery.loading
-		},
+		discovery,
 		shared: state.shared,
 		home: state.home,
-		scroller: state.scroller
+		scroller: state.scroller,
+		comments: state.comments,
+		lovelist: state.lovelist
 	};
 };
 
 const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies, match, location } = props;
-	await dispatch(actions.promoAction({
+
+	const promoType = _.chain(match).get('params.type').value().replace('-', '_') || 'best_seller';
+	const parsedUrl = queryString.parse(location.search);
+	const promoParam = {
+		segment_id: parsedUrl.segment_id !== undefined ? parseInt(parsedUrl.segment_id, 10) : 150,
+		page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
+		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 36,
+	};
+	const response = await dispatch(promoActions.promoAction({
 		token: cookies.get('user.token'),
-		promoType: `${match.params.type}${location.search}`
+		promoType,
+		query: promoParam
 	}));
+
+	const productIdList = _.map(response.products, 'product_id') || [];
+	if (productIdList.length > 0) {
+		await dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+	}
 };
 
 export default withCookies(connect(mapStateToProps)(Scroller(Shared(Promo, doAfterAnonymous))));
