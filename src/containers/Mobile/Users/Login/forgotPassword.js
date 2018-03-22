@@ -97,12 +97,8 @@ class ForgotPassword extends Component {
 	}
 
 	async successValidateOtp(response) {
-
-		const { cookies } = this.props;
-		// const { userName, password, redirectUri } = this.state;
-		console.log(response, cookies.get('isLogin'));
-
-		// redirect to token
+		const { history } = this.props;
+		history.push(`/user-newpassword?token${response.token}`);
 	}
 
 	render() {
@@ -121,6 +117,7 @@ class ForgotPassword extends Component {
 		if (showOtp) {
 			return (
 				<Otp
+					autoSend={false}
 					type={'forgot'}
 					phoneEmail={userName}
 					onClickBack={() => this.onBack()}
