@@ -41,6 +41,12 @@ class Lovelist extends Component {
 		this.onNotifClose = this.onNotifClose.bind(this);
 		this.removeItem = this.removeItem.bind(this);
 		this.renderLovelistPage = this.renderLovelistPage.bind(this);
+
+		this.loadingContent = (
+			<div style={{ margin: '20% auto 20% auto' }}>
+				<Spinner size='large' />
+			</div>
+		);
 		
 	}
 
@@ -56,7 +62,7 @@ class Lovelist extends Component {
 		const { dispatch, lovelist, comments } = nextProps;
 		const { status } = this.state;
 
-		status.loading = nextProps.loading;
+		status.loading = lovelist.loading;
 		// updates neccessary things and checking resources availability
 		if (this.props.lovelist.items.list !== lovelist.items.list) {
 			status.listEmpty = _.isEmpty(lovelist.items.list);
@@ -198,6 +204,7 @@ class Lovelist extends Component {
 	}
 
 	renderLovelistPage(content) {
+		const { items } = this.props.lovelist;
 		const { status, notif } = this.state;
 		const HeaderPage = {
 			left: ((status.listEmpty) ? null : (
@@ -222,7 +229,8 @@ class Lovelist extends Component {
 			<div style={this.props.style}>
 				<Page color='white'>
 					{ <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} /> }
-					{content}
+					{status.loading && this.loadingContent}
+					{(!status.loading && !_.isEmpty(items.list)) && content}
 				</Page>
 				<Header.Modal {...HeaderPage} />
 
@@ -255,16 +263,8 @@ class Lovelist extends Component {
 
 	render() {
 		const { status } = this.state;
-		
-		if (status.loading) {
-			return this.renderLovelistPage(
-				<div style={{ marginTop: '50%' }} className='text-center'>
-					<Spinner size='large' />
-				</div>
-			);
-		}
 
-		if (status.listEmpty) {
+		if (!status.loading && status.listEmpty) {
 			return (this.renderLovelistPage(
 				<div className='text-center --disable-flex'>
 					<p className={styles.lovelistEmpty}>Lovelist kamu masih kosong</p>
