@@ -139,6 +139,9 @@
 	  	overflow-x: hidden;
 	  	overflow-y: auto;
 	}
+    html{
+        overflow: hidden;
+    }
 
 	#root > main {
 		height: 100%;
