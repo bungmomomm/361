@@ -592,7 +592,7 @@ class Products extends Component {
 				onClick: this.handleShowMoreProductDescription
 			};
 
-			let fullProductDescriptionButtonText = '[...]';
+			let fullProductDescriptionButtonText = 'more';
 			let classNameProductDescription = classNames('padding--medium-h', styles.textOnlyShowTwoLines);
 
 			if (showFullProductDescription === true) {
@@ -730,14 +730,12 @@ class Products extends Component {
 
 							<div style={{ backgroundColor: '#F5F5F5' }}>
 								{/* ----------------------------	PRODUCT REVIEWS ---------------------------- */}
-								{!_.isEmpty(reviews.summary) &&
-									<ReviewSummary
-										productId={id}
-										reviews={reviews}
-										seller={seller}
-										onBtnSeeAllReviewClick={() => this.redirectToPage('reviews')}
-									/>
-								}
+								<ReviewSummary
+									productId={id}
+									reviews={reviews}
+									seller={seller}
+									onBtnSeeAllReviewClick={() => this.redirectToPage('reviews')}
+								/>
 
 								{/* MOVED TEMPORALLY ON NOTES ... */}
 								{/* ----------------------------	END OF REVIEW ---------------------------- */}
