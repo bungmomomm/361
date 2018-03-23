@@ -53,13 +53,14 @@ const trackSellerPageView = (products, info, props) => {
 		name: info.title,
 		url_path: props.location.pathname
 	};
+
 	const impressions = _.map(products, (product, key) => {
 		return {
 			name: product.product_title,
 			id: product.product_id,
 			price: product.pricing.original.effective_price,
 			brand: product.brand.name,
-			category: product.product_category_names.join('/'),
+			category: product.product_category_names ? product.product_category_names.join('/') : '',
 			position: key + 1,
 			list: 'mm'
 		};
@@ -466,7 +467,7 @@ class Seller extends Component {
 				) : (
 					<div style={this.props.style}>
 						<Page color='white'>
-							<SEO 
+							<SEO
 								paramCanonical={process.env.MOBILE_UR}
 							/>
 							{this.sellerHeader()}
@@ -522,7 +523,6 @@ const doAfterAnonymous = async (props) => {
 
 	await dispatch(actions.initSeller(data.token, data.query.store_id));
 	const response = await to(dispatch(actions.getProducts(data)));
-
 	const productIdList = _.map(response[1].data.products, 'product_id') || [];
 	dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 	dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));

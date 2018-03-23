@@ -16,25 +16,6 @@ class Hashtags extends Component {
 
 	state = {
 		isFooterShow: false,
-		scroll: {
-			top: 0
-		}
-	};
-
-	componentDidMount() {
-		addEventListener('scroll', this.handleScroll, true);
-	};
-
-	componentWillUnmount() {
-		removeEventListener('scroll', this.handleScroll, true);
-	};
-
-	handleScroll = () => {
-		this.setState({
-			scroll: {
-				top: window.props.scroll
-			}
-		});
 	};
 
 	switchTag = (tag) => {
@@ -159,7 +140,7 @@ class Hashtags extends Component {
 			if (this.staticHashtag) {
 				const rect = this.staticHashtag.getBoundingClientRect();
 				// const threshold = 90;
-				return window.props.scroll.top > (rect.top + rect.height);
+				return this.props.scroll.top > (rect.top + rect.height);
 			}
 			return false;
 		};

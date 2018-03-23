@@ -2,29 +2,18 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { actions } from '@/state/v4/Shared';
 import getComputedStyles from './styleSnackbar';
-import _ from 'lodash';
 
 class Snackbar extends React.Component {
 
-	constructor(props) {
-		super(props);
-		this.props = props;
-		this.state = {
-			snack: null,
-			visible: false,
-			scroll: {
-				top: 0,
-				docHeight: 0,
-				isNavSticky: false
-			}
-		};
-	}
+	state = {
+		snack: null,
+		visible: false,
+	};
 
 	componentDidMount() {
 		if (this.props.snack) {
 			this.showSnack(this.props.snack);
 		}
-		window.addEventListener('scroll', this.handleScroll, true);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -46,7 +35,6 @@ class Snackbar extends React.Component {
 
 	componentWillUnmount() {
 		this.clearDismissTimer();
-		window.removeEventListener('scroll', this.handleScroll, true);
 	}
 
 	showSnack = (snack) => {
@@ -114,28 +102,9 @@ class Snackbar extends React.Component {
 	};
 
 	populateStyles = (elem) => {
-		const { theming, shared } = this.props;
-		const { scroll } = this.state;
-		const snackStyle = _.chain(shared.snackbar).get('[0].style').value() || { css: {}, sticky: true };
-		const snackCss = _.chain(snackStyle).get('css.snack').value() || {};
-		const snackSticky = !snackStyle.sticky ? {} : {
-			bottom: !scroll.isNavSticky && document.querySelector('.navigation__navigation') ? 50 : 0,
-			zIndex: !scroll.isNavSticky && document.querySelector('.navigation__navigation') ? 2 : 999
-		};
-		const customStyles = { ...snackStyle.css, snack: { ...snackCss, ...snackSticky } };
+		const { theming, customStyles } = this.props;
 		const largeScreen = window.matchMedia('(min-width: 720px)').matches;
-
 		return getComputedStyles(elem, largeScreen, this.state.visible, theming, customStyles);
-	};
-
-	handleScroll = () => {
-		this.setState({
-			scroll: {
-				top: window.props.scroll.top,
-				docHeight: window.props.scroll.docHeight,
-				isNavSticky: window.props.scroll.isNavSticky
-			}
-		});
 	};
 
 	render() {

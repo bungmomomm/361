@@ -148,10 +148,6 @@ class Detail extends Component {
 		}
 	}
 
-	componentDidMount() {
-		addEventListener('scroll', this.handleScroll, true);
-	}
-
 	componentWillReceiveProps(nextProps) {
 		const { cookies } = this.props;
 		if (!('serviceUrl' in this.props.shared) && 'serviceUrl' in nextProps.shared) {
@@ -191,10 +187,9 @@ class Detail extends Component {
 			const data = nextProps.brands.searchData;
 			trackBrandPageView(data.products, data.info, nextProps);
 		}
-	}
 
-	componentWillUnmount() {
-		removeEventListener('scroll', this.handleScroll, true);
+		this.handleScroll();
+
 	}
 
 	async onApply(e, fq) {
@@ -245,7 +240,7 @@ class Detail extends Component {
 			type: 'init'
 		};
 		dispatch(brandAction.brandProductAction(data));
-	};
+	}
 
 	handlePick(e) {
 		const { showSort } = this.state;
@@ -260,17 +255,17 @@ class Detail extends Component {
 		}
 	}
 
-	handleScroll = () => {
+	handleScroll() {
 		const { styleHeader } = this.state;
 		if (!this.headerEl) return;
 		const headerHeight = this.headerEl.getBoundingClientRect().height;
-		if (window.props.scroll.top > headerHeight && styleHeader) {
+		if (this.props.scroll.top > headerHeight && styleHeader) {
 			this.setState({ styleHeader: false });
 		}
-		if (window.props.scroll.top < headerHeight && !styleHeader) {
+		if (this.props.scroll.top < headerHeight && !styleHeader) {
 			this.setState({ styleHeader: true });
 		}
-	};
+	}
 
 	sort(e, sort) {
 		this.setState({
