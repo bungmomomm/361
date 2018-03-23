@@ -8,7 +8,7 @@ import { setUserCookie, setUniqeCookie } from '@/utils';
 import { Fusion } from '@/utils/tracking/lucidworks';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
-import { Svg } from '@/components/Mobile';
+import { Svg } from '@/components/mobile';
 import Snackbar from '@/containers/Mobile/Shared/snackbar';
 import styles from './shared.scss';
 import { check as checkConnection, watch as watchConnection } from 'is-offline';
