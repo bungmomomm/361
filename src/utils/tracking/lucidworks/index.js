@@ -1,9 +1,9 @@
-import { Event } from './event';
-import { Fusion } from './fusion';
+import LucidCart from './cart';
 import { EventPayload as Payload } from './event-payload';
+import { Fusion } from './fusion';
 
 export default {
-	Event,
 	Fusion,
+	LucidCart,
 	Payload
 };

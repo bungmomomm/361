@@ -7,40 +7,24 @@ class Navigation extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
-			show: true,
-			scroll: {
-				top: 0,
-				docHeight: 0,
-				isNavSticky: false
-			},
+			show: true
 		};
+		this.currentScrollPos = 0;
 	}
-
-	componentDidMount() {
-		window.addEventListener('scroll', this.handleScroll, true);
-	}
-
-	componentWillUnmount() {
-		window.removeEventListener('scroll', this.handleScroll, true);
-	}
-
-	handleScroll = () => {
-		this.setState({
-			scroll: {
-				top: window.props.scroll.top,
-				docHeight: window.props.scroll.docHeight,
-				isNavSticky: window.props.scroll.isNavSticky
-			}
-		});
-	};
-
 	render() {
-		const { className, active, totalCartItems } = this.props;
-		const { scroll } = this.state;
+		const { className, active, scroll, totalCartItems } = this.props;
+
+		// const isSticky = (oldPos = this.currentScrollPos) => {
+		// 	if (!scroll) {
+		// 		return false;
+		// 	}
+		// 	this.currentScrollPos = scroll.top;
+		// 	return scroll.top > oldPos && scroll.top < scroll.docHeight;
+		// };
 
 		const createClassName = classNames(
 			styles.container,
-			scroll && scroll.isNavSticky ? styles.hide : '',
+			scroll.isNavSticky ? styles.hide : '',
 			className
 		);
 

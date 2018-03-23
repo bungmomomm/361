@@ -104,16 +104,9 @@ class Product extends Component {
 				sort: '',
 				...propsObject.get('query').value()
 			},
-			isFooterShow: true,
-			scroll: {
-				top: 0
-			}
+			isFooterShow: true
 		};
 		this.loadingView = <Spinner />;
-	}
-
-	componentDidMount() {
-		addEventListener('scroll', this.handleScroll, true);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -132,15 +125,14 @@ class Product extends Component {
 	componentWillUnmount() {
 		const { dispatch } = this.props;
 		dispatch(pcpActions.loadingAction(true));
-		addEventListener('scroll', this.handleScroll, true);
 	}
 
-	async onApply(e, fq) {
+	async onApply(e, fq, closeFilter) {
 		const { query } = this.state;
 		query.fq = fq;
 		this.setState({
 			query,
-			showFilter: false
+			showFilter: !closeFilter
 		});
 		this.update({
 			fq
@@ -152,14 +144,6 @@ class Product extends Component {
 			showFilter: false
 		});
 	}
-
-	handleScroll = () => {
-		this.setState({
-			scroll: {
-				top: window.props.scroll
-			}
-		});
-	};
 
 	update = async (params) => {
 		const { cookies, dispatch, location, history } = this.props;
@@ -370,8 +354,8 @@ class Product extends Component {
 				<Filter
 					shown={showFilter}
 					filters={productCategory.pcpData}
-					onApply={(e, fq) => {
-						this.onApply(e, fq);
+					onApply={(e, fq, closeFilter) => {
+						this.onApply(e, fq, closeFilter);
 					}}
 					onClose={(e) => this.onClose(e)}
 				/>
@@ -379,7 +363,7 @@ class Product extends Component {
 		}
 
 		const navigationAttribute = {
-			scroll: window.props.scroll
+			scroll: this.props.scroll
 		};
 
 		if (shared.userPreviousPage !== 'HOME') {

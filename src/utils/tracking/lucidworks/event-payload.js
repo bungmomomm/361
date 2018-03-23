@@ -5,11 +5,7 @@ class EventPayload extends Fusion {
 
 	constructor(cookies) {
 		super(cookies);
-		this.commons = {
-			source: this.getSource(),
-			session_id: this.getSessionId(),
-			customer_id: this.customerId
-		};
+		this.commons = this.getCommons();
 	}
 
 	trackPdp(payload) {

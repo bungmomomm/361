@@ -2,53 +2,96 @@ import to from 'await-to-js';
 import { Promise } from 'es6-promise';
 import _ from 'lodash';
 import { request } from '@/utils';
-import { promos } from './reducer';
+import { promoLoading, promoViewMode, promoInit, promoNextInit } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 
-const configs = {
-	defaultPage: 30
-};
+const promoAction = ({ token, promoType, query = {}, loadNext = false }) => async (dispatch, getState) => {
+	if (loadNext) {
+		dispatch(scrollerActions.onScroll({ loading: true }));
+	} else {
+		dispatch(promoLoading({ isLoading: true }));
+	}
 
-const promoAction = ({ token, promoType, query = {} }) => async (dispatch, getState) => {
-	dispatch(scrollerActions.onScroll({ loading: true }));
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
 	
-	let type = promoType.replace('-', '_');
+	const path = `${baseUrl}/${promoType}`;
 
-	const url = `${baseUrl}/${type}`;
-	
-	if (!query.page) {
-		query.page = 1;
-	}
-	query.per_page = configs.defaultPage;
-	
-	const [err, response] = await to(request({ token, path: url, method: 'GET', query, fullpath: true }));
+	const [err, response] = await to(request({
+		token,
+		path,
+		method: 'GET',
+		query,
+		fullpath: true
+	}));
 
 	if (err) {
 		return Promise.reject(err);
 	}
-	type = type.split('?')[0].replace('_', '-');
-	
+
+	const type = promoType.replace('_', '-');
 	const promo = {};
-	promo[type] = response.data.data;
-	
-	dispatch(promos({ promo }));
+	promo[type] = {
+		...response.data.data
+	};
+
+	if (loadNext) {
+		dispatch(promoNextInit({ promo }));
+	} else {
+		dispatch(promoInit({ promo }));
+	}
 
 	const nextLink = promo[type].links && promo[type].links.next ? new URL(baseUrl + promo[type].links.next).searchParams : false;
 	dispatch(scrollerActions.onScroll({
-		nextData: { token, type, query: { ...query, page: nextLink ? nextLink.get('page') : false } },
+		nextData: {
+			token,
+			promoType,
+			query: {
+				...query,
+				page: nextLink ? parseInt(nextLink.get('page'), 10) : false
+			},
+			loadNext: true
+		},
 		nextPage: nextLink !== false,
 		loading: false,
 		loader: promoAction
 	}));
 
-	return Promise.resolve(response);
+	return Promise.resolve(promo[type]);
+};
 
+const viewModeAction = (mode) => (dispatch) => {
+	dispatch(promoLoading({ isLoading: true }));
+
+	let icon = null;
+	switch (mode) {
+	case 1:
+		icon = 'ico_grid.svg';
+		break;
+	case 3:
+		icon = 'ico_list.svg';
+		break;
+	default:
+		icon = 'ico_grid-3x3.svg';
+		break;
+	}
+
+	dispatch(promoViewMode({
+		viewMode: {
+			mode,
+			icon
+		}
+	}));
+};
+
+const loadingAction = (value) => (dispatch) => {
+	dispatch(promoLoading({ isLoading: value }));
 };
 
 export default {
-	promoAction
+	promoAction,
+	viewModeAction,
+	loadingAction
 };
