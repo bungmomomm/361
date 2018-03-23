@@ -164,18 +164,20 @@ class Home extends Component {
 					{ header }
 					<Grid split={3} bordered>
 						{
-							data.data.map(({ images, pricing, path }, e) => (
-								<div key={e}>
-									<Link to={`/${path}`}>
-										<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
-										<div className={styles.btnThumbnail}>
-											<Button transparent color='secondary' size='small'>
-												{pricing.formatted.effective_price}
-											</Button>
-										</div>
-									</Link>
-								</div>
-							))
+							data.data.map((p, e) => {
+								return (
+									<div key={e}>
+										<Link to={`/${p.path}`}>
+											<Image lazyload shape='square' alt='thumbnail' src={p.images[0].thumbnail} />
+											<div className={styles.btnThumbnail}>
+												<Button transparent color='secondary' size='small'>
+													{p.pricing.formatted.effective_price}
+												</Button>
+											</div>
+										</Link>
+									</div>
+								);
+							})
 						}
 					</Grid>
 				</div>

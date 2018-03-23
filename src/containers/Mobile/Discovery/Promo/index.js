@@ -36,11 +36,11 @@ class Promo extends Component {
 	}
 
 	getProductListContent() {
-		
+
 		const { discovery } = this.props;
 		const { listTypeGrid } = this.state;
 		const products = _.chain(discovery).get(`promo.${this.promoType}`).value().products;
-		
+
 		if (typeof products !== 'undefined') {
 			const content = products.map((product, idx) => {
 				return listTypeGrid ?
@@ -114,7 +114,7 @@ class Promo extends Component {
 		const { discovery } = this.props;
 		const info = _.chain(discovery).get(`promo.${this.promoType}`).value().info;
 		const headerLabel = info ? `${info.title} <br /> ${info.product_count} Total Produk` : '';
-		
+
 		const HeaderPage = {
 			left: (
 				<Link to='/'>
@@ -134,14 +134,14 @@ class Promo extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page color='white'>
 					{content}
 					{this.props.scroller.loading && <Spinner />}
 				</Page>
 
 				<Header.Modal {...HeaderPage} />
 				{<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />}
-				
+
 				<Navigation active='Promo' scroll={this.props.scroll} />
 			</div>
 		);
@@ -154,12 +154,12 @@ class Promo extends Component {
 }
 
 const mapStateToProps = (state, props) => {
-	const { 
-		comments, 
+	const {
+		comments,
 		lovelist,
 		discovery } = state;
 	const { match } = props;
-	
+
 	const promoType = match.params.type;
 
 	const promoTypeData = _.chain(discovery).get(`promo.${promoType}`);
@@ -169,7 +169,7 @@ const mapStateToProps = (state, props) => {
 
 		discovery.promo[promoType].products = Discovery.mapProducts(products, comments, lovelist);
 	}
-	
+
 	return {
 		discovery: {
 			...discovery,
