@@ -13,5 +13,6 @@ export default {
 		successCode: 201,
 		successLabel: 'OK',
 		sessionLength: 2,
+		referenceInfoName: '_v3rF'
 	}
 };
