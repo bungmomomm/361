@@ -13,7 +13,11 @@ class Price extends PureComponent {
 		this.state = {
 			range: {
 				min: parseInt(props.range.min, 10),
-				max: parseInt(props.range.max, 10)
+				max: parseInt(props.range.max, 10),
+			},
+			selectedRange: {
+				min: props.selected_range !== undefined ? parseInt(props.selected_range.min, 10) : parseInt(props.range.min, 10),
+				max: props.selected_range !== undefined ? parseInt(props.selected_range.max, 10) : parseInt(props.range.max, 10),
 			},
 			custom: false,
 			data: props.data || [],
@@ -71,7 +75,7 @@ class Price extends PureComponent {
 		this.setState({
 			resetDisabled: false,
 			custom: true,
-			range: {
+			selectedRange: {
 				min: Math.abs(updatedValue.min) < parseInt(range.max, 10) ? Math.abs(updatedValue.min) : parseInt(range.min, 10),
 				max: Math.abs(updatedValue.max) < parseInt(range.max, 10) ? Math.abs(updatedValue.max) : parseInt(range.max, 10),
 			}
@@ -99,12 +103,14 @@ class Price extends PureComponent {
 			right: null
 		};
 
+		// const selectedRange = this.state.selectedRange ? this.state.selectedRange : this.state.range;
+
 		return (
 			<div style={this.props.style}>
 				<Page color='white' style={{ marginTop: '15px' }}>
 					<div className={styles.priceSlider}>
 						<div className='padding--medium-h'>
-							<Slider min={parseInt(range.min, 10)} max={parseInt(range.max, 10)} value={this.state.range} onChange={(value) => this.updateRange(value)} />
+							<Slider min={parseInt(range.min, 10)} max={parseInt(range.max, 10)} value={this.state.selectedRange} onChange={(value) => this.updateRange(value)} />
 							<div className={styles.sliderInfo}>
 								<span>min</span>
 								<span>max</span>
@@ -114,11 +120,11 @@ class Price extends PureComponent {
 					<div className={styles.priceInput}>
 						<div className='flex-row padding--medium-h flex-spaceBetween margin--medium-v margin--none-t flex-middle'>
 							<div style={{ width: '45%' }}>
-								<Input value={this.state.range.min} ref={c => { this.rangeMin = c; }} onChange={(event) => { this.updateRange({ min: parseInt(event.target.value, 10) }, 'min'); }} type='number' placeholder='Min price' />
+								<Input value={this.state.selectedRange.min} ref={c => { this.rangeMin = c; }} onChange={(event) => { this.updateRange({ min: parseInt(event.target.value, 10) }, 'min'); }} type='number' placeholder='Min price' />
 							</div>
 							<div>-</div>
 							<div style={{ width: '45%' }}>
-								<Input value={this.state.range.max} ref={c => { this.rangeMax = c; }} onChange={(event) => { this.updateRange({ max: parseInt(event.target.value, 10) }, 'max'); }} type='number' placeholder='Max price' />
+								<Input value={this.state.selectedRange.max} ref={c => { this.rangeMax = c; }} onChange={(event) => { this.updateRange({ max: parseInt(event.target.value, 10) }, 'max'); }} type='number' placeholder='Max price' />
 							</div>
 						</div>
 					</div>
