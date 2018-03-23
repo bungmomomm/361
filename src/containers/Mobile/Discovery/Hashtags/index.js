@@ -163,7 +163,7 @@ class Hashtags extends Component {
 		return (
 			<div>
 				<Page color='white'>
-					<SEO 
+					<SEO
 						paramCanonical={process.env.MOBILE_UR}
 					/>
 					<div className='margin--medium-v text-center padding--large-h'>

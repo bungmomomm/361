@@ -218,15 +218,15 @@ class SearchResults extends Component {
 				/>
 			);
 		}
-		
+
 		const navigationAttribute = {
 			scroll: this.props.scroll
 		};
-		
+
 		if (shared.userPreviousPage !== 'HOME') {
 			navigationAttribute.active = 'Categories';
 		}
-		
+
 		return (
 			<div style={this.props.style}>
 				{isLoading ? this.loadingView : this.renderSearch()}
