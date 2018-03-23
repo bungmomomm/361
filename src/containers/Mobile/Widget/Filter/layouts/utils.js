@@ -1,7 +1,9 @@
 import querystring from 'querystring';
 import _ from 'lodash';
 import currency from 'currency.js';
-
+const toIdr = (value) => {
+	return currency(value, { symbol: 'Rp', precision: 0, formatWithSymbol: true }).format();
+};
 const applyAndGetSelected = (facets, selected, disabled, type, values, custom) => {
 	const results = _.map(values, (value) => {
 		return value.facetrange;
@@ -38,9 +40,9 @@ const applyAndGetSelected = (facets, selected, disabled, type, values, custom) =
 				selected[facet.id] = [];
 				if (custom) {
 					selected[facet.id] = [custom];
-					facet.requested_range = custom;
+					facet.selected_range = custom;
 				} else {
-					delete facet.requested_range;
+					delete facet.selected_range;
 					facet.data = _.map(facet.data, (facetData) => {
 						const isExist = _.find(results, (v) => {
 							return v === facetData.facetrange;
@@ -112,6 +114,14 @@ const mapFilters = (facets, selected, disabled) => {
 			selected[facet.id] = [];
 			[facet.data, selected[facet.id]] = updateChilds(facet.data, selected[facet.id]);
 			break;
+		case 'price':
+			selected[facet.id] = [];
+			if (facet.selected_range) {
+				selected[facet.id] = [{
+					facetdisplay: `${toIdr(facet.selected_range.min)} - ${toIdr(facet.selected_range.max)}`
+				}];
+			}
+			break;
 		default:
 			selected[facet.id] = [];
 			facet.data = _.map(facet.data, (facetData) => {
@@ -178,8 +188,8 @@ const getFq = (filters) => {
 			});
 			break;
 		case 'price':
-			if (facet.requested_range) {
-				fq[facet.id] = [(`${facet.requested_range.min}-${facet.requested_range.max}`)];
+			if (facet.selected_range) {
+				fq[facet.id] = [(`${facet.selected_range.min}-${facet.selected_range.max}`)];
 			} else {
 				_.forEach(facet.data, (value) => {
 					if (value.is_selected === 1) {
@@ -329,9 +339,7 @@ const isFiltered = (facets) => {
 	return filtered.length > 0;
 };
 
-const toIdr = (value) => {
-	return currency(value, { symbol: 'Rp', precision: 0, formatWithSymbol: true }).format();
-};
+
 export default {
 	getCategoryFq,
 	getFq,

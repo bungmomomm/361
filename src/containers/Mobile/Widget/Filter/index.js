@@ -274,7 +274,8 @@ class Filter extends PureComponent {
 						{...state} 
 						title={data.title}
 						data={data.data} 
-						range={data.range} 
+						range={data.range}
+						selected={data.selected_range} 
 						onChange={(e, value) => this.onFilterSelected(e, 'pricerange', value)} 
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
 						onClose={(e) => this.onFilterSectionClose()}
