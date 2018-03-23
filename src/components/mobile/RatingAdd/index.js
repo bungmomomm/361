@@ -16,7 +16,7 @@ class RatingAdd extends PureComponent {
 	onChangeHandler(event) {
 		// console.log(event.target.value);
 		this.setState({ current: event.target.value });
-		// this.props.onChange();
+		this.props.onChange(event);
 	}
 
 	render() {

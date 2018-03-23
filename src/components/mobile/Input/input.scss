@@ -40,7 +40,18 @@
   &:not(:last-child){
     margin-bottom: 20px
   }
-  input{
+  input {
+    background: transparent;
+    padding-left: 0px;
+    padding-right: 0px;
+    border-radius: 0px;
+    font-size: 13px;
+    outline: 0px;
+    border: 0px;
+    border-bottom: 1px solid #D8D8D8;
+    height: 40px;
+  }
+  textarea {
     background: transparent;
     padding-left: 0px;
     padding-right: 0px;
@@ -97,6 +108,7 @@
   pointer-events: none;
   // opacity: 0;
   transition: all 0.3s ease;
+  text-align: left;
 }
 
 .showLabel{
@@ -104,6 +116,7 @@
     opacity: 1;
     left: 0px;
     top: -10px;
+    text-align: left;
   }
 }
 
@@ -123,20 +136,29 @@
     cursor: not-allowed;
     opacity: .6;
   }
+  & .textarea {
+    cursor: not-allowed;
+    opacity: .6;
+  }
 }
 
 .success {
   & .input {
-    
+
   }
 
   & .hint {
-    
+
   }
 }
 
 .error {
   & .input {
+    border-color: #FF1B1B;
+    color: #FF1B1B;
+  }
+
+  & .textarea {
     border-color: #FF1B1B;
     color: #FF1B1B;
   }
@@ -165,7 +187,7 @@
 }
 
 .partitioned{
-  width:290px; 
+  width:290px;
   margin: 0 auto;
   overflow: hidden;
   .wrapper{

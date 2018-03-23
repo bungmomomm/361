@@ -36,7 +36,11 @@ class AddReview extends Component {
 				seller_rating: null,
 			},
 			isSubmiting: false,
-			isSubmitSuccess: false
+			isSubmitSuccess: false,
+			hintSubject: 'Maksimal 70 karakter',
+			errorSubject: false,
+			hintReview: 'Maksimal 500 karakter',
+			errorReview: false
 		};
 
 		if (this.isLogin !== 'true') {
@@ -51,7 +55,8 @@ class AddReview extends Component {
 			}
 
 			const { reviewInfo } = this.props.user;
-			const payload = {
+
+			const payload = reviewInfo && {
 				...this.state.payload,
 				product_id: reviewInfo.item.product_id,
 				product_variant_id: reviewInfo.item.product_variant_id,
@@ -87,6 +92,7 @@ class AddReview extends Component {
 
 	render() {
 		const { reviewInfo } = this.props.user;
+		const { payload } = this.state;
 		const HeaderPage = ({
 			left: (
 				<span
@@ -101,7 +107,9 @@ class AddReview extends Component {
 			right: null,
 		});
 		const className = classNames('sellerReviewInfo');
-		return (
+
+		const notComplete = !payload.product_rating || !payload.review || !payload.seller_rating || this.state.errorReview || this.state.errorSubject;
+		return reviewInfo && (
 			<div style={this.props.style}>
 				<Page>
 					<Level>
@@ -121,7 +129,14 @@ class AddReview extends Component {
 								Jadikan ulasanmu lebih bermanfaat
 							</div>
 							<div className={styles.sellerReviewInfo}>
-								<RatingAdd name='seller' active='3' total='5' />
+								<RatingAdd
+									name='seller'
+									total='5'
+									onChange={(event) => {
+										const payloadUpdate = { ...this.state.payload, seller_rating: event.target.value };
+										this.setState({ ...this.state, payload: payloadUpdate });
+									}}
+								/>
 							</div>
 						</div>
 					</Level>
@@ -137,7 +152,14 @@ class AddReview extends Component {
 						<Level.Item>
 							<span className='margin--small text-uppercase'>{reviewInfo.item.brand.name}</span>
 							<span className='margin--small font-color--primary-ext-2'>{reviewInfo.item.product_title}</span>
-							<span className='margin--small'><RatingAdd name='product' active='3' total='5' /></span>
+							<RatingAdd
+								name='product'
+								total='5'
+								onChange={(event) => {
+									const payloadUpdate = { ...this.state.payload, product_rating: event.target.value };
+									this.setState({ ...this.state, payload: payloadUpdate });
+								}}
+							/>
 						</Level.Item>
 						<Level.Right>
 							<strong>{reviewInfo.item.pricing.formatted.price}</strong>
@@ -146,7 +168,6 @@ class AddReview extends Component {
 					<div style={{
 						textAlign: 'center',
 						padding: '0px 25px',
-						marginTop: '10px',
 						backgroundColor: 'white'
 					}}
 					>
@@ -154,29 +175,51 @@ class AddReview extends Component {
 							<Input
 								label='Judul ulasan anda (Opsional)'
 								type='text'
+								as='textarea'
 								placeholder=''
 								flat
+								hint={this.state.hintSubject}
+								error={this.state.errorSubject}
 								onChange={(event) => {
-									const payload = { ...this.state.payload, subject: event.target.value };
-									this.setState({ ...this.state, payload });
+									const text = event.target.value;
+									let hint = 'Maksimal 70 karakter';
+									let error = false;
+									if (text.length === 0) {
+										hint = '';
+									} else if (text.length > 70) {
+										error = true;
+									}
+									const payloadUpdate = { ...this.state.payload, subject: event.target.value };
+									this.setState({ ...this.state, payload: payloadUpdate, hintSubject: hint, errorSubject: error });
 								}}
 							/>
 						</div>
-						<div>
+						<div style={{ marginTop: '18px' }}>
 							<Input
-								label='Ceritakan kepuasan dan kesesuaian produk yang anda beli atau terima'
+								label='Ceritakan kepuasan dan kesesuaian produk'
 								type='text'
+								as='textarea'
 								placeholder=''
 								flat
+								hint={this.state.hintReview}
+								error={this.state.errorReview}
 								onChange={(event) => {
-									const payload = { ...this.state.payload, review: event.target.value };
-									this.setState({ ...this.state, payload });
+									const text = event.target.value;
+									let hint = 'Maksimal 500 karakter';
+									let error = false;
+									if (text.length === 0) {
+										hint = '';
+									} else if (text.length > 500) {
+										error = true;
+									}
+									const payloadUpdate = { ...this.state.payload, review: event.target.value };
+									this.setState({ ...this.state, payload: payloadUpdate, hintReview: hint, errorReview: error });
 								}}
 							/>
 						</div>
 					</div>
-					<Level className='bg--white'>
-						<Button rounded disabled={this.state.isSubmiting} size='medium' color='secondary' onClick={() => this.onSubmitReview()}>Kirim</Button>
+					<Level className='bg--white flex-center'>
+						<Button rounded disabled={this.state.isSubmiting || notComplete} size='medium' color='secondary' onClick={() => this.onSubmitReview()}>Kirim</Button>
 					</Level>
 					<Level>
 						<div>*Upload barang tersebut (jpeg, jpg, png) maksimal 5 foto</div>
