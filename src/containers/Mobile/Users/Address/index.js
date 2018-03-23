@@ -114,7 +114,7 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies, history } = props;
-	if (cookies.get('isLogin') === 'false') {
+	if (!cookies.get('isLogin') || cookies.get('isLogin') === 'false') {
 		history.push('/login');
 		return;
 	}
