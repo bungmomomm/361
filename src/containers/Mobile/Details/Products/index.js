@@ -622,19 +622,21 @@ class Products extends Component {
 							{!_.isEmpty(detail.description)
 							&&
 								<div>
-									<div className={classNameProductDescription} dangerouslySetInnerHTML={{ __html: stringHelper.removeHtmlTag(detail.description) }} />
+									<div className={classNameProductDescription}>
+										{stringHelper.removeHtmlTag(detail.description)}
+										{!_.isEmpty(detail.spec) && (
+											<div className='margin--medium-v --disable-flex'>
+												{(detail.spec.map((item, idx) => {
+													item.value = item.value.replace(/(?:\r\n|\r|\n)/g, '<br />');
+													if (/^/.test(item.value)) return <div key={idx} className='margin--small-v font-medium font-color--primary' dangerouslySetInnerHTML={{ __html: item.value }} />;
+													return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
+												}))}
+											</div>
+										)}
+									</div>
 									<span className='padding--medium-h font-color--grey' {...buttonProductDescriptionAttribute}>{ fullProductDescriptionButtonText }</span>
 								</div>
 							}
-							{!_.isEmpty(detail.spec) && (
-								<div className='margin--medium-v --disable-flex padding--medium-h'>
-									{(detail.spec.map((item, idx) => {
-										item.value = item.value.replace(/(?:\r\n|\r|\n)/g, '<br />');
-										if (/^/.test(item.value)) return <div key={idx} className='margin--small-v font-medium font-color--primary' dangerouslySetInnerHTML={{ __html: item.value }} />;
-										return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
-									}))}
-								</div>
-							)}
 							<div className='margin--medium-v --disable-flex padding--medium-h'>
 								{this.isLogin && (
 									<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
