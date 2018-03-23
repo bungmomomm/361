@@ -27,11 +27,10 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				scroll: {
 					top: 0,
 					docHeight: 0,
-					isNavSticky: false,
-					isNavExists: false
+					isNavSticky: false
 				},
 				provider: (query.code || query.state) ? (query.code ? 'facebook' : 'google') : false,
-				watchConnection: false
+				watchConnection: false,
 			};
 
 			this.userCookies = this.props.cookies.get('user.token');
@@ -78,7 +77,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		componentDidMount() {
-			// window.mmLoading.destroy();
+			window.mmLoading.destroy();
 			window.addEventListener('scroll', this.handleScroll, true);
 			this.docBody = document.body;
 
@@ -89,9 +88,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		componentWillUnmount() {
 			window.mmLoading.play();
-			window.removeEventListener('scroll', this.handleScroll, true);
 			window.prevLocation = this.props.location;
 			window.previousLocation = location.pathname + location.search;
+			window.removeEventListener('scroll', this.handleScroll, true);
 		}
 
 		shouldLoginAnonymous() {
@@ -104,9 +103,10 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			const { login, provider } = this.state;
 			let tokenBearer = token === null ? this.userCookies : token.token;
 			const rfT = token === null ? this.userRFCookies : token.refresh_token;
+
 			const resp = await to(dispatch(new users.refreshToken(rfT, tokenBearer)));
 
-			const data = resp[1].data.data;
+			const { data } = resp[1].data;
 
 			const isAnonymous = data.info.userid <= 1;
 			setUserCookie(this.props.cookies, data, isAnonymous);
@@ -125,7 +125,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			}
 
 			if (typeof doAfterAnonymousCall !== 'undefined') {
-				await doAfterAnonymousCall.apply(this, [this.props]);
+				await to(doAfterAnonymousCall.apply(this, [this.props]));
 			}
 			return null;
 		}
@@ -146,6 +146,10 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		async loginAnonymous() {
 			const response = await to(this.props.dispatch(new users.userAnonymous()));
 
+			if (response[0]) {
+				return null;
+			}
+
 			setUserCookie(this.props.cookies, response[1].token, true);
 			return Promise.resolve({
 				status: 1,
@@ -160,6 +164,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			const serviceUrl = _.chain(shared).get('serviceUrl').value() || false;
 			if (!serviceUrl) {
 				const response = await to(this.props.dispatch(new initAction.initAction()));
+				if (response[0]) {
+					return null;
+				}
 
 				this.initApp();
 				return response[1];
@@ -188,12 +195,11 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		render() {
-			const { scroll } = this.state;
 			const snackStyle = _.chain(this.props.shared.snackbar).get('[0].style').value() || { css: {}, sticky: true };
 			const snackCss = _.chain(snackStyle).get('css.snack').value() || {};
 			const snackSticky = !snackStyle.sticky ? {} : {
-				bottom: !scroll.isNavSticky && document.querySelector('.navigation__navigation') ? 50 : 0,
-				zIndex: !scroll.isNavSticky && document.querySelector('.navigation__navigation') ? 2 : 999
+				bottom: !this.state.scroll.isNavSticky ? 50 : 0,
+				zIndex: !this.state.scroll.isNavSticky ? 2 : 999
 			};
 			const customStylesCss = { ...snackStyle.css, snack: { ...snackCss, ...snackSticky } };
 

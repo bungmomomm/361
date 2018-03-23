@@ -1,23 +1,50 @@
 import { handleActions, createActions } from 'redux-actions';
-// import * as constants from './constants';
-
 
 const initialState = {
+	isLoading: false,
+	viewMode: {
+		mode: 2,
+		icon: 'ico_grid-3x3.svg'
+	},
 	promo: {
 		'new-arrival': {},
 		'best-seller': {},
 		'recommended-products': {},
 		'recent-view': {}
-	},
-	loading: false
+	}
 };
 
-const { promos, loading } = createActions(
-	'PROMOS', 'LOADING'
+const { promoLoading, promoViewMode, promoInit, promoNextInit } = createActions(
+	'PROMO_LOADING', 'PROMO_VIEW_MODE', 'PROMO_INIT', 'PROMO_NEXT_INIT'
 );
 
 const reducer = handleActions({
-	[promos](state, { payload: { promo } }) {
+	[promoLoading](state, { payload: isLoading }) {
+		return {
+			...state,
+			isLoading
+		};
+	},
+	[promoViewMode](state, { payload: { isLoading, viewMode } }) {
+		return {
+			...state,
+			isLoading: false,
+			viewMode
+		};
+	},
+	[promoInit](state, { payload: { promo } }) {
+		const keys = Object.keys(promo);
+		return {
+			...state,
+			promo: {
+				[keys[0]]: {
+					...promo[keys[0]]
+				}
+			},
+			isLoading: false
+		};
+	},
+	[promoNextInit](state, { payload: { promo } }) {
 		const keys = Object.keys(promo);
 		return {
 			...state,
@@ -26,22 +53,20 @@ const reducer = handleActions({
 				...promo,
 				[keys[0]]: {
 					...promo[keys[0]],
-					products: state.promo[keys[0]].products ? 
-					[
+					products: [
 						...state.promo[keys[0]].products,
 						...promo[keys[0]].products
-					] : promo[keys[0]].products
+					] 
 				}
 			}
 		};
-	},
-	[loading](state, { payload: data }) {
-		return { ...state, ...data };
 	}
 }, initialState);
 
 export default {
 	reducer,
-	promos,
-	loading
+	promoLoading,
+	promoViewMode,
+	promoInit,
+	promoNextInit
 };
