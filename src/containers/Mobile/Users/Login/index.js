@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { actions as users } from '@/state/v4/User';
-import { 
-	Link 
+import {
+	Link
 } from 'react-router-dom';
-import { 
-	Button, 
-	Input, 
-	Svg, 
-	Notification 
+import {
+	Button,
+	Input,
+	Svg,
+	Notification
 } from '@/components/mobile';
 import {
 	Login as LoginWidget
@@ -31,7 +31,6 @@ class Login extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-
 		this.state = {
 			current: 'login',
 			visiblePassword: false,
@@ -98,17 +97,17 @@ class Login extends Component {
 	}
 
 	render() {
-		const { 
-			isLoading, 
-			login 
+		const {
+			isLoading,
+			login
 		} = this.props.users;
-		const { 
-			visiblePassword, 
-			validLoginId, 
-			validLoginPassword, 
-			loginId, 
+		const {
+			visiblePassword,
+			validLoginId,
+			validLoginPassword,
+			loginId,
 			redirectUri,
-			password 
+			password
 		} = this.state;
 		const buttonLoginEnable = !isLoading && validLoginId && validLoginPassword;
 

@@ -8,7 +8,9 @@ import { setUserCookie, setUniqeCookie } from '@/utils';
 import { Fusion } from '@/utils/tracking/lucidworks';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
+import { Svg } from '@/components/Mobile';
 import Snackbar from '@/containers/Mobile/Shared/snackbar';
+import styles from './shared.scss';
 import { check as checkConnection, watch as watchConnection } from 'is-offline';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
@@ -212,6 +214,13 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				<div>
 					<Snackbar history={this.props.history} location={this.props.location} customStyles={customStylesCss} />
 					<WrappedComponent {...this.props} scroll={this.state.scroll} />
+					{
+						this.state.scroll.top > window.innerHeight && (
+							<a href='#root' className={styles.backToTop}>
+								<Svg src='ico_to-top.svg' />
+							</a>
+						)
+					}
 				</div>
 			);
 		}
