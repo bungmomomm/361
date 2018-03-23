@@ -143,15 +143,15 @@ class Promo extends Component {
 	}
 
 	renderPage() {
-        const { cookies } = this.props;
-        const navigationAttribute = {
-            scroll: this.props.scroll
-        };
-        if (cookies.get('page.referrer') === 'CATEGORY') {
-            navigationAttribute.active = 'Categories';
-        } else {
-            navigationAttribute.active = 'Promo';
-        }
+		const { cookies } = this.props;
+		const navigationAttribute = {
+			scroll: this.props.scroll
+		};
+		if (cookies.get('page.referrer') === 'CATEGORY') {
+			navigationAttribute.active = 'Categories';
+		} else {
+			navigationAttribute.active = 'Promo';
+		}
 		return (
 			<div style={this.props.style}>
 				{this.renderProductList()}
