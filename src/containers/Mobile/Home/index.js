@@ -307,7 +307,8 @@ class Home extends Component {
 					<Grid split={3}>
 						{
 							featuredBrand.value().map((brand, e) => {
-								const url = urlBuilder.setId(brand.brand_id).setName(brand.brand_name).buildBrand();
+								const url = urlBuilder.setId(brand.brand_id).setName(brand.brand_name)
+									.setCategoryId(this.props.home.activeSegment.id).buildFeatureBrand();
 								return (
 									<div className={styles.brandsImage} key={e}>
 										<Link to={url} >

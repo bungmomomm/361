@@ -130,6 +130,7 @@ class Detail extends Component {
 		};
 	}
 	componentWillMount() {
+		window.scroll(0, 0);
 		if ('serviceUrl' in this.props.shared) {
 			const { dispatch, match: { params }, cookies } = this.props;
 			const qs = queryString.parse(location.search);
