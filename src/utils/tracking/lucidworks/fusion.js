@@ -71,7 +71,7 @@ class Fusion {
 				const data = `${this.sessionId}|${this.customerId}`;
 				this.savesData(config.sessionName, data);
 				this.initNewSessionEvent();
-				this.push();
+				this.push(this.Payloads);
 			}
 		} catch (error) {
 			console.log(error);
@@ -101,9 +101,9 @@ class Fusion {
 		return this.cookies.get(name);
 	}
 
-	push = () => {
+	push = (payloads) => {
 		try {	
-			this.Payloads.google_session_id = this.gaClientId;
+			payloads.google_session_id = this.gaClientId;
 
 			if (this.Payloads.event !== NEW_SESSION && !this.hasSession()) {
 				this.bindSession();
@@ -115,13 +115,13 @@ class Fusion {
 						'Content-Type': 'text/plain; charset=utf-8'
 					}
 				};
-				const data = (typeof this.Payloads === 'object') ? JSON.stringify(this.Payloads) : '';
+				const data = (typeof payloads === 'object') ? JSON.stringify(payloads) : '';
 				const requestSent = axios.post(config.trackingUrl, data, requestConfig);
 
 				// sending request...
 				requestSent.then((res) => {
 					console.log('An event has been pushed: ', res);
-					console.log('Payloads pushed: ', this.Payloads);
+					console.log('Payloads pushed: ', payloads);
 				}).catch((err) => {
 					console.log(err);
 				});

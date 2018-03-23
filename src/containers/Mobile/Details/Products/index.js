@@ -189,6 +189,14 @@ class Products extends Component {
 				} else if (cardProduct.variants.length === 1 && !cardProduct.hasVariantSize) {
 					selectedVariant = cardProduct.variants[0];
 				}
+
+				const pricing = detail.variants[0].pricing.original;
+				// Fusion PDP tracking...
+				this.fusion.trackPdp({
+					product_id: detail.id,
+					item_price: pricing.effective_price,
+					item_disc: pricing.discount,
+				});
 			}
 
 			// disable enabled button BELI AJA
@@ -202,13 +210,6 @@ class Products extends Component {
 			if (typeof detail.seller !== 'undefined' && typeof detail.seller.seller_id !== 'undefined') {
 				dispatch(productActions.productStoreAction(this.userCookies, detail.seller.seller_id));
 			}
-
-			// Fusion PDP tracking...
-			this.fusion.trackPdp({
-				product_id: detail.id,
-				item_price: detail.price_range.effective_price,
-				item_disc: detail.price_range.discount,
-			}).push();
 		}
 
 		// sets lovelist data
@@ -340,6 +341,16 @@ class Products extends Component {
 		});
 
 		handler.then((res) => {
+			// Fusion Add to Cart tracking...
+			const pricing = product.detail.variants[0].pricing.original;
+			this.fusion.trackAddToCart({
+				product_id: product.detail.id,
+				item_id: variant.id,
+				item_price: pricing.effective_price,
+				item_disc: pricing.discount,
+				qty: this.defaultCount
+			});
+
 			// updates carts badge
 			dispatch(sharedActions.totalCartAction(this.userCookies));
 			status.pendingAddProduct = false;
@@ -348,7 +359,7 @@ class Products extends Component {
 			notif.show = true;
 			notif.content = 'Produk Berhasil ditambahkan';
 			this.setState({ status, notif });
-			status.pdpDataHasLoaded = false;
+
 			dispatch(productActions.productDetailAction(this.userCookies, product.detail.id));
 			trackAddToCart(product, this.props, variant);
 

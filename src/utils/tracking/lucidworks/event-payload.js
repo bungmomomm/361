@@ -12,19 +12,34 @@ class EventPayload extends Fusion {
 		};
 	}
 
-	trackPdp(data) {
+	trackPdp(payload) {
 		const event = Events.PRODUCT_DETAIL_PAGE;
-		this.Payloads = {
+		const payloads = {
 			event,
 			...this.commons,
-			...data,
+			...payload,
 			reference: 'not-set-yet',
 			query: 'not-set-yet',
 			page: 1,
 			limit: 1
 		};
 
-		return this;
+		this.push(payloads);
+	}
+
+	trackAddToCart(payload) {
+		const event = Events.ADD_TO_CART;
+		const payloads = {
+			event,
+			...this.commons,
+			...payload,
+			reference: 'not-set-yet',
+			query: 'not-set-yet',
+			page: 1,
+			limit: 1
+		};
+
+		this.push(payloads);
 	}
 
 }
