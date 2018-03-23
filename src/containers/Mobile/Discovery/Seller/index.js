@@ -9,7 +9,8 @@ import { Navigation,
 	Button,
 	Level,
 	Image,
-	Badge
+	Badge,
+	SEO
 } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
@@ -36,8 +37,57 @@ import {
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as commentActions } from '@/state/v4/Comment';
 import to from 'await-to-js';
-
 import Discovery from '../Utils';
+
+import {
+	TrackingRequest,
+	sendGtm,
+	categoryViewBuilder,
+	productClickBuilder
+} from '@/utils/tracking';
+
+const trackSellerPageView = (products, info, props) => {
+	const productId = _.map(products, 'product_id') || [];
+	const brandInfo = {
+		id: props.match.params.store_id,
+		name: info.title,
+		url_path: props.location.pathname
+	};
+
+	const impressions = _.map(products, (product, key) => {
+		return {
+			name: product.product_title,
+			id: product.product_id,
+			price: product.pricing.original.effective_price,
+			brand: product.brand.name,
+			category: product.product_category_names ? product.product_category_names.join('/') : '',
+			position: key + 1,
+			list: 'mm'
+		};
+	}) || [];
+	const request = new TrackingRequest();
+	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
+	request.setFusionSessionId('').setIpAddress('').setImpressions(impressions).setCategoryInfo(brandInfo);
+	request.setListProductId(productId.join('|'));
+	const requestPayload = request.getPayload(categoryViewBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
+
+const trackProductOnClick = (product, position, source = 'mm') => {
+	const productData = {
+		name: product.product_title,
+		id: product.product_id,
+		price: product.pricing.original.effective_price,
+		brand: product.brand.name,
+		category: product.product_category_names.join('/'),
+		position
+	};
+	const request = new TrackingRequest();
+	request.setFusionSessionId('').setProducts([productData]).setSourceName(source);
+	const requestPayload = request.getPayload(productClickBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
+
 
 class Seller extends Component {
 	constructor(props) {
@@ -83,6 +133,11 @@ class Seller extends Component {
 			this.setState({
 				query: nextProps.query
 			});
+		}
+
+		if (nextProps.seller.data !== this.props.seller.data) {
+			const data = nextProps.seller.data;
+			trackSellerPageView(data.products, data.info, nextProps);
 		}
 	}
 
@@ -131,13 +186,13 @@ class Seller extends Component {
 		}
 	};
 
-	onApply = async (e, fq) => {
+	onApply = async (e, fq, closeFilter) => {
 		const { query } = this.state;
 		query.fq = fq;
 
 		this.setState({
 			query,
-			showFilter: false
+			showFilter: !closeFilter
 		});
 		this.update({
 			fq
@@ -217,7 +272,7 @@ class Seller extends Component {
 	};
 
 	filterTabs = () => {
-		const { seller, isFiltered } = this.props;
+		const { seller, scroller, isFiltered } = this.props;
 		const { listTypeState, showSort, filterStyle } = this.state;
 		const sorts = _.chain(seller).get('data.sorts').value() || [];
 
@@ -230,18 +285,18 @@ class Seller extends Component {
 						{
 							id: 'sort',
 							title: 'Urutkan',
-							disabled: _.isEmpty(seller.data.sorts)
+							disabled: scroller.loading
 						},
 						{
 							id: 'filter',
 							title: 'Filter',
-							disabled: _.isEmpty(seller.data.facets),
+							disabled: scroller.loading,
 							checked: isFiltered
 						},
 						{
 							id: 'view',
 							title: <Svg src={listTypeState.icon} />,
-							disabled: _.isEmpty(seller.data.products)
+							disabled: scroller.loading
 						}
 					]}
 					onPick={e => this.handlePick(e)}
@@ -318,17 +373,32 @@ class Seller extends Component {
 		switch (this.state.listTypeState.type) {
 		case 'list':
 			listView = (
-				<CatalogView comments={comments} loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={products} />
+				<CatalogView
+					comments={comments}
+					loading={scroller.loading}
+					forceLoginNow={() => this.forceLoginNow()}
+					products={products}
+					productOnClick={trackProductOnClick}
+				/>
 			);
 			break;
 		case 'grid':
 			listView = (
-				<GridView loading={scroller.loading} forceLoginNow={() => this.forceLoginNow()} products={products} />
+				<GridView
+					loading={scroller.loading}
+					forceLoginNow={() => this.forceLoginNow()}
+					products={products}
+					productOnClick={trackProductOnClick}
+				/>
 			);
 			break;
 		case 'small':
 			listView = (
-				<SmallGridView loading={scroller.loading} products={products} />
+				<SmallGridView
+					loading={scroller.loading}
+					products={products}
+					productOnClick={trackProductOnClick}
+				/>
 			);
 			break;
 		default:
@@ -389,15 +459,17 @@ class Seller extends Component {
 					<Filter
 						shown={showFilter}
 						filters={seller.data}
-						onApply={(e, fq) => {
-							this.onApply(e, fq);
+						onApply={(e, fq, closeFilter) => {
+							this.onApply(e, fq, closeFilter);
 						}}
 						onClose={(e) => this.onClose(e)}
 					/>
 				) : (
 					<div style={this.props.style}>
 						<Page color='white'>
-							{seller.info.seller && this.renderHelmet()}
+							<SEO
+								paramCanonical={process.env.MOBILE_UR}
+							/>
 							{this.sellerHeader()}
 							{this.filterTabs()}
 							{this.loadProducts()}
@@ -451,7 +523,6 @@ const doAfterAnonymous = async (props) => {
 
 	await dispatch(actions.initSeller(data.token, data.query.store_id));
 	const response = await to(dispatch(actions.getProducts(data)));
-
 	const productIdList = _.map(response[1].data.products, 'product_id') || [];
 	dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 	dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));

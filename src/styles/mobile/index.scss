@@ -139,6 +139,9 @@
 	  	overflow-x: hidden;
 	  	overflow-y: auto;
 	}
+    html{
+        overflow: hidden;
+    }
 
 	#root > main {
 		height: 100%;
@@ -343,6 +346,11 @@
 			}
 		}
 
+		.no-margin-v {
+			margin-top: 0;
+			margin-bottom: 0;
+		}
+
 	  	// Padding
 		@each $value in $space-list {
 			.padding#{nth($value, 1)} {
@@ -369,6 +377,8 @@
 			  	padding-right: nth($value, 2);
 			}
 		}
+
+		.no-padding-b {padding-bottom: 0;}
 
 		.border-top {
 			border-top: 0.5px solid #DBDBDB;

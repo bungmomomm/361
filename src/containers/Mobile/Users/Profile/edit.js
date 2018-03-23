@@ -67,18 +67,16 @@ class UserProfileEdit extends Component {
 		this.loadingView = <Spinner />;
 		this.editIcon = <Svg src='ico_edit.svg' />;
 		this.recaptchaInstance = null;
-	}
 
-	componentWillMount() {
 		if (!this.isLogin) {
 			const { history } = this.props;
-			history.push('/login');
+			history.push('/login?redirect_uri=profile');
 		}
 	}
 
 	componentWillReceiveProps(nextProps) {
 		const { formData } = this.state;
-		if (nextProps.userProfile !== false) {
+		if (nextProps.userProfile !== this.props.userProfile) {
 			this.setState({
 				formData: {
 					...formData,
@@ -214,7 +212,6 @@ class UserProfileEdit extends Component {
 	}
 
 	submitFormData = async (e) => {
-		console.log('captcha response', e);
 		const { dispatch } = this.props;
 		const { layout, formData } = this.state;
 
@@ -258,9 +255,8 @@ class UserProfileEdit extends Component {
 					},
 					submittingForm: false
 				});
-
-				console.log(err);
 			} else if (response) {
+				dispatch(userActions.userGetProfile(this.userToken));
 				this.setState({
 					formResult: {
 						status: 'success',
@@ -273,7 +269,6 @@ class UserProfileEdit extends Component {
 					submittingForm: false
 				});
 				this.setTimeoutForm(5000);
-				console.log(response);
 			}
 		}
 
@@ -297,13 +292,16 @@ class UserProfileEdit extends Component {
 		const { validName, validBirthday, submittingForm } = this.state;
 		const styleHeader = {
 			parent: {
-				height: '55px'
+				height: '55px',
+				marginBottom: '20px'
 			},
 			left: {
 				width: '80px'
 			},
 			center: {
-				alignItems: 'center'
+				alignItems: 'center',
+				fontFamily: 'Lato-Regular',
+				fontSize: '15px'
 			},
 			right: {
 				width: '80px'
@@ -315,7 +313,7 @@ class UserProfileEdit extends Component {
 		);
 		const centerHeader = 'Ubah Profil';
 		const rightHeader = (
-			<Button onClick={() => this.saveFormData()} disabled={submittingForm || !validName || !validBirthday}>SIMPAN</Button>
+			<Button onClick={() => this.saveFormData()} disabled={submittingForm || !validName || !validBirthday} className={styles.saveButton}>SIMPAN</Button>
 		);
 
 		return (
@@ -351,11 +349,10 @@ class UserProfileEdit extends Component {
 		return null;
 	}
 
-	renderAvatar() {
-		const { userProfile } = this.props;
-		const { isBuyer } = this.state;
+	renderAvatar(source = 'local') {
+		const { formData, isBuyer } = this.state;
 
-		if (_.isEmpty(userProfile)) {
+		if (_.isEmpty(formData)) {
 			return (
 				<form style={{ padding: '15px' }}>
 					{this.loadingView}
@@ -373,11 +370,16 @@ class UserProfileEdit extends Component {
 			styles.big
 		);
 
-		const avatar = userProfile && userProfile[this.AVATAR_FIELD] ? (
-			<Image width={80} height={80} avatar src={userProfile[this.AVATAR_FIELD]} alt={_.capitalize(userProfile[this.NAME_FIELD]) || ''} />
-		) : (
-			<div className={ppClassName}>{splitString(userProfile[this.NAME_FIELD] || '')}</div>
-		);
+		let avatar;
+		if (source === 'api') {
+			avatar = formData && formData[this.AVATAR_FIELD] ? (
+				<Image width={80} height={80} avatar src={formData[this.AVATAR_FIELD]} alt={_.capitalize(formData[this.NAME_FIELD]) || ''} />
+			) : (
+				<div className={ppClassName}>{splitString(formData[this.NAME_FIELD].trim() || '')}</div>
+			);
+		} else {
+			avatar = <div className={ppClassName}>{splitString(formData[this.NAME_FIELD].trim() || '')}</div>;
+		}
 
 		return (
 			<div style={{ alignItems: 'center' }}>
@@ -402,19 +404,21 @@ class UserProfileEdit extends Component {
 
 		const ovoId = formData[this.OVO_ID_FIELD] || '';
 		return (
-			formData[this.OVO_VERIFIED_FIELD] === '1' ?
+			formData[this.OVO_VERIFIED_FIELD] === 1 && formData[this.OVO_ID_FIELD] !== 0 ?
 				<div className='margin--medium-v'>
-					<label className={styles.label} htmlFor='ovoID'><span style={{ color: '#4E2688' }}>OVO ID</span></label>
+					<label className={styles.label} htmlFor='ovoID'><span style={{ color: '#4E2688', fontWeight: 'bold' }}>OVO ID</span></label>
 					<div className={styles.inputChange}>
 						<div className={styles.inputChangeInput}>
 							<Input readOnly id='ovoID' flat defaultValue={ovoId} />
 						</div>
-						<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.OVO_ID_FIELD)}>UBAH</Button>
+						<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.OVO_ID_FIELD)}>{this.editIcon}</Button>
 					</div>
-					<span style={{ color: '#4E2688', fontSize: '12px' }}>OVO ID anda telah terhubung</span>
+					<span style={{ color: '#4E2688', fontSize: '12px', marginTop: '10px' }}>
+						<Svg src='ico_ovo_verified.svg' style={{ verticalAlign: 'text-bottom' }} /> OVO ID anda telah terhubung
+					</span>
 				</div> :
 				<div className='margin--medium-v'>
-					<Button color='primary' size='large' onClick={(e, value) => this.switchLayoutHandler(e, this.OVO_ID_FIELD)}>VERIFIKASI OVO ID</Button>
+					<Button color='purple' size='large' onClick={(e, value) => this.switchLayoutHandler(e, this.OVO_ID_FIELD)}>VERIFIKASI OVO ID</Button>
 				</div>
 		);
 	}
@@ -626,7 +630,7 @@ class UserProfileEdit extends Component {
 				<Page style={{ paddingTop: 0 }} color='white'>
 					{this.renderHeader()}
 					{this.renderNotif()}
-					{this.renderAvatar()}
+					{this.renderAvatar('api')}
 					{this.renderForm()}
 				</Page>
 			);
@@ -654,4 +658,13 @@ const mapStateToProps = (state) => {
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(UserProfileEdit)));
+const doAfterAnonymous = async (props) => {
+	const { dispatch, cookies, shared } = props;
+
+	const serviceUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
+	if (serviceUrl) {
+		dispatch(userActions.userGetProfile(cookies.get('user.token')));
+	}
+};
+
+export default withCookies(connect(mapStateToProps)(Shared(UserProfileEdit, doAfterAnonymous)));

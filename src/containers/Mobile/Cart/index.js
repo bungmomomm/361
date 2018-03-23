@@ -8,10 +8,26 @@ import { connect } from 'react-redux';
 import { actions as shopBagAction } from '@/state/v4/ShopBag';
 import CONST from '@/constants';
 import { urlBuilder, aux } from '@/utils';
-import CartEmpty from '@/containers/Mobile/Cart/empty';
 import { actions as actionShared } from '@/state/v4/Shared';
 import _ from 'lodash';
+import {
+	TrackingRequest,
+	sendGtm,
+	cartViewBuilder
+} from '@/utils/tracking';
 
+const trackBrandPageView = (data, props) => {
+	const items = _.flatMap(data, (e) => (e.items));
+	const productId = _.map(items, 'product_id');
+	const pricingList = _.map(items, 'pricing.original.effective_price');
+	const quantityList = _.map(items, 'qty');
+	const request = new TrackingRequest();
+	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
+	request.setFusionSessionId('').setIpAddress('');
+	request.setListProductId(productId.join('|')).setListPrice(pricingList.join('|')).setListQuantity(quantityList.join('|'));
+	const requestPayload = request.getPayload(cartViewBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
 class Cart extends Component {
 	constructor(props) {
 		super(props);
@@ -48,7 +64,7 @@ class Cart extends Component {
 
 	componentDidMount() {
 		const { dispatch } = this.props;
-		dispatch(new actionShared.totalLovelistAction(this.userToken));
+		dispatch(actionShared.totalCartAction(this.userToken));
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -56,7 +72,17 @@ class Cart extends Component {
 			const { dispatch } = this.props;
 			dispatch(shopBagAction.getAction(this.userToken));
 		}
+
+		if (nextProps.shopBag.carts !== this.props.shopBag.carts) {
+			trackBrandPageView(nextProps.shopBag.carts, nextProps);
+		}
+
 		this.checkNotProcedItem(nextProps);
+	}
+
+	componentWillUnmount() {
+		const { dispatch } = this.props;
+		dispatch(actionShared.totalCartAction(this.userToken));
 	}
 
 	checkNotProcedItem(props) {
@@ -127,7 +153,8 @@ class Cart extends Component {
 	}
 
 	renderList(shopBagData) {
-		return (this.props.shopBag.carts !== null) && (this.props.shopBag.carts.map((cart, key) => {
+		const sortedCart = _.sortBy(this.props.shopBag.carts, 'seller_id');
+		return (this.props.shopBag.carts !== null) && (sortedCart.map((cart, key) => {
 			const items = cart.items.map((item, keyItem) => {
 				return (
 					<div key={keyItem}>
@@ -142,22 +169,25 @@ class Cart extends Component {
 							</Level.Item>
 							<Level.Item className='padding--medium-l'>
 								<div>
-									<Link className='font-color--black' to={urlBuilder.setId(item.brand.id).setName(item.brand.brand_name).buildBrand()}>
-										{item.brand.brand_name}
+									<Link className='font-color--black text-uppercase' to={urlBuilder.setId(item.brand.id).setName(item.brand.brand_name).buildBrand()}>
+										{item.brand.name}
 									</Link>
 								</div>
 								<div className='font-color--primary-ext-1 flex-row'>
-									<Link className='font-color--black' to={urlBuilder.setId(item.product_id).setName(item.product_title).buildPdp()}>
+									<Link className='font-color--grey' to={urlBuilder.setId(item.product_id).setName(item.product_title).buildPdp()}>
 										{item.product_title}
 									</Link>
 									<Button
 										onClick={() => this.deleteConfirmationItemHandler(
-											item.variant_id, item.brand.brand_name, item.product_title, item.images[0].thumbnail
+											item.variant_id, item.brand.name, item.product_title, item.images[0].thumbnail
 										)}
 										className='font-color--primary-ext-1 margin--medium-l margin--small-r'
 									>
 										<Svg src='ico_trash.svg' />
 									</Button>
+								</div>
+								<div className='font-color--black'>
+									{item.variant.title} : {item.variant.value}
 								</div>
 								<div className='margin--medium-v'>
 									<div className='font--lato-bold'>{item.pricing.formatted.effective_price}</div>
@@ -223,13 +253,13 @@ class Cart extends Component {
 						<div>Subtotal</div>
 						<div className='font-medium'>{this.props.shopBag.total.formatted.subtotal}</div>
 					</div>
-					<div className='flex-row flex-spaceBetween'>
+					{/* <div className='flex-row flex-spaceBetween'>
 						<div>
 							<div>Estimasi biaya pengiriman</div>
 							{shopBag.location_default && (<div className='font-small'>({shopBag.location_default})</div>)}
 						</div>
 						<div className='font-medium'>{this.props.shopBag.total.formatted.shipping_estimation}</div>
-					</div>
+					</div> */}
 				</div>
 			</div>
 		);
@@ -262,7 +292,7 @@ class Cart extends Component {
 		} else {
 			link = (<Link to='login?redirect_uri=/cart'>{wording}</Link>);
 		}
-		return (
+		return this.props.shopBag.total !== null && (
 			<div className={styles.paymentLink}>
 				<div>
 					<div>
@@ -295,27 +325,30 @@ class Cart extends Component {
 	render() {
 		const headerOption = {
 			left: (
-				<Link to='/'>
-					<Svg src={'ico_close-large.svg'} />
-				</Link>
+				<span
+					onClick={() => this.props.history.goBack()}
+					role='button'
+					tabIndex='0'
+				>
+					<Svg src='ico_arrow-back-left.svg' />
+				</span>
 			),
 			center: (<div><span> Tas Belanja {this.props.shopBag.loading ? (<Spinner />) : ''}</span></div>),
 			right: null
 		};
 
-		if ((this.props.shopBag.carts && this.props.shopBag.carts.length < 1) || this.props.shopBag.carts === null) {
-			return <CartEmpty />;
-		}
-
 		return (
 			<div>
 				<Page color='white'>
-					<div style={{ backgroundColor: '#F5F5F5' }}>
-						{this.renderHeaderShopBag()}
-						{this.renderMessageNotProcedItems()}
-						{this.renderList()}
-						{this.renderTotal()}
-					</div>
+					{ (this.props.shopBag.total && this.props.shopBag.total.count_item === 0) ?
+						(<div dangerouslySetInnerHTML={{ __html: this.props.shopBag.empty_state }} />) :
+						(<div style={{ backgroundColor: '#F5F5F5' }}>
+							{this.renderHeaderShopBag()}
+							{this.renderMessageNotProcedItems()}
+							{this.renderList()}
+							{this.renderTotal()}
+						</div>)
+					}
 				</Page>
 
 				<Header.Modal {...headerOption} />

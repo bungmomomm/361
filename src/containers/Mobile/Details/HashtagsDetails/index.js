@@ -2,45 +2,49 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Header, Page, Navigation, Svg, Grid, Card, Carousel } from '@/components/mobile';
+import { Header, Page, Svg, Carousel } from '@/components/mobile';
 import { actions } from '@/state/v4/HashtagsDetails';
 import Shared from '@/containers/Mobile/Shared';
 import Spinner from '@/components/mobile/Spinner';
-import { urlBuilder } from '@/utils';
-import InstagramEmbed from 'react-instagram-embed';
+import { GridView } from '@/containers/Mobile/Discovery/View';
+import Discovery from '@/containers/Mobile/Discovery/Utils';
+import { actions as commentActions } from '@/state/v4/Comment';
+import { actions as lovelistActions } from '@/state/v4/Lovelist';
+import _ from 'lodash';
 
 class HashtagsDetails extends Component {
 
+	componentDidMount() {
+		const script = document.createElement('script');
+		script.src = '//www.instagram.com/embed.js';
+		script.async = true;
+		script.defer = true;
+
+		document.body.appendChild(script);
+	}
+
+	forceLoginNow = () => {
+		const { history, location } = this.props;
+		const currentUrl = encodeURIComponent(`${location.pathname}${location.search}`);
+		history.push(`/login?redirect_uri=${currentUrl}`);
+	};
+
 	bufferCarousel = (products) => {
+		const { scroller } = this.props;
 		const buffer = [];
 		let fragment = [];
 
 		products.forEach((product, i) => {
-			fragment = ((i + 1) % 2 !== 0) ?
-			[
-				<Card.CatalogGrid
-					key={i}
-					images={product.images}
-					productTitle={product.product_title}
-					brandName={product.brand.name}
-					pricing={product.pricing}
-					linkToPdp={urlBuilder.buildPdp(product.product_title, product.product_id)}
-				/>
-			] :
-			[
-				...fragment,
-				<Card.CatalogGrid
-					key={i}
-					images={product.images}
-					productTitle={product.product_title}
-					brandName={product.brand.name}
-					pricing={product.pricing}
-					linkToPdp={urlBuilder.buildPdp(product.product_title, product.product_id)}
-				/>
-			];
-
+			fragment = ((i + 1) % 2 !== 0) ? [product] : [...fragment, product];
 			if ((i + 1) % 2 === 0 || products.length === (i + 1)) {
-				buffer.push(fragment);
+				buffer.push(
+					<GridView
+						key={i}
+						loading={scroller.loading}
+						forceLoginNow={() => this.forceLoginNow()}
+						products={fragment}
+					/>
+				);
 			}
 		});
 
@@ -64,28 +68,24 @@ class HashtagsDetails extends Component {
 
 		return (
 			<div>
-
 				<Page color='white'>
 					{ent.data.post.embed_url && (
 						<div
 							style={{
-								marginTop: '-3px',
-								marginLeft: '-3px',
-								width: 'calc(100% + 8px)'
+								marginBottom: '10px',
+								maxWidth: '480px'
 							}}
 						>
-							<InstagramEmbed
-								url={ent.data.post.embed_url.replace('embed/captioned/', '')}
-								maxWidth='auto'
-								hideCaption={false}
-								containerTagName='div'
-								protocol=''
-								onLoading={() => {}}
-								onSuccess={() => {}}
-								onAfterRender={() => {
-									// document.getElementsByClassName('instagram-media')[0].removeAttribute('style');
+							<iframe
+								src={ent.data.post.embed_url}
+								title='sgdsgs'
+								className={'instagram-media'}
+								frameBorder={0}
+								style={{
+									pointerEvents: 'none',
+									cursor: 'default !important',
+									maxWidth: '480px'
 								}}
-								onFailure={() => {}}
 							/>
 						</div>
 					)}
@@ -99,7 +99,7 @@ class HashtagsDetails extends Component {
 						>
 							<div className='padding--medium-h font-medium'><strong>Get The Look</strong></div>
 							<Carousel>
-								{looks.map((chunk, i) => <Grid split={2} key={i}>{chunk}</Grid>)}
+								{looks.map((chunk, i) => chunk)}
 							</Carousel>
 						</div>
 					)}
@@ -107,18 +107,21 @@ class HashtagsDetails extends Component {
 				</Page>
 
 				<Header.Modal {...HeaderPage} />
-				<Navigation scroll={this.props.scroll} />
 			</div>);
 	}
 }
 
 const mapStateToProps = (state) => {
+	const { comments, lovelist, hashtagdetails } = state;
+	hashtagdetails.data.products = Discovery.mapProducts(hashtagdetails.data.products, comments, lovelist);
+
 	return {
-		...state
+		...state,
+		hashtagdetails
 	};
 };
 
-const doAfterAnonymous = (props) => {
+const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies, match: { params } } = props;
 	if (isNaN(parseInt(params.post_id, 10)) || isNaN(parseInt(params.campaign_id, 10))) {
 		window.location.href = '/404';
@@ -127,9 +130,15 @@ const doAfterAnonymous = (props) => {
 	const ids = {
 		post_id: params.post_id,
 		campaign_id: params.campaign_id,
+		icode: params.icode
 	};
 
-	dispatch(actions.hashtagDetailAction(cookies.get('user.token'), ids));
+	const resp = await dispatch(actions.hashtagDetailAction(cookies.get('user.token'), ids));
+	const productIdList = _.map(resp.data.data.products, 'product_id') || [];
+	if (productIdList.length > 0) {
+		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
+		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+	}
 };
 
 export default withRouter(withCookies(connect(mapStateToProps)(Shared(HashtagsDetails, doAfterAnonymous))));

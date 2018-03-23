@@ -70,12 +70,12 @@ class SearchResults extends Component {
 		}
 	}
 
-	async onApply(e, fq) {
+	async onApply(e, fq, closeFilter) {
 		const { query } = this.state;
 		query.fq = fq;
 		this.setState({
 			query,
-			showFilter: false
+			showFilter: !closeFilter
 		});
 		this.update({
 			fq
@@ -203,7 +203,7 @@ class SearchResults extends Component {
 	}
 
 	renderPage() {
-		const { isLoading, searchResults } = this.props;
+		const { isLoading, searchResults, shared } = this.props;
 		const { showFilter } = this.state;
 
 		if (showFilter) {
@@ -211,19 +211,27 @@ class SearchResults extends Component {
 				<Filter
 					shown={showFilter}
 					filters={searchResults.searchData}
-					onApply={(e, fq) => {
-						this.onApply(e, fq);
+					onApply={(e, fq, closeFilter) => {
+						this.onApply(e, fq, closeFilter);
 					}}
 					onClose={(e) => this.onClose(e)}
 				/>
 			);
 		}
 
+		const navigationAttribute = {
+			scroll: this.props.scroll
+		};
+
+		if (shared.userPreviousPage !== 'HOME') {
+			navigationAttribute.active = 'Categories';
+		}
+
 		return (
 			<div style={this.props.style}>
 				{isLoading ? this.loadingView : this.renderSearch()}
 				{this.renderHeader()}
-				<Navigation scroll={this.props.scroll} />
+				<Navigation {...navigationAttribute} />
 			</div>
 		);
 	}
@@ -263,7 +271,7 @@ class SearchResults extends Component {
 	}
 
 	renderTabs() {
-		const { searchResults, viewMode } = this.props;
+		const { searchResults, viewMode, isLoading, isFiltered } = this.props;
 		const { showSort } = this.state;
 
 		let tabsView = null;
@@ -280,12 +288,13 @@ class SearchResults extends Component {
 							{
 								id: 'sort',
 								title: 'Urutkan',
-								disabled: typeof searchResults.searchData === 'undefined'
+								disabled: isLoading
 							},
 							{
 								id: 'filter',
 								title: 'Filter',
-								disabled: typeof searchResults.searchData === 'undefined'
+								disabled: isLoading,
+								checked: isFiltered
 							},
 							{
 								id: 'view',
@@ -329,10 +338,12 @@ class SearchResults extends Component {
 const mapStateToProps = (state) => {
 	const { comments, lovelist, searchResults } = state;
 	searchResults.searchData.products = Discovery.mapProducts(searchResults.searchData.products, comments, lovelist);
+	const isFiltered = Filter.utils.isFiltered(searchResults.searchData.facets);
 
 	return {
 		...state,
 		searchResults,
+		isFiltered,
 		promoData: state.searchResults.promoData,
 		query: state.searchResults.query,
 		isLoading: state.searchResults.isLoading,

@@ -6,7 +6,7 @@ import _ from 'lodash';
 import {
 	Header, Carousel, Tabs,
 	Page, Level, Button, Grid, Article,
-	Navigation, Svg, Image, SmartBanner
+	Navigation, Svg, Image, SmartBanner, SEO
 } from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
@@ -14,7 +14,13 @@ import { actions as sharedActions } from '@/state/v4/Shared';
 import Shared from '@/containers/Mobile/Shared';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Footer from '@/containers/Mobile/Shared/footer';
-import CONST from '@/constants';
+import {
+	TrackingRequest,
+	homepageViewBuilder,
+	impressionsPushedBuilder,
+	sendGtm,
+} from '@/utils/tracking';
+import { urlBuilder } from '@/utils';
 
 const renderSectionHeader = (title, options) => {
 	return (
@@ -22,7 +28,7 @@ const renderSectionHeader = (title, options) => {
 			<Level.Left><div className={styles.headline}>{title}</div></Level.Left>
 			<Level.Right>
 				{
-					options.isMozaic ? 
+					options.isMozaic ?
 						<a href={options.url || '/'} target='_blank' className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></a>
 						:
 						<Link to={options.url || '/'} className={styles.readmore}>
@@ -36,6 +42,24 @@ const renderSectionHeader = (title, options) => {
 
 
 class Home extends Component {
+
+	static trackImpresionHandler(homeData) {
+		homeData = _.chain(homeData);
+		const ImpressionsReq = new TrackingRequest();
+		const promotions = [];
+		promotions.push(homeData.get('heroBanner[0].impression').value());
+		promotions.push(homeData.get('squareBanner[0].impression').value());
+		promotions.push(homeData.get('squareBanner[1].impression').value());
+		promotions.push(homeData.get('topLanscape[0].impression').value());
+		promotions.push(homeData.get('topLanscape[1].impression').value());
+		promotions.push(homeData.get('bottomLanscape[0].impression').value());
+		promotions.push(homeData.get('bottomLanscape[1].impression').value());
+		ImpressionsReq.setPromotions(promotions);
+		const impressionsPayload = ImpressionsReq.getPayload(impressionsPushedBuilder);
+		if (impressionsPayload) sendGtm(impressionsPayload);
+	}
+
+
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -47,23 +71,33 @@ class Home extends Component {
 		this.isLogin = this.props.cookies.get('isLogin');
 
 		this.state = {
-			isFooterShow: true, 
+			isFooterShow: true,
 			showSmartBanner: this.props.cookies.get('sb-show') !== '0' && true
 		};
 
 		this.sbClose = this.sbClose.bind(this);
 	}
 
-	handlePick(current) {
+	componentDidMount() {
+		this.trackPageViewHandler();
+	}
+
+	trackPageViewHandler() {
+		const PageViewReq = new TrackingRequest();
+		PageViewReq.setEmailHash('email@satu').setUserId('999').setCurrentUrl(this.props.location.pathname);
+		const pageViewPayload = PageViewReq.getPayload(homepageViewBuilder);
+		if (pageViewPayload) sendGtm(pageViewPayload);
+	}
+
+	async handlePick(current) {
 		const { segmen } = this.props.home;
 		const { dispatch } = this.props;
 		const willActiveSegment = segmen.find(e => e.id === current);
-		// this.setState({ current: willActiveSegment.key });
 		dispatch(new sharedActions.setCurrentSegment(willActiveSegment.key));
-		dispatch(new actions.mainAction(willActiveSegment, this.userCookies));
+		const mainPageData = await dispatch(new actions.mainAction(willActiveSegment, this.userCookies));
+		Home.trackImpresionHandler(mainPageData);
 		dispatch(new actions.recomendationAction(willActiveSegment, this.userCookies));
 	}
-
 
 	sbClose() {
 		const { cookies } = this.props;
@@ -78,7 +112,7 @@ class Home extends Component {
 	}
 
 	renderHeroBanner() {
-		const { home } = this.props;
+		const { home, dispatch } = this.props;
 		const segment = home.activeSegment.key;
 		const featuredBanner = _.chain(home).get(`allSegmentData.${segment}`).get('heroBanner');
 		if (!featuredBanner.isEmpty().value()) {
@@ -86,7 +120,14 @@ class Home extends Component {
 			const images = featuredBanner.value()[0].images;
 			const link = featuredBanner.value()[0].link.target;
 			return (
-				<Link to={link}>
+				<Link
+					to={link}
+					onClick={
+						() => {
+							dispatch(new sharedActions.logSinglePage('HOME'));
+						}
+					}
+				>
 					<div>
 						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
 					</div>
@@ -104,41 +145,43 @@ class Home extends Component {
 		 * recommended-products,
 		 * recent-view
 		 * */
-		
+
 		const { home } = this.props;
 		const segment = home.activeSegment;
 		const title = 'LIHAT SEMUA';
-		const datas = _.chain(home).get(`allSegmentData.${segment.key}`).get('recomendationData').get(type);
-		
-		if (!datas.isEmpty().value()) {
-			const data = datas.value();
-			const link = `/promo/${type}?segment_id=${segment.id}`;
+		const recommendationData = _.chain(home).get(`allSegmentData.${segment.key}.recomendationData.${type}`);
+		if (recommendationData.value()) {
+			const data = recommendationData.value();
+			console.log(data);
+			if (data.data && data.data.length > 0) {
+				const link = `/promo/${type}?segment_id=${segment.id}`;
 
-			const header = renderSectionHeader(data.title, {
-				title,
-				url: link
-			});
-			return (
-				<div>
-					{ header }
-					<Grid split={3} bordered>
-						{
-							data.data.map(({ images, pricing, path }, e) => (
-								<div key={e}>
-									<Link to={`/${path}`}>
-										<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
-										<div className={styles.btnThumbnail}>
-											<Button transparent color='secondary' size='small'>
-												{pricing.formatted.effective_price}
-											</Button>
-										</div>
-									</Link>
-								</div>
-							))
-						}
-					</Grid>
-				</div>
-			);
+				const header = renderSectionHeader(data.title, {
+					title,
+					url: link
+				});
+				return (
+					<div>
+						{ header }
+						<Grid split={3} bordered>
+							{
+								data.data.map(({ images, pricing, path, product_id, product_title }, e) => (
+									<div key={e}>
+										<Link to={`/${urlBuilder.buildPdp(product_title, product_id)}`}>
+											<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
+											<div className={styles.btnThumbnail}>
+												<Button transparent color='secondary' size='small'>
+													{pricing.formatted.effective_price}
+												</Button>
+											</div>
+										</Link>
+									</div>
+								))
+							}
+						</Grid>
+					</div>
+				);
+			}
 		}
 		return null;
 	}
@@ -154,7 +197,7 @@ class Home extends Component {
 				title: datanya.mainlink.text,
 				url: baseHashtagUrl
 			});
-			
+
 			const detailHashTag = `${baseHashtagUrl}/${datanya.hashtag.replace('#', '')}-${datanya.campaign_id}`;
 
 			return (
@@ -162,14 +205,18 @@ class Home extends Component {
 					{ header }
 					<Grid split={3} bordered>
 						{
-							datanya.images.map((gambar, e) => (
-								<div key={e}>
-									<Link to={`${detailHashTag}/${gambar.content_id}`}>
-										<Image lazyload shape='square' alt='thumbnail' src={gambar.images.thumbnail} />
-									</Link>
-								</div>
-								
-							))
+							datanya.images.map((gambar, e) => {
+								const embedUrl = _.chain(gambar).get('embed_url').value();
+								const icode = (embedUrl.substr(embedUrl.indexOf('/p/')).split('/') || [])[2];
+
+								return (
+									<div key={e}>
+										<Link to={`${detailHashTag}/${gambar.content_id}/${icode || ''}`}>
+											<Image lazyload shape='square' alt='thumbnail' src={gambar.images.thumbnail} />
+										</Link>
+									</div>
+								);
+							})
 						}
 					</Grid>
 				</div>
@@ -179,15 +226,23 @@ class Home extends Component {
 	}
 
 	renderSquareBanner() {
-		const { home } = this.props;
+		const { home, dispatch } = this.props;
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}.squareBanner`);
-		if (!datas.isEmpty().value()) {
+		if (datas.value()) {
 			return (
 				<div className='margin--medium-v'>
 					{
 						datas.value().map(({ images, link }, c) => (
-							<Link to={link.target || '/'} key={c}>
+							<Link
+								to={link.target || '/'}
+								key={c}
+								onClick={
+									() => {
+										dispatch(new sharedActions.logSinglePage('HOME'));
+									}
+								}
+							>
 								<div>
 									<Image lazyload alt='banner' src={images.thumbnail} />
 								</div>
@@ -201,12 +256,12 @@ class Home extends Component {
 	}
 
 	renderBottomBanner(position = 'top') {
-		const { home } = this.props;
+		const { home, dispatch } = this.props;
 		const segment = home.activeSegment.key;
 		let bottomBanner = [];
 		const dataTop = _.chain(home).get(`allSegmentData.${segment}.topLanscape`);
 		const dataBottm = _.chain(home).get(`allSegmentData.${segment}.bottomLanscape`);
-		if (!dataTop.isEmpty().value() && !dataBottm.isEmpty().value()) {
+		if (dataTop.value() && dataBottm.value()) {
 			bottomBanner = position === 'top' ? dataTop.value() : dataBottm.value();
 		}
 		if (bottomBanner.length > 0) {
@@ -214,7 +269,15 @@ class Home extends Component {
 				<div className='margin--medium-v'>
 					{
 						bottomBanner.map(({ images, link }, d) => (
-							<Link to={link.target || '/'} key={d}>
+							<Link
+								to={link.target || '/'}
+								key={d}
+								onClick={
+									() => {
+										dispatch(new sharedActions.logSinglePage('HOME'));
+									}
+								}
+							>
 								<div>
 									<Image lazyload alt='banner' src={images.thumbnail} />
 								</div>
@@ -246,18 +309,8 @@ class Home extends Component {
 					<Grid split={3}>
 						{
 							featuredBrand.value().map((brand, e) => {
-								let url = '/';
-								switch (brand.link.type) {
-								case CONST.CATEGORY_TYPE.brand:
-									url = `/brand/${brand.brand_id}/${encodeURIComponent(brand.brand_name.toLowerCase())}`;
-									break;
-								case CONST.CATEGORY_TYPE.category: // TODO : must change if api ready
-									url = `/brand/${brand.brand_id}/${encodeURIComponent(brand.brand_name.toLowerCase())}`;
-									break;
-								default:
-									url = `/category/${CONST.SEGMENT_DEFAULT_SELECTED.key}`;
-									break;
-								}
+								const url = urlBuilder.setId(brand.brand_id).setName(brand.brand_name)
+									.setCategoryId(this.props.home.activeSegment.id).buildFeatureBrand();
 								return (
 									<div className={styles.brandsImage} key={e}>
 										<Link to={url} >
@@ -309,11 +362,14 @@ class Home extends Component {
 	render() {
 		const { shared, dispatch } = this.props;
 
-		const recommendation1 = this.isLogin === 'false' ? 'best-seller' : 'recommended-products';
-		const recommendation2 = this.isLogin === 'false' ? 'new-arrival' : 'recent-view';
+		const recommendation1 = this.isLogin === 'false' ? 'new-arrival' : 'recommended-products';
+		const recommendation2 = this.isLogin === 'false' ? 'best-seller' : 'recent-view';
 		return (
 			<div style={this.props.style}>
 				<Page color='white'>
+					<SEO
+						paramCanonical={process.env.MOBILE_UR}
+					/>
 					<Tabs
 						current={this.props.shared.current}
 						variants={this.props.home.segmen}
@@ -340,10 +396,10 @@ class Home extends Component {
 
 					<Footer isShow={this.state.isFooterShow} />
 				</Page>
-				<SmartBanner 
-					title='MatahariMall' 
-					iconSrc='app-icon.png' 
-					author='PT Solusi Ecommerce Global' 
+				<SmartBanner
+					title='MatahariMall'
+					iconSrc='app-icon.png'
+					author='PT Solusi Ecommerce Global'
 					googlePlay='com.mataharimall.mmandroid'
 					appStore='1033108124'
 					isShow={this.state.showSmartBanner}
@@ -351,9 +407,9 @@ class Home extends Component {
 					scroll={this.props.scroll}
 				/>
 
-				<Header 
-					lovelist={shared.totalLovelist} 
-					value={this.props.search.keyword} 
+				<Header
+					lovelist={shared.totalLovelist}
+					value={this.props.search.keyword}
 				/>
 				<Navigation active='Home' scroll={this.props.scroll} totalCartItems={shared.totalCart} />
 			</div>
@@ -376,8 +432,9 @@ const doAfterAnonymous = async (props) => {
 
 	const tokenHeader = cookies.get('user.token');
 
-	await dispatch(new actions.mainAction(activeSegment, tokenHeader));
+	const mainPageData = await dispatch(new actions.mainAction(activeSegment, tokenHeader));
 	await dispatch(new actions.recomendationAction(activeSegment, tokenHeader));
+	Home.trackImpresionHandler(mainPageData);
 };
 
 

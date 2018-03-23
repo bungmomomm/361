@@ -31,6 +31,9 @@ const actions = createActions({
 	USER_VALIDATE_OVO: undefined,
 	USER_VALIDATE_OVO_FAIL: (error) => ({ validateOvo: { error } }),
 	USER_VALIDATE_OVO_SUCCESS: (message) => ({ validateOvo: { message } }),
+	USER_LOGOUT: undefined,
+	USER_LOGOUT_FAIL: (error) => ({ logout: { error } }),
+	USER_LOGOUT_SUCCESS: (message) => ({ logout: { message } }),
 	USER_FORGET_PASSWORD: undefined,
 	USER_FORGET_PASSWORD_FAIL: (error) => ({ forgot: { error } }),
 	USER_FORGET_PASSOWRD_SUCCESS: (message) => ({ forget: { message } }),
@@ -50,7 +53,8 @@ const actions = createActions({
 	USER_CHECK_MY_ORDERS: undefined,
 	USER_KEEP_REVIEW_INFO: undefined,
 	USER_AFTER_LOGIN: (state, action, param) => ({ state, action, param }),
-	USER_AFTER_LOGIN_CLEAR: undefined
+	USER_AFTER_LOGIN_CLEAR: undefined,
+	USER_BANK_LIST: (userBankList) => ({ userBankList })
 });
 
 const initialState = {
@@ -66,6 +70,7 @@ const initialState = {
 	myOrdersCurrent: 'konfirmasi',
 	myOrdersDetail: null,
 	creditCard: {},
+	bankList: {},
 	trackingInfo: null,
 	isNoOrders: null,
 	reviewInfo: null,
@@ -113,6 +118,14 @@ const reducer = handleActions({
 			},
 		};
 	},
+	[actions.userBankList]: (state, action) => {
+		return {
+			...state,
+			bankList: {
+				...action.payload.userBankList
+			},
+		};
+	},
 	[actions.userSocialLogin]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
 	[actions.userRegister]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
 	[actions.userRegisterFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
@@ -142,6 +155,9 @@ const reducer = handleActions({
 	[actions.userValidateOvo]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
 	[actions.userValidateOvoFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
 	[actions.userValidateOvoSuccess]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
+	[actions.userLogout]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
+	[actions.userLogoutFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
+	[actions.userLogoutSuccess]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
 	[actions.userForgotPassword]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
 	[actions.userForgotPasswordFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
 	[actions.userForgotPasswordSuccess]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),

@@ -36,7 +36,7 @@ const productDetailAction = (token, productId) => async (dispatch, getState) => 
 	dispatch(productDetail({ detail: product.detail }));
 	dispatch(productLoading({ loading: false }));
 
-	return Promise.resolve(response);
+	return Promise.resolve(product);
 };
 
 const productStoreAction = (token, storeId, page = 1, perPage = 4) => async (dispatch, getState) => {
@@ -72,8 +72,8 @@ const productStoreAction = (token, storeId, page = 1, perPage = 4) => async (dis
 
 /**
  * Gets product reviews summary
- * @param {*} token 
- * @param {*} productId 
+ * @param {*} token
+ * @param {*} productId
  */
 const productSocialSummaryAction = (token, productId) => async (dispatch, getState) => {
 	const { shared } = getState();
@@ -135,8 +135,8 @@ const allProductReviewsAction = (token, productId, page = 1, perPage = 10) => as
 
 /**
  * Gets promo meta_data, similar items, recommended items and best seller items
- * @param {*} token 
- * @param {*} productId 
+ * @param {*} token
+ * @param {*} productId
  */
 const productPromoAction = (token, productId) => async (dispatch, getState) => {
 	const { shared } = getState();
@@ -160,7 +160,17 @@ const productPromoAction = (token, productId) => async (dispatch, getState) => {
 		return Promise.reject(err);
 	}
 
+	// mapping meta data
 	const promo = response.data.data;
+	const metaData = {
+		ovo_info: '',
+		ovo_reward: 0
+	};
+
+	if (_.isEmpty(promo.meta_data) || _.isNull(promo.meta_data)) {
+		promo.meta_data = metaData;
+	}
+
 	dispatch(productPromotion({ promo }));
 	dispatch(productLoading({ loading: false }));
 
@@ -168,7 +178,7 @@ const productPromoAction = (token, productId) => async (dispatch, getState) => {
 };
 
 /**
- * @param {*} details 
+ * @param {*} details
  */
 const getProductCardData = (details) => {
 	if (!_.isEmpty(details)) {

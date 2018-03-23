@@ -15,17 +15,14 @@ class Address extends Component {
 	state = {
 		allowSubmit: false,
 		showSelect: {
-			province: false,
 			city: false,
 			district: false
 		},
 		disabled: {
-			province: false,
 			city: false,
 			district: false
 		},
 		selected: {
-			province: '',
 			city: '',
 			district: ''
 		},
@@ -39,32 +36,25 @@ class Address extends Component {
 		if (this.props.address.edit !== nextProps.address.edit) {
 			(async () => {
 				const { dispatch, cookies, address, address: { edit } } = nextProps;
-				const selected = { };
+				const selected = { city: [], district: [] };
 
-				selected.province = address.data.provinces.filter((obj) => {
-					return obj.name === edit.province;
-				});
+				const cities = await to(dispatch(actions.getCity(cookies.get('user.token'), { q: `${edit.city.split(' ').pop().replace(/[,.]/i, '')}` })));
+				selected.city = cities[1] ? cities[1].data.data.cities.filter((obj) => {
+					return obj.name === `${edit.city}, ${edit.province}`;
+				}) : [];
 
-				if (selected.province.length) {
-					const cities = await dispatch(actions.getCity(cookies.get('user.token'), { province_id: selected.province[0].id }));
-					selected.city = cities.data.data.cities.filter((obj) => {
-						return obj.name === edit.city;
-					});
-
-					if (selected.city.length) {
-						const districts = await dispatch(actions.getDistrict(cookies.get('user.token'), { city_id: selected.city[0].id }));
-						selected.district = districts.data.data.districts.filter((obj) => {
-							return obj.name === edit.district;
-						});
-					}
+				if (selected.city.length) {
+					const districts = await to(dispatch(actions.getDistrict(cookies.get('user.token'), { city_id: selected.city[0].city_id })));
+					selected.district = districts[1] ? districts[1].data.data.districts.filter((obj) => {
+						return obj.name === edit.district;
+					}) : [];
 				}
 
 				this.setState({
 					...this.state,
 					edit: address.edit,
 					selected: {
-						province: selected.province.length ? selected.province[0].id : '',
-						city: selected.city.length ? selected.city[0].id : '',
+						city: selected.city.length ? `${selected.city[0].province_id}_${selected.city[0].city_id}` : '',
 						district: selected.district.length ? selected.district[0].id : '',
 					},
 					default: edit.fg_default
@@ -79,7 +69,7 @@ class Address extends Component {
 		dispatch(actions.mutateState({ edit: {} }));
 	}
 
-	onSelectChange = (v, which = 'province') => {
+	onSelectChange = (v, which = 'city') => {
 		this.setState({
 			selected: {
 				...this.state.selected,
@@ -87,40 +77,7 @@ class Address extends Component {
 			}
 		});
 
-		if (which === 'province') {
-			this.setState({
-				disabled: {
-					...this.state.disabled,
-					city: true,
-					district: true
-				},
-				selected: {
-					...this.state.selected,
-					city: '',
-					district: ''
-				}
-			});
-
-			if (v) {
-				(async () => {
-					const { dispatch, cookies } = this.props;
-					const [err, resp] = await to(dispatch(actions.getCity(cookies.get('user.token'), { province_id: v })));
-
-					if (err) {
-						return Promise.reject(err);
-					}
-
-					this.setState({
-						disabled: {
-							...this.state.disabled,
-							city: false
-						}
-					});
-
-					return Promise.resolve(resp);
-				})();
-			}
-		} else if (which === 'city') {
+		if (which === 'city') {
 			this.setState({
 				disabled: {
 					...this.state.disabled,
@@ -135,11 +92,7 @@ class Address extends Component {
 			if (v) {
 				(async () => {
 					const { dispatch, cookies } = this.props;
-					const [err, resp] = await to(dispatch(actions.getDistrict(cookies.get('user.token'), { offset: 30 })));
-
-					if (err) {
-						return Promise.reject(err);
-					}
+					const resp = await to(dispatch(actions.getDistrict(cookies.get('user.token'), { city_id: v.split('_')[1] })));
 
 					this.setState({
 						disabled: {
@@ -148,7 +101,7 @@ class Address extends Component {
 						}
 					});
 
-					return Promise.resolve(resp);
+					return Promise.resolve(resp[1]);
 				})();
 			}
 		}
@@ -167,7 +120,14 @@ class Address extends Component {
 		this.formsy.submit();
 	};
 
-	toggleShow = (which = 'province') => {
+	onCitySearch = (el) => {
+		const { cookies, dispatch } = this.props;
+		if (el.target.value.length > 2) {
+			dispatch(actions.getCity(cookies.get('user.token'), { q: el.target.value }));
+		}
+	};
+
+	toggleShow = (which = 'city') => {
 		this.setState({
 			showSelect: {
 				...this.state.showSelect,
@@ -189,8 +149,13 @@ class Address extends Component {
 	};
 
 	submit = async (model) => {
+		const { city_id } = model;
+		const splitr = city_id.split('-');
+
 		model = {
 			...model,
+			province_id: splitr[0],
+			city_id: splitr[1],
 			type: this.state.type,
 			country_id: 1,
 			is_supported_pin_point: 0,
@@ -209,14 +174,10 @@ class Address extends Component {
 
 	renderData = () => {
 		const { address } = this.props;
-		const provinces = address.options.provinces;
 		const cities = address.options.cities;
 		const districts = address.options.districts;
 
 		const selected = {
-			province: provinces.filter((obj) => {
-				return obj.value === this.state.selected.province;
-			}),
 			city: cities.filter((obj) => {
 				return obj.value === this.state.selected.city;
 			}),
@@ -317,53 +278,11 @@ class Address extends Component {
 					</div>
 
 					<div className='margin--medium'>
-						<label className={styles.label} htmlFor='province'>Provinsi</label>
+						<label className={styles.label} htmlFor='city'>Kota, Provinsi *</label>
 						<Level
 							className='flex-row border-bottom'
 							onClick={
-								(this.state.disabled.province || this.state.submitting) ? false : () => this.toggleShow()
-							}
-						>
-							<Level.Left>
-								<Button className='flex-center' disabled={(this.state.disabled.province || this.state.submitting)}>
-									<span style={{ marginRight: '10px' }}>
-										{selected.province.length ? selected.province[0].label : '- Select Province -'}
-									</span>
-								</Button>
-							</Level.Left>
-							<Level.Right>
-								<Svg src='ico_chevron-down.svg' />
-							</Level.Right>
-						</Level>
-						<Select
-							horizontal
-							show={this.state.showSelect.province}
-							label='Kota, Provinsi *'
-							name='province'
-							options={provinces}
-							onChange={this.onSelectChange}
-							onClose={() => this.toggleShow()}
-							defaultValue={selected.province.length ? selected.province[0].value : ''}
-						/>
-						<Input
-							id='province_id'
-							name='province_id'
-							type='hidden'
-							validations={{
-								matchRegexp: /^[1-9][0-9]*$/
-							}}
-							validationError='This field is required'
-							value={this.state.selected.province}
-							required
-						/>
-					</div>
-
-					<div className='margin--medium'>
-						<label className={styles.label} htmlFor='city'>Kota, Kabupaten</label>
-						<Level
-							className='flex-row border-bottom'
-							onClick={
-								(this.state.disabled.city || this.state.submitting) ? false : () => this.toggleShow('city')
+								(this.state.disabled.city || this.state.submitting) ? false : () => this.toggleShow()
 							}
 						>
 							<Level.Left>
@@ -380,11 +299,13 @@ class Address extends Component {
 						<Select
 							horizontal
 							show={this.state.showSelect.city}
-							label='Kota, Kabupaten *'
+							label='Kota, Provinsi *'
 							name='city'
 							options={cities}
-							onChange={(v) => this.onSelectChange(v, 'city')}
-							onClose={() => this.toggleShow('city')}
+							search
+							onSearch={this.onCitySearch}
+							onChange={this.onSelectChange}
+							onClose={() => this.toggleShow()}
 							defaultValue={selected.city.length ? selected.city[0].value : ''}
 						/>
 						<Input
@@ -392,7 +313,7 @@ class Address extends Component {
 							name='city_id'
 							type='hidden'
 							validations={{
-								matchRegexp: /^[1-9][0-9]*$/
+								matchRegexp: /^[1-9][0-9]*_[1-9][0-9]*$/
 							}}
 							validationError='This field is required'
 							value={this.state.selected.city}
@@ -516,7 +437,6 @@ const doAfterAnonymous = async (props) => {
 		history.push('/login');
 	}
 
-	await dispatch(actions.getProvinces(cookies.get('user.token')));
 	const address = await dispatch(actions.getAddress(cookies.get('user.token')));
 	const shipping = _.chain(address).get('data.data.shipping').value();
 

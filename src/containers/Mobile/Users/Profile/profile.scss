@@ -26,8 +26,8 @@
   border-radius: 50%;
   width: 60px;
   height: 60px;
-  font-family: font-family('Lato-Bold');
-  font-size: 32px;
+  font-family: font-family('Lato');
+  font-size: 25px;
   text-transform: uppercase;
   overflow: hidden;
 }
@@ -49,7 +49,7 @@
 .big {
   width: 80px;
   height: 80px;
-  font-size: 44px;
+  font-size: 32px;
 }
 .editPP {
   position: absolute;
@@ -72,6 +72,39 @@
   align-items: center;
   background: #ECECEC;
 }
+
+// Order Menu List
+
+.orderMenu {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.10);
+
+  .orderStatus {
+    padding-top: 8px;
+    margin-top: 8px;
+    border-top: 1px solid #D8D8D8;
+  }
+}
+
+.orderMenuList {
+  border-bottom: none !important;
+}
+
+.orderStatus {
+  padding-top: 8px;
+  border-top: 1px solid #e8e8e8;
+
+  font-weight: 600;
+}
+
+.orderStatusProcess {color: #F57C00;}
+.orderStatusSuccess {color: #3FD0BB;}
+.orderStatusCancel {color: #EB0029;}
+
 .orderList {
   > li {
 	margin-bottom: 15px;
@@ -79,6 +112,14 @@
 	  margin-bottom: 0;
 	}
   }
+}
+
+.red{
+
+}
+
+.green{
+
 }
 
 .orderPaymentList {
@@ -98,4 +139,19 @@
   flex-flow: row wrap;
   justify-content: space-between;
   margin-bottom: 15px;
+}
+
+.profileBackground{
+	position: fixed;
+	background: #F5F5F5;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	max-width: 480px;
+}
+
+.saveButton {
+  margin-top: 2px;
+  font-family: lato-bold;
+  font-size: 12px;
 }

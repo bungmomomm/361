@@ -38,7 +38,14 @@ const initialState = {
 		}
 
 	},
-	store: {},
+	store: {
+		info: {
+			product_count: 0,
+			title: '',
+			web_url: ''
+		},
+		products: []
+	},
 	allReviews: {
 		info: {},
 		items: []

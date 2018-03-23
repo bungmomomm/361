@@ -3,7 +3,9 @@ import classNames from 'classnames';
 import Image from '../Image';
 import Level from '../Level';
 import Rating from '../Rating';
+import Badge from '../Badge';
 import styles from './comment.scss';
+import { trimString } from '@/utils';
 
 class Comment extends Component {
 
@@ -32,14 +34,27 @@ class Comment extends Component {
 							<Image height={30} width={30} avatar src={customer.customer_avatar} />
 						</Level.Left>
 						<Level.Item>
-							<div className='padding--medium-h'>{customer.customer_name}</div>
+							<div
+								className='padding--medium-h font--lato-bold'
+								style={{ paddingTop: '5px' }}
+							>
+								{trimString(customer.customer_name, 20)}
+							</div>
 						</Level.Item>
 						<Level.Right>
-							<div className='margin--small-v font-small font-color--primary-ext-2'>{comment.created_time}</div>
+							<div
+								className='margin--small-v font-small font-color--primary-ext-2'
+								style={{ fontStyle: 'italic' }}
+							>
+								{comment.created_time}
+							</div>
 						</Level.Right>
 					</Level>
-					<div className='padding--normal-h' style={{ marginLeft: '45px' }}>
-						<div>{comment.comment}</div>
+					<div
+						className='padding--normal-h'
+						style={{ marginLeft: '45px' }}
+					>
+						<div style={{ borderBottom: '1px solid #D8D8D8', paddingBottom: '15px' }}>{comment.comment}</div>
 					</div>
 				</div>
 			))
@@ -59,10 +74,11 @@ class Comment extends Component {
 					<div className={createClassName} >
 						<Level style={{ paddingBottom: '5px' }} className='flex-center'>
 							<Level.Left>
-								<Image height={30} width={30} avatar src={sellerData.seller_logo} />
+								<Image avatar width={30} height={30} src={sellerData.seller_logo} />
+								<Badge attached position='bottom-right'><Image src={sellerData.seller_badge_image} width={12} /></Badge>
 							</Level.Left>
 							<Level.Item>
-								<div className='padding--medium-h font--lato-bold'>{sellerData.seller}</div>
+								<div className='padding--medium-h font--lato-bold flex-row'>{sellerData.seller}<span className={styles.sellerBadge}>Penjual</span></div>
 							</Level.Item>
 						</Level>
 						<div className='padding--normal-h border-bottom padding--small-b' style={{ marginLeft: '45px' }}>
@@ -90,7 +106,7 @@ class Comment extends Component {
 							<Rating active={data.review.rating} total={5} />
 						</Level.Right>
 					</Level>
-					<div className='padding--normal-h border-bottom padding--small-b' style={{ marginLeft: '45px' }}>
+					<div className='padding--normal-h padding--small-b' style={{ marginLeft: '45px' }}>
 						<div>{data.review.review}</div>
 						<div className='margin--small-v font-small font-color--primary-ext-2'>Post updated: {data.review.created_time}</div>
 					</div>

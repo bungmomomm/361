@@ -11,7 +11,9 @@ import {
 	Page,
 	List,
 	Navigation,
-	Level
+	Level,
+	Spinner,
+	SEO
 } from '@/components/mobile';
 import C from '@/constants';
 import styles from './brands.scss';
@@ -46,6 +48,12 @@ class Brands extends Component {
 			dispatch(new actions.brandListAction(this.userCookies, category.activeSegment.id));
 		}
 	}
+
+	componentWillUnmount() {
+		const { dispatch } = this.props;
+		dispatch(actions.brandProductCleanUp());
+	}
+
 
 	onFilter(keyword) {
 		let filteredBrand = [];
@@ -181,11 +189,14 @@ class Brands extends Component {
 			center: 'Brands',
 			right: null
 		};
-		const { shared, dispatch } = this.props;
+		const { shared, dispatch, brands } = this.props;
 
 		return (
 			<div style={this.props.style}>
 				<Page color='white'>
+					<SEO 
+						paramCanonical={process.env.MOBILE_UR}
+					/>
 					{
 						<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />
 					}
@@ -210,6 +221,7 @@ class Brands extends Component {
 								</Level.Right>
 							}
 						</Level>
+						{ !brands.brand_list && (<div style={{ paddingTop: '20px' }}> <Spinner /></div>)}
 						{ this.renderFilterAlphabets() }
 					</div>
 					{ this.renderBrandBySearch() }

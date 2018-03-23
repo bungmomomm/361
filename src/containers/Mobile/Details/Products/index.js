@@ -18,18 +18,70 @@ import styles from './products.scss';
 import SellerProfile from '../../Discovery/Seller/components/SellerProfile';
 import { Promise } from 'es6-promise';
 import classNames from 'classnames';
+import {
+	TrackingRequest,
+	pdpViewBuilder,
+	addToCartBuilder,
+	sendGtm,
+} from '@/utils/tracking';
+
+const trackAddToCart = (data, props, variant) => {
+	const products = {
+		name: data.detail.title,
+		id: data.detail.id,
+		price: data.detail.price_range.effective_price,
+		brand: data.detail.brand.name,
+		category: data.detail.product_category_names.join('/'),
+		variant: variant.options[0].value,
+		variant_id: variant.id,
+		quantity: 1
+	};
+	const request = new TrackingRequest();
+	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
+	request.setFusionSessionId('').setIpAddress('').setProducts([products]);
+	const requestPayload = request.getPayload(addToCartBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
+
+const trackPdpView = (data, props) => {
+	const products = {
+		name: data.detail.title,
+		id: data.detail.id,
+		price: data.detail.price_range.effective_price,
+		brand: data.detail.brand.name,
+		category: data.detail.product_category_names.join('/'),
+	};
+	const request = new TrackingRequest();
+	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
+	request.setFusionSessionId('').setIpAddress('').setProducts([products]);
+	request.setStoreName(data.detail.seller.seller);
+	const requestPayload = request.getPayload(pdpViewBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
+
+import Discovery from '@/containers/Mobile/Discovery/Utils';
 
 const doAfterAnonymous = async (props) => {
 	const { dispatch, match, cookies } = props;
-
 	const productId = _.toInteger(match.params.id);
 	const token = cookies.get('user.token');
 
-	dispatch(new productActions.productDetailAction(token, productId));
-	dispatch(new productActions.productPromoAction(token, productId));
-	dispatch(new productActions.productSocialSummaryAction(token, productId));
-	dispatch(new lovelistActions.bulkieCountByProduct(token, productId));
+	const productDetail = await dispatch(productActions.productDetailAction(token, productId));
+	trackPdpView(productDetail, props);
 
+	const res = await dispatch(productActions.productPromoAction(token, productId));
+	if (res.status === 200 && res.statusText === 'OK') {
+		const ids = [productId];
+		const { recommended_items, similar_items, best_seller_items } = res.data.data;
+		recommended_items.products.forEach((item) => ids.push(item.product_id));
+		if (!_.isEmpty(similar_items.products)) {
+			similar_items.products.forEach((item) => ids.push(item.product_id));
+		} else if (_.isEmpty(similar_items.products) && !_.isEmpty(best_seller_items.products)) {
+			best_seller_items.products.forEach((item) => ids.push(item.product_id));
+		}
+		await dispatch(lovelistActions.bulkieCountByProduct(token, ids));
+	}
+	await dispatch(productActions.productSocialSummaryAction(token, productId));
 };
 
 class Products extends Component {
@@ -52,6 +104,7 @@ class Products extends Component {
 		this.handleCloseModalPopUp = this.handleCloseModalPopUp.bind(this);
 		this.handleBtnBeliClicked = this.handleBtnBeliClicked.bind(this);
 		this.handleSelectVariant = this.handleSelectVariant.bind(this);
+		this.loginNow = this.loginNow.bind(this);
 		this.onOvoInfoClick = this.onOvoInfoClick.bind(this);
 		this.redirectToPage = this.redirectToPage.bind(this);
 		this.removeAddItem = this.removeAddItem.bind(this);
@@ -62,7 +115,6 @@ class Products extends Component {
 		this.state = {
 			size: '',
 			status: {
-				bulkieSet: false,
 				btnBeliDisabled: false,
 				forceLogin: false,
 				hasVariantSize: false,
@@ -115,7 +167,6 @@ class Products extends Component {
 
 		// sets card product
 		if ((!_.isEmpty(detail) && (this.props.product.detail !== detail)) || this.updateCard) {
-			console.log('updating data....');
 			this.updateCard = false;
 			cardProduct = productActions.getProductCardData(detail);
 			status.hasVariantSize = cardProduct.hasVariantSize;
@@ -141,7 +192,7 @@ class Products extends Component {
 			}
 
 			if (typeof detail.seller !== 'undefined' && typeof detail.seller.seller_id !== 'undefined') {
-				dispatch(new productActions.productStoreAction(this.userCookies, detail.seller.seller_id));
+				dispatch(productActions.productStoreAction(this.userCookies, detail.seller.seller_id));
 			}
 		}
 
@@ -172,6 +223,18 @@ class Products extends Component {
 				slideIndex: index || 0
 			}
 		});
+	}
+
+	productsMapper = (products = [], bulkies = []) => {
+		if (!_.isEmpty(products) && !_.isEmpty(bulkies)) {
+			products = products.map((product) => {
+				const productFound = lovelistActions.getBulkItem(bulkies, product.product_id);
+				product.lovelistStatus = 0;
+				if (productFound) product.lovelistStatus = productFound.status;
+				return product;
+			});
+		}
+		return products;
 	}
 
 	closeZoomImage(e) {
@@ -246,30 +309,33 @@ class Products extends Component {
 		this.setState({ status });
 	}
 
-	addToShoppingBag(variantId) {
+	addToShoppingBag(variant) {
 		const { status, notif } = this.state;
-		const { dispatch } = this.props;
+		const { dispatch, product } = this.props;
 
-		
 		status.showModalSelectSize = false;
 		notif.show = false;
 		this.setState({ status, notif });
 
 		const handler = new Promise((resolve, reject) => {
-			resolve(dispatch(shopBagActions.updateAction(this.userCookies, variantId, this.defaultCount, 'add')));
+			resolve(dispatch(shopBagActions.updateAction(this.userCookies, variant.id, this.defaultCount, 'add')));
 		});
 
 		handler.then((res) => {
 			// updates carts badge
-			dispatch(new sharedActions.totalCartAction(this.userCookies));
+			dispatch(sharedActions.totalCartAction(this.userCookies));
 			status.pendingAddProduct = false;
 			status.productAdded = true;
 			status.showModalSelectSize = false;
 			notif.show = true;
 			notif.content = 'Produk Berhasil ditambahkan';
 			this.setState({ status, notif });
+			status.pdpDataHasLoaded = false;
+			dispatch(productActions.productDetailAction(this.userCookies, product.detail.id));
+			trackAddToCart(product, this.props, variant);
+
 			// get product data
-			// dispatch(new productActions.productDetailAction(this.userCookies, product.detail.id));
+			// dispatch(productActions.productDetailAction(this.userCookies, product.detail.id));
 		}).catch((err) => {
 			status.showModalSelectSize = false;
 			this.setState({ status, notif });
@@ -292,7 +358,7 @@ class Products extends Component {
 			status.pendingAddProduct = true;
 			this.setState({ status });
 		} else {
-			this.addToShoppingBag(selectedVariant.id);
+			this.addToShoppingBag(selectedVariant);
 		}
 	}
 
@@ -303,10 +369,11 @@ class Products extends Component {
 	}
 
 	handleSelectVariant(size) {
-		if (!_.isUndefined(size) && size !== '') {
-			const { cardProduct } = this.state;
+		if (!_.isUndefined(size) && !_.isEmpty(size)) {
+			const { cardProduct, status } = this.state;
 			const selectedVariant = cardProduct.variantsData[size];
 			cardProduct.pricing = selectedVariant.pricing.formatted;
+
 			this.setState({
 				size,
 				selectedVariant,
@@ -314,29 +381,29 @@ class Products extends Component {
 			});
 
 			// Add product to cart cardProduct after product variant size selected
-			// if (status.pendingAddProduct) this.addToShoppingBag(selectedVariant.id);
+			if (status.pendingAddProduct) this.addToShoppingBag(selectedVariant);
 		}
 	}
-	
+
 	handleShowLessProductDescription() {
 		this.setState({
 			showFullProductDescription: false
 		});
 	}
-	
+
 	handleShowMoreProductDescription() {
 		this.setState({
 			showFullProductDescription: true
 		});
 	}
-	
+
 	loginLater() {
 		const { status } = this.state;
 		status.forceLogin = false;
 		this.setState({ status });
 	}
 
-	loginNow() {
+	loginNow(e) {
 		const { status } = this.state;
 		status.forceLogin = false;
 		this.setState({ status });
@@ -407,13 +474,16 @@ class Products extends Component {
 			this.setState({ status, cardProduct, notif });
 			throw err;
 		});
+
+		notif.show = false;
+		notif.content = '';
+		this.setState({ notif });
 	}
 
 	renderStoreProducts() {
 		const { products } = this.props.product.store;
 		const length = products.length;
 		const storeProductListContent = products.map((product, idx) => {
-			// console.log('rendering store product item: ', product);
 			if (idx === (length - 1)) {
 				return (
 					<div key={`storePNH-${idx}`} className='padding--small-h'>
@@ -500,7 +570,7 @@ class Products extends Component {
 							</div>
 						</div>
 						<div>
-							<Button color='secondary' disabled={status.btnBeliDisabled} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
+							<Button color='secondary' disabled={(status.btnBeliDisabled || status.loading)} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
 						</div>
 					</div>
 				</div>
@@ -513,24 +583,26 @@ class Products extends Component {
 		try {
 
 			const { match, product } = this.props;
-			const { detail, socialSummary, promo } = product;
+			const { detail, socialSummary, promo, loading, store } = product;
 			const { seller, comments, reviews } = socialSummary;
 			const { cardProduct, status, carousel, selectedVariant, showFullProductDescription } = this.state;
 			const { id } = detail;
-			
+
 			const buttonProductDescriptionAttribute = {
 				onClick: this.handleShowMoreProductDescription
 			};
-			
-			let fullProductDescriptionButtonText = 'More';
+
+			let fullProductDescriptionButtonText = 'more';
 			let classNameProductDescription = classNames('padding--medium-h', styles.textOnlyShowTwoLines);
-			
+
 			if (showFullProductDescription === true) {
 				classNameProductDescription = classNames('padding--medium-h');
 				buttonProductDescriptionAttribute.onClick = this.handleShowLessProductDescription;
 				fullProductDescriptionButtonText = 'Hide';
 			}
-			
+
+			// if (_.isEmpty(detail) || status.loading) return this.loadingContent;
+
 			if (status.isZoomed && _.has(detail, 'images')) {
 				return (
 					<div>
@@ -542,7 +614,6 @@ class Products extends Component {
 						>
 							{
 								detail.images.map((image, idx) => {
-									console.log('rendering zoom image item....');
 									return (
 										<div tabIndex='0' role='button' onClick={this.closeZoomImage} key={idx}>
 											<Image lazyload src={image.original} alt='product' />
@@ -555,12 +626,11 @@ class Products extends Component {
 				);
 			}
 
-			if (_.isEmpty(detail) || status.loading) return this.loadingContent;
-
 			return (
 				<div>
 					<Page color='white'>
 						<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
+							{((_.isEmpty(cardProduct) || !_.has(cardProduct, 'images')) && status.loading) && this.loadingContent}
 							{!_.isEmpty(cardProduct) && (
 								<div ref={(n) => { this.carouselEL = n; }}>
 									<Card.Product
@@ -569,12 +639,13 @@ class Products extends Component {
 										onImageItemClick={this.handleImageItemClick}
 										data={cardProduct || {}}
 										isLoved={status.isLoved}
-										disabledLovelist={false}
+										disabledLovelist={loading}
 										onBtnLovelistClick={this.handleLovelistClick}
 										onBtnCommentClick={this.redirectToPage}
 										onBtnBeliClick={this.handleBtnBeliClicked}
 										linkToPdpDisabled={this.linkToPdpDisabled}
 										totalComments={comments.total}
+										totalLovelist={cardProduct.totalLovelist}
 									/>
 								</div>
 							)}
@@ -661,14 +732,12 @@ class Products extends Component {
 
 							<div style={{ backgroundColor: '#F5F5F5' }}>
 								{/* ----------------------------	PRODUCT REVIEWS ---------------------------- */}
-								{!_.isEmpty(reviews.summary) &&
-									<ReviewSummary
-										productId={id}
-										reviews={reviews}
-										seller={seller}
-										onBtnSeeAllReviewClick={() => this.redirectToPage('reviews')}
-									/>
-								}
+								<ReviewSummary
+									productId={id}
+									reviews={reviews}
+									seller={seller}
+									onBtnSeeAllReviewClick={() => this.redirectToPage('reviews')}
+								/>
 
 								{/* MOVED TEMPORALLY ON NOTES ... */}
 								{/* ----------------------------	END OF REVIEW ---------------------------- */}
@@ -683,11 +752,12 @@ class Products extends Component {
 											isNewStore={seller.is_new_seller}
 											successOrder={(!_.isUndefined(seller.success_order.rate)) ? (seller.success_order.rate || 0) : 0}
 											rating={seller.rating}
-											totalProduct={(!_.isUndefined(seller.success_order.total)) ? (seller.success_order.total || 0) : 0}
+											totalProduct={(!_.isUndefined(store.info.product_count)) ? (store.info.product_count || 0) : 0}
 											name={detail.seller.seller}
 											location={detail.seller.seller_location}
 											description=''
 											storeAddress={urlBuilder.setId(detail.seller.seller_id).setName(detail.seller.seller).buildStore()}
+											badgeImage={seller.seller_badge_image}
 										/>
 										)
 									}
@@ -706,8 +776,10 @@ class Products extends Component {
 								<Promos
 									promo={promo}
 									loading={status.loading}
-									loginNow={() => this.loginNow()}
+									loginNow={this.handleLovelistClick}
+									productId={detail.id}
 								/>
+								{/* } */}
 
 							</div>
 						</div>
@@ -739,7 +811,15 @@ class Products extends Component {
 						<div className='padding--medium-v'>
 							<div className='padding--medium-h'><strong>PILIH UKURAN</strong></div>
 							<div className='horizontal-scroll padding--medium-h  margin--medium-r'>
-								<Level style={{ padding: '0px' }} className='margin--medium-v'>
+								<Radio
+									name='size'
+									checked={this.state.size}
+									variant='rounded'
+									className='margin--small-v'
+									onChange={this.handleSelectVariant}
+									data={cardProduct.variants}
+								/>
+								{/* <Level style={{ padding: '0px' }} className='margin--medium-v'>
 									<Level.Left />
 									<Level.Item>
 										<Radio
@@ -754,7 +834,7 @@ class Products extends Component {
 									<Level.Right className='padding--small-v' >
 										<Button color='secondary' disabled={status.btnBeliDisabled || _.isEmpty(selectedVariant)} size='medium' onClick={this.handleBtnBeliClicked}>{this.state.btnBeliLabel}</Button>
 									</Level.Right>
-								</Level>
+								</Level> */}
 							</div>
 						</div>
 					</Modal>
@@ -787,7 +867,10 @@ class Products extends Component {
 								<Level style={{ padding: '0px' }} className='margin--medium-v'>
 									<Level.Left />
 									<Level.Item className='padding--medium-h'>
-										<center>{product.promo.meta_data.ovo_info}</center>
+										<center>
+											{(/^/.test(promo.meta_data.ovo_info)) && <div dangerouslySetInnerHTML={{ __html: promo.meta_data.ovo_info }} />}
+											{!(/^/.test(promo.meta_data.ovo_info)) && <div>{promo.meta_data.ovo_info}</div>}
+										</center>
 									</Level.Item>
 								</Level>
 							</div>
@@ -812,6 +895,12 @@ class Products extends Component {
 }
 
 const mapStateToProps = (state) => {
+	const { promo } = state.product;
+	const { recommended_items, similar_items, best_seller_items } = promo;
+	promo.recommended_items.products = Discovery.mapPromoProducts(recommended_items.products, state.lovelist);
+	promo.similar_items.products = Discovery.mapPromoProducts(similar_items.products, state.lovelist);
+	promo.best_seller_items.products = Discovery.mapPromoProducts(best_seller_items.products, state.lovelist);
+
 	return {
 		product: state.product,
 		shared: state.shared,

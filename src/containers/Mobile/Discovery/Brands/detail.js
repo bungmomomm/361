@@ -13,6 +13,7 @@ import _ from 'lodash';
 import { Filter, Sort } from '@/containers/Mobile/Widget';
 import { actions as brandAction } from '@/state/v4/Brand';
 import Shared from '@/containers/Mobile/Shared';
+import EmptyState from '@/containers/Mobile/Shared/emptyState';
 import queryString from 'query-string';
 import { renderIf, urlBuilder } from '@/utils';
 import Scroller from '@/containers/Mobile/Shared/scroller';
@@ -25,8 +26,56 @@ import Discovery from '../Utils';
 import {
 	CatalogView,
 	GridView,
-	SmallGridView
+	SmallGridView,
 } from '@/containers/Mobile/Discovery/View';
+
+import {
+	TrackingRequest,
+	sendGtm,
+	categoryViewBuilder,
+	productClickBuilder
+} from '@/utils/tracking';
+
+const trackBrandPageView = (products, info, props) => {
+	const productId = _.map(products, 'product_id') || [];
+	const brandInfo = {
+		id: props.match.params.brandId,
+		name: info.title,
+		url_path: props.location.pathname
+	};
+	const impressions = _.map(products, (product, key) => {
+		return {
+			name: product.product_title,
+			id: product.product_id,
+			price: product.pricing.original.effective_price,
+			brand: product.brand.name,
+			category: product.product_category_names.join('/'),
+			position: key + 1,
+			list: 'mm'
+		};
+	}) || [];
+	const request = new TrackingRequest();
+	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
+	request.setFusionSessionId('').setIpAddress('').setImpressions(impressions).setCategoryInfo(brandInfo);
+	request.setListProductId(productId.join('|'));
+	const requestPayload = request.getPayload(categoryViewBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
+
+const trackProductOnClick = (product, position, source = 'mm') => {
+	const productData = {
+		name: product.product_title,
+		id: product.product_id,
+		price: product.pricing.original.effective_price,
+		brand: product.brand.name,
+		category: product.product_category_names.join('/'),
+		position
+	};
+	const request = new TrackingRequest();
+	request.setFusionSessionId('').setProducts([productData]).setSourceName(source);
+	const requestPayload = request.getPayload(productClickBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
 
 class Detail extends Component {
 	static queryObject(props) {
@@ -80,9 +129,10 @@ class Detail extends Component {
 			lovelistProductId: null
 		};
 	}
-	componentDidMount() {
+	componentWillMount() {
+		window.scroll(0, 0);
 		if ('serviceUrl' in this.props.shared) {
-			const { dispatch, match: { params } } = this.props;
+			const { dispatch, match: { params }, cookies } = this.props;
 			const qs = queryString.parse(location.search);
 			const data = {
 				token: this.userToken,
@@ -91,8 +141,11 @@ class Detail extends Component {
 					...qs
 				}
 			};
+			this.setState({
+				query: data.query
+			});
 			dispatch(brandAction.brandProductAction(data));
-			dispatch(brandAction.brandBannerAction(this.userToken, this.props.match.params.brandId));
+			dispatch(brandAction.brandBannerAction(cookies.get('user.token'), this.props.match.params.brandId));
 		}
 	}
 
@@ -130,16 +183,22 @@ class Detail extends Component {
 		if (nextProps.brands.products_comments !== this.props.brands.products_comments) {
 			this.setState({ newComment: { product_id: '', comment: '' } });
 		}
+
+		if (nextProps.brands.searchData !== this.props.brands.searchData) {
+			const data = nextProps.brands.searchData;
+			trackBrandPageView(data.products, data.info, nextProps);
+		}
+
 		this.handleScroll();
 
 	}
 
-	async onApply(e, fq) {
+	async onApply(e, fq, closeFilter) {
 		const { query } = this.state;
 		query.fq = fq;
 		this.setState({
 			query,
-			showFilter: false
+			showFilter: !closeFilter
 		});
 		this.update({
 			fq
@@ -172,7 +231,7 @@ class Detail extends Component {
 			...parsedUrl,
 			...filters
 		});
-		
+
 		const data = {
 			token: cookies.get('user.token'),
 			query: {
@@ -244,43 +303,38 @@ class Detail extends Component {
 	}
 
 	renderFilter() {
-		const { isFiltered } = this.props;
-		const isProductSet = this.props.brands.searchData.products.length >= 1;
+		const { brands, isFiltered } = this.props;
 		const { showSort } = this.state;
 		const sorts = _.chain(this.props.brands).get('searchData.sorts').value() || [];
-		if (isProductSet) {
-			return (
-				<div className='padding--medium-t'>
-					<Tabs
-						type='segment'
-						variants={[
-							{
-								id: 'sort',
-								title: 'Urutkan',
-								disabled: !isProductSet
-							},
-							{
-								id: 'filter',
-								title: 'Filter',
-								disabled: !isProductSet,
-								checked: isFiltered
-							},
-							{
-								id: 'view',
-								title: <Svg src={this.state.listTypeState.icon} />,
-								disabled: !isProductSet
-							}
-						]}
-						onPick={e => this.handlePick(e)}
-					/>
-					{renderIf(sorts)(
-						<Sort onCloseOverlay={() => this.setState({ showSort: false })} shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
-					)}
-				</div>
-			);
-		}
-
-		return null;
+		return (
+			<div className='padding--medium-t'>
+				<Tabs
+					type='segment'
+					variants={[
+						{
+							id: 'sort',
+							title: 'Urutkan',
+							disabled: brands.loading_products
+						},
+						{
+							id: 'filter',
+							title: 'Filter',
+							disabled: brands.loading_products,
+							checked: isFiltered
+						},
+						{
+							id: 'view',
+							title: <Svg src={this.state.listTypeState.icon} />,
+							disabled: brands.loading_products
+						}
+					]}
+					onPick={e => this.handlePick(e)}
+				/>
+				{renderIf(sorts)(
+					<Sort onCloseOverlay={() => this.setState({ showSort: false })} shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+				)}
+			</div>
+		);
 	}
 
 	renderProduct() {
@@ -294,6 +348,7 @@ class Detail extends Component {
 				<GridView
 					loading={scroller.loading}
 					forceLoginNow={() => this.forceLoginNow()}
+					productOnClick={trackProductOnClick}
 					products={products}
 				/>
 			);
@@ -331,7 +386,7 @@ class Detail extends Component {
 				</span>
 			),
 
-			center: !this.state.styleHeader && 'Brand',
+			center: !this.state.styleHeader && _.chain(searchData).get('info.title').value(),
 			right: <Share title={title} url={url} />,
 			rows: !this.state.styleHeader && this.renderFilter()
 		};
@@ -340,13 +395,18 @@ class Detail extends Component {
 
 	renderTotalProduct() {
 		const productCount = this.props.brands.searchData.info && this.props.brands.searchData.info.product_count;
-		return productCount && (
-			<div className='margin--medium-v text-center'>{productCount} Total Produk</div>
-		);
+
+		if (productCount === 0) {
+			return <EmptyState />;
+		}
+
+		return productCount && (<div className='margin--medium-v text-center'>{productCount} Total Produk</div>);
 	}
 
 	render() {
 		const { showFilter } = this.state;
+
+		const activeNav = (window.prevLocation) ? (window.prevLocation.pathname === '/') ? 'Home' : 'Categories' : 'Categories';
 
 		return (
 			<div style={this.props.style}>
@@ -354,8 +414,8 @@ class Detail extends Component {
 					<Filter
 						shown={showFilter}
 						filters={this.props.brands.searchData}
-						onApply={(e, fq) => {
-							this.onApply(e, fq);
+						onApply={(e, fq, closeFilter) => {
+							this.onApply(e, fq, closeFilter);
 						}}
 						onClose={(e) => this.onClose(e)}
 					/>
@@ -369,7 +429,7 @@ class Detail extends Component {
 								</div>
 								{this.renderTotalProduct()}
 								{this.renderProduct()}
-								{this.props.scroller.loading && (<Spinner />)}
+								{this.props.scroller.loading && (<div style={{ paddingTop: '20px' }}> <Spinner /></div>)}
 							</div>
 						</div>
 						<Footer isShow={this.state.isFooterShow} />
@@ -378,7 +438,7 @@ class Detail extends Component {
 				{(!showFilter) && (
 					<div>
 						{this.renderHeader()}
-						<Navigation active='Categories' scroll={this.props.scroll} />
+						<Navigation active={activeNav} scroll={this.props.scroll} />
 					</div>
 				)}
 			</div>

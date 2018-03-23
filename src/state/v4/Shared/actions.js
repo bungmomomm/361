@@ -12,7 +12,8 @@ import {
 	rrsDismissSnack,
 	rrsShowSnack,
 	rrsClearSnackQueue,
-	connectionWatch
+	connectionWatch,
+	userPreviousPage
 } from './reducer';
 
 const closeFB = () => (dispatch, getState) => {
@@ -43,6 +44,7 @@ const totalCartAction = (token) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
+		console.log(err.response);
 		return Promise.reject(err);
 	}
 
@@ -118,6 +120,14 @@ const showSnack = (id, data = { label: '', timeout: 7000, button: {} }, style = 
 	dispatch(rrsShowSnack({ id, data, style }));
 };
 
+const logSinglePage = (pageName) => (dispatch) => {
+	dispatch(userPreviousPage(pageName));
+};
+
+const removeLogSinglePage = (pageName = '') => (dispatch) => {
+	dispatch(userPreviousPage(pageName));
+};
+
 export const dismissSnack = (id) => (dispatch) => {
 	dispatch(rrsDismissSnack({ id }));
 };
@@ -138,5 +148,7 @@ export default {
 	showSnack,
 	dismissSnack,
 	clearSnackQueue,
-	watchConnection
+	watchConnection,
+	logSinglePage,
+	removeLogSinglePage
 };

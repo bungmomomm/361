@@ -23,18 +23,6 @@ class Category extends PureComponent {
 		this.source = this.props.cookies.get('user.source');
 	}
 
-	componentWillMount() {
-		let selectedSegment = null;
-		if (this.props.home.segmen.length > 2) {
-			selectedSegment = this.props.home.segmen.find(e => e.key === this.props.shared.current);
-		} else {
-			selectedSegment = CONST.SEGMENT_INIT.find(e => e.key === this.props.shared.current);
-		}
-		this.setSegmentCategory(selectedSegment);
-
-		return true;
-	}
-
 	componentWillReceiveProps(nextProps) {
 		if (this.props.home.segmen !== nextProps.home.segmen) {
 			const selectedSegment = nextProps.home.segmen.find(e => e.key === nextProps.shared.current);
@@ -70,7 +58,7 @@ class Category extends PureComponent {
 				url = '/brands';
 				break;
 			case CONST.CATEGORY_TYPE.newarrival:
-				url = '/promo/new_arrival';
+				url = `/promo/new-arrival?segment_id=${this.props.category.activeSegment.id}`;
 				break;
 			case CONST.CATEGORY_TYPE.category:
 				url = '/sub-category/';
@@ -106,20 +94,34 @@ class Category extends PureComponent {
 						current={this.props.shared.current}
 						variants={this.props.home.segmen}
 						onPick={(e) => this.handlePick(e)}
+						type='minimal'
 					/>
 					<div>
 						{ category.loading ? loading : this.renderCategories() }
 					</div>
 				</Page>
 				<Header
-					lovelist={this.props.shared.totalLovelist} 
-					value={this.props.search.keyword} 
+					lovelist={this.props.shared.totalLovelist}
+					value={this.props.search.keyword}
 				/>
 				<Navigation active='Categories' scroll={this.props.scroll} />
 			</div>
 		);
 	}
 }
+
+const doAfterAnonymous = (props) => {
+	const { shared, dispatch, cookies, home } = props;
+
+	let selectedSegment = null;
+	if (home.segmen.length > 2) {
+		selectedSegment = home.segmen.find(e => e.key === shared.current);
+	} else {
+		selectedSegment = CONST.SEGMENT_INIT.find(e => e.key === shared.current);
+	}
+	dispatch(sharedActions.setCurrentSegment(selectedSegment.key));
+	dispatch(new categoryActions.getCategoryMenuAction(cookies.get('user.token'), selectedSegment));
+};
 
 const mapStateToProps = (state) => {
 	return {
@@ -130,4 +132,4 @@ const mapStateToProps = (state) => {
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(Category)));
+export default withCookies(connect(mapStateToProps)(Shared(Category, doAfterAnonymous)));

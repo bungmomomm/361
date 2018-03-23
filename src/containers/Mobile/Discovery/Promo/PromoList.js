@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
-// import to from 'await-to-js';
 import Iframe from 'react-iframe';
+
 import Shared from '@/containers/Mobile/Shared';
 import { Header, Page, Navigation } from '@/components/mobile';
 
@@ -15,7 +15,6 @@ class PromoList extends Component {
 				show: true
 			}
 		};
-		this.isLogin = this.props.cookies.get('isLogin');
 		this.state = {
 			content: ''
 		};
@@ -52,17 +51,4 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymous = (props) => {
-	// const { dispatch } = props;
-	// dispatch(actions.promoPageAction());
-};
-
-export default withCookies(
-	connect(mapStateToProps)(
-		Shared(
-			PromoList,
-			doAfterAnonymous
-		)
-	)
-);
-
+export default withCookies(connect(mapStateToProps)(Shared(PromoList)));

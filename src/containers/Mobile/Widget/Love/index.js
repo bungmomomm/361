@@ -9,10 +9,10 @@ import {
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
-import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as usersActions } from '@/state/v4/User';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { uniqid } from '@/utils';
+import to from 'await-to-js';
 
 class Love extends PureComponent {
 	constructor(props) {
@@ -20,18 +20,32 @@ class Love extends PureComponent {
 		this.props = props;
 		this.state = {
 			loading: false,
-			showModal: false
+			showModal: false,
+			status: props.status || -1
 		};
 	}
 
+	componentWillReceiveProps(nextProps) {
+		const { status } = this.state;
+		if (status === -1 && nextProps.status !== undefined) {
+			this.setState({
+				status: nextProps.status
+			});
+		}
+	}
+
 	async loveClicked(e) {
-		const { cookies, data, dispatch, onClick, status } = this.props;
-		const { loading } = this.state;
+		const { cookies, data, dispatch, onClick, inline } = this.props;
+		const { loading, status } = this.state;
 		let message = '';
 		if (cookies.get('isLogin') === 'false') {
-			this.setState({
-				showModal: true
-			});
+			if (inline) {
+				this.setState({
+					showModal: true
+				});
+			} else {
+				this.props.onNeedLogin();
+			}
 			return;
 		}
 		if (loading) {
@@ -40,18 +54,29 @@ class Love extends PureComponent {
 		this.setState({
 			loading: true
 		});
+		let response;
 		if (status === 1) {
 			message = 'Produk berhasil dihapus dari Lovelist';
-			await dispatch(lovelistActions.removeFromLovelist(cookies.get('user.token'), data));
+			response = await to(dispatch(lovelistActions.removeFromLovelist(cookies.get('user.token'), data)));
+			if (response[1]) {
+				this.setState({
+					status: 0
+				});
+			}
 		} else {
 			message = 'Produk berhasil disimpan ke Lovelist';
-			await dispatch(lovelistActions.addToLovelist(cookies.get('user.token'), data));
+			response = await to(dispatch(lovelistActions.addToLovelist(cookies.get('user.token'), data)));
+			if (response[1]) {
+				this.setState({
+					status: 1
+				});
+			}
 		}
-		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), [data]));
-		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), [data]));
+		
 		this.setState({
 			loading: false
 		});
+		
 		dispatch(sharedActions.showSnack(uniqid('err-'), {
 			label: message,
 			timeout: 3000
@@ -78,8 +103,8 @@ class Love extends PureComponent {
 	}
 
 	render() {
-		const { disabled, showNumber, status, total } = this.props;
-		const { loading, showModal } = this.state;
+		const { disabled, showNumber, total } = this.props;
+		const { loading, showModal, status } = this.state;
 		return (
 			<div>
 				<Button.Love
@@ -113,5 +138,9 @@ class Love extends PureComponent {
 		);
 	}
 }
+
+Love.defaultProps = {
+	inline: true
+};
 
 export default withCookies(connect()(Love));
