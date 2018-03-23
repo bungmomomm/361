@@ -39,7 +39,7 @@ class Users extends Component {
 		});
 		history.replace(`/${current}`);
 	}
-    
+
 	callbackRegisterComponent(value) {
 		this.setState({
 			callback: {
@@ -49,7 +49,7 @@ class Users extends Component {
 			}
 		});
 	};
-    
+
 	render() {
 		const { style, users, history } = this.props;
 		const { current, redirectUri } = this.state;
@@ -64,26 +64,23 @@ class Users extends Component {
 			center: _.capitalize(current),
 			right: null,
 			shadow: false,
-			rows: [
-				{
-					center: (
-						<Tabs
-							activeTab={current}
-							variants={[
-								{
-									title: 'Login',
-									id: 'login'
-								},
-								{
-									title: 'Daftar',
-									id: 'register'
-								}
-							]}
-							onPick={(e) => this.handlePick(e)}
-						/>
-					)
-				}
-			]
+			rows: (
+				<Tabs
+					type='borderedBottom'
+					activeTab={current}
+					variants={[
+						{
+							title: 'Login',
+							id: 'login'
+						},
+						{
+							title: 'Daftar',
+							id: 'register'
+						}
+					]}
+					onPick={(e) => this.handlePick(e)}
+				/>
+			)
 		};
 		if (current === 'login') {
 			layout = (
