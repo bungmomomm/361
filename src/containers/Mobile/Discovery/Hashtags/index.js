@@ -8,7 +8,7 @@ import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import Spinner from '@/components/mobile/Spinner';
 import Footer from '@/containers/Mobile/Shared/footer';
-// import styles from './Hashtags.scss';
+import styles from './Hashtags.scss';
 import _ from 'lodash';
 import currency from 'currency.js';
 
@@ -139,13 +139,13 @@ class Hashtags extends Component {
 		const isSticky = () => {
 			if (this.staticHashtag) {
 				const rect = this.staticHashtag.getBoundingClientRect();
-				// const threshold = 90;
-				return this.props.scroll.top > (rect.top + rect.height);
+				return this.props.scroll.top > (rect.top + rect.height + 90);
 			}
 			return false;
 		};
 
 		const HeaderPage = {
+			className: styles.hastagClass,
 			left: (
 				<button onClick={history.goBack}>
 					<Svg src={'ico_arrow-back-left.svg'} />
@@ -157,16 +157,16 @@ class Hashtags extends Component {
 					<Svg src={hashtag.viewMode === 3 ? 'ico_list.svg' : 'ico_grid-3x3.svg'} />
 				</Button>
 			),
-			rows: isSticky() ? [{ left: null, center: listHastags, right: null }] : null
+			rows: <div style={{ height: '40px', paddingTop: '5px' }} className={`${isSticky() ? 'd-block' : ''} bg--white d-none`}>{listHastags}</div>
 		};
 
 		return (
 			<div>
 				<Page color='white'>
-					<SEO 
+					<SEO
 						paramCanonical={process.env.MOBILE_UR}
 					/>
-					<div className='margin--medium-v text-center padding--large-h'>
+					<div style={{ marginTop: '-30px' }} className='margin--medium-v text-center padding--large-h'>
 						{hashtag.header.description}
 					</div>
 					<div ref={(n) => { this.staticHashtag = n; }}>

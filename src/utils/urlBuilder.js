@@ -11,6 +11,7 @@ const replace = (history, obj) => {
 class MMUrlBuilder {
 	id = '';
 	name = '';
+	catId = '';
 	domain = process.env.MOBILE_URL;
 	brand = '';
 
@@ -21,6 +22,11 @@ class MMUrlBuilder {
 
 	setName = (name) => {
 		this.name = MMUrlBuilder.formatedText(name);
+		return this;
+	}
+
+	setCategoryId = (id) => {
+		this.catId = id;
 		return this;
 	}
 
@@ -50,7 +56,7 @@ class MMUrlBuilder {
 	buildFeatureBrand = () => {
 		const temp = { ...this };
 		this.reset();
-		return `/p-${temp.id}/${temp.name}/${temp.brand}`;
+		return `/brand/${temp.id}/${temp.name}?category_id=${temp.catId}`;
 	}
 
 	// spec: https://[MM_HOSTNAME]/[NAME]-[ID].html

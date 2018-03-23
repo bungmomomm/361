@@ -96,7 +96,7 @@ class SubCategory extends PureComponent {
 					<List key={key}>
 						<Link
 							style={{ flexFlow: 'row nowrap' }}
-							to={urlBuilder.setId(brand.id).setBrand(brand.title).setName(categoryName).buildFeatureBrand()}
+							to={urlBuilder.setId(brand.id).setCategoryId(this.state.selectedCategory.id).setName(categoryName).buildFeatureBrand()}
 						>
 							<List.Image><Image width={40} height={40} avatar src={brand.image_url} /></List.Image>
 							<List.Content>{brand.title}</List.Content>

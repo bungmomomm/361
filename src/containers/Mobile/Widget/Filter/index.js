@@ -91,7 +91,7 @@ class Filter extends PureComponent {
 			layout: 'result'
 		});
 		const obj = utils.getFq(filters);
-		this.props.onApply(e, obj);
+		this.props.onApply(e, obj, true);
 	}
 
 	onReset(e) {
@@ -114,6 +114,7 @@ class Filter extends PureComponent {
 			case 'category':
 			case 'custom_category_ids':
 			case 'size':
+			case 'location':
 				facet.data = updateChilds(facet.data);
 				break;
 			default:
@@ -137,6 +138,10 @@ class Filter extends PureComponent {
 			selected,
 			resetCliked: true
 		});
+		if (this.props.autoUpdateFacets) {
+			const obj = utils.getFq(filters);
+			this.props.onApply(null, obj, false);
+		}
 		this.forceUpdate();
 	}
 
@@ -194,6 +199,10 @@ class Filter extends PureComponent {
 			layout: 'result',
 			resetCliked: false
 		});
+		if (this.props.autoUpdateFacets) {
+			const obj = utils.getFq(filters);
+			this.props.onApply(null, obj, false);
+		}
 	}
 
 	render() {
@@ -265,7 +274,8 @@ class Filter extends PureComponent {
 						{...state} 
 						title={data.title}
 						data={data.data} 
-						range={data.range} 
+						range={data.range}
+						selected={data.selected_range} 
 						onChange={(e, value) => this.onFilterSelected(e, 'pricerange', value)} 
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
 						onClose={(e) => this.onFilterSectionClose()}
@@ -340,5 +350,9 @@ class Filter extends PureComponent {
 }
 
 Filter.utils = utils;
+
+Filter.defaultProps = {
+	autoUpdateFacets: true
+};
 
 export default Filter;

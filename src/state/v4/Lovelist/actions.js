@@ -41,7 +41,8 @@ const formatItems = (data) => {
 				product_title: item.product_title,
 				totalLovelist: 0,
 				totalComments: 0,
-				original: item
+				original: item,
+				stock: (!_.isUndefined(item.stock) && item.stock >= 0) ? item.stock : 0
 			};
 		});	
 	}
