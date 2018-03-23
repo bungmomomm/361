@@ -44,6 +44,8 @@ import {
 	categoryViewBuilder,
 	productClickBuilder
 } from '@/utils/tracking';
+import classNames from 'classnames';
+import styles from './styles.scss';
 
 const trackSellerPageView = (products, info, props) => {
 	const productId = _.map(products, 'product_id') || [];
@@ -119,7 +121,12 @@ class Seller extends Component {
 			},
 			filterStyle: {},
 			centerStyle: { opacity: 0 },
-			headerNameY: false
+			headerNameY: false,
+			seeMore: {
+				bool: true,
+				text: '[...]',
+				show: false
+			},
 		};
 	}
 
@@ -136,7 +143,15 @@ class Seller extends Component {
 
 		if (nextProps.seller.data !== this.props.seller.data) {
 			const data = nextProps.seller.data;
-			trackSellerPageView(data.products, data.info, nextProps);
+			if (nextProps.seller.info.description.length > 110) {
+				this.setState({
+					seeMore: {
+						...this.state.seeMore,
+						show: true
+					}
+				});
+			}
+			trackSellerPageView(data.products, nextProps.seller.info, nextProps);
 		}
 	}
 
@@ -204,7 +219,7 @@ class Seller extends Component {
 		});
 	};
 
-	forceLoginNow() {
+	forceLoginNow = () => {
 		const { history } = this.props;
 		const currentUrl = encodeURIComponent(`${location.pathname}${location.search}`);
 		history.push(`/login?redirect_uri=${currentUrl}`);
@@ -307,8 +322,19 @@ class Seller extends Component {
 		);
 	}
 
+	toggleSeeMore = () => {
+		this.setState({
+			seeMore: {
+				bool: !this.state.seeMore.bool,
+				text: !this.state.seeMore.bool ? '[...]' : 'Hide'
+			}
+		});
+	};
+
 	sellerHeader = () => {
 		const { seller, location } = this.props;
+		const { seeMore } = this.state;
+
 		return (seller.info.seller && (
 			<div className='border-bottom'>
 				<div className='margin--medium-v'>
@@ -359,7 +385,16 @@ class Seller extends Component {
 					<div className='padding--medium-h margin--small-v'>
 						<div className='font-medium' ref={(el) => { this.headerName = el; }}>{seller.info.seller || ''}</div>
 						<div className='font-small flex-row flex-middle'><Svg src='ico_pinlocation-black.svg' /> <span>{seller.info.seller_location || ''}</span></div>
-						<div className='font-small'>{seller.info.description || ''}</div>
+						<div>
+							<div className={seeMore.bool && seeMore.show ? classNames('padding--medium-h', styles.textOnlyShowTwoLines) : 'padding--medium-h'}>{seller.info.description || ''}</div>
+							{seeMore.show && (
+								<span className='padding--medium-h'>
+									<button className='font-color--grey' onClick={this.toggleSeeMore}>
+										{seeMore.text}
+									</button>
+								</span>
+							)}
+						</div>
 					</div>
 				</div>
 			</div>
