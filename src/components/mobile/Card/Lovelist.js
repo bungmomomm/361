@@ -41,9 +41,10 @@ class Lovelist extends PureComponent {
 	render() {
 		const { className, type, data, isLoved, linkToPdp, linkToComments, lovelistDisabled } = this.props;
 		const createClassName = classNames(styles.container, styles[type], className);
+		const loveListEmpty = classNames(styles.lovelistEmpty, className);
 		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
 
-		const discountBadge = data.pricing.discount !== '0%' ? (
+		const discountBadge = (data.pricing.discount !== '0%' || _.toInteger(data.pricing.discount) !== 0) ? (
 			<div style={{ marginLeft: '1.5rem' }}>
 				<Badge rounded color='red'>
 					<span className='font--lato-bold'>{data.pricing.discount}</span>
@@ -64,15 +65,28 @@ class Lovelist extends PureComponent {
 
 		return (
 			<div className={createClassName} >
-				<Link to={linkToPdp}>
-					<Carousel wrapAround={this.slideWrapAround} >
-						{
-							data.images.map((image, index) => (
-								<Image key={index} src={image.thumbnail} lazyload alt={data.product_title} />
-							))
-						}
-					</Carousel>
-				</Link>
+				{data.stock === 0 && (
+					<Link to={linkToPdp} className={loveListEmpty}>
+						<Carousel wrapAround={this.slideWrapAround} >
+							{
+								data.images.map((image, index) => (
+									<Image key={index} src={image.thumbnail} lazyload alt={data.product_title} />
+								))
+							}
+						</Carousel>
+					</Link>
+				)}
+				{data.stock > 0 && (
+					<Link to={linkToPdp}>
+						<Carousel wrapAround={this.slideWrapAround} >
+							{
+								data.images.map((image, index) => (
+									<Image key={index} src={image.thumbnail} lazyload alt={data.product_title} />
+								))
+							}
+						</Carousel>
+					</Link>
+				)}
 				<Level
 					className={styles.action}
 					style={{ borderBottom: '1px solid #D8D8D8' }}

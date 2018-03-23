@@ -128,12 +128,12 @@ class Product extends Component {
 		dispatch(pcpActions.loadingAction(true));
 	}
 
-	async onApply(e, fq) {
+	async onApply(e, fq, closeFilter) {
 		const { query } = this.state;
 		query.fq = fq;
 		this.setState({
 			query,
-			showFilter: false
+			showFilter: !closeFilter
 		});
 		this.update({
 			fq
@@ -264,7 +264,7 @@ class Product extends Component {
 		if (productCategory.pcpStatus !== '') {
 			if (productCategory.pcpStatus === 'success') {
 				const products = productCategory.pcpData.products;
-				
+
 				let productsView;
 				if (!_.isEmpty(products)) {
 					const info = productCategory.pcpData.info;
@@ -322,7 +322,7 @@ class Product extends Component {
 
 				return (
 					<Page color='white'>
-						<SEO 
+						<SEO
 							paramCanonical={process.env.MOBILE_UR}
 						/>
 						{this.foreverBannerBlock()}
@@ -375,24 +375,24 @@ class Product extends Component {
 				<Filter
 					shown={showFilter}
 					filters={productCategory.pcpData}
-					onApply={(e, fq) => {
-						this.onApply(e, fq);
+					onApply={(e, fq, closeFilter) => {
+						this.onApply(e, fq, closeFilter);
 					}}
 					onClose={(e) => this.onClose(e)}
 				/>
 			);
 		}
-		
+
 		const navigationAttribute = {
 			scroll: this.props.scroll
 		};
-		
+
 		if (shared.userPreviousPage !== 'HOME') {
 			navigationAttribute.active = 'Categories';
 		} else {
 			navigationAttribute.active = 'Home';
 		}
-		
+
 		return (
 			<div style={this.props.style}>
 				{this.productsBlock()}

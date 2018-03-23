@@ -7,53 +7,24 @@ class Navigation extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
-			show: true,
-			scroll: {
-				top: 0,
-				docHeight: 0,
-				isNavSticky: false,
-				isNavExists: false
-			},
+			show: true
 		};
-		this.docBody = null;
 		this.currentScrollPos = 0;
 	}
-
-	componentDidMount() {
-		window.addEventListener('scroll', this.handleScroll, true);
-		this.docBody = document.body;
-	}
-
-	componentWillUnmount() {
-		window.removeEventListener('scroll', this.handleScroll, true);
-	}
-
-	handleScroll = (e) => {
-		if (e.target.tagName === 'BODY') {
-			const docHeight = this.docBody ? this.docBody.scrollHeight - window.innerHeight : 0;
-			this.setState({
-				scroll: {
-					top: e.target.scrollTop,
-					docHeight,
-					isNavSticky: ((oldPos = this.currentScrollPos) => {
-						if (!scroll) {
-							return false;
-						}
-						this.currentScrollPos = this.state.scroll.top;
-						return this.state.scroll.top > oldPos && this.state.scroll.top < this.state.scroll.docHeight;
-					})()
-				}
-			});
-		}
-	};
-
 	render() {
-		const { className, active, totalCartItems } = this.props;
-		const { scroll } = this.state;
+		const { className, active, scroll, totalCartItems } = this.props;
+
+		// const isSticky = (oldPos = this.currentScrollPos) => {
+		// 	if (!scroll) {
+		// 		return false;
+		// 	}
+		// 	this.currentScrollPos = scroll.top;
+		// 	return scroll.top > oldPos && scroll.top < scroll.docHeight;
+		// };
 
 		const createClassName = classNames(
 			styles.container,
-			scroll && scroll.isNavSticky ? styles.hide : '',
+			scroll.isNavSticky ? styles.hide : '',
 			className
 		);
 

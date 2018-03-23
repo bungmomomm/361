@@ -9,16 +9,18 @@ import styles from './card.scss';
 import { Link } from 'react-router-dom';
 
 class LovelistGrid extends PureComponent {
+	
 	render() {
 		const { className, data, isLoved, linkToPdp, lovelistDisabled } = this.props;
 		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
 		const createClassName = classNames(styles.container, styles.grid, className);
+		const loveListEmpty = classNames(styles.imgWrapper, styles.lovelistEmpty, className);
 
 		const basePrice = data.pricing.discount !== '' && data.pricing.discount !== '0%' ? (
 			<div className={styles.discount}>{data.pricing.formatted.base_price}</div>
 		) : '';
 
-		const discountBadge = data.pricing.discount !== '' && data.pricing.discount !== '0%' ? (
+		const discountBadge = ((Number(data.pricing.discount) !== 0 || data.pricing.discount !== '') || data.pricing.discount !== '0%') ? (
 			<Level.Right>
 				<Badge rounded color='red'>
 					<span className='font--lato-bold'>{data.pricing.discount}</span>
@@ -29,9 +31,16 @@ class LovelistGrid extends PureComponent {
 		return (
 			<div className={createClassName}>
 				<Link to={linkToPdp || '/'} className={styles.imgContainer}>
-					<div className={styles.imgWrapper}>
-						<Image lazyload src={data.images[0].thumbnail} alt={data.product_title} />
-					</div>
+					{(data.stock === 0) && 
+						<div className={loveListEmpty}>
+							<Image lazyload src={data.images[0].thumbnail} alt={data.product_title} />
+						</div>
+					}
+					{(data.stock > 0) && 
+						<div className={styles.imgWrapper}>
+							<Image lazyload src={data.images[0].thumbnail} alt={data.product_title} />
+						</div>
+					}
 				</Link>
 				<Level className={styles.action}>
 					<Level.Item>

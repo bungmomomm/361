@@ -149,37 +149,39 @@ class Home extends Component {
 		const { home } = this.props;
 		const segment = home.activeSegment;
 		const title = 'LIHAT SEMUA';
-		const datas = _.chain(home).get(`allSegmentData.${segment.key}`).get('recomendationData').get(type);
+		const recommendationData = _.chain(home).get(`allSegmentData.${segment.key}.recomendationData.${type}`);
+		if (recommendationData.value()) {
+			const data = recommendationData.value();
+			console.log(data);
+			if (data.data && data.data.length > 0) {
+				const link = `/promo/${type}?segment_id=${segment.id}`;
 
-		if (!datas.isEmpty().value()) {
-			const data = datas.value();
-			const link = `/promo/${type}?segment_id=${segment.id}`;
-
-			const header = renderSectionHeader(data.title, {
-				title,
-				url: link
-			});
-			return (
-				<div>
-					{ header }
-					<Grid split={3} bordered>
-						{
-							data.data.map(({ images, pricing, path }, e) => (
-								<div key={e}>
-									<Link to={`/${path}`}>
-										<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
-										<div className={styles.btnThumbnail}>
-											<Button transparent color='secondary' size='small'>
-												{pricing.formatted.effective_price}
-											</Button>
-										</div>
-									</Link>
-								</div>
-							))
-						}
-					</Grid>
-				</div>
-			);
+				const header = renderSectionHeader(data.title, {
+					title,
+					url: link
+				});
+				return (
+					<div>
+						{ header }
+						<Grid split={3} bordered>
+							{
+								data.data.map(({ images, pricing, path, product_id, product_title }, e) => (
+									<div key={e}>
+										<Link to={`/${urlBuilder.buildPdp(product_title, product_id)}`}>
+											<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
+											<div className={styles.btnThumbnail}>
+												<Button transparent color='secondary' size='small'>
+													{pricing.formatted.effective_price}
+												</Button>
+											</div>
+										</Link>
+									</div>
+								))
+							}
+						</Grid>
+					</div>
+				);
+			}
 		}
 		return null;
 	}
@@ -227,7 +229,7 @@ class Home extends Component {
 		const { home, dispatch } = this.props;
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}.squareBanner`);
-		if (!datas.isEmpty().value()) {
+		if (datas.value()) {
 			return (
 				<div className='margin--medium-v'>
 					{
@@ -259,7 +261,7 @@ class Home extends Component {
 		let bottomBanner = [];
 		const dataTop = _.chain(home).get(`allSegmentData.${segment}.topLanscape`);
 		const dataBottm = _.chain(home).get(`allSegmentData.${segment}.bottomLanscape`);
-		if (!dataTop.isEmpty().value() && !dataBottm.isEmpty().value()) {
+		if (dataTop.value() && dataBottm.value()) {
 			bottomBanner = position === 'top' ? dataTop.value() : dataBottm.value();
 		}
 		if (bottomBanner.length > 0) {
@@ -307,7 +309,8 @@ class Home extends Component {
 					<Grid split={3}>
 						{
 							featuredBrand.value().map((brand, e) => {
-								const url = urlBuilder.setId(brand.brand_id).setName(brand.brand_name).buildBrand();
+								const url = urlBuilder.setId(brand.brand_id).setName(brand.brand_name)
+									.setCategoryId(this.props.home.activeSegment.id).buildFeatureBrand();
 								return (
 									<div className={styles.brandsImage} key={e}>
 										<Link to={url} >
@@ -359,8 +362,8 @@ class Home extends Component {
 	render() {
 		const { shared, dispatch } = this.props;
 
-		const recommendation1 = this.isLogin === 'false' ? 'best-seller' : 'recommended-products';
-		const recommendation2 = this.isLogin === 'false' ? 'new-arrival' : 'recent-view';
+		const recommendation1 = this.isLogin === 'false' ? 'new-arrival' : 'recommended-products';
+		const recommendation2 = this.isLogin === 'false' ? 'best-seller' : 'recent-view';
 		return (
 			<div style={this.props.style}>
 				<Page color='white'>
