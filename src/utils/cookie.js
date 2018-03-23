@@ -1,4 +1,4 @@
-const setUserCookie = (cookies, token, isAnonymous = false) => {
+const setUserCookie = (cookies, token, isAnonymous = false, profile = undefined) => {
 	const currentDate = new Date();
 	const limitDate = isAnonymous ? 1 : (2 * 365);
 	currentDate.setDate(currentDate.getDate() + limitDate);
@@ -7,6 +7,10 @@ const setUserCookie = (cookies, token, isAnonymous = false) => {
 	cookies.set('user.token', token.token, { domain: process.env.SESSION_DOMAIN, path: '/', expires: currentDate });
 
 	cookies.set('isLogin', !isAnonymous, { domain: process.env.SESSION_DOMAIN, path: '/', expires: currentDate });
+	
+	if (profile !== undefined) {
+		cookies.set('user.profile', profile, { domain: process.env.SESSION_DOMAIN, path: '/', expires: currentDate });
+	}
 };
 
 const removeUserCookie = (cookies, token, isAnonymous = false) => {
@@ -14,6 +18,7 @@ const removeUserCookie = (cookies, token, isAnonymous = false) => {
 	cookies.remove('user.rf.token', { domain: process.env.SESSION_DOMAIN, path: '/' });
 	cookies.remove('user.token', { domain: process.env.SESSION_DOMAIN, path: '/' });
 	cookies.remove('isLogin', { domain: process.env.SESSION_DOMAIN, path: '/' });
+	cookies.remove('user.profile', { domain: process.env.SESSION_DOMAIN, path: '/' });
 };
 
 const setUniqeCookie = (cookies) => {
