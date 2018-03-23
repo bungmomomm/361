@@ -22,11 +22,14 @@
 	width: 100%;
 	justify-content: center;
 	background: #fff;
+	z-index: 2;
+	top: 0px;
 }
 
 .subHeader{
 	min-height: rem(40px);
 	justify-content: flex-end;
+	top: 59px;
 }
 
 .center{
