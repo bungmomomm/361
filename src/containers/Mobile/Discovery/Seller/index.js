@@ -53,13 +53,14 @@ const trackSellerPageView = (products, info, props) => {
 		name: info.title,
 		url_path: props.location.pathname
 	};
+
 	const impressions = _.map(products, (product, key) => {
 		return {
 			name: product.product_title,
 			id: product.product_id,
 			price: product.pricing.original.effective_price,
 			brand: product.brand.name,
-			category: product.product_category_names.join('/'),
+			category: product.product_category_names ? product.product_category_names.join('/') : '',
 			position: key + 1,
 			list: 'mm'
 		};
@@ -185,13 +186,13 @@ class Seller extends Component {
 		}
 	};
 
-	onApply = async (e, fq) => {
+	onApply = async (e, fq, closeFilter) => {
 		const { query } = this.state;
 		query.fq = fq;
 
 		this.setState({
 			query,
-			showFilter: false
+			showFilter: !closeFilter
 		});
 		this.update({
 			fq
@@ -271,7 +272,7 @@ class Seller extends Component {
 	};
 
 	filterTabs = () => {
-		const { seller, isFiltered } = this.props;
+		const { seller, scroller, isFiltered } = this.props;
 		const { listTypeState, showSort, filterStyle } = this.state;
 		const sorts = _.chain(seller).get('data.sorts').value() || [];
 
@@ -284,18 +285,18 @@ class Seller extends Component {
 						{
 							id: 'sort',
 							title: 'Urutkan',
-							disabled: _.isEmpty(seller.data.sorts)
+							disabled: scroller.loading
 						},
 						{
 							id: 'filter',
 							title: 'Filter',
-							disabled: _.isEmpty(seller.data.facets),
+							disabled: scroller.loading,
 							checked: isFiltered
 						},
 						{
 							id: 'view',
 							title: <Svg src={listTypeState.icon} />,
-							disabled: _.isEmpty(seller.data.products)
+							disabled: scroller.loading
 						}
 					]}
 					onPick={e => this.handlePick(e)}
@@ -458,15 +459,15 @@ class Seller extends Component {
 					<Filter
 						shown={showFilter}
 						filters={seller.data}
-						onApply={(e, fq) => {
-							this.onApply(e, fq);
+						onApply={(e, fq, closeFilter) => {
+							this.onApply(e, fq, closeFilter);
 						}}
 						onClose={(e) => this.onClose(e)}
 					/>
 				) : (
 					<div style={this.props.style}>
 						<Page color='white'>
-							<SEO 
+							<SEO
 								paramCanonical={process.env.MOBILE_UR}
 							/>
 							{this.sellerHeader()}
@@ -522,7 +523,6 @@ const doAfterAnonymous = async (props) => {
 
 	await dispatch(actions.initSeller(data.token, data.query.store_id));
 	const response = await to(dispatch(actions.getProducts(data)));
-
 	const productIdList = _.map(response[1].data.products, 'product_id') || [];
 	dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
 	dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));

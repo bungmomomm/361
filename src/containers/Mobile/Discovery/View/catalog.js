@@ -65,6 +65,7 @@ class CatalogView extends Component {
 			return this.loadingView;
 		}
 
+		const redirectUri = `?redirect_uri=product/comments/${product.product_id}`;
 
 		const commentProduct = product.comments || false;
 		return (
@@ -94,7 +95,7 @@ class CatalogView extends Component {
 											onChange={(e) => this.commentOnChange(e, product.product_id)}
 										/>)
 								: (
-									<span><Link to='/login'>Login / Register</Link> untuk memberikan komentar</span>
+									<span><Link to={`/login${redirectUri}`}>Login</Link> / <Link to={`/register${redirectUri}`}>Register</Link> untuk memberikan komentar</span>
 								)
 						}
 					</Level.Item>

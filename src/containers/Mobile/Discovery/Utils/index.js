@@ -25,6 +25,18 @@ const mapProducts = (products, comments, lovelists) => {
 	return products;
 };
 
+const mapPromoProducts = (products, lovelists) => {
+	products = _.map(products, (product) => {
+		const productFound = !_.isEmpty(lovelists.bulkieCountProducts) ? _.find(lovelists.bulkieCountProducts, { product_id: product.product_id }) : false;
+		product.lovelistStatus = 0;
+		if (productFound) product.lovelistStatus = productFound.status;
+		return product;
+	});
+
+	return products;
+};
+
 export default {
-	mapProducts
+	mapProducts,
+	mapPromoProducts
 };

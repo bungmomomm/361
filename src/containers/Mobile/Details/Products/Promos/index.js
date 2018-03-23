@@ -10,6 +10,8 @@ class Promos extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.isLogin = (typeof this.props.cookies.get('isLogin') === 'string' && this.props.cookies.get('isLogin') === 'true');
+		this.token = this.props.cookies.get('user.token');
 		this.loadingContent = (
 			<div style={{ margin: '20% auto 20% auto' }}>
 				<Spinner size='large' />
@@ -17,16 +19,17 @@ class Promos extends Component {
 		);
 	}
 
-	componentWillReceiveProps(nextProps) {}
 	shouldComponentUpdate(nextProps, nextState) {
-		return (this.props.promo.recommended_items !== nextProps.promo.recommended_items || 
-			this.props.promo.recommended_items !== nextProps.promo.similar || 
-			this.props.promo.recommended_items !== nextProps.promo.best_seller_items);
+		const { recommended_items, similar_items, best_seller_items } = nextProps.promo;
+		return (this.props.promo.recommended_items.products !== recommended_items.products && 
+			this.props.promo.similar_items.products !== similar_items.products && 
+			this.props.promo.best_seller_items !== best_seller_items.products);
 	}
 
 	getBuiltItems = (products) => {
 		let fragment = [];
 		const itemsList = [];
+		const productClicked = (e) => console.log('Ouch, don\'t do that!!!');
 
 		// builds items
 		products.forEach((item, idx) => {
@@ -39,11 +42,13 @@ class Promos extends Component {
 					discount: item.pricing.formatted.discount,
 					...item.pricing
 				},
+				productOnClick: productClicked,
 				linkToPdp: urlBuilder.buildPdp(item.product_title, item.product_id),
 				love: (
 					<Love
 						status={item.lovelistStatus}
 						data={item.product_id}
+						inline={false}
 						total={item.lovelistTotal}
 						onNeedLogin={this.props.loginNow}
 					/>

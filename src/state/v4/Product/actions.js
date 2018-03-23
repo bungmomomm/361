@@ -160,7 +160,17 @@ const productPromoAction = (token, productId) => async (dispatch, getState) => {
 		return Promise.reject(err);
 	}
 
+	// mapping meta data
 	const promo = response.data.data;
+	const metaData = {
+		ovo_info: '',
+		ovo_reward: 0
+	};
+
+	if (_.isEmpty(promo.meta_data) || _.isNull(promo.meta_data)) {
+		promo.meta_data = metaData;
+	}
+
 	dispatch(productPromotion({ promo }));
 	dispatch(productLoading({ loading: false }));
 
