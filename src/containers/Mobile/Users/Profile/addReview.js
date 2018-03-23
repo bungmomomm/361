@@ -133,7 +133,7 @@ class AddReview extends Component {
 									name='seller'
 									total='5'
 									onChange={(event) => {
-										const payloadUpdate = { ...this.state.payload, seller_rating: event.target.value };
+										const payloadUpdate = { ...this.state.payload, seller_rating: Number(event.target.value) };
 										this.setState({ ...this.state, payload: payloadUpdate });
 									}}
 								/>
@@ -156,7 +156,7 @@ class AddReview extends Component {
 								name='product'
 								total='5'
 								onChange={(event) => {
-									const payloadUpdate = { ...this.state.payload, product_rating: event.target.value };
+									const payloadUpdate = { ...this.state.payload, product_rating: Number(event.target.value) };
 									this.setState({ ...this.state, payload: payloadUpdate });
 								}}
 							/>
