@@ -347,7 +347,7 @@ class Product extends Component {
 	}
 
 	renderPage() {
-		const { productCategory, shared } = this.props;
+		const { productCategory, cookies } = this.props;
 		const { showFilter } = this.state;
 		if (showFilter) {
 			return (
@@ -366,10 +366,10 @@ class Product extends Component {
 			scroll: this.props.scroll
 		};
 		
-		if (shared.userPreviousPage !== 'HOME') {
-			navigationAttribute.active = 'Categories';
-		} else {
+		if (cookies.get('page.referrer') === 'HOME') {
 			navigationAttribute.active = 'Home';
+		} else {
+			navigationAttribute.active = 'Categories';
 		}
 		
 		return (

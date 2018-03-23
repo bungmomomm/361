@@ -203,7 +203,7 @@ class SearchResults extends Component {
 	}
 
 	renderPage() {
-		const { isLoading, searchResults, shared } = this.props;
+		const { isLoading, searchResults, cookies } = this.props;
 		const { showFilter } = this.state;
 
 		if (showFilter) {
@@ -223,7 +223,7 @@ class SearchResults extends Component {
 			scroll: this.props.scroll
 		};
 		
-		if (shared.userPreviousPage !== 'HOME') {
+		if (cookies.get('page.referrer') !== 'HOME') {
 			navigationAttribute.active = 'Categories';
 		}
 		

@@ -111,7 +111,7 @@ class Promo extends Component {
 	renderData(content) {
 
 		const { listTypeGrid } = this.state;
-		const { discovery } = this.props;
+		const { discovery, cookies } = this.props;
 		const info = _.chain(discovery).get(`promo.${this.promoType}`).value().info;
 		const headerLabel = info ? `${info.title} <br /> ${info.product_count} Total Produk` : '';
 		
@@ -131,7 +131,17 @@ class Promo extends Component {
 		};
 
 		const { shared, dispatch } = this.props;
-
+		
+		const navigationAttribute = {
+			scroll: this.props.scroll
+		};
+		
+		if (cookies.get('page.referrer') === 'CATEGORY') {
+			navigationAttribute.active = 'Categories';
+		} else {
+			navigationAttribute.active = 'Promo';
+		}
+		
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -142,7 +152,7 @@ class Promo extends Component {
 				<Header.Modal {...HeaderPage} />
 				{<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />}
 				
-				<Navigation active='Promo' scroll={this.props.scroll} />
+				<Navigation {...navigationAttribute} />
 			</div>
 		);
 	}

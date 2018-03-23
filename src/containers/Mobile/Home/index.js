@@ -112,7 +112,7 @@ class Home extends Component {
 	}
 
 	renderHeroBanner() {
-		const { home, dispatch } = this.props;
+		const { home, cookies } = this.props;
 		const segment = home.activeSegment.key;
 		const featuredBanner = _.chain(home).get(`allSegmentData.${segment}`).get('heroBanner');
 		if (!featuredBanner.isEmpty().value()) {
@@ -124,7 +124,7 @@ class Home extends Component {
 					to={link}
 					onClick={
 						() => {
-							dispatch(new sharedActions.logSinglePage('HOME'));
+							cookies.set('page.referrer', 'HOME', { path: '/' });
 						}
 					}
 				>
@@ -220,7 +220,7 @@ class Home extends Component {
 	}
 
 	renderSquareBanner() {
-		const { home, dispatch } = this.props;
+		const { home, cookies } = this.props;
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}.squareBanner`);
 		if (!datas.isEmpty().value()) {
@@ -233,7 +233,7 @@ class Home extends Component {
 								key={c}
 								onClick={
 									() => {
-										dispatch(new sharedActions.logSinglePage('HOME'));
+										cookies.set('page.referrer', 'HOME', { path: '/' });
 									}
 								}
 							>
@@ -250,7 +250,7 @@ class Home extends Component {
 	}
 
 	renderBottomBanner(position = 'top') {
-		const { home, dispatch } = this.props;
+		const { home, cookies } = this.props;
 		const segment = home.activeSegment.key;
 		let bottomBanner = [];
 		const dataTop = _.chain(home).get(`allSegmentData.${segment}.topLanscape`);
@@ -268,7 +268,7 @@ class Home extends Component {
 								key={d}
 								onClick={
 									() => {
-										dispatch(new sharedActions.logSinglePage('HOME'));
+										cookies.set('page.referrer', 'HOME', { path: '/' });
 									}
 								}
 							>
