@@ -379,7 +379,7 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = (props) => {
 	const { cookies, history } = props;
-	if (!cookies.get('isLogin')) {
+	if (cookies.get('isLogin') === 'false') {
 		history.push('/login');
 	}
 };
