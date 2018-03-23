@@ -27,7 +27,6 @@ import Share from '@/components/mobile/Share';
 import { renderIf } from '@/utils';
 import _ from 'lodash';
 import queryString from 'query-string';
-import Helmet from 'react-helmet';
 import {
 	CatalogView,
 	GridView,
@@ -149,7 +148,7 @@ class Seller extends Component {
 		const { headerNameY } = this.state;
 		const header = document.getElementById('store-filter');
 		const sticky = header.offsetTop;
-		const scrollY = e.srcElement.scrollTop;
+		const scrollY = e.target.scrollTop;
 
 		if (!headerNameY) {
 			this.setState({
@@ -407,30 +406,6 @@ class Seller extends Component {
 		}
 
 		return listView;
-	};
-
-	renderHelmet = () => {
-		const { seller: { info }, location } = this.props;
-
-		return (
-			<Helmet>
-				<title>{`${info.seller} | MatahariMall.com`}</title>
-				<meta name='twitter:card' content='summary' />
-				<meta name='twitter:site' content='@MatahariMallCom' />
-				<meta name='twitter:creator' content='@MatahariMallCom' />
-				<meta name='twitter:title' content={info.description} />
-				<meta name='twitter:url' content={`${process.env.MOBILE_URL}${location.pathname}${location.search}`} />
-				<meta name='twitter:description' content={info.description} />
-				<meta name='twitter:image' content={info.seller_logo} />
-				<meta property='og:title' content={info.seller} />
-				<meta property='og:url' content={`${process.env.MOBILE_URL}${location.pathname}${location.search}`} />
-				<meta property='og:type' content='website' />
-				<meta property='og:description' content={info.description} />
-				<meta property='og:image' content={info.seller_logo} />
-				<meta property='og:site_name' content='MatahariMall.com' />
-				<link rel='canonical' href={process.env.MOBILE_URL} />
-			</Helmet>
-		);
 	};
 
 	renderData = () => {

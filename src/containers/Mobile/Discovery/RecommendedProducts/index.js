@@ -50,7 +50,7 @@ class RecommendedProducts extends Component {
 		const html = document.documentElement;
 
 		const docHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-		const scrollY = e.srcElement.scrollTop;
+		const scrollY = e.target.scrollTop;
 		const scrHeight = window.screen.height;
 
 		if ((scrollY + scrHeight) >= docHeight && this.props.links.next && !this.props.isLoading)	{
@@ -67,7 +67,7 @@ class RecommendedProducts extends Component {
 
 	render() {
 		const { isLoading, recommendedproducts, style, viewMode } = this.props;
-		
+
 		const HeaderPage = {
 			left: (
 				<button onClick={this.props.history.goBack}>
