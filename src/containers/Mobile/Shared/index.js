@@ -198,8 +198,8 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			const snackStyle = _.chain(this.props.shared.snackbar).get('[0].style').value() || { css: {}, sticky: true };
 			const snackCss = _.chain(snackStyle).get('css.snack').value() || {};
 			const snackSticky = !snackStyle.sticky ? {} : {
-				bottom: !this.state.scroll.isNavSticky ? 50 : 0,
-				zIndex: !this.state.scroll.isNavSticky ? 2 : 999
+				bottom: !this.state.scroll.isNavSticky && document.querySelector('.navigation__navigation') ? 50 : 0,
+				zIndex: !this.state.scroll.isNavSticky && document.querySelector('.navigation__navigation') ? 2 : 999
 			};
 			const customStylesCss = { ...snackStyle.css, snack: { ...snackCss, ...snackSticky } };
 
