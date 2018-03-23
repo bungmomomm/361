@@ -186,13 +186,13 @@ class Seller extends Component {
 		}
 	};
 
-	onApply = async (e, fq) => {
+	onApply = async (e, fq, closeFilter) => {
 		const { query } = this.state;
 		query.fq = fq;
 
 		this.setState({
 			query,
-			showFilter: false
+			showFilter: !closeFilter
 		});
 		this.update({
 			fq
@@ -272,7 +272,7 @@ class Seller extends Component {
 	};
 
 	filterTabs = () => {
-		const { seller, isFiltered } = this.props;
+		const { seller, scroller, isFiltered } = this.props;
 		const { listTypeState, showSort, filterStyle } = this.state;
 		const sorts = _.chain(seller).get('data.sorts').value() || [];
 
@@ -285,18 +285,18 @@ class Seller extends Component {
 						{
 							id: 'sort',
 							title: 'Urutkan',
-							disabled: _.isEmpty(seller.data.sorts)
+							disabled: scroller.loading
 						},
 						{
 							id: 'filter',
 							title: 'Filter',
-							disabled: _.isEmpty(seller.data.facets),
+							disabled: scroller.loading,
 							checked: isFiltered
 						},
 						{
 							id: 'view',
 							title: <Svg src={listTypeState.icon} />,
-							disabled: _.isEmpty(seller.data.products)
+							disabled: scroller.loading
 						}
 					]}
 					onPick={e => this.handlePick(e)}
@@ -459,8 +459,8 @@ class Seller extends Component {
 					<Filter
 						shown={showFilter}
 						filters={seller.data}
-						onApply={(e, fq) => {
-							this.onApply(e, fq);
+						onApply={(e, fq, closeFilter) => {
+							this.onApply(e, fq, closeFilter);
 						}}
 						onClose={(e) => this.onClose(e)}
 					/>

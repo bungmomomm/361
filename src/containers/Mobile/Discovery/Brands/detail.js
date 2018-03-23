@@ -193,12 +193,12 @@ class Detail extends Component {
 
 	}
 
-	async onApply(e, fq) {
+	async onApply(e, fq, closeFilter) {
 		const { query } = this.state;
 		query.fq = fq;
 		this.setState({
 			query,
-			showFilter: false
+			showFilter: !closeFilter
 		});
 		this.update({
 			fq
@@ -303,7 +303,7 @@ class Detail extends Component {
 	}
 
 	renderFilter() {
-		// const { brands } = this.props;
+		const { brands, isFiltered } = this.props;
 		const { showSort } = this.state;
 		const sorts = _.chain(this.props.brands).get('searchData.sorts').value() || [];
 		return (
@@ -314,17 +314,18 @@ class Detail extends Component {
 						{
 							id: 'sort',
 							title: 'Urutkan',
-							// disabled: brands.loading_products
+							disabled: brands.loading_products
 						},
 						{
 							id: 'filter',
 							title: 'Filter',
-							// disabled: brands.loading_products
+							disabled: brands.loading_products,
+							checked: isFiltered
 						},
 						{
 							id: 'view',
 							title: <Svg src={this.state.listTypeState.icon} />,
-							// disabled: brands.loading_products
+							disabled: brands.loading_products
 						}
 					]}
 					onPick={e => this.handlePick(e)}
@@ -413,8 +414,8 @@ class Detail extends Component {
 					<Filter
 						shown={showFilter}
 						filters={this.props.brands.searchData}
-						onApply={(e, fq) => {
-							this.onApply(e, fq);
+						onApply={(e, fq, closeFilter) => {
+							this.onApply(e, fq, closeFilter);
 						}}
 						onClose={(e) => this.onClose(e)}
 					/>

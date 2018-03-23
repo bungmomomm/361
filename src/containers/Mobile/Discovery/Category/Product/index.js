@@ -127,12 +127,12 @@ class Product extends Component {
 		dispatch(pcpActions.loadingAction(true));
 	}
 
-	async onApply(e, fq) {
+	async onApply(e, fq, closeFilter) {
 		const { query } = this.state;
 		query.fq = fq;
 		this.setState({
 			query,
-			showFilter: false
+			showFilter: !closeFilter
 		});
 		this.update({
 			fq
@@ -354,8 +354,8 @@ class Product extends Component {
 				<Filter
 					shown={showFilter}
 					filters={productCategory.pcpData}
-					onApply={(e, fq) => {
-						this.onApply(e, fq);
+					onApply={(e, fq, closeFilter) => {
+						this.onApply(e, fq, closeFilter);
 					}}
 					onClose={(e) => this.onClose(e)}
 				/>
