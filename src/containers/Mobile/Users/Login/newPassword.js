@@ -48,6 +48,7 @@ class NewPassword extends Component {
 			message: response.data,
 			showModal: true
 		});
+		history.push('/login');
 		return response;
 	}
 

@@ -5,15 +5,21 @@ import _ from 'lodash';
 
 export default thunk((promised, action, store) => {
 	promised.catch((err) => {
-		const { response } = err;
+		const { response, message } = err;
+		const exc = [409, 422];
+		const status = _.chain(response).get('status').value();
 
-		store.dispatch(actions.showSnack(uniqid('err-'), {
-			label: !response ? (err.message || err) : _.chain(response).get('data.error_message').value() || '',
-			timeout: 10000,
-			button: {
-				label: 'COBA LAGI',
-				action: 'reload'
-			}
-		}));
+		if (!response || !exc.includes(status)) {
+			store.dispatch(actions.showSnack(uniqid('err-'), {
+				label: response ? _.chain(response).get('data.error_message').value()
+						: err.error_message ? err.error_message
+						: message || err,
+				timeout: 10000,
+				button: {
+					label: 'COBA LAGI',
+					action: 'reload'
+				}
+			}));
+		}
 	});
 });
