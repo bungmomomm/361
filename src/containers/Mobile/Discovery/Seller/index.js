@@ -325,6 +325,7 @@ class Seller extends Component {
 	toggleSeeMore = () => {
 		this.setState({
 			seeMore: {
+				...this.state.seeMore,
 				bool: !this.state.seeMore.bool,
 				text: !this.state.seeMore.bool ? '[...]' : 'Hide'
 			}
@@ -386,10 +387,10 @@ class Seller extends Component {
 						<div className='font-medium' ref={(el) => { this.headerName = el; }}>{seller.info.seller || ''}</div>
 						<div className='font-small flex-row flex-middle'><Svg src='ico_pinlocation-black.svg' /> <span>{seller.info.seller_location || ''}</span></div>
 						<div>
-							<div className={seeMore.bool && seeMore.show ? classNames('padding--medium-h', styles.textOnlyShowTwoLines) : 'padding--medium-h'}>{seller.info.description || ''}</div>
+							<div className={seeMore.bool && seeMore.show ? classNames('font-small padding--medium-h', styles.textOnlyShowTwoLines) : 'font-small padding--medium-h'}>{seller.info.description || ''}</div>
 							{seeMore.show && (
 								<span className='padding--medium-h'>
-									<button className='font-color--grey' onClick={this.toggleSeeMore}>
+									<button className='font-small font-color--grey' onClick={this.toggleSeeMore}>
 										{seeMore.text}
 									</button>
 								</span>
