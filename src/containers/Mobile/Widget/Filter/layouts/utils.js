@@ -143,11 +143,10 @@ const getCategoryFq = (categories, source) => {
 		const isExist = _.find(categories, (c) => {
 			return c.facetrange === category.facetrange;
 		});
-		if (typeof isExist === 'undefined') {
-			categories.push(category);
-		}
 		if (typeof (category.childs) !== 'undefined' && category.childs.length > 0) {
 			categories = getCategoryFq(categories, category.childs);
+		} else if (typeof isExist === 'undefined') {
+			categories.push(category);
 		}
 	});
 	
