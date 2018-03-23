@@ -34,7 +34,7 @@ const Modal = props => {
 
 		return (
 			<div className={styles.subHeaderWrapper}>
-				<div className={styles.subHeader}>
+				<div style={this.props.subheaderStyle} className={styles.subHeader}>
 					{CompHeader}
 				</div>
 			</div>

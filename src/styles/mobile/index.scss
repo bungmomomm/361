@@ -442,6 +442,11 @@
 		-webkit-overflow-scrolling: touch;
 		-ms-overflow-style: -ms-autohiding-scrollbar;
 	}
+    .placeholder-image{
+        background-image: url('../../assets/images/mobile/ico_placeholder.png');
+        background-position: center center;
+        background-repeat: no-repeat;
+    }
 }
 
 @keyframes :global(fadeIn) {

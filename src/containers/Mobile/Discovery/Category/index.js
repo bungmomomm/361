@@ -94,7 +94,7 @@ class Category extends PureComponent {
 						current={this.props.shared.current}
 						variants={this.props.home.segmen}
 						onPick={(e) => this.handlePick(e)}
-						type='minimal'
+						type='borderedBottom'
 					/>
 					<div>
 						{ category.loading ? loading : this.renderCategories() }

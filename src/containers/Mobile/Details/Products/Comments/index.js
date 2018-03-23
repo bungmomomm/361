@@ -113,13 +113,13 @@ class Comments extends Component {
 				/>
 			);
 		}
-		
+
 		return null;
 	}
 
 	renderComments() {
 		const { isLoading, comments } = this.props;
-		
+
 		if (!_.isEmpty(comments.comments)) {
 			const loadMore = !_.isEmpty(comments.links.next) ? (
 				<Button
@@ -185,6 +185,7 @@ class Comments extends Component {
 					{userAvatar}
 					<Level.Item>
 						<Input
+							as='textarea'
 							color='white'
 							placeholder='Tulis komentar..'
 							value={commentValue}
