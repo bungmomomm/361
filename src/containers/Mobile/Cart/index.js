@@ -197,7 +197,7 @@ class Cart extends Component {
 										</div>
 									) }
 								</div>
-								<Level className='flex-row flex-middle padding--none-l'>
+								<Level style={{ width: '60%' }} className='flex-row flex-middle padding--none-l'>
 									<Level.Left>
 										<div>Jumlah: </div>
 									</Level.Left>

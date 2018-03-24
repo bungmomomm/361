@@ -447,6 +447,18 @@
         background-position: center center;
         background-repeat: no-repeat;
     }
+    .wysiwyg-content{
+        font-size: 13px;
+        p{
+            line-height: 16px;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+        ul, ol{
+            padding-left: 20px;
+            font-size: 13px;
+        }
+    }
 }
 
 @keyframes :global(fadeIn) {
