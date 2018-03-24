@@ -85,6 +85,12 @@ li.disabled {
 	}
 }
 
+.borderedBottom{
+    .active {
+  		border-bottom: solid 1px #191919;
+    }
+}
+
 /* Types */
 .minimal {
   // margin-top: -1px;
