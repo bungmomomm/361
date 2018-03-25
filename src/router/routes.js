@@ -1,3 +1,4 @@
+import { home, category, brands, search, hashtags, store } from '@/utils/tracking/lucidworks';  
 import Loading from './loading';
 import loadable from 'loadable-components';
 
@@ -21,62 +22,76 @@ export default {
 		{
 			path: '/',
 			component: loadable(() => import('@/containers/Mobile/Home'), defaultOptions),
-			exact: true
+			exact: true,
+			group: home
 		},
 		{
 			path: '/mau-gaya-itu-gampang',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Hashtags'), defaultOptions),
-			exact: true
+			exact: true,
+			group: hashtags
 		},
 		{
 			path: '/mau-gaya-itu-gampang/:campaign_name-:campaign_id/:post_id/:icode',
-			component: loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'), defaultOptions)
+			component: loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'), defaultOptions),
+			group: hashtags
 		},
 		{
 			path: '/search',
-			component: loadable(() => import('@/containers/Mobile/Discovery/Search'), defaultOptions)
+			component: loadable(() => import('@/containers/Mobile/Discovery/Search'), defaultOptions),
+			group: search
 		},
 		{
 			path: '/products',
-			component: loadable(() => import('@/containers/Mobile/Discovery/SearchResults'), defaultOptions)
+			component: loadable(() => import('@/containers/Mobile/Discovery/SearchResults'), defaultOptions),
+			group: search
 		},
 		{
 			path: '/searchnotfound', // This path only for displaying search not found SearchNotFound Container
-			component: loadable(() => import('@/containers/Mobile/Discovery/SearchNotFound'), defaultOptions)
+			component: loadable(() => import('@/containers/Mobile/Discovery/SearchNotFound'), defaultOptions),
+			group: search
 		},
 		{
 			path: '/sub-category/',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'), defaultOptions),
+			group: category
 		},
 		{
 			path: '/category/',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Category'), defaultOptions),
+			group: category
 		},
 		{
 			path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9-]+)',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Category/Product'), defaultOptions),
+			group: category
 		},
 		{
 			path: '/p-:categoryId:([0-9]+)}/:categoryTitle([a-zA-Z0-9-]+)/:brandTitle([a-zA-Z0-9-]+)',
-			component: loadable(() => import('@/containers/Mobile/Discovery/Category/Product'), defaultOptions)
+			component: loadable(() => import('@/containers/Mobile/Discovery/Category/Product'), defaultOptions),
+			group: category
 		},
 		{
 			path: '/subcategory/:categoryId',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Category/SubCategory'), defaultOptions),
+			group: category
 		},
 		{
 			path: '/brands',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Brands'), defaultOptions),
-			exact: true
+			exact: true,
+			group: brands
 		},
 		{
 			path: '/brand/:brandId/:brandTitle',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Brands/detail'), defaultOptions),
-			exact: true
+			exact: true,
+			group: brands
 		},
 		{
 			path: '/catalogcategory',
-			component: loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'), defaultOptions)
+			component: loadable(() => import('@/containers/Mobile/Discovery/Category/Catalog'), defaultOptions),
+			group: category
 		},
 		{
 			path: '/product/comments/:id',
@@ -167,7 +182,8 @@ export default {
 		{
 			path: '/store/:store_id/:store_name',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Seller'), defaultOptions),
-			exact: true
+			exact: true,
+			group: store
 		},
 		{
 			path: '/profile/my-order',

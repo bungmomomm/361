@@ -81,7 +81,7 @@ class Cart extends Component {
 
 		if (nextProps.shopBag.carts !== this.props.shopBag.carts && (typeof this.fusion === 'undefined')) {
 			const { carts, total } = nextProps.shopBag;
-			this.fusion = new LucidCart(this.props.cookies, carts, total);
+			this.fusion = new LucidCart(carts, total);
 		}
 
 		this.checkNotProcedItem(nextProps);

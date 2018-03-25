@@ -2,15 +2,20 @@ import React, { PureComponent } from 'react';
 import { Route } from 'react-router-dom';
 import { spring, AnimatedSwitch } from 'react-router-transition';
 import routes from './routes';
+import { Fusion } from '@/utils/tracking/lucidworks';
 
 class CustomRoute extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.props = props;
 	}
+
 	componentWillMount() {
 		window.mmLoading.play();
+		// binds fusion session
+		Fusion.tracks(this.props);
 	}
+
 	render() {
 		const { ...props } = this.props;
 		return <Route {...props} />;

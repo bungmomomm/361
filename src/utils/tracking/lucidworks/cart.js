@@ -1,11 +1,10 @@
-import { Fusion } from './fusion';
+import Fusion from './core';
 import { INCREASE_CART, DECREASE_CART, REMOVE_CART_ITEM } from './event';
 
 export default class LucidCart extends Fusion {
 
-	constructor(cookies, carts, total) {
-		super(cookies);
-		this.commons = this.getCommons();
+	constructor(carts, total) {
+		super();
 		this.itemChanged = {};
 		this.bag = {
 			qty: 0,

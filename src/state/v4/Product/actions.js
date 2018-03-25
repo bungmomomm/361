@@ -29,6 +29,7 @@ const productDetailAction = (token, productId) => async (dispatch, getState) => 
 	}));
 
 	if (err) {
+		dispatch(productLoading({ loading: false }));
 		return Promise.reject(err);
 	}
 
@@ -60,6 +61,7 @@ const productStoreAction = (token, storeId, page = 1, perPage = 4) => async (dis
 	}));
 
 	if (err) {
+		dispatch(productLoading({ loading: false }));
 		return Promise.reject(err);
 	}
 
@@ -91,6 +93,7 @@ const productSocialSummaryAction = (token, productId) => async (dispatch, getSta
 	}));
 
 	if (err) {
+		dispatch(productLoading({ loading: false }));
 		return Promise.reject(err);
 	}
 
@@ -123,6 +126,7 @@ const allProductReviewsAction = (token, productId, page = 1, perPage = 10) => as
 	}));
 
 	if (err) {
+		dispatch(productLoading({ loading: false }));
 		return Promise.reject(err);
 	}
 
@@ -157,6 +161,7 @@ const productPromoAction = (token, productId) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
+		dispatch(productLoading({ loading: false }));
 		return Promise.reject(err);
 	}
 

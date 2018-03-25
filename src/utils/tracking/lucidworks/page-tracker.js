@@ -1,22 +1,38 @@
-// import { config } from './config';
+import Utils from './utils';
 
-// const REFERENCE_HOME = 'home';
-// const REFERENCE_CATEGORY = 'category';
-// const REFERENCE_SEARCH = 'search';
+const info = {
+	reference: '',
+	query: '',
+	page: 0,
+	limit: 1,
+};
 
-// export default class FusionPageInfo {
+export default class PageTracker {
+	static trackReference = (route) => {
+		try {
+			const { group } = route;
+			if (typeof group !== 'undefined' && group !== null && group !== '') {
+				info.reference = group;
+				Utils.storeInfo(JSON.stringify(info));
+			}
+		} catch (error) { console.log(error); }
+	}
 
-// 	constructor(props) {
-// 		this.props = props;
+	static trackPage = (page = 0) => {
+		try {
+			if (typeof page !== 'undefined' && page !== null && page !== '') {
+				info.page = page;
+				Utils.storeInfo(JSON.stringify(info));
+			}
+		} catch (error) { console.log(error); }
+	}
 
-// 	}
-
-// 	extractPath() {
-
-// 	}
-
-// 	storeInfo(data, expires = 0) {
-// 		const { cookies } = this.props;
-// 		cookies.set(config.referenceInfoName, data, { domain: config.domain, path: '/', expires });
-// 	}
-// }
+	static trackQuery = (query = '') => {
+		try {
+			if (typeof query !== 'undefined' && query !== null && query !== '') {
+				info.query = query;
+				Utils.storeInfo(JSON.stringify(info));
+			}
+		} catch (error) { console.log(error); }
+	}
+}

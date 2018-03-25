@@ -1,26 +1,26 @@
-import { Fusion } from './fusion';
+import Fusion from './core';
 import * as Events from './event';
 
 class EventPayload extends Fusion {
 
-	constructor(cookies) {
-		super(cookies);
-		this.commons = this.getCommons();
-	}
-
 	trackPdp(payload) {
-		const event = Events.PRODUCT_DETAIL_PAGE;
-		const payloads = {
-			event,
-			...this.commons,
-			...payload,
-			reference: 'not-set-yet',
-			query: 'not-set-yet',
-			page: 1,
-			limit: 1
-		};
+		try {
+			const event = Events.PRODUCT_DETAIL_PAGE;
+			const payloads = {
+				event,
+				...this.commons,
+				...payload,
+				reference: this.reference,
+				query: 'not-set-yet',
+				page: 1,
+				limit: 1
+			};
 
-		this.push(payloads);
+			console.log('payloads: ', payloads);
+			this.push(payloads);
+		} catch (error) {
+			console.log('here you go: ', error);
+		}
 	}
 
 	trackAddToCart(payload) {

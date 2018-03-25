@@ -5,7 +5,6 @@ import { actions } from '@/state/v4/Shared';
 import { actions as users } from '@/state/v4/User';
 import { actions as initAction } from '@/state/v4/Home';
 import { setUserCookie, setUniqeCookie } from '@/utils';
-import { Fusion } from '@/utils/tracking/lucidworks';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
 import { Svg } from '@/components/mobile';
@@ -42,9 +41,6 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			this.handleScroll = this.handleScroll.bind(this);
 			this.docBody = null;
 			this.currentScrollPos = 0;
-
-			const f = new Fusion(this.props.cookies);
-			f.bindSession();
 		}
 
 		componentWillMount() {

@@ -14,5 +14,15 @@ export default {
 		successLabel: 'OK',
 		sessionLength: 2,
 		referenceInfoName: '_v3rF'
+	},
+	references: {
+		home: 'home',
+		category: 'category',
+		brands: 'brands',
+		search: 'search',
+		hashtags: 'hashtags',
+		pdp: 'pdp',
+		store: 'store',
+		cart: 'cart',
 	}
 };
