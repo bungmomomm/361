@@ -152,7 +152,6 @@ class Home extends Component {
 		const recommendationData = _.chain(home).get(`allSegmentData.${segment.key}.recomendationData.${type}`);
 		if (recommendationData.value()) {
 			const data = recommendationData.value();
-			console.log(data);
 			if (data.data && data.data.length > 0) {
 				const link = `/promo/${type}?segment_id=${segment.id}`;
 
