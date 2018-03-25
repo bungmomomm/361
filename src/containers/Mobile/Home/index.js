@@ -148,7 +148,7 @@ class Home extends Component {
 
 		const { home } = this.props;
 		const segment = home.activeSegment;
-		const title = 'LIHAT SEMUA'
+		const title = 'LIHAT SEMUA';
 		const recommendationData = _.chain(home).get(`allSegmentData.${segment.key}.recomendationData.${type}`);
 		if (recommendationData.value()) {
 			const data = recommendationData.value();
