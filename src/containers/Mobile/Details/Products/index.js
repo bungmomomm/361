@@ -699,7 +699,7 @@ class Products extends Component {
 											<div className='margin--medium-v --disable-flex'>
 												{(detail.spec.map((item, idx) => {
 													item.value = item.value.replace(/(?:\r\n|\r|\n)/g, '<br />');
-													if (/^/.test(item.value)) return <div key={idx} className='margin--small-v font-medium font-color--primary' dangerouslySetInnerHTML={{ __html: item.value }} />;
+													if (/^/.test(item.value)) return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
 													return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
 												}))}
 											</div>
@@ -779,8 +779,6 @@ class Products extends Component {
 									loginNow={this.handleLovelistClick}
 									productId={detail.id}
 								/>
-								{/* } */}
-
 							</div>
 						</div>
 						{this.renderStickyAction()}
