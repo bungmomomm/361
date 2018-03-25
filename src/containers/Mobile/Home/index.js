@@ -167,7 +167,7 @@ class Home extends Component {
 							{
 								data.data.map(({ images, pricing, path, product_id, product_title }, e) => (
 									<div key={e}>
-										<Link to={`/${urlBuilder.buildPdp(product_title, product_id)}`}>
+										<Link to={`${urlBuilder.buildPdp(product_title, product_id)}`}>
 											<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
 											<div className={styles.btnThumbnail}>
 												<Button transparent color='secondary' size='small'>
