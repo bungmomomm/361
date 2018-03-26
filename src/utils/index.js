@@ -10,6 +10,7 @@ import trimString from './trimString';
 import { request, getCancelToken } from './request';
 import { setUserCookie, setUniqeCookie, removeUserCookie, setUserInfoCookie } from './cookie';
 import urlBuilder from './urlBuilder';
+import enableZoomPinch from './zoomPinch';
 import loading from './loading';
 import { request as emarsysRequest } from './emarsys';
 import uniqid from './uniqid';
@@ -75,5 +76,6 @@ export default {
 	loading,
 	emarsysRequest,
 	uniqid,
-	stringHelper
+	stringHelper,
+	enableZoomPinch
 };

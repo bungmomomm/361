@@ -3,7 +3,7 @@ import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
-import { urlBuilder, stringHelper } from '@/utils';
+import { urlBuilder, stringHelper, enableZoomPinch } from '@/utils';
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
@@ -253,6 +253,7 @@ class Products extends Component {
 	closeZoomImage(e) {
 		const { status } = this.state;
 		status.isZoomed = false;
+		enableZoomPinch(false);
 		this.setState({ status });
 	}
 
@@ -270,7 +271,7 @@ class Products extends Component {
 		const { status } = this.state;
 		const { top } = this.props.scroll;
 		const carouselHeight = this.carouselEL.getBoundingClientRect().height;
-		
+
 		status.showScrollInfomation = ((top !== 0) && top > (carouselHeight / 2));
 		this.setState({ status });
 		// if (top > (carouselHeight / 2) && !status.showScrollInfomation) {
@@ -633,6 +634,7 @@ class Products extends Component {
 			// if (_.isEmpty(detail) || status.loading) return this.loadingContent;
 
 			if (status.isZoomed && _.has(detail, 'images')) {
+				enableZoomPinch(true);
 				return (
 					<div>
 						<Header.Modal style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }} {...this.headerZoom} />
