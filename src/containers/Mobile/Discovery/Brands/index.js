@@ -38,7 +38,7 @@ class Brands extends Component {
 		this.headContainer = null;
 
 		this.onAlphabetsClick = (id) => {
-			const section = document.getElementById(String(id));
+			const section = document.getElementById(String(id.trim()));
 			document.body.scrollTop = section.offsetTop;
 		};
 	}
