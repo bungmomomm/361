@@ -1,27 +1,20 @@
 import Utils from './utils';
+import { references } from './config';
 
 const info = {
 	reference: '',
 	query: '',
-	page: 0,
+	page: 1,
 	limit: 1,
 };
 
 export default class PageTracker {
-	static trackReference = (route) => {
-		try {
-			const { group } = route;
-			if (typeof group !== 'undefined' && group !== null && group !== '') {
-				info.reference = group;
-				Utils.storeInfo(JSON.stringify(info));
-			}
-		} catch (error) { console.log(error); }
-	}
 
-	static trackPage = (page = 0) => {
+	static trackPage = (page = 0, limit = 1) => {
 		try {
-			if (typeof page !== 'undefined' && page !== null && page !== '') {
+			if (Utils.notEmptyVal(page)) {
 				info.page = page;
+				info.limit = limit;
 				Utils.storeInfo(JSON.stringify(info));
 			}
 		} catch (error) { console.log(error); }
@@ -29,10 +22,43 @@ export default class PageTracker {
 
 	static trackQuery = (query = '') => {
 		try {
-			if (typeof query !== 'undefined' && query !== null && query !== '') {
+			if (Utils.notEmptyVal(query)) {
 				info.query = query;
 				Utils.storeInfo(JSON.stringify(info));
 			}
 		} catch (error) { console.log(error); }
 	}
+
+	static trackRoute = (route) => {
+		try {
+			const { group } = route;
+			const { search } = route.location || window.location.search;
+
+			if (Utils.notEmptyVal(group)) info.reference = group;
+
+			// extract data from 'search'
+			if (Utils.notEmptyVal(search)) {
+				const params = Utils.extractRouteParams(search);
+				const { fq, page, per_page, query } = params;
+
+				if (group === references.search && Utils.notEmptyVal(query)) info.query = query;
+				if (Utils.notEmptyVal(fq)) info.query = fq;
+				if (Utils.notEmptyVal(page)) info.page = page;
+				if (Utils.notEmptyVal(per_page)) info.limit = params.per_page;
+			}
+			Utils.storeInfo(JSON.stringify(info));
+		} catch (error) { console.log(error); }
+	}
+
+	static extractRouteParams = (route) => {
+		const query = route.substring(1);
+		const params = query.split('&');
+		const founds = {};
+
+		for (let i = 0; i < params.length; i++) {
+			const param = params[i].split('=');
+			founds[param[0]] = param[1];
+		}
+		return founds;
+	};
 }

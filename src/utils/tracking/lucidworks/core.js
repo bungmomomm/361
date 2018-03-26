@@ -4,19 +4,8 @@ import Utils from './utils';
 import PageTracker from './page-tracker';
 
 export default class Fusion {
-
 	constructor() {
 		this.enabled = config.enabled;
-		console.log('fusion enabled: ', this.enabled);
-	}
-
-	get reference() {
-		const info = Utils.getInfo(config.referenceInfoName);
-		if (this.enabled && Utils.notEmptyVal(info)) {
-			const infoObj = JSON.parse(info);
-			return infoObj.reference;
-		}
-		return '';
 	}
 
 	get commons() {
@@ -29,6 +18,35 @@ export default class Fusion {
 			};
 		}
 		return {};
+	}
+
+	get reference() {
+		const info = Utils.getInfo(config.referenceInfoName);
+		if (this.enabled && Utils.notEmptyVal(info)) {
+			const infoObj = JSON.parse(info);
+			return infoObj.reference;
+		}
+		return '';
+	}
+
+	get page() {
+		const pageInfo = { page: 1, limit: 1 };
+		const info = Utils.getInfo(config.referenceInfoName);
+		if (this.enabled && Utils.notEmptyVal(info)) {
+			const infoObj = JSON.parse(info);
+			pageInfo.page = infoObj.page;
+			pageInfo.limit = infoObj.limit;
+		}
+		return pageInfo;
+	};
+
+	get query() {
+		const info = Utils.getInfo(config.referenceInfoName);
+		if (this.enabled && Utils.notEmptyVal(info)) {
+			const infoObj = JSON.parse(info);
+			return infoObj.query;
+		}
+		return '';
 	}
 
 	bindSession() {
@@ -87,7 +105,9 @@ export default class Fusion {
 	static tracks = (route) => {
 		// tracks referal page
 		if (config.enabled) {
-			PageTracker.trackReference(route);
+			console.log('binds fusion session....');
+			console.log('current route props: ', route);
+			PageTracker.trackRoute(route);
 			window.onload = () => {
 				const f = new Fusion();
 				f.bindSession();

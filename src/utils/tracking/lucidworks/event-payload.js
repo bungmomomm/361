@@ -25,12 +25,11 @@ class EventPayload extends Fusion {
 
 					this.push({
 						event,
-						...this.commons,
 						...data,
+						...this.commons,
+						...this.page,
 						reference: this.reference,
-						query: 'not-set-yet',
-						page: 1,
-						limit: 1
+						query: this.query
 					});
 				}
 			}
@@ -45,12 +44,11 @@ class EventPayload extends Fusion {
 				const event = Events.ADD_TO_CART;
 				const payloads = {
 					event,
-					...this.commons,
 					...payload,
+					...this.commons,
+					...this.page,
 					reference: this.reference,
-					query: 'not-set-yet',
-					page: 1,
-					limit: 1
+					query: this.query
 				};
 
 				this.push(payloads);
