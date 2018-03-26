@@ -692,7 +692,7 @@ class Products extends Component {
 							<div className='font-medium margin--medium-v padding--medium-h'><strong>Details</strong></div>
 							{!_.isEmpty(detail.description)
 							&&
-								<div>
+								<div className='wysiwyg-content'>
 									<div className={classNameProductDescription} dangerouslySetInnerHTML={{ __html: stringHelper.removeHtmlTag(detail.description) }} />
 									<span className='padding--medium-h font-color--grey' {...buttonProductDescriptionAttribute}>{ fullProductDescriptionButtonText }</span>
 								</div>
@@ -701,7 +701,7 @@ class Products extends Component {
 								<div className='margin--medium-v --disable-flex padding--medium-h'>
 									{(detail.spec.map((item, idx) => {
 										item.value = item.value.replace(/(?:\r\n|\r|\n)/g, '<br />');
-										if (/^/.test(item.value)) return <div key={idx} className='margin--small-v font-medium font-color--primary' dangerouslySetInnerHTML={{ __html: item.value }} />;
+										if (/^/.test(item.value)) return <div key={idx} className='margin--small-v font-medium font-color--primary wysiwyg-content' dangerouslySetInnerHTML={{ __html: item.value }} />;
 										return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
 									}))}
 								</div>
