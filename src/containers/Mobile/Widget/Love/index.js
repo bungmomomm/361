@@ -87,15 +87,14 @@ class Love extends PureComponent {
 					snack: {
 						display: 'flex',
 						position: 'fixed',
-						bottom: '20px',
-						left: '14%',
+						bottom: '30px',
+						right: 0,
+						left: 0,
+						marginRight: 'auto',
+						marginLeft: 'auto',
 						zIndex: '2',
-						width: 'auto',
-						minWidth: '300px',
+						width: '300px',
 						maxWidth: '480px',
-						transition: 'transform 200ms ease-out',
-						willChange: 'transform',
-						transform: 'translate(0px, 0px)',
 						backgroundColor: 'rgba(0, 0, 0, 0.8)',
 						padding: '15px',
 						borderRadius: '40px',
@@ -120,7 +119,7 @@ class Love extends PureComponent {
 						paddingRight: '0px'
 					}
 				},
-				sticky: true
+				sticky: true,
 			}
 		));
 

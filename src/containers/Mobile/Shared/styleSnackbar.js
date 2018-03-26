@@ -8,7 +8,7 @@ function getDefaultStyles(theming) {
 			zIndex: 999,
 			width: '100%',
 			maxWidth: '480px',
-			transition: 'transform 200ms ease-out',
+			transition: 'transform 100ms ease-out',
 			willChange: 'transform',
 			transform: 'translate(0, 100%)',
 			backgroundColor: theming.backgroundColor || '#E3E3E3',
@@ -65,7 +65,7 @@ function getTransitionStyles(elem, largeScreen, visible, theming) {
 		return {};
 	}
 	return {
-		transition: 'opacity 200ms ease-out',
+		transition: 'opacity 100ms ease-out',
 		transitionDelay: '150ms',
 		willChange: 'opacity',
 		opacity: visible ? 1 : 0,
