@@ -7,9 +7,7 @@ import { actions as initAction } from '@/state/v4/Home';
 import { setUserCookie, setUniqeCookie } from '@/utils';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
-import { Svg } from '@/components/Mobile';
 import Snackbar from '@/containers/Mobile/Shared/snackbar';
-import styles from './shared.scss';
 import { check as checkConnection, watch as watchConnection } from 'is-offline';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
@@ -53,7 +51,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 					await dispatch(actions.dismissSnack('offline'));
 					dispatch(actions.showSnack('offline', {
 						label: 'Oops, koneksi Internet kamu sepertinya terputus.',
-						timeout: 7000,
+						timeout: 10000,
 						button: {
 							label: 'COBA LAGI',
 							action: 'reload'
@@ -196,27 +194,26 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			}
 		}
 
-		render() {
+		snackStyle = () => {
 			const snackStyle = _.chain(this.props.shared.snackbar).get('[0].style').value() || { css: {}, sticky: true };
 			const snackCss = _.chain(snackStyle).get('css.snack').value() || {};
+			const stickyEl = document.querySelector('.navigation__navigation') ? document.querySelector('.navigation__navigation')
+				: document.querySelector('.products__stickyAction') ? document.querySelector('.products__stickyAction')
+					: false;
 			const snackSticky = !snackStyle.sticky ? {} : {
-				bottom: !this.state.scroll.isNavSticky ? 50 : 0,
-				zIndex: !this.state.scroll.isNavSticky ? 2 : 999
+				bottom: !this.state.scroll.isNavSticky && stickyEl ? stickyEl.getBoundingClientRect().height : 0,
+				zIndex: !this.state.scroll.isNavSticky && stickyEl ? 2 : 999
 			};
 			const customStylesCss = { ...snackStyle.css, snack: { ...snackCss, ...snackSticky } };
 
+			return customStylesCss;
+		};
 
+		render() {
 			return (
 				<div>
-					<Snackbar history={this.props.history} location={this.props.location} customStyles={customStylesCss} />
+					<Snackbar history={this.props.history} location={this.props.location} customStyles={this.snackStyle()} />
 					<WrappedComponent {...this.props} scroll={this.state.scroll} />
-					{
-						this.state.scroll.top > window.innerHeight && (
-							<a href='#root' className={styles.backToTop}>
-								<Svg src='ico_to-top.svg' />
-							</a>
-						)
-					}
 				</div>
 			);
 		}

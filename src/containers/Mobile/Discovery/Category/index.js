@@ -51,6 +51,7 @@ class Category extends PureComponent {
 	}
 
 	renderCategories() {
+		const { cookies } = this.props;
 		return this.props.category.categories.length > 1 && this.props.category.categories.map((cat, key) => {
 			let url = cat.link;
 			switch (cat.type) {
@@ -75,7 +76,17 @@ class Category extends PureComponent {
 						<div className={styles.label}>{cat.title}</div>
 					</a>)
 				: (
-					<Link to={url} key={key} className={styles.list} onClick={() => this.selectSubCategoryHandler(cat.id)}>
+					<Link
+						to={url}
+						key={key}
+						className={styles.list}
+						onClick={
+							() => {
+								this.selectSubCategoryHandler(cat.id);
+								cookies.set('page.referrer', 'CATEGORY', { path: '/' });
+							}
+						}
+					>
 						<Image src={cat.image_url} />
 						<div className={styles.label}>{cat.title}</div>
 					</Link>
@@ -94,7 +105,7 @@ class Category extends PureComponent {
 						current={this.props.shared.current}
 						variants={this.props.home.segmen}
 						onPick={(e) => this.handlePick(e)}
-						type='minimal'
+						type='borderedBottom'
 					/>
 					<div>
 						{ category.loading ? loading : this.renderCategories() }

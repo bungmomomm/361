@@ -61,7 +61,8 @@ class Register extends Component {
 		if (err) {
 			return err;
 		}
-		setUserCookie(this.props.cookies, response.token);
+		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
+		setUserCookie(this.props.cookies, response.token, false, userProfile);
 		dispatch(new users.afterLogin(cookies.get('user.token')));
 		history.push(redirectUri || '/');
 		return response;
@@ -121,7 +122,8 @@ class Register extends Component {
 			}
 
 			// Set the cookie for the page.
-			setUserCookie(cookies, responseUserLogin.token);
+			const userProfile = JSON.stringify({ name: responseUserLogin.userprofile.name, avatar: responseUserLogin.userprofile.avatar });
+			setUserCookie(this.props.cookies, responseUserLogin.token, false, userProfile);
 			dispatch(new users.afterLogin(cookies.get('user.token')));
 			history.push(redirectUri || '/');
 
@@ -188,7 +190,8 @@ class Register extends Component {
 		}
 		
 		// Set the cookie for the page.
-		setUserCookie(cookies, responseUserLogin.token);
+		const userProfile = JSON.stringify({ name: responseUserLogin.userprofile.name, avatar: responseUserLogin.userprofile.avatar });
+		setUserCookie(this.props.cookies, responseUserLogin.token, false, userProfile);
 		dispatch(new users.afterLogin(cookies.get('user.token')));
 		history.push(redirectUri || '/');
 		

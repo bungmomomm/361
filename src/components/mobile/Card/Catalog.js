@@ -114,7 +114,7 @@ class Catalog extends PureComponent {
 				<Link to={linkToPdp}>
 					<Carousel>
 						{
-							images.map((image, index) => (
+							images.slice(0, 9).map((image, index) => (
 								<div key={index} tabIndex='0' role='button' onClick={() => productOnClick()}>
 									<Image src={image.thumbnail} lazyload alt={productTitle} />
 								</div>

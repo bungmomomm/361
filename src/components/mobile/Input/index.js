@@ -10,6 +10,21 @@ class Input extends PureComponent {
 			isFocused: false,
 			showLabel: false,
 		};
+		this.textInput = null;
+		this.onChangeHandler = this.onChangeHandler.bind(this);
+	}
+
+	onChangeHandler(event) {
+		if (this.props.as === 'textarea') this.autoHight();
+		this.props.onChange(event);
+	}
+
+	autoHight() {
+		const el = this.textInput;
+		if (el.scrollHeight !== el.clientHeight) {
+			el.style.cssText = 'height:auto';
+			el.style.cssText = `height:${el.scrollHeight}px`;
+		}
 	}
 
 	showLabel() {
@@ -105,7 +120,6 @@ class Input extends PureComponent {
 			};
 		}
 
-
 		return (
 			<div className={className}>
 				{this.renderLabel()}
@@ -115,9 +129,10 @@ class Input extends PureComponent {
 					<TagName
 						{...props}
 						className={CreateinputClassName}
-						ref={this.setInput}
+						ref={(element) => { this.textInput = element; }}
 						{...valueData()}
 						onClick={onClickAction}
+						onChange={this.onChangeHandler}
 					/>
 				</div>
 				{renderHint()}

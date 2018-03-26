@@ -692,7 +692,7 @@ class Products extends Component {
 							<div className='font-medium margin--medium-v padding--medium-h'><strong>Details</strong></div>
 							{!_.isEmpty(detail.description)
 							&&
-								<div>
+								<div className='wysiwyg-content'>
 									<div className={classNameProductDescription} dangerouslySetInnerHTML={{ __html: stringHelper.removeHtmlTag(detail.description) }} />
 									<span className='padding--medium-h font-color--grey' {...buttonProductDescriptionAttribute}>{ fullProductDescriptionButtonText }</span>
 								</div>
@@ -701,27 +701,16 @@ class Products extends Component {
 								<div className='margin--medium-v --disable-flex padding--medium-h'>
 									{(detail.spec.map((item, idx) => {
 										item.value = item.value.replace(/(?:\r\n|\r|\n)/g, '<br />');
-										if (/^/.test(item.value)) return <div key={idx} className='margin--small-v font-medium font-color--primary' dangerouslySetInnerHTML={{ __html: item.value }} />;
+										if (/^/.test(item.value)) return <div key={idx} className='margin--small-v font-medium font-color--primary wysiwyg-content' dangerouslySetInnerHTML={{ __html: item.value }} />;
 										return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
 									}))}
 								</div>
 							)}
 							<div className='margin--medium-v --disable-flex padding--medium-h'>
-								{this.isLogin && (
-									<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
-										{(comments.total === 0) && 'Tulis Komentar'}
-										{(comments.total > 0 && comments.total <= 2) && `${comments.total} Komentar`}
-										{(comments.total > 2) && `Lihat Semua ${comments.total} Komentar`}
-									</Link>
-								)}
-
-								{
-									(!this.isLogin) &&
-									<span>
-										<a href={`/login?redirect_uri=${this.props.location.pathname}`}>Log in</a> /
-										<a href={`/register?redirect_uri=${this.props.location.pathname}`}>Register</a> untuk memberikan komentar
-									</span>
-								}
+								<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
+									{(comments.total === 0) && 'Tulis Komentar'}
+									{(comments.total > 0) && `Lihat Semua ${comments.total} Komentar`}
+								</Link>
 								{(!_.isUndefined(comments) && !_.isUndefined(comments.summary) && !_.isEmpty(comments.summary)) && (
 									<Comment type='lite-review' data={comments.summary} />
 								)}

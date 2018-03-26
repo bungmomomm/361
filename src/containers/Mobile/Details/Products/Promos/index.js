@@ -21,8 +21,8 @@ class Promos extends Component {
 
 	shouldComponentUpdate(nextProps, nextState) {
 		const { recommended_items, similar_items, best_seller_items } = nextProps.promo;
-		return (this.props.promo.recommended_items.products !== recommended_items.products && 
-			this.props.promo.similar_items.products !== similar_items.products && 
+		return (this.props.promo.recommended_items.products !== recommended_items.products &&
+			this.props.promo.similar_items.products !== similar_items.products &&
 			this.props.promo.best_seller_items !== best_seller_items.products);
 	}
 
@@ -72,13 +72,13 @@ class Promos extends Component {
 		const recommended = this.getBuiltItems(promo.recommended_items.products);
 		const similar = this.getBuiltItems(promo.similar_items.products);
 		const bestSeller = this.getBuiltItems(promo.best_seller_items.products);
-		
+
 		return (
 			<div className='flex' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 				{/* ----------------------------	RECOMMENDATION PRODUCTS---------------------------- */}
 				{!_.isEmpty(recommended) && (
-					<div className='padding--medium-h margin--medium-v'>
-						<div className='font-medium'><strong>Anda Mungkin Suka</strong></div>
+					<div className='margin--medium-v'>
+						<div className='font-medium padding--medium-h'><strong>Anda Mungkin Suka</strong></div>
 						{loading && this.loadingContent}
 						{!loading && (
 							<div className='flex'>{
@@ -94,8 +94,8 @@ class Promos extends Component {
 
 				{/* ----------------------------	SIMILAR / BEST SELLER ---------------------------- */}
 				{!_.isEmpty(similar) && (
-					<div className='border-top padding--medium-h margin--medium-v'>
-						<div className='margin--medium-v padding--small-h font-medium'><strong>Produk Serupa</strong></div>
+					<div className='border-top margin--medium-v'>
+						<div className='margin--medium-v padding--medium-h font-medium'><strong>Produk Serupa</strong></div>
 						{loading && this.loadingContent}
 						{!loading && (
 							<div className='flex'>{
@@ -108,8 +108,8 @@ class Promos extends Component {
 					</div>
 				)}
 				{_.isEmpty(similar) && !_.isEmpty(bestSeller) && (
-					<div className='border-top padding--medium-h margin--medium-v '>
-						<div className='margin--medium-v padding--small-h font-medium'><strong>Produk Terlaris</strong></div>
+					<div className='border-top margin--medium-v '>
+						<div className='margin--medium-v padding--medium-h font-medium'><strong>Produk Terlaris</strong></div>
 						{loading && this.loadingContent}
 						{!loading && (
 							<div className='flex'>{
