@@ -14,7 +14,7 @@ import { actions as categoryActions } from '@/state/v4/Category';
 import CONST from '@/constants';
 import Shared from '@/containers/Mobile/Shared';
 import { actions as sharedActions } from '@/state/v4/Shared';
-import { userSource, userToken } from '@/data/cookiesLabel';
+import { userSource, userToken, pageReferrer } from '@/data/cookiesLabel';
 
 class Category extends PureComponent {
 	constructor(props) {
@@ -84,7 +84,7 @@ class Category extends PureComponent {
 						onClick={
 							() => {
 								this.selectSubCategoryHandler(cat.id);
-								cookies.set('page.referrer', 'CATEGORY', { path: '/' });
+								cookies.set(pageReferrer, 'CATEGORY', { path: '/' });
 							}
 						}
 					>
