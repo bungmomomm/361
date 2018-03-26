@@ -405,7 +405,9 @@
 		.border-white-right {
 			border-right: 0.5px solid #fff;
 		}
-
+		.flex-column {
+			flex-direction: column;
+		}
 		.flex-row {
 			flex-direction: row;
 		}

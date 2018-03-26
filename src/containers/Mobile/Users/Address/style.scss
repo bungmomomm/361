@@ -51,6 +51,17 @@
   height: 80px;
   font-size: 44px;
 }
+
+.fullName {
+  font-size: 13px;
+  padding-bottom: 10px;
+}
+
+.locationMarked {
+  color: color(--orange);
+  padding-top: 15px;
+}
+
 .editPP {
   position: absolute;
   bottom: 0px;
