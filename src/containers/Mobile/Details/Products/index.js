@@ -27,6 +27,7 @@ import {
 
 import { Payload } from '@/utils/tracking/lucidworks';
 
+const fusion = new Payload(_);
 const trackAddToCart = (data, props, variant) => {
 	const products = {
 		name: data.detail.title,
@@ -70,6 +71,7 @@ const doAfterAnonymous = async (props) => {
 
 	const productDetail = await dispatch(productActions.productDetailAction(token, productId));
 	trackPdpView(productDetail, props);
+	fusion.trackPdp(productDetail);
 
 	const res = await dispatch(productActions.productPromoAction(token, productId));
 	if (res.status === 200 && res.statusText === 'OK') {
@@ -152,8 +154,6 @@ class Products extends Component {
 			center: '',
 			right: ''
 		};
-
-		this.fusion = new Payload(this.props.cookies);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -185,15 +185,6 @@ class Products extends Component {
 				} else if (cardProduct.variants.length === 1 && !cardProduct.hasVariantSize) {
 					selectedVariant = cardProduct.variants[0];
 				}
-
-				const pricing = detail.variants[0].pricing.original;
-				// Fusion PDP tracking...
-				this.fusion.trackPdp({
-					product_id: detail.id,
-					item_price: pricing.effective_price,
-					item_disc: pricing.discount,
-					item_id: ''
-				});
 			}
 
 			// disable enabled button BELI AJA
@@ -343,7 +334,7 @@ class Products extends Component {
 		handler.then((res) => {
 			// Fusion Add to Cart tracking...
 			const pricing = product.detail.variants[0].pricing.original;
-			this.fusion.trackAddToCart({
+			fusion.trackAddToCart({
 				product_id: product.detail.id,
 				item_id: variant.id,
 				item_price: pricing.effective_price,

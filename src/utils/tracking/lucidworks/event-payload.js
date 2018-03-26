@@ -3,20 +3,36 @@ import * as Events from './event';
 
 class EventPayload extends Fusion {
 
+	constructor(lodash) {
+		super();
+		this._ = lodash;
+	}
+
 	trackPdp(payload) {
 		try {
 			if (this.enabled) {
-				const event = Events.PRODUCT_DETAIL_PAGE;
-				const payloads = {
-					event,
-					...this.commons,
-					...payload,
-					reference: this.reference,
-					query: 'not-set-yet',
-					page: 1,
-					limit: 1
-				};
-				this.push(payloads);
+				const _ = this._;
+				const { detail } = payload;
+				if (_.has(detail, 'variants') && Array.isArray(detail.variants) && !_.isEmpty(detail.variants)) {
+					const event = Events.PRODUCT_DETAIL_PAGE;
+					const pricing = detail.variants[0].pricing.original;
+					const data = {
+						product_id: detail.id,
+						item_price: pricing.effective_price,
+						item_disc: pricing.discount,
+						item_id: ''
+					};
+
+					this.push({
+						event,
+						...this.commons,
+						...data,
+						reference: this.reference,
+						query: 'not-set-yet',
+						page: 1,
+						limit: 1
+					});
+				}
 			}
 		} catch (error) {
 			console.log('fusion tracking: ', error);
@@ -31,7 +47,7 @@ class EventPayload extends Fusion {
 					event,
 					...this.commons,
 					...payload,
-					reference: 'not-set-yet',
+					reference: this.reference,
 					query: 'not-set-yet',
 					page: 1,
 					limit: 1

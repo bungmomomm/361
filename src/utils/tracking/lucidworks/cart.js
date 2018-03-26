@@ -5,7 +5,7 @@ export default class LucidCart extends Fusion {
 
 	constructor(carts, total) {
 		super();
-		this.itemChanged = {};
+		this.oldBag = {};
 		this.bag = {
 			qty: 0,
 			total_price: 0,
@@ -23,7 +23,6 @@ export default class LucidCart extends Fusion {
 		carts.forEach(cart => {
 			cart.items.forEach((item) => {
 				const { product_id, variant_id, pricing, qty } = item;
-				this.bag.qty += qty;
 				this.bag.list_items.push({
 					product_id,
 					item_id: variant_id,
@@ -42,23 +41,20 @@ export default class LucidCart extends Fusion {
 	 * @param {*} variantId 
 	 * @param {*} qty 
 	 */
-	updateCart(variantId, qty, push = true) {
-		let event = INCREASE_CART;
-		this.itemChanged = this.bag.list_items.find((item) => {
-			// Updates cart item based variant qty changed ...
-			if (item.item_id === variantId) {
-				const newQty = qty - item.qty;
-				this.bag.total_price_old = this.bag.total_price;
-				this.bag.total_price += (newQty * item.item_price);
-				this.bag.qty = qty; 
-				return true;
+	updateCart(variantId, qty) {
+		// Updates cart item based variant's qty changed ...
+		// Recalculates total price and total price old bags items
+		this.bag.total_price_old = this.oldBag.total_price;
+		this.bag.total_price = 0;
+		this.bag.list_items.forEach((item, idx) => {
+			if (variantId === item.item_id) {
+				item.qty = qty;
+				this.bag.qty = qty;
+				this.bag.product_id = item.product_id;
+				this.bag.item_id = item.item_id;
 			}
-			return false;
+			this.bag.total_price += (item.qty * item.item_price);
 		});
-
-		console.log('item changed: ', this.itemChanged);
-		if (qty < this.itemChanged.qty) event = DECREASE_CART;
-		if (push) this.trackCartChangesEvent(event);
 	}
 
 	/**
@@ -78,24 +74,38 @@ export default class LucidCart extends Fusion {
 		// If item with variant_id value specified is exist then
 		// removes item from cart item_lists 
 		if (searchedVariantId >= 0) {
-			this.updateCart(variantId, 0, false);
+			this.updateCart(variantId, 0);
 			this.bag.list_items.splice(searchedVariantId, 1);
-			this.trackCartChangesEvent(REMOVE_CART_ITEM);
 		}
 	}
 
 	get payloads() {
-		return {
+		const payload = {
 			...this.commons,
-			...this.bag,
-			product_id: this.itemChanged.product_id,
-			variant_id: this.itemChanged.item_id
+			qty: this.bag.qty,
+			item_id: this.bag.item_id,
+			product_id: this.bag.product_id,
+			list_items: this.oldBag.list_items,
+			total_price: this.bag.total_price,
+			total_price_old: this.bag.total_price_old
 		};
+
+		return payload;
 	}
 
-	trackCartChangesEvent(event) {
+	trackCartChanges(variantId, qty = 0) {
 		if (typeof this.enabled !== 'undefined' && this.enabled) {
-			console.log('prepares for cart tracking...');
+			this.oldBag = JSON.parse(JSON.stringify(this.bag));
+			const oldItem = this.oldBag.list_items.find((item) => (item.item_id === variantId));
+			let event = REMOVE_CART_ITEM;
+
+			if (qty > 0) {
+				event = (qty > oldItem.qty) ? INCREASE_CART : DECREASE_CART;
+				this.updateCart(variantId, qty);
+			} else {
+				this.removeCart(variantId);
+			}
+			
 			const eventPayloads = this.payloads;
 			this.push({ event, ...eventPayloads });
 		}
