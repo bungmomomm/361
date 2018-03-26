@@ -18,6 +18,7 @@ import {
 import {
 	Header, Page, Svg, Navigation, Button
 } from '@/components/mobile';
+import { userToken } from '@/data/cookiesLabel';
 
 import Spinner from '@/components/mobile/Spinner';
 
@@ -201,15 +202,15 @@ const doAfterAnonymous = async (props) => {
 		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 36,
 	};
 	const response = await dispatch(promoActions.promoAction({
-		token: cookies.get('user.token'),
+		token: cookies.get(userToken),
 		promoType,
 		query: promoParam
 	}));
 
 	const productIdList = _.map(response.products, 'product_id') || [];
 	if (productIdList.length > 0) {
-		await dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+		await dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
+		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
 	}
 };
 

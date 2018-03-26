@@ -21,6 +21,7 @@ import { actions } from '@/state/v4/Brand';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Shared from '@/containers/Mobile/Shared';
 import { urlBuilder } from '@/utils';
+import { userToken, userRfToken, userSource } from '@/data/cookiesLabel';
 
 class Brands extends Component {
 	constructor(props) {
@@ -32,9 +33,9 @@ class Brands extends Component {
 			filteredBrand: [],
 			keyword: ''
 		};
-		this.userCookies = this.props.cookies.get('user.token');
-		this.userRFCookies = this.props.cookies.get('user.rf.token');
-		this.source = this.props.cookies.get('user.source');
+		this.userCookies = this.props.cookies.get(userToken);
+		this.userRFCookies = this.props.cookies.get(userRfToken);
+		this.source = this.props.cookies.get(userSource);
 		this.headContainer = null;
 
 		this.onAlphabetsClick = (id) => {

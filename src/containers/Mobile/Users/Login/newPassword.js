@@ -14,12 +14,13 @@ import styles from '../user.scss';
 import { to } from 'await-to-js';
 import validator from 'validator';
 import queryString from 'query-string';
+import { userSource, userToken } from '@/data/cookiesLabel';
 
 
 class NewPassword extends Component {
 	constructor(props) {
 		super(props);
-		this.source = this.props.cookies.get('user.source');
+		this.source = this.props.cookies.get(userSource);
 		this.props = props;
 		const query = queryString.parse(location.search);
 		this.state = {
@@ -36,7 +37,7 @@ class NewPassword extends Component {
 	async onNewPassword(e) {
 		const { dispatch, cookies } = this.props;
 		const { pass1, pass2, token } = this.state;
-		const [err, response] = await to(dispatch(new users.userNewPassword(cookies.get('user.token'), pass1, pass2, token)));
+		const [err, response] = await to(dispatch(new users.userNewPassword(cookies.get(userToken), pass1, pass2, token)));
 		if (err) {
 			this.setState({
 				error: true,

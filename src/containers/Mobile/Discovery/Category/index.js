@@ -14,13 +14,14 @@ import { actions as categoryActions } from '@/state/v4/Category';
 import CONST from '@/constants';
 import Shared from '@/containers/Mobile/Shared';
 import { actions as sharedActions } from '@/state/v4/Shared';
+import { userSource, userToken } from '@/data/cookiesLabel';
 
 class Category extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.userCookies = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
-		this.source = this.props.cookies.get('user.source');
+		this.userCookies = this.props.cookies.get(userToken);
+		this.source = this.props.cookies.get(userSource);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -131,7 +132,7 @@ const doAfterAnonymous = (props) => {
 		selectedSegment = CONST.SEGMENT_INIT.find(e => e.key === shared.current);
 	}
 	dispatch(sharedActions.setCurrentSegment(selectedSegment.key));
-	dispatch(new categoryActions.getCategoryMenuAction(cookies.get('user.token'), selectedSegment));
+	dispatch(new categoryActions.getCategoryMenuAction(cookies.get(userToken), selectedSegment));
 };
 
 const mapStateToProps = (state) => {

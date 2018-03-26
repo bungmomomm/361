@@ -30,6 +30,8 @@ import {
 	sendGtm,
 } from '@/utils/tracking';
 
+import { userToken } from '@/data/cookiesLabel';
+
 class LoginPage extends Component {
 	constructor(props) {
 		super(props);
@@ -54,12 +56,12 @@ class LoginPage extends Component {
 	async onLogin(e) {
 		const { cookies, dispatch, history } = this.props;
 		const { loginId, password, redirectUri } = this.state;
-		const [err, response] = await to(dispatch(new users.userLogin(cookies.get('user.token'), loginId, password)));
+		const [err, response] = await to(dispatch(new users.userLogin(cookies.get(userToken), loginId, password)));
 		if (err) {
 			return err;
 		}
 		setUserCookie(this.props.cookies, response.token);
-		dispatch(new users.afterLogin(cookies.get('user.token')));
+		dispatch(new users.afterLogin(cookies.get(userToken)));
 		history.push(redirectUri || '/');
 
 		this.trackingHandler(response);
@@ -71,12 +73,12 @@ class LoginPage extends Component {
 		const { cookies, dispatch, history } = this.props;
 		const { redirectUri } = this.state;
 		const { accessToken } = token;
-		const [err, response] = await to(dispatch(new users.userSocialLogin(cookies.get('user.token'), provider, accessToken)));
+		const [err, response] = await to(dispatch(new users.userSocialLogin(cookies.get(userToken), provider, accessToken)));
 		if (err) {
 			return err;
 		}
 		setUserCookie(this.props.cookies, response.token);
-		dispatch(new users.afterLogin(cookies.get('user.token')));
+		dispatch(new users.afterLogin(cookies.get(userToken)));
 		history.push(redirectUri || '/');
 
 		this.trackingHandler(response, provider);

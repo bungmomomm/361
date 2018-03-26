@@ -9,6 +9,7 @@ import { Form, Input } from '@/components/mobile/Formsy';
 import { to } from 'await-to-js';
 import { Promise } from 'es6-promise';
 import _ from 'lodash';
+import { isLogin, userToken } from '@/data/cookiesLabel';
 
 class Address extends Component {
 
@@ -38,13 +39,13 @@ class Address extends Component {
 				const { dispatch, cookies, address, address: { edit } } = nextProps;
 				const selected = { city: [], district: [] };
 
-				const cities = await to(dispatch(actions.getCity(cookies.get('user.token'), { q: `${edit.city.split(' ').pop().replace(/[,.]/i, '')}` })));
+				const cities = await to(dispatch(actions.getCity(cookies.get(userToken), { q: `${edit.city.split(' ').pop().replace(/[,.]/i, '')}` })));
 				selected.city = cities[1] ? cities[1].data.data.cities.filter((obj) => {
 					return obj.name === `${edit.city}, ${edit.province}`;
 				}) : [];
 
 				if (selected.city.length) {
-					const districts = await to(dispatch(actions.getDistrict(cookies.get('user.token'), { city_id: selected.city[0].city_id })));
+					const districts = await to(dispatch(actions.getDistrict(cookies.get(userToken), { city_id: selected.city[0].city_id })));
 					selected.district = districts[1] ? districts[1].data.data.districts.filter((obj) => {
 						return obj.name === edit.district;
 					}) : [];
@@ -92,7 +93,7 @@ class Address extends Component {
 			if (v) {
 				(async () => {
 					const { dispatch, cookies } = this.props;
-					const resp = await to(dispatch(actions.getDistrict(cookies.get('user.token'), { city_id: v.split('_')[1] })));
+					const resp = await to(dispatch(actions.getDistrict(cookies.get(userToken), { city_id: v.split('_')[1] })));
 
 					this.setState({
 						disabled: {
@@ -123,7 +124,7 @@ class Address extends Component {
 	onCitySearch = (el) => {
 		const { cookies, dispatch } = this.props;
 		if (el.target.value.length > 2) {
-			dispatch(actions.getCity(cookies.get('user.token'), { q: el.target.value }));
+			dispatch(actions.getCity(cookies.get(userToken), { q: el.target.value }));
 		}
 	};
 
@@ -167,7 +168,7 @@ class Address extends Component {
 
 		const { dispatch, cookies, history } = this.props;
 		this.setState({ submitting: true });
-		await dispatch(actions.editAddress(cookies.get('user.token'), model));
+		await dispatch(actions.editAddress(cookies.get(userToken), model));
 
 		history.push('/address');
 	};
@@ -433,12 +434,12 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies, history, match: { params } } = props;
-	if (!cookies.get('isLogin') || cookies.get('isLogin') === 'false') {
+	if (!cookies.get(isLogin) || cookies.get(isLogin) === 'false') {
 		history.push('/login');
 		return null;
 	}
 
-	const address = await dispatch(actions.getAddress(cookies.get('user.token')));
+	const address = await dispatch(actions.getAddress(cookies.get(userToken)));
 	const shipping = _.chain(address).get('data.data.shipping').value();
 
 	if (!shipping) {

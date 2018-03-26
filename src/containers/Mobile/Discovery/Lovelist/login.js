@@ -3,12 +3,13 @@ import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import { Header, Page, Button, Svg, Level } from '@/components/mobile';
 import styles from './lovelist.scss';
+import cookiesLabel from '@/data/cookiesLabel';
 
 class LovelistLogin extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.isLogin = (typeof this.props.cookies.get('isLogin') === 'string' && this.props.cookies.get('isLogin') === 'true');
+		this.isLogin = (typeof this.props.cookies.get(cookiesLabel.isLogin) === 'string' && this.props.cookies.get(cookiesLabel.isLogin) === 'true');
 		this.redirectToPage = this.redirectToPage.bind(this);
 	}
 

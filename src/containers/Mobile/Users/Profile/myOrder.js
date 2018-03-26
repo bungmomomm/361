@@ -14,10 +14,10 @@ import {
 	Spinner
 } from '@/components/mobile';
 import styles from './profile.scss';
-import CONST from '@/constants';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import { aux } from '@/utils';
 import classNames from 'classnames';
+import cookiesLabel from '@/data/cookiesLabel';
 
 class MyOrder extends Component {
 	constructor(props) {
@@ -27,8 +27,8 @@ class MyOrder extends Component {
 			{ id: 0, key: 'konfirmasi', title: 'Konfirmasi' }, { id: 1, key: 'dikirim', title: 'Dikirim' },
 			{ id: 2, key: 'selesai', title: 'Selesai' }, { id: 3, key: 'batal', title: 'Batal' }
 		];
-		this.isLogin = this.props.cookies.get('isLogin');
-		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin);
+		this.userToken = this.props.cookies.get(cookiesLabel.userToken);
 
 		if (this.isLogin !== 'true') {
 			this.props.history.push('/');
