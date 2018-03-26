@@ -38,7 +38,7 @@ export default class PageTracker {
 
 			// extract data from 'search'
 			if (Utils.notEmptyVal(search)) {
-				const params = Utils.extractRouteParams(search);
+				const params = PageTracker.extractRouteParams(search);
 				const { fq, page, per_page, query } = params;
 
 				if (group === references.search && Utils.notEmptyVal(query)) info.query = query;

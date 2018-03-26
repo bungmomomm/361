@@ -47,8 +47,13 @@ export default class Utils {
 
 	static getCustomerID = () => {
 		const sessionName = `${config.userSession}`;
-		const customerId = Utils.getInfo(sessionName);
-		if (Utils.notEmptyVal(customerId)) return customerId;
+		const userSession = Utils.getInfo(sessionName);
+
+		if (Utils.IsJsonString(userSession)) {
+			const info = JSON.parse(userSession);
+			const customerId = Number(info.id);
+			if (Utils.notEmptyVal(customerId)) return customerId;
+		}
 		return config.defaultCustomerId;
 	}
 
@@ -85,5 +90,10 @@ export default class Utils {
 
 	static notEmptyVal(value) {
 		return (typeof value !== 'undefined' && value !== null && value !== '');
+	}
+
+	static IsJsonString = (str) => {
+		try { JSON.parse(str); } catch (e) { return false; }
+		return true;
 	}
 }

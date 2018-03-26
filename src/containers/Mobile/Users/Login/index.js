@@ -56,7 +56,12 @@ class Login extends Component {
 		}
 		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
 		setUserCookie(this.props.cookies, response.token, false, userProfile);
-		setUserInfoCookie(cookies, _.toInteger(response.userprofile.userid));
+		const userInfo = { 
+			id: response.userprofile.userid, 
+			encId: response.userprofile.enc_userid, 
+			encEmail: response.userprofile.enc_email
+		};
+		setUserInfoCookie(cookies, JSON.stringify(userInfo));
 		dispatch(new users.afterLogin(cookies.get(userToken)));
 		history.push(redirectUri || '/');
 		return response;
