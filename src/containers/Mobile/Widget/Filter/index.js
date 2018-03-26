@@ -117,6 +117,9 @@ class Filter extends PureComponent {
 			case 'location':
 				facet.data = updateChilds(facet.data);
 				break;
+			case 'price':
+				delete facet.selected_range;
+				break;
 			default:
 				facet.data = _.map(facet.data, (facetData) => {
 					facetData.is_selected = 0;
