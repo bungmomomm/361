@@ -29,8 +29,15 @@ const setUniqeCookie = (cookies) => {
 	cookies.set('uniqueid', timeStampInMs, { domain: process.env.SESSION_DOMAIN, path: '/', expires: currentDate });
 };
 
+// save user info as session-cookie
+const setUserInfoCookie = (cookies, info) => {
+	const cname = process.env.USER_INFO_COOKIE;
+	cookies.set(cname, info, { domain: process.env.SESSION_DOMAIN, path: '/', expires: 0 });
+};
+
 export default {
 	setUserCookie,
 	removeUserCookie,
-	setUniqeCookie
+	setUniqeCookie,
+	setUserInfoCookie
 };

@@ -14,9 +14,10 @@ import {
 import {
 	Login as LoginWidget
 } from '@/containers/Mobile/Widget';
-import {
-	setUserCookie,
-	renderIf
+import { 
+	setUserCookie, 
+	renderIf,
+	setUserInfoCookie
 } from '@/utils';
 import styles from '../user.scss';
 import _ from 'lodash';
@@ -55,6 +56,7 @@ class Login extends Component {
 		}
 		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
 		setUserCookie(this.props.cookies, response.token, false, userProfile);
+		setUserInfoCookie(cookies, _.toInteger(response.userprofile.userid));
 		dispatch(new users.afterLogin(cookies.get('user.token')));
 		history.push(redirectUri || '/');
 		return response;

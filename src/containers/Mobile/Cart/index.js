@@ -16,6 +16,8 @@ import {
 	cartViewBuilder
 } from '@/utils/tracking';
 
+import { LucidCart } from '@/utils/tracking/lucidworks';
+
 const trackBrandPageView = (data, props) => {
 	const items = _.flatMap(data, (e) => (e.items));
 	const productId = _.map(items, 'product_id');
@@ -77,6 +79,11 @@ class Cart extends Component {
 			trackBrandPageView(nextProps.shopBag.carts, nextProps);
 		}
 
+		if (nextProps.shopBag.carts !== this.props.shopBag.carts && (typeof this.fusion === 'undefined')) {
+			const { carts, total } = nextProps.shopBag;
+			this.fusion = new LucidCart(carts, total);
+		}
+
 		this.checkNotProcedItem(nextProps);
 	}
 
@@ -120,6 +127,8 @@ class Cart extends Component {
 		const deleting = new Promise((resolve, reject) => {
 			resolve(dispatch(shopBagAction.deleteAction(this.userToken, this.state.productWillDelete.variant_id)));
 			this.clearWillDeleteState();
+			const { variant_id } = this.state.productWillDelete;
+			this.fusion.removeCart(variant_id);
 		});
 		deleting.then((res) => {
 			dispatch(shopBagAction.getAction(this.userToken));
@@ -148,6 +157,8 @@ class Cart extends Component {
 		const { dispatch } = this.props;
 		if (this.state.qtyNew !== null && this.state.qtyCurrent !== this.state.qtyNew) {
 			dispatch(shopBagAction.updateAction(this.userToken, this.state.variantIdwillUpdate, this.state.qtyNew));
+			const { variantIdwillUpdate, qtyNew } = this.state;
+			this.fusion.updateCart(variantIdwillUpdate, qtyNew);
 		}
 		this.setState({ showSelect: false, variantIdwillUpdate: null, selectList: [], qtyCurrent: null, qtyNew: null });
 	}

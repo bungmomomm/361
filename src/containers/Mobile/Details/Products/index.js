@@ -25,6 +25,8 @@ import {
 	sendGtm,
 } from '@/utils/tracking';
 
+import { Payload } from '@/utils/tracking/lucidworks';
+
 const trackAddToCart = (data, props, variant) => {
 	const products = {
 		name: data.detail.title,
@@ -150,6 +152,8 @@ class Products extends Component {
 			center: '',
 			right: ''
 		};
+
+		this.fusion = new Payload(this.props.cookies);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -181,6 +185,15 @@ class Products extends Component {
 				} else if (cardProduct.variants.length === 1 && !cardProduct.hasVariantSize) {
 					selectedVariant = cardProduct.variants[0];
 				}
+
+				const pricing = detail.variants[0].pricing.original;
+				// Fusion PDP tracking...
+				this.fusion.trackPdp({
+					product_id: detail.id,
+					item_price: pricing.effective_price,
+					item_disc: pricing.discount,
+					item_id: ''
+				});
 			}
 
 			// disable enabled button BELI AJA
@@ -257,15 +270,21 @@ class Products extends Component {
 		const { status } = this.state;
 		const { top } = this.props.scroll;
 		const carouselHeight = this.carouselEL.getBoundingClientRect().height;
-		if (top > carouselHeight && !status.showScrollInfomation) {
-			status.showScrollInfomation = true;
-			this.setState({ status });
-		}
+		
+		status.showScrollInfomation = ((top !== 0) && top > (carouselHeight / 2));
+		this.setState({ status });
+		// if (top > (carouselHeight / 2) && !status.showScrollInfomation) {
+		// if (top > (carouselHeight / 2)) {
+		// 	console.log('enter set show info');
+		// 	status.showScrollInfomation = true;
+		// 	this.setState({ status });
+		// }
 
-		if ((top === 0 || top < carouselHeight) && status.showScrollInfomation) {
-			status.showScrollInfomation = false;
-			this.setState({ status });
-		}
+		// if (top === 100 || (top < carouselHeight)) {
+		// if ((top === 0 || top < carouselHeight) && status.showScrollInfomation) {
+		// 	status.showScrollInfomation = false;
+		// 	this.setState({ status });
+		// }
 	}
 
 	handleLovelistClick(e) {
@@ -322,6 +341,16 @@ class Products extends Component {
 		});
 
 		handler.then((res) => {
+			// Fusion Add to Cart tracking...
+			const pricing = product.detail.variants[0].pricing.original;
+			this.fusion.trackAddToCart({
+				product_id: product.detail.id,
+				item_id: variant.id,
+				item_price: pricing.effective_price,
+				item_disc: pricing.discount,
+				qty: this.defaultCount
+			});
+
 			// updates carts badge
 			dispatch(sharedActions.totalCartAction(this.userCookies));
 			status.pendingAddProduct = false;
@@ -330,7 +359,7 @@ class Products extends Component {
 			notif.show = true;
 			notif.content = 'Produk Berhasil ditambahkan';
 			this.setState({ status, notif });
-			status.pdpDataHasLoaded = false;
+
 			dispatch(productActions.productDetailAction(this.userCookies, product.detail.id));
 			trackAddToCart(product, this.props, variant);
 
@@ -650,16 +679,16 @@ class Products extends Component {
 								</div>
 							)}
 
-							{status.loading && this.loadingContent}
-
 							{!_.isEmpty(detail) && status.hasVariantSize && (
 								<div className='flex-center padding--medium-h border-top'>
 									<div className='margin--medium-v'>
 										<div className='flex-row flex-spaceBetween'>
 											<div className='font-medium'>Pilih Ukuran</div>
-											<Link to='/product/guide' className='d-flex font-color--primary font--lato-bold font-color-primary flex-row flex-middle'>
-												<Svg src='ico_sizeguide.svg' /> <span className='padding--small-h font--lato-bold font-color--primary padding--none-r'>PANDUAN UKURAN</span>
-											</Link>
+											{(!_.isEmpty(cardProduct) && _.has(cardProduct, 'hasSizeGuide') && cardProduct.hasSizeGuide) &&
+												<Link to='/product/guide' className='d-flex font-color--primary font--lato-bold font-color-primary flex-row flex-middle'>
+													<Svg src='ico_sizeguide.svg' /> <span className='padding--small-h font--lato-bold font-color--primary padding--none-r'>PANDUAN UKURAN</span>
+												</Link>
+											}
 										</div>
 										<div className='margin--medium-v horizontal-scroll margin--none-b'>
 											<Radio
@@ -693,19 +722,21 @@ class Products extends Component {
 							{!_.isEmpty(detail.description)
 							&&
 								<div className='wysiwyg-content'>
-									<div className={classNameProductDescription} dangerouslySetInnerHTML={{ __html: stringHelper.removeHtmlTag(detail.description) }} />
+									<div className={classNameProductDescription}>
+										{stringHelper.removeHtmlTag(detail.description)}
+										{!_.isEmpty(cardProduct.specs) && (
+											<div className='margin--medium-v --disable-flex'>
+												{(cardProduct.specs.map((item, idx) => {
+													item.value = item.value.replace(/(?:\r\n|\r|\n)/g, '<br />');
+													if (/^/.test(item.value)) return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
+													return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
+												}))}
+											</div>
+										)}
+									</div>
 									<span className='padding--medium-h font-color--grey' {...buttonProductDescriptionAttribute}>{ fullProductDescriptionButtonText }</span>
 								</div>
 							}
-							{!_.isEmpty(detail.spec) && (
-								<div className='margin--medium-v --disable-flex padding--medium-h'>
-									{(detail.spec.map((item, idx) => {
-										item.value = item.value.replace(/(?:\r\n|\r|\n)/g, '<br />');
-										if (/^/.test(item.value)) return <div key={idx} className='margin--small-v font-medium font-color--primary wysiwyg-content' dangerouslySetInnerHTML={{ __html: item.value }} />;
-										return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
-									}))}
-								</div>
-							)}
 							<div className='margin--medium-v --disable-flex padding--medium-h'>
 								<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
 									{(comments.total === 0) && 'Tulis Komentar'}
@@ -766,8 +797,6 @@ class Products extends Component {
 									loginNow={this.handleLovelistClick}
 									productId={detail.id}
 								/>
-								{/* } */}
-
 							</div>
 						</div>
 						{this.renderStickyAction()}
@@ -806,22 +835,6 @@ class Products extends Component {
 									onChange={this.handleSelectVariant}
 									data={cardProduct.variants}
 								/>
-								{/* <Level style={{ padding: '0px' }} className='margin--medium-v'>
-									<Level.Left />
-									<Level.Item>
-										<Radio
-											name='size'
-											checked={this.state.size}
-											variant='rounded'
-											className='margin--small-v'
-											onChange={this.handleSelectVariant}
-											data={cardProduct.variants}
-										/>
-									</Level.Item>
-									<Level.Right className='padding--small-v' >
-										<Button color='secondary' disabled={status.btnBeliDisabled || _.isEmpty(selectedVariant)} size='medium' onClick={this.handleBtnBeliClicked}>{this.state.btnBeliLabel}</Button>
-									</Level.Right>
-								</Level> */}
 							</div>
 						</div>
 					</Modal>
