@@ -193,6 +193,11 @@ class Detail extends Component {
 
 	}
 
+	componentWillUnmount() {
+		const { dispatch } = this.props;
+		dispatch(brandAction.brandProductCleanUp());
+	}
+
 	async onApply(e, fq, closeFilter) {
 		const { query } = this.state;
 		query.fq = fq;

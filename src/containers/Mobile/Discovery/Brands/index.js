@@ -55,12 +55,6 @@ class Brands extends Component {
 		}
 	}
 
-	componentWillUnmount() {
-		const { dispatch } = this.props;
-		dispatch(actions.brandProductCleanUp());
-	}
-
-
 	onFilter(keyword) {
 		let filteredBrand = [];
 
