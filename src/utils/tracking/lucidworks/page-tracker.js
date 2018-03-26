@@ -38,13 +38,17 @@ export default class PageTracker {
 			if (!Utils.notEmptyVal(group)) group = references.home;
 			info.reference = group;
 
-			// extract data from 'search'
+			// extract data from 'search' same value with window.location.search
 			if (Utils.notEmptyVal(search)) {
 				const params = PageTracker.extractRouteParams(search);
 				const { fq, page, per_page, query } = params;
 
-				if (group === references.search && Utils.notEmptyVal(query)) info.query = query;
-				if (Utils.notEmptyVal(fq)) info.query = fq;
+				if (Utils.notEmptyVal(query) && Utils.notEmptyVal(fq)) info.query = `${query}|${fq}`;
+				else {
+					if (Utils.notEmptyVal(query)) info.query = query;
+					if (Utils.notEmptyVal(fq)) info.query = fq;
+				}
+
 				if (Utils.notEmptyVal(page)) info.page = page;
 				if (Utils.notEmptyVal(per_page)) info.limit = params.per_page;
 			}

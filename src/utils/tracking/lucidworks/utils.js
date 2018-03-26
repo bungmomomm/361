@@ -27,13 +27,11 @@ export default class Utils {
 			if (Utils.notEmptyVal(decInfo)) {
 				const infoArr = decInfo.split(';');
 				const len = infoArr.length;
-
 				for (let i = 0; i < len; i++) {
 					let c = infoArr[i];
 					while (c.charAt(0) === ' ') c = c.substring(1);
 					if (c.indexOf(cname) === 0) return c.substring(cname.length, c.length);
 				};
-
 			}
 			return '';
 		} catch (error) {

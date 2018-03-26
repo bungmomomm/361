@@ -16,6 +16,12 @@ class CustomRoute extends PureComponent {
 		Fusion.tracks(this.props);
 	}
 
+	componentDidUpdate() {
+		// binds fusion session
+		// tracking fusion for loadless page like pdp, apply sort and filter
+		Fusion.tracks(this.props);
+	}
+
 	render() {
 		const { ...props } = this.props;
 		return <Route {...props} />;

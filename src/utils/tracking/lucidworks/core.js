@@ -87,8 +87,7 @@ export default class Fusion {
 
 					// sending request...
 					requestSent.then((res) => {
-						console.log('An event has been pushed: ', res);
-						console.log('Payloads pushed: ', payload);
+						console.log('fusion: ', payload);
 					}).catch((err) => {
 						console.log(err);
 					});
@@ -105,8 +104,6 @@ export default class Fusion {
 	static tracks = (route) => {
 		// tracks referal page
 		if (config.enabled) {
-			console.log('binds fusion session....');
-			console.log('current route props: ', route);
 			PageTracker.trackRoute(route);
 			window.onload = () => {
 				const f = new Fusion();
