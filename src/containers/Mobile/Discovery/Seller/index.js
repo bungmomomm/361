@@ -46,6 +46,7 @@ import {
 } from '@/utils/tracking';
 import classNames from 'classnames';
 import styles from './styles.scss';
+import { userToken } from '@/data/cookiesLabel';
 
 const trackSellerPageView = (products, info, props) => {
 	const productId = _.map(products, 'product_id') || [];
@@ -243,7 +244,7 @@ class Seller extends Component {
 		history.push(`?${url}`);
 
 		const data = {
-			token: cookies.get('user.token'),
+			token: cookies.get(userToken),
 			query: {
 				...query,
 				...filters,
@@ -255,8 +256,8 @@ class Seller extends Component {
 		const response = await to(dispatch(actions.getProducts(data)));
 
 		const productIdList = _.map(response[1].data.products, 'product_id') || [];
-		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+		dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
+		dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
 	};
 
 	handlePick = (val) => {
@@ -525,7 +526,7 @@ const doAfterAnonymous = async (props) => {
 
 	const qs = queryString.parse(location.search);
 	const data = {
-		token: cookies.get('user.token'),
+		token: cookies.get(userToken),
 		query: {
 			store_id: params.store_id || 0,
 			...qs
@@ -535,8 +536,8 @@ const doAfterAnonymous = async (props) => {
 	await dispatch(actions.initSeller(data.token, data.query.store_id));
 	const response = await to(dispatch(actions.getProducts(data)));
 	const productIdList = _.map(response[1].data.products, 'product_id') || [];
-	dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-	dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+	dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
+	dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
 
 };
 

@@ -11,6 +11,7 @@ import Discovery from '@/containers/Mobile/Discovery/Utils';
 import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import _ from 'lodash';
+import { userToken } from '@/data/cookiesLabel';
 
 class HashtagsDetails extends Component {
 
@@ -133,11 +134,11 @@ const doAfterAnonymous = async (props) => {
 		icode: params.icode
 	};
 
-	const resp = await dispatch(actions.hashtagDetailAction(cookies.get('user.token'), ids));
+	const resp = await dispatch(actions.hashtagDetailAction(cookies.get(userToken), ids));
 	const productIdList = _.map(resp.data.data.products, 'product_id') || [];
 	if (productIdList.length > 0) {
-		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+		dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
+		dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
 	}
 };
 

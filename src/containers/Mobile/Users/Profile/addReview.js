@@ -13,17 +13,17 @@ import {
 	Modal,
 	RatingAdd
 } from '@/components/mobile';
-import CONST from '@/constants';
 import { actions as userAction } from '@/state/v4/User';
 import styles from './profile.scss';
 import classNames from 'classnames';
+import cookiesLabel from '@/data/cookiesLabel';
 
 class AddReview extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.isLogin = this.props.cookies.get('isLogin');
-		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin);
+		this.userToken = this.props.cookies.get(cookiesLabel.userToken);
 		this.soNumber = this.props.match.params.so_number;
 		this.state = {
 			payload: {

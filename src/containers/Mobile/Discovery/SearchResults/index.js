@@ -33,13 +33,14 @@ import { actions as lovelistActions } from '@/state/v4/Lovelist';
 // TODO util management
 import Discovery from '../Utils';
 import { urlBuilder, renderIf } from '@/utils';
+import cookiesLabel from '@/data/cookiesLabel';
 
 
 class SearchResults extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.isLogin = this.props.cookies.get('isLogin') || false;
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) || false;
 
 		const propsObject = _.chain(props.searchResults);
 		this.state = {
@@ -111,22 +112,22 @@ class SearchResults extends Component {
 		});
 
 		const [err, response] = await to(dispatch(searchActions.searchAction({
-			token: cookies.get('user.token'),
+			token: cookies.get(cookiesLabel.userToken),
 			query: {
 				...query,
 				...params
 			}
 		})));
 		if (err) {
-			dispatch(searchActions.promoAction(cookies.get('user.token')));
+			dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken)));
 		}
 		if (response) {
 			if (!_.isEmpty(response.searchData.products)) {
 				const productIdList = _.map(response.searchData.products, 'product_id') || null;
-				dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-				dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+				dispatch(commentActions.bulkieCommentAction(cookies.get(cookiesLabel.userToken), productIdList));
+				dispatch(lovelistActions.bulkieCountByProduct(cookies.get(cookiesLabel.userToken), productIdList));
 			} else {
-				dispatch(searchActions.promoAction(cookies.get('user.token')));
+				dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken)));
 			}
 		}
 	}
@@ -239,23 +240,23 @@ class SearchResults extends Component {
 	renderHeader() {
 		const { dispatch, cookies } = this.props;
 		let back = () => {
-			dispatch(actionSearch.updatedKeywordHandler('', cookies.get('user.token')));
+			dispatch(actionSearch.updatedKeywordHandler('', cookies.get(cookiesLabel.userToken)));
 			this.props.history.go(-2);
 		};
 		if (this.props.history.length === 0) {
 			back = () => {
-				dispatch(actionSearch.updatedKeywordHandler('', cookies.get('user.token')));
+				dispatch(actionSearch.updatedKeywordHandler('', cookies.get(cookiesLabel.userToken)));
 				this.props.history.push('/');
 			};
 		}
 
 		const iconRightAction = () => {
-			dispatch(actionSearch.updatedKeywordHandler('', cookies.get('user.token')));
+			dispatch(actionSearch.updatedKeywordHandler('', cookies.get(cookiesLabel.userToken)));
 			this.props.history.push('/search');
 		};
 
 		const onClickInputAction = () => {
-			dispatch(actionSearch.updatedKeywordHandler(this.getKeyword(), cookies.get('user.token')));
+			dispatch(actionSearch.updatedKeywordHandler(this.getKeyword(), cookies.get(cookiesLabel.userToken)));
 			this.props.history.push('/search');
 		};
 
@@ -365,17 +366,17 @@ const doAfterAnonymous = async (props) => {
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
-	const [err, response] = await to(dispatch(searchActions.searchAction({ token: cookies.get('user.token'), query: searchParam })));
+	const [err, response] = await to(dispatch(searchActions.searchAction({ token: cookies.get(cookiesLabel.userToken), query: searchParam })));
 	if (err) {
-		await dispatch(searchActions.promoAction(cookies.get('user.token')));
+		await dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken)));
 	}
 	if (response) {
 		if (!_.isEmpty(response.searchData.products)) {
 			const productIdList = _.map(response.searchData.products, 'product_id') || null;
-			await dispatch(searchActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-			await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+			await dispatch(searchActions.bulkieCommentAction(cookies.get(cookiesLabel.userToken), productIdList));
+			await dispatch(lovelistActions.bulkieCountByProduct(cookies.get(cookiesLabel.userToken), productIdList));
 		} else {
-			await dispatch(searchActions.promoAction(cookies.get('user.token')));
+			await dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken)));
 		}
 	}
 };
