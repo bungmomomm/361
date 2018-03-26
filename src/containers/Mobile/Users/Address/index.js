@@ -6,6 +6,7 @@ import Shared from '@/containers/Mobile/Shared';
 import { Page, Button, Svg, Header, Modal, Level } from '@/components/mobile';
 import { actions } from '@/state/v4/Address';
 import { Promise } from 'es6-promise';
+import styles from './style.scss';
 
 class Address extends Component {
 
@@ -56,58 +57,44 @@ class Address extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page color='white'>
-					<div className='margin--small'>
-						<p style={{ textAlign: 'center' }}>
-							<Link to='/address/add'>Tambah alamat baru +</Link>
-						</p>
-					</div>
+				<Page color='grey'>
+					<Link to='/address/add' className='bg--white margin--medium-t margin--medium-b'>
+						<Level>
+							<Level.Left>
+								Tambah Alamat Baru
+							</Level.Left>
+							<Level.Right style={{ justifyContent: 'center' }}>
+								<Svg src='ico_add.svg' />
+							</Level.Right>
+						</Level>
+					</Link>
 					{address.address.shipping.map((v, k) => {
 						const { city, fullname, district, phone, province, zipcode } = v;
 						console.log('value');
 						console.log(v);
+						const placeHasBeenMarkedContent = (
+							<div className='flex-row'>
+								<div className='margin--small-r'><Svg src='ico_pin-poin-marked.svg' /></div>
+								<div>&nbsp;Lokasi sudah ditandai</div>
+							</div>
+						);
 						return (
-							<div className='margin--small' key={k}>
-								<p>
-									<Link to={`/address/edit/${v.id}`}>Edit</Link>
-									<Button onClick={() => this.openDeleteModal(v)}>Delete</Button>
-								</p>
-								<div>
-									Nilai tandai lokasi
-									{v.is_supported_pin_point}
-								</div>
-								<div>
-									Alamat Sebagai
-									{v.address_label}
-								</div>
-								<div>
-									Phone
-									{phone}
-								</div>
-								<div>
-									Province
-									{province}
-								</div>
-								<div>
-									ZipCode
-									{zipcode}
-								</div>
-								<div>
-									FullName
-									{fullname}
-								</div>
-								<div>
-									District
-									{district}
-								</div>
-								<div>
-									Address
-									{v.address}
-								</div>
-								<div>
-									City
-									{city}
-								</div>
+
+							<div>
+								<Level className='bg--white border-bottom' key={k}>
+									<Level.Left className='d-inline-block'>
+										<strong>{v.address_label}</strong>&nbsp;{(v.fg_default === 1) ? '(Alamat Utama)' : null }
+									</Level.Left>
+									<Level.Right style={{ justifyContent: 'center' }}>
+										<Svg src='ico_option.svg' />
+									</Level.Right>
+								</Level>
+								<Level className='bg--white margin--medium-b flex-column'>
+									<div><strong>{fullname}</strong></div>
+									<div><p>{v.address}, {province}, {city}, {district}, {zipcode}</p></div>
+									<div><p>{phone}</p></div>
+									<div className={styles.locationMarked}>{(v.is_supported_pin_point === 1) ? placeHasBeenMarkedContent : null }</div>
+								</Level>
 							</div>
 						);
 					})}
