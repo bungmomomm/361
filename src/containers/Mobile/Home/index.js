@@ -21,6 +21,7 @@ import {
 	sendGtm,
 } from '@/utils/tracking';
 import { urlBuilder } from '@/utils';
+import cookiesLabel from '@/data/cookiesLabel';
 
 const renderSectionHeader = (title, options, cookies = null) => {
 	return (
@@ -72,11 +73,11 @@ class Home extends Component {
 		super(props);
 		this.props = props;
 
-		this.userCookies = this.props.cookies.get('user.token');
-		this.userRFCookies = this.props.cookies.get('user.rf.token');
-		this.source = this.props.cookies.get('user.source');
+		this.userCookies = this.props.cookies.get(cookiesLabel.userToken);
+		this.userRFCookies = this.props.cookies.get(cookiesLabel.userRfToken);
+		this.source = this.props.cookies.get(cookiesLabel.userSource);
 
-		this.isLogin = this.props.cookies.get('isLogin');
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin);
 
 		this.state = {
 			isFooterShow: true,
@@ -437,7 +438,7 @@ const doAfterAnonymous = async (props) => {
 
 	const activeSegment = home.segmen.find(e => e.key === home.activeSegment.key);
 
-	const tokenHeader = cookies.get('user.token');
+	const tokenHeader = cookies.get(cookiesLabel.userToken);
 
 	const mainPageData = await dispatch(new actions.mainAction(activeSegment, tokenHeader));
 	await dispatch(new actions.recomendationAction(activeSegment, tokenHeader));

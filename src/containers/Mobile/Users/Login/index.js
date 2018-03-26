@@ -23,7 +23,7 @@ import _ from 'lodash';
 import validator from 'validator';
 import util from 'util';
 import to from 'await-to-js';
-
+import { userToken } from '@/data/cookiesLabel';
 import Logout from './Logout';
 
 class Login extends Component {
@@ -49,13 +49,13 @@ class Login extends Component {
 	async onLogin(e) {
 		const { cookies, dispatch, history } = this.props;
 		const { loginId, password, redirectUri } = this.state;
-		const [err, response] = await to(dispatch(new users.userLogin(cookies.get('user.token'), loginId, password)));
+		const [err, response] = await to(dispatch(new users.userLogin(cookies.get(userToken), loginId, password)));
 		if (err) {
 			return err;
 		}
 		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
 		setUserCookie(this.props.cookies, response.token, false, userProfile);
-		dispatch(new users.afterLogin(cookies.get('user.token')));
+		dispatch(new users.afterLogin(cookies.get(userToken)));
 		history.push(redirectUri || '/');
 		return response;
 	}
@@ -64,13 +64,13 @@ class Login extends Component {
 		const { cookies, dispatch, history } = this.props;
 		const { redirectUri } = this.state;
 		const { accessToken } = token;
-		const [err, response] = await to(dispatch(new users.userSocialLogin(cookies.get('user.token'), provider, accessToken)));
+		const [err, response] = await to(dispatch(new users.userSocialLogin(cookies.get(userToken), provider, accessToken)));
 		if (err) {
 			return err;
 		}
 		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
 		setUserCookie(this.props.cookies, response.token, false, userProfile);
-		dispatch(new users.afterLogin(cookies.get('user.token')));
+		dispatch(new users.afterLogin(cookies.get(userToken)));
 		history.push(redirectUri || '/');
 		return response;
 	}

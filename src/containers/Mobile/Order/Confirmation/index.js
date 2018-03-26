@@ -20,6 +20,7 @@ import {
 	Level,
 	Notification
 } from '@/components/mobile';
+import { userToken } from '@/data/cookiesLabel';
 
 class OrderConfirmation extends Component {
 	
@@ -53,7 +54,7 @@ class OrderConfirmation extends Component {
 		const { location, history, dispatch, cookies } = this.props;
 		const query = queryString.parse(location.search);
 		const orderId = query.order_id;
-		dispatch(users.getMyOrderDetail(cookies.get('user.token'), cookies.get('user.token')));
+		dispatch(users.getMyOrderDetail(cookies.get(userToken), cookies.get(userToken)));
 		// If no order id or there is no order detail exist then throw them to homepage
 		if (!orderId || !this.props.users.myOrdersDetail) {
 			history.push('/');
@@ -179,7 +180,7 @@ class OrderConfirmation extends Component {
 			checkedTransferTo
 		};
 		
-		const [error, response] = await to(dispatch(new users.PostOrderConfirmation(cookies.get('user.token'), postData)));
+		const [error, response] = await to(dispatch(new users.PostOrderConfirmation(cookies.get(userToken), postData)));
   
 		console.log('postData');
 		console.log(postData);
@@ -417,7 +418,7 @@ class OrderConfirmation extends Component {
 const doAfterAnonymous = async (props) => {
  
 	const { dispatch, cookies } = props;
-	dispatch(new users.getListBankConfirmation(cookies.get('user.token')));
+	dispatch(new users.getListBankConfirmation(cookies.get(userToken)));
  
 };
 
