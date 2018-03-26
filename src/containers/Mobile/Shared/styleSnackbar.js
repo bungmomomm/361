@@ -5,7 +5,10 @@ function getDefaultStyles(theming) {
 			position: 'fixed',
 			bottom: 0,
 			left: 0,
+			right: 0,
 			zIndex: 999,
+			marginRight: 'auto',
+			marginLeft: 'auto',
 			width: '100%',
 			maxWidth: '480px',
 			transition: 'transform 100ms ease-out',
@@ -14,12 +17,7 @@ function getDefaultStyles(theming) {
 			backgroundColor: theming.backgroundColor || '#E3E3E3',
 			padding: '13px 16px',
 			largeScreen: {
-				left: '50%',
-				transform: 'translate(-50%, 100%)',
-				borderRadius: '2px',
-				padding: '20px 24px',
-				minWidth: '320px',
-				maxWidth: '480px',
+				left: -15,
 			}
 		},
 		label: {
@@ -57,7 +55,7 @@ function getTransitionStyles(elem, largeScreen, visible, theming) {
 	if (elem === 'snack') {
 		if (visible) {
 			const small = `translate(${(theming.transitionToXY || {}).smallScreen || '0, 0'})`;
-			const large = `translate(${(theming.transitionToXY || {}).largeScreen || '-50%, 0'})`;
+			const large = `translate(${(theming.transitionToXY || {}).largeScreen || '0, 0'})`;
 			return {
 				transform: largeScreen ? large : small,
 			};

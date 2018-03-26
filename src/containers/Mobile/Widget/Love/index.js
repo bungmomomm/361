@@ -101,12 +101,7 @@ class Love extends PureComponent {
 						borderRadius: '40px',
 						textAlign: 'center',
 						largeScreen: {
-							left: '50%',
-							transform: 'translate(-50%, 100%)',
-							borderRadius: '40px',
-							padding: '20px 24px',
-							minWidth: '320px',
-							maxWidth: '480px',
+							left: -15,
 						}
 					},
 					label: {

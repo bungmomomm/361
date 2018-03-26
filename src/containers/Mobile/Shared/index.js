@@ -208,8 +208,8 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 						: (+(parseInt(snackCss.bottom, 10) || 0) + 0),
 				zIndex: !this.state.scroll.isNavSticky && stickyEl ? 2 : 999
 			};
-			const customStyles = { ...snackStyle.css, snack: { ...snackCss, ...snackSticky } };
-			return { theming: { ...snackStyle.theming, snack: { ...themingSnackCss, ...snackSticky } }, customStyles };
+			const customStyles = { ...snackStyle.css, snack: { ...snackCss, ...snackSticky, largeScreen: { ...snackCss, ...snackSticky } } };
+			return { theming: { ...snackStyle.theming, snack: { ...themingSnackCss, ...snackSticky, largeScreen: { ...snackCss, ...snackSticky } } }, customStyles };
 		};
 
 		render() {
