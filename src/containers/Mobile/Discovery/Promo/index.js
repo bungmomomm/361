@@ -36,7 +36,7 @@ class Promo extends Component {
 
 		this.loadingView = <Spinner />;
 	}
-
+  
 	componentWillUnmount() {
 		const { dispatch } = this.props;
 		dispatch(promoActions.loadingAction(true));
@@ -75,7 +75,6 @@ class Promo extends Component {
 
 	renderForeverBanner() {
 		const { shared, dispatch } = this.props;
-
 		return <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />;
 	}
 
@@ -143,12 +142,21 @@ class Promo extends Component {
 	}
 
 	renderPage() {
+		const { cookies } = this.props;
+		const navigationAttribute = {
+			scroll: this.props.scroll
+		};
+		if (cookies.get('page.referrer') === 'CATEGORY') {
+			navigationAttribute.active = 'Categories';
+		} else {
+			navigationAttribute.active = 'Promo';
+		}
 		return (
 			<div style={this.props.style}>
 				{this.renderProductList()}
 				{this.renderHeader()}
 				{this.renderForeverBanner()}
-				<Navigation active='Promo' scroll={this.props.scroll} />
+				<Navigation {...navigationAttribute} />
 			</div>
 		);
 	}
@@ -159,8 +167,8 @@ class Promo extends Component {
 }
 
 const mapStateToProps = (state, props) => {
-	const { 
-		comments, 
+	const {
+		comments,
 		lovelist,
 		discovery } = state;
 	const { match } = props;
@@ -171,7 +179,7 @@ const mapStateToProps = (state, props) => {
 		const { products } = promoTypeData.value();
 		discovery.promo[promoType].products = Discovery.mapProducts(products, comments, lovelist);
 	}
-	
+
 	return {
 		discovery,
 		shared: state.shared,

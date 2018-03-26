@@ -4,7 +4,6 @@ import { Header, Page, Spinner } from '@/components/mobile';
 import styles from './search.scss';
 import { connect } from 'react-redux';
 import { actions as actionSearch } from '@/state/v4/Search';
-import { actions as sharedActions } from '@/state/v4/Shared';
 import { Link } from 'react-router-dom';
 import CONST from '@/constants';
 import Shared from '@/containers/Mobile/Shared';
@@ -77,10 +76,10 @@ class Search extends PureComponent {
 
 	enterSearchHandler(event) {
 		if (event.key === 'Enter') {
-			const { location, dispatch } = this.props;
-			dispatch(new sharedActions.removeLogSinglePage());
+			const { location, cookies } = this.props;
+			cookies.remove('page.referrer', { path: '/' });
 			if (location.search === '?ref=home') {
-				dispatch(new sharedActions.logSinglePage('HOME'));
+				cookies.set('page.referrer', 'HOME', { path: '/' });
 			}
 			this.setCookieSearch(event.target.value, event.target.value, this.SUGGEST_KEYWORD);
 			const pathProd = `/products?category_id=&query=${encodeURIComponent(event.target.value)}`;
@@ -257,9 +256,9 @@ class Search extends PureComponent {
 
 		const backHandler = () => {
 			if (this.props.location.search === '?ref=home') {
-				const { dispatch } = this.props;
+				const { cookies, dispatch } = this.props;
 				dispatch(actionSearch.updatedKeywordHandler('', this.userToken));
-				dispatch(sharedActions.logSinglePage('HOME'));
+				cookies.set('page.referrer', 'HOME', { path: '/' });
 				this.props.history.push('/');
 			} else {
 				this.props.history.goBack();

@@ -433,8 +433,9 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies, history, match: { params } } = props;
-	if (!cookies.get('isLogin')) {
+	if (!cookies.get('isLogin') || cookies.get('isLogin') === 'false') {
 		history.push('/login');
+		return null;
 	}
 
 	const address = await dispatch(actions.getAddress(cookies.get('user.token')));

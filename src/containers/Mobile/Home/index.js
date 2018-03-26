@@ -112,7 +112,7 @@ class Home extends Component {
 	}
 
 	renderHeroBanner() {
-		const { home, dispatch } = this.props;
+		const { home, cookies } = this.props;
 		const segment = home.activeSegment.key;
 		const featuredBanner = _.chain(home).get(`allSegmentData.${segment}`).get('heroBanner');
 		if (!featuredBanner.isEmpty().value()) {
@@ -124,7 +124,7 @@ class Home extends Component {
 					to={link}
 					onClick={
 						() => {
-							dispatch(new sharedActions.logSinglePage('HOME'));
+							cookies.set('page.referrer', 'HOME', { path: '/' });
 						}
 					}
 				>
@@ -152,7 +152,6 @@ class Home extends Component {
 		const recommendationData = _.chain(home).get(`allSegmentData.${segment.key}.recomendationData.${type}`);
 		if (recommendationData.value()) {
 			const data = recommendationData.value();
-			console.log(data);
 			if (data.data && data.data.length > 0) {
 				const link = `/promo/${type}?segment_id=${segment.id}`;
 
@@ -167,7 +166,7 @@ class Home extends Component {
 							{
 								data.data.map(({ images, pricing, path, product_id, product_title }, e) => (
 									<div key={e}>
-										<Link to={`/${urlBuilder.buildPdp(product_title, product_id)}`}>
+										<Link to={`${urlBuilder.buildPdp(product_title, product_id)}`}>
 											<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
 											<div className={styles.btnThumbnail}>
 												<Button transparent color='secondary' size='small'>
@@ -226,7 +225,7 @@ class Home extends Component {
 	}
 
 	renderSquareBanner() {
-		const { home, dispatch } = this.props;
+		const { home, cookies } = this.props;
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}.squareBanner`);
 		if (datas.value()) {
@@ -239,7 +238,7 @@ class Home extends Component {
 								key={c}
 								onClick={
 									() => {
-										dispatch(new sharedActions.logSinglePage('HOME'));
+										cookies.set('page.referrer', 'HOME', { path: '/' });
 									}
 								}
 							>
@@ -256,7 +255,7 @@ class Home extends Component {
 	}
 
 	renderBottomBanner(position = 'top') {
-		const { home, dispatch } = this.props;
+		const { home, cookies } = this.props;
 		const segment = home.activeSegment.key;
 		let bottomBanner = [];
 		const dataTop = _.chain(home).get(`allSegmentData.${segment}.topLanscape`);
@@ -274,7 +273,7 @@ class Home extends Component {
 								key={d}
 								onClick={
 									() => {
-										dispatch(new sharedActions.logSinglePage('HOME'));
+										cookies.set('page.referrer', 'HOME', { path: '/' });
 									}
 								}
 							>
