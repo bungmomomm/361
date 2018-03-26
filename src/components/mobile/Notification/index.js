@@ -5,34 +5,14 @@ import Button from '../Button';
 import Svg from '../Svg';
 
 class Notification extends PureComponent {
-	constructor(props) {
-		super(props);
-		this.props = props;
-		this.state = {
-			show: props.show 
-		};
-		this.timeout = false;
-	}
 
-	componentDidMount() {
+	componentWillMount() {
 		const { timeout } = this.props;
 		const that = this;
 		if (timeout > 0) {
-			this.timeout = setTimeout(() => {
-				that.setState({
-					show: false
-				});
+			setTimeout(() => {
 				that.props.onClose(undefined);
-				that.timeout = false;
 			}, parseInt(timeout, 10));
-		}
-	}
-
-	componentWillReceiveProps(nextProps) {
-		if (nextProps.show !== undefined) {
-			this.setState({
-				show: nextProps.show
-			});
 		}
 	}
 
@@ -45,10 +25,9 @@ class Notification extends PureComponent {
 			toast,
 			disableClose,
 			alert,
+			show,
 			style
 		} = this.props;
-
-		const { show } = this.state;
 
 		const createClassName = classNames(
 			styles.container,

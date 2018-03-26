@@ -56,27 +56,13 @@ const actions = createActions({
 	USER_AFTER_LOGIN_CLEAR: undefined,
 	USER_BANK_LIST: (userBankList) => ({ userBankList }),
 	USER_CLEAR_ERROR: () => ({ 
-		login: {
-			error: undefined
-		}, 
-		newpassword: {
-			error: undefined
-		},
-		forget: {
-			error: undefined
-		},
-		logout: {
-			error: undefined
-		},
-		validateOvo: {
-			error: undefined
-		},
-		otp: {
-			error: undefined
-		},
-		register: {
-			error: undefined
-		},
+		login: undefined, 
+		newpassword: undefined,
+		forget: undefined,
+		logout: undefined,
+		validateOvo: undefined,
+		otp: undefined,
+		register: undefined,
 	})
 });
 
