@@ -23,6 +23,7 @@ import Radio from './Radio';
 import Select from './Select';
 import Table from './Table';
 import Rating from './Rating';
+import RatingAdd from './RatingAdd';
 import Spinner from './Spinner';
 import SocialLogin from './SocialLogin';
 import Timeline from './Timeline';
@@ -51,6 +52,7 @@ export default {
 	Panel,
 	Radio,
 	Rating,
+	RatingAdd,
 	Select,
 	Slider,
 	Spinner,

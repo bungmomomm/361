@@ -181,6 +181,7 @@ class Brands extends Component {
 
 	render() {
 		const HeaderPage = {
+			// subheaderStyle: { height: ref.getBoundingClientRect.height },
 			left: (
 				<Link to='/category'>
 					<Svg src='ico_arrow-back-left.svg' />
@@ -194,7 +195,7 @@ class Brands extends Component {
 		return (
 			<div style={this.props.style}>
 				<Page color='white'>
-					<SEO 
+					<SEO
 						paramCanonical={process.env.MOBILE_UR}
 					/>
 					{

@@ -6,7 +6,6 @@ import Utils from './utils';
 import Uuid from './uuid';
 import { EventPayload as Payload } from './event-payload';
 
-console.log('references: ', references);
 export default {
 	Fusion,
 	LucidCart,

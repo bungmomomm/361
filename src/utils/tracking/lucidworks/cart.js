@@ -94,8 +94,10 @@ export default class LucidCart extends Fusion {
 	}
 
 	trackCartChangesEvent(event) {
-		console.log('prepares for cart tracking...');
-		const eventPayloads = this.payloads;
-		this.push({ event, ...eventPayloads });
+		if (typeof this.enabled !== 'undefined' && this.enabled) {
+			console.log('prepares for cart tracking...');
+			const eventPayloads = this.payloads;
+			this.push({ event, ...eventPayloads });
+		}
 	}
 }

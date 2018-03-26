@@ -29,7 +29,7 @@ const Comments = (props) => {
 	};
 	return (
 		<div>
-			<Page>
+			<Page color='white'>
 				<div className='margin--medium-v padding--medium-h'>
 					{/* <Table>
 						<thead>

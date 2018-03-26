@@ -13,7 +13,7 @@ import { Header, Page, Navigation, Svg, List, Level, Image, Panel, Spinner, Moda
 import { actions as userActions } from '@/state/v4/User';
 
 import CONST from '@/constants';
-import { splitString, setUserCookie } from '@/utils';
+import { splitString, removeUserCookie } from '@/utils';
 
 import styles from './profile.scss';
 
@@ -49,7 +49,7 @@ class UserProfile extends Component {
 		if (err) {
 			return err;
 		}
-		setUserCookie(cookies, response.token, true);
+		removeUserCookie(cookies);
 		history.push('/');
 		return response;
 	}

@@ -7,6 +7,7 @@ export default class Fusion {
 
 	constructor() {
 		this.enabled = config.enabled;
+		console.log('fusion enabled: ', this.enabled);
 	}
 
 	get reference() {
@@ -51,30 +52,32 @@ export default class Fusion {
 
 	push = (payload) => {
 		try {
-			// new-session event signal should be pushed in the first place
-			if (payload.event !== NEW_SESSION && !Utils.hasSession()) this.bindSession();
+			if (this.enabled) {
+				// new-session event signal should be pushed in the first place
+				if (payload.event !== NEW_SESSION && !Utils.hasSession()) this.bindSession();
 
-			// prepare request...
-			const axios = require('axios');
-			const request = () => {
-				const requestConfig = {
-					headers: {
-						'Content-Type': 'text/plain; charset=utf-8'
-					}
+				// prepare request...
+				const axios = require('axios');
+				const request = () => {
+					const requestConfig = {
+						headers: {
+							'Content-Type': 'text/plain; charset=utf-8'
+						}
+					};
+					const data = (typeof payloads === 'object') ? JSON.stringify(payload) : payload;
+					const requestSent = axios.post(config.trackingUrl, data, requestConfig);
+
+					// sending request...
+					requestSent.then((res) => {
+						console.log('An event has been pushed: ', res);
+						console.log('Payloads pushed: ', payload);
+					}).catch((err) => {
+						console.log(err);
+					});
 				};
-				const data = (typeof payloads === 'object') ? JSON.stringify(payload) : payload;
-				const requestSent = axios.post(config.trackingUrl, data, requestConfig);
-
-				// sending request...
-				requestSent.then((res) => {
-					console.log('An event has been pushed: ', res);
-					console.log('Payloads pushed: ', payload);
-				}).catch((err) => {
-					console.log(err);
-				});
-			};
-			// pushing payload...
-			setTimeout(request, config.timeout);
+				// pushing payload...
+				setTimeout(request, config.timeout);
+			}
 
 		} catch (error) {
 			console.log('error on fusion: ', error);
@@ -83,10 +86,12 @@ export default class Fusion {
 
 	static tracks = (route) => {
 		// tracks referal page
-		PageTracker.trackReference(route);
-		window.onload = () => {
-			const f = new Fusion();
-			f.bindSession();
-		};
+		if (config.enabled) {
+			PageTracker.trackReference(route);
+			window.onload = () => {
+				const f = new Fusion();
+				f.bindSession();
+			};
+		}
 	}
 } 
