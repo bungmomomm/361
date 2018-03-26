@@ -10,9 +10,28 @@ import styles from './style.scss';
 
 class Address extends Component {
 
-	state = {
-		showConfirmDelete: false
-	};
+	constructor(props) {
+		super(props);
+		this.props = props;
+		this.state = {
+			AddressModalIndicator: false
+		};
+		this.showAddressModal = this.showAddressModal.bind(this);
+		this.hideAddressModal = this.hideAddressModal.bind(this);
+	}
+
+	showAddressModal() {
+		this.setState({
+			AddressModalIndicator: true
+		});
+	}
+
+	hideAddressModal() {
+		this.setState({
+			AddressModalIndicator: false
+		});
+	}
+
 
 	deleteAddress = async () => {
 		const { dispatch, cookies, address } = this.props;
@@ -26,7 +45,7 @@ class Address extends Component {
 		});
 
 		this.setState({
-			showConfirmDelete: false
+			AddressModalIndicator: false
 		});
 
 		return dispatch(actions.mutateState({
@@ -39,11 +58,13 @@ class Address extends Component {
 
 	openDeleteModal = (data) => {
 		this.setState({
-			showConfirmDelete: data
+			AddressModalndicator: data
 		});
 	};
 
 	renderData = () => {
+
+		const { AddressModalIndicator } = this.state;
 		const { history, address } = this.props;
 		const HeaderPage = {
 			left: (
@@ -54,6 +75,14 @@ class Address extends Component {
 			center: 'Buku Alamat',
 			right: null
 		};
+
+		const ModalAttribute = {
+			show: false
+		};
+
+		if (AddressModalIndicator === true) {
+			ModalAttribute.show = true;
+		}
 
 		return (
 			<div style={this.props.style}>
@@ -73,7 +102,7 @@ class Address extends Component {
 						console.log('value');
 						console.log(v);
 						const placeHasBeenMarkedContent = (
-							<div className='flex-row'>
+							<div className='flex-row flex-middle'>
 								<div className='margin--small-r'><Svg src='ico_pin-poin-marked.svg' /></div>
 								<div>&nbsp;Lokasi sudah ditandai</div>
 							</div>
@@ -86,11 +115,14 @@ class Address extends Component {
 										<strong>{v.address_label}</strong>&nbsp;{(v.fg_default === 1) ? '(Alamat Utama)' : null }
 									</Level.Left>
 									<Level.Right style={{ justifyContent: 'center' }}>
-										<Svg src='ico_option.svg' />
+										<Svg
+											src='ico_option.svg'
+											onClick={this.showAddressModal}
+										/>
 									</Level.Right>
 								</Level>
 								<Level className='bg--white margin--medium-b flex-column'>
-									<div><strong>{fullname}</strong></div>
+									<div className={styles.fullName}><strong>{fullname}</strong></div>
 									<div><p>{v.address}, {province}, {city}, {district}, {zipcode}</p></div>
 									<div><p>{phone}</p></div>
 									<div className={styles.locationMarked}>{(v.is_supported_pin_point === 1) ? placeHasBeenMarkedContent : null }</div>
@@ -102,23 +134,18 @@ class Address extends Component {
 
 				<Header.Modal {...HeaderPage} style={{ zIndex: 1 }} />
 
-				<Modal show={this.state.showConfirmDelete}>
+				<Modal {...ModalAttribute}>
 					<div className='font-medium'>
-						<h3>Hapus Alamat</h3>
-						<Level style={{ padding: '0px' }} className='margin--medium-v'>
+						<Level style={{ padding: '0px', textAlign: 'center' }}>
 							<Level.Left />
-							<Level.Item className='padding--medium-h'>
-								<div className='font-small'>Kamu yakin mau menghapus alamat ini?</div>
+							<Level.Item className='flex-center'>
+								<div className='padding--small'>Jadikan Alamat Utama</div>
+								<div className='padding--small'>Ubah Alamat</div>
+								<Button className='padding--small' onClick={this.deleteAddress}>Hapus Alamat</Button>
+								<Button className='padding--small' onClick={this.hideAddressModal}>Batal</Button>
 							</Level.Item>
 						</Level>
 					</div>
-					<Modal.Action
-						closeButton={(
-							<Button onClick={() => { this.setState({ showConfirmDelete: false }); }}>
-								<span className='font-color--primary-ext-2'>BATALKAN</span>
-							</Button>)}
-						confirmButton={(<Button onClick={this.deleteAddress}>YA, HAPUS</Button>)}
-					/>
 				</Modal>
 			</div>
 		);
