@@ -12,6 +12,7 @@ import StepTwo from './components/stepTwo';
 import StepThree from './components/stepThree';
 import StepFour from './components/stepFour';
 import { getBaseUrl } from '@/utils';
+import { userRfToken, userToken } from '@/data/cookiesLabel';
 
 class Page extends Component {
 
@@ -50,8 +51,8 @@ class Page extends Component {
 	}
 
 	componentDidMount() {
-		const rfToken = this.props.cookies.get('user.rf.token');
-		const usrToken = this.props.cookies.get('user.token');
+		const rfToken = this.props.cookies.get(userRfToken);
+		const usrToken = this.props.cookies.get(userToken);
 		const isProduction = process.env.NODE_ENV.toUpperCase() === 'PRODUCTION';
 		if ((typeof rfToken === 'undefined' || typeof usrToken === 'undefined') 
 		&& isProduction) { 

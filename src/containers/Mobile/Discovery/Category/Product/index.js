@@ -36,6 +36,7 @@ import {
 	renderIf,
 	urlBuilder
 } from '@/utils';
+import { userToken } from '@/data/cookiesLabel';
 
 import Discovery from '../../Utils';
 
@@ -170,15 +171,15 @@ class Product extends Component {
 			...params
 		};
 
-		const [err, response] = await to(dispatch(pcpActions.pcpAction({ token: cookies.get('user.token'), query: pcpParam })));
+		const [err, response] = await to(dispatch(pcpActions.pcpAction({ token: cookies.get(userToken), query: pcpParam })));
 		if (err) {
 			return err;
 		}
 
 		const productIdList = _.map(response.pcpData.products, 'product_id') || [];
 		if (!_.isEmpty(productIdList)) {
-			dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-			await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+			dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
+			await dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
 			trackCategoryPageView(response.pcpData.products, response.pcpData.info, this.props);
 		}
 
@@ -438,12 +439,12 @@ const doAfterAnonymous = async (props) => {
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
 
-	const response = await dispatch(pcpActions.pcpAction({ token: cookies.get('user.token'), query: pcpParam }));
+	const response = await dispatch(pcpActions.pcpAction({ token: cookies.get(userToken), query: pcpParam }));
 
 	const productIdList = _.map(response.pcpData.products, 'product_id') || [];
 	if (productIdList.length > 0) {
-		await dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+		await dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
+		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
 	}
 };
 

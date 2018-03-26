@@ -231,6 +231,11 @@ export default {
 			component: loadable(() => import('@/containers/Mobile/Static'), defaultOptions),
 		},
 		{
+			path: '/bantuan/:detail',
+			exact: true,
+			component: loadable(() => import('@/containers/Mobile/Static/details'), defaultOptions),
+		},
+		{
 			path: '/*', // Page not found handling.
 			component: loadable(() => import('@/containers/Mobile/404'), defaultOptions),
 			exact: true
