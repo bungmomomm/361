@@ -96,7 +96,7 @@ class Category extends PureComponent {
 	}
 
 	render() {
-		const { category } = this.props;
+		const { shared, category } = this.props;
 		const loading = (<div />);
 
 		return (
@@ -116,7 +116,7 @@ class Category extends PureComponent {
 					lovelist={this.props.shared.totalLovelist}
 					value={this.props.search.keyword}
 				/>
-				<Navigation active='Categories' scroll={this.props.scroll} />
+				<Navigation active='Categories' scroll={this.props.scroll} totalCartItems={shared.totalCart} />
 			</div>
 		);
 	}
