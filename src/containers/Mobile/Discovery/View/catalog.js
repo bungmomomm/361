@@ -23,7 +23,6 @@ import { Love } from '@/containers/Mobile/Widget';
 import { actions as commentActions } from '@/state/v4/Comment';
 
 import stylesCatalog from './view.scss';
-import cookiesLabel from '@/data/cookiesLabel';
 
 // @TODO cleanup code and move it as independence Component
 
@@ -44,7 +43,7 @@ class CatalogView extends Component {
 			counterLimit: 300
 		};
 
-		this.userProfile = this.props.cookies.get(cookiesLabel.userProfile) || false;
+		this.userProfile = this.props.cookies.get('user.profile') || false;
 		this.loadingView = <Spinner />;
 	}
 
@@ -93,8 +92,8 @@ class CatalogView extends Component {
 			commentLoading: true
 		});
 
-		await dispatch(commentActions.commentAddAction(cookies.get(cookiesLabel.userToken), newComment.product_id, newComment.comment, 'pcp'));
-		await dispatch(commentActions.bulkieCommentAction(cookies.get(cookiesLabel.userToken), [focusedProductId]));
+		await dispatch(commentActions.commentAddAction(cookies.get('user.token'), newComment.product_id, newComment.comment, 'pcp'));
+		await dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), [focusedProductId]));
 		
 		this.setState({
 			commentLoading: false,
@@ -143,7 +142,9 @@ class CatalogView extends Component {
 		const redirectUri = redirectPath !== '' ? `?redirect_uri=${redirectPath}` : `?redirect_uri=product/comments/${product.product_id}`;
 
 		const userAvatar = this.userProfile && !_.isEmpty(this.userProfile.avatar) ? (
-			<Level.Left>
+			<Level.Left
+				style={{ justifyContent: 'flex-end', paddingBottom: '5px' }}
+			>
 				<Image
 					height={30}
 					width={30}
@@ -160,7 +161,9 @@ class CatalogView extends Component {
 		) : '';
 
 		const sendButton = showSendButton && focusedProductId === product.product_id ? (
-			<Level.Right>
+			<Level.Right
+				style={{ justifyContent: 'flex-end', paddingBottom: '10px' }}
+			>
 				<Button
 					className={stylesCatalog.sendButton}
 					onClick={() => this.addComment()}
@@ -174,7 +177,7 @@ class CatalogView extends Component {
 
 		const commentProps = focusedProductId === product.product_id ? {
 			onChange: (e) => this.commentOnChange(e),
-			iconRight: textCounter
+			textCounter
 		} : '';
 
 		const commentProduct = product.comments || false;
@@ -200,6 +203,7 @@ class CatalogView extends Component {
 								comments.isLoading || commentLoading ? this.loadingView :
 									(
 										<Input
+											as='textarea'
 											color='white'
 											placeholder='Tulis komentar..'
 											onClickInputAction={() => this.setFocusedProduct(product.product_id)}

@@ -165,7 +165,9 @@ class Comments extends Component {
 
 		if (this.isLogin === 'true') {
 			const userAvatar = this.userProfile && !_.isEmpty(this.userProfile.avatar) ? (
-				<Level.Left>
+				<Level.Left
+					style={{ paddingBottom: '2px' }}
+				>
 					<Image
 						height={30}
 						width={30}
@@ -191,7 +193,9 @@ class Comments extends Component {
 							textCounter={this.renderCounter()}
 						/>
 					</Level.Item>
-					<Level.Right>
+					<Level.Right
+						style={{ paddingBottom: '10px' }}
+					>
 						<Button
 							className='padding--small-h font--lato-bold'
 							style={{ marginLeft: '5px' }}

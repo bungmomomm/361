@@ -68,7 +68,10 @@ const doAfterAnonymous = async (props) => {
 	const token = cookies.get(cookiesLabel.userToken);
 
 	const productDetail = await dispatch(productActions.productDetailAction(token, productId));
-	trackPdpView(productDetail, props);
+	if (productDetail) {
+		trackPdpView(productDetail, props);
+		await dispatch(productActions.productSocialSummaryAction(token, productId));
+	}
 
 	const res = await dispatch(productActions.productPromoAction(token, productId));
 	if (res.status === 200 && res.statusText === 'OK') {
@@ -82,7 +85,6 @@ const doAfterAnonymous = async (props) => {
 		}
 		await dispatch(lovelistActions.bulkieCountByProduct(token, ids));
 	}
-	await dispatch(productActions.productSocialSummaryAction(token, productId));
 };
 
 class Products extends Component {
@@ -728,15 +730,18 @@ class Products extends Component {
 									}))}
 								</div>
 							)}
-							<div className='margin--medium-v --disable-flex padding--medium-h'>
-								<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
-									{(comments.total === 0) && 'Tulis Komentar'}
-									{(comments.total > 0) && `Lihat Semua ${comments.total} Komentar`}
-								</Link>
-								{(!_.isUndefined(comments) && !_.isUndefined(comments.summary) && !_.isEmpty(comments.summary)) && (
-									<Comment type='lite-review' data={comments.summary} />
-								)}
-							</div>
+							{product.loading ? this.loadingContent : (
+								<div className='margin--medium-v --disable-flex padding--medium-h'>
+									<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
+										{(comments.total === 0) && 'Tulis Komentar'}
+										{(comments.total > 0) && `Lihat Semua ${comments.total} Komentar`}
+									</Link>
+									{(!_.isUndefined(comments) && !_.isUndefined(comments.summary) && !_.isEmpty(comments.summary)) && (
+										<Comment type='lite-review' data={comments.summary} />
+									)}
+								</div>
+							)}
+							
 							{/* ----------------------------	END OF PDP MAIN CONTENT (CARD PRODUCT) ---------------------------- */}
 
 							<div style={{ backgroundColor: '#F5F5F5' }}>

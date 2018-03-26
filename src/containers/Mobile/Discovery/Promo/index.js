@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import queryString from 'query-string';
 
@@ -55,13 +54,23 @@ class Promo extends Component {
 	}
 
 	renderHeader() {
-		const { discovery } = this.props;
+		const { history, discovery } = this.props;
+
+		let back = () => {
+			history.goBack();
+		};
+		if (history.length === 0) {
+			back = () => {
+				history.push('/');
+			};
+		}
+		
 		const headerTitle = _.chain(discovery).get(`promo.${this.promoType}.info.title`).value() || '';
 		const headerPage = {
 			left: (
-				<Link to='/'>
+				<Button onClick={back}>
 					<Svg src='ico_arrow-back-left.svg' />
-				</Link>
+				</Button>
 			),
 			center: discovery.isLoading ? this.loadingView : headerTitle,
 			right: (

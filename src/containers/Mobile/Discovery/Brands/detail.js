@@ -127,7 +127,8 @@ class Detail extends Component {
 			},
 			isFooterShow: true,
 			newComment: { product_id: '', comment: '' },
-			lovelistProductId: null
+			lovelistProductId: null,
+			focusedProductId: ''
 		};
 	}
 	componentWillMount() {
@@ -221,6 +222,10 @@ class Detail extends Component {
 		const { cookies, dispatch } = this.props;
 		dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), [productId]));
 		dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), [productId]));
+	}
+
+	setFocusedProduct(id) {
+		this.setState({ focusedProductId: id });
 	}
 
 	update = (filters) => {
@@ -344,9 +349,10 @@ class Detail extends Component {
 	}
 
 	renderProduct() {
-		const { brands, comments, scroller } = this.props;
-		const { listTypeState } = this.state;
+		const { brands, comments, scroller, location } = this.props;
+		const { listTypeState, focusedProductId } = this.state;
 		const products = _.chain(brands).get('searchData.products').value() || [];
+		const redirectPath = location.pathname !== '' ? location.pathname : '';
 
 		switch (listTypeState.type) {
 		case 'grid':
@@ -363,6 +369,7 @@ class Detail extends Component {
 				<SmallGridView
 					loading={scroller.loading}
 					products={products}
+					productOnClick={trackProductOnClick}
 				/>
 			);
 		default:
@@ -372,6 +379,10 @@ class Detail extends Component {
 					loading={scroller.loading}
 					forceLoginNow={() => this.forceLoginNow()}
 					products={products}
+					productOnClick={trackProductOnClick}
+					focusedProductId={focusedProductId}
+					setFocusedProduct={(id) => this.setFocusedProduct(id)}
+					redirectPath={redirectPath}
 				/>
 			);
 		}
