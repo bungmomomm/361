@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import queryString from 'query-string';
 import to from 'await-to-js';
@@ -24,6 +23,7 @@ import {
 	Svg,
 	Tabs,
 	Navigation,
+	Button,
 	Spinner,
 	SEO
 } from '@/components/mobile';
@@ -104,7 +104,8 @@ class Product extends Component {
 				sort: '',
 				...propsObject.get('query').value()
 			},
-			isFooterShow: true
+			isFooterShow: true,
+			focusedProductId: ''
 		};
 		this.loadingView = <Spinner />;
 	}
@@ -143,6 +144,10 @@ class Product extends Component {
 		this.setState({
 			showFilter: false
 		});
+	}
+
+	setFocusedProduct(id) {
+		this.setState({ focusedProductId: id });
 	}
 
 	update = async (params) => {
@@ -254,7 +259,8 @@ class Product extends Component {
 	}
 
 	productsBlock() {
-		const { isLoading, comments, productCategory, scroller, viewMode } = this.props;
+		const { isLoading, comments, productCategory, scroller, viewMode, location } = this.props;
+		const { focusedProductId } = this.state;
 		if (productCategory.pcpStatus !== '') {
 			if (productCategory.pcpStatus === 'success') {
 				const products = productCategory.pcpData.products;
@@ -262,6 +268,8 @@ class Product extends Component {
 				let productsView;
 				if (!_.isEmpty(products)) {
 					const info = productCategory.pcpData.info;
+					const redirectPath = location.pathname !== '' ? location.pathname : '';
+
 					let listView;
 					switch (viewMode.mode) {
 					case 1:
@@ -272,6 +280,9 @@ class Product extends Component {
 								forceLoginNow={() => this.forceLoginNow()}
 								products={products}
 								productOnClick={trackProductOnClick}
+								focusedProductId={focusedProductId}
+								setFocusedProduct={(id) => this.setFocusedProduct(id)}
+								redirectPath={redirectPath}
 							/>
 						);
 						break;
@@ -328,13 +339,23 @@ class Product extends Component {
 	}
 
 	headerBlock() {
-		const { isLoading, productCategory } = this.props;
+		const { history, isLoading, productCategory } = this.props;
+
+		let back = () => {
+			history.goBack();
+		};
+		if (history.length === 0) {
+			back = () => {
+				history.push('/');
+			};
+		}
+
 		const headerTitle = _.chain(productCategory).get('pcpData.info.title').value();
 		const HeaderPage = {
 			left: (
-				<Link to='/sub-category'>
+				<Button onClick={back}>
 					<Svg src='ico_arrow-back-left.svg' />
-				</Link>
+				</Button>
 			),
 			center: isLoading ? this.loadingView : headerTitle,
 			right: null,

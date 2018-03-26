@@ -707,21 +707,10 @@ class Products extends Component {
 								</div>
 							)}
 							<div className='margin--medium-v --disable-flex padding--medium-h'>
-								{this.isLogin && (
-									<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
-										{(comments.total === 0) && 'Tulis Komentar'}
-										{(comments.total > 0 && comments.total <= 2) && `${comments.total} Komentar`}
-										{(comments.total > 2) && `Lihat Semua ${comments.total} Komentar`}
-									</Link>
-								)}
-
-								{
-									(!this.isLogin) &&
-									<span>
-										<a href={`/login?redirect_uri=${this.props.location.pathname}`}>Log in</a> /
-										<a href={`/register?redirect_uri=${this.props.location.pathname}`}>Register</a> untuk memberikan komentar
-									</span>
-								}
+								<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
+									{(comments.total === 0) && 'Tulis Komentar'}
+									{(comments.total > 0) && `Lihat Semua ${comments.total} Komentar`}
+								</Link>
 								{(!_.isUndefined(comments) && !_.isUndefined(comments.summary) && !_.isEmpty(comments.summary)) && (
 									<Comment type='lite-review' data={comments.summary} />
 								)}
