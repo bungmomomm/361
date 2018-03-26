@@ -36,7 +36,7 @@ class Promo extends Component {
 
 		this.loadingView = <Spinner />;
 	}
-
+  
 	componentWillUnmount() {
 		const { dispatch } = this.props;
 		dispatch(promoActions.loadingAction(true));
@@ -75,7 +75,6 @@ class Promo extends Component {
 
 	renderForeverBanner() {
 		const { shared, dispatch } = this.props;
-
 		return <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />;
 	}
 
@@ -159,8 +158,8 @@ class Promo extends Component {
 }
 
 const mapStateToProps = (state, props) => {
-	const { 
-		comments, 
+	const {
+		comments,
 		lovelist,
 		discovery } = state;
 	const { match } = props;
@@ -171,7 +170,7 @@ const mapStateToProps = (state, props) => {
 		const { products } = promoTypeData.value();
 		discovery.promo[promoType].products = Discovery.mapProducts(products, comments, lovelist);
 	}
-	
+
 	return {
 		discovery,
 		shared: state.shared,
