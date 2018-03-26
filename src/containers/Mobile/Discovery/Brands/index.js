@@ -21,7 +21,7 @@ import { actions } from '@/state/v4/Brand';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Shared from '@/containers/Mobile/Shared';
 import { urlBuilder } from '@/utils';
-import { userToken, userRfToken, userSource } from '@/data/cookiesLabel';
+import { userToken, userRfToken, userSource, pageReferrer } from '@/data/cookiesLabel';
 
 class Brands extends Component {
 	constructor(props) {
@@ -182,8 +182,15 @@ class Brands extends Component {
 	}
 
 	render() {
-		const { shared, dispatch, brands } = this.props;
-
+		const { shared, dispatch, brands, cookies } = this.props;
+		const navigationAttribute = {
+			scroll: this.props.scroll
+		};
+		const pageReferrerValue = cookies.get(pageReferrer);
+		if (pageReferrerValue === 'HOME') {
+			navigationAttribute.active = 'Home';
+		}
+		
 		const HeaderPage = {
 			left: (
 				<Link to='/category'>
@@ -241,7 +248,7 @@ class Brands extends Component {
 				</Page>
 				<Header.Modal {...HeaderPage} headerRef={(header) => { this.headContainer = header; }} />
 				{/* <Header.Modal {...HeaderPage} /> */}
-				<Navigation active='Categories' scroll={this.props.scroll} />
+				<Navigation {...navigationAttribute} />
 			</div>
 		);
 	}

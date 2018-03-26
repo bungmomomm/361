@@ -35,7 +35,7 @@ import {
 	categoryViewBuilder,
 	productClickBuilder
 } from '@/utils/tracking';
-import { userToken } from '@/data/cookiesLabel';
+import { userToken, pageReferrer } from '@/data/cookiesLabel';
 
 const trackBrandPageView = (products, info, props) => {
 	const productId = _.map(products, 'product_id') || [];
@@ -410,10 +410,18 @@ class Detail extends Component {
 	}
 
 	render() {
+		
+		const { cookies } = this.props;
 		const { showFilter } = this.state;
-
-		const activeNav = (window.prevLocation) ? (window.prevLocation.pathname === '/') ? 'Home' : 'Categories' : 'Categories';
-
+		
+		const navigationAttribute = {
+			scroll: this.props.scroll
+		};
+		const pageReferrerValue = cookies.get(pageReferrer);
+		if (pageReferrerValue === 'HOME') {
+			navigationAttribute.active = 'Home';
+		}
+  
 		return (
 			<div style={this.props.style}>
 				{(showFilter) ? (
@@ -444,7 +452,7 @@ class Detail extends Component {
 				{(!showFilter) && (
 					<div>
 						{this.renderHeader()}
-						<Navigation active={activeNav} scroll={this.props.scroll} />
+						<Navigation {...navigationAttribute} />
 					</div>
 				)}
 			</div>
