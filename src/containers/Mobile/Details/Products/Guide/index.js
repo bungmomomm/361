@@ -1,8 +1,14 @@
 import React from 'react';
-import { Page, Header, Image, Svg, Table, Button } from '@/components/mobile';
+import { 
+	Page, 
+	Header, 
+	Svg, 
+	// Image, 
+	// Table, 
+	Button } from '@/components/mobile';
 
 const Comments = (props) => {
-	
+	const spec = (typeof window.sizeGuide !== 'undefined') ? window.sizeGuide : null;
 	const goToPreviousPage = (e) => {
 		const { history } = props;
 		if ((history.length - 1 >= 0)) {
@@ -25,7 +31,7 @@ const Comments = (props) => {
 		<div>
 			<Page>
 				<div className='margin--medium-v padding--medium-h'>
-					<Table>
+					{/* <Table>
 						<thead>
 							<tr>
 								<th>International</th>
@@ -41,11 +47,13 @@ const Comments = (props) => {
 							<tr><td>L</td><td>102-107</td><td>84-89</td><td>103-111</td></tr>
 							<tr><td>XL</td><td>107-112</td><td>89-94</td><td>111-116</td></tr>
 						</tbody>
-					</Table>
+					</Table> */}
+					{(/^/.test(spec)) && <div dangerouslySetInnerHTML={{ __html: spec }} />}
+					{!(/^/.test(spec)) && spec }
 				</div>
-				<div className='margin--medium-v padding--medium-h'>
+				{/* <div className='margin--medium-v padding--medium-h'>
 					<Image local src='temp/size-guide.jpg' />
-				</div>
+				</div> */}
 			</Page>
 			<Header.Modal {...HeaderOption} />
 		</div>);

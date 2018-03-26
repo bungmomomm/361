@@ -270,15 +270,21 @@ class Products extends Component {
 		const { status } = this.state;
 		const { top } = this.props.scroll;
 		const carouselHeight = this.carouselEL.getBoundingClientRect().height;
-		if (top > carouselHeight && !status.showScrollInfomation) {
-			status.showScrollInfomation = true;
-			this.setState({ status });
-		}
+		
+		status.showScrollInfomation = ((top !== 0) && top > (carouselHeight / 2));
+		this.setState({ status });
+		// if (top > (carouselHeight / 2) && !status.showScrollInfomation) {
+		// if (top > (carouselHeight / 2)) {
+		// 	console.log('enter set show info');
+		// 	status.showScrollInfomation = true;
+		// 	this.setState({ status });
+		// }
 
-		if ((top === 0 || top < carouselHeight) && status.showScrollInfomation) {
-			status.showScrollInfomation = false;
-			this.setState({ status });
-		}
+		// if (top === 100 || (top < carouselHeight)) {
+		// if ((top === 0 || top < carouselHeight) && status.showScrollInfomation) {
+		// 	status.showScrollInfomation = false;
+		// 	this.setState({ status });
+		// }
 	}
 
 	handleLovelistClick(e) {
@@ -673,16 +679,16 @@ class Products extends Component {
 								</div>
 							)}
 
-							{status.loading && this.loadingContent}
-
 							{!_.isEmpty(detail) && status.hasVariantSize && (
 								<div className='flex-center padding--medium-h border-top'>
 									<div className='margin--medium-v'>
 										<div className='flex-row flex-spaceBetween'>
 											<div className='font-medium'>Pilih Ukuran</div>
-											<Link to='/product/guide' className='d-flex font-color--primary font--lato-bold font-color-primary flex-row flex-middle'>
-												<Svg src='ico_sizeguide.svg' /> <span className='padding--small-h font--lato-bold font-color--primary padding--none-r'>PANDUAN UKURAN</span>
-											</Link>
+											{(!_.isEmpty(cardProduct) && _.has(cardProduct, 'hasSizeGuide') && cardProduct.hasSizeGuide) &&
+												<Link to='/product/guide' className='d-flex font-color--primary font--lato-bold font-color-primary flex-row flex-middle'>
+													<Svg src='ico_sizeguide.svg' /> <span className='padding--small-h font--lato-bold font-color--primary padding--none-r'>PANDUAN UKURAN</span>
+												</Link>
+											}
 										</div>
 										<div className='margin--medium-v horizontal-scroll margin--none-b'>
 											<Radio
@@ -718,9 +724,9 @@ class Products extends Component {
 								<div>
 									<div className={classNameProductDescription}>
 										{stringHelper.removeHtmlTag(detail.description)}
-										{!_.isEmpty(detail.spec) && (
+										{!_.isEmpty(cardProduct.specs) && (
 											<div className='margin--medium-v --disable-flex'>
-												{(detail.spec.map((item, idx) => {
+												{(cardProduct.specs.map((item, idx) => {
 													item.value = item.value.replace(/(?:\r\n|\r|\n)/g, '<br />');
 													if (/^/.test(item.value)) return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
 													return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
@@ -840,22 +846,6 @@ class Products extends Component {
 									onChange={this.handleSelectVariant}
 									data={cardProduct.variants}
 								/>
-								{/* <Level style={{ padding: '0px' }} className='margin--medium-v'>
-									<Level.Left />
-									<Level.Item>
-										<Radio
-											name='size'
-											checked={this.state.size}
-											variant='rounded'
-											className='margin--small-v'
-											onChange={this.handleSelectVariant}
-											data={cardProduct.variants}
-										/>
-									</Level.Item>
-									<Level.Right className='padding--small-v' >
-										<Button color='secondary' disabled={status.btnBeliDisabled || _.isEmpty(selectedVariant)} size='medium' onClick={this.handleBtnBeliClicked}>{this.state.btnBeliLabel}</Button>
-									</Level.Right>
-								</Level> */}
 							</div>
 						</div>
 					</Modal>

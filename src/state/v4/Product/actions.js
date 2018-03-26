@@ -189,6 +189,8 @@ const getProductCardData = (details) => {
 	if (!_.isEmpty(details)) {
 		let productStock = 0;
 		let hasVariantSize = false;
+		let hasSizeGuide = false;
+		let specs = [];
 		const productVariants = [];
 		const variantsData = {};
 		const images = details.images.map((img, idx) => {
@@ -239,6 +241,20 @@ const getProductCardData = (details) => {
 						}
 					});
 				}
+
+				// maps seize guide value from product spec...
+				specs = details.spec.filter((item) => {
+					const specKey = item.key.toLowerCase().trim();
+					if (specKey.indexOf('size') === -1 && specKey.indexOf('guide') === -1) {
+						return true;
+					}
+
+					if (!_.isEmpty(item) && _.has(item, 'value')) {
+						hasSizeGuide = true;
+						window.sizeGuide = item.value;
+					}
+					return false;
+				});
 			}
 		} catch (error) {
 			throw error;
@@ -253,7 +269,9 @@ const getProductCardData = (details) => {
 			variants: productVariants,
 			variantsData,
 			productStock,
-			hasVariantSize
+			hasVariantSize,
+			specs,
+			hasSizeGuide
 		};
 	}
 	return details;
