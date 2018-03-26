@@ -1,5 +1,6 @@
 import { config } from './config';
 import Uuid from './uuid';
+import { isMobile } from '@/utils';
 
 export default class Utils {
 
@@ -58,8 +59,7 @@ export default class Utils {
 	}
 
 	static getSource = () => {
-		// The current fusion apps right now is mobile-web, then the should be 'mobile-web'
-		// Will be adjust once desktop version is available or developed.
+		if (isMobile()) return config.sourceDesktop;
 		return config.defaultSource;
 	}
 

@@ -31,10 +31,12 @@ export default class PageTracker {
 
 	static trackRoute = (route) => {
 		try {
-			const { group } = route;
+			let { group } = route;
 			const { search } = route.location || window.location.search;
 
-			if (Utils.notEmptyVal(group)) info.reference = group;
+			// default group value is 'home'
+			if (!Utils.notEmptyVal(group)) group = references.home;
+			info.reference = group;
 
 			// extract data from 'search'
 			if (Utils.notEmptyVal(search)) {

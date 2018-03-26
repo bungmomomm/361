@@ -1,4 +1,4 @@
-import { home, category, brands, search, hashtags, store } from '@/utils/tracking/lucidworks';  
+import { home, category, search } from '@/utils/tracking/lucidworks';  
 import Loading from './loading';
 import loadable from 'loadable-components';
 
@@ -28,13 +28,11 @@ export default {
 		{
 			path: '/mau-gaya-itu-gampang',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Hashtags'), defaultOptions),
-			exact: true,
-			group: hashtags
+			exact: true
 		},
 		{
 			path: '/mau-gaya-itu-gampang/:campaign_name-:campaign_id/:post_id/:icode',
-			component: loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'), defaultOptions),
-			group: hashtags
+			component: loadable(() => import('@/containers/Mobile/Details/HashtagsDetails'), defaultOptions)
 		},
 		{
 			path: '/search',
@@ -79,14 +77,12 @@ export default {
 		{
 			path: '/brands',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Brands'), defaultOptions),
-			exact: true,
-			group: brands
+			exact: true
 		},
 		{
 			path: '/brand/:brandId/:brandTitle',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Brands/detail'), defaultOptions),
-			exact: true,
-			group: brands
+			exact: true
 		},
 		{
 			path: '/catalogcategory',
@@ -182,8 +178,7 @@ export default {
 		{
 			path: '/store/:store_id/:store_name',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Seller'), defaultOptions),
-			exact: true,
-			group: store
+			exact: true
 		},
 		{
 			path: '/profile/my-order',
