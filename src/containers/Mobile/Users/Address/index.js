@@ -109,8 +109,7 @@ class Address extends Component {
 							</div>
 						);
 						return (
-
-							<div>
+							<div key={k}>
 								<Level className='bg--white border-bottom' key={k}>
 									<Level.Left className='d-inline-block'>
 										<strong>{v.address_label}</strong>&nbsp;{(v.fg_default === 1) ? '(Alamat Utama)' : null }
