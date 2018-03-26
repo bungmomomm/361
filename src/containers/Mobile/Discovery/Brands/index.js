@@ -61,7 +61,8 @@ class Brands extends Component {
 		if (keyword.length >= this.state.minimumLetter) {
 			this.props.brands.brand_list.map((e) => {
 				const listBrand = e.brands.filter((list) => {
-					if (list.facetdisplay.indexOf(keyword) >= 0) {
+					const keywordDisplay = list.facetdisplay.toLowerCase();
+					if (keywordDisplay.indexOf(keyword.toLowerCase()) >= 0) {
 						filteredBrand.push(list);
 					}
 					return list;
