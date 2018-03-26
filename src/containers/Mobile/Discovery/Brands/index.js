@@ -229,7 +229,7 @@ class Brands extends Component {
 					{ this.renderBrandByAlphabets() }
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Categories' scroll={this.props.scroll} />
+				<Navigation scroll={this.props.scroll} />
 			</div>
 		);
 	}

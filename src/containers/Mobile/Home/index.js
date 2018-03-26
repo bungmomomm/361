@@ -22,7 +22,7 @@ import {
 } from '@/utils/tracking';
 import { urlBuilder } from '@/utils';
 
-const renderSectionHeader = (title, options) => {
+const renderSectionHeader = (title, options, cookies = null) => {
 	return (
 		<Level>
 			<Level.Left><div className={styles.headline}>{title}</div></Level.Left>
@@ -31,7 +31,15 @@ const renderSectionHeader = (title, options) => {
 					options.isMozaic ?
 						<a href={options.url || '/'} target='_blank' className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></a>
 						:
-						<Link to={options.url || '/'} className={styles.readmore}>
+						<Link
+							to={options.url || '/'}
+							className={styles.readmore}
+							onClick={
+								() => {
+									cookies.set('page.referrer', 'HOME', { path: '/' });
+								}
+							}
+						>
 							{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' />
 						</Link>
 				}
@@ -146,7 +154,7 @@ class Home extends Component {
 		 * recent-view
 		 * */
 
-		const { home } = this.props;
+		const { home, cookies } = this.props;
 		const segment = home.activeSegment;
 		const title = 'LIHAT SEMUA';
 		const recommendationData = _.chain(home).get(`allSegmentData.${segment.key}.recomendationData.${type}`);
@@ -158,7 +166,7 @@ class Home extends Component {
 				const header = renderSectionHeader(data.title, {
 					title,
 					url: link
-				});
+				}, cookies);
 				return (
 					<div>
 						{ header }

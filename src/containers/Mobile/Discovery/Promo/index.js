@@ -146,8 +146,11 @@ class Promo extends Component {
 		const navigationAttribute = {
 			scroll: this.props.scroll
 		};
-		if (cookies.get('page.referrer') === 'CATEGORY') {
+		const pageReferrer = cookies.get('page.referrer');
+		if (pageReferrer === 'CATEGORY') {
 			navigationAttribute.active = 'Categories';
+		} else if (pageReferrer === 'HOME') {
+			navigationAttribute.active = 'Home';
 		} else {
 			navigationAttribute.active = 'Promo';
 		}
