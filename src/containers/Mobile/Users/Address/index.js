@@ -14,52 +14,51 @@ class Address extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			AddressModalIndicator: false
+			AddressModalIndicator: false,
+			selectedAddress: false
 		};
 		this.showAddressModal = this.showAddressModal.bind(this);
 		this.hideAddressModal = this.hideAddressModal.bind(this);
 	}
 
-	showAddressModal() {
+	setDefault = async () => {
+		const { dispatch, cookies } = this.props;
+		await dispatch(actions.setDefaultAddress(cookies.get('user.token'), this.state.selectedAddress));
+		window.location.reload();
+	};
+
+	showAddressModal(id) {
 		this.setState({
-			AddressModalIndicator: true
+			AddressModalIndicator: true,
+			selectedAddress: id
 		});
 	}
 
 	hideAddressModal() {
 		this.setState({
-			AddressModalIndicator: false
+			AddressModalIndicator: false,
+			selectedAddress: false
 		});
 	}
 
-
 	deleteAddress = async () => {
 		const { dispatch, cookies, address } = this.props;
-		if (!this.state.showConfirmDelete.id) {
+		if (!this.state.selectedAddress) {
 			return Promise.reject(new Error('Invalid address id, please contact administrator.'));
 		}
 
-		await dispatch(actions.deleteAddress(cookies.get('user.token'), this.state.showConfirmDelete.id));
+		await dispatch(actions.deleteAddress(cookies.get('user.token'), this.state.selectedAddress));
 		const mutatedShipping = address.address.shipping.filter((v) => {
-			return v.id !== this.state.showConfirmDelete.id;
+			return v.id !== this.state.selectedAddress;
 		});
 
-		this.setState({
-			AddressModalIndicator: false
-		});
-
+		this.hideAddressModal();
 		return dispatch(actions.mutateState({
 			address: {
 				...address.address,
 				shipping: mutatedShipping
 			}
 		}));
-	};
-
-	openDeleteModal = (data) => {
-		this.setState({
-			AddressModalndicator: data
-		});
 	};
 
 	renderData = () => {
@@ -86,7 +85,7 @@ class Address extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page color='grey'>
+				<Page color='white'>
 					<Link to='/address/add' className='bg--white margin--medium-t margin--medium-b'>
 						<Level>
 							<Level.Left>
@@ -98,9 +97,7 @@ class Address extends Component {
 						</Level>
 					</Link>
 					{address.address.shipping.map((v, k) => {
-						const { city, fullname, district, phone, province, zipcode } = v;
-						console.log('value');
-						console.log(v);
+						const { city, fullname, district, phone, province, zipcode, id } = v;
 						const placeHasBeenMarkedContent = (
 							<div className='flex-row flex-middle'>
 								<div className='margin--small-r'><Svg src='ico_pin-poin-marked.svg' /></div>
@@ -109,7 +106,7 @@ class Address extends Component {
 						);
 						return (
 
-							<div>
+							<div key={k}>
 								<Level className='bg--white border-bottom' key={k}>
 									<Level.Left className='d-inline-block'>
 										<strong>{v.address_label}</strong>&nbsp;{(v.fg_default === 1) ? '(Alamat Utama)' : null }
@@ -117,7 +114,7 @@ class Address extends Component {
 									<Level.Right style={{ justifyContent: 'center' }}>
 										<Svg
 											src='ico_option.svg'
-											onClick={this.showAddressModal}
+											onClick={() => this.showAddressModal(id)}
 										/>
 									</Level.Right>
 								</Level>
@@ -139,8 +136,12 @@ class Address extends Component {
 						<Level style={{ padding: '0px', textAlign: 'center' }}>
 							<Level.Left />
 							<Level.Item className='flex-center'>
-								<div className='padding--small'>Jadikan Alamat Utama</div>
-								<div className='padding--small'>Ubah Alamat</div>
+								<Button className='padding--small' onClick={this.setDefault}>Jadikan Alamat Utama</Button>
+								<div className='padding--small'>
+									<Link to={`/address/edit/${this.state.selectedAddress}`}>
+										Ubah Alamat
+									</Link>
+								</div>
 								<Button className='padding--small' onClick={this.deleteAddress}>Hapus Alamat</Button>
 								<Button className='padding--small' onClick={this.hideAddressModal}>Batal</Button>
 							</Level.Item>

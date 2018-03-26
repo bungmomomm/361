@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import Shared from '@/containers/Mobile/Shared';
-import { Page, Svg, Button, Header, Select, Level, Radio } from '@/components/mobile';
+import { Page, Svg, Button, Header, Select, Level } from '@/components/mobile';
 import { actions } from '@/state/v4/Address';
 import styles from './style.scss';
 import { Form, Input } from '@/components/mobile/Formsy';
@@ -10,6 +10,7 @@ import { to } from 'await-to-js';
 import { Promise } from 'es6-promise';
 import _ from 'lodash';
 import { isLogin, userToken } from '@/data/cookiesLabel';
+import Switch from 'react-switch';
 
 class Address extends Component {
 
@@ -188,7 +189,7 @@ class Address extends Component {
 		};
 
 		return (
-			<Page>
+			<Page color='white'>
 				<Form
 					style={{ padding: '15px' }}
 					onValidSubmit={this.submit}
@@ -199,29 +200,11 @@ class Address extends Component {
 					<div className='margin--medium' style={{ marginTop: '50px' }}>
 						<label className={styles.label} htmlFor='default_address'>Jadikan Alamat Utama</label>
 						<div style={{ marginTop: '10px' }}>
-							<Radio
-								list
-								name='default_address'
+							<Switch
 								onChange={this.radioChange}
 								checked={this.state.default}
-								data={[
-									{
-										value: 0,
-										label: (
-											<div>
-												<span>Tidak</span>
-											</div>
-										)
-									},
-									{
-										value: 1,
-										label: (
-											<div>
-												<span>Ya</span>
-											</div>
-										)
-									}
-								]}
+								name='default_address'
+								id='default_address'
 							/>
 						</div>
 					</div>
