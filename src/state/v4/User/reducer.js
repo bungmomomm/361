@@ -54,7 +54,30 @@ const actions = createActions({
 	USER_KEEP_REVIEW_INFO: undefined,
 	USER_AFTER_LOGIN: (state, action, param) => ({ state, action, param }),
 	USER_AFTER_LOGIN_CLEAR: undefined,
-	USER_BANK_LIST: (userBankList) => ({ userBankList })
+	USER_BANK_LIST: (userBankList) => ({ userBankList }),
+	USER_CLEAR_ERROR: () => ({ 
+		login: {
+			error: undefined
+		}, 
+		newpassword: {
+			error: undefined
+		},
+		forget: {
+			error: undefined
+		},
+		logout: {
+			error: undefined
+		},
+		validateOvo: {
+			error: undefined
+		},
+		otp: {
+			error: undefined
+		},
+		register: {
+			error: undefined
+		},
+	})
 });
 
 const initialState = {
@@ -192,6 +215,12 @@ const reducer = handleActions({
 	[actions.userAfterLoginClear]: (state, action) => {
 		state.queue = [];
 		return state;
+	},
+	[actions.userClearError]: (state, action) => {
+		return {
+			...state,
+			...action.payload
+		};
 	}
 }, initialState);
 export default {

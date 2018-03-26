@@ -98,7 +98,7 @@ class ForgotPassword extends Component {
 
 	async successValidateOtp(response) {
 		const { history } = this.props;
-		history.push(`/user-newpassword?token${response.token}`);
+		history.push(`/user/newpassword?token=${response.token}`);
 	}
 
 	render() {

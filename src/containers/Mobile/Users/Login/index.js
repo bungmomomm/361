@@ -56,7 +56,7 @@ class Login extends Component {
 		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
 		setUserCookie(this.props.cookies, response.token, false, userProfile);
 		dispatch(new users.afterLogin(cookies.get('user.token')));
-		history.push(redirectUri || '/');
+		history.push(redirectUri || '/profile');
 		return response;
 	}
 
@@ -71,7 +71,7 @@ class Login extends Component {
 		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
 		setUserCookie(this.props.cookies, response.token, false, userProfile);
 		dispatch(new users.afterLogin(cookies.get('user.token')));
-		history.push(redirectUri || '/');
+		history.push(redirectUri || '/profile');
 		return response;
 	}
 
@@ -94,6 +94,10 @@ class Login extends Component {
 
 	handlePick(current) {
 		this.setState({ current });
+	}
+
+	removeError() {
+		this.props.dispatch(new users.clearError(this.props.cookies.get('user.token')));
 	}
 
 	render() {
@@ -131,7 +135,7 @@ class Login extends Component {
 				/>
 				<div className={styles.divider}><span>Atau</span></div>
 				{renderIf(login)(
-					<Notification style={{ marginBottom: '20px' }} disableClose color='pink' show><span className='font-color--secondary'>Email/No Handphone/Password yang Anda masukkan salah</span></Notification>
+					<Notification timeout={3000} style={{ marginBottom: '20px' }} disableClose onClose={() => this.removeError()} color='pink' show><span className='font-color--secondary'>Email/No Handphone/Password yang Anda masukkan salah</span></Notification>
 				)}
 				<div>
 					<Input

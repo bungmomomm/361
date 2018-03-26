@@ -86,7 +86,7 @@ class Register extends Component {
 		if (errorRegister) {
 			const { code } = errorRegister.response.data;
 			if (code === 422 && errorRegister.response.data.error_message === 'hp_email is already taken.') {
-				this.setState({ whatIShouldRender: 'EMAIL_MOBILE_HAS_BEEN_REGISTERED' });
+				this.setView('EMAIL_MOBILE_HAS_BEEN_REGISTERED');
 				return false;
 			}
 
@@ -107,9 +107,7 @@ class Register extends Component {
 					return false;
 				}
 				// Set state for OTP
-				this.setState({
-					whatIShouldRender: 'VALIDATE_OTP'
-				});
+				this.setView('VALIDATE_OTP');
 
 				return responseUserOtp;
 
@@ -164,6 +162,13 @@ class Register extends Component {
 			});
 		}
 
+	}
+
+	setView(whatIShouldRender) {
+		this.setState({
+			whatIShouldRender
+		});
+		this.props.callback();
 	}
 	
 	otpClickBack() {
@@ -359,14 +364,11 @@ class Register extends Component {
 		const {
 			whatIShouldRender
 		} = this.state;
-		
-		const { callback } = this.props;
   
 		let View = this.renderRegisterView();
 
 		if (whatIShouldRender === 'VALIDATE_OTP') {
 			View = this.renderValidateOtpView();
-			callback(whatIShouldRender);
 		}
 
 		if (whatIShouldRender === 'EMAIL_MOBILE_HAS_BEEN_REGISTERED') {

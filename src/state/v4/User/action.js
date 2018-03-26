@@ -62,6 +62,10 @@ const userLogin = (token, email, password) => async (dispatch, getState) => {
 	});
 };
 
+const clearError = (token) => dispatch => {
+	dispatch(actions.userClearError());
+};
+
 const userAnonymous = (token) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
@@ -477,5 +481,6 @@ export default {
 	addAfterLogin,
 	PostOrderConfirmation,
 	getListBankConfirmation,
+	clearError,
 	cleanMyOrderDetail
 };
