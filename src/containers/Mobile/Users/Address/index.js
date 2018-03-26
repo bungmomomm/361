@@ -63,15 +63,51 @@ class Address extends Component {
 						</p>
 					</div>
 					{address.address.shipping.map((v, k) => {
+						const { city, fullname, district, phone, province, zipcode } = v;
+						console.log('value');
+						console.log(v);
 						return (
 							<div className='margin--small' key={k}>
 								<p>
 									<Link to={`/address/edit/${v.id}`}>Edit</Link>
 									<Button onClick={() => this.openDeleteModal(v)}>Delete</Button>
 								</p>
-								<p>
-									{JSON.stringify(v)}
-								</p>
+								<div>
+									Nilai tandai lokasi
+									{v.is_supported_pin_point}
+								</div>
+								<div>
+									Alamat Sebagai
+									{v.address_label}
+								</div>
+								<div>
+									Phone
+									{phone}
+								</div>
+								<div>
+									Province
+									{province}
+								</div>
+								<div>
+									ZipCode
+									{zipcode}
+								</div>
+								<div>
+									FullName
+									{fullname}
+								</div>
+								<div>
+									District
+									{district}
+								</div>
+								<div>
+									Address
+									{v.address}
+								</div>
+								<div>
+									City
+									{city}
+								</div>
 							</div>
 						);
 					})}
