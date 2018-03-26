@@ -11,13 +11,14 @@ import { actions as commentActions } from '@/state/v4/Comment';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Shared from '@/containers/Mobile/Shared';
 import { urlBuilder } from '@/utils';
+import cookiesLabel from '@/data/cookiesLabel';
 
 class Lovelist extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.isLogin = (typeof this.props.cookies.get('isLogin') === 'string' && this.props.cookies.get('isLogin') === 'true');
-		this.userCookies = this.props.cookies.get('user.token');
+		this.isLogin = (typeof this.props.cookies.get(cookiesLabel.isLogin) === 'string' && this.props.cookies.get(cookiesLabel.isLogin) === 'true');
+		this.userCookies = this.props.cookies.get(cookiesLabel.userToken);
 		this.state = {
 			status: {
 				listTypeGrid: true,
@@ -296,11 +297,11 @@ const mapStateToProps = (state) => {
 const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies } = props;
 
-	const list = await dispatch(LoveListActionCreator.getLovelisItems(cookies.get('user.token'))) || [];
+	const list = await dispatch(LoveListActionCreator.getLovelisItems(cookies.get(cookiesLabel.userToken))) || [];
 	const ids = list.products.map((item) => item.product_id);
 	if (ids.length > 0) {
-		await dispatch(LoveListActionCreator.bulkieCountByProduct(cookies.get('user.token'), ids));	
-		await dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), ids));
+		await dispatch(LoveListActionCreator.bulkieCountByProduct(cookies.get(cookiesLabel.userToken), ids));	
+		await dispatch(commentActions.bulkieCommentAction(cookies.get(cookiesLabel.userToken), ids));
 	}
 
 	// }

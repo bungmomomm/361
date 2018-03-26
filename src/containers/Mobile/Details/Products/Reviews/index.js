@@ -6,12 +6,13 @@ import { Page, Header, Svg, Comment, Spinner, Button, Rating } from '@/component
 import { actions as productActions } from '@/state/v4/Product';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './reviews.scss';
+import cookiesLabel from '@/data/cookiesLabel';
 
 class Reviews extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.isLogin = (typeof this.props.cookies.get('isLogin') === 'string' && this.props.cookies.get('isLogin') === 'true');
+		this.isLogin = (typeof this.props.cookies.get(cookiesLabel.isLogin) === 'string' && this.props.cookies.get(cookiesLabel.isLogin) === 'true');
 
 		this.state = {
 			loading: false
@@ -172,7 +173,7 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies, match } = props;
-	const token = cookies.get('user.token');
+	const token = cookies.get(cookiesLabel.userToken);
 	const productId = match.params.id;
 
 	dispatch(productActions.allProductReviewsAction(token, productId));

@@ -22,13 +22,14 @@ import _ from 'lodash';
 import queryString from 'query-string';
 
 import Otp from '@/containers/Mobile/Shared/Otp';
+import { userToken, userRfToken, userSource } from '@/data/cookiesLabel';
 
 class ForgotPassword extends Component {
 	constructor(props) {
 		super(props);
-		this.userCookies = this.props.cookies.get('user.token');
-		this.userRFCookies = this.props.cookies.get('user.rf.token');
-		this.source = this.props.cookies.get('user.source');
+		this.userCookies = this.props.cookies.get(userToken);
+		this.userRFCookies = this.props.cookies.get(userRfToken);
+		this.source = this.props.cookies.get(userSource);
 		this.props = props;
 
 		const query = queryString.parse(props.location.search);
@@ -46,7 +47,7 @@ class ForgotPassword extends Component {
 	async onResetPassword(e) {
 		const { dispatch, cookies } = this.props;
 		const { userName, useOtp } = this.state;
-		const [err, response] = await to(dispatch(new users.userForgotPassword(cookies.get('user.token'), userName)));
+		const [err, response] = await to(dispatch(new users.userForgotPassword(cookies.get(userToken), userName)));
 		if (err) {
 			this.setState({
 				error: true,

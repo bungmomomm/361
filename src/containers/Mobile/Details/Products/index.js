@@ -24,6 +24,7 @@ import {
 	addToCartBuilder,
 	sendGtm,
 } from '@/utils/tracking';
+import cookiesLabel from '@/data/cookiesLabel';
 
 const trackAddToCart = (data, props, variant) => {
 	const products = {
@@ -64,7 +65,7 @@ import Discovery from '@/containers/Mobile/Discovery/Utils';
 const doAfterAnonymous = async (props) => {
 	const { dispatch, match, cookies } = props;
 	const productId = _.toInteger(match.params.id);
-	const token = cookies.get('user.token');
+	const token = cookies.get(cookiesLabel.userToken);
 
 	const productDetail = await dispatch(productActions.productDetailAction(token, productId));
 	trackPdpView(productDetail, props);
@@ -88,10 +89,10 @@ class Products extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.userCookies = this.props.cookies.get('user.token');
-		this.userRFCookies = this.props.cookies.get('user.rf.token');
-		this.source = this.props.cookies.get('user.source');
-		this.isLogin = (typeof this.props.cookies.get('isLogin') === 'string' && this.props.cookies.get('isLogin') === 'true');
+		this.userCookies = this.props.cookies.get(cookiesLabel.userToken);
+		this.userRFCookies = this.props.cookies.get(cookiesLabel.userRfToken);
+		this.source = this.props.cookies.get(cookiesLabel.userSource);
+		this.isLogin = (typeof this.props.cookies.get(cookiesLabel.isLogin) === 'string' && this.props.cookies.get(cookiesLabel.isLogin) === 'true');
 		this.defaultCount = 1;
 		this.slideWrapAround = true;
 		this.linkToPdpDisabled = true;
