@@ -2,6 +2,7 @@ import to from 'await-to-js';
 import { Promise } from 'es6-promise';
 import _ from 'lodash';
 import { actions } from './reducer';
+import { totalLoveList, totalBag } from '@/state/v4/Shared/reducer';
 import base64 from 'base-64';
 import {
 	request,
@@ -437,7 +438,10 @@ const userLogout = (token) => async (dispatch, getState) => {
 	if (err) {
 		dispatch(actions.userLogoutFail(err.response.data));
 		return Promise.reject(err.response.data);
-	}
+	} 
+
+	dispatch(totalBag({ totalCart: 0 }));
+	dispatch(totalLoveList({ totalLovelist: 0 }));
 
 	dispatch(actions.userLogoutSuccess(response.data.data));
 	return Promise.resolve({
