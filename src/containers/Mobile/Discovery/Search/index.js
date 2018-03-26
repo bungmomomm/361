@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import CONST from '@/constants';
 import Shared from '@/containers/Mobile/Shared';
 import { aux } from '@/utils';
+import cookiesLabel from '@/data/cookiesLabel';
 class Search extends PureComponent {
 	static isKeywordNotExistInHistory(cookies, text) {
 		const foundKeyword = cookies.filter(e => e.text === text);
@@ -23,7 +24,7 @@ class Search extends PureComponent {
 		};
 		this.searchListCookieName = CONST.COOKIE_USER_SEARCH_LIST;
 		this.searchHashtagListCookieName = CONST.COOKIE_USER_SEARCH_HASHTAG_LIST;
-		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
+		this.userToken = this.props.cookies.get(cookiesLabel.userToken);
 		this.SUGGEST_KEYWORD = CONST.SEARCH_SUGGEST_TYPE.suggestKeyword;
 		this.SUGGEST_CATEGORY = CONST.SEARCH_SUGGEST_TYPE.suggestCategory;
 		this.SUGGEST_HASTAG = CONST.SEARCH_SUGGEST_TYPE.suggestHashtag;
@@ -77,9 +78,9 @@ class Search extends PureComponent {
 	enterSearchHandler(event) {
 		if (event.key === 'Enter') {
 			const { location, cookies } = this.props;
-			cookies.remove('page.referrer', { path: '/' });
+			cookies.remove(cookiesLabel.pageReferrer, { path: '/' });
 			if (location.search === '?ref=home') {
-				cookies.set('page.referrer', 'HOME', { path: '/' });
+				cookies.set(cookiesLabel.pageReferrer, 'HOME', { path: '/' });
 			}
 			this.setCookieSearch(event.target.value, event.target.value, this.SUGGEST_KEYWORD);
 			const pathProd = `/products?category_id=&query=${encodeURIComponent(event.target.value)}`;
@@ -258,7 +259,7 @@ class Search extends PureComponent {
 			if (this.props.location.search === '?ref=home') {
 				const { cookies, dispatch } = this.props;
 				dispatch(actionSearch.updatedKeywordHandler('', this.userToken));
-				cookies.set('page.referrer', 'HOME', { path: '/' });
+				cookies.set(cookiesLabel.pageReferrer, 'HOME', { path: '/' });
 				this.props.history.push('/');
 			} else {
 				this.props.history.goBack();

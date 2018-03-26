@@ -6,7 +6,6 @@ import styles from './cart.scss';
 import Shared from '@/containers/Mobile/Shared';
 import { connect } from 'react-redux';
 import { actions as shopBagAction } from '@/state/v4/ShopBag';
-import CONST from '@/constants';
 import { urlBuilder, aux } from '@/utils';
 import { actions as actionShared } from '@/state/v4/Shared';
 import _ from 'lodash';
@@ -15,6 +14,7 @@ import {
 	sendGtm,
 	cartViewBuilder
 } from '@/utils/tracking';
+import cookiesLabel from '@/data/cookiesLabel';
 
 const trackBrandPageView = (data, props) => {
 	const items = _.flatMap(data, (e) => (e.items));
@@ -46,13 +46,13 @@ class Cart extends Component {
 			},
 			itemsNotProced: []
 		};
-		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
+		this.userToken = this.props.cookies.get(cookiesLabel.userToken);
 		this.deleteItemHandler = this.deleteItemHandler.bind(this);
 		this.addToLovelistHandler = this.addToLovelistHandler.bind(this);
 		this.selectItemHandler = this.selectItemHandler.bind(this);
 		this.selectedNewQtyHander = this.selectedNewQtyHander.bind(this);
 		this.updateCartHander = this.updateCartHander.bind(this);
-		this.isLogin = this.props.cookies.get('isLogin');
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin);
 	}
 
 	componentWillMount() {

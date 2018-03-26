@@ -12,6 +12,7 @@ import {
 	Spinner
 } from '@/components/mobile';
 import { actions as userAction } from '@/state/v4/User';
+import { userToken, isLogin } from '@/data/cookiesLabel';
 
 class MyOrderDetail extends Component {
 	constructor(props) {
@@ -20,6 +21,9 @@ class MyOrderDetail extends Component {
 		this.state = {};
 		this.provider = this.props.match.params.provider;
 		this.so_number = this.props.match.params.so_number;
+		this.isLogin = this.props.cookies.get(isLogin);
+
+		this.userToken = this.props.cookies.get(userToken);
 
 		if (this.isLogin !== 'true') {
 			this.props.history.push('/');
