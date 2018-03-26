@@ -224,8 +224,10 @@ class SearchResults extends Component {
 			scroll: this.props.scroll
 		};
 		
-		if (cookies.get('page.referrer') !== 'HOME') {
+		if (cookies.get(cookiesLabel.pageReferrer) !== 'HOME') {
 			navigationAttribute.active = 'Categories';
+		} else {
+			navigationAttribute.active = 'Home';
 		}
 
 		return (
