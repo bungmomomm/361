@@ -35,6 +35,12 @@ class Brands extends Component {
 		this.userCookies = this.props.cookies.get('user.token');
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.source = this.props.cookies.get('user.source');
+		this.headContainer = null;
+
+		this.onAlphabetsClick = (id) => {
+			const section = document.getElementById(String(id.trim()));
+			document.body.scrollTop = section.offsetTop;
+		};
 	}
 
 	componentDidMount() {
@@ -49,19 +55,14 @@ class Brands extends Component {
 		}
 	}
 
-	componentWillUnmount() {
-		const { dispatch } = this.props;
-		dispatch(actions.brandProductCleanUp());
-	}
-
-
 	onFilter(keyword) {
 		let filteredBrand = [];
 
 		if (keyword.length >= this.state.minimumLetter) {
 			this.props.brands.brand_list.map((e) => {
 				const listBrand = e.brands.filter((list) => {
-					if (list.facetdisplay.indexOf(keyword) >= 0) {
+					const keywordDisplay = list.facetdisplay.toLowerCase();
+					if (keywordDisplay.indexOf(keyword.toLowerCase()) >= 0) {
 						filteredBrand.push(list);
 					}
 					return list;
@@ -112,12 +113,12 @@ class Brands extends Component {
 				{C.FILTER_KEY.map((key, id) => {
 					const brandExist = brands.brand_list.filter(e => e.group === key.trim());
 					const disabled = brandExist.length < 1;
-					const link = `#${key.trim()}`;
+					// const link = `#${key.trim()}`;
 
 					return (
 						<Button
 							key={id}
-							onClick={() => { window.location.href = link; }}
+							onClick={() => { this.onAlphabetsClick(key); }}
 							disabled={disabled}
 						>
 							{
@@ -180,27 +181,22 @@ class Brands extends Component {
 	}
 
 	render() {
+		const { shared, dispatch, brands } = this.props;
+
 		const HeaderPage = {
-			// subheaderStyle: { height: ref.getBoundingClientRect.height },
 			left: (
 				<Link to='/category'>
 					<Svg src='ico_arrow-back-left.svg' />
 				</Link>
 			),
 			center: 'Brands',
-			right: null
-		};
-		const { shared, dispatch, brands } = this.props;
-
-		return (
-			<div style={this.props.style}>
-				<Page color='white'>
-					<SEO
-						paramCanonical={process.env.MOBILE_UR}
-					/>
-					{
-						<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />
-					}
+			right: null,
+			subHeaderStyle: {
+				height: this.headContainer && this.headContainer.getBoundingClientRect().height
+			},
+			rows: [{
+				left: null,
+				center: (
 					<div className={styles.filter}>
 						<Level>
 							<Level.Item className={styles.center}>
@@ -225,10 +221,25 @@ class Brands extends Component {
 						{ !brands.brand_list && (<div style={{ paddingTop: '20px' }}> <Spinner /></div>)}
 						{ this.renderFilterAlphabets() }
 					</div>
+				),
+				right: null
+			}]
+		};
+
+		return (
+			<div style={this.props.style}>
+				<Page color='white'>
+					<SEO
+						paramCanonical={process.env.MOBILE_UR}
+					/>
+					{
+						<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />
+					}
 					{ this.renderBrandBySearch() }
 					{ this.renderBrandByAlphabets() }
 				</Page>
-				<Header.Modal {...HeaderPage} />
+				<Header.Modal {...HeaderPage} headerRef={(header) => { this.headContainer = header; }} />
+				{/* <Header.Modal {...HeaderPage} /> */}
 				<Navigation active='Categories' scroll={this.props.scroll} />
 			</div>
 		);
