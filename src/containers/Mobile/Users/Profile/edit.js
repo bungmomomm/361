@@ -278,14 +278,19 @@ class UserProfileEdit extends Component {
 		}
 	}
 
-	successValidateOtp() {
+	successValidateOtp = async (response) => {
+		const { dispatch } = this.props;
+		
+		await dispatch(userActions.userGetProfile(this.userToken));
 		this.setState({
 			layout: 'main',
 			formResult: {
 				status: 'success',
-				message: 'Nomor Handphone berhasil diubah'
+				message: response.msg || 'Nomor Handphone berhasil diubah'
 			}
 		});
+
+		this.setTimeoutForm(5000);
 	}
 
 	renderHeader() {
@@ -622,7 +627,7 @@ class UserProfileEdit extends Component {
 				<Otp
 					phoneEmail={formData[this.HP_EMAIL_FIELD]}
 					onClickBack={(e, value) => this.switchLayoutHandler(e, this.PHONE_FIELD)}
-					onSuccess={() => this.successValidateOtp()}
+					onSuccess={(response) => this.successValidateOtp(response)}
 				/>
 			);
 			break;
