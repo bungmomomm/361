@@ -20,6 +20,20 @@
 		color: #A4A4A4;
 	}
 
+.commentBox{
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    align-items: center;
+    background: #F9F9F9;
+    border-top: 1px solid #D8D8D8;
+    button {
+		font-family: font-family('Lato-Bold');
+		color: #191919;
+	}
+}
+
 	.sendButton {
 		padding-left: 5px;
 		padding-right: 5px;

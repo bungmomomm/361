@@ -119,6 +119,7 @@
     "react-share": "^2.0.0",
     "react-smartbanner": "^5.0.5",
     "react-svg-inline": "^2.0.1",
+    "react-textarea-autosize": "^6.0.2",
     "redux": "^3.7.2",
     "redux-actions": "^2.2.1",
     "redux-api-middleware": "^2.2.0",

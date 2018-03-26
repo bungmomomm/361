@@ -186,8 +186,8 @@ class Comments extends Component {
 							value={commentValue}
 							onChange={(e) => this.inputHandler(e)}
 							onFocus={() => this.setState({ showCounter: true })}
-							onBlur={() => this.setState({ showCounter: false })}
-							iconRight={this.renderCounter()}
+							onBlur={() => commentValue.length === 0 && this.setState({ showCounter: false })}
+							textCounter={this.renderCounter()}
 						/>
 					</Level.Item>
 					<Level.Right>
