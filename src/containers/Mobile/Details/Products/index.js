@@ -8,7 +8,7 @@ import { actions as productActions } from '@/state/v4/Product';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as shopBagActions } from '@/state/v4/ShopBag';
-import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Spinner, Badge, Notification } from '@/components/mobile';
+import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Spinner, Badge, Notification, AnimationLovelist, AnimationAddToCart } from '@/components/mobile';
 import Promos from './Promos';
 import ReviewSummary from './Reviews/summary';
 
@@ -114,6 +114,11 @@ class Products extends Component {
 
 		this.state = {
 			size: '',
+			animation: {
+				lovelist: false,
+				addToCart: false
+			},
+			showAnimationLovelist: false,
 			status: {
 				btnBeliDisabled: false,
 				forceLogin: false,
@@ -268,9 +273,23 @@ class Products extends Component {
 		}
 	}
 
+	animateLovelist() {
+		this.setState({ animaiton: { ...this.state.animation, lovelist: true } });
+		setTimeout(() => {
+			this.setState({ animaiton: { ...this.state.animation, lovelist: false } });
+		}, 2000);
+	}
+
+	animateAddtoCart() {
+		this.setState({ animaiton: { ...this.state.animation, addToCart: true } });
+		setTimeout(() => {
+			this.setState({ animaiton: { ...this.state.animation, addToCart: false } });
+		}, 2000);
+	}
+
 	handleLovelistClick(e) {
 		const { status } = this.state;
-
+		this.animateLovelist();
 		// customer must be logged in first
 		if (!this.isLogin) {
 			status.forceLogin = true;
@@ -310,6 +329,8 @@ class Products extends Component {
 	}
 
 	addToShoppingBag(variant) {
+		this.animateAddtoCart();
+		
 		const { status, notif } = this.state;
 		const { dispatch, product } = this.props;
 
@@ -345,7 +366,7 @@ class Products extends Component {
 
 	handleBtnBeliClicked(e) {
 		const { selectedVariant, status } = this.state;
-
+		this.animateAddtoCart();
 		// product variants not found
 		if (!status.hasVariantSize && _.isEmpty(selectedVariant)) {
 			status.btnBeliDisabled = true;
@@ -773,6 +794,22 @@ class Products extends Component {
 							</div>
 						</div>
 						{this.renderStickyAction()}
+						{
+							this.state.animation.lovelist && <AnimationLovelist />
+						}
+						{
+							this.state.animation.addToCart && (
+								<AnimationAddToCart
+									style={{
+										top: '-32%',
+										left: '50%',
+										opacity: '1',
+										transform: 'scale(0.1)'
+									}}
+									image='https://mm-imgs.s3.amazonaws.com/p/2017/08/28/01/cardinal-girl-short-sleeve-plaid-shirt-merah_4139942_1_59365.jpg'
+								/>
+							)
+						}
 					</Page>
 					<Header.Modal style={!status.showScrollInfomation ? { backgroundColor: 'transparent', border: 'none', boxShadow: 'none' } : {}} {...this.renderHeaderPage()} />
 
