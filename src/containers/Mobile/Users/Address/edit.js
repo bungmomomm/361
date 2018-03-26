@@ -30,7 +30,7 @@ class Address extends Component {
 		},
 		type: 'shipping',
 		submitting: false,
-		default: 0,
+		default: false,
 		edit: {}
 	};
 
@@ -59,7 +59,7 @@ class Address extends Component {
 						city: selected.city.length ? `${selected.city[0].province_id}_${selected.city[0].city_id}` : '',
 						district: selected.district.length ? selected.district[0].id : '',
 					},
-					default: edit.fg_default
+					default: edit.fg_default === 1
 				});
 
 			})();
@@ -152,7 +152,7 @@ class Address extends Component {
 
 	submit = async (model) => {
 		const { city_id } = model;
-		const splitr = city_id.split('-');
+		const splitr = city_id.split('_');
 
 		model = {
 			...model,
@@ -160,7 +160,6 @@ class Address extends Component {
 			city_id: splitr[1],
 			type: this.state.type,
 			country_id: 1,
-			is_supported_pin_point: 0,
 			latitude: '',
 			longitude: '',
 			default: this.state.default,

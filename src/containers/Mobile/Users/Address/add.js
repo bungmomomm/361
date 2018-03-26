@@ -29,7 +29,7 @@ class Address extends Component {
 		},
 		type: 'shipping',
 		submitting: false,
-		default: 0
+		default: false
 	};
 
 	onChange = (v, which = 'city') => {
@@ -108,7 +108,7 @@ class Address extends Component {
 
 	submit = async (model) => {
 		const { city_id } = model;
-		const splitr = city_id.split('-');
+		const splitr = city_id.split('_');
 
 		model = {
 			...model,
@@ -116,7 +116,6 @@ class Address extends Component {
 			city_id: splitr[1],
 			type: this.state.type,
 			country_id: 1,
-			is_supported_pin_point: 0,
 			latitude: '',
 			longitude: '',
 			default: this.state.default
