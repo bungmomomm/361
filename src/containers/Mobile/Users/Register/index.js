@@ -22,11 +22,12 @@ import {
 	Login as LoginWidget
 } from '@/containers/Mobile/Widget';
 import Otp from '@/containers/Mobile/Shared/Otp';
+import { userSource, userToken } from '@/data/cookiesLabel';
 
 class Register extends Component {
 	constructor(props) {
 		super(props);
-		this.source = this.props.cookies.get('user.source');
+		this.source = this.props.cookies.get(userSource);
 		this.props = props;
 		this.state = {
 			current: 'register',
@@ -57,12 +58,13 @@ class Register extends Component {
 		const { redirectUri } = this.state;
 		const { accessToken } = e;
 
-		const [err, response] = await to(dispatch(new users.userSocialLogin(cookies.get('user.token'), provider, accessToken)));
+		const [err, response] = await to(dispatch(new users.userSocialLogin(cookies.get(userToken), provider, accessToken)));
 		if (err) {
 			return err;
 		}
-		setUserCookie(this.props.cookies, response.token);
-		dispatch(new users.afterLogin(cookies.get('user.token')));
+		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
+		setUserCookie(this.props.cookies, response.token, false, userProfile);
+		dispatch(new users.afterLogin(cookies.get(userToken)));
 		history.push(redirectUri || '/');
 		return response;
 	}
@@ -79,7 +81,7 @@ class Register extends Component {
 		const dataForRegister = { fullname: loginId, hp_email: email, pwd: password };
 
 		// Call register action.
-		const [errorRegister, responseRegister] = await to(dispatch(new users.userRegister(cookies.get('user.token'), dataForRegister)));
+		const [errorRegister, responseRegister] = await to(dispatch(new users.userRegister(cookies.get(userToken), dataForRegister)));
 
 		// Throw error if any.
 		if (errorRegister) {
@@ -100,7 +102,7 @@ class Register extends Component {
 			// Check if we register via mobile.
 			if (registerWith === 'MOBILE') {
 				// Then send OTP
-				const [errorUserOtp, responseUserOtp] = await to(dispatch(new users.userOtp(cookies.get('user.token'), dataForRegister.hp_email)));
+				const [errorUserOtp, responseUserOtp] = await to(dispatch(new users.userOtp(cookies.get(userToken), dataForRegister.hp_email)));
 				if (errorUserOtp) {
 					console.log('Error on OTP');
 					return false;
@@ -114,15 +116,16 @@ class Register extends Component {
 
 			}
 
-			const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get('user.token'), email, password)));
+			const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get(userToken), email, password)));
 
 			if (errorUserLogin) {
 				return false;
 			}
 
 			// Set the cookie for the page.
-			setUserCookie(cookies, responseUserLogin.token);
-			dispatch(new users.afterLogin(cookies.get('user.token')));
+			const userProfile = JSON.stringify({ name: responseUserLogin.userprofile.name, avatar: responseUserLogin.userprofile.avatar });
+			setUserCookie(this.props.cookies, responseUserLogin.token, false, userProfile);
+			dispatch(new users.afterLogin(cookies.get(userToken)));
 			history.push(redirectUri || '/');
 
 		}
@@ -180,7 +183,7 @@ class Register extends Component {
 		const { cookies, dispatch, history } = this.props;
 		const { email, password, redirectUri } = this.state;
 		
-		const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get('user.token'), email, password)));
+		const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get(userToken), email, password)));
 		
 		if (errorUserLogin) {
 			console.log('error on user login');
@@ -188,8 +191,9 @@ class Register extends Component {
 		}
 		
 		// Set the cookie for the page.
-		setUserCookie(cookies, responseUserLogin.token);
-		dispatch(new users.afterLogin(cookies.get('user.token')));
+		const userProfile = JSON.stringify({ name: responseUserLogin.userprofile.name, avatar: responseUserLogin.userprofile.avatar });
+		setUserCookie(this.props.cookies, responseUserLogin.token, false, userProfile);
+		dispatch(new users.afterLogin(cookies.get(userToken)));
 		history.push(redirectUri || '/');
 		
 		return responseUserLogin;

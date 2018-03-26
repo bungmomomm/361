@@ -1,3 +1,6 @@
+@import '../../../../../styles/mobile/variables';
+@import '../../../../../styles/mobile/mixins';
+
 .commentbox{
     position: fixed;
     bottom: 0px;
@@ -6,6 +9,10 @@
     align-items: center;
     background: #F9F9F9;
     border-top: 1px solid #D8D8D8;
+    button {
+		font-family: font-family('Lato-Bold');
+		color: #191919;
+	}
 }
 
 .commentsBackground {
@@ -18,9 +25,13 @@
 }
 
 .loadMore {
-    height: 45px;
-    color: #D8D8D8;
     border-top: 1px solid #D8D8D8;
     border-bottom: 1px solid #D8D8D8;
     margin: 10px 15px;
+    button {
+        font-family: font-family('Lato-Regular');
+        height: 45px;
+        color: #D8D8D8;
+        justify-content: left;
+    }
 }

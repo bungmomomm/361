@@ -14,13 +14,14 @@ import { actions as categoryActions } from '@/state/v4/Category';
 import CONST from '@/constants';
 import Shared from '@/containers/Mobile/Shared';
 import { actions as sharedActions } from '@/state/v4/Shared';
+import { userSource, userToken } from '@/data/cookiesLabel';
 
 class Category extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.userCookies = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
-		this.source = this.props.cookies.get('user.source');
+		this.userCookies = this.props.cookies.get(userToken);
+		this.source = this.props.cookies.get(userSource);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -51,6 +52,7 @@ class Category extends PureComponent {
 	}
 
 	renderCategories() {
+		const { cookies } = this.props;
 		return this.props.category.categories.length > 1 && this.props.category.categories.map((cat, key) => {
 			let url = cat.link;
 			switch (cat.type) {
@@ -75,7 +77,17 @@ class Category extends PureComponent {
 						<div className={styles.label}>{cat.title}</div>
 					</a>)
 				: (
-					<Link to={url} key={key} className={styles.list} onClick={() => this.selectSubCategoryHandler(cat.id)}>
+					<Link
+						to={url}
+						key={key}
+						className={styles.list}
+						onClick={
+							() => {
+								this.selectSubCategoryHandler(cat.id);
+								cookies.set('page.referrer', 'CATEGORY', { path: '/' });
+							}
+						}
+					>
 						<Image src={cat.image_url} />
 						<div className={styles.label}>{cat.title}</div>
 					</Link>
@@ -94,7 +106,7 @@ class Category extends PureComponent {
 						current={this.props.shared.current}
 						variants={this.props.home.segmen}
 						onPick={(e) => this.handlePick(e)}
-						type='minimal'
+						type='borderedBottom'
 					/>
 					<div>
 						{ category.loading ? loading : this.renderCategories() }
@@ -120,7 +132,7 @@ const doAfterAnonymous = (props) => {
 		selectedSegment = CONST.SEGMENT_INIT.find(e => e.key === shared.current);
 	}
 	dispatch(sharedActions.setCurrentSegment(selectedSegment.key));
-	dispatch(new categoryActions.getCategoryMenuAction(cookies.get('user.token'), selectedSegment));
+	dispatch(new categoryActions.getCategoryMenuAction(cookies.get(userToken), selectedSegment));
 };
 
 const mapStateToProps = (state) => {

@@ -35,6 +35,7 @@ import {
 	categoryViewBuilder,
 	productClickBuilder
 } from '@/utils/tracking';
+import { userToken } from '@/data/cookiesLabel';
 
 const trackBrandPageView = (products, info, props) => {
 	const productId = _.map(products, 'product_id') || [];
@@ -130,6 +131,7 @@ class Detail extends Component {
 		};
 	}
 	componentWillMount() {
+		window.scroll(0, 0);
 		if ('serviceUrl' in this.props.shared) {
 			const { dispatch, match: { params }, cookies } = this.props;
 			const qs = queryString.parse(location.search);
@@ -144,7 +146,7 @@ class Detail extends Component {
 				query: data.query
 			});
 			dispatch(brandAction.brandProductAction(data));
-			dispatch(brandAction.brandBannerAction(cookies.get('user.token'), this.props.match.params.brandId));
+			dispatch(brandAction.brandBannerAction(cookies.get(userToken), this.props.match.params.brandId));
 		}
 	}
 
@@ -164,15 +166,15 @@ class Detail extends Component {
 				query: data.query
 			});
 			dispatch(brandAction.brandProductAction(data));
-			dispatch(brandAction.brandBannerAction(cookies.get('user.token'), nextProps.match.params.brandId));
+			dispatch(brandAction.brandBannerAction(cookies.get(userToken), nextProps.match.params.brandId));
 		}
 
 		if (this.props.brands.searchData.products !== nextProps.brands.searchData.products) {
 			const { dispatch } = this.props;
 			const productIdList = _.map(nextProps.brands.searchData.products, 'product_id') || [];
 			if (productIdList.length > 0) {
-				dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-				dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+				dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
+				dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
 			}
 		}
 
@@ -192,12 +194,17 @@ class Detail extends Component {
 
 	}
 
-	async onApply(e, fq) {
+	componentWillUnmount() {
+		const { dispatch } = this.props;
+		dispatch(brandAction.brandProductCleanUp());
+	}
+
+	async onApply(e, fq, closeFilter) {
 		const { query } = this.state;
 		query.fq = fq;
 		this.setState({
 			query,
-			showFilter: false
+			showFilter: !closeFilter
 		});
 		this.update({
 			fq
@@ -212,8 +219,8 @@ class Detail extends Component {
 
 	onItemLoved(productId) {
 		const { cookies, dispatch } = this.props;
-		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), [productId]));
-		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), [productId]));
+		dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), [productId]));
+		dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), [productId]));
 	}
 
 	update = (filters) => {
@@ -232,7 +239,7 @@ class Detail extends Component {
 		});
 
 		const data = {
-			token: cookies.get('user.token'),
+			token: cookies.get(userToken),
 			query: {
 				...query,
 				...filters
@@ -302,7 +309,7 @@ class Detail extends Component {
 	}
 
 	renderFilter() {
-		// const { brands } = this.props;
+		const { brands, isFiltered } = this.props;
 		const { showSort } = this.state;
 		const sorts = _.chain(this.props.brands).get('searchData.sorts').value() || [];
 		return (
@@ -313,17 +320,18 @@ class Detail extends Component {
 						{
 							id: 'sort',
 							title: 'Urutkan',
-							// disabled: brands.loading_products
+							disabled: brands.loading_products
 						},
 						{
 							id: 'filter',
 							title: 'Filter',
-							// disabled: brands.loading_products
+							disabled: brands.loading_products,
+							checked: isFiltered
 						},
 						{
 							id: 'view',
 							title: <Svg src={this.state.listTypeState.icon} />,
-							// disabled: brands.loading_products
+							disabled: brands.loading_products
 						}
 					]}
 					onPick={e => this.handlePick(e)}
@@ -412,8 +420,8 @@ class Detail extends Component {
 					<Filter
 						shown={showFilter}
 						filters={this.props.brands.searchData}
-						onApply={(e, fq) => {
-							this.onApply(e, fq);
+						onApply={(e, fq, closeFilter) => {
+							this.onApply(e, fq, closeFilter);
 						}}
 						onClose={(e) => this.onClose(e)}
 					/>

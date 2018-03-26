@@ -2,35 +2,34 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { actions as users } from '@/state/v4/User';
-import { 
-	Link 
+import {
+	Link
 } from 'react-router-dom';
-import { 
-	Button, 
-	Input, 
-	Svg, 
-	Notification 
+import {
+	Button,
+	Input,
+	Svg,
+	Notification
 } from '@/components/mobile';
 import {
 	Login as LoginWidget
 } from '@/containers/Mobile/Widget';
-import { 
-	setUserCookie, 
-	renderIf 
+import {
+	setUserCookie,
+	renderIf
 } from '@/utils';
 import styles from '../user.scss';
 import _ from 'lodash';
 import validator from 'validator';
 import util from 'util';
 import to from 'await-to-js';
-
+import { userToken } from '@/data/cookiesLabel';
 import Logout from './Logout';
 
 class Login extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-
 		this.state = {
 			current: 'login',
 			visiblePassword: false,
@@ -50,12 +49,13 @@ class Login extends Component {
 	async onLogin(e) {
 		const { cookies, dispatch, history } = this.props;
 		const { loginId, password, redirectUri } = this.state;
-		const [err, response] = await to(dispatch(new users.userLogin(cookies.get('user.token'), loginId, password)));
+		const [err, response] = await to(dispatch(new users.userLogin(cookies.get(userToken), loginId, password)));
 		if (err) {
 			return err;
 		}
-		setUserCookie(this.props.cookies, response.token);
-		dispatch(new users.afterLogin(cookies.get('user.token')));
+		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
+		setUserCookie(this.props.cookies, response.token, false, userProfile);
+		dispatch(new users.afterLogin(cookies.get(userToken)));
 		history.push(redirectUri || '/');
 		return response;
 	}
@@ -64,12 +64,13 @@ class Login extends Component {
 		const { cookies, dispatch, history } = this.props;
 		const { redirectUri } = this.state;
 		const { accessToken } = token;
-		const [err, response] = await to(dispatch(new users.userSocialLogin(cookies.get('user.token'), provider, accessToken)));
+		const [err, response] = await to(dispatch(new users.userSocialLogin(cookies.get(userToken), provider, accessToken)));
 		if (err) {
 			return err;
 		}
-		setUserCookie(this.props.cookies, response.token);
-		dispatch(new users.afterLogin(cookies.get('user.token')));
+		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
+		setUserCookie(this.props.cookies, response.token, false, userProfile);
+		dispatch(new users.afterLogin(cookies.get(userToken)));
 		history.push(redirectUri || '/');
 		return response;
 	}
@@ -96,17 +97,17 @@ class Login extends Component {
 	}
 
 	render() {
-		const { 
-			isLoading, 
-			login 
+		const {
+			isLoading,
+			login
 		} = this.props.users;
-		const { 
-			visiblePassword, 
-			validLoginId, 
-			validLoginPassword, 
-			loginId, 
+		const {
+			visiblePassword,
+			validLoginId,
+			validLoginPassword,
+			loginId,
 			redirectUri,
-			password 
+			password
 		} = this.state;
 		const buttonLoginEnable = !isLoading && validLoginId && validLoginPassword;
 

@@ -12,6 +12,7 @@ import { Header, Page, Button, Svg, Input, Notification, Spinner } from '@/compo
 import { actions as userActions } from '@/state/v4/User';
 
 import CONST from '@/constants';
+import cookiesLabel from '@/data/cookiesLabel';
 
 import styles from './otp.scss';
 
@@ -20,7 +21,7 @@ class Otp extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
+		this.userToken = this.props.cookies.get(cookiesLabel.userToken);
 
 		this.state = {
 			showNotif: false,

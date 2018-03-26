@@ -11,7 +11,8 @@ export default thunk((promised, action, store) => {
 
 		if (!response || !exc.includes(status)) {
 			store.dispatch(actions.showSnack(uniqid('err-'), {
-				label: response ? _.chain(response).get('data.error_message').value()
+				label: _.chain(response).get('data.error_message').value() ? _.chain(response).get('data.error_message').value()
+						: _.chain(response).get('statusText').value() ? _.chain(response).get('statusText').value()
 						: err.error_message ? err.error_message
 						: message || err,
 				timeout: 10000,

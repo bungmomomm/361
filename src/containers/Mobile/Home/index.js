@@ -21,6 +21,7 @@ import {
 	sendGtm,
 } from '@/utils/tracking';
 import { urlBuilder } from '@/utils';
+import cookiesLabel from '@/data/cookiesLabel';
 
 const renderSectionHeader = (title, options) => {
 	return (
@@ -64,11 +65,11 @@ class Home extends Component {
 		super(props);
 		this.props = props;
 
-		this.userCookies = this.props.cookies.get('user.token');
-		this.userRFCookies = this.props.cookies.get('user.rf.token');
-		this.source = this.props.cookies.get('user.source');
+		this.userCookies = this.props.cookies.get(cookiesLabel.userToken);
+		this.userRFCookies = this.props.cookies.get(cookiesLabel.userRfToken);
+		this.source = this.props.cookies.get(cookiesLabel.userSource);
 
-		this.isLogin = this.props.cookies.get('isLogin');
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin);
 
 		this.state = {
 			isFooterShow: true,
@@ -112,7 +113,7 @@ class Home extends Component {
 	}
 
 	renderHeroBanner() {
-		const { home, dispatch } = this.props;
+		const { home, cookies } = this.props;
 		const segment = home.activeSegment.key;
 		const featuredBanner = _.chain(home).get(`allSegmentData.${segment}`).get('heroBanner');
 		if (!featuredBanner.isEmpty().value()) {
@@ -124,7 +125,7 @@ class Home extends Component {
 					to={link}
 					onClick={
 						() => {
-							dispatch(new sharedActions.logSinglePage('HOME'));
+							cookies.set('page.referrer', 'HOME', { path: '/' });
 						}
 					}
 				>
@@ -149,37 +150,38 @@ class Home extends Component {
 		const { home } = this.props;
 		const segment = home.activeSegment;
 		const title = 'LIHAT SEMUA';
-		const datas = _.chain(home).get(`allSegmentData.${segment.key}`).get('recomendationData').get(type);
+		const recommendationData = _.chain(home).get(`allSegmentData.${segment.key}.recomendationData.${type}`);
+		if (recommendationData.value()) {
+			const data = recommendationData.value();
+			if (data.data && data.data.length > 0) {
+				const link = `/promo/${type}?segment_id=${segment.id}`;
 
-		if (!datas.isEmpty().value()) {
-			const data = datas.value();
-			const link = `/promo/${type}?segment_id=${segment.id}`;
-
-			const header = renderSectionHeader(data.title, {
-				title,
-				url: link
-			});
-			return (
-				<div>
-					{ header }
-					<Grid split={3} bordered>
-						{
-							data.data.map(({ images, pricing, path }, e) => (
-								<div key={e}>
-									<Link to={`/${path}`}>
-										<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
-										<div className={styles.btnThumbnail}>
-											<Button transparent color='secondary' size='small'>
-												{pricing.formatted.effective_price}
-											</Button>
-										</div>
-									</Link>
-								</div>
-							))
-						}
-					</Grid>
-				</div>
-			);
+				const header = renderSectionHeader(data.title, {
+					title,
+					url: link
+				});
+				return (
+					<div>
+						{ header }
+						<Grid split={3} bordered>
+							{
+								data.data.map(({ images, pricing, path, product_id, product_title }, e) => (
+									<div key={e}>
+										<Link to={`${urlBuilder.buildPdp(product_title, product_id)}`}>
+											<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
+											<div className={styles.btnThumbnail}>
+												<Button transparent color='secondary' size='small'>
+													{pricing.formatted.effective_price}
+												</Button>
+											</div>
+										</Link>
+									</div>
+								))
+							}
+						</Grid>
+					</div>
+				);
+			}
 		}
 		return null;
 	}
@@ -224,10 +226,10 @@ class Home extends Component {
 	}
 
 	renderSquareBanner() {
-		const { home, dispatch } = this.props;
+		const { home, cookies } = this.props;
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}.squareBanner`);
-		if (!datas.isEmpty().value()) {
+		if (datas.value()) {
 			return (
 				<div className='margin--medium-v'>
 					{
@@ -237,7 +239,7 @@ class Home extends Component {
 								key={c}
 								onClick={
 									() => {
-										dispatch(new sharedActions.logSinglePage('HOME'));
+										cookies.set('page.referrer', 'HOME', { path: '/' });
 									}
 								}
 							>
@@ -254,12 +256,12 @@ class Home extends Component {
 	}
 
 	renderBottomBanner(position = 'top') {
-		const { home, dispatch } = this.props;
+		const { home, cookies } = this.props;
 		const segment = home.activeSegment.key;
 		let bottomBanner = [];
 		const dataTop = _.chain(home).get(`allSegmentData.${segment}.topLanscape`);
 		const dataBottm = _.chain(home).get(`allSegmentData.${segment}.bottomLanscape`);
-		if (!dataTop.isEmpty().value() && !dataBottm.isEmpty().value()) {
+		if (dataTop.value() && dataBottm.value()) {
 			bottomBanner = position === 'top' ? dataTop.value() : dataBottm.value();
 		}
 		if (bottomBanner.length > 0) {
@@ -272,7 +274,7 @@ class Home extends Component {
 								key={d}
 								onClick={
 									() => {
-										dispatch(new sharedActions.logSinglePage('HOME'));
+										cookies.set('page.referrer', 'HOME', { path: '/' });
 									}
 								}
 							>
@@ -307,7 +309,8 @@ class Home extends Component {
 					<Grid split={3}>
 						{
 							featuredBrand.value().map((brand, e) => {
-								const url = urlBuilder.setId(brand.brand_id).setName(brand.brand_name).buildBrand();
+								const url = urlBuilder.setId(brand.brand_id).setName(brand.brand_name)
+									.setCategoryId(this.props.home.activeSegment.id).buildFeatureBrand();
 								return (
 									<div className={styles.brandsImage} key={e}>
 										<Link to={url} >
@@ -359,8 +362,8 @@ class Home extends Component {
 	render() {
 		const { shared, dispatch } = this.props;
 
-		const recommendation1 = this.isLogin === 'false' ? 'best-seller' : 'recommended-products';
-		const recommendation2 = this.isLogin === 'false' ? 'new-arrival' : 'recent-view';
+		const recommendation1 = this.isLogin === 'false' ? 'new-arrival' : 'recommended-products';
+		const recommendation2 = this.isLogin === 'false' ? 'best-seller' : 'recent-view';
 		return (
 			<div style={this.props.style}>
 				<Page color='white'>
@@ -427,7 +430,7 @@ const doAfterAnonymous = async (props) => {
 
 	const activeSegment = home.segmen.find(e => e.key === home.activeSegment.key);
 
-	const tokenHeader = cookies.get('user.token');
+	const tokenHeader = cookies.get(cookiesLabel.userToken);
 
 	const mainPageData = await dispatch(new actions.mainAction(activeSegment, tokenHeader));
 	await dispatch(new actions.recomendationAction(activeSegment, tokenHeader));

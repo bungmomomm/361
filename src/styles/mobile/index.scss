@@ -139,6 +139,9 @@
 	  	overflow-x: hidden;
 	  	overflow-y: auto;
 	}
+    html{
+        overflow: hidden;
+    }
 
 	#root > main {
 		height: 100%;
@@ -439,6 +442,23 @@
 		-webkit-overflow-scrolling: touch;
 		-ms-overflow-style: -ms-autohiding-scrollbar;
 	}
+    .placeholder-image{
+        background-image: url('../../assets/images/mobile/ico_placeholder.png');
+        background-position: center center;
+        background-repeat: no-repeat;
+    }
+    .wysiwyg-content{
+        font-size: 13px;
+        p{
+            line-height: 16px;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+        ul, ol{
+            padding-left: 20px;
+            font-size: 13px;
+        }
+    }
 }
 
 @keyframes :global(fadeIn) {

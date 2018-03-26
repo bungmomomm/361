@@ -11,13 +11,14 @@ import { actions as commentActions } from '@/state/v4/Comment';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Shared from '@/containers/Mobile/Shared';
 import { urlBuilder } from '@/utils';
+import cookiesLabel from '@/data/cookiesLabel';
 
 class Lovelist extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.isLogin = (typeof this.props.cookies.get('isLogin') === 'string' && this.props.cookies.get('isLogin') === 'true');
-		this.userCookies = this.props.cookies.get('user.token');
+		this.isLogin = (typeof this.props.cookies.get(cookiesLabel.isLogin) === 'string' && this.props.cookies.get(cookiesLabel.isLogin) === 'true');
+		this.userCookies = this.props.cookies.get(cookiesLabel.userToken);
 		this.state = {
 			status: {
 				listTypeGrid: true,
@@ -34,12 +35,19 @@ class Lovelist extends Component {
 		};
 
 		this.getLovelistCardsContent = this.getLovelistCardsContent.bind(this);
-		this.renderLovelistPage = this.renderLovelistPage.bind(this);
+		this.goBackPreviousPage = this.goBackPreviousPage.bind(this);
 		this.handleLovelistClicked = this.handleLovelistClicked.bind(this);
 		this.handleCancelRemoveItem = this.handleCancelRemoveItem.bind(this);
 		this.onGridViewModeClick = this.onGridViewModeClick.bind(this);
-		this.removeItem = this.removeItem.bind(this);
 		this.onNotifClose = this.onNotifClose.bind(this);
+		this.removeItem = this.removeItem.bind(this);
+		this.renderLovelistPage = this.renderLovelistPage.bind(this);
+
+		this.loadingContent = (
+			<div style={{ margin: '20% auto 20% auto' }}>
+				<Spinner size='large' />
+			</div>
+		);
 		
 	}
 
@@ -55,7 +63,7 @@ class Lovelist extends Component {
 		const { dispatch, lovelist, comments } = nextProps;
 		const { status } = this.state;
 
-		status.loading = nextProps.loading;
+		status.loading = lovelist.loading;
 		// updates neccessary things and checking resources availability
 		if (this.props.lovelist.items.list !== lovelist.items.list) {
 			status.listEmpty = _.isEmpty(lovelist.items.list);
@@ -129,6 +137,15 @@ class Lovelist extends Component {
 		return <div className={styles.cardContainer}>{content}</div>;
 	}
 
+	goBackPreviousPage(e) {
+		const { history } = this.props;
+		if ((history.length - 1 >= 0)) {
+			history.goBack();
+		} else {
+			history.push('/');
+		}
+	}
+
 	handleLovelistClicked(e) {
 		const { status, notif } = this.state;
 		const { id } = e.currentTarget.dataset;
@@ -188,6 +205,7 @@ class Lovelist extends Component {
 	}
 
 	renderLovelistPage(content) {
+		const { items } = this.props.lovelist;
 		const { status, notif } = this.state;
 		const HeaderPage = {
 			left: ((status.listEmpty) ? null : (
@@ -200,9 +218,9 @@ class Lovelist extends Component {
 			)),
 			center: <strong>Lovelist</strong>,
 			right: (
-				<Link to='/'>
+				<Button onClick={this.goBackPreviousPage}>
 					<Svg src='ico_arrow-back.svg' />
-				</Link>
+				</Button>
 			)
 		};
 
@@ -212,7 +230,8 @@ class Lovelist extends Component {
 			<div style={this.props.style}>
 				<Page color='white'>
 					{ <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} /> }
-					{content}
+					{status.loading && this.loadingContent}
+					{(!status.loading && !_.isEmpty(items.list)) && content}
 				</Page>
 				<Header.Modal {...HeaderPage} />
 
@@ -245,16 +264,8 @@ class Lovelist extends Component {
 
 	render() {
 		const { status } = this.state;
-		
-		if (status.loading) {
-			return this.renderLovelistPage(
-				<div style={{ marginTop: '50%' }} className='text-center'>
-					<Spinner size='large' />
-				</div>
-			);
-		}
 
-		if (status.listEmpty) {
+		if (!status.loading && status.listEmpty) {
 			return (this.renderLovelistPage(
 				<div className='text-center --disable-flex'>
 					<p className={styles.lovelistEmpty}>Lovelist kamu masih kosong</p>
@@ -286,11 +297,11 @@ const mapStateToProps = (state) => {
 const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies } = props;
 
-	const list = await dispatch(LoveListActionCreator.getLovelisItems(cookies.get('user.token'))) || [];
+	const list = await dispatch(LoveListActionCreator.getLovelisItems(cookies.get(cookiesLabel.userToken))) || [];
 	const ids = list.products.map((item) => item.product_id);
 	if (ids.length > 0) {
-		await dispatch(LoveListActionCreator.bulkieCountByProduct(cookies.get('user.token'), ids));	
-		await dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), ids));
+		await dispatch(LoveListActionCreator.bulkieCountByProduct(cookies.get(cookiesLabel.userToken), ids));	
+		await dispatch(commentActions.bulkieCommentAction(cookies.get(cookiesLabel.userToken), ids));
 	}
 
 	// }

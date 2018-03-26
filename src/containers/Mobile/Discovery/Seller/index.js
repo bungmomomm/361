@@ -27,7 +27,6 @@ import Share from '@/components/mobile/Share';
 import { renderIf } from '@/utils';
 import _ from 'lodash';
 import queryString from 'query-string';
-import Helmet from 'react-helmet';
 import {
 	CatalogView,
 	GridView,
@@ -45,6 +44,9 @@ import {
 	categoryViewBuilder,
 	productClickBuilder
 } from '@/utils/tracking';
+import classNames from 'classnames';
+import styles from './styles.scss';
+import { userToken } from '@/data/cookiesLabel';
 
 const trackSellerPageView = (products, info, props) => {
 	const productId = _.map(products, 'product_id') || [];
@@ -53,13 +55,14 @@ const trackSellerPageView = (products, info, props) => {
 		name: info.title,
 		url_path: props.location.pathname
 	};
+
 	const impressions = _.map(products, (product, key) => {
 		return {
 			name: product.product_title,
 			id: product.product_id,
 			price: product.pricing.original.effective_price,
 			brand: product.brand.name,
-			category: product.product_category_names.join('/'),
+			category: product.product_category_names ? product.product_category_names.join('/') : '',
 			position: key + 1,
 			list: 'mm'
 		};
@@ -119,7 +122,12 @@ class Seller extends Component {
 			},
 			filterStyle: {},
 			centerStyle: { opacity: 0 },
-			headerNameY: false
+			headerNameY: false,
+			seeMore: {
+				bool: true,
+				text: '[...]',
+				show: false
+			},
 		};
 	}
 
@@ -136,7 +144,15 @@ class Seller extends Component {
 
 		if (nextProps.seller.data !== this.props.seller.data) {
 			const data = nextProps.seller.data;
-			trackSellerPageView(data.products, data.info, nextProps);
+			if (nextProps.seller.info.description.length > 110) {
+				this.setState({
+					seeMore: {
+						...this.state.seeMore,
+						show: true
+					}
+				});
+			}
+			trackSellerPageView(data.products, nextProps.seller.info, nextProps);
 		}
 	}
 
@@ -148,7 +164,7 @@ class Seller extends Component {
 		const { headerNameY } = this.state;
 		const header = document.getElementById('store-filter');
 		const sticky = header.offsetTop;
-		const scrollY = e.srcElement.scrollTop;
+		const scrollY = e.target.scrollTop;
 
 		if (!headerNameY) {
 			this.setState({
@@ -185,13 +201,13 @@ class Seller extends Component {
 		}
 	};
 
-	onApply = async (e, fq) => {
+	onApply = async (e, fq, closeFilter) => {
 		const { query } = this.state;
 		query.fq = fq;
 
 		this.setState({
 			query,
-			showFilter: false
+			showFilter: !closeFilter
 		});
 		this.update({
 			fq
@@ -204,7 +220,7 @@ class Seller extends Component {
 		});
 	};
 
-	forceLoginNow() {
+	forceLoginNow = () => {
 		const { history } = this.props;
 		const currentUrl = encodeURIComponent(`${location.pathname}${location.search}`);
 		history.push(`/login?redirect_uri=${currentUrl}`);
@@ -228,7 +244,7 @@ class Seller extends Component {
 		history.push(`?${url}`);
 
 		const data = {
-			token: cookies.get('user.token'),
+			token: cookies.get(userToken),
 			query: {
 				...query,
 				...filters,
@@ -240,8 +256,8 @@ class Seller extends Component {
 		const response = await to(dispatch(actions.getProducts(data)));
 
 		const productIdList = _.map(response[1].data.products, 'product_id') || [];
-		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+		dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
+		dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
 	};
 
 	handlePick = (val) => {
@@ -271,7 +287,7 @@ class Seller extends Component {
 	};
 
 	filterTabs = () => {
-		const { seller, isFiltered } = this.props;
+		const { seller, scroller, isFiltered } = this.props;
 		const { listTypeState, showSort, filterStyle } = this.state;
 		const sorts = _.chain(seller).get('data.sorts').value() || [];
 
@@ -284,18 +300,18 @@ class Seller extends Component {
 						{
 							id: 'sort',
 							title: 'Urutkan',
-							disabled: _.isEmpty(seller.data.sorts)
+							disabled: scroller.loading
 						},
 						{
 							id: 'filter',
 							title: 'Filter',
-							disabled: _.isEmpty(seller.data.facets),
+							disabled: scroller.loading,
 							checked: isFiltered
 						},
 						{
 							id: 'view',
 							title: <Svg src={listTypeState.icon} />,
-							disabled: _.isEmpty(seller.data.products)
+							disabled: scroller.loading
 						}
 					]}
 					onPick={e => this.handlePick(e)}
@@ -307,8 +323,20 @@ class Seller extends Component {
 		);
 	}
 
+	toggleSeeMore = () => {
+		this.setState({
+			seeMore: {
+				...this.state.seeMore,
+				bool: !this.state.seeMore.bool,
+				text: !this.state.seeMore.bool ? '[...]' : 'Hide'
+			}
+		});
+	};
+
 	sellerHeader = () => {
 		const { seller, location } = this.props;
+		const { seeMore } = this.state;
+
 		return (seller.info.seller && (
 			<div className='border-bottom'>
 				<div className='margin--medium-v'>
@@ -359,7 +387,16 @@ class Seller extends Component {
 					<div className='padding--medium-h margin--small-v'>
 						<div className='font-medium' ref={(el) => { this.headerName = el; }}>{seller.info.seller || ''}</div>
 						<div className='font-small flex-row flex-middle'><Svg src='ico_pinlocation-black.svg' /> <span>{seller.info.seller_location || ''}</span></div>
-						<div className='font-small'>{seller.info.description || ''}</div>
+						<div>
+							<div className={seeMore.bool && seeMore.show ? classNames('font-small padding--medium-h', styles.textOnlyShowTwoLines) : 'font-small padding--medium-h'}>{seller.info.description || ''}</div>
+							{seeMore.show && (
+								<span className='padding--medium-h'>
+									<button className='font-small font-color--grey' onClick={this.toggleSeeMore}>
+										{seeMore.text}
+									</button>
+								</span>
+							)}
+						</div>
 					</div>
 				</div>
 			</div>
@@ -408,30 +445,6 @@ class Seller extends Component {
 		return listView;
 	};
 
-	renderHelmet = () => {
-		const { seller: { info }, location } = this.props;
-
-		return (
-			<Helmet>
-				<title>{`${info.seller} | MatahariMall.com`}</title>
-				<meta name='twitter:card' content='summary' />
-				<meta name='twitter:site' content='@MatahariMallCom' />
-				<meta name='twitter:creator' content='@MatahariMallCom' />
-				<meta name='twitter:title' content={info.description} />
-				<meta name='twitter:url' content={`${process.env.MOBILE_URL}${location.pathname}${location.search}`} />
-				<meta name='twitter:description' content={info.description} />
-				<meta name='twitter:image' content={info.seller_logo} />
-				<meta property='og:title' content={info.seller} />
-				<meta property='og:url' content={`${process.env.MOBILE_URL}${location.pathname}${location.search}`} />
-				<meta property='og:type' content='website' />
-				<meta property='og:description' content={info.description} />
-				<meta property='og:image' content={info.seller_logo} />
-				<meta property='og:site_name' content='MatahariMall.com' />
-				<link rel='canonical' href={process.env.MOBILE_URL} />
-			</Helmet>
-		);
-	};
-
 	renderData = () => {
 
 		const { showFilter, centerStyle } = this.state;
@@ -458,15 +471,15 @@ class Seller extends Component {
 					<Filter
 						shown={showFilter}
 						filters={seller.data}
-						onApply={(e, fq) => {
-							this.onApply(e, fq);
+						onApply={(e, fq, closeFilter) => {
+							this.onApply(e, fq, closeFilter);
 						}}
 						onClose={(e) => this.onClose(e)}
 					/>
 				) : (
 					<div style={this.props.style}>
 						<Page color='white'>
-							<SEO 
+							<SEO
 								paramCanonical={process.env.MOBILE_UR}
 							/>
 							{this.sellerHeader()}
@@ -513,7 +526,7 @@ const doAfterAnonymous = async (props) => {
 
 	const qs = queryString.parse(location.search);
 	const data = {
-		token: cookies.get('user.token'),
+		token: cookies.get(userToken),
 		query: {
 			store_id: params.store_id || 0,
 			...qs
@@ -522,10 +535,9 @@ const doAfterAnonymous = async (props) => {
 
 	await dispatch(actions.initSeller(data.token, data.query.store_id));
 	const response = await to(dispatch(actions.getProducts(data)));
-
 	const productIdList = _.map(response[1].data.products, 'product_id') || [];
-	dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-	dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+	dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
+	dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
 
 };
 

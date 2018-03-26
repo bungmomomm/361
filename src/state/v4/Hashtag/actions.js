@@ -6,7 +6,7 @@ import { to } from 'await-to-js';
 import { Promise } from 'es6-promise';
 
 const configs = {
-	defaultPage: 20
+	defaultPage: 21
 };
 
 const getQuery = () => (dispatch, getState) => {

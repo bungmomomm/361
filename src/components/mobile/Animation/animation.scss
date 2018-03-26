@@ -1,0 +1,71 @@
+.loveIcon{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    span{
+        animation-name: pulse;
+        animation-duration: 1.8s;
+        animation-fill-mode: both;
+    }
+}
+
+.addToCart{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    opacity: 1;
+    transition: all 0.3s ease;
+}
+
+@keyframes moveTop {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+    left: 0%;
+    margin-top: 0%;
+  }
+  90% {
+      left: 41%;
+      margin-top: -57%;
+      transform: scale(0.1);
+      opacity: 0.7;
+  }
+
+  100% {
+      left: 41%;
+      margin-top: -57%;
+      transform: scale(0.1);
+      opacity: 0;
+  }
+}
+
+
+
+@keyframes pulse {
+  0% {
+    transform: scale3d(2, 2, 2);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale3d(4, 4, 4);
+    opacity: 1;
+  }
+
+  80% {
+    transform: scale3d(1.05, 1.05, 1.05);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale3d(1, 1, 1);
+    opacity: 0;
+  }
+}

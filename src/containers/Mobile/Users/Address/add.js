@@ -8,6 +8,7 @@ import styles from './style.scss';
 import { Form, Input } from '@/components/mobile/Formsy';
 import { to } from 'await-to-js';
 import { Promise } from 'es6-promise';
+import { userToken, isLogin } from '@/data/cookiesLabel';
 
 class Address extends Component {
 
@@ -53,7 +54,7 @@ class Address extends Component {
 			if (v) {
 				(async () => {
 					const { dispatch, cookies } = this.props;
-					const [err, resp] = await to(dispatch(actions.getDistrict(cookies.get('user.token'), { city_id: v.split('_')[1] })));
+					const [err, resp] = await to(dispatch(actions.getDistrict(cookies.get(userToken), { city_id: v.split('_')[1] })));
 
 					if (err) {
 						return Promise.reject(err);
@@ -75,7 +76,7 @@ class Address extends Component {
 	onCitySearch = (el) => {
 		const { cookies, dispatch } = this.props;
 		if (el.target.value.length > 2) {
-			dispatch(actions.getCity(cookies.get('user.token'), { q: el.target.value }));
+			dispatch(actions.getCity(cookies.get(userToken), { q: el.target.value }));
 		}
 	};
 
@@ -122,7 +123,7 @@ class Address extends Component {
 
 		const { dispatch, cookies, history } = this.props;
 		this.setState({ submitting: true });
-		await dispatch(actions.addAddress(cookies.get('user.token'), model));
+		await dispatch(actions.addAddress(cookies.get(userToken), model));
 
 		history.push('/address');
 	};
@@ -379,7 +380,7 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = (props) => {
 	const { cookies, history } = props;
-	if (!cookies.get('isLogin')) {
+	if (!cookies.get(isLogin) || cookies.get(isLogin) === 'false') {
 		history.push('/login');
 	}
 };

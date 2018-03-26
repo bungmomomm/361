@@ -1,19 +1,26 @@
-const setUserCookie = (cookies, token, isAnonymous = false) => {
+import { userExp, userRfToken, userToken, isLogin, userProfile, uniqueid } from '@/data/cookiesLabel';
+
+const setUserCookie = (cookies, token, isAnonymous = false, profile = undefined) => {
 	const currentDate = new Date();
 	const limitDate = isAnonymous ? 1 : (2 * 365);
 	currentDate.setDate(currentDate.getDate() + limitDate);
-	cookies.set('user.exp', Number(token.expires_in), { domain: process.env.SESSION_DOMAIN, path: '/', expires: currentDate });
-	cookies.set('user.rf.token', token.refresh_token, { domain: process.env.SESSION_DOMAIN, path: '/', expires: currentDate });
-	cookies.set('user.token', token.token, { domain: process.env.SESSION_DOMAIN, path: '/', expires: currentDate });
+	cookies.set(userExp, Number(token.expires_in), { domain: process.env.SESSION_DOMAIN, path: '/', expires: currentDate });
+	cookies.set(userRfToken, token.refresh_token, { domain: process.env.SESSION_DOMAIN, path: '/', expires: currentDate });
+	cookies.set(userToken, token.token, { domain: process.env.SESSION_DOMAIN, path: '/', expires: currentDate });
 
-	cookies.set('isLogin', !isAnonymous, { domain: process.env.SESSION_DOMAIN, path: '/', expires: currentDate });
+	cookies.set(isLogin, !isAnonymous, { domain: process.env.SESSION_DOMAIN, path: '/', expires: currentDate });
+	
+	if (profile !== undefined) {
+		cookies.set(userProfile, profile, { domain: process.env.SESSION_DOMAIN, path: '/', expires: currentDate });
+	}
 };
 
 const removeUserCookie = (cookies, token, isAnonymous = false) => {
-	cookies.remove('user.exp', { domain: process.env.SESSION_DOMAIN, path: '/' });
-	cookies.remove('user.rf.token', { domain: process.env.SESSION_DOMAIN, path: '/' });
-	cookies.remove('user.token', { domain: process.env.SESSION_DOMAIN, path: '/' });
-	cookies.remove('isLogin', { domain: process.env.SESSION_DOMAIN, path: '/' });
+	cookies.remove(userExp, { domain: process.env.SESSION_DOMAIN, path: '/' });
+	cookies.remove(userRfToken, { domain: process.env.SESSION_DOMAIN, path: '/' });
+	cookies.remove(userToken, { domain: process.env.SESSION_DOMAIN, path: '/' });
+	cookies.remove(isLogin, { domain: process.env.SESSION_DOMAIN, path: '/' });
+	cookies.remove(userProfile, { domain: process.env.SESSION_DOMAIN, path: '/' });
 };
 
 const setUniqeCookie = (cookies) => {
@@ -21,7 +28,7 @@ const setUniqeCookie = (cookies) => {
 	const currentDate = new Date();
 	const limitDate = 2 * 365;
 	currentDate.setDate(currentDate.getDate() + limitDate);
-	cookies.set('uniqueid', timeStampInMs, { domain: process.env.SESSION_DOMAIN, path: '/', expires: currentDate });
+	cookies.set(uniqueid, timeStampInMs, { domain: process.env.SESSION_DOMAIN, path: '/', expires: currentDate });
 };
 
 export default {
