@@ -37,7 +37,7 @@ const renderSectionHeader = (title, options, cookies = null) => {
 							className={styles.readmore}
 							onClick={
 								() => {
-									cookies.set('page.referrer', 'HOME', { path: '/' });
+									cookies.set(cookiesLabel.pageReferrer, 'HOME', { path: '/' });
 								}
 							}
 						>
@@ -133,7 +133,7 @@ class Home extends Component {
 					to={link}
 					onClick={
 						() => {
-							cookies.set('page.referrer', 'HOME', { path: '/' });
+							cookies.set(cookiesLabel.pageReferrer, 'HOME', { path: '/' });
 						}
 					}
 				>
@@ -247,7 +247,7 @@ class Home extends Component {
 								key={c}
 								onClick={
 									() => {
-										cookies.set('page.referrer', 'HOME', { path: '/' });
+										cookies.set(cookiesLabel.pageReferrer, 'HOME', { path: '/' });
 									}
 								}
 							>
@@ -282,7 +282,7 @@ class Home extends Component {
 								key={d}
 								onClick={
 									() => {
-										cookies.set('page.referrer', 'HOME', { path: '/' });
+										cookies.set(cookiesLabel.pageReferrer, 'HOME', { path: '/' });
 									}
 								}
 							>

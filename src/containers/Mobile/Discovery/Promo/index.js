@@ -18,7 +18,7 @@ import {
 import {
 	Header, Page, Svg, Navigation, Button
 } from '@/components/mobile';
-import { userToken } from '@/data/cookiesLabel';
+import { userToken, pageReferrer } from '@/data/cookiesLabel';
 
 import Spinner from '@/components/mobile/Spinner';
 
@@ -147,10 +147,10 @@ class Promo extends Component {
 		const navigationAttribute = {
 			scroll: this.props.scroll
 		};
-		const pageReferrer = cookies.get('page.referrer');
-		if (pageReferrer === 'CATEGORY') {
+		const pageReferrerValue = cookies.get(pageReferrer);
+		if (pageReferrerValue === 'CATEGORY') {
 			navigationAttribute.active = 'Categories';
-		} else if (pageReferrer === 'HOME') {
+		} else if (pageReferrerValue === 'HOME') {
 			navigationAttribute.active = 'Home';
 		} else {
 			navigationAttribute.active = 'Promo';
