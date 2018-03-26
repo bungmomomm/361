@@ -14,25 +14,25 @@ class Notification extends PureComponent {
 		this.timeout = false;
 	}
 
-	componentWillReceiveProps(nextProps) {
+	componentDidMount() {
 		const { timeout } = this.props;
 		const that = this;
+		if (timeout > 0) {
+			this.timeout = setTimeout(() => {
+				that.setState({
+					show: false
+				});
+				that.props.onClose(undefined);
+				that.timeout = false;
+			}, parseInt(timeout, 10));
+		}
+	}
+
+	componentWillReceiveProps(nextProps) {
 		if (nextProps.show !== undefined) {
 			this.setState({
 				show: nextProps.show
 			});
-
-			if (nextProps.show && !this.timeout) {
-				if (timeout > 0) {
-					this.timeout = setTimeout(() => {
-						that.setState({
-							show: false
-						});
-						that.props.onClose(undefined);
-						that.timeout = false;
-					}, parseInt(timeout, 10));
-				}
-			}
 		}
 	}
 
