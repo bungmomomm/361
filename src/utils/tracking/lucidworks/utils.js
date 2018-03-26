@@ -59,7 +59,7 @@ export default class Utils {
 	}
 
 	static getSource = () => {
-		if (isMobile()) return config.sourceDesktop;
+		if (!isMobile()) return config.sourceDesktop;
 		return config.defaultSource;
 	}
 
