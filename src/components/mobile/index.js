@@ -28,6 +28,8 @@ import Spinner from './Spinner';
 import SocialLogin from './SocialLogin';
 import Timeline from './Timeline';
 import SmartBanner from './SmartBanner';
+import AnimationLovelist from './Animation/Lovelist';
+import AnimationAddToCart from './Animation/addToCart';
 import SEO from './SEO';
 
 // Alphabetically sort (^_^)
@@ -62,5 +64,7 @@ export default {
 	Table,
 	Timeline,
 	SmartBanner,
+	AnimationLovelist,
+	AnimationAddToCart,
 	SEO
 };

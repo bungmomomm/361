@@ -8,6 +8,7 @@ import { Header, Page, Navigation, Svg, Grid, Card, Spinner, Level, Carousel } f
 import styles from './search.scss';
 import { connect } from 'react-redux';
 import { urlBuilder } from '@/utils';
+import cookiesLabel from '@/data/cookiesLabel';
 
 class Page404 extends Component {
 	constructor(props) {
@@ -18,7 +19,7 @@ class Page404 extends Component {
 				show: true
 			}
 		};
-		this.isLogin = this.props.cookies.get('isLogin');
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin);
 	}
 
 	renderBanner() {
@@ -118,7 +119,7 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies } = props;
-	await dispatch(actions.promoAction(cookies.get('user.token')));
+	await dispatch(actions.promoAction(cookies.get(cookiesLabel.userToken)));
 };
 
 export default withCookies(

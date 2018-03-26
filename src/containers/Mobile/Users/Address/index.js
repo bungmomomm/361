@@ -6,6 +6,7 @@ import Shared from '@/containers/Mobile/Shared';
 import { Page, Button, Svg, Header, Modal, Level } from '@/components/mobile';
 import { actions } from '@/state/v4/Address';
 import { Promise } from 'es6-promise';
+import { userToken, isLogin } from '@/data/cookiesLabel';
 
 class Address extends Component {
 
@@ -19,7 +20,7 @@ class Address extends Component {
 			return Promise.reject(new Error('Invalid address id, please contact administrator.'));
 		}
 
-		await dispatch(actions.deleteAddress(cookies.get('user.token'), this.state.showConfirmDelete.id));
+		await dispatch(actions.deleteAddress(cookies.get(userToken), this.state.showConfirmDelete.id));
 		const mutatedShipping = address.address.shipping.filter((v) => {
 			return v.id !== this.state.showConfirmDelete.id;
 		});
@@ -114,12 +115,12 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies, history } = props;
-	if (!cookies.get('isLogin') || cookies.get('isLogin') === 'false') {
+	if (!cookies.get(isLogin) || cookies.get(isLogin) === 'false') {
 		history.push('/login');
 		return;
 	}
 
-	await dispatch(actions.getAddress(cookies.get('user.token')));
+	await dispatch(actions.getAddress(cookies.get(userToken)));
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Address, doAfterAnonymous)));

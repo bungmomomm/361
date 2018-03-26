@@ -81,7 +81,7 @@ class Image extends Component {
 			image = require(`@/assets/images/${this.props.src}`);
 		}
 		if (this.props.lazyload && !this.state.loaded) {
-			image = require('@/assets/images/Loading_icon.gif');
+			image = require('@/assets/images/mobile/ico_placeholder-full.png');
 		}
 		return image;
 	}

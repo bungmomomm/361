@@ -14,12 +14,13 @@ import Shared from '@/containers/Mobile/Shared';
 import { actions as commentActions } from '@/state/v4/Comment';
 
 import styles from './comments.scss';
+import cookiesLabel from '@/data/cookiesLabel';
 
 class Comments extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.isLogin = this.props.cookies.get('isLogin') || false;
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) || false;
 
 		this.state = {
 			validForm: false,
@@ -29,7 +30,7 @@ class Comments extends Component {
 			counterLimit: 300
 		};
 
-		this.userProfile = this.props.cookies.get('user.profile') || false;
+		this.userProfile = this.props.cookies.get(cookiesLabel.userProfile) || false;
 		this.renderLoading = <Spinner />;
 	}
 
@@ -63,7 +64,7 @@ class Comments extends Component {
 				product_id: parsedUrl.product_id !== undefined ? parseInt(parsedUrl.product_id, 10) : '',
 				page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : ''
 			};
-			await dispatch(commentActions.productCommentAction(cookies.get('user.token'), commentsParam.product_id, commentsParam.page));
+			await dispatch(commentActions.productCommentAction(cookies.get(cookiesLabel.userToken), commentsParam.product_id, commentsParam.page));
 		}
 	}
 
@@ -73,7 +74,7 @@ class Comments extends Component {
 
 		const productId = _.chain(match).get('params.id').value() || false;
 		if (productId) {
-			dispatch(commentActions.commentAddAction(cookies.get('user.token'), productId, commentValue));
+			dispatch(commentActions.commentAddAction(cookies.get(cookiesLabel.userToken), productId, commentValue));
 		}
 
 		this.setState({
@@ -245,7 +246,7 @@ const doAfterAnonymous = async (props) => {
 
 	const productId = _.chain(match).get('params.id').value() || false;
 	if (productId) {
-		await dispatch(commentActions.productCommentAction(cookies.get('user.token'), productId, 1));
+		await dispatch(commentActions.productCommentAction(cookies.get(cookiesLabel.userToken), productId, 1));
 	}
 };
 

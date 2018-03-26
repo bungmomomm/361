@@ -43,7 +43,15 @@ const brandListAction = (token, segment = 1) => async (dispatch, getState) => {
 
 const brandProductCleanUp = () => async (dispatch, getState) => {
 	dispatch(brandProducts({
-		searchStatus: null, data: [], type: 'init'
+		searchStatus: null,
+		data: {
+			links: null,
+			info: null,
+			facets: [],
+			sorts: [],
+			products: []
+		},
+		type: 'init'
 	}));
 };
 
@@ -82,9 +90,7 @@ const brandProductAction = ({ token, query = {}, type = 'update' }) => async (di
 	dispatch(brandLoadingProducts({ loading_products: false }));
 
 	const data = _.chain(response).get('data.data').value() || {};
-	dispatch(brandProducts({
-		searchStatus: 'success', data, type
-	}));
+	dispatch(brandProducts({ searchStatus: 'success', data, type }));
 
 	const nextLink = data.links && data.links.next ? new URL(baseUrl + data.links.next).searchParams : false;
 	dispatch(scrollerActions.onScroll({

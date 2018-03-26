@@ -6,7 +6,8 @@ import { actions as recommendedActions } from '@/state/v4/RecommendedProducts';
 import Love from '@/containers/Mobile/Shared/Widget/Love';
 import { withRouter } from 'react-router-dom';
 import Discovery from '../Utils';
-import _ from 'lodash';
+// import _ from 'lodash';  
+import { userToken } from '@/data/cookiesLabel';
 
 class RecommendedProducts extends Component {
 	constructor(props) {
@@ -22,7 +23,7 @@ class RecommendedProducts extends Component {
 		window.addEventListener('scroll', this.touchDown, true);
 
 		const dataInit = {
-			token: cookies.get('user.token'),
+			token: cookies.get(userToken),
 			page: this.props.nextPage,
 			docHeight: this.props.docHeight ? this.props.docHeight : 0
 		};
@@ -57,7 +58,7 @@ class RecommendedProducts extends Component {
 			const nextLink = new URL(this.props.links.next).searchParams;
 
 			const dataInit = {
-				token: cookies.get('user.token'),
+				token: cookies.get(userToken),
 				page: nextLink.get('page')
 			};
 
