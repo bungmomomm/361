@@ -9,6 +9,7 @@ import { Promise } from 'es6-promise';
 import queryString from 'query-string';
 import Snackbar from '@/containers/Mobile/Shared/snackbar';
 import { check as checkConnection, watch as watchConnection } from 'is-offline';
+import { userToken, userRfToken, uniqueid } from '@/data/cookiesLabel';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 	WrappedComponent.contextTypes = {
@@ -33,9 +34,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				watchConnection: false,
 			};
 
-			this.userCookies = this.props.cookies.get('user.token');
-			this.userRFCookies = this.props.cookies.get('user.rf.token');
-			this.uniqueId = this.props.cookies.get('uniqueid');
+			this.userCookies = this.props.cookies.get(userToken);
+			this.userRFCookies = this.props.cookies.get(userRfToken);
+			this.uniqueId = this.props.cookies.get(uniqueid);
 			this.handleScroll = this.handleScroll.bind(this);
 			this.docBody = null;
 			this.currentScrollPos = 0;
@@ -95,7 +96,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		shouldLoginAnonymous() {
 			const { cookies } = this.props;
-			return (_.isEmpty(cookies.get('user.token')) || _.isEmpty(cookies.get('user.rf.token')));
+			return (_.isEmpty(cookies.get(userToken)) || _.isEmpty(cookies.get(userRfToken)));
 		}
 
 		async exeCall(token = null) {

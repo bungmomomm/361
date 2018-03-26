@@ -13,6 +13,7 @@ import { actions as usersActions } from '@/state/v4/User';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { uniqid } from '@/utils';
 import to from 'await-to-js';
+import { isLogin } from '@/data/cookiesLabel';
 
 class Love extends PureComponent {
 	constructor(props) {
@@ -38,7 +39,7 @@ class Love extends PureComponent {
 		const { cookies, data, dispatch, onClick, inline } = this.props;
 		const { loading, status } = this.state;
 		let message = '';
-		if (cookies.get('isLogin') === 'false') {
+		if (cookies.get(isLogin) === 'false') {
 			if (inline) {
 				this.setState({
 					showModal: true
