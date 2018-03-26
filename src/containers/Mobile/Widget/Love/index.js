@@ -72,15 +72,57 @@ class Love extends PureComponent {
 				});
 			}
 		}
-		
+
 		this.setState({
 			loading: false
 		});
-		
-		dispatch(sharedActions.showSnack(uniqid('err-'), {
-			label: message,
-			timeout: 3000
-		}));
+
+		dispatch(sharedActions.showSnack(uniqid('err-'),
+			{
+				label: message,
+				timeout: 3000
+			},
+			{
+				css: {
+					snack: {
+						display: 'flex',
+						position: 'fixed',
+						bottom: '20px',
+						left: '14%',
+						zIndex: '2',
+						width: 'auto',
+						minWidth: '300px',
+						maxWidth: '480px',
+						transition: 'transform 200ms ease-out',
+						willChange: 'transform',
+						transform: 'translate(0px, 0px)',
+						backgroundColor: 'rgba(0, 0, 0, 0.8)',
+						padding: '15px',
+						borderRadius: '40px',
+						textAlign: 'center',
+						largeScreen: {
+							left: '50%',
+							transform: 'translate(-50%, 100%)',
+							borderRadius: '40px',
+							padding: '20px 24px',
+							minWidth: '320px',
+							maxWidth: '480px',
+						}
+					},
+					label: {
+						flex: '4',
+						fontSize: '14px',
+						lineHeight: 'normal',
+						fontFamily: 'arial, sans-serif',
+						color: 'rgba(255, 255, 255, 0.7)',
+						width: '100%',
+						display: 'block',
+						paddingRight: '0px'
+					}
+				},
+				sticky: true
+			}
+		));
 
 		if (onClick) {
 			onClick(data);
@@ -109,7 +151,7 @@ class Love extends PureComponent {
 			<div>
 				<Button.Love
 					onClick={(e) => this.loveClicked(e)}
-					disabled={loading || disabled} 
+					disabled={loading || disabled}
 					showNumber={showNumber}
 					status={status}
 					total={total}

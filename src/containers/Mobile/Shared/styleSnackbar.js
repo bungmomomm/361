@@ -7,6 +7,7 @@ function getDefaultStyles(theming) {
 			left: 0,
 			zIndex: 999,
 			width: '100%',
+			maxWidth: '480px',
 			transition: 'transform 200ms ease-out',
 			willChange: 'transform',
 			transform: 'translate(0, 100%)',
@@ -36,9 +37,19 @@ function getDefaultStyles(theming) {
 			color: theming.buttonColor || '#494949',
 			border: 'none',
 			background: 'none',
-			padding: 0,
+			paddingRight: '10px',
 			margin: 0
 		},
+		close: {
+			color: '#777',
+			font: '14px/100% arial, sans-serif',
+			position: 'absolute',
+			right: '5px',
+			textDecoration: 'none',
+			textShadow: '0 1px 0 #fff',
+			top: '5px',
+			content: '×'
+		}
 	};
 }
 
