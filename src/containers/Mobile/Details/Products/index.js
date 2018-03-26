@@ -3,7 +3,7 @@ import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
-import { urlBuilder, stringHelper, enableZoomPinch } from '@/utils';
+import { urlBuilder, enableZoomPinch } from '@/utils';
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
@@ -160,6 +160,14 @@ class Products extends Component {
 		};
 
 		this.fusion = new Payload(this.props.cookies);
+
+		this.hastagLinkCreator = (text) => {
+			const urlRegex = /(#[^\s]+)/g;
+			return text.replace(urlRegex, (url) => {
+				const hashlink = urlBuilder.setName(url).buildSearchByKeyword();
+				return `<a href="${hashlink + url}">${url}</a>`;
+			});
+		};
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -747,7 +755,7 @@ class Products extends Component {
 							&&
 								<div className='wysiwyg-content'>
 									<div className={classNameProductDescription}>
-										{stringHelper.removeHtmlTag(detail.description)}
+										{<div dangerouslySetInnerHTML={{ __html: this.hastagLinkCreator(detail.description) }} />}
 										{!_.isEmpty(cardProduct.specs) && (
 											<div className='margin--medium-v --disable-flex'>
 												{(cardProduct.specs.map((item, idx) => {
