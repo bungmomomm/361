@@ -56,7 +56,8 @@ class ForgotPassword extends Component {
 		}
 		this.setState({
 			error: false,
-			message: response.data,
+			data: response.data,
+			message: response.data.message,
 			showModal: !useOtp,
 			showOtp: useOtp
 		});
@@ -104,7 +105,7 @@ class ForgotPassword extends Component {
 
 	render() {
 		const { isLoginLoading } = this.props;
-		const { error, isValidUsername, userName, showOtp } = this.state;
+		const { error, isValidUsername, userName, showOtp, data } = this.state;
 		const HeaderPage = {
 			left: (
 				<Button onClick={(e) => this.onBack(e)}>
@@ -118,9 +119,11 @@ class ForgotPassword extends Component {
 		if (showOtp) {
 			return (
 				<Otp
+					isLoading={isLoginLoading}
 					autoSend={false}
 					type={'forgot'}
 					phoneEmail={userName}
+					countdownValue={data.countdown}
 					onClickBack={() => this.onBack()}
 					onSuccess={(response) => this.successValidateOtp(response)}
 				/>
