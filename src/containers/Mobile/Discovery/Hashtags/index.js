@@ -59,7 +59,7 @@ class Hashtags extends Component {
 					const icode = (embedUrl.substr(embedUrl.indexOf('/p/')).split('/') || [])[2];
 
 					return (
-						<div key={i}>
+						<div className='placeholder-image' key={i}>
 							<Link to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode}`}>
 								<Image src={product.image} />
 							</Link>
