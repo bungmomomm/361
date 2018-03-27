@@ -393,7 +393,6 @@ class Detail extends Component {
 					<Svg src='ico_arrow-back-left.svg' />
 				</span>
 			),
-
 			center: !this.state.styleHeader && _.chain(searchData).get('info.title').value(),
 			right: <Share title={title} url={url} />,
 			rows: !this.state.styleHeader && this.renderFilter()
@@ -414,12 +413,12 @@ class Detail extends Component {
 	render() {
 		const { cookies } = this.props;
 		const { showFilter } = this.state;
-		
+
 		const navigationAttribute = {
 			scroll: this.props.scroll
 		};
 		navigationAttribute.active = cookies.get(pageReferrer);
-  
+
 		return (
 			<div style={this.props.style}>
 				{(showFilter) ? (

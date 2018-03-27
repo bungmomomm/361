@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.1 (51147) - http://www.bohemiancoding.com/sketch -->
+    <title>ico_add-address</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="MS-5-(Profile,-Checkout,-Payment)" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="04_05_ShippingAddress" transform="translate(-290.000000, -96.000000)" stroke="#005BB6">
+            <g id="ico_add-address" transform="translate(291.000000, 97.000000)">
+                <g id="Page-1">
+                    <path d="M13.6576222,7.02356667 C13.6576222,10.6876778 10.6880667,13.6580111 7.02317778,13.6580111 C3.35906667,13.6580111 0.388733333,10.6876778 0.388733333,7.02356667 C0.388733333,3.35945556 3.35906667,0.389122222 7.02317778,0.389122222 C10.6880667,0.389122222 13.6576222,3.35945556 13.6576222,7.02356667 Z" id="Stroke-1"></path>
+                    <path d="M7.02341111,2.99607778 L7.02341111,11.0507444" id="Stroke-3"></path>
+                    <path d="M11.0509,7.02356667 L2.99623333,7.02356667" id="Stroke-5"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
