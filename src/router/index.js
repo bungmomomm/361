@@ -56,17 +56,15 @@ const transition = {
 };
 
 export default () => (
-	<div className='full-height'>
-		<AnimatedSwitch
-			atEnter={transition.atEnter}
-			atLeave={transition.atLeave}
-			atActive={transition.atActive}
-			mapStyles={mapStyles}
-			className='switch-wrapper'
-		>
-			{ routes.parent.map((route, i) => (
-				<CustomRoute {...route} key={`parent-${i}`} />
-			))}
-		</AnimatedSwitch>
-	</div>
+	<AnimatedSwitch
+		atEnter={transition.atEnter}
+		atLeave={transition.atLeave}
+		atActive={transition.atActive}
+		mapStyles={mapStyles}
+		className='switch-wrapper full-height'
+	>
+		{ routes.parent.map((route, i) => (
+			<CustomRoute {...route} key={`parent-${i}`} />
+		))}
+	</AnimatedSwitch>
 );

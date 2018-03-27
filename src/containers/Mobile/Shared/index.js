@@ -47,7 +47,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		componentWillMount() {
 			// window.mmLoading.destroy();
 			const { dispatch, shared, cookies } = this.props;
-			
+
 			dispatch(actions.clearSnackQueue());
 
 			const offline = async (bool) => {
@@ -72,11 +72,11 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 			// const existingPref = cookies.get(pageReferrer);
 			const referrer = window.previousLocation === '/category' ? 'categories' : (window.previousLocation === '/' ? 'home' : '');
-			
+
 			if (referrer !== '') {
 				setReferrenceCookie(cookies, referrer);
 			}
-			
+
 			this.initProcess().then(shouldInit => {
 				if (!shouldInit) {
 					this.initApp();
@@ -87,7 +87,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		componentDidMount() {
 			window.mmLoading.destroy();
-			window.addEventListener('scroll', this.handleScroll, true);
+			window.addEventListener('scroll', _.debounce(this.handleScroll), true);
 			this.docBody = document.body;
 
 			if (typeof this.uniqueId === 'undefined') {
@@ -99,7 +99,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			window.mmLoading.play();
 			window.prevLocation = this.props.location;
 			window.previousLocation = location.pathname + location.search;
-			window.removeEventListener('scroll', this.handleScroll, true);
+			window.removeEventListener('scroll', _.debounce(this.handleScroll), true);
 		}
 
 		shouldLoginAnonymous() {
@@ -185,22 +185,20 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		handleScroll(e) {
-			if (e.target.tagName === 'BODY') {
-				const docHeight = this.docBody ? this.docBody.scrollHeight - window.innerHeight : 0;
-				this.setState({
-					scroll: {
-						top: e.target.scrollTop,
-						docHeight,
-						isNavSticky: ((oldPos = this.currentScrollPos) => {
-							if (!scroll) {
-								return false;
-							}
-							this.currentScrollPos = this.state.scroll.top;
-							return this.state.scroll.top > oldPos && this.state.scroll.top < this.state.scroll.docHeight;
-						})()
-					}
-				});
-			}
+			const docHeight = this.docBody ? this.docBody.scrollHeight - window.innerHeight : 0;
+			this.setState({
+				scroll: {
+					top: window.scrollY,
+					docHeight,
+					isNavSticky: ((oldPos = this.currentScrollPos) => {
+						if (!scroll) {
+							return false;
+						}
+						this.currentScrollPos = this.state.scroll.top;
+						return this.state.scroll.top > oldPos && this.state.scroll.top < this.state.scroll.docHeight;
+					})()
+				}
+			});
 		}
 
 		snackStyle = () => {
@@ -222,7 +220,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		render() {
 			return (
-				<div>
+				<div className='shared_container'>
 					<Snackbar history={this.props.history} location={this.props.location} theming={this.snackStyle().theming} customStyles={this.snackStyle().customStyles} />
 					<WrappedComponent {...this.props} scroll={this.state.scroll} />
 					{

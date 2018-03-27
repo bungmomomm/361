@@ -62,6 +62,7 @@ class Input extends PureComponent {
 			iconRight,
 			partitioned,
 			onClickInputAction,
+			inputRef,
 			...props,
 		} = this.props;
 
@@ -129,7 +130,10 @@ class Input extends PureComponent {
 					<TagName
 						{...props}
 						className={CreateinputClassName}
-						ref={(element) => { this.textInput = element; }}
+						ref={(element) => {
+							if (inputRef) inputRef(element);
+							this.textInput = element;
+						}}
 						{...valueData()}
 						onClick={onClickAction}
 						onChange={this.onChangeHandler}
