@@ -331,7 +331,7 @@ class Products extends Component {
 
 	addToShoppingBag(variant) {
 		this.animateAddtoCart();
-		
+
 		const { status, notif } = this.state;
 		const { dispatch, product } = this.props;
 
@@ -542,7 +542,7 @@ class Products extends Component {
 							<Svg src={'ico_arrow-back-left.svg'} />
 						</Button>
 					),
-					center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{brandName}</div>,
+					center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'><div className='marguee'><span>{brandName}</span></div></div>,
 					right: (
 						<div className='flex-row flex-middle'>
 							<Share title={detail.title} url={url} />
