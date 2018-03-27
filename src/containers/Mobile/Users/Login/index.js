@@ -14,8 +14,8 @@ import {
 import {
 	Login as LoginWidget
 } from '@/containers/Mobile/Widget';
-import { 
-	setUserCookie, 
+import {
+	setUserCookie,
 	renderIf,
 	setUserInfoCookie
 } from '@/utils';

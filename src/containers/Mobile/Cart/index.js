@@ -53,6 +53,7 @@ class Cart extends Component {
 		this.addToLovelistHandler = this.addToLovelistHandler.bind(this);
 		this.selectItemHandler = this.selectItemHandler.bind(this);
 		this.selectedNewQtyHander = this.selectedNewQtyHander.bind(this);
+		this.clearWillDeleteState = this.clearWillDeleteState.bind(this);
 		this.updateCartHander = this.updateCartHander.bind(this);
 		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin);
 	}
@@ -342,7 +343,7 @@ class Cart extends Component {
 					role='button'
 					tabIndex='0'
 				>
-					<Svg src='ico_arrow-back-left.svg' />
+					<Svg src='ico_close-large.svg' />
 				</span>
 			),
 			center: (<div><span> Tas Belanja {this.props.shopBag.loading ? (<Spinner />) : ''}</span></div>),

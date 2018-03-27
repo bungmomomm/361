@@ -3,7 +3,7 @@ import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
-import { urlBuilder, stringHelper } from '@/utils';
+import { urlBuilder, enableZoomPinch } from '@/utils';
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
@@ -160,6 +160,16 @@ class Products extends Component {
 			center: '',
 			right: ''
 		};
+
+		this.fusion = new Payload(this.props.cookies);
+
+		this.hastagLinkCreator = (text) => {
+			const urlRegex = /(#[^\s]+)/g;
+			return text.replace(urlRegex, (url) => {
+				const hashlink = urlBuilder.setName(url).buildSearchByKeyword();
+				return `<a href="${hashlink + url}">${url}</a>`;
+			});
+		};
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -250,6 +260,7 @@ class Products extends Component {
 	closeZoomImage(e) {
 		const { status } = this.state;
 		status.isZoomed = false;
+		enableZoomPinch(false);
 		this.setState({ status });
 	}
 
@@ -267,7 +278,7 @@ class Products extends Component {
 		const { status } = this.state;
 		const { top } = this.props.scroll;
 		const carouselHeight = this.carouselEL.getBoundingClientRect().height;
-		
+
 		status.showScrollInfomation = ((top !== 0) && top > (carouselHeight / 2));
 		this.setState({ status });
 		// if (top > (carouselHeight / 2) && !status.showScrollInfomation) {
@@ -646,6 +657,7 @@ class Products extends Component {
 			// if (_.isEmpty(detail) || status.loading) return this.loadingContent;
 
 			if (status.isZoomed && _.has(detail, 'images')) {
+				enableZoomPinch(true);
 				return (
 					<div>
 						<Header.Modal style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }} {...this.headerZoom} />
@@ -736,7 +748,7 @@ class Products extends Component {
 							&&
 								<div className='wysiwyg-content'>
 									<div className={classNameProductDescription}>
-										{stringHelper.removeHtmlTag(detail.description)}
+										{<div dangerouslySetInnerHTML={{ __html: this.hastagLinkCreator(detail.description) }} />}
 										{!_.isEmpty(cardProduct.specs) && (
 											<div className='margin--medium-v --disable-flex'>
 												{(cardProduct.specs.map((item, idx) => {
