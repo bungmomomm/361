@@ -4,13 +4,14 @@ import to from 'await-to-js';
 import { actions } from '@/state/v4/Shared';
 import { actions as users } from '@/state/v4/User';
 import { actions as initAction } from '@/state/v4/Home';
-import { setUserCookie, setUniqeCookie } from '@/utils';
+import { setUserCookie, setUniqeCookie, setReferrenceCookie } from '@/utils';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
-import { Svg } from '@/components/Mobile';
 import Snackbar from '@/containers/Mobile/Shared/snackbar';
+import { Svg } from '@/components/mobile';
 import styles from './shared.scss';
 import { check as checkConnection, watch as watchConnection } from 'is-offline';
+import { userToken, userRfToken, uniqueid } from '@/data/cookiesLabel';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 	WrappedComponent.contextTypes = {
@@ -35,9 +36,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				watchConnection: false,
 			};
 
-			this.userCookies = this.props.cookies.get('user.token');
-			this.userRFCookies = this.props.cookies.get('user.rf.token');
-			this.uniqueId = this.props.cookies.get('uniqueid');
+			this.userCookies = this.props.cookies.get(userToken);
+			this.userRFCookies = this.props.cookies.get(userRfToken);
+			this.uniqueId = this.props.cookies.get(uniqueid);
 			this.handleScroll = this.handleScroll.bind(this);
 			this.docBody = null;
 			this.currentScrollPos = 0;
@@ -45,7 +46,8 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		componentWillMount() {
 			// window.mmLoading.destroy();
-			const { dispatch, shared } = this.props;
+			const { dispatch, shared, cookies } = this.props;
+			
 			dispatch(actions.clearSnackQueue());
 
 			const offline = async (bool) => {
@@ -53,7 +55,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 					await dispatch(actions.dismissSnack('offline'));
 					dispatch(actions.showSnack('offline', {
 						label: 'Oops, koneksi Internet kamu sepertinya terputus.',
-						timeout: 7000,
+						timeout: 10000,
 						button: {
 							label: 'COBA LAGI',
 							action: 'reload'
@@ -68,14 +70,19 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				watchConnection(offline);
 			}
 
+			// const existingPref = cookies.get(pageReferrer);
+			const referrer = window.previousLocation === '/category' ? 'categories' : (window.previousLocation === '/' ? 'home' : '');
+			
+			if (referrer !== '') {
+				setReferrenceCookie(cookies, referrer);
+			}
+			
 			this.initProcess().then(shouldInit => {
 				if (!shouldInit) {
 					this.initApp();
 				}
 			});
 
-			const location = this.props.location;
-			if (!window.previousLocation) window.previousLocation = location.pathname + location.search;
 		}
 
 		componentDidMount() {
@@ -97,7 +104,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		shouldLoginAnonymous() {
 			const { cookies } = this.props;
-			return (_.isEmpty(cookies.get('user.token')) || _.isEmpty(cookies.get('user.rf.token')));
+			return (_.isEmpty(cookies.get(userToken)) || _.isEmpty(cookies.get(userRfToken)));
 		}
 
 		async exeCall(token = null) {
@@ -196,19 +203,27 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			}
 		}
 
-		render() {
-			const snackStyle = _.chain(this.props.shared.snackbar).get('[0].style').value() || { css: {}, sticky: true };
+		snackStyle = () => {
+			const snackStyle = _.chain(this.props.shared.snackbar).get('[0].style').value() || { css: {}, sticky: true, theming: {} };
 			const snackCss = _.chain(snackStyle).get('css.snack').value() || {};
+			const themingSnackCss = _.chain(snackStyle).get('theming.snack').value() || {};
+			const stickyEl = document.querySelector('.navigation__navigation') ? document.querySelector('.navigation__navigation')
+							: document.querySelector('.products__stickyAction') ? document.querySelector('.products__stickyAction')
+							: false;
 			const snackSticky = !snackStyle.sticky ? {} : {
-				bottom: !this.state.scroll.isNavSticky ? 50 : 0,
-				zIndex: !this.state.scroll.isNavSticky ? 2 : 999
+				bottom: !this.state.scroll.isNavSticky && stickyEl
+						? (+(parseInt(snackCss.bottom, 10) || 0) + +stickyEl.getBoundingClientRect().height)
+						: (+(parseInt(snackCss.bottom, 10) || 0) + 0),
+				zIndex: !this.state.scroll.isNavSticky && stickyEl ? 2 : 999
 			};
-			const customStylesCss = { ...snackStyle.css, snack: { ...snackCss, ...snackSticky } };
+			const customStyles = { ...snackStyle.css, snack: { ...snackCss, ...snackSticky, largeScreen: { ...snackCss, ...snackSticky } } };
+			return { theming: { ...snackStyle.theming, snack: { ...themingSnackCss, ...snackSticky, largeScreen: { ...snackCss, ...snackSticky } } }, customStyles };
+		};
 
-
+		render() {
 			return (
 				<div>
-					<Snackbar history={this.props.history} location={this.props.location} customStyles={customStylesCss} />
+					<Snackbar history={this.props.history} location={this.props.location} theming={this.snackStyle().theming} customStyles={this.snackStyle().customStyles} />
 					<WrappedComponent {...this.props} scroll={this.state.scroll} />
 					{
 						this.state.scroll.top > window.innerHeight && (

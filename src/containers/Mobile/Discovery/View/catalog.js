@@ -1,21 +1,29 @@
 import React, {
 	Component
 } from 'react';
+import { connect } from 'react-redux';
+import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
+import _ from 'lodash';
+import util from 'util';
+import validator from 'validator';
+
 import {
 	Button,
 	Card,
 	Comment,
 	Level,
 	Input,
-	Spinner
+	Spinner,
+	Image
 } from '@/components/mobile';
-import { Love } from '@/containers/Mobile/Widget';
-import stylesCatalog from './view.scss';
 
-import { connect } from 'react-redux';
-import { withCookies } from 'react-cookie';
+import { Love } from '@/containers/Mobile/Widget';
+
 import { actions as commentActions } from '@/state/v4/Comment';
+
+import stylesCatalog from './view.scss';
+import cookiesLabel from '@/data/cookiesLabel';
 
 // @TODO cleanup code and move it as independence Component
 
@@ -24,55 +32,157 @@ class CatalogView extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			commentLoading: false
+			commentLoading: false,
+			showSendButton: false,
+			showCounter: false,
+			validForm: false,
+			newComment: {
+				product_id: props.focusedProductId || '',
+				comment: ''
+			},
+			counterValue: 0,
+			counterLimit: 300
 		};
 
+		this.userProfile = this.props.cookies.get(cookiesLabel.userProfile) || false;
 		this.loadingView = <Spinner />;
+	}
+
+	componentWillReceiveProps(nextProps) {
+		const { newComment } = this.state;
+
+		if (nextProps.focusedProductId !== this.props.focusedProductId) {
+			this.setState({
+				newComment: {
+					...newComment,
+					product_id: nextProps.focusedProductId
+				}
+			});
+		}
+	}
+
+	setFocusedProduct(id) {
+		const { setFocusedProduct, focusedProductId } = this.props;
+
+		if (focusedProductId !== id) {
+			this.setState({
+				showSendButton: true,
+				showCounter: false,
+				validForm: false,
+				counterValue: 0
+			});
+		}
+		
+		setFocusedProduct(id);
 	}
 
 	forceLoginNow() {
 		const { forceLoginNow } = this.props;
+
 		if (forceLoginNow) {
 			forceLoginNow();
 		}
 	}
 
 	// @TODO refractor and move addcomment outside this component
-	async addComment(event, productId) {
-		const { cookies, dispatch } = this.props;
+	async addComment() {
+		const { cookies, dispatch, focusedProductId } = this.props;
 		const { newComment } = this.state;
-		if (event.key === 'Enter') {
-			this.setState({
-				commentLoading: true
-			});
-			await dispatch(commentActions.commentAddAction(cookies.get('user.token'), newComment.product_id, newComment.comment, 'pcp'));
-			await dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), [productId]));
-			this.setState({
-				commentLoading: false
-			});
-		}
+
+		this.setState({
+			commentLoading: true
+		});
+
+		await dispatch(commentActions.commentAddAction(cookies.get(cookiesLabel.userToken), newComment.product_id, newComment.comment, 'pcp'));
+		await dispatch(commentActions.bulkieCommentAction(cookies.get(cookiesLabel.userToken), [focusedProductId]));
+		
+		this.setState({
+			commentLoading: false,
+			showSendButton: false,
+			showCounter: false,
+			validForm: false,
+			counterValue: 0
+		});
 	}
 
-	commentOnChange(event, productId) {
-		this.setState({ newComment: { product_id: productId, comment: event.target.value } });
+	commentOnChange(e) {
+		const { newComment } = this.state;
+		const value = util.format('%s', e.target.value);
+
+		if (value.length > 0) {
+			this.setState({ showCounter: true, counterValue: value.length });
+		} else {
+			this.setState({ counterValue: 0 });
+		}
+
+		let validForm = false;
+		if (!validator.isEmpty(value) && value.length <= 300) {
+			validForm = true;
+		}
+
+		this.setState({
+			validForm,
+			newComment: {
+				...newComment,
+				comment: value
+			}
+		});
 	}
 
 	renderComment(product) {
-		const { comments, cookies } = this.props;
-		const { commentLoading } = this.state;
+		const { comments, cookies, focusedProductId, redirectPath } = this.props;
+		const {
+			commentLoading, 
+			validForm, showCounter, showSendButton, counterValue, counterLimit
+		} = this.state;
 
 		if (comments.isLoading) {
 			return this.loadingView;
 		}
 
-		const redirectUri = `?redirect_uri=product/comments/${product.product_id}`;
+		const redirectUri = redirectPath !== '' ? `?redirect_uri=${redirectPath}` : `?redirect_uri=product/comments/${product.product_id}`;
+
+		const userAvatar = this.userProfile && !_.isEmpty(this.userProfile.avatar) ? (
+			<Level.Left>
+				<Image
+					height={30}
+					width={30}
+					avatar
+					lazyload
+					src={this.userProfile.avatar}
+					style={{ marginRight: '8px' }}
+				/>
+			</Level.Left>
+		) : '';
+
+		const textCounter = showCounter ? (
+			`${counterValue}/${counterLimit}`
+		) : '';
+
+		const sendButton = showSendButton && focusedProductId === product.product_id ? (
+			<Level.Right>
+				<Button
+					className={stylesCatalog.sendButton}
+					onClick={() => this.addComment()}
+					loading={comments.isLoading}
+					disabled={!validForm}
+				>
+					KIRIM
+				</Button>
+			</Level.Right>
+		) : '';
+
+		const commentProps = focusedProductId === product.product_id ? {
+			onChange: (e) => this.commentOnChange(e),
+			iconRight: textCounter
+		} : '';
 
 		const commentProduct = product.comments || false;
 		return (
 			<div className={stylesCatalog.commentBlock}>
 				{(commentProduct) && (
 					<Link to={product.commentUrl}>
-						<Button>View {commentProduct.total} comments</Button>
+						<Button>Lihat semua {commentProduct.total} komentar</Button>
 					</Link>
 				)}
 				{(commentProduct) && (
@@ -83,6 +193,7 @@ class CatalogView extends Component {
 					/>
 				)}
 				<Level>
+					{userAvatar}
 					<Level.Item>
 						{
 							cookies.get('isLogin') === 'true' ?
@@ -90,15 +201,17 @@ class CatalogView extends Component {
 									(
 										<Input
 											color='white'
-											placeholder='Write comment'
-											onKeyPress={(e) => this.addComment(e, product.product_id)}
-											onChange={(e) => this.commentOnChange(e, product.product_id)}
-										/>)
+											placeholder='Tulis komentar..'
+											onClickInputAction={() => this.setFocusedProduct(product.product_id)}
+											{...commentProps}
+										/>
+									)
 								: (
 									<span><Link to={`/login${redirectUri}`}>Login</Link> / <Link to={`/register${redirectUri}`}>Register</Link> untuk memberikan komentar</span>
 								)
 						}
 					</Level.Item>
+					{sendButton}
 				</Level>
 			</div>
 		);
@@ -140,7 +253,7 @@ class CatalogView extends Component {
 								)}
 								productOnClick={() => productOnClick(product, index + 1)}
 							/>
-							{comments && comments.loading ? this.loadingView : this.renderComment(product)}
+							{comments && comments.isLoading ? this.loadingView : this.renderComment(product)}
 						</div>
 					);
 				})}

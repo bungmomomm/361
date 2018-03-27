@@ -13,9 +13,11 @@ import { Header, Page, Navigation, Svg, List, Level, Image, Panel, Spinner, Moda
 import { actions as userActions } from '@/state/v4/User';
 
 import CONST from '@/constants';
-import { splitString, setUserCookie } from '@/utils';
+import { splitString, removeUserCookie } from '@/utils';
 
 import styles from './profile.scss';
+
+import cookiesLabel from '@/data/cookiesLabel';
 
 class UserProfile extends Component {
 	constructor(props) {
@@ -28,8 +30,8 @@ class UserProfile extends Component {
 			showLogout: false,
 			logoutMessage: ''
 		};
-		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
-		this.isLogin = this.props.cookies.get('isLogin') === 'true' && true;
+		this.userToken = this.props.cookies.get(cookiesLabel.userToken);
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true' && true;
 		this.loadingView = <Spinner />;
 
 		if (!this.isLogin) {
@@ -49,7 +51,7 @@ class UserProfile extends Component {
 		if (err) {
 			return err;
 		}
-		setUserCookie(cookies, response.token, true);
+		removeUserCookie(cookies);
 		history.push('/');
 		return response;
 	}
@@ -263,7 +265,7 @@ const doAfterAnonymous = async (props) => {
 
 	const serviceUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
 	if (serviceUrl) {
-		dispatch(userActions.userGetProfile(cookies.get('user.token')));
+		dispatch(userActions.userGetProfile(cookies.get(cookiesLabel.userToken)));
 	}
 };
 

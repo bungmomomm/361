@@ -79,7 +79,7 @@ class Snackbar extends React.Component {
 		}
 	};
 
-	buttonClickHandler = async () => {
+	buttonClickHandler = () => {
 		const { onButtonClick } = this.props;
 		const { snack } = this.state;
 		const { id, data: { button = {} } } = snack;
@@ -101,6 +101,11 @@ class Snackbar extends React.Component {
 		this.props.dispatch(actions.dismissSnack(id));
 	};
 
+	closeHandler = () => {
+		const { snack: { id } } = this.state;
+		this.props.dispatch(actions.dismissSnack(id));
+	};
+
 	populateStyles = (elem) => {
 		const { theming, customStyles } = this.props;
 		const largeScreen = window.matchMedia('(min-width: 720px)').matches;
@@ -113,6 +118,7 @@ class Snackbar extends React.Component {
 			return null;
 		}
 		const button = (snack.data.button || {}).label ? snack.data.button : null;
+
 		return (
 			<div
 				style={this.populateStyles('snack')}
@@ -122,16 +128,26 @@ class Snackbar extends React.Component {
 					<div style={this.populateStyles('label')}>
 						{snack.data.label}
 					</div>
-					<div style={{ display: 'inline-block', width: '25%' }}>
-						{button && (
+					{button && (
+						<div style={{ display: 'inline-block', width: '25%' }}>
 							<button
 								style={this.populateStyles('button')}
 								onClick={this.buttonClickHandler}
 							>
 								{button.label}
 							</button>
-						)}
-					</div>
+						</div>
+					)}
+					{snack.close && (
+						<button
+							onClick={this.closeHandler}
+							className='close'
+							style={this.populateStyles('close')}
+							title='Close'
+						>
+							✖
+						</button>
+					)}
 				</span>
 			</div>
 		);

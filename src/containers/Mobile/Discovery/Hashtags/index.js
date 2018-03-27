@@ -11,6 +11,7 @@ import Footer from '@/containers/Mobile/Shared/footer';
 import styles from './Hashtags.scss';
 import _ from 'lodash';
 import currency from 'currency.js';
+import { userToken } from '@/data/cookiesLabel';
 
 class Hashtags extends Component {
 
@@ -28,7 +29,7 @@ class Hashtags extends Component {
 			if (!hashtag.products[switchTag] && !hashtag.loading) {
 				const q = dispatch(actions.getQuery());
 				const dataFetch = {
-					token: cookies.get('user.token'),
+					token: cookies.get(userToken),
 					query: q.query
 				};
 				dispatch(actions.itemsFetchData(dataFetch));
@@ -59,7 +60,7 @@ class Hashtags extends Component {
 					const icode = (embedUrl.substr(embedUrl.indexOf('/p/')).split('/') || [])[2];
 
 					return (
-						<div key={i}>
+						<div className='placeholder-image' key={i}>
 							<Link to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode}`}>
 								<Image src={product.image} />
 							</Link>
@@ -199,7 +200,7 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = async (props) => {
 	const { dispatch, location, cookies } = props;
-	await dispatch(actions.initHashtags(cookies.get('user.token'), location.hash));
+	await dispatch(actions.initHashtags(cookies.get(userToken), location.hash));
 };
 
 export default withRouter(withCookies(connect(mapStateToProps)(Scroller(Shared(Hashtags, doAfterAnonymous)))));

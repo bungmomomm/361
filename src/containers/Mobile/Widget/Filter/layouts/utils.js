@@ -335,6 +335,11 @@ const isFiltered = (facets) => {
 	let filtered = [];
 	_.forEach(facets, (facet) => {
 		filtered = getSelected(facet.data, filtered);
+		if (facet.id === 'price' && facet.selected_range !== undefined) {
+			filtered.push({
+				facetdisplay: `${toIdr(facet.selected_range.min)} - ${toIdr(facet.selected_range.max)}`
+			});
+		}
 	});
 	return filtered.length > 0;
 };

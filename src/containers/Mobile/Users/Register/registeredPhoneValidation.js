@@ -7,14 +7,15 @@ import { Header, Page, Button, Svg, Input, Notification } from '@/components/mob
 import Shared from '@/containers/Mobile/Shared';
 import styles from '../user.scss';
 import Recaptcha from 'react-recaptcha';
+import { userToken, userRfToken, userSource } from '@/data/cookiesLabel';
 
 
 class RegisteredPhoneValidation extends Component {
 	constructor(props) {
 		super(props);
-		this.userCookies = this.props.cookies.get('user.token');
-		this.userRFCookies = this.props.cookies.get('user.rf.token');
-		this.source = this.props.cookies.get('user.source');
+		this.userCookies = this.props.cookies.get(userToken);
+		this.userRFCookies = this.props.cookies.get(userRfToken);
+		this.source = this.props.cookies.get(userSource);
 		this.props = props;
 		this.state = {
 			visibalePasswod: false

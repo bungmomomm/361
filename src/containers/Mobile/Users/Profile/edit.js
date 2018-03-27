@@ -26,6 +26,7 @@ import CONST from '@/constants';
 import { splitString } from '@/utils';
 
 import styles from './profile.scss';
+import cookiesLabel from '@/data/cookiesLabel';
 
 class UserProfileEdit extends Component {
 	constructor(props) {
@@ -47,8 +48,8 @@ class UserProfileEdit extends Component {
 			},
 			formData: props.userProfile,
 		};
-		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
-		this.isLogin = this.props.cookies.get('isLogin') === 'true' && true;
+		this.userToken = this.props.cookies.get(cookiesLabel.userToken);
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true' && true;
 
 		this.AVATAR_FIELD = CONST.USER_PROFILE_FIELD.avatar;
 		this.NAME_FIELD = CONST.USER_PROFILE_FIELD.name;
@@ -663,7 +664,7 @@ const doAfterAnonymous = async (props) => {
 
 	const serviceUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
 	if (serviceUrl) {
-		dispatch(userActions.userGetProfile(cookies.get('user.token')));
+		dispatch(userActions.userGetProfile(cookies.get(cookiesLabel.userToken)));
 	}
 };
 

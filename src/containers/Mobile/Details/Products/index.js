@@ -8,7 +8,7 @@ import { actions as productActions } from '@/state/v4/Product';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as shopBagActions } from '@/state/v4/ShopBag';
-import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Spinner, Badge, Notification } from '@/components/mobile';
+import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Spinner, Badge, Notification, AnimationLovelist, AnimationAddToCart } from '@/components/mobile';
 import Promos from './Promos';
 import ReviewSummary from './Reviews/summary';
 
@@ -24,6 +24,7 @@ import {
 	addToCartBuilder,
 	sendGtm,
 } from '@/utils/tracking';
+import cookiesLabel from '@/data/cookiesLabel';
 
 const trackAddToCart = (data, props, variant) => {
 	const products = {
@@ -64,7 +65,7 @@ import Discovery from '@/containers/Mobile/Discovery/Utils';
 const doAfterAnonymous = async (props) => {
 	const { dispatch, match, cookies } = props;
 	const productId = _.toInteger(match.params.id);
-	const token = cookies.get('user.token');
+	const token = cookies.get(cookiesLabel.userToken);
 
 	const productDetail = await dispatch(productActions.productDetailAction(token, productId));
 	trackPdpView(productDetail, props);
@@ -88,10 +89,10 @@ class Products extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.userCookies = this.props.cookies.get('user.token');
-		this.userRFCookies = this.props.cookies.get('user.rf.token');
-		this.source = this.props.cookies.get('user.source');
-		this.isLogin = (typeof this.props.cookies.get('isLogin') === 'string' && this.props.cookies.get('isLogin') === 'true');
+		this.userCookies = this.props.cookies.get(cookiesLabel.userToken);
+		this.userRFCookies = this.props.cookies.get(cookiesLabel.userRfToken);
+		this.source = this.props.cookies.get(cookiesLabel.userSource);
+		this.isLogin = (typeof this.props.cookies.get(cookiesLabel.isLogin) === 'string' && this.props.cookies.get(cookiesLabel.isLogin) === 'true');
 		this.defaultCount = 1;
 		this.slideWrapAround = true;
 		this.linkToPdpDisabled = true;
@@ -114,6 +115,11 @@ class Products extends Component {
 
 		this.state = {
 			size: '',
+			animation: {
+				lovelist: false,
+				addToCart: false
+			},
+			showAnimationLovelist: false,
 			status: {
 				btnBeliDisabled: false,
 				forceLogin: false,
@@ -268,9 +274,23 @@ class Products extends Component {
 		}
 	}
 
+	animateLovelist() {
+		this.setState({ animaiton: { ...this.state.animation, lovelist: true } });
+		setTimeout(() => {
+			this.setState({ animaiton: { ...this.state.animation, lovelist: false } });
+		}, 2000);
+	}
+
+	animateAddtoCart() {
+		this.setState({ animaiton: { ...this.state.animation, addToCart: true } });
+		setTimeout(() => {
+			this.setState({ animaiton: { ...this.state.animation, addToCart: false } });
+		}, 2000);
+	}
+
 	handleLovelistClick(e) {
 		const { status } = this.state;
-
+		this.animateLovelist();
 		// customer must be logged in first
 		if (!this.isLogin) {
 			status.forceLogin = true;
@@ -310,6 +330,8 @@ class Products extends Component {
 	}
 
 	addToShoppingBag(variant) {
+		this.animateAddtoCart();
+		
 		const { status, notif } = this.state;
 		const { dispatch, product } = this.props;
 
@@ -345,7 +367,7 @@ class Products extends Component {
 
 	handleBtnBeliClicked(e) {
 		const { selectedVariant, status } = this.state;
-
+		this.animateAddtoCart();
 		// product variants not found
 		if (!status.hasVariantSize && _.isEmpty(selectedVariant)) {
 			status.btnBeliDisabled = true;
@@ -692,7 +714,7 @@ class Products extends Component {
 							<div className='font-medium margin--medium-v padding--medium-h'><strong>Details</strong></div>
 							{!_.isEmpty(detail.description)
 							&&
-								<div>
+								<div className='wysiwyg-content'>
 									<div className={classNameProductDescription} dangerouslySetInnerHTML={{ __html: stringHelper.removeHtmlTag(detail.description) }} />
 									<span className='padding--medium-h font-color--grey' {...buttonProductDescriptionAttribute}>{ fullProductDescriptionButtonText }</span>
 								</div>
@@ -701,27 +723,16 @@ class Products extends Component {
 								<div className='margin--medium-v --disable-flex padding--medium-h'>
 									{(detail.spec.map((item, idx) => {
 										item.value = item.value.replace(/(?:\r\n|\r|\n)/g, '<br />');
-										if (/^/.test(item.value)) return <div key={idx} className='margin--small-v font-medium font-color--primary' dangerouslySetInnerHTML={{ __html: item.value }} />;
+										if (/^/.test(item.value)) return <div key={idx} className='margin--small-v font-medium font-color--primary wysiwyg-content' dangerouslySetInnerHTML={{ __html: item.value }} />;
 										return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
 									}))}
 								</div>
 							)}
 							<div className='margin--medium-v --disable-flex padding--medium-h'>
-								{this.isLogin && (
-									<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
-										{(comments.total === 0) && 'Tulis Komentar'}
-										{(comments.total > 0 && comments.total <= 2) && `${comments.total} Komentar`}
-										{(comments.total > 2) && `Lihat Semua ${comments.total} Komentar`}
-									</Link>
-								)}
-
-								{
-									(!this.isLogin) &&
-									<span>
-										<a href={`/login?redirect_uri=${this.props.location.pathname}`}>Log in</a> /
-										<a href={`/register?redirect_uri=${this.props.location.pathname}`}>Register</a> untuk memberikan komentar
-									</span>
-								}
+								<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
+									{(comments.total === 0) && 'Tulis Komentar'}
+									{(comments.total > 0) && `Lihat Semua ${comments.total} Komentar`}
+								</Link>
 								{(!_.isUndefined(comments) && !_.isUndefined(comments.summary) && !_.isEmpty(comments.summary)) && (
 									<Comment type='lite-review' data={comments.summary} />
 								)}
@@ -782,6 +793,22 @@ class Products extends Component {
 							</div>
 						</div>
 						{this.renderStickyAction()}
+						{
+							this.state.animation.lovelist && <AnimationLovelist />
+						}
+						{
+							this.state.animation.addToCart && (
+								<AnimationAddToCart
+									style={{
+										top: '-32%',
+										left: '50%',
+										opacity: '1',
+										transform: 'scale(0.1)'
+									}}
+									image='https://mm-imgs.s3.amazonaws.com/p/2017/08/28/01/cardinal-girl-short-sleeve-plaid-shirt-merah_4139942_1_59365.jpg'
+								/>
+							)
+						}
 					</Page>
 					<Header.Modal style={!status.showScrollInfomation ? { backgroundColor: 'transparent', border: 'none', boxShadow: 'none' } : {}} {...this.renderHeaderPage()} />
 

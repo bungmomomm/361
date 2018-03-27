@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import util from 'util';
@@ -11,33 +12,35 @@ import { Page, Header, Svg, Comment, Input, Button, Level, Spinner, Image } from
 import Shared from '@/containers/Mobile/Shared';
 
 import { actions as commentActions } from '@/state/v4/Comment';
-import { actions as userActions } from '@/state/v4/User';
 
 import styles from './comments.scss';
+import cookiesLabel from '@/data/cookiesLabel';
 
 class Comments extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.isLogin = this.props.cookies.get('isLogin') || false;
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) || false;
 
 		this.state = {
 			validForm: false,
 			commentValue: '',
-			showClearButton: false
+			showCounter: false,
+			counterValue: 0,
+			counterLimit: 300
 		};
 
+		this.userProfile = this.props.cookies.get(cookiesLabel.userProfile) || false;
 		this.renderLoading = <Spinner />;
-		this.clearButton = <Svg src='ico_clear.svg' />;
 	}
 
 	inputHandler(e) {
 		const value = util.format('%s', e.target.value);
 
 		if (value.length > 0) {
-			this.setState({ showClearButton: true });
+			this.setState({ showCounter: true, counterValue: value.length });
 		} else {
-			this.setState({ showClearButton: false });
+			this.setState({ counterValue: 0 });
 		}
 
 		let validForm = false;
@@ -61,7 +64,7 @@ class Comments extends Component {
 				product_id: parsedUrl.product_id !== undefined ? parseInt(parsedUrl.product_id, 10) : '',
 				page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : ''
 			};
-			await dispatch(commentActions.productCommentAction(cookies.get('user.token'), commentsParam.product_id, commentsParam.page));
+			await dispatch(commentActions.productCommentAction(cookies.get(cookiesLabel.userToken), commentsParam.product_id, commentsParam.page));
 		}
 	}
 
@@ -71,10 +74,13 @@ class Comments extends Component {
 
 		const productId = _.chain(match).get('params.id').value() || false;
 		if (productId) {
-			dispatch(commentActions.commentAddAction(cookies.get('user.token'), productId, commentValue));
+			dispatch(commentActions.commentAddAction(cookies.get(cookiesLabel.userToken), productId, commentValue));
 		}
 
 		this.setState({
+			validForm: false,
+			showCounter: false,
+			counterValue: 0,
 			commentValue: ''
 		});
 	}
@@ -113,25 +119,26 @@ class Comments extends Component {
 				/>
 			);
 		}
-		
+
 		return null;
 	}
 
 	renderComments() {
 		const { isLoading, comments } = this.props;
-		
+
 		if (!_.isEmpty(comments.comments)) {
 			const loadMore = !_.isEmpty(comments.links.next) ? (
-				<Button
-					className={styles.loadMore}
-					onClick={() => this.loadNextComments()}
-					loading={isLoading}
-				>
-					Lihat komentar sebelumnya
-				</Button>
+				<div className={styles.loadMore}>
+					<Button
+						onClick={() => this.loadNextComments()}
+						loading={isLoading}
+					>
+						Lihat komentar sebelumnya
+					</Button>
+				</div>
 			) : '';
 			return (
-				<div style={{ marginBottom: '100px' }}>
+				<div style={{ marginBottom: '50px' }}>
 					{loadMore}
 					{<Comment data={comments.comments} loading={isLoading} />}
 				</div>
@@ -141,40 +148,29 @@ class Comments extends Component {
 		return null;
 	}
 
-	renderClearButton() {
-		const { showClearButton } = this.state;
+	renderCounter() {
+		const { showCounter, counterValue, counterLimit } = this.state;
 
-		if (showClearButton) {
-			return (
-				<Button
-					onClick={() => {
-						this.setState({
-							commentValue: '',
-							showClearButton: false,
-							validForm: false
-						});
-					}}
-				>
-					{this.clearButton}
-				</Button>
-			);
+		if (showCounter) {
+			return `${counterValue}/${counterLimit}`;
 		}
 
 		return null;
 	}
 
 	renderAvailComment() {
-		const { isLoading, userProfile } = this.props;
+		const { isLoading, location } = this.props;
 		const { validForm, commentValue } = this.state;
+		const redirectUri = location.pathname !== '' ? `?redirect_uri=${location.pathname}` : '';
 
 		if (this.isLogin === 'true') {
-			const userAvatar = !_.isEmpty(userProfile) ? (
+			const userAvatar = this.userProfile && !_.isEmpty(this.userProfile.avatar) ? (
 				<Level.Left>
 					<Image
 						height={30}
 						width={30}
 						avatar
-						src={userProfile.avatar}
+						src={this.userProfile.avatar}
 						style={{ marginRight: '8px' }}
 					/>
 				</Level.Left>
@@ -185,11 +181,14 @@ class Comments extends Component {
 					{userAvatar}
 					<Level.Item>
 						<Input
+							as='textarea'
 							color='white'
 							placeholder='Tulis komentar..'
 							value={commentValue}
 							onChange={(e) => this.inputHandler(e)}
-							iconRight={this.renderClearButton()}
+							onFocus={() => this.setState({ showCounter: true })}
+							onBlur={() => this.setState({ showCounter: false })}
+							iconRight={this.renderCounter()}
 						/>
 					</Level.Item>
 					<Level.Right>
@@ -209,7 +208,7 @@ class Comments extends Component {
 
 		return (
 			<span className={styles.commentbox}>
-				<a href='/login'>Log in</a> / <a href='/register'>Register</a> untuk memberi komentar
+				<Link to={`/login${redirectUri}`}>Login</Link> / <Link to={`/register${redirectUri}`}>Register</Link> untuk memberikan komentar
 			</span>
 		);
 	}
@@ -218,7 +217,7 @@ class Comments extends Component {
 		const { isLoadingProfile } = this.props;
 
 		return (
-			<div>
+			<div className={styles.commentsContainer}>
 				<div className={styles.commentsBackground} />
 				<Page style={{ paddingTop: 0 }} color='white'>
 					<div className='margin--medium-v'>
@@ -228,7 +227,8 @@ class Comments extends Component {
 				</Page>
 				{this.renderHeader()}
 				{isLoadingProfile ? this.renderLoading : this.renderAvailComment()}
-			</div>);
+			</div>
+		);
 	}
 }
 
@@ -238,22 +238,15 @@ const mapStateToProps = (state) => {
 		comments: state.comments.data || '',
 		product: state.comments.data.product || '',
 		isLoading: state.comments.isLoading,
-		isLoadingProfile: state.users.isLoading,
-		userProfile: state.users.userProfile
 	};
 };
 
 const doAfterAnonymous = async (props) => {
-	const { dispatch, cookies, match, shared } = props;
+	const { dispatch, cookies, match } = props;
 
 	const productId = _.chain(match).get('params.id').value() || false;
 	if (productId) {
-		await dispatch(commentActions.productCommentAction(cookies.get('user.token'), productId, 1));
-	}
-
-	const serviceUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
-	if (serviceUrl) {
-		await dispatch(userActions.userGetProfile(cookies.get('user.token')));
+		await dispatch(commentActions.productCommentAction(cookies.get(cookiesLabel.userToken), productId, 1));
 	}
 };
 

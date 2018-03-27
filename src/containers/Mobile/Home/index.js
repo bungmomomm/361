@@ -21,8 +21,9 @@ import {
 	sendGtm,
 } from '@/utils/tracking';
 import { urlBuilder } from '@/utils';
+import cookiesLabel from '@/data/cookiesLabel';
 
-const renderSectionHeader = (title, options) => {
+const renderSectionHeader = (title, options, cookies = null) => {
 	return (
 		<Level>
 			<Level.Left><div className={styles.headline}>{title}</div></Level.Left>
@@ -31,7 +32,10 @@ const renderSectionHeader = (title, options) => {
 					options.isMozaic ?
 						<a href={options.url || '/'} target='_blank' className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></a>
 						:
-						<Link to={options.url || '/'} className={styles.readmore}>
+						<Link
+							to={options.url || '/'}
+							className={styles.readmore}
+						>
 							{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' />
 						</Link>
 				}
@@ -64,11 +68,11 @@ class Home extends Component {
 		super(props);
 		this.props = props;
 
-		this.userCookies = this.props.cookies.get('user.token');
-		this.userRFCookies = this.props.cookies.get('user.rf.token');
-		this.source = this.props.cookies.get('user.source');
+		this.userCookies = this.props.cookies.get(cookiesLabel.userToken);
+		this.userRFCookies = this.props.cookies.get(cookiesLabel.userRfToken);
+		this.source = this.props.cookies.get(cookiesLabel.userSource);
 
-		this.isLogin = this.props.cookies.get('isLogin');
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin);
 
 		this.state = {
 			isFooterShow: true,
@@ -112,7 +116,7 @@ class Home extends Component {
 	}
 
 	renderHeroBanner() {
-		const { home, dispatch } = this.props;
+		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		const featuredBanner = _.chain(home).get(`allSegmentData.${segment}`).get('heroBanner');
 		if (!featuredBanner.isEmpty().value()) {
@@ -122,11 +126,6 @@ class Home extends Component {
 			return (
 				<Link
 					to={link}
-					onClick={
-						() => {
-							dispatch(new sharedActions.logSinglePage('HOME'));
-						}
-					}
 				>
 					<div>
 						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
@@ -146,20 +145,19 @@ class Home extends Component {
 		 * recent-view
 		 * */
 
-		const { home } = this.props;
+		const { home, cookies } = this.props;
 		const segment = home.activeSegment;
 		const title = 'LIHAT SEMUA';
 		const recommendationData = _.chain(home).get(`allSegmentData.${segment.key}.recomendationData.${type}`);
 		if (recommendationData.value()) {
 			const data = recommendationData.value();
-			console.log(data);
 			if (data.data && data.data.length > 0) {
 				const link = `/promo/${type}?segment_id=${segment.id}`;
 
 				const header = renderSectionHeader(data.title, {
 					title,
 					url: link
-				});
+				}, cookies);
 				return (
 					<div>
 						{ header }
@@ -167,7 +165,7 @@ class Home extends Component {
 							{
 								data.data.map(({ images, pricing, path, product_id, product_title }, e) => (
 									<div key={e}>
-										<Link to={`/${urlBuilder.buildPdp(product_title, product_id)}`}>
+										<Link to={`${urlBuilder.buildPdp(product_title, product_id)}`}>
 											<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
 											<div className={styles.btnThumbnail}>
 												<Button transparent color='secondary' size='small'>
@@ -226,7 +224,7 @@ class Home extends Component {
 	}
 
 	renderSquareBanner() {
-		const { home, dispatch } = this.props;
+		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}.squareBanner`);
 		if (datas.value()) {
@@ -237,11 +235,6 @@ class Home extends Component {
 							<Link
 								to={link.target || '/'}
 								key={c}
-								onClick={
-									() => {
-										dispatch(new sharedActions.logSinglePage('HOME'));
-									}
-								}
 							>
 								<div>
 									<Image lazyload alt='banner' src={images.thumbnail} />
@@ -256,7 +249,7 @@ class Home extends Component {
 	}
 
 	renderBottomBanner(position = 'top') {
-		const { home, dispatch } = this.props;
+		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		let bottomBanner = [];
 		const dataTop = _.chain(home).get(`allSegmentData.${segment}.topLanscape`);
@@ -272,11 +265,6 @@ class Home extends Component {
 							<Link
 								to={link.target || '/'}
 								key={d}
-								onClick={
-									() => {
-										dispatch(new sharedActions.logSinglePage('HOME'));
-									}
-								}
 							>
 								<div>
 									<Image lazyload alt='banner' src={images.thumbnail} />
@@ -430,7 +418,7 @@ const doAfterAnonymous = async (props) => {
 
 	const activeSegment = home.segmen.find(e => e.key === home.activeSegment.key);
 
-	const tokenHeader = cookies.get('user.token');
+	const tokenHeader = cookies.get(cookiesLabel.userToken);
 
 	const mainPageData = await dispatch(new actions.mainAction(activeSegment, tokenHeader));
 	await dispatch(new actions.recomendationAction(activeSegment, tokenHeader));

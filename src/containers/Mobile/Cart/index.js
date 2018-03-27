@@ -6,7 +6,6 @@ import styles from './cart.scss';
 import Shared from '@/containers/Mobile/Shared';
 import { connect } from 'react-redux';
 import { actions as shopBagAction } from '@/state/v4/ShopBag';
-import CONST from '@/constants';
 import { urlBuilder, aux } from '@/utils';
 import { actions as actionShared } from '@/state/v4/Shared';
 import _ from 'lodash';
@@ -15,6 +14,7 @@ import {
 	sendGtm,
 	cartViewBuilder
 } from '@/utils/tracking';
+import cookiesLabel from '@/data/cookiesLabel';
 
 const trackBrandPageView = (data, props) => {
 	const items = _.flatMap(data, (e) => (e.items));
@@ -46,13 +46,13 @@ class Cart extends Component {
 			},
 			itemsNotProced: []
 		};
-		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
+		this.userToken = this.props.cookies.get(cookiesLabel.userToken);
 		this.deleteItemHandler = this.deleteItemHandler.bind(this);
 		this.addToLovelistHandler = this.addToLovelistHandler.bind(this);
 		this.selectItemHandler = this.selectItemHandler.bind(this);
 		this.selectedNewQtyHander = this.selectedNewQtyHander.bind(this);
 		this.updateCartHander = this.updateCartHander.bind(this);
-		this.isLogin = this.props.cookies.get('isLogin');
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin);
 	}
 
 	componentWillMount() {
@@ -159,7 +159,7 @@ class Cart extends Component {
 				return (
 					<div key={keyItem}>
 						<Level style={{ paddingLeft: '0px' }} className='flex-row'>
-							<Level.Item>
+							<Level.Item style={{ width: '30%', flex: 'none' }}>
 								<Link className='font-color--black' to={urlBuilder.setId(item.product_id).setName(item.product_title).buildPdp()}>
 									<Image width='100%' src={item.images[0].original} />
 									{(item.max_qty < item.qty) && (
@@ -168,14 +168,9 @@ class Cart extends Component {
 								</Link>
 							</Level.Item>
 							<Level.Item className='padding--medium-l'>
-								<div>
+								<div className='flex-row flex-spaceBetween'>
 									<Link className='font-color--black text-uppercase' to={urlBuilder.setId(item.brand.id).setName(item.brand.brand_name).buildBrand()}>
 										{item.brand.name}
-									</Link>
-								</div>
-								<div className='font-color--primary-ext-1 flex-row'>
-									<Link className='font-color--grey' to={urlBuilder.setId(item.product_id).setName(item.product_title).buildPdp()}>
-										{item.product_title}
 									</Link>
 									<Button
 										onClick={() => this.deleteConfirmationItemHandler(
@@ -186,10 +181,15 @@ class Cart extends Component {
 										<Svg src='ico_trash.svg' />
 									</Button>
 								</div>
+								<div className='font-color--primary-ext-1'>
+									<Link className='font-color--grey' to={urlBuilder.setId(item.product_id).setName(item.product_title).buildPdp()}>
+										{item.product_title}
+									</Link>
+								</div>
 								<div className='font-color--black'>
 									{item.variant.title} : {item.variant.value}
 								</div>
-								<div className='margin--medium-v'>
+								<div className='margin--medium-t'>
 									<div className='font--lato-bold'>{item.pricing.formatted.effective_price}</div>
 									{(item.pricing.formatted.effective_price !== item.pricing.formatted.base_price) && (
 										<div className='font-color--primary-ext-1 font-small text-line-through'>
@@ -197,7 +197,7 @@ class Cart extends Component {
 										</div>
 									) }
 								</div>
-								<Level className='flex-row flex-middle padding--none-l'>
+								<Level style={{ width: '60%' }} className='flex-row flex-middle padding--none-l'>
 									<Level.Left>
 										<div>Jumlah: </div>
 									</Level.Left>

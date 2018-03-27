@@ -45,6 +45,7 @@ class Image extends Component {
 	onLoad() {
 		// Fix for carousel issue
 		this.triggerEvent(window, 'resize');
+		this.imgRef.parentElement.style.backgroundColor = '#ffffff';
 		this.forceUpdate();
 	}
 
@@ -80,9 +81,9 @@ class Image extends Component {
 		if (this.props.local) {
 			image = require(`@/assets/images/${this.props.src}`);
 		}
-		if (this.props.lazyload && !this.state.loaded) {
-			image = require('@/assets/images/Loading_icon.gif');
-		}
+		// if (this.props.lazyload && !this.state.loaded) {
+		// 	image = require('@/assets/images/mobile/ico_placeholder-full.png');
+		// }
 		return image;
 	}
 

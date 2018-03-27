@@ -14,10 +14,9 @@ import {
 } from '@/components/mobile';
 import { actions as categoryActions } from '@/state/v4/Category';
 import Shared from '@/containers/Mobile/Shared';
-import CONST from '@/constants';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { urlBuilder } from '@/utils';
-
+import { userToken, userSource } from '@/data/cookiesLabel';
 const buildUrl = (stringCategory = '') => {
 	return stringCategory.replace(/[^a-zA-Z ]/g, '').replace(/\s\s+/g, ' ').replace(/ /g, '-').toLowerCase();
 };
@@ -26,8 +25,8 @@ class SubCategory extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.userCookies = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
-		this.source = this.props.cookies.get('user.source');
+		this.userCookies = this.props.cookies.get(userToken);
+		this.source = this.props.cookies.get(userSource);
 		this.state = {
 			selectedCategory: null
 		};
@@ -108,6 +107,7 @@ class SubCategory extends PureComponent {
 	}
 
 	render() {
+		const { shared } = this.props;
 		const { selectedCategory } = this.state;
 		const HeaderPage = (selectedCategory) && ({
 			left: (
@@ -141,7 +141,7 @@ class SubCategory extends PureComponent {
 					}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Categories' scroll={this.props.scroll} />
+				<Navigation active='Categories' scroll={this.props.scroll} totalCartItems={shared.totalCart} />
 			</div>
 		);
 	}

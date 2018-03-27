@@ -2,17 +2,38 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Header, Page, Svg, Carousel } from '@/components/mobile';
+import { 
+	Card,
+	Header, 
+	Page, 
+	Svg, 
+	Carousel,
+	Modal,
+	Level,
+	Button
+} from '@/components/mobile';
 import { actions } from '@/state/v4/HashtagsDetails';
 import Shared from '@/containers/Mobile/Shared';
 import Spinner from '@/components/mobile/Spinner';
-import { GridView } from '@/containers/Mobile/Discovery/View';
+// import { GridView } from '@/containers/Mobile/Discovery/View';
 import Discovery from '@/containers/Mobile/Discovery/Utils';
 import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
+import { actions as usersActions } from '@/state/v4/User';
 import _ from 'lodash';
+import { userToken } from '@/data/cookiesLabel';
+import { urlBuilder } from '@/utils';
+import { Love } from '@/containers/Mobile/Widget';
 
 class HashtagsDetails extends Component {
+
+	constructor(props) {
+		super(props);
+		this.props = props;
+		this.state = {
+			showLoginModal: false
+		};
+	}
 
 	componentDidMount() {
 		const script = document.createElement('script');
@@ -23,29 +44,62 @@ class HashtagsDetails extends Component {
 		document.body.appendChild(script);
 	}
 
-	forceLoginNow = () => {
+	handleLovelistClick(e, product) {
+		const { cookies } = this.props;
+
+		// customer must be logged in first
+		if (cookies.get('isLogin') === 'false') {
+			this.setState({
+				showLoginModal: true,
+				product
+			});
+		}
+	}
+
+	loginNow = () => {
+		this.props.dispatch(new usersActions.addAfterLogin('Lovelist', 'addToLovelist', [this.state.product]));
 		const { history, location } = this.props;
 		const currentUrl = encodeURIComponent(`${location.pathname}${location.search}`);
 		history.push(`/login?redirect_uri=${currentUrl}`);
 	};
 
-	bufferCarousel = (products) => {
-		const { scroller } = this.props;
-		const buffer = [];
-		let fragment = [];
+	loginLater() {
+		this.setState({ 
+			showLoginModal: false,
+			product: undefined
+		});
+	}
 
+	bufferCarousel = (products) => {
+		const buffer = [];
+		const productClicked = (e) => console.log('Ouch, don\'t do that!!!');
 		products.forEach((product, i) => {
-			fragment = ((i + 1) % 2 !== 0) ? [product] : [...fragment, product];
-			if ((i + 1) % 2 === 0 || products.length === (i + 1)) {
-				buffer.push(
-					<GridView
-						key={i}
-						loading={scroller.loading}
-						forceLoginNow={() => this.forceLoginNow()}
-						products={fragment}
+			const attr = {
+				key: i,
+				images: product.images,
+				productTitle: product.product_title,
+				brandName: product.brand.name,
+				pricing: {
+					discount: product.pricing.formatted.discount,
+					...product.pricing
+				},
+				productOnClick: productClicked,
+				linkToPdp: urlBuilder.buildPdp(product.product_title, product.product_id),
+				love: (
+					<Love
+						status={product.lovelistStatus}
+						data={product.product_id}
+						inline={false}
+						total={product.lovelistTotal}
+						onNeedLogin={(e) => this.handleLovelistClick(e, product.product_id)}
 					/>
-				);
-			}
+				)
+			};
+			buffer.push(
+				<Card.CatalogGrid
+					{...attr} 			
+				/>
+			);
 		});
 
 		return buffer;
@@ -53,6 +107,7 @@ class HashtagsDetails extends Component {
 
 	render() {
 		const { hashtagdetails, history } = this.props;
+		const { showLoginModal } = this.state;
 		const ent = hashtagdetails;
 		const looks = this.bufferCarousel(ent.data.products);
 
@@ -107,6 +162,26 @@ class HashtagsDetails extends Component {
 				</Page>
 
 				<Header.Modal {...HeaderPage} />
+				{showLoginModal && (
+					<Modal show>
+						<div className='font-medium'>
+							<h3 className='text-center'>Lovelist</h3>
+							<Level style={{ padding: '0px' }} className='margin--medium-v'>
+								<Level.Left />
+								<Level.Item className='padding--medium-h margin--medium-h'>
+									<center className='font-medium'>Silahkan login/register untuk menambahkan produk ke Lovelist</center>
+								</Level.Item>
+							</Level>
+						</div>
+						<Modal.Action
+							closeButton={(
+								<Button onClick={(e) => this.loginLater()}>
+									<strong className='font-color--primary-ext-2'>NANTI</strong>
+								</Button>)}
+							confirmButton={(<Button onClick={(e) => this.loginNow()}><strong className='font-color--primary'>SEKARANG</strong></Button>)}
+						/>
+					</Modal>
+				)}
 			</div>);
 	}
 }
@@ -133,11 +208,11 @@ const doAfterAnonymous = async (props) => {
 		icode: params.icode
 	};
 
-	const resp = await dispatch(actions.hashtagDetailAction(cookies.get('user.token'), ids));
+	const resp = await dispatch(actions.hashtagDetailAction(cookies.get(userToken), ids));
 	const productIdList = _.map(resp.data.data.products, 'product_id') || [];
 	if (productIdList.length > 0) {
-		dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-		dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+		dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
+		dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
 	}
 };
 

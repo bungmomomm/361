@@ -17,6 +17,7 @@ import {
 	Modal,
 	Button
 } from '@/components/mobile';
+import { userToken } from '@/data/cookiesLabel';
 
 class CreditCard extends Component {
 
@@ -51,7 +52,7 @@ class CreditCard extends Component {
 			card_id: checkedCreditCardValueForSetDefault
 		};
 		
-		const [err, response] = await to(dispatch(new actions.setCreditCard(cookies.get('user.token'), parameterDefault)));
+		const [err, response] = await to(dispatch(new actions.setCreditCard(cookies.get(userToken), parameterDefault)));
 		
 		if (err) {
 			return false;
@@ -91,7 +92,7 @@ class CreditCard extends Component {
 			return false;
 		}
 		
-		const [err, response] = await to(dispatch(new actions.deleteCreditCard(cookies.get('user.token'), parameterDelete)));
+		const [err, response] = await to(dispatch(new actions.deleteCreditCard(cookies.get(userToken), parameterDelete)));
 		
 		if (err) {
 			return false;
@@ -101,7 +102,7 @@ class CreditCard extends Component {
 		
 		if (data.code === 200) {
 			
-			await to(dispatch(new actions.getCreditCard(cookies.get('user.token'))));
+			await to(dispatch(new actions.getCreditCard(cookies.get(userToken))));
 			
 			this.setState({
 				successMessage: data.data.msg,
@@ -320,7 +321,7 @@ const mapStateToProps = (state) => {
 const doAfterAnonymous = (props) => {
 	
 	const { dispatch, cookies } = props;
-	dispatch(new actions.getCreditCard(cookies.get('user.token')));
+	dispatch(new actions.getCreditCard(cookies.get(userToken)));
  
 };
 

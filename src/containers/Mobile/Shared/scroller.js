@@ -35,7 +35,7 @@ const Scroller = (WrappedComponent) => {
 			const html = document.documentElement;
 
 			const docHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-			const scrollY = e.srcElement.scrollTop;
+			const scrollY = e.target.scrollTop;
 			const scrHeight = window.screen.height;
 			if ((scrollY + scrHeight) >= (this.startInfScroll * docHeight) && this.allowNext) {
 				this.props.dispatch(this.scroller.loader(this.scroller.nextData));

@@ -8,12 +8,13 @@ class Article extends PureComponent {
 			className,
 			posts
 		} = this.props;
+		
 		const createClassName = classNames(
 			styles.container,
 			className
 		);
-		
-		return ( 
+
+		return (
 			<div className={createClassName}>
 				<a href={posts.link} target='_blank'>
 					<img src={posts.images.thumbnail} alt='article' />
@@ -27,7 +28,7 @@ class Article extends PureComponent {
 				<div className={styles.author}>by {posts.author}</div>
 			</div>
 		);
-		
+
 	}
 }
 

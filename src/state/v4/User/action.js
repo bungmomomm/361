@@ -2,6 +2,7 @@ import to from 'await-to-js';
 import { Promise } from 'es6-promise';
 import _ from 'lodash';
 import { actions } from './reducer';
+import { totalLoveList, totalBag } from '@/state/v4/Shared/reducer';
 import base64 from 'base-64';
 import {
 	request,
@@ -60,6 +61,10 @@ const userLogin = (token, email, password) => async (dispatch, getState) => {
 			refresh_token: response.data.data.refresh_token
 		}
 	});
+};
+
+const clearError = (token) => dispatch => {
+	dispatch(actions.userClearError());
 };
 
 const userAnonymous = (token) => async (dispatch, getState) => {
@@ -437,7 +442,10 @@ const userLogout = (token) => async (dispatch, getState) => {
 	if (err) {
 		dispatch(actions.userLogoutFail(err.response.data));
 		return Promise.reject(err.response.data);
-	}
+	} 
+
+	dispatch(totalBag({ totalCart: 0 }));
+	dispatch(totalLoveList({ totalLovelist: 0 }));
 
 	dispatch(actions.userLogoutSuccess(response.data.data));
 	return Promise.resolve({
@@ -477,5 +485,6 @@ export default {
 	addAfterLogin,
 	PostOrderConfirmation,
 	getListBankConfirmation,
+	clearError,
 	cleanMyOrderDetail
 };

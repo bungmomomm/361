@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import queryString from 'query-string';
 import to from 'await-to-js';
@@ -24,6 +23,7 @@ import {
 	Svg,
 	Tabs,
 	Navigation,
+	Button,
 	Spinner,
 	SEO
 } from '@/components/mobile';
@@ -36,6 +36,7 @@ import {
 	renderIf,
 	urlBuilder
 } from '@/utils';
+import { userToken, pageReferrer } from '@/data/cookiesLabel';
 
 import Discovery from '../../Utils';
 
@@ -104,9 +105,14 @@ class Product extends Component {
 				sort: '',
 				...propsObject.get('query').value()
 			},
-			isFooterShow: true
+			isFooterShow: true,
+			focusedProductId: ''
 		};
-		this.loadingView = <Spinner />;
+		this.loadingView = (
+			<div style={{ margin: '20px auto 20px auto' }}>
+				<Spinner />
+			</div>
+		);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -135,7 +141,8 @@ class Product extends Component {
 			showFilter: !closeFilter
 		});
 		this.update({
-			fq
+			fq,
+			page: 0
 		});
 	}
 
@@ -143,6 +150,10 @@ class Product extends Component {
 		this.setState({
 			showFilter: false
 		});
+	}
+
+	setFocusedProduct(id) {
+		this.setState({ focusedProductId: id });
 	}
 
 	update = async (params) => {
@@ -165,15 +176,15 @@ class Product extends Component {
 			...params
 		};
 
-		const [err, response] = await to(dispatch(pcpActions.pcpAction({ token: cookies.get('user.token'), query: pcpParam })));
+		const [err, response] = await to(dispatch(pcpActions.pcpAction({ token: cookies.get(userToken), query: pcpParam })));
 		if (err) {
 			return err;
 		}
 
 		const productIdList = _.map(response.pcpData.products, 'product_id') || [];
 		if (!_.isEmpty(productIdList)) {
-			dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-			await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+			dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
+			await dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
 			trackCategoryPageView(response.pcpData.products, response.pcpData.info, this.props);
 		}
 
@@ -186,7 +197,8 @@ class Product extends Component {
 			showSort: false
 		});
 		this.update({
-			sort: sort.q
+			sort: sort.q,
+			page: 0
 		});
 	}
 
@@ -254,7 +266,8 @@ class Product extends Component {
 	}
 
 	productsBlock() {
-		const { isLoading, comments, productCategory, scroller, viewMode } = this.props;
+		const { isLoading, comments, productCategory, scroller, viewMode, location } = this.props;
+		const { focusedProductId } = this.state;
 		if (productCategory.pcpStatus !== '') {
 			if (productCategory.pcpStatus === 'success') {
 				const products = productCategory.pcpData.products;
@@ -262,6 +275,8 @@ class Product extends Component {
 				let productsView;
 				if (!_.isEmpty(products)) {
 					const info = productCategory.pcpData.info;
+					const redirectPath = location.pathname !== '' ? location.pathname : '';
+
 					let listView;
 					switch (viewMode.mode) {
 					case 1:
@@ -272,6 +287,9 @@ class Product extends Component {
 								forceLoginNow={() => this.forceLoginNow()}
 								products={products}
 								productOnClick={trackProductOnClick}
+								focusedProductId={focusedProductId}
+								setFocusedProduct={(id) => this.setFocusedProduct(id)}
+								redirectPath={redirectPath}
 							/>
 						);
 						break;
@@ -328,13 +346,23 @@ class Product extends Component {
 	}
 
 	headerBlock() {
-		const { isLoading, productCategory } = this.props;
+		const { history, isLoading, productCategory } = this.props;
+
+		let back = () => {
+			history.goBack();
+		};
+		if (history.length === 0) {
+			back = () => {
+				history.push('/');
+			};
+		}
+
 		const headerTitle = _.chain(productCategory).get('pcpData.info.title').value();
 		const HeaderPage = {
 			left: (
-				<Link to='/sub-category'>
+				<Button onClick={back}>
 					<Svg src='ico_arrow-back-left.svg' />
-				</Link>
+				</Button>
 			),
 			center: isLoading ? this.loadingView : headerTitle,
 			right: null,
@@ -347,7 +375,7 @@ class Product extends Component {
 	}
 
 	renderPage() {
-		const { productCategory, shared } = this.props;
+		const { shared, productCategory, cookies } = this.props;
 		const { showFilter } = this.state;
 		if (showFilter) {
 			return (
@@ -363,15 +391,10 @@ class Product extends Component {
 		}
 
 		const navigationAttribute = {
-			scroll: this.props.scroll
+			scroll: this.props.scroll,
+			totalCartItems: shared.totalCart
 		};
-
-		if (shared.userPreviousPage !== 'HOME') {
-			navigationAttribute.active = 'Categories';
-		} else {
-			navigationAttribute.active = 'Home';
-		}
-
+		navigationAttribute.active = cookies.get(pageReferrer);
 		return (
 			<div style={this.props.style}>
 				{this.productsBlock()}
@@ -417,12 +440,12 @@ const doAfterAnonymous = async (props) => {
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
 
-	const response = await dispatch(pcpActions.pcpAction({ token: cookies.get('user.token'), query: pcpParam }));
+	const response = await dispatch(pcpActions.pcpAction({ token: cookies.get(userToken), query: pcpParam }));
 
 	const productIdList = _.map(response.pcpData.products, 'product_id') || [];
 	if (productIdList.length > 0) {
-		await dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), productIdList));
-		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get('user.token'), productIdList));
+		await dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
+		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
 	}
 };
 

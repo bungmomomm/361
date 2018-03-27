@@ -23,7 +23,7 @@ import _ from 'lodash';
 import validator from 'validator';
 import util from 'util';
 import to from 'await-to-js';
-
+import { userToken } from '@/data/cookiesLabel';
 import Logout from './Logout';
 
 class Login extends Component {
@@ -49,12 +49,13 @@ class Login extends Component {
 	async onLogin(e) {
 		const { cookies, dispatch, history } = this.props;
 		const { loginId, password, redirectUri } = this.state;
-		const [err, response] = await to(dispatch(new users.userLogin(cookies.get('user.token'), loginId, password)));
+		const [err, response] = await to(dispatch(new users.userLogin(cookies.get(userToken), loginId, password)));
 		if (err) {
 			return err;
 		}
-		setUserCookie(this.props.cookies, response.token);
-		dispatch(new users.afterLogin(cookies.get('user.token')));
+		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
+		setUserCookie(this.props.cookies, response.token, false, userProfile);
+		dispatch(new users.afterLogin(cookies.get(userToken)));
 		history.push(redirectUri || '/');
 		return response;
 	}
@@ -63,12 +64,13 @@ class Login extends Component {
 		const { cookies, dispatch, history } = this.props;
 		const { redirectUri } = this.state;
 		const { accessToken } = token;
-		const [err, response] = await to(dispatch(new users.userSocialLogin(cookies.get('user.token'), provider, accessToken)));
+		const [err, response] = await to(dispatch(new users.userSocialLogin(cookies.get(userToken), provider, accessToken)));
 		if (err) {
 			return err;
 		}
-		setUserCookie(this.props.cookies, response.token);
-		dispatch(new users.afterLogin(cookies.get('user.token')));
+		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
+		setUserCookie(this.props.cookies, response.token, false, userProfile);
+		dispatch(new users.afterLogin(cookies.get(userToken)));
 		history.push(redirectUri || '/');
 		return response;
 	}
@@ -85,6 +87,7 @@ class Login extends Component {
 			});
 		} else {
 			this.setState({
+				passTyped: (value !== ''),
 				validLoginPassword: !validator.isEmpty(value) && validator.isLength(value, { min: 6, max: undefined })
 			});
 		}
@@ -92,6 +95,10 @@ class Login extends Component {
 
 	handlePick(current) {
 		this.setState({ current });
+	}
+
+	removeError() {
+		this.props.dispatch(new users.clearError(this.props.cookies.get('user.token')));
 	}
 
 	render() {
@@ -105,6 +112,7 @@ class Login extends Component {
 			validLoginPassword,
 			loginId,
 			redirectUri,
+			passTyped,
 			password
 		} = this.state;
 		const buttonLoginEnable = !isLoading && validLoginId && validLoginPassword;
@@ -129,7 +137,7 @@ class Login extends Component {
 				/>
 				<div className={styles.divider}><span>Atau</span></div>
 				{renderIf(login)(
-					<Notification style={{ marginBottom: '20px' }} disableClose color='pink' show><span className='font-color--secondary'>Email/No Handphone/Password yang Anda masukkan salah</span></Notification>
+					<Notification timeout={3000} style={{ marginBottom: '20px' }} disableClose onClose={() => this.removeError()} color='pink' show><span className='font-color--secondary'>Email/No Handphone/Password yang Anda masukkan salah</span></Notification>
 				)}
 				<div>
 					<Input
@@ -154,11 +162,11 @@ class Login extends Component {
 							this.setState({ password: event.target.value });
 						}}
 						label='Password'
-						iconRight={
+						iconRight={passTyped && (
 							<Button onClick={() => this.setState({ visiblePassword: !visiblePassword })}>
 								<Svg src={visiblePassword ? 'ico_password_hide.svg' : 'ico_password_show.svg'} />
 							</Button>
-						}
+						)}
 						type={visiblePassword ? 'text' : 'password'}
 						placeholder=''
 						error={!validLoginPassword && password !== ''}
