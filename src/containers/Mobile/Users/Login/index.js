@@ -87,6 +87,7 @@ class Login extends Component {
 			});
 		} else {
 			this.setState({
+				passTyped: (value !== ''),
 				validLoginPassword: !validator.isEmpty(value) && validator.isLength(value, { min: 6, max: undefined })
 			});
 		}
@@ -111,6 +112,7 @@ class Login extends Component {
 			validLoginPassword,
 			loginId,
 			redirectUri,
+			passTyped,
 			password
 		} = this.state;
 		const buttonLoginEnable = !isLoading && validLoginId && validLoginPassword;
@@ -160,11 +162,11 @@ class Login extends Component {
 							this.setState({ password: event.target.value });
 						}}
 						label='Password'
-						iconRight={
+						iconRight={passTyped && (
 							<Button onClick={() => this.setState({ visiblePassword: !visiblePassword })}>
 								<Svg src={visiblePassword ? 'ico_password_hide.svg' : 'ico_password_show.svg'} />
 							</Button>
-						}
+						)}
 						type={visiblePassword ? 'text' : 'password'}
 						placeholder=''
 						error={!validLoginPassword && password !== ''}
