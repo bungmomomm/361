@@ -542,7 +542,17 @@ class Products extends Component {
 							<Svg src={'ico_arrow-back-left.svg'} />
 						</Button>
 					),
-					center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'><div className='marguee'><span>{brandName}</span></div></div>,
+					center: (
+						<div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>
+							{
+								_.chain(brandName).split(' ').size().value() > 5 ? (
+									<div className='marguee'>
+										<span>{brandName}</span>
+									</div>
+								) : <span>{brandName}</span>
+							}
+						</div>
+					),
 					right: (
 						<div className='flex-row flex-middle'>
 							<Share title={detail.title} url={url} />
