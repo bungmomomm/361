@@ -12,9 +12,9 @@ import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Shared from '@/containers/Mobile/Shared';
 import { urlBuilder } from '@/utils';
 import cookiesLabel from '@/data/cookiesLabel';
-import handler from '@/containers/Mobile/Shared/handler';
+import xhandler from '@/containers/Mobile/Shared/handler';
 
-@handler
+@xhandler
 class Lovelist extends Component {
 	constructor(props) {
 		super(props);

@@ -2,6 +2,7 @@ import { request, getCancelToken } from '@/utils';
 import { keywordUpdate, initialState } from './reducer';
 import _ from 'lodash';
 import to from 'await-to-js';
+import __x from '@/state/__x';
 
 let cancelReq;
 let cancelTokenReq;
