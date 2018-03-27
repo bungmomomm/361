@@ -412,17 +412,13 @@ class Detail extends Component {
 	}
 
 	render() {
-		
 		const { cookies } = this.props;
 		const { showFilter } = this.state;
 		
 		const navigationAttribute = {
 			scroll: this.props.scroll
 		};
-		const pageReferrerValue = cookies.get(pageReferrer);
-		if (pageReferrerValue === 'HOME') {
-			navigationAttribute.active = 'Home';
-		}
+		navigationAttribute.active = cookies.get(pageReferrer);
   
 		return (
 			<div style={this.props.style}>

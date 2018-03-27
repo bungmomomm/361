@@ -14,7 +14,7 @@ import { actions as categoryActions } from '@/state/v4/Category';
 import CONST from '@/constants';
 import Shared from '@/containers/Mobile/Shared';
 import { actions as sharedActions } from '@/state/v4/Shared';
-import { userSource, userToken, pageReferrer } from '@/data/cookiesLabel';
+import { userSource, userToken } from '@/data/cookiesLabel';
 
 class Category extends PureComponent {
 	constructor(props) {
@@ -52,7 +52,6 @@ class Category extends PureComponent {
 	}
 
 	renderCategories() {
-		const { cookies } = this.props;
 		return this.props.category.categories.length > 1 && this.props.category.categories.map((cat, key) => {
 			let url = cat.link;
 			switch (cat.type) {
@@ -84,7 +83,6 @@ class Category extends PureComponent {
 						onClick={
 							() => {
 								this.selectSubCategoryHandler(cat.id);
-								cookies.set(pageReferrer, 'CATEGORY', { path: '/' });
 							}
 						}
 					>
@@ -96,7 +94,7 @@ class Category extends PureComponent {
 	}
 
 	render() {
-		const { category } = this.props;
+		const { shared, category } = this.props;
 		const loading = (<div />);
 
 		return (
@@ -116,7 +114,7 @@ class Category extends PureComponent {
 					lovelist={this.props.shared.totalLovelist}
 					value={this.props.search.keyword}
 				/>
-				<Navigation active='Categories' scroll={this.props.scroll} />
+				<Navigation active='Categories' scroll={this.props.scroll} totalCartItems={shared.totalCart} />
 			</div>
 		);
 	}
