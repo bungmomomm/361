@@ -99,7 +99,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			window.mmLoading.play();
 			window.prevLocation = this.props.location;
 			window.previousLocation = location.pathname + location.search;
-			window.removeEventListener('scroll', _.debounce(this.handleScroll), true);
+			window.removeEventListener('scroll', this.handleScroll, true);
 		}
 
 		shouldLoginAnonymous() {
