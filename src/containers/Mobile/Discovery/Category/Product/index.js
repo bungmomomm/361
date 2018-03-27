@@ -108,7 +108,11 @@ class Product extends Component {
 			isFooterShow: true,
 			focusedProductId: ''
 		};
-		this.loadingView = <Spinner />;
+		this.loadingView = (
+			<div style={{ margin: '20px auto 20px auto' }}>
+				<Spinner />
+			</div>
+		);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -369,7 +373,7 @@ class Product extends Component {
 	}
 
 	renderPage() {
-		const { productCategory, cookies } = this.props;
+		const { shared, productCategory, cookies } = this.props;
 		const { showFilter } = this.state;
 		if (showFilter) {
 			return (
@@ -385,7 +389,8 @@ class Product extends Component {
 		}
 
 		const navigationAttribute = {
-			scroll: this.props.scroll
+			scroll: this.props.scroll,
+			totalCartItems: shared.totalCart
 		};
 		navigationAttribute.active = cookies.get(pageReferrer);
 		return (
