@@ -8,9 +8,7 @@ import {
 	commentLoading, 
 	addComment,
 	addCommentDetail,
-	commentListLoaded,
-	commentListLoad,
-	commentListFailed
+	commentListLoaded
 } from './reducer';
 
 
@@ -113,7 +111,7 @@ const productCommentAction = (token, productId, page = 1) => async (dispatch, ge
 
 const bulkieCommentAction = (token, productId) => async (dispatch, getState) => {
 	if ((_.isArray(productId) && productId.length > 0) || (_.toInteger(productId) > 0)) {
-		dispatch(commentListLoad({ isLoading: true }));
+		dispatch(commentLoading({ isLoading: true }));
 
 		const { shared } = getState();
 		const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
@@ -133,7 +131,7 @@ const bulkieCommentAction = (token, productId) => async (dispatch, getState) => 
 		}));
 
 		if (err) {
-			dispatch(commentListFailed());
+			dispatch(commentLoading({ isLoading: false }));
 			return Promise.reject(err);
 		}
 

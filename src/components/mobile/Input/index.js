@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import Textarea from 'react-textarea-autosize';
 import classNames from 'classnames';
 import styles from './input.scss';
 
@@ -15,16 +16,7 @@ class Input extends PureComponent {
 	}
 
 	onChangeHandler(event) {
-		if (this.props.as === 'textarea') this.autoHight();
 		this.props.onChange(event);
-	}
-
-	autoHight() {
-		const el = this.textInput;
-		if (el.scrollHeight !== el.clientHeight) {
-			el.style.cssText = 'height:auto';
-			el.style.cssText = `height:${el.scrollHeight}px`;
-		}
 	}
 
 	showLabel() {
@@ -62,6 +54,7 @@ class Input extends PureComponent {
 			iconRight,
 			partitioned,
 			onClickInputAction,
+			textCounter,
 			inputRef,
 			...props,
 		} = this.props;
@@ -81,13 +74,10 @@ class Input extends PureComponent {
 
 		const CreateinputClassName = classNames(styles.input, inputClassName);
 
-		const TagName = as === 'textarea' ? 'textarea' : 'input';
-
 		const renderHint = () => {
 			if (!hint) {
 				return null;
 			}
-
 			return <p className={styles.hint}>{hint}</p>;
 		};
 
@@ -103,6 +93,13 @@ class Input extends PureComponent {
 				return null;
 			}
 			return <div className={styles.iconRight}>{iconRight}</div>;
+		};
+
+		const renderTextCounter = () => {
+			if (!textCounter) {
+				return null;
+			}
+			return <div className={styles.textCounter}>{textCounter}</div>;
 		};
 
 		const valueData = () => {
@@ -121,23 +118,34 @@ class Input extends PureComponent {
 			};
 		}
 
+		const propsList = {
+			...props,
+			className: CreateinputClassName,
+			ref: (element) => {
+				if (inputRef) inputRef(element);
+				this.textInput = element;
+			},
+			...valueData(),
+			onClick: onClickAction,
+			onChange: this.onChangeHandler
+		};
+
+		const TagName = as === 'textarea' ? (
+			<Textarea
+				{...propsList}
+				minRows={1}
+				maxRows={5}
+			/>
+		) : <input {...propsList} />;
+
 		return (
 			<div className={className}>
 				{this.renderLabel()}
 				<div className={styles.wrapper}>
 					{renderIconLeft()}
 					{renderIconRight()}
-					<TagName
-						{...props}
-						className={CreateinputClassName}
-						ref={(element) => {
-							if (inputRef) inputRef(element);
-							this.textInput = element;
-						}}
-						{...valueData()}
-						onClick={onClickAction}
-						onChange={this.onChangeHandler}
-					/>
+					{renderTextCounter()}
+					{TagName}
 				</div>
 				{renderHint()}
 			</div>
