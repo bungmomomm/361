@@ -3,7 +3,7 @@ import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
-import { urlBuilder, stringHelper } from '@/utils';
+import { urlBuilder, enableZoomPinch } from '@/utils';
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
@@ -26,6 +26,9 @@ import {
 } from '@/utils/tracking';
 import cookiesLabel from '@/data/cookiesLabel';
 
+import { Payload } from '@/utils/tracking/lucidworks';
+
+const fusion = new Payload(_);
 const trackAddToCart = (data, props, variant) => {
 	const products = {
 		name: data.detail.title,
@@ -69,6 +72,7 @@ const doAfterAnonymous = async (props) => {
 
 	const productDetail = await dispatch(productActions.productDetailAction(token, productId));
 	trackPdpView(productDetail, props);
+	fusion.trackPdp(productDetail);
 
 	const res = await dispatch(productActions.productPromoAction(token, productId));
 	if (res.status === 200 && res.statusText === 'OK') {
@@ -155,6 +159,16 @@ class Products extends Component {
 			left: (<Button onClick={this.closeZoomImage} ><Svg src={'ico_close-large.svg'} /></Button>),
 			center: '',
 			right: ''
+		};
+
+		this.fusion = new Payload(this.props.cookies);
+
+		this.hastagLinkCreator = (text) => {
+			const urlRegex = /(#[^\s]+)/g;
+			return text.replace(urlRegex, (url) => {
+				const hashlink = urlBuilder.setName(url).buildSearchByKeyword();
+				return `<a href="${hashlink + url.replace('#', '%23')}">${url}</a>`;
+			});
 		};
 	}
 
@@ -246,6 +260,7 @@ class Products extends Component {
 	closeZoomImage(e) {
 		const { status } = this.state;
 		status.isZoomed = false;
+		enableZoomPinch(false);
 		this.setState({ status });
 	}
 
@@ -263,15 +278,21 @@ class Products extends Component {
 		const { status } = this.state;
 		const { top } = this.props.scroll;
 		const carouselHeight = this.carouselEL.getBoundingClientRect().height;
-		if (top > carouselHeight && !status.showScrollInfomation) {
-			status.showScrollInfomation = true;
-			this.setState({ status });
-		}
 
-		if ((top === 0 || top < carouselHeight) && status.showScrollInfomation) {
-			status.showScrollInfomation = false;
-			this.setState({ status });
-		}
+		status.showScrollInfomation = ((top !== 0) && top > (carouselHeight / 2));
+		this.setState({ status });
+		// if (top > (carouselHeight / 2) && !status.showScrollInfomation) {
+		// if (top > (carouselHeight / 2)) {
+		// 	console.log('enter set show info');
+		// 	status.showScrollInfomation = true;
+		// 	this.setState({ status });
+		// }
+
+		// if (top === 100 || (top < carouselHeight)) {
+		// if ((top === 0 || top < carouselHeight) && status.showScrollInfomation) {
+		// 	status.showScrollInfomation = false;
+		// 	this.setState({ status });
+		// }
 	}
 
 	animateLovelist() {
@@ -344,6 +365,16 @@ class Products extends Component {
 		});
 
 		handler.then((res) => {
+			// Fusion Add to Cart tracking...
+			const pricing = product.detail.variants[0].pricing.original;
+			fusion.trackAddToCart({
+				product_id: product.detail.id,
+				item_id: variant.id,
+				item_price: pricing.effective_price,
+				item_disc: pricing.discount,
+				qty: this.defaultCount
+			});
+
 			// updates carts badge
 			dispatch(sharedActions.totalCartAction(this.userCookies));
 			status.pendingAddProduct = false;
@@ -352,7 +383,7 @@ class Products extends Component {
 			notif.show = true;
 			notif.content = 'Produk Berhasil ditambahkan';
 			this.setState({ status, notif });
-			status.pdpDataHasLoaded = false;
+
 			dispatch(productActions.productDetailAction(this.userCookies, product.detail.id));
 			trackAddToCart(product, this.props, variant);
 
@@ -624,7 +655,7 @@ class Products extends Component {
 				onClick: this.handleShowMoreProductDescription
 			};
 
-			let fullProductDescriptionButtonText = '[...]';
+			let fullProductDescriptionButtonText = 'more';
 			let classNameProductDescription = classNames('padding--medium-h', styles.textOnlyShowTwoLines);
 
 			if (showFullProductDescription === true) {
@@ -636,6 +667,7 @@ class Products extends Component {
 			// if (_.isEmpty(detail) || status.loading) return this.loadingContent;
 
 			if (status.isZoomed && _.has(detail, 'images')) {
+				enableZoomPinch(true);
 				return (
 					<div>
 						<Header.Modal style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }} {...this.headerZoom} />
@@ -682,16 +714,16 @@ class Products extends Component {
 								</div>
 							)}
 
-							{status.loading && this.loadingContent}
-
 							{!_.isEmpty(detail) && status.hasVariantSize && (
 								<div className='flex-center padding--medium-h border-top'>
 									<div className='margin--medium-v'>
 										<div className='flex-row flex-spaceBetween'>
 											<div className='font-medium'>Pilih Ukuran</div>
-											<Link to='/product/guide' className='d-flex font-color--primary font--lato-bold font-color-primary flex-row flex-middle'>
-												<Svg src='ico_sizeguide.svg' /> <span className='padding--small-h font--lato-bold font-color--primary padding--none-r'>PANDUAN UKURAN</span>
-											</Link>
+											{(!_.isEmpty(cardProduct) && _.has(cardProduct, 'hasSizeGuide') && cardProduct.hasSizeGuide) &&
+												<Link to='/product/guide' className='d-flex font-color--primary font--lato-bold font-color-primary flex-row flex-middle'>
+													<Svg src='ico_sizeguide.svg' /> <span className='padding--small-h font--lato-bold font-color--primary padding--none-r'>PANDUAN UKURAN</span>
+												</Link>
+											}
 										</div>
 										<div className='margin--medium-v horizontal-scroll margin--none-b'>
 											<Radio
@@ -725,19 +757,21 @@ class Products extends Component {
 							{!_.isEmpty(detail.description)
 							&&
 								<div className='wysiwyg-content'>
-									<div className={classNameProductDescription} dangerouslySetInnerHTML={{ __html: stringHelper.removeHtmlTag(detail.description) }} />
+									<div className={classNameProductDescription}>
+										{<div dangerouslySetInnerHTML={{ __html: this.hastagLinkCreator(detail.description) }} />}
+										{!_.isEmpty(cardProduct.specs) && (
+											<div className='margin--medium-v --disable-flex'>
+												{(cardProduct.specs.map((item, idx) => {
+													item.value = item.value.replace(/(?:\r\n|\r|\n)/g, '<br />');
+													if (/^/.test(item.value)) return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
+													return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
+												}))}
+											</div>
+										)}
+									</div>
 									<span className='padding--medium-h font-color--grey' {...buttonProductDescriptionAttribute}>{ fullProductDescriptionButtonText }</span>
 								</div>
 							}
-							{!_.isEmpty(detail.spec) && (
-								<div className='margin--medium-v --disable-flex padding--medium-h'>
-									{(detail.spec.map((item, idx) => {
-										item.value = item.value.replace(/(?:\r\n|\r|\n)/g, '<br />');
-										if (/^/.test(item.value)) return <div key={idx} className='margin--small-v font-medium font-color--primary wysiwyg-content' dangerouslySetInnerHTML={{ __html: item.value }} />;
-										return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
-									}))}
-								</div>
-							)}
 							<div className='margin--medium-v --disable-flex padding--medium-h'>
 								<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
 									{(comments.total === 0) && 'Tulis Komentar'}
@@ -751,14 +785,12 @@ class Products extends Component {
 
 							<div style={{ backgroundColor: '#F5F5F5' }}>
 								{/* ----------------------------	PRODUCT REVIEWS ---------------------------- */}
-								{!_.isEmpty(reviews.summary) &&
-									<ReviewSummary
-										productId={id}
-										reviews={reviews}
-										seller={seller}
-										onBtnSeeAllReviewClick={() => this.redirectToPage('reviews')}
-									/>
-								}
+								<ReviewSummary
+									productId={id}
+									reviews={reviews}
+									seller={seller}
+									onBtnSeeAllReviewClick={() => this.redirectToPage('reviews')}
+								/>
 
 								{/* MOVED TEMPORALLY ON NOTES ... */}
 								{/* ----------------------------	END OF REVIEW ---------------------------- */}
@@ -800,8 +832,6 @@ class Products extends Component {
 									loginNow={this.handleLovelistClick}
 									productId={detail.id}
 								/>
-								{/* } */}
-
 							</div>
 						</div>
 						{this.renderStickyAction()}
@@ -856,22 +886,6 @@ class Products extends Component {
 									onChange={this.handleSelectVariant}
 									data={cardProduct.variants}
 								/>
-								{/* <Level style={{ padding: '0px' }} className='margin--medium-v'>
-									<Level.Left />
-									<Level.Item>
-										<Radio
-											name='size'
-											checked={this.state.size}
-											variant='rounded'
-											className='margin--small-v'
-											onChange={this.handleSelectVariant}
-											data={cardProduct.variants}
-										/>
-									</Level.Item>
-									<Level.Right className='padding--small-v' >
-										<Button color='secondary' disabled={status.btnBeliDisabled || _.isEmpty(selectedVariant)} size='medium' onClick={this.handleBtnBeliClicked}>{this.state.btnBeliLabel}</Button>
-									</Level.Right>
-								</Level> */}
 							</div>
 						</div>
 					</Modal>

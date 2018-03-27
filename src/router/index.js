@@ -2,15 +2,28 @@ import React, { PureComponent } from 'react';
 import { Route } from 'react-router-dom';
 import { spring, AnimatedSwitch } from 'react-router-transition';
 import routes from './routes';
+import { Fusion } from '@/utils/tracking/lucidworks';
 
 class CustomRoute extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.props = props;
 	}
+
 	componentWillMount() {
+		console.log('will mount: ', this.props);
 		window.mmLoading.play();
+		// binds fusion session
+		Fusion.tracks(this.props);
 	}
+
+	componentDidUpdate() {
+		// binds fusion session
+		// tracking fusion for loadless page like pdp, apply sort and filter
+		Fusion.tracks(this.props);
+		window.prevRoute = this.props;
+	}
+
 	render() {
 		const { ...props } = this.props;
 		return <Route {...props} />;

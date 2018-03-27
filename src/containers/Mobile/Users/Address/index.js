@@ -7,28 +7,55 @@ import { Page, Button, Svg, Header, Modal, Level } from '@/components/mobile';
 import { actions } from '@/state/v4/Address';
 import { Promise } from 'es6-promise';
 import { userToken, isLogin } from '@/data/cookiesLabel';
+import styles from './style.scss';
 
 class Address extends Component {
 
-	state = {
-		showConfirmDelete: false
+	constructor(props) {
+		super(props);
+		this.props = props;
+		this.state = {
+			AddressModalIndicator: false,
+			selectedAddress: false,
+			showConfirmDelete: false
+		};
+		this.showAddressModal = this.showAddressModal.bind(this);
+		this.hideAddressModal = this.hideAddressModal.bind(this);
+	}
+
+	setDefault = async () => {
+		const { dispatch, cookies } = this.props;
+		await dispatch(actions.setDefaultAddress(cookies.get('user.token'), this.state.selectedAddress));
+		window.location.reload();
 	};
+
+	showAddressModal(id) {
+		this.setState({
+			AddressModalIndicator: true,
+			selectedAddress: id
+		});
+	}
+
+	hideAddressModal() {
+		this.setState({
+			AddressModalIndicator: false,
+			selectedAddress: false
+		});
+	}
 
 	deleteAddress = async () => {
 		const { dispatch, cookies, address } = this.props;
-		if (!this.state.showConfirmDelete.id) {
+		if (!this.state.selectedAddress) {
 			return Promise.reject(new Error('Invalid address id, please contact administrator.'));
 		}
 
-		await dispatch(actions.deleteAddress(cookies.get(userToken), this.state.showConfirmDelete.id));
+		await dispatch(actions.deleteAddress(cookies.get('user.token'), this.state.selectedAddress));
 		const mutatedShipping = address.address.shipping.filter((v) => {
-			return v.id !== this.state.showConfirmDelete.id;
+			return v.id !== this.state.selectedAddress;
 		});
 
-		this.setState({
-			showConfirmDelete: false
-		});
-
+		this.hideAddressModal();
+		this.setState({ showConfirmDelete: false });
 		return dispatch(actions.mutateState({
 			address: {
 				...address.address,
@@ -37,13 +64,9 @@ class Address extends Component {
 		}));
 	};
 
-	openDeleteModal = (data) => {
-		this.setState({
-			showConfirmDelete: data
-		});
-	};
-
 	renderData = () => {
+
+		const { AddressModalIndicator } = this.state;
 		const { history, address } = this.props;
 		const HeaderPage = {
 			left: (
@@ -55,24 +78,55 @@ class Address extends Component {
 			right: null
 		};
 
+		const ModalAttribute = {
+			show: false
+		};
+
+		if (AddressModalIndicator === true) {
+			ModalAttribute.show = true;
+		}
+
 		return (
 			<div style={this.props.style}>
 				<Page color='white'>
-					<div className='margin--small'>
-						<p style={{ textAlign: 'center' }}>
-							<Link to='/address/add'>Tambah alamat baru +</Link>
-						</p>
-					</div>
+					<Link to='/address/add' className='bg--white margin--medium-t margin--medium-b'>
+						<Level>
+							<Level.Left>
+								Tambah Alamat Baru
+							</Level.Left>
+							<Level.Right style={{ justifyContent: 'center' }}>
+								<Svg src='ico_add.svg' />
+							</Level.Right>
+						</Level>
+					</Link>
 					{address.address.shipping.map((v, k) => {
+						const { city, fullname, district, phone, province, zipcode, id } = v;
+						const placeHasBeenMarkedContent = (
+							<div className='flex-row flex-middle'>
+								<div className='margin--small-r'><Svg src='ico_pin-poin-marked.svg' /></div>
+								<div>&nbsp;Lokasi sudah ditandai</div>
+							</div>
+						);
 						return (
-							<div className='margin--small' key={k}>
-								<p>
-									<Link to={`/address/edit/${v.id}`}>Edit</Link>
-									<Button onClick={() => this.openDeleteModal(v)}>Delete</Button>
-								</p>
-								<p>
-									{JSON.stringify(v)}
-								</p>
+
+							<div key={k}>
+								<Level className='bg--white border-bottom' key={k}>
+									<Level.Left className='d-inline-block'>
+										<strong>{v.address_label}</strong>&nbsp;{(v.fg_default === 1) ? '(Alamat Utama)' : null }
+									</Level.Left>
+									<Level.Right style={{ justifyContent: 'center' }}>
+										<Svg
+											src='ico_option.svg'
+											onClick={() => this.showAddressModal(id)}
+										/>
+									</Level.Right>
+								</Level>
+								<Level className='bg--white margin--medium-b flex-column'>
+									<div className={styles.fullName}><strong>{fullname}</strong></div>
+									<div><p>{v.address}, {province}, {city}, {district}, {zipcode}</p></div>
+									<div><p>{phone}</p></div>
+									<div className={styles.locationMarked}>{(v.is_supported_pin_point === 1) ? placeHasBeenMarkedContent : null }</div>
+								</Level>
 							</div>
 						);
 					})}
@@ -80,13 +134,31 @@ class Address extends Component {
 
 				<Header.Modal {...HeaderPage} style={{ zIndex: 1 }} />
 
+				<Modal {...ModalAttribute}>
+					<div className='font-medium'>
+						<Level style={{ padding: '0px', textAlign: 'center' }}>
+							<Level.Left />
+							<Level.Item className='flex-center'>
+								<Button className='padding--small' onClick={this.setDefault}>Jadikan Alamat Utama</Button>
+								<div className='padding--small'>
+									<Link to={`/address/edit/${this.state.selectedAddress}`}>
+										Ubah Alamat
+									</Link>
+								</div>
+								<Button className='padding--small' onClick={() => { this.setState({ showConfirmDelete: true }); }}>Hapus Alamat</Button>
+								<Button className='padding--small' onClick={this.hideAddressModal}>Batal</Button>
+							</Level.Item>
+						</Level>
+					</div>
+				</Modal>
+
 				<Modal show={this.state.showConfirmDelete}>
 					<div className='font-medium'>
 						<h3>Hapus Alamat</h3>
 						<Level style={{ padding: '0px' }} className='margin--medium-v'>
 							<Level.Left />
 							<Level.Item className='padding--medium-h'>
-								<div className='font-small'>Kamu yakin mau menghapus alamat ini?</div>
+								<div className='font-small'>Kamu yakin menghapus alamat ini?</div>
 							</Level.Item>
 						</Level>
 					</div>

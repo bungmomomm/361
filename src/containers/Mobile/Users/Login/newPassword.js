@@ -122,10 +122,7 @@ class NewPassword extends Component {
 								error={(!isValidPassword && pass1Typed) || error}
 								iconRight={pass1Typed && (
 									<Button onClick={() => this.setState({ visiblePassword: !visiblePassword })}>
-										<Svg src='ico_password_hide.svg' />
-										{
-											// <Svg src='ico_password_show.svg' />
-										}
+										<Svg src={visiblePassword ? 'ico_password_hide.svg' : 'ico_password_show.svg'} />
 									</Button>
 								)}
 								hint={error ? 'We are unable to proccess your request, please try again' : (pass1.length < 6 ? `${6 - pass1.length} karakter lagi` : '')}
@@ -142,10 +139,7 @@ class NewPassword extends Component {
 								error={(!isValidConfirmPassword && pass2Typed) || error}
 								iconRight={pass2Typed && (
 									<Button onClick={() => this.setState({ visibleConfirmPassword: !visibleConfirmPassword })}>
-										<Svg src='ico_password_hide.svg' />
-										{
-											// <Svg src='ico_password_show.svg' />
-										}
+										<Svg src={visibleConfirmPassword ? 'ico_password_hide.svg' : 'ico_password_show.svg'} />
 									</Button>
 								)}
 								hint={error ? 'We are unable to proccess your request, please try again' : (pass2.length < 6 ? `${6 - pass2.length} karakter lagi` : '')}
