@@ -186,10 +186,7 @@ class Brands extends Component {
 		const navigationAttribute = {
 			scroll: this.props.scroll
 		};
-		const pageReferrerValue = cookies.get(pageReferrer);
-		if (pageReferrerValue === 'HOME') {
-			navigationAttribute.active = 'Home';
-		}
+		navigationAttribute.active = cookies.get(pageReferrer);
 		
 		const HeaderPage = {
 			left: (

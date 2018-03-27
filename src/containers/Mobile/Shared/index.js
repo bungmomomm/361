@@ -4,7 +4,7 @@ import to from 'await-to-js';
 import { actions } from '@/state/v4/Shared';
 import { actions as users } from '@/state/v4/User';
 import { actions as initAction } from '@/state/v4/Home';
-import { setUserCookie, setUniqeCookie } from '@/utils';
+import { setUserCookie, setUniqeCookie, setReferrenceCookie } from '@/utils';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
 import Snackbar from '@/containers/Mobile/Shared/snackbar';
@@ -44,7 +44,8 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		componentWillMount() {
 			// window.mmLoading.destroy();
-			const { dispatch, shared } = this.props;
+			const { dispatch, shared, cookies } = this.props;
+			
 			dispatch(actions.clearSnackQueue());
 
 			const offline = async (bool) => {
@@ -67,14 +68,19 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				watchConnection(offline);
 			}
 
+			// const existingPref = cookies.get(pageReferrer);
+			const referrer = window.previousLocation === '/category' ? 'categories' : (window.previousLocation === '/' ? 'home' : '');
+			
+			if (referrer !== '') {
+				setReferrenceCookie(cookies, referrer);
+			}
+			
 			this.initProcess().then(shouldInit => {
 				if (!shouldInit) {
 					this.initApp();
 				}
 			});
 
-			const location = this.props.location;
-			if (!window.previousLocation) window.previousLocation = location.pathname + location.search;
 		}
 
 		componentDidMount() {

@@ -223,12 +223,8 @@ class SearchResults extends Component {
 		const navigationAttribute = {
 			scroll: this.props.scroll
 		};
+		navigationAttribute.active = cookies.get(cookiesLabel.pageReferrer);
 		
-		if (cookies.get(cookiesLabel.pageReferrer) !== 'HOME') {
-			navigationAttribute.active = 'Categories';
-		} else {
-			navigationAttribute.active = 'Home';
-		}
 
 		return (
 			<div style={this.props.style}>

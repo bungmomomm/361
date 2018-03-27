@@ -387,13 +387,7 @@ class Product extends Component {
 		const navigationAttribute = {
 			scroll: this.props.scroll
 		};
-		
-		if (cookies.get(pageReferrer) === 'HOME') {
-			navigationAttribute.active = 'Home';
-		} else {
-			navigationAttribute.active = 'Categories';
-		}
-
+		navigationAttribute.active = cookies.get(pageReferrer);
 		return (
 			<div style={this.props.style}>
 				{this.productsBlock()}
