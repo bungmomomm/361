@@ -26,11 +26,15 @@ class PromoList extends Component {
 			center: 'Promo',
 		};
 
+		const { shared } = this.props;
+		const { webViewUrl } = shared; 
+		const url = webViewUrl && webViewUrl.bantuan ? webViewUrl.bantuan : 'https://super.mataharimall.com/promo/new/mobileapps.html';
+
 		return (
 			<div className='text-center' style={this.props.style}>
 				<Page>
 					<Iframe
-						url='https://super.mataharimall.com/promo/new/mobileapps.html'
+						url={url}
 						id='myId'
 						width='100%'
 						height='100vh'

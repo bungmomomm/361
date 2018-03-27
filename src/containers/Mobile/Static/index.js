@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
+import Iframe from 'react-iframe';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
+
 import {
 	Header,
 	Svg,
-	List,
 	Page
 } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
@@ -22,6 +23,9 @@ class Static extends Component {
 	}
 
 	render() {
+		const { shared } = this.props;
+		const { webViewUrl } = shared; 
+		const url = webViewUrl && webViewUrl.bantuan ? webViewUrl.bantuan : 'https://super.mataharimall.com/static/';
 		const HeaderPage = {
 			left: (
 				<Link to={'/'}>
@@ -36,32 +40,13 @@ class Static extends Component {
 			<div style={this.props.style}>
 				
 				<Page color='grey'>
-					<List className='margin--medium-t'>
-						<Link to='/bantuan/aboutus'>
-							<List.Content>Tentang Kami</List.Content>
-						</Link>
-						<a href='/bantuan/faq'>
-							<List.Content>FAQ</List.Content>
-						</a>
-						<a href='https://super.mataharimall.com/affiliateaja/' rel='noopener noreferrer' target='_blank'>
-							<List.Content>Affiliate</List.Content>
-						</a>
-						<a href='/bantuan'>
-							<List.Content>Berjualan di MatahariMall</List.Content>	
-						</a>
-						<a href='/bantuan'>
-							<List.Content>Partnership Lainnya</List.Content>
-						</a>
-						<a href='/bantuan/privasi'>
-							<List.Content>Kebijakan Privasi</List.Content>
-						</a>
-						<a href='/bantuan'>
-							<List.Content>Syarat & Ketentuan</List.Content>
-						</a>
-						<a href='/bantuan'>
-							<List.Content>Hubungi Kami</List.Content>
-						</a>
-					</List>
+					<Iframe
+						url={url}
+						id='myId'
+						width='100%'
+						height='100vh'
+						allowFullScreen
+					/>
 				</Page>
 				<Header.Modal {...HeaderPage} />
 				
@@ -74,8 +59,6 @@ class Static extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		home: state.home,
-		search: state.search,
 		shared: state.shared
 	};
 };

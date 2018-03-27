@@ -46,13 +46,17 @@ class CatalogView extends Component {
 		};
 
 		this.userProfile = this.props.cookies.get(cookiesLabel.userProfile) || false;
-		this.loadingView = <Spinner />;
+		this.loadingView = (
+			<div style={{ margin: '20px auto 20px auto' }}>
+				<Spinner />
+			</div>
+		);
 	}
 
 	componentWillReceiveProps(nextProps) {
 		const { newComment } = this.state;
 
-		if (nextProps.focusedProductId !== this.props.focusedProductId) {
+		if (nextProps) {
 			this.setState({
 				newComment: {
 					...newComment,
@@ -63,16 +67,14 @@ class CatalogView extends Component {
 	}
 
 	setFocusedProduct(id) {
-		const { setFocusedProduct, focusedProductId } = this.props;
+		const { setFocusedProduct } = this.props;
 
-		if (focusedProductId !== id) {
-			this.setState({
-				showSendButton: true,
-				showCounter: false,
-				validForm: false,
-				counterValue: 0
-			});
-		}
+		this.setState({
+			showSendButton: true,
+			showCounter: false,
+			validForm: false,
+			counterValue: 0
+		});
 		
 		setFocusedProduct(id);
 	}
@@ -102,7 +104,11 @@ class CatalogView extends Component {
 			showSendButton: false,
 			showCounter: false,
 			validForm: false,
-			counterValue: 0
+			counterValue: 0,
+			newComment: {
+				product_id: '',
+				comment: ''
+			}
 		});
 	}
 

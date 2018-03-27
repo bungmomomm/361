@@ -125,7 +125,7 @@ class Input extends PureComponent {
 				if (inputRef) inputRef(element);
 				this.textInput = element;
 			},
-			...valueData,
+			...valueData(),
 			onClick: onClickAction,
 			onChange: this.onChangeHandler
 		};

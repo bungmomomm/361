@@ -47,13 +47,16 @@
         if (categoryPage.test(pathUrl)) {
             filename = pathUrl.replace ( /[^\d.]/g, '' )  + '.js';
         }else if (categoryBrandPage.test(pathUrl)) {
-
+            var brand = pathUrl.split('/');
+            var categoryId = brand[1].replace( /[^\d.]/g, '' );
+            var brandName = brand[3];
+            filename = 'brand-'+categoryId + '-' + brandName + '.js';
         }else if (brandPage.test(pathUrl) || storePage.test(pathUrl)) {
-            var brand = pathUrl.split('/')[3];
+            var brand = pathUrl.split('/')[2];
             var prefix = brandPage.test(pathUrl) ? 'brand-' : 'store-';
             filename = prefix + pathUrl.replace ( /[^\d.]/g, '' )  + '-' + brand +'.js';
         }else  {
-            filename = 'home.js';
+            filename = 'www.mataharimall.com.js';
         }
 
         var script = document.createElement('script');
