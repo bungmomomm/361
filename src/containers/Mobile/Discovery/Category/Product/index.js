@@ -36,7 +36,7 @@ import {
 	renderIf,
 	urlBuilder
 } from '@/utils';
-import { userToken } from '@/data/cookiesLabel';
+import { userToken, pageReferrer } from '@/data/cookiesLabel';
 
 import Discovery from '../../Utils';
 
@@ -390,7 +390,7 @@ class Product extends Component {
 			scroll: this.props.scroll
 		};
 		
-		if (cookies.get('page.referrer') === 'HOME') {
+		if (cookies.get(pageReferrer) === 'HOME') {
 			navigationAttribute.active = 'Home';
 		} else {
 			navigationAttribute.active = 'Categories';
