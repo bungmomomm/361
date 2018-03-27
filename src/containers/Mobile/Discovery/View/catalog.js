@@ -22,6 +22,8 @@ import { Love } from '@/containers/Mobile/Widget';
 
 import { actions as commentActions } from '@/state/v4/Comment';
 
+import cookiesLabel from '@/data/cookiesLabel';
+
 import stylesCatalog from './view.scss';
 
 // @TODO cleanup code and move it as independence Component
@@ -43,7 +45,7 @@ class CatalogView extends Component {
 			counterLimit: 300
 		};
 
-		this.userProfile = this.props.cookies.get('user.profile') || false;
+		this.userProfile = this.props.cookies.get(cookiesLabel.userProfile) || false;
 		this.loadingView = <Spinner />;
 	}
 
