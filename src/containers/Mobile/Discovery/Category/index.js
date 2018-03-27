@@ -116,7 +116,7 @@ class Category extends PureComponent {
 					lovelist={this.props.shared.totalLovelist}
 					value={this.props.search.keyword}
 				/>
-				<Navigation active='Categories' scroll={this.props.scroll} />
+				<Navigation active='Categories' scroll={this.props.scroll} botNav={this.props.botNav} />
 			</div>
 		);
 	}

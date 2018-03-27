@@ -223,7 +223,7 @@ class SearchResults extends Component {
 		const navigationAttribute = {
 			scroll: this.props.scroll
 		};
-		
+
 		if (cookies.get(cookiesLabel.pageReferrer) !== 'HOME') {
 			navigationAttribute.active = 'Categories';
 		} else {
@@ -234,7 +234,7 @@ class SearchResults extends Component {
 			<div style={this.props.style}>
 				{isLoading ? this.loadingView : this.renderSearch()}
 				{this.renderHeader()}
-				<Navigation {...navigationAttribute} />
+				<Navigation {...navigationAttribute} botNav={this.props.botNav} />
 			</div>
 		);
 	}

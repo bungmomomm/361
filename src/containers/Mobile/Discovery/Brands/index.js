@@ -190,7 +190,7 @@ class Brands extends Component {
 		if (pageReferrerValue === 'HOME') {
 			navigationAttribute.active = 'Home';
 		}
-		
+
 		const HeaderPage = {
 			left: (
 				<Link to='/category'>
@@ -248,7 +248,7 @@ class Brands extends Component {
 				</Page>
 				<Header.Modal {...HeaderPage} headerRef={(header) => { this.headContainer = header; }} />
 				{/* <Header.Modal {...HeaderPage} /> */}
-				<Navigation {...navigationAttribute} />
+				<Navigation {...navigationAttribute} botNav={this.props.botNav} />
 			</div>
 		);
 	}

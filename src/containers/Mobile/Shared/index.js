@@ -199,9 +199,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			const snackStyle = _.chain(this.props.shared.snackbar).get('[0].style').value() || { css: {}, sticky: true, theming: {} };
 			const snackCss = _.chain(snackStyle).get('css.snack').value() || {};
 			const themingSnackCss = _.chain(snackStyle).get('theming.snack').value() || {};
-			const stickyEl = document.querySelector('.navigation__navigation') ? document.querySelector('.navigation__navigation')
-							: document.querySelector('.products__stickyAction') ? document.querySelector('.products__stickyAction')
-							: false;
+			const stickyEl = this.botNav || false;
 			const snackSticky = !snackStyle.sticky ? {} : {
 				bottom: !this.state.scroll.isNavSticky && stickyEl
 						? (+(parseInt(snackCss.bottom, 10) || 0) + +stickyEl.getBoundingClientRect().height)
@@ -216,7 +214,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			return (
 				<div>
 					<Snackbar history={this.props.history} location={this.props.location} theming={this.snackStyle().theming} customStyles={this.snackStyle().customStyles} />
-					<WrappedComponent {...this.props} scroll={this.state.scroll} />
+					<WrappedComponent {...this.props} scroll={this.state.scroll} botNav={(r) => { this.botNav = r; }} />
 				</div>
 			);
 		}

@@ -37,7 +37,7 @@ class Promo extends Component {
 
 		this.loadingView = <Spinner />;
 	}
-  
+
 	componentWillUnmount() {
 		const { dispatch } = this.props;
 		dispatch(promoActions.loadingAction(true));
@@ -82,12 +82,12 @@ class Promo extends Component {
 	renderProductList() {
 		const { discovery, comments, scroller } = this.props;
 		const products = _.chain(discovery).get(`promo.${this.promoType}.products`).value();
-		
+
 		if (products) {
 			let productsView;
 			if (!_.isEmpty(products)) {
 				const productCount = _.chain(discovery).get(`promo.${this.promoType}.info.product_count`).value() || 0;
-				
+
 				let listView;
 				switch (discovery.viewMode.mode) {
 				case 1:
@@ -160,7 +160,7 @@ class Promo extends Component {
 				{this.renderProductList()}
 				{this.renderHeader()}
 				{this.renderForeverBanner()}
-				<Navigation {...navigationAttribute} />
+				<Navigation {...navigationAttribute} botNav={this.props.botNav} />
 			</div>
 		);
 	}

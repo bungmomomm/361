@@ -156,7 +156,7 @@ class MyOrder extends Component {
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Profile' />
+				<Navigation active='Profile' botNav={this.props.botNav} />
 			</div>
 		);
 	}

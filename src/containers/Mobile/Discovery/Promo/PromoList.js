@@ -38,7 +38,7 @@ class PromoList extends Component {
 					/>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Promo' scroll={this.props.scroll} />
+				<Navigation active='Promo' scroll={this.props.scroll} botNav={this.props.botNav} />
 			</div>
 		);
 	}

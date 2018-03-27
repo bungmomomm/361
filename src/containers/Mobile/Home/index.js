@@ -419,7 +419,7 @@ class Home extends Component {
 					lovelist={shared.totalLovelist}
 					value={this.props.search.keyword}
 				/>
-				<Navigation active='Home' scroll={this.props.scroll} totalCartItems={shared.totalCart} />
+				<Navigation active='Home' scroll={this.props.scroll} totalCartItems={shared.totalCart} botNav={this.props.botNav} />
 			</div>
 		);
 	}

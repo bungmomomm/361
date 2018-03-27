@@ -387,7 +387,7 @@ class Product extends Component {
 		const navigationAttribute = {
 			scroll: this.props.scroll
 		};
-		
+
 		if (cookies.get(pageReferrer) === 'HOME') {
 			navigationAttribute.active = 'Home';
 		} else {
@@ -400,6 +400,7 @@ class Product extends Component {
 				{this.headerBlock()}
 				<Navigation
 					{...navigationAttribute}
+					botNav={this.props.botNav}
 				/>
 			</div>
 		);

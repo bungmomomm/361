@@ -158,6 +158,10 @@ class Products extends Component {
 		};
 	}
 
+	componentDidMount() {
+		if (this.props.botNav) this.props.botNav(this.botNav);
+	}
+
 	componentWillReceiveProps(nextProps) {
 		const { product, lovelist, dispatch } = nextProps;
 		const { detail } = product;
@@ -212,6 +216,10 @@ class Products extends Component {
 		// updates states
 		this.setState({ status, cardProduct, selectedVariant, size });
 		this.handleScroll();
+	}
+
+	componentWillUnmount() {
+		if (this.props.botNav) this.props.botNav(false);
 	}
 
 	onOvoInfoClick(e) {
@@ -331,7 +339,7 @@ class Products extends Component {
 
 	addToShoppingBag(variant) {
 		this.animateAddtoCart();
-		
+
 		const { status, notif } = this.state;
 		const { dispatch, product } = this.props;
 
@@ -574,7 +582,7 @@ class Products extends Component {
 
 		if (!_.isEmpty(cardProduct) && _.has(cardProduct, 'pricing')) {
 			return (
-				<div className={styles.stickyAction}>
+				<div className={styles.stickyAction} ref={(r) => { this.botNav = r; }}>
 					<div className='flex-row flex-spaceBetween padding--medium-h padding--medium-v border-top flex-middle'>
 						<div className='flex-row'>
 							<div>

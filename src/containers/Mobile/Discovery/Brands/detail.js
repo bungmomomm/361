@@ -410,10 +410,10 @@ class Detail extends Component {
 	}
 
 	render() {
-		
+
 		const { cookies } = this.props;
 		const { showFilter } = this.state;
-		
+
 		const navigationAttribute = {
 			scroll: this.props.scroll
 		};
@@ -421,7 +421,7 @@ class Detail extends Component {
 		if (pageReferrerValue === 'HOME') {
 			navigationAttribute.active = 'Home';
 		}
-  
+
 		return (
 			<div style={this.props.style}>
 				{(showFilter) ? (
@@ -452,7 +452,7 @@ class Detail extends Component {
 				{(!showFilter) && (
 					<div>
 						{this.renderHeader()}
-						<Navigation {...navigationAttribute} />
+						<Navigation {...navigationAttribute} botNav={this.props.botNav} />
 					</div>
 				)}
 			</div>
