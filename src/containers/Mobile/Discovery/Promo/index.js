@@ -147,14 +147,7 @@ class Promo extends Component {
 		const navigationAttribute = {
 			scroll: this.props.scroll
 		};
-		const pageReferrerValue = cookies.get(pageReferrer);
-		if (pageReferrerValue === 'CATEGORY') {
-			navigationAttribute.active = 'Categories';
-		} else if (pageReferrerValue === 'HOME') {
-			navigationAttribute.active = 'Home';
-		} else {
-			navigationAttribute.active = 'Promo';
-		}
+		navigationAttribute.active = cookies.get(pageReferrer);
 		return (
 			<div style={this.props.style}>
 				{this.renderProductList()}

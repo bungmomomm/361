@@ -35,11 +35,6 @@ const renderSectionHeader = (title, options, cookies = null) => {
 						<Link
 							to={options.url || '/'}
 							className={styles.readmore}
-							onClick={
-								() => {
-									cookies.set(cookiesLabel.pageReferrer, 'HOME', { path: '/' });
-								}
-							}
 						>
 							{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' />
 						</Link>
@@ -121,7 +116,7 @@ class Home extends Component {
 	}
 
 	renderHeroBanner() {
-		const { home, cookies } = this.props;
+		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		const featuredBanner = _.chain(home).get(`allSegmentData.${segment}`).get('heroBanner');
 		if (!featuredBanner.isEmpty().value()) {
@@ -131,11 +126,6 @@ class Home extends Component {
 			return (
 				<Link
 					to={link}
-					onClick={
-						() => {
-							cookies.set(cookiesLabel.pageReferrer, 'HOME', { path: '/' });
-						}
-					}
 				>
 					<div>
 						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
@@ -234,7 +224,7 @@ class Home extends Component {
 	}
 
 	renderSquareBanner() {
-		const { home, cookies } = this.props;
+		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}.squareBanner`);
 		if (datas.value()) {
@@ -245,11 +235,6 @@ class Home extends Component {
 							<Link
 								to={link.target || '/'}
 								key={c}
-								onClick={
-									() => {
-										cookies.set(cookiesLabel.pageReferrer, 'HOME', { path: '/' });
-									}
-								}
 							>
 								<div>
 									<Image lazyload alt='banner' src={images.thumbnail} />
@@ -264,7 +249,7 @@ class Home extends Component {
 	}
 
 	renderBottomBanner(position = 'top') {
-		const { home, cookies } = this.props;
+		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		let bottomBanner = [];
 		const dataTop = _.chain(home).get(`allSegmentData.${segment}.topLanscape`);
@@ -280,11 +265,6 @@ class Home extends Component {
 							<Link
 								to={link.target || '/'}
 								key={d}
-								onClick={
-									() => {
-										cookies.set(cookiesLabel.pageReferrer, 'HOME', { path: '/' });
-									}
-								}
 							>
 								<div>
 									<Image lazyload alt='banner' src={images.thumbnail} />

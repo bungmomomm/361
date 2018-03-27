@@ -107,6 +107,7 @@ class SubCategory extends PureComponent {
 	}
 
 	render() {
+		const { shared } = this.props;
 		const { selectedCategory } = this.state;
 		const HeaderPage = (selectedCategory) && ({
 			left: (
@@ -140,7 +141,7 @@ class SubCategory extends PureComponent {
 					}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Categories' scroll={this.props.scroll} botNav={this.props.botNav} />
+				<Navigation active='Categories' scroll={this.props.scroll} totalCartItems={shared.totalCart} botNav={this.props.botNav} />
 			</div>
 		);
 	}

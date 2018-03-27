@@ -44,11 +44,11 @@ class Otp extends Component {
 	}
 
 	componentWillMount = async () => {
-		const { dispatch, phoneEmail, autoSend } = this.props;
+		const { dispatch, phoneEmail, autoSend, countdownValue } = this.props;
 
-		this.setState({ isLoading: true });
 		if (autoSend) {
 			if (phoneEmail !== undefined && phoneEmail !== '') {
+				this.setState({ isLoading: true });
 				const [err, response] = await to(dispatch(userActions.userOtp(this.userToken, phoneEmail)));
 				if (err) {
 					this.setState({
@@ -63,6 +63,10 @@ class Otp extends Component {
 					this.countdownTimer(countdown);
 				}
 			}
+		}
+
+		if (countdownValue > 0) {
+			this.countdownTimer(countdownValue);
 		}
 
 		this.setTimeoutNotif(5000);
@@ -278,7 +282,7 @@ class Otp extends Component {
 
 		return (
 			<div className='full-height' style={this.props.style}>
-				<Page>
+				<Page color='white'>
 					<div className={styles.container}>
 						<div className='margin--medium-v'>Kami telah mengirimkan kode verifikasi ke no {phoneEmail}. Silakan masukan kode verifikasi.</div>
 						{this.renderNotification()}
