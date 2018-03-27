@@ -59,12 +59,15 @@ class NewPassword extends Component {
 	}
 
 	onPasswordChange(value) {
+		const { pass2 } = this.state;
 		let isValidPassword = false;
 		if (!validator.isEmpty(value) && validator.isLength(value, { min: 6, max: undefined })) {
 			isValidPassword = true;
 		}
+		if (pass2 !== '' && pass2 !== value) {
+			isValidPassword = false;
+		}
 		this.setState({
-			
 			pass1Typed: (value !== ''),
 			pass1: value,
 			isValidPassword
@@ -117,14 +120,14 @@ class NewPassword extends Component {
 								type={visiblePassword ? 'text' : 'password'}
 								onChange={(e) => this.onPasswordChange(e.target.value)}
 								error={(!isValidPassword && pass1Typed) || error}
-								iconRight={
+								iconRight={pass1Typed && (
 									<Button onClick={() => this.setState({ visiblePassword: !visiblePassword })}>
 										<Svg src='ico_password_hide.svg' />
 										{
 											// <Svg src='ico_password_show.svg' />
 										}
 									</Button>
-								}
+								)}
 								hint={error ? 'We are unable to proccess your request, please try again' : (pass1.length < 6 ? `${6 - pass1.length} karakter lagi` : '')}
 							/>
 						</div>
@@ -137,14 +140,14 @@ class NewPassword extends Component {
 								type={visibleConfirmPassword ? 'text' : 'password'}
 								onChange={(e) => this.onConfirmPasswordChange(e.target.value)}
 								error={(!isValidConfirmPassword && pass2Typed) || error}
-								iconRight={
+								iconRight={pass2Typed && (
 									<Button onClick={() => this.setState({ visibleConfirmPassword: !visibleConfirmPassword })}>
 										<Svg src='ico_password_hide.svg' />
 										{
 											// <Svg src='ico_password_show.svg' />
 										}
 									</Button>
-								}
+								)}
 								hint={error ? 'We are unable to proccess your request, please try again' : (pass2.length < 6 ? `${6 - pass2.length} karakter lagi` : '')}
 							/>
 						</div>

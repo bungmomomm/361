@@ -46,8 +46,8 @@ class Color extends PureComponent {
 	}
 
 	render() {
-		const { onClose, data, title } = this.props;
-		const { resetDisabled } = this.state;
+		const { onClose, title } = this.props;
+		const { resetDisabled, data } = this.state;
 		const HeaderPage = {
 			left: (
 				<Button onClick={onClose}>
