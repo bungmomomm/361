@@ -95,6 +95,7 @@ export default class Utils {
 	}
 
 	static IsJsonString = (str) => {
+		if (Utils.isEmpty(str)) return false;
 		try { JSON.parse(str); } catch (e) { return false; }
 		return true;
 	}
