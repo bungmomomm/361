@@ -11,6 +11,7 @@ class CustomRoute extends PureComponent {
 	}
 
 	componentWillMount() {
+		console.log('will mount: ', this.props);
 		window.mmLoading.play();
 		// binds fusion session
 		Fusion.tracks(this.props);
@@ -20,6 +21,7 @@ class CustomRoute extends PureComponent {
 		// binds fusion session
 		// tracking fusion for loadless page like pdp, apply sort and filter
 		Fusion.tracks(this.props);
+		window.prevRoute = this.props;
 	}
 
 	render() {

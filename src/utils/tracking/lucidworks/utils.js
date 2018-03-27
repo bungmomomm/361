@@ -90,6 +90,10 @@ export default class Utils {
 		return (typeof value !== 'undefined' && value !== null && value !== '');
 	}
 
+	static isEmpty(value) {
+		return (typeof value === 'undefined' || value === null || value === '');
+	}
+
 	static IsJsonString = (str) => {
 		try { JSON.parse(str); } catch (e) { return false; }
 		return true;

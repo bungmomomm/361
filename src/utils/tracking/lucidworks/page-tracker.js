@@ -35,7 +35,7 @@ export default class PageTracker {
 			const { search } = route.location || window.location.search;
 
 			// default group value is 'home'
-			if (!Utils.notEmptyVal(group)) group = references.home;
+			if (Utils.isEmpty(group)) group = references.home;
 			info.reference = group;
 
 			// extract data from 'search' same value with window.location.search
