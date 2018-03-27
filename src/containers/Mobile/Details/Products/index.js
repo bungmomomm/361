@@ -167,7 +167,7 @@ class Products extends Component {
 			const urlRegex = /(#[^\s]+)/g;
 			return text.replace(urlRegex, (url) => {
 				const hashlink = urlBuilder.setName(url).buildSearchByKeyword();
-				return `<a href="${hashlink + url}">${url}</a>`;
+				return `<a href="${hashlink + url.replace('#', '%23')}">${url}</a>`;
 			});
 		};
 	}
