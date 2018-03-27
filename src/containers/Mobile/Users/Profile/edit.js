@@ -68,7 +68,6 @@ class UserProfileEdit extends Component {
 		this.loadingView = <Spinner />;
 		this.editIcon = <Svg src='ico_edit.svg' />;
 		this.recaptchaInstance = null;
-		this.pageInstance = null;
 
 		if (!this.isLogin) {
 			const { history } = this.props;
@@ -280,21 +279,18 @@ class UserProfileEdit extends Component {
 	}
 
 	successValidateOtp = async (response) => {
-		console.log(this.pageInstance);
-		if (this.pageInstance !== null) {
-			const { dispatch } = this.props;
+		const { dispatch } = this.props;
 
-			await dispatch(userActions.userGetProfile(this.userToken));
-			this.setState({
-				layout: 'main',
-				formResult: {
-					status: 'success',
-					message: response.msg || 'Nomor Handphone berhasil diubah'
-				}
-			});
-	
-			this.setTimeoutForm(5000);
-		}
+		await dispatch(userActions.userGetProfile(this.userToken));
+		this.setState({
+			layout: 'main',
+			formResult: {
+				status: 'success',
+				message: response.msg || 'Nomor Handphone berhasil diubah'
+			}
+		});
+
+		this.setTimeoutForm(5000);
 	}
 
 	renderHeader() {
@@ -637,7 +633,7 @@ class UserProfileEdit extends Component {
 			break;
 		default:
 			layoutView = (
-				<Page style={{ paddingTop: 0 }} color='white' ref={e => { this.pageInstance = e; }}>
+				<Page style={{ paddingTop: 0 }} color='white'>
 					{this.renderHeader()}
 					{this.renderNotif()}
 					{this.renderAvatar('api')}

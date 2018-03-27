@@ -22,6 +22,8 @@ class Otp extends Component {
 		super(props);
 		this.props = props;
 		this.userToken = this.props.cookies.get(cookiesLabel.userToken);
+		this.interval = false;
+		this.timeout = false;
 
 		this.state = {
 			showNotif: false,
@@ -69,8 +71,9 @@ class Otp extends Component {
 	}
 
 	setTimeoutNotif(n) {
-		window.setTimeout(() => {
-			this.setState({
+		const that = this;
+		this.timeout = window.setTimeout(() => {
+			that.setState({
 				showNotif: false,
 				statusNotif: ''
 			});
@@ -113,24 +116,25 @@ class Otp extends Component {
 	}
 
 	countdownTimer = async (number) => {
+		const that = this;
 		const counterDown = () => {
 			if (number > 0) {
 				number -= 1;
-				this.setState({
+				that.setState({
 					enableResend: false,
 					resendButtonMessage: `Kirim Ulang Kode OTP Dalam ${number} detik`
 				});
 			}
 		};
 		
-		const doCounter = setInterval(() => {
+		this.interval = setInterval(() => {
 			counterDown();
 			if (number === 0) {
-				this.setState({
+				that.setState({
 					enableResend: true,
 					resendButtonMessage: 'Kirim Ulang Kode OTP'
 				});
-				clearInterval(doCounter);
+				clearInterval(that.interval);
 			}
 		}, 1000);
 	}
@@ -141,7 +145,6 @@ class Otp extends Component {
 		let validForm = false;
 		if (validator.isNumeric(value) && validator.isLength(value, { min: 6 })) {
 			validForm = true;
-			this.validateOtp(value);
 		}
 			
 		const inputHint = value.length > 0 && validForm === false ? 'Format Kode OTP tidak sesuai.' : '';
@@ -151,6 +154,10 @@ class Otp extends Component {
 			validForm,
 			inputHint
 		});
+
+		if (validForm) {
+			this.validateOtp(value);
+		}
 	}
 
 	validateOtp = async (data) => {
@@ -172,6 +179,8 @@ class Otp extends Component {
 				inputHint: err.error_message || 'Invalid OTP'
 			});
 		} else if (response) {
+			clearInterval(this.interval);
+			clearTimeout(this.timeout);
 			onSuccess(response);
 		}
 
@@ -249,6 +258,7 @@ class Otp extends Component {
 	}
 
 	renderResendButton() {
+		const that = this;
 		const { isLoading } = this.props;
 		const { enableResend, resendButtonMessage } = this.state;
 
@@ -261,10 +271,10 @@ class Otp extends Component {
 					loading={isLoading}
 					disabled={!enableResend}
 					onClick={() => {
-						if (this.recaptchaInstance !== null) {
-							this.recaptchaInstance.execute();
+						if (that.recaptchaInstance !== null) {
+							that.recaptchaInstance.execute();
 						}
-						this.setState({ inputHint: '' });
+						that.setState({ inputHint: '' });
 					}}
 				>
 					{enableResend ? this.resendIcon : ''}{resendButtonMessage}
