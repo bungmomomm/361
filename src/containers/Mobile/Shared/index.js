@@ -8,6 +8,8 @@ import { setUserCookie, setUniqeCookie, setReferrenceCookie } from '@/utils';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
 import Snackbar from '@/containers/Mobile/Shared/snackbar';
+import { Svg } from '@/components/mobile';
+import styles from './shared.scss';
 import { check as checkConnection, watch as watchConnection } from 'is-offline';
 import { userToken, userRfToken, uniqueid } from '@/data/cookiesLabel';
 
@@ -223,6 +225,13 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				<div>
 					<Snackbar history={this.props.history} location={this.props.location} theming={this.snackStyle().theming} customStyles={this.snackStyle().customStyles} />
 					<WrappedComponent {...this.props} scroll={this.state.scroll} />
+					{
+						this.state.scroll.top > window.innerHeight && (
+							<a href='#root' className={styles.backToTop}>
+								<Svg src='ico_to-top.svg' />
+							</a>
+						)
+					}
 				</div>
 			);
 		}
