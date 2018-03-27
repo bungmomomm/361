@@ -35,7 +35,7 @@ import {
 	categoryViewBuilder,
 	productClickBuilder
 } from '@/utils/tracking';
-import { userToken } from '@/data/cookiesLabel';
+import { userToken, pageReferrer } from '@/data/cookiesLabel';
 
 const trackBrandPageView = (products, info, props) => {
 	const productId = _.map(products, 'product_id') || [];
@@ -208,7 +208,8 @@ class Detail extends Component {
 			showFilter: !closeFilter
 		});
 		this.update({
-			fq
+			fq,
+			page: 0
 		});
 	}
 
@@ -285,7 +286,8 @@ class Detail extends Component {
 			showSort: false
 		});
 		this.update({
-			sort: sort.q
+			sort: sort.q,
+			page: 0
 		});
 	}
 
@@ -402,7 +404,6 @@ class Detail extends Component {
 					<Svg src='ico_arrow-back-left.svg' />
 				</span>
 			),
-
 			center: !this.state.styleHeader && _.chain(searchData).get('info.title').value(),
 			right: <Share title={title} url={url} />,
 			rows: !this.state.styleHeader && this.renderFilter()
@@ -421,9 +422,13 @@ class Detail extends Component {
 	}
 
 	render() {
+		const { cookies } = this.props;
 		const { showFilter } = this.state;
 
-		const activeNav = (window.prevLocation) ? (window.prevLocation.pathname === '/') ? 'Home' : 'Categories' : 'Categories';
+		const navigationAttribute = {
+			scroll: this.props.scroll
+		};
+		navigationAttribute.active = cookies.get(pageReferrer);
 
 		return (
 			<div style={this.props.style}>
@@ -455,7 +460,7 @@ class Detail extends Component {
 				{(!showFilter) && (
 					<div>
 						{this.renderHeader()}
-						<Navigation active={activeNav} scroll={this.props.scroll} />
+						<Navigation {...navigationAttribute} />
 					</div>
 				)}
 			</div>

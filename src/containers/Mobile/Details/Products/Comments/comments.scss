@@ -4,7 +4,7 @@
 .commentbox{
     position: fixed;
     bottom: 0px;
-    left: 0px;
+    max-width: 480px;
     width: 100%;
     align-items: flex-end;
     background: #F9F9F9;
@@ -13,6 +13,12 @@
 		font-family: font-family('Lato-Bold');
 		color: #191919;
 	}
+}
+
+.commentboxGuest {
+    @extend .commentbox;
+    flex-direction: row;
+    justify-content: initial;
 }
 
 .commentsBackground {

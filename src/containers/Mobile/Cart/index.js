@@ -16,6 +16,8 @@ import {
 } from '@/utils/tracking';
 import cookiesLabel from '@/data/cookiesLabel';
 
+import { LucidCart } from '@/utils/tracking/lucidworks';
+
 const trackBrandPageView = (data, props) => {
 	const items = _.flatMap(data, (e) => (e.items));
 	const productId = _.map(items, 'product_id');
@@ -51,6 +53,7 @@ class Cart extends Component {
 		this.addToLovelistHandler = this.addToLovelistHandler.bind(this);
 		this.selectItemHandler = this.selectItemHandler.bind(this);
 		this.selectedNewQtyHander = this.selectedNewQtyHander.bind(this);
+		this.clearWillDeleteState = this.clearWillDeleteState.bind(this);
 		this.updateCartHander = this.updateCartHander.bind(this);
 		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin);
 	}
@@ -75,6 +78,12 @@ class Cart extends Component {
 
 		if (nextProps.shopBag.carts !== this.props.shopBag.carts) {
 			trackBrandPageView(nextProps.shopBag.carts, nextProps);
+		}
+
+		if (nextProps.shopBag.carts !== this.props.shopBag.carts && (typeof this.fusion === 'undefined')) {
+			const { carts, total } = nextProps.shopBag;
+			if (!_.isEmpty(carts) && !_.isEmpty(total)) this.fusion = new LucidCart(carts, total);
+			
 		}
 
 		this.checkNotProcedItem(nextProps);
@@ -120,6 +129,8 @@ class Cart extends Component {
 		const deleting = new Promise((resolve, reject) => {
 			resolve(dispatch(shopBagAction.deleteAction(this.userToken, this.state.productWillDelete.variant_id)));
 			this.clearWillDeleteState();
+			const { variant_id } = this.state.productWillDelete;
+			if (typeof this.fusion !== 'undefined') this.fusion.trackCartChanges(variant_id, 0);
 		});
 		deleting.then((res) => {
 			dispatch(shopBagAction.getAction(this.userToken));
@@ -148,6 +159,8 @@ class Cart extends Component {
 		const { dispatch } = this.props;
 		if (this.state.qtyNew !== null && this.state.qtyCurrent !== this.state.qtyNew) {
 			dispatch(shopBagAction.updateAction(this.userToken, this.state.variantIdwillUpdate, this.state.qtyNew));
+			const { variantIdwillUpdate, qtyNew } = this.state;
+			if (typeof this.fusion !== 'undefined') this.fusion.trackCartChanges(variantIdwillUpdate, qtyNew);
 		}
 		this.setState({ showSelect: false, variantIdwillUpdate: null, selectList: [], qtyCurrent: null, qtyNew: null });
 	}
@@ -330,7 +343,7 @@ class Cart extends Component {
 					role='button'
 					tabIndex='0'
 				>
-					<Svg src='ico_arrow-back-left.svg' />
+					<Svg src='ico_close-large.svg' />
 				</span>
 			),
 			center: (<div><span> Tas Belanja {this.props.shopBag.loading ? (<Spinner />) : ''}</span></div>),

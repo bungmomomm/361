@@ -21,7 +21,7 @@ import { actions } from '@/state/v4/Brand';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Shared from '@/containers/Mobile/Shared';
 import { urlBuilder } from '@/utils';
-import { userToken, userRfToken, userSource } from '@/data/cookiesLabel';
+import { userToken, userRfToken, userSource, pageReferrer } from '@/data/cookiesLabel';
 
 class Brands extends Component {
 	constructor(props) {
@@ -37,7 +37,7 @@ class Brands extends Component {
 		this.userRFCookies = this.props.cookies.get(userRfToken);
 		this.source = this.props.cookies.get(userSource);
 		this.headContainer = null;
-
+		this.inputElement = null;
 		this.onAlphabetsClick = (id) => {
 			const section = document.getElementById(String(id.trim()));
 			document.body.scrollTop = section.offsetTop;
@@ -85,6 +85,7 @@ class Brands extends Component {
 	}
 
 	onFocus() {
+		console.log('on focus trigerd');
 		this.setState({
 			searchFocus: true
 		});
@@ -111,23 +112,42 @@ class Brands extends Component {
 		return (this.props.brands.brand_list) ? (
 			this.state.keyword.length < this.state.minimumLetter &&
 			<div className={styles.listFilterKey}>
-				{C.FILTER_KEY.map((key, id) => {
-					const brandExist = brands.brand_list.filter(e => e.group === key.trim());
-					const disabled = brandExist.length < 1;
-					// const link = `#${key.trim()}`;
-
-					return (
-						<Button
-							key={id}
-							onClick={() => { this.onAlphabetsClick(key); }}
-							disabled={disabled}
-						>
-							{
-								disabled ? <strike>{key}</strike> : <b>{key}</b>
-							}
-						</Button>
-					);
-				})}
+				<div className={styles.perline}>
+					{C.FILTER_KEY.map((key, id) => {
+						if (id > 12) return '';
+						const brandExist = brands.brand_list.filter(e => e.group === key.trim());
+						const disabled = brandExist.length < 1;
+						return (
+							<Button
+								key={id}
+								onClick={() => { this.onAlphabetsClick(key); }}
+								disabled={disabled}
+							>
+								{
+									disabled ? <strike>{key}</strike> : key
+								}
+							</Button>
+						);
+					})}
+				</div>
+				<div className={styles.perline}>
+					{C.FILTER_KEY.map((key, id) => {
+						if (id <= 12) return '';
+						const brandExist = brands.brand_list.filter(e => e.group === key.trim());
+						const disabled = brandExist.length < 1;
+						return (
+							<Button
+								key={id}
+								onClick={() => { this.onAlphabetsClick(key); }}
+								disabled={disabled}
+							>
+								{
+									disabled ? <strike>{key}</strike> : key
+								}
+							</Button>
+						);
+					})}
+				</div>
 			</div>
 		) : '';
 	}
@@ -140,7 +160,7 @@ class Brands extends Component {
 			brands.brand_list.map((list, id) => {
 				return (
 					<div key={id} id={list.group} className='margin--medium-v'>
-						<Divider className='margin--none-t margin--none-r' size='small'>
+						<Divider className='margin--none-t margin--none-r' size='small' style={{ margin: 0 }}>
 							{list.group}
 						</Divider>
 						{
@@ -173,7 +193,11 @@ class Brands extends Component {
 				return (
 					<List key={key}>
 						<Link to={urlBuilder.setId(brand.facetrange).setName(brand.facetdisplay).buildBrand()}>
-							<List.Content>{brand.facetdisplay} <text style={{ color: 'grey' }} >({brand.count})</text></List.Content>
+							<List.Content>
+								<p className='margin--medium-v'>
+									{brand.facetdisplay} <text style={{ color: 'grey' }} >({brand.count})</text>
+								</p>
+							</List.Content>
 						</Link>
 					</List>
 				);
@@ -182,7 +206,22 @@ class Brands extends Component {
 	}
 
 	render() {
-		const { shared, dispatch, brands } = this.props;
+		const { shared, dispatch, brands, cookies } = this.props;
+		const navigationAttribute = {
+			scroll: this.props.scroll
+		};
+		navigationAttribute.active = cookies.get(pageReferrer);
+
+		const iconRight = {
+			iconRight: this.state.keyword !== '' && (
+				<button onClick={() => {
+					this.inputElement.focus();
+					this.setState({ ...this.state.keyword, keyword: '', searchFocus: true });
+				}}
+				>
+					<Svg src='ico_close-grey.svg' />
+				</button>)
+		};
 
 		const HeaderPage = {
 			left: (
@@ -204,11 +243,13 @@ class Brands extends Component {
 								<Input
 									autoFocus
 									iconLeft={<Svg src='ico_search.svg' />}
+									{...iconRight}
 									placeholder='cari nama brand'
 									onFocus={() => this.onFocus()}
 									onBlur={(e) => this.onBlur(e)}
 									onChange={(e) => this.onChange(e)}
 									value={this.state.keyword}
+									inputRef={(el) => { this.inputElement = el; }}
 								/>
 							</Level.Item>
 							{
@@ -241,7 +282,7 @@ class Brands extends Component {
 				</Page>
 				<Header.Modal {...HeaderPage} headerRef={(header) => { this.headContainer = header; }} />
 				{/* <Header.Modal {...HeaderPage} /> */}
-				<Navigation active='Categories' scroll={this.props.scroll} />
+				<Navigation {...navigationAttribute} />
 			</div>
 		);
 	}

@@ -55,6 +55,7 @@ class Input extends PureComponent {
 			partitioned,
 			onClickInputAction,
 			textCounter,
+			inputRef,
 			...props,
 		} = this.props;
 
@@ -120,7 +121,10 @@ class Input extends PureComponent {
 		const propsList = {
 			...props,
 			className: CreateinputClassName,
-			ref: (element) => { this.textInput = element; },
+			ref: (element) => {
+				if (inputRef) inputRef(element);
+				this.textInput = element;
+			},
 			...valueData,
 			onClick: onClickAction,
 			onChange: this.onChangeHandler

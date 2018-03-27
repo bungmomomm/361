@@ -89,6 +89,10 @@ class MMUrlBuilder {
 		return `product/comments/${productId}`;
 	}
 
+	buildSearchByKeyword = () => {
+		return `products?category_id=&query=${name}`;
+	}
+
 }
 
 const urlBuilder = new MMUrlBuilder();
