@@ -45,7 +45,7 @@ class Promo extends Component {
 			</div>
 		);
 	}
-  
+
 	componentWillUnmount() {
 		const { dispatch } = this.props;
 		dispatch(promoActions.loadingAction(true));
@@ -95,7 +95,7 @@ class Promo extends Component {
 		const { discovery, comments, scroller, location } = this.props;
 		const { focusedProductId } = this.state;
 		const products = _.chain(discovery).get(`promo.${this.promoType}.products`).value();
-		
+
 		if (products) {
 			let productsView;
 			if (!_.isEmpty(products)) {
@@ -172,7 +172,7 @@ class Promo extends Component {
 				{this.renderProductList()}
 				{this.renderHeader()}
 				{this.renderForeverBanner()}
-				<Navigation {...navigationAttribute} />
+				<Navigation {...navigationAttribute} botNav={this.props.botNav} />
 			</div>
 		);
 	}

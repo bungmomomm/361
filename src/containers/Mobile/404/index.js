@@ -103,7 +103,7 @@ class Page404 extends Component {
 					}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Home' />
+				<Navigation active='Home' botNav={this.props.botNav} />
 			</div>
 		);
 	}

@@ -449,7 +449,7 @@ class Detail extends Component {
 				{(!showFilter) && (
 					<div>
 						{this.renderHeader()}
-						<Navigation {...navigationAttribute} />
+						<Navigation {...navigationAttribute} botNav={this.props.botNav} />
 					</div>
 				)}
 			</div>
