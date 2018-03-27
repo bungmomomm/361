@@ -39,6 +39,15 @@ class Users extends Component {
 		}
 	}
 
+	onBack(e) {
+		const { history } = this.props;
+		if (history.length > 0) {
+			history.goBack();
+		} else {
+			history.push('/');
+		}
+	}
+
 	handlePick(current) {
 		const { history } = this.props;
 		this.setState({
@@ -56,15 +65,6 @@ class Users extends Component {
 			}
 		});
 	};
-
-	onBack(e) {
-		const { history } = this.props;
-		if (history.length > 0) {
-			history.goBack();
-		} else {
-			history.push('/');
-		}
-	}
 
 	render() {
 		const { style, users, history } = this.props;
