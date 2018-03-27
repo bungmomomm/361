@@ -33,7 +33,6 @@ const userRegister = (token, bodyData) => async (dispatch, getState) => {
 
 	const [err, response] = await to(request(requestBody));
 	if (err) {
-		console.log(err.response);
 		dispatch(actions.userRegisterFail(err.response.data));
 		return Promise.reject(err.response.data);
 	}

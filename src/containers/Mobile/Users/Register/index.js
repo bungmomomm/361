@@ -84,7 +84,6 @@ class Register extends Component {
 
 		// Throw error if any.
 		if (errorRegister) {
-			console.log(errorRegister);
 			if (errorRegister.error_message.indexOf('taken') > -1) {
 				this.setView('EMAIL_MOBILE_HAS_BEEN_REGISTERED');
 				return false;
@@ -345,7 +344,7 @@ class Register extends Component {
 					</p>
 				</div>
 				<div className='margin--small-v'>
-					<Link to='/login'>
+					<Link to={`/login${location.search}`}>
 						<Button {...buttonProperty}>LOGIN</Button>
 					</Link>
 				</div>
