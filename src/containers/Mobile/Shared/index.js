@@ -202,24 +202,26 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		snackStyle = () => {
-			const snackStyle = _.chain(this.props.shared.snackbar).get('[0].style').value() || { css: {}, sticky: true };
+			const snackStyle = _.chain(this.props.shared.snackbar).get('[0].style').value() || { css: {}, sticky: true, theming: {} };
 			const snackCss = _.chain(snackStyle).get('css.snack').value() || {};
+			const themingSnackCss = _.chain(snackStyle).get('theming.snack').value() || {};
 			const stickyEl = document.querySelector('.navigation__navigation') ? document.querySelector('.navigation__navigation')
-				: document.querySelector('.products__stickyAction') ? document.querySelector('.products__stickyAction')
-					: false;
+							: document.querySelector('.products__stickyAction') ? document.querySelector('.products__stickyAction')
+							: false;
 			const snackSticky = !snackStyle.sticky ? {} : {
-				bottom: !this.state.scroll.isNavSticky && stickyEl ? stickyEl.getBoundingClientRect().height : 0,
+				bottom: !this.state.scroll.isNavSticky && stickyEl
+						? (+(parseInt(snackCss.bottom, 10) || 0) + +stickyEl.getBoundingClientRect().height)
+						: (+(parseInt(snackCss.bottom, 10) || 0) + 0),
 				zIndex: !this.state.scroll.isNavSticky && stickyEl ? 2 : 999
 			};
-			const customStylesCss = { ...snackStyle.css, snack: { ...snackCss, ...snackSticky } };
-
-			return customStylesCss;
+			const customStyles = { ...snackStyle.css, snack: { ...snackCss, ...snackSticky, largeScreen: { ...snackCss, ...snackSticky } } };
+			return { theming: { ...snackStyle.theming, snack: { ...themingSnackCss, ...snackSticky, largeScreen: { ...snackCss, ...snackSticky } } }, customStyles };
 		};
 
 		render() {
 			return (
 				<div>
-					<Snackbar history={this.props.history} location={this.props.location} customStyles={this.snackStyle()} />
+					<Snackbar history={this.props.history} location={this.props.location} theming={this.snackStyle().theming} customStyles={this.snackStyle().customStyles} />
 					<WrappedComponent {...this.props} scroll={this.state.scroll} />
 				</div>
 			);

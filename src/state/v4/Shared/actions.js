@@ -115,9 +115,9 @@ const clearErrors = () => (dispatch) => {
 	dispatch(errorHandler({ errors: [] }));
 };
 
-const showSnack = (id, data = { label: '', timeout: 7000, button: {} }, style = { css: {} }) => (dispatch) => {
-	style = { ...style, sticky: style.sticky || true };
-	dispatch(rrsShowSnack({ id, data, style }));
+const showSnack = (id, data = { label: '', timeout: 7000, button: {} }, style = { css: {}, sticky: true, theming: {} }, close = false) => (dispatch) => {
+	style = { ...style, sticky: style.sticky !== undefined ? style.sticky : true };
+	dispatch(rrsShowSnack({ id, data, style, close }));
 };
 
 const logSinglePage = (pageName) => (dispatch) => {
