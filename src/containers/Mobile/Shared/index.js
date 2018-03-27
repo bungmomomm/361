@@ -87,7 +87,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		componentDidMount() {
 			window.mmLoading.destroy();
-			window.addEventListener('scroll', _.debounce(this.handleScroll), true);
+			window.addEventListener('scroll', _.throttle(this.handleScroll), true);
 			this.docBody = document.body;
 
 			if (typeof this.uniqueId === 'undefined') {
@@ -99,7 +99,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			window.mmLoading.play();
 			window.prevLocation = this.props.location;
 			window.previousLocation = location.pathname + location.search;
-			window.removeEventListener('scroll', _.debounce(this.handleScroll), true);
+			window.removeEventListener('scroll', this.handleScroll, true);
 		}
 
 		shouldLoginAnonymous() {

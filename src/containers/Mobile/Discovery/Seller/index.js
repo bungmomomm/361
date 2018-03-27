@@ -125,7 +125,7 @@ class Seller extends Component {
 			headerNameY: false,
 			seeMore: {
 				bool: true,
-				text: '[...]',
+				text: 'Lihat Selengkapnya',
 				show: false
 			},
 		};
@@ -330,7 +330,7 @@ class Seller extends Component {
 			seeMore: {
 				...this.state.seeMore,
 				bool: !this.state.seeMore.bool,
-				text: !this.state.seeMore.bool ? '[...]' : 'Hide'
+				text: !this.state.seeMore.bool ? 'Lihat Selengkapnya' : 'Tutup'
 			}
 		});
 	};
@@ -392,11 +392,13 @@ class Seller extends Component {
 						<div>
 							<div className={seeMore.bool && seeMore.show ? classNames('font-small padding--medium-h', styles.textOnlyShowTwoLines) : 'font-small padding--medium-h'}>{seller.info.description || ''}</div>
 							{seeMore.show && (
-								<span className='padding--medium-h'>
-									<button className='font-small font-color--grey' onClick={this.toggleSeeMore}>
-										{seeMore.text}
-									</button>
-								</span>
+								<div style={{ textAlign: 'center', paddingTop: '20px' }}>
+									<span className='padding--medium-h'>
+										<button className='font-small font-color--grey' onClick={this.toggleSeeMore} style={{ color: '#2f67b7' }}>
+											{seeMore.text}
+										</button>
+									</span>
+								</div>
 							)}
 						</div>
 					</div>
