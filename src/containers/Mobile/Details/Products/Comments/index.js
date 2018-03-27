@@ -228,7 +228,7 @@ class Comments extends Component {
 		return (
 			<div className={styles.commentsContainer}>
 				<div className={styles.commentsBackground} />
-				<Page style={{ paddingTop: 0, marginBottom: '100px' }} color='white'>
+				<Page style={{ paddingTop: 0, marginBottom: '100px', flexGrow: 0 }} color='white'>
 					<div className='margin--medium-v'>
 						{this.renderDetail()}
 						{this.renderComments()}
