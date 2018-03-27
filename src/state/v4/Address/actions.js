@@ -207,6 +207,24 @@ const deleteAddress = (token, addressId) => async (dispatch, getState) => {
 	return Promise.resolve(resp);
 };
 
+const setDefaultAddress = (token, addressId) => async (dispatch, getState) => {
+	const st = getState();
+	const url = _.chain(st.shared).get('serviceUrl.account.url').value() || false;
+	const [errDef, respDef] = await to(request({
+		token,
+		path: `${url}/me/addresses/setdefault/${addressId}`,
+		method: 'POST',
+		fullpath: true,
+		body: {}
+	}));
+
+	if (errDef) {
+		return Promise.reject(errDef);
+	}
+
+	return Promise.resolve(respDef);
+};
+
 const mutateState = (data) => async (dispatch) => {
 	dispatch(address(data));
 	return Promise.resolve();
@@ -219,5 +237,6 @@ export default {
 	addAddress,
 	editAddress,
 	deleteAddress,
-	mutateState
+	mutateState,
+	setDefaultAddress
 };

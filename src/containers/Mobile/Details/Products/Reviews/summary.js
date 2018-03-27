@@ -11,19 +11,21 @@ export default class ReviewSummary extends Component {
 	}
 
 	shouldComponentUpdate(nextProps) {
-		const { reviews } = nextProps;
-		return (this.props.reviews.total !== reviews.total || this.props.reviews.summary !== reviews.summary);
+		const { reviews, productId } = nextProps;
+		return ((this.props.reviews.total !== reviews.total || this.props.reviews.summary !== reviews.summary) && !_.isUndefined(productId));
 	}
 
 	render() {
 		const { reviews, seller, productId } = this.props;
 
-		if (_.has(reviews, 'total') && reviews.total === 0) return null;
 		return (
 			<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 				<div className='margin--medium-v'>
 					<div className='padding--small-h margin--small-v margin--none-t flex-row flex-spaceBetween'>
-						<div className='font-medium'><strong>Ulasan Produk</strong></div>
+						<div className='font-medium flex-row'>
+							<strong>Ulasan Produk</strong>
+							{(reviews.total === 0 && !_.isUndefined(productId)) && <span className='font-color--primary-ext-2 padding--small-h'>(Belum Tersedia)</span>}
+						</div>
 						{reviews.total > 2 && (
 							<Link to={`/product/reviews/${productId}`} className='font-small flex-middle d-flex flex-row font-color--primary-ext-2' >
 								<span style={{ marginRight: '5px' }} >LIHAT SEMUA</span> <Svg src='ico_chevron-right.svg' />

@@ -121,6 +121,7 @@ class Snackbar extends React.Component {
 
 		return (
 			<div
+				className='snackBar'
 				style={this.populateStyles('snack')}
 				onTransitionEnd={this.transitionEndHandler}
 			>

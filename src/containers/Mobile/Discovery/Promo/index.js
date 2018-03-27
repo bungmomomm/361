@@ -35,12 +35,24 @@ class Promo extends Component {
 		this.props = props;
 		this.promoType = this.props.match.params.type;
 
-		this.loadingView = <Spinner />;
+		this.state = {
+			focusedProductId: ''
+		};
+
+		this.loadingView = (
+			<div style={{ margin: '20px auto 20px auto' }}>
+				<Spinner />
+			</div>
+		);
 	}
 
 	componentWillUnmount() {
 		const { dispatch } = this.props;
 		dispatch(promoActions.loadingAction(true));
+	}
+
+	setFocusedProduct(id) {
+		this.setState({ focusedProductId: id });
 	}
 
 	handlePick(e) {
@@ -80,13 +92,15 @@ class Promo extends Component {
 	}
 
 	renderProductList() {
-		const { discovery, comments, scroller } = this.props;
+		const { discovery, comments, scroller, location } = this.props;
+		const { focusedProductId } = this.state;
 		const products = _.chain(discovery).get(`promo.${this.promoType}.products`).value();
 
 		if (products) {
 			let productsView;
 			if (!_.isEmpty(products)) {
 				const productCount = _.chain(discovery).get(`promo.${this.promoType}.info.product_count`).value() || 0;
+				const redirectPath = location.pathname !== '' ? location.pathname : '';
 
 				let listView;
 				switch (discovery.viewMode.mode) {
@@ -97,6 +111,9 @@ class Promo extends Component {
 							loading={scroller.loading}
 							forceLoginNow={() => this.forceLoginNow()}
 							products={products}
+							focusedProductId={focusedProductId}
+							setFocusedProduct={(id) => this.setFocusedProduct(id)}
+							redirectPath={redirectPath}
 						/>
 					);
 					break;
@@ -143,11 +160,13 @@ class Promo extends Component {
 	}
 
 	renderPage() {
-		const { cookies } = this.props;
+		const { cookies, shared } = this.props;
 		const navigationAttribute = {
-			scroll: this.props.scroll
+			scroll: this.props.scroll,
+			totalCartItems: shared.totalCart
 		};
 		navigationAttribute.active = cookies.get(pageReferrer);
+		
 		return (
 			<div style={this.props.style}>
 				{this.renderProductList()}
