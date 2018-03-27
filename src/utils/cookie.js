@@ -1,4 +1,5 @@
-import { userExp, userRfToken, userToken, isLogin, userProfile, uniqueid } from '@/data/cookiesLabel';
+import { userExp, userRfToken, userToken, isLogin, userProfile, uniqueid, pageReferrer } from '@/data/cookiesLabel';
+import _ from 'lodash';
 
 const setUserCookie = (cookies, token, isAnonymous = false, profile = undefined) => {
 	const currentDate = new Date();
@@ -37,9 +38,14 @@ const setUserInfoCookie = (cookies, info) => {
 	cookies.set(cname, info, { domain: process.env.SESSION_DOMAIN, path: '/', expires: 0 });
 };
 
+const setReferrenceCookie = (cookies, referrence) => {
+	cookies.set(pageReferrer, _.startCase(referrence), { path: '/' });
+};
+
 export default {
 	setUserCookie,
 	removeUserCookie,
 	setUniqeCookie,
-	setUserInfoCookie
+	setUserInfoCookie,
+	setReferrenceCookie
 };

@@ -8,7 +8,9 @@ import {
 } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import queryString from 'query-string';
-import { removeUserCookie } from '@/utils';
+import { setUserCookie } from '@/utils';
+import { actions as userActions } from '@/state/v4/User';
+import to from 'await-to-js';
 
 class Logout extends Component {
 	constructor(props) {
@@ -26,14 +28,20 @@ class Logout extends Component {
 		}, 2000);
 	}
 
-	redirect() {
+	async redirect() {
 		const { 
+			dispatch,
 			history, 
 			cookies 
 		} = this.props;
 		const { redirectUri } = this.state;
-		removeUserCookie(cookies);
+		const [err, response] = await to(dispatch(userActions.userLogout(cookies.get('user.token'))));
+		if (err) {
+			return err;
+		}
+		setUserCookie(cookies, response.token, true);
 		history.push(redirectUri || '/');
+		return response;
 	}
 
 	render() {
