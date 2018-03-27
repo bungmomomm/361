@@ -361,10 +361,12 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = (props) => {
-	const { cookies, history } = props;
+	const { cookies, history, dispatch } = props;
 	if (!cookies.get(isLogin) || cookies.get(isLogin) === 'false') {
 		history.push('/login');
 	}
+
+	dispatch(actions.getCity(cookies.get(userToken), { q: '' }));
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Address, doAfterAnonymous)));
