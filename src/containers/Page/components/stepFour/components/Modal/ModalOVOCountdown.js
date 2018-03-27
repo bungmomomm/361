@@ -4,7 +4,9 @@ import { Image } from '@/components';
 import { Modal, Level } from 'mm-ui';
 // import styles from './ModalOVOCountdown.scss';
 // import { T } from '@/data/translations';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 export default class OvoCountDownModal extends Component {
 	constructor(props) {
 		super(props);
@@ -43,12 +45,12 @@ export default class OvoCountDownModal extends Component {
 						<Level.Item className='text-center'>
 							<Image src='loading-momo.png' />
 						</Level.Item>
-					</Level>	
+					</Level>
 				</Modal.Header>
 				<Modal.Body>
 					<p className='text-center font-purple'><strong>OVO Payment</strong></p>
-					<p className='text-center'>Konfirmasi pembayaran telah dikirim ke Aplikasi OVO Anda 
-						<br /> 
+					<p className='text-center'>Konfirmasi pembayaran telah dikirim ke Aplikasi OVO Anda
+						<br />
 						Mohon lakukan konfirmasi pembayaran dalam <strong>30 detik</strong>.
 					</p>
 				</Modal.Body>

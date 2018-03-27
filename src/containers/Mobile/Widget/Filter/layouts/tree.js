@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
 	Header,
-	// Divider, 
+	// Divider,
 	Page,
 	Svg,
 	List,
@@ -26,7 +26,9 @@ const treeIcon = (active, HasTree, isChildSelected) => {
 	}
 	return <Svg src='ico_empty.svg' />;
 };
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class TreeSegment extends Component {
 	constructor(props) {
 		super(props);

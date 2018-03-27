@@ -3,7 +3,9 @@ import React, { Component } from 'react';
 // component load
 import { Group, Button, Modal, Icon } from 'mm-ui';
 import { T } from '@/data/translations';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 export default class ModalErrorPayment extends Component {
 	constructor(props) {
 		super(props);

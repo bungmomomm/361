@@ -14,7 +14,9 @@ import { actions as sharedActions } from '@/state/v4/Shared';
 import { uniqid } from '@/utils';
 import to from 'await-to-js';
 import { isLogin } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Love extends PureComponent {
 	constructor(props) {
 		super(props);

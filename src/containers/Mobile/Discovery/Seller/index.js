@@ -47,6 +47,7 @@ import {
 import classNames from 'classnames';
 import styles from './styles.scss';
 import { userToken } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
 const trackSellerPageView = (products, info, props) => {
 	const productId = _.map(products, 'product_id') || [];
@@ -90,7 +91,7 @@ const trackProductOnClick = (product, position, source = 'mm') => {
 	if (requestPayload) sendGtm(requestPayload);
 };
 
-
+@handler
 class Seller extends Component {
 	constructor(props) {
 		super(props);

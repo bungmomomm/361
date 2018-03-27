@@ -18,7 +18,9 @@ import Scroller from '@/containers/Mobile/Shared/scroller';
 import { aux } from '@/utils';
 import classNames from 'classnames';
 import cookiesLabel from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class MyOrder extends Component {
 	constructor(props) {
 		super(props);

@@ -15,7 +15,9 @@ import { actions as commentActions } from '@/state/v4/Comment';
 
 import styles from './comments.scss';
 import cookiesLabel from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Comments extends Component {
 	constructor(props) {
 		super(props);

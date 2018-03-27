@@ -13,7 +13,9 @@ import Action from './action';
 // import C from '@/constants';
 import styles from './brands.scss';
 import utils from './utils';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Brands extends Component {
 	constructor(props) {
 		super(props);
@@ -60,7 +62,7 @@ class Brands extends Component {
 		this.setState({
 			keyword: e.target.value
 		});
-	} 
+	}
 
 	filterlist(key) {
 		this.setState({
@@ -71,7 +73,7 @@ class Brands extends Component {
 	render() {
 		const { onClose, title } = this.props;
 		const { keyword, resetDisabled } = this.state;
-		
+
 		let data = this.state.data;
 		if (data.length > 0) {
 			if (!_.isEmpty(keyword)) {

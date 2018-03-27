@@ -12,7 +12,9 @@ import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Shared from '@/containers/Mobile/Shared';
 import { urlBuilder } from '@/utils';
 import cookiesLabel from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Lovelist extends Component {
 	constructor(props) {
 		super(props);
@@ -48,7 +50,7 @@ class Lovelist extends Component {
 				<Spinner size='large' />
 			</div>
 		);
-		
+
 	}
 
 	componentWillMount() {
@@ -253,7 +255,7 @@ class Lovelist extends Component {
 						confirmButton={(<Button onClick={this.removeItem}>YA, HAPUS</Button>)}
 					/>
 				</Modal>
-				
+
 				<Notification style={{ marginTop: '90%' }} show={notif.show} toast disableClose onClose={this.onNotifClose}>
 					<span>{notif.content}</span>
 				</Notification>
@@ -300,7 +302,7 @@ const doAfterAnonymous = async (props) => {
 	const list = await dispatch(LoveListActionCreator.getLovelisItems(cookies.get(cookiesLabel.userToken))) || [];
 	const ids = list.products.map((item) => item.product_id);
 	if (ids.length > 0) {
-		await dispatch(LoveListActionCreator.bulkieCountByProduct(cookies.get(cookiesLabel.userToken), ids));	
+		await dispatch(LoveListActionCreator.bulkieCountByProduct(cookies.get(cookiesLabel.userToken), ids));
 		await dispatch(commentActions.bulkieCommentAction(cookies.get(cookiesLabel.userToken), ids));
 	}
 

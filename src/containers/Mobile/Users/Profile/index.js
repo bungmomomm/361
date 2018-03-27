@@ -18,7 +18,9 @@ import { splitString, removeUserCookie } from '@/utils';
 import styles from './profile.scss';
 
 import cookiesLabel from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class UserProfile extends Component {
 	constructor(props) {
 		super(props);
@@ -60,7 +62,7 @@ class UserProfile extends Component {
 		const { history } = this.props;
 		const HeaderPage = {
 			left: (
-				<button onClick={() => (history.length < 2 ? history.push('/') : history.go(-2))}> 
+				<button onClick={() => (history.length < 2 ? history.push('/') : history.go(-2))}>
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</button>
 			),

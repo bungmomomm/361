@@ -15,7 +15,9 @@ import styles from './profile.scss';
 import CONST from '@/constants';
 import { actions as userAction } from '@/state/v4/User';
 import { aux } from '@/utils';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class MyOrderDetail extends Component {
 	static renderTrackingInfo(order) {
 		const isResiInfoExist = Object.prototype.hasOwnProperty.call(order.shipping, 'resi');

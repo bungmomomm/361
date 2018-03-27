@@ -2,7 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { actions } from '@/state/v4/Shared';
 import getComputedStyles from './styleSnackbar';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Snackbar extends React.Component {
 
 	state = {

@@ -6,12 +6,13 @@ import {
 	request,
 	getClientSecret
 } from '@/utils';
+import __x from '@/state/__x';
 
 const userSocialLogin = (token, provider, accessToken) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	dispatch(actions.userSocialLogin());
 	let path = `${baseUrl}/auth/fblogin`;
@@ -32,7 +33,7 @@ const userSocialLogin = (token, provider, accessToken) => async (dispatch, getSt
 
 	if (err) {
 		dispatch(actions.userLoginFail(err));
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	const data = _.chain(response);
@@ -52,7 +53,7 @@ const userSocialLoginWithRedirect = (token, provider, redirectUrl) => async (dis
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 	console.log(token);
 	dispatch(actions.userSocialLogin());
 	let path = `${baseUrl}/auth/fblogin?redirect_uri=${redirectUrl}`;
@@ -75,7 +76,7 @@ const userSocialLoginWithRedirect = (token, provider, redirectUrl) => async (dis
 
 	if (err) {
 		dispatch(actions.userLoginFail(err));
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	const data = _.chain(response);

@@ -5,7 +5,9 @@ import { Link } from 'react-router-dom';
 import { Page, Card, Svg, Grid, Level, Carousel, Button } from '@/components/mobile';
 import { hyperlink } from '@/utils';
 // import styles from './search.scss';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class SearchNotFound extends PureComponent {
 	constructor(props) {
 		super(props);

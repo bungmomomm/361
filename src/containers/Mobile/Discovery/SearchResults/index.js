@@ -35,7 +35,9 @@ import Discovery from '../Utils';
 import { urlBuilder, renderIf } from '@/utils';
 import cookiesLabel from '@/data/cookiesLabel';
 
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class SearchResults extends Component {
 	constructor(props) {
 		super(props);

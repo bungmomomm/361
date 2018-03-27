@@ -4,7 +4,9 @@ import { connect } from 'react-redux';
 import Shared from '@/containers/Mobile/Shared';
 import { Header, Svg, Tabs } from '@/components/mobile';
 import { Link } from 'react-router-dom';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Filters extends Component {
 	constructor(props) {
 		super(props);

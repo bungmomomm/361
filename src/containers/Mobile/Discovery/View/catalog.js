@@ -27,7 +27,9 @@ import cookiesLabel from '@/data/cookiesLabel';
 import stylesCatalog from './view.scss';
 
 // @TODO cleanup code and move it as independence Component
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class CatalogView extends Component {
 	constructor(props) {
 		super(props);
@@ -75,7 +77,7 @@ class CatalogView extends Component {
 			validForm: false,
 			counterValue: 0
 		});
-		
+
 		setFocusedProduct(id);
 	}
 
@@ -98,7 +100,7 @@ class CatalogView extends Component {
 
 		await dispatch(commentActions.commentAddAction(cookies.get('user.token'), newComment.product_id, newComment.comment, 'pcp'));
 		await dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), [focusedProductId]));
-		
+
 		this.setState({
 			commentLoading: false,
 			showSendButton: false,
@@ -139,7 +141,7 @@ class CatalogView extends Component {
 	renderComment(product) {
 		const { comments, cookies, focusedProductId, redirectPath } = this.props;
 		const {
-			commentLoading, 
+			commentLoading,
 			validForm, showCounter, showSendButton, counterValue, counterLimit
 		} = this.state;
 

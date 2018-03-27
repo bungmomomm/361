@@ -26,7 +26,9 @@ import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 
 import Discovery from '../Utils';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Promo extends Component {
 
 	constructor(props) {
@@ -76,7 +78,7 @@ class Promo extends Component {
 				history.push('/');
 			};
 		}
-		
+
 		const headerTitle = _.chain(discovery).get(`promo.${this.promoType}.info.title`).value() || '';
 		const headerPage = {
 			left: (
@@ -175,7 +177,7 @@ class Promo extends Component {
 			totalCartItems: shared.totalCart
 		};
 		navigationAttribute.active = cookies.get(pageReferrer);
-		
+
 		return (
 			<div style={this.props.style}>
 				{this.renderProductList()}

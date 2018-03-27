@@ -28,7 +28,9 @@ import {
 	sendGtm,
 } from '@/utils/tracking';
 import { userSource, userToken } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Register extends Component {
 	constructor(props) {
 		super(props);

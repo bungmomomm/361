@@ -27,6 +27,7 @@ import {
 import cookiesLabel from '@/data/cookiesLabel';
 
 import { Payload } from '@/utils/tracking/lucidworks';
+import handler from '@/containers/Mobile/Shared/handler';
 
 const fusion = new Payload(_);
 const trackAddToCart = (data, props, variant) => {
@@ -91,6 +92,7 @@ const doAfterAnonymous = async (props) => {
 	}
 };
 
+@handler
 class Products extends Component {
 	constructor(props) {
 		super(props);

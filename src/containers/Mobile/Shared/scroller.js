@@ -1,7 +1,10 @@
 import React, { PureComponent } from 'react';
+import handler from '@/containers/Mobile/Shared/handler';
 
 const Scroller = (WrappedComponent) => {
-	return class InfiniteScroller extends PureComponent {
+
+	@handler
+	class InfiniteScroller extends PureComponent {
 		constructor(props) {
 			super(props);
 			this.props = props;
@@ -46,6 +49,8 @@ const Scroller = (WrappedComponent) => {
 			return <WrappedComponent {...this.props} />;
 		};
 	};
+
+	return InfiniteScroller;
 };
 
 export default Scroller;

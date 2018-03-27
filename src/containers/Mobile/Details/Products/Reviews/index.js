@@ -7,7 +7,9 @@ import { actions as productActions } from '@/state/v4/Product';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './reviews.scss';
 import cookiesLabel from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Reviews extends Component {
 	constructor(props) {
 		super(props);
@@ -51,7 +53,7 @@ class Reviews extends Component {
 			return (
 				<div className='padding--small-h' key={`rvd-${idx + 1}`}>
 					<Comment key={idx} type='review' data={item} />
-					{!_.isEmpty(item.reply.reply) && 
+					{!_.isEmpty(item.reply.reply) &&
 						<div className='comment-reply'>
 							<div><Svg src='ico_review_reply.svg' /></div>
 							<Comment key={idx} type='review-reply' replyData={item.reply} sellerData={allReviews.seller} />

@@ -29,7 +29,9 @@ const getSelected = (childs, source = false) => {
 
 	return source;
 };
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Filter extends PureComponent {
 	constructor(props) {
 		super(props);
@@ -127,7 +129,7 @@ class Filter extends PureComponent {
 				});
 				break;
 			}
-			
+
 			selected[facet.id] = [{
 				facetdisplay: 'Semua'
 			}];
@@ -219,11 +221,11 @@ class Filter extends PureComponent {
 			case 'brand':
 				data = this.getFacet('brand');
 				filterView = (
-					<Brands 
-						{...state} 
-						title={data.title} 
-						data={data.data} 
-						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
+					<Brands
+						{...state}
+						title={data.title}
+						data={data.data}
+						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
@@ -232,68 +234,68 @@ class Filter extends PureComponent {
 			case 'color':
 				data = this.getFacet('color');
 				filterView = (
-					<Color 
-						{...state} 
+					<Color
+						{...state}
 						title={data.title}
-						data={data.data} 
-						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
+						data={data.data}
+						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
 				);
-			
+
 				break;
 			case 'size':
 				data = this.getFacet('size');
 				filterView = (
-					<Size 
-						{...state} 
+					<Size
+						{...state}
 						title={data.title}
-						data={data.data} 
-						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
+						data={data.data}
+						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
-				);			
+				);
 				break;
 			case 'location':
 				data = this.getFacet('location');
 				filterView = (
-					<Tree 
-						{...state} 
+					<Tree
+						{...state}
 						title={data.title}
-						data={data.data} 
-						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
+						data={data.data}
+						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values, custom) => this.applyFilter(layout, values, custom)}
 					/>
 				);
-			
+
 				break;
 			case 'price':
 				data = this.getFacet('price');
 				filterView = (
-					<Price 
-						{...state} 
+					<Price
+						{...state}
 						title={data.title}
-						data={data.data} 
+						data={data.data}
 						range={data.range}
-						selected={data.selected_range} 
-						onChange={(e, value) => this.onFilterSelected(e, 'pricerange', value)} 
-						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
+						selected={data.selected_range}
+						onChange={(e, value) => this.onFilterSelected(e, 'pricerange', value)}
+						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values, custom) => this.applyFilter(layout, values, custom)}
 					/>
-				);			
+				);
 				break;
 			case 'shipping_methods':
 				data = this.getFacet('shipping_methods');
 				filterView = (
-					<Lists 
-						{...state} 
+					<Lists
+						{...state}
 						title={data.title}
-						data={data.data} 
-						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
+						data={data.data}
+						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
@@ -302,24 +304,24 @@ class Filter extends PureComponent {
 			case 'custom_category_ids':
 				data = this.getFacet('custom_category_ids');
 				filterView = (
-					<TreeSegment 
-						{...state} 
+					<TreeSegment
+						{...state}
 						title={data.title}
-						data={data.data} 
-						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
+						data={data.data}
+						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
-				);		
+				);
 				break;
 			case 'category':
 				data = this.getFacet('category');
 				filterView = (
-					<TreeSegment 
-						{...state} 
+					<TreeSegment
+						{...state}
 						title={data.title}
-						data={data.data} 
-						onClick={(e, value) => this.onFilterSelected(e, layout, value)} 
+						data={data.data}
+						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
@@ -327,18 +329,18 @@ class Filter extends PureComponent {
 				break;
 			case 'result':
 				filterView = (
-					<Result 
-						{...state} 
+					<Result
+						{...state}
 						filters={filters}
 						resetDisabled={resetDisabled}
-						onReset={(e) => this.onReset(e)} 
+						onReset={(e) => this.onReset(e)}
 						selected={selected}
-						onApply={(e) => this.onApply(e)} 
-						onListClick={(e, key) => this.onListClick(e, key)} 
-						onClose={(e) => this.onFilterSectionClose()} 
+						onApply={(e) => this.onApply(e)}
+						onListClick={(e, key) => this.onListClick(e, key)}
+						onClose={(e) => this.onFilterSectionClose()}
 					/>
-				);	
-				break;	
+				);
+				break;
 			default:
 				filterView = null;
 			}

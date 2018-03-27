@@ -22,7 +22,9 @@ import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Shared from '@/containers/Mobile/Shared';
 import { urlBuilder } from '@/utils';
 import { userToken, userRfToken, userSource, pageReferrer } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Brands extends Component {
 	constructor(props) {
 		super(props);
