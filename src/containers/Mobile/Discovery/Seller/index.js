@@ -125,7 +125,7 @@ class Seller extends Component {
 			headerNameY: false,
 			seeMore: {
 				bool: true,
-				text: '[...]',
+				text: 'Lihat Selengkapnya',
 				show: false
 			},
 		};
@@ -210,7 +210,8 @@ class Seller extends Component {
 			showFilter: !closeFilter
 		});
 		this.update({
-			fq
+			fq,
+			page: 0
 		});
 	};
 
@@ -282,7 +283,8 @@ class Seller extends Component {
 			showSort: false
 		});
 		this.update({
-			sort: sort.q
+			sort: sort.q,
+			page: 0
 		});
 	};
 
@@ -328,7 +330,7 @@ class Seller extends Component {
 			seeMore: {
 				...this.state.seeMore,
 				bool: !this.state.seeMore.bool,
-				text: !this.state.seeMore.bool ? '[...]' : 'Hide'
+				text: !this.state.seeMore.bool ? 'Lihat Selengkapnya' : 'Tutup'
 			}
 		});
 	};
@@ -390,11 +392,13 @@ class Seller extends Component {
 						<div>
 							<div className={seeMore.bool && seeMore.show ? classNames('font-small padding--medium-h', styles.textOnlyShowTwoLines) : 'font-small padding--medium-h'}>{seller.info.description || ''}</div>
 							{seeMore.show && (
-								<span className='padding--medium-h'>
-									<button className='font-small font-color--grey' onClick={this.toggleSeeMore}>
-										{seeMore.text}
-									</button>
-								</span>
+								<div style={{ textAlign: 'center', paddingTop: '20px' }}>
+									<span className='padding--medium-h'>
+										<button className='font-small font-color--grey' onClick={this.toggleSeeMore} style={{ color: '#2f67b7' }}>
+											{seeMore.text}
+										</button>
+									</span>
+								</div>
 							)}
 						</div>
 					</div>
@@ -489,7 +493,7 @@ class Seller extends Component {
 						</Page>
 
 						<Header.Modal {...HeaderPage} style={{ zIndex: 1 }} />
-						<Navigation scroll={this.props.scroll} active={activeNav} />
+						<Navigation scroll={this.props.scroll} active={activeNav} botNav={this.props.botNav} />
 					</div>
 				)}
 			</span>

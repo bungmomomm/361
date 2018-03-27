@@ -79,7 +79,8 @@ class SearchResults extends Component {
 			showFilter: !closeFilter
 		});
 		this.update({
-			fq
+			fq,
+			page: 0
 		});
 	}
 
@@ -138,7 +139,8 @@ class SearchResults extends Component {
 			showSort: false
 		});
 		this.update({
-			sort: sort.q
+			sort: sort.q,
+			page: 0
 		});
 	}
 
@@ -223,16 +225,14 @@ class SearchResults extends Component {
 		const navigationAttribute = {
 			scroll: this.props.scroll
 		};
-		
-		if (cookies.get('page.referrer') !== 'HOME') {
-			navigationAttribute.active = 'Categories';
-		}
+		navigationAttribute.active = cookies.get(cookiesLabel.pageReferrer);
+
 
 		return (
 			<div style={this.props.style}>
 				{isLoading ? this.loadingView : this.renderSearch()}
 				{this.renderHeader()}
-				<Navigation {...navigationAttribute} />
+				<Navigation {...navigationAttribute} botNav={this.props.botNav} />
 			</div>
 		);
 	}

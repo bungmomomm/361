@@ -29,6 +29,7 @@ const productDetailAction = (token, productId) => async (dispatch, getState) => 
 	}));
 
 	if (err) {
+		dispatch(productLoading({ loading: false }));
 		return Promise.reject(err);
 	}
 
@@ -60,6 +61,7 @@ const productStoreAction = (token, storeId, page = 1, perPage = 4) => async (dis
 	}));
 
 	if (err) {
+		dispatch(productLoading({ loading: false }));
 		return Promise.reject(err);
 	}
 
@@ -91,6 +93,7 @@ const productSocialSummaryAction = (token, productId) => async (dispatch, getSta
 	}));
 
 	if (err) {
+		dispatch(productLoading({ loading: false }));
 		return Promise.reject(err);
 	}
 
@@ -123,6 +126,7 @@ const allProductReviewsAction = (token, productId, page = 1, perPage = 10) => as
 	}));
 
 	if (err) {
+		dispatch(productLoading({ loading: false }));
 		return Promise.reject(err);
 	}
 
@@ -157,6 +161,7 @@ const productPromoAction = (token, productId) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
+		dispatch(productLoading({ loading: false }));
 		return Promise.reject(err);
 	}
 
@@ -184,6 +189,8 @@ const getProductCardData = (details) => {
 	if (!_.isEmpty(details)) {
 		let productStock = 0;
 		let hasVariantSize = false;
+		let hasSizeGuide = false;
+		let specs = [];
 		const productVariants = [];
 		const variantsData = {};
 		const images = details.images.map((img, idx) => {
@@ -234,6 +241,20 @@ const getProductCardData = (details) => {
 						}
 					});
 				}
+
+				// maps seize guide value from product spec...
+				specs = details.spec.filter((item) => {
+					const specKey = item.key.toLowerCase().trim();
+					if (specKey.indexOf('size') === -1 && specKey.indexOf('guide') === -1) {
+						return true;
+					}
+
+					if (!_.isEmpty(item) && _.has(item, 'value')) {
+						hasSizeGuide = true;
+						window.sizeGuide = item.value;
+					}
+					return false;
+				});
 			}
 		} catch (error) {
 			throw error;
@@ -248,7 +269,9 @@ const getProductCardData = (details) => {
 			variants: productVariants,
 			variantsData,
 			productStock,
-			hasVariantSize
+			hasVariantSize,
+			specs,
+			hasSizeGuide
 		};
 	}
 	return details;

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import Shared from '@/containers/Mobile/Shared';
-import { Page, Svg, Button, Header, Select, Level, Radio } from '@/components/mobile';
+import { Page, Svg, Button, Header, Select, Level } from '@/components/mobile';
 import { actions } from '@/state/v4/Address';
 import styles from './style.scss';
 import { Form, Input } from '@/components/mobile/Formsy';
@@ -10,6 +10,7 @@ import { to } from 'await-to-js';
 import { Promise } from 'es6-promise';
 import _ from 'lodash';
 import { isLogin, userToken } from '@/data/cookiesLabel';
+import Switch from 'react-switch';
 
 class Address extends Component {
 
@@ -29,7 +30,7 @@ class Address extends Component {
 		},
 		type: 'shipping',
 		submitting: false,
-		default: 0,
+		default: false,
 		edit: {}
 	};
 
@@ -58,7 +59,7 @@ class Address extends Component {
 						city: selected.city.length ? `${selected.city[0].province_id}_${selected.city[0].city_id}` : '',
 						district: selected.district.length ? selected.district[0].id : '',
 					},
-					default: edit.fg_default
+					default: edit.fg_default === 1
 				});
 
 			})();
@@ -151,7 +152,7 @@ class Address extends Component {
 
 	submit = async (model) => {
 		const { city_id } = model;
-		const splitr = city_id.split('-');
+		const splitr = city_id.split('_');
 
 		model = {
 			...model,
@@ -159,7 +160,6 @@ class Address extends Component {
 			city_id: splitr[1],
 			type: this.state.type,
 			country_id: 1,
-			is_supported_pin_point: 0,
 			latitude: '',
 			longitude: '',
 			default: this.state.default,
@@ -188,215 +188,196 @@ class Address extends Component {
 		};
 
 		return (
-			<Page color='grey'>
+			<Page color='white'>
 				<Form
+					style={{ padding: '15px' }}
 					onValidSubmit={this.submit}
 					onValid={this.enableButton}
 					onInvalid={this.disableButton}
 					ref={(form) => { this.formsy = form; }}
 				>
-					<Level className='bg--white margin--medium-t margin--medium-b'>
-						<Level.Left>
-							Jadikan Alamat Utama
-						</Level.Left>
-						<Level.Right style={{ justifyContent: 'center' }}>
-							<div className='margin--medium'>
-								<div style={{ marginTop: '10px' }}>
-									<Radio
-										list
-										name='default_address'
-										onChange={this.radioChange}
-										checked={this.state.default}
-										data={[
-											{
-												value: 0,
-												label: (
-													<div>
-														<span>Tidak</span>
-													</div>
-												)
-											},
-											{
-												value: 1,
-												label: (
-													<div>
-														<span>Ya</span>
-													</div>
-												)
-											}
-										]}
-									/>
-								</div>
-							</div>
-						</Level.Right>
-					</Level>
-					<Level className='bg--white flex-column'>
-						<div className='margin--medium'>
-							<label className={styles.label} htmlFor='address_label'>Simpan Sebagai</label>
-							<Input
-								id='address_label'
-								name='address_label'
-								flat
-								placeholder='Rumah'
-								validations={{
-									matchRegexp: /^[0-9A-Za-z,.\s]+$/
-								}}
-								validationError='Invalid character supplied'
-								disabled={this.state.submitting}
-								required
-								hint='This is hint'
-								value={this.state.edit.address_label || ''}
-								onChange={this.onTextChange}
+					<div className='margin--medium' style={{ marginTop: '50px' }}>
+						<label className={styles.label} htmlFor='default_address'>Jadikan Alamat Utama</label>
+						<div style={{ marginTop: '10px' }}>
+							<Switch
+								onChange={this.radioChange}
+								checked={this.state.default}
+								name='default_address'
+								id='default_address'
 							/>
 						</div>
-						<div className='margin--medium'>
-							<label className={styles.label} htmlFor='fullname'>Nama Penerima</label>
-							<Input
-								id='fullname'
-								name='fullname'
-								flat
-								placeholder='John Doe'
-								validations='isWords'
-								validationError='Invalid character supplied'
-								disabled={this.state.submitting}
-								required
-								value={this.state.edit.fullname || ''}
-								onChange={this.onTextChange}
-							/>
-						</div>
-						<div className='margin--medium'>
-							<label className={styles.label} htmlFor='telephone'>Nomor Handphone</label>
-							<Input
-								id='phone'
-								name='phone'
-								flat
-								placeholder='085975049209'
-								validations={{
-									matchRegexp: /^[0-9]{7,14}$/
-								}}
-								validationError='Invalid character supplied'
-								disabled={this.state.submitting}
-								required
-								value={this.state.edit.phone || ''}
-								onChange={this.onTextChange}
-							/>
-						</div>
-						<div className='margin--medium'>
-							<label className={styles.label} htmlFor='city'>Kota, Provinsi *</label>
-							<Level
-								className='flex-row border-bottom'
-								onClick={
-									(this.state.disabled.city || this.state.submitting) ? false : () => this.toggleShow()
-								}
-							>
-								<Level.Left>
-									<Button className='flex-center' disabled={(this.state.disabled.city || this.state.submitting)}>
-										<span style={{ marginRight: '10px' }}>
-											{selected.city.length ? selected.city[0].label : '- Select City -'}
-										</span>
-									</Button>
-								</Level.Left>
-								<Level.Right>
-									<Svg src='ico_chevron-down.svg' />
-								</Level.Right>
-							</Level>
-							<Select
-								horizontal
-								show={this.state.showSelect.city}
-								label='Kota, Provinsi *'
-								name='city'
-								options={cities}
-								search
-								onSearch={this.onCitySearch}
-								onChange={this.onSelectChange}
-								onClose={() => this.toggleShow()}
-								defaultValue={selected.city.length ? selected.city[0].value : ''}
-							/>
-							<Input
-								id='city_id'
-								name='city_id'
-								type='hidden'
-								validations={{
-									matchRegexp: /^[1-9][0-9]*_[1-9][0-9]*$/
-								}}
-								validationError='This field is required'
-								value={this.state.selected.city}
-								required
-							/>
-						</div>
-						<div className='margin--medium'>
-							<label className={styles.label} htmlFor='district'>Kecamatan</label>
-							<Level
-								className='flex-row border-bottom'
-								onClick={
-									(this.state.disabled.district || this.state.submitting) ? false : () => this.toggleShow('district')
-								}
-							>
-								<Level.Left>
-									<Button className='flex-center' disabled={(this.state.disabled.district || this.state.submitting)}>
-										<span style={{ marginRight: '10px' }}>
-											{selected.district.length ? selected.district[0].label : '- Select District -'}
-										</span>
-									</Button>
-								</Level.Left>
-								<Level.Right>
-									<Svg src='ico_chevron-down.svg' />
-								</Level.Right>
-							</Level>
-							<Select
-								horizontal
-								show={this.state.showSelect.district}
-								label='Kecamatan *'
-								name='district'
-								options={districts}
-								onChange={(v) => this.onSelectChange(v, 'district')}
-								onClose={() => this.toggleShow('district')}
-								defaultValue={selected.district.length ? selected.district[0].value : ''}
-							/>
-							<Input
-								id='district_id'
-								name='district_id'
-								type='hidden'
-								validations={{
-									matchRegexp: /^[1-9][0-9]*$/
-								}}
-								validationError='This field is required'
-								value={this.state.selected.district}
-								required
-							/>
-						</div>
-						<div className='margin--medium'>
-							<label className={styles.label} htmlFor='zipcode'>Kode Pos</label>
-							<Input
-								id='zipcode'
-								name='zipcode'
-								flat
-								placeholder='16451'
-								validations={{
-									matchRegexp: /^[0-9]{5,6}$/
-								}}
-								validationError='Invalid character supplied'
-								disabled={this.state.submitting}
-								required
-								value={this.state.edit.zipcode || ''}
-								onChange={this.onTextChange}
-							/>
-						</div>
-						<div className='margin--medium'>
-							<label className={styles.label} htmlFor='address'>Address</label>
-							<Input
-								id='address'
-								name='address'
-								flat
-								placeholder='Jl. Perbanas No. 5A - Tugu'
-								validationError='This field is required'
-								disabled={this.state.submitting}
-								required
-								value={this.state.edit.address || ''}
-								onChange={this.onTextChange}
-							/>
-						</div>
-					</Level>
+					</div>
+					<div className='margin--medium'>
+						<label className={styles.label} htmlFor='address_label'>Simpan Sebagai</label>
+						<Input
+							id='address_label'
+							name='address_label'
+							flat
+							placeholder='Rumah'
+							validations={{
+								matchRegexp: /^[0-9A-Za-z,.\s]+$/
+							}}
+							validationError='Invalid character supplied'
+							disabled={this.state.submitting}
+							required
+							hint='This is hint'
+							value={this.state.edit.address_label || ''}
+							onChange={this.onTextChange}
+						/>
+					</div>
+
+					<div className='margin--medium'>
+						<label className={styles.label} htmlFor='fullname'>Nama Penerima</label>
+						<Input
+							id='fullname'
+							name='fullname'
+							flat
+							placeholder='John Doe'
+							validations='isWords'
+							validationError='Invalid character supplied'
+							disabled={this.state.submitting}
+							required
+							value={this.state.edit.fullname || ''}
+							onChange={this.onTextChange}
+						/>
+					</div>
+
+					<div className='margin--medium'>
+						<label className={styles.label} htmlFor='telephone'>Nomor Handphone</label>
+						<Input
+							id='phone'
+							name='phone'
+							flat
+							placeholder='085975049209'
+							validations={{
+								matchRegexp: /^[0-9]{7,14}$/
+							}}
+							validationError='Invalid character supplied'
+							disabled={this.state.submitting}
+							required
+							value={this.state.edit.phone || ''}
+							onChange={this.onTextChange}
+						/>
+					</div>
+
+					<div className='margin--medium'>
+						<label className={styles.label} htmlFor='city'>Kota, Provinsi *</label>
+						<Level
+							className='flex-row border-bottom'
+							onClick={
+								(this.state.disabled.city || this.state.submitting) ? false : () => this.toggleShow()
+							}
+						>
+							<Level.Left>
+								<Button className='flex-center' disabled={(this.state.disabled.city || this.state.submitting)}>
+									<span style={{ marginRight: '10px' }}>
+										{selected.city.length ? selected.city[0].label : '- Select City -'}
+									</span>
+								</Button>
+							</Level.Left>
+							<Level.Right>
+								<Svg src='ico_chevron-down.svg' />
+							</Level.Right>
+						</Level>
+						<Select
+							horizontal
+							show={this.state.showSelect.city}
+							label='Kota, Provinsi *'
+							name='city'
+							options={cities}
+							search
+							onSearch={this.onCitySearch}
+							onChange={this.onSelectChange}
+							onClose={() => this.toggleShow()}
+							defaultValue={selected.city.length ? selected.city[0].value : ''}
+						/>
+						<Input
+							id='city_id'
+							name='city_id'
+							type='hidden'
+							validations={{
+								matchRegexp: /^[1-9][0-9]*_[1-9][0-9]*$/
+							}}
+							validationError='This field is required'
+							value={this.state.selected.city}
+							required
+						/>
+					</div>
+
+					<div className='margin--medium'>
+						<label className={styles.label} htmlFor='district'>Kecamatan</label>
+						<Level
+							className='flex-row border-bottom'
+							onClick={
+								(this.state.disabled.district || this.state.submitting) ? false : () => this.toggleShow('district')
+							}
+						>
+							<Level.Left>
+								<Button className='flex-center' disabled={(this.state.disabled.district || this.state.submitting)}>
+									<span style={{ marginRight: '10px' }}>
+										{selected.district.length ? selected.district[0].label : '- Select District -'}
+									</span>
+								</Button>
+							</Level.Left>
+							<Level.Right>
+								<Svg src='ico_chevron-down.svg' />
+							</Level.Right>
+						</Level>
+						<Select
+							horizontal
+							show={this.state.showSelect.district}
+							label='Kecamatan *'
+							name='district'
+							options={districts}
+							onChange={(v) => this.onSelectChange(v, 'district')}
+							onClose={() => this.toggleShow('district')}
+							defaultValue={selected.district.length ? selected.district[0].value : ''}
+						/>
+						<Input
+							id='district_id'
+							name='district_id'
+							type='hidden'
+							validations={{
+								matchRegexp: /^[1-9][0-9]*$/
+							}}
+							validationError='This field is required'
+							value={this.state.selected.district}
+							required
+						/>
+					</div>
+
+					<div className='margin--medium'>
+						<label className={styles.label} htmlFor='zipcode'>Kode Pos</label>
+						<Input
+							id='zipcode'
+							name='zipcode'
+							flat
+							placeholder='16451'
+							validations={{
+								matchRegexp: /^[0-9]{5,6}$/
+							}}
+							validationError='Invalid character supplied'
+							disabled={this.state.submitting}
+							required
+							value={this.state.edit.zipcode || ''}
+							onChange={this.onTextChange}
+						/>
+					</div>
+
+					<div className='margin--medium'>
+						<label className={styles.label} htmlFor='address'>Address</label>
+						<Input
+							id='address'
+							name='address'
+							flat
+							placeholder='Jl. Perbanas No. 5A - Tugu'
+							validationError='This field is required'
+							disabled={this.state.submitting}
+							required
+							value={this.state.edit.address || ''}
+							onChange={this.onTextChange}
+						/>
+					</div>
 				</Form>
 			</Page>
 		);

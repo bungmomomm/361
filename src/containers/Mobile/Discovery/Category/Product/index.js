@@ -36,7 +36,7 @@ import {
 	renderIf,
 	urlBuilder
 } from '@/utils';
-import { userToken } from '@/data/cookiesLabel';
+import { userToken, pageReferrer } from '@/data/cookiesLabel';
 
 import Discovery from '../../Utils';
 
@@ -108,7 +108,11 @@ class Product extends Component {
 			isFooterShow: true,
 			focusedProductId: ''
 		};
-		this.loadingView = <Spinner />;
+		this.loadingView = (
+			<div style={{ margin: '20px auto 20px auto' }}>
+				<Spinner />
+			</div>
+		);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -137,7 +141,8 @@ class Product extends Component {
 			showFilter: !closeFilter
 		});
 		this.update({
-			fq
+			fq,
+			page: 0
 		});
 	}
 
@@ -192,7 +197,8 @@ class Product extends Component {
 			showSort: false
 		});
 		this.update({
-			sort: sort.q
+			sort: sort.q,
+			page: 0
 		});
 	}
 
@@ -326,7 +332,6 @@ class Product extends Component {
 						<SEO
 							paramCanonical={process.env.MOBILE_UR}
 						/>
-						{this.foreverBannerBlock()}
 						{isLoading ? this.loadingView : productsView}
 						<Footer isShow={this.state.isFooterShow} />
 					</Page>
@@ -369,7 +374,7 @@ class Product extends Component {
 	}
 
 	renderPage() {
-		const { productCategory, cookies } = this.props;
+		const { shared, productCategory, cookies } = this.props;
 		const { showFilter } = this.state;
 		if (showFilter) {
 			return (
@@ -385,21 +390,19 @@ class Product extends Component {
 		}
 
 		const navigationAttribute = {
-			scroll: this.props.scroll
+			scroll: this.props.scroll,
+			totalCartItems: shared.totalCart
 		};
-		
-		if (cookies.get('page.referrer') === 'HOME') {
-			navigationAttribute.active = 'Home';
-		} else {
-			navigationAttribute.active = 'Categories';
-		}
+		navigationAttribute.active = cookies.get(pageReferrer);
 
 		return (
 			<div style={this.props.style}>
 				{this.productsBlock()}
+				{this.foreverBannerBlock()}
 				{this.headerBlock()}
 				<Navigation
 					{...navigationAttribute}
+					botNav={this.props.botNav}
 				/>
 			</div>
 		);

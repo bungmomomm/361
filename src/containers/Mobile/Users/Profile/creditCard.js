@@ -22,7 +22,7 @@ import { userToken } from '@/data/cookiesLabel';
 class CreditCard extends Component {
 
 	constructor(props) {
-		
+
 		super(props);
 		this.props = props;
 		this.setDefaultCreditCard = this.setDefaultCreditCard.bind(this);
@@ -31,7 +31,7 @@ class CreditCard extends Component {
 		this.renderDeleteCreditCardPopUpConfirmation = this.renderDeleteCreditCardPopUpConfirmation.bind(this);
 		this.renderSetDefaultCreditCardPopUpConfirmation = this.renderSetDefaultCreditCardPopUpConfirmation.bind(this);
 		this.renderCreditCardList = this.renderCreditCardList.bind(this);
-		
+
 		this.state = {
 			successMessage: '',
 			temporaryCheckedCreditCardValueForSetDefault: null,
@@ -41,9 +41,9 @@ class CreditCard extends Component {
 			showSetDefaultCreditCardPopUpConfirmation: false,
 			isCreditCardAllowedForDelete: false
 		};
-		
+
 	}
-	
+
 	async setDefaultCreditCard() {
 
 		const { dispatch, cookies } = this.props;
@@ -51,9 +51,9 @@ class CreditCard extends Component {
 		const parameterDefault = {
 			card_id: checkedCreditCardValueForSetDefault
 		};
-		
+
 		const [err, response] = await to(dispatch(new actions.setCreditCard(cookies.get(userToken), parameterDefault)));
-		
+
 		if (err) {
 			return false;
 		}
@@ -73,15 +73,15 @@ class CreditCard extends Component {
 		return response;
 
 	}
-    
+
 	async deleteSingleCreditCardFromList() {
-		
+
 		const { dispatch, cookies } = this.props;
 		const { checkedCreditCardValueForDelete, isCreditCardAllowedForDelete } = this.state;
 		const parameterDelete = {
 			card_id: checkedCreditCardValueForDelete
 		};
-		
+
 		// Prevent the default credit card to be deleted.
 		if (isCreditCardAllowedForDelete === false) {
 			const message = 'Kartu kredit tidak bisa di hapus. Silahkan terapkan default pada kartu kredit lainnya';
@@ -91,46 +91,46 @@ class CreditCard extends Component {
 			});
 			return false;
 		}
-		
+
 		const [err, response] = await to(dispatch(new actions.deleteCreditCard(cookies.get(userToken), parameterDelete)));
-		
+
 		if (err) {
 			return false;
 		}
-		
+
 		const { data } = response;
-		
+
 		if (data.code === 200) {
-			
+
 			await to(dispatch(new actions.getCreditCard(cookies.get(userToken))));
-			
+
 			this.setState({
 				successMessage: data.data.msg,
 				showDeleteCreditCardPopUpConfirmation: false
 			});
 		}
-		
+
 		return response;
-		
+
 	}
-	
+
 	makeCreditCardRadioChecked(id) {
 
 		this.setState({ checkedCreditCardValueForSetDefault: id }, () => { this.setDefaultCreditCard(); });
 	}
-	
+
 	renderDeleteCreditCardPopUpConfirmation() {
-		
+
 		const { showDeleteCreditCardPopUpConfirmation } = this.state;
-		
+
 		const modalAttribute = {
 			show: false
 		};
-		
+
 		if (showDeleteCreditCardPopUpConfirmation === true) {
 			modalAttribute.show = true;
 		}
-		
+
 		return (
 			<Modal {...modalAttribute}>
 				<div className='font-medium'>
@@ -154,38 +154,38 @@ class CreditCard extends Component {
 			</Modal>
 		);
 	}
-	
+
 	renderCreditCardList() {
-		
-		
+
+
 		const { checkedCreditCardValueForSetDefault } = this.state;
-		
+
 		const { users } = this.props;
-		
+
 		let view = (<div>Loading...</div>);
-		
+
 		if (_.isEmpty(users.creditCard === false)) {
-			
+
 			view = _.map(users.creditCard, (cc, id) => {
-				
+
 				const fgDefault = cc.fg_default;
 				const creditCardWithSeparator = cc.credit_card_with_separator;
 				const creditCardName = cc.credit_card_type;
-				
+
 				const isCheckedByDefault = (fgDefault === 1 && !checkedCreditCardValueForSetDefault);
 				const isCheckedByUser = (checkedCreditCardValueForSetDefault && (checkedCreditCardValueForSetDefault === cc.id));
-				
+
 				const isChecked = isCheckedByDefault || isCheckedByUser ? cc.id : null;
-				
+
 				const creditCardLogo = `logo_${cc.credit_card_type}.svg`;
-				
+
 				// Make condition if credit card allowed for delete or not.
 				let allowDeleteValue = true;
-				
+
 				if (checkedCreditCardValueForSetDefault === cc.id || cc.fg_default !== 0) {
 					allowDeleteValue = false;
 				}
-				
+
 				return (
 					<div className='margin--medium-t' key={id}>
 						<Level className='bg--white' key={id}>
@@ -221,7 +221,7 @@ class CreditCard extends Component {
 												showDeleteCreditCardPopUpConfirmation: true,
 												isCreditCardAllowedForDelete: allowDeleteValue
 											};
-											
+
 										});
 									}}
 								/>
@@ -232,21 +232,21 @@ class CreditCard extends Component {
 			});
 		}
 		return view;
-		
+
 	}
-    
+
 	renderSetDefaultCreditCardPopUpConfirmation() {
- 
+
 		const { showSetDefaultCreditCardPopUpConfirmation, temporaryCheckedCreditCardValueForSetDefault } = this.state;
-		
+
 		const modalAttribute = {
 			show: false
 		};
-		
+
 		if (showSetDefaultCreditCardPopUpConfirmation === true) {
 			modalAttribute.show = true;
 		}
-		
+
 		return (
 			<Modal {...modalAttribute}>
 				<div className='font-medium'>
@@ -280,7 +280,7 @@ class CreditCard extends Component {
 			show: true,
 			disableClose: true
 		};
-		
+
 		const HeaderPage = ({
 			left: (
 				<Link to={'/profile'}>
@@ -300,13 +300,13 @@ class CreditCard extends Component {
 							{successMessage}
 						</Notification>
 					) }
-					
+
 					{ this.renderCreditCardList() }
 					{ this.renderDeleteCreditCardPopUpConfirmation() }
 					{ this.renderSetDefaultCreditCardPopUpConfirmation() }
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Profile' />
+				<Navigation active='Profile' botNav={this.props.botNav} />
 			</div>
 		);
 	}
@@ -319,10 +319,10 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = (props) => {
-	
+
 	const { dispatch, cookies } = props;
 	dispatch(new actions.getCreditCard(cookies.get(userToken)));
- 
+
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(CreditCard, doAfterAnonymous)));

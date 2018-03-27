@@ -23,7 +23,7 @@ import {
 import { urlBuilder } from '@/utils';
 import cookiesLabel from '@/data/cookiesLabel';
 
-const renderSectionHeader = (title, options) => {
+const renderSectionHeader = (title, options, cookies = null) => {
 	return (
 		<Level>
 			<Level.Left><div className={styles.headline}>{title}</div></Level.Left>
@@ -32,7 +32,10 @@ const renderSectionHeader = (title, options) => {
 					options.isMozaic ?
 						<a href={options.url || '/'} target='_blank' className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></a>
 						:
-						<Link to={options.url || '/'} className={styles.readmore}>
+						<Link
+							to={options.url || '/'}
+							className={styles.readmore}
+						>
 							{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' />
 						</Link>
 				}
@@ -113,7 +116,7 @@ class Home extends Component {
 	}
 
 	renderHeroBanner() {
-		const { home, cookies } = this.props;
+		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		const featuredBanner = _.chain(home).get(`allSegmentData.${segment}`).get('heroBanner');
 		if (!featuredBanner.isEmpty().value()) {
@@ -123,11 +126,6 @@ class Home extends Component {
 			return (
 				<Link
 					to={link}
-					onClick={
-						() => {
-							cookies.set('page.referrer', 'HOME', { path: '/' });
-						}
-					}
 				>
 					<div>
 						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
@@ -147,7 +145,7 @@ class Home extends Component {
 		 * recent-view
 		 * */
 
-		const { home } = this.props;
+		const { home, cookies } = this.props;
 		const segment = home.activeSegment;
 		const title = 'LIHAT SEMUA';
 		const recommendationData = _.chain(home).get(`allSegmentData.${segment.key}.recomendationData.${type}`);
@@ -159,7 +157,7 @@ class Home extends Component {
 				const header = renderSectionHeader(data.title, {
 					title,
 					url: link
-				});
+				}, cookies);
 				return (
 					<div>
 						{ header }
@@ -226,7 +224,7 @@ class Home extends Component {
 	}
 
 	renderSquareBanner() {
-		const { home, cookies } = this.props;
+		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		const datas = _.chain(home).get(`allSegmentData.${segment}.squareBanner`);
 		if (datas.value()) {
@@ -237,11 +235,6 @@ class Home extends Component {
 							<Link
 								to={link.target || '/'}
 								key={c}
-								onClick={
-									() => {
-										cookies.set('page.referrer', 'HOME', { path: '/' });
-									}
-								}
 							>
 								<div>
 									<Image lazyload alt='banner' src={images.thumbnail} />
@@ -256,7 +249,7 @@ class Home extends Component {
 	}
 
 	renderBottomBanner(position = 'top') {
-		const { home, cookies } = this.props;
+		const { home } = this.props;
 		const segment = home.activeSegment.key;
 		let bottomBanner = [];
 		const dataTop = _.chain(home).get(`allSegmentData.${segment}.topLanscape`);
@@ -272,11 +265,6 @@ class Home extends Component {
 							<Link
 								to={link.target || '/'}
 								key={d}
-								onClick={
-									() => {
-										cookies.set('page.referrer', 'HOME', { path: '/' });
-									}
-								}
 							>
 								<div>
 									<Image lazyload alt='banner' src={images.thumbnail} />
@@ -411,7 +399,7 @@ class Home extends Component {
 					lovelist={shared.totalLovelist}
 					value={this.props.search.keyword}
 				/>
-				<Navigation active='Home' scroll={this.props.scroll} totalCartItems={shared.totalCart} />
+				<Navigation active='Home' scroll={this.props.scroll} totalCartItems={shared.totalCart} botNav={this.props.botNav} />
 			</div>
 		);
 	}

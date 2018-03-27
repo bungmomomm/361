@@ -89,7 +89,8 @@ const reducer = handleActions({
 	[commentListLoadFail](state, { payload: { isLoading, data } }) {
 		return {
 			...state,
-			isLoading: false
+			isLoading: false,
+			data
 		};
 	},
 }, initialState);

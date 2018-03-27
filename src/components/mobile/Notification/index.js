@@ -5,17 +5,28 @@ import Button from '../Button';
 import Svg from '../Svg';
 
 class Notification extends PureComponent {
+
+	componentWillMount() {
+		const { timeout } = this.props;
+		const that = this;
+		if (timeout > 0) {
+			setTimeout(() => {
+				that.props.onClose(undefined);
+			}, parseInt(timeout, 10));
+		}
+	}
+
 	render() {
 		const {
 			className,
 			children,
-			show,
 			onClose,
 			color,
 			toast,
 			disableClose,
 			alert,
-			...props,
+			show,
+			style
 		} = this.props;
 
 		const createClassName = classNames(
@@ -38,7 +49,7 @@ class Notification extends PureComponent {
 
 		const renderNotification = () => {
 			return (
-				<div className={createClassName} {...props} >
+				<div className={createClassName} style={style} >
 					{children}
 					{
 						!disableClose && (
@@ -70,5 +81,10 @@ class Notification extends PureComponent {
 		return renderNotification();
 	}
 }
+
+Notification.defaultProps = {
+	timeout: 0,
+	show: false
+};
 
 export default Notification;

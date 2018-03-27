@@ -15,52 +15,53 @@ class Address extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			AddressModalIndicator: false
+			AddressModalIndicator: false,
+			selectedAddress: false,
+			showConfirmDelete: false
 		};
 		this.showAddressModal = this.showAddressModal.bind(this);
 		this.hideAddressModal = this.hideAddressModal.bind(this);
 	}
 
-	showAddressModal() {
+	setDefault = async () => {
+		const { dispatch, cookies } = this.props;
+		await dispatch(actions.setDefaultAddress(cookies.get('user.token'), this.state.selectedAddress));
+		window.location.reload();
+	};
+
+	showAddressModal(id) {
 		this.setState({
-			AddressModalIndicator: true
+			AddressModalIndicator: true,
+			selectedAddress: id
 		});
 	}
 
 	hideAddressModal() {
 		this.setState({
-			AddressModalIndicator: false
+			AddressModalIndicator: false,
+			selectedAddress: false
 		});
 	}
 
-
 	deleteAddress = async () => {
 		const { dispatch, cookies, address } = this.props;
-		if (!this.state.showConfirmDelete.id) {
+		if (!this.state.selectedAddress) {
 			return Promise.reject(new Error('Invalid address id, please contact administrator.'));
 		}
 
-		await dispatch(actions.deleteAddress(cookies.get(userToken), this.state.showConfirmDelete.id));
+		await dispatch(actions.deleteAddress(cookies.get('user.token'), this.state.selectedAddress));
 		const mutatedShipping = address.address.shipping.filter((v) => {
-			return v.id !== this.state.showConfirmDelete.id;
+			return v.id !== this.state.selectedAddress;
 		});
 
-		this.setState({
-			AddressModalIndicator: false
-		});
-
+		this.hideAddressModal();
+		this.setState({ showConfirmDelete: false });
 		return dispatch(actions.mutateState({
 			address: {
 				...address.address,
 				shipping: mutatedShipping
 			}
 		}));
-	};
-
-	openDeleteModal = (data) => {
-		this.setState({
-			AddressModalndicator: data
-		});
 	};
 
 	renderData = () => {
@@ -87,7 +88,7 @@ class Address extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page color='grey'>
+				<Page color='white'>
 					<Link to='/address/add' className='bg--white margin--medium-t margin--medium-b'>
 						<Level>
 							<Level.Left>
@@ -99,9 +100,7 @@ class Address extends Component {
 						</Level>
 					</Link>
 					{address.address.shipping.map((v, k) => {
-						const { city, fullname, district, phone, province, zipcode } = v;
-						console.log('value');
-						console.log(v);
+						const { city, fullname, district, phone, province, zipcode, id } = v;
 						const placeHasBeenMarkedContent = (
 							<div className='flex-row flex-middle'>
 								<div className='margin--small-r'><Svg src='ico_pin-poin-marked.svg' /></div>
@@ -109,6 +108,7 @@ class Address extends Component {
 							</div>
 						);
 						return (
+
 							<div key={k}>
 								<Level className='bg--white border-bottom' key={k}>
 									<Level.Left className='d-inline-block'>
@@ -117,7 +117,7 @@ class Address extends Component {
 									<Level.Right style={{ justifyContent: 'center' }}>
 										<Svg
 											src='ico_option.svg'
-											onClick={this.showAddressModal}
+											onClick={() => this.showAddressModal(id)}
 										/>
 									</Level.Right>
 								</Level>
@@ -139,13 +139,36 @@ class Address extends Component {
 						<Level style={{ padding: '0px', textAlign: 'center' }}>
 							<Level.Left />
 							<Level.Item className='flex-center'>
-								<div className='padding--small'>Jadikan Alamat Utama</div>
-								<div className='padding--small'>Ubah Alamat</div>
-								<Button className='padding--small' onClick={this.deleteAddress}>Hapus Alamat</Button>
+								<Button className='padding--small' onClick={this.setDefault}>Jadikan Alamat Utama</Button>
+								<div className='padding--small'>
+									<Link to={`/address/edit/${this.state.selectedAddress}`}>
+										Ubah Alamat
+									</Link>
+								</div>
+								<Button className='padding--small' onClick={() => { this.setState({ showConfirmDelete: true }); }}>Hapus Alamat</Button>
 								<Button className='padding--small' onClick={this.hideAddressModal}>Batal</Button>
 							</Level.Item>
 						</Level>
 					</div>
+				</Modal>
+
+				<Modal show={this.state.showConfirmDelete}>
+					<div className='font-medium'>
+						<h3>Hapus Alamat</h3>
+						<Level style={{ padding: '0px' }} className='margin--medium-v'>
+							<Level.Left />
+							<Level.Item className='padding--medium-h'>
+								<div className='font-small'>Kamu yakin menghapus alamat ini?</div>
+							</Level.Item>
+						</Level>
+					</div>
+					<Modal.Action
+						closeButton={(
+							<Button onClick={() => { this.setState({ showConfirmDelete: false }); }}>
+								<span className='font-color--primary-ext-2'>BATALKAN</span>
+							</Button>)}
+						confirmButton={(<Button onClick={this.deleteAddress}>YA, HAPUS</Button>)}
+					/>
 				</Modal>
 			</div>
 		);
