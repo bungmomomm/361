@@ -6,6 +6,7 @@ import Shared from '@/containers/Mobile/Shared';
 import { Page, Button, Svg, Header, Modal, Level } from '@/components/mobile';
 import { actions } from '@/state/v4/Address';
 import { Promise } from 'es6-promise';
+import { userToken, isLogin } from '@/data/cookiesLabel';
 import styles from './style.scss';
 
 class Address extends Component {
@@ -186,12 +187,12 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies, history } = props;
-	if (!cookies.get('isLogin') || cookies.get('isLogin') === 'false') {
+	if (!cookies.get(isLogin) || cookies.get(isLogin) === 'false') {
 		history.push('/login');
 		return;
 	}
 
-	await dispatch(actions.getAddress(cookies.get('user.token')));
+	await dispatch(actions.getAddress(cookies.get(userToken)));
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Address, doAfterAnonymous)));
