@@ -44,7 +44,7 @@ class Users extends Component {
 		this.setState({
 			current
 		});
-		history.replace(`/${current}`);
+		history.replace(`/${current}${location.search}`);
 	}
 
 	callbackRegisterComponent(value) {
