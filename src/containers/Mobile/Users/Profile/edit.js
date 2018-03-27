@@ -23,7 +23,6 @@ import { Page, Svg, Level, Image, Input, Button, Spinner, Select, Notification }
 import { actions as userActions } from '@/state/v4/User';
 
 import CONST from '@/constants';
-import { splitString } from '@/utils';
 
 import styles from './profile.scss';
 import cookiesLabel from '@/data/cookiesLabel';
@@ -35,7 +34,6 @@ class UserProfileEdit extends Component {
 		this.state = {
 			showSelect: false,
 			newGender: null,
-			isBuyer: true, // buyer or seller
 			layout: 'main',
 			submittingForm: false,
 			validName: true,
@@ -356,7 +354,7 @@ class UserProfileEdit extends Component {
 	}
 
 	renderAvatar(source = 'local') {
-		const { formData, isBuyer } = this.state;
+		const { formData } = this.state;
 
 		if (_.isEmpty(formData)) {
 			return (
@@ -366,25 +364,21 @@ class UserProfileEdit extends Component {
 			);
 		}
 
-		const ppClassName = classNames(
-			styles.tempPP,
-			isBuyer ? styles.buyer : styles.seller
-		);
-
 		const ppCtrClassName = classNames(
 			styles.tempPPContainer,
 			styles.big
 		);
 
 		let avatar;
+		const defaultImage = require('@/assets/images/mobile/ico_avatar.png');
 		if (source === 'api') {
 			avatar = formData && formData[this.AVATAR_FIELD] ? (
 				<Image width={80} height={80} avatar src={formData[this.AVATAR_FIELD]} alt={_.capitalize(formData[this.NAME_FIELD]) || ''} />
 			) : (
-				<div className={ppClassName}>{splitString(formData[this.NAME_FIELD].trim() || '')}</div>
+				<Image width={80} height={80} avatar src={defaultImage} alt={_.capitalize(formData[this.NAME_FIELD]) || ''} />
 			);
 		} else {
-			avatar = <div className={ppClassName}>{splitString(formData[this.NAME_FIELD].trim() || '')}</div>;
+			avatar = <Image width={80} height={80} avatar src={defaultImage} alt={_.capitalize(formData[this.NAME_FIELD]) || ''} />;
 		}
 
 		return (
