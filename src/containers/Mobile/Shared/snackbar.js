@@ -115,6 +115,7 @@ class Snackbar extends React.Component {
 		const button = (snack.data.button || {}).label ? snack.data.button : null;
 		return (
 			<div
+				className='snackBar'
 				style={this.populateStyles('snack')}
 				onTransitionEnd={this.transitionEndHandler}
 			>
