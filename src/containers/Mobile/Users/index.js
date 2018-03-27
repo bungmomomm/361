@@ -23,6 +23,7 @@ class Users extends Component {
 		this.state = {
 			current: location.pathname.substring(1),
 			redirectUri: query.redirect_uri || false,
+			loading: true,
 			callback: {
 				register: {
 					view: ''
@@ -30,6 +31,12 @@ class Users extends Component {
 			}
 		};
 		this.callbackRegisterComponent = this.callbackRegisterComponent.bind(this);
+	}
+
+	componentDidMount() {
+		if (this.props.cookies.get('isLogin') === 'true') {
+			this.props.history.replace('/profile');
+		}
 	}
 
 	handlePick(current) {

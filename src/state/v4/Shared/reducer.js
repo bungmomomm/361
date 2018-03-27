@@ -87,7 +87,7 @@ const reducer = handleActions({
 	},
 	[rrsShowSnack](state, { payload }) {
 		snackQueue = state.snackbar.slice();
-		snackQueue.push({ id: payload.id, data: payload.data, style: payload.style });
+		snackQueue.push({ id: payload.id, data: payload.data, style: payload.style, close: payload.close });
 		return {
 			...state,
 			snackbar: snackQueue
