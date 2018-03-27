@@ -23,7 +23,8 @@ class Price extends PureComponent {
 			data: props.data || [],
 			resetDisabled: utils.getSelected(props.data).length < 1
 		};
-		this.state.resetData =	 _.cloneDeep(this.state.range);
+		this.state.resetRangeData = _.cloneDeep(this.state.range);
+		this.state.resetSelectedRangeData = _.cloneDeep(this.state.selectedRange);
 	}
 
 	onClick(e, value) {
@@ -42,15 +43,15 @@ class Price extends PureComponent {
 	}
 
 	onApply(e) {
-		const { data, range, custom } = this.state;
+		const { data, selectedRange, custom } = this.state;
 		const { onApply } = this.props;
 		const result = _.filter(data, (facetData) => {
 			return (facetData.is_selected === 1);
 		});
 		if (custom) {
 			return onApply(e, null, {
-				...range,
-				facetdisplay: `${utils.toIdr(range.min)} - ${utils.toIdr(range.max)}`
+				...selectedRange,
+				facetdisplay: `${utils.toIdr(selectedRange.min)} - ${utils.toIdr(selectedRange.max)}`
 			});
 		}
 		return onApply(e, result, false);
@@ -83,10 +84,11 @@ class Price extends PureComponent {
 	}
 
 	reset() {
-		const { resetData } = this.state;
+		const { resetRangeData, resetSelectedRangeData } = this.state;
 		this.setState({
 			resetDisabled: true,
-			range: _.cloneDeep(resetData)
+			range: _.cloneDeep(resetRangeData),
+			selectedRange: _.cloneDeep(resetSelectedRangeData),
 		});
 	}
 
