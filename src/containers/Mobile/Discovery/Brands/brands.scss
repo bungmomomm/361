@@ -1,26 +1,36 @@
 @import '../../../../styles/mobile/variables';
 @import '../../../../styles/mobile/mixins';
 .filter {
-    padding: 0px rem(15px);
+    // padding: 0px rem(15px);
     input {
         text-align: center;
+    }
+    input:focus {
+        text-align: left;
     }
     button {
         padding: 5px;
     }
+    .perline {
+        display: flex;
+        justify-content:space-around;
+        flex-direction:row;
+        width: 100%;
+    }
+    // box-shadow: 0 4px 2px -2px rgba(0, 0, 0, 0.05);
 }
 
 .listFilterKey {
     flex-direction: row;
     width: 100%;
     padding: 0 rem(10px);
-    margin: rem(15px) 0;
+    margin-bottom: rem(15px);
     flex-wrap: wrap;
-    justify-content: center;
+    // justify-content: center;
     button {
         display: inline-flex;
         font-family: font-family(--lato-regular);
-        font-size: 12px;
+        font-size: 15px;
         letter-spacing: 0.3px;
         line-height: 26px;
         padding: 0px rem(5px);
