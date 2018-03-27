@@ -207,9 +207,9 @@ class Comments extends Component {
 		}
 
 		return (
-			<span className={styles.commentbox}>
-				<Link to={`/login${redirectUri}`}>Login</Link> / <Link to={`/register${redirectUri}`}>Register</Link> untuk memberikan komentar
-			</span>
+			<Level className={styles.commentboxGuest}>
+				<Link to={`/login${redirectUri}`}>Login</Link>&nbsp;/&nbsp;<Link to={`/register${redirectUri}`}>Register</Link>&nbsp;untuk memberikan komentar
+			</Level>
 		);
 	}
 
