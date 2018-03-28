@@ -332,6 +332,7 @@ class Product extends Component {
 						<SEO
 							paramCanonical={process.env.MOBILE_UR}
 						/>
+						{this.foreverBannerBlock()}
 						{isLoading ? this.loadingView : productsView}
 						<Footer isShow={this.state.isFooterShow} />
 					</Page>
@@ -398,7 +399,6 @@ class Product extends Component {
 		return (
 			<div style={this.props.style}>
 				{this.productsBlock()}
-				{this.foreverBannerBlock()}
 				{this.headerBlock()}
 				<Navigation
 					{...navigationAttribute}
