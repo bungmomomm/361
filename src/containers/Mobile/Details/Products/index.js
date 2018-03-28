@@ -71,8 +71,11 @@ const doAfterAnonymous = async (props) => {
 	const token = cookies.get(cookiesLabel.userToken);
 
 	const productDetail = await dispatch(productActions.productDetailAction(token, productId));
-	trackPdpView(productDetail, props);
-	fusion.trackPdp(productDetail);
+	if (productDetail) {
+		trackPdpView(productDetail, props);
+		await dispatch(productActions.productSocialSummaryAction(token, productId));
+		fusion.trackPdp(productDetail);
+	}
 
 	const res = await dispatch(productActions.productPromoAction(token, productId));
 	if (res.status === 200 && res.statusText === 'OK') {
@@ -86,7 +89,6 @@ const doAfterAnonymous = async (props) => {
 		}
 		await dispatch(lovelistActions.bulkieCountByProduct(token, ids));
 	}
-	await dispatch(productActions.productSocialSummaryAction(token, productId));
 };
 
 class Products extends Component {
@@ -167,9 +169,13 @@ class Products extends Component {
 			const urlRegex = /(#[^\s]+)/g;
 			return text.replace(urlRegex, (url) => {
 				const hashlink = urlBuilder.setName(url).buildSearchByKeyword();
-				return `<a href="${hashlink + url}">${url}</a>`;
+				return `<a href="${hashlink + url.replace('#', '%23')}">${url}</a>`;
 			});
 		};
+	}
+
+	componentDidMount() {
+		if (this.props.botNav) this.props.botNav(this.botNav);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -226,6 +232,10 @@ class Products extends Component {
 		// updates states
 		this.setState({ status, cardProduct, selectedVariant, size });
 		this.handleScroll();
+	}
+
+	componentWillUnmount() {
+		if (this.props.botNav) this.props.botNav(false);
 	}
 
 	onOvoInfoClick(e) {
@@ -573,7 +583,17 @@ class Products extends Component {
 							<Svg src={'ico_arrow-back-left.svg'} />
 						</Button>
 					),
-					center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'><div className='marguee'><span>{brandName}</span></div></div>,
+					center: (
+						<div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>
+							{
+								_.chain(brandName).split(' ').size().value() > 5 ? (
+									<div className='marguee'>
+										<span>{brandName}</span>
+									</div>
+								) : <span>{brandName}</span>
+							}
+						</div>
+					),
 					right: (
 						<div className='flex-row flex-middle'>
 							<Share title={detail.title} url={url} />
@@ -605,7 +625,7 @@ class Products extends Component {
 
 		if (!_.isEmpty(cardProduct) && _.has(cardProduct, 'pricing')) {
 			return (
-				<div className={styles.stickyAction}>
+				<div className={styles.stickyAction} ref={(r) => { this.botNav = r; }}>
 					<div className='flex-row flex-spaceBetween padding--medium-h padding--medium-v border-top flex-middle'>
 						<div className='flex-row'>
 							<div>
@@ -762,15 +782,17 @@ class Products extends Component {
 									<span className='padding--medium-h font-color--grey' {...buttonProductDescriptionAttribute}>{ fullProductDescriptionButtonText }</span>
 								</div>
 							}
-							<div className='margin--medium-v --disable-flex padding--medium-h'>
-								<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
-									{(comments.total === 0) && 'Tulis Komentar'}
-									{(comments.total > 0) && `Lihat Semua ${comments.total} Komentar`}
-								</Link>
-								{(!_.isUndefined(comments) && !_.isUndefined(comments.summary) && !_.isEmpty(comments.summary)) && (
-									<Comment type='lite-review' data={comments.summary} />
-								)}
-							</div>
+							{product.loading ? this.loadingContent : (
+								<div className='margin--medium-v --disable-flex padding--medium-h'>
+									<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
+										{(comments.total === 0) && 'Tulis Komentar'}
+										{(comments.total > 0) && `Lihat Semua ${comments.total} Komentar`}
+									</Link>
+									{(!_.isUndefined(comments) && !_.isUndefined(comments.summary) && !_.isEmpty(comments.summary)) && (
+										<Comment type='lite-review' data={comments.summary} />
+									)}
+								</div>
+							)}
 							{/* ----------------------------	END OF PDP MAIN CONTENT (CARD PRODUCT) ---------------------------- */}
 
 							<div style={{ backgroundColor: '#F5F5F5' }}>
