@@ -11,6 +11,8 @@ import {
 	loadingState
 } from './reducer';
 
+import { actions as scrollerActions } from '@/state/v4/Scroller';
+
 const setLoadingState = (loading) => (dispatch) => {
 	dispatch(loadingState(loading));
 };
@@ -156,7 +158,9 @@ const removeFromLovelist = (token, productId) => async (dispatch, getState) => {
  * Gets user lovelist list from server
  * @param {*} token 
  */
-const getLovelisItems = (token) => async (dispatch, getState) => {
+const getLovelisItems = ({ token, query = {} }) => async (dispatch, getState) => {
+
+	dispatch(scrollerActions.onScroll({ loading: true }));
 	
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
@@ -169,10 +173,29 @@ const getLovelisItems = (token) => async (dispatch, getState) => {
 
 	const [err, response] = await to(request({ token, path, method: 'GET', fullpath: true }));
 
+	const lovelistData = response.data.data;
+
 	if (err) return Promise.reject(err);
 
 	dispatch(getList(response.data.data));
 	dispatch(setLoadingState({ loading: false }));
+
+	console.log('link: ', lovelistData.links);
+	const nextLink = lovelistData.links && lovelistData.links.next ? new URL(baseUrl + lovelistData.links.next).searchParams : false;
+	console.log('nextLink: ', nextLink.get('page'));
+	dispatch(scrollerActions.onScroll({
+		nextData: {
+			token,
+			query: {
+				...query,
+				page: nextLink ? parseInt(nextLink.get('page'), 10) : false
+			},
+			loadNext: true
+		},
+		nextPage: nextLink !== false,
+		loading: false,
+		loader: getLovelisItems
+	}));
 
 	return Promise.resolve(response.data.data);
 };

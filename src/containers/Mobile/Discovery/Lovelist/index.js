@@ -10,6 +10,7 @@ import { actions as LoveListActionCreator } from '@/state/v4/Lovelist';
 import { actions as commentActions } from '@/state/v4/Comment';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Shared from '@/containers/Mobile/Shared';
+import Scroller from '@/containers/Mobile/Shared/scroller';
 import { urlBuilder } from '@/utils';
 import cookiesLabel from '@/data/cookiesLabel';
 
@@ -288,6 +289,7 @@ class Lovelist extends Component {
 
 const mapStateToProps = (state) => {
 	return {
+		...state,
 		lovelist: state.lovelist,
 		shared: state.shared,
 		comments: state.comments
@@ -297,7 +299,7 @@ const mapStateToProps = (state) => {
 const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies } = props;
 
-	const list = await dispatch(LoveListActionCreator.getLovelisItems(cookies.get(cookiesLabel.userToken))) || [];
+	const list = await dispatch(LoveListActionCreator.getLovelisItems({ token: cookies.get(cookiesLabel.userToken), query: { page: 1 } })) || [];
 	const ids = list.products.map((item) => item.product_id);
 	if (ids.length > 0) {
 		await dispatch(LoveListActionCreator.bulkieCountByProduct(cookies.get(cookiesLabel.userToken), ids));	
@@ -307,4 +309,4 @@ const doAfterAnonymous = async (props) => {
 	// }
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(Lovelist, doAfterAnonymous)));
+export default withCookies(connect(mapStateToProps)(Scroller(Shared(Lovelist, doAfterAnonymous))));
