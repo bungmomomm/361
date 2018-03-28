@@ -23,6 +23,7 @@ class Address extends Component {
 		};
 		this.showAddressModal = this.showAddressModal.bind(this);
 		this.hideAddressModal = this.hideAddressModal.bind(this);
+		this.listAddressMaker = this.listAddressMaker.bind(this);
 	}
 
 	setDefault = async () => {
@@ -68,6 +69,30 @@ class Address extends Component {
 		}));
 	};
 
+	listAddressMaker(options) {
+		return (
+			<div key={options.key}>
+				<Level className='bg--white border-bottom' key={options.key}>
+					<Level.Left className='d-inline-block'>
+						<strong>{options.address_label}</strong>&nbsp;{(options.default === 1) ? '(Alamat Utama)' : null }
+					</Level.Left>
+					<Level.Right style={{ justifyContent: 'center' }}>
+						<Svg
+							src='ico_option.svg'
+							onClick={() => this.showAddressModal(options.id)}
+						/>
+					</Level.Right>
+				</Level>
+				<Level className='bg--white margin--medium-b flex-column'>
+					<div className={styles.fullName}><strong>{options.fullname}</strong></div>
+					<div><p>{options.address}, {options.province}, {options.city}, {options.district}, {options.zipcode}</p></div>
+					<div><p>{options.phone}</p></div>
+					<div className={styles.locationMarked}>{(options.is_supported_pin_point === 1) ? options.placeHasBeenMarkedContent : null }</div>
+				</Level>
+			</div>
+		);
+	}
+	
 	renderData = () => {
 
 		const { AddressModalIndicator } = this.state;
@@ -81,7 +106,14 @@ class Address extends Component {
 			center: 'Buku Alamat',
 			right: null
 		};
-
+		
+		const placeHasBeenMarkedContent = (
+			<div className='flex-row flex-middle'>
+				<div className='margin--small-r'><Svg src='ico_pin-poin-marked.svg' /></div>
+				<div>&nbsp;Lokasi sudah ditandai</div>
+			</div>
+		);
+  
 		const ModalAttribute = {
 			show: false
 		};
@@ -89,7 +121,10 @@ class Address extends Component {
 		if (AddressModalIndicator === true) {
 			ModalAttribute.show = true;
 		}
-
+        
+		const defaultAddress = _.filter(address.address.shipping, ['fg_default', 1]);
+		const notDefaultAddress = _.orderBy(address.address.shipping, ['id'], ['desc']);
+		
 		return (
 			<div style={this.props.style}>
 				<Page color='grey'>
@@ -103,36 +138,45 @@ class Address extends Component {
 							</Level.Right>
 						</Level>
 					</Link>
-					{!_.isEmpty(address.address.shipping) && address.address.shipping.map((v, k) => {
-						const { city, fullname, district, phone, province, zipcode, id } = v;
-						const placeHasBeenMarkedContent = (
-							<div className='flex-row flex-middle'>
-								<div className='margin--small-r'><Svg src='ico_pin-poin-marked.svg' /></div>
-								<div>&nbsp;Lokasi sudah ditandai</div>
-							</div>
-						);
-						return (
-							<div key={k}>
-								<Level className='bg--white border-bottom' key={k}>
-									<Level.Left className='d-inline-block'>
-										<strong>{v.address_label}</strong>&nbsp;{(v.fg_default === 1) ? '(Alamat Utama)' : null }
-									</Level.Left>
-									<Level.Right style={{ justifyContent: 'center' }}>
-										<Svg
-											src='ico_option.svg'
-											onClick={() => this.showAddressModal(id)}
-										/>
-									</Level.Right>
-								</Level>
-								<Level className='bg--white margin--medium-b flex-column'>
-									<div className={styles.fullName}><strong>{fullname}</strong></div>
-									<div><p>{v.address}, {province}, {city}, {district}, {zipcode}</p></div>
-									<div><p>{phone}</p></div>
-									<div className={styles.locationMarked}>{(v.is_supported_pin_point === 1) ? placeHasBeenMarkedContent : null }</div>
-								</Level>
-							</div>
-						);
-					})}
+					{
+						defaultAddress.map((v, k) => {
+							return this.listAddressMaker({
+								key: k,
+								address_label: v.address_label,
+								id: v.id,
+								fullname: v.fullname,
+								address: v.address,
+								province: v.province,
+								city: v.city,
+								district: v.district,
+								zipcode: v.zipcode,
+								default: v.fg_default,
+								is_supported_pin_point: v.is_supported_pin_point,
+								placeHasBeenMarkedContent
+							});
+						})
+					}
+					{
+						notDefaultAddress.map((v, k) => {
+							if (v.fg_default === 0) {
+								return this.listAddressMaker({
+									key: k,
+									address_label: v.address_label,
+									id: v.id,
+									fullname: v.fullname,
+									address: v.address,
+									province: v.province,
+									city: v.city,
+									district: v.district,
+									zipcode: v.zipcode,
+									default: v.fg_default,
+									is_supported_pin_point: v.is_supported_pin_point,
+									placeHasBeenMarkedContent
+								});
+							}
+							return null;
+						})
+					}
 				</Page>
 
 				<Header.Modal {...HeaderPage} style={{ zIndex: 1 }} />
