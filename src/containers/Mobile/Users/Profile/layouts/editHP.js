@@ -56,7 +56,14 @@ class EditHp extends Component {
 			validForm = true;
 		}
 
-		const inputHint = value.length > 0 && validForm === false ? 'Format Nomor Handphone tidak sesuai. Silahkan cek kembali' : '';
+		// const inputHint = value.length > 0 && validForm === false ? 'Format Nomor Handphone tidak sesuai' : '';
+
+		let inputHint = '';
+		if (value.length > 0 && value.length < 10 && !validForm) {
+			inputHint = 'Nomor Handphone minimal 10 digit';
+		} else if (value.length > 0 && value.length >= 10 && !validForm) {
+			inputHint = 'Format Nomor Handphone tidak sesuai';
+		}
 
 		this.setState({
 			inputValue: value,

@@ -102,7 +102,7 @@ const userNameChange = (username) => dispatch => {
 
 // 	USER_OTP: undefined,
 
-const userOtp = (token, data, type) => async (dispatch, getState) => {
+const userOtp = (token, data, action) => async (dispatch, getState) => {
 
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
@@ -113,7 +113,7 @@ const userOtp = (token, data, type) => async (dispatch, getState) => {
 
 	const dataForOtp = {
 		hp_email: data,
-		type
+		action
 	};
 
 	dispatch(actions.userOtp());
