@@ -36,8 +36,10 @@ class Product extends PureComponent {
 	}
 
 	renderCarousel(pdpLinkDisabled = true) {
-		const { data, onImageItemClick } = this.props;
 		const slideIndex = this.getSlideIndex();
+		const { data, onImageItemClick, outOfStock } = this.props;
+		const selectedClass = (outOfStock) ? styles.lovelistEmpty : '';
+		const images = (_.has(data, 'images') && !_.isEmpty(data.images)) ? data.images : [];
 		const carouselContent = (
 			<Carousel
 				slideIndex={slideIndex}
@@ -45,8 +47,8 @@ class Product extends PureComponent {
 				wrapAround={this.slideWrapAround}
 			>
 				{
-					data.images.map((image, idx) => (
-						<div tabIndex='0' role='button' onClick={onImageItemClick} key={idx} data-img={image.mobile}>
+					images.map((image, idx) => (
+						<div className={selectedClass} tabIndex='0' role='button' onClick={onImageItemClick} key={idx}>
 							<Image lazyload src={image.mobile} alt={data.product_title} />
 						</div>
 					))

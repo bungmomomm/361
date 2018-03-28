@@ -177,25 +177,25 @@ const getLovelisItems = ({ token, query = {} }) => async (dispatch, getState) =>
 
 	if (err) return Promise.reject(err);
 
-	dispatch(getList(response.data.data));
+	dispatch(getList(lovelistData));
 	dispatch(setLoadingState({ loading: false }));
 
-	console.log('link: ', lovelistData.links);
-	const nextLink = lovelistData.links && lovelistData.links.next ? new URL(baseUrl + lovelistData.links.next).searchParams : false;
-	console.log('nextLink: ', nextLink.get('page'));
-	dispatch(scrollerActions.onScroll({
-		nextData: {
-			token,
-			query: {
-				...query,
-				page: nextLink ? parseInt(nextLink.get('page'), 10) : false
+	if (_.has(lovelistData, 'info') && _.has(lovelistData, 'info.count') && lovelistData.info.count > 0) {
+		const nextLink = lovelistData.links && lovelistData.links.next ? new URL(baseUrl + lovelistData.links.next).searchParams : false;
+		dispatch(scrollerActions.onScroll({
+			nextData: {
+				token,
+				query: {
+					...query,
+					page: nextLink ? parseInt(nextLink.get('page'), 10) : false
+				},
+				loadNext: true
 			},
-			loadNext: true
-		},
-		nextPage: nextLink !== false,
-		loading: false,
-		loader: getLovelisItems
-	}));
+			nextPage: nextLink !== false,
+			loading: false,
+			loader: getLovelisItems
+		}));
+	}
 
 	return Promise.resolve(response.data.data);
 };

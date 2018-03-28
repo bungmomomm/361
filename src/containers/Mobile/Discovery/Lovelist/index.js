@@ -8,6 +8,7 @@ import styles from './lovelist.scss';
 
 import { actions as LoveListActionCreator } from '@/state/v4/Lovelist';
 import { actions as commentActions } from '@/state/v4/Comment';
+import { actions as actionShared } from '@/state/v4/Shared';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
@@ -94,6 +95,11 @@ class Lovelist extends Component {
 		}
 
 		this.setState({ status });
+	}
+
+	componentWillUnmount() {
+		const { dispatch } = this.props;
+		dispatch(actionShared.totalLovelistAction(this.userCookies));
 	}
 
 	onNotifClose(e) {
@@ -206,7 +212,6 @@ class Lovelist extends Component {
 	}
 
 	renderLovelistPage(content) {
-		const { items } = this.props.lovelist;
 		const { status, notif } = this.state;
 		const HeaderPage = {
 			left: ((status.listEmpty) ? null : (
@@ -232,7 +237,7 @@ class Lovelist extends Component {
 				<Page color='white'>
 					{ <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} /> }
 					{status.loading && this.loadingContent}
-					{(!status.loading && !_.isEmpty(items.list)) && content}
+					{(!status.loading && content)}
 				</Page>
 				<Header.Modal {...HeaderPage} />
 
@@ -289,7 +294,7 @@ class Lovelist extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		...state,
+		scroller: state.scroller,
 		lovelist: state.lovelist,
 		shared: state.shared,
 		comments: state.comments
@@ -298,15 +303,14 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies } = props;
-
 	const list = await dispatch(LoveListActionCreator.getLovelisItems({ token: cookies.get(cookiesLabel.userToken), query: { page: 1 } })) || [];
-	const ids = list.products.map((item) => item.product_id);
-	if (ids.length > 0) {
-		await dispatch(LoveListActionCreator.bulkieCountByProduct(cookies.get(cookiesLabel.userToken), ids));	
-		await dispatch(commentActions.bulkieCommentAction(cookies.get(cookiesLabel.userToken), ids));
+	if (_.has(list, 'products') && !_.isEmpty(list.products)) {
+		const ids = list.products.map((item) => item.product_id);
+		if (ids.length > 0) {
+			await dispatch(LoveListActionCreator.bulkieCountByProduct(cookies.get(cookiesLabel.userToken), ids));
+			await dispatch(commentActions.bulkieCommentAction(cookies.get(cookiesLabel.userToken), ids));
+		}
 	}
-
-	// }
 };
 
 export default withCookies(connect(mapStateToProps)(Scroller(Shared(Lovelist, doAfterAnonymous))));
