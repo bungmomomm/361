@@ -52,7 +52,7 @@
             var brandName = brand[3];
             filename = 'brand-'+categoryId + '-' + brandName + '.js';
         }else if (brandPage.test(pathUrl) || storePage.test(pathUrl)) {
-            var brand = pathUrl.split('/')[2];
+            var brand = pathUrl.split('/')[3];
             var prefix = brandPage.test(pathUrl) ? 'brand-' : 'store-';
             filename = prefix + pathUrl.replace ( /[^\d.]/g, '' )  + '-' + brand +'.js';
         }else  {
