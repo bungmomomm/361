@@ -128,6 +128,7 @@ class Seller extends Component {
 				text: 'Lihat Selengkapnya',
 				show: false
 			},
+			focusedProductId: ''
 		};
 	}
 
@@ -220,6 +221,10 @@ class Seller extends Component {
 			showFilter: false
 		});
 	};
+
+	setFocusedProduct(id) {
+		this.setState({ focusedProductId: id });
+	}
 
 	forceLoginNow = () => {
 		const { history } = this.props;
@@ -408,7 +413,10 @@ class Seller extends Component {
 	};
 
 	loadProducts = () => {
-		const { comments, scroller, seller: { data: { products } } } = this.props;
+		const { comments, scroller, seller: { data: { products } }, location } = this.props;
+		const { focusedProductId } = this.state;
+
+		const redirectPath = location.pathname !== '' ? location.pathname : '';
 		let listView;
 		switch (this.state.listTypeState.type) {
 		case 'list':
@@ -419,6 +427,9 @@ class Seller extends Component {
 					forceLoginNow={() => this.forceLoginNow()}
 					products={products}
 					productOnClick={trackProductOnClick}
+					focusedProductId={focusedProductId}
+					setFocusedProduct={(id) => this.setFocusedProduct(id)}
+					redirectPath={redirectPath}
 				/>
 			);
 			break;

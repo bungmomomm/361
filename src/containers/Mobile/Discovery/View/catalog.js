@@ -67,13 +67,18 @@ class CatalogView extends Component {
 	}
 
 	setFocusedProduct(id) {
-		const { setFocusedProduct } = this.props;
+		const { setFocusedProduct, focusedProductId } = this.props;
+
+		if (id !== focusedProductId) {
+			this.setState({
+				showCounter: false,
+				counterValue: 0,
+				validForm: false
+			});
+		}
 
 		this.setState({
-			showSendButton: true,
-			showCounter: false,
-			validForm: false,
-			counterValue: 0
+			showSendButton: true
 		});
 		
 		setFocusedProduct(id);
