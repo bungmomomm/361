@@ -121,7 +121,7 @@ if (
 	(
 		process.env.NODE_ENV === 'production'
 		|| process.env.STATIC
-	) && process.env.NODE_ENV !== 'staging'
+	) || process.env.NODE_ENV === 'staging'
 ) {
 
 	config.plugins.push(
