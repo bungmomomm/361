@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { actions } from '@/state/v4/Shared';
-import getComputedStyles from './styleSnackbar';
+import { getComputedStyles } from './styleSnackbar';
 
 class Snackbar extends React.Component {
 
