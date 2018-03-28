@@ -93,7 +93,7 @@ class Share extends PureComponent {
 											>
 												<GooglePlusIcon size={32} round />
 											</GooglePlusShareButton>
-											{this.state.shareCountEnabled && 
+											{this.state.shareCountEnabled &&
 												<GooglePlusShareCount
 													url={url}
 													className={style.share_count}
@@ -114,7 +114,9 @@ class Share extends PureComponent {
 										<div className={style.network} style={{ marginRight: '0px' }}>
 											<EmailShareButton
 												url={url}
-												subject={title}
+												title={`${title} - Mataharimall.com`}
+												subject={`${title} - Mataharimall.com`}
+												body={url}
 												className={style.share_button}
 											>
 												<EmailIcon size={32} round />

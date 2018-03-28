@@ -332,6 +332,7 @@ class Product extends Component {
 						<SEO
 							paramCanonical={process.env.MOBILE_UR}
 						/>
+						{this.foreverBannerBlock()}
 						{isLoading ? this.loadingView : productsView}
 						<Footer isShow={this.state.isFooterShow} />
 					</Page>
@@ -398,7 +399,6 @@ class Product extends Component {
 		return (
 			<div style={this.props.style}>
 				{this.productsBlock()}
-				{this.foreverBannerBlock()}
 				{this.headerBlock()}
 				<Navigation
 					{...navigationAttribute}
@@ -439,7 +439,7 @@ const doAfterAnonymous = async (props) => {
 		page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
 		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 36,
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
-		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
+		// sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
 
 	const response = await dispatch(pcpActions.pcpAction({ token: cookies.get(userToken), query: pcpParam }));

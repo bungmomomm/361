@@ -39,7 +39,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			this.userCookies = this.props.cookies.get(userToken);
 			this.userRFCookies = this.props.cookies.get(userRfToken);
 			this.uniqueId = this.props.cookies.get(uniqueid);
-			this.handleScroll = this.handleScroll.bind(this);
+			this.handleScroll = _.throttle(this.handleScroll).bind(this);
 			this.docBody = null;
 			this.currentScrollPos = 0;
 		}
@@ -87,7 +87,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		componentDidMount() {
 			window.mmLoading.destroy();
-			window.addEventListener('scroll', _.throttle(this.handleScroll), true);
+			window.addEventListener('scroll', this.handleScroll, true);
 			this.docBody = document.body;
 
 			if (typeof this.uniqueId === 'undefined') {

@@ -33,7 +33,7 @@ class LovelistLogin extends Component {
 			break;
 		case 'register':
 		case 'login':
-			destUri = '/login?redirect_uri=/lovelist';
+			destUri = `/${page}?redirect_uri=/lovelist`;
 			break;
 		default:
 			break;
@@ -54,14 +54,14 @@ class LovelistLogin extends Component {
 		return (
 			<div>
 				<Page style={{ marginTop: '-60px' }}>
-					<div className={styles.lovelistLogin} style={{ backgroundImage: `url(${loginBg})` }}>
+					<div className={styles.lovelistLogin} style={{ backgroundImage: `url(${loginBg})`, height: '100vh' }}>
 						<Svg width='50px' height='50px' style={{ justifyContent: 'center' }} src='ico_home-white.svg' />
 						<p className='margin--medium' style={{ color: '#fff' }}>Unlock the Full Experience</p>
 						<Level className='margin--medium'>
 							<Level.Left>&nbsp;</Level.Left>
 							<Level.Item>
 								<p className='margin--small'><Button onClick={() => this.redirectToPage('login')} wide size='large' color='secondary'>LOGIN</Button></p>
-								<p className='margin--small'><Button onClick={() => this.redirectToPage('login')} wide outline size='large' color='transparent'>DAFTAR</Button></p>
+								<p className='margin--small'><Button onClick={() => this.redirectToPage('register')} wide outline size='large' color='transparent'>DAFTAR</Button></p>
 							</Level.Item>
 							<Level.Right>&nbsp;</Level.Right>
 						</Level>

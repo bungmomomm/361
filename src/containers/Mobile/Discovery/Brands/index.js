@@ -40,7 +40,7 @@ class Brands extends Component {
 		this.inputElement = null;
 		this.onAlphabetsClick = (id) => {
 			const section = document.getElementById(String(id.trim()));
-			document.body.scrollTop = section.offsetTop;
+			(document.documentElement || document.body.parentNode || document.body).scrollTop = section.offsetTop;
 		};
 	}
 
