@@ -21,7 +21,7 @@ class Page404 extends Component {
 				show: true
 			}
 		};
-		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin);
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true';
 	}
 
 	renderBanner() {
@@ -105,7 +105,7 @@ class Page404 extends Component {
 					}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Home' botNav={this.props.botNav} />
+				<Navigation active='Home' botNav={this.props.botNav} isLogin={this.isLogin} />
 			</div>
 		);
 	}

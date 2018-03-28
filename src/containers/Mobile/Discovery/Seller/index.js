@@ -46,7 +46,7 @@ import {
 } from '@/utils/tracking';
 import classNames from 'classnames';
 import styles from './styles.scss';
-import { userToken } from '@/data/cookiesLabel';
+import { userToken, isLogin } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
 
 const trackSellerPageView = (products, info, props) => {
@@ -109,6 +109,7 @@ class Seller extends Component {
 		}];
 
 		const propsObject = _.chain(props.seller);
+		this.isLogin = this.props.cookies.get(isLogin) === 'true';
 
 		this.state = {
 			listTypeState: this.listType[this.currentListState],
