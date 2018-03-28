@@ -4,6 +4,7 @@ import { to } from 'await-to-js';
 import { request } from '@/utils';
 import { pcpLoading, pcpViewMode, pcpInit, pcpNextInit, pcpUpdateSingleItem } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
+import __x from '@/state/__x';
 
 const updateSingleItem = (item) => async (dispatch, getState) => {
 	dispatch(pcpUpdateSingleItem(item));
@@ -19,7 +20,7 @@ const pcpAction = ({ token, query = {}, loadNext = false }) => async (dispatch, 
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const path = `${baseUrl}/products/search`;
 
@@ -35,7 +36,7 @@ const pcpAction = ({ token, query = {}, loadNext = false }) => async (dispatch, 
 		dispatch(pcpInit({
 			pcpStatus: 'failed'
 		}));
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	const pcpData = {
@@ -58,7 +59,7 @@ const pcpAction = ({ token, query = {}, loadNext = false }) => async (dispatch, 
 
 	const nextLink = pcpData.links && pcpData.links.next ? new URL(baseUrl + pcpData.links.next).searchParams : false;
 	dispatch(scrollerActions.onScroll({
-		nextData: { 
+		nextData: {
 			token,
 			query: {
 				...query,

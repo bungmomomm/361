@@ -21,7 +21,7 @@ class Navigation extends PureComponent {
 	}
 
 	render() {
-		const { className, active, scroll, totalCartItems } = this.props;
+		const { className, active, scroll, totalCartItems, isLogin } = this.props;
 
 		// const isSticky = (oldPos = this.currentScrollPos) => {
 		// 	if (!scroll) {
@@ -36,6 +36,7 @@ class Navigation extends PureComponent {
 			scroll && scroll.isNavSticky ? styles.hide : '',
 			className
 		);
+		const profileUrl = isLogin ? '/profile' : '/login?redirect_uri=/profile';
 
 		return (
 			<nav className={createClassName} >
@@ -68,7 +69,7 @@ class Navigation extends PureComponent {
 							active={active === 'Promo'}
 						/>
 						<Item
-							to='/profile'
+							to={profileUrl}
 							icon='ico_user.svg'
 							label='Profile'
 							active={active === 'Profile'}

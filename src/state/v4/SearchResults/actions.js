@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { to } from 'await-to-js';
+import __x from '@/state/__x';
 
 import { request } from '@/utils';
 import { searchLoading, searchViewMode, initSearch, initNextSearch, searchPromo } from './reducer';
@@ -15,7 +16,7 @@ const searchAction = ({ token, query = {}, loadNext = false }) => async (dispatc
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const path = `${baseUrl}/products/search`;
 
@@ -29,13 +30,13 @@ const searchAction = ({ token, query = {}, loadNext = false }) => async (dispatc
 	const searchData = {
 		...response.data.data
 	};
-	
+
 	if (err) {
 		dispatch(initSearch({
 			searchStatus: 'failed'
 		}));
 
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	if (loadNext) {
@@ -79,7 +80,7 @@ const promoAction = (token) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const path = `${baseUrl}/suggestion?mode=404`;
 
@@ -92,7 +93,7 @@ const promoAction = (token) => async (dispatch, getState) => {
 
 	if (err) {
 		console.log(err);
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	const promoData = response.data.data;

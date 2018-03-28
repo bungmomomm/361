@@ -5,7 +5,9 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './catalog.scss';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Catalog extends Component {
 	constructor(props) {
 		super(props);

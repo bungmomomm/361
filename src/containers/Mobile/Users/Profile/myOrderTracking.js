@@ -13,7 +13,9 @@ import {
 } from '@/components/mobile';
 import { actions as userAction } from '@/state/v4/User';
 import { userToken, isLogin } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class MyOrderDetail extends Component {
 	constructor(props) {
 		super(props);

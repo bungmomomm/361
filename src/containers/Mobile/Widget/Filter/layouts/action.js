@@ -2,7 +2,9 @@ import React, { PureComponent } from 'react';
 import { Svg, Button } from '@/components/mobile';
 import styles from './action.scss';
 import classNames from 'classnames';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Action extends PureComponent {
 	constructor(props) {
 		super(props);

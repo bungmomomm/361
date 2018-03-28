@@ -82,7 +82,7 @@ if (process.env.NODE_ENV === 'development') {
 
 if (
 	process.env.NODE_ENV === 'production'
-	|| process.env.STATIC
+	|| process.env.STATIC || process.env.NODE_ENV === 'staging'
 ) {
 	config.entry.main = ['babel-polyfill', './src/client'];
 

@@ -26,7 +26,9 @@ import util from 'util';
 import to from 'await-to-js';
 import { userToken } from '@/data/cookiesLabel';
 import Logout from './Logout';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Login extends Component {
 	constructor(props) {
 		super(props);
@@ -56,9 +58,9 @@ class Login extends Component {
 		}
 		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
 		setUserCookie(this.props.cookies, response.token, false, userProfile);
-		const userInfo = { 
-			id: response.userprofile.userid, 
-			encId: response.userprofile.enc_userid, 
+		const userInfo = {
+			id: response.userprofile.userid,
+			encId: response.userprofile.enc_userid,
 			encEmail: response.userprofile.enc_email
 		};
 		setUserInfoCookie(cookies, JSON.stringify(userInfo));
@@ -182,7 +184,7 @@ class Login extends Component {
 					/>
 				</div>
 				<div className='text-right margin--medium-v'>
-					<Link className='pull-right' to={redirectUri ? `/forgot-password?redirectUri=${redirectUri}` : '/forgot-password'}>LUPA PASSWORD</Link>
+					<Link className='pull-right' to={redirectUri ? `/forgot-password?redirect_uri=${redirectUri}` : '/forgot-password'}>LUPA PASSWORD</Link>
 				</div>
 				<div className='margin--medium-v'>
 					<Button color='secondary' size='large' disabled={!buttonLoginEnable} loading={isLoading} onClick={(e) => this.onLogin(e)} >LOGIN</Button>

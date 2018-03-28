@@ -35,7 +35,7 @@ import {
 	categoryViewBuilder,
 	productClickBuilder
 } from '@/utils/tracking';
-import { userToken, pageReferrer } from '@/data/cookiesLabel';
+import { userToken, pageReferrer, isLogin } from '@/data/cookiesLabel';
 
 const trackBrandPageView = (products, info, props) => {
 	const productId = _.map(products, 'product_id') || [];
@@ -77,7 +77,9 @@ const trackProductOnClick = (product, position, source = 'mm') => {
 	const requestPayload = request.getPayload(productClickBuilder);
 	if (requestPayload) sendGtm(requestPayload);
 };
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Detail extends Component {
 	static queryObject(props) {
 		const brandId = props.match.params.brandId;
@@ -90,13 +92,14 @@ class Detail extends Component {
 			page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
 			per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 10,
 			fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
-			sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
+			// sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 		};
 	}
 
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.isLogin = this.props.cookies.get(isLogin) === 'true';
 		this.listType = [{
 			type: 'list',
 			icon: 'ico_grid.svg'
@@ -460,7 +463,7 @@ class Detail extends Component {
 				{(!showFilter) && (
 					<div>
 						{this.renderHeader()}
-						<Navigation {...navigationAttribute} botNav={this.props.botNav} />
+						<Navigation {...navigationAttribute} botNav={this.props.botNav} isLogin={this.isLogin} />
 					</div>
 				)}
 			</div>

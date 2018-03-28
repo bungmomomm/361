@@ -10,7 +10,9 @@ import { to } from 'await-to-js';
 import { Promise } from 'es6-promise';
 import { userToken, isLogin } from '@/data/cookiesLabel';
 import Switch from 'react-switch';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Address extends Component {
 
 	state = {

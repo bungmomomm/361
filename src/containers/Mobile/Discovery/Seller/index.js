@@ -46,7 +46,8 @@ import {
 } from '@/utils/tracking';
 import classNames from 'classnames';
 import styles from './styles.scss';
-import { userToken } from '@/data/cookiesLabel';
+import { userToken, isLogin } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
 const trackSellerPageView = (products, info, props) => {
 	const productId = _.map(products, 'product_id') || [];
@@ -90,7 +91,7 @@ const trackProductOnClick = (product, position, source = 'mm') => {
 	if (requestPayload) sendGtm(requestPayload);
 };
 
-
+@handler
 class Seller extends Component {
 	constructor(props) {
 		super(props);
@@ -108,6 +109,7 @@ class Seller extends Component {
 		}];
 
 		const propsObject = _.chain(props.seller);
+		this.isLogin = this.props.cookies.get(isLogin) === 'true';
 
 		this.state = {
 			listTypeState: this.listType[this.currentListState],
@@ -164,7 +166,7 @@ class Seller extends Component {
 		const { headerNameY } = this.state;
 		const header = document.getElementById('store-filter');
 		const sticky = header.offsetTop;
-		const scrollY = e.target.scrollTop;
+		const scrollY = window.scrollY;
 
 		if (!headerNameY) {
 			this.setState({

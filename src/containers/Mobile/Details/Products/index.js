@@ -3,12 +3,12 @@ import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
-import { urlBuilder, enableZoomPinch } from '@/utils';
+import { urlBuilder, enableZoomPinch, uniqid } from '@/utils';
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as shopBagActions } from '@/state/v4/ShopBag';
-import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Spinner, Badge, Notification, AnimationLovelist, AnimationAddToCart } from '@/components/mobile';
+import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Spinner, Badge, AnimationLovelist, AnimationAddToCart } from '@/components/mobile';
 import Promos from './Promos';
 import ReviewSummary from './Reviews/summary';
 
@@ -27,6 +27,9 @@ import {
 import cookiesLabel from '@/data/cookiesLabel';
 
 import { Payload } from '@/utils/tracking/lucidworks';
+import xhandler from '@/containers/Mobile/Shared/handler';
+
+import { toastSytle } from '@/containers/Mobile/Shared/styleSnackbar';
 
 const fusion = new Payload(_);
 const trackAddToCart = (data, props, variant) => {
@@ -91,6 +94,7 @@ const doAfterAnonymous = async (props) => {
 	}
 };
 
+@xhandler
 class Products extends Component {
 	constructor(props) {
 		super(props);
@@ -145,11 +149,7 @@ class Products extends Component {
 				slideIndex: 0
 			},
 			selectedVariant: {},
-			btnBeliLabel: 'BELI AJA',
-			notif: {
-				show: false,
-				content: ''
-			}
+			btnBeliLabel: 'BELI AJA'
 		};
 
 		this.loadingContent = (
@@ -172,6 +172,10 @@ class Products extends Component {
 				return `<a href="${hashlink + url.replace('#', '%23')}">${url}</a>`;
 			});
 		};
+	}
+
+	componentWillMount() {
+		window.scroll(0, 0);
 	}
 
 	componentDidMount() {
@@ -363,17 +367,16 @@ class Products extends Component {
 	addToShoppingBag(variant) {
 		this.animateAddtoCart();
 
-		const { status, notif } = this.state;
+		const { status } = this.state;
 		const { dispatch, product } = this.props;
 
 		status.showModalSelectSize = false;
-		notif.show = false;
-		this.setState({ status, notif });
+		this.setState({ status });
 
 		const handler = new Promise((resolve, reject) => {
 			resolve(dispatch(shopBagActions.updateAction(this.userCookies, variant.id, this.defaultCount, 'add')));
 		});
-
+		let message = '';
 		handler.then((res) => {
 			// Fusion Add to Cart tracking...
 			const pricing = product.detail.variants[0].pricing.original;
@@ -390,9 +393,16 @@ class Products extends Component {
 			status.pendingAddProduct = false;
 			status.productAdded = true;
 			status.showModalSelectSize = false;
-			notif.show = true;
-			notif.content = 'Produk Berhasil ditambahkan';
-			this.setState({ status, notif });
+			message = 'Produk Berhasil ditambahkan';
+			this.setState({ status });
+
+			dispatch(sharedActions.showSnack(uniqid('err-'),
+				{
+					label: message,
+					timeout: 3000
+				},
+				toastSytle(),
+			));
 
 			dispatch(productActions.productDetailAction(this.userCookies, product.detail.id));
 			trackAddToCart(product, this.props, variant);
@@ -401,7 +411,14 @@ class Products extends Component {
 			// dispatch(productActions.productDetailAction(this.userCookies, product.detail.id));
 		}).catch((err) => {
 			status.showModalSelectSize = false;
-			this.setState({ status, notif });
+			this.setState({ status });
+			dispatch(sharedActions.showSnack(uniqid('err-'),
+				{
+					label: message,
+					timeout: 3000
+				},
+				toastSytle(),
+			));
 			throw err;
 		});
 	}
@@ -505,42 +522,48 @@ class Products extends Component {
 	 */
 	removeAddItem(e) {
 		const { dispatch, product } = this.props;
-		const { cardProduct, status, notif } = this.state;
+		const { cardProduct, status } = this.state;
 		const handler = new Promise((resolve, reject) => {
 			if (!status.isLoved) resolve(dispatch(lovelistActions.addToLovelist(this.userCookies, product.detail.id)));
 			else resolve(dispatch(lovelistActions.removeFromLovelist(this.userCookies, product.detail.id)));
 		});
 
 		status.showConfirmDelete = false;
-		notif.show = false;
-		this.setState({ status, notif });
-
+		this.setState({ status });
+		let message = '';
 		handler.then((res) => {
 			// Updating product lovelist state ...
 			if (res.status === 200 && res.statusText === 'OK') {
 				if (!status.isLoved) {
-					notif.content = 'Lovelist ditambahkan';
+					message = 'Lovelist ditambahkan';
 					status.isLoved = true;
 					cardProduct.totalLovelist += 1;
 				} else {
-					notif.content = 'Produk dihapus dari Lovelist';
+					message = 'Produk dihapus dari Lovelist';
 					status.isLoved = false;
 					cardProduct.totalLovelist -= 1;
 				}
 			}
-			notif.show = true;
-			this.setState({ status, cardProduct, notif });
+
+			dispatch(sharedActions.showSnack(uniqid('err-'),
+				{
+					label: message,
+					timeout: 3000
+				},
+				toastSytle(),
+			));
 
 		}).catch((err) => {
 			status.showConfirmDelete = false;
-			notif.show = false;
-			this.setState({ status, cardProduct, notif });
+			dispatch(sharedActions.showSnack(uniqid('err-'),
+				{
+					label: message,
+					timeout: 3000
+				},
+				toastSytle(),
+			));
 			throw err;
 		});
-
-		notif.show = false;
-		notif.content = '';
-		this.setState({ notif });
 	}
 
 	renderStoreProducts() {
@@ -945,10 +968,6 @@ class Products extends Component {
 							/>
 						</Modal>
 					)}
-
-					<Notification style={{ marginTop: '90%' }} show={this.state.notif.show} toast disableClose onClose={this.onNotifClose}>
-						<span>{this.state.notif.content}</span>
-					</Notification>
 				</div>);
 		} catch (error) {
 			console.log('PDP ERROR: ', error);

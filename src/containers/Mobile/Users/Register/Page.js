@@ -28,7 +28,9 @@ import {
 	sendGtm,
 } from '@/utils/tracking';
 import { userSource, userToken } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Register extends Component {
 	constructor(props) {
 		super(props);
@@ -106,7 +108,7 @@ class Register extends Component {
 			// Check if we register via mobile.
 			if (registerWith === 'MOBILE') {
 				// Then send OTP
-				const [errorUserOtp, responseUserOtp] = await to(dispatch(new users.userOtp(cookies.get(userToken), dataForRegister.hp_email)));
+				const [errorUserOtp, responseUserOtp] = await to(dispatch(new users.userOtp(cookies.get(userToken), dataForRegister.hp_email, 'register')));
 				if (errorUserOtp) {
 					console.log('Error on OTP');
 					return false;

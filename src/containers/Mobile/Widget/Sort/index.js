@@ -4,6 +4,9 @@ import styles from './sort.scss';
 import _ from 'lodash';
 
 import classNames from 'classnames';
+import handler from '@/containers/Mobile/Shared/handler';
+
+@handler
 class Sort extends Component {
 
 	static toggleBodyOverflow(shown) {

@@ -21,9 +21,11 @@ import {
 	Notification
 } from '@/components/mobile';
 import { userToken } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class OrderConfirmation extends Component {
-	
+
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -40,7 +42,7 @@ class OrderConfirmation extends Component {
 			notificationType: 'SUCCESS',
 			selectedBankText: '- Nama Bank Pengirim -'
 		};
-		
+
 		this.orderId = null;
 		this.getDataTransferTo = this.getDataTransferTo.bind(this);
 		this.makeRadioTransferToChecked = this.makeRadioTransferToChecked.bind(this);
@@ -48,9 +50,9 @@ class OrderConfirmation extends Component {
 		this.getDataTransferFrom = this.getDataTransferFrom.bind(this);
 		this.clearState = this.clearState.bind(this);
 	};
-	
+
 	componentDidMount() {
-		
+
 		const { location, history, dispatch, cookies } = this.props;
 		const query = queryString.parse(location.search);
 		const orderId = query.order_id;
@@ -59,43 +61,43 @@ class OrderConfirmation extends Component {
 		if (!orderId || !this.props.users.myOrdersDetail) {
 			history.push('/');
 		}
-		
+
 		this.orderId = orderId;
 	}
-	
+
 	getDataTransferFrom() {
-		
+
 		const { bankList } = this.props.users;
 		const dataTransferFrom = [];
-		
+
 		if (_.isEmpty(bankList.to_banks) === false) {
 			_.map(bankList.to_banks, (value) => {
 				const dataForBankTransferFrom = {};
 				dataForBankTransferFrom.value = value.id;
 				dataForBankTransferFrom.label = value.bank;
-				
+
 				dataTransferFrom.push(dataForBankTransferFrom);
 			});
 		}
-		
+
 		return dataTransferFrom;
-		
+
 	}
-	
+
 	getDataTransferTo() {
-		
+
 		const { bankList } = this.props.users;
 		const radioDataTransferTo = [];
-		
+
 		if (!_.isEmpty(bankList.to_banks)) {
 			_.map(bankList.to_banks, (value) => {
-				
+
 				const imageAttribute = {
 					width: 100,
 					height: 20,
 					src: value.image_url
 				};
-				
+
 				const dataForBankTransferTo = {};
 				dataForBankTransferTo.value = value.id;
 				dataForBankTransferTo.label = (
@@ -104,18 +106,18 @@ class OrderConfirmation extends Component {
 						<span>No. Rek: <strong>{value.rekening}</strong></span>
 					</div>
 				);
-				
+
 				radioDataTransferTo.push(dataForBankTransferTo);
-				
+
 			});
 		}
-		
+
 		return radioDataTransferTo;
-		
+
 	}
-	
+
 	clearState() {
-		
+
 		this.setState({
 			amountTransfer: '',
 			bankSenderID: null,
@@ -126,19 +128,19 @@ class OrderConfirmation extends Component {
 			selectedBankText: '- Nama Bank Pengirim - '
 		});
 	}
- 
+
 	makeRadioTransferToChecked(id) {
 		this.setState({
 			checkedTransferTo: id
 		});
 	}
-	
+
 	makeBankFromListVisible() {
 		this.setState({
 			displayBankTransferFromList: true
 		});
 	}
-	
+
 	async sendPostOrderConfirmation(e) {
 
 		const {
@@ -149,9 +151,9 @@ class OrderConfirmation extends Component {
 			timeSender,
 			checkedTransferTo
 		} = this.state;
-		
+
 		const { dispatch, cookies } = this.props;
-		
+
 		// Do the form validation.
 		if (
 			amountTransfer === ''
@@ -179,16 +181,16 @@ class OrderConfirmation extends Component {
 			timeSender,
 			checkedTransferTo
 		};
-		
+
 		const [error, response] = await to(dispatch(new users.PostOrderConfirmation(cookies.get(userToken), postData)));
-  
+
 		console.log('postData');
 		console.log(postData);
-		
+
 		if (error) {
 			return false;
 		}
-		
+
 		this.setState(() => {
 			return {
 				displayNotification: true,
@@ -196,13 +198,13 @@ class OrderConfirmation extends Component {
 				notificationType: 'SUCCESS'
 			};
 		}, this.clearState);
-		
+
 		return response;
-		
+
 	}
- 
+
 	render() {
-		
+
 		const {
 			displayNotification,
 			displayBankTransferFromList,
@@ -215,7 +217,7 @@ class OrderConfirmation extends Component {
             bankHolderName,
             selectedBankText
 		} = this.state;
-		
+
 		const HeaderPage = ({
 			left: (
 				<Link to={'/profile'}>
@@ -230,7 +232,7 @@ class OrderConfirmation extends Component {
 				right: null
 			}]
 		});
-  
+
 		const inputAmountTransferAttribute = {
 			label: 'Jumlah Yang Ditransfer',
 			type: 'text',
@@ -241,15 +243,15 @@ class OrderConfirmation extends Component {
 				const regex = /^[0-9\b]+$/;
 				const { value } = event.target;
 				if (value !== '' && regex.test(value)) {
-					
+
 					this.setState({
 						amountTransfer: event.target.value
 					});
-					
+
 				}
 			}
 		};
-		
+
 		const inputHolderBankNameAttribute = {
 			label: 'Nama Pemegang Rekening',
 			type: 'text',
@@ -262,7 +264,7 @@ class OrderConfirmation extends Component {
 				});
 			}
 		};
-		
+
 		const inputDateAttribute = {
 			label: 'Tanggal Transfer',
 			type: 'date',
@@ -275,7 +277,7 @@ class OrderConfirmation extends Component {
 				});
 			}
 		};
-		
+
 		const inputTimeAttribute = {
 			label: 'Waktu Transfer',
 			type: 'time',
@@ -288,24 +290,24 @@ class OrderConfirmation extends Component {
 				});
 			}
 		};
-		
+
 		const buttonPostAttribute = {
 			color: 'primary',
 			size: 'large',
 			inline: true,
 			onClick: (e) => this.sendPostOrderConfirmation(e)
 		};
-		
+
 		const notificationAttribute = {
 			show: true,
 			color: 'green',
 			disableClose: true
 		};
-		
+
 		if (notificationType === 'ERROR') {
 			notificationAttribute.color = 'pink';
 		}
-		
+
 		const selectFromBankAttribute = {
 			horizontal: true,
 			options: this.getDataTransferFrom(),
@@ -319,20 +321,20 @@ class OrderConfirmation extends Component {
 				this.setState({
 					bankSenderID: e
 				}, () => {
-					
+
 					const { bankList } = this.props.users;
 					const selectedBank = _.find(bankList.from_banks, { id: this.state.bankSenderID }) || null;
-					
+
 					if (selectedBank !== null) {
 						this.setState({
 							selectedBankText: selectedBank.bank
 						});
 					}
-     
+
 				});
 			}
 		};
-		
+
 		if (displayBankTransferFromList === true) {
 			selectFromBankAttribute.show = true;
 		}
@@ -344,7 +346,7 @@ class OrderConfirmation extends Component {
 			onChange: this.makeRadioTransferToChecked,
 			data: this.getDataTransferTo()
 		};
-		
+
 		return (
 			<div style={this.props.style}>
 				<Page>
@@ -352,7 +354,7 @@ class OrderConfirmation extends Component {
 						<div className='margin--medium-b'>
 							Pemesanan dengan Bank Transfer akan otomatis dibatalkan oleh sistem kami jika pembayaran tidak diterima dalam waktu 24 jam.
 						</div>
-						
+
 						<Panel
 							color='blue'
 							className='padding--normal flex-row flex-spaceBetween'
@@ -374,8 +376,8 @@ class OrderConfirmation extends Component {
 								</Notification>
 							)
 						}
-						
-						
+
+
 						<form className='margin--large flex-column'>
 							<Input {...inputAmountTransferAttribute} />
 							<Level
@@ -397,10 +399,10 @@ class OrderConfirmation extends Component {
 							<Input {...inputHolderBankNameAttribute} />
 							<Input {...inputDateAttribute} />
 							<Input {...inputTimeAttribute} />
-							
+
 							<strong className='font-medium margin--medium-v'>Pilih Bank Transfer Tujuan</strong>
 							<Radio {...radioTransferToAttribute} />
-							
+
 							<div className='margin--medium-v'>
 								<Button {...buttonPostAttribute}>
 									Konfirmasi
@@ -416,10 +418,10 @@ class OrderConfirmation extends Component {
 }
 
 const doAfterAnonymous = async (props) => {
- 
+
 	const { dispatch, cookies } = props;
 	dispatch(new users.getListBankConfirmation(cookies.get(userToken)));
- 
+
 };
 
 const mapStateToProps = (state) => {

@@ -8,8 +8,10 @@ import { actions } from '@/state/v4/Address';
 import { Promise } from 'es6-promise';
 import { userToken, isLogin } from '@/data/cookiesLabel';
 import styles from './style.scss';
+import handler from '@/containers/Mobile/Shared/handler';
 import _ from 'lodash';
 
+@handler
 class Address extends Component {
 
 	constructor(props) {

@@ -11,7 +11,9 @@ import { Promise } from 'es6-promise';
 import _ from 'lodash';
 import { isLogin, userToken } from '@/data/cookiesLabel';
 import Switch from 'react-switch';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Address extends Component {
 
 	state = {

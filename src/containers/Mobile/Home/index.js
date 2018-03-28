@@ -44,7 +44,9 @@ const renderSectionHeader = (title, options, cookies = null) => {
 	);
 };
 
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Home extends Component {
 
 	static trackImpresionHandler(homeData) {
@@ -72,7 +74,7 @@ class Home extends Component {
 		this.userRFCookies = this.props.cookies.get(cookiesLabel.userRfToken);
 		this.source = this.props.cookies.get(cookiesLabel.userSource);
 
-		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin);
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true';
 
 		this.state = {
 			isFooterShow: true,
@@ -350,8 +352,8 @@ class Home extends Component {
 	render() {
 		const { shared, dispatch } = this.props;
 
-		const recommendation1 = this.isLogin === 'false' ? 'new-arrival' : 'recommended-products';
-		const recommendation2 = this.isLogin === 'false' ? 'best-seller' : 'recent-view';
+		const recommendation1 = !this.isLogin ? 'new-arrival' : 'recommended-products';
+		const recommendation2 = !this.isLogin ? 'best-seller' : 'recent-view';
 		return (
 			<div style={this.props.style}>
 				<Page color='white'>
@@ -399,7 +401,7 @@ class Home extends Component {
 					lovelist={shared.totalLovelist}
 					value={this.props.search.keyword}
 				/>
-				<Navigation active='Home' scroll={this.props.scroll} totalCartItems={shared.totalCart} botNav={this.props.botNav} />
+				<Navigation active='Home' scroll={this.props.scroll} totalCartItems={shared.totalCart} botNav={this.props.botNav} isLogin={this.isLogin} />
 			</div>
 		);
 	}

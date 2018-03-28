@@ -17,7 +17,7 @@ import {
 import {
 	Header, Page, Svg, Navigation, Button
 } from '@/components/mobile';
-import { userToken, pageReferrer } from '@/data/cookiesLabel';
+import { userToken, pageReferrer, isLogin } from '@/data/cookiesLabel';
 
 import Spinner from '@/components/mobile/Spinner';
 
@@ -26,13 +26,16 @@ import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 
 import Discovery from '../Utils';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Promo extends Component {
 
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.promoType = this.props.match.params.type;
+		this.isLogin = this.props.cookies.get(isLogin) === 'true';
 
 		this.state = {
 			focusedProductId: ''
@@ -76,7 +79,7 @@ class Promo extends Component {
 				history.push('/');
 			};
 		}
-		
+
 		const headerTitle = _.chain(discovery).get(`promo.${this.promoType}.info.title`).value() || '';
 		const headerPage = {
 			left: (
@@ -175,13 +178,13 @@ class Promo extends Component {
 			totalCartItems: shared.totalCart
 		};
 		navigationAttribute.active = cookies.get(pageReferrer);
-		
+
 		return (
 			<div style={this.props.style}>
 				{this.renderProductList()}
 				{this.renderHeader()}
 				{this.renderForeverBanner()}
-				<Navigation {...navigationAttribute} botNav={this.props.botNav} />
+				<Navigation {...navigationAttribute} botNav={this.props.botNav} isLogin={this.isLogin} />
 			</div>
 		);
 	}

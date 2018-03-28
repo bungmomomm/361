@@ -15,7 +15,9 @@ import { T } from '@/data/translations';
 
 import Dropshipper from './Dropshipper';
 import ModalAddress from './ModalAddress';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class TabAddress extends Component {
 
 	constructor(props) {
@@ -56,7 +58,7 @@ class TabAddress extends Component {
 			}
 			if (selectedAddress) {
 				this.onPlaceOrder(selectedAddress, nextProps.stepState.stepOne.dropshipper);
-			} 
+			}
 		}
 	}
 
@@ -163,7 +165,7 @@ class TabAddress extends Component {
 		if (this.state.shipping.length < 1) {
 			return (
 				<Button block color='orange' onClick={() => this.showModalAddress('add')} >
-					{T.checkout.INPUT_DELIVERY_ADDRESS} 
+					{T.checkout.INPUT_DELIVERY_ADDRESS}
 				</Button>
 			);
 		}
@@ -205,10 +207,10 @@ class TabAddress extends Component {
 						</Level.Item>
 					</Level>
 				</Panel>
-				<Dropshipper 
-					stepState={this.props.stepState} 
-					onPlaceOrder={(e) => this.onPlaceOrder(e)} 
-					applyState={(e) => this.props.applyState(e)} 
+				<Dropshipper
+					stepState={this.props.stepState}
+					onPlaceOrder={(e) => this.onPlaceOrder(e)}
+					applyState={(e) => this.props.applyState(e)}
 				/>
 			</div>
 		);
@@ -222,7 +224,7 @@ class TabAddress extends Component {
 				</Alert>
 				{this.renderAddressContent()}
 				{
-					this.state.showModalAddress && 
+					this.state.showModalAddress &&
 					<ModalAddress
 						open
 						isEdit={this.flagModalAddress === 'edit'}

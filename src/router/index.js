@@ -11,7 +11,6 @@ class CustomRoute extends PureComponent {
 	}
 
 	componentWillMount() {
-		console.log('will mount: ', this.props);
 		window.mmLoading.play();
 		// binds fusion session
 		Fusion.tracks(this.props);
