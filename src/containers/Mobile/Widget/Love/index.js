@@ -42,6 +42,7 @@ class Love extends PureComponent {
 		const { cookies, data, dispatch, onClick, inline } = this.props;
 		const { loading, status } = this.state;
 		let message = '';
+		let isError = false;
 		if (cookies.get(isLogin) === 'false') {
 			if (inline) {
 				this.setState({
@@ -62,6 +63,10 @@ class Love extends PureComponent {
 		if (status === 1) {
 			message = 'Produk berhasil dihapus dari Lovelist';
 			response = await to(dispatch(lovelistActions.removeFromLovelist(cookies.get('user.token'), data)));
+			if (response[0]) {
+				isError = true;
+				message = 'Gagal menyimpan Produk di lovelist';
+			}
 			if (response[1]) {
 				this.setState({
 					status: 0
@@ -70,6 +75,10 @@ class Love extends PureComponent {
 		} else {
 			message = 'Produk berhasil disimpan ke Lovelist';
 			response = await to(dispatch(lovelistActions.addToLovelist(cookies.get('user.token'), data)));
+			if (response[0]) {
+				isError = true;
+				message = 'Gagal menyimpan Produk di lovelist';
+			}
 			if (response[1]) {
 				this.setState({
 					status: 1
@@ -80,17 +89,18 @@ class Love extends PureComponent {
 		this.setState({
 			loading: false
 		});
+		if (isError) {
+			dispatch(sharedActions.showSnack(uniqid('err-'),
+				{
+					label: message,
+					timeout: 3000
+				},
+				toastSytle()
+			));
 
-		dispatch(sharedActions.showSnack(uniqid('err-'),
-			{
-				label: message,
-				timeout: 3000
-			},
-			toastSytle()
-		));
-
-		if (onClick) {
-			onClick(data);
+			if (onClick) {
+				onClick(data);
+			}
 		}
 	}
 

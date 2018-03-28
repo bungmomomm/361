@@ -351,7 +351,7 @@ class Register extends Component {
 					</Link>
 				</div>
 				<div className='margin--medium-v text-center'>
-					<Link to='/forgotPassword?redirect_uri=/register'>Lupa Password</Link>
+					<Link to={`/forgot-password${location.search}`}>Lupa Password</Link>
 				</div>
 			</div>
 		);
