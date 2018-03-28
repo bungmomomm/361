@@ -13,7 +13,9 @@ import {
 } from '@/components/mobile';
 import { actions as userAction } from '@/state/v4/User';
 import { userToken, isLogin } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class MyOrderDetail extends Component {
 	constructor(props) {
 		super(props);
@@ -44,7 +46,7 @@ class MyOrderDetail extends Component {
 		}
 
 		if (nextProps.user.trackingInfo !== this.props.user.trackingInfo && nextProps.user.trackingInfo === false) {
-			this.props.history.push('/profile-my-order');
+			this.props.history.push('/profile/my-order');
 		}
 	}
 
@@ -67,7 +69,7 @@ class MyOrderDetail extends Component {
 	renderTimeline() {
 		const tracking = this.props.user.trackingInfo;
 		const total = tracking && tracking.historical.length;
-		const timeline = total > 0 && tracking.historical.reverse().map((item, key) => {
+		const timeline = total > 0 && tracking.historical.map((item, key) => {
 			const active = (key === 0) && ({ active: 'active' });
 			return (
 				<Timeline.Item {...active} key={key}>

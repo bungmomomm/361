@@ -11,17 +11,19 @@ import queryString from 'query-string';
 import { setUserCookie } from '@/utils';
 import { actions as userActions } from '@/state/v4/User';
 import to from 'await-to-js';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Logout extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		
+
 		const query = queryString.parse(props.location.search);
-		
+
 		this.state = {
 			loading: true,
-			redirectUri: query.redirectUri || false
+			redirectUri: query.redirect_uri || false
 		};
 		this.timeout = setTimeout(() => {
 			this.redirect();
@@ -29,10 +31,10 @@ class Logout extends Component {
 	}
 
 	async redirect() {
-		const { 
+		const {
 			dispatch,
-			history, 
-			cookies 
+			history,
+			cookies
 		} = this.props;
 		const { redirectUri } = this.state;
 		const [err, response] = await to(dispatch(userActions.userLogout(cookies.get('user.token'))));

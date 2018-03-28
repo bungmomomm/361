@@ -12,12 +12,13 @@ import {
 	productStore,
 	allProductReviews
 } from './reducer';
+import __x from '@/state/__x';
 
 const productDetailAction = (token, productId) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	dispatch(productLoading({ loading: true }));
 
@@ -29,7 +30,8 @@ const productDetailAction = (token, productId) => async (dispatch, getState) => 
 	}));
 
 	if (err) {
-		return Promise.reject(err);
+		dispatch(productLoading({ loading: false }));
+		return Promise.reject(__x(err));
 	}
 
 	const product = response.data.data;
@@ -43,7 +45,7 @@ const productStoreAction = (token, storeId, page = 1, perPage = 4) => async (dis
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	dispatch(productLoading({ loading: true }));
 
@@ -60,7 +62,8 @@ const productStoreAction = (token, storeId, page = 1, perPage = 4) => async (dis
 	}));
 
 	if (err) {
-		return Promise.reject(err);
+		dispatch(productLoading({ loading: false }));
+		return Promise.reject(__x(err));
 	}
 
 	const store = response.data.data;
@@ -79,7 +82,7 @@ const productSocialSummaryAction = (token, productId) => async (dispatch, getSta
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	dispatch(productLoading({ loading: true }));
 
@@ -91,7 +94,8 @@ const productSocialSummaryAction = (token, productId) => async (dispatch, getSta
 	}));
 
 	if (err) {
-		return Promise.reject(err);
+		dispatch(productLoading({ loading: false }));
+		return Promise.reject(__x(err));
 	}
 
 	const socialSummary = response.data.data;
@@ -106,7 +110,7 @@ const allProductReviewsAction = (token, productId, page = 1, perPage = 10) => as
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	dispatch(productLoading({ loading: true }));
 
@@ -123,7 +127,8 @@ const allProductReviewsAction = (token, productId, page = 1, perPage = 10) => as
 	}));
 
 	if (err) {
-		return Promise.reject(err);
+		dispatch(productLoading({ loading: false }));
+		return Promise.reject(__x(err));
 	}
 
 	const allReviews = response.data.data;
@@ -142,7 +147,7 @@ const productPromoAction = (token, productId) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	dispatch(productLoading({ loading: true }));
 
@@ -157,7 +162,8 @@ const productPromoAction = (token, productId) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
-		return Promise.reject(err);
+		dispatch(productLoading({ loading: false }));
+		return Promise.reject(__x(err));
 	}
 
 	// mapping meta data
@@ -184,6 +190,8 @@ const getProductCardData = (details) => {
 	if (!_.isEmpty(details)) {
 		let productStock = 0;
 		let hasVariantSize = false;
+		let hasSizeGuide = false;
+		let specs = [];
 		const productVariants = [];
 		const variantsData = {};
 		const images = details.images.map((img, idx) => {
@@ -234,6 +242,20 @@ const getProductCardData = (details) => {
 						}
 					});
 				}
+
+				// maps seize guide value from product spec...
+				specs = details.spec.filter((item) => {
+					const specKey = item.key.toLowerCase().trim();
+					if (specKey.indexOf('size') === -1 && specKey.indexOf('guide') === -1) {
+						return true;
+					}
+
+					if (!_.isEmpty(item) && _.has(item, 'value')) {
+						hasSizeGuide = true;
+						window.sizeGuide = item.value;
+					}
+					return false;
+				});
 			}
 		} catch (error) {
 			throw error;
@@ -248,7 +270,9 @@ const getProductCardData = (details) => {
 			variants: productVariants,
 			variantsData,
 			productStock,
-			hasVariantSize
+			hasVariantSize,
+			specs,
+			hasSizeGuide
 		};
 	}
 	return details;

@@ -14,7 +14,10 @@ import { actions as sharedActions } from '@/state/v4/Shared';
 import { uniqid } from '@/utils';
 import to from 'await-to-js';
 import { isLogin } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
+import { toastSytle } from '@/containers/Mobile/Shared/styleSnackbar';
 
+@handler
 class Love extends PureComponent {
 	constructor(props) {
 		super(props);
@@ -39,6 +42,7 @@ class Love extends PureComponent {
 		const { cookies, data, dispatch, onClick, inline } = this.props;
 		const { loading, status } = this.state;
 		let message = '';
+		let isError = false;
 		if (cookies.get(isLogin) === 'false') {
 			if (inline) {
 				this.setState({
@@ -59,6 +63,10 @@ class Love extends PureComponent {
 		if (status === 1) {
 			message = 'Produk berhasil dihapus dari Lovelist';
 			response = await to(dispatch(lovelistActions.removeFromLovelist(cookies.get('user.token'), data)));
+			if (response[0]) {
+				isError = true;
+				message = 'Gagal menyimpan Produk di lovelist';
+			}
 			if (response[1]) {
 				this.setState({
 					status: 0
@@ -67,6 +75,10 @@ class Love extends PureComponent {
 		} else {
 			message = 'Produk berhasil disimpan ke Lovelist';
 			response = await to(dispatch(lovelistActions.addToLovelist(cookies.get('user.token'), data)));
+			if (response[0]) {
+				isError = true;
+				message = 'Gagal menyimpan Produk di lovelist';
+			}
 			if (response[1]) {
 				this.setState({
 					status: 1
@@ -77,50 +89,18 @@ class Love extends PureComponent {
 		this.setState({
 			loading: false
 		});
-
-		dispatch(sharedActions.showSnack(uniqid('err-'),
-			{
-				label: message,
-				timeout: 3000
-			},
-			{
-				css: {
-					snack: {
-						display: 'flex',
-						position: 'fixed',
-						bottom: '30px',
-						right: 0,
-						left: 0,
-						marginRight: 'auto',
-						marginLeft: 'auto',
-						zIndex: '2',
-						width: '300px',
-						maxWidth: '480px',
-						backgroundColor: 'rgba(0, 0, 0, 0.8)',
-						padding: '15px',
-						borderRadius: '40px',
-						textAlign: 'center',
-						largeScreen: {
-							left: -15,
-						}
-					},
-					label: {
-						flex: '4',
-						fontSize: '14px',
-						lineHeight: 'normal',
-						fontFamily: 'arial, sans-serif',
-						color: 'rgba(255, 255, 255, 0.7)',
-						width: '100%',
-						display: 'block',
-						paddingRight: '0px'
-					}
+		if (isError) {
+			dispatch(sharedActions.showSnack(uniqid('err-'),
+				{
+					label: message,
+					timeout: 3000
 				},
-				sticky: true,
-			}
-		));
+				toastSytle()
+			));
 
-		if (onClick) {
-			onClick(data);
+			if (onClick) {
+				onClick(data);
+			}
 		}
 	}
 

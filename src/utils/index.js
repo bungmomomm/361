@@ -8,12 +8,14 @@ import componentState from './componentState';
 import splitString from './splitString';
 import trimString from './trimString';
 import { request, getCancelToken } from './request';
-import { setUserCookie, setUniqeCookie, removeUserCookie, setReferrenceCookie } from './cookie';
+import { setUserCookie, setUniqeCookie, removeUserCookie, setUserInfoCookie, setReferrenceCookie } from './cookie';
 import urlBuilder from './urlBuilder';
+import enableZoomPinch from './zoomPinch';
 import loading from './loading';
 import { request as emarsysRequest } from './emarsys';
 import uniqid from './uniqid';
 import stringHelper from './stringHelper';
+import initUTMProcess from './affiliate';
 
 const isHexColor = (color) => {
 	return /(^#[0-9A-F]{3}|^#[0-9A-F]{6})$/i.test(color);
@@ -55,6 +57,7 @@ export default {
 	getClientSecret,
 	getClientVersion,
 	setUserCookie,
+	setUserInfoCookie,
 	removeUserCookie,
 	setUniqeCookie,
 	newId,
@@ -75,5 +78,7 @@ export default {
 	emarsysRequest,
 	uniqid,
 	stringHelper,
-	setReferrenceCookie
+	enableZoomPinch,
+	setReferrenceCookie,
+	initUTMProcess
 };

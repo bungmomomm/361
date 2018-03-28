@@ -3,12 +3,12 @@ import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
-import { urlBuilder, stringHelper } from '@/utils';
+import { urlBuilder, enableZoomPinch, uniqid } from '@/utils';
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as shopBagActions } from '@/state/v4/ShopBag';
-import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Spinner, Badge, Notification, AnimationLovelist, AnimationAddToCart } from '@/components/mobile';
+import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Spinner, Badge, AnimationLovelist, AnimationAddToCart } from '@/components/mobile';
 import Promos from './Promos';
 import ReviewSummary from './Reviews/summary';
 
@@ -26,6 +26,12 @@ import {
 } from '@/utils/tracking';
 import cookiesLabel from '@/data/cookiesLabel';
 
+import { Payload } from '@/utils/tracking/lucidworks';
+import xhandler from '@/containers/Mobile/Shared/handler';
+
+import { toastSytle } from '@/containers/Mobile/Shared/styleSnackbar';
+
+const fusion = new Payload(_);
 const trackAddToCart = (data, props, variant) => {
 	const products = {
 		name: data.detail.title,
@@ -68,7 +74,11 @@ const doAfterAnonymous = async (props) => {
 	const token = cookies.get(cookiesLabel.userToken);
 
 	const productDetail = await dispatch(productActions.productDetailAction(token, productId));
-	trackPdpView(productDetail, props);
+	if (productDetail) {
+		trackPdpView(productDetail, props);
+		await dispatch(productActions.productSocialSummaryAction(token, productId));
+		fusion.trackPdp(productDetail);
+	}
 
 	const res = await dispatch(productActions.productPromoAction(token, productId));
 	if (res.status === 200 && res.statusText === 'OK') {
@@ -82,9 +92,9 @@ const doAfterAnonymous = async (props) => {
 		}
 		await dispatch(lovelistActions.bulkieCountByProduct(token, ids));
 	}
-	await dispatch(productActions.productSocialSummaryAction(token, productId));
 };
 
+@xhandler
 class Products extends Component {
 	constructor(props) {
 		super(props);
@@ -139,11 +149,7 @@ class Products extends Component {
 				slideIndex: 0
 			},
 			selectedVariant: {},
-			btnBeliLabel: 'BELI AJA',
-			notif: {
-				show: false,
-				content: ''
-			}
+			btnBeliLabel: 'BELI AJA'
 		};
 
 		this.loadingContent = (
@@ -156,6 +162,24 @@ class Products extends Component {
 			center: '',
 			right: ''
 		};
+
+		this.fusion = new Payload(this.props.cookies);
+
+		this.hastagLinkCreator = (text) => {
+			const urlRegex = /(#[^\s]+)/g;
+			return text.replace(urlRegex, (url) => {
+				const hashlink = urlBuilder.setName(url).buildSearchByKeyword();
+				return `<a href="${hashlink + url.replace('#', '%23')}">${url}</a>`;
+			});
+		};
+	}
+
+	componentWillMount() {
+		window.scroll(0, 0);
+	}
+
+	componentDidMount() {
+		if (this.props.botNav) this.props.botNav(this.botNav);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -214,6 +238,10 @@ class Products extends Component {
 		this.handleScroll();
 	}
 
+	componentWillUnmount() {
+		if (this.props.botNav) this.props.botNav(false);
+	}
+
 	onOvoInfoClick(e) {
 		const { promo } = this.props.product;
 		const { status } = this.state;
@@ -246,6 +274,7 @@ class Products extends Component {
 	closeZoomImage(e) {
 		const { status } = this.state;
 		status.isZoomed = false;
+		enableZoomPinch(false);
 		this.setState({ status });
 	}
 
@@ -263,15 +292,21 @@ class Products extends Component {
 		const { status } = this.state;
 		const { top } = this.props.scroll;
 		const carouselHeight = this.carouselEL.getBoundingClientRect().height;
-		if (top > carouselHeight && !status.showScrollInfomation) {
-			status.showScrollInfomation = true;
-			this.setState({ status });
-		}
 
-		if ((top === 0 || top < carouselHeight) && status.showScrollInfomation) {
-			status.showScrollInfomation = false;
-			this.setState({ status });
-		}
+		status.showScrollInfomation = ((top !== 0) && top > (carouselHeight / 2));
+		this.setState({ status });
+		// if (top > (carouselHeight / 2) && !status.showScrollInfomation) {
+		// if (top > (carouselHeight / 2)) {
+		// 	console.log('enter set show info');
+		// 	status.showScrollInfomation = true;
+		// 	this.setState({ status });
+		// }
+
+		// if (top === 100 || (top < carouselHeight)) {
+		// if ((top === 0 || top < carouselHeight) && status.showScrollInfomation) {
+		// 	status.showScrollInfomation = false;
+		// 	this.setState({ status });
+		// }
 	}
 
 	animateLovelist() {
@@ -331,28 +366,44 @@ class Products extends Component {
 
 	addToShoppingBag(variant) {
 		this.animateAddtoCart();
-		
-		const { status, notif } = this.state;
+
+		const { status } = this.state;
 		const { dispatch, product } = this.props;
 
 		status.showModalSelectSize = false;
-		notif.show = false;
-		this.setState({ status, notif });
+		this.setState({ status });
 
 		const handler = new Promise((resolve, reject) => {
 			resolve(dispatch(shopBagActions.updateAction(this.userCookies, variant.id, this.defaultCount, 'add')));
 		});
-
+		let message = '';
 		handler.then((res) => {
+			// Fusion Add to Cart tracking...
+			const pricing = product.detail.variants[0].pricing.original;
+			fusion.trackAddToCart({
+				product_id: product.detail.id,
+				item_id: variant.id,
+				item_price: pricing.effective_price,
+				item_disc: pricing.discount,
+				qty: this.defaultCount
+			});
+
 			// updates carts badge
 			dispatch(sharedActions.totalCartAction(this.userCookies));
 			status.pendingAddProduct = false;
 			status.productAdded = true;
 			status.showModalSelectSize = false;
-			notif.show = true;
-			notif.content = 'Produk Berhasil ditambahkan';
-			this.setState({ status, notif });
-			status.pdpDataHasLoaded = false;
+			message = 'Produk Berhasil ditambahkan';
+			this.setState({ status });
+
+			dispatch(sharedActions.showSnack(uniqid('err-'),
+				{
+					label: message,
+					timeout: 3000
+				},
+				toastSytle(),
+			));
+
 			dispatch(productActions.productDetailAction(this.userCookies, product.detail.id));
 			trackAddToCart(product, this.props, variant);
 
@@ -360,7 +411,14 @@ class Products extends Component {
 			// dispatch(productActions.productDetailAction(this.userCookies, product.detail.id));
 		}).catch((err) => {
 			status.showModalSelectSize = false;
-			this.setState({ status, notif });
+			this.setState({ status });
+			dispatch(sharedActions.showSnack(uniqid('err-'),
+				{
+					label: message,
+					timeout: 3000
+				},
+				toastSytle(),
+			));
 			throw err;
 		});
 	}
@@ -464,42 +522,48 @@ class Products extends Component {
 	 */
 	removeAddItem(e) {
 		const { dispatch, product } = this.props;
-		const { cardProduct, status, notif } = this.state;
+		const { cardProduct, status } = this.state;
 		const handler = new Promise((resolve, reject) => {
 			if (!status.isLoved) resolve(dispatch(lovelistActions.addToLovelist(this.userCookies, product.detail.id)));
 			else resolve(dispatch(lovelistActions.removeFromLovelist(this.userCookies, product.detail.id)));
 		});
 
 		status.showConfirmDelete = false;
-		notif.show = false;
-		this.setState({ status, notif });
-
+		this.setState({ status });
+		let message = '';
 		handler.then((res) => {
 			// Updating product lovelist state ...
 			if (res.status === 200 && res.statusText === 'OK') {
 				if (!status.isLoved) {
-					notif.content = 'Lovelist ditambahkan';
+					message = 'Lovelist ditambahkan';
 					status.isLoved = true;
 					cardProduct.totalLovelist += 1;
 				} else {
-					notif.content = 'Produk dihapus dari Lovelist';
+					message = 'Produk dihapus dari Lovelist';
 					status.isLoved = false;
 					cardProduct.totalLovelist -= 1;
 				}
 			}
-			notif.show = true;
-			this.setState({ status, cardProduct, notif });
+
+			dispatch(sharedActions.showSnack(uniqid('err-'),
+				{
+					label: message,
+					timeout: 3000
+				},
+				toastSytle(),
+			));
 
 		}).catch((err) => {
 			status.showConfirmDelete = false;
-			notif.show = false;
-			this.setState({ status, cardProduct, notif });
+			dispatch(sharedActions.showSnack(uniqid('err-'),
+				{
+					label: message,
+					timeout: 3000
+				},
+				toastSytle(),
+			));
 			throw err;
 		});
-
-		notif.show = false;
-		notif.content = '';
-		this.setState({ notif });
 	}
 
 	renderStoreProducts() {
@@ -542,7 +606,17 @@ class Products extends Component {
 							<Svg src={'ico_arrow-back-left.svg'} />
 						</Button>
 					),
-					center: <div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>{brandName}</div>,
+					center: (
+						<div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>
+							{
+								_.chain(brandName).split(' ').size().value() > 5 ? (
+									<div className='marguee'>
+										<span>{brandName}</span>
+									</div>
+								) : <span>{brandName}</span>
+							}
+						</div>
+					),
 					right: (
 						<div className='flex-row flex-middle'>
 							<Share title={detail.title} url={url} />
@@ -574,7 +648,7 @@ class Products extends Component {
 
 		if (!_.isEmpty(cardProduct) && _.has(cardProduct, 'pricing')) {
 			return (
-				<div className={styles.stickyAction}>
+				<div className={styles.stickyAction} ref={(r) => { this.botNav = r; }}>
 					<div className='flex-row flex-spaceBetween padding--medium-h padding--medium-v border-top flex-middle'>
 						<div className='flex-row'>
 							<div>
@@ -614,7 +688,7 @@ class Products extends Component {
 				onClick: this.handleShowMoreProductDescription
 			};
 
-			let fullProductDescriptionButtonText = '[...]';
+			let fullProductDescriptionButtonText = 'more';
 			let classNameProductDescription = classNames('padding--medium-h', styles.textOnlyShowTwoLines);
 
 			if (showFullProductDescription === true) {
@@ -626,6 +700,7 @@ class Products extends Component {
 			// if (_.isEmpty(detail) || status.loading) return this.loadingContent;
 
 			if (status.isZoomed && _.has(detail, 'images')) {
+				enableZoomPinch(true);
 				return (
 					<div>
 						<Header.Modal style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }} {...this.headerZoom} />
@@ -672,16 +747,16 @@ class Products extends Component {
 								</div>
 							)}
 
-							{status.loading && this.loadingContent}
-
 							{!_.isEmpty(detail) && status.hasVariantSize && (
 								<div className='flex-center padding--medium-h border-top'>
 									<div className='margin--medium-v'>
 										<div className='flex-row flex-spaceBetween'>
 											<div className='font-medium'>Pilih Ukuran</div>
-											<Link to='/product/guide' className='d-flex font-color--primary font--lato-bold font-color-primary flex-row flex-middle'>
-												<Svg src='ico_sizeguide.svg' /> <span className='padding--small-h font--lato-bold font-color--primary padding--none-r'>PANDUAN UKURAN</span>
-											</Link>
+											{(!_.isEmpty(cardProduct) && _.has(cardProduct, 'hasSizeGuide') && cardProduct.hasSizeGuide) &&
+												<Link to='/product/guide' className='d-flex font-color--primary font--lato-bold font-color-primary flex-row flex-middle'>
+													<Svg src='ico_sizeguide.svg' /> <span className='padding--small-h font--lato-bold font-color--primary padding--none-r'>PANDUAN UKURAN</span>
+												</Link>
+											}
 										</div>
 										<div className='margin--medium-v horizontal-scroll margin--none-b'>
 											<Radio
@@ -715,40 +790,42 @@ class Products extends Component {
 							{!_.isEmpty(detail.description)
 							&&
 								<div className='wysiwyg-content'>
-									<div className={classNameProductDescription} dangerouslySetInnerHTML={{ __html: stringHelper.removeHtmlTag(detail.description) }} />
+									<div className={classNameProductDescription}>
+										{<div dangerouslySetInnerHTML={{ __html: this.hastagLinkCreator(detail.description) }} />}
+										{!_.isEmpty(cardProduct.specs) && (
+											<div className='margin--medium-v --disable-flex'>
+												{(cardProduct.specs.map((item, idx) => {
+													item.value = item.value.replace(/(?:\r\n|\r|\n)/g, '<br />');
+													if (/^/.test(item.value)) return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
+													return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
+												}))}
+											</div>
+										)}
+									</div>
 									<span className='padding--medium-h font-color--grey' {...buttonProductDescriptionAttribute}>{ fullProductDescriptionButtonText }</span>
 								</div>
 							}
-							{!_.isEmpty(detail.spec) && (
+							{product.loading ? this.loadingContent : (
 								<div className='margin--medium-v --disable-flex padding--medium-h'>
-									{(detail.spec.map((item, idx) => {
-										item.value = item.value.replace(/(?:\r\n|\r|\n)/g, '<br />');
-										if (/^/.test(item.value)) return <div key={idx} className='margin--small-v font-medium font-color--primary wysiwyg-content' dangerouslySetInnerHTML={{ __html: item.value }} />;
-										return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
-									}))}
+									<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
+										{(comments.total === 0) && 'Tulis Komentar'}
+										{(comments.total > 0) && `Lihat Semua ${comments.total} Komentar`}
+									</Link>
+									{(!_.isUndefined(comments) && !_.isUndefined(comments.summary) && !_.isEmpty(comments.summary)) && (
+										<Comment type='lite-review' data={comments.summary} />
+									)}
 								</div>
 							)}
-							<div className='margin--medium-v --disable-flex padding--medium-h'>
-								<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
-									{(comments.total === 0) && 'Tulis Komentar'}
-									{(comments.total > 0) && `Lihat Semua ${comments.total} Komentar`}
-								</Link>
-								{(!_.isUndefined(comments) && !_.isUndefined(comments.summary) && !_.isEmpty(comments.summary)) && (
-									<Comment type='lite-review' data={comments.summary} />
-								)}
-							</div>
 							{/* ----------------------------	END OF PDP MAIN CONTENT (CARD PRODUCT) ---------------------------- */}
 
 							<div style={{ backgroundColor: '#F5F5F5' }}>
 								{/* ----------------------------	PRODUCT REVIEWS ---------------------------- */}
-								{!_.isEmpty(reviews.summary) &&
-									<ReviewSummary
-										productId={id}
-										reviews={reviews}
-										seller={seller}
-										onBtnSeeAllReviewClick={() => this.redirectToPage('reviews')}
-									/>
-								}
+								<ReviewSummary
+									productId={id}
+									reviews={reviews}
+									seller={seller}
+									onBtnSeeAllReviewClick={() => this.redirectToPage('reviews')}
+								/>
 
 								{/* MOVED TEMPORALLY ON NOTES ... */}
 								{/* ----------------------------	END OF REVIEW ---------------------------- */}
@@ -790,8 +867,6 @@ class Products extends Component {
 									loginNow={this.handleLovelistClick}
 									productId={detail.id}
 								/>
-								{/* } */}
-
 							</div>
 						</div>
 						{this.renderStickyAction()}
@@ -846,22 +921,6 @@ class Products extends Component {
 									onChange={this.handleSelectVariant}
 									data={cardProduct.variants}
 								/>
-								{/* <Level style={{ padding: '0px' }} className='margin--medium-v'>
-									<Level.Left />
-									<Level.Item>
-										<Radio
-											name='size'
-											checked={this.state.size}
-											variant='rounded'
-											className='margin--small-v'
-											onChange={this.handleSelectVariant}
-											data={cardProduct.variants}
-										/>
-									</Level.Item>
-									<Level.Right className='padding--small-v' >
-										<Button color='secondary' disabled={status.btnBeliDisabled || _.isEmpty(selectedVariant)} size='medium' onClick={this.handleBtnBeliClicked}>{this.state.btnBeliLabel}</Button>
-									</Level.Right>
-								</Level> */}
 							</div>
 						</div>
 					</Modal>
@@ -909,10 +968,6 @@ class Products extends Component {
 							/>
 						</Modal>
 					)}
-
-					<Notification style={{ marginTop: '90%' }} show={this.state.notif.show} toast disableClose onClose={this.onNotifClose}>
-						<span>{this.state.notif.content}</span>
-					</Notification>
 				</div>);
 		} catch (error) {
 			console.log('PDP ERROR: ', error);

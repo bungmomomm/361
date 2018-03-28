@@ -31,7 +31,9 @@ import {
 } from '@/utils/tracking';
 
 import { userToken } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class LoginPage extends Component {
 	constructor(props) {
 		super(props);

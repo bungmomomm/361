@@ -20,7 +20,9 @@ import { userToken, userSource } from '@/data/cookiesLabel';
 const buildUrl = (stringCategory = '') => {
 	return stringCategory.replace(/[^a-zA-Z ]/g, '').replace(/\s\s+/g, ' ').replace(/ /g, '-').toLowerCase();
 };
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class SubCategory extends PureComponent {
 	constructor(props) {
 		super(props);
@@ -141,7 +143,7 @@ class SubCategory extends PureComponent {
 					}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Categories' scroll={this.props.scroll} totalCartItems={shared.totalCart} />
+				<Navigation active='Categories' scroll={this.props.scroll} totalCartItems={shared.totalCart} botNav={this.props.botNav} />
 			</div>
 		);
 	}

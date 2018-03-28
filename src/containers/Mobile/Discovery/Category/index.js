@@ -15,7 +15,9 @@ import CONST from '@/constants';
 import Shared from '@/containers/Mobile/Shared';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { userSource, userToken } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Category extends PureComponent {
 	constructor(props) {
 		super(props);
@@ -114,7 +116,7 @@ class Category extends PureComponent {
 					lovelist={this.props.shared.totalLovelist}
 					value={this.props.search.keyword}
 				/>
-				<Navigation active='Categories' scroll={this.props.scroll} totalCartItems={shared.totalCart} />
+				<Navigation active='Categories' scroll={this.props.scroll} totalCartItems={shared.totalCart} botNav={this.props.botNav} />
 			</div>
 		);
 	}

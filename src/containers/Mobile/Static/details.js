@@ -6,7 +6,9 @@ import Iframe from 'react-iframe';
 import Shared from '@/containers/Mobile/Shared';
 import { Header, Page, Svg } from '@/components/mobile';
 import cookiesLabel from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Details extends Component {
 	constructor(props) {
 		super(props);
@@ -24,20 +26,20 @@ class Details extends Component {
 					link: 'https://super.mataharimall.com/static/contact-us.html'
 				},
 				faq: {
-					title: 'FAQ', 
+					title: 'FAQ',
 					link: ''
 				},
 				aboutus: {
-					title: 'Tentang Kami', 
+					title: 'Tentang Kami',
 					link: 'https://super.mataharimall.com/static/about-us.html'
 				},
 				// affiliate: ''
 				privasi: {
-					title: 'Kebijakan Privasi', 
+					title: 'Kebijakan Privasi',
 					link: 'https://super.mataharimall.com/static/privacy-policy.html'
 				},
-				joa: { 
-					title: 'Jualan Aja', 
+				joa: {
+					title: 'Jualan Aja',
 					link: ''
 				}
 
@@ -55,9 +57,9 @@ class Details extends Component {
 			history.push('/notfound');
 		}
 
-		
+
 		console.log(match.params.detail);
-		
+
 	}
 
 	render() {

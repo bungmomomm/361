@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Inbox extends Component {
 	constructor(props) {
 		super(props);

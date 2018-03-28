@@ -18,7 +18,9 @@ import Scroller from '@/containers/Mobile/Shared/scroller';
 import { aux } from '@/utils';
 import classNames from 'classnames';
 import cookiesLabel from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class MyOrder extends Component {
 	constructor(props) {
 		super(props);
@@ -156,7 +158,7 @@ class MyOrder extends Component {
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Profile' />
+				<Navigation active='Profile' botNav={this.props.botNav} />
 			</div>
 		);
 	}

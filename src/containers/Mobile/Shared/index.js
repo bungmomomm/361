@@ -4,7 +4,7 @@ import to from 'await-to-js';
 import { actions } from '@/state/v4/Shared';
 import { actions as users } from '@/state/v4/User';
 import { actions as initAction } from '@/state/v4/Home';
-import { setUserCookie, setUniqeCookie, setReferrenceCookie } from '@/utils';
+import { setUserCookie, setUniqeCookie, setReferrenceCookie, initUTMProcess } from '@/utils';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
 import Snackbar from '@/containers/Mobile/Shared/snackbar';
@@ -12,6 +12,7 @@ import { Svg } from '@/components/mobile';
 import styles from './shared.scss';
 import { check as checkConnection, watch as watchConnection } from 'is-offline';
 import { userToken, userRfToken, uniqueid } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 	WrappedComponent.contextTypes = {
@@ -19,6 +20,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		location: React.PropTypes.object
 	};
 
+	@handler
 	class SharedAction extends Component {
 		constructor(props) {
 			super(props);
@@ -39,7 +41,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			this.userCookies = this.props.cookies.get(userToken);
 			this.userRFCookies = this.props.cookies.get(userRfToken);
 			this.uniqueId = this.props.cookies.get(uniqueid);
-			this.handleScroll = this.handleScroll.bind(this);
+			this.handleScroll = _.throttle(this.handleScroll).bind(this);
 			this.docBody = null;
 			this.currentScrollPos = 0;
 		}
@@ -47,7 +49,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		componentWillMount() {
 			// window.mmLoading.destroy();
 			const { dispatch, shared, cookies } = this.props;
-			
+
 			dispatch(actions.clearSnackQueue());
 
 			const offline = async (bool) => {
@@ -72,11 +74,11 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 			// const existingPref = cookies.get(pageReferrer);
 			const referrer = window.previousLocation === '/category' ? 'categories' : (window.previousLocation === '/' ? 'home' : '');
-			
+
 			if (referrer !== '') {
 				setReferrenceCookie(cookies, referrer);
 			}
-			
+
 			this.initProcess().then(shouldInit => {
 				if (!shouldInit) {
 					this.initApp();
@@ -93,6 +95,8 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			if (typeof this.uniqueId === 'undefined') {
 				setUniqeCookie(this.props.cookies);
 			}
+
+			initUTMProcess();
 		}
 
 		componentWillUnmount() {
@@ -185,31 +189,27 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		handleScroll(e) {
-			if (e.target.tagName === 'BODY') {
-				const docHeight = this.docBody ? this.docBody.scrollHeight - window.innerHeight : 0;
-				this.setState({
-					scroll: {
-						top: e.target.scrollTop,
-						docHeight,
-						isNavSticky: ((oldPos = this.currentScrollPos) => {
-							if (!scroll) {
-								return false;
-							}
-							this.currentScrollPos = this.state.scroll.top;
-							return this.state.scroll.top > oldPos && this.state.scroll.top < this.state.scroll.docHeight;
-						})()
-					}
-				});
-			}
+			const docHeight = this.docBody ? this.docBody.scrollHeight - window.innerHeight : 0;
+			this.setState({
+				scroll: {
+					top: window.scrollY,
+					docHeight,
+					isNavSticky: ((oldPos = this.currentScrollPos) => {
+						if (!scroll) {
+							return false;
+						}
+						this.currentScrollPos = this.state.scroll.top;
+						return this.state.scroll.top > oldPos && this.state.scroll.top < this.state.scroll.docHeight;
+					})()
+				}
+			});
 		}
 
 		snackStyle = () => {
 			const snackStyle = _.chain(this.props.shared.snackbar).get('[0].style').value() || { css: {}, sticky: true, theming: {} };
 			const snackCss = _.chain(snackStyle).get('css.snack').value() || {};
 			const themingSnackCss = _.chain(snackStyle).get('theming.snack').value() || {};
-			const stickyEl = document.querySelector('.navigation__navigation') ? document.querySelector('.navigation__navigation')
-							: document.querySelector('.products__stickyAction') ? document.querySelector('.products__stickyAction')
-							: false;
+			const stickyEl = this.botNav || false;
 			const snackSticky = !snackStyle.sticky ? {} : {
 				bottom: !this.state.scroll.isNavSticky && stickyEl
 						? (+(parseInt(snackCss.bottom, 10) || 0) + +stickyEl.getBoundingClientRect().height)
@@ -222,9 +222,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		render() {
 			return (
-				<div>
+				<div className='shared_container'>
 					<Snackbar history={this.props.history} location={this.props.location} theming={this.snackStyle().theming} customStyles={this.snackStyle().customStyles} />
-					<WrappedComponent {...this.props} scroll={this.state.scroll} />
+					<WrappedComponent {...this.props} scroll={this.state.scroll} botNav={(r) => { this.botNav = r; }} />
 					{
 						this.state.scroll.top > window.innerHeight && (
 							<a href='#root' className={styles.backToTop}>

@@ -77,7 +77,9 @@ const trackProductOnClick = (product, position, source = 'mm') => {
 	const requestPayload = request.getPayload(productClickBuilder);
 	if (requestPayload) sendGtm(requestPayload);
 };
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Detail extends Component {
 	static queryObject(props) {
 		const brandId = props.match.params.brandId;
@@ -90,7 +92,7 @@ class Detail extends Component {
 			page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
 			per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 10,
 			fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
-			sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
+			// sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 		};
 	}
 
@@ -127,7 +129,8 @@ class Detail extends Component {
 			},
 			isFooterShow: true,
 			newComment: { product_id: '', comment: '' },
-			lovelistProductId: null
+			lovelistProductId: null,
+			focusedProductId: ''
 		};
 	}
 	componentWillMount() {
@@ -222,6 +225,10 @@ class Detail extends Component {
 		const { cookies, dispatch } = this.props;
 		dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), [productId]));
 		dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), [productId]));
+	}
+
+	setFocusedProduct(id) {
+		this.setState({ focusedProductId: id });
 	}
 
 	update = (filters) => {
@@ -346,9 +353,10 @@ class Detail extends Component {
 	}
 
 	renderProduct() {
-		const { brands, comments, scroller } = this.props;
-		const { listTypeState } = this.state;
+		const { brands, comments, scroller, location } = this.props;
+		const { listTypeState, focusedProductId } = this.state;
 		const products = _.chain(brands).get('searchData.products').value() || [];
+		const redirectPath = location.pathname !== '' ? location.pathname : '';
 
 		switch (listTypeState.type) {
 		case 'grid':
@@ -365,6 +373,7 @@ class Detail extends Component {
 				<SmallGridView
 					loading={scroller.loading}
 					products={products}
+					productOnClick={trackProductOnClick}
 				/>
 			);
 		default:
@@ -374,6 +383,10 @@ class Detail extends Component {
 					loading={scroller.loading}
 					forceLoginNow={() => this.forceLoginNow()}
 					products={products}
+					productOnClick={trackProductOnClick}
+					focusedProductId={focusedProductId}
+					setFocusedProduct={(id) => this.setFocusedProduct(id)}
+					redirectPath={redirectPath}
 				/>
 			);
 		}
@@ -393,7 +406,6 @@ class Detail extends Component {
 					<Svg src='ico_arrow-back-left.svg' />
 				</span>
 			),
-
 			center: !this.state.styleHeader && _.chain(searchData).get('info.title').value(),
 			right: <Share title={title} url={url} />,
 			rows: !this.state.styleHeader && this.renderFilter()
@@ -414,12 +426,12 @@ class Detail extends Component {
 	render() {
 		const { cookies } = this.props;
 		const { showFilter } = this.state;
-		
+
 		const navigationAttribute = {
 			scroll: this.props.scroll
 		};
 		navigationAttribute.active = cookies.get(pageReferrer);
-  
+
 		return (
 			<div style={this.props.style}>
 				{(showFilter) ? (
@@ -450,7 +462,7 @@ class Detail extends Component {
 				{(!showFilter) && (
 					<div>
 						{this.renderHeader()}
-						<Navigation {...navigationAttribute} />
+						<Navigation {...navigationAttribute} botNav={this.props.botNav} />
 					</div>
 				)}
 			</div>

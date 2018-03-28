@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import _ from 'lodash';
 import classNames from 'classnames';
 import styles from './image.scss';
 
@@ -9,33 +10,28 @@ class Image extends Component {
 			loaded: false
 		};
 		this.onLoad = this.onLoad.bind(this);
-		this.onBodyScroll = this.onBodyScroll.bind(this);
+		this.onBodyScroll = _.throttle(this.onBodyScroll).bind(this);
 	}
 
 	componentDidMount() {
 		if (this.props.lazyload) {
-			// Bind scroll when element added
-			const body = window.document.getElementsByTagName('body')[0];
-			body.addEventListener('scroll', this.onBodyScroll);
+			window.addEventListener('scroll', this.onBodyScroll);
 			if (!this.state.loaded) {
-				// Fix for lazyload
 				this.checkVisibility();
 			}
 		}
 	}
 
 	componentDidUpdate() {
-		// Remove scroll bind when lazyload props removed
 		if (!this.props.lazyload) {
-			const body = window.document.getElementsByTagName('body')[0];
-			body.removeEventListener('scroll', this.onBodyScroll);
+			window.removeEventListener('scroll', this.onBodyScroll);
 		}
 	}
 
 	componentWillUnmount() {
-		// Remove scroll bind when element removed
-		const body = window.document.getElementsByTagName('body')[0];
-		body.removeEventListener('scroll', this.onBodyScroll);
+		if (this.props.lazyload) {
+			window.removeEventListener('scroll', this.onBodyScroll);
+		}
 	}
 
 	onBodyScroll() {
@@ -45,20 +41,20 @@ class Image extends Component {
 	onLoad() {
 		// Fix for carousel issue
 		this.triggerEvent(window, 'resize');
-		this.imgRef.parentElement.style.backgroundColor = '#ffffff';
-		this.forceUpdate();
+		// this.imgRef.parentElement.style.backgroundColor = '#ffffff';
+		// this.forceUpdate();
 	}
 
 	checkVisibility() {
 		// If element is visible load image
 		const viewportH = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+
 		const viewportOffset = 0; // Debug only
 		const imgOffset = this.imgRef.getBoundingClientRect();
 		const isVisible = imgOffset.top <= (viewportH + viewportOffset);
 		if (this.props.lazyload && !this.state.loaded && isVisible) {
 			this.setState({ loaded: true });
-			const body = window.document.getElementsByTagName('body')[0];
-			body.removeEventListener('scroll', this.onBodyScroll);
+			window.removeEventListener('scroll', this.onBodyScroll);
 		}
 	}
 
@@ -81,9 +77,9 @@ class Image extends Component {
 		if (this.props.local) {
 			image = require(`@/assets/images/${this.props.src}`);
 		}
-		// if (this.props.lazyload && !this.state.loaded) {
-		// 	image = require('@/assets/images/mobile/ico_placeholder-full.png');
-		// }
+		if (this.props.lazyload && !this.state.loaded) {
+			image = require('@/assets/images/mobile/ico_placeholder-full.png');
+		}
 		return image;
 	}
 

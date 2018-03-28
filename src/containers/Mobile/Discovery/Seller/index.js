@@ -47,6 +47,7 @@ import {
 import classNames from 'classnames';
 import styles from './styles.scss';
 import { userToken } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
 const trackSellerPageView = (products, info, props) => {
 	const productId = _.map(products, 'product_id') || [];
@@ -90,7 +91,7 @@ const trackProductOnClick = (product, position, source = 'mm') => {
 	if (requestPayload) sendGtm(requestPayload);
 };
 
-
+@handler
 class Seller extends Component {
 	constructor(props) {
 		super(props);
@@ -125,7 +126,7 @@ class Seller extends Component {
 			headerNameY: false,
 			seeMore: {
 				bool: true,
-				text: '[...]',
+				text: 'Lihat Selengkapnya',
 				show: false
 			},
 		};
@@ -164,7 +165,7 @@ class Seller extends Component {
 		const { headerNameY } = this.state;
 		const header = document.getElementById('store-filter');
 		const sticky = header.offsetTop;
-		const scrollY = e.target.scrollTop;
+		const scrollY = window.scrollY;
 
 		if (!headerNameY) {
 			this.setState({
@@ -330,7 +331,7 @@ class Seller extends Component {
 			seeMore: {
 				...this.state.seeMore,
 				bool: !this.state.seeMore.bool,
-				text: !this.state.seeMore.bool ? '[...]' : 'Hide'
+				text: !this.state.seeMore.bool ? 'Lihat Selengkapnya' : 'Tutup'
 			}
 		});
 	};
@@ -392,11 +393,13 @@ class Seller extends Component {
 						<div>
 							<div className={seeMore.bool && seeMore.show ? classNames('font-small padding--medium-h', styles.textOnlyShowTwoLines) : 'font-small padding--medium-h'}>{seller.info.description || ''}</div>
 							{seeMore.show && (
-								<span className='padding--medium-h'>
-									<button className='font-small font-color--grey' onClick={this.toggleSeeMore}>
-										{seeMore.text}
-									</button>
-								</span>
+								<div style={{ textAlign: 'center', paddingTop: '20px' }}>
+									<span className='padding--medium-h'>
+										<button className='font-small font-color--grey' onClick={this.toggleSeeMore} style={{ color: '#2f67b7' }}>
+											{seeMore.text}
+										</button>
+									</span>
+								</div>
 							)}
 						</div>
 					</div>
@@ -491,7 +494,7 @@ class Seller extends Component {
 						</Page>
 
 						<Header.Modal {...HeaderPage} style={{ zIndex: 1 }} />
-						<Navigation scroll={this.props.scroll} active={activeNav} />
+						<Navigation scroll={this.props.scroll} active={activeNav} botNav={this.props.botNav} />
 					</div>
 				)}
 			</span>

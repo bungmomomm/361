@@ -8,7 +8,9 @@ import { Page, Input, Svg, Button, Notification, Spinner, Header, Panel } from '
 import CONST from '@/constants';
 
 import styles from '../profile.scss';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class EditOvo extends Component {
 	constructor(props) {
 		super(props);
@@ -82,7 +84,7 @@ class EditOvo extends Component {
 
 		const HeaderPage = {
 			left: (
-				<button onClick={onClickBack}> 
+				<button onClick={onClickBack}>
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</button>
 			),
@@ -108,7 +110,7 @@ class EditOvo extends Component {
 
 	renderNotif() {
 		const { formResult } = this.state;
-		
+
 		if (!_.isEmpty(formResult.status) && !_.isEmpty(formResult.message)) {
 			const notifColor = formResult.status === 'success' ? 'green' : 'pink';
 			return (
@@ -121,7 +123,7 @@ class EditOvo extends Component {
 				</Notification>
 			);
 		}
-		
+
 		return null;
 	}
 

@@ -10,7 +10,9 @@ import Tree from './filterLayouts/tree';
 import TreeSegment from './filterLayouts/treeSegment';
 import Result from './filterLayouts/result';
 
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Filter extends PureComponent {
 	constructor(props) {
 		super(props);

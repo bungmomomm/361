@@ -51,6 +51,43 @@ function getDefaultStyles(theming) {
 	};
 }
 
+function toastSytle() {
+	return 	{
+		css: {
+			snack: {
+				display: 'flex',
+				position: 'fixed',
+				bottom: '30px',
+				right: 0,
+				left: 0,
+				marginRight: 'auto',
+				marginLeft: 'auto',
+				zIndex: '2',
+				width: '300px',
+				maxWidth: '480px',
+				backgroundColor: 'rgba(0, 0, 0, 0.8)',
+				padding: '15px',
+				borderRadius: '40px',
+				textAlign: 'center',
+				largeScreen: {
+					left: -15,
+				}
+			},
+			label: {
+				flex: '4',
+				fontSize: '14px',
+				lineHeight: 'normal',
+				fontFamily: 'arial, sans-serif',
+				color: 'rgba(255, 255, 255, 0.7)',
+				width: '100%',
+				display: 'block',
+				paddingRight: '0px'
+			}
+		},
+		sticky: true
+	};
+}
+
 function getTransitionStyles(elem, largeScreen, visible, theming) {
 	if (elem === 'snack') {
 		if (visible) {
@@ -87,4 +124,7 @@ function getComputedStyles(elem, largeScreen, visible, theming = {}, customStyle
 	return styles;
 }
 
-export default getComputedStyles;
+export default {
+	getComputedStyles,
+	toastSytle
+};

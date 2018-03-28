@@ -2,14 +2,17 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import Shared from '@/containers/Mobile/Shared';
-import { Page, Svg, Button, Header, Select, Level, Radio } from '@/components/mobile';
+import { Page, Svg, Button, Header, Select, Level } from '@/components/mobile';
 import { actions } from '@/state/v4/Address';
 import styles from './style.scss';
 import { Form, Input } from '@/components/mobile/Formsy';
 import { to } from 'await-to-js';
 import { Promise } from 'es6-promise';
 import { userToken, isLogin } from '@/data/cookiesLabel';
+import Switch from 'react-switch';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Address extends Component {
 
 	state = {
@@ -28,7 +31,7 @@ class Address extends Component {
 		},
 		type: 'shipping',
 		submitting: false,
-		default: 0
+		default: false
 	};
 
 	onChange = (v, which = 'city') => {
@@ -107,7 +110,7 @@ class Address extends Component {
 
 	submit = async (model) => {
 		const { city_id } = model;
-		const splitr = city_id.split('-');
+		const splitr = city_id.split('_');
 
 		model = {
 			...model,
@@ -115,7 +118,6 @@ class Address extends Component {
 			city_id: splitr[1],
 			type: this.state.type,
 			country_id: 1,
-			is_supported_pin_point: 0,
 			latitude: '',
 			longitude: '',
 			default: this.state.default
@@ -153,30 +155,12 @@ class Address extends Component {
 				>
 					<div className='margin--medium'>
 						<label className={styles.label} htmlFor='default_address'>Jadikan Alamat Utama</label>
-						<div style={{ marginTop: '10px' }}>
-							<Radio
-								list
-								name='default_address'
+						<div style={{ marginTop: '10px', display: 'inline-block' }}>
+							<Switch
 								onChange={this.radioChange}
 								checked={this.state.default}
-								data={[
-									{
-										value: 0,
-										label: (
-											<div>
-												<span>Tidak</span>
-											</div>
-										)
-									},
-									{
-										value: 1,
-										label: (
-											<div>
-												<span>Ya</span>
-											</div>
-										)
-									}
-								]}
+								name='default_address'
+								id='default_address'
 							/>
 						</div>
 					</div>
@@ -379,10 +363,12 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = (props) => {
-	const { cookies, history } = props;
+	const { cookies, history, dispatch } = props;
 	if (!cookies.get(isLogin) || cookies.get(isLogin) === 'false') {
 		history.push('/login');
 	}
+
+	dispatch(actions.getCity(cookies.get(userToken), { q: '' }));
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Address, doAfterAnonymous)));

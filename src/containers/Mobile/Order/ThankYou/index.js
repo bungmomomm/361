@@ -7,7 +7,9 @@ import {
 } from '@/components/mobile';
 
 import { Link } from 'react-router-dom';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Brands extends Component {
 
 	componentDidMount() {

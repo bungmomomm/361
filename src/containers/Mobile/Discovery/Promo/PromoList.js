@@ -5,7 +5,9 @@ import Iframe from 'react-iframe';
 
 import Shared from '@/containers/Mobile/Shared';
 import { Header, Page, Navigation } from '@/components/mobile';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class PromoList extends Component {
 	constructor(props) {
 		super(props);
@@ -26,11 +28,15 @@ class PromoList extends Component {
 			center: 'Promo',
 		};
 
+		const { shared } = this.props;
+		const { webViewUrl } = shared;
+		const url = webViewUrl && webViewUrl.promo_tab ? webViewUrl.promo_tab : 'https://super.mataharimall.com/promo/new/mobileapps.html';
+
 		return (
 			<div className='text-center' style={this.props.style}>
 				<Page>
 					<Iframe
-						url='https://super.mataharimall.com/promo/new/mobileapps.html'
+						url={url}
 						id='myId'
 						width='100%'
 						height='100vh'
@@ -38,7 +44,7 @@ class PromoList extends Component {
 					/>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Promo' scroll={this.props.scroll} />
+				<Navigation active='Promo' scroll={this.props.scroll} botNav={this.props.botNav} />
 			</div>
 		);
 	}

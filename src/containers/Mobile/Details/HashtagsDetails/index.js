@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { 
+import {
 	Card,
-	Header, 
-	Page, 
-	Svg, 
+	Header,
+	Page,
+	Svg,
 	Carousel,
 	Modal,
 	Level,
@@ -24,7 +24,10 @@ import _ from 'lodash';
 import { userToken } from '@/data/cookiesLabel';
 import { urlBuilder } from '@/utils';
 import { Love } from '@/containers/Mobile/Widget';
+import stylesCatalog from '@/containers/Mobile/Discovery/View/view.scss';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class HashtagsDetails extends Component {
 
 	constructor(props) {
@@ -64,7 +67,7 @@ class HashtagsDetails extends Component {
 	};
 
 	loginLater() {
-		this.setState({ 
+		this.setState({
 			showLoginModal: false,
 			product: undefined
 		});
@@ -72,7 +75,9 @@ class HashtagsDetails extends Component {
 
 	bufferCarousel = (products) => {
 		const buffer = [];
-		const productClicked = (e) => console.log('Ouch, don\'t do that!!!');
+		let fragment = [];
+
+		const productClicked = (e) => null;
 		products.forEach((product, i) => {
 			const attr = {
 				key: i,
@@ -95,11 +100,29 @@ class HashtagsDetails extends Component {
 					/>
 				)
 			};
-			buffer.push(
-				<Card.CatalogGrid
-					{...attr} 			
-				/>
-			);
+
+			if ((i + 1) % 2 !== 0) {
+				fragment = [
+					<Card.CatalogGrid
+						{...attr}
+					/>
+				];
+			} else {
+				fragment = [
+					...fragment,
+					<Card.CatalogGrid
+						{...attr}
+					/>
+				];
+			};
+
+			if ((i + 1) % 2 === 0 || products.length === (i + 1)) {
+				buffer.push(
+					<div className={stylesCatalog.cardContainer} key={i}>
+						{fragment}
+					</div>
+				);
+			}
 		});
 
 		return buffer;

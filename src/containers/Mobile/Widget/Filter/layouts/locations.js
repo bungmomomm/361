@@ -5,7 +5,9 @@ import Action from './action';
 
 import _ from 'lodash';
 import utils from './utils';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Location extends PureComponent {
 	constructor(props) {
 		super(props);
@@ -16,7 +18,7 @@ class Location extends PureComponent {
 			resetDisabled: utils.getSelected(props.data).length < 1
 		};
 	}
-	
+
 	onApply(e) {
 		const { data } = this.state;
 		const { onApply } = this.props;

@@ -3,6 +3,9 @@ import {
 	Card
 } from '@/components/mobile';
 import stylesCatalog from './view.scss';
+import handler from '@/containers/Mobile/Shared/handler';
+
+@handler
 class SmallGridView extends Component {
 	constructor(props) {
 		super(props);

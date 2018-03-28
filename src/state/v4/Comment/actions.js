@@ -5,19 +5,18 @@ import { request } from '@/utils';
 import {
 	commentList,
 	commentListNext,
-	commentLoading, 
+	commentLoading,
 	addComment,
 	addCommentDetail,
-	commentListLoaded,
-	commentListLoad,
-	commentListFailed
+	commentListLoaded
 } from './reducer';
+import __x from '@/state/__x';
 
 
 const newCommentData = (commentState, newComment) => {
 
 	const newC = {
-		id: newComment.id, 
+		id: newComment.id,
 		customer: {
 			customer_avatar: newComment.customer.customer_avatar,
 			customer_id: newComment.customer.customer_id,
@@ -37,7 +36,7 @@ const newCommentData = (commentState, newComment) => {
 		commentState.push(newC);
 		commentData = commentState;
 	}
-	
+
 	return commentData;
 };
 
@@ -45,7 +44,7 @@ const commentAddAction = (token, productId, comment, source = null) => async (di
 	const { shared, comments } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	dispatch(commentLoading({ isLoading: true }));
 
@@ -62,7 +61,7 @@ const commentAddAction = (token, productId, comment, source = null) => async (di
 
 	if (err) {
 		dispatch(commentLoading({ isLoading: false }));
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	const data = response.data.data;
@@ -81,7 +80,7 @@ const productCommentAction = (token, productId, page = 1) => async (dispatch, ge
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	dispatch(commentLoading({ isLoading: true }));
 
@@ -95,7 +94,7 @@ const productCommentAction = (token, productId, page = 1) => async (dispatch, ge
 
 	if (err) {
 		dispatch(commentLoading({ isLoading: false }));
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	const data = {
@@ -103,7 +102,7 @@ const productCommentAction = (token, productId, page = 1) => async (dispatch, ge
 	};
 
 	if (page > 1) {
-		dispatch(commentListNext({ data }));	
+		dispatch(commentListNext({ data }));
 	} else {
 		dispatch(commentList({ data }));
 	}
@@ -113,12 +112,12 @@ const productCommentAction = (token, productId, page = 1) => async (dispatch, ge
 
 const bulkieCommentAction = (token, productId) => async (dispatch, getState) => {
 	if ((_.isArray(productId) && productId.length > 0) || (_.toInteger(productId) > 0)) {
-		dispatch(commentListLoad({ isLoading: true }));
+		dispatch(commentLoading({ isLoading: true }));
 
 		const { shared } = getState();
 		const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
 
-		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+		if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 		const path = `${baseUrl}/commentcount/bulkie/byproduct`;
 
@@ -133,8 +132,8 @@ const bulkieCommentAction = (token, productId) => async (dispatch, getState) => 
 		}));
 
 		if (err) {
-			dispatch(commentListFailed());
-			return Promise.reject(err);
+			dispatch(commentLoading({ isLoading: false }));
+			return Promise.reject(__x(err));
 		}
 
 		const data = response.data.data;

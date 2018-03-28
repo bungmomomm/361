@@ -87,7 +87,9 @@ const trackProductOnClick = (product, position, source = 'mm') => {
 	const requestPayload = request.getPayload(productClickBuilder);
 	if (requestPayload) sendGtm(requestPayload);
 };
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Product extends Component {
 	constructor(props) {
 		super(props);
@@ -395,12 +397,14 @@ class Product extends Component {
 			totalCartItems: shared.totalCart
 		};
 		navigationAttribute.active = cookies.get(pageReferrer);
+
 		return (
 			<div style={this.props.style}>
 				{this.productsBlock()}
 				{this.headerBlock()}
 				<Navigation
 					{...navigationAttribute}
+					botNav={this.props.botNav}
 				/>
 			</div>
 		);
@@ -437,7 +441,7 @@ const doAfterAnonymous = async (props) => {
 		page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
 		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 36,
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
-		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
+		// sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
 
 	const response = await dispatch(pcpActions.pcpAction({ token: cookies.get(userToken), query: pcpParam }));

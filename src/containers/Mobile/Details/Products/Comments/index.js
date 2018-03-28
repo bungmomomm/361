@@ -15,7 +15,10 @@ import { actions as commentActions } from '@/state/v4/Comment';
 
 import styles from './comments.scss';
 import cookiesLabel from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
+import { urlBuilder } from '@/utils';
 
+@handler
 class Comments extends Component {
 	constructor(props) {
 		super(props);
@@ -31,7 +34,19 @@ class Comments extends Component {
 		};
 
 		this.userProfile = this.props.cookies.get(cookiesLabel.userProfile) || false;
-		this.renderLoading = <Spinner />;
+		this.renderLoading = (
+			<div style={{ margin: '20px auto 20px auto' }}>
+				<Spinner />
+			</div>
+		);
+
+		this.hastagLinkCreator = (text) => {
+			const urlRegex = /(#[^\s]+)/g;
+			return text.replace(urlRegex, (url) => {
+				const hashlink = urlBuilder.setName(url).buildSearchByKeyword();
+				return `<a href="${hashlink + url.replace('#', '%23')}">${url}</a>`;
+			});
+		};
 	}
 
 	inputHandler(e) {
@@ -114,8 +129,8 @@ class Comments extends Component {
 		if (!_.isEmpty(product)) {
 			return (
 				<div
-					className='margin--small-v padding--medium-h'
-					dangerouslySetInnerHTML={{ __html: product.description }}
+					className='margin--medium-v padding--medium-h'
+					dangerouslySetInnerHTML={{ __html: this.hastagLinkCreator(product.description) }}
 				/>
 			);
 		}
@@ -137,8 +152,9 @@ class Comments extends Component {
 					</Button>
 				</div>
 			) : '';
+
 			return (
-				<div style={{ marginBottom: '50px' }}>
+				<div>
 					{loadMore}
 					{<Comment data={comments.comments} loading={isLoading} />}
 				</div>
@@ -165,7 +181,9 @@ class Comments extends Component {
 
 		if (this.isLogin === 'true') {
 			const userAvatar = this.userProfile && !_.isEmpty(this.userProfile.avatar) ? (
-				<Level.Left>
+				<Level.Left
+					style={{ paddingBottom: '2px' }}
+				>
 					<Image
 						height={30}
 						width={30}
@@ -187,11 +205,13 @@ class Comments extends Component {
 							value={commentValue}
 							onChange={(e) => this.inputHandler(e)}
 							onFocus={() => this.setState({ showCounter: true })}
-							onBlur={() => this.setState({ showCounter: false })}
-							iconRight={this.renderCounter()}
+							onBlur={() => commentValue.length === 0 && this.setState({ showCounter: false })}
+							textCounter={this.renderCounter()}
 						/>
 					</Level.Item>
-					<Level.Right>
+					<Level.Right
+						style={{ paddingBottom: '10px' }}
+					>
 						<Button
 							className='padding--small-h font--lato-bold'
 							style={{ marginLeft: '5px' }}
@@ -207,26 +227,26 @@ class Comments extends Component {
 		}
 
 		return (
-			<span className={styles.commentbox}>
-				<Link to={`/login${redirectUri}`}>Login</Link> / <Link to={`/register${redirectUri}`}>Register</Link> untuk memberikan komentar
-			</span>
+			<Level className={styles.commentboxGuest}>
+				<Link to={`/login${redirectUri}`}>Login</Link>&nbsp;/&nbsp;<Link to={`/register${redirectUri}`}>Register</Link>&nbsp;untuk memberikan komentar
+			</Level>
 		);
 	}
 
 	render() {
-		const { isLoadingProfile } = this.props;
+		const { isLoading } = this.props;
 
 		return (
 			<div className={styles.commentsContainer}>
 				<div className={styles.commentsBackground} />
-				<Page style={{ paddingTop: 0 }} color='white'>
+				<Page style={{ paddingTop: 0, marginBottom: '100px', flexGrow: 0 }} color='white'>
 					<div className='margin--medium-v'>
 						{this.renderDetail()}
 						{this.renderComments()}
 					</div>
 				</Page>
 				{this.renderHeader()}
-				{isLoadingProfile ? this.renderLoading : this.renderAvailComment()}
+				{isLoading ? this.renderLoading : this.renderAvailComment()}
 			</div>
 		);
 	}

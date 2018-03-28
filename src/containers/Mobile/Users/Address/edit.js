@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import Shared from '@/containers/Mobile/Shared';
-import { Page, Svg, Button, Header, Select, Level, Radio } from '@/components/mobile';
+import { Page, Svg, Button, Header, Select, Level } from '@/components/mobile';
 import { actions } from '@/state/v4/Address';
 import styles from './style.scss';
 import { Form, Input } from '@/components/mobile/Formsy';
@@ -10,7 +10,10 @@ import { to } from 'await-to-js';
 import { Promise } from 'es6-promise';
 import _ from 'lodash';
 import { isLogin, userToken } from '@/data/cookiesLabel';
+import Switch from 'react-switch';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Address extends Component {
 
 	state = {
@@ -29,7 +32,7 @@ class Address extends Component {
 		},
 		type: 'shipping',
 		submitting: false,
-		default: 0,
+		default: false,
 		edit: {}
 	};
 
@@ -58,7 +61,7 @@ class Address extends Component {
 						city: selected.city.length ? `${selected.city[0].province_id}_${selected.city[0].city_id}` : '',
 						district: selected.district.length ? selected.district[0].id : '',
 					},
-					default: edit.fg_default
+					default: edit.fg_default === 1
 				});
 
 			})();
@@ -151,7 +154,7 @@ class Address extends Component {
 
 	submit = async (model) => {
 		const { city_id } = model;
-		const splitr = city_id.split('-');
+		const splitr = city_id.split('_');
 
 		model = {
 			...model,
@@ -159,7 +162,6 @@ class Address extends Component {
 			city_id: splitr[1],
 			type: this.state.type,
 			country_id: 1,
-			is_supported_pin_point: 0,
 			latitude: '',
 			longitude: '',
 			default: this.state.default,
@@ -188,7 +190,7 @@ class Address extends Component {
 		};
 
 		return (
-			<Page>
+			<Page color='white'>
 				<Form
 					style={{ padding: '15px' }}
 					onValidSubmit={this.submit}
@@ -199,29 +201,11 @@ class Address extends Component {
 					<div className='margin--medium' style={{ marginTop: '50px' }}>
 						<label className={styles.label} htmlFor='default_address'>Jadikan Alamat Utama</label>
 						<div style={{ marginTop: '10px' }}>
-							<Radio
-								list
-								name='default_address'
+							<Switch
 								onChange={this.radioChange}
 								checked={this.state.default}
-								data={[
-									{
-										value: 0,
-										label: (
-											<div>
-												<span>Tidak</span>
-											</div>
-										)
-									},
-									{
-										value: 1,
-										label: (
-											<div>
-												<span>Ya</span>
-											</div>
-										)
-									}
-								]}
+								name='default_address'
+								id='default_address'
 							/>
 						</div>
 					</div>
