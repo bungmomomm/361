@@ -94,7 +94,6 @@
 			});
 		</script>
 		<!-- End of Loading -->
-
         <div id="root"><%= params.markup %></div>
 
 		<!-- Load Jquery for GTM, and Partners who using JQuery -->
@@ -111,11 +110,9 @@
         }(document, 'script', 'gtm-js'));</script>
 		<!-- End Google Tag Manager -->
 		<script src="https://www.google.com/recaptcha/api.js" async defer></script>
-		<script src="https://cdn.ravenjs.com/3.17.0/raven.min.js"
-				crossorigin="anonymous"></script>
 		<!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChjpQSbwKaJOCJy_06GAwU9dNMwVq_rg4&libraries=places&region=id&language=id"></script> -->
 		<script type="text/javascript" src="<%= process.env.VT_JS %>"></script>
-		<% if (process.env.NODE_ENV === 'production') { %>
+        <% if (process.env.NODE_ENV === 'production') { %>
 		<script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
 		<script>Raven.config('https://af6e3248ca6f4d8d8c3e669f6fd6e4e4@sentry.io/215821').install();</script>
 		<% } %>
