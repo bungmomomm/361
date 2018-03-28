@@ -10,6 +10,7 @@ import {
 	removeItem,
 	loadingState
 } from './reducer';
+import __x from '@/state/__x';
 
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 
@@ -19,14 +20,14 @@ const setLoadingState = (loading) => (dispatch) => {
 
 /**
  * fetchs lovelist list into redux lovelist items format
- * @param {*} response 
+ * @param {*} response
  */
 const formatItems = (data) => {
 	const items = {
 		ids: [],
 		list: []
 	};
-	
+
 	if (!_.isUndefined(data.products) && !_.isEmpty(data.products)) {
 		items.list = data.products.map((item, idx) => {
 			const images = item.images.map((img) => {
@@ -46,7 +47,7 @@ const formatItems = (data) => {
 				original: item,
 				stock: (!_.isUndefined(item.stock) && item.stock >= 0) ? item.stock : 0
 			};
-		});	
+		});
 	}
 
 	return items;
@@ -54,7 +55,7 @@ const formatItems = (data) => {
 
 /**
  * save user's lovelist list
- * @param {*} items 
+ * @param {*} items
  */
 const getList = (items, formatted = true) => (dispatch) => {
 	// fetching response into lovelist redux items format
@@ -81,16 +82,16 @@ const sendLovedItemToEmarsys = () => {
 
 /**
  * Adds item into Lovelist
- * @param {*} token 
- * @param {*} productId 
+ * @param {*} token
+ * @param {*} productId
  */
 const addToLovelist = (token, productId) => async (dispatch, getState) => {
-	
+
 	if (productId) {
 		const { shared } = getState();
 		const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
 
-		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+		if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 		const path = `${baseUrl}/add/${productId}`;
 
@@ -103,23 +104,24 @@ const addToLovelist = (token, productId) => async (dispatch, getState) => {
 		}));
 
 		if (err) {
-			return Promise.reject(err);
+			dispatch(setLoadingState({ loading: false }));
+			return Promise.reject(__x(err));
 		}
-		
+
 		// dispatching of adding item into lovelist
 		const item = { productId };
 		dispatch(addItem(item));
 
 		return Promise.resolve(response);
-	
+
 	}
-	return Promise.reject(new Error('Invalid ProductId'));
+	return Promise.reject(__x(new Error('Invalid ProductId')));
 };
 
 /**
  * Removes item from Lovelist
- * @param {*} token 
- * @param {*} productId 
+ * @param {*} token
+ * @param {*} productId
  */
 const removeFromLovelist = (token, productId) => async (dispatch, getState) => {
 
@@ -127,7 +129,7 @@ const removeFromLovelist = (token, productId) => async (dispatch, getState) => {
 		const { shared } = getState();
 		const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
 
-		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+		if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 		const path = `${baseUrl}/delete/${productId}`;
 
@@ -138,44 +140,53 @@ const removeFromLovelist = (token, productId) => async (dispatch, getState) => {
 			fullpath: true,
 			body: productId
 		}));
-		
+
 		if (err) {
-			return Promise.reject(err);
+			dispatch(setLoadingState({ loading: false }));
+			return Promise.reject(__x(err));
 		}
-		
+
 		// dispatching of deleting item from lovelist
 		const item = { productId };
 		dispatch(removeItem(item));
 
 		return Promise.resolve(response);
-	
+
 	}
 
-	return Promise.reject(new Error('Invalid ProductId'));
+	return Promise.reject(__x(new Error('Invalid ProductId')));
 };
 
 /**
  * Gets user lovelist list from server
- * @param {*} token 
+ * @param {*} token
  */
-const getLovelisItems = ({ token, query = {} }) => async (dispatch, getState) => {
+const getLovelisItems = ({ token, query = { page: 1, per_page: 10 } }) => async (dispatch, getState) => {
 
-	dispatch(scrollerActions.onScroll({ loading: true }));
-	
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	dispatch(setLoadingState({ loading: true }));
 
 	const path = `${baseUrl}/gets`;
 
-	const [err, response] = await to(request({ token, path, method: 'GET', fullpath: true }));
+	const [err, response] = await to(request({ 
+		token, 
+		path, 
+		method: 'GET', 
+		fullpath: true,
+		query: {
+			...query
+		}
+	}));
 
 	const lovelistData = response.data.data;
-
-	if (err) return Promise.reject(err);
+	if (err) {
+		dispatch(setLoadingState({ loading: false }));
+		return Promise.reject(__x(err));
+	}
 
 	dispatch(getList(lovelistData));
 	dispatch(setLoadingState({ loading: false }));
@@ -202,7 +213,7 @@ const getLovelisItems = ({ token, query = {} }) => async (dispatch, getState) =>
 
 /**
  * Gets number lovelist of product detail page
- * @param {*} token 
+ * @param {*} token
  * @param {*} productId
  */
 const bulkieCountByProduct = (token, productId) => async (dispatch, getState) => {
@@ -212,7 +223,7 @@ const bulkieCountByProduct = (token, productId) => async (dispatch, getState) =>
 		const { shared } = getState();
 		const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
 
-		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+		if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 		const path = `${baseUrl}/bulkie/byproduct`;
 		const [err, response] = await to(request({
@@ -225,7 +236,10 @@ const bulkieCountByProduct = (token, productId) => async (dispatch, getState) =>
 			}
 		}));
 
-		if (err) return Promise.reject(err);
+		if (err) {
+			dispatch(setLoadingState({ loading: false }));
+			return Promise.reject(__x(err));
+		}
 
 		const productLovelist = { bulkieCountProducts: (response.data.data || {}) };
 		dispatch(bulkieCount(productLovelist));
@@ -233,7 +247,7 @@ const bulkieCountByProduct = (token, productId) => async (dispatch, getState) =>
 		return Promise.resolve(response);
 	}
 
-	return Promise.reject(new Error('Invalid ProductIds'));
+	return Promise.reject(__x(new Error('Invalid ProductIds')));
 };
 
 const getBulkItem = (bulkies, productId) => {

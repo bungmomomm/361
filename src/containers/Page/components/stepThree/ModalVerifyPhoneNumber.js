@@ -2,15 +2,17 @@ import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import React, { Component } from 'react';
 import Recaptcha from 'react-recaptcha';
-import { 
+import {
 	Modal,
-	Input, 
+	Input,
 	Button
 } from 'mm-ui';
 import { T } from '@/data/translations';
 import { componentState } from '@/utils';
 import { actions as CouponActions } from '@/state/Coupon';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class ModalVerifyPhoneNumber extends Component {
 	constructor(props) {
 		super(props);
@@ -155,7 +157,7 @@ class ModalVerifyPhoneNumber extends Component {
 		clearInterval(this.interval);
 		this.props.handleClose(e);
 	}
-	
+
 	render() {
 		return (
 			<Modal
@@ -172,7 +174,7 @@ class ModalVerifyPhoneNumber extends Component {
 				<Modal.Body>
 					{
 						!this.state.isModalOtpActive && (
-							<Input 
+							<Input
 								placeholder='No handphone anda (contoh: 08123456789)'
 								name='phoneNumber'
 								type='text'
@@ -189,11 +191,11 @@ class ModalVerifyPhoneNumber extends Component {
 								sitekey={process.env.GOOGLE_CAPTCHA_SITE_KEY}
 								verifyCallback={() => this.verifyCallback()}
 							/>
-						) 
+						)
 					}
 					{
 						this.state.isModalOtpActive && (
-							<Input 
+							<Input
 								placeholder='OTP dari no handphone anda (contoh: 123123)'
 								name='otp'
 								type='text'
@@ -208,7 +210,7 @@ class ModalVerifyPhoneNumber extends Component {
 				<Modal.Footer>
 					{
 						!this.state.isModalOtpActive && (
-							<Button 
+							<Button
 								block
 								type='button'
 								size='medium'
@@ -223,7 +225,7 @@ class ModalVerifyPhoneNumber extends Component {
 					{
 						this.state.isModalOtpActive && (
 							<div>
-								<Button 
+								<Button
 									block
 									type='button'
 									size='medium'
@@ -233,7 +235,7 @@ class ModalVerifyPhoneNumber extends Component {
 								>
 									Resend OTP ({this.state.resendOtpCountDown})
 								</Button>
-								<Button 
+								<Button
 									block
 									type='button'
 									color='dark'
@@ -245,7 +247,7 @@ class ModalVerifyPhoneNumber extends Component {
 							</div>
 						)
 					}
-					<Button 
+					<Button
 						block
 						type='button'
 						size='medium'

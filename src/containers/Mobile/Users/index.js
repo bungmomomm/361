@@ -14,7 +14,9 @@ import {
 	Svg,
 	Tabs
 } from '@/components/mobile/';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Users extends Component {
 	constructor(props) {
 		super(props);

@@ -5,12 +5,13 @@ import {
 	request,
 } from '@/utils';
 import { actions } from './reducer';
+import __x from '@/state/__x';
 
 const getTrackingInfo = (token, provider, resi) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.shipping.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 	const [err, response] = await to(
 		request({
 			token,
@@ -22,7 +23,7 @@ const getTrackingInfo = (token, provider, resi) => async (dispatch, getState) =>
 
 	if (err) {
 		dispatch(actions.userGetTrackingInfo({ trackingInfo: false }));
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	};
 
 	let trackingData = response.data.data;

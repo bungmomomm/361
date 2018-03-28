@@ -8,7 +8,7 @@ import { RESET_PAYMENT_METHOD } from '@/state/Payment/constants';
 import { currency, componentState, renderIf } from '@/utils';
 import { pushDataLayer } from '@/utils/gtm';
 import { T } from '@/data/translations';
-import { 
+import {
 	Level,
 	Icon,
 	Group,
@@ -19,8 +19,9 @@ import {
 import styles from '../../../Page/page.scss';
 import ModalVerifyPhoneNumber from './ModalVerifyPhoneNumber';
 import { getRefreshToken } from '@/state/Auth/actions';
+import handler from '@/containers/Mobile/Shared/handler';
 
-
+@handler
 class StepThree extends Component {
 	constructor(props) {
 		super(props);
@@ -28,7 +29,7 @@ class StepThree extends Component {
 		this.state = {
 			voucherCode: null,
 			showModalOtp: false,
-			applyCouponStep: componentState.button.active, 
+			applyCouponStep: componentState.button.active,
 			removeCouponStep: componentState.button.active
 		};
 		this.userCookies = this.props.cookies.get('user.token');
@@ -47,7 +48,7 @@ class StepThree extends Component {
 		if (
 			this.props.coupon !== nextProps.coupon &&
 			!nextProps.coupon.validCoupon &&
-			nextProps.coupon.code === 403 && 
+			nextProps.coupon.code === 403 &&
 			!nextProps.coupon.otp.valid
 		) {
 			this.showOTPmodal(true);
@@ -68,7 +69,7 @@ class StepThree extends Component {
 			pushDataLayer('checkout', 'checkout', { step: 5, option: 'Voucher' }, this.props.products);
 		}).catch((error) => {
 			me.setState({ applyCouponStep: componentState.button.active });
-			
+
 			if (error.response.data.code === 405) {
 				dispatch(getRefreshToken({
 					userToken: this.userCookies,
@@ -161,7 +162,7 @@ class StepThree extends Component {
 		const { showModalOtp } = this.state;
 
 		const { payments, coupon } = this.props;
-		
+
 		const inlineStyle = {
 			mb5: {
 				marginBottom: '5px'
@@ -189,7 +190,7 @@ class StepThree extends Component {
 				</Level>
 			);
 		});
-		
+
 
 		return (
 			<div className={this.createClassCard()}>
@@ -230,7 +231,7 @@ class StepThree extends Component {
 							<Level.Left className={styles.voucherLabel}>{T.checkout.VOUCHER_CODE}</Level.Left>
 							<Level.Right>
 								<Group attached grouped>
-									<Input 
+									<Input
 										size='small'
 										name='voucherCode'
 										color={invalidVoucher ? 'red' : 'green'}
@@ -239,7 +240,7 @@ class StepThree extends Component {
 										}}
 										onChange={(e) => this.onChangeVoucher(e)}
 									/>
-									<Button 
+									<Button
 										type={invalidVoucher ? 'button' : 'submit'}
 										icon={invalidVoucher ? 'times' : ''}
 										size='small'
@@ -252,7 +253,7 @@ class StepThree extends Component {
 						</Level>
 					)
 				}
-				{ 
+				{
 					renderIf(adminFeeIdr)(
 						<Level isMobile>
 							<Level.Left><strong>Biaya Administrasi</strong></Level.Left>
@@ -269,7 +270,7 @@ class StepThree extends Component {
 						</Level>
 					)
 				}
-				
+
 				<div className={styles.CheckoutTitle}>
 					<Level isMobile>
 						<Level.Left>{T.checkout.TOTAL_PAYMENT}</Level.Left>
@@ -280,7 +281,7 @@ class StepThree extends Component {
 				</div>
 				{
 					showModalOtp && (
-						<ModalVerifyPhoneNumber 
+						<ModalVerifyPhoneNumber
 							show={showModalOtp}
 							handleClose={() => this.showOTPmodal(false)}
 						/>

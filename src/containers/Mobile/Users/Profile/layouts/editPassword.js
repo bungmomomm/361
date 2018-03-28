@@ -8,7 +8,9 @@ import { Page, Input, Button, Svg, Notification, Header, Panel } from '@/compone
 import CONST from '@/constants';
 
 import styles from '../profile.scss';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class EditPassword extends Component {
 	constructor(props) {
 		super(props);
@@ -128,7 +130,7 @@ class EditPassword extends Component {
 
 		const HeaderPage = {
 			left: (
-				<button onClick={onClickBack}> 
+				<button onClick={onClickBack}>
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</button>
 			),
@@ -140,7 +142,7 @@ class EditPassword extends Component {
 
 	renderNotif() {
 		const { formResult } = this.state;
-		
+
 		if (!_.isEmpty(formResult.status) && !_.isEmpty(formResult.message)) {
 			const notifColor = formResult.status === 'success' ? 'green' : 'pink';
 			return (
@@ -153,7 +155,7 @@ class EditPassword extends Component {
 				</Notification>
 			);
 		}
-		
+
 		return null;
 	}
 

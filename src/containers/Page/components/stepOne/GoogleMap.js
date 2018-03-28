@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import { Map, Polygon, GoogleApiWrapper } from 'google-maps-react';
 import { Input } from 'mm-ui';
 import styles from './GoogleMap.scss';
+import handler from '@/containers/Mobile/Shared/handler';
 
-
+@handler
 class GoogleMap extends Component {
 
 	createControlClassName() {

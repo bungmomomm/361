@@ -5,7 +5,9 @@ import styles from './price.scss';
 import Action from './action';
 import _ from 'lodash';
 import utils from './utils';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Price extends PureComponent {
 
 	constructor(props) {

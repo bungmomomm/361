@@ -3,7 +3,9 @@ import { Header, Page, Svg, List, Button } from '@/components/mobile';
 import Action from './action';
 import _ from 'lodash';
 import utils from './utils';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Lists extends PureComponent {
 	constructor(props) {
 		super(props);
@@ -19,7 +21,7 @@ class Lists extends PureComponent {
 
 		data = utils.updateChilds(data, value, {
 			is_selected: value.is_selected === 1 ? 0 : 1
-		});			
+		});
 
 		const resetDisabled = utils.getSelected(data).length < 1;
 		this.setState({
@@ -42,7 +44,7 @@ class Lists extends PureComponent {
 			data: utils.resetChilds(data)
 		});
 	}
-	
+
 	render() {
 		const { onClose, title } = this.props;
 		const { data, resetDisabled } = this.state;

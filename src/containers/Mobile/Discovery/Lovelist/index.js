@@ -14,7 +14,9 @@ import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import { urlBuilder } from '@/utils';
 import cookiesLabel from '@/data/cookiesLabel';
+import xhandler from '@/containers/Mobile/Shared/handler';
 
+@xhandler
 class Lovelist extends Component {
 	constructor(props) {
 		super(props);
@@ -50,7 +52,7 @@ class Lovelist extends Component {
 				<Spinner size='large' />
 			</div>
 		);
-		
+
 	}
 
 	componentWillMount() {
@@ -259,7 +261,7 @@ class Lovelist extends Component {
 						confirmButton={(<Button onClick={this.removeItem}>YA, HAPUS</Button>)}
 					/>
 				</Modal>
-				
+
 				<Notification style={{ marginTop: '90%' }} show={notif.show} toast disableClose onClose={this.onNotifClose}>
 					<span>{notif.content}</span>
 				</Notification>
@@ -303,7 +305,8 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies } = props;
-	const list = await dispatch(LoveListActionCreator.getLovelisItems({ token: cookies.get(cookiesLabel.userToken), query: { page: 1 } })) || [];
+
+	const list = await dispatch(LoveListActionCreator.getLovelisItems({ token: cookies.get(cookiesLabel.userToken), query: { page: 1, per_page: 36 } })) || [];
 	if (_.has(list, 'products') && !_.isEmpty(list.products)) {
 		const ids = list.products.map((item) => item.product_id);
 		if (ids.length > 0) {

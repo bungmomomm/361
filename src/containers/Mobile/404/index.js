@@ -9,7 +9,9 @@ import styles from './search.scss';
 import { connect } from 'react-redux';
 import { urlBuilder } from '@/utils';
 import cookiesLabel from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Page404 extends Component {
 	constructor(props) {
 		super(props);

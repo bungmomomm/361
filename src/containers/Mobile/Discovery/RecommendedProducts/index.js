@@ -6,9 +6,11 @@ import { actions as recommendedActions } from '@/state/v4/RecommendedProducts';
 import Love from '@/containers/Mobile/Shared/Widget/Love';
 import { withRouter } from 'react-router-dom';
 import Discovery from '../Utils';
-// import _ from 'lodash';  
+// import _ from 'lodash';
 import { userToken } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class RecommendedProducts extends Component {
 	constructor(props) {
 		super(props);

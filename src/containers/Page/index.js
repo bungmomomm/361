@@ -13,7 +13,9 @@ import StepThree from './components/stepThree';
 import StepFour from './components/stepFour';
 import { getBaseUrl } from '@/utils';
 import { userRfToken, userToken } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Page extends Component {
 
 	constructor(props) {
@@ -54,8 +56,8 @@ class Page extends Component {
 		const rfToken = this.props.cookies.get(userRfToken);
 		const usrToken = this.props.cookies.get(userToken);
 		const isProduction = process.env.NODE_ENV.toUpperCase() === 'PRODUCTION';
-		if ((typeof rfToken === 'undefined' || typeof usrToken === 'undefined') 
-		&& isProduction) { 
+		if ((typeof rfToken === 'undefined' || typeof usrToken === 'undefined')
+		&& isProduction) {
 			top.location.href = getBaseUrl();
 		}
 		this.updateDimensions();
@@ -94,26 +96,26 @@ class Page extends Component {
 					}
 				</div>
 				<Container className={styles.checkoutWrapper}>
-					<StepOne 
-						applyState={(e) => this.applyState(e)} 
+					<StepOne
+						applyState={(e) => this.applyState(e)}
 						stepState={this.state}
 					/>
 					{
-						<StepTwo 
-							applyState={(e) => this.applyState(e)} 
-							stepState={this.state} 
+						<StepTwo
+							applyState={(e) => this.applyState(e)}
+							stepState={this.state}
 							disabled={this.state.stepTwo.disabled}
 						/>
 					}
 					<div className={[styles.cardPayment].join(' ').trim()}>
-						<StepThree 
-							applyState={(e) => this.applyState(e)} 
-							stepState={this.state} 
+						<StepThree
+							applyState={(e) => this.applyState(e)}
+							stepState={this.state}
 							disabled={this.state.stepThree.disabled}
 						/>
-						<StepFour 
-							applyState={(e) => this.applyState(e)} 
-							stepState={this.state} 
+						<StepFour
+							applyState={(e) => this.applyState(e)}
+							stepState={this.state}
 							disabled={this.state.stepFour.disabled}
 						/>
 					</div>

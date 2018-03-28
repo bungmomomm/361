@@ -20,7 +20,9 @@ import { userToken, userSource } from '@/data/cookiesLabel';
 const buildUrl = (stringCategory = '') => {
 	return stringCategory.replace(/[^a-zA-Z ]/g, '').replace(/\s\s+/g, ' ').replace(/ /g, '-').toLowerCase();
 };
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class SubCategory extends PureComponent {
 	constructor(props) {
 		super(props);
