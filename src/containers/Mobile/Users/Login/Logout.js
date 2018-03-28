@@ -21,7 +21,7 @@ class Logout extends Component {
 		
 		this.state = {
 			loading: true,
-			redirectUri: query.redirectUri || false
+			redirectUri: query.redirect_uri || false
 		};
 		this.timeout = setTimeout(() => {
 			this.redirect();

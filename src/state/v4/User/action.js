@@ -10,20 +10,11 @@ import {
 	getClientSecret
 } from '@/utils';
 
-import {
-	afterLogin,
-	addAfterLogin
- } from './after-login-action';
-import { userSocialLogin, userSocialLoginWithRedirect } from './social-action';
-import { checkMyOrders, getMyOrderDetail, updateMyOrdersCurrent, getMyOrderMore, cleanMyOrderData, keepReviewInfo, submitReview, PostOrderConfirmation, getListBankConfirmation, cleanMyOrderDetail } from './myOrder-action';
-import { getTrackingInfo } from './tracking-action';
-
-const isSuccess = (response) => {
-	if (typeof response.data !== 'undefined' && typeof response.data.code !== 'undefined' && response.data.code >= 200 && response.data.code < 300) {
-		return true;
-	}
-	return false;
-};
+import afterLoginActions from './after-login-action';
+import socialActions from './social-action';
+import orderActions from './myOrder-action';
+import trackingActions from './tracking-action';
+import registerActions from './register-action';
 
 const userLogin = (token, email, password) => async (dispatch, getState) => {
 	const { shared } = getState();
@@ -48,8 +39,8 @@ const userLogin = (token, email, password) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
-		dispatch(actions.userLoginFail(err.data));
-		return Promise.reject(err);
+		dispatch(actions.userLoginFail(err.response.data));
+		return Promise.reject(err.response.data);
 	}
 
 	dispatch(actions.userLoginSuccess(response.data.data.info));
@@ -89,8 +80,8 @@ const userAnonymous = (token) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
-		dispatch(actions.userLoginFail(err.data));
-		return Promise.reject(err);
+		dispatch(actions.userLoginFail(err.response.data));
+		return Promise.reject(err.response.data);
 	}
 
 	dispatch(actions.userAnonymousSuccess(response.data.data.info));
@@ -179,58 +170,6 @@ const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
 
 };
 
-//  USER_REGISTER: undefined,
-
-const userRegister = (token, bodyData) => async (dispatch, getState) => {
-	const { shared } = getState();
-	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
-
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
-
-	const path = `${baseUrl}/auth/register`;
-
-
-	dispatch(actions.userRegister());
-
-	try {
-
-		const dataForRegister = {
-			hp_email: bodyData.hp_email,
-			pwd: base64.encode(bodyData.pwd),
-			fullname: bodyData.fullname
-		};
-		const requestData = {
-			token,
-			path,
-			method: 'POST',
-			fullpath: true,
-			body: dataForRegister
-		};
-
-		const response = await request(requestData);
-
-		if (isSuccess(response)) {
-			dispatch(actions.userRegisterSuccess(response));
-			return Promise.resolve(response);
-		}
-		const error = new Error('Error while calling api');
-		dispatch(actions.userRegisterFail(error));
-		return Promise.reject('This error actually success');
-	} catch (error) {
-		dispatch(actions.userRegisterFail(error));
-		return Promise.reject(error);
-	}
-};
-
-// 	USER_REGISTER_FAIL: (error) => ({ register: { error } }),
-// 	USER_REGISTER_SUCCESS: (data) => ({ register: { data } }),
-// 	USER_OTP_SUCCESS: (message) => ({ otp: { message } }),
-// 	USER_OTP_FAIL: (error) => ({ otp: { error } }),
-// 	USER_OTP_VALIDATE: undefined,
-// 	USER_OTP_VALIDATE_SUCCESS: (userProfile) => ({ userProfile }),
-// 	USER_OTP_VALIDATE_FAIL: (error) => ({ otp: { error } }),
-// 	USER_GET_PROFILE: undefined,
-
 const userGetProfile = (token) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
@@ -240,30 +179,27 @@ const userGetProfile = (token) => async (dispatch, getState) => {
 	const path = `${baseUrl}/me`;
 
 	dispatch(actions.userGetProfile());
-	try {
-		const response = await request({
-			token,
-			method: 'GET',
-			path,
-			fullpath: true,
-			body: {
-				client_secret: getClientSecret(),
-				device_id: getDeviceID()
-			}
-		});
-		if (isSuccess(response)) {
-			dispatch(actions.userGetProfileSuccess(response.data.data));
-			return Promise.resolve({
-				userprofile: response.data.data
-			});
+	
+	const [err, response] = await to(request({
+		token,
+		method: 'GET',
+		path,
+		fullpath: true,
+		body: {
+			client_secret: getClientSecret(),
+			device_id: getDeviceID()
 		}
-		const error = new Error('Error while calling api');
-		dispatch(actions.userGetProfileFail(error));
-		return Promise.reject(error);
-	} catch (error) {
-		dispatch(actions.userGetProfileFail(error));
-		return Promise.reject(error);
+	}));
+
+	if (err) {
+		dispatch(actions.userGetProfileFail(err.response.data));
+		return Promise.reject(err.response.data);
 	}
+
+	dispatch(actions.userGetProfileSuccess(response.data.data));
+	return Promise.resolve({
+		userprofile: response.data.data
+	});
 };
 
 const userForgotPassword = (token, username) => async (dispatch, getState) => {
@@ -275,30 +211,25 @@ const userForgotPassword = (token, username) => async (dispatch, getState) => {
 	const path = `${baseUrl}/auth/forgotpwd`;
 
 	dispatch(actions.userForgotPassword());
-	try {
-		const response = await request({
-			token,
-			method: 'POST',
-			path,
-			fullpath: true,
-			body: {
-				client_secret: getClientSecret(),
-				hp_email: username
-			}
-		});
-		if (isSuccess(response)) {
-			dispatch(actions.userForgotPasswordSuccess(response.data.data));
-			return Promise.resolve({
-				data: response.data.data
-			});
+	const [err, response] = await to(request({
+		token,
+		method: 'POST',
+		path,
+		fullpath: true,
+		body: {
+			client_secret: getClientSecret(),
+			hp_email: username
 		}
-		const error = new Error('Error while calling api');
-		dispatch(actions.userForgotPasswordFail(error));
-		return Promise.reject(error);
-	} catch (error) {
-		dispatch(actions.userForgotPasswordFail(error));
-		return Promise.reject(error);
+	}));
+	
+	if (err) {
+		dispatch(actions.userForgotPasswordFail(err.response.data));
+		return Promise.reject(err.response.data);
 	}
+	dispatch(actions.userForgotPasswordSuccess(response.data.data));
+	return Promise.resolve({
+		data: response.data.data
+	});
 };
 
 const userNewPassword = (token, pass1, pass2, passtoken) => async (dispatch, getState) => {
@@ -324,20 +255,14 @@ const userNewPassword = (token, pass1, pass2, passtoken) => async (dispatch, get
 	}));
 
 	if (err) {
-		dispatch(actions.userNewPasswordFail(err));
-		return Promise.reject(err);
+		dispatch(actions.userNewPasswordFail(err.response.data));
+		return Promise.reject(err.response.data);
 	}
 
-	if (isSuccess(response)) {
-		dispatch(actions.userNewPasswordSuccess(response.data.data));
-		return Promise.resolve({
-			data: response.data.data
-		});
-	}
-
-	const error = new Error('Error while calling api');
-	dispatch(actions.userNewPasswordFail(error));
-	return Promise.reject(error);
+	dispatch(actions.userNewPasswordSuccess(response.data.data));
+	return Promise.resolve({
+		data: response.data.data
+	});
 };
 
 const refreshToken = (tokenRefresh, token) => async (dispatch, getState) => {
@@ -348,7 +273,7 @@ const refreshToken = (tokenRefresh, token) => async (dispatch, getState) => {
 
 	const path = `${baseUrl}/auth/refreshtoken?refresh_token=${tokenRefresh}`;
 
-	const response = await request({
+	const [err, response] = await to(request({
 		method: 'POST',
 		token,
 		path,
@@ -356,13 +281,12 @@ const refreshToken = (tokenRefresh, token) => async (dispatch, getState) => {
 		body: {
 			refresh_token: tokenRefresh
 		}
-	});
+	}));
 
-	if (isSuccess(response)) {
-		return Promise.resolve(response);
+	if (err) {
+		return Promise.reject(err.response.data);
 	}
-
-	return Promise.reject(response);
+	return Promise.resolve(response);
 };
 
 // 	USER_GET_PROFILE_FAIL: (error) => ({ profile: { error } }),
@@ -458,33 +382,22 @@ const userLogout = (token) => async (dispatch, getState) => {
 };
 
 export default {
-	userSocialLoginWithRedirect,
-	userSocialLogin,
 	userLogin,
 	userAnonymous,
 	userNameChange,
 	userGetProfile,
 	userEditProfile,
 	userValidateOvo,
-	userRegister,
 	userForgotPassword,
 	userNewPassword,
 	userOtpValidate,
 	userLogout,
-	getMyOrderDetail,
-	updateMyOrdersCurrent,
 	userOtp,
-	getTrackingInfo,
-	getMyOrderMore,
-	cleanMyOrderData,
-	checkMyOrders,
 	refreshToken,
-	keepReviewInfo,
-	submitReview,
-	afterLogin,
-	addAfterLogin,
-	PostOrderConfirmation,
-	getListBankConfirmation,
 	clearError,
-	cleanMyOrderDetail
+	...afterLoginActions,
+	...orderActions,
+	...socialActions,
+	...trackingActions,
+	...registerActions
 };
