@@ -35,7 +35,7 @@ class NewPassword extends Component {
 	}
 
 	async onNewPassword(e) {
-		const { dispatch, cookies } = this.props;
+		const { dispatch, cookies, history } = this.props;
 		const { pass1, pass2, token } = this.state;
 		const [err, response] = await to(dispatch(new users.userNewPassword(cookies.get(userToken), pass1, pass2, token)));
 		if (err) {
