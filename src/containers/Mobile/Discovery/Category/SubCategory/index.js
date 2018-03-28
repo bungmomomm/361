@@ -141,7 +141,7 @@ class SubCategory extends PureComponent {
 					}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Categories' scroll={this.props.scroll} totalCartItems={shared.totalCart} />
+				<Navigation active='Categories' scroll={this.props.scroll} totalCartItems={shared.totalCart} botNav={this.props.botNav} />
 			</div>
 		);
 	}

@@ -226,13 +226,13 @@ class SearchResults extends Component {
 			scroll: this.props.scroll
 		};
 		navigationAttribute.active = cookies.get(cookiesLabel.pageReferrer);
-		
+
 
 		return (
 			<div style={this.props.style}>
 				{isLoading ? this.loadingView : this.renderSearch()}
 				{this.renderHeader()}
-				<Navigation {...navigationAttribute} />
+				<Navigation {...navigationAttribute} botNav={this.props.botNav} />
 			</div>
 		);
 	}

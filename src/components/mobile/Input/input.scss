@@ -68,7 +68,7 @@
   position: relative;
 }
 
-.iconLeft, .iconRight{
+.iconLeft, .iconRight, .textCounter{
   position: absolute;
   height: 100%;
   display: flex;
@@ -84,7 +84,6 @@
   }
 }
 
-
 .iconRight{
   right: 0px;
   padding-left: 0px;
@@ -93,7 +92,18 @@
   }
 }
 
-.label, .hint {
+.textCounter{
+  align-items: right;
+  right: 5px;
+  justify-content: flex-end;
+  padding-left: 0px;
+  padding-bottom: 10px;
+  + *{
+    padding-right: rem(50px)
+  }
+}
+
+.label, .hint, .textCounter {
   font-family: font-family(--lato-normal);
   font-size: map-get($font-size, --small );
   line-height: 1.4;
@@ -181,6 +191,10 @@
 
 .white{
   input{
+    background-color: #fff;
+    border-color: #D8D8D8;
+  }
+  textarea{
     background-color: #fff;
     border-color: #D8D8D8;
   }

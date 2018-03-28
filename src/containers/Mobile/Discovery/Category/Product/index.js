@@ -400,7 +400,10 @@ class Product extends Component {
 				{this.productsBlock()}
 				{this.foreverBannerBlock()}
 				{this.headerBlock()}
-				<Navigation {...navigationAttribute} />
+				<Navigation
+					{...navigationAttribute}
+					botNav={this.props.botNav}
+				/>
 			</div>
 		);
 	}
