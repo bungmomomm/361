@@ -87,7 +87,9 @@ const trackProductOnClick = (product, position, source = 'mm') => {
 	const requestPayload = request.getPayload(productClickBuilder);
 	if (requestPayload) sendGtm(requestPayload);
 };
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Product extends Component {
 	constructor(props) {
 		super(props);
@@ -332,6 +334,7 @@ class Product extends Component {
 						<SEO
 							paramCanonical={process.env.MOBILE_UR}
 						/>
+						{this.foreverBannerBlock()}
 						{isLoading ? this.loadingView : productsView}
 						<Footer isShow={this.state.isFooterShow} />
 					</Page>
@@ -398,7 +401,6 @@ class Product extends Component {
 		return (
 			<div style={this.props.style}>
 				{this.productsBlock()}
-				{this.foreverBannerBlock()}
 				{this.headerBlock()}
 				<Navigation
 					{...navigationAttribute}

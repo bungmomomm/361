@@ -18,7 +18,9 @@ import {
 	Button
 } from '@/components/mobile';
 import { userToken } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class CreditCard extends Component {
 
 	constructor(props) {

@@ -15,6 +15,7 @@ import {
 	connectionWatch,
 	userPreviousPage
 } from './reducer';
+import __x from '@/state/__x';
 
 const closeFB = () => (dispatch, getState) => {
 	const { shared } = getState();
@@ -32,7 +33,7 @@ const totalCartAction = (token) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const path = `${baseUrl}/cart/total`;
 
@@ -45,7 +46,7 @@ const totalCartAction = (token) => async (dispatch, getState) => {
 
 	if (err) {
 		console.log(err.response);
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	const total = response.data.data.total || 0;
@@ -60,7 +61,7 @@ const totalLovelistAction = (token, url = false) => async (dispatch, getState) =
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const path = `${baseUrl}/total/bycustomer`;
 
@@ -72,7 +73,7 @@ const totalLovelistAction = (token, url = false) => async (dispatch, getState) =
 	}));
 
 	if (err) {
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	const totalLovelist = response.data.data.total || 0;

@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { 
-	SocialLogin, 
-	Svg 
+import {
+	SocialLogin,
+	Svg
 } from '@/components/mobile';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Login extends Component {
 
 	constructor(props) {

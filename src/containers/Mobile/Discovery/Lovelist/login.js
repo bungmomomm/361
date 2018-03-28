@@ -4,7 +4,9 @@ import { Link } from 'react-router-dom';
 import { Header, Page, Button, Svg, Level } from '@/components/mobile';
 import styles from './lovelist.scss';
 import cookiesLabel from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class LovelistLogin extends Component {
 	constructor(props) {
 		super(props);
@@ -33,7 +35,7 @@ class LovelistLogin extends Component {
 			break;
 		case 'register':
 		case 'login':
-			destUri = '/login?redirect_uri=/lovelist';
+			destUri = `/${page}?redirect_uri=/lovelist`;
 			break;
 		default:
 			break;
@@ -61,7 +63,7 @@ class LovelistLogin extends Component {
 							<Level.Left>&nbsp;</Level.Left>
 							<Level.Item>
 								<p className='margin--small'><Button onClick={() => this.redirectToPage('login')} wide size='large' color='secondary'>LOGIN</Button></p>
-								<p className='margin--small'><Button onClick={() => this.redirectToPage('login')} wide outline size='large' color='transparent'>DAFTAR</Button></p>
+								<p className='margin--small'><Button onClick={() => this.redirectToPage('register')} wide outline size='large' color='transparent'>DAFTAR</Button></p>
 							</Level.Item>
 							<Level.Right>&nbsp;</Level.Right>
 						</Level>

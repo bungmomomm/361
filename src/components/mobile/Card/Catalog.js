@@ -112,15 +112,23 @@ class Catalog extends PureComponent {
 		return (
 			<div className={createClassName} {...props} data-loved={lovelistStatus}>
 				<Link to={linkToPdp}>
-					<Carousel>
-						{
-							images.slice(0, 9).map((image, index) => (
-								<div className='placeholder-image' key={index} tabIndex='0' role='button' onClick={() => productOnClick()}>
-									<Image src={image.thumbnail} lazyload alt={productTitle} />
-								</div>
-							))
-						}
-					</Carousel>
+					{images.length > 1 ? (
+						<Carousel>
+							{
+								images.slice(0, 9).map((image, index) => (
+									<div className='placeholder-image' key={index} tabIndex='0' role='button' onClick={() => productOnClick()}>
+										<Image src={image.thumbnail} lazyload alt={productTitle} />
+									</div>
+								))
+							}
+						</Carousel>
+					) : (
+						images.slice(0, 9).map((image, index) => (
+							<div className='placeholder-image' key={index} tabIndex='0' role='button' onClick={() => productOnClick()}>
+								<Image src={image.thumbnail} lazyload alt={productTitle} />
+							</div>
+						))
+					)}
 				</Link>
 				<Level
 					className={styles.action}

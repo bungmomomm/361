@@ -26,7 +26,9 @@ import CONST from '@/constants';
 
 import styles from './profile.scss';
 import cookiesLabel from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class UserProfileEdit extends Component {
 	constructor(props) {
 		super(props);
@@ -69,7 +71,7 @@ class UserProfileEdit extends Component {
 
 		if (!this.isLogin) {
 			const { history } = this.props;
-			history.push('/login?redirect_uri=profile');
+			history.push('/login?redirect_uri=/profile');
 		}
 	}
 
@@ -349,7 +351,7 @@ class UserProfileEdit extends Component {
 				</Notification>
 			);
 		}
-		
+
 		return null;
 	}
 
@@ -510,7 +512,7 @@ class UserProfileEdit extends Component {
 				</Level>
 			</div>
 		);
-		
+
 		const birthdayValue = moment(formData[this.BIRTHDAY_FIELD]).isValid() === true ? moment(formData[this.BIRTHDAY_FIELD]).format('YYYY-MM-DD') : '1990-01-01';
 		const birthdayField = (
 			<div className='margin--medium-v'>

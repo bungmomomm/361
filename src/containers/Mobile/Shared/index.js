@@ -4,7 +4,7 @@ import to from 'await-to-js';
 import { actions } from '@/state/v4/Shared';
 import { actions as users } from '@/state/v4/User';
 import { actions as initAction } from '@/state/v4/Home';
-import { setUserCookie, setUniqeCookie, setReferrenceCookie } from '@/utils';
+import { setUserCookie, setUniqeCookie, setReferrenceCookie, initUTMProcess } from '@/utils';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
 import Snackbar from '@/containers/Mobile/Shared/snackbar';
@@ -12,6 +12,7 @@ import { Svg } from '@/components/mobile';
 import styles from './shared.scss';
 import { check as checkConnection, watch as watchConnection } from 'is-offline';
 import { userToken, userRfToken, uniqueid } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 	WrappedComponent.contextTypes = {
@@ -19,6 +20,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		location: React.PropTypes.object
 	};
 
+	@handler
 	class SharedAction extends Component {
 		constructor(props) {
 			super(props);
@@ -39,7 +41,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			this.userCookies = this.props.cookies.get(userToken);
 			this.userRFCookies = this.props.cookies.get(userRfToken);
 			this.uniqueId = this.props.cookies.get(uniqueid);
-			this.handleScroll = this.handleScroll.bind(this);
+			this.handleScroll = _.throttle(this.handleScroll).bind(this);
 			this.docBody = null;
 			this.currentScrollPos = 0;
 		}
@@ -87,12 +89,14 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		componentDidMount() {
 			window.mmLoading.destroy();
-			window.addEventListener('scroll', _.throttle(this.handleScroll), true);
+			window.addEventListener('scroll', this.handleScroll, true);
 			this.docBody = document.body;
 
 			if (typeof this.uniqueId === 'undefined') {
 				setUniqeCookie(this.props.cookies);
 			}
+
+			initUTMProcess();
 		}
 
 		componentWillUnmount() {

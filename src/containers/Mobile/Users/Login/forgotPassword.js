@@ -23,7 +23,9 @@ import queryString from 'query-string';
 
 import Otp from '@/containers/Mobile/Shared/Otp';
 import { userToken, userRfToken, userSource } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class ForgotPassword extends Component {
 	constructor(props) {
 		super(props);

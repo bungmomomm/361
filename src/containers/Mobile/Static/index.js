@@ -10,7 +10,9 @@ import {
 	Page
 } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Static extends Component {
 
 	constructor(props) {
@@ -24,7 +26,7 @@ class Static extends Component {
 
 	render() {
 		const { shared } = this.props;
-		const { webViewUrl } = shared; 
+		const { webViewUrl } = shared;
 		const url = webViewUrl && webViewUrl.bantuan ? webViewUrl.bantuan : 'https://super.mataharimall.com/static/';
 		const HeaderPage = {
 			left: (
@@ -38,7 +40,7 @@ class Static extends Component {
 
 		return (
 			<div style={this.props.style}>
-				
+
 				<Page color='grey'>
 					<Iframe
 						url={url}
@@ -49,7 +51,7 @@ class Static extends Component {
 					/>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				
+
 			</div>
 		);
 	}

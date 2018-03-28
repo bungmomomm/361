@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import queryString from 'query-string';
 
@@ -9,12 +8,15 @@ import Shared from '@/containers/Mobile/Shared';
 import Login from './Login';
 import Register from './Register';
 import {
+	Button,
 	Header,
 	Page,
 	Svg,
 	Tabs
 } from '@/components/mobile/';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Users extends Component {
 	constructor(props) {
 		super(props);
@@ -39,12 +41,21 @@ class Users extends Component {
 		}
 	}
 
+	onBack(e) {
+		const { history } = this.props;
+		if (history.length > 0) {
+			history.goBack();
+		} else {
+			history.push('/');
+		}
+	}
+
 	handlePick(current) {
 		const { history } = this.props;
 		this.setState({
 			current
 		});
-		history.replace(`/${current}`);
+		history.replace(`/${current}${location.search}`);
 	}
 
 	callbackRegisterComponent(value) {
@@ -64,9 +75,9 @@ class Users extends Component {
 		let layout = null;
 		const HeaderPage = {
 			left: (
-				<Link to='/'>
+				<Button onClick={(e) => this.onBack(e)}>
 					<Svg src='ico_arrow-back-left.svg' />
-				</Link>
+				</Button>
 			),
 			center: _.capitalize(current),
 			right: null,

@@ -6,6 +6,7 @@ import {
 } from '@/utils';
 import { actions } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
+import __x from '@/state/__x';
 
 const configs = {
 	defaultPage: 10
@@ -36,7 +37,7 @@ const getMyOrderMore = ({ token, query = {} }) => async (dispatch, getState) => 
 	const { shared, users, scroller: { nextData } } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 	const newQuery = { ...query, per_page: configs.defaultPage, status: users.myOrdersCurrent };
 	const [err, response] = await to(
 		request({
@@ -50,7 +51,7 @@ const getMyOrderMore = ({ token, query = {} }) => async (dispatch, getState) => 
 
 	if (err) {
 		dispatch(scrollerActions.onScroll({ loading: false, nextPage: false }));
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	};
 
 	const listOrder = response.data.data[0];
@@ -79,7 +80,7 @@ const checkMyOrders = (token) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const [err, response] = await to(
 		request({
@@ -92,7 +93,7 @@ const checkMyOrders = (token) => async (dispatch, getState) => {
 
 	if (err) {
 		dispatch(actions.userGetMyOrder({ myOrders: false }));
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	};
 
 	const orders = response.data.data;
@@ -110,7 +111,7 @@ const getMyOrderDetail = (token, soNumber) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 	const [err, response] = await to(
 		request({
 			token,
@@ -122,7 +123,7 @@ const getMyOrderDetail = (token, soNumber) => async (dispatch, getState) => {
 
 	if (err) {
 		dispatch(actions.userGetMyOrderDetail({ myOrdersDetail: null }));
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	};
 
 	const orderDetail = response.data.data;
@@ -140,7 +141,7 @@ const submitReview = (token, data) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 	const [err, response] = await to(
 		request({
 			token,
@@ -152,7 +153,7 @@ const submitReview = (token, data) => async (dispatch, getState) => {
 	);
 
 	if (err) {
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	};
 
 	return Promise.resolve(response);
@@ -176,7 +177,7 @@ const PostOrderConfirmation = (token, bodyData) => async (dispatch, getState) =>
 
 	if (err) {
 
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	return Promise.resolve(response);
@@ -198,7 +199,7 @@ const getListBankConfirmation = (token) => async (dispatch, getState) => {
 	const [err, response] = await to(request(requestData));
 
 	if (err) {
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	dispatch(actions.userBankList(response.data.data));
