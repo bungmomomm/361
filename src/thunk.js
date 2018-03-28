@@ -5,7 +5,7 @@ import _ from 'lodash';
 
 export default thunk((promised, action, store) => {
 	promised.catch((err) => {
-		if (err.type === 'redux') {
+		if (err.redux) {
 			const { response, message, code } = err;
 			const exc = [409, 422];
 			const status = _.chain(response).get('status').value();
