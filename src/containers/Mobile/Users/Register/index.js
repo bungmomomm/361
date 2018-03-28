@@ -44,7 +44,8 @@ class Register extends Component {
 			redirectUri: props.redirectUri || false,
 			disableOtpButton: false,
 			messageType: 'SUCCESS',
-			isButtonResendOtpLoading: false
+			isButtonResendOtpLoading: false,
+			countdownValue: 60
 		};
 		this.renderRegisterView = this.renderRegisterView.bind(this);
 		this.renderValidateOtpView = this.renderValidateOtpView.bind(this);
@@ -93,6 +94,13 @@ class Register extends Component {
 		// Response from register is success
 		if (response.data.id) {
 			// Check if we register via mobile.
+			const otpResponse = await to(dispatch(new users.userOtp(cookies.get(userToken), email, 'register')));
+			if (otpResponse[0]) {
+				return otpResponse[0];
+			}
+			this.setState({
+				countdownValue: _.chain(otpResponse[1]).get('countdown').value() || 60
+			});
 			if (registerWith === 'MOBILE') {
 				// Set state for OTP
 				this.setView('VALIDATE_OTP');
@@ -313,10 +321,12 @@ class Register extends Component {
 
 	renderValidateOtpView() {
 		
-		const { email } = this.state;
+		const { email, countdownValue } = this.state;
 		
 		return (
 			<Otp
+				countdownValue={countdownValue}
+				autoSend={false}
 				type={'register'}
 				phoneEmail={email}
 				onClickBack={() => this.otpClickBack()}
