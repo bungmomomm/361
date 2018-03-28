@@ -6,6 +6,7 @@ import Iframe from 'react-iframe';
 import Shared from '@/containers/Mobile/Shared';
 import { Header, Page, Navigation } from '@/components/mobile';
 import handler from '@/containers/Mobile/Shared/handler';
+import { isLogin } from '@/data/cookiesLabel';
 
 @handler
 class PromoList extends Component {
@@ -20,6 +21,7 @@ class PromoList extends Component {
 		this.state = {
 			content: ''
 		};
+		this.isLogin = this.props.cookies.get(isLogin) === 'true';
 
 	}
 
@@ -44,7 +46,7 @@ class PromoList extends Component {
 					/>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Promo' scroll={this.props.scroll} botNav={this.props.botNav} />
+				<Navigation active='Promo' scroll={this.props.scroll} botNav={this.props.botNav} isLogin={this.isLogin} />
 			</div>
 		);
 	}

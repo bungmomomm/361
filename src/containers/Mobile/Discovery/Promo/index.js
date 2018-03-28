@@ -17,7 +17,7 @@ import {
 import {
 	Header, Page, Svg, Navigation, Button
 } from '@/components/mobile';
-import { userToken, pageReferrer } from '@/data/cookiesLabel';
+import { userToken, pageReferrer, isLogin } from '@/data/cookiesLabel';
 
 import Spinner from '@/components/mobile/Spinner';
 
@@ -35,6 +35,7 @@ class Promo extends Component {
 		super(props);
 		this.props = props;
 		this.promoType = this.props.match.params.type;
+		this.isLogin = this.props.cookies.get(isLogin) === 'true';
 
 		this.state = {
 			focusedProductId: ''
@@ -183,7 +184,7 @@ class Promo extends Component {
 				{this.renderProductList()}
 				{this.renderHeader()}
 				{this.renderForeverBanner()}
-				<Navigation {...navigationAttribute} botNav={this.props.botNav} />
+				<Navigation {...navigationAttribute} botNav={this.props.botNav} isLogin={this.isLogin} />
 			</div>
 		);
 	}

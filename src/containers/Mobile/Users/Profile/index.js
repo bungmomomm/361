@@ -33,7 +33,7 @@ class UserProfile extends Component {
 			logoutMessage: ''
 		};
 		this.userToken = this.props.cookies.get(cookiesLabel.userToken);
-		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true' && true;
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true';
 		this.loadingView = <Spinner />;
 
 		if (!this.isLogin) {
@@ -248,7 +248,7 @@ class UserProfile extends Component {
 				</Page>
 				{this.renderHeader()}
 				{this.renderLogoutModal()}
-				<Navigation active='Profile' scroll={this.props.scroll} totalCartItems={shared.totalCart} botNav={this.props.botNav} />
+				<Navigation active='Profile' scroll={this.props.scroll} totalCartItems={shared.totalCart} botNav={this.props.botNav} isLogin={this.isLogin} />
 			</div>
 		) : this.loadingView;
 	}
