@@ -15,6 +15,7 @@ import { uniqid } from '@/utils';
 import to from 'await-to-js';
 import { isLogin } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
+import { toastSytle } from '@/containers/Mobile/Shared/styleSnackbar';
 
 @handler
 class Love extends PureComponent {
@@ -85,40 +86,7 @@ class Love extends PureComponent {
 				label: message,
 				timeout: 3000
 			},
-			{
-				css: {
-					snack: {
-						display: 'flex',
-						position: 'fixed',
-						bottom: '30px',
-						right: 0,
-						left: 0,
-						marginRight: 'auto',
-						marginLeft: 'auto',
-						zIndex: '2',
-						width: '300px',
-						maxWidth: '480px',
-						backgroundColor: 'rgba(0, 0, 0, 0.8)',
-						padding: '15px',
-						borderRadius: '40px',
-						textAlign: 'center',
-						largeScreen: {
-							left: -15,
-						}
-					},
-					label: {
-						flex: '4',
-						fontSize: '14px',
-						lineHeight: 'normal',
-						fontFamily: 'arial, sans-serif',
-						color: 'rgba(255, 255, 255, 0.7)',
-						width: '100%',
-						display: 'block',
-						paddingRight: '0px'
-					}
-				},
-				sticky: true,
-			}
+			toastSytle()
 		));
 
 		if (onClick) {

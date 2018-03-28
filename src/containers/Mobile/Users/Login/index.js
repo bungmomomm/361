@@ -184,7 +184,7 @@ class Login extends Component {
 					/>
 				</div>
 				<div className='text-right margin--medium-v'>
-					<Link className='pull-right' to={redirectUri ? `/forgot-password?redirectUri=${redirectUri}` : '/forgot-password'}>LUPA PASSWORD</Link>
+					<Link className='pull-right' to={redirectUri ? `/forgot-password?redirect_uri=${redirectUri}` : '/forgot-password'}>LUPA PASSWORD</Link>
 				</div>
 				<div className='margin--medium-v'>
 					<Button color='secondary' size='large' disabled={!buttonLoginEnable} loading={isLoading} onClick={(e) => this.onLogin(e)} >LOGIN</Button>

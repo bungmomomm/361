@@ -71,7 +71,7 @@ class UserProfileEdit extends Component {
 
 		if (!this.isLogin) {
 			const { history } = this.props;
-			history.push('/login?redirect_uri=profile');
+			history.push('/login?redirect_uri=/profile');
 		}
 	}
 

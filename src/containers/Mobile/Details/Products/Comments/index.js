@@ -16,6 +16,7 @@ import { actions as commentActions } from '@/state/v4/Comment';
 import styles from './comments.scss';
 import cookiesLabel from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
+import { urlBuilder } from '@/utils';
 
 @handler
 class Comments extends Component {
@@ -38,6 +39,14 @@ class Comments extends Component {
 				<Spinner />
 			</div>
 		);
+
+		this.hastagLinkCreator = (text) => {
+			const urlRegex = /(#[^\s]+)/g;
+			return text.replace(urlRegex, (url) => {
+				const hashlink = urlBuilder.setName(url).buildSearchByKeyword();
+				return `<a href="${hashlink + url.replace('#', '%23')}">${url}</a>`;
+			});
+		};
 	}
 
 	inputHandler(e) {
@@ -121,7 +130,7 @@ class Comments extends Component {
 			return (
 				<div
 					className='margin--medium-v padding--medium-h'
-					dangerouslySetInnerHTML={{ __html: product.description }}
+					dangerouslySetInnerHTML={{ __html: this.hastagLinkCreator(product.description) }}
 				/>
 			);
 		}
