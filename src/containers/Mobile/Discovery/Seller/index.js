@@ -165,7 +165,7 @@ class Seller extends Component {
 		const { headerNameY } = this.state;
 		const header = document.getElementById('store-filter');
 		const sticky = header.offsetTop;
-		const scrollY = e.target.scrollTop;
+		const scrollY = window.scrollY;
 
 		if (!headerNameY) {
 			this.setState({
