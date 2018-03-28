@@ -174,6 +174,10 @@ class Products extends Component {
 		};
 	}
 
+	componentWillMount() {
+		window.scroll(0, 0);
+	}
+
 	componentDidMount() {
 		if (this.props.botNav) this.props.botNav(this.botNav);
 	}
