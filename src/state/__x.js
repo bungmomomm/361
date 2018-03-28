@@ -1,6 +1,4 @@
-import __x from 'error/wrapped';
-
-export default __x({
-	message: '{origMessage}',
-	type: 'redux',
-});
+export default (err) => {
+	err.redux = true;
+	return err;
+};
