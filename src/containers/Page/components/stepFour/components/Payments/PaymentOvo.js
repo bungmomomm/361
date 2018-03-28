@@ -5,13 +5,15 @@ import { actions } from '@/state/Payment';
 
 import { Icon, Radio, Checkbox, Level, Input, Button, Group, Alert } from 'mm-ui';
 // import { T } from '@/data/translations';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class PaymentOvo extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.state = {
-			ovoTimer: 30, 
+			ovoTimer: 30,
 			useDefault: true,
 			ovoPhonePayment: this.props.payments.ovoPhonePayment || this.props.payments.ovoPhoneNumber,
 			ovoPhonePaymentValid: this.props.payments.ovoPhoneNumber,
@@ -39,7 +41,7 @@ class PaymentOvo extends Component {
 	componentWillMount() {
 		this.isOvoPayment = true;
 		if (this.state.useDefault && this.props.payments.ovoPhoneNumber) {
-			this.props.dispatch(new actions.changeOvoPaymentNumber(this.props.payments.ovoPhoneNumber));	
+			this.props.dispatch(new actions.changeOvoPaymentNumber(this.props.payments.ovoPhoneNumber));
 		}
 	}
 
@@ -49,7 +51,7 @@ class PaymentOvo extends Component {
 		}
 
 		if (this.state.useDefault && nextProps.payments.ovoPhoneNumber && !nextProps.payments.ovoPaymentNumber) {
-			this.props.dispatch(new actions.changeOvoPaymentNumber(nextProps.payments.ovoPhoneNumber));	
+			this.props.dispatch(new actions.changeOvoPaymentNumber(nextProps.payments.ovoPhoneNumber));
 		}
 	}
 
@@ -63,7 +65,7 @@ class PaymentOvo extends Component {
 			ovoPhonePayment: event.target.value,
 			ovoPhonePaymentValid: this.input.validation.checkValid(event.target.value)
 		});
-		this.props.dispatch(new actions.changeOvoPaymentNumber(event.target.value));		
+		this.props.dispatch(new actions.changeOvoPaymentNumber(event.target.value));
 		this.validateOvoForm();
 	}
 
@@ -139,8 +141,8 @@ class PaymentOvo extends Component {
 				{
 					(payments.ovoInfo && parseInt(payments.ovoInfo.ovoFlag, 10) === 1) ?
 						<div>
-							<Radio 
-								inputStyle='blocklist' 
+							<Radio
+								inputStyle='blocklist'
 								block
 								data={[{
 									label: (
@@ -158,7 +160,7 @@ class PaymentOvo extends Component {
 										onChange: () => this.setDefaultOvo(true),
 										checked: this.state.useDefault
 									}
-								}]} 
+								}]}
 							/>
 							{this.state.useDefault ? this.renderAddMore() : this.renderPaymentInput()}
 						</div>

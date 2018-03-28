@@ -15,12 +15,13 @@ import socialActions from './social-action';
 import orderActions from './myOrder-action';
 import trackingActions from './tracking-action';
 import registerActions from './register-action';
+import __x from '@/state/__x';
 
 const userLogin = (token, email, password) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	dispatch(actions.userLogin());
 	const path = `${baseUrl}/auth/login`;
@@ -40,7 +41,7 @@ const userLogin = (token, email, password) => async (dispatch, getState) => {
 
 	if (err) {
 		dispatch(actions.userLoginFail(err.response.data));
-		return Promise.reject(err.response.data);
+		return Promise.reject(__x(err.response.data));
 	}
 
 	dispatch(actions.userLoginSuccess(response.data.data.info));
@@ -62,7 +63,7 @@ const userAnonymous = (token) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const path = `${baseUrl}/auth/anonymouslogin`;
 
@@ -81,7 +82,7 @@ const userAnonymous = (token) => async (dispatch, getState) => {
 
 	if (err) {
 		dispatch(actions.userLoginFail(err.response.data));
-		return Promise.reject(err.response.data);
+		return Promise.reject(__x(err.response.data));
 	}
 
 	dispatch(actions.userAnonymousSuccess(response.data.data.info));
@@ -106,7 +107,7 @@ const userOtp = (token, data) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const path = `${baseUrl}/auth/otp/send`;
 
@@ -140,7 +141,7 @@ const userOtpValidate = (token, bodyData) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const path = `${baseUrl}/auth/otp/validate`;
 
@@ -174,7 +175,7 @@ const userGetProfile = (token) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const path = `${baseUrl}/me`;
 
@@ -193,7 +194,7 @@ const userGetProfile = (token) => async (dispatch, getState) => {
 
 	if (err) {
 		dispatch(actions.userGetProfileFail(err.response.data));
-		return Promise.reject(err.response.data);
+		return Promise.reject(__x(err.response.data));
 	}
 
 	dispatch(actions.userGetProfileSuccess(response.data.data));
@@ -206,7 +207,7 @@ const userForgotPassword = (token, username) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const path = `${baseUrl}/auth/forgotpwd`;
 
@@ -224,7 +225,7 @@ const userForgotPassword = (token, username) => async (dispatch, getState) => {
 	
 	if (err) {
 		dispatch(actions.userForgotPasswordFail(err.response.data));
-		return Promise.reject(err.response.data);
+		return Promise.reject(__x(err.response.data));
 	}
 	dispatch(actions.userForgotPasswordSuccess(response.data.data));
 	return Promise.resolve({
@@ -236,7 +237,7 @@ const userNewPassword = (token, pass1, pass2, passtoken) => async (dispatch, get
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const path = `${baseUrl}/auth/newpwd`;
 
@@ -256,7 +257,7 @@ const userNewPassword = (token, pass1, pass2, passtoken) => async (dispatch, get
 
 	if (err) {
 		dispatch(actions.userNewPasswordFail(err.response.data));
-		return Promise.reject(err.response.data);
+		return Promise.reject(__x(err.response.data));
 	}
 
 	dispatch(actions.userNewPasswordSuccess(response.data.data));
@@ -269,7 +270,7 @@ const refreshToken = (tokenRefresh, token) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const path = `${baseUrl}/auth/refreshtoken?refresh_token=${tokenRefresh}`;
 
@@ -284,7 +285,7 @@ const refreshToken = (tokenRefresh, token) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
-		return Promise.reject(err.response.data);
+		return Promise.reject(__x(err.response.data));
 	}
 	return Promise.resolve(response);
 };
@@ -296,7 +297,7 @@ const userEditProfile = (token, data = []) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const path = `${baseUrl}/me/edit`;
 
@@ -322,7 +323,7 @@ const userValidateOvo = (token, data = []) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const path = `${baseUrl}/ovo/validate`;
 
@@ -348,7 +349,7 @@ const userLogout = (token) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const path = `${baseUrl}/auth/logout`;
 
@@ -366,7 +367,7 @@ const userLogout = (token) => async (dispatch, getState) => {
 	if (err) {
 		dispatch(actions.userLogoutFail(err.response.data));
 		return Promise.reject(err.response.data);
-	} 
+	}
 
 	dispatch(totalBag({ totalCart: 0 }));
 	dispatch(totalLoveList({ totalLovelist: 0 }));

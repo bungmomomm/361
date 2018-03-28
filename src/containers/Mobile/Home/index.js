@@ -44,7 +44,9 @@ const renderSectionHeader = (title, options, cookies = null) => {
 	);
 };
 
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Home extends Component {
 
 	static trackImpresionHandler(homeData) {

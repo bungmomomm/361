@@ -18,7 +18,9 @@ import {
 import GoogleMap from './GoogleMap';
 import { T } from '@/data/translations';
 import { Polygon } from '@/data/polygons';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class ModalAddress extends Component {
 	static saveAddress(token, dispatch, formData, selectedAddress) {
 		dispatch(new actions.saveAddress(token, formData, selectedAddress));
@@ -83,7 +85,7 @@ class ModalAddress extends Component {
 			this.flagAfterSelectDistrict = true;
 		}
 	}
-	
+
 	onChangeProvince(e) {
 		const value = e.value;
 		if (value) {
@@ -144,7 +146,7 @@ class ModalAddress extends Component {
 			});
 		}
 	}
-	
+
 	getTemporaryPinPointAddress(lat, lng) {
 		const { google } = this.props;
 		if (google) {
@@ -177,7 +179,7 @@ class ModalAddress extends Component {
 		if (typeof e.geometry !== 'undefined') {
 			const latLng = new google.maps.LatLng(e.geometry.location.lat(), e.geometry.location.lng());
 			const isValidMarkerPosition = this.isValidPosition(latLng);
-			this.setState({ 
+			this.setState({
 				isValidMarkerPosition,
 				mapMarkerCenter: {
 					lat: e.geometry.location.lat(),
@@ -189,7 +191,7 @@ class ModalAddress extends Component {
 	}
 
 	isValidPosition(e) {
-		const { google } = this.props;	
+		const { google } = this.props;
 		const polygonArea = new google.maps.Polygon({ paths: this.selectedPolygon.location_coords });
 		return !!google.maps.geometry.poly.containsLocation(e, polygonArea);
 	}
@@ -210,8 +212,8 @@ class ModalAddress extends Component {
 					value: `${district}`
 				}
 			};
-			this.setState({ 
-				selected: stateProvince, 
+			this.setState({
+				selected: stateProvince,
 				isJakarta
 			});
 		}
@@ -269,7 +271,7 @@ class ModalAddress extends Component {
 			}
 			this.setState({ mapMarkerCenter: { lng, lat } });
 		}
-		this.setState({ 
+		this.setState({
 			showMap,
 			isValidMarkerPosition: true
 		});
@@ -278,19 +280,19 @@ class ModalAddress extends Component {
 	mapMoved(mapProps, map) {
 		const isValidMarkerPosition = this.isValidPosition(map.center);
 		this.getTemporaryPinPointAddress(map.getCenter().lat(), map.getCenter().lng());
-		this.setState({ 
+		this.setState({
 			isValidMarkerPosition,
 			mapMarkerCenter: {
-				lat: map.getCenter().lat(), 
+				lat: map.getCenter().lat(),
 				lng: map.getCenter().lng()
-			} 
+			}
 		});
 	}
 
 	centerMap() {
 		const { mapMarkerCenter } = this.state;
 		if (mapMarkerCenter && mapMarkerCenter.lat !== '' && mapMarkerCenter.lng !== '') {
-			return mapMarkerCenter;	
+			return mapMarkerCenter;
 		}
 		return this.selectedPolygon.center;
 	}
@@ -354,7 +356,7 @@ class ModalAddress extends Component {
 					}}
 				/>
 				{
-					!this.state.isValidMarkerPosition ? 
+					!this.state.isValidMarkerPosition ?
 						<Alert color='red'>{T.checkout.LOCATION_NOT_MATCH_WITH_SHIPPING_ADDRESS}</Alert> :
 						<Panel><Icon name='map-marker' /> {this.state.tempFormattedAddress}</Panel>
 				}
@@ -428,7 +430,7 @@ class ModalAddress extends Component {
 						/>
 					}
 					{
-						typeof address.cityProv === 'object' && 
+						typeof address.cityProv === 'object' &&
 						typeof address.district !== 'undefined' &&
 						<Select
 							block

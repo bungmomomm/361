@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { actions as users } from '@/state/v4/User';
-import { 
+import {
 	Link
 } from 'react-router-dom';
 import {
@@ -10,7 +10,7 @@ import {
 	Input,
 	Svg
 } from '@/components/mobile';
-import { 
+import {
 	setUserCookie
 } from '@/utils';
 import styles from '../user.scss';
@@ -23,7 +23,9 @@ import {
 } from '@/containers/Mobile/Widget';
 import Otp from '@/containers/Mobile/Shared/Otp';
 import { userSource, userToken } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Register extends Component {
 	constructor(props) {
 		super(props);
@@ -115,7 +117,7 @@ class Register extends Component {
 		return response;
 
 	}
-	
+
 	onFieldChange(e, type) {
 
 		const value = util.format('%s', e.target.value);
@@ -155,7 +157,7 @@ class Register extends Component {
 		});
 		this.props.callback(whatIShouldRender);
 	}
-	
+
 	otpClickBack() {
 		const { callback } = this.props;
 		// Also clear state from previous page.
@@ -171,23 +173,23 @@ class Register extends Component {
 		
 		const { cookies, dispatch, history } = this.props;
 		const { email, password, redirectUri } = this.state;
-		
+
 		const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get(userToken), email, password)));
-		
+
 		if (errorUserLogin) {
 			console.log('error on user login');
 			return errorUserLogin;
 		}
-		
+
 		// Set the cookie for the page.
 		const userProfile = JSON.stringify({ name: responseUserLogin.userprofile.name, avatar: responseUserLogin.userprofile.avatar });
 		setUserCookie(this.props.cookies, responseUserLogin.token, false, userProfile);
 		dispatch(new users.afterLogin(cookies.get(userToken)));
 		history.push(redirectUri || '/');
-		
+
 		return responseUserLogin;
 	}
- 
+
 	renderRegisterView() {
 		const {
 			email,
@@ -312,9 +314,9 @@ class Register extends Component {
 	}
 
 	renderValidateOtpView() {
-		
+
 		const { email } = this.state;
-		
+
 		return (
 			<Otp
 				type={'register'}
@@ -359,7 +361,7 @@ class Register extends Component {
 		const {
 			whatIShouldRender
 		} = this.state;
-  
+
 		let View = this.renderRegisterView();
 
 		if (whatIShouldRender === 'VALIDATE_OTP') {

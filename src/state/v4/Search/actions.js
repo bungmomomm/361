@@ -2,6 +2,7 @@ import { request, getCancelToken } from '@/utils';
 import { keywordUpdate, initialState } from './reducer';
 import _ from 'lodash';
 import to from 'await-to-js';
+import __x from '@/state/__x';
 
 let cancelReq;
 let cancelTokenReq;
@@ -20,7 +21,7 @@ const updatedKeywordHandler = (string, userToken) => async (dispatch, getState) 
 		const { shared } = getState();
 		const baseUrl = _.chain(shared).get('serviceUrl.suggestion.url').value() || false;
 
-		if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+		if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 		const [err, response] = await to(
 			request({

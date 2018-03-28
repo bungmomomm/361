@@ -4,7 +4,9 @@ import {
 } from '@/components/mobile';
 import { Love } from '@/containers/Mobile/Widget';
 import stylesCatalog from './view.scss';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class GridView extends Component {
 	constructor(props) {
 		super(props);

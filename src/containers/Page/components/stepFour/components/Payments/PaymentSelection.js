@@ -8,7 +8,9 @@ import styles from '@/containers/Page/page.scss';
 import { Radio, Level, Icon, Tooltip } from 'mm-ui';
 import _ from 'lodash';
 import { pushDataLayer } from '@/utils/gtm';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class PaymentSelection extends Component {
 	constructor(props) {
 		super(props);

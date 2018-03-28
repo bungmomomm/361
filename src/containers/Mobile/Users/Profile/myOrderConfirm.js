@@ -14,7 +14,9 @@ import {
 	Button
 } from '@/components/mobile';
 // import styles from './profile.scss';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class MyOrderDetail extends Component {
 	constructor(props) {
 		super(props);

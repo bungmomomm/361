@@ -77,7 +77,9 @@ const trackProductOnClick = (product, position, source = 'mm') => {
 	const requestPayload = request.getPayload(productClickBuilder);
 	if (requestPayload) sendGtm(requestPayload);
 };
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Detail extends Component {
 	static queryObject(props) {
 		const brandId = props.match.params.brandId;

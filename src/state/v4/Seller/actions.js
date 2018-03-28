@@ -5,6 +5,7 @@ import { actions as scrollerActions } from '@/state/v4/Scroller';
 import { to } from 'await-to-js';
 import { Promise } from 'es6-promise';
 // import { promo } from '@/data/translations';
+import __x from '@/state/__x';
 
 const configs = {
 	defaultPage: 36
@@ -13,7 +14,7 @@ const configs = {
 const initSeller = (token, sellerId) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 	const url = `${baseUrl}/sellerrating/${sellerId}`;
 
 	const [err, resp] = await to(request({
@@ -24,7 +25,7 @@ const initSeller = (token, sellerId) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	const data = _.chain(resp).get('data.data.seller').value() || {};
@@ -38,7 +39,7 @@ const getProducts = ({ token, query = {}, type = 'update' }) => async (dispatch,
 
 	const { shared, scroller: { nextData } } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 	const url = `${baseUrl}/products/search`;
 
 	if (!query.page) {
@@ -55,7 +56,7 @@ const getProducts = ({ token, query = {}, type = 'update' }) => async (dispatch,
 	}));
 
 	if (err) {
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	const data = _.chain(resp).get('data.data').value() || {};

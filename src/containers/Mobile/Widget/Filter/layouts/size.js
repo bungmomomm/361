@@ -5,7 +5,9 @@ import _ from 'lodash';
 import renderIf from '@/utils/renderIf';
 import Divider from '@/components/mobile/Divider';
 import utils from './utils';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Size extends PureComponent {
 	constructor(props) {
 		super(props);
@@ -41,7 +43,7 @@ class Size extends PureComponent {
 			data: utils.resetChilds(data)
 		});
 	}
-	
+
 	render() {
 		const { onClose, title } = this.props;
 		const { data, resetDisabled } = this.state;
@@ -57,7 +59,7 @@ class Size extends PureComponent {
 
 		// to do: use below logic when implement
 		// const icon = <Svg src='ico_check.svg' />;
-		
+
 		const sizeList = _.map(data, (size, id) => {
 			let childSizes = null;
 			if (size.childs && size.childs.length > 0) {

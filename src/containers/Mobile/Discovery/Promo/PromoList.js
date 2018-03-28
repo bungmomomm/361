@@ -5,7 +5,9 @@ import Iframe from 'react-iframe';
 
 import Shared from '@/containers/Mobile/Shared';
 import { Header, Page, Navigation } from '@/components/mobile';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class PromoList extends Component {
 	constructor(props) {
 		super(props);
@@ -27,7 +29,7 @@ class PromoList extends Component {
 		};
 
 		const { shared } = this.props;
-		const { webViewUrl } = shared; 
+		const { webViewUrl } = shared;
 		const url = webViewUrl && webViewUrl.promo_tab ? webViewUrl.promo_tab : 'https://super.mataharimall.com/promo/new/mobileapps.html';
 
 		return (

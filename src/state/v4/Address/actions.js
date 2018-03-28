@@ -3,11 +3,12 @@ import _ from 'lodash';
 import { Promise } from 'es6-promise';
 import { to } from 'await-to-js';
 import { address } from './reducer';
+import __x from '@/state/__x';
 
 const getAddress = (token) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const url = _.chain(shared).get('serviceUrl.account.url').value() || false;
-	if (!url) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!url) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const [err, resp] = await to(request({
 		token,
@@ -17,7 +18,7 @@ const getAddress = (token) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	dispatch(address({
@@ -30,7 +31,7 @@ const getAddress = (token) => async (dispatch, getState) => {
 const getCity = (token, query = {}) => async (dispatch, getState) => {
 	const st = getState();
 	const url = _.chain(st.shared).get('serviceUrl.account.url').value() || false;
-	if (!url) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!url) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const [err, resp] = await to(request({
 		token,
@@ -41,7 +42,7 @@ const getCity = (token, query = {}) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	const optCities = resp.data.data.cities.filter((v) => {
@@ -71,7 +72,7 @@ const getCity = (token, query = {}) => async (dispatch, getState) => {
 const getDistrict = (token, query = {}) => async (dispatch, getState) => {
 	const st = getState();
 	const url = _.chain(st.shared).get('serviceUrl.account.url').value() || false;
-	if (!url) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!url) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const [err, resp] = await to(request({
 		token,
@@ -82,7 +83,7 @@ const getDistrict = (token, query = {}) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	const optDistricts = resp.data.data.districts.filter((v) => {
@@ -112,7 +113,7 @@ const getDistrict = (token, query = {}) => async (dispatch, getState) => {
 const addAddress = (token, body = {}) => async (dispatch, getState) => {
 	const st = getState();
 	const url = _.chain(st.shared).get('serviceUrl.account.url').value() || false;
-	if (!url) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!url) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const defaultAddress = body.default;
 	delete body.default;
@@ -126,7 +127,7 @@ const addAddress = (token, body = {}) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	if (defaultAddress) {
@@ -139,7 +140,7 @@ const addAddress = (token, body = {}) => async (dispatch, getState) => {
 		}));
 
 		if (errDef) {
-			return Promise.reject(errDef);
+			return Promise.reject(__x(errDef));
 		}
 		return Promise.resolve(respDef);
 	}
@@ -150,7 +151,7 @@ const addAddress = (token, body = {}) => async (dispatch, getState) => {
 const editAddress = (token, body = {}) => async (dispatch, getState) => {
 	const st = getState();
 	const url = _.chain(st.shared).get('serviceUrl.account.url').value() || false;
-	if (!url) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!url) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const defaultAddress = body.default;
 	const addressId = body.address_id;
@@ -166,7 +167,7 @@ const editAddress = (token, body = {}) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	if (defaultAddress) {
@@ -179,7 +180,7 @@ const editAddress = (token, body = {}) => async (dispatch, getState) => {
 		}));
 
 		if (errDef) {
-			return Promise.reject(errDef);
+			return Promise.reject(__x(errDef));
 		}
 		return Promise.resolve(respDef);
 	}
@@ -190,7 +191,7 @@ const editAddress = (token, body = {}) => async (dispatch, getState) => {
 const deleteAddress = (token, addressId) => async (dispatch, getState) => {
 	const st = getState();
 	const url = _.chain(st.shared).get('serviceUrl.account.url').value() || false;
-	if (!url) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!url) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const [err, resp] = await to(request({
 		token,
@@ -201,7 +202,7 @@ const deleteAddress = (token, addressId) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	return Promise.resolve(resp);
@@ -219,7 +220,7 @@ const setDefaultAddress = (token, addressId) => async (dispatch, getState) => {
 	}));
 
 	if (errDef) {
-		return Promise.reject(errDef);
+		return Promise.reject(__x(errDef));
 	}
 
 	return Promise.resolve(respDef);

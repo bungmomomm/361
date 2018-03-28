@@ -12,6 +12,7 @@ import { Svg } from '@/components/mobile';
 import styles from './shared.scss';
 import { check as checkConnection, watch as watchConnection } from 'is-offline';
 import { userToken, userRfToken, uniqueid } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 	WrappedComponent.contextTypes = {
@@ -19,6 +20,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		location: React.PropTypes.object
 	};
 
+	@handler
 	class SharedAction extends Component {
 		constructor(props) {
 			super(props);

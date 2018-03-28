@@ -2,8 +2,8 @@ import { connect } from 'react-redux';
 import { actions } from '@/state/Adresses';
 import { withCookies } from 'react-cookie';
 import React, { Component } from 'react';
-import { 
-	Modal, 
+import {
+	Modal,
 	Input,
 	Panel,
 	Radio,
@@ -11,9 +11,11 @@ import {
 } from 'mm-ui';
 import { T } from '@/data/translations';
 import styles from './modalo2o.scss';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Modalo2o extends Component {
-	
+
 	static fetchDataO2OProvinces(token, dispatch) {
 		dispatch(new actions.getO2OProvinces(token));
 	}
@@ -29,7 +31,7 @@ class Modalo2o extends Component {
 			selectedProvince: this.props.selectedProvinceO2O || '6',
 			listo2o: this.props.listo2o,
 			collections: this.props.listo2o || [],
-			filter: ''			
+			filter: ''
 		};
 		this.cookies = this.props.cookies.get('user.token');
 		this.onSelectProvince = this.onSelectProvince.bind(this);
@@ -40,11 +42,11 @@ class Modalo2o extends Component {
 
 	componentWillMount() {
 		if (this.props.o2oProvinces === undefined) {
-			this.constructor.fetchDataO2OProvinces(this.cookies, this.props.dispatch);		
+			this.constructor.fetchDataO2OProvinces(this.cookies, this.props.dispatch);
 		}
 		this.onLoadData(this.props.selectedProvinceO2O || this.state.selectedProvince);
 	}
-	
+
 	componentWillReceiveProps(nextProps) {
 		if (this.props.listo2o !== nextProps.listo2o) {
 			if (typeof nextProps.listo2o === 'object' && nextProps.listo2o.length > 0) {
@@ -99,7 +101,7 @@ class Modalo2o extends Component {
 			this.setState({
 				listo2o: this.state.collections,
 				filter
-			});		
+			});
 		}
 	}
 
@@ -108,11 +110,11 @@ class Modalo2o extends Component {
 			selected: elockerId
 		});
 	}
-	
+
 	render() {
 		return (
 			<Modal
-				size='medium' 
+				size='medium'
 				className={styles.modal}
 				showOverlayCloseButton
 				show={this.props.open}
@@ -125,13 +127,13 @@ class Modalo2o extends Component {
 							<div className={styles.searchFilter}><Select hasFilter options={this.props.o2oProvinces} block onChange={this.onSelectProvince} defaultValue={this.state.selectedProvince} /></div>
 						}
 						<div className={styles.searchInput}>
-							<Input 
-								block 
+							<Input
+								block
 								dataProps={{
 									value: this.state.filter
 								}}
-								placeholder='Cari Lokasi Toko / E-Locker (O2O) lainnya' 
-								onChange={this.onChangeFilterText} 
+								placeholder='Cari Lokasi Toko / E-Locker (O2O) lainnya'
+								onChange={this.onChangeFilterText}
 							/>
 						</div>
 					</div>
@@ -141,8 +143,8 @@ class Modalo2o extends Component {
 						this.state.listo2o && this.state.listo2o.filter(e => e.type === 'pickup_location').map((address, index) => {
 							const isChecked = this.props.selectedAddressO2O && this.props.selectedAddressO2O.id === address.id;
 							return (
-								<Panel 
-									key={index} 
+								<Panel
+									key={index}
 									className={styles.panel}
 									color={isChecked ? 'yellow' : 'grey'}
 									dataProps={{
@@ -151,17 +153,17 @@ class Modalo2o extends Component {
 										}
 									}}
 									header={
-										<Radio 
+										<Radio
 											inverted={isChecked}
 											data={[
-												{ 
-													label: isChecked ? T.checkout.MAIN_ADDRESS : T.checkout.USE_THIS_ADDRESS, 
-													inputProps: { 
+												{
+													label: isChecked ? T.checkout.MAIN_ADDRESS : T.checkout.USE_THIS_ADDRESS,
+													inputProps: {
 														readOnly: true,
 														checked: isChecked
-													} 
+													}
 												}
-											]} 
+											]}
 										/>
 									}
 								>

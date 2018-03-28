@@ -13,7 +13,9 @@ import {
 import { Group, Select, Input, Icon, Level } from 'mm-ui';
 import { Bulan } from '@/data';
 import { T } from '@/data/translations';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class PaymentInstallment extends Component {
 	constructor(props) {
 		super(props);
@@ -25,7 +27,7 @@ class PaymentInstallment extends Component {
 			cvv: ''
 		};
 		this.card = '';
-		this.bank = '';		
+		this.bank = '';
 		this.ccvValue = '';
 		this.tahun = [{ value: null, label: 'tahun' }];
 		this.cookies = this.props.cookies.get('user.token');
@@ -50,7 +52,7 @@ class PaymentInstallment extends Component {
 	}
 
 	onBankChange(bank) {
-		this.bank = bank.value;		
+		this.bank = bank.value;
 		const { dispatch, payments } = this.props;
 		if (bank.value !== null) {
 			const selectedPaymentOption = new actions.getAvailabelPaymentSelection(payments.selectedPayment);
@@ -82,7 +84,7 @@ class PaymentInstallment extends Component {
 			}
 		});
 	}
-	
+
 	onChangeCVV(e) {
 		if (!e.target.value.match(/[^0-9]/i)) {
 			this.ccvValue = e.target.value;
@@ -147,7 +149,7 @@ class PaymentInstallment extends Component {
 
 	checkValidInstallment(event) {
 		this.card = event || '';
-		let validInstallmentBin = false;		
+		let validInstallmentBin = false;
 		if (event.valid && event.valid !== null && event.ccNumber.length > 1) {
 			const { blockContent } = this.props;
 			const bank = this.bank === '' ? 'mandiri' : this.bank.value;
@@ -227,10 +229,10 @@ class PaymentInstallment extends Component {
 					</Level.Right>
 				</Level>
 				<Group>
-					<Select 
-						block 
-						options={payments.selectedPayment.paymentItems[0].banks} 
-						onChange={(e) => this.onBankChange(e)} 
+					<Select
+						block
+						options={payments.selectedPayment.paymentItems[0].banks}
+						onChange={(e) => this.onBankChange(e)}
 						defaultValue={payments.selectedBank.value || ''}
 						ref={(c) => { this.elBank = c; }}
 						label='Pilih Bank'

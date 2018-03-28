@@ -4,7 +4,9 @@ import { Link } from 'react-router-dom';
 import { Header, Page, Button, Svg, Level } from '@/components/mobile';
 import styles from './lovelist.scss';
 import cookiesLabel from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class LovelistLogin extends Component {
 	constructor(props) {
 		super(props);

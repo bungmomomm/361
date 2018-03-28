@@ -5,7 +5,7 @@ import { actions } from '@/state/Payment';
 
 // component load
 import { CreditCardRadio, CreditCardInput, Sprites } from '@/components';
-import { 
+import {
 	Group,
 	Input,
 	Row,
@@ -16,7 +16,9 @@ import {
 } from 'mm-ui';
 import { Bulan } from '@/data';
 import { T } from '@/data/translations';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class PaymentCreditCard extends Component {
 	constructor(props) {
 		super(props);
@@ -227,13 +229,13 @@ class PaymentCreditCard extends Component {
 			return (
 				<div>
 					<Group>
-						<CreditCardInput 
-							placeholder={T.checkout.INPUT_CART_NUMBER} 
+						<CreditCardInput
+							placeholder={T.checkout.INPUT_CART_NUMBER}
 							color={!cardValid && cardValid !== null ? 'red' : ''}
-							sprites='payment-option' 
+							sprites='payment-option'
 							ref={(c) => { this.elCreditCard = c; }}
 							disableMaskInput
-							onChange={(e) => this.onCardNumberChange(e)} 
+							onChange={(e) => this.onCardNumberChange(e)}
 							message={!cardValid && cardValid !== null ? T.checkout.INPUT_MATCHED_CART_NUMBER : ''}
 							validation={{ rules: 'required|max_value:16', name: 'cc' }}
 						/>
@@ -263,9 +265,9 @@ class PaymentCreditCard extends Component {
 						/>
 						<div style={{ paddingRight: '30px' }} ><Sprites name='cvv' /></div>
 					</Group>
-					<Checkbox 
-						defaultChecked 
-						onClick={(state, value) => dispatch(new actions.saveCC(state, value))} 
+					<Checkbox
+						defaultChecked
+						onClick={(state, value) => dispatch(new actions.saveCC(state, value))}
 					>
 						{T.checkout.SAVE_CARD_FOR_NEXT_TRANSACTION}
 					</Checkbox>

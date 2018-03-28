@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import { Page, Header, Image, Button, Svg } from '@/components/mobile';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Empty extends Component {
 	constructor(props) {
 		super(props);
