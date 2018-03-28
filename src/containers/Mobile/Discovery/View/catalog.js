@@ -152,7 +152,7 @@ class CatalogView extends Component {
 			return this.loadingView;
 		}
 
-		const redirectUri = redirectPath !== '' ? `?redirect_uri=${redirectPath}` : `?redirect_uri=product/comments/${product.product_id}`;
+		const redirectUri = redirectPath !== '' ? `?redirect_uri=${redirectPath}` : `?redirect_uri=/product/comments/${product.product_id}`;
 
 		const userAvatar = this.userProfile && !_.isEmpty(this.userProfile.avatar) ? (
 			<Level.Left

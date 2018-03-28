@@ -90,7 +90,7 @@ class MMUrlBuilder {
 	}
 
 	buildSearchByKeyword = () => {
-		return `products?category_id=&query=${name}`;
+		return `/products?category_id=&query=${name}`;
 	}
 
 }

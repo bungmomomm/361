@@ -39,7 +39,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			this.userCookies = this.props.cookies.get(userToken);
 			this.userRFCookies = this.props.cookies.get(userRfToken);
 			this.uniqueId = this.props.cookies.get(uniqueid);
-			this.handleScroll = this.handleScroll.bind(this);
+			this.handleScroll = _.throttle(this.handleScroll).bind(this);
 			this.docBody = null;
 			this.currentScrollPos = 0;
 		}
@@ -87,7 +87,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		componentDidMount() {
 			window.mmLoading.destroy();
-			window.addEventListener('scroll', _.throttle(this.handleScroll), true);
+			window.addEventListener('scroll', this.handleScroll, true);
 			this.docBody = document.body;
 
 			if (typeof this.uniqueId === 'undefined') {
@@ -205,9 +205,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			const snackStyle = _.chain(this.props.shared.snackbar).get('[0].style').value() || { css: {}, sticky: true, theming: {} };
 			const snackCss = _.chain(snackStyle).get('css.snack').value() || {};
 			const themingSnackCss = _.chain(snackStyle).get('theming.snack').value() || {};
-			const stickyEl = document.querySelector('.navigation__navigation') ? document.querySelector('.navigation__navigation')
-							: document.querySelector('.products__stickyAction') ? document.querySelector('.products__stickyAction')
-							: false;
+			const stickyEl = this.botNav || false;
 			const snackSticky = !snackStyle.sticky ? {} : {
 				bottom: !this.state.scroll.isNavSticky && stickyEl
 						? (+(parseInt(snackCss.bottom, 10) || 0) + +stickyEl.getBoundingClientRect().height)
@@ -222,7 +220,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			return (
 				<div className='shared_container'>
 					<Snackbar history={this.props.history} location={this.props.location} theming={this.snackStyle().theming} customStyles={this.snackStyle().customStyles} />
-					<WrappedComponent {...this.props} scroll={this.state.scroll} />
+					<WrappedComponent {...this.props} scroll={this.state.scroll} botNav={(r) => { this.botNav = r; }} />
 					{
 						this.state.scroll.top > window.innerHeight && (
 							<a href='#root' className={styles.backToTop}>

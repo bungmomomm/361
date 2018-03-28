@@ -400,7 +400,10 @@ class Product extends Component {
 				{this.productsBlock()}
 				{this.foreverBannerBlock()}
 				{this.headerBlock()}
-				<Navigation {...navigationAttribute} />
+				<Navigation
+					{...navigationAttribute}
+					botNav={this.props.botNav}
+				/>
 			</div>
 		);
 	}
@@ -436,7 +439,7 @@ const doAfterAnonymous = async (props) => {
 		page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
 		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 36,
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
-		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
+		// sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
 
 	const response = await dispatch(pcpActions.pcpAction({ token: cookies.get(userToken), query: pcpParam }));

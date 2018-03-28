@@ -90,7 +90,7 @@ class Detail extends Component {
 			page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
 			per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 10,
 			fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
-			sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
+			// sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 		};
 	}
 
@@ -460,7 +460,7 @@ class Detail extends Component {
 				{(!showFilter) && (
 					<div>
 						{this.renderHeader()}
-						<Navigation {...navigationAttribute} />
+						<Navigation {...navigationAttribute} botNav={this.props.botNav} />
 					</div>
 				)}
 			</div>

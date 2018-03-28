@@ -40,7 +40,7 @@ class Brands extends Component {
 		this.inputElement = null;
 		this.onAlphabetsClick = (id) => {
 			const section = document.getElementById(String(id.trim()));
-			document.body.scrollTop = section.offsetTop;
+			(document.documentElement || document.body.parentNode || document.body).scrollTop = section.offsetTop;
 		};
 	}
 
@@ -282,7 +282,7 @@ class Brands extends Component {
 				</Page>
 				<Header.Modal {...HeaderPage} headerRef={(header) => { this.headContainer = header; }} />
 				{/* <Header.Modal {...HeaderPage} /> */}
-				<Navigation {...navigationAttribute} />
+				<Navigation {...navigationAttribute} botNav={this.props.botNav} />
 			</div>
 		);
 	}

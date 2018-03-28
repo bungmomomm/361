@@ -504,7 +504,7 @@ class Seller extends Component {
 						</Page>
 
 						<Header.Modal {...HeaderPage} style={{ zIndex: 1 }} />
-						<Navigation scroll={this.props.scroll} active={activeNav} />
+						<Navigation scroll={this.props.scroll} active={activeNav} botNav={this.props.botNav} />
 					</div>
 				)}
 			</span>

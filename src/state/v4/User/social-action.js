@@ -31,8 +31,8 @@ const userSocialLogin = (token, provider, accessToken) => async (dispatch, getSt
 	}));
 
 	if (err) {
-		dispatch(actions.userLoginFail(err));
-		return Promise.reject(err);
+		dispatch(actions.userLoginFail(err.response.data));
+		return Promise.reject(err.response.data);
 	}
 
 	const data = _.chain(response);
@@ -53,7 +53,6 @@ const userSocialLoginWithRedirect = (token, provider, redirectUrl) => async (dis
 	const baseUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
 
 	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
-	console.log(token);
 	dispatch(actions.userSocialLogin());
 	let path = `${baseUrl}/auth/fblogin?redirect_uri=${redirectUrl}`;
 	if (provider === 'google') {
@@ -74,8 +73,8 @@ const userSocialLoginWithRedirect = (token, provider, redirectUrl) => async (dis
 	}));
 
 	if (err) {
-		dispatch(actions.userLoginFail(err));
-		return Promise.reject(err);
+		dispatch(actions.userLoginFail(err.response.data));
+		return Promise.reject(err.response.data);
 	}
 
 	const data = _.chain(response);

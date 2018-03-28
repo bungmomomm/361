@@ -49,7 +49,6 @@ class Register extends Component {
 		this.renderRegisterView = this.renderRegisterView.bind(this);
 		this.renderValidateOtpView = this.renderValidateOtpView.bind(this);
 		this.renderMobileOrEmailHasBeenRegistered = this.renderMobileOrEmailHasBeenRegistered.bind(this);
-		this.otpClickBack = this.otpClickBack.bind(this);
 
 	}
 
@@ -81,43 +80,29 @@ class Register extends Component {
 		const dataForRegister = { fullname: loginId, hp_email: email, pwd: password };
 
 		// Call register action.
-		const [errorRegister, responseRegister] = await to(dispatch(new users.userRegister(cookies.get(userToken), dataForRegister)));
+		const [errorRegister, response] = await to(dispatch(new users.userRegister(cookies.get(userToken), dataForRegister)));
 
 		// Throw error if any.
 		if (errorRegister) {
-			const { code } = errorRegister.response.data;
-			if (code === 422 && errorRegister.response.data.error_message === 'hp_email is already taken.') {
+			if (errorRegister.error_message.indexOf('taken') > -1) {
 				this.setView('EMAIL_MOBILE_HAS_BEEN_REGISTERED');
 				return false;
 			}
-
 			return false;
 		}
-		// Extract response from register
-		const { data } = responseRegister;
-		const { code } = data;
-
 		// Response from register is success
-		if (code === 200 && data.data.id) {
+		if (response.data.id) {
 			// Check if we register via mobile.
 			if (registerWith === 'MOBILE') {
-				// Then send OTP
-				const [errorUserOtp, responseUserOtp] = await to(dispatch(new users.userOtp(cookies.get(userToken), dataForRegister.hp_email)));
-				if (errorUserOtp) {
-					console.log('Error on OTP');
-					return false;
-				}
 				// Set state for OTP
 				this.setView('VALIDATE_OTP');
-
-				return responseUserOtp;
-
+				return false;
 			}
 
 			const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get(userToken), email, password)));
 
 			if (errorUserLogin) {
-				return false;
+				return errorUserLogin;
 			}
 
 			// Set the cookie for the page.
@@ -125,10 +110,9 @@ class Register extends Component {
 			setUserCookie(this.props.cookies, responseUserLogin.token, false, userProfile);
 			dispatch(new users.afterLogin(cookies.get(userToken)));
 			history.push(redirectUri || '/');
-
 		}
 
-		return responseRegister;
+		return response;
 
 	}
 	
@@ -169,7 +153,7 @@ class Register extends Component {
 		this.setState({
 			whatIShouldRender
 		});
-		this.props.callback();
+		this.props.callback(whatIShouldRender);
 	}
 	
 	otpClickBack() {
@@ -183,7 +167,7 @@ class Register extends Component {
 		}, callback('REGISTER'));
 	}
  
-	async successValidateOtp() {
+	async successValidateOtp(response) {
 		
 		const { cookies, dispatch, history } = this.props;
 		const { email, password, redirectUri } = this.state;
@@ -192,7 +176,7 @@ class Register extends Component {
 		
 		if (errorUserLogin) {
 			console.log('error on user login');
-			return false;
+			return errorUserLogin;
 		}
 		
 		// Set the cookie for the page.
@@ -333,9 +317,10 @@ class Register extends Component {
 		
 		return (
 			<Otp
+				type={'register'}
 				phoneEmail={email}
-				onClickBack={this.otpClickBack}
-				onSuccess={() => this.successValidateOtp()}
+				onClickBack={() => this.otpClickBack()}
+				onSuccess={(response) => this.successValidateOtp(response)}
 			/>
 		);
 	}
@@ -346,17 +331,26 @@ class Register extends Component {
 
 		const buttonProperty = {
 			color: 'secondary',
-			size: 'large'
+			size: 'large',
+			wide: true
 		};
 
 		return (
-			<div>
-				<p>Akun ini sudah terdafatar. Silahkan lakukan log in untuk mengakses akun</p>
-				<p>Masuk dengan {email} </p>
-				<Link to='/login'>
-					<Button {...buttonProperty}>Login</Button>
-				</Link>
-				<Link to='/forgotPassword'>Lupa Password</Link>
+			<div className={styles.container}>
+				<div className='margin--medium-v font-medium'>Akun ini sudah terdaftar. Silahkan lakukan log in untuk mengakses akun.</div>
+				<div className='margin--medium-v font-medium text-center'>
+					<p>
+						MASUK DENGAN {email} 
+					</p>
+				</div>
+				<div className='margin--small-v'>
+					<Link to={`/login${location.search}`}>
+						<Button {...buttonProperty}>LOGIN</Button>
+					</Link>
+				</div>
+				<div className='margin--medium-v text-center'>
+					<Link to='/forgotPassword?redirect_uri=/register'>Lupa Password</Link>
+				</div>
 			</div>
 		);
 	}

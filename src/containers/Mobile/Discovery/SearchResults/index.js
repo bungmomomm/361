@@ -226,13 +226,13 @@ class SearchResults extends Component {
 			scroll: this.props.scroll
 		};
 		navigationAttribute.active = cookies.get(cookiesLabel.pageReferrer);
-		
+
 
 		return (
 			<div style={this.props.style}>
 				{isLoading ? this.loadingView : this.renderSearch()}
 				{this.renderHeader()}
-				<Navigation {...navigationAttribute} />
+				<Navigation {...navigationAttribute} botNav={this.props.botNav} />
 			</div>
 		);
 	}
@@ -364,7 +364,7 @@ const doAfterAnonymous = async (props) => {
 		page: parsedUrl.page !== undefined && !_.isEmpty(parsedUrl.page) ? parseInt(parsedUrl.page, 10) : 1,
 		per_page: parsedUrl.per_page !== undefined && !_.isEmpty(parsedUrl.per_page) ? parseInt(parsedUrl.per_page, 10) : 30,
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
-		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
+		// sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
 	const [err, response] = await to(dispatch(searchActions.searchAction({ token: cookies.get(cookiesLabel.userToken), query: searchParam })));
 	if (err) {

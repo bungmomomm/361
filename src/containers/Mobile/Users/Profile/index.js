@@ -36,7 +36,7 @@ class UserProfile extends Component {
 
 		if (!this.isLogin) {
 			const { history } = this.props;
-			history.push('/login?redirect_uri=profile');
+			history.push('/login?redirect_uri=/profile');
 		}
 
 		this.AVATAR_FIELD = CONST.USER_PROFILE_FIELD.avatar;
@@ -246,7 +246,7 @@ class UserProfile extends Component {
 				</Page>
 				{this.renderHeader()}
 				{this.renderLogoutModal()}
-				<Navigation active='Profile' scroll={this.props.scroll} totalCartItems={shared.totalCart} />
+				<Navigation active='Profile' scroll={this.props.scroll} totalCartItems={shared.totalCart} botNav={this.props.botNav} />
 			</div>
 		) : this.loadingView;
 	}
