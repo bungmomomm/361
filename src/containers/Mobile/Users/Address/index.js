@@ -8,6 +8,7 @@ import { actions } from '@/state/v4/Address';
 import { Promise } from 'es6-promise';
 import { userToken, isLogin } from '@/data/cookiesLabel';
 import styles from './style.scss';
+import _ from 'lodash';
 
 class Address extends Component {
 
@@ -25,7 +26,10 @@ class Address extends Component {
 
 	setDefault = async () => {
 		const { dispatch, cookies } = this.props;
-		await dispatch(actions.setDefaultAddress(cookies.get('user.token'), this.state.selectedAddress));
+		const { selectedAddress } = this.state;
+		await dispatch(actions.setDefaultAddress(cookies.get(userToken), selectedAddress));
+		
+		// Dispatch the action again to get the updated address list.
 		window.location.reload();
 	};
 
@@ -45,13 +49,14 @@ class Address extends Component {
 
 	deleteAddress = async () => {
 		const { dispatch, cookies, address } = this.props;
-		if (!this.state.selectedAddress) {
+		const { selectedAddress } = this.state;
+		if (!selectedAddress) {
 			return Promise.reject(new Error('Invalid address id, please contact administrator.'));
 		}
 
-		await dispatch(actions.deleteAddress(cookies.get('user.token'), this.state.selectedAddress));
+		await dispatch(actions.deleteAddress(cookies.get(userToken), selectedAddress));
 		const mutatedShipping = address.address.shipping.filter((v) => {
-			return v.id !== this.state.selectedAddress;
+			return v.id !== selectedAddress;
 		});
 
 		this.hideAddressModal();
@@ -99,7 +104,7 @@ class Address extends Component {
 							</Level.Right>
 						</Level>
 					</Link>
-					{address.address.shipping.map((v, k) => {
+					{!_.isEmpty(address.address.shipping) && address.address.shipping.map((v, k) => {
 						const { city, fullname, district, phone, province, zipcode, id } = v;
 						const placeHasBeenMarkedContent = (
 							<div className='flex-row flex-middle'>
@@ -108,7 +113,6 @@ class Address extends Component {
 							</div>
 						);
 						return (
-
 							<div key={k}>
 								<Level className='bg--white border-bottom' key={k}>
 									<Level.Left className='d-inline-block'>

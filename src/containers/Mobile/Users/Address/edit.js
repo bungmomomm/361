@@ -220,7 +220,6 @@ class Address extends Component {
 							validationError='Invalid character supplied'
 							disabled={this.state.submitting}
 							required
-							hint='This is hint'
 							value={this.state.edit.address_label || ''}
 							onChange={this.onTextChange}
 						/>

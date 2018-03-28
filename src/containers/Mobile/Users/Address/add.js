@@ -176,7 +176,6 @@ class Address extends Component {
 							validationError='Invalid character supplied'
 							disabled={this.state.submitting}
 							required
-							hint='This is hint'
 						/>
 					</div>
 
