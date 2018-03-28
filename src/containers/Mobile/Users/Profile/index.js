@@ -246,7 +246,7 @@ class UserProfile extends Component {
 				</Page>
 				{this.renderHeader()}
 				{this.renderLogoutModal()}
-				<Navigation active='Profile' scroll={this.props.scroll} totalCartItems={shared.totalCart} />
+				<Navigation active='Profile' scroll={this.props.scroll} totalCartItems={shared.totalCart} botNav={this.props.botNav} />
 			</div>
 		) : this.loadingView;
 	}

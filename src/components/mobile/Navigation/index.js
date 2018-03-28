@@ -11,6 +11,15 @@ class Navigation extends PureComponent {
 		};
 		this.currentScrollPos = 0;
 	}
+
+	componentDidMount() {
+		if (this.props.botNav) this.props.botNav(this.botNav);
+	}
+
+	componentWillUnmount() {
+		if (this.props.botNav) this.props.botNav(false);
+	}
+
 	render() {
 		const { className, active, scroll, totalCartItems } = this.props;
 
@@ -31,7 +40,7 @@ class Navigation extends PureComponent {
 		return (
 			<nav className={createClassName} >
 				<div className={styles.wrapper}>
-					<div className={styles.navigation}>
+					<div className={styles.navigation} ref={(r) => { this.botNav = r; }}>
 						<Item
 							to='/'
 							icon='ico_home.svg'

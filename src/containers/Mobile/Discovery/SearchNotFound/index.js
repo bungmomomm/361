@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 
-import { Page, Card, Svg, Grid, Level, Carousel } from '@/components/mobile';
+import { Page, Card, Svg, Grid, Level, Carousel, Button } from '@/components/mobile';
 import { hyperlink } from '@/utils';
 // import styles from './search.scss';
 
@@ -77,14 +77,20 @@ class SearchNotFound extends PureComponent {
 		return (
 			<Page color='white'>
 				<div className='text-center' >
-					<div className='margin--medium-v flex-center flex-middle'><Svg src='ico_no_result.svg' /></div>
+					<div className='margin--medium-v flex-center flex-middle'><Svg src='ico_no_result-search.svg' /></div>
 					<div className=' margin--small-v'>
 						<strong className='font-bold font-large'>SORRY!</strong>
 					</div>
-					<div>
-						{'Mohon maaf hasil pencarian untuk "'}{keyword || ''}
-						{ '" tidak dapat ditemukan. Silakan periksa pengejaan kata, atau menggunakan kata kunci lain!'}
+					<div className='--disable-flex padding--medium-h'>
+						Mohon maaf hasil pencarian untuk <br />
+						<strong>{keyword || ''}</strong> tidak dapat ditemukan <br />
+						<br />
+						Silakan periksa pengejaan kata, atau menggunakan <br />
+						kata kunci lain!
 					</div>
+					<span className='margin--medium-v'>
+						<Button to='/search' inline size='medium' color='secondary'>CARI KEMBALI</Button>
+					</span>
 					{this.bannerRender()}
 					{this.productRender()}
 				</div>

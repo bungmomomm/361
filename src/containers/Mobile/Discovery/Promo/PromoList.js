@@ -28,7 +28,7 @@ class PromoList extends Component {
 
 		const { shared } = this.props;
 		const { webViewUrl } = shared; 
-		const url = webViewUrl && webViewUrl.bantuan ? webViewUrl.bantuan : 'https://super.mataharimall.com/promo/new/mobileapps.html';
+		const url = webViewUrl && webViewUrl.promo_tab ? webViewUrl.promo_tab : 'https://super.mataharimall.com/promo/new/mobileapps.html';
 
 		return (
 			<div className='text-center' style={this.props.style}>
@@ -42,7 +42,7 @@ class PromoList extends Component {
 					/>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Promo' scroll={this.props.scroll} />
+				<Navigation active='Promo' scroll={this.props.scroll} botNav={this.props.botNav} />
 			</div>
 		);
 	}
