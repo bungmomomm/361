@@ -93,7 +93,7 @@ class Address extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page color='white'>
+				<Page color='grey'>
 					<Link to='/address/add' className='bg--white margin--medium-t margin--medium-b'>
 						<Level>
 							<Level.Left>
@@ -145,11 +145,11 @@ class Address extends Component {
 							<Level.Item className='flex-center'>
 								<Button className='padding--small' onClick={this.setDefault}>Jadikan Alamat Utama</Button>
 								<div className='padding--small'>
-									<Link to={`/address/edit/${this.state.selectedAddress}`}>
+									<Link to={`/address/edit/${this.state.selectedAddress}`} style={{ color: '#191919' }}>
 										Ubah Alamat
 									</Link>
 								</div>
-								<Button className='padding--small' onClick={() => { this.setState({ showConfirmDelete: true }); }}>Hapus Alamat</Button>
+								<Button className='padding--small' style={{ color: '#ED1C24' }} onClick={() => { this.setState({ showConfirmDelete: true }); }}>Hapus Alamat</Button>
 								<Button className='padding--small' onClick={this.hideAddressModal}>Batal</Button>
 							</Level.Item>
 						</Level>
