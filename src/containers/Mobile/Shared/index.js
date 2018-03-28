@@ -4,7 +4,7 @@ import to from 'await-to-js';
 import { actions } from '@/state/v4/Shared';
 import { actions as users } from '@/state/v4/User';
 import { actions as initAction } from '@/state/v4/Home';
-import { setUserCookie, setUniqeCookie, setReferrenceCookie } from '@/utils';
+import { setUserCookie, setUniqeCookie, setReferrenceCookie, initUTMProcess } from '@/utils';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
 import Snackbar from '@/containers/Mobile/Shared/snackbar';
@@ -95,6 +95,8 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			if (typeof this.uniqueId === 'undefined') {
 				setUniqeCookie(this.props.cookies);
 			}
+
+			initUTMProcess();
 		}
 
 		componentWillUnmount() {
