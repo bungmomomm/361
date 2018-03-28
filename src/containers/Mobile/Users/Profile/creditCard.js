@@ -17,8 +17,9 @@ import {
 	Modal,
 	Button
 } from '@/components/mobile';
-import { userToken } from '@/data/cookiesLabel';
+import { userToken, isLogin } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
+
 
 @handler
 class CreditCard extends Component {
@@ -27,6 +28,7 @@ class CreditCard extends Component {
 
 		super(props);
 		this.props = props;
+		this.isLogin = this.props.cookies.get(isLogin) === 'true';
 		this.setDefaultCreditCard = this.setDefaultCreditCard.bind(this);
 		this.deleteSingleCreditCardFromList = this.deleteSingleCreditCardFromList.bind(this);
 		this.makeCreditCardRadioChecked = this.makeCreditCardRadioChecked.bind(this);
@@ -308,7 +310,7 @@ class CreditCard extends Component {
 					{ this.renderSetDefaultCreditCardPopUpConfirmation() }
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Profile' botNav={this.props.botNav} />
+				<Navigation active='Profile' botNav={this.props.botNav} isLogin={this.isLogin} />
 			</div>
 		);
 	}

@@ -21,7 +21,7 @@ import { actions } from '@/state/v4/Brand';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Shared from '@/containers/Mobile/Shared';
 import { urlBuilder } from '@/utils';
-import { userToken, userRfToken, userSource, pageReferrer } from '@/data/cookiesLabel';
+import { userToken, userRfToken, userSource, pageReferrer, isLogin } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
 
 @handler
@@ -40,6 +40,7 @@ class Brands extends Component {
 		this.source = this.props.cookies.get(userSource);
 		this.headContainer = null;
 		this.inputElement = null;
+		this.isLogin = this.props.cookies.get(isLogin) === 'true';
 		this.onAlphabetsClick = (id) => {
 			const section = document.getElementById(String(id.trim()));
 			(document.documentElement || document.body.parentNode || document.body).scrollTop = section.offsetTop;
@@ -284,7 +285,7 @@ class Brands extends Component {
 				</Page>
 				<Header.Modal {...HeaderPage} headerRef={(header) => { this.headContainer = header; }} />
 				{/* <Header.Modal {...HeaderPage} /> */}
-				<Navigation {...navigationAttribute} botNav={this.props.botNav} />
+				<Navigation {...navigationAttribute} botNav={this.props.botNav} isLogin={this.isLogin} />
 			</div>
 		);
 	}
