@@ -271,7 +271,7 @@ class Address extends Component {
 						<div className='padding--medium-v'>
 							<label className={styles.label} htmlFor='city'>Kota, Provinsi *</label>
 							<Level
-								className='flex-row border-bottom'
+								className='flex-row border-bottom no-padding-h'
 								onClick={
 									(this.state.disabled.city || this.state.submitting) ? false : () => this.toggleShow()
 								}
@@ -315,7 +315,7 @@ class Address extends Component {
 						<div className='padding--medium-v'>
 							<label className={styles.label} htmlFor='district'>Kecamatan</label>
 							<Level
-								className='flex-row border-bottom'
+								className='flex-row border-bottom no-padding-h'
 								onClick={
 									(this.state.disabled.district || this.state.submitting) ? false : () => this.toggleShow('district')
 								}
@@ -377,6 +377,7 @@ class Address extends Component {
 							<Input
 								id='address'
 								name='address'
+								as='textarea'
 								flat
 								placeholder='Jl. Perbanas No. 5A - Tugu'
 								validationError='This field is required'
