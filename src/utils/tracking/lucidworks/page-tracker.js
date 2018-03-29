@@ -2,10 +2,10 @@ import Utils from './utils';
 import { references } from './config';
 
 const info = {
-	reference: '',
+	reference: references.home,
 	query: '',
-	page: 1,
-	limit: 1,
+	page: 0,
+	limit: 0,
 };
 
 export default class PageTracker {
@@ -31,12 +31,12 @@ export default class PageTracker {
 
 	static trackRoute = (route) => {
 		try {
-			let { group } = route;
+			const { group } = route;
 			const { search } = route.location || window.location.search;
 
 			// default group value is 'home'
-			if (Utils.isEmpty(group)) group = references.home;
-			info.reference = group;
+			if (Utils.isEmpty(group)) PageTracker.resetInfo();
+			else info.reference = group;
 
 			// extract data from 'search' same value with window.location.search
 			if (Utils.notEmptyVal(search)) {
@@ -54,6 +54,14 @@ export default class PageTracker {
 			}
 			Utils.storeInfo(JSON.stringify(info));
 		} catch (error) { console.log(error); }
+	}
+
+	static resetInfo = () => {
+		info.reference = references.home;
+		info.limit = 0;
+		info.page = 0;
+		info.query = 0;
+		Utils.storeInfo(JSON.stringify(info));
 	}
 
 	static extractRouteParams = (route) => {

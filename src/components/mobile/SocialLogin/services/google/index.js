@@ -8,7 +8,7 @@ class GoogleLogin extends PureComponent {
 		super(props);
 		this.props = props;
 		this.state = {
-			sdkLoaded: false
+			sdkLoaded: window.gapi !== undefined || false
 		};
 	}
 	componentDidMount() {
@@ -52,7 +52,9 @@ class GoogleLogin extends PureComponent {
 
 	login() {
 		const { prompt, callback } = this.props;
+		console.log('Login....', this.state.sdkLoaded, this.state.loading);
 		if (this.state.sdkLoaded && !this.state.loading) {
+			console.log('loaded && !loading');
 			const auth2 = window.gapi.auth2.getAuthInstance();
 			const options = {
 				prompt

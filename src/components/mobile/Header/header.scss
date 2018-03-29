@@ -44,6 +44,8 @@
 .dummyplaceholder{
 	position: absolute;
 	pointer-events: none;
+	left: 0px;
+	top: 0px;
 	width: 100%;
 	display: flex;
 	flex-direction: row;

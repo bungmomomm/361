@@ -25,7 +25,8 @@ class Love extends PureComponent {
 		this.state = {
 			loading: false,
 			showModal: false,
-			status: props.status || -1
+			status: props.status || -1,
+			total: this.props.total
 		};
 	}
 
@@ -40,7 +41,7 @@ class Love extends PureComponent {
 
 	async loveClicked(e) {
 		const { cookies, data, dispatch, onClick, inline } = this.props;
-		const { loading, status } = this.state;
+		const { loading, status, total } = this.state;
 		let message = '';
 		let isError = false;
 		if (cookies.get(isLogin) === 'false') {
@@ -65,11 +66,12 @@ class Love extends PureComponent {
 			response = await to(dispatch(lovelistActions.removeFromLovelist(cookies.get('user.token'), data)));
 			if (response[0]) {
 				isError = true;
-				message = 'Gagal menyimpan Produk di lovelist';
+				message = 'Gagal menghapus Produk dari lovelist';
 			}
 			if (response[1]) {
 				this.setState({
-					status: 0
+					status: 0,
+					total: total === 0 ? 0 : (total - 1)
 				});
 			}
 		} else {
@@ -81,7 +83,8 @@ class Love extends PureComponent {
 			}
 			if (response[1]) {
 				this.setState({
-					status: 1
+					status: 1,
+					total: (total + 1)
 				});
 			}
 		}
@@ -89,15 +92,16 @@ class Love extends PureComponent {
 		this.setState({
 			loading: false
 		});
-		if (isError) {
-			dispatch(sharedActions.showSnack(uniqid('err-'),
-				{
-					label: message,
-					timeout: 3000
-				},
-				toastSytle()
-			));
 
+		dispatch(sharedActions.showSnack(uniqid('err-'),
+			{
+				label: message,
+				timeout: 3000
+			},
+			!isError ? toastSytle() : {}
+		));
+
+		if (!isError) {
 			if (onClick) {
 				onClick(data);
 			}
@@ -120,8 +124,8 @@ class Love extends PureComponent {
 	}
 
 	render() {
-		const { disabled, showNumber, total } = this.props;
-		const { loading, showModal, status } = this.state;
+		const { disabled, showNumber } = this.props;
+		const { loading, showModal, status, total } = this.state;
 		return (
 			<div>
 				<Button.Love

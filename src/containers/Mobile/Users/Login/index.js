@@ -52,7 +52,7 @@ class Login extends Component {
 	async onLogin(e) {
 		const { cookies, dispatch, history } = this.props;
 		const { loginId, password, redirectUri } = this.state;
-		const [err, response] = await to(dispatch(new users.userLogin(cookies.get(userToken), loginId, password)));
+		const [err, response] = await to(dispatch(users.userLogin(cookies.get(userToken), loginId, password)));
 		if (err) {
 			return err;
 		}
@@ -73,7 +73,7 @@ class Login extends Component {
 		const { cookies, dispatch, history } = this.props;
 		const { redirectUri } = this.state;
 		const { accessToken } = token;
-		const [err, response] = await to(dispatch(new users.userSocialLogin(cookies.get(userToken), provider, accessToken)));
+		const [err, response] = await to(dispatch(users.userSocialLogin(cookies.get(userToken), provider, accessToken)));
 		if (err) {
 			return err;
 		}

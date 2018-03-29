@@ -16,9 +16,7 @@ function getDefaultStyles(theming) {
 			transform: 'translate(0, 100%)',
 			backgroundColor: theming.backgroundColor || '#E3E3E3',
 			padding: '13px 16px',
-			largeScreen: {
-				left: -15,
-			}
+			largeScreen: {}
 		},
 		label: {
 			flex: 4,
@@ -69,9 +67,7 @@ function toastSytle() {
 				padding: '15px',
 				borderRadius: '40px',
 				textAlign: 'center',
-				largeScreen: {
-					left: -15,
-				}
+				largeScreen: {}
 			},
 			label: {
 				flex: '4',

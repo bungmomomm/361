@@ -62,10 +62,12 @@ textarea {
     padding-right: 0px;
     border-radius: 0px;
     font-size: 13px;
+    line-height: 20px;
+    overflow-wrap: break-word;
     outline: 0px;
     border: 0px;
     border-bottom: 1px solid #D8D8D8;
-    height: 40px;
+    height: 60px;
   }
 }
 

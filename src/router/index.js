@@ -12,15 +12,14 @@ class CustomRoute extends PureComponent {
 
 	componentWillMount() {
 		window.mmLoading.play();
-		// binds fusion session
-		Fusion.tracks(this.props);
+
+		// binds fusion session only
+		Fusion.tracks(this.props, false);
 	}
 
 	componentDidUpdate() {
-		// binds fusion session
-		// tracking fusion for loadless page like pdp, apply sort and filter
+		// binds fusion session and do tracking page references
 		Fusion.tracks(this.props);
-		window.prevRoute = this.props;
 	}
 
 	render() {
