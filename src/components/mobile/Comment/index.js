@@ -57,7 +57,7 @@ class Comment extends Component {
 							style={{ marginLeft: '45px' }}
 						>
 							<div
-								style={{ borderBottom: borderStyle, paddingBottom: '15px' }}
+								style={{ borderBottom: borderStyle, paddingBottom: '15px', overflowWrap: 'break-word' }}
 							>
 								{comment.comment}
 							</div>

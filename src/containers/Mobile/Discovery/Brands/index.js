@@ -21,7 +21,7 @@ import { actions } from '@/state/v4/Brand';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Shared from '@/containers/Mobile/Shared';
 import { urlBuilder } from '@/utils';
-import { userToken, userRfToken, userSource, pageReferrer } from '@/data/cookiesLabel';
+import { userToken, userRfToken, userSource, pageReferrer, isLogin } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
 
 @handler
@@ -40,22 +40,16 @@ class Brands extends Component {
 		this.source = this.props.cookies.get(userSource);
 		this.headContainer = null;
 		this.inputElement = null;
+		this.isLogin = this.props.cookies.get(isLogin) === 'true';
 		this.onAlphabetsClick = (id) => {
 			const section = document.getElementById(String(id.trim()));
-			(document.documentElement || document.body.parentNode || document.body).scrollTop = section.offsetTop;
+			const sUsrAg = window.navigator.userAgent;
+			if ((sUsrAg.indexOf('Safari') > -1)) {
+				document.body.scrollTop = section.offsetTop;
+			} else {
+				document.body.parentNode.scrollTop = section.offsetTop;
+			}
 		};
-	}
-
-	componentDidMount() {
-		const { dispatch, category } = this.props;
-		dispatch(new actions.brandListAction(this.userCookies, category.activeSegment.id));
-	}
-
-	componentWillReceiveProps(nextProps) {
-		const { dispatch, category } = this.props;
-		if (this.props.shared.serviceUrl !== nextProps.shared.serviceUrl) {
-			dispatch(new actions.brandListAction(this.userCookies, category.activeSegment.id));
-		}
 	}
 
 	onFilter(keyword) {
@@ -262,7 +256,7 @@ class Brands extends Component {
 								</Level.Right>
 							}
 						</Level>
-						{ !brands.brand_list && (<div style={{ paddingTop: '20px' }}> <Spinner /></div>)}
+
 						{ this.renderFilterAlphabets() }
 					</div>
 				),
@@ -279,12 +273,13 @@ class Brands extends Component {
 					{
 						<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />
 					}
+					{ !brands.brand_list && (<div style={{ padding: '20px 0' }}> <Spinner /></div>)}
 					{ this.renderBrandBySearch() }
 					{ this.renderBrandByAlphabets() }
 				</Page>
 				<Header.Modal {...HeaderPage} headerRef={(header) => { this.headContainer = header; }} />
 				{/* <Header.Modal {...HeaderPage} /> */}
-				<Navigation {...navigationAttribute} botNav={this.props.botNav} />
+				<Navigation {...navigationAttribute} botNav={this.props.botNav} isLogin={this.isLogin} />
 			</div>
 		);
 	}
@@ -294,8 +289,15 @@ const mapStateToProps = (state) => {
 	return {
 		category: state.category,
 		brands: state.brands,
-		shared: state.shared
+		shared: state.shared,
+		home: state.home
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(Brands)));
+const doAfterAnonymous = async (props) => {
+	const { dispatch, cookies, shared, home } = props;
+	const activeSegment = home.segmen.filter((e) => e.key === shared.current)[0];
+	dispatch(new actions.brandListAction(cookies.get(userToken), activeSegment.id));
+};
+
+export default withCookies(connect(mapStateToProps)(Shared(Brands, doAfterAnonymous)));

@@ -8,7 +8,7 @@ class FacebookLogin extends PureComponent {
 		super(props);
 		this.props = props;
 		this.state = {
-			sdkLoaded: true,
+			sdkLoaded: window.FB !== undefined || false,
 			loading: false
 		};
 	}

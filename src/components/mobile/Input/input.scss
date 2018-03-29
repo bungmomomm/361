@@ -8,6 +8,11 @@
   position: relative;
 }
 
+textarea {
+  font-family: font-family(--lato-normal);
+  font-size: map-get($font-size, --normal );
+}
+
 .input {
   border: 0;
   outline: none;
@@ -57,10 +62,12 @@
     padding-right: 0px;
     border-radius: 0px;
     font-size: 13px;
+    line-height: 20px;
+    overflow-wrap: break-word;
     outline: 0px;
     border: 0px;
     border-bottom: 1px solid #D8D8D8;
-    height: 40px;
+    height: 60px;
   }
 }
 
@@ -94,13 +101,10 @@
 
 .textCounter{
   align-items: right;
-  right: 5px;
+  right: 10px;
   justify-content: flex-end;
   padding-left: 0px;
-  padding-bottom: 10px;
-  + *{
-    padding-right: rem(50px)
-  }
+  padding-bottom: 1px;
 }
 
 .label, .hint, .textCounter {

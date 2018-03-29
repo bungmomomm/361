@@ -1,8 +1,7 @@
 export default {
 	config: {
 		debug: true,
-		enabled: true,
-		// enabled: (process.env.LUCID_TRACKING_ENABLED === 'true') || false,
+		enabled: (process.env.LUCID_TRACKING_ENABLED === 'true') || false,
 		sessionName: process.env.LUCID_COOKIE_NAME,
 		userSession: process.env.USER_INFO_COOKIE,
 		loggedInSession: 'isLogin',

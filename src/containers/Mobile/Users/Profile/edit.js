@@ -47,6 +47,7 @@ class UserProfileEdit extends Component {
 				message: ''
 			},
 			formData: props.userProfile,
+			otpCountdown: 0
 		};
 		this.userToken = this.props.cookies.get(cookiesLabel.userToken);
 		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true' && true;
@@ -224,6 +225,8 @@ class UserProfileEdit extends Component {
 					[this.GENDER_FIELD]: formData[this.GENDER_FIELD],
 					[this.BIRTHDAY_FIELD]: formData[this.BIRTHDAY_FIELD]
 				};
+			} else if (layout === this.PHONE_FIELD) {
+				newData = formData[this.HP_EMAIL_FIELD];
 			} else if (layout === this.OVO_ID_FIELD) {
 				newData = {
 					[this.PHONE_FIELD]: formData[this.OVO_ID_FIELD]
@@ -244,6 +247,8 @@ class UserProfileEdit extends Component {
 			let dispatchAction = null;
 			if (layout === this.OVO_ID_FIELD) {
 				dispatchAction = dispatch(userActions.userValidateOvo(this.userToken, newData));
+			} else if (layout === this.PHONE_FIELD) {
+				dispatchAction = dispatch(userActions.userOtp(this.userToken, newData, 'edit'));
 			} else {
 				dispatchAction = dispatch(userActions.userEditProfile(this.userToken, newData));
 			}
@@ -257,19 +262,32 @@ class UserProfileEdit extends Component {
 					submittingForm: false
 				});
 			} else if (response) {
-				dispatch(userActions.userGetProfile(this.userToken));
-				this.setState({
-					formResult: {
-						status: 'success',
-						message: response.msg || 'Form success'
-					},
-					formData: {
-						...formData,
-						...newData
-					},
-					submittingForm: false
-				});
-				this.setTimeoutForm(5000);
+				if (layout === this.PHONE_FIELD) {
+					const countdown = _.chain(response).get('countdown').value() || 60;
+
+					this.setState({
+						otpCountdown: countdown,
+						formData: {
+							...formData,
+							[this.HP_EMAIL_FIELD]: newData
+						},
+						layout: this.OTP_FIELD,
+					});
+				} else {
+					dispatch(userActions.userGetProfile(this.userToken));
+					this.setState({
+						formResult: {
+							status: 'success',
+							message: response.msg || 'Form success'
+						},
+						formData: {
+							...formData,
+							...newData
+						},
+						submittingForm: false
+					});
+					this.setTimeoutForm(5000);
+				}
 			}
 		}
 
@@ -287,7 +305,8 @@ class UserProfileEdit extends Component {
 			formResult: {
 				status: 'success',
 				message: response.msg || 'Nomor Handphone berhasil diubah'
-			}
+			},
+			otpCountdown: 0
 		});
 
 		this.setTimeoutForm(5000);
@@ -576,7 +595,7 @@ class UserProfileEdit extends Component {
 	}
 
 	renderLayout() {
-		const { layout, formResult, formData } = this.state;
+		const { layout, formResult, formData, otpCountdown } = this.state;
 		let layoutView;
 		switch (layout) {
 		case this.EMAIL_FIELD:
@@ -594,7 +613,7 @@ class UserProfileEdit extends Component {
 				<EditHp
 					data={formData[this.PHONE_FIELD]}
 					onClickBack={(e, value) => this.switchLayoutHandler(e, 'main')}
-					onSave={(e, data) => this.switchLayoutHandler(e, this.OTP_FIELD, data)}
+					onSave={(e, data) => this.saveFormData(data)}
 					formResult={formResult}
 				/>
 			);
@@ -622,6 +641,8 @@ class UserProfileEdit extends Component {
 			layoutView = (
 				<Otp
 					phoneEmail={formData[this.HP_EMAIL_FIELD]}
+					countdownValue={otpCountdown}
+					autoSend={false}
 					onClickBack={(e, value) => this.switchLayoutHandler(e, this.PHONE_FIELD)}
 					onSuccess={(response) => this.successValidateOtp(response)}
 				/>

@@ -29,10 +29,10 @@ class MyOrder extends Component {
 			{ id: 0, key: 'konfirmasi', title: 'Konfirmasi' }, { id: 1, key: 'dikirim', title: 'Dikirim' },
 			{ id: 2, key: 'selesai', title: 'Selesai' }, { id: 3, key: 'batal', title: 'Batal' }
 		];
-		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin);
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true';
 		this.userToken = this.props.cookies.get(cookiesLabel.userToken);
 
-		if (this.isLogin !== 'true') {
+		if (!this.isLogin) {
 			this.props.history.push('/');
 		}
 		this.isEmpty = false;
@@ -158,7 +158,7 @@ class MyOrder extends Component {
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Profile' botNav={this.props.botNav} />
+				<Navigation active='Profile' botNav={this.props.botNav} isLogin={this.isLogin} />
 			</div>
 		);
 	}

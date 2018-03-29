@@ -222,12 +222,14 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		};
 
 		render() {
+			const { scroll } = this.state;
+			const { location, history } = this.props;
 			return (
 				<div className='shared_container'>
-					<Snackbar history={this.props.history} location={this.props.location} theming={this.snackStyle().theming} customStyles={this.snackStyle().customStyles} />
-					<WrappedComponent {...this.props} scroll={this.state.scroll} botNav={(r) => { this.botNav = r; }} />
+					<Snackbar history={history} location={location} theming={this.snackStyle().theming} customStyles={this.snackStyle().customStyles} />
+					<WrappedComponent {...this.props} scroll={scroll} botNav={(r) => { this.botNav = r; }} />
 					{
-						this.state.scroll.top > window.innerHeight && (
+						scroll.top > 20 && (
 							<a href='#root' className={styles.backToTop}>
 								<Svg src='ico_to-top.svg' />
 							</a>

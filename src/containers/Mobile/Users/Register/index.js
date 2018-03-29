@@ -46,7 +46,8 @@ class Register extends Component {
 			redirectUri: props.redirectUri || false,
 			disableOtpButton: false,
 			messageType: 'SUCCESS',
-			isButtonResendOtpLoading: false
+			isButtonResendOtpLoading: false,
+			countdownValue: 60
 		};
 		this.renderRegisterView = this.renderRegisterView.bind(this);
 		this.renderValidateOtpView = this.renderValidateOtpView.bind(this);
@@ -95,6 +96,13 @@ class Register extends Component {
 		// Response from register is success
 		if (response.data.id) {
 			// Check if we register via mobile.
+			const otpResponse = await to(dispatch(new users.userOtp(cookies.get(userToken), email, 'register')));
+			if (otpResponse[0]) {
+				return otpResponse[0];
+			}
+			this.setState({
+				countdownValue: _.chain(otpResponse[1]).get('countdown').value() || 60
+			});
 			if (registerWith === 'MOBILE') {
 				// Set state for OTP
 				this.setView('VALIDATE_OTP');
@@ -145,6 +153,7 @@ class Register extends Component {
 			});
 		} else {
 			this.setState({
+				typed: value !== '',
 				validPassword: !validator.isEmpty(value) && validator.isLength(value, { min: 6, max: undefined })
 			});
 		}
@@ -198,7 +207,8 @@ class Register extends Component {
 			visiblePassword,
 			validLoginId,
 			validPassword,
-			validEmailOrMobile
+			validEmailOrMobile,
+			typed
 		} = this.state;
 
 		const { isLoading } = this.props.users;
@@ -239,10 +249,7 @@ class Register extends Component {
 			inputMobileEmailAttribute.hint = 'Format Email/Nomor Handphone tidak sesuai. Silahkan cek kembali';
 		}
 
-		let iconRightPasswordContent = 'ico_password_hide.svg';
-		if (visiblePassword === true) {
-			iconRightPasswordContent = 'ico_password_show.svg';
-		}
+		const iconRightPasswordContent = visiblePassword ? 'ico_password_show.svg' : 'ico_password_hide.svg';
 
 		const inputPasswordAttribute = {
 			value: password,
@@ -255,10 +262,11 @@ class Register extends Component {
 			flat: true,
 			placeholder: '',
 			type: (visiblePassword) ? 'text' : 'password',
-			iconRight: (
+			iconRight: typed && (
 				<Button onClick={() => this.setState({ visiblePassword: !visiblePassword })}>
 					<Svg src={iconRightPasswordContent} />
-				</Button>)
+				</Button>
+			)
 		};
 
 		if (password.length > 0 && validPassword === false) {
@@ -273,7 +281,7 @@ class Register extends Component {
 			disabled: !buttonLoginEnable
 		};
 
-		if (isLoading === true) {
+		if (isLoading) {
 			buttonRegisterAttribute.loading = true;
 		}
 
@@ -314,11 +322,13 @@ class Register extends Component {
 	}
 
 	renderValidateOtpView() {
-
-		const { email } = this.state;
-
+		
+		const { email, countdownValue } = this.state;
+		
 		return (
 			<Otp
+				countdownValue={countdownValue}
+				autoSend={false}
 				type={'register'}
 				phoneEmail={email}
 				onClickBack={() => this.otpClickBack()}
