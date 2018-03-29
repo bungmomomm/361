@@ -8,6 +8,11 @@
   position: relative;
 }
 
+textarea {
+  font-family: font-family(--lato-normal);
+  font-size: map-get($font-size, --normal );
+}
+
 .input {
   border: 0;
   outline: none;
@@ -96,13 +101,10 @@
 
 .textCounter{
   align-items: right;
-  right: 5px;
+  right: 10px;
   justify-content: flex-end;
   padding-left: 0px;
-  padding-bottom: 10px;
-  + *{
-    padding-right: rem(50px)
-  }
+  padding-bottom: 1px;
 }
 
 .label, .hint, .textCounter {

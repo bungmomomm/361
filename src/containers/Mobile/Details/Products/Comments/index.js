@@ -50,7 +50,12 @@ class Comments extends Component {
 	}
 
 	inputHandler(e) {
+		const { counterLimit } = this.state;
 		const value = util.format('%s', e.target.value);
+
+		if (value.length > counterLimit) {
+			return;
+		}
 
 		if (value.length > 0) {
 			this.setState({ showCounter: true, counterValue: value.length });
@@ -59,7 +64,7 @@ class Comments extends Component {
 		}
 
 		let validForm = false;
-		if (!validator.isEmpty(value) && value.length <= 300) {
+		if (!validator.isEmpty(value) && value.length <= counterLimit) {
 			validForm = true;
 		}
 
