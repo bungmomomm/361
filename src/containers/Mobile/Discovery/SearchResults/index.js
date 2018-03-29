@@ -103,8 +103,8 @@ class SearchResults extends Component {
 	update = async (params) => {
 		const { cookies, dispatch, location, history } = this.props;
 		const { query } = this.state;
-		const parsedUrl = queryString.parse(location.search);
-
+		let parsedUrl = queryString.parse(location.search);
+		parsedUrl = { ...parsedUrl, query: encodeURIComponent(parsedUrl.query) };
 		urlBuilder.replace(history, {
 			query: query.q,
 			page: query.page,
