@@ -85,7 +85,7 @@ const userSocialLoginWithRedirect = (token, provider, redirectUrl) => async (dis
 	});
 };
 
-export {
+export default {
 	userSocialLogin,
 	userSocialLoginWithRedirect
 };
