@@ -1,4 +1,12 @@
 class TrackingRequest {
+	constructor(payload = null) {
+		if (payload !== null) {
+			Object.keys(payload).forEach((key) => {
+				this[key] = payload[key];
+			});
+		}
+	}
+
 	getPayload(payloadBuilder) {
 		return (payloadBuilder(this));
 	}

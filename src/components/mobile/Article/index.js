@@ -8,7 +8,7 @@ class Article extends PureComponent {
 			className,
 			posts
 		} = this.props;
-		
+
 		const createClassName = classNames(
 			styles.container,
 			className
@@ -17,7 +17,9 @@ class Article extends PureComponent {
 		return (
 			<div className={createClassName}>
 				<a href={posts.link} target='_blank'>
-					<img src={posts.images.thumbnail} alt='article' />
+					<div className={styles.thumbnail} style={{ backgroundImage: `url(${posts.images.thumbnail})` }}>
+						<img src={posts.images.thumbnail} alt='article' />
+					</div>
 					<div className={`${styles.category} --disable-flex`}>
 						<span>{posts.category}</span>
 					</div>

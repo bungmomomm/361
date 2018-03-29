@@ -48,6 +48,7 @@ import classNames from 'classnames';
 import styles from './styles.scss';
 import { userToken, isLogin } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
+import { Utils } from '@/utils/tracking/lucidworks';
 
 const trackSellerPageView = (products, info, props) => {
 	const productId = _.map(products, 'product_id') || [];
@@ -68,10 +69,20 @@ const trackSellerPageView = (products, info, props) => {
 			list: 'mm'
 		};
 	}) || [];
-	const request = new TrackingRequest();
-	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
-	request.setFusionSessionId('').setIpAddress('').setImpressions(impressions).setCategoryInfo(brandInfo);
-	request.setListProductId(productId.join('|'));
+	const { users, shared } = props;
+	const { userProfile } = users;
+	const layerData = { 
+		emailHash: _.defaultTo(userProfile.enc_email, ''),
+		userIdEncrypted: userProfile.enc_userid,
+		userId: userProfile.id,
+		ipAddress: shared.ipAddress,
+		currentUrl: this.props.location.pathname,
+		impressions,
+		categoryInfo: brandInfo,
+		fusionSessionId: Utils.getSessionID(),
+		listProductId: productId.join('|')
+	};
+	const request = new TrackingRequest(layerData);
 	const requestPayload = request.getPayload(categoryViewBuilder);
 	if (requestPayload) sendGtm(requestPayload);
 };
@@ -85,8 +96,12 @@ const trackProductOnClick = (product, position, source = 'mm') => {
 		category: product.product_category_names.join('/'),
 		position
 	};
-	const request = new TrackingRequest();
-	request.setFusionSessionId('').setProducts([productData]).setSourceName(source);
+	const layerData = { 
+		fusionSessionId: Utils.getSessionID(),
+		products: [productData],
+		sourceName: source
+	};
+	const request = new TrackingRequest(layerData);
 	const requestPayload = request.getPayload(productClickBuilder);
 	if (requestPayload) sendGtm(requestPayload);
 };
@@ -107,6 +122,7 @@ class Seller extends Component {
 			type: 'small',
 			icon: 'ico_list.svg'
 		}];
+		this.activeNav = 'Home';
 
 		const propsObject = _.chain(props.seller);
 		this.isLogin = this.props.cookies.get(isLogin) === 'true';
@@ -136,6 +152,24 @@ class Seller extends Component {
 
 	componentWillMount() {
 		window.addEventListener('scroll', this.onScroll, true);
+	}
+
+	componentDidMount() {
+		let product = false;
+
+		window.surfs.some((item) => {
+			if (item.pathname.indexOf('.html') !== -1) product = true;
+
+			if (product && ['', '/'].includes(item.pathname)) return true;
+
+			if (product && item.pathname.indexOf('/category') !== -1) {
+				this.activeNav = 'Categories';
+				console.log('Categories');
+				return true;
+			};
+
+			return false;
+		});
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -330,7 +364,7 @@ class Seller extends Component {
 				)}
 			</div>
 		);
-	}
+	};
 
 	toggleSeeMore = () => {
 		this.setState({
@@ -469,8 +503,8 @@ class Seller extends Component {
 		const title = seller.info.seller;
 		const url = `${process.env.MOBILE_URL}${location.pathname}${location.search}`;
 		const storename = (!title) ? '' : (title.length > 30) ? `${title.substring(0, 30)}&hellip;` : title;
-		const prevLocation = _.chain(window.prevLocation).get('pathname').value();
-		const activeNav = prevLocation && prevLocation.indexOf('.html') > -1 ? 'Categories' : ['', '/'].includes(prevLocation) ? 'Home' : null;
+		// const prevLocation = _.chain(window.prevLocation).get('pathname').value();
+		// const activeNav = prevLocation && prevLocation.indexOf('.html') > -1 ? 'Categories' : ['', '/'].includes(prevLocation) ? 'Home' : null;
 
 		const HeaderPage = {
 			left: (
@@ -506,7 +540,7 @@ class Seller extends Component {
 						</Page>
 
 						<Header.Modal {...HeaderPage} style={{ zIndex: 1 }} />
-						<Navigation scroll={this.props.scroll} active={activeNav} botNav={this.props.botNav} />
+						<Navigation scroll={this.props.scroll} active={this.activeNav} botNav={this.props.botNav} />
 					</div>
 				)}
 			</span>

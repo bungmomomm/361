@@ -88,13 +88,13 @@ class Comments extends Component {
 		}
 	}
 
-	postComment() {
+	postComment = async () => {
 		const { dispatch, match, cookies } = this.props;
 		const { commentValue } = this.state;
 
 		const productId = _.chain(match).get('params.id').value() || false;
 		if (productId) {
-			dispatch(commentActions.commentAddAction(cookies.get(cookiesLabel.userToken), productId, commentValue));
+			await dispatch(commentActions.commentAddAction(cookies.get(cookiesLabel.userToken), productId, commentValue));
 		}
 
 		this.setState({
@@ -103,6 +103,11 @@ class Comments extends Component {
 			counterValue: 0,
 			commentValue: ''
 		});
+
+		const body = document.body;
+		const html = document.documentElement;
+		const height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+		window.scrollTo(0, height);
 	}
 
 	renderHeader() {
@@ -134,7 +139,7 @@ class Comments extends Component {
 		if (!_.isEmpty(product)) {
 			return (
 				<div
-					className='margin--medium-v padding--medium-h'
+					className='margin--medium-v padding--medium-h wysiwyg-content'
 					dangerouslySetInnerHTML={{ __html: this.hastagLinkCreator(product.description) }}
 				/>
 			);
@@ -239,8 +244,6 @@ class Comments extends Component {
 	}
 
 	render() {
-		const { isLoading } = this.props;
-
 		return (
 			<div className={styles.commentsContainer}>
 				<div className={styles.commentsBackground} />
@@ -251,7 +254,7 @@ class Comments extends Component {
 					</div>
 				</Page>
 				{this.renderHeader()}
-				{isLoading ? this.renderLoading : this.renderAvailComment()}
+				{this.renderAvailComment()}
 			</div>
 		);
 	}

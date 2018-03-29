@@ -25,12 +25,12 @@ const foreverBanner = (params) => {
 	let content = <div>Loading...</div>;
 	if (!isHide) {
 		content = (
-			<div className='margin--medium-v'>
-				<Link to={link.target}>
+			<Link to={link.target}>
+				<div className='margin--medium-v'>
 					<div className='font-large' style={inlineStyle}>{text.text1}</div>
 					<p style={inlineStyle}>{text.text2}</p>
-				</Link>
-			</div>
+				</div>
+			</Link>
 		);
 	}
 	return (

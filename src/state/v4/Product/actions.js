@@ -36,7 +36,6 @@ const productDetailAction = (token, productId) => async (dispatch, getState) => 
 
 	const product = response.data.data;
 	dispatch(productDetail({ detail: product.detail }));
-	dispatch(productLoading({ loading: false }));
 
 	return Promise.resolve(product);
 };
@@ -68,7 +67,6 @@ const productStoreAction = (token, storeId, page = 1, perPage = 4) => async (dis
 
 	const store = response.data.data;
 	dispatch(productStore({ store }));
-	dispatch(productLoading({ loading: false }));
 
 	return Promise.resolve(response);
 };
@@ -99,9 +97,7 @@ const productSocialSummaryAction = (token, productId) => async (dispatch, getSta
 	}
 
 	const socialSummary = response.data.data;
-
 	dispatch(productSocialSummary({ socialSummary }));
-	dispatch(productLoading({ loading: false }));
 
 	return Promise.resolve(response);
 };
@@ -133,7 +129,6 @@ const allProductReviewsAction = (token, productId, page = 1, perPage = 10) => as
 
 	const allReviews = response.data.data;
 	dispatch(allProductReviews({ allReviews }));
-	dispatch(productLoading({ loading: false }));
 
 	return Promise.resolve(response);
 };
@@ -178,7 +173,6 @@ const productPromoAction = (token, productId) => async (dispatch, getState) => {
 	}
 
 	dispatch(productPromotion({ promo }));
-	dispatch(productLoading({ loading: false }));
 
 	return Promise.resolve(response);
 };
@@ -278,11 +272,16 @@ const getProductCardData = (details) => {
 	return details;
 };
 
+const productLoadingAction = (value) => (dispatch) => {
+	dispatch(productLoading({ loading: value }));
+};
+
 export default {
 	productDetailAction,
 	productSocialSummaryAction,
 	productPromoAction,
 	productStoreAction,
 	getProductCardData,
-	allProductReviewsAction
+	allProductReviewsAction,
+	productLoadingAction
 };

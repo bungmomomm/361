@@ -13,9 +13,10 @@ import {
 	TrackingRequest,
 	sendGtm,
 	cartViewBuilder
+	
 } from '@/utils/tracking';
 import cookiesLabel from '@/data/cookiesLabel';
-import { LucidCart } from '@/utils/tracking/lucidworks';
+import { LucidCart, Utils } from '@/utils/tracking/lucidworks';
 import handler from '@/containers/Mobile/Shared/handler';
 
 const trackBrandPageView = (data, props) => {
@@ -23,10 +24,20 @@ const trackBrandPageView = (data, props) => {
 	const productId = _.map(items, 'product_id');
 	const pricingList = _.map(items, 'pricing.original.effective_price');
 	const quantityList = _.map(items, 'qty');
-	const request = new TrackingRequest();
-	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
-	request.setFusionSessionId('').setIpAddress('');
-	request.setListProductId(productId.join('|')).setListPrice(pricingList.join('|')).setListQuantity(quantityList.join('|'));
+	const { users, shared } = props;
+	const { userProfile } = users;
+	const layerData = { 
+		emailHash: _.defaultTo(userProfile.enc_email, ''),
+		userIdEncrypted: userProfile.enc_userid,
+		userId: userProfile.id,
+		ipAddress: shared.ipAddress,
+		currentUrl: this.props.location.pathname,
+		listPrice: pricingList.join('|'),
+		listQuantity: quantityList.join('|'),
+		fusionSessionId: Utils.getSessionID(),
+		listProductId: productId.join('|')
+	};
+	const request = new TrackingRequest(layerData);
 	const requestPayload = request.getPayload(cartViewBuilder);
 	if (requestPayload) sendGtm(requestPayload);
 };
@@ -67,18 +78,17 @@ class Cart extends Component {
 		}
 	}
 
-	componentDidMount() {
-		const { dispatch } = this.props;
-		dispatch(actionShared.totalCartAction(this.userToken));
-	}
 
 	componentWillReceiveProps(nextProps) {
 		if (!('serviceUrl' in this.props.shared) && 'serviceUrl' in nextProps.shared) {
 			const { dispatch } = this.props;
 			dispatch(shopBagAction.getAction(this.userToken));
+			dispatch(actionShared.totalCartAction(this.userToken));
 		}
 
-		if (nextProps.shopBag.carts !== this.props.shopBag.carts) {
+		if (nextProps.shopBag.carts !== this.props.shopBag.carts
+			&& this.props.users.userProfile !== nextProps.users.userProfile
+		) {
 			trackBrandPageView(nextProps.shopBag.carts, nextProps);
 		}
 
@@ -93,7 +103,7 @@ class Cart extends Component {
 
 	componentWillUnmount() {
 		const { dispatch } = this.props;
-		dispatch(actionShared.totalCartAction(this.userToken));
+		dispatch(actionShared.totalCartAction(this.userToken)); // what the purpose?
 	}
 
 	checkNotProcedItem(props) {
@@ -410,7 +420,8 @@ class Cart extends Component {
 const mapStateToProps = (state) => {
 	return {
 		shared: state.shared,
-		shopBag: state.shopBag
+		shopBag: state.shopBag,
+		users: state.users
 	};
 };
 

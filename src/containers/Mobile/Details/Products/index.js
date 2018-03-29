@@ -3,6 +3,7 @@ import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
+import to from 'await-to-js';
 import { urlBuilder, enableZoomPinch, uniqid } from '@/utils';
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as sharedActions } from '@/state/v4/Shared';
@@ -26,13 +27,15 @@ import {
 } from '@/utils/tracking';
 import cookiesLabel from '@/data/cookiesLabel';
 
-import { Payload } from '@/utils/tracking/lucidworks';
+import { Payload, Utils } from '@/utils/tracking/lucidworks';
 import xhandler from '@/containers/Mobile/Shared/handler';
 
 import { toastSytle } from '@/containers/Mobile/Shared/styleSnackbar';
 
 const fusion = new Payload(_);
 const trackAddToCart = (data, props, variant, hasVariantSize = true) => {
+	const { users, shared } = props;
+	const { userProfile } = users;
 	const products = {
 		name: data.detail.title,
 		id: data.detail.id,
@@ -43,14 +46,23 @@ const trackAddToCart = (data, props, variant, hasVariantSize = true) => {
 		variant_id: variant.id,
 		quantity: 1
 	};
-	const request = new TrackingRequest();
-	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
-	request.setFusionSessionId('').setIpAddress('').setProducts([products]);
+	const layerData = {
+		emailHash: _.defaultTo(userProfile.enc_email, ''),
+		userIdEncrypted: userProfile.enc_userid,
+		userId: userProfile.id,
+		ipAddress: shared.ipAddress,
+		currentUrl: this.props.location.pathname,
+		products: [products],
+		fusionSessionId: Utils.getSessionID(),
+	};
+	const request = new TrackingRequest(layerData);
 	const requestPayload = request.getPayload(addToCartBuilder);
 	if (requestPayload) sendGtm(requestPayload);
 };
 
 const trackPdpView = (data, props) => {
+	const { users, shared } = props;
+	const { userProfile } = users;
 	const products = {
 		name: data.detail.title,
 		id: data.detail.id,
@@ -58,10 +70,17 @@ const trackPdpView = (data, props) => {
 		brand: data.detail.brand.name,
 		category: data.detail.product_category_names.join('/'),
 	};
-	const request = new TrackingRequest();
-	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
-	request.setFusionSessionId('').setIpAddress('').setProducts([products]);
-	request.setStoreName(data.detail.seller.seller);
+	const layerData = {
+		emailHash: _.defaultTo(userProfile.enc_email, ''),
+		userIdEncrypted: userProfile.enc_userid,
+		userId: userProfile.id,
+		ipAddress: shared.ipAddress,
+		currentUrl: this.props.location.pathname,
+		products: [products],
+		fusionSessionId: Utils.getSessionID(),
+		storeName: data.detail.seller.seller
+	};
+	const request = new TrackingRequest(layerData);
 	const requestPayload = request.getPayload(pdpViewBuilder);
 	if (requestPayload) sendGtm(requestPayload);
 };
@@ -69,15 +88,17 @@ const trackPdpView = (data, props) => {
 import Discovery from '@/containers/Mobile/Discovery/Utils';
 
 const doAfterAnonymous = async (props) => {
-	const { dispatch, match, cookies } = props;
+	const { dispatch, match, cookies, history } = props;
 	const productId = _.toInteger(match.params.id);
 	const token = cookies.get(cookiesLabel.userToken);
 
-	const productDetail = await dispatch(productActions.productDetailAction(token, productId));
-	if (productDetail) {
-		trackPdpView(productDetail, props);
+	const [err, response] = await to(dispatch(productActions.productDetailAction(token, productId)));
+	if (err) {
+		history.push('/not-found');
+	} else if (response) {
+		trackPdpView(response, props);
 		await dispatch(productActions.productSocialSummaryAction(token, productId));
-		fusion.trackPdp(productDetail);
+		fusion.trackPdp(response);
 	}
 
 	const res = await dispatch(productActions.productPromoAction(token, productId));
@@ -107,6 +128,7 @@ class Products extends Component {
 		this.slideWrapAround = true;
 		this.linkToPdpDisabled = true;
 		this.updateCard = false;
+		this.botNavUp = false;
 
 		this.closeZoomImage = this.closeZoomImage.bind(this);
 		this.goBackPreviousPage = this.goBackPreviousPage.bind(this);
@@ -131,6 +153,7 @@ class Products extends Component {
 			},
 			showAnimationLovelist: false,
 			status: {
+				loading: false,
 				btnBeliDisabled: false,
 				forceLogin: false,
 				hasVariantSize: false,
@@ -179,10 +202,6 @@ class Products extends Component {
 		window.scroll(0, 0);
 	}
 
-	componentDidMount() {
-		if (this.props.botNav) this.props.botNav(this.botNav);
-	}
-
 	componentWillReceiveProps(nextProps) {
 		const { product, lovelist, dispatch } = nextProps;
 		const { detail } = product;
@@ -215,7 +234,7 @@ class Products extends Component {
 			}
 
 			// disable enabled button BELI AJA
-			if (_.isEmpty(cardProduct.variants) || outOfStock || 
+			if (_.isEmpty(cardProduct.variants) || outOfStock ||
 				cardProduct.productStock === 0 || detail.is_product_available === 0) {
 				status.btnBeliDisabled = true;
 			} else {
@@ -239,8 +258,20 @@ class Products extends Component {
 		this.handleScroll();
 	}
 
+	componentDidUpdate() {
+		if (this.props.botNav && this.botNav) {
+			if (!this.botNavUp) {
+				this.props.botNav(this.botNav);
+				this.botNavUp = true;
+			}
+		}
+	}
+
 	componentWillUnmount() {
+		const { dispatch } = this.props;
+
 		if (this.props.botNav) this.props.botNav(false);
+		dispatch(productActions.productLoadingAction(true));
 	}
 
 	onOvoInfoClick(e) {
@@ -543,6 +574,7 @@ class Products extends Component {
 				toastSytle(),
 			));
 
+			dispatch(sharedActions.totalLovelistAction(this.userCookies));
 		}).catch((err) => {
 			status.showConfirmDelete = false;
 			dispatch(sharedActions.showSnack(uniqid('err-'),
@@ -715,98 +747,120 @@ class Products extends Component {
 				);
 			}
 
+			const cardProductView = !_.isEmpty(cardProduct) && _.has(cardProduct, 'images') && (
+				<div ref={(n) => { this.carouselEL = n; }}>
+					<Card.Product
+						setCarouselSlideIndex={this.setCarouselSlideIndex}
+						slideIndex={carousel.slideIndex}
+						onImageItemClick={this.handleImageItemClick}
+						data={cardProduct || {}}
+						isLoved={status.isLoved}
+						disabledLovelist={loading}
+						onBtnLovelistClick={this.handleLovelistClick}
+						onBtnCommentClick={this.redirectToPage}
+						onBtnBeliClick={this.handleBtnBeliClicked}
+						linkToPdpDisabled={this.linkToPdpDisabled}
+						totalComments={comments.total}
+						totalLovelist={cardProduct.totalLovelist}
+						outOfStock={outOfStock}
+					/>
+				</div>
+			);
+
+			const sizeView = !_.isEmpty(detail) && status.hasVariantSize && (
+				<div className='flex-center padding--medium-h border-top'>
+					<div className='margin--medium-v'>
+						<div className='flex-row flex-spaceBetween'>
+							<div className='font-medium'>Pilih Ukuran</div>
+							{(!_.isEmpty(cardProduct) && _.has(cardProduct, 'hasSizeGuide') && cardProduct.hasSizeGuide) &&
+								<Link to='/product/guide' className='d-flex font-color--primary font--lato-bold font-color-primary flex-row flex-middle'>
+									<Svg src='ico_sizeguide.svg' /> <span className='padding--small-h font--lato-bold font-color--primary padding--none-r'>PANDUAN UKURAN</span>
+								</Link>
+							}
+						</div>
+						<div className='margin--medium-v horizontal-scroll margin--none-b'>
+							<Radio
+								name='size'
+								checked={this.state.size}
+								variant='rounded'
+								style={{ marginTop: '10px', marginBottom: '10px' }}
+								onChange={this.handleSelectVariant}
+								data={cardProduct.variants}
+							/>
+						</div>
+						{(status.hasVariantSize && !_.isEmpty(selectedVariant) && (selectedVariant.warning_stock_text !== '')) && (
+							<p className='font-color--red font-small'>{selectedVariant.warning_stock_text}</p>
+						)}
+					</div>
+				</div>
+			);
+
+			const ovoRewardView = !_.isEmpty(promo.meta_data.ovo_reward) && (
+				<Level className='font-color--primary-ext-2 border-top border-bottom'>
+					<Level.Item>
+						<div className='padding--small-h'>{promo.meta_data.ovo_reward}</div>
+					</Level.Item>
+					<Level.Right>
+						<Button onClick={this.onOvoInfoClick}>
+							<Svg src='ico_warning.svg' />
+						</Button>
+					</Level.Right>
+				</Level>
+			);
+
+			const productDetailView = !_.isEmpty(detail.description) && (
+				<div>
+					<div className='font-medium margin--medium-v padding--medium-h'><strong>Details</strong></div>
+					<div className='wysiwyg-content'>
+						<div className={classNameProductDescription}>
+							{<div dangerouslySetInnerHTML={{ __html: this.hastagLinkCreator(detail.description) }} />}
+							{!_.isEmpty(cardProduct.specs) && (
+								<div className='margin--medium-v --disable-flex'>
+									{(cardProduct.specs.map((item, idx) => {
+										item.value = item.value.replace(/(?:\r\n|\r|\n)/g, '<br />');
+										if (/^/.test(item.value)) return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
+										return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
+									}))}
+								</div>
+							)}
+						</div>
+						<span className='padding--medium-h font-color--grey' {...buttonProductDescriptionAttribute}>{ fullProductDescriptionButtonText }</span>
+					</div>
+				</div>
+			);
+
+			const commentsView = this.isLogin ? (
+				<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
+					{(comments.total === 0) && 'Tulis Komentar'}
+					{(comments.total > 0) && `Lihat Semua ${comments.total} Komentar`}
+				</Link>
+			) : (
+				<span>
+					<a href={`/login?redirect_uri=${this.props.location.pathname}`}>Log in</a> / 
+					<a href={`/register?redirect_uri=${this.props.location.pathname}`}>Register</a> untuk memberikan komentar
+				</span>
+			);
+
+			const commentsBlockView = (
+				<div className='margin--medium-v --disable-flex padding--medium-h'>
+					{commentsView}
+					{(!_.isUndefined(comments) && !_.isUndefined(comments.summary) && !_.isEmpty(comments.summary)) && (
+						<Comment type='lite-review' data={comments.summary} />
+					)}
+				</div>
+			);
+
 			return (
 				<div>
 					<Page color='white'>
 						<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
-							{((_.isEmpty(cardProduct) || !_.has(cardProduct, 'images')) && status.loading) && this.loadingContent}
-							{!_.isEmpty(cardProduct) && (
-								<div ref={(n) => { this.carouselEL = n; }}>
-									<Card.Product
-										setCarouselSlideIndex={this.setCarouselSlideIndex}
-										slideIndex={carousel.slideIndex}
-										onImageItemClick={this.handleImageItemClick}
-										data={cardProduct || {}}
-										isLoved={status.isLoved}
-										disabledLovelist={loading}
-										onBtnLovelistClick={this.handleLovelistClick}
-										onBtnCommentClick={this.redirectToPage}
-										onBtnBeliClick={this.handleBtnBeliClicked}
-										linkToPdpDisabled={this.linkToPdpDisabled}
-										totalComments={comments.total}
-										totalLovelist={cardProduct.totalLovelist}
-										outOfStock={outOfStock}
-									/>
-								</div>
-							)}
-
-							{!_.isEmpty(detail) && status.hasVariantSize && (
-								<div className='flex-center padding--medium-h border-top'>
-									<div className='margin--medium-v'>
-										<div className='flex-row flex-spaceBetween'>
-											<div className='font-medium'>Pilih Ukuran</div>
-											{(!_.isEmpty(cardProduct) && _.has(cardProduct, 'hasSizeGuide') && cardProduct.hasSizeGuide) &&
-												<Link to='/product/guide' className='d-flex font-color--primary font--lato-bold font-color-primary flex-row flex-middle'>
-													<Svg src='ico_sizeguide.svg' /> <span className='padding--small-h font--lato-bold font-color--primary padding--none-r'>PANDUAN UKURAN</span>
-												</Link>
-											}
-										</div>
-										<div className='margin--medium-v horizontal-scroll margin--none-b'>
-											<Radio
-												name='size'
-												checked={this.state.size}
-												variant='rounded'
-												style={{ marginTop: '10px', marginBottom: '10px' }}
-												onChange={this.handleSelectVariant}
-												data={cardProduct.variants}
-											/>
-										</div>
-										{(status.hasVariantSize && !_.isEmpty(selectedVariant) && (selectedVariant.warning_stock_text !== '')) && (
-											<p className='font-color--red font-small'>{selectedVariant.warning_stock_text}</p>
-										)}
-									</div>
-								</div>
-							)}
-							{(!_.isEmpty(promo.meta_data.ovo_reward)) && (
-								<Level className='font-color--primary-ext-2 border-top border-bottom'>
-									<Level.Item>
-										<div className='padding--small-h'>{promo.meta_data.ovo_reward}</div>
-									</Level.Item>
-									<Level.Right>
-										<Button onClick={this.onOvoInfoClick}>
-											<Svg src='ico_warning.svg' />
-										</Button>
-									</Level.Right>
-								</Level>
-							)}
-							<div className='font-medium margin--medium-v padding--medium-h'><strong>Details</strong></div>
-							{!_.isEmpty(detail.description)
-							&&
-								<div className='wysiwyg-content'>
-									<div className={classNameProductDescription}>
-										{<div dangerouslySetInnerHTML={{ __html: this.hastagLinkCreator(detail.description) }} />}
-										{!_.isEmpty(cardProduct.specs) && (
-											<div className='margin--medium-v --disable-flex'>
-												{(cardProduct.specs.map((item, idx) => {
-													item.value = item.value.replace(/(?:\r\n|\r|\n)/g, '<br />');
-													if (/^/.test(item.value)) return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
-													return <div key={idx} className='margin--small-v font-medium font-color--primary'>{`${item.key}: ${item.value}`}</div>;
-												}))}
-											</div>
-										)}
-									</div>
-									<span className='padding--medium-h font-color--grey' {...buttonProductDescriptionAttribute}>{ fullProductDescriptionButtonText }</span>
-								</div>
-							}
 							{product.loading ? this.loadingContent : (
-								<div className='margin--medium-v --disable-flex padding--medium-h'>
-									<Link to={`/product/comments/${match.params.id}`} className='font--lato-normal font-color--primary-ext-2'>
-										{(comments.total === 0) && 'Tulis Komentar'}
-										{(comments.total > 0) && `Lihat Semua ${comments.total} Komentar`}
-									</Link>
-									{(!_.isUndefined(comments) && !_.isUndefined(comments.summary) && !_.isEmpty(comments.summary)) && (
-										<Comment type='lite-review' data={comments.summary} />
-									)}
+								<div>
+									{cardProductView}
+									{sizeView}
+									{ovoRewardView}
+									{productDetailView}
+									{commentsBlockView}
 								</div>
 							)}
 							{/* ----------------------------	END OF PDP MAIN CONTENT (CARD PRODUCT) ---------------------------- */}
@@ -817,41 +871,41 @@ class Products extends Component {
 									productId={id}
 									reviews={reviews}
 									seller={seller}
+									loading={product.loading}
 									onBtnSeeAllReviewClick={() => this.redirectToPage('reviews')}
 								/>
-
-								{/* MOVED TEMPORALLY ON NOTES ... */}
 								{/* ----------------------------	END OF REVIEW ---------------------------- */}
 
-
 								{/* ----------------------------	SELLER PROFILE ---------------------------- */}
-								<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
-									{!_.isEmpty(detail) && (
-										<SellerProfile
-											image={detail.seller.seller_logo}
-											status='gold'
-											isNewStore={seller.is_new_seller}
-											successOrder={(!_.isUndefined(seller.success_order.rate)) ? (seller.success_order.rate || 0) : 0}
-											rating={seller.rating}
-											totalProduct={(!_.isUndefined(store.info.product_count)) ? (store.info.product_count || 0) : 0}
-											name={detail.seller.seller}
-											location={detail.seller.seller_location}
-											description=''
-											storeAddress={urlBuilder.setId(detail.seller.seller_id).setName(detail.seller.seller).buildStore()}
-											badgeImage={seller.seller_badge_image}
-										/>
-										)
-									}
+								{product.loading ? this.loadingContent : (
+									<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
+										{!_.isEmpty(detail) && (
+											<SellerProfile
+												image={detail.seller.seller_logo}
+												status='gold'
+												isNewStore={seller.is_new_seller}
+												successOrder={(!_.isUndefined(seller.success_order.rate)) ? (seller.success_order.rate || 0) : 0}
+												rating={seller.rating}
+												totalProduct={(!_.isUndefined(store.info.product_count)) ? (store.info.product_count || 0) : 0}
+												name={detail.seller.seller}
+												location={detail.seller.seller_location}
+												description=''
+												storeAddress={urlBuilder.setId(detail.seller.seller_id).setName(detail.seller.seller).buildStore()}
+												badgeImage={seller.seller_badge_image}
+											/>
+											)
+										}
 
-									{(!_.isEmpty(product.store.products)) && (
-										<div className='margin--medium-v margin--none-t'>
-											<Link to={urlBuilder.setId(detail.seller.seller_id).setName(detail.seller.seller).buildStore()} >
-												{this.renderStoreProducts()}
-											</Link>
-										</div>
-									)}
-									{/* ----------------------------	END OF SELLER PROFILE ---------------------------- */}
-								</div>
+										{(!_.isEmpty(product.store.products)) && (
+											<div className='margin--medium-v margin--none-t'>
+												<Link to={urlBuilder.setId(detail.seller.seller_id).setName(detail.seller.seller).buildStore()} >
+													{this.renderStoreProducts()}
+												</Link>
+											</div>
+										)}
+									</div>
+								)}
+								{/* ----------------------------	END OF SELLER PROFILE ---------------------------- */}
 
 								{/* ----------------------------	PROMOS PRODUCTs ---------------------------- */}
 								<Promos

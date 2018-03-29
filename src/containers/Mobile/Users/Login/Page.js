@@ -32,6 +32,7 @@ import {
 
 import { userToken } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
+import { Utils } from '@/utils/tracking/lucidworks';
 
 @handler
 class LoginPage extends Component {
@@ -66,7 +67,7 @@ class LoginPage extends Component {
 		dispatch(new users.afterLogin(cookies.get(userToken)));
 		history.push(redirectUri || '/');
 
-		this.trackingHandler(response);
+		this.trackingHandler(response, this.props);
 
 		return response;
 	}
@@ -83,7 +84,7 @@ class LoginPage extends Component {
 		dispatch(new users.afterLogin(cookies.get(userToken)));
 		history.push(redirectUri || '/');
 
-		this.trackingHandler(response, provider);
+		this.trackingHandler(response, this.props, provider);
 
 		return response;
 	}
@@ -105,10 +106,21 @@ class LoginPage extends Component {
 		}
 	}
 
-	trackingHandler(response, method = 'onsite') {
-		const request = new TrackingRequest();
-		request.setEmailHash('').setUserId(response.userid).setCurrentUrl(`/${this.state.current}`);
-		request.setFusionSessionId('').setUserIdEncrypted('').setIpAddress('').setLoginRegisterMethod(method);
+	trackingHandler(response, props, method = 'onsite') {
+		console.log(this.props);
+		const { shared } = props;
+		const { userProfile } = users;
+		const data = {
+			emailHash: _.defaultTo(userProfile.enc_email, ''),
+			userIdEncrypted: userProfile.enc_userid,
+			userId: userProfile.id,
+			ipAddress: shared.ipAddress,
+			currentUrl: `/${this.state.current}`,
+			fusionSessionId: Utils.getSessionID(),
+			loginRegisterMethod: method
+		};
+
+		const request = new TrackingRequest(data);
 		const requestPayload = request.getPayload(loginSuccessBuilder);
 		if (requestPayload) sendGtm(requestPayload);
 	}

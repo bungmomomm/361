@@ -18,7 +18,7 @@ import {
 	TrackingRequest,
 	homepageViewBuilder,
 	impressionsPushedBuilder,
-	sendGtm,
+	sendGtm
 } from '@/utils/tracking';
 import { urlBuilder } from '@/utils';
 import cookiesLabel from '@/data/cookiesLabel';
@@ -84,15 +84,28 @@ class Home extends Component {
 		this.sbClose = this.sbClose.bind(this);
 	}
 
-	componentDidMount() {
-		this.trackPageViewHandler();
+	componentWillReceiveProps(nextProps) {
+		if (this.props.users.userProfile !== nextProps.users.userProfile) {
+			this.trackPageViewHandler(nextProps.users);
+		}
 	}
 
-	trackPageViewHandler() {
-		const PageViewReq = new TrackingRequest();
-		PageViewReq.setEmailHash('email@satu').setUserId('999').setCurrentUrl(this.props.location.pathname);
-		const pageViewPayload = PageViewReq.getPayload(homepageViewBuilder);
-		if (pageViewPayload) sendGtm(pageViewPayload);
+	trackPageViewHandler(users) {
+		const { shared } = this.props;
+		const { userProfile } = users;
+		if (userProfile) {
+			const data = {
+				emailHash: _.defaultTo(userProfile.enc_email, ''),
+				userIdEncrypted: userProfile.enc_userid,
+				userId: userProfile.id,
+				ipAddress: shared.ipAddress,
+				currentUrl: this.props.location.pathname
+			};
+			const PageViewReq = new TrackingRequest(data);
+			const pageViewPayload = PageViewReq.getPayload(homepageViewBuilder);
+			if (pageViewPayload) sendGtm(pageViewPayload);
+		}
+		
 	}
 
 	async handlePick(current) {
@@ -411,7 +424,8 @@ const mapStateToProps = (state) => {
 	return {
 		home: state.home,
 		search: state.search,
-		shared: state.shared
+		shared: state.shared,
+		users: state.users
 	};
 };
 

@@ -88,6 +88,7 @@ class Love extends PureComponent {
 				});
 			}
 		}
+		dispatch(sharedActions.totalLovelistAction(cookies.get('user.token')));
 
 		this.setState({
 			loading: false

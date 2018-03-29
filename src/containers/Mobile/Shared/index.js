@@ -85,6 +85,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				}
 			});
 
+			if (!window.surfs) window.surfs = [];
 		}
 
 		componentDidMount() {
@@ -101,7 +102,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 		componentWillUnmount() {
 			window.mmLoading.play();
-			window.prevLocation = this.props.location;
+			window.surfs = window.surfs ? [this.props.location, ...window.surfs] : [this.props.location];
 			window.previousLocation = location.pathname + location.search;
 			window.removeEventListener('scroll', this.handleScroll, true);
 		}
@@ -136,6 +137,8 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			if (login && provider) {
 				await to(dispatch(new users.userSocialLogin(tokenBearer, provider, login)));
 			}
+
+			dispatch(new users.userGetProfile(tokenBearer));
 
 			if (typeof doAfterAnonymousCall !== 'undefined') {
 				await to(doAfterAnonymousCall.apply(this, [this.props]));

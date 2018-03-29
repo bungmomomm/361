@@ -232,7 +232,7 @@ class Lovelist extends Component {
 					className={this.isLogin || !status.listEmpty ? null : 'd-none'}
 					onClick={this.onGridViewModeClick}
 				>
-					<Svg src={status.listTypeGrid ? 'ico_grid.svg' : 'ico_list.svg'} />
+					<Svg src={status.listTypeGrid ? 'ico_list.svg' : 'ico_grid.svg'} />
 				</Button>
 			)),
 			center: <strong>Lovelist</strong>,
