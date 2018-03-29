@@ -139,7 +139,7 @@ class Comments extends Component {
 		if (!_.isEmpty(product)) {
 			return (
 				<div
-					className={styles.productDescription}
+					className='margin--medium-v padding--medium-h wysiwyg-content'
 					dangerouslySetInnerHTML={{ __html: this.hastagLinkCreator(product.description) }}
 				/>
 			);

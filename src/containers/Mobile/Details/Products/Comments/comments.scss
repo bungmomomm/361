@@ -1,6 +1,11 @@
 @import '../../../../../styles/mobile/variables';
 @import '../../../../../styles/mobile/mixins';
 
+.container {
+    padding: 0;
+    order: 5;
+}
+
 .commentbox{
     position: fixed;
     bottom: 0px;
@@ -40,13 +45,5 @@
         height: 45px;
         color: #D8D8D8;
         justify-content: left;
-    }
-}
-
-.productDescription {
-    padding: 0 15px;
-    margin: 15px 0;
-    ul, ol {
-		padding-left: rem(15px);
     }
 }

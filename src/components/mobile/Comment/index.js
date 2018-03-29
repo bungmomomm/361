@@ -135,7 +135,11 @@ class Comment extends Component {
 									</Level.Item>
 								</Level>
 								<div className='padding--normal-h'>
-									<div>{comment.comment}</div>
+									<div
+										style={{ overflowWrap: 'break-word' }}
+									>
+										{comment.comment}
+									</div>
 								</div>
 							</div>
 						))
