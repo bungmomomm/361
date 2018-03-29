@@ -12,6 +12,8 @@ import {
 } from './reducer';
 import __x from '@/state/__x';
 
+import { actions as scrollerActions } from '@/state/v4/Scroller';
+
 const setLoadingState = (loading) => (dispatch) => {
 	dispatch(loadingState(loading));
 };
@@ -102,6 +104,7 @@ const addToLovelist = (token, productId) => async (dispatch, getState) => {
 		}));
 
 		if (err) {
+			dispatch(setLoadingState({ loading: false }));
 			return Promise.reject(__x(err));
 		}
 
@@ -139,6 +142,7 @@ const removeFromLovelist = (token, productId) => async (dispatch, getState) => {
 		}));
 
 		if (err) {
+			dispatch(setLoadingState({ loading: false }));
 			return Promise.reject(__x(err));
 		}
 
@@ -157,7 +161,7 @@ const removeFromLovelist = (token, productId) => async (dispatch, getState) => {
  * Gets user lovelist list from server
  * @param {*} token
  */
-const getLovelisItems = (token) => async (dispatch, getState) => {
+const getLovelisItems = ({ token, query = { page: 1, per_page: 10 } }) => async (dispatch, getState) => {
 
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
@@ -168,12 +172,41 @@ const getLovelisItems = (token) => async (dispatch, getState) => {
 
 	const path = `${baseUrl}/gets`;
 
-	const [err, response] = await to(request({ token, path, method: 'GET', fullpath: true }));
+	const [err, response] = await to(request({ 
+		token, 
+		path, 
+		method: 'GET', 
+		fullpath: true,
+		query: {
+			...query
+		}
+	}));
 
-	if (err) return Promise.reject(__x(err));
+	const lovelistData = response.data.data;
+	if (err) {
+		dispatch(setLoadingState({ loading: false }));
+		return Promise.reject(__x(err));
+	}
 
-	dispatch(getList(response.data.data));
+	dispatch(getList(lovelistData));
 	dispatch(setLoadingState({ loading: false }));
+
+	if (_.has(lovelistData, 'info') && _.has(lovelistData, 'info.count') && lovelistData.info.count > 0) {
+		const nextLink = lovelistData.links && lovelistData.links.next ? new URL(baseUrl + lovelistData.links.next).searchParams : false;
+		dispatch(scrollerActions.onScroll({
+			nextData: {
+				token,
+				query: {
+					...query,
+					page: nextLink ? parseInt(nextLink.get('page'), 10) : false
+				},
+				loadNext: true
+			},
+			nextPage: nextLink !== false,
+			loading: false,
+			loader: getLovelisItems
+		}));
+	}
 
 	return Promise.resolve(response.data.data);
 };
@@ -203,7 +236,10 @@ const bulkieCountByProduct = (token, productId) => async (dispatch, getState) =>
 			}
 		}));
 
-		if (err) return Promise.reject(__x(err));
+		if (err) {
+			dispatch(setLoadingState({ loading: false }));
+			return Promise.reject(__x(err));
+		}
 
 		const productLovelist = { bulkieCountProducts: (response.data.data || {}) };
 		dispatch(bulkieCount(productLovelist));

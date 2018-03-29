@@ -1,4 +1,4 @@
-import { config } from './config';
+import { config, references } from './config';
 import { NEW_SESSION } from './event';
 import Utils from './utils';
 import PageTracker from './page-tracker';
@@ -21,28 +21,29 @@ export default class Fusion {
 	}
 
 	get reference() {
+		let ref = references.home;
 		const info = Utils.getInfo(config.referenceInfoName);
-		if (this.enabled && Utils.notEmptyVal(info)) {
-			const infoObj = JSON.parse(info);
-			return infoObj.reference;
+		if (this.enabled && Utils.IsJsonString(info)) {
+			const { reference } = JSON.parse(info);
+			ref = (!Utils.isEmpty(reference)) ? reference : references.home;
 		}
-		return '';
+		return ref;
 	}
 
 	get page() {
-		const pageInfo = { page: 1, limit: 1 };
+		const pageInfo = { page: 0, limit: 0 };
 		const info = Utils.getInfo(config.referenceInfoName);
-		if (this.enabled && Utils.notEmptyVal(info)) {
-			const infoObj = JSON.parse(info);
-			pageInfo.page = infoObj.page;
-			pageInfo.limit = infoObj.limit;
+		if (this.enabled && Utils.IsJsonString(info)) {
+			const { page, limit } = JSON.parse(info);
+			pageInfo.page = page;
+			pageInfo.limit = limit;
 		}
 		return pageInfo;
 	};
 
 	get query() {
 		const info = Utils.getInfo(config.referenceInfoName);
-		if (this.enabled && Utils.notEmptyVal(info)) {
+		if (this.enabled && Utils.IsJsonString(info)) {
 			const infoObj = JSON.parse(info);
 			return infoObj.query;
 		}
@@ -101,10 +102,10 @@ export default class Fusion {
 		}
 	}
 
-	static tracks = (route) => {
+	static tracks = (route, trackInfo = true) => {
 		// tracks referal page
 		if (config.enabled) {
-			PageTracker.trackRoute(route);
+			if (trackInfo) PageTracker.trackRoute(route);
 			window.onload = () => {
 				const f = new Fusion();
 				f.bindSession();

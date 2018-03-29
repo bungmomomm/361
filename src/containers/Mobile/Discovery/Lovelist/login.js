@@ -56,7 +56,7 @@ class LovelistLogin extends Component {
 		return (
 			<div>
 				<Page style={{ marginTop: '-60px' }}>
-					<div className={styles.lovelistLogin} style={{ backgroundImage: `url(${loginBg})` }}>
+					<div className={styles.lovelistLogin} style={{ backgroundImage: `url(${loginBg})`, height: '100vh' }}>
 						<Svg width='50px' height='50px' style={{ justifyContent: 'center' }} src='ico_home-white.svg' />
 						<p className='margin--medium' style={{ color: '#fff' }}>Unlock the Full Experience</p>
 						<Level className='margin--medium'>
