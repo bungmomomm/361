@@ -4,6 +4,8 @@ import { spring, AnimatedSwitch } from 'react-router-transition';
 import routes from './routes';
 import { Fusion } from '@/utils/tracking/lucidworks';
 
+Fusion.init();
+
 class CustomRoute extends PureComponent {
 	constructor(props) {
 		super(props);

@@ -4,8 +4,9 @@ import Utils from './utils';
 import PageTracker from './page-tracker';
 
 export default class Fusion {
-	constructor() {
-		this.enabled = config.enabled;
+
+	get enabled() {
+		return this.getFusionEnableFlag();
 	}
 
 	get commons() {
@@ -50,6 +51,10 @@ export default class Fusion {
 		return '';
 	}
 
+	getFusionEnableFlag = () => {
+		return config.enabled;
+	}
+
 	bindSession() {
 		try {
 			// creates new session ...
@@ -65,7 +70,7 @@ export default class Fusion {
 				this.push(payload);
 			}
 		} catch (error) {
-			console.log(error);
+			if (config.debug) console.log(error);
 		}
 	}
 
@@ -88,9 +93,9 @@ export default class Fusion {
 
 					// sending request...
 					requestSent.then((res) => {
-						console.log('fusion: ', payload);
+						if (config.debug) console.log('fusion: ', payload);
 					}).catch((err) => {
-						console.log(err);
+						if (config.debug) console.log(err);
 					});
 				};
 				// pushing payload...
@@ -98,18 +103,21 @@ export default class Fusion {
 			}
 
 		} catch (error) {
-			console.log('error on fusion: ', error);
+			if (config.debug) console.log('error on fusion: ', error);
 		}
 	}
 
 	static tracks = (route, trackInfo = true) => {
 		// tracks referal page
-		if (config.enabled) {
-			if (trackInfo) PageTracker.trackRoute(route);
-			window.onload = () => {
+		if (config.enabled && trackInfo) PageTracker.trackRoute(route);
+	}
+
+	static init() {
+		window.onload = () => {
+			if (typeof window.Fusion === 'undefined') {
 				const f = new Fusion();
 				f.bindSession();
-			};
-		}
+			}
+		};
 	}
 } 
