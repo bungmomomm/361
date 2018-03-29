@@ -8,11 +8,15 @@ import {
 	bulkieCount,
 	addItem,
 	removeItem,
-	loadingState
+	loadingState,
+	lovelistEmpty
 } from './reducer';
 import __x from '@/state/__x';
-
 import { actions as scrollerActions } from '@/state/v4/Scroller';
+
+const listEmptyAction = (lovedEmpty) => (dispatch) => {
+	dispatch(lovelistEmpty(lovedEmpty));
+};
 
 const setLoadingState = (loading) => (dispatch) => {
 	dispatch(loadingState(loading));
@@ -57,12 +61,12 @@ const formatItems = (data) => {
  * save user's lovelist list
  * @param {*} items
  */
-const getList = (items, formatted = true) => (dispatch) => {
+const getList = (items, formatted = true, type = 'init') => (dispatch) => {
 	// fetching response into lovelist redux items format
 	if (formatted) items = formatItems(items);
 
 	// dispatching total lovelist of logged user
-	dispatch(loveListItems({ items }));
+	dispatch(loveListItems({ items, type }));
 	dispatch(countLovelist({ count: items.list.length }));
 };
 
@@ -161,8 +165,7 @@ const removeFromLovelist = (token, productId) => async (dispatch, getState) => {
  * Gets user lovelist list from server
  * @param {*} token
  */
-const getLovelisItems = ({ token, query = { page: 1, per_page: 10 } }) => async (dispatch, getState) => {
-
+const getLovelisItems = ({ token, query = { page: 1, per_page: 10 }, type }) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
 
@@ -172,10 +175,10 @@ const getLovelisItems = ({ token, query = { page: 1, per_page: 10 } }) => async 
 
 	const path = `${baseUrl}/gets`;
 
-	const [err, response] = await to(request({ 
-		token, 
-		path, 
-		method: 'GET', 
+	const [err, response] = await to(request({
+		token,
+		path,
+		method: 'GET',
 		fullpath: true,
 		query: {
 			...query
@@ -188,10 +191,11 @@ const getLovelisItems = ({ token, query = { page: 1, per_page: 10 } }) => async 
 		return Promise.reject(__x(err));
 	}
 
-	dispatch(getList(lovelistData));
+	dispatch(getList(lovelistData, true, type));
 	dispatch(setLoadingState({ loading: false }));
 
 	if (_.has(lovelistData, 'info') && _.has(lovelistData, 'info.count') && lovelistData.info.count > 0) {
+		type = 'update';
 		const nextLink = lovelistData.links && lovelistData.links.next ? new URL(baseUrl + lovelistData.links.next).searchParams : false;
 		dispatch(scrollerActions.onScroll({
 			nextData: {
@@ -200,7 +204,8 @@ const getLovelisItems = ({ token, query = { page: 1, per_page: 10 } }) => async 
 					...query,
 					page: nextLink ? parseInt(nextLink.get('page'), 10) : false
 				},
-				loadNext: true
+				type,
+				loadNext: true,
 			},
 			nextPage: nextLink !== false,
 			loading: false,
@@ -263,5 +268,6 @@ export default {
 	getLovelisItems,
 	setLoadingState,
 	getBulkItem,
-	sendLovedItemToEmarsys
+	sendLovedItemToEmarsys,
+	listEmptyAction
 };

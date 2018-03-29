@@ -11,26 +11,31 @@ const defaultLovelist = {
 		added: [],
 		deleted: []
 	},
-	showHomeIcon: false,
+	lovedEmpty: false,
 	bulkieCountProducts: [],
 	loading: false
 };
 
-const { countLovelist, loveListItems, activeUser, bulkieCount, addItem, removeItem, loadingState } = createActions(
-	'COUNT_LOVELIST', 'LOVE_LIST_ITEMS', 'ACTIVE_USER', 'BULKIE_COUNT', 'ADD_ITEM', 'REMOVE_ITEM', 'LOADING_STATE'
+const { countLovelist, loveListItems, activeUser, bulkieCount, addItem, removeItem, loadingState, lovelistEmpty } = createActions(
+	'COUNT_LOVELIST', 'LOVE_LIST_ITEMS', 'ACTIVE_USER', 'BULKIE_COUNT', 'ADD_ITEM', 'REMOVE_ITEM', 'LOADING_STATE', 'LOVELIST_EMPTY'
 );
 
 const listActions = {
 	// action used to get total number of lovelist
 	[countLovelist](state, { payload: { count } }) {
-		// set flag (state) for displaying lovelist icon
-		state.showHomeIcon = (count > 0);
 		return {
 			...state,
 			count
 		};
 	},
-	[loveListItems](state, { payload: { items } }) {
+	[loveListItems](state, { payload: { items, type } }) {
+		if (type === 'update') {
+			items.list = state.items.list.concat(items.list);
+			items.ids = state.items.ids.concat(items.ids);
+		}
+		console.log('type: ', type);
+		console.log('items: ', items);
+
 		return {
 			...state,
 			items
@@ -72,6 +77,12 @@ const listActions = {
 			...state,
 			loading
 		};
+	},
+	[lovelistEmpty](state, { payload: { lovedEmpty } }) {
+		return {
+			...state,
+			lovedEmpty
+		};
 	}
 };
 
@@ -85,5 +96,6 @@ export default {
 	bulkieCount,
 	addItem,
 	removeItem,
-	loadingState
+	loadingState,
+	lovelistEmpty
 };

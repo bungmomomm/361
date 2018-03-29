@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { Header, Page, Card, Button, Svg, Image, Level, Modal, Spinner, Notification } from '@/components/mobile';
 import styles from './lovelist.scss';
 
-import { actions as LoveListActionCreator } from '@/state/v4/Lovelist';
+import { actions as lovelistAction } from '@/state/v4/Lovelist';
 import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as actionShared } from '@/state/v4/Shared';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
@@ -68,20 +68,19 @@ class Lovelist extends Component {
 		const { status } = this.state;
 
 		status.loading = lovelist.loading;
-		// updates neccessary things and checking resources availability
-		if (this.props.lovelist.items.list !== lovelist.items.list) {
-			status.listEmpty = _.isEmpty(lovelist.items.list);
-		}
+		status.listEmpty = lovelist.lovedEmpty;
 
+		// updates neccessary things and checking resources availability
 		if (this.props.comments.data !== comments.data) {
 			// updates total lovelist each product item
 			if (!_.isEmpty(lovelist.bulkieCountProducts)) {
+				console.log('enter will receive');
 				lovelist.items.list = lovelist.items.list.map((item, idx) => {
-					const productFound = LoveListActionCreator.getBulkItem(lovelist.bulkieCountProducts, item.original.product_id);
+					const productFound = lovelistAction.getBulkItem(lovelist.bulkieCountProducts, item.original.product_id);
 					item.last_comments = [];
 					item.totalComments = 0;
 					if (!_.isEmpty(comments.data)) {
-						const commentFound = LoveListActionCreator.getBulkItem(comments.data, item.original.product_id);
+						const commentFound = lovelistAction.getBulkItem(comments.data, item.original.product_id);
 						if (commentFound) {
 							item.totalComments = commentFound.total || 0;
 							item.last_comments = commentFound.last_comment || [];
@@ -92,12 +91,24 @@ class Lovelist extends Component {
 				});
 
 				// updating lovelist list
-				dispatch(new LoveListActionCreator.getList(lovelist.items, false));
+				dispatch(new lovelistAction.getList(lovelist.items, false, 'init'));
 			}
 		}
 
 		this.setState({ status });
 	}
+
+	// shouldComponentUpdate(np) {
+	// 	const { items, bulkieCountProducts } = this.props.lovelist;
+	// 	const { data } = this.props.comments;
+
+	// 	if ((items.list !== np.lovelist.items.list && items.ids !== np.lovelist.items.ids) || 
+	// 		(bulkieCountProducts !== np.lovelist.bulkieCountProducts) || (data !== np.comments.data)) {
+	// 		console.log('prepare updating lovelist');
+	// 		return true;
+	// 	}
+	// 	return false;
+	// }
 
 	componentWillUnmount() {
 		const { dispatch } = this.props;
@@ -182,7 +193,7 @@ class Lovelist extends Component {
 		this.setState({ status });
 		if (removedItemId && (idx > -1)) {
 			const handler = new Promise((resolve, reject) => {
-				resolve(dispatch(LoveListActionCreator.removeFromLovelist(this.userCookies, removedItemId)));
+				resolve(dispatch(lovelistAction.removeFromLovelist(this.userCookies, removedItemId)));
 			});
 
 			handler.then((res) => {
@@ -200,7 +211,7 @@ class Lovelist extends Component {
 				if (ids.length === 0) status.listEmpty = true;
 
 				// updating lovelist items props
-				dispatch(new LoveListActionCreator.getList({ ids, list }, false));
+				dispatch(new lovelistAction.getList({ ids, list }, false));
 
 			}).catch((err) => {
 				status.lovelistDisabled = false;
@@ -240,6 +251,20 @@ class Lovelist extends Component {
 					{ <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} /> }
 					{status.loading && this.loadingContent}
 					{(!status.loading && content)}
+					{(!status.loading && status.listEmpty) && (
+						<div className='text-center --disable-flex'>
+							<p className={styles.lovelistEmpty}>Lovelist kamu masih kosong</p>
+							<p className={styles.lovelistEmptyDescription}>Tekan <Svg width='20px' height='18px' src='ico_love.svg' /> untuk menambahkan
+								<br />produk ke Lovelist.
+							</p>
+							<p className='margin--medium-v'>
+								<Link to='/'>
+									<Button inline size='medium' color='secondary'>BELANJA</Button>
+								</Link>
+							</p>
+							<Image local className={styles.lovelistEmptyImg} alt='Tap the love icon' src='lovelist-guide.png' />
+						</div>
+					)}
 				</Page>
 				<Header.Modal {...HeaderPage} />
 
@@ -271,24 +296,7 @@ class Lovelist extends Component {
 	}
 
 	render() {
-		const { status } = this.state;
-
-		if (!status.loading && status.listEmpty) {
-			return (this.renderLovelistPage(
-				<div className='text-center --disable-flex'>
-					<p className={styles.lovelistEmpty}>Lovelist kamu masih kosong</p>
-					<p className={styles.lovelistEmptyDescription}>Tekan <Svg width='20px' height='18px' src='ico_love.svg' /> untuk menambahkan
-						<br />produk ke Lovelist.
-					</p>
-					<p className='margin--medium-v'>
-						<Link to='/'>
-							<Button inline size='medium' color='secondary'>BELANJA</Button>
-						</Link>
-					</p>
-					<Image local className={styles.lovelistEmptyImg} alt='Tap the love icon' src='lovelist-guide.png' />
-				</div>
-			));
-		}
+		
 
 		return (this.renderLovelistPage(this.getLovelistCardsContent()));
 	}
@@ -305,15 +313,19 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies } = props;
+	const token = cookies.get(cookiesLabel.userToken);
 
-	const list = await dispatch(LoveListActionCreator.getLovelisItems({ token: cookies.get(cookiesLabel.userToken), query: { page: 1, per_page: 36 } })) || [];
-	if (_.has(list, 'products') && !_.isEmpty(list.products)) {
+	console.log('anonymous');
+	const list = await dispatch(lovelistAction.getLovelisItems({ token, query: { page: 1, per_page: 10 }, type: 'init' })) || [];
+	const lovedEmpty = (_.has(list, 'products') && !_.isEmpty(list.products));
+	if (lovedEmpty) {
 		const ids = list.products.map((item) => item.product_id);
 		if (ids.length > 0) {
-			await dispatch(LoveListActionCreator.bulkieCountByProduct(cookies.get(cookiesLabel.userToken), ids));
+			await dispatch(lovelistAction.bulkieCountByProduct(cookies.get(cookiesLabel.userToken), ids));
 			await dispatch(commentActions.bulkieCommentAction(cookies.get(cookiesLabel.userToken), ids));
 		}
 	}
+	await dispatch(lovelistAction.listEmptyAction({ lovedEmpty: !lovedEmpty }));
 };
 
 export default withCookies(connect(mapStateToProps)(Scroller(Shared(Lovelist, doAfterAnonymous))));
