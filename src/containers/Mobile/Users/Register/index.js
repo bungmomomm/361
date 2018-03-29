@@ -151,6 +151,7 @@ class Register extends Component {
 			});
 		} else {
 			this.setState({
+				typed: value !== '',
 				validPassword: !validator.isEmpty(value) && validator.isLength(value, { min: 6, max: undefined })
 			});
 		}
@@ -204,7 +205,8 @@ class Register extends Component {
 			visiblePassword,
 			validLoginId,
 			validPassword,
-			validEmailOrMobile
+			validEmailOrMobile,
+			typed
 		} = this.state;
 
 		const { isLoading } = this.props.users;
@@ -245,10 +247,7 @@ class Register extends Component {
 			inputMobileEmailAttribute.hint = 'Format Email/Nomor Handphone tidak sesuai. Silahkan cek kembali';
 		}
 
-		let iconRightPasswordContent = 'ico_password_hide.svg';
-		if (visiblePassword === true) {
-			iconRightPasswordContent = 'ico_password_show.svg';
-		}
+		const iconRightPasswordContent = visiblePassword ? 'ico_password_show.svg' : 'ico_password_hide.svg';
 
 		const inputPasswordAttribute = {
 			value: password,
@@ -261,10 +260,11 @@ class Register extends Component {
 			flat: true,
 			placeholder: '',
 			type: (visiblePassword) ? 'text' : 'password',
-			iconRight: (
+			iconRight: typed && (
 				<Button onClick={() => this.setState({ visiblePassword: !visiblePassword })}>
 					<Svg src={iconRightPasswordContent} />
-				</Button>)
+				</Button>
+			)
 		};
 
 		if (password.length > 0 && validPassword === false) {
@@ -279,7 +279,7 @@ class Register extends Component {
 			disabled: !buttonLoginEnable
 		};
 
-		if (isLoading === true) {
+		if (isLoading) {
 			buttonRegisterAttribute.loading = true;
 		}
 

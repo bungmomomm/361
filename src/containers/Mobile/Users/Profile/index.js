@@ -36,7 +36,7 @@ class UserProfile extends Component {
 
 		if (!this.isLogin) {
 			const { history } = this.props;
-			history.push('/login?redirect_uri=/profile');
+			history.replace('/login?redirect_uri=/profile');
 		}
 
 		this.AVATAR_FIELD = CONST.USER_PROFILE_FIELD.avatar;
