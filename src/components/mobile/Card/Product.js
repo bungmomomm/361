@@ -47,7 +47,7 @@ class Product extends PureComponent {
 				wrapAround={this.slideWrapAround}
 			>
 				{
-					images.map((image, idx) => (
+					images && images.map((image, idx) => (
 						<div className={selectedClass} tabIndex='0' role='button' onClick={onImageItemClick} key={idx}>
 							<Image lazyload src={image.mobile} alt={data.product_title} />
 						</div>

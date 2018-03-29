@@ -36,6 +36,6 @@ const getTrackingInfo = (token, provider, resi) => async (dispatch, getState) =>
 };
 
 
-export {
+export default {
 	getTrackingInfo
 };

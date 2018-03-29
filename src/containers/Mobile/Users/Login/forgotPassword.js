@@ -92,7 +92,8 @@ class ForgotPassword extends Component {
 			error: false,
 			userName: value,
 			isValidUsername,
-			useOtp
+			useOtp,
+			typed: value !== ''
 		});
 	}
 
@@ -107,7 +108,7 @@ class ForgotPassword extends Component {
 
 	render() {
 		const { isLoginLoading } = this.props;
-		const { error, isValidUsername, userName, showOtp, data } = this.state;
+		const { error, isValidUsername, userName, showOtp, data, typed } = this.state;
 		const HeaderPage = {
 			left: (
 				<Button onClick={(e) => this.onBack(e)}>
@@ -143,8 +144,8 @@ class ForgotPassword extends Component {
 								placeholder=''
 								label='Email / Nomor Handphone'
 								onChange={(e) => this.onUserChange(e.target.value)}
-								error={error}
-								hint={error ? 'We are unable to proccess your request, please try again' : ''}
+								error={error || (!isValidUsername && typed)}
+								hint={error || (!isValidUsername && typed) ? ((!isValidUsername && typed) ? 'Format Nomor Handphone/Email harus benar' : 'We are unable to proccess your request, please try again') : 'Format Nomor Handphone/Email harus benar'}
 							/>
 						</div>
 						<div className='margin--medium-v'>

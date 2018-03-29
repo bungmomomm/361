@@ -207,7 +207,7 @@ const getListBankConfirmation = (token) => async (dispatch, getState) => {
 };
 
 
-export {
+export default {
 	checkMyOrders,
 	getMyOrderMore,
 	getMyOrderDetail,

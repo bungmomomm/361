@@ -358,9 +358,13 @@
 			}
 		}
 
-		.no-margin-v {
-			margin-top: 0;
-			margin-bottom: 0;
+		.no-margin {
+			&-v {margin-top: 0;margin-bottom: 0;}
+			&-h {margin-left: 0;margin-right: 0;}
+			&-l {margin-left: 0;}
+			&-r {margin-right: 0;}
+			&-t {margin-top: 0;}
+			&-b {margin-bottom: 0;}
 		}
 
 		// Padding
@@ -390,8 +394,14 @@
 			}
 		}
 
-		.no-padding-b {
-			padding-bottom: 0;
+
+		.no-padding {
+			&-v {padding-top: 0;padding-bottom: 0;}
+			&-h {padding-left: 0;padding-right: 0;}
+			&-l {padding-left: 0;}
+			&-r {padding-right: 0;}
+			&-t {padding-top: 0;}
+			&-b {padding-bottom: 0;}
 		}
 
 		.border-top {

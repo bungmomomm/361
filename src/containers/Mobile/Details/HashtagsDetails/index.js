@@ -39,11 +39,16 @@ class HashtagsDetails extends Component {
 	}
 
 	componentDidMount() {
+		const el = document.getElementsByClassName('embed-ig');
+
+		if (el.length) document.body.removeChild(el[0]);
+		if (window.instgrm) delete window.instgrm;
+
 		const script = document.createElement('script');
+		script.className = 'embed-ig';
 		script.src = '//www.instagram.com/embed.js';
 		script.async = true;
 		script.defer = true;
-
 		document.body.appendChild(script);
 	}
 
@@ -164,6 +169,7 @@ class HashtagsDetails extends Component {
 									cursor: 'default !important',
 									maxWidth: '480px'
 								}}
+								ref={(r) => { this.embedIg = r; }}
 							/>
 						</div>
 					)}
