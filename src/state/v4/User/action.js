@@ -2,7 +2,7 @@ import to from 'await-to-js';
 import { Promise } from 'es6-promise';
 import _ from 'lodash';
 import { actions } from './reducer';
-import { totalLoveList, totalBag } from '@/state/v4/Shared/reducer';
+import { totalLoveList, totalBag, setIp } from '@/state/v4/Shared/reducer';
 import base64 from 'base-64';
 import {
 	request,
@@ -288,6 +288,7 @@ const refreshToken = (tokenRefresh, token) => async (dispatch, getState) => {
 	if (err) {
 		return Promise.reject(__x(err.response.data));
 	}
+	dispatch(setIp({ ipAddress: response.data.data.ip_address }));
 	return Promise.resolve(response);
 };
 

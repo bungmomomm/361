@@ -2,11 +2,8 @@ import React, { Component } from 'react';
 import Iframe from 'react-iframe';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-import { Link } from 'react-router-dom';
 
 import {
-	Header,
-	Svg,
 	Page
 } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
@@ -27,16 +24,7 @@ class Static extends Component {
 	render() {
 		const { shared } = this.props;
 		const { webViewUrl } = shared;
-		const url = webViewUrl && webViewUrl.bantuan ? webViewUrl.bantuan : 'https://super.mataharimall.com/static/';
-		const HeaderPage = {
-			left: (
-				<Link to={'/'}>
-					<Svg src='ico_arrow-back-left.svg' />
-				</Link>
-			),
-			center: 'Pusat Bantuan',
-			right: null
-		};
+		const url = webViewUrl && webViewUrl.bantuan ? `${webViewUrl.bantuan}/cf` : 'https://super.mataharimall.com/static/cf';
 
 		return (
 			<div style={this.props.style}>
@@ -50,8 +38,6 @@ class Static extends Component {
 						allowFullScreen
 					/>
 				</Page>
-				<Header.Modal {...HeaderPage} />
-
 			</div>
 		);
 	}

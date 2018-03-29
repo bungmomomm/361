@@ -138,6 +138,8 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				await to(dispatch(new users.userSocialLogin(tokenBearer, provider, login)));
 			}
 
+			dispatch(new users.userGetProfile(tokenBearer));
+
 			if (typeof doAfterAnonymousCall !== 'undefined') {
 				await to(doAfterAnonymousCall.apply(this, [this.props]));
 			}

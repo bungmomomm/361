@@ -39,6 +39,7 @@ import {
 import { userToken, pageReferrer, isLogin } from '@/data/cookiesLabel';
 
 import Discovery from '../../Utils';
+import { Utils } from '@/utils/tracking/lucidworks';
 
 import {
 	TrackingRequest,
@@ -65,10 +66,20 @@ const trackCategoryPageView = (products, info, props) => {
 			list: 'mm'
 		};
 	}) || [];
-	const request = new TrackingRequest();
-	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
-	request.setFusionSessionId('').setIpAddress('').setImpressions(impressions).setCategoryInfo(categoryInfo);
-	request.setListProductId(productId.join('|'));
+	const { users, shared } = props;
+	const { userProfile } = users;
+	const layerData = { 
+		emailHash: _.defaultTo(userProfile.enc_email, ''),
+		userIdEncrypted: userProfile.enc_userid,
+		userId: userProfile.id,
+		ipAddress: shared.ipAddress,
+		currentUrl: this.props.location.pathname,
+		impressions, 
+		categoryInfo,
+		listProductId: productId.join('|'),
+		fusionSessionId: Utils.getSessionID()
+	};
+	const request = new TrackingRequest(layerData);
 	const requestPayload = request.getPayload(categoryViewBuilder);
 	if (requestPayload) sendGtm(requestPayload);
 };
@@ -82,8 +93,12 @@ const trackProductOnClick = (product, position, source = 'mm') => {
 		category: product.product_category_names.join('/'),
 		position
 	};
-	const request = new TrackingRequest();
-	request.setFusionSessionId('').setProducts([productData]).setSourceName(source);
+	const layerData = { 
+		products: [productData],
+		sourceName: source,
+		fusionSessionId: Utils.getSessionID()
+	};
+	const request = new TrackingRequest(layerData);
 	const requestPayload = request.getPayload(productClickBuilder);
 	if (requestPayload) sendGtm(requestPayload);
 };

@@ -23,7 +23,8 @@ const initialState = {
 	errors: [],
 	snackbar: [],
 	watchConnection: false,
-	userPreviousPage: ''
+	userPreviousPage: '', 
+	ipAddress: false
 };
 
 const {
@@ -36,7 +37,8 @@ const {
 	rrsDismissSnack,
 	rrsClearSnackQueue,
 	connectionWatch,
-	userPreviousPage
+	userPreviousPage,
+	setIp
 
 } = createActions(
 	'TOTAL_LOVE_LIST',
@@ -48,7 +50,8 @@ const {
 	'RRS_DISMISS_SNACK',
 	'RRS_CLEAR_SNACK_QUEUE',
 	'CONNECTION_WATCH',
-	'USER_PREVIOUS_PAGE'
+	'USER_PREVIOUS_PAGE',
+	'SET_IP'
 );
 
 let snackQueue;
@@ -120,6 +123,12 @@ const reducer = handleActions({
 			...state,
 			userPreviousPage: payload
 		};
+	},
+	[setIp](state, { payload: { ipAddress } }) {
+		return {
+			...state,
+			ipAddress
+		};
 	}
 }, initialState);
 
@@ -134,5 +143,6 @@ export default {
 	rrsDismissSnack,
 	rrsClearSnackQueue,
 	connectionWatch,
-	userPreviousPage
+	userPreviousPage,
+	setIp
 };

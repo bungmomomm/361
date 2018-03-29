@@ -27,13 +27,15 @@ import {
 } from '@/utils/tracking';
 import cookiesLabel from '@/data/cookiesLabel';
 
-import { Payload } from '@/utils/tracking/lucidworks';
+import { Payload, Utils } from '@/utils/tracking/lucidworks';
 import xhandler from '@/containers/Mobile/Shared/handler';
 
 import { toastSytle } from '@/containers/Mobile/Shared/styleSnackbar';
 
 const fusion = new Payload(_);
 const trackAddToCart = (data, props, variant, hasVariantSize = true) => {
+	const { users, shared } = props;
+	const { userProfile } = users;
 	const products = {
 		name: data.detail.title,
 		id: data.detail.id,
@@ -44,14 +46,23 @@ const trackAddToCart = (data, props, variant, hasVariantSize = true) => {
 		variant_id: variant.id,
 		quantity: 1
 	};
-	const request = new TrackingRequest();
-	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
-	request.setFusionSessionId('').setIpAddress('').setProducts([products]);
+	const layerData = {
+		emailHash: _.defaultTo(userProfile.enc_email, ''),
+		userIdEncrypted: userProfile.enc_userid,
+		userId: userProfile.id,
+		ipAddress: shared.ipAddress,
+		currentUrl: this.props.location.pathname,
+		products: [products],
+		fusionSessionId: Utils.getSessionID(),
+	};
+	const request = new TrackingRequest(layerData);
 	const requestPayload = request.getPayload(addToCartBuilder);
 	if (requestPayload) sendGtm(requestPayload);
 };
 
 const trackPdpView = (data, props) => {
+	const { users, shared } = props;
+	const { userProfile } = users;
 	const products = {
 		name: data.detail.title,
 		id: data.detail.id,
@@ -59,10 +70,17 @@ const trackPdpView = (data, props) => {
 		brand: data.detail.brand.name,
 		category: data.detail.product_category_names.join('/'),
 	};
-	const request = new TrackingRequest();
-	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
-	request.setFusionSessionId('').setIpAddress('').setProducts([products]);
-	request.setStoreName(data.detail.seller.seller);
+	const layerData = {
+		emailHash: _.defaultTo(userProfile.enc_email, ''),
+		userIdEncrypted: userProfile.enc_userid,
+		userId: userProfile.id,
+		ipAddress: shared.ipAddress,
+		currentUrl: this.props.location.pathname,
+		products: [products],
+		fusionSessionId: Utils.getSessionID(),
+		storeName: data.detail.seller.seller
+	};
+	const request = new TrackingRequest(layerData);
 	const requestPayload = request.getPayload(pdpViewBuilder);
 	if (requestPayload) sendGtm(requestPayload);
 };
