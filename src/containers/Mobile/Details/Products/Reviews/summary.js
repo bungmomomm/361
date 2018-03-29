@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Rating, Comment, Svg } from '@/components/mobile';
+import { Rating, Comment, Svg, Spinner } from '@/components/mobile';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import handler from '@/containers/Mobile/Shared/handler';
@@ -10,6 +10,11 @@ export default class ReviewSummary extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.loadingContent = (
+			<div style={{ margin: '20% auto 20% auto' }}>
+				<Spinner size='large' />
+			</div>
+		);
 	}
 
 	shouldComponentUpdate(nextProps) {
@@ -18,7 +23,7 @@ export default class ReviewSummary extends Component {
 	}
 
 	render() {
-		const { reviews, seller, productId } = this.props;
+		const { reviews, seller, productId, loading } = this.props;
 
 		return (
 			<div className='padding--small-h' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
@@ -50,8 +55,8 @@ export default class ReviewSummary extends Component {
 					)}
 					{reviews.total > 0 && (
 						<div>
-							{status.loading && this.loadingContent}
-							{!status.loading &&
+							{loading && this.loadingContent}
+							{!loading &&
 								(reviews.summary.map((item, idx) => {
 									return (
 										<div key={`pdp-rvd-${idx + 1}`}>
@@ -64,8 +69,9 @@ export default class ReviewSummary extends Component {
 											}
 										</div>
 									);
-								})
-								)}</div>
+								}))
+							}
+						</div>
 					)}
 				</div>
 			</div>

@@ -75,15 +75,14 @@ class Promos extends Component {
 		const recommended = this.getBuiltItems(promo.recommended_items.products);
 		const similar = this.getBuiltItems(promo.similar_items.products);
 		const bestSeller = this.getBuiltItems(promo.best_seller_items.products);
-
+		
 		return (
 			<div className='flex' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
 				{/* ----------------------------	RECOMMENDATION PRODUCTS---------------------------- */}
 				{!_.isEmpty(recommended) && (
 					<div className='margin--medium-v'>
 						<div className='font-medium padding--medium-h'><strong>Anda Mungkin Suka</strong></div>
-						{loading && this.loadingContent}
-						{!loading && (
+						{loading ? this.loadingContent : (
 							<div className='flex'>{
 								<Carousel className='margin--medium-v'>
 									{recommended.map((item, i) => <Grid split={2} key={i}>{item}</Grid>)}
@@ -99,8 +98,7 @@ class Promos extends Component {
 				{!_.isEmpty(similar) && (
 					<div className='border-top margin--medium-v'>
 						<div className='margin--medium-v padding--medium-h font-medium'><strong>Produk Serupa</strong></div>
-						{loading && this.loadingContent}
-						{!loading && (
+						{loading ? this.loadingContent : (
 							<div className='flex'>{
 								<Carousel className='margin--medium-v'>
 									{similar.map((item, i) => <Grid split={2} key={i}>{item}</Grid>)}
@@ -113,8 +111,7 @@ class Promos extends Component {
 				{_.isEmpty(similar) && !_.isEmpty(bestSeller) && (
 					<div className='border-top margin--medium-v '>
 						<div className='margin--medium-v padding--medium-h font-medium'><strong>Produk Terlaris</strong></div>
-						{loading && this.loadingContent}
-						{!loading && (
+						{loading ? this.loadingContent : (
 							<div className='flex'>{
 								<Carousel className='margin--medium-v'>
 									{bestSeller.map((item, i) => <Grid split={2} key={i}>{item}</Grid>)}
