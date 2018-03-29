@@ -4,7 +4,9 @@ import Action from './action';
 import _ from 'lodash';
 import { isHexColor, renderIf } from '@/utils';
 import utils from './utils';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Color extends PureComponent {
 
 	constructor(props) {

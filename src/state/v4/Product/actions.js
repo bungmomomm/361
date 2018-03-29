@@ -12,12 +12,13 @@ import {
 	productStore,
 	allProductReviews
 } from './reducer';
+import __x from '@/state/__x';
 
 const productDetailAction = (token, productId) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	dispatch(productLoading({ loading: true }));
 
@@ -30,7 +31,7 @@ const productDetailAction = (token, productId) => async (dispatch, getState) => 
 
 	if (err) {
 		dispatch(productLoading({ loading: false }));
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	const product = response.data.data;
@@ -44,7 +45,7 @@ const productStoreAction = (token, storeId, page = 1, perPage = 4) => async (dis
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	dispatch(productLoading({ loading: true }));
 
@@ -62,7 +63,7 @@ const productStoreAction = (token, storeId, page = 1, perPage = 4) => async (dis
 
 	if (err) {
 		dispatch(productLoading({ loading: false }));
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	const store = response.data.data;
@@ -81,7 +82,7 @@ const productSocialSummaryAction = (token, productId) => async (dispatch, getSta
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	dispatch(productLoading({ loading: true }));
 
@@ -94,7 +95,7 @@ const productSocialSummaryAction = (token, productId) => async (dispatch, getSta
 
 	if (err) {
 		dispatch(productLoading({ loading: false }));
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	const socialSummary = response.data.data;
@@ -109,7 +110,7 @@ const allProductReviewsAction = (token, productId, page = 1, perPage = 10) => as
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	dispatch(productLoading({ loading: true }));
 
@@ -127,7 +128,7 @@ const allProductReviewsAction = (token, productId, page = 1, perPage = 10) => as
 
 	if (err) {
 		dispatch(productLoading({ loading: false }));
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	const allReviews = response.data.data;
@@ -146,7 +147,7 @@ const productPromoAction = (token, productId) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	dispatch(productLoading({ loading: true }));
 
@@ -162,7 +163,7 @@ const productPromoAction = (token, productId) => async (dispatch, getState) => {
 
 	if (err) {
 		dispatch(productLoading({ loading: false }));
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	// mapping meta data

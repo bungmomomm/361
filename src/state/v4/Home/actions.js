@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { request } from '@/utils';
 import { initResponse, homepageData, segmentActive, recomendation } from './reducer';
 import { forEverBanner } from '@/state/v4/Shared/reducer';
+import __x from '@/state/__x';
 
 const initAction = () => async (dispatch) => {
 	const url = `${process.env.MICROSERVICES_URL}init?platform=mobilesite&version=1.22.0`;
@@ -12,11 +13,11 @@ const initAction = () => async (dispatch) => {
 		method: 'GET',
 		fullpath: true
 	}));
-	
+
 	if (err) {
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
-	
+
 	const segment = response.data.data.segment;
 	const foreverBanner = response.data.data.forever_banner;
 	const serviceUrl = response.data.data.service_url;
@@ -35,10 +36,10 @@ const mainAction = (activeSegment, token) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const path = `${baseUrl}/mainpromo?segment_id=${activeSegment.id}`;
-	
+
 	const [err, response] = await to(request({
 		token,
 		path,
@@ -47,7 +48,7 @@ const mainAction = (activeSegment, token) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	const mainData = {
@@ -72,7 +73,7 @@ const recomendationAction = (activeSegment, token, url = false) => async (dispat
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const path = `${baseUrl}/recommended_promo?segment_id=${activeSegment.id}`;
 
@@ -84,9 +85,9 @@ const recomendationAction = (activeSegment, token, url = false) => async (dispat
 	}));
 
 	if (err) {
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
-	
+
 	const bestSellerProducts = response.data.data.find(e => e.type === 'bestseller') || {};
 	const newArrivalProducts = response.data.data.find(e => e.type === 'newarrival') || {};
 	const recommendedProducts = response.data.data.find(e => e.type === 'recommended') || {};

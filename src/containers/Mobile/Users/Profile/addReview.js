@@ -17,7 +17,9 @@ import { actions as userAction } from '@/state/v4/User';
 import styles from './profile.scss';
 import classNames from 'classnames';
 import cookiesLabel from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class AddReview extends Component {
 	constructor(props) {
 		super(props);

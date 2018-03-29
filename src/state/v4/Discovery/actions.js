@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { request } from '@/utils';
 import { promoLoading, promoViewMode, promoInit, promoNextInit } from './reducer';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
+import __x from '@/state/__x';
 
 const promoAction = ({ token, promoType, query = {}, loadNext = false }) => async (dispatch, getState) => {
 	if (loadNext) {
@@ -15,8 +16,8 @@ const promoAction = ({ token, promoType, query = {}, loadNext = false }) => asyn
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
-	
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
+
 	const path = `${baseUrl}/${promoType}`;
 
 	const [err, response] = await to(request({
@@ -28,7 +29,7 @@ const promoAction = ({ token, promoType, query = {}, loadNext = false }) => asyn
 	}));
 
 	if (err) {
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	const type = promoType.replace('_', '-');

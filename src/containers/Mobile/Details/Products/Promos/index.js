@@ -6,7 +6,9 @@ import _ from 'lodash';
 import { Card, Grid, Carousel, Spinner } from '@/components/mobile';
 import { Love } from '@/containers/Mobile/Widget';
 import cookiesLabel from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Promos extends Component {
 	constructor(props) {
 		super(props);

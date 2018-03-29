@@ -27,7 +27,9 @@ import { T } from '@/data/translations';
 import { setUserGTM, pushDataLayer } from '@/utils/gtm';
 import { getRefreshToken } from '@/state/Auth/actions';
 import { getUser } from '@/state/User/actions';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class stepOne extends Component {
 
 	static fetchDataAddress(userToken, userRFToken, dispatch) {
@@ -76,7 +78,7 @@ class stepOne extends Component {
 		this.userRFCookies = this.props.cookies.get('user.rf.token');
 		this.source = this.props.cookies.get('user.source');
 		this.tabIndex = 0;
-		
+
 	}
 
 	componentWillMount() {
@@ -93,7 +95,7 @@ class stepOne extends Component {
 		});
 		dispatch(getUser(this.props.cookies.get('user.token')));
 	}
-	
+
 	componentDidMount() {
 		if (this.props.addresses === undefined) {
 			this.constructor.fetchDataAddress(this.userCookies, this.userRFCookies, this.props.dispatch);
@@ -109,7 +111,7 @@ class stepOne extends Component {
 		if (this.props.cart !== nextProps.cart || this.props.error !== nextProps.error || changeTab) {
 			this.checkAllowedPayment(nextProps.stepState.stepOne.selectedAddress, nextProps);
 		}
-		
+
 		// set default elocker
 		if (!nextProps.stepState.stepOne.selectedAddressO2O && nextProps.latesto2o && nextProps.latesto2o.length > 0) {
 			const checkoutState = this.setStateDefaultElocker(nextProps.stepState, nextProps.latesto2o);
@@ -122,7 +124,7 @@ class stepOne extends Component {
 		this.constructor.placeOrder(this.userCookies, this.userRFCookies, this.props.dispatch, address, billing);
 		this.setBillingNumber(address);
 	}
-	
+
 	setBillingNumber(address) {
 		const { dispatch } = this.props;
 		const billing = this.tabIndex < 1 ? address.attributes.phone : '';
@@ -168,15 +170,15 @@ class stepOne extends Component {
 	checkAllowedPayment(selectedAddress, nextProps) {
 		const { cart, stepState, isPickupable } = nextProps;
 		const activeTab = stepState.stepOne.activeTab;
-		
-		// for jabodetabek item only 
+
+		// for jabodetabek item only
 		const jabotabekRestrictedCart = cart.filter((e) => {
 			return e.store.products[0].fgLocation === '1';
 		});
 		const emptyShipping = activeTab === 0 && !selectedAddress.id;
 		const notAlowedShipping = (activeTab === 0 && jabotabekRestrictedCart.length > 0 && selectedAddress.attributes.isJabodetabekArea === '0') || emptyShipping;
 
-		// for o2o item only 
+		// for o2o item only
 		const o2oRestrictedCart = cart.filter((e) => {
 			const notSupportedProducts = e.store.products.filter(p => p.o2o_supported === '0');
 			return (isPickupable === '0' && !e.store.shipping.o2oSupported && activeTab === 1) || notSupportedProducts.length > 0;
@@ -219,7 +221,7 @@ class stepOne extends Component {
 
 	afterChangeTab(event) {
 		// Event 0 = shipping, 1 = O2O
-		this.tabIndex = event;		
+		this.tabIndex = event;
 		const { stepState } = this.props;
 		const checkoutState = {
 			...stepState,
@@ -239,7 +241,7 @@ class stepOne extends Component {
 	saveSelectedAddress(selectedAddress, selectedAddressType = 'selectedAddress') {
 		let { stepState } = this.props;
 		stepState = this.setStateDefaultElocker(stepState, this.props.latesto2o);
-		
+
 		const checkoutState = {
 			...stepState,
 			stepOne: {

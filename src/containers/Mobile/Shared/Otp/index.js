@@ -16,7 +16,9 @@ import cookiesLabel from '@/data/cookiesLabel';
 
 import styles from './otp.scss';
 
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Otp extends Component {
 	constructor(props) {
 		super(props);
@@ -130,7 +132,7 @@ class Otp extends Component {
 				});
 			}
 		};
-		
+
 		this.interval = setInterval(() => {
 			counterDown();
 			if (number === 0) {
@@ -142,7 +144,7 @@ class Otp extends Component {
 			}
 		}, 1000);
 	}
-	
+
 	inputHandler(e) {
 		const value = util.format('%s', e.target.value);
 
@@ -150,9 +152,9 @@ class Otp extends Component {
 		if (validator.isNumeric(value) && validator.isLength(value, { min: 6 })) {
 			validForm = true;
 		}
-			
+
 		const inputHint = value.length > 0 && validForm === false ? 'Format Kode OTP tidak sesuai.' : '';
-		
+
 		this.setState({
 			inputValue: value,
 			validForm,
@@ -239,7 +241,7 @@ class Otp extends Component {
 					value={inputValue}
 					error={!validForm && inputValue !== ''}
 					hint={inputHint}
-					partitioned 
+					partitioned
 					maxLength={6}
 					disabled={disabledInput}
 					onChange={(e) => this.inputHandler(e)}

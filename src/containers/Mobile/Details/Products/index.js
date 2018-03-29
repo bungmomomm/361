@@ -27,6 +27,7 @@ import {
 import cookiesLabel from '@/data/cookiesLabel';
 
 import { Payload } from '@/utils/tracking/lucidworks';
+import xhandler from '@/containers/Mobile/Shared/handler';
 
 import { toastSytle } from '@/containers/Mobile/Shared/styleSnackbar';
 
@@ -93,6 +94,7 @@ const doAfterAnonymous = async (props) => {
 	}
 };
 
+@xhandler
 class Products extends Component {
 	constructor(props) {
 		super(props);

@@ -18,7 +18,9 @@ import { splitString, removeUserCookie } from '@/utils';
 import styles from './profile.scss';
 
 import cookiesLabel from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class UserProfile extends Component {
 	constructor(props) {
 		super(props);
@@ -31,7 +33,7 @@ class UserProfile extends Component {
 			logoutMessage: ''
 		};
 		this.userToken = this.props.cookies.get(cookiesLabel.userToken);
-		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true' && true;
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true';
 		this.loadingView = <Spinner />;
 
 		if (!this.isLogin) {
@@ -60,7 +62,7 @@ class UserProfile extends Component {
 		const { history } = this.props;
 		const HeaderPage = {
 			left: (
-				<button onClick={() => (history.length < 2 ? history.push('/') : history.go(-2))}> 
+				<button onClick={() => (history.length < 2 ? history.push('/') : history.go(-2))}>
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</button>
 			),
@@ -246,7 +248,7 @@ class UserProfile extends Component {
 				</Page>
 				{this.renderHeader()}
 				{this.renderLogoutModal()}
-				<Navigation active='Profile' scroll={this.props.scroll} totalCartItems={shared.totalCart} botNav={this.props.botNav} />
+				<Navigation active='Profile' scroll={this.props.scroll} totalCartItems={shared.totalCart} botNav={this.props.botNav} isLogin={this.isLogin} />
 			</div>
 		) : this.loadingView;
 	}

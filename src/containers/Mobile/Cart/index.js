@@ -15,8 +15,8 @@ import {
 	cartViewBuilder
 } from '@/utils/tracking';
 import cookiesLabel from '@/data/cookiesLabel';
-
 import { LucidCart } from '@/utils/tracking/lucidworks';
+import handler from '@/containers/Mobile/Shared/handler';
 
 const trackBrandPageView = (data, props) => {
 	const items = _.flatMap(data, (e) => (e.items));
@@ -30,6 +30,8 @@ const trackBrandPageView = (data, props) => {
 	const requestPayload = request.getPayload(cartViewBuilder);
 	if (requestPayload) sendGtm(requestPayload);
 };
+
+@handler
 class Cart extends Component {
 	constructor(props) {
 		super(props);
@@ -83,7 +85,7 @@ class Cart extends Component {
 		if (nextProps.shopBag.carts !== this.props.shopBag.carts && (typeof this.fusion === 'undefined')) {
 			const { carts, total } = nextProps.shopBag;
 			if (!_.isEmpty(carts) && !_.isEmpty(total)) this.fusion = new LucidCart(carts, total);
-			
+
 		}
 
 		this.checkNotProcedItem(nextProps);

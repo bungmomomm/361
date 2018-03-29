@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
-import { 
+import {
 	Checkbox,
 	Panel,
 	Input
 } from 'mm-ui';
 import { T } from '@/data/translations';
 import { pushDataLayer } from '@/utils/gtm';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Dropshipper extends Component {
 	constructor(props) {
 		super(props);
@@ -48,7 +50,7 @@ class Dropshipper extends Component {
 			validDropshipper: valid,
 			validateDropshipper: false
 		};
-		
+
 		if (checked !== null) {
 			dropshipper = {
 				...dropshipper,
@@ -86,9 +88,9 @@ class Dropshipper extends Component {
 				{
 					this.state.showForm && (
 						<div>
-							<Input 
-								type='text' 
-								name='dropship_name' 
+							<Input
+								type='text'
+								name='dropship_name'
 								placeholder={T.checkout.DROPSHIPPER_NAME}
 								validation={{
 									rules: 'required',
@@ -97,9 +99,9 @@ class Dropshipper extends Component {
 								ref={(c) => { this.elDropshipName = c; }}
 								onChange={(event) => this.onChange(this.state.showForm, event.target.value, this.state.dropshipPhone)}
 							/>
-							<Input 
-								type='text' 
-								name='dropship_phone' 
+							<Input
+								type='text'
+								name='dropship_phone'
 								placeholder={T.checkout.PHONE_NUMBER}
 								validation={{
 									rules: 'required|min:6|max:14|numeric',

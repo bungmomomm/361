@@ -14,7 +14,9 @@ import { T } from '@/data/translations';
 
 import styles from '../../page.scss';
 import Modalo2o from './Modalo2o';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class TabO2O extends Component {
 
 	constructor(props) {
@@ -27,7 +29,7 @@ class TabO2O extends Component {
 		};
 	}
 
-	onPlaceOrder(address, dropshipper = null) {		
+	onPlaceOrder(address, dropshipper = null) {
 		address.type = 'pickup';
 		address.attributes.is_dropshipper = false;
 		this.props.onPlaceOrder(address);
@@ -67,7 +69,7 @@ class TabO2O extends Component {
 	saveSelectedAddress(selectedAddress, selectedAddressType = 'selectedAddress') {
 		let { stepState } = this.props;
 		stepState = this.setStateDefaultElocker(stepState, this.props.latesto2o);
-		
+
 		const checkoutState = {
 			...stepState,
 			stepOne: {
@@ -142,7 +144,7 @@ class TabO2O extends Component {
 			<div>
 				<Alert color='yellow' style={{ marginBottom: '15px', textAlign: 'center' }} safeHtml={T.checkout.REGULATION} />
 				{
-					this.props.isPickupable !== '1' && 
+					this.props.isPickupable !== '1' &&
 					<Alert close icon='ban' color='red' style={{ marginBottom: '15px', textAlign: 'center' }} safeHtml={T.checkout.ONE_OR_MORE_PRODUCT_NOT_SUPPORTED} />
 				}
 				{this.renderO2OContent()}

@@ -10,7 +10,7 @@ import { componentState } from '@/utils';
 
 import { paymentGroupName, paymentMethodName } from '@/state/Payment/constants';
 
-import { 
+import {
 	// Group,
 	Select,
 	Checkbox,
@@ -41,7 +41,9 @@ import PaymentCreditCard from './components/Payments/PaymentCreditCard';
 
 import styles from '../../../Page/page.scss';
 import { getRefreshToken } from '@/state/Auth/actions';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class StepFour extends Component {
 	static placeOrder(userToken, userRFToken, dispatch, selectedAddress, billing) {
 		if (selectedAddress.type !== 'shipping') {
@@ -70,7 +72,7 @@ class StepFour extends Component {
 			selectedPaymentOption: null,
 			termCondition: true,
 			ovo: {
-				ovoTimer: 30, 
+				ovoTimer: 30,
 				useDefault: true,
 				ovoPhonePayment: this.props.payments.ovoPhonePayment || this.props.payments.ovoPhoneNumber,
 				ovoPhonePaymentValid: this.props.payments.ovoPhoneNumber,
@@ -107,14 +109,14 @@ class StepFour extends Component {
 			tahun
 		});
 	}
-	
+
 	componentWillReceiveProps(nextProps) {
 		if (this.props.payments !== nextProps.payments) {
 			this.isOvoPayment = nextProps.payments.paymentMethod === paymentMethodName.OVO;
 			let ovo = this.state.ovo;
-			
+
 			if (this.isOvoPayment) {
-				const ovoPay = nextProps.payments.selectedPayment.paymentItems[0];		
+				const ovoPay = nextProps.payments.selectedPayment.paymentItems[0];
 				ovo = {
 					...ovo,
 					ovoTimer: ovoPay.settings.countdown,
@@ -154,7 +156,7 @@ class StepFour extends Component {
 			this.setInstallmentList(nextProps.payments.selectedPaymentOption.banks[0]);
 		}
 	}
-	
+
 	onRefreshToken(dispatch, callback = false) {
 		dispatch(getRefreshToken({
 			userToken: this.userCookies,
@@ -248,7 +250,7 @@ class StepFour extends Component {
 							this.onVtCreditCardCallback(response);
 						};
 						this.onRefreshToken(dispatch, cvCall);
-						
+
 					} else {
 						this.onPaymentFailed();
 					}
@@ -307,7 +309,7 @@ class StepFour extends Component {
 							this.onVtInstallmentCallback(response);
 						};
 						this.onRefreshToken(dispatch, vtCall);
-						
+
 					} else {
 						this.onPaymentFailed();
 					}
@@ -561,17 +563,17 @@ class StepFour extends Component {
 					this.onRequestSprintInstallment(mode);
 				};
 				this.onRefreshToken(dispatch, sprintCall);
-				
+
 			} else {
 				this.onPaymentFailed();
 			}
 		});
 	}
-	
+
 	onBillingNumberChange(event) {
 		const { dispatch } = this.props;
 		dispatch(new paymentAction.changeBillingNumber(event.target.value, true));
-	}		
+	}
 
 	onOvoNumberChange(ovoNumber) {
 		const { dispatch } = this.props;
@@ -613,7 +615,7 @@ class StepFour extends Component {
 	paymentMethodChange(stateSelectedPayment) {
 		const { payments, dispatch } = this.props;
 		dispatch(new paymentAction.changePaymentMethod(stateSelectedPayment.value, payments.paymentMethods, this.userCookies));
-		this.setState({ 
+		this.setState({
 			showPaymentInfo: null,
 			stateSelectedPayment,
 			cardValidLuhn: false,
@@ -644,7 +646,7 @@ class StepFour extends Component {
 					...stepState.stepOne,
 					dropshipper: {
 						...stepState.stepOne.dropshipper,
-						validateDropshipper: true						
+						validateDropshipper: true
 					}
 				}
 			};
@@ -686,7 +688,7 @@ class StepFour extends Component {
 							this.onDoPayment();
 						}
 					}).catch((error) => {
-						// error apply bin 
+						// error apply bin
 					});
 				} else {
 					this.onDoPayment();
@@ -695,15 +697,15 @@ class StepFour extends Component {
 		} else {
 			this.onDoPayment();
 		}
-	
+
 	}
-	
+
 	checkOvoStatus(tick) {
 		const { dispatch, soNumber, payments, stepState } = this.props;
 		const params = payments.selectedPaymentOption.settings.checkParams.join('&');
 		const checkStatusUrl = payments.selectedPaymentOption.settings.checkUrl;
 		const selected = stepState.stepOne.activeTab > 0 ? stepState.stepOne.selectedAddressO2O : stepState.stepOne.selectedAddress;
-		
+
 		if (this.props.payments.paymentOvoFailed) {
 			this.setState({
 				showModalOvo: false
@@ -712,7 +714,7 @@ class StepFour extends Component {
 			if (selected.id) {
 				this.onPaymentFailed();
 			}
-		} 
+		}
 		if (tick % this.state.ovo.ovoInterval === 0) {
 			dispatch(new paymentAction.checkStatusOvoPayment(`${checkStatusUrl}${params}`, this.userCookies, soNumber, this.state.ovo.ovoPhonePayment, tick < 1))
 			.then(() => {
@@ -728,14 +730,14 @@ class StepFour extends Component {
 			this.setState({
 				showModalOvo: false
 			});
-		} 
+		}
 	}
 
 	checkCCField() {
 		const { payments } = this.props;
 		return (
-			typeof payments.selectedCardDetail !== 'undefined' && 
-			typeof payments.selectedCard !== 'undefined' && 
+			typeof payments.selectedCardDetail !== 'undefined' &&
+			typeof payments.selectedCard !== 'undefined' &&
 			payments.selectedCardDetail.cvv !== 0 &&
 			payments.selectedCardDetail.cvv !== '' &&
 			(payments.selectedCard.selected ||
@@ -745,7 +747,7 @@ class StepFour extends Component {
 			payments.selectedCard.value !== ''
 		);
 	}
-	
+
 	checkShowingOvoPhone() {
 		const { payments } = this.props;
 		const ovoValidation = (payments.ovoInfo && payments.ovoInfo.ovoFlag === '1') ? true : !this.state.ovo.autoLinkage;
@@ -834,7 +836,7 @@ class StepFour extends Component {
 			return null;
 		}
 	};
-	
+
 	render() {
 		const {
 			payments
@@ -846,20 +848,20 @@ class StepFour extends Component {
 			<div className={this.createClassCard()}>
 				<p><strong>{T.checkout.STEP_FOUR_LABEL}</strong></p>
 				<div className={styles.stepFourWrapper}>
-					<Select 
-						block 
+					<Select
+						block
 						selectStyle='panel'
 						label={T.checkout.PAYMENT_METHOD}
-						options={payments.paymentMethods.methods} 
+						options={payments.paymentMethods.methods}
 						onChange={(e) => this.paymentMethodChange(e)}
 						defaultValue={payments.selectedPayment ? payments.selectedPayment.id : null}
 					/>
-					{payments.selectedPaymentOption && payments.selectedPaymentOption.paymentMethod === 'commerce_cod' && 
+					{payments.selectedPaymentOption && payments.selectedPaymentOption.paymentMethod === 'commerce_cod' &&
 						<Level isMobile>
 							<Level.Left>&nbsp;</Level.Left>
 							<Level.Right>
 								{
-									payments.selectedPaymentOption.settings && payments.selectedPaymentOption.settings.info && 
+									payments.selectedPaymentOption.settings && payments.selectedPaymentOption.settings.info &&
 									<Tooltip
 										position='left'
 										label={
@@ -869,7 +871,7 @@ class StepFour extends Component {
 										}
 									>
 										{
-											payments.selectedPaymentOption.settings.info.length && 
+											payments.selectedPaymentOption.settings.info.length &&
 											payments.selectedPaymentOption.settings.info.join('<br />')
 										}
 									</Tooltip>
@@ -877,8 +879,8 @@ class StepFour extends Component {
 							</Level.Right>
 						</Level>
 					}
-					
-					
+
+
 					{payments.selectedPayment && this.renderSwitchPaymentElement()}
 					<label htmlFor='ovo-phone'>{T.checkout.PHONE_NUMBER_O2O_CONFIRMATION}</label>
 					<Input
@@ -889,21 +891,21 @@ class StepFour extends Component {
 						min={0}
 						type='tel'
 						placeholder={payments.billingPhoneNumber || T.checkout.BILLING_PHONE_NUMBER}
-						onChange={(event) => this.onBillingNumberChange(event)} 
+						onChange={(event) => this.onBillingNumberChange(event)}
 					/>
 					{
 						this.checkShowingOvoPhone() && payments.ovoPhoneNumber !== null &&
 						<div>
 							<label htmlFor='ovo-phone'>{T.checkout.OVO_PHONE_LABEL}</label>
-							<Input 
+							<Input
 								id='ovo-phone'
-								state={ovoReadOnly ? 'disabled' : ''} 
-								color={ovoReadOnly ? 'purple' : null} 
-								icon={ovoReadOnly ? 'check' : null} 
+								state={ovoReadOnly ? 'disabled' : ''}
+								color={ovoReadOnly ? 'purple' : null}
+								icon={ovoReadOnly ? 'check' : null}
 								dataProps={{
 									value: payments.ovoPhoneNumber
 								}}
-								placeholder={T.checkout.SAVED_OVO_PHONE} 
+								placeholder={T.checkout.SAVED_OVO_PHONE}
 								type='tel'
 								min={0}
 								onChange={(event) => this.onOvoNumberChange(event.target.value)}
@@ -958,7 +960,7 @@ const mapStateToProps = (state) => {
 		state.payments.ovoPhoneNumber = state.payments.ovoInfo ? state.payments.ovoInfo.ovoId : null;
 	}
 
-	if (state.payments.selectedPayment.value === paymentGroupName.CREDIT_CARD 
+	if (state.payments.selectedPayment.value === paymentGroupName.CREDIT_CARD
 		&& state.payments.selectedPayment.cards < 1) {
 		state.payments.twoClickEnabled = false;
 	}

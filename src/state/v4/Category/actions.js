@@ -3,6 +3,7 @@ import { getCategoryMenu, getCategoryBrand, categoryLoading, brandsLoading, setS
 import _ from 'lodash';
 import to from 'await-to-js';
 import { Promise } from 'es6-promise';
+import __x from '@/state/__x';
 
 const getCategoryMenuAction = (userToken, activeSegment) => async (dispatch, getState) => {
 	dispatch(categoryLoading({ loading: true }));
@@ -10,7 +11,7 @@ const getCategoryMenuAction = (userToken, activeSegment) => async (dispatch, get
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const [err, response] = await to(
 		request({
@@ -24,7 +25,7 @@ const getCategoryMenuAction = (userToken, activeSegment) => async (dispatch, get
 		})
 	);
 
-	if (err) return Promise.reject(err);
+	if (err) return Promise.reject(__x(err));
 
 	const categories = response.data.data;
 	dispatch(getCategoryMenu({ categories, activeSegment }));
@@ -39,7 +40,7 @@ const getBrandsByCategoryIdAction = (token, categoryId) => async (dispatch, getS
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	// const url = `${process.env.MICROSERVICES_URL}featured_brand`;
 	const [err, response] = await to(
@@ -54,7 +55,7 @@ const getBrandsByCategoryIdAction = (token, categoryId) => async (dispatch, getS
 		})
 	);
 
-	if (err) return Promise.reject(err);
+	if (err) return Promise.reject(__x(err));
 
 	const brands = response.data.data;
 	dispatch(getCategoryBrand({ brands }));

@@ -9,6 +9,9 @@ import CONST from '@/constants';
 import Shared from '@/containers/Mobile/Shared';
 import { aux } from '@/utils';
 import cookiesLabel from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
+
+@handler
 class Search extends PureComponent {
 	static isKeywordNotExistInHistory(cookies, text) {
 		const foundKeyword = cookies.filter(e => e.text === text);

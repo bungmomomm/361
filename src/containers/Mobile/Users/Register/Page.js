@@ -22,6 +22,11 @@ import {
 	Login as LoginWidget
 } from '@/containers/Mobile/Widget';
 import Otp from '@/containers/Mobile/Shared/Otp';
+import {
+	TrackingRequest,
+	registerSuccessBuilder,
+	sendGtm,
+} from '@/utils/tracking';
 import { userSource, userToken } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
 
@@ -46,12 +51,12 @@ class Register extends Component {
 			redirectUri: props.redirectUri || false,
 			disableOtpButton: false,
 			messageType: 'SUCCESS',
-			isButtonResendOtpLoading: false,
-			countdownValue: 60
+			isButtonResendOtpLoading: false
 		};
 		this.renderRegisterView = this.renderRegisterView.bind(this);
 		this.renderValidateOtpView = this.renderValidateOtpView.bind(this);
 		this.renderMobileOrEmailHasBeenRegistered = this.renderMobileOrEmailHasBeenRegistered.bind(this);
+		this.otpClickBack = this.otpClickBack.bind(this);
 
 	}
 
@@ -64,9 +69,8 @@ class Register extends Component {
 		if (err) {
 			return err;
 		}
-		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
-		setUserCookie(this.props.cookies, response.token, false, userProfile);
-		dispatch(new users.afterLogin(cookies.get(userToken)));
+		setUserCookie(this.props.cookies, response.token);
+		this.trackingHandler(response, provider);
 		history.push(redirectUri || '/');
 		return response;
 	}
@@ -83,46 +87,56 @@ class Register extends Component {
 		const dataForRegister = { fullname: loginId, hp_email: email, pwd: password };
 
 		// Call register action.
-		const [errorRegister, response] = await to(dispatch(new users.userRegister(cookies.get(userToken), dataForRegister)));
+		const [errorRegister, responseRegister] = await to(dispatch(new users.userRegister(cookies.get(userToken), dataForRegister)));
 
 		// Throw error if any.
 		if (errorRegister) {
-			if (errorRegister.error_message.indexOf('taken') > -1) {
-				this.setView('EMAIL_MOBILE_HAS_BEEN_REGISTERED');
+			const { code } = errorRegister.response.data;
+			if (code === 422 && errorRegister.response.data.error_message === 'hp_email is already taken.') {
+				this.setState({ whatIShouldRender: 'EMAIL_MOBILE_HAS_BEEN_REGISTERED' });
 				return false;
 			}
+
 			return false;
 		}
+		// Extract response from register
+		const { data } = responseRegister;
+		const { code } = data;
+
 		// Response from register is success
-		if (response.data.id) {
+		if (code === 200 && data.data.id) {
 			// Check if we register via mobile.
-			const otpResponse = await to(dispatch(new users.userOtp(cookies.get(userToken), email, 'register')));
-			if (otpResponse[0]) {
-				return otpResponse[0];
-			}
-			this.setState({
-				countdownValue: _.chain(otpResponse[1]).get('countdown').value() || 60
-			});
 			if (registerWith === 'MOBILE') {
+				// Then send OTP
+				const [errorUserOtp, responseUserOtp] = await to(dispatch(new users.userOtp(cookies.get(userToken), dataForRegister.hp_email, 'register')));
+				if (errorUserOtp) {
+					console.log('Error on OTP');
+					return false;
+				}
 				// Set state for OTP
-				this.setView('VALIDATE_OTP');
-				return false;
+				this.setState({
+					whatIShouldRender: 'VALIDATE_OTP'
+				});
+
+				return responseUserOtp;
+
 			}
 
 			const [errorUserLogin, responseUserLogin] = await to(dispatch(new users.userLogin(cookies.get(userToken), email, password)));
 
 			if (errorUserLogin) {
-				return errorUserLogin;
+				return false;
 			}
 
+			this.trackingHandler(responseRegister);
+
 			// Set the cookie for the page.
-			const userProfile = JSON.stringify({ name: responseUserLogin.userprofile.name, avatar: responseUserLogin.userprofile.avatar });
-			setUserCookie(this.props.cookies, responseUserLogin.token, false, userProfile);
-			dispatch(new users.afterLogin(cookies.get(userToken)));
+			setUserCookie(cookies, responseUserLogin.token);
 			history.push(redirectUri || '/');
+
 		}
 
-		return response;
+		return responseRegister;
 
 	}
 
@@ -153,18 +167,18 @@ class Register extends Component {
 			});
 		} else {
 			this.setState({
-				typed: value !== '',
 				validPassword: !validator.isEmpty(value) && validator.isLength(value, { min: 6, max: undefined })
 			});
 		}
 
 	}
 
-	setView(whatIShouldRender) {
-		this.setState({
-			whatIShouldRender
-		});
-		this.props.callback(whatIShouldRender);
+	trackingHandler(response, method = 'onsite') {
+		const request = new TrackingRequest();
+		request.setEmailHash('').setUserId(response.userid).setCurrentUrl(`/${this.state.current}`);
+		request.setFusionSessionId('').setUserIdEncrypted('').setIpAddress('').setLoginRegisterMethod(method);
+		const requestPayload = request.getPayload(registerSuccessBuilder);
+		if (requestPayload) sendGtm(requestPayload);
 	}
 
 	otpClickBack() {
@@ -177,9 +191,9 @@ class Register extends Component {
 			password: ''
 		}, callback('REGISTER'));
 	}
- 
-	async successValidateOtp(response) {
-		
+
+	async successValidateOtp() {
+
 		const { cookies, dispatch, history } = this.props;
 		const { email, password, redirectUri } = this.state;
 
@@ -187,13 +201,11 @@ class Register extends Component {
 
 		if (errorUserLogin) {
 			console.log('error on user login');
-			return errorUserLogin;
+			return false;
 		}
 
 		// Set the cookie for the page.
-		const userProfile = JSON.stringify({ name: responseUserLogin.userprofile.name, avatar: responseUserLogin.userprofile.avatar });
-		setUserCookie(this.props.cookies, responseUserLogin.token, false, userProfile);
-		dispatch(new users.afterLogin(cookies.get(userToken)));
+		setUserCookie(cookies, responseUserLogin.token);
 		history.push(redirectUri || '/');
 
 		return responseUserLogin;
@@ -207,8 +219,7 @@ class Register extends Component {
 			visiblePassword,
 			validLoginId,
 			validPassword,
-			validEmailOrMobile,
-			typed
+			validEmailOrMobile
 		} = this.state;
 
 		const { isLoading } = this.props.users;
@@ -249,7 +260,10 @@ class Register extends Component {
 			inputMobileEmailAttribute.hint = 'Format Email/Nomor Handphone tidak sesuai. Silahkan cek kembali';
 		}
 
-		const iconRightPasswordContent = visiblePassword ? 'ico_password_show.svg' : 'ico_password_hide.svg';
+		let iconRightPasswordContent = 'ico_password_hide.svg';
+		if (visiblePassword === true) {
+			iconRightPasswordContent = 'ico_password_show.svg';
+		}
 
 		const inputPasswordAttribute = {
 			value: password,
@@ -262,11 +276,10 @@ class Register extends Component {
 			flat: true,
 			placeholder: '',
 			type: (visiblePassword) ? 'text' : 'password',
-			iconRight: typed && (
+			iconRight: (
 				<Button onClick={() => this.setState({ visiblePassword: !visiblePassword })}>
 					<Svg src={iconRightPasswordContent} />
-				</Button>
-			)
+				</Button>)
 		};
 
 		if (password.length > 0 && validPassword === false) {
@@ -281,7 +294,7 @@ class Register extends Component {
 			disabled: !buttonLoginEnable
 		};
 
-		if (isLoading) {
+		if (isLoading === true) {
 			buttonRegisterAttribute.loading = true;
 		}
 
@@ -322,17 +335,14 @@ class Register extends Component {
 	}
 
 	renderValidateOtpView() {
-		
-		const { email, countdownValue } = this.state;
-		
+
+		const { email } = this.state;
+
 		return (
 			<Otp
-				countdownValue={countdownValue}
-				autoSend={false}
-				type={'register'}
 				phoneEmail={email}
-				onClickBack={() => this.otpClickBack()}
-				onSuccess={(response) => this.successValidateOtp(response)}
+				onClickBack={this.otpClickBack}
+				onSuccess={() => this.successValidateOtp()}
 			/>
 		);
 	}
@@ -343,31 +353,24 @@ class Register extends Component {
 
 		const buttonProperty = {
 			color: 'secondary',
-			size: 'large',
-			wide: true
+			size: 'large'
 		};
 
 		return (
-			<div className={styles.container}>
-				<div className='margin--medium-v font-medium'>Akun ini sudah terdaftar. Silahkan lakukan log in untuk mengakses akun.</div>
-				<div className='margin--medium-v font-medium text-center'>
-					<p>
-						MASUK DENGAN {email} 
-					</p>
-				</div>
-				<div className='margin--small-v'>
-					<Link to={`/login${location.search}`}>
-						<Button {...buttonProperty}>LOGIN</Button>
-					</Link>
-				</div>
-				<div className='margin--medium-v text-center'>
-					<Link to={`/forgot-password${location.search}`}>Lupa Password</Link>
-				</div>
+			<div>
+				<p>Akun ini sudah terdafatar. Silahkan lakukan log in untuk mengakses akun</p>
+				<p>Masuk dengan {email} </p>
+				<Link to='/login'>
+					<Button {...buttonProperty}>Login</Button>
+				</Link>
+				<Link to='/forgotPassword'>Lupa Password</Link>
 			</div>
 		);
 	}
 
 	render() {
+
+		const { callback } = this.props;
 		const {
 			whatIShouldRender
 		} = this.state;
@@ -376,6 +379,7 @@ class Register extends Component {
 
 		if (whatIShouldRender === 'VALIDATE_OTP') {
 			View = this.renderValidateOtpView();
+			callback(whatIShouldRender);
 		}
 
 		if (whatIShouldRender === 'EMAIL_MOBILE_HAS_BEEN_REGISTERED') {
