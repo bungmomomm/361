@@ -11,7 +11,7 @@ const configs = {
 };
 
 
-const brandListAction = (token, segment = 1) => async (dispatch, getState) => {
+const brandListAction = (token, segment) => async (dispatch, getState) => {
 	dispatch(brandLoading({ loading: true }));
 
 	const { shared } = getState();

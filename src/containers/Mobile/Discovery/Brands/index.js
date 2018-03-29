@@ -51,18 +51,6 @@ class Brands extends Component {
 		};
 	}
 
-	componentDidMount() {
-		const { dispatch, category } = this.props;
-		dispatch(new actions.brandListAction(this.userCookies, category.activeSegment.id));
-	}
-
-	componentWillReceiveProps(nextProps) {
-		const { dispatch, category } = this.props;
-		if (this.props.shared.serviceUrl !== nextProps.shared.serviceUrl) {
-			dispatch(new actions.brandListAction(this.userCookies, category.activeSegment.id));
-		}
-	}
-
 	onFilter(keyword) {
 		let filteredBrand = [];
 
@@ -267,7 +255,7 @@ class Brands extends Component {
 								</Level.Right>
 							}
 						</Level>
-						{ !brands.brand_list && (<div style={{ paddingTop: '20px' }}> <Spinner /></div>)}
+
 						{ this.renderFilterAlphabets() }
 					</div>
 				),
@@ -284,6 +272,7 @@ class Brands extends Component {
 					{
 						<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />
 					}
+					{ !brands.brand_list && (<div style={{ padding: '20px 0' }}> <Spinner /></div>)}
 					{ this.renderBrandBySearch() }
 					{ this.renderBrandByAlphabets() }
 				</Page>
@@ -299,8 +288,15 @@ const mapStateToProps = (state) => {
 	return {
 		category: state.category,
 		brands: state.brands,
-		shared: state.shared
+		shared: state.shared,
+		home: state.home
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(Brands)));
+const doAfterAnonymous = async (props) => {
+	const { dispatch, cookies, shared, home } = props;
+	const activeSegment = home.segmen.filter((e) => e.key === shared.current)[0];
+	dispatch(new actions.brandListAction(cookies.get(userToken), activeSegment.id));
+};
+
+export default withCookies(connect(mapStateToProps)(Shared(Brands, doAfterAnonymous)));
