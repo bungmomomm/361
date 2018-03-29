@@ -8,7 +8,9 @@ import { Page, Input, Button, Svg, Notification, Spinner, Header, Panel } from '
 import CONST from '@/constants';
 
 import styles from '../profile.scss';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class EditHp extends Component {
 	constructor(props) {
 		super(props);
@@ -39,7 +41,7 @@ class EditHp extends Component {
 			});
 		}
 	}
-	
+
 	inputHandler(e) {
 		const value = util.format('%s', e.target.value);
 
@@ -84,7 +86,7 @@ class EditHp extends Component {
 
 		const HeaderPage = {
 			left: (
-				<button onClick={onClickBack}> 
+				<button onClick={onClickBack}>
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</button>
 			),
@@ -123,7 +125,7 @@ class EditHp extends Component {
 				</Notification>
 			);
 		}
-		
+
 		return null;
 	}
 

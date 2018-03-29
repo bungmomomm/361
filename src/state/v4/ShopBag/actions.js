@@ -3,6 +3,7 @@ import { shopBagLoading, shopBagGet } from './reducer';
 import _ from 'lodash';
 import to from 'await-to-js';
 import { Promise } from 'es6-promise';
+import __x from '@/state/__x';
 
 const getAction = (token) => async (dispatch, getState) => {
 	dispatch(shopBagLoading({ loading: true }));
@@ -10,7 +11,7 @@ const getAction = (token) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 	const [err, response] = await to(
 		request({
 			token,
@@ -23,7 +24,7 @@ const getAction = (token) => async (dispatch, getState) => {
 	if (err) {
 		dispatch(shopBagLoading({ loading: false }));
 		dispatch(shopBagGet({ carts: [], total: null, location_default: null }));
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	};
 
 	// const cartsData = [];
@@ -41,7 +42,7 @@ const deleteAction = (token, productId) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 	const [err, response] = await to(
 		request({
 			token,
@@ -55,7 +56,7 @@ const deleteAction = (token, productId) => async (dispatch, getState) => {
 	);
 
 	if (err) {
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	};
 
 	return Promise.resolve(response);
@@ -65,7 +66,7 @@ const addLovelistAction = (token, productId) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 	const [err, response] = await to(
 		request({
 			token,
@@ -77,7 +78,7 @@ const addLovelistAction = (token, productId) => async (dispatch, getState) => {
 	);
 
 	if (err) {
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	};
 
 	return Promise.resolve(response);
@@ -87,7 +88,7 @@ const updateAction = (token, productId, newQty, type = 'update') => async (dispa
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 	const [err, response] = await to(
 		request({
 			token,
@@ -103,7 +104,7 @@ const updateAction = (token, productId, newQty, type = 'update') => async (dispa
 	);
 
 	if (err) {
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	};
 
 	dispatch(getAction(token));

@@ -8,8 +8,9 @@ import Shared from '@/containers/Mobile/Shared';
 import styles from '../user.scss';
 import Recaptcha from 'react-recaptcha';
 import { userToken, userRfToken, userSource } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
-
+@handler
 class RegisteredPhoneValidation extends Component {
 	constructor(props) {
 		super(props);

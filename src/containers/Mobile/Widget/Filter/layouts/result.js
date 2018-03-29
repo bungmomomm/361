@@ -2,7 +2,9 @@ import React, { PureComponent } from 'react';
 import { Header, Page, Svg, List, Button } from '@/components/mobile';
 import _ from 'lodash';
 import Action from './action';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Result extends PureComponent {
 
 	render() {

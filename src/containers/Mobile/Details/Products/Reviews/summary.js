@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { Rating, Comment, Svg } from '@/components/mobile';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 export default class ReviewSummary extends Component {
 
 	constructor(props) {

@@ -25,7 +25,9 @@ import { userToken } from '@/data/cookiesLabel';
 import { urlBuilder } from '@/utils';
 import { Love } from '@/containers/Mobile/Widget';
 import stylesCatalog from '@/containers/Mobile/Discovery/View/view.scss';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class HashtagsDetails extends Component {
 
 	constructor(props) {

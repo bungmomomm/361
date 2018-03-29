@@ -12,7 +12,9 @@ import styles from './Hashtags.scss';
 import _ from 'lodash';
 import currency from 'currency.js';
 import { userToken } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Hashtags extends Component {
 
 	state = {

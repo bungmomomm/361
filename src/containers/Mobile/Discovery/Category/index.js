@@ -14,14 +14,17 @@ import { actions as categoryActions } from '@/state/v4/Category';
 import CONST from '@/constants';
 import Shared from '@/containers/Mobile/Shared';
 import { actions as sharedActions } from '@/state/v4/Shared';
-import { userSource, userToken } from '@/data/cookiesLabel';
+import { userSource, userToken, isLogin } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Category extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.props = props;
 		this.userCookies = this.props.cookies.get(userToken);
 		this.source = this.props.cookies.get(userSource);
+		this.isLogin = this.props.cookies.get(isLogin) === 'true';
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -114,7 +117,7 @@ class Category extends PureComponent {
 					lovelist={this.props.shared.totalLovelist}
 					value={this.props.search.keyword}
 				/>
-				<Navigation active='Categories' scroll={this.props.scroll} totalCartItems={shared.totalCart} botNav={this.props.botNav} />
+				<Navigation active='Categories' scroll={this.props.scroll} totalCartItems={shared.totalCart} botNav={this.props.botNav} isLogin={this.isLogin} />
 			</div>
 		);
 	}

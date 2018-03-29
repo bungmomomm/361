@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { Modal, Panel, Radio } from 'mm-ui';
 import { T } from '@/data/translations';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 export default class ModalChooseAddress extends Component {
 	constructor(props) {
 		super(props);
@@ -24,22 +26,22 @@ export default class ModalChooseAddress extends Component {
 						this.props.address.map((address, index) => {
 							const isChecked = this.checkSelected(address);
 							return (
-								<Panel 
-									key={index} 
+								<Panel
+									key={index}
 									color={isChecked ? 'yellow' : 'grey'}
 									onClick={() => this.props.onChange(address)}
 									header={
-										<Radio 
+										<Radio
 											inverted={isChecked}
 											data={[
-												{ 
+												{
 													label: address.label,
-													dataProps: { 
+													dataProps: {
 														readOnly: true,
 														defaultChecked: isChecked
-													} 
+													}
 												}
-											]} 
+											]}
 										/>
 									}
 								>

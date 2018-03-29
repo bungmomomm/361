@@ -10,7 +10,9 @@ import {
 	// Table,
 	Button } from '@/components/mobile';
 import _ from 'lodash';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Guide extends Component {
 	constructor(props) {
 		super(props);

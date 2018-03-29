@@ -15,9 +15,11 @@ import StoreBoxFooter from './StoreBoxFooter';
 import styles from '../../page.scss';
 import { getRefreshToken } from '@/state/Auth/actions';
 import { pushDataLayer } from '@/utils/gtm';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class StepTwo extends Component {
-	
+
 	static fetchDataCart(userToken, userRFToken, dispatch) {
 		dispatch(new actions.getCart(userToken))
 		.catch((error) => {
@@ -100,7 +102,7 @@ class StepTwo extends Component {
 		const storeItems = this.props.cart.filter(e => e.store.id === store.id);
 		if (storeItems[0]) {
 			pushDataLayer('checkout', 'checkout', { step: 4, option: checked ? 'Gosend' : 'Regular Delivery' }, storeItems[0].store.products);
-		} 
+		}
 	}
 
 	updateQty(qty, product) {
@@ -120,7 +122,7 @@ class StepTwo extends Component {
 		};
 
 		const productId = product.id;
-		if (qty !== '') { 
+		if (qty !== '') {
 			const { soNumber, coupon, dispatch } = this.props;
 			if (soNumber) {
 				dispatch(new actions.updateQtyCart(this.userCookies, qty, productId, { soNumber, coupon }))
@@ -181,7 +183,7 @@ class StepTwo extends Component {
 
 	createClassCard() {
 		return [
-			styles.card, 
+			styles.card,
 			this.props.loading ? styles.loading : '',
 			this.props.disabled ? styles.disabled : ''
 		].join(' ').trim();
@@ -218,20 +220,20 @@ class StepTwo extends Component {
 										{T.checkout.STORE_TEMPORARY_CLOSED}
 									</div>)
 								}
-								<StoreBoxBody 
+								<StoreBoxBody
 									products={storeData.store.products}
 									stepOneActiveTab={stepOne.activeTab}
 									onUpdateQty={(e, product) => this.updateQty(e, product)}
 									showBtnDelete={!(this.props.cart.length < 2 && storeData.store.products.length < 2)}
 								/>
-								<StoreBoxFooter 
+								<StoreBoxFooter
 									stepOneActiveTab={stepOne.activeTab}
 									selectedAddress={stepOne.selectedAddress}
 									showEditAddressModal={typeof stepOne.funcShowModalAddress === 'function' && stepOne.funcShowModalAddress}
 									checkGosendMethod={(checked, store) => this.updateShippingMethodGosend(checked, store)}
 									isRestrictO2O={isRestrictO2O}
 									isJabotabekItem={isJabotabekItem}
-									data={storeData} 
+									data={storeData}
 									shippingDefault={!this.props.stepState.stepFour.disabled}
 									gosendInfo={this.props.gosendInfo}
 									onShowGosendTooltip={(e) => this.onShowGosendTooltip()}

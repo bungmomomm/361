@@ -5,7 +5,10 @@ import Iframe from 'react-iframe';
 
 import Shared from '@/containers/Mobile/Shared';
 import { Header, Page, Navigation } from '@/components/mobile';
+import handler from '@/containers/Mobile/Shared/handler';
+import { isLogin } from '@/data/cookiesLabel';
 
+@handler
 class PromoList extends Component {
 	constructor(props) {
 		super(props);
@@ -18,6 +21,7 @@ class PromoList extends Component {
 		this.state = {
 			content: ''
 		};
+		this.isLogin = this.props.cookies.get(isLogin) === 'true';
 
 	}
 
@@ -27,7 +31,7 @@ class PromoList extends Component {
 		};
 
 		const { shared } = this.props;
-		const { webViewUrl } = shared; 
+		const { webViewUrl } = shared;
 		const url = webViewUrl && webViewUrl.promo_tab ? webViewUrl.promo_tab : 'https://super.mataharimall.com/promo/new/mobileapps.html';
 
 		return (
@@ -42,7 +46,7 @@ class PromoList extends Component {
 					/>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Promo' scroll={this.props.scroll} botNav={this.props.botNav} />
+				<Navigation active='Promo' scroll={this.props.scroll} botNav={this.props.botNav} isLogin={this.isLogin} />
 			</div>
 		);
 	}

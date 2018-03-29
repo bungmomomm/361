@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import {
-	Header, 
-	// Divider, 
-	Page, 
-	Svg, 
-	List, 
-	Button 
+	Header,
+	// Divider,
+	Page,
+	Svg,
+	List,
+	Button
 } from '@/components/mobile';
 import styles from './tree.scss';
 import Action from './action';
@@ -26,7 +26,9 @@ const treeIcon = (active, HasTree, isChildSelected) => {
 	}
 	return <Svg src='ico_empty.svg' />;
 };
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class TreeSegment extends Component {
 	constructor(props) {
 		super(props);
@@ -78,7 +80,7 @@ class TreeSegment extends Component {
 					})
 				});
 			}
-			
+
 		} else {
 			this.onClick(e, value);
 		}
@@ -94,7 +96,7 @@ class TreeSegment extends Component {
 
 	renderChild(category, firstLevel) {
 		const { defaultOpen } = this.state;
-		
+
 		if (typeof category.childs === 'undefined') {
 			return null;
 		}

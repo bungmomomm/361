@@ -6,9 +6,11 @@ import { actions as recommendedActions } from '@/state/v4/RecommendedProducts';
 import Love from '@/containers/Mobile/Shared/Widget/Love';
 import { withRouter } from 'react-router-dom';
 import Discovery from '../Utils';
-// import _ from 'lodash';  
-import { userToken } from '@/data/cookiesLabel';
+// import _ from 'lodash';
+import { userToken, isLogin } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class RecommendedProducts extends Component {
 	constructor(props) {
 		super(props);
@@ -16,6 +18,7 @@ class RecommendedProducts extends Component {
 
 		this.switchMode = this.switchMode.bind(this);
 		this.touchDown = this.touchDown.bind(this);
+		this.isLogin = this.props.cookies.get(isLogin) === 'true';
 	}
 
 	componentDidMount() {
@@ -151,7 +154,7 @@ class RecommendedProducts extends Component {
 				</Page>
 
 				<Header.Modal {...HeaderPage} />
-				<Navigation />
+				<Navigation isLogin={this.isLogin} />
 			</div>);
 	}
 }

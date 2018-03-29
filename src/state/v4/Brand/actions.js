@@ -4,6 +4,7 @@ import _ from 'lodash';
 import to from 'await-to-js';
 import { Promise } from 'es6-promise';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
+import __x from '@/state/__x';
 
 const configs = {
 	defaultPage: 36
@@ -16,7 +17,7 @@ const brandListAction = (token, segment = 1) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 	const [err, response] = await to(
 		request({
 			token,
@@ -31,7 +32,7 @@ const brandListAction = (token, segment = 1) => async (dispatch, getState) => {
 
 	if (err) {
 		dispatch(brandLoading({ loading: false }));
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	};
 
 	const brandList = response.data.data.items;
@@ -80,7 +81,7 @@ const brandProductAction = ({ token, query = {}, type = 'update' }) => async (di
 		dispatch(brandLoadingProducts({ loading_products: false }));
 		dispatch(brandProducts({ searchStatus: 'failed' }));
 		dispatch(scrollerActions.onScroll({ loading: false, nextPage: false }));
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	const searchData = {
@@ -119,7 +120,7 @@ const brandBannerAction = (token, brandId) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
 
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const [err, response] = await to(
 		request({
@@ -133,7 +134,7 @@ const brandBannerAction = (token, brandId) => async (dispatch, getState) => {
 		})
 	);
 
-	if (err) return Promise.reject(err);
+	if (err) return Promise.reject(__x(err));
 
 	const banner = response.data.data.banner;
 	dispatch(brandBanner({ brand_id: brandId, banner }));
@@ -145,7 +146,7 @@ const brandProductsCommentsAction = (token, productIds) => async (dispatch, getS
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
 
-	if (!baseUrl) Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 	const [err, response] = await to(
 		request({
 			token,
@@ -159,7 +160,7 @@ const brandProductsCommentsAction = (token, productIds) => async (dispatch, getS
 	);
 	if (err) {
 		dispatch(brandLoadingProductsComments({ loading_prodcuts_comments: false }));
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	const productsComments = response.data.data;
@@ -173,7 +174,7 @@ const brandProductsLovelistAction = (token, productIds) => async (dispatch, getS
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
 
-	if (!baseUrl) Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 	const [err, response] = await to(
 		request({
 			token,
@@ -185,7 +186,7 @@ const brandProductsLovelistAction = (token, productIds) => async (dispatch, getS
 			}
 		})
 	);
-	if (err) return Promise.reject(err);
+	if (err) return Promise.reject(__x(err));
 
 	const productsLovelist = response.data.data;
 

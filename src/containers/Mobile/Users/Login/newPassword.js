@@ -15,8 +15,9 @@ import { to } from 'await-to-js';
 import validator from 'validator';
 import queryString from 'query-string';
 import { userSource, userToken } from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
-
+@handler
 class NewPassword extends Component {
 	constructor(props) {
 		super(props);
@@ -94,7 +95,7 @@ class NewPassword extends Component {
 	render() {
 		const { loading } = this.props;
 		const { pass1, pass2, error, pass1Typed, pass2Typed, isValidPassword, isValidConfirmPassword, visiblePassword, visibleConfirmPassword } = this.state;
-		
+
 		const HeaderPage = {
 			left: (
 				<Button onClick={(e) => this.onBack(e)}>

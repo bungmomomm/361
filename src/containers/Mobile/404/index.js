@@ -9,7 +9,9 @@ import styles from './search.scss';
 import { connect } from 'react-redux';
 import { urlBuilder } from '@/utils';
 import cookiesLabel from '@/data/cookiesLabel';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Page404 extends Component {
 	constructor(props) {
 		super(props);
@@ -19,7 +21,7 @@ class Page404 extends Component {
 				show: true
 			}
 		};
-		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin);
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true';
 	}
 
 	renderBanner() {
@@ -103,7 +105,7 @@ class Page404 extends Component {
 					}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Home' botNav={this.props.botNav} />
+				<Navigation active='Home' botNav={this.props.botNav} isLogin={this.isLogin} />
 			</div>
 		);
 	}

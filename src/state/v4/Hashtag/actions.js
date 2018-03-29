@@ -4,6 +4,7 @@ import { actions as scrollerActions } from '@/state/v4/Scroller';
 import _ from 'lodash';
 import { to } from 'await-to-js';
 import { Promise } from 'es6-promise';
+import __x from '@/state/__x';
 
 const configs = {
 	defaultPage: 21
@@ -70,7 +71,7 @@ const itemsFetchData = ({ token, query = {} }) => async (dispatch, getState) => 
 	const { shared } = getState();
 
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const url = `${baseUrl}/campaign`;
 
@@ -89,7 +90,7 @@ const itemsFetchData = ({ token, query = {} }) => async (dispatch, getState) => 
 
 	if (err) {
 		dispatch(actions.itemsHasError({ hasError: err }));
-		return Promise.reject(err);
+		return Promise.reject(__x(err));
 	}
 
 	dispatch(actions.itemsFetchDataSuccess({
@@ -112,7 +113,7 @@ const initHashtags = (token, hash) => async (dispatch, getState) => {
 	const { shared } = getState();
 
 	const baseUrlPromo = _.chain(shared).get('serviceUrl.promo.url').value() || false;
-	if (!baseUrlPromo) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrlPromo) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const urlInit = `${baseUrlPromo}/mainpromo?segment_id=1`;
 	const [errPromo, respPromo] = await to(request({
@@ -124,13 +125,13 @@ const initHashtags = (token, hash) => async (dispatch, getState) => {
 
 	if (errPromo) {
 		dispatch(actions.itemsHasError({ hasError: errPromo }));
-		return Promise.reject(errPromo);
+		return Promise.reject(__x(errPromo));
 	} else if (_.chain(respPromo).get('data.data.hashtag.campaign_id').value() === undefined) {
-		return Promise.reject('Whoops sorry, no feeds to show you for now.');
+		return Promise.reject(__x('Whoops sorry, no feeds to show you for now.'));
 	}
 
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
-	if (!baseUrl) return Promise.reject(new Error('Terjadi kesalahan pada proses silahkan kontak administrator'));
+	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	const url = `${baseUrl}/campaign`;
 	let query = {
@@ -147,7 +148,7 @@ const initHashtags = (token, hash) => async (dispatch, getState) => {
 	}));
 	if (errInit) {
 		dispatch(actions.itemsHasError({ hasError: errInit }));
-		return Promise.reject(errInit);
+		return Promise.reject(__x(errInit));
 	}
 	dispatch(actions.itemsActiveHashtag({
 		active: {

@@ -36,7 +36,7 @@ import {
 	renderIf,
 	urlBuilder
 } from '@/utils';
-import { userToken, pageReferrer } from '@/data/cookiesLabel';
+import { userToken, pageReferrer, isLogin } from '@/data/cookiesLabel';
 
 import Discovery from '../../Utils';
 
@@ -87,13 +87,16 @@ const trackProductOnClick = (product, position, source = 'mm') => {
 	const requestPayload = request.getPayload(productClickBuilder);
 	if (requestPayload) sendGtm(requestPayload);
 };
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class Product extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
 
 		const propsObject = _.chain(props.productCategory);
+		this.isLogin = this.props.cookies.get(isLogin) === 'true';
 		this.state = {
 			showFilter: false,
 			showSort: false,
@@ -395,6 +398,7 @@ class Product extends Component {
 			totalCartItems: shared.totalCart
 		};
 		navigationAttribute.active = cookies.get(pageReferrer);
+		navigationAttribute.isLogin = this.isLogin;
 
 		return (
 			<div style={this.props.style}>

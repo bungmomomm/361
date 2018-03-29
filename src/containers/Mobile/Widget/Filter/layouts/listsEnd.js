@@ -2,11 +2,13 @@ import React, { PureComponent } from 'react';
 import { Header, Page, Svg, List } from '@/components/mobile';
 import { Link } from 'react-router-dom';
 import Action from './action';
+import handler from '@/containers/Mobile/Shared/handler';
 
+@handler
 class ListsEnd extends PureComponent {
 	render() {
 		const { params } = this.props;
-		
+
 		const HeaderPage = {
 			left: (
 				<Link to='/catalogcategory'>
