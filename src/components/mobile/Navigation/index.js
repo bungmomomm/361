@@ -38,16 +38,25 @@ class Navigation extends PureComponent {
 		);
 		const profileUrl = isLogin ? '/profile' : '/login?redirect_uri=/profile';
 
+
+		const homeAttribute = {
+			to: '/',
+			icon: 'ico_home-new.svg',
+			label: 'Home',
+		};
+
+		if (active !== 'Home') {
+			homeAttribute.icon = 'ico_home.svg';
+		} else if (active === 'Home') {
+			homeAttribute.active = 'Home';
+		}
+
+
 		return (
 			<nav className={createClassName} >
 				<div className={styles.wrapper}>
 					<div className={styles.navigation} ref={(r) => { this.botNav = r; }}>
-						<Item
-							to='/'
-							icon='ico_home.svg'
-							label='Home'
-							active={active === 'Home'}
-						/>
+						<Item {...homeAttribute} />
 						<Item
 							to={'/category'}
 							icon='ico_categories.svg'
