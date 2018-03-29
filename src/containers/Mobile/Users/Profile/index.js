@@ -13,7 +13,7 @@ import { Header, Page, Navigation, Svg, List, Level, Image, Panel, Spinner, Moda
 import { actions as userActions } from '@/state/v4/User';
 
 import CONST from '@/constants';
-import { splitString, removeUserCookie } from '@/utils';
+import { removeUserCookie } from '@/utils';
 
 import styles from './profile.scss';
 
@@ -27,18 +27,17 @@ class UserProfile extends Component {
 		this.props = props;
 		this.state = {
 			hasPP: false,
-			isBuyer: true, // buyer or seller
 			isLoading: false,
 			showLogout: false,
 			logoutMessage: ''
 		};
 		this.userToken = this.props.cookies.get(cookiesLabel.userToken);
-		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true' && true;
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true';
 		this.loadingView = <Spinner />;
 
 		if (!this.isLogin) {
 			const { history } = this.props;
-			history.push('/login?redirect_uri=/profile');
+			history.replace('/login?redirect_uri=/profile');
 		}
 
 		this.AVATAR_FIELD = CONST.USER_PROFILE_FIELD.avatar;
@@ -74,7 +73,6 @@ class UserProfile extends Component {
 
 	renderProfile(source = 'local') {
 		const { userProfile } = this.props;
-		const { isBuyer } = this.state;
 
 		if (!userProfile) {
 			return (
@@ -83,24 +81,21 @@ class UserProfile extends Component {
 				</form>
 			);
 		}
-
-		const ppClassName = classNames(
-			styles.tempPP,
-			isBuyer ? styles.buyer : styles.seller
-		);
+		
 		const ppCtrClassName = classNames(
 			styles.tempPPContainer
 		);
 
 		let avatar;
+		const defaultImage = require('@/assets/images/mobile/ico_avatar.png');
 		if (source === 'api') {
 			avatar = userProfile && userProfile[this.AVATAR_FIELD] ? (
 				<Image width={60} height={60} avatar src={userProfile[this.AVATAR_FIELD]} alt={_.capitalize(userProfile[this.NAME_FIELD]) || ''} />
 			) : (
-				<div className={ppClassName}>{splitString(userProfile[this.NAME_FIELD].trim() || '')}</div>
+				<Image width={80} height={80} avatar src={defaultImage} alt={_.capitalize(userProfile[this.NAME_FIELD]) || ''} />
 			);
 		} else {
-			avatar = <div className={ppClassName}>{splitString(userProfile[this.NAME_FIELD].trim() || '')}</div>;
+			avatar = <Image width={80} height={80} avatar src={defaultImage} alt={_.capitalize(userProfile[this.NAME_FIELD]) || ''} />;
 		}
 
 		return (
@@ -248,7 +243,7 @@ class UserProfile extends Component {
 				</Page>
 				{this.renderHeader()}
 				{this.renderLogoutModal()}
-				<Navigation active='Profile' scroll={this.props.scroll} totalCartItems={shared.totalCart} botNav={this.props.botNav} />
+				<Navigation active='Profile' scroll={this.props.scroll} totalCartItems={shared.totalCart} botNav={this.props.botNav} isLogin={this.isLogin} />
 			</div>
 		) : this.loadingView;
 	}

@@ -21,7 +21,7 @@ class Navigation extends PureComponent {
 	}
 
 	render() {
-		const { className, active, scroll, totalCartItems } = this.props;
+		const { className, active, scroll, totalCartItems, isLogin } = this.props;
 
 		// const isSticky = (oldPos = this.currentScrollPos) => {
 		// 	if (!scroll) {
@@ -36,17 +36,27 @@ class Navigation extends PureComponent {
 			scroll && scroll.isNavSticky ? styles.hide : '',
 			className
 		);
+		const profileUrl = isLogin ? '/profile' : '/login?redirect_uri=/profile';
+
+
+		const homeAttribute = {
+			to: '/',
+			icon: 'ico_home-new.svg',
+			label: 'Home',
+		};
+
+		if (active !== 'Home') {
+			homeAttribute.icon = 'ico_home.svg';
+		} else if (active === 'Home') {
+			homeAttribute.active = 'Home';
+		}
+
 
 		return (
 			<nav className={createClassName} >
 				<div className={styles.wrapper}>
 					<div className={styles.navigation} ref={(r) => { this.botNav = r; }}>
-						<Item
-							to='/'
-							icon='ico_home.svg'
-							label='Home'
-							active={active === 'Home'}
-						/>
+						<Item {...homeAttribute} />
 						<Item
 							to={'/category'}
 							icon='ico_categories.svg'
@@ -68,7 +78,7 @@ class Navigation extends PureComponent {
 							active={active === 'Promo'}
 						/>
 						<Item
-							to='/profile'
+							to={profileUrl}
 							icon='ico_user.svg'
 							label='Profile'
 							active={active === 'Profile'}

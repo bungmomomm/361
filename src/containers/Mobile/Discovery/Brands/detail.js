@@ -35,7 +35,7 @@ import {
 	categoryViewBuilder,
 	productClickBuilder
 } from '@/utils/tracking';
-import { userToken, pageReferrer } from '@/data/cookiesLabel';
+import { userToken, pageReferrer, isLogin } from '@/data/cookiesLabel';
 
 const trackBrandPageView = (products, info, props) => {
 	const productId = _.map(products, 'product_id') || [];
@@ -99,6 +99,7 @@ class Detail extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
+		this.isLogin = this.props.cookies.get(isLogin) === 'true';
 		this.listType = [{
 			type: 'list',
 			icon: 'ico_grid.svg'
@@ -462,7 +463,7 @@ class Detail extends Component {
 				{(!showFilter) && (
 					<div>
 						{this.renderHeader()}
-						<Navigation {...navigationAttribute} botNav={this.props.botNav} />
+						<Navigation {...navigationAttribute} botNav={this.props.botNav} isLogin={this.isLogin} />
 					</div>
 				)}
 			</div>

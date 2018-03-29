@@ -42,7 +42,7 @@ class SearchResults extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) || false;
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true';
 
 		const propsObject = _.chain(props.searchResults);
 		this.state = {
@@ -228,6 +228,7 @@ class SearchResults extends Component {
 			scroll: this.props.scroll
 		};
 		navigationAttribute.active = cookies.get(cookiesLabel.pageReferrer);
+		navigationAttribute.isLogin = this.isLogin;
 
 
 		return (

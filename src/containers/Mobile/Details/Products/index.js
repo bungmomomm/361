@@ -149,7 +149,8 @@ class Products extends Component {
 				slideIndex: 0
 			},
 			selectedVariant: {},
-			btnBeliLabel: 'BELI AJA'
+			btnBeliLabel: 'BELI AJA',
+			outOfStock: false
 		};
 
 		this.loadingContent = (
@@ -185,7 +186,7 @@ class Products extends Component {
 	componentWillReceiveProps(nextProps) {
 		const { product, lovelist, dispatch } = nextProps;
 		const { detail } = product;
-		const { status } = this.state;
+		const { status, outOfStock } = this.state;
 		let { cardProduct, selectedVariant, size } = this.state;
 
 		status.loading = product.loading;
@@ -214,7 +215,7 @@ class Products extends Component {
 			}
 
 			// disable enabled button BELI AJA
-			if (_.isEmpty(cardProduct.variants) ||
+			if (_.isEmpty(cardProduct.variants) || outOfStock || 
 				cardProduct.productStock === 0 || detail.is_product_available === 0) {
 				status.btnBeliDisabled = true;
 			} else {
@@ -443,8 +444,8 @@ class Products extends Component {
 	}
 
 	handleImageItemClick() {
-		const { status } = this.state;
-		status.isZoomed = true;
+		const { status, outOfStock } = this.state;
+		if (!outOfStock) status.isZoomed = true;
 		this.setState({ status });
 	}
 
@@ -588,8 +589,7 @@ class Products extends Component {
 		const { detail } = this.props.product;
 
 		if (!_.isEmpty(detail)) {
-			const { status } = this.state;
-			const brandName = !_.isEmpty(detail.brand.name) ? detail.brand.name : '';
+			const { status, outOfStock } = this.state;
 			const shopBageContent = (
 				<Button onClick={() => this.redirectToPage('carts')} className='margin--medium-l'>
 					<Svg src={'ico_cart.svg'} />
@@ -598,8 +598,10 @@ class Products extends Component {
 					}
 				</Button>
 			);
+			let brandName = !_.isEmpty(detail.brand.name) ? detail.brand.name : '';
+			brandName = (outOfStock) ? 'PRODUK TIDAK TERSEDIA' : brandName;
 
-			if (status.showScrollInfomation) {
+			if (status.showScrollInfomation || outOfStock) {
 				return {
 					left: (
 						<Button onClick={this.goBackPreviousPage} >
@@ -681,8 +683,9 @@ class Products extends Component {
 			const { match, product } = this.props;
 			const { detail, socialSummary, promo, loading, store } = product;
 			const { seller, comments, reviews } = socialSummary;
-			const { cardProduct, status, carousel, selectedVariant, showFullProductDescription } = this.state;
+			const { cardProduct, status, carousel, selectedVariant, showFullProductDescription, outOfStock } = this.state;
 			const { id } = detail;
+			const promoProductsLoading = (loading && _.isEmpty(promo.recommended_items.products));
 
 			const buttonProductDescriptionAttribute = {
 				onClick: this.handleShowMoreProductDescription
@@ -743,6 +746,7 @@ class Products extends Component {
 										linkToPdpDisabled={this.linkToPdpDisabled}
 										totalComments={comments.total}
 										totalLovelist={cardProduct.totalLovelist}
+										outOfStock={outOfStock}
 									/>
 								</div>
 							)}
@@ -863,7 +867,7 @@ class Products extends Component {
 								{/* ----------------------------	PROMOS PRODUCTs ---------------------------- */}
 								<Promos
 									promo={promo}
-									loading={status.loading}
+									loading={promoProductsLoading}
 									loginNow={this.handleLovelistClick}
 									productId={detail.id}
 								/>
@@ -887,7 +891,7 @@ class Products extends Component {
 							)
 						}
 					</Page>
-					<Header.Modal style={!status.showScrollInfomation ? { backgroundColor: 'transparent', border: 'none', boxShadow: 'none' } : {}} {...this.renderHeaderPage()} />
+					<Header.Modal style={(!status.showScrollInfomation && !outOfStock) ? { backgroundColor: 'transparent', border: 'none', boxShadow: 'none' } : {}} {...this.renderHeaderPage()} />
 
 					{/* MODALS */}
 					<Modal show={status.showConfirmDelete}>

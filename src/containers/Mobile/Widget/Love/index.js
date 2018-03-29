@@ -66,7 +66,7 @@ class Love extends PureComponent {
 			response = await to(dispatch(lovelistActions.removeFromLovelist(cookies.get('user.token'), data)));
 			if (response[0]) {
 				isError = true;
-				message = 'Gagal menyimpan Produk di lovelist';
+				message = 'Gagal menghapus Produk dari lovelist';
 			}
 			if (response[1]) {
 				this.setState({
@@ -92,15 +92,16 @@ class Love extends PureComponent {
 		this.setState({
 			loading: false
 		});
-		if (isError) {
-			dispatch(sharedActions.showSnack(uniqid('err-'),
-				{
-					label: message,
-					timeout: 3000
-				},
-				toastSytle()
-			));
 
+		dispatch(sharedActions.showSnack(uniqid('err-'),
+			{
+				label: message,
+				timeout: 3000
+			},
+			!isError ? toastSytle() : {}
+		));
+
+		if (!isError) {
 			if (onClick) {
 				onClick(data);
 			}
