@@ -63,6 +63,10 @@ class SearchResults extends Component {
 		};
 
 		this.loadingView = <Spinner />;
+		this.renderForeverBanner = (tprops) => {
+			const { shared, dispatch } = tprops;
+			return <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />;
+		};
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -172,6 +176,7 @@ class SearchResults extends Component {
 			<SearchNotFound
 				keyword={this.getKeyword()}
 				data={promoData}
+				renderForeverBanner={() => this.renderForeverBanner(this.props)}
 			/>
 		);
 	}
@@ -199,7 +204,7 @@ class SearchResults extends Component {
 		}
 		return (
 			<Page color='white'>
-				{this.renderForeverBanner()}
+				{this.renderForeverBanner(this.props)}
 				<div className='text-center margin--medium-v'>{info.product_count} Total Produk</div>
 				{listView}
 				<Footer isShow={this.state.isFooterShow} />
@@ -315,11 +320,6 @@ class SearchResults extends Component {
 		return tabsView;
 	}
 
-	renderForeverBanner() {
-		const { shared, dispatch } = this.props;
-
-		return <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />;
-	}
 
 	renderSearch() {
 		const { searchResults } = this.props;

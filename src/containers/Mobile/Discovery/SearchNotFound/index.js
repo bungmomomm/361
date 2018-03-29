@@ -74,10 +74,11 @@ class SearchNotFound extends PureComponent {
 	}
 
 	render() {
-		const { keyword } = this.props;
+		const { keyword, renderForeverBanner } = this.props;
 
 		return (
 			<Page color='white'>
+				{renderForeverBanner()}
 				<div className='text-center' >
 					<div className='margin--medium-v flex-center flex-middle'><Svg src='ico_no_result-search.svg' /></div>
 					<div className=' margin--small-v'>

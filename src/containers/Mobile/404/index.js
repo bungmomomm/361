@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import { urlBuilder } from '@/utils';
 import cookiesLabel from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
+import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 
 @handler
 class Page404 extends Component {
@@ -70,7 +71,7 @@ class Page404 extends Component {
 	}
 
 	render() {
-		const { history, promoData } = this.props;
+		const { history, promoData, shared, dispatch } = this.props;
 		const HeaderPage = {
 			left: (
 				<button onClick={() => (history.length < 2 ? history.push('/') : history.go(-2))}>
@@ -82,6 +83,7 @@ class Page404 extends Component {
 		return (
 			<div className='text-center' style={this.props.style}>
 				<Page color='white'>
+					{<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />}
 					{
 						(promoData.length === 0) ? (
 							<div className='margin--large-v'>
