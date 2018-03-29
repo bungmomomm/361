@@ -32,14 +32,14 @@ import xhandler from '@/containers/Mobile/Shared/handler';
 import { toastSytle } from '@/containers/Mobile/Shared/styleSnackbar';
 
 const fusion = new Payload(_);
-const trackAddToCart = (data, props, variant) => {
+const trackAddToCart = (data, props, variant, hasVariantSize = true) => {
 	const products = {
 		name: data.detail.title,
 		id: data.detail.id,
 		price: data.detail.price_range.effective_price,
 		brand: data.detail.brand.name,
 		category: data.detail.product_category_names.join('/'),
-		variant: variant.options[0].value,
+		variant: (hasVariantSize) ? variant.options[0].value : '',
 		variant_id: variant.id,
 		quantity: 1
 	};
@@ -296,31 +296,19 @@ class Products extends Component {
 
 		status.showScrollInfomation = ((top !== 0) && top > (carouselHeight / 2));
 		this.setState({ status });
-		// if (top > (carouselHeight / 2) && !status.showScrollInfomation) {
-		// if (top > (carouselHeight / 2)) {
-		// 	console.log('enter set show info');
-		// 	status.showScrollInfomation = true;
-		// 	this.setState({ status });
-		// }
-
-		// if (top === 100 || (top < carouselHeight)) {
-		// if ((top === 0 || top < carouselHeight) && status.showScrollInfomation) {
-		// 	status.showScrollInfomation = false;
-		// 	this.setState({ status });
-		// }
 	}
 
 	animateLovelist() {
-		this.setState({ animaiton: { ...this.state.animation, lovelist: true } });
+		this.setState({ animation: { ...this.state.animation, lovelist: true } });
 		setTimeout(() => {
-			this.setState({ animaiton: { ...this.state.animation, lovelist: false } });
+			this.setState({ animation: { ...this.state.animation, lovelist: false } });
 		}, 2000);
 	}
 
 	animateAddtoCart() {
-		this.setState({ animaiton: { ...this.state.animation, addToCart: true } });
+		this.setState({ animation: { ...this.state.animation, addToCart: true } });
 		setTimeout(() => {
-			this.setState({ animaiton: { ...this.state.animation, addToCart: false } });
+			this.setState({ animation: { ...this.state.animation, addToCart: false } });
 		}, 2000);
 	}
 
@@ -368,7 +356,7 @@ class Products extends Component {
 	addToShoppingBag(variant) {
 		this.animateAddtoCart();
 
-		const { status } = this.state;
+		const { status, cardProduct } = this.state;
 		const { dispatch, product } = this.props;
 
 		status.showModalSelectSize = false;
@@ -377,7 +365,9 @@ class Products extends Component {
 		const handler = new Promise((resolve, reject) => {
 			resolve(dispatch(shopBagActions.updateAction(this.userCookies, variant.id, this.defaultCount, 'add')));
 		});
+
 		let message = '';
+
 		handler.then((res) => {
 			// Fusion Add to Cart tracking...
 			const pricing = product.detail.variants[0].pricing.original;
@@ -405,8 +395,7 @@ class Products extends Component {
 				toastSytle(),
 			));
 
-			dispatch(productActions.productDetailAction(this.userCookies, product.detail.id));
-			trackAddToCart(product, this.props, variant);
+			trackAddToCart(product, this.props, variant, cardProduct.hasVariantSize);
 
 			// get product data
 			// dispatch(productActions.productDetailAction(this.userCookies, product.detail.id));
@@ -415,7 +404,7 @@ class Products extends Component {
 			this.setState({ status });
 			dispatch(sharedActions.showSnack(uniqid('err-'),
 				{
-					label: message,
+					label: err.message,
 					timeout: 3000
 				},
 				toastSytle(),
