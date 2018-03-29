@@ -62,29 +62,38 @@ class NewPassword extends Component {
 	onPasswordChange(value) {
 		const { pass2 } = this.state;
 		let isValidPassword = false;
+		let isValidConfirmPassword = false;
 		if (!validator.isEmpty(value) && validator.isLength(value, { min: 6, max: undefined })) {
 			isValidPassword = true;
 		}
 		if (pass2 !== '' && pass2 !== value) {
 			isValidPassword = false;
 		}
+		if (pass2 === value) {
+			isValidConfirmPassword = true;
+		}
 		this.setState({
 			pass1Typed: (value !== ''),
 			pass1: value,
-			isValidPassword
+			isValidPassword,
+			isValidConfirmPassword
 		});
 	}
 
 	onConfirmPasswordChange(value) {
 		const { pass1 } = this.state;
+
 		let isValidConfirmPassword = false;
+		let isValidPassword = false;
 		if (pass1 === value) {
 			isValidConfirmPassword = true;
+			isValidPassword = true;
 		}
 		this.setState({
 			pass2Typed: (value !== ''),
 			pass2: value,
-			isValidConfirmPassword
+			isValidConfirmPassword,
+			isValidPassword
 		});
 	}
 
