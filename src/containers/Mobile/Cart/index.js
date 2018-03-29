@@ -307,7 +307,7 @@ class Cart extends Component {
 		} else {
 			link = (<Link to='login?redirect_uri=/cart'>{wording}</Link>);
 		}
-		return this.props.shopBag.total !== null && (
+		return this.props.shopBag.total !== null ? (
 			<div className={styles.paymentLink}>
 				<div>
 					<div>
@@ -322,7 +322,7 @@ class Cart extends Component {
 					</div>
 				</div>
 			</div>
-		);
+		) : null;
 	}
 
 	renderMessageNotProcedItems() {
@@ -336,6 +336,17 @@ class Cart extends Component {
 			</div>
 		);
 	}
+
+	renderEmpty = () => {
+		return (
+			<div style={{ margin: 'auto' }}>
+				<div className='margin--medium-v flex-center flex-middle'><Svg src='mm_ico_no-order-shoppingbag.svg' /></div>
+				<div className='margin--small-v flex-center flex-middle'>
+					Anda belum memiliki produk di keranjang anda.
+				</div>
+			</div>
+		);
+	};
 
 	render() {
 		const headerOption = {
@@ -356,7 +367,7 @@ class Cart extends Component {
 			<div>
 				<Page color='white'>
 					{ (this.props.shopBag.total && this.props.shopBag.total.count_item === 0) ?
-						(<div dangerouslySetInnerHTML={{ __html: this.props.shopBag.empty_state }} />) :
+						(this.renderEmpty()) :
 						(<div style={{ backgroundColor: '#F5F5F5' }}>
 							{this.renderHeaderShopBag()}
 							{this.renderMessageNotProcedItems()}

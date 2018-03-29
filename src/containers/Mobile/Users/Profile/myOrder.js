@@ -139,7 +139,18 @@ class MyOrder extends Component {
 			}]
 		});
 
-		const renderEmptyOrders = (<div> Tidak ada order</div>);
+		const renderEmptyOrders = (
+			<div style={{ margin: 'auto' }}>
+				<div className='margin--medium-v flex-center flex-middle'><Svg src='mm_ico_no-order-shoppingbag.svg' /></div>
+				<div className='margin--small-v flex-center flex-middle'>
+					Anda belum memiliki pesanan.
+				</div>
+			</div>
+		);
+
+		const pageAttribute = {
+			color: (this.props.user.isNoOrders === null) ? 'white' : 'grey'
+		};
 
 		const content = (this.props.user.isNoOrders === false) ? (
 			<aux>
@@ -148,11 +159,12 @@ class MyOrder extends Component {
 					{ this.props.scroller.loading && (<Spinner />)}
 				</div>
 			</aux>
-		) : (<aux> {renderEmptyOrders} </aux>);
+		) : null;
 
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page {...pageAttribute}>
+					{ this.props.user.isNoOrders === null ? renderEmptyOrders : null }
 					<div className='margin--medium'>
 						{content}
 					</div>

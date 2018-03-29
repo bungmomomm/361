@@ -35,7 +35,7 @@ class CreditCard extends Component {
 		this.renderDeleteCreditCardPopUpConfirmation = this.renderDeleteCreditCardPopUpConfirmation.bind(this);
 		this.renderSetDefaultCreditCardPopUpConfirmation = this.renderSetDefaultCreditCardPopUpConfirmation.bind(this);
 		this.renderCreditCardList = this.renderCreditCardList.bind(this);
-
+		this.renderEmpty = this.renderEmpty.bind(this);
 		this.state = {
 			successMessage: '',
 			temporaryCheckedCreditCardValueForSetDefault: null,
@@ -159,6 +159,21 @@ class CreditCard extends Component {
 		);
 	}
 
+	renderEmpty() {
+		const { users } = this.props;
+		if (_.isEmpty(users.creditCard) === true) {
+			return (
+				<div style={{ margin: 'auto' }}>
+					<div className='margin--medium-v flex-center flex-middle'><Svg src='mm_ico-nocc.svg' /></div>
+					<div className='margin--small-v flex-center flex-middle'>
+						Anda belum memiliki daftar kartu kredit.
+					</div>
+				</div>
+			);
+		}
+		return null;
+	}
+
 	renderCreditCardList() {
 
 
@@ -278,6 +293,14 @@ class CreditCard extends Component {
 	render() {
 
 		const { successMessage } = this.state;
+		const { users } = this.props;
+		const pageAttribute = {
+			color: 'grey'
+		};
+
+		if (_.isEmpty(users.creditCard) === true) {
+			pageAttribute.color = 'white';
+		}
 
 		const notificationSuccessSetDefaultAttribute = {
 			color: 'yellow',
@@ -298,14 +321,13 @@ class CreditCard extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page>
+				<Page {...pageAttribute}>
 					{ successMessage !== '' && (
 						<Notification {...notificationSuccessSetDefaultAttribute}>
 							{successMessage}
 						</Notification>
 					) }
-
-					{ this.renderCreditCardList() }
+					{ (_.isEmpty(users.creditCard)) ? this.renderEmpty() : this.renderCreditCardList() }
 					{ this.renderDeleteCreditCardPopUpConfirmation() }
 					{ this.renderSetDefaultCreditCardPopUpConfirmation() }
 				</Page>

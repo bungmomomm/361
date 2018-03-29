@@ -124,7 +124,18 @@ class Address extends Component {
         
 		const defaultAddress = _.filter(address.address.shipping, ['fg_default', 1]);
 		const notDefaultAddress = _.orderBy(address.address.shipping, ['id'], ['desc']);
-		
+		const renderEmptyAddress = (
+			<div style={{ margin: 'auto' }}>
+				<div className='margin--medium-v flex-center flex-middle'><Svg src='mm_ico_no-order-shoppingbag.svg' /></div>
+				<div className='margin--small-v flex-center flex-middle'>
+					Anda belum memiliki daftar alamat.
+				</div>
+			</div>
+		);
+
+		console.log('this.props');
+		console.log(this.props);
+
 		return (
 			<div style={this.props.style}>
 				<Page color='grey'>
@@ -138,6 +149,7 @@ class Address extends Component {
 							</Level.Right>
 						</Level>
 					</Link>
+					{ this.props.address.shipping === null ? renderEmptyAddress : null }
 					{
 						defaultAddress.map((v, k) => {
 							return this.listAddressMaker({
