@@ -120,8 +120,12 @@ class CatalogView extends Component {
 	}
 
 	commentOnChange(e) {
-		const { newComment } = this.state;
+		const { newComment, counterLimit } = this.state;
 		const value = util.format('%s', e.target.value);
+
+		if (value.length > counterLimit) {
+			return;
+		}
 
 		if (value.length > 0) {
 			this.setState({ showCounter: true, counterValue: value.length });
@@ -130,7 +134,7 @@ class CatalogView extends Component {
 		}
 
 		let validForm = false;
-		if (!validator.isEmpty(value) && value.length <= 300) {
+		if (!validator.isEmpty(value) && value.length <= counterLimit) {
 			validForm = true;
 		}
 
@@ -147,7 +151,8 @@ class CatalogView extends Component {
 		const { comments, cookies, focusedProductId, redirectPath } = this.props;
 		const {
 			commentLoading,
-			validForm, showCounter, showSendButton, counterValue, counterLimit
+			validForm, showCounter, showSendButton, counterValue, counterLimit,
+			newComment
 		} = this.state;
 
 		if (comments.isLoading) {
@@ -221,6 +226,7 @@ class CatalogView extends Component {
 											as='textarea'
 											color='white'
 											placeholder='Tulis komentar..'
+											value={newComment.comment}
 											onClickInputAction={() => this.setFocusedProduct(product.product_id)}
 											{...commentProps}
 										/>
