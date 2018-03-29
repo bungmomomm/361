@@ -42,3 +42,11 @@
         justify-content: left;
     }
 }
+
+.productDescription {
+    padding: 0 15px;
+    margin: 15px 0;
+    ul, ol {
+		padding-left: rem(15px);
+    }
+}

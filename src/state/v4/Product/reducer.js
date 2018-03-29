@@ -70,40 +70,45 @@ const {
 );
 
 const reducer = handleActions({
-	[productDetail](state, { payload: { detail } }) {
+	[productDetail](state, { payload: { detail, loading } }) {
 		return {
 			...state,
-			detail
+			detail,
+			loading: false
 		};
 	},
-	[productSocialSummary](state, { payload: { socialSummary } }) {
+	[productSocialSummary](state, { payload: { socialSummary, loading } }) {
 		return {
 			...state,
 			socialSummary,
+			loading: false
 		};
 	},
-	[productPromotion](state, { payload: { promo } }) {
+	[productPromotion](state, { payload: { promo, loading } }) {
 		return {
 			...state,
 			promo,
+			loading: false
 		};
 	},
-	[productStore](state, { payload: { store } }) {
+	[productStore](state, { payload: { store, loading } }) {
 		return {
 			...state,
 			store,
+			loading: false
 		};
 	},
-	[allProductReviews](state, { payload: { allReviews } }) {
+	[allProductReviews](state, { payload: { allReviews, loading } }) {
 		return {
 			...state,
-			allReviews
+			allReviews,
+			loading: false
 		};
 	},
 	[productLoading](state, { payload: { loading } }) {
 		return {
 			...state,
-			loading,
+			loading
 		};
 	},
 }, initialState);
