@@ -554,6 +554,7 @@ class Products extends Component {
 				toastSytle(),
 			));
 
+			dispatch(sharedActions.totalLovelistAction(this.userCookies));
 		}).catch((err) => {
 			status.showConfirmDelete = false;
 			dispatch(sharedActions.showSnack(uniqid('err-'),
