@@ -44,10 +44,10 @@ class Brands extends Component {
 		this.onAlphabetsClick = (id) => {
 			const section = document.getElementById(String(id.trim()));
 			const sUsrAg = window.navigator.userAgent;
-			if ((sUsrAg.indexOf('Chrome') > -1) || (sUsrAg.indexOf('Firefox') > -1)) {
-				document.body.parentNode.scrollTop = section.offsetTop;
-			} else {
+			if ((sUsrAg.indexOf('Safari') > -1)) {
 				document.body.scrollTop = section.offsetTop;
+			} else {
+				document.body.parentNode.scrollTop = section.offsetTop;
 			}
 		};
 	}
