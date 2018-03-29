@@ -9,6 +9,7 @@ import { Promise } from 'es6-promise';
 import { userToken, isLogin } from '@/data/cookiesLabel';
 import styles from './style.scss';
 import handler from '@/containers/Mobile/Shared/handler';
+import _ from 'lodash';
 
 @handler
 class Address extends Component {
@@ -18,17 +19,19 @@ class Address extends Component {
 		this.props = props;
 		this.state = {
 			AddressModalIndicator: false,
-			selectedAddress: false,
-			showConfirmDelete: false
+			selectedAddress: false
 		};
 		this.showAddressModal = this.showAddressModal.bind(this);
 		this.hideAddressModal = this.hideAddressModal.bind(this);
+		this.listAddressMaker = this.listAddressMaker.bind(this);
 	}
 
 	setDefault = async () => {
 		const { dispatch, cookies } = this.props;
-		await dispatch(actions.setDefaultAddress(cookies.get('user.token'), this.state.selectedAddress));
-		window.location.reload();
+		const { selectedAddress } = this.state;
+		await dispatch(actions.setDefaultAddress(cookies.get(userToken), selectedAddress));
+		await dispatch(actions.getAddress(cookies.get(userToken)));
+		this.hideAddressModal();
 	};
 
 	showAddressModal(id) {
@@ -47,17 +50,17 @@ class Address extends Component {
 
 	deleteAddress = async () => {
 		const { dispatch, cookies, address } = this.props;
-		if (!this.state.selectedAddress) {
+		const { selectedAddress } = this.state;
+		if (!selectedAddress) {
 			return Promise.reject(new Error('Invalid address id, please contact administrator.'));
 		}
 
-		await dispatch(actions.deleteAddress(cookies.get('user.token'), this.state.selectedAddress));
+		await dispatch(actions.deleteAddress(cookies.get(userToken), selectedAddress));
 		const mutatedShipping = address.address.shipping.filter((v) => {
-			return v.id !== this.state.selectedAddress;
+			return v.id !== selectedAddress;
 		});
 
 		this.hideAddressModal();
-		this.setState({ showConfirmDelete: false });
 		return dispatch(actions.mutateState({
 			address: {
 				...address.address,
@@ -66,6 +69,30 @@ class Address extends Component {
 		}));
 	};
 
+	listAddressMaker(options) {
+		return (
+			<div key={options.key}>
+				<Level className='bg--white border-bottom' key={options.key}>
+					<Level.Left className='d-inline-block'>
+						<strong>{options.address_label}</strong>&nbsp;{(options.default === 1) ? '(Alamat Utama)' : null }
+					</Level.Left>
+					<Level.Right style={{ justifyContent: 'center' }}>
+						<Svg
+							src='ico_option.svg'
+							onClick={() => this.showAddressModal(options.id)}
+						/>
+					</Level.Right>
+				</Level>
+				<Level className='bg--white margin--medium-b flex-column'>
+					<div className={styles.fullName}><strong>{options.fullname}</strong></div>
+					<div><p>{options.address}, {options.province}, {options.city}, {options.district}, {options.zipcode}</p></div>
+					<div><p>{options.phone}</p></div>
+					<div className={styles.locationMarked}>{(options.is_supported_pin_point === 1) ? options.placeHasBeenMarkedContent : null }</div>
+				</Level>
+			</div>
+		);
+	}
+	
 	renderData = () => {
 
 		const { AddressModalIndicator } = this.state;
@@ -79,7 +106,14 @@ class Address extends Component {
 			center: 'Buku Alamat',
 			right: null
 		};
-
+		
+		const placeHasBeenMarkedContent = (
+			<div className='flex-row flex-middle'>
+				<div className='margin--small-r'><Svg src='ico_pin-poin-marked.svg' /></div>
+				<div>&nbsp;Lokasi sudah ditandai</div>
+			</div>
+		);
+  
 		const ModalAttribute = {
 			show: false
 		};
@@ -87,10 +121,13 @@ class Address extends Component {
 		if (AddressModalIndicator === true) {
 			ModalAttribute.show = true;
 		}
-
+        
+		const defaultAddress = _.filter(address.address.shipping, ['fg_default', 1]);
+		const notDefaultAddress = _.orderBy(address.address.shipping, ['id'], ['desc']);
+		
 		return (
 			<div style={this.props.style}>
-				<Page color='white'>
+				<Page color='grey'>
 					<Link to='/address/add' className='bg--white margin--medium-t margin--medium-b'>
 						<Level>
 							<Level.Left>
@@ -101,37 +138,45 @@ class Address extends Component {
 							</Level.Right>
 						</Level>
 					</Link>
-					{address.address.shipping.map((v, k) => {
-						const { city, fullname, district, phone, province, zipcode, id } = v;
-						const placeHasBeenMarkedContent = (
-							<div className='flex-row flex-middle'>
-								<div className='margin--small-r'><Svg src='ico_pin-poin-marked.svg' /></div>
-								<div>&nbsp;Lokasi sudah ditandai</div>
-							</div>
-						);
-						return (
-
-							<div key={k}>
-								<Level className='bg--white border-bottom' key={k}>
-									<Level.Left className='d-inline-block'>
-										<strong>{v.address_label}</strong>&nbsp;{(v.fg_default === 1) ? '(Alamat Utama)' : null }
-									</Level.Left>
-									<Level.Right style={{ justifyContent: 'center' }}>
-										<Svg
-											src='ico_option.svg'
-											onClick={() => this.showAddressModal(id)}
-										/>
-									</Level.Right>
-								</Level>
-								<Level className='bg--white margin--medium-b flex-column'>
-									<div className={styles.fullName}><strong>{fullname}</strong></div>
-									<div><p>{v.address}, {province}, {city}, {district}, {zipcode}</p></div>
-									<div><p>{phone}</p></div>
-									<div className={styles.locationMarked}>{(v.is_supported_pin_point === 1) ? placeHasBeenMarkedContent : null }</div>
-								</Level>
-							</div>
-						);
-					})}
+					{
+						defaultAddress.map((v, k) => {
+							return this.listAddressMaker({
+								key: k,
+								address_label: v.address_label,
+								id: v.id,
+								fullname: v.fullname,
+								address: v.address,
+								province: v.province,
+								city: v.city,
+								district: v.district,
+								zipcode: v.zipcode,
+								default: v.fg_default,
+								is_supported_pin_point: v.is_supported_pin_point,
+								placeHasBeenMarkedContent
+							});
+						})
+					}
+					{
+						notDefaultAddress.map((v, k) => {
+							if (v.fg_default === 0) {
+								return this.listAddressMaker({
+									key: k,
+									address_label: v.address_label,
+									id: v.id,
+									fullname: v.fullname,
+									address: v.address,
+									province: v.province,
+									city: v.city,
+									district: v.district,
+									zipcode: v.zipcode,
+									default: v.fg_default,
+									is_supported_pin_point: v.is_supported_pin_point,
+									placeHasBeenMarkedContent
+								});
+							}
+							return null;
+						})
+					}
 				</Page>
 
 				<Header.Modal {...HeaderPage} style={{ zIndex: 1 }} />
@@ -143,34 +188,15 @@ class Address extends Component {
 							<Level.Item className='flex-center'>
 								<Button className='padding--small' onClick={this.setDefault}>Jadikan Alamat Utama</Button>
 								<div className='padding--small'>
-									<Link to={`/address/edit/${this.state.selectedAddress}`}>
+									<Link to={`/address/edit/${this.state.selectedAddress}`} style={{ color: '#191919' }}>
 										Ubah Alamat
 									</Link>
 								</div>
-								<Button className='padding--small' onClick={() => { this.setState({ showConfirmDelete: true }); }}>Hapus Alamat</Button>
+								<Button className='padding--small' style={{ color: '#ED1C24' }} onClick={this.deleteAddress}>Hapus Alamat</Button>
 								<Button className='padding--small' onClick={this.hideAddressModal}>Batal</Button>
 							</Level.Item>
 						</Level>
 					</div>
-				</Modal>
-
-				<Modal show={this.state.showConfirmDelete}>
-					<div className='font-medium'>
-						<h3>Hapus Alamat</h3>
-						<Level style={{ padding: '0px' }} className='margin--medium-v'>
-							<Level.Left />
-							<Level.Item className='padding--medium-h'>
-								<div className='font-small'>Kamu yakin menghapus alamat ini?</div>
-							</Level.Item>
-						</Level>
-					</div>
-					<Modal.Action
-						closeButton={(
-							<Button onClick={() => { this.setState({ showConfirmDelete: false }); }}>
-								<span className='font-color--primary-ext-2'>BATALKAN</span>
-							</Button>)}
-						confirmButton={(<Button onClick={this.deleteAddress}>YA, HAPUS</Button>)}
-					/>
 				</Modal>
 			</div>
 		);
