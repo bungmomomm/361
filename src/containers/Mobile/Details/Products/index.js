@@ -107,6 +107,7 @@ class Products extends Component {
 		this.slideWrapAround = true;
 		this.linkToPdpDisabled = true;
 		this.updateCard = false;
+		this.botNavUp = false;
 
 		this.closeZoomImage = this.closeZoomImage.bind(this);
 		this.goBackPreviousPage = this.goBackPreviousPage.bind(this);
@@ -179,10 +180,6 @@ class Products extends Component {
 		window.scroll(0, 0);
 	}
 
-	componentDidMount() {
-		if (this.props.botNav) this.props.botNav(this.botNav);
-	}
-
 	componentWillReceiveProps(nextProps) {
 		const { product, lovelist, dispatch } = nextProps;
 		const { detail } = product;
@@ -215,7 +212,7 @@ class Products extends Component {
 			}
 
 			// disable enabled button BELI AJA
-			if (_.isEmpty(cardProduct.variants) || outOfStock || 
+			if (_.isEmpty(cardProduct.variants) || outOfStock ||
 				cardProduct.productStock === 0 || detail.is_product_available === 0) {
 				status.btnBeliDisabled = true;
 			} else {
@@ -237,6 +234,15 @@ class Products extends Component {
 		// updates states
 		this.setState({ status, cardProduct, selectedVariant, size });
 		this.handleScroll();
+	}
+
+	componentDidUpdate() {
+		if (this.props.botNav && this.botNav) {
+			if (!this.botNavUp) {
+				this.props.botNav(this.botNav);
+				this.botNavUp = true;
+			}
+		}
 	}
 
 	componentWillUnmount() {
