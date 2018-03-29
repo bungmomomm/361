@@ -107,6 +107,7 @@ class Seller extends Component {
 			type: 'small',
 			icon: 'ico_list.svg'
 		}];
+		this.activeNav = 'Home';
 
 		const propsObject = _.chain(props.seller);
 
@@ -134,6 +135,24 @@ class Seller extends Component {
 
 	componentWillMount() {
 		window.addEventListener('scroll', this.onScroll, true);
+	}
+
+	componentDidMount() {
+		let product = false;
+
+		window.surfs.some((item) => {
+			if (item.pathname.indexOf('.html') !== -1) product = true;
+
+			if (product && ['', '/'].includes(item.pathname)) return true;
+
+			if (product && item.pathname.indexOf('/category') !== -1) {
+				this.activeNav = 'Categories';
+				console.log('Categories');
+				return true;
+			};
+
+			return false;
+		});
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -324,7 +343,7 @@ class Seller extends Component {
 				)}
 			</div>
 		);
-	}
+	};
 
 	toggleSeeMore = () => {
 		this.setState({
@@ -457,8 +476,8 @@ class Seller extends Component {
 		const title = seller.info.seller;
 		const url = `${process.env.MOBILE_URL}${location.pathname}${location.search}`;
 		const storename = (!title) ? '' : (title.length > 30) ? `${title.substring(0, 30)}&hellip;` : title;
-		const prevLocation = _.chain(window.prevLocation).get('pathname').value();
-		const activeNav = prevLocation && prevLocation.indexOf('.html') > -1 ? 'Categories' : ['', '/'].includes(prevLocation) ? 'Home' : null;
+		// const prevLocation = _.chain(window.prevLocation).get('pathname').value();
+		// const activeNav = prevLocation && prevLocation.indexOf('.html') > -1 ? 'Categories' : ['', '/'].includes(prevLocation) ? 'Home' : null;
 
 		const HeaderPage = {
 			left: (
@@ -494,7 +513,7 @@ class Seller extends Component {
 						</Page>
 
 						<Header.Modal {...HeaderPage} style={{ zIndex: 1 }} />
-						<Navigation scroll={this.props.scroll} active={activeNav} botNav={this.props.botNav} />
+						<Navigation scroll={this.props.scroll} active={this.activeNav} botNav={this.props.botNav} />
 					</div>
 				)}
 			</span>
