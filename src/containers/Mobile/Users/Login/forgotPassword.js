@@ -49,21 +49,15 @@ class ForgotPassword extends Component {
 	async onResetPassword(e) {
 		const { dispatch, cookies } = this.props;
 		const { userName, useOtp } = this.state;
-		const [err, response] = await to(dispatch(new users.userForgotPassword(cookies.get(userToken), userName)));
-		if (err) {
-			this.setState({
-				error: true,
-			});
-			return err;
-		}
+		const response = await to(dispatch(new users.userForgotPassword(cookies.get(userToken), userName)));
 		this.setState({
 			error: false,
-			data: response.data,
-			message: response.data.message,
+			data: response[1] ? response[1].data : '',
+			message: response[1] ? response[1].message : '',
 			showModal: !useOtp,
 			showOtp: useOtp
 		});
-		return response;
+		return response[1];
 	}
 
 	onBack(e) {
