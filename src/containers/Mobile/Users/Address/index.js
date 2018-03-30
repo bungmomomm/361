@@ -96,12 +96,12 @@ class Address extends Component {
 	renderData = () => {
 
 		const { AddressModalIndicator } = this.state;
-		const { history, address } = this.props;
+		const { address } = this.props;
 		const HeaderPage = {
 			left: (
-				<Button onClick={history.goBack}>
+				<Link to={'/profile'}>
 					<Svg src={'ico_arrow-back-left.svg'} />
-				</Button>
+				</Link>
 			),
 			center: 'Buku Alamat',
 			right: null
@@ -117,17 +117,36 @@ class Address extends Component {
 		const ModalAttribute = {
 			show: false
 		};
-
+		
+		const pageAttribute = {
+			color: 'grey'
+		};
+		
+		if (_.isEmpty(address.address) || _.isEmpty(address.address.shipping)) {
+			pageAttribute.color = 'white';
+		}
+		
 		if (AddressModalIndicator === true) {
 			ModalAttribute.show = true;
 		}
         
 		const defaultAddress = _.filter(address.address.shipping, ['fg_default', 1]);
 		const notDefaultAddress = _.orderBy(address.address.shipping, ['id'], ['desc']);
-		
+		const renderEmptyAddress = (
+			<div style={{ margin: 'auto' }}>
+				<div className='margin--medium-v flex-center flex-middle'><Svg src='mm_ico_no-order-shoppingbag.svg' /></div>
+				<div className='margin--small-v flex-center flex-middle'>
+					Anda belum memiliki daftar alamat.
+				</div>
+			</div>
+		);
+
+		console.log('this.props');
+		console.log(this.props);
+
 		return (
 			<div style={this.props.style}>
-				<Page color='grey'>
+				<Page {...pageAttribute}>
 					<Link to='/address/add' className='bg--white margin--medium-t margin--medium-b'>
 						<Level>
 							<Level.Left>
@@ -138,6 +157,7 @@ class Address extends Component {
 							</Level.Right>
 						</Level>
 					</Link>
+					{ _.isEmpty(address.address) || _.isEmpty(address.address.shipping) ? renderEmptyAddress : null }
 					{
 						defaultAddress.map((v, k) => {
 							return this.listAddressMaker({

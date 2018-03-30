@@ -1034,7 +1034,7 @@ const mapStateToProps = (state) => {
 		product: state.product,
 		shared: state.shared,
 		lovelist: state.lovelist,
-		users: state.users
+		users: state.users 
 	};
 };
 

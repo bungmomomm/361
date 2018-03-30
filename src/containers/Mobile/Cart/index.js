@@ -308,6 +308,7 @@ class Cart extends Component {
 	renderCheckoutButton() {
 		let link = null;
 		const wording = (<aux>Lanjutkan ke Pembayaran <Svg color='#fff' src='ico_arrow-back.svg' /></aux>);
+		const { shopBag } = this.props;
 		if (this.isLogin === 'true') {
 			if (this.state.itemsNotProced.length > 0) {
 				link = (<a>{wording}</a>);
@@ -317,7 +318,7 @@ class Cart extends Component {
 		} else {
 			link = (<Link to='login?redirect_uri=/cart'>{wording}</Link>);
 		}
-		return this.props.shopBag.total !== null && (
+		return shopBag.total.count_item !== 0 ? (
 			<div className={styles.paymentLink}>
 				<div>
 					<div>
@@ -332,7 +333,7 @@ class Cart extends Component {
 					</div>
 				</div>
 			</div>
-		);
+		) : null;
 	}
 
 	renderMessageNotProcedItems() {
@@ -346,6 +347,24 @@ class Cart extends Component {
 			</div>
 		);
 	}
+
+	renderEmpty = () => {
+		return (
+			<div style={{ margin: 'auto' }}>
+				<div className='margin--medium-v flex-middle'><Svg src='mm_ico_no-order-shoppingbag.svg' /></div>
+				<div className='margin--small-v flex-middle'>
+					Anda belum memiliki produk di keranjang anda.
+				</div>
+				<div className='margin--medium-v flex-center flex-middle'>
+					<Link to='/category'>
+						<Button color='secondary' size='large'>
+							Beli Aja
+						</Button>
+					</Link>
+				</div>
+			</div>
+		);
+	};
 
 	render() {
 		const headerOption = {
@@ -366,7 +385,7 @@ class Cart extends Component {
 			<div>
 				<Page color='white'>
 					{ (this.props.shopBag.total && this.props.shopBag.total.count_item === 0) ?
-						(<div dangerouslySetInnerHTML={{ __html: this.props.shopBag.empty_state }} />) :
+						(this.renderEmpty()) :
 						(<div style={{ backgroundColor: '#F5F5F5' }}>
 							{this.renderHeaderShopBag()}
 							{this.renderMessageNotProcedItems()}
