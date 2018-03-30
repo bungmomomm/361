@@ -19,7 +19,8 @@ class Address extends Component {
 		this.props = props;
 		this.state = {
 			AddressModalIndicator: false,
-			selectedAddress: false
+			selectedAddress: false,
+			showConfirmDelete: false
 		};
 		this.showAddressModal = this.showAddressModal.bind(this);
 		this.hideAddressModal = this.hideAddressModal.bind(this);
@@ -61,6 +62,7 @@ class Address extends Component {
 		});
 
 		this.hideAddressModal();
+		this.setState({ showConfirmDelete: false });
 		return dispatch(actions.mutateState({
 			address: {
 				...address.address,
@@ -92,7 +94,7 @@ class Address extends Component {
 			</div>
 		);
 	}
-	
+
 	renderData = () => {
 
 		const { AddressModalIndicator } = this.state;
@@ -106,30 +108,30 @@ class Address extends Component {
 			center: 'Buku Alamat',
 			right: null
 		};
-		
+
 		const placeHasBeenMarkedContent = (
 			<div className='flex-row flex-middle'>
 				<div className='margin--small-r'><Svg src='ico_pin-poin-marked.svg' /></div>
 				<div>&nbsp;Lokasi sudah ditandai</div>
 			</div>
 		);
-  
+
 		const ModalAttribute = {
 			show: false
 		};
-		
+
 		const pageAttribute = {
 			color: 'grey'
 		};
-		
+
 		if (_.isEmpty(address.address) || _.isEmpty(address.address.shipping)) {
 			pageAttribute.color = 'white';
 		}
-		
+
 		if (AddressModalIndicator === true) {
 			ModalAttribute.show = true;
 		}
-        
+
 		const defaultAddress = _.filter(address.address.shipping, ['fg_default', 1]);
 		const notDefaultAddress = _.orderBy(address.address.shipping, ['id'], ['desc']);
 		const renderEmptyAddress = (
@@ -212,11 +214,30 @@ class Address extends Component {
 										Ubah Alamat
 									</Link>
 								</div>
-								<Button className='padding--small' style={{ color: '#ED1C24' }} onClick={this.deleteAddress}>Hapus Alamat</Button>
+								<Button className='padding--small' style={{ color: '#ED1C24' }} onClick={() => { this.setState({ showConfirmDelete: true }); }}>Hapus Alamat</Button>
 								<Button className='padding--small' onClick={this.hideAddressModal}>Batal</Button>
 							</Level.Item>
 						</Level>
 					</div>
+				</Modal>
+
+				<Modal show={this.state.showConfirmDelete}>
+					<div className='font-medium'>
+						<h3>Hapus Alamat</h3>
+						<Level style={{ padding: '0px' }} className='margin--medium-v'>
+							<Level.Left />
+							<Level.Item className='padding--medium-h'>
+								<div className='font-small'>Kamu yakin menghapus alamat ini?</div>
+							</Level.Item>
+						</Level>
+					</div>
+					<Modal.Action
+						closeButton={(
+							<Button onClick={() => { this.setState({ showConfirmDelete: false }); }}>
+								<span className='font-color--primary-ext-2'>BATALKAN</span>
+							</Button>)}
+						confirmButton={(<Button onClick={this.deleteAddress}>YA, HAPUS</Button>)}
+					/>
 				</Modal>
 			</div>
 		);
