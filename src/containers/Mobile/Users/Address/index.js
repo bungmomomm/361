@@ -143,9 +143,6 @@ class Address extends Component {
 			</div>
 		);
 
-		console.log('this.props');
-		console.log(this.props);
-
 		return (
 			<div style={this.props.style}>
 				<Page {...pageAttribute}>
