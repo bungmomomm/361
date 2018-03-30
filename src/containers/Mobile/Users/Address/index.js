@@ -96,12 +96,12 @@ class Address extends Component {
 	renderData = () => {
 
 		const { AddressModalIndicator } = this.state;
-		const { history, address } = this.props;
+		const { address } = this.props;
 		const HeaderPage = {
 			left: (
-				<Button onClick={history.goBack}>
+				<Link to={'/profile'}>
 					<Svg src={'ico_arrow-back-left.svg'} />
-				</Button>
+				</Link>
 			),
 			center: 'Buku Alamat',
 			right: null
@@ -117,7 +117,15 @@ class Address extends Component {
 		const ModalAttribute = {
 			show: false
 		};
-
+		
+		const pageAttribute = {
+			color: 'grey'
+		};
+		
+		if (_.isEmpty(address.address) || _.isEmpty(address.address.shipping)) {
+			pageAttribute.color = 'white';
+		}
+		
 		if (AddressModalIndicator === true) {
 			ModalAttribute.show = true;
 		}
@@ -138,7 +146,7 @@ class Address extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page color='grey'>
+				<Page {...pageAttribute}>
 					<Link to='/address/add' className='bg--white margin--medium-t margin--medium-b'>
 						<Level>
 							<Level.Left>
@@ -149,7 +157,7 @@ class Address extends Component {
 							</Level.Right>
 						</Level>
 					</Link>
-					{ this.props.address.shipping === null ? renderEmptyAddress : null }
+					{ _.isEmpty(address.address) || _.isEmpty(address.address.shipping) ? renderEmptyAddress : null }
 					{
 						defaultAddress.map((v, k) => {
 							return this.listAddressMaker({

@@ -11,7 +11,8 @@ import {
 	Navigation,
 	Tabs,
 	List,
-	Spinner
+	Spinner,
+    Button
 } from '@/components/mobile';
 import styles from './profile.scss';
 import Scroller from '@/containers/Mobile/Shared/scroller';
@@ -141,9 +142,16 @@ class MyOrder extends Component {
 
 		const renderEmptyOrders = (
 			<div style={{ margin: 'auto' }}>
-				<div className='margin--medium-v flex-center flex-middle'><Svg src='mm_ico_no-order-shoppingbag.svg' /></div>
-				<div className='margin--small-v flex-center flex-middle'>
+				<div className='margin--medium-v flex-middle'><Svg src='mm_ico_no-order-shoppingbag.svg' /></div>
+				<div className='margin--small-v flex-middle'>
 					Anda belum memiliki pesanan.
+				</div>
+				<div className='margin--medium-v flex-center flex-middle'>
+					<Link to='/category'>
+						<Button color='secondary' size='large'>
+							Beli Aja
+						</Button>
+					</Link>
 				</div>
 			</div>
 		);

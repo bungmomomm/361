@@ -181,7 +181,7 @@ class CreditCard extends Component {
 
 		const { users } = this.props;
 
-		let view = (<div>Loading...</div>);
+		let view = null;
 
 		if (_.isEmpty(users.creditCard === false)) {
 
@@ -327,7 +327,8 @@ class CreditCard extends Component {
 							{successMessage}
 						</Notification>
 					) }
-					{ (_.isEmpty(users.creditCard)) ? this.renderEmpty() : this.renderCreditCardList() }
+					{ (_.isEmpty(users.creditCard)) ? this.renderEmpty() : null }
+					{ this.renderCreditCardList() }
 					{ this.renderDeleteCreditCardPopUpConfirmation() }
 					{ this.renderSetDefaultCreditCardPopUpConfirmation() }
 				</Page>
