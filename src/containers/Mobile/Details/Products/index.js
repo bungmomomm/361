@@ -75,7 +75,7 @@ const trackPdpView = (data, props) => {
 		userIdEncrypted: userProfile.enc_userid,
 		userId: userProfile.id,
 		ipAddress: shared.ipAddress,
-		currentUrl: this.props.location.pathname,
+		currentUrl: props.location.pathname,
 		products: [products],
 		fusionSessionId: Utils.getSessionID(),
 		storeName: data.detail.seller.seller
@@ -1033,7 +1033,8 @@ const mapStateToProps = (state) => {
 	return {
 		product: state.product,
 		shared: state.shared,
-		lovelist: state.lovelist
+		lovelist: state.lovelist,
+		users: state.users 
 	};
 };
 

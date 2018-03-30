@@ -30,11 +30,10 @@ const listActions = {
 	},
 	[loveListItems](state, { payload: { items, type } }) {
 		if (type === 'update') {
-			items.list = state.items.list.concat(items.list);
-			items.ids = state.items.ids.concat(items.ids);
+			const { ids, list } = items;
+			items.list = state.items.list.concat(list);
+			items.ids = state.items.ids.concat(ids);
 		}
-		console.log('type: ', type);
-		console.log('items: ', items);
 
 		return {
 			...state,

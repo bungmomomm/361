@@ -166,15 +166,15 @@ const removeFromLovelist = (token, productId) => async (dispatch, getState) => {
  * @param {*} token
  */
 const getLovelisItems = ({ token, query = { page: 1, per_page: 10 }, type }) => async (dispatch, getState) => {
+	dispatch(setLoadingState({ loading: true }));
+	dispatch(scrollerActions.onScroll({ loading: true }));
+
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
 
 	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
-	dispatch(setLoadingState({ loading: true }));
-
 	const path = `${baseUrl}/gets`;
-
 	const [err, response] = await to(request({
 		token,
 		path,
@@ -188,6 +188,7 @@ const getLovelisItems = ({ token, query = { page: 1, per_page: 10 }, type }) => 
 	const lovelistData = response.data.data;
 	if (err) {
 		dispatch(setLoadingState({ loading: false }));
+		dispatch(scrollerActions.onScroll({ loading: false, nextPage: false }));
 		return Promise.reject(__x(err));
 	}
 
@@ -260,6 +261,29 @@ const getBulkItem = (bulkies, productId) => {
 	return !_.isUndefined(product) ? product : false;
 };
 
+const mapItemsToLovelist = (lovelist, comments) => {
+	const { bulkieCountProducts, items } = lovelist;
+	const { data } = comments;
+
+	if (!_.isEmpty(bulkieCountProducts) && !_.isEmpty(items.list)) {
+		lovelist.items.list = lovelist.items.list.map((item, idx) => {
+			const productFound = getBulkItem(bulkieCountProducts, item.original.product_id);
+			item.last_comments = [];
+			item.totalComments = 0;
+			if (!_.isEmpty(data) && _.isArray(data)) {
+				const commentFound = getBulkItem(data, item.original.product_id);
+				if (commentFound) {
+					item.totalComments = commentFound.total || 0;
+					item.last_comments = commentFound.last_comment || [];
+				}
+			}
+			if (productFound) item.totalLovelist = productFound.total;
+			return item;
+		});
+	}
+	return lovelist;
+};
+
 export default {
 	getList,
 	addToLovelist,
@@ -269,5 +293,6 @@ export default {
 	setLoadingState,
 	getBulkItem,
 	sendLovedItemToEmarsys,
-	listEmptyAction
+	listEmptyAction,
+	mapItemsToLovelist
 };
