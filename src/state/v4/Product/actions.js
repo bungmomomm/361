@@ -13,6 +13,7 @@ import {
 	allProductReviews
 } from './reducer';
 import __x from '@/state/__x';
+import { actions as scrollerActions } from '@/state/v4/Scroller';
 
 const productDetailAction = (token, productId) => async (dispatch, getState) => {
 	const { shared } = getState();
@@ -102,13 +103,16 @@ const productSocialSummaryAction = (token, productId) => async (dispatch, getSta
 	return Promise.resolve(response);
 };
 
-const allProductReviewsAction = (token, productId, page = 1, perPage = 10) => async (dispatch, getState) => {
+const allProductReviewsAction = ({ token, productId, query = { page: 1, per_page: 5 }, type }) => async (dispatch, getState) => {
+// const allProductReviewsAction = (token, productId, page = 1, perPage = 10) => async (dispatch, getState) => {
+	
+	dispatch(scrollerActions.onScroll({ loading: true }));
+	dispatch(productLoading({ loading: true }));
+
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
 
 	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
-
-	dispatch(productLoading({ loading: true }));
 
 	const [err, response] = await to(request({
 		token,
@@ -116,19 +120,41 @@ const allProductReviewsAction = (token, productId, page = 1, perPage = 10) => as
 		method: 'GET',
 		fullpath: true,
 		query: {
-			product_id: productId,
-			page,
-			per_page: perPage
+			...query
 		}
 	}));
 
 	if (err) {
 		dispatch(productLoading({ loading: false }));
+		dispatch(scrollerActions.onScroll({ loading: false }));
 		return Promise.reject(__x(err));
 	}
 
 	const allReviews = response.data.data;
-	dispatch(allProductReviews({ allReviews }));
+
+	if (_.has(allReviews, 'info') && _.has(allReviews, 'info.total_review') && allReviews.info.total_review > 0) {
+		type = 'update';
+		const nextLink = allReviews.links && allReviews.links.next ? new URL(baseUrl + allReviews.links.next).searchParams : false;
+		dispatch(scrollerActions.onScroll({
+			nextData: {
+				token,
+				productId,
+				query: {
+					...query,
+					page: nextLink ? parseInt(nextLink.get('page'), 10) : false
+				},
+				type,
+				loadNext: true,
+			},
+			nextPage: nextLink !== false,
+			loading: false,
+			loader: allProductReviewsAction
+		}));
+	}
+
+	dispatch(allProductReviews({ allReviews, type }));
+	dispatch(productLoading({ loading: false }));
+	dispatch(scrollerActions.onScroll({ loading: false }));
 
 	return Promise.resolve(response);
 };

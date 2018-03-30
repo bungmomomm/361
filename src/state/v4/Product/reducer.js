@@ -98,7 +98,12 @@ const reducer = handleActions({
 			loading: false
 		};
 	},
-	[allProductReviews](state, { payload: { allReviews, loading } }) {
+	[allProductReviews](state, { payload: { allReviews, loading, type } }) {
+		if (type === 'update') {
+			const { items } = allReviews;
+			allReviews.items = state.allReviews.items.concat(items);
+		}
+
 		return {
 			...state,
 			allReviews,

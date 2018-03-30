@@ -8,11 +8,15 @@ import {
 	bulkieCount,
 	addItem,
 	removeItem,
-	loadingState
+	loadingState,
+	lovelistEmpty
 } from './reducer';
 import __x from '@/state/__x';
-
 import { actions as scrollerActions } from '@/state/v4/Scroller';
+
+const listEmptyAction = (lovedEmpty) => (dispatch) => {
+	dispatch(lovelistEmpty(lovedEmpty));
+};
 
 const setLoadingState = (loading) => (dispatch) => {
 	dispatch(loadingState(loading));
@@ -57,12 +61,12 @@ const formatItems = (data) => {
  * save user's lovelist list
  * @param {*} items
  */
-const getList = (items, formatted = true) => (dispatch) => {
+const getList = (items, formatted = true, type = 'init') => (dispatch) => {
 	// fetching response into lovelist redux items format
 	if (formatted) items = formatItems(items);
 
 	// dispatching total lovelist of logged user
-	dispatch(loveListItems({ items }));
+	dispatch(loveListItems({ items, type }));
 	dispatch(countLovelist({ count: items.list.length }));
 };
 
@@ -161,21 +165,20 @@ const removeFromLovelist = (token, productId) => async (dispatch, getState) => {
  * Gets user lovelist list from server
  * @param {*} token
  */
-const getLovelisItems = ({ token, query = { page: 1, per_page: 10 } }) => async (dispatch, getState) => {
+const getLovelisItems = ({ token, query = { page: 1, per_page: 10 }, type }) => async (dispatch, getState) => {
+	dispatch(setLoadingState({ loading: true }));
+	dispatch(scrollerActions.onScroll({ loading: true }));
 
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.lovelist.url').value() || false;
 
 	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
-	dispatch(setLoadingState({ loading: true }));
-
 	const path = `${baseUrl}/gets`;
-
-	const [err, response] = await to(request({ 
-		token, 
-		path, 
-		method: 'GET', 
+	const [err, response] = await to(request({
+		token,
+		path,
+		method: 'GET',
 		fullpath: true,
 		query: {
 			...query
@@ -185,13 +188,14 @@ const getLovelisItems = ({ token, query = { page: 1, per_page: 10 } }) => async 
 	const lovelistData = response.data.data;
 	if (err) {
 		dispatch(setLoadingState({ loading: false }));
+		dispatch(scrollerActions.onScroll({ loading: false, nextPage: false }));
 		return Promise.reject(__x(err));
 	}
 
-	dispatch(getList(lovelistData));
-	dispatch(setLoadingState({ loading: false }));
+	dispatch(getList(lovelistData, true, type));
 
 	if (_.has(lovelistData, 'info') && _.has(lovelistData, 'info.count') && lovelistData.info.count > 0) {
+		type = 'update';
 		const nextLink = lovelistData.links && lovelistData.links.next ? new URL(baseUrl + lovelistData.links.next).searchParams : false;
 		dispatch(scrollerActions.onScroll({
 			nextData: {
@@ -200,13 +204,17 @@ const getLovelisItems = ({ token, query = { page: 1, per_page: 10 } }) => async 
 					...query,
 					page: nextLink ? parseInt(nextLink.get('page'), 10) : false
 				},
-				loadNext: true
+				type,
+				loadNext: true,
 			},
 			nextPage: nextLink !== false,
 			loading: false,
 			loader: getLovelisItems
 		}));
 	}
+
+	dispatch(scrollerActions.onScroll({ loading: false }));
+	dispatch(setLoadingState({ loading: false }));
 
 	return Promise.resolve(response.data.data);
 };
@@ -255,6 +263,29 @@ const getBulkItem = (bulkies, productId) => {
 	return !_.isUndefined(product) ? product : false;
 };
 
+const mapItemsToLovelist = (lovelist, comments) => {
+	const { bulkieCountProducts, items } = lovelist;
+	const { data } = comments;
+
+	if (!_.isEmpty(bulkieCountProducts) && !_.isEmpty(items.list)) {
+		lovelist.items.list = lovelist.items.list.map((item, idx) => {
+			const productFound = getBulkItem(bulkieCountProducts, item.original.product_id);
+			item.last_comments = [];
+			item.totalComments = 0;
+			if (!_.isEmpty(data) && _.isArray(data)) {
+				const commentFound = getBulkItem(data, item.original.product_id);
+				if (commentFound) {
+					item.totalComments = commentFound.total || 0;
+					item.last_comments = commentFound.last_comment || [];
+				}
+			}
+			if (productFound) item.totalLovelist = productFound.total;
+			return item;
+		});
+	}
+	return lovelist;
+};
+
 export default {
 	getList,
 	addToLovelist,
@@ -263,5 +294,7 @@ export default {
 	getLovelisItems,
 	setLoadingState,
 	getBulkItem,
-	sendLovedItemToEmarsys
+	sendLovedItemToEmarsys,
+	listEmptyAction,
+	mapItemsToLovelist
 };
