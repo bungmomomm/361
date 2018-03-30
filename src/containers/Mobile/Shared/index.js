@@ -44,6 +44,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			this.handleScroll = _.throttle(this.handleScroll).bind(this);
 			this.docBody = null;
 			this.currentScrollPos = 0;
+			this.persistSnackStyle = false;
 			if (!window.surfs) window.surfs = [];
 		}
 
@@ -97,6 +98,13 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			}
 
 			initUTMProcess();
+		}
+
+		componentWillReceiveProps(nextProps) {
+			const snackStyle = _.chain(nextProps.shared.snackbar).get('[0].style').value();
+			if (snackStyle) {
+				this.persistSnackStyle = snackStyle;
+			}
 		}
 
 		componentWillUnmount() {
@@ -208,7 +216,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		snackStyle = () => {
-			const snackStyle = _.chain(this.props.shared.snackbar).get('[0].style').value() || { css: {}, sticky: true, theming: {} };
+			const snackStyle = this.persistSnackStyle || { css: {}, sticky: true, theming: {} };
 			const snackCss = _.chain(snackStyle).get('css.snack').value() || {};
 			const themingSnackCss = _.chain(snackStyle).get('theming.snack').value() || {};
 			const stickyEl = (this.botNav) || false;

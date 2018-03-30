@@ -71,7 +71,7 @@ const trackSellerPageView = (products, info, props) => {
 	}) || [];
 	const { users, shared } = props;
 	const { userProfile } = users;
-	const layerData = { 
+	const layerData = {
 		emailHash: _.defaultTo(userProfile.enc_email, ''),
 		userIdEncrypted: userProfile.enc_userid,
 		userId: userProfile.id,
@@ -96,7 +96,7 @@ const trackProductOnClick = (product, position, source = 'mm') => {
 		category: product.product_category_names.join('/'),
 		position
 	};
-	const layerData = { 
+	const layerData = {
 		fusionSessionId: Utils.getSessionID(),
 		products: [productData],
 		sourceName: source
@@ -164,7 +164,6 @@ class Seller extends Component {
 
 			if (product && item.pathname.indexOf('/category') !== -1) {
 				this.activeNav = 'Categories';
-				console.log('Categories');
 				return true;
 			};
 
