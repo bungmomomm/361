@@ -193,7 +193,6 @@ const getLovelisItems = ({ token, query = { page: 1, per_page: 10 }, type }) => 
 	}
 
 	dispatch(getList(lovelistData, true, type));
-	dispatch(setLoadingState({ loading: false }));
 
 	if (_.has(lovelistData, 'info') && _.has(lovelistData, 'info.count') && lovelistData.info.count > 0) {
 		type = 'update';
@@ -213,6 +212,9 @@ const getLovelisItems = ({ token, query = { page: 1, per_page: 10 }, type }) => 
 			loader: getLovelisItems
 		}));
 	}
+
+	dispatch(scrollerActions.onScroll({ loading: false }));
+	dispatch(setLoadingState({ loading: false }));
 
 	return Promise.resolve(response.data.data);
 };

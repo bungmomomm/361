@@ -65,7 +65,6 @@ class Lovelist extends Component {
 	}
 
 	onGridViewModeClick(e) {
-		console.log('gridviewclick');
 		const { status } = this.state;
 		status.listTypeGrid = (!status.listTypeGrid);
 		this.setState({ status });
@@ -203,6 +202,7 @@ class Lovelist extends Component {
 					{<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />}
 					{(loading && _.isEmpty(items.list)) && this.loadingContent}
 					{(this.getLovelistCardsContent())}
+					{this.props.scroller.loading && (<div style={{ paddingTop: '20px' }}> <Spinner /></div>)}
 					{(!loading && lovedEmpty) && (
 						<div className='text-center --disable-flex'>
 							<p className={styles.lovelistEmpty}>Lovelist kamu masih kosong</p>

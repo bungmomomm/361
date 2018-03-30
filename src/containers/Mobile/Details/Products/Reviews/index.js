@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import _ from 'lodash';
 import { Page, Header, Svg, Comment, Spinner, Button, Rating } from '@/components/mobile';
 import { actions as productActions } from '@/state/v4/Product';
+import Scroller from '@/containers/Mobile/Shared/scroller';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './reviews.scss';
 import cookiesLabel from '@/data/cookiesLabel';
@@ -16,10 +17,6 @@ class Reviews extends Component {
 		this.props = props;
 		this.isLogin = (typeof this.props.cookies.get(cookiesLabel.isLogin) === 'string' && this.props.cookies.get(cookiesLabel.isLogin) === 'true');
 
-		this.state = {
-			loading: false
-		};
-
 		this.goToPreviousPage = this.goToPreviousPage.bind(this);
 		this.loadingContent = (
 			<div style={{ margin: '70% auto 20% auto' }}>
@@ -28,11 +25,7 @@ class Reviews extends Component {
 		);
 	}
 
-	componentWillReceiveProps(nextProps) {
-		this.setState({
-			loading: this.props.product.loading
-		});
-	}
+	componentWillReceiveProps(nextProps) {}
 
 	toFixDecimal = (val, max, fix = 0) => {
 		return (val > 0 && val < max) ? Number.parseFloat(val).toFixed(fix) : val;
@@ -72,10 +65,7 @@ class Reviews extends Component {
 
 	render() {
 		const { allReviews } = this.props.product;
-		const reviewsNotReady = _.isEmpty(allReviews.items);
-
-		if (reviewsNotReady) return this.loadingContent;
-
+		const reviewsEmpty = _.isEmpty(allReviews.items);
 		const { info } = allReviews;
 		const { rating } = info;
 
@@ -89,7 +79,7 @@ class Reviews extends Component {
 			right: null
 		};
 		return (
-			<div>
+			(!reviewsEmpty) && <div>
 				<Page>
 					<div>
 						<div style={{ backgroundColor: '#ffffff' }}>
@@ -157,6 +147,7 @@ class Reviews extends Component {
 							</div>
 						</div>
 						{this.renderReviews()}
+						{this.props.scroller.loading && (<div style={{ paddingTop: '20px' }}> <Spinner /></div>)}
 					</div>
 
 				</Page>
@@ -167,18 +158,24 @@ class Reviews extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		product: state.product,
 		shared: state.shared,
+		product: state.product,
+		scroller: state.scroller,
 		users: state.users
 	};
 };
 
 const doAfterAnonymous = async (props) => {
-	const { dispatch, cookies, match } = props;
+	const { dispatch, cookies, match, history } = props;
 	const token = cookies.get(cookiesLabel.userToken);
-	const productId = match.params.id;
+	if (_.has(match, 'params.id') && typeof _.toInteger(match.params.id) === 'number') {
+		const productId = match.params.id;
+		const params = { token, productId, query: { product_id: productId, page: 1, per_page: 10 }, type: 'init' };
 
-	dispatch(productActions.allProductReviewsAction(token, productId));
+		const res = await dispatch(productActions.allProductReviewsAction(params));
+		if (res.status !== 200 || (_.has(res, 'data.data.items') && _.isEmpty(res.data.data.items))) history.push('/not-found');
+
+	} else history.push('/not-found');
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(Reviews, doAfterAnonymous)));
+export default withCookies(connect(mapStateToProps)(Scroller(Shared(Reviews, doAfterAnonymous))));
