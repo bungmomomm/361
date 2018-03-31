@@ -205,7 +205,7 @@ class Comments extends Component {
 			) : '';
 
 			return (
-				<Level className={styles.commentbox}>
+				<Level className={styles.commentbox} innerRef={(n) => { this.commentBoxRef = n; }}>
 					{userAvatar}
 					<Level.Item>
 						<Input
@@ -244,17 +244,27 @@ class Comments extends Component {
 	}
 
 	render() {
+		const commentBoxHeight = () => {
+			if (_.has(this, 'commentBoxRef')) {
+				return _.round(this.commentBoxRef.getBoundingClientRect().height);
+			};
+			return 68;
+		};
 		return (
 			<div className={styles.commentsContainer}>
 				<div className={styles.commentsBackground} />
-				<Page style={{ paddingTop: 0, marginBottom: '100px', flexGrow: 0 }} color='white'>
-					<div className='margin--medium-v'>
+				<Page>
+					<div className='padding--medium-v' style={{ backgroundColor: '#fff' }}>
 						{this.renderDetail()}
 						{this.renderComments()}
 					</div>
 				</Page>
 				{this.renderHeader()}
-				{this.renderAvailComment()}
+				<div style={{ order: 5 }}>
+					<div style={{ height: commentBoxHeight() }}>
+						{this.renderAvailComment()}
+					</div>
+				</div>
 			</div>
 		);
 	}
