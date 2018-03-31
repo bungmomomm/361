@@ -348,24 +348,6 @@ class Cart extends Component {
 		);
 	}
 
-	renderEmpty = () => {
-		return (
-			<div style={{ margin: 'auto' }}>
-				<div className='margin--medium-v flex-middle'><Svg src='mm_ico_no-order-shoppingbag.svg' /></div>
-				<div className='margin--small-v flex-middle'>
-					Anda belum memiliki produk di keranjang anda.
-				</div>
-				<div className='margin--medium-v flex-center flex-middle'>
-					<Link to='/category'>
-						<Button color='secondary' size='large'>
-							Beli Aja
-						</Button>
-					</Link>
-				</div>
-			</div>
-		);
-	};
-
 	render() {
 		const headerOption = {
 			left: (
@@ -385,7 +367,7 @@ class Cart extends Component {
 			<div>
 				<Page color='white'>
 					{ (this.props.shopBag.total && this.props.shopBag.total.count_item === 0) ?
-						(this.renderEmpty()) :
+						(<div dangerouslySetInnerHTML={{ __html: this.props.shopBag.empty_state }} />) :
 						(<div style={{ backgroundColor: '#F5F5F5' }}>
 							{this.renderHeaderShopBag()}
 							{this.renderMessageNotProcedItems()}
