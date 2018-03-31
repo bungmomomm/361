@@ -67,6 +67,9 @@ function toastSytle() {
 				padding: '15px',
 				borderRadius: '40px',
 				textAlign: 'center',
+				transition: 'transform 100ms ease-out',
+				willChange: 'transform',
+				transform: 'translate(0, 100%)',
 				largeScreen: {}
 			},
 			label: {

@@ -112,14 +112,14 @@ class CatalogGrid extends PureComponent {
 		return (
 			<div className={createClassName} {...props} data-loved={lovelistStatus}>
 				<Link to={linkToPdp || '/'} className={styles.imgContainer}>
-					<div className={`${styles.imgWrapper} placeholder-image`} tabIndex='0' role='button' onClick={() => productOnClick()}>
+					<div className={`${styles.imgWrapper} placeholder-image`} tabIndex='0' role='button' onClick={productOnClick ? () => productOnClick() : () => true}>
 						<Image src={images[0].thumbnail} lazyload alt={productTitle} />
 					</div>
 				</Link>
 				<Level className={styles.action}>
 					<Level.Item>
 						<Link to={linkToPdp || '/'} >
-							<div className={styles.title} tabIndex='0' role='button' onClick={() => productOnClick()}>
+							<div className={styles.title} tabIndex='0' role='button' onClick={productOnClick ? () => productOnClick() : true}>
 								<span className='font-small text-uppercase font--lato-bold font-color--primary'>{brandName}</span>
 								<span className='text-elipsis-two-line font-color--primary-ext-2'>{trimString(productTitle)}</span>
 							</div>

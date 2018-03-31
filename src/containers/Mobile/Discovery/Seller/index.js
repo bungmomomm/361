@@ -71,12 +71,12 @@ const trackSellerPageView = (products, info, props) => {
 	}) || [];
 	const { users, shared } = props;
 	const { userProfile } = users;
-	const layerData = { 
+	const layerData = {
 		emailHash: _.defaultTo(userProfile.enc_email, ''),
 		userIdEncrypted: userProfile.enc_userid,
 		userId: userProfile.id,
 		ipAddress: shared.ipAddress,
-		currentUrl: this.props.location.pathname,
+		currentUrl: props.location.pathname,
 		impressions,
 		categoryInfo: brandInfo,
 		fusionSessionId: Utils.getSessionID(),
@@ -96,7 +96,7 @@ const trackProductOnClick = (product, position, source = 'mm') => {
 		category: product.product_category_names.join('/'),
 		position
 	};
-	const layerData = { 
+	const layerData = {
 		fusionSessionId: Utils.getSessionID(),
 		products: [productData],
 		sourceName: source
@@ -111,7 +111,7 @@ class Seller extends Component {
 	constructor(props) {
 		super(props);
 
-		this.currentListState = 0;
+		this.currentListState = 1;
 		this.listType = [{
 			type: 'list',
 			icon: 'ico_grid.svg'
@@ -164,7 +164,6 @@ class Seller extends Component {
 
 			if (product && item.pathname.indexOf('/category') !== -1) {
 				this.activeNav = 'Categories';
-				console.log('Categories');
 				return true;
 			};
 

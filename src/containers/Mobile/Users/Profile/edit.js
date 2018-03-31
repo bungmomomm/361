@@ -515,13 +515,13 @@ class UserProfileEdit extends Component {
 			</div>
 		);
 
-		const genderValue = !_.isEmpty(formData[this.GENDER_FIELD]) ? _.capitalize(formData[this.GENDER_FIELD]) : 'male';
+		const genderValue = !_.isEmpty(formData[this.GENDER_FIELD]) ? formData[this.GENDER_FIELD] : 'male';
 		const genderField = (
 			<div className='margin--medium-v'>
 				<label className={styles.label} htmlFor='gender'>Jenis Kelamin</label>
 				<Level className='flex-row border-bottom' onClick={() => this.showSelectGender()}>
 					<Level.Left>
-						<div>{genderValue}</div>
+						<div>{genderValue === 'male' ? 'Pria' : 'Wanita'}</div>
 					</Level.Left>
 					<Level.Right>
 						<Button className='flex-center'>
@@ -577,8 +577,8 @@ class UserProfileEdit extends Component {
 	renderGenderSelect() {
 		const { showSelect, formData } = this.state;
 		const genderList = [
-			{ value: 'male', label: 'Male' },
-			{ value: 'female', label: 'Female' }
+			{ value: 'male', label: 'Pria' },
+			{ value: 'female', label: 'Wanita' }
 		];
 		const defaultValue = !_.isEmpty(formData[this.GENDER_FIELD]) ? formData[this.GENDER_FIELD] : null;
 

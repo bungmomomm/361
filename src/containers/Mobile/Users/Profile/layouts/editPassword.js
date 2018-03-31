@@ -35,7 +35,10 @@ class EditPassword extends Component {
 			validConfPass: false,
 			oldPassHint: '',
 			newPassHint: '',
-			confPassHint: ''
+			confPassHint: '',
+			showIconOldPass: false,
+			showIconNewPass: false,
+			showIconConfPass: false
 		};
 	}
 
@@ -67,6 +70,12 @@ class EditPassword extends Component {
 
 	inputValidation(type, value) {
 		if (type === this.OLD_PWD_FIELD) {
+			if (value.length > 0) {
+				this.setState({ showIconOldPass: true });
+			} else {
+				this.setState({ showIconOldPass: false });
+			}
+
 			let validOldPass = false;
 			if (value !== '' && value.length > 6) {
 				validOldPass = true;
@@ -76,15 +85,40 @@ class EditPassword extends Component {
 
 			this.setState({ validOldPass, oldPassHint });
 		} else if (type === this.NEW_PWD_FIELD) {
+			if (value.length > 0) {
+				this.setState({ showIconNewPass: true });
+			} else {
+				this.setState({ showIconNewPass: false });
+			}
+
 			let validNewPass = false;
 			if (value !== '' && value.length > 6) {
 				validNewPass = true;
 			}
 
-			const newPassHint = value.length > 0 && value.length <= 6 ? 'Password harus lebih dari 6 karakter' : '';
+			let newPassHint = '';
+			if (value.length > 0 && value.length <= 6) {
+				newPassHint = 'Password baru harus lebih dari 6 karakter';
+			}
 
-			this.setState({ validNewPass, newPassHint });
+			let validConfPass = this.state.validConfPass;
+			let confPassHint = this.state.confPassHint;
+			if (this.state[this.CONF_PWD_FIELD] !== '' && base64.encode(value) !== this.state[this.CONF_PWD_FIELD]) {
+				validConfPass = false;
+				confPassHint = 'Konfirmasi password tidak sesuai dengan password baru';
+			} else if (this.state[this.CONF_PWD_FIELD] !== '' && validNewPass) {
+				validConfPass = true;
+				confPassHint = '';
+			}
+
+			this.setState({ validNewPass, newPassHint, validConfPass, confPassHint });
 		} else if (type === this.CONF_PWD_FIELD) {
+			if (value.length > 0) {
+				this.setState({ showIconConfPass: true });
+			} else {
+				this.setState({ showIconConfPass: false });
+			}
+
 			let validConfPass = false;
 			if (value !== '' && value.length > 6 && base64.encode(value) === this.state[this.NEW_PWD_FIELD]) {
 				validConfPass = true;
@@ -93,11 +127,18 @@ class EditPassword extends Component {
 			let confPassHint = '';
 			if (value.length > 0 && value.length <= 6) {
 				confPassHint = 'Konfirmasi password harus lebih dari 6 karakter';
-			} else if (base64.encode(value) !== this.state[this.NEW_PWD_FIELD]) {
+			} else if (value.length > 0 && base64.encode(value) !== this.state[this.NEW_PWD_FIELD]) {
 				confPassHint = 'Konfirmasi password tidak sesuai dengan password baru';
 			}
 
-			this.setState({ validConfPass, confPassHint });
+			let validNewPass = this.state.validNewPass;
+			let newPassHint = this.state.newPassHint;
+			if (this.state[this.NEW_PWD_FIELD] !== '' && validConfPass) {
+				validNewPass = true;
+				newPassHint = '';
+			}
+
+			this.setState({ validConfPass, confPassHint, validNewPass, newPassHint });
 		}
 	}
 
@@ -186,7 +227,8 @@ class EditPassword extends Component {
 			isLoading,
 			visibleOldPassword, visibleNewPassword, visibleConfPassword,
 			validOldPass, validNewPass, validConfPass,
-			oldPassHint, newPassHint, confPassHint
+			oldPassHint, newPassHint, confPassHint,
+			showIconOldPass, showIconNewPass, showIconConfPass
 		} = this.state;
 
 		return (
@@ -198,7 +240,7 @@ class EditPassword extends Component {
 						id='editPassword'
 						flat
 						onChange={(e) => this.inputHandler(e)}
-						iconRight={<Button onClick={() => this.setVisiblePassword('visibleOldPassword')}>{this.showPasswordButton('visibleOldPassword')}</Button>}
+						iconRight={showIconOldPass && <Button onClick={() => this.setVisiblePassword('visibleOldPassword')}>{this.showPasswordButton('visibleOldPassword')}</Button>}
 						type={visibleOldPassword ? 'text' : 'password'}
 						error={!validOldPass && this.state[this.OLD_PWD_FIELD] !== ''}
 						hint={oldPassHint}
@@ -217,7 +259,7 @@ class EditPassword extends Component {
 						id='editPasswordNew'
 						flat
 						onChange={(e) => this.inputHandler(e)}
-						iconRight={<Button onClick={() => this.setVisiblePassword('visibleNewPassword')}>{this.showPasswordButton('visibleNewPassword')}</Button>}
+						iconRight={showIconNewPass && <Button onClick={() => this.setVisiblePassword('visibleNewPassword')}>{this.showPasswordButton('visibleNewPassword')}</Button>}
 						type={visibleNewPassword ? 'text' : 'password'}
 						error={!validNewPass && this.state[this.NEW_PWD_FIELD] !== ''}
 						hint={newPassHint}
@@ -236,7 +278,7 @@ class EditPassword extends Component {
 						id='editPasswordNewConfirm'
 						flat
 						onChange={(e) => this.inputHandler(e)}
-						iconRight={<Button onClick={() => this.setVisiblePassword('visibleConfPassword')}>{this.showPasswordButton('visibleConfPassword')}</Button>}
+						iconRight={showIconConfPass && <Button onClick={() => this.setVisiblePassword('visibleConfPassword')}>{this.showPasswordButton('visibleConfPassword')}</Button>}
 						type={visibleConfPassword ? 'text' : 'password'}
 						error={!validConfPass && this.state[this.CONF_PWD_FIELD] !== ''}
 						hint={confPassHint}
