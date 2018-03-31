@@ -29,12 +29,12 @@ class Comments extends Component {
 			validForm: false,
 			commentValue: '',
 			showCounter: false,
-			counterValue: 0,
-			counterLimit: 300
+			counterValue: 0
 		};
 
 		this.userProfile = this.props.cookies.get(cookiesLabel.userProfile) || false;
-		this.renderLoading = (
+		this.counterLimit = 300;
+		this.loadingView = (
 			<div style={{ margin: '20px auto 20px auto' }}>
 				<Spinner />
 			</div>
@@ -49,13 +49,14 @@ class Comments extends Component {
 		};
 	}
 
-	inputHandler(e) {
-		const { counterLimit } = this.state;
-		const value = util.format('%s', e.target.value);
+	componentWillUnmount() {
+		const { dispatch } = this.props;
 
-		if (value.length > counterLimit) {
-			return;
-		}
+		dispatch(commentActions.commentLoadingAction(true));
+	}
+
+	inputHandler(e) {
+		const value = util.format('%s', e.target.value);
 
 		if (value.length > 0) {
 			this.setState({ showCounter: true, counterValue: value.length });
@@ -64,7 +65,7 @@ class Comments extends Component {
 		}
 
 		let validForm = false;
-		if (!validator.isEmpty(value) && value.length <= counterLimit) {
+		if (!validator.isEmpty(value) && value.length <= this.counterLimit) {
 			validForm = true;
 		}
 
@@ -175,10 +176,10 @@ class Comments extends Component {
 	}
 
 	renderCounter() {
-		const { showCounter, counterValue, counterLimit } = this.state;
+		const { showCounter, counterValue } = this.state;
 
 		if (showCounter) {
-			return `${counterValue}/${counterLimit}`;
+			return `${counterValue}/${this.counterLimit}`;
 		}
 
 		return null;
@@ -210,9 +211,9 @@ class Comments extends Component {
 					<Level.Item>
 						<Input
 							as='textarea'
+							maxLength={this.counterLimit}
 							color='white'
 							placeholder='Tulis komentar..'
-							value={commentValue}
 							onChange={(e) => this.inputHandler(e)}
 							onFocus={() => this.setState({ showCounter: true })}
 							onBlur={() => commentValue.length === 0 && this.setState({ showCounter: false })}
@@ -244,14 +245,18 @@ class Comments extends Component {
 	}
 
 	render() {
+		const { isLoading } = this.props;
+
 		return (
 			<div className={styles.commentsContainer}>
 				<div className={styles.commentsBackground} />
 				<Page style={{ paddingTop: 0, marginBottom: '100px', flexGrow: 0 }} color='white'>
-					<div className='margin--medium-v'>
-						{this.renderDetail()}
-						{this.renderComments()}
-					</div>
+					{isLoading ? this.loadingView : (
+						<div className='margin--medium-v'>
+							{this.renderDetail()}
+							{this.renderComments()}
+						</div>
+					)}
 				</Page>
 				{this.renderHeader()}
 				{this.renderAvailComment()}
@@ -263,8 +268,8 @@ class Comments extends Component {
 const mapStateToProps = (state) => {
 	return {
 		...state,
-		comments: state.comments.data || '',
-		product: state.comments.data.product || '',
+		comments: state.comments.data || {},
+		product: state.comments.data.product || {},
 		isLoading: state.comments.isLoading,
 	};
 };
