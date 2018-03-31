@@ -135,13 +135,13 @@ class Comments extends Component {
 	}
 
 	renderDetail() {
-		const { product } = this.props;
+		const { comments } = this.props;
 
-		if (!_.isEmpty(product)) {
+		if (!_.isEmpty(comments.product)) {
 			return (
 				<div
 					className='margin--medium-v padding--medium-h wysiwyg-content'
-					dangerouslySetInnerHTML={{ __html: this.hastagLinkCreator(product.description) }}
+					dangerouslySetInnerHTML={{ __html: this.hastagLinkCreator(comments.product.description) }}
 				/>
 			);
 		}
@@ -279,9 +279,8 @@ class Comments extends Component {
 const mapStateToProps = (state) => {
 	return {
 		...state,
-		comments: state.comments.data || {},
-		product: state.comments.data.product || {},
-		isLoading: state.comments.isLoading,
+		comments: state.comments.data || '',
+		isLoading: state.comments.isLoading
 	};
 };
 
