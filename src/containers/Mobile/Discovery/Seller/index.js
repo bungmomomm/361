@@ -111,7 +111,7 @@ class Seller extends Component {
 	constructor(props) {
 		super(props);
 
-		this.currentListState = 0;
+		this.currentListState = 1;
 		this.listType = [{
 			type: 'list',
 			icon: 'ico_grid.svg'
