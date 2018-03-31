@@ -31,7 +31,7 @@ const trackBrandPageView = (data, props) => {
 		userIdEncrypted: userProfile.enc_userid,
 		userId: userProfile.id,
 		ipAddress: shared.ipAddress,
-		currentUrl: this.props.location.pathname,
+		currentUrl: props.location.pathname,
 		listPrice: pricingList.join('|'),
 		listQuantity: quantityList.join('|'),
 		fusionSessionId: Utils.getSessionID(),
@@ -194,7 +194,7 @@ class Cart extends Component {
 							</Level.Item>
 							<Level.Item className='padding--medium-l'>
 								<div className='flex-row flex-spaceBetween'>
-									<Link className='font-color--black text-uppercase' to={urlBuilder.setId(item.brand.id).setName(item.brand.brand_name).buildBrand()}>
+									<Link className='font-color--black text-uppercase' to={urlBuilder.setId(item.brand.id).setName(item.brand.name).buildBrand()}>
 										{item.brand.name}
 									</Link>
 									<Button

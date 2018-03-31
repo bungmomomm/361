@@ -169,10 +169,17 @@ class MyOrder extends Component {
 			</aux>
 		) : null;
 
+		const initSpinner = (
+			<div style={{ margin: '15px auto' }}>
+				<Spinner />
+			</div>
+		);
+
 		return (
 			<div style={this.props.style}>
 				<Page {...pageAttribute}>
-					{ this.props.user.isNoOrders === null ? renderEmptyOrders : null }
+					{ this.props.user.isNoOrders === null && (initSpinner) }
+					{ this.props.user.isNoOrders === true ? renderEmptyOrders : null }
 					<div className='margin--medium'>
 						{content}
 					</div>

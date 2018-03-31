@@ -73,7 +73,7 @@ const trackCategoryPageView = (products, info, props) => {
 		userIdEncrypted: userProfile.enc_userid,
 		userId: userProfile.id,
 		ipAddress: shared.ipAddress,
-		currentUrl: this.props.location.pathname,
+		currentUrl: props.location.pathname,
 		impressions, 
 		categoryInfo,
 		listProductId: productId.join('|'),
