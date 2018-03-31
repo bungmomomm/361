@@ -194,7 +194,7 @@ class Cart extends Component {
 							</Level.Item>
 							<Level.Item className='padding--medium-l'>
 								<div className='flex-row flex-spaceBetween'>
-									<Link className='font-color--black text-uppercase' to={urlBuilder.setId(item.brand.id).setName(item.brand.brand_name).buildBrand()}>
+									<Link className='font-color--black text-uppercase' to={urlBuilder.setId(item.brand.id).setName(item.brand.name).buildBrand()}>
 										{item.brand.name}
 									</Link>
 									<Button
