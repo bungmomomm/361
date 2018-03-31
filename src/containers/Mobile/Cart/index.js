@@ -13,7 +13,7 @@ import {
 	TrackingRequest,
 	sendGtm,
 	cartViewBuilder
-	
+
 } from '@/utils/tracking';
 import cookiesLabel from '@/data/cookiesLabel';
 import { LucidCart, Utils } from '@/utils/tracking/lucidworks';
@@ -26,7 +26,7 @@ const trackBrandPageView = (data, props) => {
 	const quantityList = _.map(items, 'qty');
 	const { users, shared } = props;
 	const { userProfile } = users;
-	const layerData = { 
+	const layerData = {
 		emailHash: _.defaultTo(userProfile.enc_email, ''),
 		userIdEncrypted: userProfile.enc_userid,
 		userId: userProfile.id,
@@ -318,7 +318,7 @@ class Cart extends Component {
 		} else {
 			link = (<Link to='login?redirect_uri=/cart'>{wording}</Link>);
 		}
-		return shopBag.total.count_item !== 0 ? (
+		return shopBag.total && shopBag.total.count_item !== 0 ? (
 			<div className={styles.paymentLink}>
 				<div>
 					<div>
