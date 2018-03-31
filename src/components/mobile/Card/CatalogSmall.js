@@ -18,7 +18,7 @@ class CatalogSmall extends PureComponent {
 		const createClassName = classNames(styles.container, styles.small, className);
 
 		return (
-			<div className={createClassName} {...props} tabIndex='0' role='button' onClick={() => productOnClick()}>
+			<div className={createClassName} {...props} tabIndex='0' role='button' onClick={productOnClick ? () => productOnClick() : () => true}>
 				<Link to={(linkToPdp) || '/'} className={styles.imgContainer}>
 					<div className={`${styles.imgWrapper} placeholder-image`}>
 						<Image src={images[0].thumbnail} lazyload alt='product' />

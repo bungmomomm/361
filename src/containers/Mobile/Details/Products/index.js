@@ -128,7 +128,7 @@ class Products extends Component {
 		this.slideWrapAround = true;
 		this.linkToPdpDisabled = true;
 		this.updateCard = false;
-		this.botNavUp = false;
+		this.botBarUp = false;
 
 		this.closeZoomImage = this.closeZoomImage.bind(this);
 		this.goBackPreviousPage = this.goBackPreviousPage.bind(this);
@@ -259,10 +259,10 @@ class Products extends Component {
 	}
 
 	componentDidUpdate() {
-		if (this.props.botNav && this.botNav) {
-			if (!this.botNavUp) {
-				this.props.botNav(this.botNav);
-				this.botNavUp = true;
+		if (this.props.botBar && this.botBar) {
+			if (!this.botBarUp) {
+				this.props.botBar(this.botBar);
+				this.botBarUp = true;
 			}
 		}
 	}
@@ -270,7 +270,7 @@ class Products extends Component {
 	componentWillUnmount() {
 		const { dispatch } = this.props;
 
-		if (this.props.botNav) this.props.botNav(false);
+		if (this.props.botBar) this.props.botBar(false);
 		dispatch(productActions.productLoadingAction(true));
 	}
 
@@ -671,7 +671,7 @@ class Products extends Component {
 
 		if (!_.isEmpty(cardProduct) && _.has(cardProduct, 'pricing')) {
 			return (
-				<div className={styles.stickyAction} ref={(r) => { this.botNav = r; }}>
+				<div className={styles.stickyAction} ref={(r) => { this.botBar = r; }}>
 					<div className='flex-row flex-spaceBetween padding--medium-h padding--medium-v border-top flex-middle'>
 						<div className='flex-row'>
 							<div>
@@ -836,7 +836,7 @@ class Products extends Component {
 				</Link>
 			) : (
 				<span>
-					<a href={`/login?redirect_uri=${this.props.location.pathname}`}>Log in</a> / 
+					<a href={`/login?redirect_uri=${this.props.location.pathname}`}>Log in</a> /
 					<a href={`/register?redirect_uri=${this.props.location.pathname}`}>Register</a> untuk memberikan komentar
 				</span>
 			);
@@ -1017,7 +1017,7 @@ class Products extends Component {
 					)}
 				</div>);
 		} catch (error) {
-			console.log('PDP ERROR: ', error);
+			// console.log('PDP ERROR: ', error);
 			return 'ERROR';
 		}
 	}

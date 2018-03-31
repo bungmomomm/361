@@ -36,7 +36,7 @@ class GridView extends Component {
 							brandName={product.brand.name}
 							pricing={product.pricing}
 							linkToPdp={product.url}
-							productOnClick={() => productOnClick(product, index + 1)}
+							productOnClick={productOnClick ? () => productOnClick(product, index + 1) : () => true}
 							love={(
 								<Love
 									status={product.lovelistStatus}

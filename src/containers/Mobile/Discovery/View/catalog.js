@@ -276,7 +276,7 @@ class CatalogView extends Component {
 										showNumber
 									/>
 								)}
-								productOnClick={() => productOnClick(product, index + 1)}
+								productOnClick={productOnClick ? () => productOnClick(product, index + 1) : () => true}
 							/>
 							{comments && comments.isLoading ? this.loadingView : this.renderComment(product)}
 						</div>

@@ -44,6 +44,8 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			this.handleScroll = _.throttle(this.handleScroll).bind(this);
 			this.docBody = null;
 			this.currentScrollPos = 0;
+			this.persistSnackStyle = false;
+			if (!window.surfs) window.surfs = [];
 		}
 
 		componentWillMount() {
@@ -84,8 +86,6 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 					this.initApp();
 				}
 			});
-
-			if (!window.surfs) window.surfs = [];
 		}
 
 		componentDidMount() {
@@ -100,9 +100,16 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			initUTMProcess();
 		}
 
+		componentWillReceiveProps(nextProps) {
+			const snackStyle = _.chain(nextProps.shared.snackbar).get('[0].style').value();
+			if (snackStyle) {
+				this.persistSnackStyle = snackStyle;
+			}
+		}
+
 		componentWillUnmount() {
 			window.mmLoading.play();
-			window.surfs = window.surfs ? [this.props.location, ...window.surfs] : [this.props.location];
+			window.surfs = [this.props.location, ...window.surfs];
 			window.previousLocation = location.pathname + location.search;
 			window.removeEventListener('scroll', this.handleScroll, true);
 		}
@@ -202,20 +209,20 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 							return false;
 						}
 						this.currentScrollPos = this.state.scroll.top;
-						return this.state.scroll.top > oldPos && this.state.scroll.top < this.state.scroll.docHeight;
+						return (this.state.scroll.top > oldPos && this.state.scroll.top < this.state.scroll.docHeight) || this.noNav;
 					})()
 				}
 			});
 		}
 
 		snackStyle = () => {
-			const snackStyle = _.chain(this.props.shared.snackbar).get('[0].style').value() || { css: {}, sticky: true, theming: {} };
+			const snackStyle = this.persistSnackStyle || { css: {}, sticky: true, theming: {} };
 			const snackCss = _.chain(snackStyle).get('css.snack').value() || {};
 			const themingSnackCss = _.chain(snackStyle).get('theming.snack').value() || {};
-			const stickyEl = this.botNav || false;
+			const stickyEl = (this.botNav) || false;
 			const snackSticky = !snackStyle.sticky ? {} : {
-				bottom: !this.state.scroll.isNavSticky && stickyEl
-						? (+(parseInt(snackCss.bottom, 10) || 0) + +stickyEl.getBoundingClientRect().height)
+				bottom: (!this.state.scroll.isNavSticky && stickyEl) || this.botBar
+						? (+(parseInt(snackCss.bottom, 10) || 0) + (stickyEl ? +stickyEl.getBoundingClientRect().height : +this.botBar.getBoundingClientRect().height))
 						: (+(parseInt(snackCss.bottom, 10) || 0) + 0),
 				zIndex: !this.state.scroll.isNavSticky && stickyEl ? 2 : 999
 			};
@@ -229,7 +236,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			return (
 				<div className='shared_container'>
 					<Snackbar history={history} location={location} theming={this.snackStyle().theming} customStyles={this.snackStyle().customStyles} />
-					<WrappedComponent {...this.props} scroll={scroll} botNav={(r) => { this.botNav = r; }} />
+					<WrappedComponent {...this.props} scroll={scroll} botNav={(r) => { this.botNav = r; }} botBar={(r) => { this.botBar = r; }} />
 					{
 						scroll.top > 20 && (
 							<a href='#root' className={styles.backToTop}>
