@@ -31,7 +31,7 @@ const trackBrandPageView = (data, props) => {
 		userIdEncrypted: userProfile.enc_userid,
 		userId: userProfile.id,
 		ipAddress: shared.ipAddress,
-		currentUrl: this.props.location.pathname,
+		currentUrl: props.location.pathname,
 		listPrice: pricingList.join('|'),
 		listQuantity: quantityList.join('|'),
 		fusionSessionId: Utils.getSessionID(),

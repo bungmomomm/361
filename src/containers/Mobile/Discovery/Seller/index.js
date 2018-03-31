@@ -76,7 +76,7 @@ const trackSellerPageView = (products, info, props) => {
 		userIdEncrypted: userProfile.enc_userid,
 		userId: userProfile.id,
 		ipAddress: shared.ipAddress,
-		currentUrl: this.props.location.pathname,
+		currentUrl: props.location.pathname,
 		impressions,
 		categoryInfo: brandInfo,
 		fusionSessionId: Utils.getSessionID(),

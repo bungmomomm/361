@@ -51,7 +51,7 @@ const trackAddToCart = (data, props, variant, hasVariantSize = true) => {
 		userIdEncrypted: userProfile.enc_userid,
 		userId: userProfile.id,
 		ipAddress: shared.ipAddress,
-		currentUrl: this.props.location.pathname,
+		currentUrl: props.location.pathname,
 		products: [products],
 		fusionSessionId: Utils.getSessionID(),
 	};
