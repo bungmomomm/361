@@ -13,7 +13,7 @@ import {
 	TrackingRequest,
 	sendGtm,
 	cartViewBuilder
-	
+
 } from '@/utils/tracking';
 import cookiesLabel from '@/data/cookiesLabel';
 import { LucidCart, Utils } from '@/utils/tracking/lucidworks';
@@ -26,7 +26,7 @@ const trackBrandPageView = (data, props) => {
 	const quantityList = _.map(items, 'qty');
 	const { users, shared } = props;
 	const { userProfile } = users;
-	const layerData = { 
+	const layerData = {
 		emailHash: _.defaultTo(userProfile.enc_email, ''),
 		userIdEncrypted: userProfile.enc_userid,
 		userId: userProfile.id,
@@ -318,7 +318,7 @@ class Cart extends Component {
 		} else {
 			link = (<Link to='login?redirect_uri=/cart'>{wording}</Link>);
 		}
-		return shopBag.total.count_item !== 0 ? (
+		return shopBag.total && shopBag.total.count_item !== 0 ? (
 			<div className={styles.paymentLink}>
 				<div>
 					<div>
@@ -348,24 +348,6 @@ class Cart extends Component {
 		);
 	}
 
-	renderEmpty = () => {
-		return (
-			<div style={{ margin: 'auto' }}>
-				<div className='margin--medium-v flex-middle'><Svg src='mm_ico_no-order-shoppingbag.svg' /></div>
-				<div className='margin--small-v flex-middle'>
-					Anda belum memiliki produk di keranjang anda.
-				</div>
-				<div className='margin--medium-v flex-center flex-middle'>
-					<Link to='/category'>
-						<Button color='secondary' size='large'>
-							Beli Aja
-						</Button>
-					</Link>
-				</div>
-			</div>
-		);
-	};
-
 	render() {
 		const headerOption = {
 			left: (
@@ -385,7 +367,7 @@ class Cart extends Component {
 			<div>
 				<Page color='white'>
 					{ (this.props.shopBag.total && this.props.shopBag.total.count_item === 0) ?
-						(this.renderEmpty()) :
+						(<div dangerouslySetInnerHTML={{ __html: this.props.shopBag.empty_state }} />) :
 						(<div style={{ backgroundColor: '#F5F5F5' }}>
 							{this.renderHeaderShopBag()}
 							{this.renderMessageNotProcedItems()}
