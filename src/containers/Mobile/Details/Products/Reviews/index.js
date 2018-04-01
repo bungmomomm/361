@@ -27,6 +27,16 @@ class Reviews extends Component {
 
 	componentWillReceiveProps(nextProps) {}
 
+	shouldComponentUpdate(np) {
+		if (_.has(np.product.allReviews, 'items')) {
+			const { items } = this.props.product.allReviews;
+			const nItems = np.product.allReviews.items;
+
+			return (items !== nItems);
+		}
+		return false;
+	}
+
 	toFixDecimal = (val, max, fix = 0) => {
 		return (val > 0 && val < max) ? Number.parseFloat(val).toFixed(fix) : val;
 	}
