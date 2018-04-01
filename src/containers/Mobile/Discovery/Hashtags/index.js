@@ -55,7 +55,7 @@ class Hashtags extends Component {
 			return (obj.campaign_id === campaignId);
 		});
 
-		const rect = _.round(window.innerWidth / 3);
+		const rect = _.round((window.innerWidth > 480 ? 480 : window.innerWidth) / 3);
 
 		return (
 			<Grid bordered split={3}>
