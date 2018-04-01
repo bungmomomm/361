@@ -3,14 +3,13 @@ import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
-import Lightbox from 'react-image-lightbox';
 import to from 'await-to-js';
 import { urlBuilder, enableZoomPinch, uniqid } from '@/utils';
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as shopBagActions } from '@/state/v4/ShopBag';
-import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Spinner, Badge, AnimationLovelist, AnimationAddToCart } from '@/components/mobile';
+import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Spinner, Badge, AnimationLovelist, AnimationAddToCart } from '@/components/mobile';
 import Promos from './Promos';
 import ReviewSummary from './Reviews/summary';
 
@@ -154,7 +153,6 @@ class Products extends Component {
 			status: {
 				loading: false,
 				btnBeliDisabled: false,
-				btnBeliLoading: false,
 				forceLogin: false,
 				hasVariantSize: false,
 				isLoved: false,
@@ -291,6 +289,18 @@ class Products extends Component {
 		});
 	}
 
+	productsMapper = (products = [], bulkies = []) => {
+		if (!_.isEmpty(products) && !_.isEmpty(bulkies)) {
+			products = products.map((product) => {
+				const productFound = lovelistActions.getBulkItem(bulkies, product.product_id);
+				product.lovelistStatus = 0;
+				if (productFound) product.lovelistStatus = productFound.status;
+				return product;
+			});
+		}
+		return products;
+	}
+
 	closeZoomImage(e) {
 		const { status } = this.state;
 		status.isZoomed = false;
@@ -379,7 +389,6 @@ class Products extends Component {
 		const { cookies, dispatch, product } = this.props;
 
 		status.showModalSelectSize = false;
-		status.btnBeliLoading = true;
 		this.setState({ status });
 
 		const handler = new Promise((resolve, reject) => {
@@ -404,7 +413,6 @@ class Products extends Component {
 			status.pendingAddProduct = false;
 			status.productAdded = true;
 			status.showModalSelectSize = false;
-			status.btnBeliLoading = false;
 			message = 'Produk Berhasil ditambahkan';
 			this.setState({ status });
 
@@ -422,7 +430,6 @@ class Products extends Component {
 			// dispatch(productActions.productDetailAction(cookies.get(cookiesLabel.userToken), product.detail.id));
 		}).catch((err) => {
 			status.showModalSelectSize = false;
-			status.btnBeliLoading = false;
 			this.setState({ status });
 			dispatch(sharedActions.showSnack(uniqid('err-'),
 				{
@@ -680,7 +687,7 @@ class Products extends Component {
 							</div>
 						</div>
 						<div>
-							<Button color='secondary' disabled={(status.btnBeliDisabled || status.loading)} loading={status.btnBeliLoading} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
+							<Button color='secondary' disabled={(status.btnBeliDisabled || status.loading)} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
 						</div>
 					</div>
 				</div>
@@ -712,22 +719,13 @@ class Products extends Component {
 				fullProductDescriptionButtonText = 'Hide';
 			}
 
-			if (status.isZoomed && _.has(detail, 'images')) {
-				const images = detail.images.map((image) => image.original);
-				const { slideIndex } = carousel;
+			// if (_.isEmpty(detail) || status.loading) return this.loadingContent;
 
+			if (status.isZoomed && _.has(detail, 'images')) {
+				enableZoomPinch(true);
 				return (
 					<div>
-						<Lightbox
-							mainSrc={images[slideIndex]}
-							nextSrc={images[(slideIndex + 1) % images.length]}
-							prevSrc={images[((slideIndex + images.length) - 1) % images.length]}
-							onCloseRequest={(e) => this.closeZoomImage(e)}
-							onMovePrevRequest={() => this.setCarouselSlideIndex(((slideIndex + images.length) - 1) % images.length)}
-							onMoveNextRequest={() => this.setCarouselSlideIndex(((slideIndex + images.length) - 1) % images.length)}
-						/>
-
-						{/* <Header.Modal style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }} {...this.headerZoom} />
+						<Header.Modal style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }} {...this.headerZoom} />
 						<Carousel
 							slideIndex={carousel.slideIndex}
 							afterSlide={newSlideIndex => this.setCarouselSlideIndex(newSlideIndex)}
@@ -742,7 +740,7 @@ class Products extends Component {
 									);
 								})
 							}
-						</Carousel> */}
+						</Carousel>
 					</div>
 				);
 			}
@@ -788,10 +786,9 @@ class Products extends Component {
 								data={cardProduct.variants}
 							/>
 						</div>
-						{(detail.is_product_available !== 0 && !_.isEmpty(selectedVariant) && (selectedVariant.warning_stock_text !== '')) && (
+						{(status.hasVariantSize && !_.isEmpty(selectedVariant) && (selectedVariant.warning_stock_text !== '')) && (
 							<p className='font-color--red font-small'>{selectedVariant.warning_stock_text}</p>
 						)}
-						{detail.is_product_available === 0 && <p className='font-color--red font-small'>Produk Tidak Tersedia</p>}
 					</div>
 				</div>
 			);
