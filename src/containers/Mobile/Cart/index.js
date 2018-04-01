@@ -7,7 +7,6 @@ import Shared from '@/containers/Mobile/Shared';
 import { connect } from 'react-redux';
 import { actions as shopBagAction } from '@/state/v4/ShopBag';
 import { urlBuilder, aux } from '@/utils';
-import { actions as actionShared } from '@/state/v4/Shared';
 import _ from 'lodash';
 import {
 	TrackingRequest,
@@ -70,20 +69,7 @@ class Cart extends Component {
 		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin);
 	}
 
-	componentWillMount() {
-		if ('serviceUrl' in this.props.shared) {
-			const { dispatch, cookies } = this.props;
-			dispatch(shopBagAction.getAction(cookies.get(cookiesLabel.userToken)));
-		}
-	}
-
-
 	componentWillReceiveProps(nextProps) {
-		if (!('serviceUrl' in this.props.shared) && 'serviceUrl' in nextProps.shared) {
-			const { dispatch, cookies } = this.props;
-			dispatch(shopBagAction.getAction(cookies.get(cookiesLabel.userToken)));
-			dispatch(actionShared.totalCartAction(cookies.get(cookiesLabel.userToken)));
-		}
 
 		if (nextProps.shopBag.carts !== this.props.shopBag.carts
 			&& this.props.users.userProfile !== nextProps.users.userProfile
@@ -100,11 +86,6 @@ class Cart extends Component {
 		this.checkNotProcedItem(nextProps);
 	}
 
-	componentWillUnmount() {
-		const { dispatch, cookies } = this.props;
-		dispatch(actionShared.totalCartAction(cookies.get(cookiesLabel.userToken))); // what the purpose?
-	}
-
 	checkNotProcedItem(props) {
 		const items = _.flatMap(props.shopBag.carts, (e) => (e.items));
 		const notProcedItems = items.filter((item) => (item.max_qty < item.qty));
@@ -112,7 +93,10 @@ class Cart extends Component {
 	}
 
 	addToLovelistHandler(productId, variantId) {
-		const { dispatch, cookies } = this.props;
+		if (this.isLogin !== 'true') {
+			return this.props.history.push(`/login?redirect_uri=${this.props.location.pathname}`);
+		}
+		const { cookies, dispatch } = this.props;
 		const movingToLovelist = new Promise((resolve, reject) => {
 			resolve(dispatch(shopBagAction.addLovelistAction(cookies.get(cookiesLabel.userToken), productId)));
 		});
@@ -124,6 +108,7 @@ class Cart extends Component {
 				dispatch(shopBagAction.getAction(cookies.get(cookiesLabel.userToken)));
 			});
 		});
+		return true;
 	}
 
 	deleteConfirmationItemHandler(variantId, itemBrand, itemTitel, itemImage) {
@@ -382,7 +367,7 @@ class Cart extends Component {
 
 				<Select
 					show={this.state.showSelect}
-					label='Pilih Ukuran'
+					label='Pilih Jumlah'
 					defaultValue={this.state.qtyCurrent}
 					onChange={(e) => this.selectedNewQtyHander(e)}
 					onClose={this.updateCartHander}
@@ -425,4 +410,14 @@ const mapStateToProps = (state) => {
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(Cart)));
+const doAfterAnonymousCall = (props) => {
+	const { dispatch, cookies } = props;
+	
+	dispatch(
+		shopBagAction.getAction(
+			cookies.get(cookiesLabel.userToken)
+		)
+	);
+};
+
+export default withCookies(connect(mapStateToProps)(Shared(Cart, doAfterAnonymousCall)));

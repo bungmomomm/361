@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 import to from 'await-to-js';
 import { actions } from '@/state/v4/Shared';
-import { actions as users } from '@/state/v4/User';
+import { actions as account } from '@/state/v4/User';
 import { actions as initAction } from '@/state/v4/Home';
 import { setUserCookie, setUniqeCookie, setReferrenceCookie, initUTMProcess } from '@/utils';
 import { Promise } from 'es6-promise';
@@ -118,12 +118,12 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		async exeCall(token = null) {
-			const { shared, cookies, dispatch } = this.props;
+			const { cookies, shared, dispatch, users } = this.props;
 			const { login, provider } = this.state;
 			let tokenBearer = token === null ? cookies.get(userToken) : token.token;
 			const rfT = token === null ? cookies.get(userRfToken) : token.refresh_token;
 
-			const resp = await to(dispatch(new users.refreshToken(rfT, tokenBearer)));
+			const resp = await to(dispatch(new account.refreshToken(rfT, tokenBearer)));
 
 			const { data } = resp[1].data;
 
@@ -140,11 +140,13 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				dispatch(new actions.totalLovelistAction(tokenBearer));
 			}
 			if (login && provider) {
-				await to(dispatch(new users.userSocialLogin(tokenBearer, provider, login)));
+				await to(dispatch(new account.userSocialLogin(tokenBearer, provider, login)));
 			}
 
-			dispatch(new users.userGetProfile(tokenBearer));
-
+			if (!users.userProfile) {
+				dispatch(new account.userGetProfile(tokenBearer));
+			}
+			
 			if (typeof doAfterAnonymousCall !== 'undefined') {
 				await to(doAfterAnonymousCall.apply(this, [this.props]));
 			}
@@ -165,7 +167,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		async loginAnonymous() {
-			const response = await to(this.props.dispatch(new users.userAnonymous()));
+			const response = await to(this.props.dispatch(new account.userAnonymous()));
 
 			if (response[0]) {
 				return null;
