@@ -145,8 +145,13 @@ const bulkieCommentAction = (token, productId) => async (dispatch, getState) => 
 	return false;
 };
 
+const commentLoadingAction = (value) => (dispatch) => {
+	dispatch(commentLoading({ isLoading: value }));
+};
+
 export default {
 	productCommentAction,
 	commentAddAction,
-	bulkieCommentAction
+	bulkieCommentAction,
+	commentLoadingAction
 };
