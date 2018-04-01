@@ -22,7 +22,6 @@ class Category extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.userCookies = this.props.cookies.get(userToken);
 		this.source = this.props.cookies.get(userSource);
 		this.isLogin = this.props.cookies.get(isLogin) === 'true';
 	}
@@ -35,10 +34,11 @@ class Category extends PureComponent {
 	}
 
 	setSegmentCategory(selectedSegment) {
+		const { cookies } = this.props;
 		if (selectedSegment) {
 			const { dispatch } = this.props;
 			dispatch(sharedActions.setCurrentSegment(selectedSegment.key));
-			dispatch(new categoryActions.getCategoryMenuAction(this.userCookies, selectedSegment));
+			dispatch(new categoryActions.getCategoryMenuAction(cookies.get(userToken), selectedSegment));
 		}
 	}
 

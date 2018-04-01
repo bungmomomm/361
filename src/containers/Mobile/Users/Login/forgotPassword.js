@@ -22,15 +22,13 @@ import _ from 'lodash';
 import queryString from 'query-string';
 
 import Otp from '@/containers/Mobile/Shared/Otp';
-import { userToken, userRfToken, userSource } from '@/data/cookiesLabel';
+import { userToken, userSource } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
 
 @handler
 class ForgotPassword extends Component {
 	constructor(props) {
 		super(props);
-		this.userCookies = this.props.cookies.get(userToken);
-		this.userRFCookies = this.props.cookies.get(userRfToken);
 		this.source = this.props.cookies.get(userSource);
 		this.props = props;
 

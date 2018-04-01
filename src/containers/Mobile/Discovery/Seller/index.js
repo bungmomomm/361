@@ -132,7 +132,7 @@ class Seller extends Component {
 			showFilter: false,
 			showSort: false,
 			query: {
-				page: 0,
+				page: 1,
 				store_id: '',
 				fq: '',
 				sort: '',
@@ -247,7 +247,7 @@ class Seller extends Component {
 		});
 		this.update({
 			fq,
-			page: 0
+			page: 1
 		});
 	};
 
@@ -324,7 +324,7 @@ class Seller extends Component {
 		});
 		this.update({
 			sort: sort.q,
-			page: 0
+			page: 1
 		});
 	};
 

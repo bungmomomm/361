@@ -15,6 +15,7 @@ import {
 	Tabs
 } from '@/components/mobile/';
 import handler from '@/containers/Mobile/Shared/handler';
+import { isLogin } from '@/data/cookiesLabel';
 
 @handler
 class Users extends Component {
@@ -36,7 +37,7 @@ class Users extends Component {
 	}
 
 	componentDidMount() {
-		if (this.props.cookies.get('isLogin') === 'true') {
+		if (this.props.cookies.get(isLogin) === 'true') {
 			this.props.history.replace('/profile');
 		}
 	}

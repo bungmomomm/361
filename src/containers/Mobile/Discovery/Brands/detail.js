@@ -118,8 +118,8 @@ class Detail extends Component {
 			showFilter: false,
 			showSort: false,
 			query: {
-				per_page: 0,
-				page: 0,
+				per_page: 10,
+				page: 1,
 				q: '',
 				brand_id: '',
 				store_id: '',
@@ -140,7 +140,7 @@ class Detail extends Component {
 			const { dispatch, match: { params }, cookies } = this.props;
 			const qs = queryString.parse(location.search);
 			const data = {
-				token: this.userToken,
+				token: cookies.get(userToken),
 				query: {
 					brand_id: params.brandId || 0,
 					...qs
@@ -160,7 +160,7 @@ class Detail extends Component {
 			const { dispatch, match: { params } } = this.props;
 			const qs = queryString.parse(location.search);
 			const data = {
-				token: this.userToken,
+				token: cookies.get(userToken),
 				query: {
 					brand_id: params.brandId || 0,
 					...qs
@@ -212,7 +212,7 @@ class Detail extends Component {
 		});
 		this.update({
 			fq,
-			page: 0
+			page: 1
 		});
 	}
 
@@ -290,7 +290,7 @@ class Detail extends Component {
 		});
 		this.update({
 			sort: sort.q,
-			page: 0
+			page: 1
 		});
 	}
 

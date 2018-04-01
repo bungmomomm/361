@@ -12,10 +12,10 @@ import {
 	Image
 } from '@/components/mobile';
 import styles from './profile.scss';
-import CONST from '@/constants';
 import { actions as userAction } from '@/state/v4/User';
 import { aux } from '@/utils';
 import handler from '@/containers/Mobile/Shared/handler';
+import cookiesLabel from '@/data/cookiesLabel';
 
 @handler
 class MyOrderDetail extends Component {
@@ -45,8 +45,7 @@ class MyOrderDetail extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.isLogin = this.props.cookies.get('isLogin');
-		this.userToken = this.props.cookies.get(CONST.COOKIE_USER_TOKEN);
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true';
 		this.soNumber = this.props.match.params.so_number;
 
 		if (this.isLogin !== 'true') {
@@ -56,21 +55,21 @@ class MyOrderDetail extends Component {
 
 	componentWillMount() {
 		if ('serviceUrl' in this.props.shared) {
-			const { dispatch } = this.props;
-			dispatch(userAction.getMyOrderDetail(this.userToken, this.soNumber));
+			const { cookies, dispatch } = this.props;
+			dispatch(userAction.getMyOrderDetail(cookies.get(cookiesLabel.userToken), this.soNumber));
 		}
 	}
 
 	componentWillReceiveProps(nextProps) {
 		if (!('serviceUrl' in this.props.shared) && 'serviceUrl' in nextProps.shared) {
-			const { dispatch } = this.props;
-			dispatch(userAction.getMyOrderDetail(this.userToken, this.soNumber));
+			const { cookies, dispatch } = this.props;
+			dispatch(userAction.getMyOrderDetail(cookies.get(cookiesLabel.userToken), this.soNumber));
 		}
 	}
 
 	componentWillUnmount() {
-		const { dispatch } = this.props;
-		dispatch(userAction.cleanMyOrderDetail(this.userToken, this.soNumber));
+		const { cookies, dispatch } = this.props;
+		dispatch(userAction.cleanMyOrderDetail(cookies.get(cookiesLabel.userToken), this.soNumber));
 	}
 
 	onAddReview(soStoreNumber, seller, item) {

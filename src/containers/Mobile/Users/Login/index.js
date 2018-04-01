@@ -107,7 +107,7 @@ class Login extends Component {
 	}
 
 	removeError() {
-		this.props.dispatch(new users.clearError(this.props.cookies.get('user.token')));
+		this.props.dispatch(new users.clearError(this.props.cookies.get(userToken)));
 	}
 
 	render() {
