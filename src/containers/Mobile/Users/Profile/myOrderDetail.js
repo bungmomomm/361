@@ -47,8 +47,7 @@ class MyOrderDetail extends Component {
 		this.props = props;
 		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true';
 		this.soNumber = this.props.match.params.so_number;
-
-		if (this.isLogin !== 'true') {
+		if (this.isLogin !== true) {
 			this.props.history.push('/');
 		}
 	}

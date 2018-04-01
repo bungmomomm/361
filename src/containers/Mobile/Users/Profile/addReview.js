@@ -44,7 +44,7 @@ class AddReview extends Component {
 			errorReview: false
 		};
 
-		if (this.isLogin !== 'true') {
+		if (this.isLogin !== true) {
 			this.props.history.push('/');
 		}
 	}
