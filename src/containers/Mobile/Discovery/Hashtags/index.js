@@ -55,6 +55,8 @@ class Hashtags extends Component {
 			return (obj.campaign_id === campaignId);
 		});
 
+		const rect = _.round(window.innerWidth / 3);
+
 		return (
 			<Grid bordered split={3}>
 				{items.map((product, i) => {
@@ -63,7 +65,7 @@ class Hashtags extends Component {
 
 					return (
 						<div className='placeholder-image' key={i}>
-							<Link to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode}`}>
+							<Link className={styles.hashtagThumbnail} style={{ width: `${rect}px`, height: `${rect}px`, backgroundImage: `url(${product.image})` }} to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode}`}>
 								<Image src={product.image} />
 							</Link>
 						</div>

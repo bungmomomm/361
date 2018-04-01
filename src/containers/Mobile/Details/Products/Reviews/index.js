@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import { Page, Header, Svg, Comment, Spinner, Button, Rating } from '@/components/mobile';
+import { Page, Header, Svg, Comment, Spinner, Button, Rating, Image } from '@/components/mobile';
 import { actions as productActions } from '@/state/v4/Product';
 import Scroller from '@/containers/Mobile/Shared/scroller';
 import Shared from '@/containers/Mobile/Shared';
@@ -97,7 +97,7 @@ class Reviews extends Component {
 								{/* ----------------------------	SELLER REVIEW INFO ---------------------------- */}
 								<div>
 									<div className={styles.starCon}>
-										<Svg src='ico_circle_review.svg' />
+										<Image alt='ico review' width={76} height={76} local src='mobile/mm_ico_circle_review.png' />
 										<div className={styles.num}>{this.toFixDecimal(info.total_rating, 5, 1)}</div>
 									</div>
 									<Rating total={5} active={this.toFixDecimal(info.total_rating, 5, 1)} />
