@@ -3,13 +3,14 @@ import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
+import Lightbox from 'react-image-lightbox';
 import to from 'await-to-js';
 import { urlBuilder, enableZoomPinch, uniqid } from '@/utils';
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as shopBagActions } from '@/state/v4/ShopBag';
-import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Carousel, Spinner, Badge, AnimationLovelist, AnimationAddToCart } from '@/components/mobile';
+import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Spinner, Badge, AnimationLovelist, AnimationAddToCart } from '@/components/mobile';
 import Promos from './Promos';
 import ReviewSummary from './Reviews/summary';
 
@@ -288,18 +289,6 @@ class Products extends Component {
 				slideIndex: index || 0
 			}
 		});
-	}
-
-	productsMapper = (products = [], bulkies = []) => {
-		if (!_.isEmpty(products) && !_.isEmpty(bulkies)) {
-			products = products.map((product) => {
-				const productFound = lovelistActions.getBulkItem(bulkies, product.product_id);
-				product.lovelistStatus = 0;
-				if (productFound) product.lovelistStatus = productFound.status;
-				return product;
-			});
-		}
-		return products;
 	}
 
 	closeZoomImage(e) {
@@ -691,7 +680,7 @@ class Products extends Component {
 							</div>
 						</div>
 						<div>
-							<Button color='secondary' disabled={(status.btnBeliDisabled || status.loading)} loading={status.btnBeliLoading || status.loading} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
+							<Button color='secondary' disabled={(status.btnBeliDisabled || status.loading)} loading={status.btnBeliLoading} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
 						</div>
 					</div>
 				</div>
@@ -724,10 +713,21 @@ class Products extends Component {
 			}
 
 			if (status.isZoomed && _.has(detail, 'images')) {
-				enableZoomPinch(true);
+				const images = detail.images.map((image) => image.original);
+				const { slideIndex } = carousel;
+
 				return (
 					<div>
-						<Header.Modal style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }} {...this.headerZoom} />
+						<Lightbox
+							mainSrc={images[slideIndex]}
+							nextSrc={images[(slideIndex + 1) % images.length]}
+							prevSrc={images[((slideIndex + images.length) - 1) % images.length]}
+							onCloseRequest={(e) => this.closeZoomImage(e)}
+							onMovePrevRequest={() => this.setCarouselSlideIndex(((slideIndex + images.length) - 1) % images.length)}
+							onMoveNextRequest={() => this.setCarouselSlideIndex(((slideIndex + images.length) - 1) % images.length)}
+						/>
+
+						{/* <Header.Modal style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }} {...this.headerZoom} />
 						<Carousel
 							slideIndex={carousel.slideIndex}
 							afterSlide={newSlideIndex => this.setCarouselSlideIndex(newSlideIndex)}
@@ -742,7 +742,7 @@ class Products extends Component {
 									);
 								})
 							}
-						</Carousel>
+						</Carousel> */}
 					</div>
 				);
 			}
