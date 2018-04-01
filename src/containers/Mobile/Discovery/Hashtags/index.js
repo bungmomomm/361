@@ -64,7 +64,7 @@ class Hashtags extends Component {
 					return (
 						<div className='placeholder-image' key={i}>
 							<Link to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode}`}>
-								<Image src={product.image} />
+								<Image lazyload src={product.image} />
 							</Link>
 						</div>
 					);
@@ -90,7 +90,7 @@ class Hashtags extends Component {
 					return (
 						<div key={i}>
 							<Link to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode || ''}`}>
-								<Image src={product.image} width='100%' />
+								<Image lazyload src={product.image} width='100%' />
 							</Link>
 							<div className='margin--medium-v flex-row flex-spaceBetween flex-middle'>
 								<div className='padding--medium-h'>
