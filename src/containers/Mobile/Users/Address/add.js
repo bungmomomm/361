@@ -56,13 +56,21 @@ class Address extends Component {
 
 			if (v) {
 				(async () => {
-					const { dispatch, cookies } = this.props;
-					const [err, resp] = await to(dispatch(actions.getDistrict(cookies.get(userToken), { city_id: v.split('_')[1] })));
+					const { address: { data, paging }, dispatch, cookies } = this.props;
 
+					const c = data.cities[data.cities.length - 1];
+					if (+v.split('_')[1] === +c.city_id && paging.cities) {
+						const [err2, resp2] = await to(dispatch(actions.getCity(cookies.get(userToken), paging.cities)));
+						if (err2) {
+							return Promise.reject(err2);
+						}
+						return Promise.resolve(resp2);
+					}
+
+					const [err, resp] = await to(dispatch(actions.getDistrict(cookies.get(userToken), { city_id: v.split('_')[1] })));
 					if (err) {
 						return Promise.reject(err);
 					}
-
 					this.setState({
 						disabled: {
 							...this.state.disabled,
@@ -79,7 +87,7 @@ class Address extends Component {
 	onCitySearch = (el) => {
 		const { cookies, dispatch } = this.props;
 		if (el.target.value.length > 2) {
-			dispatch(actions.getCity(cookies.get(userToken), { q: el.target.value }));
+			dispatch(actions.getCity(cookies.get(userToken), { q: el.target.value }, 'init'));
 		}
 	};
 
@@ -375,7 +383,7 @@ const doAfterAnonymous = (props) => {
 		history.push('/login');
 	}
 
-	dispatch(actions.getCity(cookies.get(userToken), { q: '' }));
+	dispatch(actions.getCity(cookies.get(userToken), { q: '' }, 'init'));
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Address, doAfterAnonymous)));
