@@ -106,6 +106,9 @@ class Cart extends Component {
 	}
 
 	addToLovelistHandler(productId, variantId) {
+		if (this.isLogin !== 'true') {
+			return this.props.history.push(`/login?redirect_uri=${this.props.location.pathname}`);
+		}
 		const { dispatch } = this.props;
 		const movingToLovelist = new Promise((resolve, reject) => {
 			resolve(dispatch(shopBagAction.addLovelistAction(this.userToken, productId)));
@@ -118,6 +121,7 @@ class Cart extends Component {
 				dispatch(shopBagAction.getAction(this.userToken));
 			});
 		});
+		return true;
 	}
 
 	deleteConfirmationItemHandler(variantId, itemBrand, itemTitel, itemImage) {
@@ -376,7 +380,7 @@ class Cart extends Component {
 
 				<Select
 					show={this.state.showSelect}
-					label='Pilih Ukuran'
+					label='Pilih Jumlah'
 					defaultValue={this.state.qtyCurrent}
 					onChange={(e) => this.selectedNewQtyHander(e)}
 					onClose={this.updateCartHander}
