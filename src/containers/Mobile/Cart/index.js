@@ -383,7 +383,7 @@ class Cart extends Component {
 
 				<Select
 					show={this.state.showSelect}
-					label='Pilih Ukuran'
+					label='Pilih Jumlah'
 					defaultValue={this.state.qtyCurrent}
 					onChange={(e) => this.selectedNewQtyHander(e)}
 					onClose={this.updateCartHander}
