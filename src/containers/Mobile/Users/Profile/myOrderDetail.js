@@ -13,7 +13,7 @@ import {
 } from '@/components/mobile';
 import styles from './profile.scss';
 import { actions as userAction } from '@/state/v4/User';
-import { aux } from '@/utils';
+import { aux, urlBuilder } from '@/utils';
 import handler from '@/containers/Mobile/Shared/handler';
 import cookiesLabel from '@/data/cookiesLabel';
 
@@ -121,9 +121,18 @@ class MyOrderDetail extends Component {
 											<strong className='margin--small-t'>{item.pricing.formatted.price}</strong>
 										</div>
 									</div>
-									{ myOrdersDetail.group === 'batal' && (
+									{ (myOrdersDetail.group === 'batal' || myOrdersDetail.group === 'selesai') && (
 										<div>
-											<Button rounded size='medium' color='secondary' className='margin--medium-t text-uppercase'>BELI AJA</Button>
+											<Link to={urlBuilder.setId(item.product_id).setName(item.product_title).buildPdp()} >
+												<Button
+													rounded
+													size='medium'
+													color='secondary'
+													className='margin--medium-t text-uppercase'
+												>
+														BELI LAGI
+												</Button>
+											</Link>
 										</div>
 									)}
 
