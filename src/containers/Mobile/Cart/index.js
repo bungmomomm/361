@@ -7,7 +7,6 @@ import Shared from '@/containers/Mobile/Shared';
 import { connect } from 'react-redux';
 import { actions as shopBagAction } from '@/state/v4/ShopBag';
 import { urlBuilder, aux } from '@/utils';
-import { actions as actionShared } from '@/state/v4/Shared';
 import _ from 'lodash';
 import {
 	TrackingRequest,
@@ -83,7 +82,6 @@ class Cart extends Component {
 		if (!('serviceUrl' in this.props.shared) && 'serviceUrl' in nextProps.shared) {
 			const { dispatch } = this.props;
 			dispatch(shopBagAction.getAction(this.userToken));
-			dispatch(actionShared.totalCartAction(this.userToken));
 		}
 
 		if (nextProps.shopBag.carts !== this.props.shopBag.carts
@@ -99,11 +97,6 @@ class Cart extends Component {
 		}
 
 		this.checkNotProcedItem(nextProps);
-	}
-
-	componentWillUnmount() {
-		const { dispatch } = this.props;
-		dispatch(actionShared.totalCartAction(this.userToken)); // what the purpose?
 	}
 
 	checkNotProcedItem(props) {
