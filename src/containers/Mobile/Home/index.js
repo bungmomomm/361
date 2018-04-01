@@ -428,9 +428,9 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-	const { home, dispatch, cookies } = props;
+	const { home, dispatch, cookies, shared } = props;
 
-	const activeSegment = home.segmen.find(e => e.key === home.activeSegment.key);
+	const activeSegment = home.segmen.find(e => e.key === shared.current);
 
 	const tokenHeader = cookies.get(cookiesLabel.userToken);
 
