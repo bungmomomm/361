@@ -23,9 +23,7 @@ class MyOrderDetail extends Component {
 		this.state = {};
 		this.provider = this.props.match.params.provider;
 		this.so_number = this.props.match.params.so_number;
-		this.isLogin = this.props.cookies.get(isLogin);
-
-		this.userToken = this.props.cookies.get(userToken);
+		this.isLogin = this.props.cookies.get(isLogin) === 'true';
 
 		if (this.isLogin !== 'true') {
 			this.props.history.push('/');
@@ -34,15 +32,15 @@ class MyOrderDetail extends Component {
 
 	componentWillMount() {
 		if ('serviceUrl' in this.props.shared) {
-			const { dispatch } = this.props;
-			dispatch(userAction.getTrackingInfo(this.userToken, this.provider, this.so_number));
+			const { cookies, dispatch } = this.props;
+			dispatch(userAction.getTrackingInfo(cookies.get(userToken), this.provider, this.so_number));
 		}
 	}
 
 	componentWillReceiveProps(nextProps) {
 		if (!('serviceUrl' in this.props.shared) && 'serviceUrl' in nextProps.shared) {
-			const { dispatch } = this.props;
-			dispatch(userAction.getTrackingInfo(this.userToken, this.provider, this.so_number));
+			const { cookies, dispatch } = this.props;
+			dispatch(userAction.getTrackingInfo(cookies.get(userToken), this.provider, this.so_number));
 		}
 
 		if (nextProps.user.trackingInfo !== this.props.user.trackingInfo && nextProps.user.trackingInfo === false) {

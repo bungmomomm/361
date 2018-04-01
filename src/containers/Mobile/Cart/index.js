@@ -61,7 +61,6 @@ class Cart extends Component {
 			},
 			itemsNotProced: []
 		};
-		this.userToken = this.props.cookies.get(cookiesLabel.userToken);
 		this.deleteItemHandler = this.deleteItemHandler.bind(this);
 		this.addToLovelistHandler = this.addToLovelistHandler.bind(this);
 		this.selectItemHandler = this.selectItemHandler.bind(this);
@@ -73,17 +72,17 @@ class Cart extends Component {
 
 	componentWillMount() {
 		if ('serviceUrl' in this.props.shared) {
-			const { dispatch } = this.props;
-			dispatch(shopBagAction.getAction(this.userToken));
+			const { dispatch, cookies } = this.props;
+			dispatch(shopBagAction.getAction(cookies.get(cookiesLabel.userToken)));
 		}
 	}
 
 
 	componentWillReceiveProps(nextProps) {
 		if (!('serviceUrl' in this.props.shared) && 'serviceUrl' in nextProps.shared) {
-			const { dispatch } = this.props;
-			dispatch(shopBagAction.getAction(this.userToken));
-			dispatch(actionShared.totalCartAction(this.userToken));
+			const { dispatch, cookies } = this.props;
+			dispatch(shopBagAction.getAction(cookies.get(cookiesLabel.userToken)));
+			dispatch(actionShared.totalCartAction(cookies.get(cookiesLabel.userToken)));
 		}
 
 		if (nextProps.shopBag.carts !== this.props.shopBag.carts
@@ -102,8 +101,8 @@ class Cart extends Component {
 	}
 
 	componentWillUnmount() {
-		const { dispatch } = this.props;
-		dispatch(actionShared.totalCartAction(this.userToken)); // what the purpose?
+		const { dispatch, cookies } = this.props;
+		dispatch(actionShared.totalCartAction(cookies.get(cookiesLabel.userToken))); // what the purpose?
 	}
 
 	checkNotProcedItem(props) {
@@ -113,16 +112,16 @@ class Cart extends Component {
 	}
 
 	addToLovelistHandler(productId, variantId) {
-		const { dispatch } = this.props;
+		const { dispatch, cookies } = this.props;
 		const movingToLovelist = new Promise((resolve, reject) => {
-			resolve(dispatch(shopBagAction.addLovelistAction(this.userToken, productId)));
+			resolve(dispatch(shopBagAction.addLovelistAction(cookies.get(cookiesLabel.userToken), productId)));
 		});
 		movingToLovelist.then((res) => {
 			const deleting = new Promise((resolve, reject) => {
-				resolve(dispatch(shopBagAction.deleteAction(this.userToken, variantId)));
+				resolve(dispatch(shopBagAction.deleteAction(cookies.get(cookiesLabel.userToken), variantId)));
 			});
 			deleting.then((resp) => {
-				dispatch(shopBagAction.getAction(this.userToken));
+				dispatch(shopBagAction.getAction(cookies.get(cookiesLabel.userToken)));
 			});
 		});
 	}
@@ -136,16 +135,16 @@ class Cart extends Component {
 	}
 
 	deleteItemHandler() {
-		const { dispatch } = this.props;
+		const { dispatch, cookies } = this.props;
 
 		const deleting = new Promise((resolve, reject) => {
-			resolve(dispatch(shopBagAction.deleteAction(this.userToken, this.state.productWillDelete.variant_id)));
+			resolve(dispatch(shopBagAction.deleteAction(cookies.get(cookiesLabel.userToken), this.state.productWillDelete.variant_id)));
 			this.clearWillDeleteState();
 			const { variant_id } = this.state.productWillDelete;
 			if (typeof this.fusion !== 'undefined') this.fusion.trackCartChanges(variant_id, 0);
 		});
 		deleting.then((res) => {
-			dispatch(shopBagAction.getAction(this.userToken));
+			dispatch(shopBagAction.getAction(cookies.get(cookiesLabel.userToken)));
 		}).catch((err) => this.clearWillDeleteState());
 
 	}
@@ -168,9 +167,9 @@ class Cart extends Component {
 	}
 
 	updateCartHander() {
-		const { dispatch } = this.props;
+		const { dispatch, cookies } = this.props;
 		if (this.state.qtyNew !== null && this.state.qtyCurrent !== this.state.qtyNew) {
-			dispatch(shopBagAction.updateAction(this.userToken, this.state.variantIdwillUpdate, this.state.qtyNew));
+			dispatch(shopBagAction.updateAction(cookies.get(cookiesLabel.userToken), this.state.variantIdwillUpdate, this.state.qtyNew));
 			const { variantIdwillUpdate, qtyNew } = this.state;
 			if (typeof this.fusion !== 'undefined') this.fusion.trackCartChanges(variantIdwillUpdate, qtyNew);
 		}

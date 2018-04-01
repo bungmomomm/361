@@ -27,7 +27,6 @@ class Search extends PureComponent {
 		};
 		this.searchListCookieName = CONST.COOKIE_USER_SEARCH_LIST;
 		this.searchHashtagListCookieName = CONST.COOKIE_USER_SEARCH_HASHTAG_LIST;
-		this.userToken = this.props.cookies.get(cookiesLabel.userToken);
 		this.SUGGEST_KEYWORD = CONST.SEARCH_SUGGEST_TYPE.suggestKeyword;
 		this.SUGGEST_CATEGORY = CONST.SEARCH_SUGGEST_TYPE.suggestCategory;
 		this.SUGGEST_HASTAG = CONST.SEARCH_SUGGEST_TYPE.suggestHashtag;
@@ -41,16 +40,16 @@ class Search extends PureComponent {
 	}
 
 	setCookieSearch(sText, sValue, sType) {
+		const { dispatch, cookies } = this.props;
 		const usedCookie = (sText.charAt(0) === '#') ? this.searchHashtagListCookieName : this.searchListCookieName;
-		let cookies = this.props.cookies.get(usedCookie);
-		cookies = (!cookies || cookies === []) ? [] : cookies;
-		if (Search.isKeywordNotExistInHistory(cookies, sText)) {
+		let theCookies = cookies.get(usedCookie);
+		theCookies = (!theCookies || theCookies === []) ? [] : theCookies;
+		if (Search.isKeywordNotExistInHistory(theCookies, sText)) {
 			const newSearch = { text: sText, value: sValue, type: sType };
-			cookies.unshift(newSearch);
-			this.props.cookies.set(usedCookie, cookies.filter((val, key) => (key <= 9)));
+			theCookies.unshift(newSearch);
+			cookies.set(usedCookie, theCookies.filter((val, key) => (key <= 9)));
 		};
-		const { dispatch } = this.props;
-		dispatch(actionSearch.updatedKeywordHandler(sText, this.userToken));
+		dispatch(actionSearch.updatedKeywordHandler(sText, cookies.get(cookiesLabel.userToken)));
 	}
 
 	deleteAllCookieSearchByType(type) {
@@ -88,8 +87,8 @@ class Search extends PureComponent {
 
 	searchKeywordUpdatedHandler(event) {
 		const newWord = event.target.value || '';
-		const { dispatch } = this.props;
-		dispatch(actionSearch.updatedKeywordHandler(newWord, this.userToken));
+		const { dispatch, cookies } = this.props;
+		dispatch(actionSearch.updatedKeywordHandler(newWord, cookies.get(cookiesLabel.userToken)));
 		if (newWord && newWord.length >= 3) {
 			this.setState({
 				...this.state,
@@ -254,9 +253,10 @@ class Search extends PureComponent {
 		const displayLoading = (<div style={{ textAlign: 'center', padding: '20px 0px' }} > <Spinner /> </div>);
 
 		const backHandler = () => {
+			const { cookies } = this.props;
 			if (this.props.location.search === '?ref=home') {
 				const { dispatch } = this.props;
-				dispatch(actionSearch.updatedKeywordHandler('', this.userToken));
+				dispatch(actionSearch.updatedKeywordHandler('', cookies.get(cookiesLabel.userToken)));
 				this.props.history.push('/');
 			} else {
 				this.props.history.goBack();

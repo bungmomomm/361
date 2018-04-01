@@ -38,8 +38,6 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				watchConnection: false,
 			};
 
-			this.userCookies = this.props.cookies.get(userToken);
-			this.userRFCookies = this.props.cookies.get(userRfToken);
 			this.uniqueId = this.props.cookies.get(uniqueid);
 			this.handleScroll = _.throttle(this.handleScroll).bind(this);
 			this.docBody = null;
@@ -120,10 +118,10 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		async exeCall(token = null) {
-			const { shared, dispatch } = this.props;
+			const { shared, cookies, dispatch } = this.props;
 			const { login, provider } = this.state;
-			let tokenBearer = token === null ? this.userCookies : token.token;
-			const rfT = token === null ? this.userRFCookies : token.refresh_token;
+			let tokenBearer = token === null ? cookies.get(userToken) : token.token;
+			const rfT = token === null ? cookies.get(userRfToken) : token.refresh_token;
 
 			const resp = await to(dispatch(new users.refreshToken(rfT, tokenBearer)));
 
