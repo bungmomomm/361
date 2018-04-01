@@ -34,7 +34,7 @@ const getCity = (token, query = {}, type = 'update') => async (dispatch, getStat
 	if (!url) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	if (!query.per_page) {
-		query.per_page = 10;
+		query.per_page = 30;
 	}
 
 	dispatch(address({
