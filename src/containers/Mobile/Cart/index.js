@@ -70,19 +70,7 @@ class Cart extends Component {
 		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin);
 	}
 
-	componentWillMount() {
-		if ('serviceUrl' in this.props.shared) {
-			const { dispatch } = this.props;
-			dispatch(shopBagAction.getAction(this.userToken));
-		}
-	}
-
-
 	componentWillReceiveProps(nextProps) {
-		if (!('serviceUrl' in this.props.shared) && 'serviceUrl' in nextProps.shared) {
-			const { dispatch } = this.props;
-			dispatch(shopBagAction.getAction(this.userToken));
-		}
 
 		if (nextProps.shopBag.carts !== this.props.shopBag.carts
 			&& this.props.users.userProfile !== nextProps.users.userProfile
@@ -423,4 +411,14 @@ const mapStateToProps = (state) => {
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(Cart)));
+const doAfterAnonymousCall = (props) => {
+	const { dispatch, cookies } = props;
+	
+	dispatch(
+		shopBagAction.getAction(
+			cookies.get(cookiesLabel.userToken)
+		)
+	);
+};
+
+export default withCookies(connect(mapStateToProps)(Shared(Cart, doAfterAnonymousCall)));
