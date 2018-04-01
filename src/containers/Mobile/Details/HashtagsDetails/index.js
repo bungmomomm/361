@@ -21,7 +21,7 @@ import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as usersActions } from '@/state/v4/User';
 import _ from 'lodash';
-import { userToken } from '@/data/cookiesLabel';
+import { userToken, isLogin } from '@/data/cookiesLabel';
 import { urlBuilder } from '@/utils';
 import { Love } from '@/containers/Mobile/Widget';
 import stylesCatalog from '@/containers/Mobile/Discovery/View/view.scss';
@@ -56,7 +56,7 @@ class HashtagsDetails extends Component {
 		const { cookies } = this.props;
 
 		// customer must be logged in first
-		if (cookies.get('isLogin') === 'false') {
+		if (cookies.get(isLogin) === 'false') {
 			this.setState({
 				showLoginModal: true,
 				product
