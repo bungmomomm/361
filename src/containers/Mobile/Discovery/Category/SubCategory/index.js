@@ -27,7 +27,6 @@ class SubCategory extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.userCookies = this.props.cookies.get(userToken);
 		this.source = this.props.cookies.get(userSource);
 		this.isLogin = this.props.cookies.get(isLogin) === 'true';
 		this.state = {
@@ -65,8 +64,8 @@ class SubCategory extends PureComponent {
 	}
 
 	getFeaturedBrands(categoryId) {
-		const { dispatch } = this.props;
-		dispatch(new categoryActions.getBrandsByCategoryIdAction(this.userCookies, categoryId));
+		const { cookies, dispatch } = this.props;
+		dispatch(new categoryActions.getBrandsByCategoryIdAction(cookies.get(userToken), categoryId));
 	}
 
 	renderListCategory() {

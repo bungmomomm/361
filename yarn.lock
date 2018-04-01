@@ -6699,6 +6699,10 @@ rc@^1.0.1, rc@^1.1.2, rc@^1.1.6, rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+react-component-errors@0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/react-component-errors/-/react-component-errors-0.0.6.tgz#370f03e284dfa95ca94449f0fdd24e8914fb8752"
+
 react-cookie@^2.0.8:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/react-cookie/-/react-cookie-2.1.1.tgz#3fd55cdcfe72350858b46e2709dba1dd60475e10"

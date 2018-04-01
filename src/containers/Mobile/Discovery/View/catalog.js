@@ -6,7 +6,6 @@ import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import util from 'util';
-import validator from 'validator';
 
 import {
 	Button,
@@ -35,7 +34,6 @@ class CatalogView extends Component {
 		super(props);
 		this.props = props;
 		this.state = {
-			commentLoading: false,
 			showSendButton: false,
 			showCounter: false,
 			validForm: false,
@@ -43,11 +41,11 @@ class CatalogView extends Component {
 				product_id: props.focusedProductId || '',
 				comment: ''
 			},
-			counterValue: 0,
-			counterLimit: 300
+			counterValue: 0
 		};
 
 		this.userProfile = this.props.cookies.get(cookiesLabel.userProfile) || false;
+		this.counterLimit = 300;
 		this.loadingView = (
 			<div style={{ margin: '20px auto 20px auto' }}>
 				<Spinner />
@@ -74,12 +72,15 @@ class CatalogView extends Component {
 		if (id !== focusedProductId) {
 			this.setState({
 				showCounter: false,
-				counterValue: 0,
 				validForm: false
 			});
 		}
 
+		const getValueLength = document.getElementById(`textarea-${id}`).value.length;
+
 		this.setState({
+			counterValue: getValueLength,
+			showCounter: true,
 			showSendButton: true
 		});
 
@@ -99,15 +100,10 @@ class CatalogView extends Component {
 		const { cookies, dispatch, focusedProductId } = this.props;
 		const { newComment } = this.state;
 
-		this.setState({
-			commentLoading: true
-		});
-
-		await dispatch(commentActions.commentAddAction(cookies.get('user.token'), newComment.product_id, newComment.comment, 'pcp'));
-		await dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), [focusedProductId]));
+		await dispatch(commentActions.commentAddAction(cookies.get(cookiesLabel.userToken), newComment.product_id, newComment.comment, 'pcp'));
+		await dispatch(commentActions.bulkieCommentAction(cookies.get(cookiesLabel.userToken), [focusedProductId]));
 
 		this.setState({
-			commentLoading: false,
 			showSendButton: false,
 			showCounter: false,
 			validForm: false,
@@ -120,12 +116,8 @@ class CatalogView extends Component {
 	}
 
 	commentOnChange(e) {
-		const { newComment, counterLimit } = this.state;
+		const { newComment } = this.state;
 		const value = util.format('%s', e.target.value);
-
-		if (value.length > counterLimit) {
-			return;
-		}
 
 		if (value.length > 0) {
 			this.setState({ showCounter: true, counterValue: value.length });
@@ -134,7 +126,7 @@ class CatalogView extends Component {
 		}
 
 		let validForm = false;
-		if (!validator.isEmpty(value) && value.length <= counterLimit) {
+		if (value.length > 0 && value.length <= this.counterLimit) {
 			validForm = true;
 		}
 
@@ -149,11 +141,7 @@ class CatalogView extends Component {
 
 	renderComment(product) {
 		const { comments, cookies, focusedProductId, redirectPath } = this.props;
-		const {
-			commentLoading,
-			validForm, showCounter, showSendButton, counterValue, counterLimit,
-			newComment
-		} = this.state;
+		const { validForm, showCounter, showSendButton, counterValue } = this.state;
 
 		if (comments.isLoading) {
 			return this.loadingView;
@@ -177,7 +165,7 @@ class CatalogView extends Component {
 		) : '';
 
 		const textCounter = showCounter ? (
-			`${counterValue}/${counterLimit}`
+			`${counterValue}/${this.counterLimit}`
 		) : '';
 
 		const sendButton = showSendButton && focusedProductId === product.product_id ? (
@@ -212,21 +200,22 @@ class CatalogView extends Component {
 					<Comment
 						data={commentProduct.last_comment}
 						type='lite-review'
-						loading={comments.loading}
+						loading={comments.isLoading}
 					/>
 				)}
 				<Level>
 					{userAvatar}
 					<Level.Item>
 						{
-							cookies.get('isLogin') === 'true' ?
-								comments.isLoading || commentLoading ? this.loadingView :
+							cookies.get(cookiesLabel.isLogin) === 'true' ?
+								comments.isLoading ? this.loadingView :
 									(
 										<Input
 											as='textarea'
+											id={`textarea-${product.product_id}`}
+											maxLength={this.counterLimit}
 											color='white'
 											placeholder='Tulis komentar..'
-											value={newComment.comment}
 											onClickInputAction={() => this.setFocusedProduct(product.product_id)}
 											{...commentProps}
 										/>

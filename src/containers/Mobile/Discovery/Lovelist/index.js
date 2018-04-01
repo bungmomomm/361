@@ -25,7 +25,6 @@ class Lovelist extends Component {
 		super(props);
 		this.props = props;
 		this.isLogin = (typeof this.props.cookies.get(cookiesLabel.isLogin) === 'string' && this.props.cookies.get(cookiesLabel.isLogin) === 'true');
-		this.userCookies = this.props.cookies.get(cookiesLabel.userToken);
 		this.state = {
 			status: {
 				listTypeGrid: true,
@@ -60,8 +59,8 @@ class Lovelist extends Component {
 	componentWillReceiveProps(nextProps) {}
 
 	componentWillUnmount() {
-		const { dispatch } = this.props;
-		dispatch(actionShared.totalLovelistAction(this.userCookies));
+		const { cookies, dispatch } = this.props;
+		dispatch(actionShared.totalLovelistAction(cookies.get(cookiesLabel.userToken)));
 	}
 
 	onGridViewModeClick(e) {
@@ -128,7 +127,7 @@ class Lovelist extends Component {
 	}
 
 	removeItem() {
-		const { dispatch, lovelist } = this.props;
+		const { cookies, dispatch, lovelist } = this.props;
 		const { ids, list } = lovelist.items;
 		const { removedItemId, status } = this.state;
 		const idx = ids.indexOf(removedItemId);
@@ -137,7 +136,7 @@ class Lovelist extends Component {
 		this.setState({ status });
 		if (removedItemId && (idx > -1)) {
 			const handler = new Promise((resolve, reject) => {
-				resolve(dispatch(lovelistAction.removeFromLovelist(this.userCookies, removedItemId)));
+				resolve(dispatch(lovelistAction.removeFromLovelist(cookies.get(cookiesLabel.userToken), removedItemId)));
 			});
 
 			handler.then((res) => {

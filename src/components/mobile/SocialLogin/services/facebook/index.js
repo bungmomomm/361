@@ -63,7 +63,7 @@ class FacebookLogin extends PureComponent {
 	}
 
 	login() {
-		if (this.state.sdkLoaded && !this.state.loading) {
+		if (this.state.sdkLoaded) {
 			this.setState({
 				loading: true
 			});

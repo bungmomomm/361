@@ -55,6 +55,8 @@ class Hashtags extends Component {
 			return (obj.campaign_id === campaignId);
 		});
 
+		const rect = _.round(window.innerWidth / 3);
+
 		return (
 			<Grid bordered split={3}>
 				{items.map((product, i) => {
@@ -63,8 +65,8 @@ class Hashtags extends Component {
 
 					return (
 						<div className='placeholder-image' key={i}>
-							<Link to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode}`}>
-								<Image lazyload src={product.image} />
+							<Link className={styles.hashtagThumbnail} style={{ width: `${rect}px`, height: `${rect}px`, backgroundImage: `url(${product.image})` }} to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode}`}>
+								<Image src={product.image} />
 							</Link>
 						</div>
 					);
@@ -90,7 +92,7 @@ class Hashtags extends Component {
 					return (
 						<div key={i}>
 							<Link to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode || ''}`}>
-								<Image lazyload src={product.image} width='100%' />
+								<Image src={product.image} width='100%' />
 							</Link>
 							<div className='margin--medium-v flex-row flex-spaceBetween flex-middle'>
 								<div className='padding--medium-h'>

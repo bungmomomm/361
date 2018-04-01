@@ -13,7 +13,7 @@ import { actions as usersActions } from '@/state/v4/User';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { uniqid } from '@/utils';
 import to from 'await-to-js';
-import { isLogin } from '@/data/cookiesLabel';
+import { isLogin, userToken } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
 import { toastSytle } from '@/containers/Mobile/Shared/styleSnackbar';
 
@@ -63,7 +63,7 @@ class Love extends PureComponent {
 		let response;
 		if (status === 1) {
 			message = 'Produk berhasil dihapus dari Lovelist';
-			response = await to(dispatch(lovelistActions.removeFromLovelist(cookies.get('user.token'), data)));
+			response = await to(dispatch(lovelistActions.removeFromLovelist(cookies.get(userToken), data)));
 			if (response[0]) {
 				isError = true;
 				message = 'Gagal menghapus Produk dari lovelist';
@@ -76,7 +76,7 @@ class Love extends PureComponent {
 			}
 		} else {
 			message = 'Produk berhasil disimpan ke Lovelist';
-			response = await to(dispatch(lovelistActions.addToLovelist(cookies.get('user.token'), data)));
+			response = await to(dispatch(lovelistActions.addToLovelist(cookies.get(userToken), data)));
 			if (response[0]) {
 				isError = true;
 				message = 'Gagal menyimpan Produk di lovelist';
@@ -88,7 +88,7 @@ class Love extends PureComponent {
 				});
 			}
 		}
-		dispatch(sharedActions.totalLovelistAction(cookies.get('user.token')));
+		dispatch(sharedActions.totalLovelistAction(cookies.get(userToken)));
 
 		this.setState({
 			loading: false

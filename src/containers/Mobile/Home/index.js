@@ -70,8 +70,6 @@ class Home extends Component {
 		super(props);
 		this.props = props;
 
-		this.userCookies = this.props.cookies.get(cookiesLabel.userToken);
-		this.userRFCookies = this.props.cookies.get(cookiesLabel.userRfToken);
 		this.source = this.props.cookies.get(cookiesLabel.userSource);
 
 		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true';
@@ -110,12 +108,12 @@ class Home extends Component {
 
 	async handlePick(current) {
 		const { segmen } = this.props.home;
-		const { dispatch } = this.props;
+		const { cookies, dispatch } = this.props;
 		const willActiveSegment = segmen.find(e => e.id === current);
 		dispatch(new sharedActions.setCurrentSegment(willActiveSegment.key));
-		const mainPageData = await dispatch(new actions.mainAction(willActiveSegment, this.userCookies));
+		const mainPageData = await dispatch(new actions.mainAction(willActiveSegment, cookies.get(cookiesLabel.userToken)));
 		Home.trackImpresionHandler(mainPageData);
-		dispatch(new actions.recomendationAction(willActiveSegment, this.userCookies));
+		dispatch(new actions.recomendationAction(willActiveSegment, cookies.get(cookiesLabel.userToken)));
 	}
 
 	sbClose() {

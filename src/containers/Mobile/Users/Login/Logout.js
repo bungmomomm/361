@@ -13,6 +13,8 @@ import { actions as userActions } from '@/state/v4/User';
 import to from 'await-to-js';
 import handler from '@/containers/Mobile/Shared/handler';
 
+import { userToken } from '@/data/cookiesLabel';
+
 @handler
 class Logout extends Component {
 	constructor(props) {
@@ -37,7 +39,7 @@ class Logout extends Component {
 			cookies
 		} = this.props;
 		const { redirectUri } = this.state;
-		const [err, response] = await to(dispatch(userActions.userLogout(cookies.get('user.token'))));
+		const [err, response] = await to(dispatch(userActions.userLogout(cookies.get(userToken))));
 		if (err) {
 			return err;
 		}

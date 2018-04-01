@@ -21,7 +21,7 @@ import { actions } from '@/state/v4/Brand';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Shared from '@/containers/Mobile/Shared';
 import { urlBuilder } from '@/utils';
-import { userToken, userRfToken, userSource, pageReferrer, isLogin } from '@/data/cookiesLabel';
+import { userToken, userSource, pageReferrer, isLogin } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
 
 @handler
@@ -35,8 +35,6 @@ class Brands extends Component {
 			filteredBrand: [],
 			keyword: ''
 		};
-		this.userCookies = this.props.cookies.get(userToken);
-		this.userRFCookies = this.props.cookies.get(userRfToken);
 		this.source = this.props.cookies.get(userSource);
 		this.headContainer = null;
 		this.inputElement = null;

@@ -12,7 +12,7 @@ const initialState = {
 		products: []
 	},
 	query: {
-		page: 0,
+		page: 1,
 		store_id: '',
 		fq: '',
 		sort: 'energy DESC',

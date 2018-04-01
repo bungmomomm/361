@@ -14,7 +14,6 @@ class Promos extends Component {
 		super(props);
 		this.props = props;
 		this.isLogin = (typeof this.props.cookies.get(cookiesLabel.isLogin) === 'string' && this.props.cookies.get(cookiesLabel.isLogin) === 'true');
-		this.token = this.props.cookies.get(cookiesLabel.userToken);
 		this.loadingContent = (
 			<div style={{ margin: '20% auto 20% auto' }}>
 				<Spinner size='large' />

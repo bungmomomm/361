@@ -49,8 +49,7 @@ class UserProfileEdit extends Component {
 			formData: props.userProfile,
 			otpCountdown: 0
 		};
-		this.userToken = this.props.cookies.get(cookiesLabel.userToken);
-		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true' && true;
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true';
 
 		this.AVATAR_FIELD = CONST.USER_PROFILE_FIELD.avatar;
 		this.NAME_FIELD = CONST.USER_PROFILE_FIELD.name;
@@ -214,7 +213,7 @@ class UserProfileEdit extends Component {
 	}
 
 	submitFormData = async (e) => {
-		const { dispatch } = this.props;
+		const { cookies, dispatch } = this.props;
 		const { layout, formData } = this.state;
 
 		if (!_.isEmpty(layout)) {
@@ -246,11 +245,11 @@ class UserProfileEdit extends Component {
 
 			let dispatchAction = null;
 			if (layout === this.OVO_ID_FIELD) {
-				dispatchAction = dispatch(userActions.userValidateOvo(this.userToken, newData));
+				dispatchAction = dispatch(userActions.userValidateOvo(cookies.get(cookiesLabel.userToken), newData));
 			} else if (layout === this.PHONE_FIELD) {
-				dispatchAction = dispatch(userActions.userOtp(this.userToken, newData, 'edit'));
+				dispatchAction = dispatch(userActions.userOtp(cookies.get(cookiesLabel.userToken), newData, 'edit'));
 			} else {
-				dispatchAction = dispatch(userActions.userEditProfile(this.userToken, newData));
+				dispatchAction = dispatch(userActions.userEditProfile(cookies.get(cookiesLabel.userToken), newData));
 			}
 			const [err, response] = await to(dispatchAction);
 			if (err) {
@@ -274,7 +273,7 @@ class UserProfileEdit extends Component {
 						layout: this.OTP_FIELD,
 					});
 				} else {
-					dispatch(userActions.userGetProfile(this.userToken));
+					dispatch(userActions.userGetProfile(cookies.get(cookiesLabel.userToken)));
 					this.setState({
 						formResult: {
 							status: 'success',
@@ -297,9 +296,9 @@ class UserProfileEdit extends Component {
 	}
 
 	successValidateOtp = async (response) => {
-		const { dispatch } = this.props;
+		const { cookies, dispatch } = this.props;
 
-		await dispatch(userActions.userGetProfile(this.userToken));
+		await dispatch(userActions.userGetProfile(cookies.get(cookiesLabel.userToken)));
 		this.setState({
 			layout: 'main',
 			formResult: {

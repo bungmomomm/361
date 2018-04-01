@@ -6,15 +6,13 @@ import { Link } from 'react-router-dom';
 import { Header, Page, Button, Svg } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import styles from '../user.scss';
-import { userToken, userRfToken, userSource } from '@/data/cookiesLabel';
+import { userSource } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
 
 @handler
 class Registered extends Component {
 	constructor(props) {
 		super(props);
-		this.userCookies = this.props.cookies.get(userToken);
-		this.userRFCookies = this.props.cookies.get(userRfToken);
 		this.source = this.props.cookies.get(userSource);
 		this.props = props;
 		this.state = {

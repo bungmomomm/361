@@ -31,8 +31,7 @@ class MyOrder extends Component {
 			{ id: 2, key: 'selesai', title: 'Selesai' }, { id: 3, key: 'batal', title: 'Batal' }
 		];
 		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true';
-		this.userToken = this.props.cookies.get(cookiesLabel.userToken);
-
+		
 		if (!this.isLogin) {
 			this.props.history.push('/');
 		}
@@ -65,14 +64,14 @@ class MyOrder extends Component {
 	}
 
 	getCurrentOrdes(props, newState) {
-		const { dispatch, user } = this.props;
+		const { cookies, dispatch, user } = this.props;
 
 		if (user.isNoOrders === null) {
-			dispatch(userAction.checkMyOrders(this.userToken));
+			dispatch(userAction.checkMyOrders(cookies.get(cookiesLabel.userToken)));
 		}
 
 		const data = {
-			token: this.userToken,
+			token: cookies.get(cookiesLabel.userToken),
 			query: {
 				page: 1,
 				per_page: 20,
@@ -169,10 +168,17 @@ class MyOrder extends Component {
 			</aux>
 		) : null;
 
+		const initSpinner = (
+			<div style={{ margin: '15px auto' }}>
+				<Spinner />
+			</div>
+		);
+
 		return (
 			<div style={this.props.style}>
 				<Page {...pageAttribute}>
-					{ this.props.user.isNoOrders === null ? renderEmptyOrders : null }
+					{ this.props.user.isNoOrders === null && (initSpinner) }
+					{ this.props.user.isNoOrders === true ? renderEmptyOrders : null }
 					<div className='margin--medium'>
 						{content}
 					</div>

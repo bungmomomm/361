@@ -31,7 +31,6 @@ class UserProfile extends Component {
 			showLogout: false,
 			logoutMessage: ''
 		};
-		this.userToken = this.props.cookies.get(cookiesLabel.userToken);
 		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true';
 		this.loadingView = <Spinner />;
 
@@ -48,7 +47,7 @@ class UserProfile extends Component {
 
 	onLogout = async () => {
 		const { dispatch, history, cookies } = this.props;
-		const [err, response] = await to(dispatch(userActions.userLogout(this.userToken)));
+		const [err, response] = await to(dispatch(userActions.userLogout(cookies.get(cookiesLabel.userToken))));
 		if (err) {
 			return err;
 		}
