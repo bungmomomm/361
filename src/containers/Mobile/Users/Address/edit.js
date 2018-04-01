@@ -99,11 +99,10 @@ class Address extends Component {
 
 					const c = data.cities[data.cities.length - 1];
 					if (+v.split('_')[1] === +c.city_id && paging.cities) {
-						const [err2, resp2] = await to(dispatch(actions.getCity(cookies.get(userToken), paging.cities)));
-						if (err2) {
-							return Promise.reject(err2);
+						const respCity = await to(dispatch(actions.getCity(cookies.get(userToken), paging.cities)));
+						if (respCity[0]) {
+							return Promise.reject(respCity[0]);
 						}
-						return Promise.resolve(resp2);
 					}
 
 					const resp = await to(dispatch(actions.getDistrict(cookies.get(userToken), { city_id: v.split('_')[1] })));
