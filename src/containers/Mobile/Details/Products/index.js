@@ -630,7 +630,7 @@ class Products extends Component {
 						</Button>
 					),
 					center: (
-						<div style={{ width: '220px', margin: '0 auto' }} className='text-elipsis --disable-flex'>
+						<div style={{ width: '180px', margin: '0 auto' }} className='text-elipsis --disable-flex'>
 							{
 								_.chain(brandName).split(' ').size().value() > 5 ? (
 									<div className='marguee'>
@@ -1034,7 +1034,7 @@ const mapStateToProps = (state) => {
 		product: state.product,
 		shared: state.shared,
 		lovelist: state.lovelist,
-		users: state.users 
+		users: state.users
 	};
 };
 
