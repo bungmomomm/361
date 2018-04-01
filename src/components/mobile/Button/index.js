@@ -7,13 +7,13 @@ import styles from './button.scss';
 
 class Button extends PureComponent {
 	renderLoading() {
-		const { loading, size } = this.props;
+		const { loading } = this.props;
 
 		if (!loading) {
 			return null;
 		}
 
-		return <Spinner type='round' className={styles.spinner} size={size} />;
+		return <Spinner type='round' className={styles.spinner} size='large' />;
 	}
 
 	render() {
@@ -49,7 +49,6 @@ class Button extends PureComponent {
 				[styles.transparent]: transparent,
 				[styles.rounded]: rounded,
 				[styles.circle]: circle,
-				[styles.loading]: loading,
 				[styles.left]: align === 'left',
 				[styles.center]: align === 'center',
 				[styles.right]: align === 'right'
