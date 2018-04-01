@@ -155,6 +155,7 @@ class Products extends Component {
 			status: {
 				loading: false,
 				btnBeliDisabled: false,
+				btnBeliLoading: false,
 				forceLogin: false,
 				hasVariantSize: false,
 				isLoved: false,
@@ -391,6 +392,7 @@ class Products extends Component {
 		const { dispatch, product } = this.props;
 
 		status.showModalSelectSize = false;
+		status.btnBeliLoading = true;
 		this.setState({ status });
 
 		const handler = new Promise((resolve, reject) => {
@@ -415,6 +417,7 @@ class Products extends Component {
 			status.pendingAddProduct = false;
 			status.productAdded = true;
 			status.showModalSelectSize = false;
+			status.btnBeliLoading = false;
 			message = 'Produk Berhasil ditambahkan';
 			this.setState({ status });
 
@@ -432,6 +435,7 @@ class Products extends Component {
 			// dispatch(productActions.productDetailAction(this.userCookies, product.detail.id));
 		}).catch((err) => {
 			status.showModalSelectSize = false;
+			status.btnBeliLoading = false;
 			this.setState({ status });
 			dispatch(sharedActions.showSnack(uniqid('err-'),
 				{
@@ -689,7 +693,7 @@ class Products extends Component {
 							</div>
 						</div>
 						<div>
-							<Button color='secondary' disabled={(status.btnBeliDisabled || status.loading)} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
+							<Button color='secondary' disabled={(status.btnBeliDisabled || status.loading)} loading={status.btnBeliLoading || status.loading} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
 						</div>
 					</div>
 				</div>
@@ -720,8 +724,6 @@ class Products extends Component {
 				buttonProductDescriptionAttribute.onClick = this.handleShowLessProductDescription;
 				fullProductDescriptionButtonText = 'Hide';
 			}
-
-			// if (_.isEmpty(detail) || status.loading) return this.loadingContent;
 
 			if (status.isZoomed && _.has(detail, 'images')) {
 				enableZoomPinch(true);
