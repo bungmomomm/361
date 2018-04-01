@@ -56,6 +56,7 @@ class Input extends PureComponent {
 			onClickInputAction,
 			textCounter,
 			inputRef,
+			maxLength,
 			...props,
 		} = this.props;
 
@@ -109,6 +110,13 @@ class Input extends PureComponent {
 			return null;
 		};
 
+		const setMaxLength = () => {
+			if (maxLength) {
+				return { maxLength };
+			}
+			return null;
+		};
+
 		let onClickAction;
 		if (onClickInputAction) {
 			onClickAction = onClickInputAction;
@@ -127,7 +135,8 @@ class Input extends PureComponent {
 			},
 			...valueData(),
 			onClick: onClickAction,
-			onChange: this.onChangeHandler
+			onChange: this.onChangeHandler,
+			...setMaxLength()
 		};
 
 		const TagName = as === 'textarea' ? (

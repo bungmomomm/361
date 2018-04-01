@@ -30,14 +30,14 @@ const {
 );
 
 const reducer = handleActions({
-	[commentList](state, { payload: { data } }) {
+	[commentList](state, { payload: { data, isLoading } }) {
 		return {
 			...state,
 			data,
 			isLoading: false
 		};
 	},
-	[commentListNext](state, { payload: { data } }) {
+	[commentListNext](state, { payload: { data, isLoading } }) {
 		return {
 			...state,
 			data: {
@@ -56,14 +56,14 @@ const reducer = handleActions({
 			isLoading
 		};
 	},
-	[addComment](state, { payload: { data } }) {
+	[addComment](state, { payload: { data, isLoading } }) {
 		return {
 			...state,
 			data,
 			isLoading: false
 		};
 	},
-	[addCommentDetail](state, { payload: { newComment } }) {
+	[addCommentDetail](state, { payload: { newComment, isLoading } }) {
 		return {
 			...state,
 			data: {

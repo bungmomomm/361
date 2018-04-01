@@ -8,7 +8,7 @@ import Right from './Right';
 
 class Level extends PureComponent {
 	render() {
-		const { children, className, divider, ...props } = this.props;
+		const { children, className, divider, innerRef, ...props } = this.props;
 
 		const createClassName = classNames(
 			styles.container,
@@ -17,7 +17,7 @@ class Level extends PureComponent {
 		);
 
 		return (
-			<div className={createClassName} {...props}>
+			<div className={createClassName} ref={innerRef} {...props}>
 				{children}
 			</div>
 		);
