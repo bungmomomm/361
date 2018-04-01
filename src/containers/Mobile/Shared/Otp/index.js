@@ -23,7 +23,6 @@ class Otp extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.userToken = this.props.cookies.get(cookiesLabel.userToken);
 		this.interval = false;
 		this.timeout = false;
 
@@ -48,12 +47,12 @@ class Otp extends Component {
 	}
 
 	componentWillMount = async () => {
-		const { dispatch, phoneEmail, autoSend, countdownValue, type } = this.props;
+		const { cookies, dispatch, phoneEmail, autoSend, countdownValue, type } = this.props;
 
 		if (autoSend) {
 			if (phoneEmail !== undefined && phoneEmail !== '') {
 				this.setState({ isLoading: true });
-				const [err, response] = await to(dispatch(userActions.userOtp(this.userToken, phoneEmail, type)));
+				const [err, response] = await to(dispatch(userActions.userOtp(cookies.get(cookiesLabel.userToken), phoneEmail, type)));
 				if (err) {
 					this.setState({
 						showNotif: true,
@@ -87,12 +86,12 @@ class Otp extends Component {
 	}
 
 	resendOtp = async () => {
-		const { dispatch, phoneEmail, type } = this.props;
+		const { cookies, dispatch, phoneEmail, type } = this.props;
 
 		this.setState({ isLoading: true });
 
 		if (phoneEmail !== undefined && phoneEmail !== '') {
-			const [err, response] = await to(dispatch(userActions.userOtp(this.userToken, phoneEmail, type)));
+			const [err, response] = await to(dispatch(userActions.userOtp(cookies.get(cookiesLabel.userToken), phoneEmail, type)));
 			if (err) {
 				this.setState({
 					showNotif: true,
@@ -167,7 +166,7 @@ class Otp extends Component {
 	}
 
 	validateOtp = async (data) => {
-		const { dispatch, onSuccess, type } = this.props;
+		const { cookies, dispatch, onSuccess, type } = this.props;
 		const { phoneEmail } = this.state;
 
 		const otpData = {
@@ -177,7 +176,7 @@ class Otp extends Component {
 		};
 
 		this.setState({ disabledInput: true });
-		const [err, response] = await to(dispatch(userActions.userOtpValidate(this.userToken, otpData)));
+		const [err, response] = await to(dispatch(userActions.userOtpValidate(cookies.get(cookiesLabel.userToken), otpData)));
 		if (err) {
 			this.setState({
 				validForm: false,

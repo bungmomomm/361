@@ -64,7 +64,7 @@ const brandProductAction = ({ token, query = {}, type = 'update' }) => async (di
 	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value();
 	const url = `${baseUrl}/products/search`;
 
-	if (!query.page) {
+	if (query.page === undefined) {
 		query.page = 1;
 	}
 	query.per_page = configs.defaultPage;

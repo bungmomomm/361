@@ -24,8 +24,7 @@ class AddReview extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin);
-		this.userToken = this.props.cookies.get(cookiesLabel.userToken);
+		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true';
 		this.soNumber = this.props.match.params.so_number;
 		this.state = {
 			payload: {
@@ -79,10 +78,10 @@ class AddReview extends Component {
 	}
 
 	onSubmitReview() {
-		const { dispatch } = this.props;
+		const { cookies, dispatch } = this.props;
 		this.setState({ isSubmiting: true });
 		const submiting = new Promise((resolve, reject) => resolve(
-			dispatch(userAction.submitReview(this.userToken, this.state.payload))
+			dispatch(userAction.submitReview(cookies.get(cookiesLabel.userToken), this.state.payload))
 		));
 		submiting.then((res) => {
 			this.setState({ isSubmiting: false, isSubmitSuccess: true });

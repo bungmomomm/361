@@ -120,8 +120,6 @@ class Products extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-		this.userCookies = this.props.cookies.get(cookiesLabel.userToken);
-		this.userRFCookies = this.props.cookies.get(cookiesLabel.userRfToken);
 		this.source = this.props.cookies.get(cookiesLabel.userSource);
 		this.isLogin = (typeof this.props.cookies.get(cookiesLabel.isLogin) === 'string' && this.props.cookies.get(cookiesLabel.isLogin) === 'true');
 		this.defaultCount = 1;
@@ -204,7 +202,7 @@ class Products extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		const { product, lovelist, dispatch } = nextProps;
+		const { cookies, product, lovelist, dispatch } = nextProps;
 		const { detail } = product;
 		const { status, outOfStock } = this.state;
 		let { cardProduct, selectedVariant, size } = this.state;
@@ -243,7 +241,7 @@ class Products extends Component {
 			}
 
 			if (typeof detail.seller !== 'undefined' && typeof detail.seller.seller_id !== 'undefined') {
-				dispatch(productActions.productStoreAction(this.userCookies, detail.seller.seller_id));
+				dispatch(productActions.productStoreAction(cookies.get(cookiesLabel.userToken), detail.seller.seller_id));
 			}
 		}
 
@@ -389,14 +387,14 @@ class Products extends Component {
 		this.animateAddtoCart();
 
 		const { status, cardProduct } = this.state;
-		const { dispatch, product } = this.props;
+		const { cookies, dispatch, product } = this.props;
 
 		status.showModalSelectSize = false;
 		status.btnBeliLoading = true;
 		this.setState({ status });
 
 		const handler = new Promise((resolve, reject) => {
-			resolve(dispatch(shopBagActions.updateAction(this.userCookies, variant.id, this.defaultCount, 'add')));
+			resolve(dispatch(shopBagActions.updateAction(cookies.get(cookiesLabel.userToken), variant.id, this.defaultCount, 'add')));
 		});
 
 		let message = '';
@@ -413,7 +411,7 @@ class Products extends Component {
 			});
 
 			// updates carts badge
-			dispatch(sharedActions.totalCartAction(this.userCookies));
+			dispatch(sharedActions.totalCartAction(cookies.get(cookiesLabel.userToken)));
 			status.pendingAddProduct = false;
 			status.productAdded = true;
 			status.showModalSelectSize = false;
@@ -432,7 +430,7 @@ class Products extends Component {
 			trackAddToCart(product, this.props, variant, cardProduct.hasVariantSize);
 
 			// get product data
-			// dispatch(productActions.productDetailAction(this.userCookies, product.detail.id));
+			// dispatch(productActions.productDetailAction(cookies.get(cookiesLabel.userToken), product.detail.id));
 		}).catch((err) => {
 			status.showModalSelectSize = false;
 			status.btnBeliLoading = false;
@@ -546,11 +544,11 @@ class Products extends Component {
 	 * @param {*} e
 	 */
 	removeAddItem(e) {
-		const { dispatch, product } = this.props;
+		const { cookies, dispatch, product } = this.props;
 		const { cardProduct, status } = this.state;
 		const handler = new Promise((resolve, reject) => {
-			if (!status.isLoved) resolve(dispatch(lovelistActions.addToLovelist(this.userCookies, product.detail.id)));
-			else resolve(dispatch(lovelistActions.removeFromLovelist(this.userCookies, product.detail.id)));
+			if (!status.isLoved) resolve(dispatch(lovelistActions.addToLovelist(cookies.get(cookiesLabel.userToken), product.detail.id)));
+			else resolve(dispatch(lovelistActions.removeFromLovelist(cookies.get(cookiesLabel.userToken), product.detail.id)));
 		});
 
 		status.showConfirmDelete = false;
@@ -578,7 +576,7 @@ class Products extends Component {
 				toastSytle(),
 			));
 
-			dispatch(sharedActions.totalLovelistAction(this.userCookies));
+			dispatch(sharedActions.totalLovelistAction(cookies.get(cookiesLabel.userToken)));
 		}).catch((err) => {
 			status.showConfirmDelete = false;
 			dispatch(sharedActions.showSnack(uniqid('err-'),

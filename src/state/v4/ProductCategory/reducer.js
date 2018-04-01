@@ -16,8 +16,8 @@ const initialState = {
 	},
 	query: {
 		category_id: '',
-		page: 0,
-		per_page: 0,
+		page: 1,
+		per_page: 10,
 		fq: '',
 		sort: ''
 	}

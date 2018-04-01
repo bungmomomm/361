@@ -100,8 +100,8 @@ class CatalogView extends Component {
 		const { cookies, dispatch, focusedProductId } = this.props;
 		const { newComment } = this.state;
 
-		await dispatch(commentActions.commentAddAction(cookies.get('user.token'), newComment.product_id, newComment.comment, 'pcp'));
-		await dispatch(commentActions.bulkieCommentAction(cookies.get('user.token'), [focusedProductId]));
+		await dispatch(commentActions.commentAddAction(cookies.get(cookiesLabel.userToken), newComment.product_id, newComment.comment, 'pcp'));
+		await dispatch(commentActions.bulkieCommentAction(cookies.get(cookiesLabel.userToken), [focusedProductId]));
 
 		this.setState({
 			showSendButton: false,
@@ -207,7 +207,7 @@ class CatalogView extends Component {
 					{userAvatar}
 					<Level.Item>
 						{
-							cookies.get('isLogin') === 'true' ?
+							cookies.get(cookiesLabel.isLogin) === 'true' ?
 								comments.isLoading ? this.loadingView :
 									(
 										<Input

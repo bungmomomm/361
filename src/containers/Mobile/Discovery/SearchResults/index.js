@@ -53,8 +53,8 @@ class SearchResults extends Component {
 				brand_id: '',
 				store_id: '',
 				category_id: '',
-				page: 0,
-				per_page: 0,
+				page: 1,
+				per_page: 10,
 				fq: '',
 				sort: '',
 				...propsObject.get('query').value()
@@ -86,7 +86,7 @@ class SearchResults extends Component {
 		});
 		this.update({
 			fq,
-			page: 0
+			page: 1
 		});
 	}
 
@@ -146,7 +146,7 @@ class SearchResults extends Component {
 		});
 		this.update({
 			sort: sort.q,
-			page: 0
+			page: 1
 		});
 	}
 

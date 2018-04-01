@@ -117,8 +117,8 @@ class Product extends Component {
 			showSort: false,
 			query: {
 				category_id: '',
-				page: 0,
-				per_page: 0,
+				page: 1,
+				per_page: 10,
 				fq: '',
 				sort: '',
 				...propsObject.get('query').value()
@@ -160,7 +160,7 @@ class Product extends Component {
 		});
 		this.update({
 			fq,
-			page: 0
+			page: 1
 		});
 	}
 
@@ -216,7 +216,7 @@ class Product extends Component {
 		});
 		this.update({
 			sort: sort.q,
-			page: 0
+			page: 1
 		});
 	}
 
