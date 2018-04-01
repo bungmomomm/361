@@ -788,9 +788,10 @@ class Products extends Component {
 								data={cardProduct.variants}
 							/>
 						</div>
-						{(status.hasVariantSize && !_.isEmpty(selectedVariant) && (selectedVariant.warning_stock_text !== '')) && (
+						{(detail.is_product_available !== 0 && !_.isEmpty(selectedVariant) && (selectedVariant.warning_stock_text !== '')) && (
 							<p className='font-color--red font-small'>{selectedVariant.warning_stock_text}</p>
 						)}
+						{detail.is_product_available === 0 && <p className='font-color--red font-small'>Produk Tidak Tersedia</p>}
 					</div>
 				</div>
 			);
