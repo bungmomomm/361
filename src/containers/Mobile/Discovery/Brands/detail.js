@@ -100,20 +100,8 @@ class Detail extends Component {
 		super(props);
 		this.props = props;
 		this.isLogin = this.props.cookies.get(isLogin) === 'true';
-		this.listType = [{
-			type: 'list',
-			icon: 'ico_grid.svg'
-		}, {
-			type: 'grid',
-			icon: 'ico_grid-3x3.svg'
-		}, {
-			type: 'small',
-			icon: 'ico_list.svg'
-		}];
 		const propsObject = _.chain(props.searchResults);
-		this.currentListState = 1;
 		this.state = {
-			listTypeState: this.listType[this.currentListState],
 			styleHeader: true,
 			showFilter: false,
 			showSort: false,
@@ -260,9 +248,10 @@ class Detail extends Component {
 
 	handlePick(e) {
 		const { showSort } = this.state;
+		const { viewMode, dispatch } = this.props;
 		if (e === 'view') {
-			this.currentListState = this.currentListState === 2 ? 0 : this.currentListState + 1;
-			this.setState({ listTypeState: this.listType[this.currentListState] });
+			const mode = viewMode.mode === 3 ? 1 : viewMode.mode + 1;
+			dispatch(brandAction.brandViewModeAction(mode));
 		} else {
 			this.setState({
 				showFilter: e === 'filter',
@@ -319,7 +308,7 @@ class Detail extends Component {
 	}
 
 	renderFilter() {
-		const { brands, isFiltered } = this.props;
+		const { brands, isFiltered, viewMode } = this.props;
 		const { showSort } = this.state;
 		const sorts = _.chain(this.props.brands).get('searchData.sorts').value() || [];
 		return (
@@ -340,7 +329,7 @@ class Detail extends Component {
 						},
 						{
 							id: 'view',
-							title: <Svg src={this.state.listTypeState.icon} />,
+							title: <Svg src={viewMode.icon} />,
 							disabled: brands.loading_products
 						}
 					]}
@@ -354,13 +343,13 @@ class Detail extends Component {
 	}
 
 	renderProduct() {
-		const { brands, comments, scroller, location } = this.props;
-		const { listTypeState, focusedProductId } = this.state;
+		const { brands, comments, scroller, location, viewMode } = this.props;
+		const { focusedProductId } = this.state;
 		const products = _.chain(brands).get('searchData.products').value() || [];
 		const redirectPath = location.pathname !== '' ? location.pathname : '';
 
-		switch (listTypeState.type) {
-		case 'grid':
+		switch (viewMode.mode) {
+		case 2:
 			return (
 				<GridView
 					loading={scroller.loading}
@@ -369,7 +358,7 @@ class Detail extends Component {
 					products={products}
 				/>
 			);
-		case 'small':
+		case 3:
 			return (
 				<SmallGridView
 					loading={scroller.loading}
@@ -480,7 +469,8 @@ const mapStateToProps = (state) => {
 	return {
 		...state,
 		isFiltered,
-		brands
+		brands,
+		viewMode: state.brands.viewMode
 	};
 };
 
