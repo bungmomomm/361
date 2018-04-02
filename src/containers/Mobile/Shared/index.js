@@ -209,7 +209,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 							return false;
 						}
 						this.currentScrollPos = this.state.scroll.top;
-						return window.scrollY > oldPos && window.scrollY < docHeight;
+						return this.state.scroll.top > oldPos && this.state.scroll.top < this.state.scroll.docHeight;
 					})()
 				}
 			});
