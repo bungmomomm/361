@@ -26,7 +26,8 @@ const Select = (props) => {
 						style={{
 							textAlign: 'left',
 							padding: '20px 20px',
-							backgroundColor: '#efefef'
+							backgroundColor: '#efefef',
+							color: '#191919'
 						}}
 						onChange={onSearch}
 					/>
