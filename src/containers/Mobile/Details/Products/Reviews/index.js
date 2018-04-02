@@ -90,9 +90,9 @@ class Reviews extends Component {
 		};
 		return (
 			(!reviewsEmpty) && <div>
-				<Page>
-					<div>
-						<div style={{ backgroundColor: '#ffffff' }}>
+				<Page color='white'>
+					<div style={{ backgroundColor: '#F5F5F5' }}>
+						<div style={{ backgroundColor: '#fff' }}>
 							<div className='flex-row padding--medium-h margin--medium-v'>
 								{/* ----------------------------	SELLER REVIEW INFO ---------------------------- */}
 								<div>

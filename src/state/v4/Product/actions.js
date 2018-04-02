@@ -131,6 +131,9 @@ const allProductReviewsAction = ({ token, productId, query = { page: 1, per_page
 	}
 
 	const allReviews = response.data.data;
+
+	dispatch(productLoading({ loading: false }));
+	dispatch(scrollerActions.onScroll({ loading: false }));
 	dispatch(allProductReviews({ allReviews, type }));
 
 	if (_.has(allReviews, 'info') && _.has(allReviews, 'info.total_review') && allReviews.info.total_review > 0) {
@@ -152,9 +155,6 @@ const allProductReviewsAction = ({ token, productId, query = { page: 1, per_page
 			loader: allProductReviewsAction
 		}));
 	}
-
-	dispatch(productLoading({ loading: false }));
-	dispatch(scrollerActions.onScroll({ loading: false }));
 
 	return Promise.resolve(response);
 };
