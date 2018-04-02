@@ -4,14 +4,18 @@ import to from 'await-to-js';
 import { actions } from '@/state/v4/Shared';
 import { actions as account } from '@/state/v4/User';
 import { actions as initAction } from '@/state/v4/Home';
-import { setUserCookie, setUniqeCookie, setReferrenceCookie, initUTMProcess } from '@/utils';
+import { setUserCookie, setUniqeCookie, setReferrenceCookie, initUTMProcess, removeUserCookie } from '@/utils';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
 import Snackbar from '@/containers/Mobile/Shared/snackbar';
 import { Svg } from '@/components/mobile';
 import styles from './shared.scss';
 import { check as checkConnection, watch as watchConnection } from 'is-offline';
-import { userToken, userRfToken, uniqueid } from '@/data/cookiesLabel';
+import { 
+	userToken, 
+	userRfToken, 
+	uniqueid
+} from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
 
 const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
@@ -124,6 +128,19 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			const rfT = token === null ? cookies.get(userRfToken) : token.refresh_token;
 
 			const resp = await to(dispatch(new account.refreshToken(rfT, tokenBearer)));
+
+			if (resp[0]) {
+				if (resp[0].code === 405) {
+					removeUserCookie(cookies);
+					dispatch(actions.showSnack('Trouble', {
+						label: 'Karena terjadi kesalahan pada sistem, anda telah ter-Logout. Silahkan Login kembali untuk melihat produk di shopping bag kamu',
+						timeout: 3000,
+					}));
+					setTimeout(() => {
+						window.location.reload();
+					}, 3000);
+				}
+			}
 
 			const { data } = resp[1].data;
 
