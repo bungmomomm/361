@@ -263,7 +263,7 @@ const parseFilter = (data) => {
 	data.facets = data.facets;
 	data.sorts = data.sorts;
 	const selectedSort = _.filter(data.sorts, (sort) => (sort.is_selected === 1)).shift();
-	data.sort = typeof selectedSort.q !== 'undefined' ? selectedSort.q : 'energy DESC';
+	data.sort = typeof selectedSort.q !== 'undefined' ? selectedSort.q : '';
 	data.q = data.info.title;
 
 	return data;
