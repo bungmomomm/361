@@ -133,8 +133,8 @@ class Product extends Component {
 		);
 	}
 
-	componentWillReceiveProps(nextProps) {
-		if (nextProps.query) {
+	componentWillReceiveProps = async (nextProps) => {
+		if (nextProps.query !== this.props.query) {
 			this.setState({
 				query: nextProps.query
 			});
@@ -143,6 +143,28 @@ class Product extends Component {
 		if (nextProps.productCategory.pcpData !== this.props.productCategory.pcpData) {
 			const pcpData = nextProps.productCategory.pcpData;
 			trackCategoryPageView(pcpData.products, pcpData.info, nextProps);
+		}
+
+		if (nextProps.match.params.categoryId !== this.props.match.params.categoryId) {
+			const { dispatch, cookies } = this.props;
+
+			const categoryId = nextProps.match.params.categoryId || '';
+			const parsedUrl = queryString.parse(nextProps.location.search);
+			const pcpNewParam = {
+				category_id: parseInt(categoryId, 10),
+				page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
+				per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 36,
+				fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
+				sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
+			};
+
+			const response = await dispatch(pcpActions.pcpAction({ token: cookies.get(userToken), query: pcpNewParam }));
+
+			const productIdList = _.map(response.pcpData.products, 'product_id') || [];
+			if (productIdList.length > 0) {
+				await dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
+				await dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
+			}
 		}
 	}
 
@@ -458,7 +480,7 @@ const doAfterAnonymous = async (props) => {
 		page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
 		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 36,
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
-		// sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
+		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : 'energy DESC',
 	};
 
 	const response = await dispatch(pcpActions.pcpAction({ token: cookies.get(userToken), query: pcpParam }));
@@ -470,4 +492,4 @@ const doAfterAnonymous = async (props) => {
 	}
 };
 
-export default withCookies(connect(mapStateToProps)(Scroller(Shared(Product, doAfterAnonymous))));
+export default withCookies(connect(mapStateToProps)(Shared(Scroller(Product), doAfterAnonymous)));
