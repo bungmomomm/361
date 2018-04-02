@@ -111,7 +111,14 @@ class Detail extends Component {
 			icon: 'ico_list.svg'
 		}];
 		const propsObject = _.chain(props.searchResults);
-		this.currentListState = 1;
+		const qs = queryString.parse(location.search);
+		this.currentListState = 1; 
+		if (qs.view) {
+			const index = _.findIndex(this.listType, (v) => v.type === qs.view);
+			if (index >= 0 && index < this.listType.length) {
+				this.currentListState = index;
+			}
+		}
 		this.state = {
 			listTypeState: this.listType[this.currentListState],
 			styleHeader: true,
@@ -259,6 +266,7 @@ class Detail extends Component {
 	}
 
 	handlePick(e) {
+		const { history } = this.props;
 		const { showSort } = this.state;
 		if (e === 'view') {
 			this.currentListState = this.currentListState === 2 ? 0 : this.currentListState + 1;
