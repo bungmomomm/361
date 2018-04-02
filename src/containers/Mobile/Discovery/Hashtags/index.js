@@ -18,12 +18,29 @@ import { checkImage } from '@/utils';
 @handler
 class Hashtags extends Component {
 
-	state = {
-		isFooterShow: false,
-	};
+	constructor(props) {
+		super(props);
+		this.props = props;
 
-	checkedImage = [];
-	checkedStatus = [];
+		this.state = {
+			isFooterShow: false
+		};
+
+		this.checkedImage = [];
+		this.checkedStatus = [];
+	}
+
+	componentDidMount() {
+		addEventListener('resize', this.handleResize, true);
+	}
+
+	componentWillUnmount() {
+		removeEventListener('resize', this.handleResize, true);
+	}
+
+	handleResize = () => {
+		this.forceUpdate();
+	};
 
 	switchTag = (tag) => {
 		const switchTag = tag.replace('#', '').toLowerCase();
@@ -77,7 +94,15 @@ class Hashtags extends Component {
 
 					return (
 						<div className='placeholder-image' key={i}>
-							<Link className={styles.hashtagThumbnail} style={{ width: `${rect}px`, height: `${rect}px`, backgroundImage: `url(${imageStatus ? product.image : require('@/assets/images/mobile/ico_placeholder-full.png')})` }} to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode}`} />
+							<Link to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode}`}>
+								<Image
+									lazyload
+									width={rect}
+									height={rect}
+									style={{ objectFit: 'cover' }}
+									src={imageStatus ? product.image : require('@/assets/images/mobile/ico_placeholder-full.png')}
+								/>
+							</Link>
 						</div>
 					);
 				})}
