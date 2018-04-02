@@ -1,4 +1,4 @@
-import { home, category, search } from '@/utils/tracking/lucidworks';  
+import { home, category, search } from '@/utils/tracking/lucidworks';
 import Loading from './loading';
 import loadable from 'loadable-components';
 
@@ -198,7 +198,7 @@ export default {
 			component: loadable(() => import('@/containers/Mobile/Users/Profile/myOrderTracking'), defaultOptions)
 		},
 		{
-			path: '/profile-my-order-confirm',
+			path: '/profile/my-order-confirm/:so_number([a-zA-Z0-9-]+)',
 			component: loadable(() => import('@/containers/Mobile/Order/Confirmation'), defaultOptions)
 		},
 		{
