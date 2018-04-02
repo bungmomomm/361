@@ -20,7 +20,7 @@ import {
 	impressionsPushedBuilder,
 	sendGtm
 } from '@/utils/tracking';
-import { urlBuilder } from '@/utils';
+import { urlBuilder, checkImage } from '@/utils';
 import cookiesLabel from '@/data/cookiesLabel';
 
 const renderSectionHeader = (title, options, cookies = null) => {
@@ -79,6 +79,8 @@ class Home extends Component {
 			showSmartBanner: this.props.cookies.get('sb-show') !== '0' && true
 		};
 
+		this.checkedImage = [];
+		this.checkedStatus = [];
 		this.sbClose = this.sbClose.bind(this);
 	}
 
@@ -103,7 +105,7 @@ class Home extends Component {
 			const pageViewPayload = PageViewReq.getPayload(homepageViewBuilder);
 			if (pageViewPayload) sendGtm(pageViewPayload);
 		}
-		
+
 	}
 
 	async handlePick(current) {
@@ -220,10 +222,19 @@ class Home extends Component {
 								const embedUrl = _.chain(gambar).get('embed_url').value();
 								const icode = (embedUrl.substr(embedUrl.indexOf('/p/')).split('/') || [])[2];
 
+								let imageStatus;
+								if (this.checkedImage.includes(gambar.images.thumbnail)) {
+									imageStatus = this.checkedStatus[this.checkedImage.indexOf(gambar.images.thumbnail)];
+								} else {
+									imageStatus = checkImage(gambar.images.thumbnail);
+									this.checkedImage.push(gambar.images.thumbnail);
+									this.checkedStatus.push(imageStatus);
+								}
+
 								return (
 									<div key={e}>
 										<Link to={`${detailHashTag}/${gambar.content_id}/${icode || ''}`}>
-											<Image lazyload shape='square' alt='thumbnail' src={gambar.images.thumbnail} />
+											<Image lazyload shape='square' alt='thumbnail' src={imageStatus ? gambar.images.thumbnail : require('@/assets/images/mobile/ico_placeholder-full.png')} />
 										</Link>
 									</div>
 								);
