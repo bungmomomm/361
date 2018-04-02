@@ -135,6 +135,7 @@ class Input extends PureComponent {
 			},
 			...valueData(),
 			onClick: onClickAction,
+			onTouchStart: onClickAction,
 			onChange: this.onChangeHandler,
 			...setMaxLength()
 		};
