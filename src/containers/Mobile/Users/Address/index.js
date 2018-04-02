@@ -205,13 +205,11 @@ class Address extends Component {
 						<Level style={{ padding: '0px', textAlign: 'center' }}>
 							<Level.Left />
 							<Level.Item className='flex-center'>
-								<Button className='padding--small' onClick={this.setDefault}>Jadikan Alamat Utama</Button>
 								<div className='padding--small'>
 									<Link to={`/address/edit/${this.state.selectedAddress}`} style={{ color: '#191919' }}>
 										Ubah Alamat
 									</Link>
 								</div>
-								<Button className='padding--small' style={{ color: '#ED1C24' }} onClick={() => { this.setState({ showConfirmDelete: true }); }}>Hapus Alamat</Button>
 								<Button className='padding--small' onClick={this.hideAddressModal}>Batal</Button>
 							</Level.Item>
 						</Level>
