@@ -11,7 +11,8 @@ import {
 	Svg
 } from '@/components/mobile';
 import {
-	setUserCookie
+	setUserCookie,
+	isFullUrl
 } from '@/utils';
 import styles from '../user.scss';
 import { to } from 'await-to-js';
@@ -66,7 +67,11 @@ class Register extends Component {
 		}
 		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
 		setUserCookie(this.props.cookies, response.token, false, userProfile);
-		dispatch(new users.afterLogin(cookies.get(userToken)));
+		await dispatch(new users.afterLogin(cookies.get(userToken)));
+		if (isFullUrl(redirectUri)) {
+			top.location.href = redirectUri;
+			return true;
+		}
 		history.push(redirectUri || '/');
 		return response;
 	}
@@ -118,7 +123,11 @@ class Register extends Component {
 			// Set the cookie for the page.
 			const userProfile = JSON.stringify({ name: responseUserLogin.userprofile.name, avatar: responseUserLogin.userprofile.avatar });
 			setUserCookie(this.props.cookies, responseUserLogin.token, false, userProfile);
-			dispatch(new users.afterLogin(cookies.get(userToken)));
+			await dispatch(new users.afterLogin(cookies.get(userToken)));
+			if (isFullUrl(redirectUri)) {
+				top.location.href = redirectUri;
+				return true;
+			}
 			history.push(redirectUri || '/');
 		}
 
@@ -193,7 +202,11 @@ class Register extends Component {
 		// Set the cookie for the page.
 		const userProfile = JSON.stringify({ name: responseUserLogin.userprofile.name, avatar: responseUserLogin.userprofile.avatar });
 		setUserCookie(this.props.cookies, responseUserLogin.token, false, userProfile);
-		dispatch(new users.afterLogin(cookies.get(userToken)));
+		await dispatch(new users.afterLogin(cookies.get(userToken)));
+		if (isFullUrl(redirectUri)) {
+			top.location.href = redirectUri;
+			return true;
+		}
 		history.push(redirectUri || '/');
 
 		return responseUserLogin;

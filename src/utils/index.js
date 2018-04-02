@@ -21,6 +21,10 @@ const isHexColor = (color) => {
 	return /(^#[0-9A-F]{3}|^#[0-9A-F]{6})$/i.test(color);
 };
 
+const isFullUrl = (str) => {
+	return /^http/i.test(str);
+};
+
 const getBaseUrl = () => {
 	return process.env.BASE_URL;
 };
@@ -80,5 +84,6 @@ export default {
 	stringHelper,
 	enableZoomPinch,
 	setReferrenceCookie,
+	isFullUrl,
 	initUTMProcess
 };
