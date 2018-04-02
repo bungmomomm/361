@@ -203,7 +203,9 @@ class Address extends Component {
 								name='fullname'
 								flat
 								placeholder='John Doe'
-								validations='isWords'
+								validations={{
+									matchRegexp: /^[0-9A-Za-z,.\s]+$/
+								}}
 								validationError='Invalid character supplied'
 								disabled={this.state.submitting}
 								required
@@ -217,7 +219,7 @@ class Address extends Component {
 								flat
 								placeholder='085975049209'
 								validations={{
-									matchRegexp: /^[0-9]{7,14}$/
+									matchRegexp: /^[0-9]{6,14}$/
 								}}
 								validationError='Invalid character supplied'
 								disabled={this.state.submitting}
@@ -318,7 +320,7 @@ class Address extends Component {
 								flat
 								placeholder='16451'
 								validations={{
-									matchRegexp: /^[0-9]{5,6}$/
+									matchRegexp: /^[0-9]{5}$/
 								}}
 								validationError='Invalid character supplied'
 								disabled={this.state.submitting}
@@ -350,7 +352,7 @@ class Address extends Component {
 		const HeaderPage = {
 			left: (
 				<Button onClick={history.goBack}>
-					<Svg src={'ico_arrow-back-left.svg'} />
+					BATAL
 				</Button>
 			),
 			center: 'Alamat Baru',
