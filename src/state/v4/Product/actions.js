@@ -103,7 +103,7 @@ const productSocialSummaryAction = (token, productId) => async (dispatch, getSta
 	return Promise.resolve(response);
 };
 
-const allProductReviewsAction = ({ token, productId, query = { page: 1, per_page: 5 }, type }) => async (dispatch, getState) => {
+const allProductReviewsAction = ({ token, productId, query = { page: 1, per_page: 5 }, type = 'init' }) => async (dispatch, getState) => {
 // const allProductReviewsAction = (token, productId, page = 1, perPage = 10) => async (dispatch, getState) => {
 	
 	dispatch(scrollerActions.onScroll({ loading: true }));
@@ -132,6 +132,10 @@ const allProductReviewsAction = ({ token, productId, query = { page: 1, per_page
 
 	const allReviews = response.data.data;
 
+	dispatch(productLoading({ loading: false }));
+	dispatch(scrollerActions.onScroll({ loading: false }));
+	dispatch(allProductReviews({ allReviews, type }));
+
 	if (_.has(allReviews, 'info') && _.has(allReviews, 'info.total_review') && allReviews.info.total_review > 0) {
 		type = 'update';
 		const nextLink = allReviews.links && allReviews.links.next ? new URL(baseUrl + allReviews.links.next).searchParams : false;
@@ -151,10 +155,6 @@ const allProductReviewsAction = ({ token, productId, query = { page: 1, per_page
 			loader: allProductReviewsAction
 		}));
 	}
-
-	dispatch(allProductReviews({ allReviews, type }));
-	dispatch(productLoading({ loading: false }));
-	dispatch(scrollerActions.onScroll({ loading: false }));
 
 	return Promise.resolve(response);
 };

@@ -27,6 +27,16 @@ class Reviews extends Component {
 
 	componentWillReceiveProps(nextProps) {}
 
+	shouldComponentUpdate(np) {
+		if (_.has(np.product.allReviews, 'items')) {
+			const { items } = this.props.product.allReviews;
+			const nItems = np.product.allReviews.items;
+
+			return (items !== nItems);
+		}
+		return false;
+	}
+
 	toFixDecimal = (val, max, fix = 0) => {
 		return (val > 0 && val < max) ? Number.parseFloat(val).toFixed(fix) : val;
 	}
@@ -80,9 +90,9 @@ class Reviews extends Component {
 		};
 		return (
 			(!reviewsEmpty) && <div>
-				<Page>
-					<div>
-						<div style={{ backgroundColor: '#ffffff' }}>
+				<Page color='white'>
+					<div style={{ backgroundColor: '#F5F5F5' }}>
+						<div style={{ backgroundColor: '#fff' }}>
 							<div className='flex-row padding--medium-h margin--medium-v'>
 								{/* ----------------------------	SELLER REVIEW INFO ---------------------------- */}
 								<div>

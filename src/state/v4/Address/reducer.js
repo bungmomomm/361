@@ -15,6 +15,11 @@ const initialState = {
 		cities: [],
 		districts: []
 	},
+	paging: {
+		provinces: false,
+		cities: false,
+		districts: false
+	},
 	edit: {}
 };
 

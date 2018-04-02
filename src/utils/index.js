@@ -16,6 +16,7 @@ import { request as emarsysRequest } from './emarsys';
 import uniqid from './uniqid';
 import stringHelper from './stringHelper';
 import initUTMProcess from './affiliate';
+import checkImage from './checkImage';
 
 const isHexColor = (color) => {
 	return /(^#[0-9A-F]{3}|^#[0-9A-F]{6})$/i.test(color);
@@ -85,5 +86,6 @@ export default {
 	enableZoomPinch,
 	setReferrenceCookie,
 	isFullUrl,
-	initUTMProcess
+	initUTMProcess,
+	checkImage
 };

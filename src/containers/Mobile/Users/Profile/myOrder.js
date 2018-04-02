@@ -38,20 +38,11 @@ class MyOrder extends Component {
 		this.isEmpty = false;
 	}
 
-	componentWillMount() {
-		if ('serviceUrl' in this.props.shared) {
-			this.getCurrentOrdes(this.props);
-		}
-	}
-
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (!('serviceUrl' in this.props.shared) && 'serviceUrl' in nextProps.shared) {
-			this.getCurrentOrdes(nextProps);
-		}
 		if (nextProps.user.myOrders !== this.props.user.myOrders && nextProps.user.myOrders === false) {
 			this.props.history.push('/profile');
 		}
@@ -198,4 +189,22 @@ const mapStateToProps = (state) => {
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Scroller(Shared(MyOrder))));
+const doAfterAnonymous = (props) => {
+	const { cookies, dispatch, user } = props;
+
+	if (user.isNoOrders === null) {
+		dispatch(userAction.checkMyOrders(cookies.get(cookiesLabel.userToken)));
+	}
+
+	const data = {
+		token: cookies.get(cookiesLabel.userToken),
+		query: {
+			page: 1,
+			per_page: 20,
+			status: user.myOrdersCurrent
+		}
+	};
+	dispatch(userAction.getMyOrderMore(data));
+};
+
+export default withCookies(connect(mapStateToProps)(Scroller(Shared(MyOrder, doAfterAnonymous))));

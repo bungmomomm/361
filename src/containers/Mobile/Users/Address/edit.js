@@ -42,7 +42,7 @@ class Address extends Component {
 				const { dispatch, cookies, address, address: { edit } } = nextProps;
 				const selected = { city: [], district: [] };
 
-				const cities = await to(dispatch(actions.getCity(cookies.get(userToken), { q: `${edit.city.split(' ').pop().replace(/[,.]/i, '')}` })));
+				const cities = await to(dispatch(actions.getCity(cookies.get(userToken), { q: `${edit.city.split(' ').pop().replace(/[,.]/i, '')}` }, 'init')));
 				selected.city = cities[1] ? cities[1].data.data.cities.filter((obj) => {
 					return obj.name === `${edit.city}, ${edit.province}`;
 				}) : [];
@@ -69,8 +69,8 @@ class Address extends Component {
 	}
 
 	componentWillUnmount() {
-		const { dispatch } = this.props;
-		dispatch(actions.mutateState({ edit: {} }));
+		const { dispatch, address: { paging } } = this.props;
+		dispatch(actions.mutateState({ edit: {}, paging: { ...paging, cities: false } }));
 	}
 
 	onSelectChange = (v, which = 'city') => {
@@ -95,7 +95,16 @@ class Address extends Component {
 
 			if (v) {
 				(async () => {
-					const { dispatch, cookies } = this.props;
+					const { address: { data, paging }, dispatch, cookies } = this.props;
+
+					const c = data.cities[data.cities.length - 1];
+					if (+v.split('_')[1] === +c.city_id && paging.cities) {
+						const respCity = await to(dispatch(actions.getCity(cookies.get(userToken), paging.cities)));
+						if (respCity[0]) {
+							return Promise.reject(respCity[0]);
+						}
+					}
+
 					const resp = await to(dispatch(actions.getDistrict(cookies.get(userToken), { city_id: v.split('_')[1] })));
 
 					this.setState({
@@ -127,7 +136,7 @@ class Address extends Component {
 	onCitySearch = (el) => {
 		const { cookies, dispatch } = this.props;
 		if (el.target.value.length > 2) {
-			dispatch(actions.getCity(cookies.get(userToken), { q: el.target.value }));
+			dispatch(actions.getCity(cookies.get(userToken), { q: el.target.value }, 'init'));
 		}
 	};
 
@@ -243,7 +252,9 @@ class Address extends Component {
 								name='fullname'
 								flat
 								placeholder='John Doe'
-								validations='isWords'
+								validations={{
+									matchRegexp: /^[0-9A-Za-z,.\s]+$/
+								}}
 								validationError='Invalid character supplied'
 								disabled={this.state.submitting}
 								required
@@ -259,7 +270,7 @@ class Address extends Component {
 								flat
 								placeholder='085975049209'
 								validations={{
-									matchRegexp: /^[0-9]{7,14}$/
+									matchRegexp: /^[0-9]{6,14}$/
 								}}
 								validationError='Invalid character supplied'
 								disabled={this.state.submitting}
@@ -362,7 +373,7 @@ class Address extends Component {
 								flat
 								placeholder='16451'
 								validations={{
-									matchRegexp: /^[0-9]{5,6}$/
+									matchRegexp: /^[0-9]{5}$/
 								}}
 								validationError='Invalid character supplied'
 								disabled={this.state.submitting}
@@ -398,7 +409,7 @@ class Address extends Component {
 		const HeaderPage = {
 			left: (
 				<Button onClick={history.goBack}>
-					<Svg src={'ico_arrow-back-left.svg'} />
+					BATAL
 				</Button>
 			),
 			center: 'Ubah Alamat',

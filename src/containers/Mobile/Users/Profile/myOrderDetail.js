@@ -13,7 +13,7 @@ import {
 } from '@/components/mobile';
 import styles from './profile.scss';
 import { actions as userAction } from '@/state/v4/User';
-import { aux } from '@/utils';
+import { aux, urlBuilder } from '@/utils';
 import handler from '@/containers/Mobile/Shared/handler';
 import cookiesLabel from '@/data/cookiesLabel';
 
@@ -48,22 +48,8 @@ class MyOrderDetail extends Component {
 		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true';
 		this.soNumber = this.props.match.params.so_number;
 
-		if (this.isLogin !== 'true') {
+		if (!this.isLogin) {
 			this.props.history.push('/');
-		}
-	}
-
-	componentWillMount() {
-		if ('serviceUrl' in this.props.shared) {
-			const { cookies, dispatch } = this.props;
-			dispatch(userAction.getMyOrderDetail(cookies.get(cookiesLabel.userToken), this.soNumber));
-		}
-	}
-
-	componentWillReceiveProps(nextProps) {
-		if (!('serviceUrl' in this.props.shared) && 'serviceUrl' in nextProps.shared) {
-			const { cookies, dispatch } = this.props;
-			dispatch(userAction.getMyOrderDetail(cookies.get(cookiesLabel.userToken), this.soNumber));
 		}
 	}
 
@@ -93,9 +79,11 @@ class MyOrderDetail extends Component {
 				{this.renderOrderList()}
 				{this.renderAddress()}
 				{this.renderPembayaran()}
-				{(order.group === 'konfirmasi' && order.payment_status_id === 1) && (
-					<Link to={'/profile-my-order-confirm/'}>
-						<Button rounded size='medium' color='secondary'>Konfirmasi Pembayaran</Button>
+				{(order.group === 'konfirmasi' && order.payment_status_id === 1 && order.fg_show_payment_confirmation_button === 1) && (
+					<Link to={`/profile/my-order-confirm/${order.so_number}`}>
+						<Level className='bg--white flex-center'>
+							<Button rounded size='medium' color='secondary'>Konfirmasi Pembayaran</Button>
+						</Level>
 					</Link>
 				)}
 			</aux>
@@ -122,9 +110,18 @@ class MyOrderDetail extends Component {
 											<strong className='margin--small-t'>{item.pricing.formatted.price}</strong>
 										</div>
 									</div>
-									{ myOrdersDetail.group === 'batal' && (
+									{ (myOrdersDetail.group === 'batal' || myOrdersDetail.group === 'selesai') && (
 										<div>
-											<Button rounded size='medium' color='secondary' className='margin--medium-t text-uppercase'>BELI AJA</Button>
+											<Link to={urlBuilder.setId(item.product_id).setName(item.product_title).buildPdp()} >
+												<Button
+													rounded
+													size='medium'
+													color='secondary'
+													className='margin--medium-t text-uppercase'
+												>
+														BELI LAGI
+												</Button>
+											</Link>
 										</div>
 									)}
 
@@ -252,8 +249,13 @@ class MyOrderDetail extends Component {
 const mapStateToProps = (state) => {
 	return {
 		shared: state.shared,
-		user: state.users
+		user: state.users 
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(MyOrderDetail)));
+const doAfterAnonymous = (props) => {
+	const { cookies, dispatch } = props;
+	dispatch(userAction.getMyOrderDetail(cookies.get(cookiesLabel.userToken), props.match.params.so_number));
+};
+
+export default withCookies(connect(mapStateToProps)(Shared(MyOrderDetail, doAfterAnonymous)));

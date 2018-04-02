@@ -22,7 +22,7 @@ const initialState = {
 		page: 1,
 		per_page: 10,
 		fq: '',
-		sort: 'energy DESC',
+		sort: ''
 	},
 	commentData: [],
 	promoData: []

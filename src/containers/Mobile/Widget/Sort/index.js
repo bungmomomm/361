@@ -33,6 +33,10 @@ class Sort extends Component {
 		this.constructor.toggleBodyOverflow(nextProps.shown);
 	}
 
+	componentWillUnmount() {
+		document.getElementsByTagName('body')[0].style.overflow = 'auto';
+	}
+
 	onClick(e, value) {
 		const { onSort } = this.props;
 		let { sorts } = this.state;
