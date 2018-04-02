@@ -143,7 +143,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				await to(dispatch(new account.userSocialLogin(tokenBearer, provider, login)));
 			}
 
-			if (!users.userProfile) {
+			if (users && !users.userProfile) {
 				dispatch(new account.userGetProfile(tokenBearer));
 			}
 
