@@ -1,5 +1,5 @@
 import { request } from '@/utils';
-import { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner, brandProductsComments, brandProductsLovelist, brandLoadingProductsComments } from './reducer';
+import { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner, brandProductsComments, brandProductsLovelist, brandLoadingProductsComments, brandViewMode } from './reducer';
 import _ from 'lodash';
 import to from 'await-to-js';
 import { Promise } from 'es6-promise';
@@ -194,6 +194,30 @@ const brandProductsLovelistAction = (token, productIds) => async (dispatch, getS
 	return Promise.resolve(response);
 };
 
+const brandViewModeAction = (mode) => (dispatch) => {
+	dispatch(brandLoadingProducts({ loading_products: true }));
+
+	let icon = null;
+	switch (mode) {
+	case 1:
+		icon = 'ico_grid.svg';
+		break;
+	case 3:
+		icon = 'ico_list.svg';
+		break;
+	default:
+		icon = 'ico_grid-3x3.svg';
+		break;
+	}
+
+	dispatch(brandViewMode({
+		viewMode: {
+			mode,
+			icon
+		}
+	}));
+};
+
 export default {
 	brandListAction,
 	brandProductAction,
@@ -201,4 +225,5 @@ export default {
 	brandProductsCommentsAction,
 	brandProductsLovelistAction,
 	brandProductCleanUp,
+	brandViewModeAction
 };
