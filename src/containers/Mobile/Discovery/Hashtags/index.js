@@ -13,6 +13,7 @@ import _ from 'lodash';
 import currency from 'currency.js';
 import { userToken } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
+import { checkImage } from '@/utils';
 
 @handler
 class Hashtags extends Component {
@@ -20,6 +21,9 @@ class Hashtags extends Component {
 	state = {
 		isFooterShow: false,
 	};
+
+	checkedImage = [];
+	checkedStatus = [];
 
 	switchTag = (tag) => {
 		const switchTag = tag.replace('#', '').toLowerCase();
@@ -47,7 +51,6 @@ class Hashtags extends Component {
 	};
 
 	renderGridSmall = (campaignId) => {
-
 		const { hashtag } = this.props;
 		const items = hashtag.products[hashtag.active.node] && hashtag.products[hashtag.active.node].items
 					? hashtag.products[hashtag.active.node].items : [];
@@ -63,11 +66,18 @@ class Hashtags extends Component {
 					const embedUrl = _.chain(product).get('embed_url').value();
 					const icode = (embedUrl.substr(embedUrl.indexOf('/p/')).split('/') || [])[2];
 
+					let imageStatus;
+					if (this.checkedImage.includes(product.image)) {
+						imageStatus = this.checkedStatus[this.checkedImage.indexOf(product.image)];
+					} else {
+						imageStatus = checkImage(product.image);
+						this.checkedImage.push(product.image);
+						this.checkedStatus.push(imageStatus);
+					}
+
 					return (
 						<div className='placeholder-image' key={i}>
-							<Link className={styles.hashtagThumbnail} style={{ width: `${rect}px`, height: `${rect}px`, backgroundImage: `url(${product.image})` }} to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode}`}>
-								<Image lazyload src={product.image} />
-							</Link>
+							<Link className={styles.hashtagThumbnail} style={{ width: `${rect}px`, height: `${rect}px`, backgroundImage: `url(${imageStatus ? product.image : require('@/assets/images/mobile/ico_placeholder-full.png')})` }} to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode}`} />
 						</div>
 					);
 				})}
@@ -89,10 +99,19 @@ class Hashtags extends Component {
 					const embedUrl = _.chain(product).get('embed_url').value();
 					const icode = (embedUrl.substr(embedUrl.indexOf('/p/')).split('/') || [])[2];
 
+					let imageStatus;
+					if (this.checkedImage.includes(product.image)) {
+						imageStatus = this.checkedStatus[this.checkedImage.indexOf(product.image)];
+					} else {
+						imageStatus = checkImage(product.image);
+						this.checkedImage.push(product.image);
+						this.checkedStatus.push(imageStatus);
+					}
+
 					return (
 						<div key={i}>
 							<Link to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode || ''}`}>
-								<Image lazyload src={product.image} width='100%' />
+								<Image lazyload src={imageStatus ? product.image : require('@/assets/images/mobile/ico_placeholder-full.png')} width='100%' />
 							</Link>
 							<div className='margin--medium-v flex-row flex-spaceBetween flex-middle'>
 								<div className='padding--medium-h'>
@@ -144,7 +163,7 @@ class Hashtags extends Component {
 		const isSticky = () => {
 			if (this.staticHashtag) {
 				const rect = this.staticHashtag.getBoundingClientRect();
-				return this.props.scroll.top > (rect.top + rect.height + 90);
+				return window.scrollY > (rect.top + rect.height + 90);
 			}
 			return false;
 		};

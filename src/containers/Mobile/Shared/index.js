@@ -146,7 +146,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			if (!users.userProfile) {
 				dispatch(new account.userGetProfile(tokenBearer));
 			}
-			
+
 			if (typeof doAfterAnonymousCall !== 'undefined') {
 				await to(doAfterAnonymousCall.apply(this, [this.props]));
 			}
@@ -209,7 +209,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 							return false;
 						}
 						this.currentScrollPos = this.state.scroll.top;
-						return (this.state.scroll.top > oldPos && this.state.scroll.top < this.state.scroll.docHeight) || this.noNav;
+						return window.scrollY > oldPos && window.scrollY < docHeight;
 					})()
 				}
 			});

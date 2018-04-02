@@ -275,10 +275,10 @@ class Detail extends Component {
 		const { styleHeader } = this.state;
 		if (!this.headerEl) return;
 		const headerHeight = this.headerEl.getBoundingClientRect().height;
-		if (this.props.scroll.top > headerHeight && styleHeader) {
+		if (window.scrollY > headerHeight && styleHeader) {
 			this.setState({ styleHeader: false });
 		}
-		if (this.props.scroll.top < headerHeight && !styleHeader) {
+		if (window.scrollY < headerHeight && !styleHeader) {
 			this.setState({ styleHeader: true });
 		}
 	}
