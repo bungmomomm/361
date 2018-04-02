@@ -139,7 +139,7 @@ class Input extends PureComponent {
 			...setMaxLength()
 		};
 
-		const TagName = as === 'textarea' ? (
+		const TagName = as === 'textarea' && !flat ? (
 			<Textarea
 				{...propsList}
 				minRows={1}
