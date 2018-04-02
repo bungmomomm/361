@@ -15,7 +15,7 @@ const initialState = {
 		page: 1,
 		store_id: '',
 		fq: '',
-		sort: 'energy DESC',
+		sort: ''
 	},
 };
 
