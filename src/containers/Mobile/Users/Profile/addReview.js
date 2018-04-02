@@ -222,9 +222,9 @@ class AddReview extends Component {
 					<Level className='bg--white flex-center'>
 						<Button rounded disabled={this.state.isSubmiting || notComplete} size='medium' color='secondary' onClick={() => this.onSubmitReview()}>Kirim</Button>
 					</Level>
-					<Level>
+					{/* <Level>
 						<div>*Upload barang tersebut (jpeg, jpg, png) maksimal 5 foto</div>
-					</Level>
+					</Level> */}
 				</Page>
 				<Header.Modal {...HeaderPage} />
 				<Modal show={this.state.isSubmitSuccess}>
