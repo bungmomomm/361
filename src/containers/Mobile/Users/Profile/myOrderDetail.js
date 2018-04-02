@@ -47,22 +47,9 @@ class MyOrderDetail extends Component {
 		this.props = props;
 		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true';
 		this.soNumber = this.props.match.params.so_number;
-		if (this.isLogin !== true) {
+
+		if (!this.isLogin) {
 			this.props.history.push('/');
-		}
-	}
-
-	componentWillMount() {
-		if ('serviceUrl' in this.props.shared) {
-			const { cookies, dispatch } = this.props;
-			dispatch(userAction.getMyOrderDetail(cookies.get(cookiesLabel.userToken), this.soNumber));
-		}
-	}
-
-	componentWillReceiveProps(nextProps) {
-		if (!('serviceUrl' in this.props.shared) && 'serviceUrl' in nextProps.shared) {
-			const { cookies, dispatch } = this.props;
-			dispatch(userAction.getMyOrderDetail(cookies.get(cookiesLabel.userToken), this.soNumber));
 		}
 	}
 
@@ -262,8 +249,13 @@ class MyOrderDetail extends Component {
 const mapStateToProps = (state) => {
 	return {
 		shared: state.shared,
-		user: state.users
+		user: state.users 
 	};
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(MyOrderDetail)));
+const doAfterAnonymous = (props) => {
+	const { cookies, dispatch } = props;
+	dispatch(userAction.getMyOrderDetail(cookies.get(cookiesLabel.userToken), props.match.params.so_number));
+};
+
+export default withCookies(connect(mapStateToProps)(Shared(MyOrderDetail, doAfterAnonymous)));
