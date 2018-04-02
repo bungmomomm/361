@@ -450,7 +450,7 @@ class Detail extends Component {
 							<div>
 								<div ref={(n) => { this.headerEl = n; }}>
 									{this.renderBenner()}
-									{this.renderFilter()}
+									{this.state.styleHeader && this.renderFilter()}
 								</div>
 								{this.renderTotalProduct()}
 								{this.renderProduct()}
