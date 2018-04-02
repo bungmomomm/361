@@ -178,7 +178,7 @@ class NewPassword extends Component {
 const mapStateToProps = state => {
 	return {
 		...state,
-		isLoginLoading: state.users.isLoading
+		loading: state.users.isLoading
 	};
 };
 const doAfterAnonymous = props => {

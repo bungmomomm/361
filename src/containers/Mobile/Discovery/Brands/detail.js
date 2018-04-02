@@ -263,6 +263,8 @@ class Detail extends Component {
 		if (e === 'view') {
 			this.currentListState = this.currentListState === 2 ? 0 : this.currentListState + 1;
 			this.setState({ listTypeState: this.listType[this.currentListState] });
+			const qs = queryString.parse(location.search);
+			urlBuilder.updateView(history, qs, this.listType[this.currentListState].type);
 		} else {
 			this.setState({
 				showFilter: e === 'filter',

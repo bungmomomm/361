@@ -8,6 +8,14 @@ const replace = (history, obj) => {
 	history.replace(`?${url}`);
 };
 
+const updateView = (history, query, view) => {
+	query.view = view;
+	const url = queryString.stringify(query, {
+		encode: false
+	});
+	history.replace(`?${url}`);
+};
+
 class MMUrlBuilder {
 	id = '';
 	name = '';
@@ -97,5 +105,6 @@ class MMUrlBuilder {
 
 const urlBuilder = new MMUrlBuilder();
 urlBuilder.replace = replace;
+urlBuilder.updateView = updateView;
 
 export default urlBuilder;
