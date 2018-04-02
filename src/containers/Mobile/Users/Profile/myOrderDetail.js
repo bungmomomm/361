@@ -92,9 +92,11 @@ class MyOrderDetail extends Component {
 				{this.renderOrderList()}
 				{this.renderAddress()}
 				{this.renderPembayaran()}
-				{(order.group === 'konfirmasi' && order.payment_status_id === 1) && (
-					<Link to={'/profile-my-order-confirm/'}>
-						<Button rounded size='medium' color='secondary'>Konfirmasi Pembayaran</Button>
+				{(order.group === 'konfirmasi' && order.payment_status_id === 1 && order.fg_show_payment_confirmation_button === 1) && (
+					<Link to={`/profile/my-order-confirm/${order.so_number}`}>
+						<Level className='bg--white flex-center'>
+							<Button rounded size='medium' color='secondary'>Konfirmasi Pembayaran</Button>
+						</Level>
 					</Link>
 				)}
 			</aux>

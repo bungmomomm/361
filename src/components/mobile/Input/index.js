@@ -57,6 +57,7 @@ class Input extends PureComponent {
 			textCounter,
 			inputRef,
 			maxLength,
+			uplabel,
 			...props,
 		} = this.props;
 
@@ -68,7 +69,7 @@ class Input extends PureComponent {
 			error ? styles.error : null,
 			partitioned ? styles.partitioned : null,
 			styles[size],
-			this.state.showLabel ? styles.showLabel : null,
+			this.state.showLabel || uplabel ? styles.showLabel : null,
 			styles[color],
 			this.props.className
 		);
