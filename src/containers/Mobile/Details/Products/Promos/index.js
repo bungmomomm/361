@@ -22,16 +22,22 @@ class Promos extends Component {
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
-		const { recommended_items, similar_items, best_seller_items } = nextProps.promo;
-		return (this.props.promo.recommended_items.products !== recommended_items.products &&
+		const { recommended_items, similar_items, best_seller_items, loading } = nextProps.promo;
+		return ((this.props.promo.recommended_items.products !== recommended_items.products &&
 			this.props.promo.similar_items.products !== similar_items.products &&
-			this.props.promo.best_seller_items !== best_seller_items.products);
+			this.props.promo.best_seller_items !== best_seller_items.products) || this.props.promo.loading !== loading);
 	}
 
 	getBuiltItems = (products) => {
-		let fragment = [];
+		const { loading } = this.props.promo;
 		const itemsList = [];
-		const productClicked = (e) => console.log('Ouch, don\'t do that!!!');
+
+		if (loading) {
+			return itemsList;
+		}
+
+		let fragment = [];
+		const productClicked = () => (console.log());
 
 		// builds items
 		products.forEach((item, idx) => {
@@ -70,56 +76,51 @@ class Promos extends Component {
 	}
 
 	render() {
-		const { promo, loading } = this.props;
+		const { promo } = this.props;
+		const { loading } = promo;
 		const recommended = this.getBuiltItems(promo.recommended_items.products);
 		const similar = this.getBuiltItems(promo.similar_items.products);
 		const bestSeller = this.getBuiltItems(promo.best_seller_items.products);
 		
 		return (
 			<div className='flex' style={{ backgroundColor: '#fff', marginTop: '15px' }}>
+				{loading && this.loadingContent}
 				{/* ----------------------------	RECOMMENDATION PRODUCTS---------------------------- */}
-				{!_.isEmpty(recommended) && (
-					<div className='margin--medium-v'>
-						<div className='font-medium padding--medium-h'><strong>Anda Mungkin Suka</strong></div>
-						{loading ? this.loadingContent : (
-							<div className='flex'>{
-								<Carousel className='margin--medium-v'>
-									{recommended.map((item, i) => <Grid split={2} key={i}>{item}</Grid>)}
-								</Carousel>
-							}
-							</div>
-						)}
+				{(!_.isEmpty(recommended) && !loading) && (
+				<div className='margin--medium-v'>
+					<div className='font-medium padding--medium-h'><strong>Anda Mungkin Suka</strong></div>
+					<div className='flex'>{
+						<Carousel className='margin--medium-v'>
+							{recommended.map((item, i) => <Grid split={2} key={i}>{item}</Grid>)}
+						</Carousel>}
 					</div>
+				</div>
 				)}
 				{/* ----------------------------	END OF RECOMMENDATION ---------------------------- */}
 
 				{/* ----------------------------	SIMILAR / BEST SELLER ---------------------------- */}
-				{!_.isEmpty(similar) && (
-					<div className='border-top margin--medium-v'>
-						<div className='margin--medium-v padding--medium-h font-medium'><strong>Produk Serupa</strong></div>
-						{loading ? this.loadingContent : (
-							<div className='flex'>{
-								<Carousel className='margin--medium-v'>
-									{similar.map((item, i) => <Grid split={2} key={i}>{item}</Grid>)}
-								</Carousel>
-							}
-							</div>
-						)}
+				{(!_.isEmpty(similar) && !loading) && (
+				<div className='border-top margin--medium-v'>
+					<div className='margin--medium-v padding--medium-h font-medium'><strong>Produk Serupa</strong></div>
+					<div className='flex'>{
+						<Carousel className='margin--medium-v'>
+							{similar.map((item, i) => <Grid split={2} key={i}>{item}</Grid>)}
+						</Carousel>}
 					</div>
+				</div>
 				)}
-				{_.isEmpty(similar) && !_.isEmpty(bestSeller) && (
+
+				{((_.isEmpty(similar) && !_.isEmpty(bestSeller)) && !loading) && (
 					<div className='border-top margin--medium-v '>
 						<div className='margin--medium-v padding--medium-h font-medium'><strong>Produk Terlaris</strong></div>
-						{loading ? this.loadingContent : (
-							<div className='flex'>{
-								<Carousel className='margin--medium-v'>
-									{bestSeller.map((item, i) => <Grid split={2} key={i}>{item}</Grid>)}
-								</Carousel>
-							}
-							</div>
-						)}
+						<div className='flex'>{
+							<Carousel className='margin--medium-v'>
+								{bestSeller.map((item, i) => <Grid split={2} key={i}>{item}</Grid>)}
+							</Carousel>}
+						</div>
 					</div>
 				)}
+
 				{/* ----------------------------	END OF SIMILAR / BEST SELLER ---------------------------- */}
 			</div>
 		);

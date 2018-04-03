@@ -98,7 +98,7 @@ const doAfterAnonymous = async (props) => {
 		history.push('/not-found');
 	} else if (response) {
 		trackPdpView(response, props);
-		await dispatch(productActions.productSocialSummaryAction(token, productId));
+		dispatch(productActions.productSocialSummaryAction(token, productId));
 		fusion.trackPdp(response);
 	}
 
@@ -160,7 +160,6 @@ class Products extends Component {
 				hasVariantSize: false,
 				isLoved: false,
 				isZoomed: false,
-				productAdded: false,
 				pendingAddProduct: false,
 				showOvoInfo: false,
 				showConfirmDelete: false,
@@ -182,14 +181,6 @@ class Products extends Component {
 				<Spinner size='large' />
 			</div>
 		);
-		this.headerZoom = {
-			left: (<Button onClick={this.closeZoomImage} ><Svg src={'ico_close-large.svg'} /></Button>),
-			center: '',
-			right: ''
-		};
-
-		this.fusion = new Payload(this.props.cookies);
-
 		this.hastagLinkCreator = (text) => {
 			const urlRegex = /(#[^\s]+)/g;
 			return text.replace(urlRegex, (url) => {
@@ -201,6 +192,9 @@ class Products extends Component {
 
 	componentWillMount() {
 		window.scroll(0, 0);
+		const { status } = this.state;
+		status.showScrollInfomation = false;
+		this.setState({ status });
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -212,6 +206,10 @@ class Products extends Component {
 		status.loading = product.loading;
 		if ((_.toInteger(this.props.match.params.id) !== _.toInteger(nextProps.match.params.id)) ||
 			(this.props.match.url !== nextProps.match.url)) {
+			selectedVariant = {};
+			cardProduct = {};
+			size = '';
+			window.scroll(0, 0);
 			this.updateCard = true;
 			doAfterAnonymous(nextProps);
 		}
@@ -281,6 +279,14 @@ class Products extends Component {
 		status.showOvoInfo = false;
 		if (!_.isEmpty(promo.meta_data.ovo_info)) status.showOvoInfo = true;
 
+		this.setState({ status });
+	}
+	
+	setBtnBeliStatus(stat) {
+		const { status } = this.state;
+		const btnState = (!_.isUndefined(stat) && _.isBoolean(stat)) ? stat : false;
+		status.btnBeliDisabled = btnState;
+		status.btnBeliLoading = btnState;
 		this.setState({ status });
 	}
 
@@ -379,18 +385,31 @@ class Products extends Component {
 		const { status, cardProduct } = this.state;
 		const { cookies, dispatch, product } = this.props;
 
+		// disabled button beli
+		this.setBtnBeliStatus(true);
 		status.showModalSelectSize = false;
-		status.btnBeliLoading = true;
 		this.setState({ status });
 
 		const handler = new Promise((resolve, reject) => {
 			resolve(dispatch(shopBagActions.updateAction(cookies.get(cookiesLabel.userToken), variant.id, this.defaultCount, 'add')));
 		});
 
-		let message = '';
-
 		handler.then((res) => {
-			// Fusion Add to Cart tracking...
+			status.pendingAddProduct = false;
+			status.showModalSelectSize = false;
+			this.setState({ status });
+			// enabled button beli after 2 seconds
+			// prevents multiple button beli hits...
+			setTimeout(() => {
+				this.setBtnBeliStatus(false);
+			}, 2000);
+
+			// updates carts badge
+			dispatch(sharedActions.totalCartAction(cookies.get(cookiesLabel.userToken)));
+			dispatch(sharedActions.showSnack(uniqid('err-'), { label: 'Produk Berhasil ditambahkan', timeout: 3000 }, toastSytle()));
+
+			// Add to Cart tracking...
+			trackAddToCart(product, this.props, variant, cardProduct.hasVariantSize);
 			const pricing = product.detail.variants[0].pricing.original;
 			fusion.trackAddToCart({
 				product_id: product.detail.id,
@@ -400,31 +419,14 @@ class Products extends Component {
 				qty: this.defaultCount
 			});
 
-			// updates carts badge
-			dispatch(sharedActions.totalCartAction(cookies.get(cookiesLabel.userToken)));
-			status.pendingAddProduct = false;
-			status.productAdded = true;
-			status.showModalSelectSize = false;
-			status.btnBeliLoading = false;
-			message = 'Produk Berhasil ditambahkan';
-			this.setState({ status });
-
-			dispatch(sharedActions.showSnack(uniqid('err-'),
-				{
-					label: message,
-					timeout: 3000
-				},
-				toastSytle(),
-			));
-
-			trackAddToCart(product, this.props, variant, cardProduct.hasVariantSize);
-
 			// get product data
 			// dispatch(productActions.productDetailAction(cookies.get(cookiesLabel.userToken), product.detail.id));
 		}).catch((err) => {
 			status.showModalSelectSize = false;
+			status.btnBeliDisabled = true;
 			status.btnBeliLoading = false;
 			this.setState({ status });
+
 			dispatch(sharedActions.showSnack(uniqid('err-'),
 				{
 					label: err.message,
@@ -681,7 +683,7 @@ class Products extends Component {
 							</div>
 						</div>
 						<div>
-							<Button color='secondary' disabled={(status.btnBeliDisabled || status.loading)} loading={status.btnBeliLoading} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
+							<Button color='secondary' disabled={(status.btnBeliDisabled || status.loading || status.btnBeliLoading)} loading={status.btnBeliLoading} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
 						</div>
 					</div>
 				</div>
@@ -707,29 +709,11 @@ class Products extends Component {
 						onMovePrevRequest={() => this.setCarouselSlideIndex(((slideIndex + images.length) - 1) % images.length)}
 						onMoveNextRequest={() => this.setCarouselSlideIndex(((slideIndex + images.length) - 1) % images.length)}
 					/>
-
-					{/* <Header.Modal style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }} {...this.headerZoom} />
-						<Carousel
-							slideIndex={carousel.slideIndex}
-							afterSlide={newSlideIndex => this.setCarouselSlideIndex(newSlideIndex)}
-							wrapAround={this.slideWrapAround}
-						>
-							{
-								detail.images.map((image, idx) => {
-									return (
-										<div tabIndex='0' role='button' onClick={this.closeZoomImage} key={idx}>
-											<Image lazyload src={image.original} alt='product' />
-										</div>
-									);
-								})
-							}
-						</Carousel> */}
 				</div>
 			);
 		}
 		return '';
 	}
-
 
 	render() {
 		try {
@@ -739,7 +723,6 @@ class Products extends Component {
 			const { seller, comments, reviews } = socialSummary;
 			const { cardProduct, status, carousel, selectedVariant, showFullProductDescription, outOfStock } = this.state;
 			const { id } = detail;
-			const promoProductsLoading = (loading && _.isEmpty(promo.recommended_items.products));
 
 			const buttonProductDescriptionAttribute = {
 				onClick: this.handleShowMoreProductDescription
@@ -753,103 +736,6 @@ class Products extends Component {
 				buttonProductDescriptionAttribute.onClick = this.handleShowLessProductDescription;
 				fullProductDescriptionButtonText = 'Hide';
 			}
-
-			// if (status.isZoomed && _.has(detail, 'images')) {
-			// 	const images = detail.images.map((image) => image.original);
-			// 	const { slideIndex } = carousel;
-
-			// 	return (
-			// 		<div>
-			// 			<Lightbox
-			// 				mainSrc={images[slideIndex]}
-			// 				nextSrc={images[(slideIndex + 1) % images.length]}
-			// 				prevSrc={images[((slideIndex + images.length) - 1) % images.length]}
-			// 				onCloseRequest={(e) => this.closeZoomImage(e)}
-			// 				onMovePrevRequest={() => this.setCarouselSlideIndex(((slideIndex + images.length) - 1) % images.length)}
-			// 				onMoveNextRequest={() => this.setCarouselSlideIndex(((slideIndex + images.length) - 1) % images.length)}
-			// 			/>
-
-			// 			{/* <Header.Modal style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }} {...this.headerZoom} />
-			// 			<Carousel
-			// 				slideIndex={carousel.slideIndex}
-			// 				afterSlide={newSlideIndex => this.setCarouselSlideIndex(newSlideIndex)}
-			// 				wrapAround={this.slideWrapAround}
-			// 			>
-			// 				{
-			// 					detail.images.map((image, idx) => {
-			// 						return (
-			// 							<div tabIndex='0' role='button' onClick={this.closeZoomImage} key={idx}>
-			// 								<Image lazyload src={image.original} alt='product' />
-			// 							</div>
-			// 						);
-			// 					})
-			// 				}
-			// 			</Carousel> */}
-			// 		</div>
-			// 	);
-			// }
-
-			const cardProductView = !_.isEmpty(cardProduct) && _.has(cardProduct, 'images') && (
-				<div ref={(n) => { this.carouselEL = n; }}>
-					<Card.Product
-						setCarouselSlideIndex={this.setCarouselSlideIndex}
-						slideIndex={carousel.slideIndex}
-						onImageItemClick={this.handleImageItemClick}
-						data={cardProduct || {}}
-						isLoved={status.isLoved}
-						disabledLovelist={loading}
-						onBtnLovelistClick={this.handleLovelistClick}
-						onBtnCommentClick={this.redirectToPage}
-						onBtnBeliClick={this.handleBtnBeliClicked}
-						linkToPdpDisabled={this.linkToPdpDisabled}
-						totalComments={comments.total}
-						totalLovelist={cardProduct.totalLovelist}
-						outOfStock={outOfStock}
-					/>
-				</div>
-			);
-
-			const sizeView = !_.isEmpty(detail) && status.hasVariantSize && (
-				<div className='flex-center padding--medium-h border-top'>
-					<div className='margin--medium-v'>
-						<div className='flex-row flex-spaceBetween'>
-							<div className='font-medium'>Pilih Ukuran</div>
-							{(!_.isEmpty(cardProduct) && _.has(cardProduct, 'hasSizeGuide') && cardProduct.hasSizeGuide) &&
-								<Link to='/product/guide' className='d-flex font-color--primary font--lato-bold font-color-primary flex-row flex-middle'>
-									<Svg src='ico_sizeguide.svg' /> <span className='padding--small-h font--lato-bold font-color--primary padding--none-r'>PANDUAN UKURAN</span>
-								</Link>
-							}
-						</div>
-						<div className='margin--medium-v horizontal-scroll margin--none-b'>
-							<Radio
-								name='size'
-								checked={this.state.size}
-								variant='rounded'
-								style={{ marginTop: '10px', marginBottom: '10px' }}
-								onChange={this.handleSelectVariant}
-								data={cardProduct.variants}
-							/>
-						</div>
-						{(detail.is_product_available !== 0 && !_.isEmpty(selectedVariant) && (selectedVariant.warning_stock_text !== '')) && (
-							<p className='font-color--red font-small'>{selectedVariant.warning_stock_text}</p>
-						)}
-						{detail.is_product_available === 0 && <p className='font-color--red font-small'>Produk Tidak Tersedia</p>}
-					</div>
-				</div>
-			);
-
-			const ovoRewardView = !_.isEmpty(promo.meta_data.ovo_reward) && (
-				<Level className='font-color--primary-ext-2 border-top border-bottom'>
-					<Level.Item>
-						<div className='padding--small-h'>{promo.meta_data.ovo_reward}</div>
-					</Level.Item>
-					<Level.Right>
-						<Button onClick={this.onOvoInfoClick}>
-							<Svg src='ico_warning.svg' />
-						</Button>
-					</Level.Right>
-				</Level>
-			);
 
 			const productDetailView = !_.isEmpty(detail.description) && (
 				<div>
@@ -898,11 +784,80 @@ class Products extends Component {
 					<Page color='white'>
 						{status.isZoomed && this.renderZoom()}
 						<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
+							{(_.isEmpty(cardProduct) || !_.has(cardProduct, 'images')) && 
+								<div style={{ height: (screen.height * 0.5) }}>
+									{this.loadingContent}
+								</div>
+							}
+
+							{!_.isEmpty(cardProduct) && _.has(cardProduct, 'images') && (
+								<div ref={(n) => { this.carouselEL = n; }} >
+									<Card.Product
+										setCarouselSlideIndex={this.setCarouselSlideIndex}
+										slideIndex={carousel.slideIndex}
+										onImageItemClick={this.handleImageItemClick}
+										data={cardProduct || {}}
+										isLoved={status.isLoved}
+										disabledLovelist={loading}
+										onBtnLovelistClick={this.handleLovelistClick}
+										onBtnCommentClick={this.redirectToPage}
+										onBtnBeliClick={this.handleBtnBeliClicked}
+										linkToPdpDisabled={this.linkToPdpDisabled}
+										totalComments={comments.total}
+										totalLovelist={cardProduct.totalLovelist}
+										outOfStock={outOfStock}
+									/>
+								</div>
+							)}
+
+							{!_.isEmpty(detail) && status.hasVariantSize && (
+								<div className='flex-center padding--medium-h border-top'>
+									<div className='margin--medium-v'>
+										<div className='flex-row flex-spaceBetween'>
+											<div className='font-medium'>Pilih Ukuran</div>
+											{(!_.isEmpty(cardProduct) && _.has(cardProduct, 'hasSizeGuide') && cardProduct.hasSizeGuide) &&
+												<Link to='/product/guide' className='d-flex font-color--primary font--lato-bold font-color-primary flex-row flex-middle'>
+													<Svg src='ico_sizeguide.svg' /> <span className='padding--small-h font--lato-bold font-color--primary padding--none-r'>PANDUAN UKURAN</span>
+												</Link>
+											}
+										</div>
+										<div className='margin--medium-v horizontal-scroll margin--none-b'>
+											<Radio
+												name='size'
+												checked={this.state.size}
+												variant='rounded'
+												style={{ marginTop: '10px', marginBottom: '10px' }}
+												onChange={this.handleSelectVariant}
+												data={cardProduct.variants}
+											/>
+										</div>
+										{(detail.is_product_available !== 0 && !_.isEmpty(selectedVariant) && (selectedVariant.warning_stock_text !== '')) && (
+											<p className='font-color--red font-small'>{selectedVariant.warning_stock_text}</p>
+										)}
+										{detail.is_product_available === 0 && <p className='font-color--red font-small'>Produk Tidak Tersedia</p>}
+									</div>
+								</div>
+							)}
+							{!_.isEmpty(promo.meta_data.ovo_reward) && (
+								<Level className='font-color--primary-ext-2 border-top border-bottom'>
+									<Level.Item>
+										<div className='padding--small-h'>{promo.meta_data.ovo_reward}</div>
+									</Level.Item>
+									<Level.Right>
+										<Button onClick={this.onOvoInfoClick}>
+											<Svg src='ico_warning.svg' />
+										</Button>
+									</Level.Right>
+								</Level>
+							)}
+							{(!_.isEmpty(detail) && !status.hasVariantSize && detail.is_product_available === 0) && (
+								<div className='flex-center padding--medium-h border-top'>
+									<div className='margin--medium-v'>{detail.is_product_available === 0 && <p className='font-color--red font-small'>Produk Tidak Tersedia</p>}</div>
+								</div>
+							)}
+
 							{product.loading ? this.loadingContent : (
 								<div>
-									{cardProductView}
-									{sizeView}
-									{ovoRewardView}
 									{productDetailView}
 									{commentsBlockView}
 								</div>
@@ -954,7 +909,7 @@ class Products extends Component {
 								{/* ----------------------------	PROMOS PRODUCTs ---------------------------- */}
 								<Promos
 									promo={promo}
-									loading={promoProductsLoading}
+									loading={loading}
 									loginNow={this.handleLovelistClick}
 									productId={detail.id}
 								/>
