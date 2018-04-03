@@ -18,9 +18,9 @@ const getMetaTags = ({
 	
 	const metaTags = [
 		// { itemprop: 'name', content: title },
-		{ itemprop: 'description', content: seoDesc },
-		{ itemprop: 'image', content: iconUrl },
-		{ itemprop: 'robots', content: seoRobots },
+		{ name: 'description', content: seoDesc },
+		{ name: 'image', content: iconUrl },
+		{ name: 'robots', content: seoRobots },
 		// twitter
 		{ name: 'twitter:site', content: '@MatahariMallCom' },
 		{ name: 'twitter:url', content: 'https://twitter.com/MatahariMallCom' },
