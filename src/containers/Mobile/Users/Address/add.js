@@ -339,6 +339,19 @@ class Address extends Component {
 								validationError='This field is required'
 								disabled={this.state.submitting}
 								required
+								style={{
+									background: 'transparent',
+									paddingLeft: '0px',
+									paddingRight: '0px',
+									borderRadius: '0px',
+									fontSize: '13px',
+									lineHeight: '20px',
+									overflowWrap: 'break-word',
+									outline: '0px',
+									border: '0px',
+									borderBottom: '1px solid #D8D8D8',
+									height: '60px'
+								}}
 							/>
 						</div>
 					</Level>
@@ -348,6 +361,10 @@ class Address extends Component {
 	};
 
 	render() {
+		if (this.props.back2top) {
+			this.props.back2top.style.display = 'none';
+		}
+
 		const { history } = this.props;
 		const HeaderPage = {
 			left: (
@@ -387,4 +404,4 @@ const doAfterAnonymous = (props) => {
 	dispatch(actions.getCity(cookies.get(userToken), { q: '' }, 'init'));
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(Address, doAfterAnonymous)));
+export default withCookies(connect(mapStateToProps)(Shared(Address, doAfterAnonymous, false)));
