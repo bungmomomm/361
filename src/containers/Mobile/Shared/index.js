@@ -158,13 +158,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 
 			tokenBearer = data.token;
 
-			if (shared.totalCart === 0) {
-				dispatch(new actions.totalCartAction(tokenBearer));
-			}
+			dispatch(new actions.totalCartAction(tokenBearer));
+			dispatch(new actions.totalLovelistAction(tokenBearer));
 
-			if (shared.totalLovelist === 0) {
-				dispatch(new actions.totalLovelistAction(tokenBearer));
-			}
 			if (login && provider) {
 				await to(dispatch(new account.userSocialLogin(tokenBearer, provider, login)));
 			}
