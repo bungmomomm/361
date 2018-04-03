@@ -506,6 +506,13 @@
 			animation: scrollLeft 7s linear infinite;
 		}
 	}
+
+	.can-copy{
+		user-select: auto;
+		p{
+			user-select: auto;
+		}
+	}
 }
 
 @keyframes :global(scrollLeft) {
