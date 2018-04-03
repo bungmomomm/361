@@ -2,10 +2,10 @@ import React, { PureComponent } from 'react';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 
-import { Page, Card, Svg, Grid, Level, Carousel, Button } from '@/components/mobile';
-import { hyperlink } from '@/utils';
-// import styles from './search.scss';
+import { GridView } from '@/containers/Mobile/Discovery/View';
 import handler from '@/containers/Mobile/Shared/handler';
+
+import { Page, Svg, Level, Button } from '@/components/mobile';
 
 @handler
 class SearchNotFound extends PureComponent {
@@ -14,10 +14,18 @@ class SearchNotFound extends PureComponent {
 		this.props = props;
 	}
 
+	forceLoginNow() {
+		const { forceLoginNow } = this.props;
+		if (forceLoginNow) {
+			forceLoginNow();
+		}
+	}
+
 	bannerRender() {
 		const { data } = this.props;
+		
 		let bannerView = null;
-		if (data && data.length > 0) {
+		if (data) {
 			const banner = _.find(data, { type: 'promo_banner' }) || false;
 			if (banner) {
 				bannerView = (
@@ -32,42 +40,25 @@ class SearchNotFound extends PureComponent {
 	productRender() {
 		const { data } = this.props;
 		let productView = null;
-		if (data && data.length > 0) {
-			const products = _.find(data, { type: 'recommended' }) || false;
-			if (products) {
-				productView = (
-					<div className='margin--large-v margin--none-t'>
-						<Level>
-							<Level.Left><strong className='font-medium'>Produk Rekomendasi</strong></Level.Left>
-							<Level.Right>
-								<Link to='/promo/recommended_products' className='text-muted font-small'>
-									LIHAT SEMUA<Svg src='ico_arrow_right_small.svg' />
-								</Link>
-							</Level.Right>
-						</Level>
-						<Grid split={1}>
-							<Carousel slidesToShow={2}>
-								{
-									_.map(products.data, (product, index) => {
-										const linkToPdp = hyperlink('', ['product', product.product_id], null);
-										return (
-											<Card.CatalogGrid
-												key={index}
-												style={{ width: '100%' }}
-												images={product.images}
-												productTitle={product.product_title}
-												brandName={product.brand.name}
-												pricing={product.pricing}
-												linkToPdp={linkToPdp}
-											/>
-										);
-									})
-								}
-							</Carousel>
-						</Grid>
-					</div>
-				);
-			}
+		if (data && data.recommendationData) {
+			const productList = data.recommendationData.products;
+			productView = (
+				<div className='margin--large-v margin--none-t'>
+					<Level>
+						<Level.Left><strong className='font-medium'>{data.title || 'Produk Rekomendasi'}</strong></Level.Left>
+						<Level.Right>
+							<Link to='/promo/recommended_products' className='text-muted font-small'>
+								LIHAT SEMUA<Svg src='ico_arrow_right_small.svg' />
+							</Link>
+						</Level.Right>
+					</Level>
+					<GridView
+						carousel
+						forceLoginNow={() => this.forceLoginNow()}
+						products={productList}
+					/>
+				</div>
+			);
 		}
 
 		return productView;
@@ -84,7 +75,7 @@ class SearchNotFound extends PureComponent {
 					<div className=' margin--small-v'>
 						<strong className='font-bold font-large'>SORRY!</strong>
 					</div>
-					<div className='--disable-flex padding--medium-h'>
+					<div className='--disable-flex padding--medium-h' style={{ overflowWrap: 'break-word' }}>
 						Mohon maaf hasil pencarian untuk <br />
 						<strong>{keyword || ''}</strong> tidak dapat ditemukan <br />
 						<br />

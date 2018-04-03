@@ -257,12 +257,7 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-	const { dispatch, cookies, shared } = props;
-
-	const serviceUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
-	if (serviceUrl) {
-		dispatch(userActions.userGetProfile(cookies.get(cookiesLabel.userToken)));
-	}
+	
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(UserProfile, doAfterAnonymous)));
