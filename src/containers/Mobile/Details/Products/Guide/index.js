@@ -26,17 +26,20 @@ class Guide extends Component {
 	}
 
 	isSizeGuideExist() {
-		this.data = this.props.product.detail.spec.filter((item) => {
-			const specKey = item.key.toLowerCase().trim();
-			if (specKey.indexOf('size') === -1 && specKey.indexOf('guide') === -1) {
-				return false;
-			}
+		const { detail } = this.props.product;
+		if (!_.isEmpty(detail)) {
+			this.data = detail.spec.filter((item) => {
+				const specKey = item.key.toLowerCase().trim();
+				if (specKey.indexOf('size') === -1 && specKey.indexOf('guide') === -1) {
+					return false;
+				}
 
-			if (!_.isEmpty(item) && _.has(item, 'value')) {
-				return true;
-			}
-			return false;
-		});
+				if (!_.isEmpty(item) && _.has(item, 'value')) {
+					return true;
+				}
+				return false;
+			});
+		} else this.goBack();
 	}
 
 	goBack() {
