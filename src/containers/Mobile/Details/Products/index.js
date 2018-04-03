@@ -615,7 +615,6 @@ class Products extends Component {
 	}
 
 	renderStickyAction() {
-		console.log('render sticky');
 		const { cardProduct, status, btnBeliLabel, outOfStock } = this.state;
 		const btnDisabled = (status.btnBeliDisabled || status.loading || status.btnBeliLoading || outOfStock);
 
