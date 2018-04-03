@@ -59,14 +59,19 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 			const offline = async (bool) => {
 				if (bool) {
 					await dispatch(actions.dismissSnack('offline'));
-					dispatch(actions.showSnack('offline', {
-						label: 'Oops, koneksi Internet kamu sepertinya terputus.',
-						timeout: 10000,
-						button: {
-							label: 'COBA LAGI',
-							action: 'reload'
-						}
-					}));
+					dispatch(actions.showSnack(
+						'offline',
+						{
+							label: 'Oops, koneksi Internet kamu sepertinya terputus.',
+							timeout: 10000,
+							button: {
+								label: 'COBA LAGI',
+								action: 'reload'
+							}
+						},
+						{},
+						true
+					));
 				}
 			};
 
