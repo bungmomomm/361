@@ -7,6 +7,7 @@ import Shared from '@/containers/Mobile/Shared';
 import { Header, Page, Navigation } from '@/components/mobile';
 import handler from '@/containers/Mobile/Shared/handler';
 import { isLogin } from '@/data/cookiesLabel';
+import styles from './promo.scss';
 
 @handler
 class PromoList extends Component {
@@ -37,14 +38,16 @@ class PromoList extends Component {
 		return (
 			<div className='text-center' style={this.props.style}>
 				<Page>
-					<Iframe
-						url={url}
-						id='myId'
-						width='100%'
-						height='100vh'
-						styles={{ left: '0px', top: '0px', position: 'fixed' }}
-						allowFullScreen
-					/>
+					<div className={styles.iframeWrapper}>
+						<Iframe
+							url={url}
+							id='myId'
+							width='100%'
+							height='100vh'
+							styles={{ left: '0px', top: '0px', position: 'fixed' }}
+							allowFullScreen
+						/>
+					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />
 				<Navigation active='Promo' totalCartItems={shared.totalCart} scroll={this.props.scroll} botNav={this.props.botNav} isLogin={this.isLogin} />
