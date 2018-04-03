@@ -25,7 +25,7 @@ class MyOrderDetail extends Component {
 		this.so_number = this.props.match.params.so_number;
 		this.isLogin = this.props.cookies.get(isLogin) === 'true';
 
-		if (this.isLogin !== 'true') {
+		if (this.isLogin !== true) {
 			this.props.history.push('/');
 		}
 	}
@@ -66,8 +66,8 @@ class MyOrderDetail extends Component {
 
 	renderTimeline() {
 		const tracking = this.props.user.trackingInfo;
-		const total = tracking && tracking.historical.length;
-		const timeline = total > 0 && tracking.historical.map((item, key) => {
+		const total = tracking && tracking.historical && tracking.historical.length;
+		const timeline = total > 0 && tracking.historical && tracking.historical.map((item, key) => {
 			const active = (key === 0) && ({ active: 'active' });
 			return (
 				<Timeline.Item {...active} key={key}>

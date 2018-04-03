@@ -22,6 +22,7 @@ const removeUserCookie = (cookies, token, isAnonymous = false) => {
 	cookies.remove(userToken, { domain: process.env.SESSION_DOMAIN, path: '/' });
 	cookies.remove(isLogin, { domain: process.env.SESSION_DOMAIN, path: '/' });
 	cookies.remove(userProfile, { domain: process.env.SESSION_DOMAIN, path: '/' });
+	cookies.remove(pageReferrer, { domain: process.env.SESSION_DOMAIN, path: '/' });
 };
 
 const setUniqeCookie = (cookies) => {

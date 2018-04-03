@@ -286,7 +286,7 @@ const refreshToken = (tokenRefresh, token) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
-		return Promise.reject(__x(err.response.data));
+		return Promise.reject(err.response.data);
 	}
 	dispatch(setIp({ ipAddress: response.data.data.ip_address }));
 	return Promise.resolve(response);

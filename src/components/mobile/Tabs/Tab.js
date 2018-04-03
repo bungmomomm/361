@@ -10,7 +10,7 @@ class Tab extends PureComponent {
 			this.props.onPick(this.props.id);
 		}
 		setTimeout(() => {
-			window.scrollTo(0, 0);
+			// window.scrollTo(0, 0);
 		}, 200);
 	}
 

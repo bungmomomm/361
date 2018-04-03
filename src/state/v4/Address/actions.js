@@ -28,10 +28,21 @@ const getAddress = (token) => async (dispatch, getState) => {
 	return Promise.resolve(resp);
 };
 
-const getCity = (token, query = {}) => async (dispatch, getState) => {
+const getCity = (token, query = {}, type = 'update') => async (dispatch, getState) => {
 	const st = getState();
 	const url = _.chain(st.shared).get('serviceUrl.account.url').value() || false;
 	if (!url) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
+
+	if (!query.per_page) {
+		query.per_page = 30;
+	}
+
+	dispatch(address({
+		options: {
+			...st.address.options,
+			cities: [...st.address.options.cities, { label: '...', value: '' }]
+		}
+	}));
 
 	const [err, resp] = await to(request({
 		token,
@@ -53,16 +64,24 @@ const getCity = (token, query = {}) => async (dispatch, getState) => {
 			value: `${city.province_id}_${city.city_id}`
 		};
 	});
-	optCities.unshift({ label: '- Select City -', value: '' });
+
+	if (type === 'init') optCities.unshift({ label: '- Select City -', value: '' });
+
+	const nextUrl = _.chain(resp).get('data.data.links.next').value();
+	const nextLink = (nextUrl && new URL(nextUrl).searchParams) || false;
 
 	dispatch(address({
 		data: {
 			...st.address.data,
-			cities: resp.data.data.cities
+			cities: type === 'update' ? [...st.address.data.cities, ...resp.data.data.cities] : resp.data.data.cities
 		},
 		options: {
 			...st.address.options,
-			cities: optCities
+			cities: type === 'update' ? [...st.address.options.cities, ...optCities] : optCities
+		},
+		paging: {
+			...st.address.paging,
+			cities: nextLink ? { ...query, page: nextLink.get('page') } : false
 		}
 	}));
 

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import Shared from '@/containers/Mobile/Shared';
-import queryString from 'query-string';
+// import queryString from 'query-string';
 import { Link } from 'react-router-dom';
 import { actions as users } from '@/state/v4/User';
 import _ from 'lodash';
@@ -49,21 +49,8 @@ class OrderConfirmation extends Component {
 		this.makeBankFromListVisible = this.makeBankFromListVisible.bind(this);
 		this.getDataTransferFrom = this.getDataTransferFrom.bind(this);
 		this.clearState = this.clearState.bind(this);
+		this.soNumber = this.props.match.params.so_number;
 	};
-
-	componentDidMount() {
-
-		const { location, history, dispatch, cookies } = this.props;
-		const query = queryString.parse(location.search);
-		const orderId = query.order_id;
-		dispatch(users.getMyOrderDetail(cookies.get(userToken), cookies.get(userToken)));
-		// If no order id or there is no order detail exist then throw them to homepage
-		if (!orderId || !this.props.users.myOrdersDetail) {
-			history.push('/');
-		}
-
-		this.orderId = orderId;
-	}
 
 	getDataTransferFrom() {
 
@@ -101,7 +88,7 @@ class OrderConfirmation extends Component {
 				const dataForBankTransferTo = {};
 				dataForBankTransferTo.value = value.id;
 				dataForBankTransferTo.label = (
-					<div>
+					<div style={{ borderBottom: '0' }}>
 						<Image style={{ alignSelf: 'flex-start' }} {...imageAttribute} />
 						<span>No. Rek: <strong>{value.rekening}</strong></span>
 					</div>
@@ -174,18 +161,15 @@ class OrderConfirmation extends Component {
 		}
 
 		const postData = {
-			amountTransfer,
-			bankSenderID,
-			bankHolderName,
-			dateSender,
-			timeSender,
-			checkedTransferTo
+			so_number: this.soNumber,
+			amount: Number(amountTransfer),
+			from_bank_id: bankSenderID,
+			sender_name: bankHolderName,
+			datetime: `${dateSender} ${timeSender}`,
+			to_bank_id: checkedTransferTo
 		};
 
 		const [error, response] = await to(dispatch(new users.PostOrderConfirmation(cookies.get(userToken), postData)));
-
-		console.log('postData');
-		console.log(postData);
 
 		if (error) {
 			return false;
@@ -225,12 +209,7 @@ class OrderConfirmation extends Component {
 				</Link>
 			),
 			center: 'Pesanan Saya',
-			right: null,
-			rows: [{
-				left: null,
-				center: '',
-				right: null
-			}]
+			right: null
 		});
 
 		const inputAmountTransferAttribute = {
@@ -238,7 +217,8 @@ class OrderConfirmation extends Component {
 			type: 'text',
 			flat: true,
 			value: amountTransfer,
-			placeholder: 'Jumlah Yang Ditransfer',
+			uplabel: true,
+			// placeholder: 'Jumlah Yang Ditransfer',
 			onChange: (event) => {
 				const regex = /^[0-9\b]+$/;
 				const { value } = event.target;
@@ -257,7 +237,8 @@ class OrderConfirmation extends Component {
 			type: 'text',
 			flat: true,
 			value: bankHolderName,
-			placeholder: 'Nama Pemegang Rekening',
+			uplabel: true,
+			// placeholder: 'Nama Pemegang Rekening',
 			onChange: (event) => {
 				this.setState({
 					bankHolderName: event.target.value
@@ -270,7 +251,8 @@ class OrderConfirmation extends Component {
 			type: 'date',
 			flat: true,
 			value: dateSender,
-			placeholder: 'Nama Pemegang Rekening',
+			uplabel: true,
+			// placeholder: 'Nama Pemegang Rekening',
 			onChange: (event) => {
 				this.setState({
 					dateSender: event.target.value
@@ -283,7 +265,8 @@ class OrderConfirmation extends Component {
 			type: 'time',
 			flat: true,
 			value: timeSender,
-			placeholder: 'Jam Transfer',
+			uplabel: true,
+			// placeholder: 'Jam Transfer',
 			onChange: (event) => {
 				this.setState({
 					timeSender: event.target.value
@@ -340,6 +323,7 @@ class OrderConfirmation extends Component {
 		}
 
 		const radioTransferToAttribute = {
+			variant: 'bullet',
 			list: true,
 			name: 'transfer-to',
 			checked: checkedTransferTo,
@@ -362,7 +346,7 @@ class OrderConfirmation extends Component {
 						>
 							<span>Order ID</span>
 							<strong>
-								{this.orderId}
+								{this.soNumber}
 							</strong>
 						</Panel>
 						{
@@ -396,7 +380,9 @@ class OrderConfirmation extends Component {
 								</Level.Right>
 							</Level>
 							<Select {...selectFromBankAttribute} />
-							<Input {...inputHolderBankNameAttribute} />
+							<div style={{ margin: '22px 0' }}>
+								<Input {...inputHolderBankNameAttribute} />
+							</div>
 							<Input {...inputDateAttribute} />
 							<Input {...inputTimeAttribute} />
 
@@ -418,10 +404,11 @@ class OrderConfirmation extends Component {
 }
 
 const doAfterAnonymous = async (props) => {
-
-	const { dispatch, cookies } = props;
+	const { dispatch, cookies, match, history } = props;
 	dispatch(new users.getListBankConfirmation(cookies.get(userToken)));
-
+	await dispatch(new users.getMyOrderDetail(cookies.get(userToken), match.params.so_number)).catch((err) => {
+		history.push('/profile');
+	});
 };
 
 const mapStateToProps = (state) => {
