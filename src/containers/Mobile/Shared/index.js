@@ -133,8 +133,12 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 				if (resp[0].code === 405) {
 					removeUserCookie(cookies);
 					dispatch(actions.showSnack('Trouble', {
-						label: 'Karena terjadi kesalahan pada sistem, anda telah ter-Logout. Silahkan Login kembali untuk melihat produk di shopping bag kamu',
+						label: 'Akun Anda ter-logout. Silakan login ulang untuk melanjutkan pembayaran',
 						timeout: 3000,
+						button: {
+							label: 'COBA LAGI',
+							action: 'reload'
+						}
 					}));
 					setTimeout(() => {
 						window.location.reload();
