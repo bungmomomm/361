@@ -11,14 +11,14 @@ import Snackbar from '@/containers/Mobile/Shared/snackbar';
 import { Svg } from '@/components/mobile';
 import styles from './shared.scss';
 import { check as checkConnection, watch as watchConnection } from 'is-offline';
-import { 
-	userToken, 
-	userRfToken, 
+import {
+	userToken,
+	userRfToken,
 	uniqueid
 } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
 
-const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
+const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) => {
 	WrappedComponent.contextTypes = {
 		router: React.PropTypes.object,
 		location: React.PropTypes.object
@@ -59,14 +59,19 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 			const offline = async (bool) => {
 				if (bool) {
 					await dispatch(actions.dismissSnack('offline'));
-					dispatch(actions.showSnack('offline', {
-						label: 'Oops, koneksi Internet kamu sepertinya terputus.',
-						timeout: 10000,
-						button: {
-							label: 'COBA LAGI',
-							action: 'reload'
-						}
-					}));
+					dispatch(actions.showSnack(
+						'offline',
+						{
+							label: 'Oops, koneksi Internet kamu sepertinya terputus.',
+							timeout: 10000,
+							button: {
+								label: 'COBA LAGI',
+								action: 'reload'
+							}
+						},
+						{},
+						true
+					));
 				}
 			};
 
@@ -122,7 +127,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 		}
 
 		async exeCall(token = null) {
-			const { cookies, shared, dispatch, users } = this.props;
+			const { cookies, dispatch, users } = this.props;
 			const { login, provider } = this.state;
 			let tokenBearer = token === null ? cookies.get(userToken) : token.token;
 			const rfT = token === null ? cookies.get(userRfToken) : token.refresh_token;
@@ -153,13 +158,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 
 			tokenBearer = data.token;
 
-			if (shared.totalCart === 0) {
-				dispatch(new actions.totalCartAction(tokenBearer));
-			}
+			dispatch(new actions.totalCartAction(tokenBearer));
+			dispatch(new actions.totalLovelistAction(tokenBearer));
 
-			if (shared.totalLovelist === 0) {
-				dispatch(new actions.totalLovelistAction(tokenBearer));
-			}
 			if (login && provider) {
 				await to(dispatch(new account.userSocialLogin(tokenBearer, provider, login)));
 			}
@@ -259,7 +260,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall) => {
 					<Snackbar history={history} location={location} theming={this.snackStyle().theming} customStyles={this.snackStyle().customStyles} />
 					<WrappedComponent {...this.props} scroll={scroll} botNav={(r) => { this.botNav = r; }} botBar={(r) => { this.botBar = r; }} />
 					{
-						scroll.top > 20 && (
+						back2top && scroll.top > 20 && (
 							<a href='#root' className={styles.backToTop}>
 								<Svg src='ico_to-top.svg' />
 							</a>

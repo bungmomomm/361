@@ -90,7 +90,7 @@ const itemsFetchData = ({ token, query = {} }) => async (dispatch, getState) => 
 
 	if (err) {
 		dispatch(actions.itemsHasError({ hasError: err }));
-		return Promise.reject(__x(err));
+		return Promise.reject(__x(new Error('Maaf, gagal memuat data.')));
 	}
 
 	dispatch(actions.itemsFetchDataSuccess({

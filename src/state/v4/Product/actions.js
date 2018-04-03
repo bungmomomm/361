@@ -10,7 +10,8 @@ import {
 	productPromotion,
 	productLoading,
 	productStore,
-	allProductReviews
+	allProductReviews,
+	initialState
 } from './reducer';
 import __x from '@/state/__x';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
@@ -171,6 +172,9 @@ const productPromoAction = (token, productId) => async (dispatch, getState) => {
 	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	dispatch(productLoading({ loading: true }));
+	let { promo } = initialState;
+	promo.loading = true;
+	dispatch(productPromotion({ promo }));
 
 	const [err, response] = await to(request({
 		token,
@@ -188,7 +192,8 @@ const productPromoAction = (token, productId) => async (dispatch, getState) => {
 	}
 
 	// mapping meta data
-	const promo = response.data.data;
+	promo = response.data.data;
+	promo.loading = false;
 	const metaData = {
 		ovo_info: '',
 		ovo_reward: 0

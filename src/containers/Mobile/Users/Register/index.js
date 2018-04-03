@@ -92,7 +92,7 @@ class Register extends Component {
 
 		// Throw error if any.
 		if (errorRegister) {
-			if (errorRegister.error_message.indexOf('taken') > -1) {
+			if (errorRegister.code === 409 || errorRegister.error_message.indexOf('taken') > -1 || errorRegister.error_message.indexOf('sudah terdaftar') > -1) {
 				this.setView('EMAIL_MOBILE_HAS_BEEN_REGISTERED');
 				return false;
 			}

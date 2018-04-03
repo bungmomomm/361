@@ -60,7 +60,7 @@ class UserProfile extends Component {
 		const { history } = this.props;
 		const HeaderPage = {
 			left: (
-				<button onClick={() => (history.length < 2 ? history.push('/') : history.go(-2))}>
+				<button onClick={history.goBack}>
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</button>
 			),
@@ -80,7 +80,7 @@ class UserProfile extends Component {
 				</form>
 			);
 		}
-		
+
 		const ppCtrClassName = classNames(
 			styles.tempPPContainer
 		);
