@@ -22,7 +22,7 @@ const hashtagDetailAction = (token, query = {}) => async (dispatch, getState) =>
 	}));
 
 	if (err) {
-		return Promise.reject(__x(err));
+		return Promise.reject(__x(new Error('Maaf, gagal memuat data.')));
 	}
 
 	dispatch(hashtagDetail({
