@@ -144,6 +144,8 @@ class Products extends Component {
 		this.handleShowMoreProductDescription = this.handleShowMoreProductDescription.bind(this);
 		this.handleShowLessProductDescription = this.handleShowLessProductDescription.bind(this);
 		this.renderZoom = this.renderZoom.bind(this);
+		this.getZoomNextImage = this.getZoomNextImage.bind(this);
+		this.getZoomPrevImage = this.getZoomPrevImage.bind(this);
 
 		this.state = {
 			size: '',
@@ -182,10 +184,12 @@ class Products extends Component {
 			</div>
 		);
 		this.hastagLinkCreator = (text) => {
+			const tobeRendered = productActions.encodeSpecialChar(text);
 			const urlRegex = /(#[^\s]+)/g;
-			return text.replace(urlRegex, (url) => {
-				const hashlink = urlBuilder.setName(url).buildSearchByKeyword();
-				return `<a href="${hashlink + url.replace('#', '%23')}">${url}</a>`;
+			return tobeRendered.replace(urlRegex, (url) => {
+				const hashText = url.replace(/<(.|\n)*?>/g, '');
+				const hashlink = urlBuilder.setName(hashText).buildSearchByKeyword();
+				return `<a href="${hashlink + hashText.replace('#', '%23')}">${hashText}</a>`;
 			});
 		};
 	}
@@ -200,8 +204,8 @@ class Products extends Component {
 	componentWillReceiveProps(nextProps) {
 		const { cookies, product, lovelist, dispatch } = nextProps;
 		const { detail } = product;
-		const { status, outOfStock } = this.state;
-		let { cardProduct, selectedVariant, size } = this.state;
+		const { status } = this.state;
+		let { cardProduct, selectedVariant, size, outOfStock } = this.state;
 
 		status.loading = product.loading;
 		if ((_.toInteger(this.props.match.params.id) !== _.toInteger(nextProps.match.params.id)) ||
@@ -220,6 +224,10 @@ class Products extends Component {
 			cardProduct = productActions.getProductCardData(detail);
 			status.hasVariantSize = cardProduct.hasVariantSize;
 
+			if (_.has(detail, 'description') && !_.isEmpty(detail.description)) {
+				cardProduct.formattedDescription = this.hastagLinkCreator(detail.description);
+			}
+
 			// Sets whether product has variants size or set defaults variant
 			// if the product has one product variant only ...
 			if (!_.isEmpty(cardProduct.variants) && _.isArray(cardProduct.variants)) {
@@ -233,6 +241,7 @@ class Products extends Component {
 			}
 
 			// disable enabled button BELI AJA
+			outOfStock = cardProduct.productStock === 0;
 			if (_.isEmpty(cardProduct.variants) || outOfStock ||
 				cardProduct.productStock === 0 || detail.is_product_available === 0) {
 				status.btnBeliDisabled = true;
@@ -298,6 +307,22 @@ class Products extends Component {
 		});
 	}
 
+	getZoomNextImage() {
+		const { slideIndex } = this.state.carousel;
+		const { images } = this.props.product.detail;
+
+		if (slideIndex === (images.length - 1)) return 0;
+		return (slideIndex + 1);
+	}
+
+	getZoomPrevImage() {
+		const { slideIndex } = this.state.carousel;
+		const { images } = this.props.product.detail;
+
+		if (slideIndex === 0) return (images.length - 1);
+		return (slideIndex - 1);
+	}
+
 	closeZoomImage(e) {
 		const { status } = this.state;
 		status.isZoomed = false;
@@ -340,7 +365,6 @@ class Products extends Component {
 
 	handleLovelistClick(e) {
 		const { status } = this.state;
-		this.animateLovelist();
 		// customer must be logged in first
 		if (!this.isLogin) {
 			status.forceLogin = true;
@@ -380,8 +404,6 @@ class Products extends Component {
 	}
 
 	addToShoppingBag(variant) {
-		this.animateAddtoCart();
-
 		const { status, cardProduct } = this.state;
 		const { cookies, dispatch, product } = this.props;
 
@@ -395,6 +417,7 @@ class Products extends Component {
 		});
 
 		handler.then((res) => {
+			this.animateAddtoCart();
 			status.pendingAddProduct = false;
 			status.showModalSelectSize = false;
 			this.setState({ status });
@@ -550,6 +573,7 @@ class Products extends Component {
 			// Updating product lovelist state ...
 			if (res.status === 200 && res.statusText === 'OK') {
 				if (!status.isLoved) {
+					this.animateLovelist();
 					message = 'Lovelist ditambahkan';
 					status.isLoved = true;
 					cardProduct.totalLovelist += 1;
@@ -661,7 +685,8 @@ class Products extends Component {
 	}
 
 	renderStickyAction() {
-		const { cardProduct, status, btnBeliLabel } = this.state;
+		const { cardProduct, status, btnBeliLabel, outOfStock } = this.state;
+		const btnDisabled = (status.btnBeliDisabled || status.loading || status.btnBeliLoading || outOfStock);
 
 		if (!_.isEmpty(cardProduct) && _.has(cardProduct, 'pricing')) {
 			return (
@@ -683,7 +708,7 @@ class Products extends Component {
 							</div>
 						</div>
 						<div>
-							<Button color='secondary' disabled={(status.btnBeliDisabled || status.loading || status.btnBeliLoading)} loading={status.btnBeliLoading} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
+							<Button color='secondary' disabled={btnDisabled} loading={status.btnBeliLoading} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
 						</div>
 					</div>
 				</div>
@@ -696,18 +721,17 @@ class Products extends Component {
 		const { detail } = this.props.product;
 		const { carousel } = this.state;
 		if (_.has(detail, 'images')) {
-			const images = detail.images.map((image) => image.original);
 			const { slideIndex } = carousel;
 
 			return (
 				<div>
 					<Lightbox
-						mainSrc={images[slideIndex]}
-						nextSrc={images[(slideIndex + 1) % images.length]}
-						prevSrc={images[((slideIndex + images.length) - 1) % images.length]}
+						mainSrc={detail.images[slideIndex].original}
+						nextSrc={detail.images[this.getZoomNextImage()].original}
+						prevSrc={detail.images[this.getZoomPrevImage()].original}
 						onCloseRequest={(e) => this.closeZoomImage(e)}
-						onMovePrevRequest={() => this.setCarouselSlideIndex(((slideIndex + images.length) - 1) % images.length)}
-						onMoveNextRequest={() => this.setCarouselSlideIndex(((slideIndex + images.length) - 1) % images.length)}
+						onMovePrevRequest={() => this.setCarouselSlideIndex(this.getZoomPrevImage())}
+						onMoveNextRequest={() => this.setCarouselSlideIndex(this.getZoomNextImage())}
 					/>
 				</div>
 			);
@@ -737,12 +761,12 @@ class Products extends Component {
 				fullProductDescriptionButtonText = 'Hide';
 			}
 
-			const productDetailView = !_.isEmpty(detail.description) && (
+			const productDetailView = (!_.isEmpty(cardProduct.formattedDescription)) && (
 				<div>
 					<div className='font-medium margin--medium-v padding--medium-h'><strong>Details</strong></div>
 					<div className='wysiwyg-content'>
-						<div className={classNameProductDescription}>
-							{<div dangerouslySetInnerHTML={{ __html: this.hastagLinkCreator(detail.description) }} />}
+						<div className={classNameProductDescription} style={{ wordWrap: 'break-word' }}>
+							{<div dangerouslySetInnerHTML={{ __html: cardProduct.formattedDescription }} />}
 							{!_.isEmpty(cardProduct.specs) && (
 								<div className='margin--medium-v --disable-flex'>
 									{(cardProduct.specs.map((item, idx) => {
