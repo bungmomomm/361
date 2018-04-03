@@ -19,11 +19,15 @@ const initialState = {
 		sorts: [],
 		products: []
 	},
-	query: null
+	query: null,
+	viewMode: {
+		mode: 2,
+		icon: 'ico_grid-3x3.svg'
+	}
 };
 
 const { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, brandBanner, brandProductsComments,
-	brandProductsLovelist, brandLoadingProductsComments } = createActions(
+	brandProductsLovelist, brandLoadingProductsComments, brandViewMode } = createActions(
 	'BRAND_LIST_UPDATE',
 	'BRAND_LOADING',
 	'BRAND_PRODUCTS',
@@ -31,7 +35,8 @@ const { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, bran
 	'BRAND_BANNER',
 	'BRAND_PRODUCTS_COMMENTS',
 	'BRAND_PRODUCTS_LOVELIST',
-	'BRAND_LOADING_PRODUCTS_COMMENTS'
+	'BRAND_LOADING_PRODUCTS_COMMENTS',
+	'BRAND_VIEW_MODE'
 );
 
 const reducer = handleActions({
@@ -101,7 +106,14 @@ const reducer = handleActions({
 			...state,
 			products_lovelist
 		};
-	}
+	},
+	[brandViewMode](state, { payload: { loading_products, viewMode } }) {
+		return {
+			...state,
+			loading_products: false,
+			viewMode
+		};
+	},
 }, initialState);
 
 export default {
@@ -113,5 +125,6 @@ export default {
 	brandBanner,
 	brandProductsComments,
 	brandProductsLovelist,
-	brandLoadingProductsComments
+	brandLoadingProductsComments,
+	brandViewMode
 };

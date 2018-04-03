@@ -11,8 +11,8 @@
 						&:checked {
 								+div {
 										background: #191919;
-										border: 1px solid #191919;
-										color: #fff;
+										// border: 1px solid #191919; //
+										// color: #fff; //
 								}
 						}
 						&:disabled {
@@ -78,7 +78,7 @@
 						justify-content: flex-start;
 						align-items: flex-start;
 						text-transform: none;
-						border-bottom: 1px solid #D8D8D8;
+						// border-bottom: 1px solid #D8D8D8; //
 				}
 				&:before {
 						content: '';
@@ -107,13 +107,13 @@
 						&:checked {
 								+div {
 										background: #FFFFFF;
-										border: 1px solid #191919;
-										color: #fff;
+										// border: 1px solid #191919; //
+										// color: #fff; //
 										&:before {
 												content: '';
 												position: absolute;
-												top: 3px;
-												left: 3px;
+												top: 8px; // 3px
+												left: -32px; // 3px
 												border-radius: 50%;
 												width: 14px;
 												height: 14px;

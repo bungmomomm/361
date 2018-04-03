@@ -17,7 +17,8 @@ import {
 import {
 	setUserCookie,
 	renderIf,
-	setUserInfoCookie
+	setUserInfoCookie,
+	isFullUrl
 } from '@/utils';
 import styles from '../user.scss';
 import _ from 'lodash';
@@ -64,7 +65,11 @@ class Login extends Component {
 			encEmail: response.userprofile.enc_email
 		};
 		setUserInfoCookie(cookies, JSON.stringify(userInfo));
-		dispatch(new users.afterLogin(cookies.get(userToken)));
+		await dispatch(new users.afterLogin(cookies.get(userToken)));
+		if (isFullUrl(redirectUri)) {
+			top.location.href = redirectUri;
+			return true;
+		}
 		history.push(redirectUri || '/');
 		return response;
 	}
@@ -79,7 +84,11 @@ class Login extends Component {
 		}
 		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
 		setUserCookie(this.props.cookies, response.token, false, userProfile);
-		dispatch(new users.afterLogin(cookies.get(userToken)));
+		await dispatch(new users.afterLogin(cookies.get(userToken)));
+		if (isFullUrl(redirectUri)) {
+			top.location.href = redirectUri;
+			return true;
+		}
 		history.push(redirectUri || '/');
 		return response;
 	}

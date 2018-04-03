@@ -300,7 +300,7 @@ class Cart extends Component {
 				link = (<a href={process.env.CHECKOUT_URL}>{wording}</a>);
 			}
 		} else {
-			link = (<Link to='login?redirect_uri=/cart'>{wording}</Link>);
+			link = (<Link to={`login?redirect_uri=${process.env.CHECKOUT_URL}`}>{wording}</Link>);
 		}
 		return shopBag.total && shopBag.total.count_item !== 0 ? (
 			<div className={styles.paymentLink}>
