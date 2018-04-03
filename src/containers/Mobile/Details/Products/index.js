@@ -143,6 +143,7 @@ class Products extends Component {
 		this.setCarouselSlideIndex = this.setCarouselSlideIndex.bind(this);
 		this.handleShowMoreProductDescription = this.handleShowMoreProductDescription.bind(this);
 		this.handleShowLessProductDescription = this.handleShowLessProductDescription.bind(this);
+		this.renderZoom = this.renderZoom.bind(this);
 
 		this.state = {
 			size: '',
@@ -689,6 +690,47 @@ class Products extends Component {
 		return this.loadingContent;
 	}
 
+	renderZoom() {
+		const { detail } = this.props.product;
+		const { carousel } = this.state;
+		if (_.has(detail, 'images')) {
+			const images = detail.images.map((image) => image.original);
+			const { slideIndex } = carousel;
+
+			return (
+				<div>
+					<Lightbox
+						mainSrc={images[slideIndex]}
+						nextSrc={images[(slideIndex + 1) % images.length]}
+						prevSrc={images[((slideIndex + images.length) - 1) % images.length]}
+						onCloseRequest={(e) => this.closeZoomImage(e)}
+						onMovePrevRequest={() => this.setCarouselSlideIndex(((slideIndex + images.length) - 1) % images.length)}
+						onMoveNextRequest={() => this.setCarouselSlideIndex(((slideIndex + images.length) - 1) % images.length)}
+					/>
+
+					{/* <Header.Modal style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }} {...this.headerZoom} />
+						<Carousel
+							slideIndex={carousel.slideIndex}
+							afterSlide={newSlideIndex => this.setCarouselSlideIndex(newSlideIndex)}
+							wrapAround={this.slideWrapAround}
+						>
+							{
+								detail.images.map((image, idx) => {
+									return (
+										<div tabIndex='0' role='button' onClick={this.closeZoomImage} key={idx}>
+											<Image lazyload src={image.original} alt='product' />
+										</div>
+									);
+								})
+							}
+						</Carousel> */}
+				</div>
+			);
+		}
+		return '';
+	}
+
+
 	render() {
 		try {
 
@@ -712,40 +754,40 @@ class Products extends Component {
 				fullProductDescriptionButtonText = 'Hide';
 			}
 
-			if (status.isZoomed && _.has(detail, 'images')) {
-				const images = detail.images.map((image) => image.original);
-				const { slideIndex } = carousel;
+			// if (status.isZoomed && _.has(detail, 'images')) {
+			// 	const images = detail.images.map((image) => image.original);
+			// 	const { slideIndex } = carousel;
 
-				return (
-					<div>
-						<Lightbox
-							mainSrc={images[slideIndex]}
-							nextSrc={images[(slideIndex + 1) % images.length]}
-							prevSrc={images[((slideIndex + images.length) - 1) % images.length]}
-							onCloseRequest={(e) => this.closeZoomImage(e)}
-							onMovePrevRequest={() => this.setCarouselSlideIndex(((slideIndex + images.length) - 1) % images.length)}
-							onMoveNextRequest={() => this.setCarouselSlideIndex(((slideIndex + images.length) - 1) % images.length)}
-						/>
+			// 	return (
+			// 		<div>
+			// 			<Lightbox
+			// 				mainSrc={images[slideIndex]}
+			// 				nextSrc={images[(slideIndex + 1) % images.length]}
+			// 				prevSrc={images[((slideIndex + images.length) - 1) % images.length]}
+			// 				onCloseRequest={(e) => this.closeZoomImage(e)}
+			// 				onMovePrevRequest={() => this.setCarouselSlideIndex(((slideIndex + images.length) - 1) % images.length)}
+			// 				onMoveNextRequest={() => this.setCarouselSlideIndex(((slideIndex + images.length) - 1) % images.length)}
+			// 			/>
 
-						{/* <Header.Modal style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }} {...this.headerZoom} />
-						<Carousel
-							slideIndex={carousel.slideIndex}
-							afterSlide={newSlideIndex => this.setCarouselSlideIndex(newSlideIndex)}
-							wrapAround={this.slideWrapAround}
-						>
-							{
-								detail.images.map((image, idx) => {
-									return (
-										<div tabIndex='0' role='button' onClick={this.closeZoomImage} key={idx}>
-											<Image lazyload src={image.original} alt='product' />
-										</div>
-									);
-								})
-							}
-						</Carousel> */}
-					</div>
-				);
-			}
+			// 			{/* <Header.Modal style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }} {...this.headerZoom} />
+			// 			<Carousel
+			// 				slideIndex={carousel.slideIndex}
+			// 				afterSlide={newSlideIndex => this.setCarouselSlideIndex(newSlideIndex)}
+			// 				wrapAround={this.slideWrapAround}
+			// 			>
+			// 				{
+			// 					detail.images.map((image, idx) => {
+			// 						return (
+			// 							<div tabIndex='0' role='button' onClick={this.closeZoomImage} key={idx}>
+			// 								<Image lazyload src={image.original} alt='product' />
+			// 							</div>
+			// 						);
+			// 					})
+			// 				}
+			// 			</Carousel> */}
+			// 		</div>
+			// 	);
+			// }
 
 			const cardProductView = !_.isEmpty(cardProduct) && _.has(cardProduct, 'images') && (
 				<div ref={(n) => { this.carouselEL = n; }}>
@@ -854,6 +896,7 @@ class Products extends Component {
 			return (
 				<div>
 					<Page color='white'>
+						{status.isZoomed && this.renderZoom()}
 						<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
 							{product.loading ? this.loadingContent : (
 								<div>
