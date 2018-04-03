@@ -396,6 +396,19 @@ class Address extends Component {
 								required
 								value={this.state.edit.address || ''}
 								onChange={this.onTextChange}
+								style={{
+									background: 'transparent',
+									paddingLeft: '0px',
+									paddingRight: '0px',
+									borderRadius: '0px',
+									fontSize: '13px',
+									lineHeight: '20px',
+									overflowWrap: 'break-word',
+									outline: '0px',
+									border: '0px',
+									borderBottom: '1px solid #D8D8D8',
+									height: '60px'
+								}}
 							/>
 						</div>
 					</Level>
@@ -460,4 +473,4 @@ const doAfterAnonymous = async (props) => {
 	return dispatch(actions.mutateState({ edit: edit[0] }));
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(Address, doAfterAnonymous)));
+export default withCookies(connect(mapStateToProps)(Shared(Address, doAfterAnonymous, false)));
