@@ -16,7 +16,6 @@ class ProductModal extends Component {
 	}
 
 	render() {
-		console.log('render modal');
 		const { showConfirmDelete, showModalSelectSize, forceLogin, showOvoInfo, variants, ovoInfo, selectedSize } = this.props;
 		return (
 			<div>

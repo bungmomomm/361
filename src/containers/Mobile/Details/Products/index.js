@@ -192,7 +192,7 @@ class Products extends Component {
 		}
 
 		// updates states
-		this.setState({ status, cardProduct, selectedVariant, size });
+		this.setState({ status, cardProduct, selectedVariant, size, outOfStock });
 		this.handleScroll();
 	}
 
