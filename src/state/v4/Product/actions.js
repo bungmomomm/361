@@ -307,12 +307,6 @@ const productLoadingAction = (value) => (dispatch) => {
 	dispatch(productLoading({ loading: value }));
 };
 
-const encodeSpecialChar = (html) => {
-	const txt = document.createElement('textarea');
-	txt.innerHTML = html;
-	return txt.value;
-};
-
 export default {
 	productDetailAction,
 	productSocialSummaryAction,
@@ -320,6 +314,5 @@ export default {
 	productStoreAction,
 	getProductCardData,
 	allProductReviewsAction,
-	productLoadingAction,
-	encodeSpecialChar
+	productLoadingAction
 };
