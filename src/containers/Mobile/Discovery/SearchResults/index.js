@@ -62,7 +62,11 @@ class SearchResults extends Component {
 			isFooterShow: false
 		};
 
-		this.loadingView = <Spinner />;
+		this.loadingView = (
+			<div style={{ margin: '20% auto 20% auto' }}>
+				<Spinner />
+			</div>
+		);
 		this.renderForeverBanner = (tprops) => {
 			const { shared, dispatch } = tprops;
 			return <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />;
@@ -75,6 +79,11 @@ class SearchResults extends Component {
 				query: nextProps.query
 			});
 		}
+	}
+
+	componentWillUnmount() {
+		const { dispatch } = this.props;
+		dispatch(searchActions.loadingAction(true));
 	}
 
 	async onApply(e, fq, closeFilter) {
@@ -171,12 +180,13 @@ class SearchResults extends Component {
 
 	searchNotFound() {
 		const { promoData } = this.props;
-
+		
 		return (
 			<SearchNotFound
 				keyword={this.getKeyword()}
 				data={promoData}
 				renderForeverBanner={() => this.renderForeverBanner(this.props)}
+				forceLoginNow={() => this.forceLoginNow()}
 			/>
 		);
 	}
@@ -343,6 +353,17 @@ const mapStateToProps = (state) => {
 	const { comments, lovelist, searchResults } = state;
 	searchResults.searchData.products = Discovery.mapProducts(searchResults.searchData.products, comments, lovelist);
 	const isFiltered = Filter.utils.isFiltered(searchResults.searchData.facets);
+
+	const getRecommendationData = _.find(searchResults.promoData, { type: 'recommended' }) || false;
+	if (getRecommendationData) {
+		state.searchResults.promoData = {
+			...searchResults.promoData,
+			recommendationData: {
+				title: getRecommendationData.title,
+				products: Discovery.mapPromoProducts(getRecommendationData.data, lovelist)
+			}
+		};
+	}
 
 	return {
 		...state,

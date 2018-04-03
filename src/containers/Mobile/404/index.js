@@ -1,16 +1,21 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import { withCookies } from 'react-cookie';
-import { actions } from '@/state/v4/SearchResults';
+
 import Shared from '@/containers/Mobile/Shared';
-import { Header, Page, Navigation, Svg, Grid, Card, Spinner, Level, Carousel } from '@/components/mobile';
-import styles from './search.scss';
-import { connect } from 'react-redux';
-import { urlBuilder } from '@/utils';
-import cookiesLabel from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
+import { GridView } from '@/containers/Mobile/Discovery/View';
+
+import { Header, Page, Navigation, Svg, Spinner, Level } from '@/components/mobile';
+
+import { actions } from '@/state/v4/SearchResults';
+
+import Discovery from '../Discovery/Utils';
+import styles from './search.scss';
+import cookiesLabel from '@/data/cookiesLabel';
 
 @handler
 class Page404 extends Component {
@@ -25,6 +30,11 @@ class Page404 extends Component {
 		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true';
 	}
 
+	forceLoginNow() {
+		const { history, location } = this.props;
+		history.push(`/login?redirect_uri=${encodeURIComponent(location.pathname + location.search)}`);
+	}
+
 	renderBanner() {
 		const { promoData } = this.props;
 		const promoBanner = promoData.filter(e => e.type === 'promo_banner')[0].data;
@@ -34,38 +44,22 @@ class Page404 extends Component {
 	}
 
 	renderRecomendation() {
-		const { promoData } = this.props;
-		const recommendationData = promoData.filter(e => e.type === 'recommended')[0].data;
+		const { recommendationData } = this.props;
 		return recommendationData && (
 			<div className='margin--large-v margin--none-t'>
 				<Level>
-					<Level.Left><strong className='font-medium'>Produk Rekomendasi</strong></Level.Left>
+					<Level.Left><strong className='font-medium'>{recommendationData.title || 'Produk Rekomendasi'}</strong></Level.Left>
 					<Level.Right>
 						<Link to='/promo/recommended_products' className='text-muted font-small'>
 							LIHAT SEMUA<Svg src='ico_arrow_right_small.svg' />
 						</Link>
 					</Level.Right>
 				</Level>
-				<Grid split={1}>
-					<Carousel slidesToShow={2}>
-						{
-							_.map(recommendationData, (product, index) => {
-								const linkToPdp = urlBuilder.buildPdp(product.product_title, product.product_id);
-								return (
-									<Card.CatalogGrid
-										key={index}
-										style={{ width: '100%' }}
-										images={product.images}
-										productTitle={product.product_title}
-										brandName={product.brand.name}
-										pricing={product.pricing}
-										linkToPdp={linkToPdp}
-									/>
-								);
-							})
-						}
-					</Carousel>
-				</Grid>
+				<GridView
+					carousel
+					forceLoginNow={() => this.forceLoginNow()}
+					products={recommendationData.products}
+				/>
 			</div>
 		);
 	}
@@ -100,7 +94,7 @@ class Page404 extends Component {
 									Periksa kembali link yang kamu tuju.
 								</div>
 
-								{this.renderBanner() }
+								{this.renderBanner()}
 								{this.renderRecomendation()}
 							</div>
 						)
@@ -114,10 +108,21 @@ class Page404 extends Component {
 }
 
 const mapStateToProps = (state) => {
+	const { lovelist, searchResults } = state;
+	const getRecommendationData = _.find(searchResults.promoData, { type: 'recommended' }) || false;
+	let recommendationData = null;
+	if (getRecommendationData) {
+		recommendationData = {
+			title: getRecommendationData.title,
+			products: Discovery.mapPromoProducts(getRecommendationData.data, lovelist)
+		};
+	}
+
 	return {
 		home: state.home,
 		shared: state.shared,
 		promoData: state.searchResults.promoData,
+		recommendationData
 	};
 };
 

@@ -259,4 +259,4 @@ const doAfterAnonymous = async (props) => {
 	await dispatch(actions.getAddress(cookies.get(userToken)));
 };
 
-export default withCookies(connect(mapStateToProps)(Shared(Address, doAfterAnonymous)));
+export default withCookies(connect(mapStateToProps)(Shared(Address, doAfterAnonymous, false)));

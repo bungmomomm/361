@@ -102,8 +102,6 @@ const promoAction = (token) => async (dispatch, getState) => {
 		promoData
 	}));
 
-	console.log(promoData);
-
 	return Promise.resolve(promoData);
 };
 
@@ -128,8 +126,13 @@ const viewModeAction = (mode) => (dispatch) => {
 	}));
 };
 
+const loadingAction = (value) => (dispatch) => {
+	dispatch(searchLoading({ isLoading: value }));
+};
+
 export default {
 	searchAction,
 	promoAction,
-	viewModeAction
+	viewModeAction,
+	loadingAction
 };
