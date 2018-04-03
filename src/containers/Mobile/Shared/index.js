@@ -127,7 +127,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 		}
 
 		async exeCall(token = null) {
-			const { cookies, shared, dispatch, users } = this.props;
+			const { cookies, dispatch, users } = this.props;
 			const { login, provider } = this.state;
 			let tokenBearer = token === null ? cookies.get(userToken) : token.token;
 			const rfT = token === null ? cookies.get(userRfToken) : token.refresh_token;
