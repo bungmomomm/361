@@ -250,18 +250,13 @@ class Products extends Component {
 	}
 
 	resetState() {
-		let { cardProduct, selectedVariant, size, outOfStock } = this.state;
 		const { status, carousel } = this.state;
-		selectedVariant = {};
-		cardProduct = {};
-		outOfStock = false;
-		size = '';
 		status.showFullProductDescription = false;
 		status.showScrollInfomation = false;
 		status.hasVariantSize = false;
 		status.isLoved = false;
 		carousel.slideIndex = 0;
-		this.setState({ status, selectedVariant, size, outOfStock, cardProduct, carousel });
+		this.setState({ status, selectedVariant: {}, size: '', outOfStock: false, cardProduct: {}, carousel });
 		window.scroll(0, 0);
 	}
 
