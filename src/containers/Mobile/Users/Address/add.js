@@ -13,8 +13,6 @@ import Switch from 'react-switch';
 import handler from '@/containers/Mobile/Shared/handler';
 import LocationPicker from 'react-location-picker';
 
-/* Default position */
-
 @handler
 class Address extends Component {
 
@@ -431,8 +429,8 @@ class Address extends Component {
 					{this.state.map.display && (
 						<Level className='bg--white flex-column'>
 							<LocationPicker
-								containerElement={ <div style={{ height: '100%'}} /> }
-								mapElement={ <div style={{ height: `${window.innerHeight - 60}px` }} /> }
+								containerElement={<div style={{ height: '100%'}} />}
+								mapElement={<div style={{ height: `${window.innerHeight - 60}px` }} />}
 								defaultPosition={this.state.map}
 								zoom={7}
 								onChange={this.handleLocationChange}

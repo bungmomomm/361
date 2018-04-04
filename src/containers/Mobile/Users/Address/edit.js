@@ -510,8 +510,8 @@ class Address extends Component {
 					{this.state.map.display && (
 						<Level className='bg--white flex-column'>
 							<LocationPicker
-								containerElement={ <div style={{ height: '100%'}} /> }
-								mapElement={ <div style={{ height: `${window.innerHeight - 60}px` }} /> }
+								containerElement={<div style={{ height: '100%'}} />}
+								mapElement={<div style={{ height: `${window.innerHeight - 60}px` }} />}
 								defaultPosition={this.state.map}
 								zoom={lat !== -6.24800035920893 && lng !== 106.81144165039063 ? 16 : 7}
 								onChange={this.handleLocationChange}
