@@ -113,7 +113,6 @@ class Products extends Component {
 				slideIndex: 0
 			},
 			selectedVariant: {},
-			btnBeliLabel: 'BELI AJA',
 			outOfStock: false
 		};
 
@@ -125,10 +124,10 @@ class Products extends Component {
 	}
 
 	componentWillMount() {
-		window.scroll(0, 0);
 		const { status } = this.state;
 		status.showScrollInfomation = false;
 		this.setState({ status });
+		window.scroll(0, 0);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -140,10 +139,7 @@ class Products extends Component {
 		status.loading = product.loading;
 		if ((_.toInteger(this.props.match.params.id) !== _.toInteger(nextProps.match.params.id)) ||
 			(this.props.match.url !== nextProps.match.url)) {
-			selectedVariant = {};
-			cardProduct = {};
-			size = '';
-			window.scroll(0, 0);
+			this.resetState();
 			this.updateCard = true;
 			doAfterAnonymous(nextProps);
 		}
@@ -251,6 +247,22 @@ class Products extends Component {
 
 		if (slideIndex === 0) return (images.length - 1);
 		return (slideIndex - 1);
+	}
+
+	resetState() {
+		let { cardProduct, selectedVariant, size, outOfStock } = this.state;
+		const { status, carousel } = this.state;
+		selectedVariant = {};
+		cardProduct = {};
+		outOfStock = false;
+		size = '';
+		status.showFullProductDescription = false;
+		status.showScrollInfomation = false;
+		status.hasVariantSize = false;
+		status.isLoved = false;
+		carousel.slideIndex = 0;
+		this.setState({ status, selectedVariant, size, outOfStock, cardProduct, carousel });
+		window.scroll(0, 0);
 	}
 
 	closeZoomImage(e) {
@@ -439,16 +451,18 @@ class Products extends Component {
 		}
 	}
 
-	handleShowLessProductDescription() {
-		this.setState({
-			showFullProductDescription: false
-		});
+	toggleDescription(toggle = true) {
+		const { status } = this.state;
+		status.showFullProductDescription = toggle;
+		this.setState({ status });		
 	}
 
-	handleShowMoreProductDescription() {
-		this.setState({
-			showFullProductDescription: true
-		});
+	handleShowLessProductDescription = () => {
+		this.toggleDescription(false);
+	}
+
+	handleShowMoreProductDescription = () => {
+		this.toggleDescription();
 	}
 
 	loginNow(e) {
@@ -615,7 +629,7 @@ class Products extends Component {
 	}
 
 	renderStickyAction() {
-		const { cardProduct, status, btnBeliLabel, outOfStock } = this.state;
+		const { cardProduct, status, outOfStock } = this.state;
 		const btnDisabled = (status.btnBeliDisabled || status.loading || status.btnBeliLoading || outOfStock);
 
 		if (!_.isEmpty(cardProduct) && _.has(cardProduct, 'pricing')) {
@@ -638,7 +652,7 @@ class Products extends Component {
 							</div>
 						</div>
 						<div>
-							<Button color='secondary' disabled={btnDisabled} loading={status.btnBeliLoading} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
+							<Button color='secondary' disabled={btnDisabled} loading={status.btnBeliLoading} size='medium' onClick={this.handleBtnBeliClicked} >BELI AJA</Button>
 						</div>
 					</div>
 				</div>
@@ -675,7 +689,7 @@ class Products extends Component {
 			const { match, product } = this.props;
 			const { detail, socialSummary, promo, loading, store } = product;
 			const { seller, comments, reviews } = socialSummary;
-			const { cardProduct, status, carousel, selectedVariant, showFullProductDescription, outOfStock, size } = this.state;
+			const { cardProduct, status, carousel, selectedVariant, outOfStock, size } = this.state;
 			const { id } = detail;
 
 			const buttonProductDescriptionAttribute = {
@@ -685,7 +699,7 @@ class Products extends Component {
 			let fullProductDescriptionButtonText = 'more';
 			let classNameProductDescription = classNames('padding--medium-h', styles.textOnlyShowTwoLines);
 
-			if (showFullProductDescription === true) {
+			if (status.showFullProductDescription === true) {
 				classNameProductDescription = classNames('padding--medium-h');
 				buttonProductDescriptionAttribute.onClick = this.handleShowLessProductDescription;
 				fullProductDescriptionButtonText = 'Hide';
@@ -694,7 +708,7 @@ class Products extends Component {
 			const productDetailView = (!_.isEmpty(cardProduct.formattedDescription)) && (
 				<div>
 					<div className='font-medium margin--medium-v padding--medium-h'><strong>Details</strong></div>
-					<div className='wysiwyg-content'>
+					<div className='wysiwyg-content can-copy'>
 						<div className={classNameProductDescription} style={{ wordWrap: 'break-word' }}>
 							{<div dangerouslySetInnerHTML={{ __html: cardProduct.formattedDescription }} />}
 							{!_.isEmpty(cardProduct.specs) && (
