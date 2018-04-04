@@ -148,7 +148,7 @@ const initHashtags = (token, hash) => async (dispatch, getState) => {
 	}));
 	if (errInit) {
 		dispatch(actions.itemsHasError({ hasError: errInit }));
-		return Promise.reject(__x(errInit));
+		return Promise.reject(__x(new Error('Maaf, gagal memuat data.')));
 	}
 	dispatch(actions.itemsActiveHashtag({
 		active: {

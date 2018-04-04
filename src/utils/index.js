@@ -55,6 +55,22 @@ const getSessionID = (cname) => {
 	return cookieWithValue !== undefined ? cookieWithValue.replace(name, '') : Date.now();
 };
 
+const decodeHtmlSpecialChar = (html) => {
+	const txt = document.createElement('textarea');
+	txt.innerHTML = html;
+	return txt.value;
+};
+
+const hastagLinkCreator = (text) => {
+	const tobeRendered = decodeHtmlSpecialChar(text);
+	const urlRegex = /(#[^\s]+)/g;
+	return tobeRendered.replace(urlRegex, (url) => {
+		const hashText = url.replace(/<(.|\n)*?>/g, '');
+		const hashlink = urlBuilder.setName(hashText).buildSearchByKeyword();
+		return `<a href="${hashlink + hashText.replace('#', '%23')}">${hashText}</a>`;
+	});
+};
+
 export default {
 	getDeviceID,
 	getClientID,
@@ -87,5 +103,7 @@ export default {
 	setReferrenceCookie,
 	isFullUrl,
 	initUTMProcess,
-	checkImage
+	checkImage,
+	decodeHtmlSpecialChar,
+	hastagLinkCreator
 };

@@ -87,9 +87,11 @@ class Address extends Component {
 				</Level>
 				<Level className='bg--white margin--medium-b flex-column'>
 					<div className={styles.fullName}><strong>{options.fullname}</strong></div>
-					<div><p>{options.address}, {options.province}, {options.city}, {options.district}, {options.zipcode}</p></div>
-					<div><p>{options.phone}</p></div>
-					<div className={styles.locationMarked}>{(options.is_supported_pin_point === 1) ? options.placeHasBeenMarkedContent : null }</div>
+					<div><p style={{ color: '#888888' }}>{options.address}</p></div>
+					<div><p style={{ color: '#888888' }}>{options.province}, {options.city}, {options.district}, {options.zipcode}</p></div>
+					<div><p style={{ color: '#888888' }}>{options.zipcode} Indonesia</p></div>
+					<div><p style={{ color: '#888888' }}>{options.phone}</p></div>
+					<div className={styles.locationMarked}>{(parseFloat(options.latitude) && parseFloat(options.longitude)) ? options.placeHasBeenMarkedContent : null }</div>
 				</Level>
 			</div>
 		);
@@ -161,16 +163,8 @@ class Address extends Component {
 						defaultAddress.map((v, k) => {
 							return this.listAddressMaker({
 								key: k,
-								address_label: v.address_label,
-								id: v.id,
-								fullname: v.fullname,
-								address: v.address,
-								province: v.province,
-								city: v.city,
-								district: v.district,
-								zipcode: v.zipcode,
+								...v,
 								default: v.fg_default,
-								is_supported_pin_point: v.is_supported_pin_point,
 								placeHasBeenMarkedContent
 							});
 						})
@@ -180,16 +174,8 @@ class Address extends Component {
 							if (v.fg_default === 0) {
 								return this.listAddressMaker({
 									key: k,
-									address_label: v.address_label,
-									id: v.id,
-									fullname: v.fullname,
-									address: v.address,
-									province: v.province,
-									city: v.city,
-									district: v.district,
-									zipcode: v.zipcode,
+									...v,
 									default: v.fg_default,
-									is_supported_pin_point: v.is_supported_pin_point,
 									placeHasBeenMarkedContent
 								});
 							}
@@ -210,6 +196,7 @@ class Address extends Component {
 										Ubah Alamat
 									</Link>
 								</div>
+								<Button className='padding--small' style={{ color: '#ED1C24' }} onClick={() => { this.setState({ showConfirmDelete: true }); }}>Hapus Alamat</Button>
 								<Button className='padding--small' onClick={this.hideAddressModal}>Batal</Button>
 							</Level.Item>
 						</Level>
