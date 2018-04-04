@@ -6,7 +6,7 @@ const C = {
 	],
 	SEGMENT_DEFAULT_SELECTED: { id: 1, key: 'wanita', title: 'Wanita' },
 	FILTER_KEY: ['0-9', 'A', ' B', ' C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
-	DIGITAL_URL: 'https://digital.mataharimall.com/',
+	DIGITAL_URL: process.env.DIGITAL_URL,
 	COOKIE_USER_TOKEN: 'user.token',
 	COOKIE_USER_RF_TOKEN: 'user.rf.token',
 	COOKIE_USER_SEARCH_LIST: 'user.search.list',

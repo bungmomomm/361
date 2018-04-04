@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import _ from 'lodash';
 import queryString from 'query-string';
-
+import CONST from '@/constants';
 import Shared from '@/containers/Mobile/Shared';
 import Login from './Login';
 import Register from './Register';
@@ -37,8 +37,17 @@ class Users extends Component {
 	}
 
 	componentDidMount() {
+		
+		const { redirectUri } = this.state;
+		const { history } = this.props;
+		const digitalUrl = CONST.DIGITAL_URL;
+		
+		if (redirectUri.indexOf('mstgdigital') > -1) {
+			history.replace(`${digitalUrl}/checkout/payment`);
+		}
+		
 		if (this.props.cookies.get(isLogin) === 'true') {
-			this.props.history.replace('/profile');
+			history.replace('/profile');
 		}
 	}
 
