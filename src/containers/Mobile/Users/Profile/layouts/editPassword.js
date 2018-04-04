@@ -77,11 +77,11 @@ class EditPassword extends Component {
 			}
 
 			let validOldPass = false;
-			if (value !== '' && value.length > 6) {
+			if (value !== '' && value.length >= 6) {
 				validOldPass = true;
 			}
 
-			const oldPassHint = value.length > 0 && value.length <= 6 ? 'Password harus lebih dari 6 karakter' : '';
+			const oldPassHint = value.length > 0 && value.length < 6 ? 'Password minimal 6 karakter' : '';
 
 			this.setState({ validOldPass, oldPassHint });
 		} else if (type === this.NEW_PWD_FIELD) {
@@ -92,13 +92,13 @@ class EditPassword extends Component {
 			}
 
 			let validNewPass = false;
-			if (value !== '' && value.length > 6) {
+			if (value !== '' && value.length >= 6) {
 				validNewPass = true;
 			}
 
 			let newPassHint = '';
-			if (value.length > 0 && value.length <= 6) {
-				newPassHint = 'Password baru harus lebih dari 6 karakter';
+			if (value.length > 0 && value.length < 6) {
+				newPassHint = 'Password minimal 6 karakter';
 			}
 
 			let validConfPass = this.state.validConfPass;
@@ -120,13 +120,13 @@ class EditPassword extends Component {
 			}
 
 			let validConfPass = false;
-			if (value !== '' && value.length > 6 && base64.encode(value) === this.state[this.NEW_PWD_FIELD]) {
+			if (value !== '' && value.length >= 6 && base64.encode(value) === this.state[this.NEW_PWD_FIELD]) {
 				validConfPass = true;
 			}
 
 			let confPassHint = '';
-			if (value.length > 0 && value.length <= 6) {
-				confPassHint = 'Konfirmasi password harus lebih dari 6 karakter';
+			if (value.length > 0 && value.length < 6) {
+				confPassHint = 'Konfirmasi password minimal 6 karakter';
 			} else if (value.length > 0 && base64.encode(value) !== this.state[this.NEW_PWD_FIELD]) {
 				confPassHint = 'Konfirmasi password tidak sesuai dengan password baru';
 			}

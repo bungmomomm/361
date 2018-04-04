@@ -65,7 +65,11 @@ class UserProfileEdit extends Component {
 		this.HP_EMAIL_FIELD = CONST.USER_PROFILE_FIELD.hpEmail;
 		this.OTP_FIELD = CONST.USER_PROFILE_FIELD.otp;
 
-		this.loadingView = <Spinner />;
+		this.loadingView = (
+			<div style={{ margin: '20px auto 20px auto' }}>
+				<Spinner />
+			</div>
+		);
 		this.editIcon = <Svg src='ico_edit.svg' />;
 		this.recaptchaInstance = null;
 
