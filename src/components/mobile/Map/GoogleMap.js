@@ -21,8 +21,11 @@ class Map extends Component {
 		this.props = props;
 
 		this.state = {
-			bounds: null,
 			center: {
+				lat: -6.24800035920893,
+				lng: 106.81144165039063
+			},
+			mark: {
 				lat: -6.24800035920893,
 				lng: 106.81144165039063
 			},
@@ -34,6 +37,10 @@ class Map extends Component {
 		if (this.state.center.lat !== nextProps.position.lat || this.state.center.lng !== nextProps.position.lng) {
 			this.setState({
 				center: {
+					lat: nextProps.position.lat,
+					lng: nextProps.position.lng
+				},
+				mark: {
 					lat: nextProps.position.lat,
 					lng: nextProps.position.lng
 				}
@@ -59,13 +66,14 @@ class Map extends Component {
 
 		this.setState({
 			center: nextCenter,
+			mark: nextCenter,
 			markers: nextMarkers,
 		});
-		this.map.fitBounds(bounds);
+		// this.map.fitBounds(bounds);
 	};
 
 	render() {
-		const { center } = this.state;
+		const { center, markers, mark } = this.state;
 		const {
 			defaultZoom,
 			handleMarkerDragEnd,
@@ -76,7 +84,7 @@ class Map extends Component {
 
 		const circle = (radius !== -1) ?
 			(<Circle
-				center={center}
+				center={mark}
 				radius={radius}
 				options={circleOptions}
 			/>) : null;
@@ -87,16 +95,9 @@ class Map extends Component {
 				onZoomChanged={onZoomChanged}
 				defaultZoom={defaultZoom}
 				center={center}
-				onBoundsChanged={() => {
-					this.setState({
-						bounds: this.map.getBounds(),
-						center: this.map.getCenter()
-					});
-				}}
 			>
 				<SearchBox
 					ref={(r) => { this.searchBox = r; }}
-					bounds={this.state.bounds}
 					controlPosition={google.maps.ControlPosition.TOP_LEFT}
 					onPlacesChanged={this.onPlacesChanged}
 				>
@@ -122,13 +123,18 @@ class Map extends Component {
 
 				<Marker
 					draggable
-					position={center}
-					onDragEnd={handleMarkerDragEnd}
+					position={markers.length ? markers[0].position : mark}
+					onDragEnd={(v) => {
+						if (typeof handleMarkerDragEnd === 'function') handleMarkerDragEnd(v);
+						this.setState({
+							mark: v.latLng
+						});
+					}}
 				/>
 				{circle}
 			</GoogleMap>
 		);
-	}
+	};
 
 }
 
