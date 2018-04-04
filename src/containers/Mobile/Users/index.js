@@ -42,7 +42,7 @@ class Users extends Component {
 		const { history } = this.props;
 		const digitalUrl = CONST.DIGITAL_URL;
 		
-		if (redirectUri.indexOf('mstgdigital') > -1) {
+		if (redirectUri === digitalUrl) {
 			history.replace(`${digitalUrl}/checkout/payment`);
 		}
 		
