@@ -112,14 +112,13 @@ class Map extends Component {
 							marginTop: '10px',
 							padding: '0 12px',
 							borderRadius: '3px',
-							boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
+							boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
 							fontSize: '14px',
 							outline: 'none',
 							textOverflow: 'ellipses',
 						}}
 					/>
 				</SearchBox>
-
 
 				<Marker
 					draggable
