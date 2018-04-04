@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
-
+import _ from 'lodash';
 import Image from '../Image';
 import Svg from '../Svg';
 import Button from '../Button';
@@ -61,6 +61,19 @@ class CatalogGrid extends PureComponent {
 		}
 	}
 
+	makeRectangle = () => {
+		const rectContainer = _.chain(window)
+			.get('innerWidth')
+			.defaultTo(320) // minimum mobilebrowser
+			.divide(2)
+			.subtract(21) // threshold padding
+			.value();
+		return {
+			width: `${rectContainer}px`,
+			height: `${rectContainer}px`
+		};
+	}
+
 	render() {
 		const {
 			className,
@@ -111,8 +124,8 @@ class CatalogGrid extends PureComponent {
 
 		return (
 			<div className={createClassName} {...props} data-loved={lovelistStatus}>
-				<Link to={linkToPdp || '/'} className={styles.imgContainer}>
-					<div className={`${styles.imgWrapper} placeholder-image`} tabIndex='0' role='button' onClick={productOnClick || (() => true)}>
+				<Link to={linkToPdp || '/'} style={this.makeRectangle()} className={styles.imgContainer}>
+					<div className={`${styles.imgWrapper} placeholder-image`} style={this.makeRectangle()} tabIndex='0' role='button' onClick={productOnClick || (() => true)}>
 						<Image src={images[0].thumbnail} lazyload alt={productTitle} />
 					</div>
 				</Link>
