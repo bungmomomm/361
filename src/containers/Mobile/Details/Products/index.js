@@ -360,7 +360,6 @@ class Products extends Component {
 		});
 
 		handler.then((res) => {
-			this.animateAddtoCart();
 			status.pendingAddProduct = false;
 			status.showModalSelectSize = false;
 			this.setState({ status });
