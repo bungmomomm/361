@@ -31,6 +31,7 @@ import SmartBanner from './SmartBanner';
 import AnimationLovelist from './Animation/Lovelist';
 import AnimationAddToCart from './Animation/addToCart';
 import SEO from './SEO';
+import Map from './Map';
 
 // Alphabetically sort (^_^)
 export default {
@@ -66,5 +67,6 @@ export default {
 	SmartBanner,
 	AnimationLovelist,
 	AnimationAddToCart,
-	SEO
+	SEO,
+	Map
 };
