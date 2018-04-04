@@ -180,8 +180,6 @@ class Address extends Component {
 					});
 				}
 			);
-
-			return null;
 		}
 
 		this.setState({

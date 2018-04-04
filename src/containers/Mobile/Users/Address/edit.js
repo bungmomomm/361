@@ -215,8 +215,6 @@ class Address extends Component {
 					lng: parseFloat(longitude)
 				}
 			});
-
-			return null;
 		}
 
 		if (navigator) {
@@ -241,8 +239,6 @@ class Address extends Component {
 					});
 				}
 			);
-
-			return null;
 		}
 
 		this.setState({
