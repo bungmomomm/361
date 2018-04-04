@@ -141,15 +141,7 @@ class HashtagsDetails extends Component {
 
 		const HeaderPage = {
 			left: (
-				<button
-					onClick={() => {
-						if (window.surfs[0]) {
-							history.push(`${window.surfs[0].pathname}${window.surfs[0].hash}${window.surfs[0].search}`);
-						} else {
-							history.goBack();
-						}
-					}}
-				>
+				<button onClick={history.goBack}>
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</button>
 			),
@@ -159,7 +151,7 @@ class HashtagsDetails extends Component {
 
 		return (
 			<div>
-				<Page color='white' ref={(r) => { this.mainpage = r; }}>
+				<Page color='white'>
 					{ent.data.post.embed_url && (
 						<div
 							style={{
