@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import Shared from '@/containers/Mobile/Shared';
-import { Page, Svg, Button, Header, Select, Level } from '@/components/mobile';
+import { Page, Svg, Button, Header, Select, Level, Map } from '@/components/mobile';
 import { actions } from '@/state/v4/Address';
 import styles from './style.scss';
 import { Form, Input } from '@/components/mobile/Formsy';
@@ -11,7 +11,6 @@ import { Promise } from 'es6-promise';
 import { userToken, isLogin } from '@/data/cookiesLabel';
 import Switch from 'react-switch';
 import handler from '@/containers/Mobile/Shared/handler';
-import LocationPicker from 'react-location-picker';
 
 @handler
 class Address extends Component {
@@ -180,6 +179,8 @@ class Address extends Component {
 					});
 				}
 			);
+
+			return false;
 		}
 
 		this.setState({
@@ -442,7 +443,7 @@ class Address extends Component {
 
 					{this.state.map.display && (
 						<Level className='bg--white flex-column' style={{ padding: '0px' }}>
-							<LocationPicker
+							<Map
 								containerElement={<div style={{ height: '100%' }} />}
 								mapElement={<div style={{ height: `${window.innerHeight - 60}px` }} />}
 								defaultPosition={this.state.map}

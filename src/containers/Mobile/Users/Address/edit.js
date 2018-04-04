@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import Shared from '@/containers/Mobile/Shared';
-import { Page, Svg, Button, Header, Select, Level } from '@/components/mobile';
+import { Page, Svg, Button, Header, Select, Level, Map } from '@/components/mobile';
 import { actions } from '@/state/v4/Address';
 import styles from './style.scss';
 import { Form, Input } from '@/components/mobile/Formsy';
@@ -12,7 +12,6 @@ import _ from 'lodash';
 import { isLogin, userToken } from '@/data/cookiesLabel';
 import Switch from 'react-switch';
 import handler from '@/containers/Mobile/Shared/handler';
-import LocationPicker from 'react-location-picker';
 
 @handler
 class Address extends Component {
@@ -68,7 +67,12 @@ class Address extends Component {
 						city: selected.city.length ? `${selected.city[0].province_id}_${selected.city[0].city_id}` : '',
 						district: selected.district.length ? selected.district[0].id : '',
 					},
-					default: edit.fg_default === 1
+					default: edit.fg_default === 1,
+					map: {
+						...this.state.map,
+						lat: parseFloat(edit.latitude),
+						lng: parseFloat(edit.longitude)
+					}
 				});
 
 			})();
@@ -210,11 +214,11 @@ class Address extends Component {
 			this.setState({
 				map: {
 					...this.state.map,
-					display: !this.state.map.display,
-					lat: parseFloat(latitude),
-					lng: parseFloat(longitude)
+					display: !this.state.map.display
 				}
 			});
+
+			return false;
 		}
 
 		if (navigator) {
@@ -513,7 +517,7 @@ class Address extends Component {
 
 					{this.state.map.display && (
 						<Level className='bg--white flex-column' style={{ padding: '0px' }}>
-							<LocationPicker
+							<Map
 								containerElement={<div style={{ height: '100%' }} />}
 								mapElement={<div style={{ height: `${window.innerHeight - 60}px` }} />}
 								defaultPosition={this.state.map}
