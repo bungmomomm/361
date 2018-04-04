@@ -450,6 +450,9 @@
 		.text-line-through {
 			text-decoration: line-through;
 		}
+		.flex-shrink-unset{
+			flex-shrink: unset;
+		}
 	}
 
 	.thumbnail-small {
@@ -501,6 +504,13 @@
 			text-align: center;
 			transform: translate3d(100%, 0, 0);
 			animation: scrollLeft 7s linear infinite;
+		}
+	}
+
+	.can-copy{
+		user-select: auto;
+		p{
+			user-select: auto;
 		}
 	}
 }

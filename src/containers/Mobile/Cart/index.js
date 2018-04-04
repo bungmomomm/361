@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
-import { Page, Header, Svg, Panel, Image, Select, Level, Button, Modal, Spinner } from '@/components/mobile';
+import { Page, Notification, Header, Svg, Panel, Image, Select, Level, Button, Modal, Spinner } from '@/components/mobile';
 import styles from './cart.scss';
 import Shared from '@/containers/Mobile/Shared';
 import { connect } from 'react-redux';
@@ -336,13 +336,14 @@ class Cart extends Component {
 	}
 
 	renderMessageNotProcedItems() {
-		const style = {
-			backgroundColor: '#ffaeae',
-			padding: '5px 10px'
-		};
 		return this.state.itemsNotProced.length > 0 && (
-			<div style={style}>
-				1 produk atau lebih item tidak dapat dibeli. Silahkan hapus barang untuk melanjutkan pembayaran
+			<div className='padding--medium-h margin--medium-t'>
+				<Notification color='pink' disableClose show bordered>
+					<div className='flex-row text-left padding--small-v'>
+						<div><Svg src='ico_error_message.svg' /></div>
+						<div className='margin--small-l font-color--red flex-shrink-unset'>1 produk atau lebih item tidak dapat dibeli. Silahkan hapus barang untuk melanjutkan pembayaran</div>
+					</div>
+				</Notification>
 			</div>
 		);
 	}
@@ -368,8 +369,8 @@ class Cart extends Component {
 					{ (this.props.shopBag.total && this.props.shopBag.total.count_item === 0) ?
 						(<div dangerouslySetInnerHTML={{ __html: this.props.shopBag.empty_state }} />) :
 						(<div style={{ backgroundColor: '#F5F5F5' }}>
-							{this.renderHeaderShopBag()}
 							{this.renderMessageNotProcedItems()}
+							{this.renderHeaderShopBag()}
 							{this.renderList()}
 							{this.renderTotal()}
 						</div>)
@@ -451,7 +452,7 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymousCall = (props) => {
 	const { dispatch, cookies } = props;
-	
+
 	dispatch(
 		shopBagAction.getAction(
 			cookies.get(cookiesLabel.userToken)
