@@ -207,6 +207,26 @@ class Address extends Component {
 		return null;
 	};
 
+	resetMap = () => {
+		this.setState({
+			map: {
+				...this.state.map,
+				display: false,
+				lat: -6.24800035920893,
+				lng: 106.81144165039063
+			}
+		});
+	};
+
+	saveMap = () => {
+		this.setState({
+			map: {
+				...this.state.map,
+				display: false
+			}
+		});
+	};
+
 	renderData = () => {
 		const { address } = this.props;
 		const cities = address.options.cities;
@@ -429,7 +449,7 @@ class Address extends Component {
 					{this.state.map.display && (
 						<Level className='bg--white flex-column'>
 							<LocationPicker
-								containerElement={<div style={{ height: '100%'}} />}
+								containerElement={<div style={{ height: '100%' }} />}
 								mapElement={<div style={{ height: `${window.innerHeight - 60}px` }} />}
 								defaultPosition={this.state.map}
 								zoom={7}
@@ -473,47 +493,27 @@ class Address extends Component {
 		);
 	};
 
-	resetMap = () => {
-		this.setState({
-			map: {
-				...this.state.map,
-				display: false,
-				lat: -6.24800035920893,
-				lng: 106.81144165039063
-			}
-		});
-	};
-
-	saveMap = () => {
-		this.setState({
-			map: {
-				...this.state.map,
-				display: false
-			}
-		});
-	};
-
 	render() {
 		const { history } = this.props;
 		const HeaderPage = {
 			left: (
 				this.state.map.display ?
-				<Button onClick={this.resetMap}>
-					<Svg src={'ico_arrow-back-left.svg'} />
-				</Button> :
-				<Button onClick={history.goBack}>
-					BATAL
-				</Button>
+					<Button onClick={this.resetMap}>
+						<Svg src={'ico_arrow-back-left.svg'} />
+					</Button> :
+					<Button onClick={history.goBack}>
+						BATAL
+					</Button>
 			),
 			center: this.state.map.display ? 'Tandai Lokasi Pengiriman' : 'Alamat Baru',
 			right: (
 				this.state.map.display ?
-				<Button onClick={this.saveMap}>
-					SIMPAN
-				</Button> :
-				<Button onClick={this.onSubmit} disabled={(!this.state.allowSubmit || this.state.submitting)}>
-					SIMPAN
-				</Button>
+					<Button onClick={this.saveMap}>
+						SIMPAN
+					</Button> :
+					<Button onClick={this.onSubmit} disabled={(!this.state.allowSubmit || this.state.submitting)}>
+						SIMPAN
+					</Button>
 			)
 		};
 

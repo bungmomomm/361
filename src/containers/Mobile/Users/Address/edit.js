@@ -153,6 +153,13 @@ class Address extends Component {
 		this.formsy.submit();
 	};
 
+	onCitySearch = (el) => {
+		const { cookies, dispatch } = this.props;
+		if (el.target.value.length > 2) {
+			dispatch(actions.getCity(cookies.get(userToken), { q: el.target.value }, 'init'));
+		}
+	};
+
 	handleLocationChange = ({ position, address }) => {
 		this.setState({
 			map: {
@@ -162,13 +169,6 @@ class Address extends Component {
 				lng: position.lng
 			}
 		});
-	};
-
-	onCitySearch = (el) => {
-		const { cookies, dispatch } = this.props;
-		if (el.target.value.length > 2) {
-			dispatch(actions.getCity(cookies.get(userToken), { q: el.target.value }, 'init'));
-		}
 	};
 
 	toggleShow = (which = 'city') => {
@@ -266,6 +266,27 @@ class Address extends Component {
 		});
 
 		return null;
+	};
+
+	resetMap = () => {
+		const { address: { edit: { latitude, longitude } } } = this.props;
+		this.setState({
+			map: {
+				...this.state.map,
+				display: false,
+				lat: parseFloat(latitude) || -6.24800035920893,
+				lng: parseFloat(longitude) || 106.81144165039063
+			}
+		});
+	};
+
+	saveMap = () => {
+		this.setState({
+			map: {
+				...this.state.map,
+				display: false
+			}
+		});
 	};
 
 	renderData = () => {
@@ -510,7 +531,7 @@ class Address extends Component {
 					{this.state.map.display && (
 						<Level className='bg--white flex-column'>
 							<LocationPicker
-								containerElement={<div style={{ height: '100%'}} />}
+								containerElement={<div style={{ height: '100%' }} />}
 								mapElement={<div style={{ height: `${window.innerHeight - 60}px` }} />}
 								defaultPosition={this.state.map}
 								zoom={lat !== -6.24800035920893 && lng !== 106.81144165039063 ? 16 : 7}
@@ -559,27 +580,6 @@ class Address extends Component {
 				</Form>
 			</Page>
 		);
-	};
-
-	resetMap = () => {
-		const { address: { edit: { latitude, longitude } } } = this.props;
-		this.setState({
-			map: {
-				...this.state.map,
-				display: false,
-				lat: parseFloat(latitude) || -6.24800035920893,
-				lng: parseFloat(longitude) || 106.81144165039063
-			}
-		});
-	};
-
-	saveMap = () => {
-		this.setState({
-			map: {
-				...this.state.map,
-				display: false
-			}
-		});
 	};
 
 	render() {
