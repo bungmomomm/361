@@ -581,7 +581,7 @@ class Address extends Component {
 						BATAL
 					</Button>
 			),
-			center: this.state.map.display ? 'Tandai Lokasi Pengiriman' : 'Alamat Baru',
+			center: this.state.map.display ? 'Tandai Lokasi Pengiriman' : 'Ubah Alamat',
 			right: (
 				this.state.map.display ?
 					<Button onClick={this.saveMap}>
