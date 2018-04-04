@@ -43,19 +43,6 @@ class Address extends Component {
 		}
 	};
 
-	componentDidMount() {
-		const el = document.getElementsByClassName('gmaps');
-		if (el.length) document.body.removeChild(el[0]);
-		if (window.google) delete window.google;
-
-		const script = document.createElement('script');
-		script.className = 'gmaps';
-		script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyC59RyFeMMuoM7l4Vgnxtzxhsgx_LngVoo&v=3.exp&libraries=geometry,drawing,places';
-		script.async = true;
-		script.defer = true;
-		document.body.appendChild(script);
-	}
-
 	componentWillReceiveProps(nextProps) {
 		if (this.props.address.edit !== nextProps.address.edit) {
 			(async () => {
@@ -529,7 +516,7 @@ class Address extends Component {
 					</Level>
 
 					{this.state.map.display && (
-						<Level className='bg--white flex-column'>
+						<Level className='bg--white flex-column' style={{ padding: '0px' }}>
 							<LocationPicker
 								containerElement={<div style={{ height: '100%' }} />}
 								mapElement={<div style={{ height: `${window.innerHeight - 60}px` }} />}

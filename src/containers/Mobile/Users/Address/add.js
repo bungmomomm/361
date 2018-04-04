@@ -41,19 +41,6 @@ class Address extends Component {
 		}
 	};
 
-	componentDidMount() {
-		const el = document.getElementsByClassName('gmaps');
-		if (el.length) document.body.removeChild(el[0]);
-		if (window.google) delete window.google;
-
-		const script = document.createElement('script');
-		script.className = 'gmaps';
-		script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyC59RyFeMMuoM7l4Vgnxtzxhsgx_LngVoo&v=3.exp&libraries=geometry,drawing,places';
-		script.async = true;
-		script.defer = true;
-		document.body.appendChild(script);
-	}
-
 	onChange = (v, which = 'city') => {
 		this.setState({
 			selected: {
@@ -231,6 +218,8 @@ class Address extends Component {
 		const { address } = this.props;
 		const cities = address.options.cities;
 		const districts = address.options.districts;
+		const { map: { lat, lng } } = this.state;
+		const isMarked = lat !== -6.24800035920893 && lng !== 106.81144165039063;
 
 		const selected = {
 			city: cities.filter((obj) => {
@@ -240,6 +229,13 @@ class Address extends Component {
 				return obj.value === this.state.selected.district;
 			})
 		};
+
+		const placeHasBeenMarkedContent = (
+			<div className='flex-row flex-middle'>
+				<div className='margin--small-r'><Svg src='ico_pin-poin-marked.svg' /></div>
+				<div style={{ color: '#F57C00', fontSize: '14px' }}>&nbsp;LOKASI SUDAH DITANDAI</div>
+			</div>
+		);
 
 		return (
 			<Page color='grey'>
@@ -447,7 +443,7 @@ class Address extends Component {
 					</Level>
 
 					{this.state.map.display && (
-						<Level className='bg--white flex-column'>
+						<Level className='bg--white flex-column' style={{ padding: '0px' }}>
 							<LocationPicker
 								containerElement={<div style={{ height: '100%' }} />}
 								mapElement={<div style={{ height: `${window.innerHeight - 60}px` }} />}
@@ -474,15 +470,22 @@ class Address extends Component {
 
 									<button
 										onClick={this.toggleMap}
-										style={{
-											backgroundColor: 'rgba(0, 0, 0, 0.8)',
-											padding: '10px 25px',
-											borderRadius: '40px',
-											fontSize: '14px',
-											color: '#fff'
-										}}
+										style={
+											!isMarked ? {
+												backgroundColor: 'rgba(0, 0, 0, 0.8)',
+												padding: '10px 25px',
+												borderRadius: '40px',
+												fontSize: '14px',
+												color: '#fff'
+											} : {}}
 									>
-										<strong><Svg src='ico_pin-poin-unmarked.svg' />&nbsp;&nbsp;Tunjukkan Alamat Dalam Peta</strong>
+										{isMarked ?
+											placeHasBeenMarkedContent
+											:
+											<strong>
+												<Svg src='ico_pin-poin-unmarked.svg' />&nbsp;&nbsp;
+												Tunjukkan Alamat Dalam Peta
+											</strong>}
 									</button>
 								</span>
 							</div>
