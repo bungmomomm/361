@@ -71,6 +71,8 @@ const hastagLinkCreator = (text) => {
 	});
 };
 
+const aspectRatioHeight = (width) => (width / 4) + width;
+
 export default {
 	getDeviceID,
 	getClientID,
@@ -105,5 +107,6 @@ export default {
 	initUTMProcess,
 	checkImage,
 	decodeHtmlSpecialChar,
-	hastagLinkCreator
+	hastagLinkCreator,
+	aspectRatioHeight
 };

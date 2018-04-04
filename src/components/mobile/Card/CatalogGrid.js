@@ -8,6 +8,7 @@ import Button from '../Button';
 import Level from '../Level';
 import Badge from '../Badge';
 import styles from './card.scss';
+import { aspectRatioHeight } from '../../../utils';
 
 import { trimString } from '@/utils';
 
@@ -61,7 +62,7 @@ class CatalogGrid extends PureComponent {
 		}
 	}
 
-	makeRectangle = () => {
+	makeAspectRatio = () => {
 		const rectContainer = _.chain(window)
 			.get('innerWidth')
 			.defaultTo(320) // minimum mobilebrowser
@@ -70,7 +71,7 @@ class CatalogGrid extends PureComponent {
 			.value();
 		return {
 			width: `${rectContainer}px`,
-			height: `${rectContainer}px`
+			height: `${aspectRatioHeight(rectContainer)}px`
 		};
 	}
 
@@ -124,8 +125,8 @@ class CatalogGrid extends PureComponent {
 
 		return (
 			<div className={createClassName} {...props} data-loved={lovelistStatus}>
-				<Link to={linkToPdp || '/'} style={this.makeRectangle()} className={styles.imgContainer}>
-					<div className={`${styles.imgWrapper} placeholder-image`} style={this.makeRectangle()} tabIndex='0' role='button' onClick={productOnClick || (() => true)}>
+				<Link to={linkToPdp || '/'} style={this.makeAspectRatio()} className={styles.imgContainer}>
+					<div className={`${styles.imgWrapper} placeholder-image`} style={this.makeAspectRatio()} tabIndex='0' role='button' onClick={productOnClick || (() => true)}>
 						<Image src={images[0].thumbnail} lazyload alt={productTitle} />
 					</div>
 				</Link>
