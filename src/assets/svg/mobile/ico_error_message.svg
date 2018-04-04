@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="14px" viewBox="0 0 14 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49 (51002) - http://www.bohemiancoding.com/sketch -->
+    <title>mm_ico_error_message</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="mm_ico_error_message" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.900000036">
+        <path d="M12.9038287,11.3229167 C13.0106859,11.5138898 13.0284951,11.6701383 12.957257,11.7916667 C12.8682094,11.9305563 12.7435446,12 12.5832588,12 L1.41674116,12 C1.25645541,12 1.13179059,11.9305563 1.04274296,11.7916667 C0.971504851,11.6701383 0.989314111,11.5138898 1.09617127,11.3229167 L6.6260018,2.234375 C6.71504944,2.07812422 6.83971426,2 7,2 C7.16028574,2 7.28495056,2.07812422 7.3739982,2.234375 L12.9038287,11.3229167 Z M7.85485303,10.75 L7.85485303,9.5 L6.14514697,9.5 L6.14514697,10.75 L7.85485303,10.75 Z M7.85485303,8.66666667 L7.85485303,4.91666667 L6.14514697,4.91666667 L6.14514697,8.66666667 L7.85485303,8.66666667 Z" id="ion-alert-circled---Ionicons" fill="#FF3D00"></path>
+    </g>
+</svg>

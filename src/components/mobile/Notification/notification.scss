@@ -51,14 +51,27 @@
     padding: rem(10px);
 }
 
+.bordered{
+    border-radius: 4px;
+}
+
 .pink{
     background-color: #FFE6E6;
+    &.bordered{
+        border: 1px solid #FFE6E6;
+    }
 }
 .blue{
     background-color: #D7ECF7;
+    &.bordered{
+        border: 1px solid #D7ECF7;
+    }
 }
 .yellow{
     background-color: #FFECD5;
+    &.bordered{
+        border: 1px solid #FFECD5;
+    }
 }
 
 .green{
@@ -80,7 +93,7 @@
   width: 100%;
   z-index: 11;
   background-color: #4A4A4A;
-  
+
 }
 
 .showToast {
@@ -96,4 +109,3 @@
 	animation-fill-mode: forwards;
   }
 }
-
