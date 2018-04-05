@@ -222,7 +222,7 @@ class Address extends Component {
 			return false;
 		}
 
-		if (navigator.geolocation) {
+		if (navigator) {
 			const timeout = setTimeout(this.justToggle, 10000);
 
 			navigator.geolocation.getCurrentPosition(
