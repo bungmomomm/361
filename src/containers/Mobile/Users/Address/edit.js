@@ -227,6 +227,7 @@ class Address extends Component {
 
 			navigator.geolocation.getCurrentPosition(
 				(pos) => {
+					clearTimeout(timeout);
 					const crd = pos.coords;
 					this.setState({
 						map: {
