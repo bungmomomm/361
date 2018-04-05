@@ -165,7 +165,7 @@ class Address extends Component {
 
 	toggleMap = () => {
 		if (navigator.geolocation) {
-			const timeout = setTimeout(this.justToggle, 5000);
+			const timeout = setTimeout(this.justToggle, 10000);
 
 			navigator.geolocation.getCurrentPosition(
 				(pos) => {
