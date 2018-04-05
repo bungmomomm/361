@@ -210,7 +210,7 @@ class OrderConfirmation extends Component {
 					<Svg src='ico_close-large.svg' />
 				</span>
 			),
-			center: 'Pesanan Saya',
+			center: 'Konfirmasi Pembayaran',
 			right: null
 		});
 

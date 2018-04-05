@@ -100,11 +100,17 @@ class MyOrderDetail extends Component {
 		return (
 			<div style={this.props.style}>
 				<Page>
+					{this.props.user.trackingInfo === null ?
+						(
+							<div className='margin--medium-v padding--medium-h'>
+								<div style={{ padding: '10px' }}><Spinner /></div>
+							</div>
+						) : (
 					<div className='margin--medium-v padding--medium-h bg--white'>
-						{this.props.user.trackingInfo === null && <Spinner />}
 						{this.renderTopInfo()}
 						{this.renderTimeline()}
 					</div>
+						)}
 				</Page>
 				<Header.Modal {...HeaderPage} />
 			</div>
