@@ -158,8 +158,10 @@ class Address extends Component {
 		e.preventDefault();
 
 		if (navigator) {
+			console.log('w/ navigator');
 			navigator.geolocation.getCurrentPosition(
 				(pos) => {
+					console.log(pos);
 					const crd = pos.coords;
 					this.setState({
 						map: {
@@ -183,6 +185,7 @@ class Address extends Component {
 			return false;
 		}
 
+		console.log('no navigator');
 		this.setState({
 			map: {
 				...this.state.map,
@@ -497,6 +500,7 @@ class Address extends Component {
 	};
 
 	render() {
+		console.log(this.state.map);
 		const { history } = this.props;
 		const HeaderPage = {
 			left: (
