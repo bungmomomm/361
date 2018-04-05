@@ -46,10 +46,6 @@ class Login extends Component {
 		};
 	}
 
-	componentDidMount() {
-
-	}
-
 	async onLogin(e) {
 		const { cookies, dispatch, history } = this.props;
 		const { loginId, password, redirectUri } = this.state;
@@ -57,6 +53,8 @@ class Login extends Component {
 		if (err) {
 			return err;
 		}
+		// remove current token
+		window.sessionStorage.removeItem('cacheToken');
 		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
 		setUserCookie(this.props.cookies, response.token, false, userProfile);
 		const userInfo = {
@@ -82,6 +80,8 @@ class Login extends Component {
 		if (err) {
 			return err;
 		}
+		// remove current token
+		window.sessionStorage.removeItem('cacheToken');
 		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
 		setUserCookie(this.props.cookies, response.token, false, userProfile);
 		await dispatch(new users.afterLogin(cookies.get(userToken)));

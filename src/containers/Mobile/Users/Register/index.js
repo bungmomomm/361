@@ -98,6 +98,8 @@ class Register extends Component {
 			}
 			return false;
 		}
+		// remove current token
+		window.sessionStorage.removeItem('cacheToken');
 		// Response from register is success
 		if (response.data.id) {
 			// Check if we register via mobile.

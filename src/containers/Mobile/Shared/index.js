@@ -121,15 +121,18 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 			window.removeEventListener('scroll', this.handleScroll, true);
 		}
 
-		shouldLoginAnonymous() {
-			const { cookies } = this.props;
-			return (_.isEmpty(cookies.get(userToken)) || _.isEmpty(cookies.get(userRfToken)));
-		}
+		async getTokenData(token = null) {
+			const { cookies, dispatch } = this.props;
+			const isStorageSupport = typeof window.Storage !== 'undefined';
+			if (isStorageSupport) {
+				const cacheToken = JSON.parse(window.sessionStorage.cacheToken || null) || false;
 
-		async exeCall(token = null) {
-			const { cookies, dispatch, users } = this.props;
-			const { login, provider } = this.state;
-			let tokenBearer = token === null ? cookies.get(userToken) : token.token;
+				if (cacheToken) {
+					return cacheToken;
+				}
+			}
+
+			const tokenBearer = token === null ? cookies.get(userToken) : token.token;
 			const rfT = token === null ? cookies.get(userRfToken) : token.refresh_token;
 
 			const resp = await to(dispatch(new account.refreshToken(rfT, tokenBearer)));
@@ -150,8 +153,27 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 					}, 3000);
 				}
 			}
-
 			const { data } = resp[1].data;
+			
+			if (isStorageSupport) {
+				window.sessionStorage.removeItem('cacheToken');
+				window.sessionStorage.cacheToken = JSON.stringify(data);
+			}
+			return data;
+		}
+
+		shouldLoginAnonymous() {
+			const { cookies } = this.props;
+			return (_.isEmpty(cookies.get(userToken)) || _.isEmpty(cookies.get(userRfToken)));
+		}
+
+		async exeCall(token = null) {
+			const { cookies, dispatch, users } = this.props;
+			const { login, provider } = this.state;
+
+			const data = await this.getTokenData(token);
+
+			let tokenBearer = token === null ? cookies.get(userToken) : token.token;
 
 			const isAnonymous = data.info.userid <= 1;
 			setUserCookie(this.props.cookies, data, isAnonymous);
@@ -203,9 +225,23 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 			});
 		}
 
+		initCache(initData) {
+			const { dispatch } = this.props;
+			dispatch(actions.cacheInitData(initData));
+		}
+
 		async initProcess() {
 			// check existing props
 			const { shared } = this.props;
+			const isStorageSupport = typeof window.Storage !== 'undefined';
+			if (isStorageSupport) {
+				const initData = JSON.parse(window.sessionStorage.initCache || null) || false;
+
+				if (initData) {
+					this.initCache(initData);
+					return false;
+				}
+			}
 			const serviceUrl = _.chain(shared).get('serviceUrl').value() || false;
 			if (!serviceUrl) {
 				const response = await to(this.props.dispatch(new initAction.initAction()));
@@ -213,6 +249,12 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 					return null;
 				}
 
+				if (isStorageSupport) {
+					// save to session storage, when user close browser will be gone
+					window.sessionStorage.removeItem('initCache');
+					window.sessionStorage.initCache = JSON.stringify(response[1]);
+				}
+				
 				this.initApp();
 				return response[1];
 			}

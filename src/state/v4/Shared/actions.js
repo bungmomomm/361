@@ -15,6 +15,7 @@ import {
 	connectionWatch,
 	userPreviousPage
 } from './reducer';
+import { initResponse } from '@/state/v4/Home/reducer';
 import __x from '@/state/__x';
 
 const closeFB = () => (dispatch, getState) => {
@@ -112,6 +113,20 @@ const catchErrors = (errors) => (dispatch, getState) => {
 	dispatch(errorHandler({ errors: err }));
 };
 
+const cacheInitData = (initData) => (dispatch, getState) => {
+	const segment = initData.segment;
+	const foreverBanner = initData.forever_banner;
+	const serviceUrl = initData.service_url;
+	const webViewUrl = initData.webview_url;
+	const banner = {
+		...foreverBanner,
+		show: true
+	};
+
+	dispatch(forEverBanner({ foreverBanner: banner, serviceUrl, webViewUrl }));
+	dispatch(initResponse({ segmen: segment }));
+};
+
 const clearErrors = () => (dispatch) => {
 	dispatch(errorHandler({ errors: [] }));
 };
@@ -151,5 +166,6 @@ export default {
 	clearSnackQueue,
 	watchConnection,
 	logSinglePage,
-	removeLogSinglePage
+	removeLogSinglePage,
+	cacheInitData
 };
