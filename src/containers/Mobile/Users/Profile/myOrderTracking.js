@@ -106,10 +106,10 @@ class MyOrderDetail extends Component {
 								<div style={{ padding: '10px' }}><Spinner /></div>
 							</div>
 						) : (
-					<div className='margin--medium-v padding--medium-h bg--white'>
-						{this.renderTopInfo()}
-						{this.renderTimeline()}
-					</div>
+							<div className='margin--medium-v padding--medium-h bg--white'>
+								{this.renderTopInfo()}
+								{this.renderTimeline()}
+							</div>
 						)}
 				</Page>
 				<Header.Modal {...HeaderPage} />
