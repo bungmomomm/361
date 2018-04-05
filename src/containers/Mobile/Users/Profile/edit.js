@@ -65,7 +65,11 @@ class UserProfileEdit extends Component {
 		this.HP_EMAIL_FIELD = CONST.USER_PROFILE_FIELD.hpEmail;
 		this.OTP_FIELD = CONST.USER_PROFILE_FIELD.otp;
 
-		this.loadingView = <Spinner />;
+		this.loadingView = (
+			<div style={{ margin: '20px auto 20px auto' }}>
+				<Spinner />
+			</div>
+		);
 		this.editIcon = <Svg src='ico_edit.svg' />;
 		this.recaptchaInstance = null;
 
@@ -213,7 +217,7 @@ class UserProfileEdit extends Component {
 	}
 
 	submitFormData = async (e) => {
-		const { cookies, dispatch } = this.props;
+		const { cookies, dispatch, userProfile } = this.props;
 		const { layout, formData } = this.state;
 
 		if (!_.isEmpty(layout)) {
@@ -258,6 +262,9 @@ class UserProfileEdit extends Component {
 						status: 'failed',
 						message: err.error_message || 'Form failed'
 					},
+					formData: {
+						...userProfile
+					},
 					submittingForm: false
 				});
 			} else if (response) {
@@ -285,7 +292,7 @@ class UserProfileEdit extends Component {
 						},
 						submittingForm: false
 					});
-					this.setTimeoutForm(5000);
+					this.setTimeoutForm(3000);
 				}
 			}
 		}
@@ -308,7 +315,7 @@ class UserProfileEdit extends Component {
 			otpCountdown: 0
 		});
 
-		this.setTimeoutForm(5000);
+		this.setTimeoutForm(3000);
 	}
 
 	renderHeader() {
@@ -393,12 +400,12 @@ class UserProfileEdit extends Component {
 		const defaultImage = require('@/assets/images/mobile/ico_avatar.png');
 		if (source === 'api') {
 			avatar = formData && formData[this.AVATAR_FIELD] ? (
-				<Image width={80} height={80} avatar src={formData[this.AVATAR_FIELD]} alt={_.capitalize(formData[this.NAME_FIELD]) || ''} />
+				<Image width={80} height={80} lazyload avatar src={formData[this.AVATAR_FIELD]} alt={_.capitalize(formData[this.NAME_FIELD]) || ''} />
 			) : (
-				<Image width={80} height={80} avatar src={defaultImage} alt={_.capitalize(formData[this.NAME_FIELD]) || ''} />
+				<Image width={80} height={80} lazyload avatar src={defaultImage} alt={_.capitalize(formData[this.NAME_FIELD]) || ''} />
 			);
 		} else {
-			avatar = <Image width={80} height={80} avatar src={defaultImage} alt={_.capitalize(formData[this.NAME_FIELD]) || ''} />;
+			avatar = <Image width={80} lazyload height={80} avatar src={defaultImage} alt={_.capitalize(formData[this.NAME_FIELD]) || ''} />;
 		}
 
 		return (
