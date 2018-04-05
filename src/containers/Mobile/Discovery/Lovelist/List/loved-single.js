@@ -37,7 +37,6 @@ class LovedItemsSingle extends Component {
 	}
 
 	render() {
-		console.log('rendering lovelist single');
 		const { cardContainerStyles } = this.props;
 		return <div className={cardContainerStyles}>{this.renderCard()}</div>;
 	}

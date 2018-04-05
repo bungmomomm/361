@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { withCookies } from 'react-cookie';
 import _ from 'lodash';
-import { Header, Page, Card, Button, Svg, Image, Level, Modal, Spinner } from '@/components/mobile';
+import { Header, Page, Button, Svg, Image, Level, Modal, Spinner } from '@/components/mobile';
 import { toastSytle } from '@/containers/Mobile/Shared/styleSnackbar';
 import styles from './lovelist.scss';
 

@@ -35,7 +35,6 @@ class LovedItemsGrid extends Component {
 	}
 
 	render() {
-		console.log('rendering lovelist grid');
 		const { cardContainerStyles } = this.props;
 		return <div className={cardContainerStyles}>{this.renderCard()}</div>;
 	}
