@@ -63,10 +63,8 @@ class CatalogGrid extends PureComponent {
 	}
 
 	makeAspectRatio = () => {
-		const rectContainer = _.chain(window)
-			.get('innerWidth')
-			.defaultTo(320) // minimum mobilebrowser
-			.divide(2)
+		const offsetWidth = document.getElementsByClassName('switch-wrapper')[0].offsetWidth;
+		const rectContainer = _.chain(offsetWidth).divide(2)
 			.subtract(21) // threshold padding
 			.value();
 		return {
