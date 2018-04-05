@@ -2,6 +2,8 @@ import { config, references } from './config';
 import { NEW_SESSION } from './event';
 import Utils from './utils';
 import PageTracker from './page-tracker';
+import { Promise } from 'es6-promise';
+
 
 export default class Fusion {
 
@@ -58,16 +60,25 @@ export default class Fusion {
 	bindSession() {
 		try {
 			// creates new session ...
+			const customerId = Utils.getCustomerID();
 			if (this.enabled && !Utils.hasSession()) {
 				const sessionId = Utils.generateID();
-				Utils.storeSession(sessionId);
+				const sessionData = `${sessionId}|${customerId}`;
+				Utils.storeSession(sessionData);
 				const event = NEW_SESSION;
 				const payload = {
 					event,
 					...this.commons
 				};
+
 				// push new session event signal ...
 				this.push(payload);
+
+			} else {
+				// updates session data...
+				const sessionId = Utils.getSessionID();
+				const sessionData = `${sessionId}|${customerId}`;
+				Utils.storeSession(sessionData);
 			}
 		} catch (error) {
 			if (config.debug) console.log(error);
@@ -78,7 +89,26 @@ export default class Fusion {
 		try {
 			if (this.enabled) {
 				// new-session event signal should be pushed in the first place
-				if (payload.event !== NEW_SESSION && !Utils.hasSession()) this.bindSession();
+				if (payload.event !== NEW_SESSION && !Utils.hasSession()) {
+					const handler = new Promise((resolve, reject) => {
+						resolve(this.bindSession());
+					});
+
+					handler.then((res) => {
+						// sinces new session just being created
+						// then need to updates its sessionId and customerId value
+						const commons = this.commons;
+						payload.session_id = commons.session_id;
+						payload.customer_id = commons.customer_id;
+						payload.source = commons.source;
+						payload.google_session_id = commons.google_session_id;
+
+						this.push(payload);
+					}).catch((err) => {
+						console.log(err);
+					});
+					return;
+				}
 
 				// prepare request...
 				const axios = require('axios');
@@ -108,15 +138,21 @@ export default class Fusion {
 	}
 
 	static tracks = (route, trackInfo = true) => {
-		// tracks referal page
-		if (config.enabled && trackInfo) PageTracker.trackRoute(route);
+		if (config.enabled) {
+			if (typeof window.mmFusion === 'undefined') Fusion.init();
+			else window.mmFusion.bindSession();
+
+			// tracks referal page
+			if (trackInfo) PageTracker.trackRoute(route);
+		}
 	}
 
 	static init() {
 		window.onload = () => {
-			if (typeof window.Fusion === 'undefined') {
+			if (typeof window.mmFusion === 'undefined') {
 				const f = new Fusion();
 				f.bindSession();
+				window.mmFusion = f;
 			}
 		};
 	}
