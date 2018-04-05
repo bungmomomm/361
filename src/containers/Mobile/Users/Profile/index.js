@@ -13,7 +13,7 @@ import { Header, Page, Navigation, Svg, List, Level, Image, Panel, Spinner, Moda
 import { actions as userActions } from '@/state/v4/User';
 
 import CONST from '@/constants';
-import { removeUserCookie } from '@/utils';
+import { setUserCookie } from '@/utils';
 
 import styles from './profile.scss';
 
@@ -44,14 +44,15 @@ class UserProfile extends Component {
 		this.EMAIL_FIELD = CONST.USER_PROFILE_FIELD.email;
 		this.PHONE_FIELD = CONST.USER_PROFILE_FIELD.phone;
 	}
-
+	
 	onLogout = async () => {
 		const { dispatch, history, cookies } = this.props;
 		const [err, response] = await to(dispatch(userActions.userLogout(cookies.get(cookiesLabel.userToken))));
 		if (err) {
 			return err;
 		}
-		removeUserCookie(cookies);
+		window.sessionStorage.removeItem('cacheToken');
+		setUserCookie(cookies, response.token, true);
 		history.push('/');
 		return response;
 	}
@@ -249,6 +250,7 @@ class UserProfile extends Component {
 }
 
 const mapStateToProps = (state) => {
+	
 	return {
 		...state,
 		isLoading: state.users.isLoading,
@@ -257,7 +259,9 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-	
+	if (props.cookies.get(cookiesLabel.isLogin) !== 'true') {
+		props.history.replace('/login?redirect_uri=/profile');
+	}
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(UserProfile, doAfterAnonymous)));
