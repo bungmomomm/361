@@ -243,6 +243,8 @@ class Address extends Component {
 					});
 				}
 			);
+
+			return false;
 		}
 
 		this.setState({
