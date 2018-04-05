@@ -86,12 +86,13 @@ class TreeSegment extends Component {
 		}
 	}
 
-	reset() {
+	reset(e) {
 		const { data } = this.state;
 		this.setState({
 			resetDisabled: true,
 			data: utils.resetChilds(data)
 		});
+		this.props.onReset(e);
 	}
 
 	renderChild(category, firstLevel) {
@@ -169,7 +170,7 @@ class TreeSegment extends Component {
 					{/* {this.renderTree(categories)} */}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action resetDisabled={resetDisabled} hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
+				<Action resetDisabled={resetDisabled} hasReset onReset={(e) => this.reset(e)} hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}

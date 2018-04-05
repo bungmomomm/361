@@ -85,13 +85,14 @@ class Price extends PureComponent {
 		});
 	}
 
-	reset() {
+	reset(e) {
 		const { resetRangeData, resetSelectedRangeData } = this.state;
 		this.setState({
 			resetDisabled: true,
 			range: _.cloneDeep(resetRangeData),
 			selectedRange: _.cloneDeep(resetSelectedRangeData),
 		});
+		this.props.onReset(e);
 	}
 
 	render() {
@@ -137,7 +138,7 @@ class Price extends PureComponent {
 					</div> */}
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action resetDisabled={resetDisabled} hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
+				<Action resetDisabled={resetDisabled} hasReset onReset={(e) => this.reset(e)} hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}
