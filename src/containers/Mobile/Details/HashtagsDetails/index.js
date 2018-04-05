@@ -141,7 +141,15 @@ class HashtagsDetails extends Component {
 
 		const HeaderPage = {
 			left: (
-				<button onClick={history.goBack}>
+				<button
+					onClick={() => {
+						if (window.surfs[0]) {
+							history.push(`${window.surfs[0].pathname}${window.surfs[0].hash}${window.surfs[0].search}`);
+						} else {
+							history.goBack();
+						}
+					}}
+				>
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</button>
 			),
@@ -151,7 +159,7 @@ class HashtagsDetails extends Component {
 
 		return (
 			<div>
-				<Page color='white'>
+				<Page color='white' ref={(r) => { this.mainpage = r; }}>
 					{ent.data.post.embed_url && (
 						<div
 							style={{
@@ -161,7 +169,7 @@ class HashtagsDetails extends Component {
 						>
 							<iframe
 								src={ent.data.post.embed_url}
-								title='sgdsgs'
+								title='Instagram'
 								className={'instagram-media'}
 								frameBorder={0}
 								style={{

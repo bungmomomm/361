@@ -43,6 +43,8 @@ class Logout extends Component {
 		if (err) {
 			return err;
 		}
+		// remove current token
+		window.sessionStorage.removeItem('cacheToken');
 		setUserCookie(cookies, response.token, true);
 		history.push(redirectUri || '/');
 		return response;

@@ -5,89 +5,28 @@ import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import Lightbox from 'react-image-lightbox';
 import to from 'await-to-js';
-import { urlBuilder, enableZoomPinch, uniqid } from '@/utils';
+import { urlBuilder, uniqid, hastagLinkCreator } from '@/utils';
 import { actions as productActions } from '@/state/v4/Product';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as shopBagActions } from '@/state/v4/ShopBag';
-import { Modal, Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Spinner, Badge, AnimationLovelist, AnimationAddToCart } from '@/components/mobile';
-import Promos from './Promos';
-import ReviewSummary from './Reviews/summary';
-
+import { Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Spinner, Badge, AnimationLovelist, AnimationAddToCart } from '@/components/mobile';
+import { Promos, ProductModal, ReviewSummary } from './Partials';
 import Share from '@/components/mobile/Share';
 import Shared from '@/containers/Mobile/Shared';
 import styles from './products.scss';
 import SellerProfile from '../../Discovery/Seller/components/SellerProfile';
 import { Promise } from 'es6-promise';
 import classNames from 'classnames';
-import {
-	TrackingRequest,
-	pdpViewBuilder,
-	addToCartBuilder,
-	sendGtm,
-} from '@/utils/tracking';
 import cookiesLabel from '@/data/cookiesLabel';
-
-import { Payload, Utils } from '@/utils/tracking/lucidworks';
 import xhandler from '@/containers/Mobile/Shared/handler';
-
+import Discovery from '@/containers/Mobile/Discovery/Utils';
 import { toastSytle } from '@/containers/Mobile/Shared/styleSnackbar';
 
+import { Payload } from '@/utils/tracking/lucidworks';
+import { trackAddToCart, trackPdpView } from './Gtm';
+
 const fusion = new Payload(_);
-const trackAddToCart = (data, props, variant, hasVariantSize = true) => {
-	const { users, shared } = props;
-	const { userProfile } = users;
-	const products = {
-		name: data.detail.title,
-		id: data.detail.id,
-		price: data.detail.price_range.effective_price,
-		brand: data.detail.brand.name,
-		category: data.detail.product_category_names.join('/'),
-		variant: (hasVariantSize) ? variant.options[0].value : '',
-		variant_id: variant.id,
-		quantity: 1
-	};
-	const layerData = {
-		emailHash: _.defaultTo(userProfile.enc_email, ''),
-		userIdEncrypted: userProfile.enc_userid,
-		userId: userProfile.id,
-		ipAddress: shared.ipAddress,
-		currentUrl: props.location.pathname,
-		products: [products],
-		fusionSessionId: Utils.getSessionID(),
-	};
-	const request = new TrackingRequest(layerData);
-	const requestPayload = request.getPayload(addToCartBuilder);
-	if (requestPayload) sendGtm(requestPayload);
-};
-
-const trackPdpView = (data, props) => {
-	const { users, shared } = props;
-	const { userProfile } = users;
-	const products = {
-		name: data.detail.title,
-		id: data.detail.id,
-		price: data.detail.price_range.effective_price,
-		brand: data.detail.brand.name,
-		category: data.detail.product_category_names.join('/'),
-	};
-	const layerData = {
-		emailHash: _.defaultTo(userProfile.enc_email, ''),
-		userIdEncrypted: userProfile.enc_userid,
-		userId: userProfile.id,
-		ipAddress: shared.ipAddress,
-		currentUrl: props.location.pathname,
-		products: [products],
-		fusionSessionId: Utils.getSessionID(),
-		storeName: data.detail.seller.seller
-	};
-	const request = new TrackingRequest(layerData);
-	const requestPayload = request.getPayload(pdpViewBuilder);
-	if (requestPayload) sendGtm(requestPayload);
-};
-
-import Discovery from '@/containers/Mobile/Discovery/Utils';
-
 const doAfterAnonymous = async (props) => {
 	const { dispatch, match, cookies, history } = props;
 	const productId = _.toInteger(match.params.id);
@@ -144,6 +83,8 @@ class Products extends Component {
 		this.handleShowMoreProductDescription = this.handleShowMoreProductDescription.bind(this);
 		this.handleShowLessProductDescription = this.handleShowLessProductDescription.bind(this);
 		this.renderZoom = this.renderZoom.bind(this);
+		this.getZoomNextImage = this.getZoomNextImage.bind(this);
+		this.getZoomPrevImage = this.getZoomPrevImage.bind(this);
 
 		this.state = {
 			size: '',
@@ -172,7 +113,6 @@ class Products extends Component {
 				slideIndex: 0
 			},
 			selectedVariant: {},
-			btnBeliLabel: 'BELI AJA',
 			outOfStock: false
 		};
 
@@ -181,35 +121,25 @@ class Products extends Component {
 				<Spinner size='large' />
 			</div>
 		);
-		this.hastagLinkCreator = (text) => {
-			const urlRegex = /(#[^\s]+)/g;
-			return text.replace(urlRegex, (url) => {
-				const hashlink = urlBuilder.setName(url).buildSearchByKeyword();
-				return `<a href="${hashlink + url.replace('#', '%23')}">${url}</a>`;
-			});
-		};
 	}
 
 	componentWillMount() {
-		window.scroll(0, 0);
 		const { status } = this.state;
 		status.showScrollInfomation = false;
 		this.setState({ status });
+		window.scroll(0, 0);
 	}
 
 	componentWillReceiveProps(nextProps) {
 		const { cookies, product, lovelist, dispatch } = nextProps;
 		const { detail } = product;
-		const { status, outOfStock } = this.state;
-		let { cardProduct, selectedVariant, size } = this.state;
+		const { status } = this.state;
+		let { cardProduct, selectedVariant, size, outOfStock } = this.state;
 
 		status.loading = product.loading;
 		if ((_.toInteger(this.props.match.params.id) !== _.toInteger(nextProps.match.params.id)) ||
 			(this.props.match.url !== nextProps.match.url)) {
-			selectedVariant = {};
-			cardProduct = {};
-			size = '';
-			window.scroll(0, 0);
+			this.resetState();
 			this.updateCard = true;
 			doAfterAnonymous(nextProps);
 		}
@@ -219,6 +149,10 @@ class Products extends Component {
 			this.updateCard = false;
 			cardProduct = productActions.getProductCardData(detail);
 			status.hasVariantSize = cardProduct.hasVariantSize;
+
+			if (_.has(detail, 'description') && !_.isEmpty(detail.description)) {
+				cardProduct.formattedDescription = hastagLinkCreator(detail.description);
+			}
 
 			// Sets whether product has variants size or set defaults variant
 			// if the product has one product variant only ...
@@ -233,6 +167,7 @@ class Products extends Component {
 			}
 
 			// disable enabled button BELI AJA
+			outOfStock = cardProduct.productStock === 0;
 			if (_.isEmpty(cardProduct.variants) || outOfStock ||
 				cardProduct.productStock === 0 || detail.is_product_available === 0) {
 				status.btnBeliDisabled = true;
@@ -253,7 +188,7 @@ class Products extends Component {
 		}
 
 		// updates states
-		this.setState({ status, cardProduct, selectedVariant, size });
+		this.setState({ status, cardProduct, selectedVariant, size, outOfStock });
 		this.handleScroll();
 	}
 
@@ -298,10 +233,36 @@ class Products extends Component {
 		});
 	}
 
+	getZoomNextImage() {
+		const { slideIndex } = this.state.carousel;
+		const { images } = this.props.product.detail;
+
+		if (slideIndex === (images.length - 1)) return 0;
+		return (slideIndex + 1);
+	}
+
+	getZoomPrevImage() {
+		const { slideIndex } = this.state.carousel;
+		const { images } = this.props.product.detail;
+
+		if (slideIndex === 0) return (images.length - 1);
+		return (slideIndex - 1);
+	}
+
+	resetState() {
+		const { status, carousel } = this.state;
+		status.showFullProductDescription = false;
+		status.showScrollInfomation = false;
+		status.hasVariantSize = false;
+		status.isLoved = false;
+		carousel.slideIndex = 0;
+		this.setState({ status, selectedVariant: {}, size: '', outOfStock: false, cardProduct: {}, carousel });
+		window.scroll(0, 0);
+	}
+
 	closeZoomImage(e) {
 		const { status } = this.state;
 		status.isZoomed = false;
-		enableZoomPinch(false);
 		this.setState({ status });
 	}
 
@@ -340,7 +301,6 @@ class Products extends Component {
 
 	handleLovelistClick(e) {
 		const { status } = this.state;
-		this.animateLovelist();
 		// customer must be logged in first
 		if (!this.isLogin) {
 			status.forceLogin = true;
@@ -358,8 +318,12 @@ class Products extends Component {
 		}
 	}
 
-	handleCloseModalPopUp(e, modal) {
+	handleCloseModalPopUp(e, modalName = null) {
 		const { status } = this.state;
+		let modal = '';
+
+		if (typeof modalName !== 'undefined' && modalName !== null) modal = modalName;
+		else modal = e.currentTarget.dataset.modal;
 
 		switch (modal) {
 		case 'lovelist':
@@ -368,6 +332,9 @@ class Products extends Component {
 		case 'select-size':
 			status.showModalSelectSize = false;
 			status.pendingAddProduct = false;
+			break;
+		case 'login-later':
+			status.forceLogin = false;
 			break;
 		case 'ovo-points':
 			status.showOvoInfo = false;
@@ -380,8 +347,6 @@ class Products extends Component {
 	}
 
 	addToShoppingBag(variant) {
-		this.animateAddtoCart();
-
 		const { status, cardProduct } = this.state;
 		const { cookies, dispatch, product } = this.props;
 
@@ -440,7 +405,7 @@ class Products extends Component {
 
 	handleBtnBeliClicked(e) {
 		const { selectedVariant, status } = this.state;
-		this.animateAddtoCart();
+
 		// product variants not found
 		if (!status.hasVariantSize && _.isEmpty(selectedVariant)) {
 			status.btnBeliDisabled = true;
@@ -480,22 +445,18 @@ class Products extends Component {
 		}
 	}
 
-	handleShowLessProductDescription() {
-		this.setState({
-			showFullProductDescription: false
-		});
-	}
-
-	handleShowMoreProductDescription() {
-		this.setState({
-			showFullProductDescription: true
-		});
-	}
-
-	loginLater() {
+	toggleDescription(toggle = true) {
 		const { status } = this.state;
-		status.forceLogin = false;
-		this.setState({ status });
+		status.showFullProductDescription = toggle;
+		this.setState({ status });		
+	}
+
+	handleShowLessProductDescription = () => {
+		this.toggleDescription(false);
+	}
+
+	handleShowMoreProductDescription = () => {
+		this.toggleDescription();
 	}
 
 	loginNow(e) {
@@ -550,6 +511,7 @@ class Products extends Component {
 			// Updating product lovelist state ...
 			if (res.status === 200 && res.statusText === 'OK') {
 				if (!status.isLoved) {
+					this.animateLovelist();
 					message = 'Lovelist ditambahkan';
 					status.isLoved = true;
 					cardProduct.totalLovelist += 1;
@@ -661,7 +623,8 @@ class Products extends Component {
 	}
 
 	renderStickyAction() {
-		const { cardProduct, status, btnBeliLabel } = this.state;
+		const { cardProduct, status, outOfStock } = this.state;
+		const btnDisabled = (status.btnBeliDisabled || status.loading || status.btnBeliLoading || outOfStock);
 
 		if (!_.isEmpty(cardProduct) && _.has(cardProduct, 'pricing')) {
 			return (
@@ -683,7 +646,7 @@ class Products extends Component {
 							</div>
 						</div>
 						<div>
-							<Button color='secondary' disabled={(status.btnBeliDisabled || status.loading || status.btnBeliLoading)} loading={status.btnBeliLoading} size='medium' onClick={this.handleBtnBeliClicked} >{btnBeliLabel}</Button>
+							<Button color='secondary' disabled={btnDisabled} loading={status.btnBeliLoading} size='medium' onClick={this.handleBtnBeliClicked} >BELI AJA</Button>
 						</div>
 					</div>
 				</div>
@@ -696,18 +659,17 @@ class Products extends Component {
 		const { detail } = this.props.product;
 		const { carousel } = this.state;
 		if (_.has(detail, 'images')) {
-			const images = detail.images.map((image) => image.original);
 			const { slideIndex } = carousel;
 
 			return (
 				<div>
 					<Lightbox
-						mainSrc={images[slideIndex]}
-						nextSrc={images[(slideIndex + 1) % images.length]}
-						prevSrc={images[((slideIndex + images.length) - 1) % images.length]}
+						mainSrc={detail.images[slideIndex].original}
+						nextSrc={detail.images[this.getZoomNextImage()].original}
+						prevSrc={detail.images[this.getZoomPrevImage()].original}
 						onCloseRequest={(e) => this.closeZoomImage(e)}
-						onMovePrevRequest={() => this.setCarouselSlideIndex(((slideIndex + images.length) - 1) % images.length)}
-						onMoveNextRequest={() => this.setCarouselSlideIndex(((slideIndex + images.length) - 1) % images.length)}
+						onMovePrevRequest={() => this.setCarouselSlideIndex(this.getZoomPrevImage())}
+						onMoveNextRequest={() => this.setCarouselSlideIndex(this.getZoomNextImage())}
 					/>
 				</div>
 			);
@@ -721,7 +683,7 @@ class Products extends Component {
 			const { match, product } = this.props;
 			const { detail, socialSummary, promo, loading, store } = product;
 			const { seller, comments, reviews } = socialSummary;
-			const { cardProduct, status, carousel, selectedVariant, showFullProductDescription, outOfStock } = this.state;
+			const { cardProduct, status, carousel, selectedVariant, outOfStock, size } = this.state;
 			const { id } = detail;
 
 			const buttonProductDescriptionAttribute = {
@@ -731,18 +693,18 @@ class Products extends Component {
 			let fullProductDescriptionButtonText = 'more';
 			let classNameProductDescription = classNames('padding--medium-h', styles.textOnlyShowTwoLines);
 
-			if (showFullProductDescription === true) {
+			if (status.showFullProductDescription === true) {
 				classNameProductDescription = classNames('padding--medium-h');
 				buttonProductDescriptionAttribute.onClick = this.handleShowLessProductDescription;
 				fullProductDescriptionButtonText = 'Hide';
 			}
 
-			const productDetailView = !_.isEmpty(detail.description) && (
+			const productDetailView = (!_.isEmpty(cardProduct.formattedDescription)) && (
 				<div>
 					<div className='font-medium margin--medium-v padding--medium-h'><strong>Details</strong></div>
-					<div className='wysiwyg-content'>
-						<div className={classNameProductDescription}>
-							{<div dangerouslySetInnerHTML={{ __html: this.hastagLinkCreator(detail.description) }} />}
+					<div className='wysiwyg-content can-copy'>
+						<div className={classNameProductDescription} style={{ wordWrap: 'break-word' }}>
+							{<div dangerouslySetInnerHTML={{ __html: cardProduct.formattedDescription }} />}
 							{!_.isEmpty(cardProduct.specs) && (
 								<div className='margin--medium-v --disable-flex'>
 									{(cardProduct.specs.map((item, idx) => {
@@ -928,92 +890,27 @@ class Products extends Component {
 										opacity: '1',
 										transform: 'scale(0.1)'
 									}}
-									image='https://mm-imgs.s3.amazonaws.com/p/2017/08/28/01/cardinal-girl-short-sleeve-plaid-shirt-merah_4139942_1_59365.jpg'
+									image={detail.images[0].thumbnail}
 								/>
 							)
 						}
 					</Page>
 					<Header.Modal style={(!status.showScrollInfomation && !outOfStock) ? { backgroundColor: 'transparent', border: 'none', boxShadow: 'none' } : {}} {...this.renderHeaderPage()} />
 
-					{/* MODALS */}
-					<Modal show={status.showConfirmDelete}>
-						<div className='font-medium'>
-							<h3 className='text-center'>Hapus Lovelist</h3>
-							<Level style={{ padding: '0px' }} className='margin--medium-v'>
-								<Level.Left />
-								<Level.Item className='padding--medium-h margin--medium-h'>
-									<div className='font-medium'>Kamu yakin mau hapus produk ini dari Lovelist kamu?</div>
-								</Level.Item>
-							</Level>
-						</div>
-						<Modal.Action
-							closeButton={(
-								<Button onClick={(e) => this.handleCloseModalPopUp(e, 'lovelist')}>
-									<strong className='font-color--primary-ext-2'>BATALKAN</strong>
-								</Button>)}
-							confirmButton={(<Button onClick={this.removeAddItem}><strong className='font-color--primary'>YA, HAPUS</strong></Button>)}
-						/>
-					</Modal>
+					<ProductModal 
+						onBtnCloseModalClick={this.handleCloseModalPopUp}
+						showConfirmDelete={status.showConfirmDelete}
+						onRemoveLovelist={this.removeAddItem}
+						showModalSelectSize={status.showModalSelectSize}
+						variants={cardProduct.variants}
+						onVariantSizeChange={this.handleSelectVariant}
+						forceLogin={status.forceLogin}
+						onLoginNow={this.loginNow}
+						showOvoInfo={status.showOvoInfo}
+						ovoInfo={promo.meta_data.ovo_info}
+						selectedSize={size}
+					/>
 
-					<Modal position='bottom' show={status.showModalSelectSize} onCloseOverlay={(e) => this.handleCloseModalPopUp(e, 'select-size')}>
-						<div className='padding--medium-v'>
-							<div className='padding--medium-h'><strong>PILIH UKURAN</strong></div>
-							<div className='horizontal-scroll padding--medium-h  margin--medium-r'>
-								<Radio
-									name='size'
-									checked={this.state.size}
-									variant='rounded'
-									className='margin--small-v'
-									onChange={this.handleSelectVariant}
-									data={cardProduct.variants}
-								/>
-							</div>
-						</div>
-					</Modal>
-
-					{status.forceLogin && (
-						<Modal show>
-							<div className='font-medium'>
-								<h3 className='text-center'>Lovelist</h3>
-								<Level style={{ padding: '0px' }} className='margin--medium-v'>
-									<Level.Left />
-									<Level.Item className='padding--medium-h margin--medium-h'>
-										<center className='font-medium'>Silahkan login/register untuk menambahkan produk ke Lovelist</center>
-									</Level.Item>
-								</Level>
-							</div>
-							<Modal.Action
-								closeButton={(
-									<Button onClick={(e) => this.loginLater()}>
-										<strong className='font-color--primary-ext-2'>NANTI</strong>
-									</Button>)}
-								confirmButton={(<Button onClick={(e) => this.loginNow()}><strong className='font-color--primary'>SEKARANG</strong></Button>)}
-							/>
-						</Modal>
-					)}
-
-					{status.showOvoInfo && (
-						<Modal show>
-							<div className='font-medium padding--medium-h margin--medium-h'>
-								<h3 className='text-center'>OVO Points</h3>
-								<Level style={{ padding: '0px' }} className='margin--medium-v'>
-									<Level.Left />
-									<Level.Item className='padding--medium-h'>
-										<center>
-											{(/^/.test(promo.meta_data.ovo_info)) && <div dangerouslySetInnerHTML={{ __html: promo.meta_data.ovo_info }} />}
-											{!(/^/.test(promo.meta_data.ovo_info)) && <div>{promo.meta_data.ovo_info}</div>}
-										</center>
-									</Level.Item>
-								</Level>
-							</div>
-							<Modal.Action
-								closeButton={(
-									<Button onClick={(e) => this.handleCloseModalPopUp(e, 'ovo-points')}>
-										<strong className='font-color--primary'>TUTUP</strong>
-									</Button>)}
-							/>
-						</Modal>
-					)}
 				</div>);
 		} catch (error) {
 			// console.log('PDP ERROR: ', error);
