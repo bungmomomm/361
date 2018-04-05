@@ -70,8 +70,8 @@ class Address extends Component {
 					default: edit.fg_default === 1,
 					map: {
 						...this.state.map,
-						lat: parseFloat(edit.latitude),
-						lng: parseFloat(edit.longitude)
+						lat: parseFloat(edit.latitude) || this.state.map.lat,
+						lng: parseFloat(edit.longitude) || this.state.map.lng
 					}
 				});
 
