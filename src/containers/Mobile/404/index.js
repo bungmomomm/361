@@ -11,7 +11,7 @@ import { GridView } from '@/containers/Mobile/Discovery/View';
 
 import { Header, Page, Navigation, Svg, Spinner, Level } from '@/components/mobile';
 
-import { actions } from '@/state/v4/SearchResults';
+import { actions as searchActions } from '@/state/v4/SearchResults';
 
 import Discovery from '../Discovery/Utils';
 import styles from './search.scss';
@@ -128,7 +128,7 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies } = props;
-	await dispatch(actions.promoAction(cookies.get(cookiesLabel.userToken)));
+	await dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken)));
 };
 
 export default withCookies(
