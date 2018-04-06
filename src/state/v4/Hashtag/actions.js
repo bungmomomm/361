@@ -42,24 +42,6 @@ const getQuery = () => (dispatch, getState) => {
 	};
 };
 
-const itemsActiveHashtag = (tag) => (dispatch, getState) => {
-	const data = {
-		active: {
-			tag,
-			node: tag.replace('#', '').toLowerCase()
-		}
-	};
-	dispatch(actions.itemsActiveHashtag(data));
-	const { scroller } = getState();
-	const q = dispatch(getQuery());
-
-	dispatch(scrollerActions.onScroll({
-		nextData: { ...scroller.nextData, query: q ? q.query : {} },
-		nextPage: q ? q.nextPage : false,
-		loading: false
-	}));
-};
-
 const switchViewMode = (mode) => (dispatch) => {
 	const data = { viewMode: mode };
 	dispatch(actions.switchViewMode(data));
@@ -103,10 +85,30 @@ const itemsFetchData = ({ token, query = {} }) => async (dispatch, getState) => 
 	dispatch(scrollerActions.onScroll({
 		nextData: { token, query: q ? q.query : {} },
 		nextPage: q ? q.nextPage : false,
-		loading: false
+		loading: false,
+		loader: itemsFetchData
 	}));
 
 	return Promise.resolve(resp);
+};
+
+const itemsActiveHashtag = (tag) => (dispatch, getState) => {
+	const data = {
+		active: {
+			tag,
+			node: tag.replace('#', '').toLowerCase()
+		}
+	};
+	dispatch(actions.itemsActiveHashtag(data));
+	const { scroller } = getState();
+	const q = dispatch(getQuery());
+
+	dispatch(scrollerActions.onScroll({
+		nextData: { ...scroller.nextData, query: q ? q.query : {} },
+		nextPage: q ? q.nextPage : false,
+		loading: false,
+		loader: itemsFetchData
+	}));
 };
 
 const initHashtags = (token, hash) => async (dispatch, getState) => {
