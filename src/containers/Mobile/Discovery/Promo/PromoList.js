@@ -44,7 +44,7 @@ class PromoList extends Component {
 							width='100%'
 							height='100vh'
 							allowFullScreen
-							style={{ position: relative }}
+							style={{ position: 'relative' }}
 						/>
 					</div>
 				</Page>
