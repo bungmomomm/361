@@ -170,7 +170,14 @@ class Address extends Component {
 				navigating: true
 			});
 
-			const timeout = setTimeout(this.justToggle, 60000);
+			const timeout = setTimeout(() => {
+				this.justToggle();
+
+				this.setState({
+					navigating: false
+				});
+			}, 60000);
+
 			navigator.geolocation.getCurrentPosition(
 				(pos) => {
 					clearTimeout(timeout);
@@ -181,18 +188,19 @@ class Address extends Component {
 							display: !this.state.map.display,
 							lat: crd.latitude,
 							lng: crd.longitude
-						}
+						},
+						navigating: false
 					});
 				},
 				(err) => {
+					this.setState({
+						navigating: false
+					});
+
 					clearTimeout(timeout);
 					this.justToggle();
 				}
 			);
-
-			this.setState({
-				navigating: false
-			});
 
 			return false;
 		}
