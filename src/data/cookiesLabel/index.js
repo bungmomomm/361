@@ -6,5 +6,6 @@ export default {
 	userProfile: 'user.profile',
 	userSource: 'user.source',
 	pageReferrer: 'page.referrer',
+	shouldRefreshToken: 'user.refresh',
 	isLogin: 'isLogin'	
 };
