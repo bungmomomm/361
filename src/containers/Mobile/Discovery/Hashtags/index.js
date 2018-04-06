@@ -13,7 +13,6 @@ import _ from 'lodash';
 import currency from 'currency.js';
 import { userToken } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
-import { checkImage } from '@/utils';
 
 @handler
 class Hashtags extends Component {
@@ -32,14 +31,26 @@ class Hashtags extends Component {
 
 	componentDidMount() {
 		addEventListener('resize', this.handleResize, true);
+		addEventListener('hashchange', this.hashChange);
 	}
 
 	componentWillUnmount() {
 		removeEventListener('resize', this.handleResize, true);
+		removeEventListener('hashchange', this.hashChange);
 	}
 
 	handleResize = () => {
 		this.forceUpdate();
+	};
+
+	hashChange = () => {
+		const { location, hashtag } = this.props;
+		let hash = location.hash;
+		if ((!location.hash || location.hash === '#root') && hashtag.tags.length) {
+			hash = hashtag.tags[0].hashtag;
+		}
+
+		this.switchTag(hash);
 	};
 
 	switchTag = (tag) => {
@@ -83,15 +94,6 @@ class Hashtags extends Component {
 					const embedUrl = _.chain(product).get('embed_url').value();
 					const icode = (embedUrl.substr(embedUrl.indexOf('/p/')).split('/') || [])[2];
 
-					let imageStatus;
-					if (this.checkedImage.includes(product.image)) {
-						imageStatus = this.checkedStatus[this.checkedImage.indexOf(product.image)];
-					} else {
-						imageStatus = checkImage(product.image);
-						this.checkedImage.push(product.image);
-						this.checkedStatus.push(imageStatus);
-					}
-
 					return (
 						<div className='placeholder-image' key={i}>
 							<Link to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode}`}>
@@ -100,7 +102,7 @@ class Hashtags extends Component {
 									width={rect}
 									height={rect}
 									style={{ objectFit: 'cover' }}
-									src={imageStatus ? product.image : require('@/assets/images/mobile/ico_placeholder-full.png')}
+									src={product.image}
 								/>
 							</Link>
 						</div>
@@ -124,19 +126,10 @@ class Hashtags extends Component {
 					const embedUrl = _.chain(product).get('embed_url').value();
 					const icode = (embedUrl.substr(embedUrl.indexOf('/p/')).split('/') || [])[2];
 
-					let imageStatus;
-					if (this.checkedImage.includes(product.image)) {
-						imageStatus = this.checkedStatus[this.checkedImage.indexOf(product.image)];
-					} else {
-						imageStatus = checkImage(product.image);
-						this.checkedImage.push(product.image);
-						this.checkedStatus.push(imageStatus);
-					}
-
 					return (
 						<div key={i}>
 							<Link to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode || ''}`}>
-								<Image lazyload src={imageStatus ? product.image : require('@/assets/images/mobile/ico_placeholder-full.png')} width='100%' />
+								<Image lazyload src={product.image} width='100%' />
 							</Link>
 							<div className='margin--medium-v flex-row flex-spaceBetween flex-middle'>
 								<div className='padding--medium-h'>
