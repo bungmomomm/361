@@ -233,6 +233,7 @@ class Address extends Component {
 			<div className='flex-row flex-middle'>
 				<div className='margin--small-r'><Svg src='ico_pin-poin-marked.svg' /></div>
 				<div style={{ color: '#F57C00', fontSize: '14px' }}>&nbsp;LOKASI SUDAH DITANDAI</div>
+				<div className='margin--large-l'><Svg src='ico_edit.svg' /></div>
 			</div>
 		);
 

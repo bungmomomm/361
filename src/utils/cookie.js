@@ -16,13 +16,17 @@ const setUserCookie = (cookies, token, isAnonymous = false, profile = undefined)
 	}
 };
 
-const removeUserCookie = (cookies, token, isAnonymous = false) => {
+const removeUserCookie = (cookies) => {
+	const currentDate = new Date();
+	currentDate.setDate(currentDate.getDate() + 1);
+	
 	cookies.remove(userExp, { domain: process.env.SESSION_DOMAIN, path: '/' });
 	cookies.remove(userRfToken, { domain: process.env.SESSION_DOMAIN, path: '/' });
 	cookies.remove(userToken, { domain: process.env.SESSION_DOMAIN, path: '/' });
 	cookies.remove(isLogin, { domain: process.env.SESSION_DOMAIN, path: '/' });
 	cookies.remove(userProfile, { domain: process.env.SESSION_DOMAIN, path: '/' });
 	cookies.remove(pageReferrer, { domain: process.env.SESSION_DOMAIN, path: '/' });
+	cookies.set(isLogin, false, { domain: process.env.SESSION_DOMAIN, path: '/', expires: currentDate });
 };
 
 const setUniqeCookie = (cookies) => {

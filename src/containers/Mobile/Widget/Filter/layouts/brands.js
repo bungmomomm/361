@@ -49,13 +49,14 @@ class Brands extends Component {
 		onApply(e, result);
 	}
 
-	reset() {
+	reset(e) {
 		const { data } = this.state;
 		this.setState({
 			resetDisabled: true,
 			keyword: '',
 			data: utils.resetChilds(data)
 		});
+		this.props.onReset(e);
 	}
 
 	searchData(e) {
@@ -129,7 +130,7 @@ class Brands extends Component {
 					</List>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action resetDisabled={resetDisabled} hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
+				<Action resetDisabled={resetDisabled} hasReset onReset={(e) => this.reset(e)} hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}

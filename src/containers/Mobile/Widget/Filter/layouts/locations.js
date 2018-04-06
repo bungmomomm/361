@@ -38,12 +38,13 @@ class Location extends PureComponent {
 		});
 	}
 
-	reset() {
+	reset(e) {
 		const { data } = this.state;
 		this.setState({
 			resetDisabled: true,
 			data: utils.resetChilds(data)
 		});
+		this.props.onReset(e);
 	}
 
 	render() {
@@ -87,7 +88,7 @@ class Location extends PureComponent {
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action resetDisabled={resetDisabled} hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
+				<Action resetDisabled={resetDisabled} hasReset onReset={(e) => this.reset(e)} hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}
