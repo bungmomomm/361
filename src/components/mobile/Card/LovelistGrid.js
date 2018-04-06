@@ -7,6 +7,7 @@ import Level from '../Level';
 import Badge from '../Badge';
 import styles from './card.scss';
 import { Link } from 'react-router-dom';
+import { trimString } from '@/utils';
 
 class LovelistGrid extends PureComponent {
 
@@ -47,7 +48,7 @@ class LovelistGrid extends PureComponent {
 						<Link to={linkToPdp || '/'}>
 							<div className={styles.title}>
 								<span className='font-small text-uppercase font--lato-bold font-color--primary'>{data.brand.name}</span>
-								<span className='text-elipsis-two-line font-color--primary-ext-2'>{data.product_title}</span>
+								<span className='text-elipsis-two-line font-color--primary-ext-2'>{trimString(data.product_title)}</span>
 							</div>
 						</Link>
 					</Level.Item>
