@@ -7,8 +7,20 @@ import Level from '../Level';
 import Badge from '../Badge';
 import styles from './card.scss';
 import { Link } from 'react-router-dom';
+import { aspectRatioHeight } from '../../../utils';
 
 class LovelistGrid extends PureComponent {
+
+	makeAspectRatio = () => {
+		const offsetWidth = document.getElementsByClassName('switch-wrapper')[0].offsetWidth;
+		const rectContainer = _.chain(offsetWidth).divide(2)
+			.subtract(21) // threshold padding
+			.value();
+		return {
+			width: `${rectContainer}px`,
+			height: `${aspectRatioHeight(rectContainer)}px`
+		};
+	}
 
 	render() {
 		const { className, data, isLoved, linkToPdp, lovelistDisabled } = this.props;
@@ -30,14 +42,14 @@ class LovelistGrid extends PureComponent {
 
 		return (
 			<div className={createClassName}>
-				<Link to={linkToPdp || '/'} className={styles.imgContainer}>
+				<Link to={linkToPdp || '/'} style={this.makeAspectRatio()} className={styles.imgContainer}>
 					{(data.stock === 0) &&
-						<div className={`${loveListEmpty} placeholder-image`}>
+						<div style={this.makeAspectRatio()} className={`${loveListEmpty} placeholder-image`}>
 							<Image lazyload src={data.images[0].thumbnail} alt={data.product_title} />
 						</div>
 					}
 					{(data.stock > 0) &&
-						<div className={`${styles.imgWrapper} placeholder-image`}>
+						<div style={this.makeAspectRatio()} className={`${styles.imgWrapper} placeholder-image`}>
 							<Image lazyload src={data.images[0].thumbnail} alt={data.product_title} />
 						</div>
 					}
