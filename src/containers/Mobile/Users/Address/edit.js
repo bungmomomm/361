@@ -70,8 +70,8 @@ class Address extends Component {
 					default: edit.fg_default === 1,
 					map: {
 						...this.state.map,
-						lat: parseFloat(edit.latitude),
-						lng: parseFloat(edit.longitude)
+						lat: parseFloat(edit.latitude) || this.state.map.lat,
+						lng: parseFloat(edit.longitude) || this.state.map.lng
 					}
 				});
 
@@ -206,24 +206,28 @@ class Address extends Component {
 		history.push('/address');
 	};
 
-	toggleMap = (e) => {
-		e.preventDefault();
+	justToggle = () => {
+		this.setState({
+			map: {
+				...this.state.map,
+				display: !this.state.map.display
+			}
+		});
+	};
 
+	toggleMap = () => {
 		const { address: { edit: { latitude, longitude } } } = this.props;
 		if (parseFloat(latitude) && parseFloat(longitude)) {
-			this.setState({
-				map: {
-					...this.state.map,
-					display: !this.state.map.display
-				}
-			});
-
+			this.justToggle();
 			return false;
 		}
 
 		if (navigator) {
+			const timeout = setTimeout(this.justToggle, 10000);
+
 			navigator.geolocation.getCurrentPosition(
 				(pos) => {
+					clearTimeout(timeout);
 					const crd = pos.coords;
 					this.setState({
 						map: {
@@ -235,23 +239,15 @@ class Address extends Component {
 					});
 				},
 				(err) => {
-					this.setState({
-						map: {
-							...this.state.map,
-							display: !this.state.map.display
-						}
-					});
+					clearTimeout(timeout);
+					this.justToggle();
 				}
 			);
+
+			return false;
 		}
 
-		this.setState({
-			map: {
-				...this.state.map,
-				display: !this.state.map.display
-			}
-		});
-
+		this.justToggle();
 		return null;
 	};
 
@@ -515,57 +511,57 @@ class Address extends Component {
 							/>
 						</div>
 					</Level>
-
-					{this.state.map.display && (
-						<Level className='bg--white flex-column' style={{ padding: '0px' }}>
-							<Map
-								containerElement={<div style={{ height: '100%' }} />}
-								mapElement={<div style={{ height: `${window.innerHeight - 60}px` }} />}
-								defaultPosition={this.state.map}
-								zoom={lat !== -6.24800035920893 && lng !== 106.81144165039063 ? 16 : 7}
-								onChange={this.handleLocationChange}
-								radius={200}
-							/>
-
-							<div style={{ marginTop: '5px' }}>
-								<small>{this.state.map.address}</small>
-							</div>
-						</Level>
-					)}
-
-					<Level className='padding--medium margin--medium-t bg--white' style={{ display: this.state.map.display ? 'none' : 'flex' }}>
-						<Level.Left style={{ margin: '0px auto 30px auto' }}>
-							<div className='padding--small-t' style={{ textAlign: 'center' }}>
-								<span>
-									<p style={{ paddingBottom: '20px', fontSize: '14px' }}>
-										Untuk pengiriman menggunakan Go-Jek, Anda harus <br />
-										menentukan koordinat alamat pengiriman Anda.
-									</p>
-
-									<button
-										onClick={this.toggleMap}
-										style={
-											!isMarked ? {
-												backgroundColor: 'rgba(0, 0, 0, 0.8)',
-												padding: '10px 25px',
-												borderRadius: '40px',
-												fontSize: '14px',
-												color: '#fff'
-											} : {}}
-									>
-										{isMarked ?
-											placeHasBeenMarkedContent
-											:
-											<strong>
-												<Svg src='ico_pin-poin-unmarked.svg' />&nbsp;&nbsp;
-												Tunjukkan Alamat Dalam Peta
-											</strong>}
-									</button>
-								</span>
-							</div>
-						</Level.Left>
-					</Level>
 				</Form>
+
+				{this.state.map.display && (
+					<Level className='bg--white flex-column' style={{ padding: '0px' }}>
+						<Map
+							containerElement={<div style={{ height: '100%' }} />}
+							mapElement={<div style={{ height: `${window.innerHeight - 60}px` }} />}
+							defaultPosition={this.state.map}
+							zoom={lat !== -6.24800035920893 && lng !== 106.81144165039063 ? 16 : 7}
+							onChange={this.handleLocationChange}
+							radius={200}
+						/>
+
+						<div style={{ marginTop: '5px' }}>
+							<small>{this.state.map.address}</small>
+						</div>
+					</Level>
+				)}
+
+				<Level className='padding--medium margin--medium-t bg--white' style={{ display: this.state.map.display ? 'none' : 'flex' }}>
+					<Level.Left style={{ margin: '0px auto 30px auto' }}>
+						<div className='padding--small-t' style={{ textAlign: 'center' }}>
+							<span>
+								<p style={{ paddingBottom: '20px', fontSize: '14px' }}>
+									Untuk pengiriman menggunakan Go-Jek, Anda harus <br />
+									menentukan koordinat alamat pengiriman Anda.
+								</p>
+
+								<button
+									onClick={this.toggleMap}
+									style={
+										!isMarked ? {
+											backgroundColor: 'rgba(0, 0, 0, 0.8)',
+											padding: '10px 25px',
+											borderRadius: '40px',
+											fontSize: '14px',
+											color: '#fff'
+										} : {}}
+								>
+									{isMarked ?
+										placeHasBeenMarkedContent
+										:
+										<strong>
+											<Svg src='ico_pin-poin-unmarked.svg' />&nbsp;&nbsp;
+											Tunjukkan Alamat Dalam Peta
+										</strong>}
+								</button>
+							</span>
+						</div>
+					</Level.Left>
+				</Level>
 			</Page>
 		);
 	};
