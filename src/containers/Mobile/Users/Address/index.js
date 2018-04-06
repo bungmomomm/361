@@ -5,6 +5,8 @@ import { connect } from 'react-redux';
 import Shared from '@/containers/Mobile/Shared';
 import { Page, Button, Svg, Header, Modal, Level } from '@/components/mobile';
 import { actions } from '@/state/v4/Address';
+import { actions as sharedActions } from '@/state/v4/Shared';
+import { toastSytle } from '@/containers/Mobile/Shared/styleSnackbar';
 import { Promise } from 'es6-promise';
 import { userToken, isLogin } from '@/data/cookiesLabel';
 import styles from './style.scss';
@@ -20,7 +22,8 @@ class Address extends Component {
 		this.state = {
 			AddressModalIndicator: false,
 			selectedAddress: false,
-			showConfirmDelete: false
+			showConfirmDelete: false,
+			showSetDefault: true
 		};
 		this.showAddressModal = this.showAddressModal.bind(this);
 		this.hideAddressModal = this.hideAddressModal.bind(this);
@@ -33,12 +36,21 @@ class Address extends Component {
 		await dispatch(actions.setDefaultAddress(cookies.get(userToken), selectedAddress));
 		await dispatch(actions.getAddress(cookies.get(userToken)));
 		this.hideAddressModal();
+
+		dispatch(sharedActions.showSnack('setDefaultAddress',
+			{
+				label: 'Alamat utama telah berhasil diubah',
+				timeout: 5000
+			},
+			toastSytle(),
+		));
 	};
 
-	showAddressModal(id) {
+	showAddressModal(id, showSetDefault = true) {
 		this.setState({
 			AddressModalIndicator: true,
-			selectedAddress: id
+			selectedAddress: id,
+			showSetDefault
 		});
 	}
 
@@ -81,7 +93,7 @@ class Address extends Component {
 					<Level.Right style={{ justifyContent: 'center' }}>
 						<Svg
 							src='ico_option.svg'
-							onClick={() => this.showAddressModal(options.id)}
+							onClick={() => this.showAddressModal(options.id, options.default === 0)}
 						/>
 					</Level.Right>
 				</Level>
@@ -99,7 +111,7 @@ class Address extends Component {
 
 	renderData = () => {
 
-		const { AddressModalIndicator } = this.state;
+		const { AddressModalIndicator, showSetDefault } = this.state;
 		const { address } = this.props;
 		const HeaderPage = {
 			left: (
@@ -191,12 +203,13 @@ class Address extends Component {
 						<Level style={{ padding: '0px', textAlign: 'center' }}>
 							<Level.Left />
 							<Level.Item className='flex-center'>
+								{showSetDefault && <Button className='padding--small' onClick={this.setDefault}>Jadikan Alamat Utama</Button>}
 								<div className='padding--small'>
 									<Link to={`/address/edit/${this.state.selectedAddress}`} style={{ color: '#191919' }}>
 										Ubah Alamat
 									</Link>
 								</div>
-								<Button className='padding--small' style={{ color: '#ED1C24' }} onClick={() => { this.setState({ showConfirmDelete: true }); }}>Hapus Alamat</Button>
+								{showSetDefault && <Button className='padding--small' style={{ color: '#ED1C24' }} onClick={() => { this.setState({ showConfirmDelete: true }); }}>Hapus Alamat</Button>}
 								<Button className='padding--small' onClick={this.hideAddressModal}>Batal</Button>
 							</Level.Item>
 						</Level>

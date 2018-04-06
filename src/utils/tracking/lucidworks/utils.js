@@ -40,20 +40,34 @@ export default class Utils {
 	}
 
 	static getSessionID = () => {
-		const sessionName = `${config.sessionName}`;
-		return Utils.getInfo(sessionName);
+		try {
+			const sessionName = `${config.sessionName}`;
+			const info = Utils.getInfo(sessionName);
+			if (!Utils.isEmpty(info) && (info.indexOf('|') >= 0)) {
+				const sessionData = info.split('|');
+				return (!Utils.isEmpty(sessionData[0])) ? sessionData[0] : null;
+			}
+		} catch (error) {
+			console.log(error);
+		}
+		return null;
 	}
 
 	static getCustomerID = () => {
-		const sessionName = `${config.userSession}`;
-		const userSession = Utils.getInfo(sessionName);
+		try {
+			const sessionName = `${config.userSession}`;
+			const userSession = Utils.getInfo(sessionName);
 
-		if (Utils.IsJsonString(userSession)) {
-			const info = JSON.parse(userSession);
-			const customerId = Number(info.id);
-			if (Utils.notEmptyVal(customerId)) return customerId;
+			if (Utils.IsJsonString(userSession)) {
+				const info = JSON.parse(userSession);
+				const customerId = Number(info.id);
+				if (Utils.notEmptyVal(customerId)) return customerId;
+			}
+			return config.defaultCustomerId;
+		} catch (error) {
+			console.log(error);
+			return config.defaultCustomerId;
 		}
-		return config.defaultCustomerId;
 	}
 
 	static getSource = () => {
@@ -78,7 +92,7 @@ export default class Utils {
 
 	static hasSession = () => {
 		const sessionFound = Utils.getSessionID();
-		return Utils.notEmptyVal(sessionFound);
+		return (Utils.notEmptyVal(sessionFound));
 	}
 
 	static hasCustomerSession = () => {

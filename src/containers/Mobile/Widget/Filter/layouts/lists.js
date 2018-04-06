@@ -43,6 +43,7 @@ class Lists extends PureComponent {
 			resetDisabled: true,
 			data: utils.resetChilds(data)
 		});
+		this.props.onReset(e);
 	}
 
 	render() {
@@ -86,7 +87,7 @@ class Lists extends PureComponent {
 					</List>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Action resetDisabled={resetDisabled} hasReset onReset={(e) => this.reset()} hasApply onApply={(e) => this.onApply(e)} />
+				<Action resetDisabled={resetDisabled} hasReset onReset={(e) => this.reset(e)} hasApply onApply={(e) => this.onApply(e)} />
 			</div>
 		);
 	}
