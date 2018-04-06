@@ -85,7 +85,7 @@ class Reviews extends Component {
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</Button>
 			),
-			center: 'Reviews',
+			center: 'Penilaian Produk',
 			right: null
 		};
 		return (

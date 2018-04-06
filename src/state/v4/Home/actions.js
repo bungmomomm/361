@@ -28,7 +28,7 @@ const initAction = () => async (dispatch) => {
 	};
 	dispatch(forEverBanner({ foreverBanner: banner, serviceUrl, webViewUrl }));
 	dispatch(initResponse({ segmen: segment }));
-	return Promise.resolve(segment);
+	return Promise.resolve(response.data.data);
 
 };
 

@@ -162,10 +162,6 @@ export default {
 			component: loadable(() => import('@/containers/Mobile/Discovery/Lovelist'), defaultOptions)
 		},
 		{
-			path: '/lovelist-login',
-			component: loadable(() => import('@/containers/Mobile/Discovery/Lovelist/login'), defaultOptions)
-		},
-		{
 			path: '/cart',
 			exact: true,
 			component: loadable(() => import('@/containers/Mobile/Cart'), defaultOptions)

@@ -62,7 +62,11 @@ class SearchResults extends Component {
 			isFooterShow: false
 		};
 
-		this.loadingView = <Spinner />;
+		this.loadingView = (
+			<div style={{ margin: '20% auto 20% auto' }}>
+				<Spinner />
+			</div>
+		);
 		this.renderForeverBanner = (tprops) => {
 			const { shared, dispatch } = tprops;
 			return <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />;
@@ -75,6 +79,11 @@ class SearchResults extends Component {
 				query: nextProps.query
 			});
 		}
+	}
+
+	componentWillUnmount() {
+		const { dispatch } = this.props;
+		dispatch(searchActions.loadingAction(true));
 	}
 
 	async onApply(e, fq, closeFilter) {
@@ -126,7 +135,7 @@ class SearchResults extends Component {
 			}
 		})));
 		if (err) {
-			dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken)));
+			dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken), 'empty'));
 		}
 		if (response) {
 			if (!_.isEmpty(response.searchData.products)) {
@@ -134,7 +143,7 @@ class SearchResults extends Component {
 				dispatch(commentActions.bulkieCommentAction(cookies.get(cookiesLabel.userToken), productIdList));
 				dispatch(lovelistActions.bulkieCountByProduct(cookies.get(cookiesLabel.userToken), productIdList));
 			} else {
-				dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken)));
+				dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken), 'empty'));
 			}
 		}
 	}
@@ -171,12 +180,13 @@ class SearchResults extends Component {
 
 	searchNotFound() {
 		const { promoData } = this.props;
-
+		
 		return (
 			<SearchNotFound
 				keyword={this.getKeyword()}
 				data={promoData}
 				renderForeverBanner={() => this.renderForeverBanner(this.props)}
+				forceLoginNow={() => this.forceLoginNow()}
 			/>
 		);
 	}
@@ -344,6 +354,17 @@ const mapStateToProps = (state) => {
 	searchResults.searchData.products = Discovery.mapProducts(searchResults.searchData.products, comments, lovelist);
 	const isFiltered = Filter.utils.isFiltered(searchResults.searchData.facets);
 
+	const getRecommendationData = _.find(searchResults.promoData, { type: 'recommended' }) || false;
+	if (getRecommendationData) {
+		state.searchResults.promoData = {
+			...searchResults.promoData,
+			recommendationData: {
+				title: getRecommendationData.title,
+				products: Discovery.mapPromoProducts(getRecommendationData.data, lovelist)
+			}
+		};
+	}
+
 	return {
 		...state,
 		searchResults,
@@ -371,7 +392,7 @@ const doAfterAnonymous = async (props) => {
 	};
 	const [err, response] = await to(dispatch(searchActions.searchAction({ token: cookies.get(cookiesLabel.userToken), query: searchParam })));
 	if (err) {
-		await dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken)));
+		await dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken), 'empty'));
 	}
 	if (response) {
 		if (!_.isEmpty(response.searchData.products)) {
@@ -379,7 +400,7 @@ const doAfterAnonymous = async (props) => {
 			await dispatch(searchActions.bulkieCommentAction(cookies.get(cookiesLabel.userToken), productIdList));
 			await dispatch(lovelistActions.bulkieCountByProduct(cookies.get(cookiesLabel.userToken), productIdList));
 		} else {
-			await dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken)));
+			await dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken), 'empty'));
 		}
 	}
 };

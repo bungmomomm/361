@@ -13,7 +13,7 @@ import { Header, Page, Navigation, Svg, List, Level, Image, Panel, Spinner, Moda
 import { actions as userActions } from '@/state/v4/User';
 
 import CONST from '@/constants';
-import { removeUserCookie } from '@/utils';
+import { setUserCookie } from '@/utils';
 
 import styles from './profile.scss';
 
@@ -44,14 +44,15 @@ class UserProfile extends Component {
 		this.EMAIL_FIELD = CONST.USER_PROFILE_FIELD.email;
 		this.PHONE_FIELD = CONST.USER_PROFILE_FIELD.phone;
 	}
-
+	
 	onLogout = async () => {
 		const { dispatch, history, cookies } = this.props;
 		const [err, response] = await to(dispatch(userActions.userLogout(cookies.get(cookiesLabel.userToken))));
 		if (err) {
 			return err;
 		}
-		removeUserCookie(cookies);
+		window.sessionStorage.removeItem('cacheToken');
+		setUserCookie(cookies, response.token, true);
 		history.push('/');
 		return response;
 	}
@@ -60,7 +61,7 @@ class UserProfile extends Component {
 		const { history } = this.props;
 		const HeaderPage = {
 			left: (
-				<button onClick={() => (history.length < 2 ? history.push('/') : history.go(-2))}>
+				<button onClick={history.goBack}>
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</button>
 			),
@@ -80,7 +81,7 @@ class UserProfile extends Component {
 				</form>
 			);
 		}
-		
+
 		const ppCtrClassName = classNames(
 			styles.tempPPContainer
 		);
@@ -249,6 +250,7 @@ class UserProfile extends Component {
 }
 
 const mapStateToProps = (state) => {
+	
 	return {
 		...state,
 		isLoading: state.users.isLoading,
@@ -257,11 +259,8 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-	const { dispatch, cookies, shared } = props;
-
-	const serviceUrl = _.chain(shared).get('serviceUrl.account.url').value() || false;
-	if (serviceUrl) {
-		dispatch(userActions.userGetProfile(cookies.get(cookiesLabel.userToken)));
+	if (props.cookies.get(cookiesLabel.isLogin) !== 'true') {
+		props.history.replace('/login?redirect_uri=/profile');
 	}
 };
 

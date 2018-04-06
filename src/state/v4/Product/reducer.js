@@ -35,8 +35,8 @@ const initialState = {
 		},
 		recommended_items: {
 			products: []
-		}
-
+		},
+		loading: false
 	},
 	store: {
 		info: {
@@ -119,6 +119,7 @@ const reducer = handleActions({
 }, initialState);
 
 export default {
+	initialState,
 	reducer, 
 	productDetail,
 	productSocialSummary,

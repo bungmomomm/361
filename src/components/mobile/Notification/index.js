@@ -24,6 +24,7 @@ class Notification extends PureComponent {
 			color,
 			toast,
 			disableClose,
+			bordered,
 			alert,
 			show,
 			style
@@ -32,6 +33,7 @@ class Notification extends PureComponent {
 		const createClassName = classNames(
 			styles.container,
 			styles[color],
+			bordered ? styles.bordered : '',
 			show ? styles.show : styles.hide,
 			toast ? styles.toast : null,
 			className
@@ -41,7 +43,7 @@ class Notification extends PureComponent {
 			styles.toastContainer,
 			show ? styles.showToast : styles.hideToast
 		);
-	
+
 		const createClassNameAlert = classNames(
 			styles.toastContainer,
 			show ? styles.showToast : styles.hideToast

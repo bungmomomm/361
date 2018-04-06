@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import Shared from '@/containers/Mobile/Shared';
-import { Link } from 'react-router-dom';
 import {
 	Header,
 	Svg,
@@ -86,9 +85,13 @@ class MyOrderDetail extends Component {
 	render() {
 		const HeaderPage = ({
 			left: (
-				<Link to={'/profile'}>
-					<Svg src='ico_arrow-back-left.svg' />
-				</Link>
+				<span
+					onClick={() => this.props.history.goBack()}
+					role='button'
+					tabIndex='0'
+				>
+					<Svg src='ico_close-large.svg' />
+				</span>
 			),
 			center: 'Lacak Pesanan',
 			right: null
@@ -97,11 +100,17 @@ class MyOrderDetail extends Component {
 		return (
 			<div style={this.props.style}>
 				<Page>
-					<div className='margin--medium-v padding--medium-h bg--white'>
-						{this.props.user.trackingInfo === null && <Spinner />}
-						{this.renderTopInfo()}
-						{this.renderTimeline()}
-					</div>
+					{this.props.user.trackingInfo === null ?
+						(
+							<div className='margin--medium-v padding--medium-h'>
+								<div style={{ padding: '10px' }}><Spinner /></div>
+							</div>
+						) : (
+							<div className='margin--medium-v padding--medium-h bg--white'>
+								{this.renderTopInfo()}
+								{this.renderTimeline()}
+							</div>
+						)}
 				</Page>
 				<Header.Modal {...HeaderPage} />
 			</div>

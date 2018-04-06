@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { withCookies } from 'react-cookie';
 import _ from 'lodash';
-import { Header, Page, Card, Button, Svg, Image, Level, Modal, Spinner } from '@/components/mobile';
+import { Header, Page, Button, Svg, Image, Level, Modal, Spinner } from '@/components/mobile';
 import { toastSytle } from '@/containers/Mobile/Shared/styleSnackbar';
 import styles from './lovelist.scss';
 
@@ -16,8 +16,10 @@ import Scroller from '@/containers/Mobile/Shared/scroller';
 import xhandler from '@/containers/Mobile/Shared/handler';
 import Shared from '@/containers/Mobile/Shared';
 
-import { urlBuilder, uniqid } from '@/utils';
+import { uniqid } from '@/utils';
 import cookiesLabel from '@/data/cookiesLabel';
+
+import { LovedItemsSingle, LovedItemsGrid } from './List';
 
 @xhandler
 class Lovelist extends Component {
@@ -34,7 +36,6 @@ class Lovelist extends Component {
 			removedItemId: false
 		};
 
-		this.getLovelistCardsContent = this.getLovelistCardsContent.bind(this);
 		this.goBackPreviousPage = this.goBackPreviousPage.bind(this);
 		this.handleLovelistClicked = this.handleLovelistClicked.bind(this);
 		this.handleCancelRemoveItem = this.handleCancelRemoveItem.bind(this);
@@ -52,7 +53,7 @@ class Lovelist extends Component {
 		// should be redirected to lovelist-login page
 		if (!this.isLogin) {
 			const { history } = this.props;
-			history.push('/lovelist-login');
+			history.push('/login?redirect_uri=/lovelist');
 		}
 	}
 
@@ -67,38 +68,6 @@ class Lovelist extends Component {
 		const { status } = this.state;
 		status.listTypeGrid = (!status.listTypeGrid);
 		this.setState({ status });
-	}
-
-	getLovelistCardsContent() {
-		const { items } = this.props.lovelist;
-		if (!_.isUndefined(items) && _.has(items, 'list') && !_.isEmpty(items.list)) {
-			const { status } = this.state;
-			const isLoved = true;
-			const content = items.list.map((product, idx) => {
-				return !status.listTypeGrid ?
-					(<Card.Lovelist
-						isLoved={isLoved}
-						key={idx}
-						data={product}
-						onBtnLovelistClick={this.handleLovelistClicked}
-						linkToPdp={urlBuilder.buildPdp(product.product_title, product.id)}
-						linkToComments={urlBuilder.buildPcpCommentUrl(product.id)}
-						lovelistDisabled={status.lovelistDisabled}
-					/>) :
-					(<Card.LovelistGrid
-						key={idx}
-						data={product}
-						isLoved={isLoved}
-						onBtnLovelistClick={this.handleLovelistClicked}
-						linkToPdp={urlBuilder.buildPdp(product.product_title, product.id)}
-						linkToComments={urlBuilder.buildPcpCommentUrl(product.id)}
-						lovelistDisabled={status.lovelistDisabled}
-						split={2}
-					/>);
-			});
-			return <div className={styles.cardContainer}>{content}</div>;
-		}
-		return '';
 	}
 
 	goBackPreviousPage(e) {
@@ -200,7 +169,22 @@ class Lovelist extends Component {
 				<Page color='white'>
 					{<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />}
 					{(loading && _.isEmpty(items.list)) && this.loadingContent}
-					{(this.getLovelistCardsContent())}
+					{(!lovedEmpty && status.listTypeGrid) && 
+						<LovedItemsGrid
+							items={items}
+							loading={loading}
+							onIconLoveClick={this.handleLovelistClicked}
+							cardContainerStyles={styles.cardContainer}
+						/>
+					}
+					{(!lovedEmpty && !status.listTypeGrid) &&
+						<LovedItemsSingle
+							items={items}
+							loading={loading}
+							onIconLoveClick={this.handleLovelistClicked}
+							cardContainerStyles={styles.cardContainer}
+						/>
+					}
 					{this.props.scroller.loading && (<div style={{ paddingTop: '20px' }}> <Spinner /></div>)}
 					{(!loading && lovedEmpty) && (
 						<div className='text-center --disable-flex'>

@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import Shared from '@/containers/Mobile/Shared';
-// import queryString from 'query-string';
-import { Link } from 'react-router-dom';
 import { actions as users } from '@/state/v4/User';
 import _ from 'lodash';
 import { to } from 'await-to-js';
@@ -204,11 +202,15 @@ class OrderConfirmation extends Component {
 
 		const HeaderPage = ({
 			left: (
-				<Link to={'/profile'}>
-					<Svg src='ico_arrow-back-left.svg' />
-				</Link>
+				<span
+					onClick={() => this.props.history.goBack()}
+					role='button'
+					tabIndex='0'
+				>
+					<Svg src='ico_close-large.svg' />
+				</span>
 			),
-			center: 'Pesanan Saya',
+			center: 'Konfirmasi Pembayaran',
 			right: null
 		});
 

@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
-import { Page, Header, Svg, Panel, Image, Select, Level, Button, Modal, Spinner } from '@/components/mobile';
+import { Page, Notification, Header, Svg, Panel, Image, Select, Level, Button, Modal, Spinner } from '@/components/mobile';
 import styles from './cart.scss';
 import Shared from '@/containers/Mobile/Shared';
 import { connect } from 'react-redux';
 import { actions as shopBagAction } from '@/state/v4/ShopBag';
-import { urlBuilder, aux } from '@/utils';
+import { urlBuilder, aux, uniqid } from '@/utils';
 import _ from 'lodash';
 import {
 	TrackingRequest,
@@ -17,6 +17,8 @@ import {
 import cookiesLabel from '@/data/cookiesLabel';
 import { LucidCart, Utils } from '@/utils/tracking/lucidworks';
 import handler from '@/containers/Mobile/Shared/handler';
+import { actions as sharedActions } from '@/state/v4/Shared';
+import { toastSytle } from '@/containers/Mobile/Shared/styleSnackbar';
 
 const trackBrandPageView = (data, props) => {
 	const items = _.flatMap(data, (e) => (e.items));
@@ -50,6 +52,7 @@ class Cart extends Component {
 			showSelect: false,
 			showConfirmDelete: false,
 			productWillDelete: { variant_id: null, brand: null, title: null, image: null },
+			productWillMove: { product_id: null, variant_id: null },
 			variantIdwillUpdate: null,
 			selectList: [],
 			qtyCurrent: null,
@@ -65,6 +68,7 @@ class Cart extends Component {
 		this.selectItemHandler = this.selectItemHandler.bind(this);
 		this.selectedNewQtyHander = this.selectedNewQtyHander.bind(this);
 		this.clearWillDeleteState = this.clearWillDeleteState.bind(this);
+		this.clearWillMoveState = this.clearWillMoveState.bind(this);
 		this.updateCartHander = this.updateCartHander.bind(this);
 		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin);
 	}
@@ -92,22 +96,24 @@ class Cart extends Component {
 		this.setState({ itemsNotProced: notProcedItems });
 	}
 
-	addToLovelistHandler(productId, variantId) {
+	async addToLovelistHandler() {
 		if (this.isLogin !== 'true') {
 			return this.props.history.push(`/login?redirect_uri=${this.props.location.pathname}`);
 		}
 		const { cookies, dispatch } = this.props;
 		const movingToLovelist = new Promise((resolve, reject) => {
-			resolve(dispatch(shopBagAction.addLovelistAction(cookies.get(cookiesLabel.userToken), productId)));
+			resolve(dispatch(shopBagAction.addLovelistAction(cookies.get(cookiesLabel.userToken), this.state.productWillMove.product_id)));
 		});
-		movingToLovelist.then((res) => {
+		await movingToLovelist.then((res) => {
 			const deleting = new Promise((resolve, reject) => {
-				resolve(dispatch(shopBagAction.deleteAction(cookies.get(cookiesLabel.userToken), variantId)));
+				resolve(dispatch(shopBagAction.deleteAction(cookies.get(cookiesLabel.userToken), this.state.productWillMove.variant_id)));
 			});
 			deleting.then((resp) => {
 				dispatch(shopBagAction.getAction(cookies.get(cookiesLabel.userToken)));
+				dispatch(sharedActions.showSnack(uniqid('err-'), { label: 'Produk dipindahkan ke Lovelist', timeout: 3000 }, toastSytle()));
 			});
 		});
+		this.clearWillMoveState();
 		return true;
 	}
 
@@ -115,8 +121,16 @@ class Cart extends Component {
 		this.setState({ showConfirmDelete: true, productWillDelete: { variant_id: variantId, brand: itemBrand, title: itemTitel, image: itemImage } });
 	}
 
+	showConfirmMoveLovelistHandler(productId, variantId) {
+		this.setState({ showConfirmMoveLovelist: true, productWillMove: { product_id: productId, variant_id: variantId } });
+	}
+
 	clearWillDeleteState() {
 		this.setState({ showConfirmDelete: false, productWillDelete: { variant_id: null, brand: null, title: null, image: null } });
+	}
+
+	clearWillMoveState() {
+		this.setState({ showConfirmMoveLovelist: false, productWillMove: { product_id: null, variant_id: null } });
 	}
 
 	deleteItemHandler() {
@@ -130,6 +144,7 @@ class Cart extends Component {
 		});
 		deleting.then((res) => {
 			dispatch(shopBagAction.getAction(cookies.get(cookiesLabel.userToken)));
+			dispatch(sharedActions.showSnack(uniqid('err-'), { label: 'Produk dihapus dari Tas Belanja', timeout: 3000 }, toastSytle()));
 		}).catch((err) => this.clearWillDeleteState());
 
 	}
@@ -227,7 +242,7 @@ class Cart extends Component {
 						<div className='flex-row flex-center flex-spaceBetween margin--medium-b'>
 							<div>
 								<Button
-									onClick={() => this.addToLovelistHandler(item.product_id, item.variant_id)}
+									onClick={() => this.showConfirmMoveLovelistHandler(item.product_id, item.variant_id)}
 									size='medium'
 								>
 									<Svg src='ico_move_lovelist.svg' /> &nbsp; <span className='font-color--blue text-uppercase'>Pindahkan ke Lovelist</span>
@@ -321,13 +336,14 @@ class Cart extends Component {
 	}
 
 	renderMessageNotProcedItems() {
-		const style = {
-			backgroundColor: '#ffaeae',
-			padding: '5px 10px'
-		};
 		return this.state.itemsNotProced.length > 0 && (
-			<div style={style}>
-				1 produk atau lebih item tidak dapat dibeli. Silahkan hapus barang untuk melanjutkan pembayaran
+			<div className='padding--medium-h margin--medium-t'>
+				<Notification color='pink' disableClose show bordered>
+					<div className='flex-row text-left padding--small-v'>
+						<div><Svg src='ico_error_message.svg' /></div>
+						<div className='margin--small-l font-color--red flex-shrink-unset'>1 produk atau lebih item tidak dapat dibeli. Silahkan hapus barang untuk melanjutkan pembayaran</div>
+					</div>
+				</Notification>
 			</div>
 		);
 	}
@@ -353,8 +369,8 @@ class Cart extends Component {
 					{ (this.props.shopBag.total && this.props.shopBag.total.count_item === 0) ?
 						(<div dangerouslySetInnerHTML={{ __html: this.props.shopBag.empty_state }} />) :
 						(<div style={{ backgroundColor: '#F5F5F5' }}>
-							{this.renderHeaderShopBag()}
 							{this.renderMessageNotProcedItems()}
+							{this.renderHeaderShopBag()}
 							{this.renderList()}
 							{this.renderTotal()}
 						</div>)
@@ -375,24 +391,48 @@ class Cart extends Component {
 				/>
 
 				<Modal show={this.state.showConfirmDelete}>
-					<div className='font-medium'>Anda mau menghapus produk ini?</div>
+					<h3 className='text-center'><strong>Hapus Troli</strong></h3>
 					<Level style={{ padding: '0px' }} className='margin--medium-v'>
-						<Level.Left><Image width='40px' src={this.state.productWillDelete.image} /></Level.Left>
-						<Level.Item className='padding--medium-h'>
-							<div className='font-small'>{this.state.productWillDelete.brand}</div>
-							<div className='font-small font-color--primary-ext-1'>{this.state.productWillDelete.title}</div>
+						<Level.Left />
+						<Level.Item className='padding--medium-h margin--medium-h'>
+							<div className='font-medium'>Kamu yakin mau hapus item dari Tas Belanja?</div>
 						</Level.Item>
 					</Level>
 					<Modal.Action
 						closeButton={
 							<Button
 								onClick={this.clearWillDeleteState}
-							> BATAL
+							>
+								<span className='font-color--primary-ext-2'>BATALKAN</span>
 							</Button>
 						}
 						confirmButton={
 							<Button onClick={this.deleteItemHandler}>
-								<span className='font-color--primary-ext-2'>HAPUS</span>
+								YA, HAPUS
+							</Button>
+						}
+					/>
+				</Modal>
+
+				<Modal show={this.state.showConfirmMoveLovelist}>
+					<h3 className='text-center'><strong>Pindahkan ke Lovelist</strong></h3>
+					<Level style={{ padding: '0px' }} className='margin--medium-v'>
+						<Level.Left />
+						<Level.Item className='padding--medium-h margin--medium-h'>
+							<div className='font-medium'>Kamu yakin mau pindahkan item ke Lovelist?</div>
+						</Level.Item>
+					</Level>
+					<Modal.Action
+						closeButton={
+							<Button
+								onClick={this.clearWillMoveState}
+							>
+								<span className='font-color--primary-ext-2'>BATALKAN</span>
+							</Button>
+						}
+						confirmButton={
+							<Button onClick={this.addToLovelistHandler}>
+								PINDAHKAN
 							</Button>
 						}
 					/>
@@ -412,7 +452,7 @@ const mapStateToProps = (state) => {
 
 const doAfterAnonymousCall = (props) => {
 	const { dispatch, cookies } = props;
-	
+
 	dispatch(
 		shopBagAction.getAction(
 			cookies.get(cookiesLabel.userToken)

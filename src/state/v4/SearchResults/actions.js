@@ -74,7 +74,7 @@ const searchAction = ({ token, query = {}, loadNext = false }) => async (dispatc
 	});
 };
 
-const promoAction = (token) => async (dispatch, getState) => {
+const promoAction = (token, mode = '404') => async (dispatch, getState) => {
 	dispatch(searchLoading({ isLoading: true }));
 
 	const { shared } = getState();
@@ -82,7 +82,7 @@ const promoAction = (token) => async (dispatch, getState) => {
 
 	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
-	const path = `${baseUrl}/suggestion?mode=404`;
+	const path = `${baseUrl}/suggestion?mode=${mode}`;
 
 	const [err, response] = await to(request({
 		token,
@@ -92,7 +92,6 @@ const promoAction = (token) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
-		console.log(err);
 		return Promise.reject(__x(err));
 	}
 
@@ -101,8 +100,6 @@ const promoAction = (token) => async (dispatch, getState) => {
 		searchStatus: 'failed',
 		promoData
 	}));
-
-	console.log(promoData);
 
 	return Promise.resolve(promoData);
 };
@@ -128,8 +125,13 @@ const viewModeAction = (mode) => (dispatch) => {
 	}));
 };
 
+const loadingAction = (value) => (dispatch) => {
+	dispatch(searchLoading({ isLoading: value }));
+};
+
 export default {
 	searchAction,
 	promoAction,
-	viewModeAction
+	viewModeAction,
+	loadingAction
 };

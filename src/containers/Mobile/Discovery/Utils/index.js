@@ -30,7 +30,10 @@ const mapPromoProducts = (products, lovelists) => {
 		const productFound = !_.isEmpty(lovelists.bulkieCountProducts) ? _.find(lovelists.bulkieCountProducts, { product_id: product.product_id }) : false;
 		product.lovelistStatus = 0;
 		if (productFound) product.lovelistStatus = productFound.status;
-		return product;
+		return {
+			...product,
+			url: urlBuilder.buildPdp(product.product_title, product.product_id)
+		};
 	});
 
 	return products;
