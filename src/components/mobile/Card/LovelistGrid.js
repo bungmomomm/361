@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import _ from 'lodash';
 import classNames from 'classnames';
 import Image from '../Image';
 import Svg from '../Svg';
