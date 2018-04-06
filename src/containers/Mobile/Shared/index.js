@@ -129,7 +129,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 			
 			if (cookies.get(shouldRefreshToken) === 'true') {
 				cookies.remove(shouldRefreshToken, { domain: process.env.SESSION_DOMAIN, path: '/' });
-				return this.refreshToken();
+				return this.refreshToken(token);
 			}
 			if (isStorageSupport) {
 				const cacheToken = JSON.parse(window.sessionStorage.cacheToken || null) || false;
@@ -139,7 +139,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 				}
 			}
 
-			return this.refreshToken();
+			return this.refreshToken(token);
 		}
 
 		async refreshToken(token) {
