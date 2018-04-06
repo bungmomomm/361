@@ -161,7 +161,7 @@ class HashtagsDetails extends Component {
 						>
 							<iframe
 								src={ent.data.post.embed_url}
-								title='sgdsgs'
+								title='Instagram'
 								className={'instagram-media'}
 								frameBorder={0}
 								style={{

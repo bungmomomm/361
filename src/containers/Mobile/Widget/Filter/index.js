@@ -87,6 +87,58 @@ class Filter extends PureComponent {
 		onUpdateFilter(e, type, value);
 	}
 
+	onFilterSectionReset(e, type) {
+		const { filters } = this.state;
+		const updateChilds = (c) => {
+			c = _.map(c, (facetData) => {
+				facetData.is_selected = 0;
+				if (facetData.childs) {
+					facetData.childs = updateChilds(facetData.childs);
+				}
+				return facetData;
+			});
+
+			return c;
+		};
+		const selected = {};
+		filters.facets = _.map(filters.facets, (facet) => {
+			if (facet.id === type) {
+				switch (facet.id) {
+				case 'category':
+				case 'custom_category_ids':
+				case 'size':
+				case 'location':
+					facet.data = updateChilds(facet.data);
+					break;
+				case 'price':
+					delete facet.selected_range;
+					break;
+				default:
+					facet.data = _.map(facet.data, (facetData) => {
+						facetData.is_selected = 0;
+						return facetData;
+					});
+					break;
+				}
+				selected[facet.id] = [{
+					facetdisplay: 'Semua'
+				}];
+			}
+			return facet;
+		});
+
+		this.setState({
+			filters,
+			selected,
+			resetCliked: true
+		});
+		if (this.props.autoUpdateFacets) {
+			const obj = utils.getFq(filters);
+			this.props.onApply(null, obj, false);
+		}
+		this.forceUpdate();
+	}
+
 	onApply(e) {
 		const { filters } = this.state;
 		this.setState({
@@ -225,6 +277,7 @@ class Filter extends PureComponent {
 						{...state}
 						title={data.title}
 						data={data.data}
+						onReset={(e) => this.onFilterSectionReset(e, layout)}
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
@@ -238,6 +291,7 @@ class Filter extends PureComponent {
 						{...state}
 						title={data.title}
 						data={data.data}
+						onReset={(e) => this.onFilterSectionReset(e, layout)}
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
@@ -252,6 +306,7 @@ class Filter extends PureComponent {
 						{...state}
 						title={data.title}
 						data={data.data}
+						onReset={(e) => this.onFilterSectionReset(e, layout)}
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
@@ -265,6 +320,7 @@ class Filter extends PureComponent {
 						{...state}
 						title={data.title}
 						data={data.data}
+						onReset={(e) => this.onFilterSectionReset(e, layout)}
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values, custom) => this.applyFilter(layout, values, custom)}
@@ -281,6 +337,7 @@ class Filter extends PureComponent {
 						data={data.data}
 						range={data.range}
 						selected={data.selected_range}
+						onReset={(e) => this.onFilterSectionReset(e, layout)}
 						onChange={(e, value) => this.onFilterSelected(e, 'pricerange', value)}
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
 						onClose={(e) => this.onFilterSectionClose()}
@@ -295,6 +352,7 @@ class Filter extends PureComponent {
 						{...state}
 						title={data.title}
 						data={data.data}
+						onReset={(e) => this.onFilterSectionReset(e, layout)}
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
@@ -308,6 +366,7 @@ class Filter extends PureComponent {
 						{...state}
 						title={data.title}
 						data={data.data}
+						onReset={(e) => this.onFilterSectionReset(e, layout)}
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
@@ -321,6 +380,7 @@ class Filter extends PureComponent {
 						{...state}
 						title={data.title}
 						data={data.data}
+						onReset={(e) => this.onFilterSectionReset(e, layout)}
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
 						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}

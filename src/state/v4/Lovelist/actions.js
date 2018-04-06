@@ -35,7 +35,7 @@ const formatItems = (data) => {
 	if (!_.isUndefined(data.products) && !_.isEmpty(data.products)) {
 		items.list = data.products.map((item, idx) => {
 			const images = item.images.map((img) => {
-				return { mobile: img.thumbnail, thumbnail: img.thumbnail };
+				return { original: img.original, thumbnail: img.thumbnail };
 			});
 
 			items.ids.push(item.product_id);

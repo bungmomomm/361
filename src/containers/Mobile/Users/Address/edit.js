@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import Shared from '@/containers/Mobile/Shared';
-import { Page, Svg, Button, Header, Select, Level } from '@/components/mobile';
+import { Page, Svg, Button, Header, Select, Level, Map } from '@/components/mobile';
 import { actions } from '@/state/v4/Address';
 import styles from './style.scss';
 import { Form, Input } from '@/components/mobile/Formsy';
@@ -33,7 +33,13 @@ class Address extends Component {
 		type: 'shipping',
 		submitting: false,
 		default: false,
-		edit: {}
+		edit: {},
+		map: {
+			display: false,
+			address: '',
+			lat: -6.24800035920893,
+			lng: 106.81144165039063
+		}
 	};
 
 	componentWillReceiveProps(nextProps) {
@@ -61,7 +67,12 @@ class Address extends Component {
 						city: selected.city.length ? `${selected.city[0].province_id}_${selected.city[0].city_id}` : '',
 						district: selected.district.length ? selected.district[0].id : '',
 					},
-					default: edit.fg_default === 1
+					default: edit.fg_default === 1,
+					map: {
+						...this.state.map,
+						lat: parseFloat(edit.latitude) || this.state.map.lat,
+						lng: parseFloat(edit.longitude) || this.state.map.lng
+					}
 				});
 
 			})();
@@ -140,6 +151,17 @@ class Address extends Component {
 		}
 	};
 
+	handleLocationChange = ({ position, address }) => {
+		this.setState({
+			map: {
+				...this.state.map,
+				address,
+				lat: position.lat,
+				lng: position.lng
+			}
+		});
+	};
+
 	toggleShow = (which = 'city') => {
 		this.setState({
 			showSelect: {
@@ -171,8 +193,8 @@ class Address extends Component {
 			city_id: splitr[1],
 			type: this.state.type,
 			country_id: 1,
-			latitude: '',
-			longitude: '',
+			latitude: this.state.map.lat !== -6.24800035920893 ? this.state.map.lat.toString() : '',
+			longitude: this.state.map.lng !== 106.81144165039063 ? this.state.map.lng.toString() : '',
 			default: this.state.default,
 			address_id: this.state.edit.id
 		};
@@ -184,8 +206,77 @@ class Address extends Component {
 		history.push('/address');
 	};
 
+	justToggle = () => {
+		this.setState({
+			map: {
+				...this.state.map,
+				display: !this.state.map.display
+			}
+		});
+	};
+
+	toggleMap = () => {
+		const { address: { edit: { latitude, longitude } } } = this.props;
+		if (parseFloat(latitude) && parseFloat(longitude)) {
+			this.justToggle();
+			return false;
+		}
+
+		if (navigator) {
+			const timeout = setTimeout(this.justToggle, 10000);
+
+			navigator.geolocation.getCurrentPosition(
+				(pos) => {
+					clearTimeout(timeout);
+					const crd = pos.coords;
+					this.setState({
+						map: {
+							...this.state.map,
+							display: !this.state.map.display,
+							lat: crd.latitude,
+							lng: crd.longitude
+						}
+					});
+				},
+				(err) => {
+					clearTimeout(timeout);
+					this.justToggle();
+				}
+			);
+
+			return false;
+		}
+
+		this.justToggle();
+		return null;
+	};
+
+	resetMap = () => {
+		const { address: { edit: { latitude, longitude } } } = this.props;
+		this.setState({
+			map: {
+				...this.state.map,
+				display: false,
+				lat: parseFloat(latitude) || -6.24800035920893,
+				lng: parseFloat(longitude) || 106.81144165039063
+			}
+		});
+	};
+
+	saveMap = () => {
+		this.setState({
+			map: {
+				...this.state.map,
+				display: false
+			}
+		});
+	};
+
 	renderData = () => {
 		const { address } = this.props;
+		const { edit: { latitude, longitude } } = address;
+		const { map: { lat, lng } } = this.state;
+		const isMarked = (parseFloat(latitude) && parseFloat(longitude)) || (lat !== -6.24800035920893 && lng !== 106.81144165039063);
 		const cities = address.options.cities;
 		const districts = address.options.districts;
 
@@ -198,6 +289,14 @@ class Address extends Component {
 			})
 		};
 
+		const placeHasBeenMarkedContent = (
+			<div className='flex-row flex-middle'>
+				<div className='margin--small-r'><Svg src='ico_pin-poin-marked.svg' /></div>
+				<div style={{ color: '#F57C00', fontSize: '14px' }}>&nbsp;LOKASI SUDAH DITANDAI</div>
+				<div className='margin--large-l'><Svg src='ico_edit.svg' /></div>
+			</div>
+		);
+
 		return (
 			<Page color='grey'>
 				<Form
@@ -206,7 +305,7 @@ class Address extends Component {
 					onInvalid={this.disableButton}
 					ref={(form) => { this.formsy = form; }}
 				>
-					<Level className='padding--medium margin--medium-b bg--white'>
+					<Level className='padding--medium margin--medium-b bg--white' style={{ display: this.state.map.display ? 'none' : 'flex' }}>
 						<Level.Left>
 							<div className='padding--small-t'>
 								<span>Jadikan Alamat Utama</span>
@@ -227,7 +326,7 @@ class Address extends Component {
 							</div>
 						</Level.Right>
 					</Level>
-					<Level className='bg--white flex-column'>
+					<Level className='bg--white flex-column' style={{ display: this.state.map.display ? 'none' : 'flex' }}>
 						<div className='padding--medium-v'>
 							<label className={styles.label} htmlFor='address_label'>Simpan Sebagai</label>
 							<Input
@@ -413,6 +512,56 @@ class Address extends Component {
 						</div>
 					</Level>
 				</Form>
+
+				{this.state.map.display && (
+					<Level className='bg--white flex-column' style={{ padding: '0px' }}>
+						<Map
+							containerElement={<div style={{ height: '100%' }} />}
+							mapElement={<div style={{ height: `${window.innerHeight - 60}px` }} />}
+							defaultPosition={this.state.map}
+							zoom={lat !== -6.24800035920893 && lng !== 106.81144165039063 ? 16 : 7}
+							onChange={this.handleLocationChange}
+							radius={200}
+						/>
+
+						<div style={{ marginTop: '5px' }}>
+							<small>{this.state.map.address}</small>
+						</div>
+					</Level>
+				)}
+
+				<Level className='padding--medium margin--medium-t bg--white' style={{ display: this.state.map.display ? 'none' : 'flex' }}>
+					<Level.Left style={{ margin: '0px auto 30px auto' }}>
+						<div className='padding--small-t' style={{ textAlign: 'center' }}>
+							<span>
+								<p style={{ paddingBottom: '20px', fontSize: '14px' }}>
+									Untuk pengiriman menggunakan Go-Jek, Anda harus <br />
+									menentukan koordinat alamat pengiriman Anda.
+								</p>
+
+								<button
+									onClick={this.toggleMap}
+									style={
+										!isMarked ? {
+											backgroundColor: 'rgba(0, 0, 0, 0.8)',
+											padding: '10px 25px',
+											borderRadius: '40px',
+											fontSize: '14px',
+											color: '#fff'
+										} : {}}
+								>
+									{isMarked ?
+										placeHasBeenMarkedContent
+										:
+										<strong>
+											<Svg src='ico_pin-poin-unmarked.svg' />&nbsp;&nbsp;
+											Tunjukkan Alamat Dalam Peta
+										</strong>}
+								</button>
+							</span>
+						</div>
+					</Level.Left>
+				</Level>
 			</Page>
 		);
 	};
@@ -421,15 +570,23 @@ class Address extends Component {
 		const { history } = this.props;
 		const HeaderPage = {
 			left: (
-				<Button onClick={history.goBack}>
-					BATAL
-				</Button>
+				this.state.map.display ?
+					<Button onClick={this.resetMap}>
+						<Svg src={'ico_arrow-back-left.svg'} />
+					</Button> :
+					<Button onClick={history.goBack}>
+						BATAL
+					</Button>
 			),
-			center: 'Ubah Alamat',
+			center: this.state.map.display ? 'Tandai Lokasi Pengiriman' : 'Ubah Alamat',
 			right: (
-				<Button onClick={this.onSubmit} disabled={(!this.state.allowSubmit || this.state.submitting)}>
-					SIMPAN
-				</Button>
+				this.state.map.display ?
+					<Button onClick={this.saveMap}>
+						SIMPAN
+					</Button> :
+					<Button onClick={this.onSubmit} disabled={(!this.state.allowSubmit || this.state.submitting)}>
+						SIMPAN
+					</Button>
 			)
 		};
 

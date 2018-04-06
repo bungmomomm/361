@@ -5,6 +5,8 @@ import { connect } from 'react-redux';
 import Shared from '@/containers/Mobile/Shared';
 import { Page, Button, Svg, Header, Modal, Level } from '@/components/mobile';
 import { actions } from '@/state/v4/Address';
+import { actions as sharedActions } from '@/state/v4/Shared';
+import { toastSytle } from '@/containers/Mobile/Shared/styleSnackbar';
 import { Promise } from 'es6-promise';
 import { userToken, isLogin } from '@/data/cookiesLabel';
 import styles from './style.scss';
@@ -20,7 +22,8 @@ class Address extends Component {
 		this.state = {
 			AddressModalIndicator: false,
 			selectedAddress: false,
-			showConfirmDelete: false
+			showConfirmDelete: false,
+			showSetDefault: true
 		};
 		this.showAddressModal = this.showAddressModal.bind(this);
 		this.hideAddressModal = this.hideAddressModal.bind(this);
@@ -33,12 +36,21 @@ class Address extends Component {
 		await dispatch(actions.setDefaultAddress(cookies.get(userToken), selectedAddress));
 		await dispatch(actions.getAddress(cookies.get(userToken)));
 		this.hideAddressModal();
+
+		dispatch(sharedActions.showSnack('setDefaultAddress',
+			{
+				label: 'Alamat utama telah berhasil diubah',
+				timeout: 5000
+			},
+			toastSytle(),
+		));
 	};
 
-	showAddressModal(id) {
+	showAddressModal(id, showSetDefault = true) {
 		this.setState({
 			AddressModalIndicator: true,
-			selectedAddress: id
+			selectedAddress: id,
+			showSetDefault
 		});
 	}
 
@@ -81,15 +93,17 @@ class Address extends Component {
 					<Level.Right style={{ justifyContent: 'center' }}>
 						<Svg
 							src='ico_option.svg'
-							onClick={() => this.showAddressModal(options.id)}
+							onClick={() => this.showAddressModal(options.id, options.default === 0)}
 						/>
 					</Level.Right>
 				</Level>
 				<Level className='bg--white margin--medium-b flex-column'>
 					<div className={styles.fullName}><strong>{options.fullname}</strong></div>
-					<div><p>{options.address}, {options.province}, {options.city}, {options.district}, {options.zipcode}</p></div>
-					<div><p>{options.phone}</p></div>
-					<div className={styles.locationMarked}>{(options.is_supported_pin_point === 1) ? options.placeHasBeenMarkedContent : null }</div>
+					<div><p style={{ color: '#888888' }}>{options.address}</p></div>
+					<div><p style={{ color: '#888888' }}>{options.province}, {options.city}, {options.district}, {options.zipcode}</p></div>
+					<div><p style={{ color: '#888888' }}>{options.zipcode} Indonesia</p></div>
+					<div><p style={{ color: '#888888' }}>{options.phone}</p></div>
+					<div className={styles.locationMarked}>{(parseFloat(options.latitude) && parseFloat(options.longitude)) ? options.placeHasBeenMarkedContent : null }</div>
 				</Level>
 			</div>
 		);
@@ -97,7 +111,7 @@ class Address extends Component {
 
 	renderData = () => {
 
-		const { AddressModalIndicator } = this.state;
+		const { AddressModalIndicator, showSetDefault } = this.state;
 		const { address } = this.props;
 		const HeaderPage = {
 			left: (
@@ -161,16 +175,8 @@ class Address extends Component {
 						defaultAddress.map((v, k) => {
 							return this.listAddressMaker({
 								key: k,
-								address_label: v.address_label,
-								id: v.id,
-								fullname: v.fullname,
-								address: v.address,
-								province: v.province,
-								city: v.city,
-								district: v.district,
-								zipcode: v.zipcode,
+								...v,
 								default: v.fg_default,
-								is_supported_pin_point: v.is_supported_pin_point,
 								placeHasBeenMarkedContent
 							});
 						})
@@ -180,16 +186,8 @@ class Address extends Component {
 							if (v.fg_default === 0) {
 								return this.listAddressMaker({
 									key: k,
-									address_label: v.address_label,
-									id: v.id,
-									fullname: v.fullname,
-									address: v.address,
-									province: v.province,
-									city: v.city,
-									district: v.district,
-									zipcode: v.zipcode,
+									...v,
 									default: v.fg_default,
-									is_supported_pin_point: v.is_supported_pin_point,
 									placeHasBeenMarkedContent
 								});
 							}
@@ -205,11 +203,13 @@ class Address extends Component {
 						<Level style={{ padding: '0px', textAlign: 'center' }}>
 							<Level.Left />
 							<Level.Item className='flex-center'>
+								{showSetDefault && <Button className='padding--small' onClick={this.setDefault}>Jadikan Alamat Utama</Button>}
 								<div className='padding--small'>
 									<Link to={`/address/edit/${this.state.selectedAddress}`} style={{ color: '#191919' }}>
 										Ubah Alamat
 									</Link>
 								</div>
+								{showSetDefault && <Button className='padding--small' style={{ color: '#ED1C24' }} onClick={() => { this.setState({ showConfirmDelete: true }); }}>Hapus Alamat</Button>}
 								<Button className='padding--small' onClick={this.hideAddressModal}>Batal</Button>
 							</Level.Item>
 						</Level>
