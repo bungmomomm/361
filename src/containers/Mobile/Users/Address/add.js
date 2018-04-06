@@ -165,7 +165,7 @@ class Address extends Component {
 	};
 
 	toggleMap = () => {
-		if (navigator) {
+		if (navigator && navigator.geolocation) {
 			this.setState({
 				navigating: true
 			});
@@ -176,7 +176,7 @@ class Address extends Component {
 				this.setState({
 					navigating: false
 				});
-			}, 60000);
+			}, 30000);
 
 			navigator.geolocation.getCurrentPosition(
 				(pos) => {
