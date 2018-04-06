@@ -19,6 +19,8 @@ import {
 } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
 
+const isStorageSupport = typeof window.Storage !== 'undefined';
+
 const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) => {
 	WrappedComponent.contextTypes = {
 		router: React.PropTypes.object,
@@ -123,39 +125,12 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 		}
 
 		async getTokenData(token = null) {
-			const { cookies, dispatch } = this.props;
+			const { cookies } = this.props;
+			
 			if (cookies.get(shouldRefreshToken) === 'true') {
 				cookies.remove(shouldRefreshToken, { domain: process.env.SESSION_DOMAIN, path: '/' });
-				const tokenBearer = token === null ? cookies.get(userToken) : token.token;
-				const rfT = token === null ? cookies.get(userRfToken) : token.refresh_token;
-
-				const resp = await to(dispatch(new account.refreshToken(rfT, tokenBearer)));
-
-				if (resp[0]) {
-					if (resp[0].code === 405) {
-						removeUserCookie(cookies);
-						dispatch(actions.showSnack('Trouble', {
-							label: 'Akun Anda ter-logout. Silakan login ulang untuk melanjutkan pembayaran',
-							timeout: 3000,
-							button: {
-								label: 'COBA LAGI',
-								action: 'reload'
-							}
-						}));
-						setTimeout(() => {
-							window.location.reload();
-						}, 3000);
-					}
-				}
-				const { data } = resp[1].data;
-
-				if (isStorageSupport) {
-					window.sessionStorage.removeItem('cacheToken');
-					window.sessionStorage.cacheToken = JSON.stringify(data);
-				}
-				return data;
+				return this.refreshToken();
 			}
-			const isStorageSupport = typeof window.Storage !== 'undefined';
 			if (isStorageSupport) {
 				const cacheToken = JSON.parse(window.sessionStorage.cacheToken || null) || false;
 
@@ -164,6 +139,11 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 				}
 			}
 
+			return this.refreshToken();
+		}
+
+		async refreshToken(token) {
+			const { cookies, dispatch } = this.props;
 			const tokenBearer = token === null ? cookies.get(userToken) : token.token;
 			const rfT = token === null ? cookies.get(userRfToken) : token.refresh_token;
 
@@ -186,7 +166,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 				}
 			}
 			const { data } = resp[1].data;
-			
+
 			if (isStorageSupport) {
 				window.sessionStorage.removeItem('cacheToken');
 				window.sessionStorage.cacheToken = JSON.stringify(data);
@@ -265,7 +245,6 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 		async initProcess() {
 			// check existing props
 			const { shared } = this.props;
-			const isStorageSupport = typeof window.Storage !== 'undefined';
 			if (isStorageSupport) {
 				const initData = JSON.parse(window.sessionStorage.initCache || null) || false;
 
