@@ -36,6 +36,7 @@ class Hashtags extends Component {
 
 	componentWillUnmount() {
 		removeEventListener('resize', this.handleResize, true);
+		removeEventListener('hashchange', this.hashChange);
 	}
 
 	handleResize = () => {
