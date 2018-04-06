@@ -92,6 +92,10 @@ class Image extends Component {
 		return image;
 	}
 
+	onError = (e) => {
+		e.target.src = require('@/assets/images/mobile/ico_placeholder-full.png');
+	};
+
 	render() {
 		const createClassName = classNames([
 			this.props.avatar ? styles.avatar : null,
@@ -115,6 +119,7 @@ class Image extends Component {
 				src={this.src()}
 				data-src={this.dataSrc()}
 				alt={this.props.alt || ''}
+				onError={this.onError}
 			/>
 		);
 	}
