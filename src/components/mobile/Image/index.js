@@ -45,6 +45,10 @@ class Image extends Component {
 		// this.forceUpdate();
 	}
 
+	onError = (e) => {
+		e.target.src = require('@/assets/images/mobile/ico_placeholder-full.png');
+	};
+
 	checkVisibility() {
 		// If element is visible load image
 		const viewportH = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
@@ -91,10 +95,6 @@ class Image extends Component {
 		}
 		return image;
 	}
-
-	onError = (e) => {
-		e.target.src = require('@/assets/images/mobile/ico_placeholder-full.png');
-	};
 
 	render() {
 		const createClassName = classNames([
