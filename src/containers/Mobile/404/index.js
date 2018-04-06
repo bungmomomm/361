@@ -38,12 +38,14 @@ class Page404 extends Component {
 	renderHeader() {
 		const { history } = this.props;
 
-		let back = () => {
-			history.go(-2);
-		};
+		let back;
 		if (history.length === 0) {
 			back = () => {
 				history.push('/');
+			};
+		} else {
+			back = () => {
+				history.go(-2);
 			};
 		}
 
