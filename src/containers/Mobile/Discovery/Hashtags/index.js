@@ -45,7 +45,7 @@ class Hashtags extends Component {
 	hashChange = () => {
 		const { location, hashtag } = this.props;
 		let hash = location.hash;
-		if ((_.isEmpty(location.hash) || location.hash === 'root') && hashtag.tags.length) {
+		if ((!location.hash || location.hash === '#root') && hashtag.tags.length) {
 			hash = hashtag.tags[0].hashtag;
 		}
 
