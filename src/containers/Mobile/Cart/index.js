@@ -187,7 +187,7 @@ class Cart extends Component {
 								<Link className='font-color--black' to={urlBuilder.setId(item.product_id).setName(item.product_title).buildPdp()}>
 									<Image width='100%' src={item.images[0].original} />
 									{(item.max_qty < item.qty) && (
-										<div style={{ backgroundColor: '#ffaeae', padding: '5px 10px', textAlign: 'center', fontSize: '12px' }}>SUDAH TIDAK DIJUAL</div>
+										<div style={{ backgroundColor: '#ffaeae', padding: '5px 10px', textAlign: 'center', fontSize: '12px' }}>STOK HABIS</div>
 									)}
 								</Link>
 							</Level.Item>
