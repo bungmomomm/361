@@ -43,8 +43,6 @@ class PromoList extends Component {
 							url={url}
 							id='myId'
 							width='100%'
-							height='100vh'
-							styles={{ left: '0px', top: '0px', position: 'fixed' }}
 							allowFullScreen
 						/>
 					</div>
