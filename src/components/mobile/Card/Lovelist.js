@@ -11,6 +11,8 @@ import styles from './card.scss';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 
+import { trimString } from '@/utils';
+
 class Lovelist extends PureComponent {
 	constructor(props) {
 		super(props);
@@ -70,7 +72,7 @@ class Lovelist extends PureComponent {
 						<Carousel wrapAround={this.slideWrapAround} >
 							{
 								data.images.map((image, index) => (
-									<Image key={index} src={image.thumbnail} lazyload alt={data.product_title} />
+									<Image key={index} src={image.original} lazyload alt={data.product_title} />
 								))
 							}
 						</Carousel>
@@ -81,7 +83,7 @@ class Lovelist extends PureComponent {
 						<Carousel wrapAround={this.slideWrapAround} >
 							{
 								data.images.map((image, index) => (
-									<Image key={index} src={image.thumbnail} lazyload alt={data.product_title} />
+									<Image key={index} src={image.original} lazyload alt={data.product_title} />
 								))
 							}
 						</Carousel>
@@ -106,7 +108,7 @@ class Lovelist extends PureComponent {
 				<Link to={(linkToPdp) || '/'}>
 					<div className={styles.title}>
 						<span className='font-small text-uppercase font--lato-bold font-color--primary'>{data.brand.name}</span>
-						<span className='text-elipsis-two-line font-color--primary-ext-2'>{data.product_title}</span>
+						<span className='text-elipsis-two-line font-color--primary-ext-2'>{trimString(data.product_title)}</span>
 					</div>
 					<Level className='padding--none-t'>
 						<Level.Item>
