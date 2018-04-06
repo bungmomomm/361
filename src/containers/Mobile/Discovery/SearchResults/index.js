@@ -135,7 +135,7 @@ class SearchResults extends Component {
 			}
 		})));
 		if (err) {
-			dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken)));
+			dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken), 'empty'));
 		}
 		if (response) {
 			if (!_.isEmpty(response.searchData.products)) {
@@ -143,7 +143,7 @@ class SearchResults extends Component {
 				dispatch(commentActions.bulkieCommentAction(cookies.get(cookiesLabel.userToken), productIdList));
 				dispatch(lovelistActions.bulkieCountByProduct(cookies.get(cookiesLabel.userToken), productIdList));
 			} else {
-				dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken)));
+				dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken), 'empty'));
 			}
 		}
 	}
@@ -392,7 +392,7 @@ const doAfterAnonymous = async (props) => {
 	};
 	const [err, response] = await to(dispatch(searchActions.searchAction({ token: cookies.get(cookiesLabel.userToken), query: searchParam })));
 	if (err) {
-		await dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken)));
+		await dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken), 'empty'));
 	}
 	if (response) {
 		if (!_.isEmpty(response.searchData.products)) {
@@ -400,7 +400,7 @@ const doAfterAnonymous = async (props) => {
 			await dispatch(searchActions.bulkieCommentAction(cookies.get(cookiesLabel.userToken), productIdList));
 			await dispatch(lovelistActions.bulkieCountByProduct(cookies.get(cookiesLabel.userToken), productIdList));
 		} else {
-			await dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken)));
+			await dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken), 'empty'));
 		}
 	}
 };
