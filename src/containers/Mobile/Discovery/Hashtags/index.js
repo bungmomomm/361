@@ -31,6 +31,7 @@ class Hashtags extends Component {
 
 	componentDidMount() {
 		addEventListener('resize', this.handleResize, true);
+		addEventListener('hashchange', this.hashChange);
 	}
 
 	componentWillUnmount() {
@@ -39,6 +40,16 @@ class Hashtags extends Component {
 
 	handleResize = () => {
 		this.forceUpdate();
+	};
+
+	hashChange = () => {
+		const { location, hashtag } = this.props;
+		let hash = location.hash;
+		if ((_.isEmpty(location.hash) || location.hash === 'root') && hashtag.tags.length) {
+			hash = hashtag.tags[0].hashtag;
+		}
+
+		this.switchTag(hash);
 	};
 
 	switchTag = (tag) => {
