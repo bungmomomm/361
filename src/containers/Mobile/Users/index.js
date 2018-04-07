@@ -38,12 +38,9 @@ class Users extends Component {
 
 	componentDidMount() {
 		
-		const { redirectUri } = this.state;
 		const { history } = this.props;
 		
-		if (redirectUri.indexOf('digital') > -1) {
-			window.location.href = redirectUri;
-		} else if (this.props.cookies.get(isLogin) === 'true') {
+		if (this.props.cookies.get(isLogin) === 'true') {
 			history.replace('/profile');
 		}
 	}
