@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import _ from 'lodash';
 import queryString from 'query-string';
-import CONST from '@/constants';
 import Shared from '@/containers/Mobile/Shared';
 import Login from './Login';
 import Register from './Register';
