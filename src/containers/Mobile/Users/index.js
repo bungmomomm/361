@@ -40,10 +40,9 @@ class Users extends Component {
 		
 		const { redirectUri } = this.state;
 		const { history } = this.props;
-		const digitalUrl = CONST.DIGITAL_URL;
 		
-		if (redirectUri === digitalUrl) {
-			window.location.href = `${digitalUrl}/checkout/payment`;
+		if (redirectUri.indexOf('digital') > -1) {
+			window.location.href = redirectUri;
 		} else if (this.props.cookies.get(isLogin) === 'true') {
 			history.replace('/profile');
 		}
