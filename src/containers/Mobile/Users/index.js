@@ -14,7 +14,7 @@ import {
 	Tabs
 } from '@/components/mobile/';
 import handler from '@/containers/Mobile/Shared/handler';
-import { isLogin } from '@/data/cookiesLabel';
+/* import { isLogin } from '@/data/cookiesLabel'; */
 
 @handler
 class Users extends Component {
@@ -37,11 +37,11 @@ class Users extends Component {
 
 	componentDidMount() {
 		
-		const { history } = this.props;
+		/* const { history } = this.props;
 		
-		if (this.props.cookies.get(isLogin) === 'true') {
+		   if (this.props.cookies.get(isLogin) === 'true') {
 			history.replace('/profile');
-		}
+		}  */
 	}
 
 	onBack(e) {
