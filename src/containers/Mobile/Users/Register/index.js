@@ -8,7 +8,8 @@ import {
 import {
 	Button,
 	Input,
-	Svg
+	Svg,
+    Notification
 } from '@/components/mobile';
 import {
 	setUserCookie,
@@ -223,7 +224,8 @@ class Register extends Component {
 			validLoginId,
 			validPassword,
 			validEmailOrMobile,
-			typed
+			typed,
+            redirectUri
 		} = this.state;
 
 		const { isLoading } = this.props.users;
@@ -309,9 +311,27 @@ class Register extends Component {
 				appId: process.env.FBAPP_ID
 			}
 		};
-
+  
+		const digitalNotificationAttribute = {
+			color: 'blue',
+			show: true,
+			disableClose: true
+		};
+  
+		let showDigitalNotification = false;
+		if (redirectUri === process.env.DIGITAL_URL) {
+			showDigitalNotification = true;
+		}
+        
 		return (
 			<div>
+				{ showDigitalNotification && (
+					<Notification {...digitalNotificationAttribute}>
+						<span className='font-color--black'>
+							Silahkan daftar untuk melanjutkan ke digital
+						</span>
+					</Notification>
+				)}
 				<div className='margin--medium font-medium'>Daftar Dengan</div>
 				<LoginWidget
 					provider={providerConfig}

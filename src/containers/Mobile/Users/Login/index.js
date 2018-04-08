@@ -144,9 +144,27 @@ class Login extends Component {
 				appId: process.env.FBAPP_ID
 			}
 		};
-
+		
+		const digitalNotificationAttribute = {
+			color: 'blue',
+			show: true,
+			disableClose: true
+		};
+		
+		let showDigitalNotification = false;
+		if (redirectUri === process.env.DIGITAL_URL) {
+			showDigitalNotification = true;
+		}
+		
 		return (
 			<div className={styles.container}>
+				{ showDigitalNotification && (
+					<Notification {...digitalNotificationAttribute}>
+						<span className='font-color--black'>
+							Silahkan login untuk melanjutkan ke digital
+						</span>
+					</Notification>
+				)}
 				<div className='margin--medium-v font-medium'>Login Dengan</div>
 				<LoginWidget
 					provider={providerConfig}
