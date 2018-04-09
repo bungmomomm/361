@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 import _ from 'lodash';
 import queryString from 'query-string';
-
 import Shared from '@/containers/Mobile/Shared';
 import Login from './Login';
 import Register from './Register';
@@ -37,9 +36,18 @@ class Users extends Component {
 	}
 
 	componentDidMount() {
-		if (this.props.cookies.get(isLogin) === 'true') {
-			this.props.history.replace('/profile');
+		
+		const { redirectUri } = this.state;
+		const { history } = this.props;
+		
+		if (redirectUri.indexOf('digital') > -1) {
+			
+			// Do nothing let them stay into the page.
+			
+		} else if (this.props.cookies.get(isLogin) === 'true') {
+			history.replace('/profile');
 		}
+		
 	}
 
 	onBack(e) {
