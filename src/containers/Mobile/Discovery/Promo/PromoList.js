@@ -23,7 +23,6 @@ class PromoList extends Component {
 			content: ''
 		};
 		this.isLogin = this.props.cookies.get(isLogin) === 'true';
-
 	}
 
 	render() {
@@ -42,11 +41,10 @@ class PromoList extends Component {
 						<Iframe
 							url={url}
 							id='myId'
-							styles={{
-								width: '100%',
-								maxWidth: '480px'
-							}}
+							width='100%'
+							height='100vh'
 							allowFullScreen
+							style={{ position: 'relative' }}
 						/>
 					</div>
 				</Page>
