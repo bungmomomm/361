@@ -42,7 +42,10 @@ class PromoList extends Component {
 						<Iframe
 							url={url}
 							id='myId'
-							width='100%'
+							styles={{
+								width: '100%',
+								maxWidth: '480px'
+							}}
 							allowFullScreen
 						/>
 					</div>
