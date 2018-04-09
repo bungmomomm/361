@@ -84,11 +84,12 @@ const addLovelistAction = (token, productId) => async (dispatch, getState) => {
 	return Promise.resolve(response);
 };
 
-const updateAction = (token, productId, newQty, type = 'update') => async (dispatch, getState) => {
+const updateAction = (token, productId, newQty, type = 'update', source = 'cart') => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;
 
 	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
+
 	const [err, response] = await to(
 		request({
 			token,
@@ -104,6 +105,7 @@ const updateAction = (token, productId, newQty, type = 'update') => async (dispa
 	);
 
 	if (err) {
+		if (typeof source !== 'undefined' && source === 'pdp') return Promise.reject(err);
 		return Promise.reject(__x(err));
 	};
 
