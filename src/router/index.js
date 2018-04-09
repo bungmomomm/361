@@ -13,7 +13,7 @@ class CustomRoute extends PureComponent {
 	}
 
 	componentWillMount() {
-		window.mmLoading.play();
+		// window.mmLoading.play();
 
 		// binds fusion session only
 		Fusion.tracks(this.props, false);
