@@ -319,7 +319,7 @@ class Register extends Component {
 		};
   
 		let showDigitalNotification = false;
-		if (redirectUri === process.env.DIGITAL_URL) {
+		if (redirectUri.indexOf('digital') > -1) {
 			showDigitalNotification = true;
 		}
         
