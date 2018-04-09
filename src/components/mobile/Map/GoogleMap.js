@@ -107,7 +107,7 @@ class Map extends Component {
 						style={{
 							boxSizing: 'border-box',
 							border: '1px solid transparent',
-							width: '70%',
+							width: '60%',
 							maxWidth: `${window.innerWidth > 480 ? 480 : window.innerWidth}px`,
 							height: '32px',
 							marginTop: '10px',

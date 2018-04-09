@@ -165,12 +165,19 @@ class Address extends Component {
 	};
 
 	toggleMap = () => {
-		if (navigator) {
+		if (navigator && navigator.geolocation) {
 			this.setState({
 				navigating: true
 			});
 
-			const timeout = setTimeout(this.justToggle, 10000);
+			const timeout = setTimeout(() => {
+				this.justToggle();
+
+				this.setState({
+					navigating: false
+				});
+			}, 30000);
+
 			navigator.geolocation.getCurrentPosition(
 				(pos) => {
 					clearTimeout(timeout);
@@ -181,7 +188,8 @@ class Address extends Component {
 							display: !this.state.map.display,
 							lat: crd.latitude,
 							lng: crd.longitude
-						}
+						},
+						navigating: false
 					});
 				},
 				(err) => {
