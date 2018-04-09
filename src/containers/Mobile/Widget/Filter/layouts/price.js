@@ -96,11 +96,11 @@ class Price extends PureComponent {
 	}
 
 	render() {
-		const { onClose, range, title } = this.props;
+		const { onReset, range, title } = this.props;
 		const { resetDisabled } = this.state;
 		const HeaderPage = {
 			left: (
-				<Button onClick={onClose}>
+				<Button onClick={(e) => onReset(e, true)}>
 					<Svg src='ico_arrow-back-left.svg' />
 				</Button>
 			),
