@@ -133,6 +133,10 @@ class Product extends Component {
 		);
 	}
 
+	componentWillMount() {
+		window.scroll(0, 0);
+	}
+
 	componentWillReceiveProps = async (nextProps) => {
 		if (nextProps.query !== this.props.query) {
 			this.setState({
@@ -481,7 +485,7 @@ const doAfterAnonymous = async (props) => {
 	const pcpParam = {
 		category_id: parseInt(categoryId, 10),
 		page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
-		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 36,
+		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 18,
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : ''
 	};
