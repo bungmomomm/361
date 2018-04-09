@@ -6,7 +6,6 @@ import queryString from 'query-string';
 import Shared from '@/containers/Mobile/Shared';
 import Login from './Login';
 import Register from './Register';
-import CONST from '@/constants';
 import {
 	Button,
 	Header,
@@ -41,7 +40,7 @@ class Users extends Component {
 		const { redirectUri } = this.state;
 		const { history } = this.props;
 		
-		if (redirectUri === CONST.DIGITAL_URL) {
+		if (redirectUri.indexOf('digital') > -1) {
 			
 			// Do nothing let them stay into the page.
 			
