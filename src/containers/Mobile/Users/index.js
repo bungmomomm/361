@@ -6,6 +6,7 @@ import queryString from 'query-string';
 import Shared from '@/containers/Mobile/Shared';
 import Login from './Login';
 import Register from './Register';
+import CONST from '@/constants';
 import {
 	Button,
 	Header,
@@ -14,7 +15,7 @@ import {
 	Tabs
 } from '@/components/mobile/';
 import handler from '@/containers/Mobile/Shared/handler';
-/* import { isLogin } from '@/data/cookiesLabel'; */
+import { isLogin } from '@/data/cookiesLabel';
 
 @handler
 class Users extends Component {
@@ -37,11 +38,17 @@ class Users extends Component {
 
 	componentDidMount() {
 		
-		/* const { history } = this.props;
+		const { redirectUri } = this.state;
+		const { history } = this.props;
 		
-		   if (this.props.cookies.get(isLogin) === 'true') {
+		if (redirectUri === CONST.DIGITAL_URL) {
+			
+			// Do nothing let them stay into the page.
+			
+		} else if (this.props.cookies.get(isLogin) === 'true') {
 			history.replace('/profile');
-		}  */
+		}
+		
 	}
 
 	onBack(e) {
