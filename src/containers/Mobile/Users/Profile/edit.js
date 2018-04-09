@@ -292,7 +292,7 @@ class UserProfileEdit extends Component {
 						},
 						submittingForm: false
 					});
-					this.setTimeoutForm(3000);
+					this.setTimeoutForm(5000);
 				}
 			}
 		}
@@ -315,7 +315,7 @@ class UserProfileEdit extends Component {
 			otpCountdown: 0
 		});
 
-		this.setTimeoutForm(3000);
+		this.setTimeoutForm(5000);
 	}
 
 	renderHeader() {

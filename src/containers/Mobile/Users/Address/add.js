@@ -37,7 +37,8 @@ class Address extends Component {
 			address: '',
 			lat: -6.24800035920893,
 			lng: 106.81144165039063
-		}
+		},
+		navigating: false
 	};
 
 	onChange = (v, which = 'city') => {
@@ -164,8 +165,18 @@ class Address extends Component {
 	};
 
 	toggleMap = () => {
-		if (navigator) {
-			const timeout = setTimeout(this.justToggle, 10000);
+		if (navigator && navigator.geolocation) {
+			this.setState({
+				navigating: true
+			});
+
+			const timeout = setTimeout(() => {
+				this.justToggle();
+
+				this.setState({
+					navigating: false
+				});
+			}, 30000);
 
 			navigator.geolocation.getCurrentPosition(
 				(pos) => {
@@ -177,10 +188,15 @@ class Address extends Component {
 							display: !this.state.map.display,
 							lat: crd.latitude,
 							lng: crd.longitude
-						}
+						},
+						navigating: false
 					});
 				},
 				(err) => {
+					this.setState({
+						navigating: false
+					});
+
 					clearTimeout(timeout);
 					this.justToggle();
 				}
@@ -232,7 +248,7 @@ class Address extends Component {
 		const placeHasBeenMarkedContent = (
 			<div className='flex-row flex-middle'>
 				<div className='margin--small-r'><Svg src='ico_pin-poin-marked.svg' /></div>
-				<div style={{ color: '#F57C00', fontSize: '14px' }}>&nbsp;LOKASI SUDAH DITANDAI</div>
+				<div style={{ color: '#F57C00', fontSize: '14px' }}>&nbsp;{this.state.navigating ? 'Mendeteksi Lokasi...' : 'LOKASI SUDAH DITANDAI'}</div>
 				<div className='margin--large-l'><Svg src='ico_edit.svg' /></div>
 			</div>
 		);
@@ -485,7 +501,7 @@ class Address extends Component {
 										:
 										<strong>
 											<Svg src='ico_pin-poin-unmarked.svg' />&nbsp;&nbsp;
-											Tunjukkan Alamat Dalam Peta
+											{this.state.navigating ? 'Mendeteksi Lokasi...' : 'Tunjukkan Alamat Dalam Peta'}
 										</strong>}
 								</button>
 							</span>
