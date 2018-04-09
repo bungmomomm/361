@@ -35,6 +35,32 @@ class Page404 extends Component {
 		history.push(`/login?redirect_uri=${encodeURIComponent(location.pathname + location.search)}`);
 	}
 
+	renderHeader() {
+		const { history } = this.props;
+
+		let back;
+		if (history.length === 0) {
+			back = () => {
+				history.push('/');
+			};
+		} else {
+			back = () => {
+				history.go(-2);
+			};
+		}
+
+		const HeaderPage = {
+			left: (
+				<button onClick={back}>
+					<Svg src={'ico_arrow-back-left.svg'} />
+				</button>
+			),
+			center: '404',
+		};
+
+		return <Header.Modal {...HeaderPage} />;
+	}
+
 	renderBanner() {
 		const { promoData } = this.props;
 		const promoBanner = promoData.filter(e => e.type === 'promo_banner')[0].data;
@@ -65,15 +91,8 @@ class Page404 extends Component {
 	}
 
 	render() {
-		const { history, promoData, shared, dispatch } = this.props;
-		const HeaderPage = {
-			left: (
-				<button onClick={history.goBack}>
-					<Svg src={'ico_arrow-back-left.svg'} />
-				</button>
-			),
-			center: '404',
-		};
+		const { promoData, shared, dispatch } = this.props;
+
 		return (
 			<div className='text-center' style={this.props.style}>
 				<Page color='white'>
@@ -100,7 +119,7 @@ class Page404 extends Component {
 						)
 					}
 				</Page>
-				<Header.Modal {...HeaderPage} />
+				{this.renderHeader()}
 				<Navigation active='Home' botNav={this.props.botNav} isLogin={this.isLogin} />
 			</div>
 		);
