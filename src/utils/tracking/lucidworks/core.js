@@ -88,6 +88,16 @@ export default class Fusion {
 	push = (payload) => {
 		try {
 			if (this.enabled) {
+				// make sure an event pushed after the document fully loaded to
+				// prevent missing google_session_id
+				const windowLoaded = (window.document.readyState === 'complete');
+				if (!windowLoaded) {
+					setTimeout(() => {
+						this.push(payload);
+					}, 500);
+					return;
+				}
+
 				// new-session event signal should be pushed in the first place
 				if (payload.event !== NEW_SESSION && !Utils.hasSession()) {
 					const handler = new Promise((resolve, reject) => {

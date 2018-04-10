@@ -356,7 +356,7 @@ class Products extends Component {
 		this.setState({ status });
 
 		const handler = new Promise((resolve, reject) => {
-			resolve(dispatch(shopBagActions.updateAction(cookies.get(cookiesLabel.userToken), variant.id, this.defaultCount, 'add')));
+			resolve(dispatch(shopBagActions.updateAction(cookies.get(cookiesLabel.userToken), variant.id, this.defaultCount, 'add', 'pdp')));
 		});
 
 		handler.then((res) => {
@@ -371,7 +371,7 @@ class Products extends Component {
 
 			// updates carts badge
 			dispatch(sharedActions.totalCartAction(cookies.get(cookiesLabel.userToken)));
-			dispatch(sharedActions.showSnack(uniqid('err-'), { label: 'Produk Berhasil ditambahkan', timeout: 3000 }, toastSytle()));
+			dispatch(sharedActions.showSnack(uniqid('err-'), { label: 'Produk berhasil ditambahkan', timeout: 3000 }, toastSytle()));
 
 			// Add to Cart tracking...
 			trackAddToCart(product, this.props, variant, cardProduct.hasVariantSize);
@@ -394,7 +394,7 @@ class Products extends Component {
 
 			dispatch(sharedActions.showSnack(uniqid('err-'),
 				{
-					label: err.message,
+					label: 'Produk gagal ditambahkan',
 					timeout: 3000
 				},
 				toastSytle(),
