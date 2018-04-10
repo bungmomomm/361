@@ -222,14 +222,12 @@ class OrderConfirmation extends Component {
 			uplabel: true,
 			// placeholder: 'Jumlah Yang Ditransfer',
 			onChange: (event) => {
-				const regex = /^[0-9\b]+$/;
+				const regex = /^[0-9.\b]+$/;
 				const { value } = event.target;
-				if (value !== '' && regex.test(value)) {
-
+				if (value === '' || regex.test(value)) {
 					this.setState({
-						amountTransfer: event.target.value
+						amountTransfer: value.toString().replace(/\./g, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.')
 					});
-
 				}
 			}
 		};
@@ -330,7 +328,8 @@ class OrderConfirmation extends Component {
 			name: 'transfer-to',
 			checked: checkedTransferTo,
 			onChange: this.makeRadioTransferToChecked,
-			data: this.getDataTransferTo()
+			data: this.getDataTransferTo(),
+			labelStyle: { paddingBottom: '15px', borderBottom: '1px solid #ededed' }
 		};
 
 		return (
@@ -389,7 +388,17 @@ class OrderConfirmation extends Component {
 							<Input {...inputTimeAttribute} />
 
 							<strong className='font-medium margin--medium-v'>Pilih Bank Transfer Tujuan</strong>
-							<Radio {...radioTransferToAttribute} />
+							<div
+								style={{
+									padding: '20px',
+									border: '1px solid #505050',
+									marginTop: '10px',
+									borderRadius: '10px',
+									boxShadow: '1px 0px 10px #dddddd'
+								}}
+							>
+								<Radio {...radioTransferToAttribute} />
+							</div>
 
 							<div className='margin--medium-v'>
 								<Button {...buttonPostAttribute}>
