@@ -14,7 +14,8 @@ export default {
 		successCode: 201,
 		successLabel: 'OK',
 		sessionLength: 2,
-		referenceInfoName: '_v3rF'
+		referenceInfoName: '_v3rF',
+		tokenStorageKey: 'cacheToken'
 	},
 	references: {
 		home: 'home',
