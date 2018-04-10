@@ -15,7 +15,6 @@ export default class Fusion {
 		if (this.enabled) {
 			return {
 				source: Utils.getSource(),
-				session_id: Utils.getSessionID(),
 				customer_id: Utils.getCustomerID()
 			};
 		}
@@ -121,6 +120,7 @@ export default class Fusion {
 
 				// set ga-client-id as additional payloads
 				payload.google_session_id = Utils.getGaClientId();
+				payload.session_id = Utils.getSessionID();
 
 				// prepare request...
 				const axios = require('axios');
