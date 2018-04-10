@@ -206,7 +206,7 @@ class Hashtags extends Component {
 			<div>
 				<Page color='white'>
 					<SEO
-						paramCanonical={process.env.MOBILE_UR}
+						paramCanonical={process.env.MOBILE_URL}
 					/>
 					<div style={{ marginTop: '-30px' }} className='margin--medium-v text-center padding--large-h'>
 						{hashtag.header.description}
