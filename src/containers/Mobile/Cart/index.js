@@ -308,7 +308,7 @@ class Cart extends Component {
 				link = (<a href={process.env.CHECKOUT_URL}>{wording}</a>);
 			}
 		} else {
-			link = (<Link to={`login?redirect_uri=${process.env.CHECKOUT_URL}`}>{wording}</Link>);
+			link = (<Button color='secondary' size='medium' wide to={`login?redirect_uri=${process.env.CHECKOUT_URL}`}>{wording}</Button>);
 		}
 		return shopBag.total && shopBag.total.count_item !== 0 ? (
 			<div className={styles.paymentLink}>
@@ -321,7 +321,9 @@ class Cart extends Component {
 							</div>
 							<div className='font-medium font--lato-bold'>{this.props.shopBag.total.formatted.total}</div>
 						</div>
-						{link}
+						<div className='padding--medium-h'>
+							{link}
+						</div>
 					</div>
 				</div>
 			</div>
@@ -358,14 +360,16 @@ class Cart extends Component {
 
 		return (
 			<div>
-				<Page color='white'>
+				<Page>
 					{ (this.props.shopBag.total && this.props.shopBag.total.count_item === 0) ?
 						(<div dangerouslySetInnerHTML={{ __html: this.props.shopBag.empty_state }} />) :
 						(<div style={{ backgroundColor: '#F5F5F5' }}>
 							{this.renderMessageNotProcedItems()}
 							{this.renderHeaderShopBag()}
 							{this.renderList()}
-							{this.renderTotal()}
+							{
+								// this.renderTotal()
+							}
 						</div>)
 					}
 				</Page>

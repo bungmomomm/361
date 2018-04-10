@@ -279,13 +279,14 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 				scroll: {
 					top: window.scrollY,
 					docHeight,
-					isNavSticky: ((oldPos = this.currentScrollPos) => {
-						if (!scroll) {
-							return false;
-						}
-						this.currentScrollPos = this.state.scroll.top;
-						return this.state.scroll.top > oldPos && this.state.scroll.top < this.state.scroll.docHeight;
-					})()
+					// isNavSticky: ((oldPos = this.currentScrollPos) => {
+					// 	if (!scroll) {
+					// 		return false;
+					// 	}
+					// 	this.currentScrollPos = this.state.scroll.top;
+					// 	return this.state.scroll.top > oldPos && this.state.scroll.top < this.state.scroll.docHeight;
+					// })()
+					isSticky: false
 				}
 			});
 		}
