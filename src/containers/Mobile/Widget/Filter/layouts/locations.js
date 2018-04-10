@@ -48,11 +48,11 @@ class Location extends PureComponent {
 	}
 
 	render() {
-		const { onClose, title } = this.props;
+		const { onReset, title } = this.props;
 		const { data, resetDisabled } = this.state;
 		const HeaderPage = {
 			left: (
-				<Button onClick={onClose}>
+				<Button onClick={(e) => onReset(e, true)}>
 					<Svg src='ico_arrow-back-left.svg' />
 				</Button>
 			),

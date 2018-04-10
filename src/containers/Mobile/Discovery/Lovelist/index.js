@@ -53,7 +53,7 @@ class Lovelist extends Component {
 		// should be redirected to lovelist-login page
 		if (!this.isLogin) {
 			const { history } = this.props;
-			history.push('/login?redirect_uri=/lovelist');
+			history.replace('/login?redirect_uri=/lovelist');
 		}
 	}
 

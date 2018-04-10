@@ -3,9 +3,10 @@ import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { actions as users } from '@/state/v4/User';
 // import { Link } from 'react-router-dom';
-// import {
-// 	setUserCookie
-// } from '@/utils';
+import {
+	// setUserCookie
+	isFullUrl
+} from '@/utils';
 import {
 	Header,
 	Page,
@@ -46,7 +47,7 @@ class ForgotPassword extends Component {
 
 	async onResetPassword(e) {
 		const { dispatch, cookies } = this.props;
-		const { userName, useOtp } = this.state;
+		const { userName, useOtp, redirectUri } = this.state;
 		const response = await to(dispatch(new users.userForgotPassword(cookies.get(userToken), userName)));
 		this.setState({
 			error: false,
@@ -55,6 +56,13 @@ class ForgotPassword extends Component {
 			showModal: !useOtp,
 			showOtp: useOtp
 		});
+		if (!useOtp) {
+			if (isFullUrl(redirectUri)) {
+				top.location.href = redirectUri;
+				return true;
+			}
+			history.push(redirectUri || '/');
+		}
 		return response[1];
 	}
 

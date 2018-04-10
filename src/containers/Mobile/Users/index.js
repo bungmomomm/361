@@ -23,7 +23,7 @@ class Users extends Component {
 		this.props = props;
 		const query = queryString.parse(props.location.search);
 		this.state = {
-			current: location.pathname.substring(1),
+			current: location.pathname.substring(1) === 'login' ? 'login' : 'register',
 			redirectUri: query.redirect_uri || false,
 			loading: true,
 			callback: {
