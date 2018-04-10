@@ -126,7 +126,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 
 		async getTokenData(token = null) {
 			const { cookies } = this.props;
-			
+
 			if (cookies.get(shouldRefreshToken) === 'true') {
 				cookies.remove(shouldRefreshToken, { domain: process.env.SESSION_DOMAIN, path: '/' });
 				return this.refreshToken(token);
@@ -265,7 +265,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 					window.sessionStorage.removeItem('initCache');
 					window.sessionStorage.initCache = JSON.stringify(response[1]);
 				}
-				
+
 				this.initApp();
 				return response[1];
 			}
@@ -279,13 +279,14 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 				scroll: {
 					top: window.scrollY,
 					docHeight,
-					isNavSticky: ((oldPos = this.currentScrollPos) => {
-						if (!scroll) {
-							return false;
-						}
-						this.currentScrollPos = this.state.scroll.top;
-						return this.state.scroll.top > oldPos && this.state.scroll.top < this.state.scroll.docHeight;
-					})()
+					// isNavSticky: ((oldPos = this.currentScrollPos) => {
+					// 	if (!scroll) {
+					// 		return false;
+					// 	}
+					// 	this.currentScrollPos = this.state.scroll.top;
+					// 	return this.state.scroll.top > oldPos && this.state.scroll.top < this.state.scroll.docHeight;
+					// })()
+					isSticky: false
 				}
 			});
 		}
