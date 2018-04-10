@@ -23,7 +23,8 @@ class Love extends PureComponent {
 }
 
 Love.defaultProps = {
-	text: 'Suka'
+	text: 'Suka',
+	total: 0
 };
 
 export default Love;

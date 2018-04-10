@@ -62,10 +62,11 @@ export default {
 		{
 			path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9-]+)',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Category/Product'), defaultOptions),
+			exact: true,
 			group: category
 		},
 		{
-			path: '/p-:categoryId:([0-9]+)}/:categoryTitle([a-zA-Z0-9-]+)/:brandTitle([a-zA-Z0-9-]+)',
+			path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9-]+)/:brandTitle([a-zA-Z0-9-]+)',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Category/Product'), defaultOptions),
 			group: category
 		},
