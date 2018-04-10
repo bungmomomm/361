@@ -57,12 +57,8 @@ class Login extends Component {
 		window.sessionStorage.removeItem('cacheToken');
 		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
 		setUserCookie(this.props.cookies, response.token, false, userProfile);
-		const userInfo = {
-			id: response.userprofile.userid,
-			encId: response.userprofile.enc_userid,
-			encEmail: response.userprofile.enc_email
-		};
-		setUserInfoCookie(cookies, JSON.stringify(userInfo));
+
+		this.saveUserInfo(response, cookies);
 		await dispatch(new users.afterLogin(cookies.get(userToken)));
 		if (isFullUrl(redirectUri)) {
 			top.location.href = redirectUri;
@@ -84,6 +80,8 @@ class Login extends Component {
 		window.sessionStorage.removeItem('cacheToken');
 		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
 		setUserCookie(this.props.cookies, response.token, false, userProfile);
+		this.saveUserInfo(response, cookies);
+
 		await dispatch(new users.afterLogin(cookies.get(userToken)));
 		if (isFullUrl(redirectUri)) {
 			top.location.href = redirectUri;
@@ -108,6 +106,25 @@ class Login extends Component {
 				passTyped: (value !== ''),
 				validLoginPassword: !validator.isEmpty(value) && validator.isLength(value, { min: 6, max: undefined })
 			});
+		}
+	}
+
+	saveUserInfo = (response, cookies) => {
+		if (_.has(response, 'userprofile')) {
+			const { userprofile } = response;
+			const userInfo = {
+				id: 1, // default value for lucid tracking
+				encId: 1,
+				encEmail: ''
+			};
+
+			// Checking required fiedl to prevent js error that might block login process.
+			if (_.has(userprofile, 'userid') && _.has(userprofile, 'enc_userid') && _.has(userprofile, 'enc_email')) {
+				userInfo.id = userprofile.userid;
+				userInfo.encId = userprofile.enc_userid;
+				userInfo.encEmail = userprofile.enc_email; 
+			}
+			setUserInfoCookie(cookies, JSON.stringify(userInfo));
 		}
 	}
 
@@ -146,9 +163,25 @@ class Login extends Component {
 		};
 
 		const redirectAfterLogin = redirectUri ? `/forgot-password?redirect_uri=${redirectUri}` : '/forgot-password';
-
+		const digitalNotificationAttribute = {
+			color: 'blue',
+			show: true,
+			disableClose: true
+		};
+		
+		let showDigitalNotification = false;
+		if (redirectUri.indexOf('digital') > -1) {
+			showDigitalNotification = true;
+		}
 		return (
 			<div className={styles.container}>
+				{ showDigitalNotification && (
+					<Notification {...digitalNotificationAttribute}>
+						<span className='font-color--black'>
+							Silahkan login untuk melanjutkan ke digital
+						</span>
+					</Notification>
+				)}
 				<div className='margin--medium-v font-medium'>Login Dengan</div>
 				<LoginWidget
 					provider={providerConfig}
