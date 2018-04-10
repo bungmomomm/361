@@ -101,6 +101,10 @@ class Home extends Component {
 		this.checkedImage = [];
 		this.checkedStatus = [];
 		this.sbClose = this.sbClose.bind(this);
+
+		this.urlPromotionEnhancer = (url, id, name, creative, position) => {
+			return `${url}?icn=${name}&icid=${id}&creid=${creative}&bannerid=${position}`;
+		};
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -136,9 +140,13 @@ class Home extends Component {
 		const segment = home.activeSegment.key;
 		const featuredBanner = _.chain(home).get(`allSegmentData.${segment}`).get('heroBanner');
 		if (!featuredBanner.isEmpty().value()) {
-
 			const images = featuredBanner.value()[0].images;
-			const link = featuredBanner.value()[0].link.target;
+			let link = featuredBanner.value()[0].link.target;
+			if (link !== '') {
+				const promotion = featuredBanner.value()[0].impression;
+				link = `${link}?icn=${promotion.name}&icid=${promotion.id}&creid=${promotion.creative}&bannerid=${promotion.position}`;
+				link = this.urlPromotionEnhancer(link, promotion.id, promotion.name, promotion.creative, promotion.position);
+			}
 			return (
 				<Link
 					to={link}
@@ -247,16 +255,22 @@ class Home extends Component {
 			return (
 				<div className='margin--medium-v'>
 					{
-						datas.value().map(({ images, link }, c) => (
-							<Link
-								to={link.target || '/'}
-								key={c}
-							>
-								<div>
-									<Image lazyload alt='banner' src={images.thumbnail} />
-								</div>
-							</Link>
-						))
+						datas.value().map(({ images, link, impression }, c) => {
+							let url = link.target;
+							if (url !== '') {
+								url = this.urlPromotionEnhancer(url, impression.id, impression.name, impression.creative, impression.position);
+							}
+							return (
+								<Link
+									to={url || '/'}
+									key={c}
+								>
+									<div>
+										<Image lazyload alt='banner' src={images.thumbnail} />
+									</div>
+								</Link>
+							);
+						})
 					}
 				</div>
 			);
@@ -277,16 +291,22 @@ class Home extends Component {
 			return (
 				<div className='margin--medium-v'>
 					{
-						bottomBanner.map(({ images, link }, d) => (
-							<Link
-								to={link.target || '/'}
-								key={d}
-							>
-								<div>
-									<Image lazyload alt='banner' src={images.thumbnail} />
-								</div>
-							</Link>
-						))
+						bottomBanner.map(({ images, link, impression }, d) => {
+							let url = link.target;
+							if (url !== '') {
+								url = this.urlPromotionEnhancer(url, impression.id, impression.name, impression.creative, impression.position);
+							}
+							return (
+								<Link
+									to={url || '/'}
+									key={d}
+								>
+									<div>
+										<Image lazyload alt='banner' src={images.thumbnail} />
+									</div>
+								</Link>
+							);
+						})
 					}
 				</div>
 			);
