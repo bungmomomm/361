@@ -4,7 +4,7 @@ import styles from './radio.scss';
 
 class Radio extends PureComponent {
 	render() {
-		const { className } = this.props;
+		const { className, divStyle, labelStyle } = this.props;
 		const radioClass = classNames(
 			className,
 			styles.container,
@@ -15,9 +15,9 @@ class Radio extends PureComponent {
 			<div className={radioClass} style={this.props.style}>
 				{
 					this.props.data.map((list, idx) => (
-						<label htmlFor={`${this.props.name}-${idx}`} key={idx}>
+						<label htmlFor={`${this.props.name}-${idx}`} key={idx} style={labelStyle}>
 							<input disabled={list.disabled || false} onChange={() => this.props.onChange(list.value, list)} checked={this.props.checked === list.value} id={`${this.props.name}-${idx}`} type='radio' name={this.props.name} defaultValue={list.value} />
-							<div className={styles.label}>{list.label}</div>
+							<div className={styles.label} style={divStyle}>{list.label}</div>
 						</label>
 					))
 				}
