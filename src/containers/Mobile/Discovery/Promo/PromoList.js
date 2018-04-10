@@ -44,12 +44,12 @@ class PromoList extends Component {
 							width='100%'
 							height='100vh'
 							allowFullScreen
-							style={{ position: 'relative' }}
+							position='relative'
 						/>
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Promo' totalCartItems={shared.totalCart} scroll={this.props.scroll} botNav={this.props.botNav} isLogin={this.isLogin} />
+				<Navigation notScroll active='Promo' totalCartItems={shared.totalCart} scroll={this.props.scroll} botNav={this.props.botNav} isLogin={this.isLogin} />
 			</div>
 		);
 	}
