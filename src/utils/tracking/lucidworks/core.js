@@ -89,7 +89,6 @@ export default class Fusion {
 				// make sure an event pushed after the document fully loaded to
 				// prevent missing google_session_id
 				const windowLoaded = (window.document.readyState === 'complete');
-
 				if (!windowLoaded || !Utils.isGaHasSet()) {
 					setTimeout(() => {
 						this.push(payload);
