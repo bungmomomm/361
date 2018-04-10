@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 
 class Loading extends PureComponent {
 	componentWillUnmount() {
-		window.mmLoading.stop();
+		// window.mmLoading.stop();
 	}
 	render() {
 		return <div>&nbsp;</div>;

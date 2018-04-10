@@ -99,7 +99,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 		}
 
 		componentDidMount() {
-			window.mmLoading.destroy();
+			// window.mmLoading.destroy();
 			window.addEventListener('scroll', this.handleScroll, true);
 			this.docBody = document.body;
 
@@ -118,7 +118,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 		}
 
 		componentWillUnmount() {
-			window.mmLoading.play();
+			// window.mmLoading.play();
 			window.surfs = [this.props.location, ...window.surfs];
 			window.previousLocation = location.pathname + location.search;
 			window.removeEventListener('scroll', this.handleScroll, true);
