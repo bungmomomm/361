@@ -17,7 +17,7 @@ const getMetaTags = ({
 }) => {
 	
 	const metaTags = [
-		// { itemprop: 'name', content: title },
+		{ name: 'title', content: seoTitle },
 		{ name: 'description', content: seoDesc },
 		{ name: 'image', content: iconUrl },
 		{ name: 'robots', content: seoRobots },
@@ -60,7 +60,7 @@ const SEO = ({
 
 	const seoDesc = variableCheck(desc) ? desc : defaultContent.description;
 	const seoRobots = variableCheck(bots) ? bots : defaultContent.robots;
-	const seoTitle = variableCheck(titz) ? titz : defaultContent.title;
+	const seoTitle = variableCheck(titz) ? `${titz} | Mataharimall.com` : defaultContent.title;
 	const seoAlternate = variableCheck(paramAlternate) ? paramAlternate : defaultContent.alternate;
 	const seoCanonial = variableCheck(cano) ? cano : (variableCheck(paramCanonical) ? paramCanonical : window.location.origin + window.location.pathname);
 
