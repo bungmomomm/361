@@ -56,6 +56,7 @@ class Brands extends Component {
 		let filteredBrand = [];
 
 		if (keyword.length >= this.state.minimumLetter) {
+			window.scrollTo(0, 0);
 			this.props.brands.brand_list.map((e) => {
 				const listBrand = e.brands.filter((list) => {
 					const keywordDisplay = list.facetdisplay.toLowerCase();
@@ -81,7 +82,6 @@ class Brands extends Component {
 	}
 
 	onFocus() {
-		console.log('on focus trigerd');
 		this.setState({
 			searchFocus: true
 		});
@@ -228,7 +228,8 @@ class Brands extends Component {
 			center: 'Brands',
 			right: null,
 			subHeaderStyle: {
-				height: this.headContainer && this.headContainer.getBoundingClientRect().height
+				height: 'auto',
+				minHeight: '60px'
 			},
 			rows: [{
 				left: null,
@@ -268,7 +269,7 @@ class Brands extends Component {
 			<div style={this.props.style}>
 				<Page color='white'>
 					<SEO
-						paramCanonical={process.env.MOBILE_UR}
+						paramCanonical={process.env.MOBILE_URL}
 					/>
 					{
 						<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />
@@ -279,7 +280,7 @@ class Brands extends Component {
 				</Page>
 				<Header.Modal {...HeaderPage} headerRef={(header) => { this.headContainer = header; }} />
 				{/* <Header.Modal {...HeaderPage} /> */}
-				<Navigation {...navigationAttribute} botNav={this.props.botNav} isLogin={this.isLogin} />
+				<Navigation {...navigationAttribute} totalCartItems={shared.totalCart} botNav={this.props.botNav} isLogin={this.isLogin} />
 			</div>
 		);
 	}

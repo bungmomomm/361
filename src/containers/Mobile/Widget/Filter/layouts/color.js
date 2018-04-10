@@ -18,6 +18,14 @@ class Color extends PureComponent {
 		this.props = props;
 	}
 
+	componentWillReceiveProps(np) {
+		if (np.data) {
+			this.setState({
+				data: np.data
+			});
+		}
+	}
+
 	onClick(e, value) {
 		let { data } = this.state;
 		data = utils.updateChilds(data, value, {
@@ -49,11 +57,11 @@ class Color extends PureComponent {
 	}
 
 	render() {
-		const { onClose, title } = this.props;
+		const { onReset, title } = this.props;
 		const { resetDisabled, data } = this.state;
 		const HeaderPage = {
 			left: (
-				<Button onClick={onClose}>
+				<Button onClick={(e) => onReset(e, true)}>
 					<Svg src='ico_arrow-back-left.svg' />
 				</Button>
 			),

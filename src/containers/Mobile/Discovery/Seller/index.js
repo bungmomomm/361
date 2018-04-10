@@ -530,7 +530,7 @@ class Seller extends Component {
 					<div style={this.props.style}>
 						<Page color='white'>
 							<SEO
-								paramCanonical={process.env.MOBILE_UR}
+								paramCanonical={process.env.MOBILE_URL}
 							/>
 							{this.sellerHeader()}
 							{this.filterTabs()}

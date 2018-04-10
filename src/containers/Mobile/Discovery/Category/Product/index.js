@@ -370,7 +370,7 @@ class Product extends Component {
 				return (
 					<Page color='white'>
 						<SEO
-							paramCanonical={process.env.MOBILE_UR}
+							paramCanonical={process.env.MOBILE_URL}
 						/>
 						{this.foreverBannerBlock()}
 						{isLoading ? this.loadingView : productsView}

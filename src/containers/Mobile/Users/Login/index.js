@@ -161,7 +161,8 @@ class Login extends Component {
 				appId: process.env.FBAPP_ID
 			}
 		};
-		
+
+		const redirectAfterLogin = redirectUri ? `/forgot-password?redirect_uri=${redirectUri}` : '/forgot-password';
 		const digitalNotificationAttribute = {
 			color: 'blue',
 			show: true,
@@ -172,7 +173,6 @@ class Login extends Component {
 		if (redirectUri.indexOf('digital') > -1) {
 			showDigitalNotification = true;
 		}
-		
 		return (
 			<div className={styles.container}>
 				{ showDigitalNotification && (
@@ -228,7 +228,7 @@ class Login extends Component {
 					/>
 				</div>
 				<div className='text-right margin--medium-v'>
-					<Link className='pull-right' to={redirectUri ? `/forgot-password?redirect_uri=${redirectUri}` : '/forgot-password'}>LUPA PASSWORD</Link>
+					<Link className='pull-right' to={redirectAfterLogin}>LUPA PASSWORD</Link>
 				</div>
 				<div className='margin--medium-v'>
 					<Button color='secondary' size='large' disabled={!buttonLoginEnable} loading={isLoading} onClick={(e) => this.onLogin(e)} >LOGIN</Button>

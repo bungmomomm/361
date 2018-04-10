@@ -7,6 +7,7 @@ import {
 	Svg,
 	Header,
 	Tabs,
+	SEO
 } from '@/components/mobile';
 import styles from './brands.scss';
 import _ from 'lodash';
@@ -424,6 +425,9 @@ class Detail extends Component {
 
 		return (
 			<div style={this.props.style}>
+				<SEO
+					paramCanonical={process.env.MOBILE_URL}
+				/>
 				{(showFilter) ? (
 					<Filter
 						shown={showFilter}
