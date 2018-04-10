@@ -113,14 +113,23 @@ export default class Utils {
 		return config.defaultSource;
 	}
 
+	static isGaHasSet = () => {
+		try {
+			const gaSet = (typeof window.ga !== 'undefined');
+			const gaHasGetAll = (gaSet && typeof window.ga.getAll === 'function');
+			const clientGA = (gaHasGetAll) ? window.ga.getAll() : undefined;
+			return (typeof clientGA !== 'undefined' && Array.isArray(clientGA));
+		} catch (error) {
+			return false;
+		}
+	}
+
 	static getGaClientId = () => {
 		let clientId = '';
-		if (typeof window.ga !== 'undefined') {
+		if (Utils.isGaHasSet()) {
 			try {
-				if (typeof window.ga.getAll === 'function') {
-					const clientGA = window.ga.getAll()[0];
-					if (typeof clientGA.get === 'function') clientId = clientGA.get('clientId');
-				}
+				const clientGA = window.ga.getAll()[0];
+				if (typeof clientGA.get === 'function') clientId = clientGA.get('clientId');
 			} catch (error) {
 				return clientId;
 			}
