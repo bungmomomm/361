@@ -46,7 +46,7 @@ class Image extends Component {
 	}
 
 	onError = (e) => {
-		e.target.src = require('@/assets/images/mobile/ico_placeholder-full.png');
+		e.target.src = require('@/assets/images/mobile/mm_ico_imagebroken.png');
 	};
 
 	checkVisibility() {

@@ -120,7 +120,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 		componentWillUnmount() {
 			// window.mmLoading.play();
 			window.surfs = [this.props.location, ...window.surfs];
-			window.previousLocation = location.pathname + location.search;
+			window.previousLocation = this.props.location.pathname + this.props.location.search;
 			window.removeEventListener('scroll', this.handleScroll, true);
 		}
 
@@ -128,7 +128,6 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 			const { cookies } = this.props;
 
 			if (cookies.get(shouldRefreshToken) === 'true') {
-				cookies.remove(shouldRefreshToken, { domain: process.env.SESSION_DOMAIN, path: '/' });
 				return this.refreshToken(token);
 			}
 			if (isStorageSupport) {
@@ -199,13 +198,17 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 				await to(dispatch(new account.userSocialLogin(tokenBearer, provider, login)));
 			}
 
-			if (users && !users.userProfile) {
+			if ((users && !users.userProfile) || cookies.get(shouldRefreshToken) === 'true') {
 				dispatch(new account.userGetProfile(tokenBearer));
 			}
 
-			if (typeof doAfterAnonymousCall !== 'undefined') {
+			if (typeof doAfterAnonymousCall !== 'undefined' || cookies.get(shouldRefreshToken) === 'true') {
 				await to(doAfterAnonymousCall.apply(this, [this.props]));
 			}
+			cookies.remove(shouldRefreshToken, {
+				domain: process.env.SESSION_DOMAIN,
+				path: '/'
+			});
 			return null;
 		}
 

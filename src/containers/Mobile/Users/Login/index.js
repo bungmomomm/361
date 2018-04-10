@@ -28,7 +28,27 @@ import to from 'await-to-js';
 import { userToken } from '@/data/cookiesLabel';
 import Logout from './Logout';
 import handler from '@/containers/Mobile/Shared/handler';
+import {
+	TrackingRequest,
+	sendGtm,
+	loginSuccessBuilder,
+} from '@/utils/tracking';
+import { Utils } from '@/utils/tracking/lucidworks';
 
+const trackSuccessLogin = (userProfile, ipAddress, provider = 'onsite') => {
+	const data = {
+		emailHash: _.defaultTo(userProfile.enc_email, ''),
+		userIdEncrypted: userProfile.enc_userid,
+		userId: userProfile.userid,
+		ipAddress,
+		currentUrl: '/login',
+		fusionSessionId: Utils.getSessionID(),
+		loginRegisterMethod: provider
+	};
+	const request = new TrackingRequest(data);
+	const requestPayload = request.getPayload(loginSuccessBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
 @handler
 class Login extends Component {
 	constructor(props) {
@@ -60,10 +80,12 @@ class Login extends Component {
 
 		this.saveUserInfo(response, cookies);
 		await dispatch(new users.afterLogin(cookies.get(userToken)));
+		trackSuccessLogin(response.userprofile, response.ipAddress);
 		if (isFullUrl(redirectUri)) {
 			top.location.href = redirectUri;
 			return true;
 		}
+
 		history.push(redirectUri || '/');
 		return response;
 	}
@@ -83,6 +105,7 @@ class Login extends Component {
 		this.saveUserInfo(response, cookies);
 
 		await dispatch(new users.afterLogin(cookies.get(userToken)));
+		trackSuccessLogin(response.userprofile, response.ipAddress, provider);
 		if (isFullUrl(redirectUri)) {
 			top.location.href = redirectUri;
 			return true;
@@ -161,7 +184,8 @@ class Login extends Component {
 				appId: process.env.FBAPP_ID
 			}
 		};
-		
+
+		const redirectAfterLogin = redirectUri ? `/forgot-password?redirect_uri=${redirectUri}` : '/forgot-password';
 		const digitalNotificationAttribute = {
 			color: 'blue',
 			show: true,
@@ -172,7 +196,6 @@ class Login extends Component {
 		if (redirectUri.indexOf('digital') > -1) {
 			showDigitalNotification = true;
 		}
-		
 		return (
 			<div className={styles.container}>
 				{ showDigitalNotification && (
@@ -228,7 +251,7 @@ class Login extends Component {
 					/>
 				</div>
 				<div className='text-right margin--medium-v'>
-					<Link className='pull-right' to={redirectUri ? `/forgot-password?redirect_uri=${redirectUri}` : '/forgot-password'}>LUPA PASSWORD</Link>
+					<Link className='pull-right' to={redirectAfterLogin}>LUPA PASSWORD</Link>
 				</div>
 				<div className='margin--medium-v'>
 					<Button color='secondary' size='large' disabled={!buttonLoginEnable} loading={isLoading} onClick={(e) => this.onLogin(e)} >LOGIN</Button>

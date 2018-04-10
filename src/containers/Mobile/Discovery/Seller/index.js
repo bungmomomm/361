@@ -66,7 +66,7 @@ const trackSellerPageView = (products, info, props) => {
 			brand: product.brand.name,
 			category: product.product_category_names ? product.product_category_names.join('/') : '',
 			position: key + 1,
-			list: 'mm'
+			list: product.source
 		};
 	}) || [];
 	const { users, shared } = props;
@@ -75,7 +75,7 @@ const trackSellerPageView = (products, info, props) => {
 		emailHash: _.defaultTo(userProfile.enc_email, ''),
 		userIdEncrypted: userProfile.enc_userid,
 		userId: userProfile.id,
-		ipAddress: shared.ipAddress,
+		ipAddress: shared.ipAddress || userProfile.ip_address,
 		currentUrl: props.location.pathname,
 		impressions,
 		categoryInfo: brandInfo,
@@ -530,7 +530,7 @@ class Seller extends Component {
 					<div style={this.props.style}>
 						<Page color='white'>
 							<SEO
-								paramCanonical={process.env.MOBILE_UR}
+								paramCanonical={process.env.MOBILE_URL}
 							/>
 							{this.sellerHeader()}
 							{this.filterTabs()}
