@@ -51,7 +51,8 @@ const userLogin = (token, email, password) => async (dispatch, getState) => {
 			token: response.data.data.token,
 			expires_in: response.data.data.expires_in,
 			refresh_token: response.data.data.refresh_token
-		}
+		},
+		ipAddress: response.data.data.ip_address
 	});
 };
 

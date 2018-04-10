@@ -63,18 +63,18 @@ const trackCategoryPageView = (products, info, props) => {
 			brand: product.brand.name,
 			category: product.product_category_names.join('/'),
 			position: key + 1,
-			list: 'mm'
+			list: product.source
 		};
 	}) || [];
 	const { users, shared } = props;
 	const { userProfile } = users;
-	const layerData = { 
+	const layerData = {
 		emailHash: _.defaultTo(userProfile.enc_email, ''),
 		userIdEncrypted: userProfile.enc_userid,
 		userId: userProfile.id,
-		ipAddress: shared.ipAddress,
+		ipAddress: shared.ipAddress || userProfile.ip_address,
 		currentUrl: props.location.pathname,
-		impressions, 
+		impressions,
 		categoryInfo,
 		listProductId: productId.join('|'),
 		fusionSessionId: Utils.getSessionID()
@@ -93,7 +93,7 @@ const trackProductOnClick = (product, position, source = 'mm') => {
 		category: product.product_category_names.join('/'),
 		position
 	};
-	const layerData = { 
+	const layerData = {
 		products: [productData],
 		sourceName: source,
 		fusionSessionId: Utils.getSessionID()
@@ -118,7 +118,7 @@ class Product extends Component {
 			query: {
 				category_id: '',
 				page: 1,
-				per_page: 10,
+				per_page: process.env.PCP_PER_PAGE,
 				fq: '',
 				sort: '',
 				...propsObject.get('query').value()
@@ -131,6 +131,23 @@ class Product extends Component {
 				<Spinner />
 			</div>
 		);
+	}
+
+	componentWillMount = async () => {
+		window.scroll(0, 0);
+
+		const { productCategory } = this.props;
+		const productData = productCategory.pcpData.products || '';
+
+		if (!_.isEmpty(productData)) {
+			const { dispatch, cookies } = this.props;
+
+			const productIdList = _.map(productData, 'product_id') || [];
+			if (productIdList.length > 0) {
+				await dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
+				await dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
+			}
+		}
 	}
 
 	componentWillReceiveProps = async (nextProps) => {
@@ -153,7 +170,7 @@ class Product extends Component {
 			const pcpNewParam = {
 				category_id: parseInt(categoryId, 10),
 				page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
-				per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 36,
+				per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : process.env.PCP_PER_PAGE,
 				fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
 				sort: parsedUrl.sort !== undefined ? parsedUrl.sort : ''
 			};
@@ -244,10 +261,21 @@ class Product extends Component {
 
 	handlePick(e) {
 		const { showSort } = this.state;
-		const { viewMode, dispatch } = this.props;
+		const { viewMode, dispatch, cookies, productCategory } = this.props;
 		if (e === 'view') {
 			const mode = viewMode.mode === 3 ? 1 : viewMode.mode + 1;
+
 			dispatch(pcpActions.viewModeAction(mode));
+
+			const productData = productCategory.pcpData.products || '';
+
+			if (!_.isEmpty(productData)) {
+				const productIdList = _.map(productData, 'product_id') || [];
+				if (productIdList.length > 0) {
+					dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
+					dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
+				}
+			}
 		} else {
 			this.setState({
 				showFilter: e === 'filter',
@@ -370,7 +398,7 @@ class Product extends Component {
 				return (
 					<Page color='white'>
 						<SEO
-							paramCanonical={process.env.MOBILE_UR}
+							paramCanonical={process.env.MOBILE_URL}
 						/>
 						{this.foreverBannerBlock()}
 						{isLoading ? this.loadingView : productsView}
@@ -466,24 +494,41 @@ const mapStateToProps = (state) => {
 		productCategory,
 		query: state.productCategory.query,
 		isLoading: state.productCategory.isLoading,
-		viewMode: state.productCategory.viewMode,
+		viewMode: state.productCategory.viewMode
 	};
 };
 
 const doAfterAnonymous = async (props) => {
-	const { dispatch, cookies, match, location } = props;
+	const { dispatch, cookies, match, location, history } = props;
 
 	const categoryId = _.chain(match).get('params.categoryId').value() || '';
+	const categoryTitle = _.chain(match).get('params.categoryTitle').value() || '';
+	const brandTitle = _.chain(match).get('params.brandTitle').value() || '';
+
 	const parsedUrl = queryString.parse(location.search);
 	const pcpParam = {
 		category_id: parseInt(categoryId, 10),
 		page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
-		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 36,
+		per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : process.env.PCP_PER_PAGE,
 		fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
 		sort: parsedUrl.sort !== undefined ? parsedUrl.sort : ''
 	};
 
+	if (!_.isEmpty(brandTitle)) {
+		pcpParam.fq = `brand_name:${brandTitle},${pcpParam.fq}`;
+	}
+	
 	const response = await dispatch(pcpActions.pcpAction({ token: cookies.get(userToken), query: pcpParam }));
+	
+	if (!_.isEmpty(categoryTitle)) {
+		const realCategoryTitle = _.chain(response).get('pcpData.info.title').value() || '';
+		const realCategoryTitleSlug = urlBuilder.setName(realCategoryTitle).name;
+		
+		if (!_.isEmpty(realCategoryTitle) && categoryTitle !== realCategoryTitleSlug) {
+			const newUrl = urlBuilder.setId(categoryId).setName(realCategoryTitle).buildPcp();
+			history.replace(newUrl);
+		}
+	}
 
 	const productIdList = _.map(response.pcpData.products, 'product_id') || [];
 	if (productIdList.length > 0) {

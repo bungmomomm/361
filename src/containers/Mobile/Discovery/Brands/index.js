@@ -269,7 +269,7 @@ class Brands extends Component {
 			<div style={this.props.style}>
 				<Page color='white'>
 					<SEO
-						paramCanonical={process.env.MOBILE_UR}
+						paramCanonical={process.env.MOBILE_URL}
 					/>
 					{
 						<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />

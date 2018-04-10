@@ -10,11 +10,12 @@ export default {
 		defaultCustomerId: 1,
 		defaultSource: 'mobile-web',
 		sourceDesktop: 'desktop',
-		timeout: 500,
+		timeout: 1000, // default timeout 1s
 		successCode: 201,
 		successLabel: 'OK',
 		sessionLength: 2,
-		referenceInfoName: '_v3rF'
+		referenceInfoName: '_v3rF',
+		tokenStorageKey: 'cacheToken'
 	},
 	references: {
 		home: 'home',

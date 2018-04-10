@@ -742,7 +742,7 @@ class Products extends Component {
 			);
 
 			return (
-				<div>
+				<div className='can-copy'>
 					<Page color='white'>
 						{status.isZoomed && this.renderZoom()}
 						<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
