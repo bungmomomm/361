@@ -45,7 +45,8 @@ const userSocialLogin = (token, provider, accessToken) => async (dispatch, getSt
 			token: data.get('data.data.token').value(),
 			expires_in: data.get('data.data.expires_in').value(),
 			refresh_token: data.get('data.data.refresh_token').value()
-		}
+		},
+		ipAddress: data.get('data.data.ip_address').value()
 	});
 };
 

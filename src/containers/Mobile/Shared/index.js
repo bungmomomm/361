@@ -120,7 +120,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 		componentWillUnmount() {
 			// window.mmLoading.play();
 			window.surfs = [this.props.location, ...window.surfs];
-			window.previousLocation = location.pathname + location.search;
+			window.previousLocation = this.props.location.pathname + this.props.location.search;
 			window.removeEventListener('scroll', this.handleScroll, true);
 		}
 

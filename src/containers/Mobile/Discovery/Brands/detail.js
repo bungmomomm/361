@@ -29,7 +29,7 @@ import {
 	GridView,
 	SmallGridView,
 } from '@/containers/Mobile/Discovery/View';
-
+import { Utils } from '@/utils/tracking/lucidworks';
 import {
 	TrackingRequest,
 	sendGtm,
@@ -40,7 +40,7 @@ import { userToken, pageReferrer, isLogin } from '@/data/cookiesLabel';
 
 const trackBrandPageView = (products, info, props) => {
 	const productId = _.map(products, 'product_id') || [];
-	const brandInfo = {
+	const categoryInfo = {
 		id: props.match.params.brandId,
 		name: info.title,
 		url_path: props.location.pathname
@@ -53,13 +53,23 @@ const trackBrandPageView = (products, info, props) => {
 			brand: product.brand.name,
 			category: product.product_category_names.join('/'),
 			position: key + 1,
-			list: 'mm'
+			list: product.source
 		};
 	}) || [];
-	const request = new TrackingRequest();
-	request.setEmailHash('').setUserId('').setUserIdEncrypted('').setCurrentUrl(props.location.pathname);
-	request.setFusionSessionId('').setIpAddress('').setImpressions(impressions).setCategoryInfo(brandInfo);
-	request.setListProductId(productId.join('|'));
+	const { users, shared } = props;
+	const { userProfile } = users;
+	const layerData = {
+		emailHash: _.defaultTo(userProfile.enc_email, ''),
+		userIdEncrypted: userProfile.enc_userid,
+		userId: userProfile.id,
+		ipAddress: shared.ipAddress || userProfile.ip_address,
+		currentUrl: props.location.pathname,
+		impressions,
+		categoryInfo,
+		listProductId: productId.join('|'),
+		fusionSessionId: Utils.getSessionID()
+	};
+	const request = new TrackingRequest(layerData);
 	const requestPayload = request.getPayload(categoryViewBuilder);
 	if (requestPayload) sendGtm(requestPayload);
 };

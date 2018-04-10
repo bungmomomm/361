@@ -22,6 +22,7 @@ import {
 } from '@/utils/tracking';
 import { urlBuilder } from '@/utils';
 import cookiesLabel from '@/data/cookiesLabel';
+import { Utils } from '@/utils/tracking/lucidworks';
 
 const renderSectionHeader = (title, options, cookies = null) => {
 	return (
@@ -42,6 +43,24 @@ const renderSectionHeader = (title, options, cookies = null) => {
 			</Level.Right>
 		</Level>
 	);
+};
+
+const trackPageViewHandler = (props) => {
+	const { shared, users } = props;
+	const { userProfile } = users;
+	if (userProfile) {
+		const data = {
+			emailHash: _.defaultTo(userProfile.enc_email, ''),
+			userIdEncrypted: userProfile.enc_userid,
+			userId: userProfile.id,
+			ipAddress: shared.ipAddress || userProfile.ip_address,
+			currentUrl: props.location.pathname,
+			fusionSessionId: Utils.getSessionID(),
+		};
+		const PageViewReq = new TrackingRequest(data);
+		const pageViewPayload = PageViewReq.getPayload(homepageViewBuilder);
+		if (pageViewPayload) sendGtm(pageViewPayload);
+	}
 };
 
 import handler from '@/containers/Mobile/Shared/handler';
@@ -82,30 +101,16 @@ class Home extends Component {
 		this.checkedImage = [];
 		this.checkedStatus = [];
 		this.sbClose = this.sbClose.bind(this);
+
+		this.urlPromotionEnhancer = (url, id, name, creative, position) => {
+			return `${url}?icn=${name}&icid=${id}&creid=${creative}&bannerid=${position}`;
+		};
 	}
 
 	componentWillReceiveProps(nextProps) {
 		if (this.props.users.userProfile !== nextProps.users.userProfile) {
-			this.trackPageViewHandler(nextProps.users);
+			trackPageViewHandler(nextProps);
 		}
-	}
-
-	trackPageViewHandler(users) {
-		const { shared } = this.props;
-		const { userProfile } = users;
-		if (userProfile) {
-			const data = {
-				emailHash: _.defaultTo(userProfile.enc_email, ''),
-				userIdEncrypted: userProfile.enc_userid,
-				userId: userProfile.id,
-				ipAddress: shared.ipAddress,
-				currentUrl: this.props.location.pathname
-			};
-			const PageViewReq = new TrackingRequest(data);
-			const pageViewPayload = PageViewReq.getPayload(homepageViewBuilder);
-			if (pageViewPayload) sendGtm(pageViewPayload);
-		}
-
 	}
 
 	async handlePick(current) {
@@ -135,9 +140,13 @@ class Home extends Component {
 		const segment = home.activeSegment.key;
 		const featuredBanner = _.chain(home).get(`allSegmentData.${segment}`).get('heroBanner');
 		if (!featuredBanner.isEmpty().value()) {
-
 			const images = featuredBanner.value()[0].images;
-			const link = featuredBanner.value()[0].link.target;
+			let link = featuredBanner.value()[0].link.target;
+			if (link !== '') {
+				const promotion = featuredBanner.value()[0].impression;
+				link = `${link}?icn=${promotion.name}&icid=${promotion.id}&creid=${promotion.creative}&bannerid=${promotion.position}`;
+				link = this.urlPromotionEnhancer(link, promotion.id, promotion.name, promotion.creative, promotion.position);
+			}
 			return (
 				<Link
 					to={link}
@@ -250,16 +259,22 @@ class Home extends Component {
 			return (
 				<div className='margin--medium-v'>
 					{
-						datas.value().map(({ images, link }, c) => (
-							<Link
-								to={link.target || '/'}
-								key={c}
-							>
-								<div>
-									<Image lazyload alt='banner' src={images.thumbnail} />
-								</div>
-							</Link>
-						))
+						datas.value().map(({ images, link, impression }, c) => {
+							let url = link.target;
+							if (url !== '') {
+								url = this.urlPromotionEnhancer(url, impression.id, impression.name, impression.creative, impression.position);
+							}
+							return (
+								<Link
+									to={url || '/'}
+									key={c}
+								>
+									<div>
+										<Image lazyload alt='banner' src={images.thumbnail} />
+									</div>
+								</Link>
+							);
+						})
 					}
 				</div>
 			);
@@ -280,16 +295,22 @@ class Home extends Component {
 			return (
 				<div className='margin--medium-v'>
 					{
-						bottomBanner.map(({ images, link }, d) => (
-							<Link
-								to={link.target || '/'}
-								key={d}
-							>
-								<div>
-									<Image lazyload alt='banner' src={images.thumbnail} />
-								</div>
-							</Link>
-						))
+						bottomBanner.map(({ images, link, impression }, d) => {
+							let url = link.target;
+							if (url !== '') {
+								url = this.urlPromotionEnhancer(url, impression.id, impression.name, impression.creative, impression.position);
+							}
+							return (
+								<Link
+									to={url || '/'}
+									key={d}
+								>
+									<div>
+										<Image lazyload alt='banner' src={images.thumbnail} />
+									</div>
+								</Link>
+							);
+						})
 					}
 				</div>
 			);
@@ -442,6 +463,7 @@ const doAfterAnonymous = async (props) => {
 
 	const mainPageData = await dispatch(new actions.mainAction(activeSegment, tokenHeader));
 	await dispatch(new actions.recomendationAction(activeSegment, tokenHeader));
+	trackPageViewHandler(props);
 	Home.trackImpresionHandler(mainPageData);
 };
 
