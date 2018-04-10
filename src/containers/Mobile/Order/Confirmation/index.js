@@ -329,7 +329,7 @@ class OrderConfirmation extends Component {
 			checked: checkedTransferTo,
 			onChange: this.makeRadioTransferToChecked,
 			data: this.getDataTransferTo(),
-			labelStyle: { paddingBottom: '15px', borderBottom: '1px solid #ededed' }
+			labelStyle: { paddingBottom: '40px', borderBottom: '1px solid #ededed' }
 		};
 
 		return (
