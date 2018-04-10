@@ -26,15 +26,27 @@ class Love extends PureComponent {
 			loading: false,
 			showModal: false,
 			status: props.status || -1,
-			total: this.props.total
+			total: props.total
 		};
 	}
 
-	componentWillReceiveProps(nextProps) {
-		const { status } = this.state;
-		if (status === -1 && nextProps.status !== undefined) {
+	componentWillMount() {
+		const { status, total } = this.props;
+		if (status && total) {
 			this.setState({
-				status: nextProps.status
+				status,
+				total
+			});
+		}
+	}
+
+	componentWillReceiveProps(nextProps) {
+		console.log(nextProps);
+		console.log(this.state);
+		if (nextProps.status !== undefined) {
+			this.setState({
+				status: nextProps.status,
+				total: nextProps.total
 			});
 		}
 	}

@@ -7,7 +7,7 @@ import { actions as scrollerActions } from '@/state/v4/Scroller';
 import __x from '@/state/__x';
 
 const configs = {
-	defaultPage: 36
+	defaultPage: process.env.PCP_PER_PAGE
 };
 
 
