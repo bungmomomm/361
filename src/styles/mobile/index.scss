@@ -509,9 +509,10 @@
 
 	.can-copy{
 		user-select: auto;
-		p{
+		*{
 			user-select: auto;
 		}
+
 	}
 }
 
