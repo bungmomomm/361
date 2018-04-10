@@ -90,8 +90,6 @@ export default class Fusion {
 				// make sure an event pushed after the document fully loaded to
 				// prevent missing google_session_id
 				const windowLoaded = (window.document.readyState === 'complete');
-				console.log('window fully loaded? ', windowLoaded);
-				console.log('GTM has been set? ', Utils.isGaHasSet());
 
 				if (!windowLoaded || !Utils.isGaHasSet()) {
 					setTimeout(() => {
