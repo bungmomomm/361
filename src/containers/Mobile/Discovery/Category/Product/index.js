@@ -63,18 +63,18 @@ const trackCategoryPageView = (products, info, props) => {
 			brand: product.brand.name,
 			category: product.product_category_names.join('/'),
 			position: key + 1,
-			list: 'mm'
+			list: product.source
 		};
 	}) || [];
 	const { users, shared } = props;
 	const { userProfile } = users;
-	const layerData = { 
+	const layerData = {
 		emailHash: _.defaultTo(userProfile.enc_email, ''),
 		userIdEncrypted: userProfile.enc_userid,
 		userId: userProfile.id,
-		ipAddress: shared.ipAddress,
+		ipAddress: shared.ipAddress || userProfile.ip_address,
 		currentUrl: props.location.pathname,
-		impressions, 
+		impressions,
 		categoryInfo,
 		listProductId: productId.join('|'),
 		fusionSessionId: Utils.getSessionID()
@@ -93,7 +93,7 @@ const trackProductOnClick = (product, position, source = 'mm') => {
 		category: product.product_category_names.join('/'),
 		position
 	};
-	const layerData = { 
+	const layerData = {
 		products: [productData],
 		sourceName: source,
 		fusionSessionId: Utils.getSessionID()

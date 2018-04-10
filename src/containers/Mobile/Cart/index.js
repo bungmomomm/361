@@ -20,7 +20,7 @@ import handler from '@/containers/Mobile/Shared/handler';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { toastSytle } from '@/containers/Mobile/Shared/styleSnackbar';
 
-const trackBrandPageView = (data, props) => {
+const trackCartView = (data, props) => {
 	const items = _.flatMap(data, (e) => (e.items));
 	const productId = _.map(items, 'product_id');
 	const pricingList = _.map(items, 'pricing.original.effective_price');
@@ -31,7 +31,7 @@ const trackBrandPageView = (data, props) => {
 		emailHash: _.defaultTo(userProfile.enc_email, ''),
 		userIdEncrypted: userProfile.enc_userid,
 		userId: userProfile.id,
-		ipAddress: shared.ipAddress,
+		ipAddress: shared.ipAddress || userProfile.ip_address,
 		currentUrl: props.location.pathname,
 		listPrice: pricingList.join('|'),
 		listQuantity: quantityList.join('|'),
@@ -74,13 +74,6 @@ class Cart extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-
-		if (nextProps.shopBag.carts !== this.props.shopBag.carts
-			&& this.props.users.userProfile !== nextProps.users.userProfile
-		) {
-			trackBrandPageView(nextProps.shopBag.carts, nextProps);
-		}
-
 		if (nextProps.shopBag.carts !== this.props.shopBag.carts && (typeof this.fusion === 'undefined')) {
 			const { carts, total } = nextProps.shopBag;
 			if (!_.isEmpty(carts) && !_.isEmpty(total)) this.fusion = new LucidCart(carts, total);
@@ -450,14 +443,15 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymousCall = (props) => {
+const doAfterAnonymousCall = async (props) => {
 	const { dispatch, cookies } = props;
 
-	dispatch(
+	const response = await dispatch(
 		shopBagAction.getAction(
 			cookies.get(cookiesLabel.userToken)
 		)
 	);
+	trackCartView(response.data.data.carts, props);
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Cart, doAfterAnonymousCall)));

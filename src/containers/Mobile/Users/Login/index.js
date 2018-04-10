@@ -28,7 +28,27 @@ import to from 'await-to-js';
 import { userToken } from '@/data/cookiesLabel';
 import Logout from './Logout';
 import handler from '@/containers/Mobile/Shared/handler';
+import {
+	TrackingRequest,
+	sendGtm,
+	loginSuccessBuilder,
+} from '@/utils/tracking';
+import { Utils } from '@/utils/tracking/lucidworks';
 
+const trackSuccessLogin = (userProfile, ipAddress, provider = 'onsite') => {
+	const data = {
+		emailHash: _.defaultTo(userProfile.enc_email, ''),
+		userIdEncrypted: userProfile.enc_userid,
+		userId: userProfile.userid,
+		ipAddress,
+		currentUrl: '/login',
+		fusionSessionId: Utils.getSessionID(),
+		loginRegisterMethod: provider
+	};
+	const request = new TrackingRequest(data);
+	const requestPayload = request.getPayload(loginSuccessBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
 @handler
 class Login extends Component {
 	constructor(props) {
@@ -64,10 +84,12 @@ class Login extends Component {
 		};
 		setUserInfoCookie(cookies, JSON.stringify(userInfo));
 		await dispatch(new users.afterLogin(cookies.get(userToken)));
+		trackSuccessLogin(response.userprofile, response.ipAddress);
 		if (isFullUrl(redirectUri)) {
 			top.location.href = redirectUri;
 			return true;
 		}
+
 		history.push(redirectUri || '/');
 		return response;
 	}
@@ -85,6 +107,7 @@ class Login extends Component {
 		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
 		setUserCookie(this.props.cookies, response.token, false, userProfile);
 		await dispatch(new users.afterLogin(cookies.get(userToken)));
+		trackSuccessLogin(response.userprofile, response.ipAddress, provider);
 		if (isFullUrl(redirectUri)) {
 			top.location.href = redirectUri;
 			return true;

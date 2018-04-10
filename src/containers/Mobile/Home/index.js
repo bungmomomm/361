@@ -22,6 +22,7 @@ import {
 } from '@/utils/tracking';
 import { urlBuilder } from '@/utils';
 import cookiesLabel from '@/data/cookiesLabel';
+import { Utils } from '@/utils/tracking/lucidworks';
 
 const renderSectionHeader = (title, options, cookies = null) => {
 	return (
@@ -42,6 +43,24 @@ const renderSectionHeader = (title, options, cookies = null) => {
 			</Level.Right>
 		</Level>
 	);
+};
+
+const trackPageViewHandler = (props) => {
+	const { shared, users } = props;
+	const { userProfile } = users;
+	if (userProfile) {
+		const data = {
+			emailHash: _.defaultTo(userProfile.enc_email, ''),
+			userIdEncrypted: userProfile.enc_userid,
+			userId: userProfile.id,
+			ipAddress: shared.ipAddress || userProfile.ip_address,
+			currentUrl: props.location.pathname,
+			fusionSessionId: Utils.getSessionID(),
+		};
+		const PageViewReq = new TrackingRequest(data);
+		const pageViewPayload = PageViewReq.getPayload(homepageViewBuilder);
+		if (pageViewPayload) sendGtm(pageViewPayload);
+	}
 };
 
 import handler from '@/containers/Mobile/Shared/handler';
@@ -86,26 +105,8 @@ class Home extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		if (this.props.users.userProfile !== nextProps.users.userProfile) {
-			this.trackPageViewHandler(nextProps.users);
+			trackPageViewHandler(nextProps);
 		}
-	}
-
-	trackPageViewHandler(users) {
-		const { shared } = this.props;
-		const { userProfile } = users;
-		if (userProfile) {
-			const data = {
-				emailHash: _.defaultTo(userProfile.enc_email, ''),
-				userIdEncrypted: userProfile.enc_userid,
-				userId: userProfile.id,
-				ipAddress: shared.ipAddress,
-				currentUrl: this.props.location.pathname
-			};
-			const PageViewReq = new TrackingRequest(data);
-			const pageViewPayload = PageViewReq.getPayload(homepageViewBuilder);
-			if (pageViewPayload) sendGtm(pageViewPayload);
-		}
-
 	}
 
 	async handlePick(current) {
@@ -438,6 +439,7 @@ const doAfterAnonymous = async (props) => {
 
 	const mainPageData = await dispatch(new actions.mainAction(activeSegment, tokenHeader));
 	await dispatch(new actions.recomendationAction(activeSegment, tokenHeader));
+	trackPageViewHandler(props);
 	Home.trackImpresionHandler(mainPageData);
 };
 
