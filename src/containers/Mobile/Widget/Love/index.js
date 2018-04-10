@@ -26,12 +26,13 @@ class Love extends PureComponent {
 			loading: false,
 			showModal: false,
 			status: props.status || -1,
-			total: props.total
+			total: props.total || 0
 		};
 	}
 
 	componentWillMount() {
 		const { status, total } = this.props;
+
 		if (status && total) {
 			this.setState({
 				status,
@@ -41,9 +42,9 @@ class Love extends PureComponent {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		console.log(nextProps);
-		console.log(this.state);
-		if (nextProps.status !== undefined) {
+		const { status } = this.state;
+
+		if (status === -1 && nextProps.status !== undefined) {
 			this.setState({
 				status: nextProps.status,
 				total: nextProps.total
