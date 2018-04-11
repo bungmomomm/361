@@ -55,16 +55,16 @@ class Sort extends Component {
 	}
 
 	render() {
-		const { isSticky, shown, overlayFixed } = this.props;
+		const { isSticky, shown, isStoreSticky, overlayFixed } = this.props;
 		const { sorts } = this.state;
 		if (shown) {
 			const cx = classNames(
-				isSticky ? styles.filterNavigationFixed : styles.filterNavigation
+				isSticky ? styles.filterNavigationFixed : isStoreSticky ? styles.filterNavigationFixedStore : styles.filterNavigation
 			);
 			const overlayStyle = classNames(
 				overlayFixed ? styles.overlayFixed : styles.overlay
 			);
-			
+
 			return (
 				<div className={cx}>
 					{this.props.onCloseOverlay && <button onClick={() => this.props.onCloseOverlay()} className={overlayStyle} />}

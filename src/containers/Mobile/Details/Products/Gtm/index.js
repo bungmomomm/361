@@ -40,7 +40,7 @@ const trackPdpView = (data, props) => {
 	const products = {
 		name: data.detail.title,
 		id: data.detail.id,
-		price: data.detail.price_range.effective_price,
+		price: data.detail.variants[0].pricing.original.effective_price,
 		brand: data.detail.brand.name,
 		category: data.detail.product_category_names.join('/'),
 	};

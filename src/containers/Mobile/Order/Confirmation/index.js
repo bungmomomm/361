@@ -160,7 +160,7 @@ class OrderConfirmation extends Component {
 
 		const postData = {
 			so_number: this.soNumber,
-			amount: Number(amountTransfer),
+			amount: Number(amountTransfer.replace(/\./g, '')),
 			from_bank_id: bankSenderID,
 			sender_name: bankHolderName,
 			datetime: `${dateSender} ${timeSender}`,
