@@ -7,6 +7,7 @@ import {
 	Svg,
 	Header,
 	Tabs,
+	SEO
 } from '@/components/mobile';
 import styles from './brands.scss';
 import _ from 'lodash';
@@ -100,7 +101,7 @@ class Detail extends Component {
 			store_id: parsedUrl.store_id !== undefined ? parseInt(parsedUrl.store_id, 10) : '',
 			category_id: parsedUrl.category_id !== undefined ? parseInt(parsedUrl.category_id, 10) : '',
 			page: parsedUrl.page !== undefined ? parseInt(parsedUrl.page, 10) : 1,
-			per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : 10,
+			per_page: parsedUrl.per_page !== undefined ? parseInt(parsedUrl.per_page, 10) : process.env.PCP_PER_PAGE,
 			fq: parsedUrl.fq !== undefined ? parsedUrl.fq : '',
 			sort: parsedUrl.sort !== undefined ? parsedUrl.sort : ''
 		};
@@ -116,7 +117,7 @@ class Detail extends Component {
 			showFilter: false,
 			showSort: false,
 			query: {
-				per_page: 10,
+				per_page: process.env.PCP_PER_PAGE,
 				page: 1,
 				q: '',
 				brand_id: '',
@@ -134,6 +135,7 @@ class Detail extends Component {
 	}
 	componentWillMount() {
 		window.scroll(0, 0);
+
 		if ('serviceUrl' in this.props.shared) {
 			const { dispatch, match: { params }, cookies } = this.props;
 			const qs = queryString.parse(location.search);
@@ -149,6 +151,19 @@ class Detail extends Component {
 			});
 			dispatch(brandAction.brandProductAction(data));
 			dispatch(brandAction.brandBannerAction(cookies.get(userToken), this.props.match.params.brandId));
+		}
+
+		const { brands } = this.props;
+		const productData = brands.searchData.products || '';
+
+		if (brands && !_.isEmpty(productData)) {
+			const { dispatch, cookies } = this.props;
+
+			const productIdList = _.map(productData, 'product_id') || [];
+			if (productIdList.length > 0) {
+				dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
+				dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
+			}
 		}
 	}
 
@@ -346,7 +361,7 @@ class Detail extends Component {
 					onPick={e => this.handlePick(e)}
 				/>
 				{renderIf(sorts)(
-					<Sort onCloseOverlay={() => this.setState({ showSort: false })} shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+					<Sort onCloseOverlay={() => this.setState({ showSort: false })} overlayFixed shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
 				)}
 			</div>
 		);
@@ -434,6 +449,9 @@ class Detail extends Component {
 
 		return (
 			<div style={this.props.style}>
+				<SEO
+					paramCanonical={process.env.MOBILE_URL}
+				/>
 				{(showFilter) ? (
 					<Filter
 						shown={showFilter}

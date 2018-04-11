@@ -6,7 +6,7 @@ import _ from 'lodash';
 import {
 	Header, Carousel, Tabs,
 	Page, Level, Button, Grid, Article,
-	Navigation, Svg, Image, SmartBanner, SEO
+	Navigation, Svg, Image, SmartBanner, SEO, Spinner
 } from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
@@ -156,7 +156,11 @@ class Home extends Component {
 				</Link>
 			);
 		}
-		return null;
+		
+		return (
+			<div style={{ margin: '20px auto 20px auto' }}>
+				<Spinner />
+			</div>);
 	}
 
 	renderRecommendation(type = 'new_arrival_products') {
@@ -391,7 +395,7 @@ class Home extends Component {
 			<div style={this.props.style}>
 				<Page color='white'>
 					<SEO
-						paramCanonical={process.env.MOBILE_UR}
+						paramCanonical={process.env.MOBILE_URL}
 					/>
 					<Tabs
 						current={this.props.shared.current}

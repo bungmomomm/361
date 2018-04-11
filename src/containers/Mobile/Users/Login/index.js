@@ -77,12 +77,8 @@ class Login extends Component {
 		window.sessionStorage.removeItem('cacheToken');
 		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
 		setUserCookie(this.props.cookies, response.token, false, userProfile);
-		const userInfo = {
-			id: response.userprofile.userid,
-			encId: response.userprofile.enc_userid,
-			encEmail: response.userprofile.enc_email
-		};
-		setUserInfoCookie(cookies, JSON.stringify(userInfo));
+
+		this.saveUserInfo(response, cookies);
 		await dispatch(new users.afterLogin(cookies.get(userToken)));
 		trackSuccessLogin(response.userprofile, response.ipAddress);
 		if (isFullUrl(redirectUri)) {
@@ -106,6 +102,8 @@ class Login extends Component {
 		window.sessionStorage.removeItem('cacheToken');
 		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
 		setUserCookie(this.props.cookies, response.token, false, userProfile);
+		this.saveUserInfo(response, cookies);
+
 		await dispatch(new users.afterLogin(cookies.get(userToken)));
 		trackSuccessLogin(response.userprofile, response.ipAddress, provider);
 		if (isFullUrl(redirectUri)) {
@@ -131,6 +129,25 @@ class Login extends Component {
 				passTyped: (value !== ''),
 				validLoginPassword: !validator.isEmpty(value) && validator.isLength(value, { min: 6, max: undefined })
 			});
+		}
+	}
+
+	saveUserInfo = (response, cookies) => {
+		if (_.has(response, 'userprofile')) {
+			const { userprofile } = response;
+			const userInfo = {
+				id: 1, // default value for lucid tracking
+				encId: 1,
+				encEmail: ''
+			};
+
+			// Checking required fiedl to prevent js error that might block login process.
+			if (_.has(userprofile, 'userid') && _.has(userprofile, 'enc_userid') && _.has(userprofile, 'enc_email')) {
+				userInfo.id = userprofile.userid;
+				userInfo.encId = userprofile.enc_userid;
+				userInfo.encEmail = userprofile.enc_email; 
+			}
+			setUserInfoCookie(cookies, JSON.stringify(userInfo));
 		}
 	}
 
@@ -167,7 +184,8 @@ class Login extends Component {
 				appId: process.env.FBAPP_ID
 			}
 		};
-		
+
+		const redirectAfterLogin = redirectUri ? `/forgot-password?redirect_uri=${redirectUri}` : '/forgot-password';
 		const digitalNotificationAttribute = {
 			color: 'blue',
 			show: true,
@@ -178,7 +196,6 @@ class Login extends Component {
 		if (redirectUri.indexOf('digital') > -1) {
 			showDigitalNotification = true;
 		}
-		
 		return (
 			<div className={styles.container}>
 				{ showDigitalNotification && (
@@ -234,7 +251,7 @@ class Login extends Component {
 					/>
 				</div>
 				<div className='text-right margin--medium-v'>
-					<Link className='pull-right' to={redirectUri ? `/forgot-password?redirect_uri=${redirectUri}` : '/forgot-password'}>LUPA PASSWORD</Link>
+					<Link className='pull-right' to={redirectAfterLogin}>LUPA PASSWORD</Link>
 				</div>
 				<div className='margin--medium-v'>
 					<Button color='secondary' size='large' disabled={!buttonLoginEnable} loading={isLoading} onClick={(e) => this.onLogin(e)} >LOGIN</Button>

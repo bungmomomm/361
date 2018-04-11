@@ -87,7 +87,7 @@ class Filter extends PureComponent {
 		onUpdateFilter(e, type, value);
 	}
 
-	onFilterSectionReset(e, type) {
+	onFilterSectionReset(e, type, closed) {
 		const { filters } = this.state;
 		const updateChilds = (c) => {
 			c = _.map(c, (facetData) => {
@@ -130,8 +130,13 @@ class Filter extends PureComponent {
 		this.setState({
 			filters,
 			selected,
-			resetCliked: true
+			resetCliked: true,
 		});
+		if (closed) {
+			this.setState({
+				layout: 'result'
+			});
+		}
 		if (this.props.autoUpdateFacets) {
 			const obj = utils.getFq(filters);
 			this.props.onApply(null, obj, false);
@@ -277,9 +282,8 @@ class Filter extends PureComponent {
 						{...state}
 						title={data.title}
 						data={data.data}
-						onReset={(e) => this.onFilterSectionReset(e, layout)}
+						onReset={(e, closed) => this.onFilterSectionReset(e, layout, closed)}
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
-						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
 				);
@@ -291,9 +295,8 @@ class Filter extends PureComponent {
 						{...state}
 						title={data.title}
 						data={data.data}
-						onReset={(e) => this.onFilterSectionReset(e, layout)}
+						onReset={(e, closed) => this.onFilterSectionReset(e, layout, closed)}
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
-						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
 				);
@@ -306,9 +309,8 @@ class Filter extends PureComponent {
 						{...state}
 						title={data.title}
 						data={data.data}
-						onReset={(e) => this.onFilterSectionReset(e, layout)}
+						onReset={(e, closed) => this.onFilterSectionReset(e, layout, closed)}
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
-						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
 				);
@@ -320,9 +322,8 @@ class Filter extends PureComponent {
 						{...state}
 						title={data.title}
 						data={data.data}
-						onReset={(e) => this.onFilterSectionReset(e, layout)}
+						onReset={(e, closed) => this.onFilterSectionReset(e, layout, closed)}
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
-						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values, custom) => this.applyFilter(layout, values, custom)}
 					/>
 				);
@@ -337,10 +338,9 @@ class Filter extends PureComponent {
 						data={data.data}
 						range={data.range}
 						selected={data.selected_range}
-						onReset={(e) => this.onFilterSectionReset(e, layout)}
+						onReset={(e, closed) => this.onFilterSectionReset(e, layout, closed)}
 						onChange={(e, value) => this.onFilterSelected(e, 'pricerange', value)}
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
-						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values, custom) => this.applyFilter(layout, values, custom)}
 					/>
 				);
@@ -352,9 +352,8 @@ class Filter extends PureComponent {
 						{...state}
 						title={data.title}
 						data={data.data}
-						onReset={(e) => this.onFilterSectionReset(e, layout)}
+						onReset={(e, closed) => this.onFilterSectionReset(e, layout, closed)}
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
-						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
 				);
@@ -366,9 +365,8 @@ class Filter extends PureComponent {
 						{...state}
 						title={data.title}
 						data={data.data}
-						onReset={(e) => this.onFilterSectionReset(e, layout)}
+						onReset={(e, closed) => this.onFilterSectionReset(e, layout, closed)}
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
-						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
 				);
@@ -380,9 +378,8 @@ class Filter extends PureComponent {
 						{...state}
 						title={data.title}
 						data={data.data}
-						onReset={(e) => this.onFilterSectionReset(e, layout)}
+						onReset={(e, closed) => this.onFilterSectionReset(e, layout, closed)}
 						onClick={(e, value) => this.onFilterSelected(e, layout, value)}
-						onClose={(e) => this.onFilterSectionClose()}
 						onApply={(e, values) => this.applyFilter(layout, values)}
 					/>
 				);
