@@ -62,7 +62,7 @@ class Product extends PureComponent {
 	}
 
 	render() {
-		const { className, type, data, isLoved, disabledLovelist, totalComments, totalLovelist } = this.props;
+		const { className, type, data, isLoved, disabledLovelist, totalComments, totalLovelist, linkToBrand } = this.props;
 		const createClassName = classNames(styles.container, styles[type], className);
 		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
 
@@ -86,7 +86,9 @@ class Product extends PureComponent {
 					</Level.Item>
 				</Level>
 				<div className={styles.title}>
-					<span className='font-small text-uppercase font--lato-bold font-color--primary'>{data.brand.name}</span>
+					<Link className='font-color--black text-uppercase' to={linkToBrand}>
+						<span className='font-small text-uppercase font--lato-bold font-color--primary'>{data.brand.name}</span>
+					</Link>
 					<span className='text-elipsis-two-line font-color--primary-ext-2'>{data.product_title}</span>
 				</div>
 			</div>
