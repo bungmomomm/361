@@ -40,7 +40,7 @@ class Users extends Component {
 		const { redirectUri } = this.state;
 		const { history } = this.props;
 		
-		if (redirectUri.indexOf('digital') > -1) {
+		if (redirectUri && redirectUri.indexOf('digital') > -1) {
 			
 			// Do nothing let them stay into the page.
 			
