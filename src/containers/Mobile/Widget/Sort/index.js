@@ -51,6 +51,7 @@ class Sort extends Component {
 			sorts
 		});
 
+		window.scrollTo(0, 0);
 		onSort(e, value);
 	}
 
