@@ -309,7 +309,7 @@ class Cart extends Component {
 			if (this.state.itemsNotProced.length > 0) {
 				link = (<a>{wording}</a>);
 			} else {
-				link = (<a href={process.env.CHECKOUT_URL}>{wording}</a>);
+				link = (<Button color='secondary' size='medium' wide to={`login?redirect_uri=${process.env.CHECKOUT_URL}`}>{wording}</Button>);
 			}
 		} else {
 			link = (<Button color='secondary' size='medium' wide to={`login?redirect_uri=${process.env.CHECKOUT_URL}`}>{wording}</Button>);
