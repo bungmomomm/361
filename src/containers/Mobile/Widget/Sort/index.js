@@ -55,11 +55,11 @@ class Sort extends Component {
 	}
 
 	render() {
-		const { isSticky, shown } = this.props;
+		const { isSticky, shown, isStoreSticky } = this.props;
 		const { sorts } = this.state;
 		if (shown) {
 			const cx = classNames(
-				isSticky ? styles.filterNavigationFixed : styles.filterNavigation
+				isSticky ? styles.filterNavigationFixed : isStoreSticky ? styles.filterNavigationFixedStore : styles.filterNavigation
 			);
 			return (
 				<div className={cx}>

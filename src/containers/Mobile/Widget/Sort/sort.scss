@@ -4,12 +4,26 @@
     position: absolute;
     width: 100%;
     top: 100%;
-    z-index: 11;
+  	height: 100vh;
+    z-index: 1;
+  	background: rgba(0, 0, 0, 0.4);
+  	max-width: 480px;
 }
 
 .filterNavigationFixed {
     position: fixed;
     top: 100px;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    max-width: 480px;
+}
+
+.filterNavigationFixedStore {
+    position: fixed;
+    top: 114px;
     z-index: 1;
     width: 100%;
     height: 100%;
