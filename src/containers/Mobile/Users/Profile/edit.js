@@ -27,6 +27,7 @@ import CONST from '@/constants';
 import styles from './profile.scss';
 import cookiesLabel from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
+import { setUserProfileCookie } from '@/utils';
 
 @handler
 class UserProfileEdit extends Component {
@@ -280,18 +281,28 @@ class UserProfileEdit extends Component {
 						layout: this.OTP_FIELD,
 					});
 				} else {
-					dispatch(userActions.userGetProfile(cookies.get(cookiesLabel.userToken)));
+					const res = await dispatch(userActions.userGetProfile(cookies.get(cookiesLabel.userToken)));
+
+					if (res && !_.isEmpty(res)) {
+						const cookiesData = JSON.stringify({ name: res.userprofile[this.NAME_FIELD], avatar: res.userprofile[this.AVATAR_FIELD] });
+						setUserProfileCookie(cookies, cookiesData);
+
+						this.setState({
+							formData: {
+								...formData,
+								...res.userprofile
+							}
+						});
+					}
+					
 					this.setState({
 						formResult: {
 							status: 'success',
 							message: response.msg || 'Form success'
 						},
-						formData: {
-							...formData,
-							...newData
-						},
 						submittingForm: false
 					});
+
 					this.setTimeoutForm(5000);
 				}
 			}

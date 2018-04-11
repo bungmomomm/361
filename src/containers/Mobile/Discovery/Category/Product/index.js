@@ -334,7 +334,7 @@ class Product extends Component {
 	}
 
 	productsBlock() {
-		const { isLoading, comments, productCategory, scroller, viewMode, location } = this.props;
+		const { isLoading, comments, productCategory, scroller, viewMode, location, match } = this.props;
 		const { focusedProductId } = this.state;
 		if (productCategory.pcpStatus !== '') {
 			if (productCategory.pcpStatus === 'success') {
@@ -395,10 +395,13 @@ class Product extends Component {
 					productsView = <EmptyState />;
 				}
 
+				const categoryId = _.chain(match).get('params.categoryId').value() || '';
+
 				return (
 					<Page color='white'>
 						<SEO
 							paramCanonical={process.env.MOBILE_URL}
+							paramAlternate={`android-app://com.mataharimall.mmandroid/mataharimall/category/${categoryId}?utm_source=app_indexing`}
 						/>
 						{this.foreverBannerBlock()}
 						{isLoading ? this.loadingView : productsView}

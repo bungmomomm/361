@@ -27,6 +27,10 @@ class Logout extends Component {
 			loading: true,
 			redirectUri: query.redirect_uri || false
 		};
+
+	}
+
+	componentDidMount() {
 		this.timeout = setTimeout(() => {
 			this.redirect();
 		}, 2000);
@@ -71,4 +75,8 @@ class Logout extends Component {
 	}
 }
 
-export default withCookies(connect()(Shared(Logout)));
+const mapStateToProps = (state) => {
+	return state;
+};
+
+export default withCookies(connect(mapStateToProps)(Shared(Logout)));
