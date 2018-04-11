@@ -684,7 +684,7 @@ class Products extends Component {
 			const { detail, socialSummary, promo, loading, store } = product;
 			const { seller, comments, reviews } = socialSummary;
 			const { cardProduct, status, carousel, selectedVariant, outOfStock, size } = this.state;
-			const { id } = detail;
+			const { id, brand } = detail;
 
 			const buttonProductDescriptionAttribute = {
 				onClick: this.handleShowMoreProductDescription
@@ -768,6 +768,7 @@ class Products extends Component {
 										totalComments={comments.total}
 										totalLovelist={cardProduct.totalLovelist}
 										outOfStock={outOfStock}
+										linkToBrand={urlBuilder.setId(brand.id).setName(brand.name).buildBrand()}
 									/>
 								</div>
 							)}
