@@ -144,7 +144,6 @@ class Home extends Component {
 			let link = featuredBanner.value()[0].link.target;
 			if (link !== '') {
 				const promotion = featuredBanner.value()[0].impression;
-				link = `${link}?icn=${promotion.name}&icid=${promotion.id}&creid=${promotion.creative}&bannerid=${promotion.position}`;
 				link = this.urlPromotionEnhancer(link, promotion.id, promotion.name, promotion.creative, promotion.position);
 			}
 			return (
