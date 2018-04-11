@@ -73,6 +73,10 @@ class Cart extends Component {
 		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin);
 	}
 
+	componentDidMount() {
+		if (this.props.botBar && this.botBar) this.props.botBar(this.botBar);
+	}
+
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.shopBag.carts !== this.props.shopBag.carts && (typeof this.fusion === 'undefined')) {
 			const { carts, total } = nextProps.shopBag;
@@ -81,6 +85,10 @@ class Cart extends Component {
 		}
 
 		this.checkNotProcedItem(nextProps);
+	}
+
+	componentWillUnmount() {
+		if (this.props.botBar) this.props.botBar(false);
 	}
 
 	checkNotProcedItem(props) {
@@ -313,7 +321,7 @@ class Cart extends Component {
 		return shopBag.total && shopBag.total.count_item !== 0 ? (
 			<div className={styles.paymentLink}>
 				<div>
-					<div>
+					<div ref={(r) => { this.botBar = r; }}>
 						<div className={styles.totalPayment}>
 							<div>
 								<div>Total Pembayaran</div>
