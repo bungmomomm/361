@@ -1,13 +1,15 @@
+import { isMobile } from '@/utils';
+
 const repeatedPayload = (data) => {
 	return {
 		email_address: data.emailHash,
 		fusion_session_id: data.fusionSessionId,
 		user_id: data.userIdEncrypted,
 		logged_in: data.userId,
-		site_type: 'd',
+		site_type: isMobile() ? 'm' : 'd',
 		ip_address: data.ipAddress,
 		timestamp: new Date().getTime(),
-		ref_url: window.previousLocation,
+		ref_url: window.previousLocation || '',
 		cur_url: data.currentUrl,
 		user_agent: navigator.userAgent
 	};
@@ -85,7 +87,7 @@ const addToCartBuilder = (data) => {
 		fusion_session_id: data.fusionSessionId,
 		user_id: data.userIdEncrypted,
 		logged_in: data.userId,
-		site_type: 'd',
+		site_type: isMobile() ? 'm' : 'd',
 		ecommerce: {
 			currencyCode: 'IDR',
 			add: {

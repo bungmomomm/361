@@ -66,7 +66,7 @@ const trackSellerPageView = (products, info, props) => {
 			brand: product.brand.name,
 			category: product.product_category_names ? product.product_category_names.join('/') : '',
 			position: key + 1,
-			list: 'mm'
+			list: product.source
 		};
 	}) || [];
 	const { users, shared } = props;
@@ -75,7 +75,7 @@ const trackSellerPageView = (products, info, props) => {
 		emailHash: _.defaultTo(userProfile.enc_email, ''),
 		userIdEncrypted: userProfile.enc_userid,
 		userId: userProfile.id,
-		ipAddress: shared.ipAddress,
+		ipAddress: shared.ipAddress || userProfile.ip_address,
 		currentUrl: props.location.pathname,
 		impressions,
 		categoryInfo: brandInfo,
@@ -139,6 +139,7 @@ class Seller extends Component {
 				...propsObject.get('query').value()
 			},
 			filterStyle: {},
+			isStoreSticky: false,
 			centerStyle: { opacity: 0 },
 			headerNameY: false,
 			seeMore: {
@@ -216,9 +217,9 @@ class Seller extends Component {
 					width: '100%',
 					top: '60px',
 					zIndex: '1',
-					overflow: 'hidden',
 					maxWidth: '480px'
-				}
+				},
+				isStoreSticky: 1
 			});
 		} else {
 			let o = 0;
@@ -233,6 +234,7 @@ class Seller extends Component {
 			this.setState({
 				centerStyle: { opacity: o },
 				filterStyle: {},
+				isStoreSticky: false
 			});
 		}
 	};
@@ -330,7 +332,7 @@ class Seller extends Component {
 
 	filterTabs = () => {
 		const { seller, scroller, isFiltered } = this.props;
-		const { listTypeState, showSort, filterStyle } = this.state;
+		const { listTypeState, showSort, filterStyle, isStoreSticky } = this.state;
 		const sorts = _.chain(seller).get('data.sorts').value() || [];
 
 		return (
@@ -359,7 +361,7 @@ class Seller extends Component {
 					onPick={e => this.handlePick(e)}
 				/>
 				{renderIf(sorts)(
-					<Sort shown={showSort} onCloseOverlay={() => this.setState({ showSort: false })} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+					<Sort shown={showSort} onCloseOverlay={() => this.setState({ showSort: false })} isStoreSticky={isStoreSticky} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
 				)}
 			</div>
 		);

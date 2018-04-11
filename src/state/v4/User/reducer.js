@@ -55,8 +55,8 @@ const actions = createActions({
 	USER_AFTER_LOGIN: (state, action, param) => ({ state, action, param }),
 	USER_AFTER_LOGIN_CLEAR: undefined,
 	USER_BANK_LIST: (userBankList) => ({ userBankList }),
-	USER_CLEAR_ERROR: () => ({ 
-		login: undefined, 
+	USER_CLEAR_ERROR: () => ({
+		login: undefined,
 		newpassword: undefined,
 		forget: undefined,
 		logout: undefined,
@@ -166,7 +166,13 @@ const reducer = handleActions({
 	[actions.userValidateOvoSuccess]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
 	[actions.userLogout]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
 	[actions.userLogoutFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
-	[actions.userLogoutSuccess]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
+	[actions.userLogoutSuccess]: (state, action) => {
+		return {
+			...state,
+			userProfile: false,
+			isLoading: false
+		};
+	},
 	[actions.userForgotPassword]: (state, action) => ({ ...state, ...action.payload, isLoading: true }),
 	[actions.userForgotPasswordFail]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
 	[actions.userForgotPasswordSuccess]: (state, action) => ({ ...state, ...action.payload, isLoading: false }),
