@@ -25,7 +25,7 @@ const brandListAction = (token, segment) => async (dispatch, getState) => {
 			method: 'GET',
 			fullpath: true,
 			query: {
-				segment_id: segment
+				category_id: segment
 			}
 		})
 	);

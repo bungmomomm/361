@@ -18,6 +18,7 @@ import {
 import C from '@/constants';
 import styles from './brands.scss';
 import { actions } from '@/state/v4/Brand';
+import { brandListUpdate } from '@/state/v4/Brand/reducer';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Shared from '@/containers/Mobile/Shared';
 import { urlBuilder } from '@/utils';
@@ -50,6 +51,12 @@ class Brands extends Component {
 				document.body.scrollTop = section.offsetTop;
 			}
 		};
+	}
+
+	componentWillUnmount() {
+		this.props.dispatch(brandListUpdate({
+			brand_list: null
+		}));
 	}
 
 	onFilter(keyword) {
@@ -298,7 +305,7 @@ const mapStateToProps = (state) => {
 const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies, shared, home } = props;
 	const activeSegment = home.segmen.filter((e) => e.key === shared.current)[0];
-	dispatch(new actions.brandListAction(cookies.get(userToken), activeSegment.id));
+	await dispatch(new actions.brandListAction(cookies.get(userToken), activeSegment.id));
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Brands, doAfterAnonymous)));
