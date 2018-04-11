@@ -646,7 +646,7 @@ class Products extends Component {
 							</div>
 						</div>
 						<div>
-							<Button color='secondary' disabled={btnDisabled} loading={status.btnBeliLoading} size='medium' onClick={this.handleBtnBeliClicked} >BELI AJA</Button>
+							<Button id='btnBeliAjaPdp' color='secondary' disabled={btnDisabled} loading={status.btnBeliLoading} size='medium' onClick={this.handleBtnBeliClicked} >BELI AJA</Button>
 						</div>
 					</div>
 				</div>
