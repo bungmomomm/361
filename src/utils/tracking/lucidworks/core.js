@@ -72,12 +72,7 @@ export default class Fusion {
 				// push new session event signal ...
 				this.push(payload);
 
-			} else {
-				// updates session data...
-				const sessionId = Utils.getSessionID();
-				const sessionData = `${sessionId}|${customerId}`;
-				Utils.storeSession(sessionData);
-			}
+			} else Utils.updateSessionID(customerId);
 		} catch (error) {
 			if (config.debug) console.log(error);
 		}

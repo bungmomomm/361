@@ -110,4 +110,13 @@ export default class LucidCart extends Fusion {
 			this.push({ event, ...eventPayloads });
 		}
 	}
+
+	static tracks = (carts, total, variantId, qty = 0) => {
+		try {
+			if (typeof window.lwfCarts === 'undefined') {
+				window.lwfCarts = new LucidCart(carts, total);
+			}
+			window.lwfCarts.trackCartChanges(variantId, qty);
+		} catch (error) { ; }
+	}
 }

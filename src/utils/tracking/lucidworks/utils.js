@@ -59,6 +59,13 @@ export default class Utils {
 		return null;
 	}
 
+	static updateSessionID = (customerId) => {
+		// updates session data...
+		const sessionId = Utils.getSessionID();
+		const sessionData = `${sessionId}|${customerId}`;
+		Utils.storeSession(sessionData);
+	}
+
 	static resetCustomerInfo = () => {
 		let userInfo = {
 			id: 1, // default value for lucid tracking
@@ -81,6 +88,8 @@ export default class Utils {
 		} catch (error) { ; }
 
 		Utils.storeData(config.userSession, JSON.stringify(userInfo));
+		if (Utils.hasSession() && Utils.isLoggedIn()) Utils.updateSessionID(userInfo.id);
+
 	}
 
 	static getCustomerID = () => {
