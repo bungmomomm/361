@@ -8,7 +8,7 @@ import componentState from './componentState';
 import splitString from './splitString';
 import trimString from './trimString';
 import { request, getCancelToken } from './request';
-import { setUserCookie, setUniqeCookie, removeUserCookie, setUserInfoCookie, setReferrenceCookie } from './cookie';
+import { setUserCookie, setUniqeCookie, removeUserCookie, setUserInfoCookie, setReferrenceCookie, setUserProfileCookie } from './cookie';
 import urlBuilder from './urlBuilder';
 import enableZoomPinch from './zoomPinch';
 import loading from './loading';
@@ -82,6 +82,7 @@ export default {
 	setUserInfoCookie,
 	removeUserCookie,
 	setUniqeCookie,
+	setUserProfileCookie,
 	newId,
 	renderIf,
 	currency,

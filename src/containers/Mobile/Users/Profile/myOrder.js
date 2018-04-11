@@ -96,8 +96,8 @@ class MyOrder extends Component {
 			currentOrders.orders.map((order, key) => {
 				return (<List className={styles.orderMenu} key={key}>
 					<Link style={{ flexFlow: 'row nowrap' }} to={`/profile/my-order/${order.so_number}`}>
-						<List.Content className={styles.orderMenuList} >
-							<div className={className}>
+						<List.Content className={styles.orderMenuList}>
+							<div className={className} style={{ flex: '1' }}>
 								<span>Pesanan <b>#{order.so_number}</b></span>
 								<small className='font-color--primary-ext-3'>{order.created_time}</small>
 								<div className={styles.orderStatus}><span className={styleStatus}>{order.status}</span></div>

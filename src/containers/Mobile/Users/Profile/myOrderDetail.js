@@ -189,7 +189,7 @@ class MyOrderDetail extends Component {
 		return (
 			<aux>
 				<div className='panel__container'>Alamat Pengiriman</div>
-				<div className='bg--white padding--medium margin--medium-b'>
+				<div className='bg--white padding--medium'>
 					<strong className='margin--small-b'>{shipping.name}</strong>
 					<div className='font-color--primary-ext-2'>
 						{shipping.address}
