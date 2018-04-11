@@ -361,7 +361,7 @@ class Detail extends Component {
 					onPick={e => this.handlePick(e)}
 				/>
 				{renderIf(sorts)(
-					<Sort onCloseOverlay={() => this.setState({ showSort: false })} shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
+					<Sort onCloseOverlay={() => this.setState({ showSort: false })} overlayFixed shown={showSort} sorts={sorts} onSort={(e, value) => this.sort(e, value)} />
 				)}
 			</div>
 		);
