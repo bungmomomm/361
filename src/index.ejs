@@ -49,12 +49,15 @@
             var brand = pathUrl.split('/')[3];
             var prefix = brandPage.test(pathUrl) ? 'brand-' : 'store-';
             filename = prefix + pathUrl.replace ( /[^\d.]/g, '' )  + '-' + brand +'.js';
-        }else  {
+        }else if (pathUrl === '/') {
             filename = 'www.mataharimall.com.js';
+        } else {
+            filename = pathUrl.substring(1) + '.js';
         }
 
         var script = document.createElement('script');
-        script.src = 'https://seo.stg.mataharimall.net/'+filename;
+        script.src = '<%= process.env.SEO_URL %>/'+filename;
+
         document.head.appendChild(script);
         </script>
     </head>
@@ -92,7 +95,8 @@
 		<script type="text/javascript" src="<%= process.env.VT_JS %>"></script>
         <% if (process.env.NODE_ENV === 'production') { %>
 		<script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
-		<script>Raven.config('https://af6e3248ca6f4d8d8c3e669f6fd6e4e4@sentry.io/215821').install();</script>
+        <script>Raven.config('<%= process.env.RAVEN_ID %>').install();</script>
+
 		<% } %>
 
 
