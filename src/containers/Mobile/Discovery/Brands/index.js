@@ -23,6 +23,7 @@ import Shared from '@/containers/Mobile/Shared';
 import { urlBuilder } from '@/utils';
 import { userToken, userSource, pageReferrer, isLogin } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
+import _ from 'lodash';
 
 @handler
 class Brands extends Component {
@@ -43,29 +44,30 @@ class Brands extends Component {
 			const section = document.getElementById(String(id.trim()));
 			const sUsrAg = window.navigator.userAgent;
 			if (sUsrAg.indexOf('UCBrowser') > -1) {
-				document.body.scrollTop = section.offsetTop;
+				document.body.scrollTop = section.offsetTop - 70;
 			} else if ((sUsrAg.indexOf('Chrome') > -1) || (sUsrAg.indexOf('Firefox') > -1)) {
-				document.body.parentNode.scrollTop = section.offsetTop;
+				document.body.parentNode.scrollTop = section.offsetTop - 70;
 			} else {
-				document.body.scrollTop = section.offsetTop;
+				document.body.scrollTop = section.offsetTop - 70;
 			}
 		};
 	}
 
-	onFilter(keyword) {
+	shouldComponentUpdate(nextProps, nextState) {
+		return this.props.brands !== nextProps.brands || this.state !== nextState;
+	}
+
+	onFilter = (keyword) => {
 		let filteredBrand = [];
 
 		if (keyword.length >= this.state.minimumLetter) {
 			window.scrollTo(0, 0);
-			this.props.brands.brand_list.map((e) => {
-				const listBrand = e.brands.filter((list) => {
-					const keywordDisplay = list.facetdisplay.toLowerCase();
-					if (keywordDisplay.indexOf(keyword.toLowerCase()) >= 0) {
-						filteredBrand.push(list);
-					}
-					return list;
-				});
-				return listBrand;
+			this.props.brands.brand_list_flat.filter((list) => {
+				const keywordDisplay = list.facetdisplay.toLowerCase();
+				if (keywordDisplay.indexOf(keyword.toLowerCase()) >= 0) {
+					filteredBrand.push(list);
+				}
+				return list;
 			});
 			filteredBrand = filteredBrand.sort((a, b) => b.count - a.count);
 		}
@@ -74,12 +76,12 @@ class Brands extends Component {
 			filteredBrand,
 			keyword
 		});
-	}
+	};
 
-	onChange(current) {
-		const keyword = current.currentTarget.value;
+	onChange = (current) => {
+		const keyword = current.target.value;
 		this.onFilter(keyword);
-	}
+	};
 
 	onFocus() {
 		this.setState({
@@ -96,7 +98,17 @@ class Brands extends Component {
 		}
 	}
 
+
+	debounce = (...args) => {
+		const debounced = _.debounce(...args);
+		return (e) => {
+			e.persist();
+			return debounced(e);
+		};
+	};
+
 	cancelSearch() {
+		this.inputElement.value = '';
 		this.setState({
 			keyword: '',
 			filteredBrand: []
@@ -212,6 +224,8 @@ class Brands extends Component {
 			iconRight: this.state.keyword !== '' && (
 				<button onClick={() => {
 					this.inputElement.focus();
+					this.inputElement.value = '';
+					this.onFilter('');
 					this.setState({ ...this.state.keyword, keyword: '', searchFocus: true });
 				}}
 				>
@@ -244,8 +258,7 @@ class Brands extends Component {
 									placeholder='cari nama brand'
 									onFocus={() => this.onFocus()}
 									onBlur={(e) => this.onBlur(e)}
-									onChange={(e) => this.onChange(e)}
-									value={this.state.keyword}
+									onChange={this.debounce(this.onChange, 500)}
 									inputRef={(el) => { this.inputElement = el; }}
 								/>
 							</Level.Item>
@@ -298,7 +311,7 @@ const mapStateToProps = (state) => {
 const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies, shared, home } = props;
 	const activeSegment = home.segmen.filter((e) => e.key === shared.current)[0];
-	dispatch(new actions.brandListAction(cookies.get(userToken), activeSegment.id));
+	await dispatch(new actions.brandListAction(cookies.get(userToken), activeSegment.id));
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Brands, doAfterAnonymous)));
