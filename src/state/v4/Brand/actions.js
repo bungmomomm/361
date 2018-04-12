@@ -36,7 +36,17 @@ const brandListAction = (token, segment) => async (dispatch, getState) => {
 	};
 
 	const brandList = response.data.data.items;
-	dispatch(brandListUpdate({ brand_list: brandList, segment }));
+	const brandListFlat = [];
+	brandList.map((e) => {
+		const listBrand = e.brands.filter((list) => {
+			brandListFlat.push(list);
+			return list;
+		});
+
+		return listBrand;
+	});
+
+	dispatch(brandListUpdate({ brand_list: brandList, segment, brand_list_flat: brandListFlat }));
 	dispatch(brandLoading({ loading: false }));
 
 	return Promise.resolve(response);

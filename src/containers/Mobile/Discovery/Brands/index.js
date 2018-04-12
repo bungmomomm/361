@@ -18,12 +18,12 @@ import {
 import C from '@/constants';
 import styles from './brands.scss';
 import { actions } from '@/state/v4/Brand';
-import { brandListUpdate } from '@/state/v4/Brand/reducer';
 import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Shared from '@/containers/Mobile/Shared';
 import { urlBuilder } from '@/utils';
 import { userToken, userSource, pageReferrer, isLogin } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
+import _ from 'lodash';
 
 @handler
 class Brands extends Component {
@@ -53,26 +53,21 @@ class Brands extends Component {
 		};
 	}
 
-	componentWillUnmount() {
-		this.props.dispatch(brandListUpdate({
-			brand_list: null
-		}));
+	shouldComponentUpdate(nextProps, nextState) {
+		return this.props.brands !== nextProps.brands || this.state !== nextState;
 	}
 
-	onFilter(keyword) {
+	onFilter = (keyword) => {
 		let filteredBrand = [];
 
 		if (keyword.length >= this.state.minimumLetter) {
 			window.scrollTo(0, 0);
-			this.props.brands.brand_list.map((e) => {
-				const listBrand = e.brands.filter((list) => {
-					const keywordDisplay = list.facetdisplay.toLowerCase();
-					if (keywordDisplay.indexOf(keyword.toLowerCase()) >= 0) {
-						filteredBrand.push(list);
-					}
-					return list;
-				});
-				return listBrand;
+			this.props.brands.brand_list_flat.filter((list) => {
+				const keywordDisplay = list.facetdisplay.toLowerCase();
+				if (keywordDisplay.indexOf(keyword.toLowerCase()) >= 0) {
+					filteredBrand.push(list);
+				}
+				return list;
 			});
 			filteredBrand = filteredBrand.sort((a, b) => b.count - a.count);
 		}
@@ -81,12 +76,12 @@ class Brands extends Component {
 			filteredBrand,
 			keyword
 		});
-	}
+	};
 
-	onChange(current) {
-		const keyword = current.currentTarget.value;
+	onChange = (current) => {
+		const keyword = current.target.value;
 		this.onFilter(keyword);
-	}
+	};
 
 	onFocus() {
 		this.setState({
@@ -103,7 +98,17 @@ class Brands extends Component {
 		}
 	}
 
+
+	debounce = (...args) => {
+		const debounced = _.debounce(...args);
+		return (e) => {
+			e.persist();
+			return debounced(e);
+		};
+	};
+
 	cancelSearch() {
+		this.inputElement.value = '';
 		this.setState({
 			keyword: '',
 			filteredBrand: []
@@ -219,6 +224,8 @@ class Brands extends Component {
 			iconRight: this.state.keyword !== '' && (
 				<button onClick={() => {
 					this.inputElement.focus();
+					this.inputElement.value = '';
+					this.onFilter('');
 					this.setState({ ...this.state.keyword, keyword: '', searchFocus: true });
 				}}
 				>
@@ -251,8 +258,7 @@ class Brands extends Component {
 									placeholder='cari nama brand'
 									onFocus={() => this.onFocus()}
 									onBlur={(e) => this.onBlur(e)}
-									onChange={(e) => this.onChange(e)}
-									value={this.state.keyword}
+									onChange={this.debounce(this.onChange, 500)}
 									inputRef={(el) => { this.inputElement = el; }}
 								/>
 							</Level.Item>
