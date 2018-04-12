@@ -57,7 +57,7 @@ class Login extends Component {
 						callback={(e) => this.onFailure('facebook', e)}
 
 					>
-						Facebook
+						<Svg src='ico_facebook.svg' style={{ marginRight: '10px' }} />Facebook
 					</SocialLogin>
 				</div>
 				<div style={{ width: '45%' }}>

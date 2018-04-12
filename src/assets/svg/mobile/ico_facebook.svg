@@ -1,13 +1,12 @@
-
+<?xml version="1.0" encoding="UTF-8"?>
 <svg width="8px" height="16px" viewBox="0 0 8 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-	<!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
-	<desc>Created with Sketch.</desc>
-	<defs></defs>
-	<g id="MS-4-(Login,-Register,-Forgot,-Movie)" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" font-family="FontAwesome" font-size="16" font-weight="normal">
-		<g id="05_01_Login" transform="translate(-36.000000, -168.000000)" fill="#FFFFFF">
-			<text id="facebook---FontAwesome">
-				<tspan x="35.4285714" y="182"></tspan>
-			</text>
-		</g>
-	</g>
+    <!-- Generator: Sketch 49.3 (51167) - http://www.bohemiancoding.com/sketch -->
+    <title>facebook - FontAwesome</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="MS-4-(Login,-Register,-Forgot,-Digital-Product)" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="05_02_Register-Blank" transform="translate(-36.000000, -190.000000)" fill="#FFFFFF">
+            <path d="M43.9910816,190.392841 L43.9910816,192.749987 L42.5892943,192.749987 C41.4910787,192.749987 41.2857213,193.276773 41.2857213,194.035702 L41.2857213,195.723204 L43.9017958,195.723204 L43.5535811,198.366065 L41.2857213,198.366065 L41.2857213,205.142859 L38.5535752,205.142859 L38.5535752,198.366065 L36.2767867,198.366065 L36.2767867,195.723204 L38.5535752,195.723204 L38.5535752,193.776774 C38.5535752,191.517842 39.9375054,190.285698 41.9553649,190.285698 C42.9196518,190.285698 43.7500099,190.357127 43.9910816,190.392841 Z" id="facebook---FontAwesome"></path>
+        </g>
+    </g>
 </svg>
