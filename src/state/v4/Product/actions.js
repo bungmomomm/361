@@ -16,17 +16,23 @@ import {
 import __x from '@/state/__x';
 import { actions as scrollerActions } from '@/state/v4/Scroller';
 
-const productDetailAction = (token, productId) => async (dispatch, getState) => {
+const productDetailAction = (token, productId, isVariant = false) => async (dispatch, getState) => {
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value() || false;
 
 	if (!baseUrl) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
 
 	dispatch(productLoading({ loading: true }));
-
+	
+	let baseUrlPath = `${baseUrl}/product/${productId}`;
+	
+	if (isVariant === true) {
+		baseUrlPath += '?variant=1';
+	}
+	
 	const [err, response] = await to(request({
 		token,
-		path: `${baseUrl}/product/${productId}`,
+		path: baseUrlPath,
 		method: 'GET',
 		fullpath: true
 	}));

@@ -103,7 +103,13 @@ export default {
 			path: '/product/guide',
 			component: loadable(() => import('@/containers/Mobile/Details/Products/Guide'), defaultOptions),
 			exact: true
-		}, {
+		},
+		{
+			path: '/([^/]+)-p:id([0-9]+).html',
+			component: loadable(() => import('@/containers/Mobile/Details/Products'), defaultOptions),
+			exact: true
+		},
+		{
 			path: '/([^/]+)-:id([0-9]+).html',
 			component: loadable(() => import('@/containers/Mobile/Details/Products'), defaultOptions),
 			exact: true
