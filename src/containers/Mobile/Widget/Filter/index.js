@@ -38,6 +38,7 @@ class Filter extends PureComponent {
 		this.props = props;
 		this.state = {
 			filters: props.filters,
+			backup: _.cloneDeep(props.filters),
 			selected: {},
 			layout: 'result',
 			resetDisabled: true,
@@ -57,6 +58,7 @@ class Filter extends PureComponent {
 	componentWillReceiveProps(nextProps) {
 		const { filters } = this.state;
 		this.setState({
+			backup: _.cloneDeep(nextProps.filters),
 			filters: nextProps.filters || filters
 		});
 		this.mapFilters(nextProps.filters);
@@ -88,38 +90,12 @@ class Filter extends PureComponent {
 	}
 
 	onFilterSectionReset(e, type, closed) {
-		const { filters } = this.state;
-		const updateChilds = (c) => {
-			c = _.map(c, (facetData) => {
-				facetData.is_selected = 0;
-				if (facetData.childs) {
-					facetData.childs = updateChilds(facetData.childs);
-				}
-				return facetData;
-			});
-
-			return c;
-		};
+		const { filters, backup } = this.state;
 		const selected = {};
 		filters.facets = _.map(filters.facets, (facet) => {
 			if (facet.id === type) {
-				switch (facet.id) {
-				case 'category':
-				case 'custom_category_ids':
-				case 'size':
-				case 'location':
-					facet.data = updateChilds(facet.data);
-					break;
-				case 'price':
-					delete facet.selected_range;
-					break;
-				default:
-					facet.data = _.map(facet.data, (facetData) => {
-						facetData.is_selected = 0;
-						return facetData;
-					});
-					break;
-				}
+				const resetFilter = _.filter(backup.facets, f => f.id === facet.id);
+				facet = _.cloneDeep(resetFilter.pop());
 				selected[facet.id] = [{
 					facetdisplay: 'Semua'
 				}];
