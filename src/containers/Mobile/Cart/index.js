@@ -311,9 +311,9 @@ class Cart extends Component {
 		const { shopBag } = this.props;
 		if (this.isLogin === 'true') {
 			if (this.state.itemsNotProced.length > 0) {
-				link = (<a>{wording}</a>);
+				link = (<Button color='secondary' size='medium' wide disabled>{wording}</Button>);
 			} else {
-				link = (<Button color='secondary' size='medium' wide to={`login?redirect_uri=${process.env.CHECKOUT_URL}`}>{wording}</Button>);
+				link = (<a href={process.env.CHECKOUT_URL}> <Button color='secondary' size='medium' wide >{wording}</Button></a>);
 			}
 		} else {
 			link = (<Button color='secondary' size='medium' wide to={`login?redirect_uri=${process.env.CHECKOUT_URL}`}>{wording}</Button>);
