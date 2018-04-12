@@ -44,11 +44,11 @@ class Brands extends Component {
 			const section = document.getElementById(String(id.trim()));
 			const sUsrAg = window.navigator.userAgent;
 			if (sUsrAg.indexOf('UCBrowser') > -1) {
-				document.body.scrollTop = section.offsetTop;
+				document.body.scrollTop = section.offsetTop - 70;
 			} else if ((sUsrAg.indexOf('Chrome') > -1) || (sUsrAg.indexOf('Firefox') > -1)) {
-				document.body.parentNode.scrollTop = section.offsetTop;
+				document.body.parentNode.scrollTop = section.offsetTop - 70;
 			} else {
-				document.body.scrollTop = section.offsetTop;
+				document.body.scrollTop = section.offsetTop - 70;
 			}
 		};
 	}
