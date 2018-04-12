@@ -54,7 +54,7 @@ class UserProfileEdit extends Component {
 
 		this.AVATAR_FIELD = CONST.USER_PROFILE_FIELD.avatar;
 		this.NAME_FIELD = CONST.USER_PROFILE_FIELD.name;
-		this.PHONE_FIELD = CONST.USER_PROFILE_FIELD.phone;
+		this.HP_FIELD = CONST.USER_PROFILE_FIELD.hp;
 		this.GENDER_FIELD = CONST.USER_PROFILE_FIELD.gender;
 		this.BIRTHDAY_FIELD = CONST.USER_PROFILE_FIELD.birthday;
 		this.EMAIL_FIELD = CONST.USER_PROFILE_FIELD.email;
@@ -229,11 +229,11 @@ class UserProfileEdit extends Component {
 					[this.GENDER_FIELD]: formData[this.GENDER_FIELD],
 					[this.BIRTHDAY_FIELD]: formData[this.BIRTHDAY_FIELD]
 				};
-			} else if (layout === this.PHONE_FIELD) {
+			} else if (layout === this.HP_FIELD) {
 				newData = formData[this.HP_EMAIL_FIELD];
 			} else if (layout === this.OVO_ID_FIELD) {
 				newData = {
-					[this.PHONE_FIELD]: formData[this.OVO_ID_FIELD]
+					[this.HP_FIELD]: formData[this.OVO_ID_FIELD]
 				};
 			} else if (layout === this.NEW_PWD_FIELD) {
 				newData = {
@@ -251,7 +251,7 @@ class UserProfileEdit extends Component {
 			let dispatchAction = null;
 			if (layout === this.OVO_ID_FIELD) {
 				dispatchAction = dispatch(userActions.userValidateOvo(cookies.get(cookiesLabel.userToken), newData));
-			} else if (layout === this.PHONE_FIELD) {
+			} else if (layout === this.HP_FIELD) {
 				dispatchAction = dispatch(userActions.userOtp(cookies.get(cookiesLabel.userToken), newData, 'edit'));
 			} else {
 				dispatchAction = dispatch(userActions.userEditProfile(cookies.get(cookiesLabel.userToken), newData));
@@ -269,7 +269,7 @@ class UserProfileEdit extends Component {
 					submittingForm: false
 				});
 			} else if (response) {
-				if (layout === this.PHONE_FIELD) {
+				if (layout === this.HP_FIELD) {
 					const countdown = _.chain(response).get('countdown').value() || 60;
 
 					this.setState({
@@ -519,7 +519,7 @@ class UserProfileEdit extends Component {
 			</div>
 		);
 
-		const phoneValue = !_.isEmpty(formData[this.PHONE_FIELD]) ? formData[this.PHONE_FIELD] : '';
+		const phoneValue = !_.isEmpty(formData[this.HP_FIELD]) ? formData[this.HP_FIELD] : '';
 		const phoneField = (
 			<div className='margin--medium-v'>
 				<label className={styles.label} htmlFor='cellPhone'>Nomor Handphone</label>
@@ -527,7 +527,7 @@ class UserProfileEdit extends Component {
 					<div className={styles.inputChangeInput}>
 						<Input autoComplete='off' readOnly id='cellPhone' flat defaultValue={phoneValue} />
 					</div>
-					<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.PHONE_FIELD)}>{this.editIcon}</Button>
+					<Button className={styles.inputChangeLink} onClick={(e, value) => this.switchLayoutHandler(e, this.HP_FIELD)}>{this.editIcon}</Button>
 				</div>
 			</div>
 		);
@@ -625,10 +625,10 @@ class UserProfileEdit extends Component {
 				/>
 			);
 			break;
-		case this.PHONE_FIELD:
+		case this.HP_FIELD:
 			layoutView = (
 				<EditHp
-					data={formData[this.PHONE_FIELD]}
+					data={formData[this.HP_FIELD]}
 					onClickBack={(e, value) => this.switchLayoutHandler(e, 'main')}
 					onSave={(e, data) => this.saveFormData(data)}
 					formResult={formResult}
@@ -660,7 +660,7 @@ class UserProfileEdit extends Component {
 					phoneEmail={formData[this.HP_EMAIL_FIELD]}
 					countdownValue={otpCountdown}
 					autoSend={false}
-					onClickBack={(e, value) => this.switchLayoutHandler(e, this.PHONE_FIELD)}
+					onClickBack={(e, value) => this.switchLayoutHandler(e, this.HP_FIELD)}
 					onSuccess={(response) => this.successValidateOtp(response)}
 				/>
 			);

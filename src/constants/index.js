@@ -27,6 +27,7 @@ const C = {
 		avatar: 'avatar',
 		name: 'name',
 		phone: 'phone',
+		hp: 'hp',
 		gender: 'gender',
 		birthday: 'birthday',
 		email: 'email',
