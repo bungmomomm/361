@@ -33,10 +33,12 @@ const doAfterAnonymous = async (props) => {
 	const productId = _.toInteger(match.params.id);
 	const token = cookies.get(cookiesLabel.userToken);
 	
-	let callProductAction = await to(dispatch(productActions.productDetailAction(token, productId)));
+	let callProductAction = null;
 	
 	if (match.path === '/([^/]+)-:id([0-9]+).html') {
 		callProductAction = await to(dispatch(productActions.productDetailAction(token, productId, true)));
+	} else {
+		callProductAction = await to(dispatch(productActions.productDetailAction(token, productId)));
 	}
 
 	const [err, response] = callProductAction;
