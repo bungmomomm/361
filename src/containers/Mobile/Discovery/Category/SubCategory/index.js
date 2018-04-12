@@ -44,6 +44,10 @@ class SubCategory extends PureComponent {
 		return true;
 	}
 
+	componentDidMount() {
+		window.scrollTo(0, 0);
+	}
+
 	setSelectedCategory(categories) {
 		const selectedCategory = categories.filter(e => e.id === this.props.category.sub_category)[0];
 		if (selectedCategory) {
