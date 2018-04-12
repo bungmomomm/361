@@ -145,7 +145,7 @@ class Login extends Component {
 			if (_.has(userprofile, 'userid') && _.has(userprofile, 'enc_userid') && _.has(userprofile, 'enc_email')) {
 				userInfo.id = userprofile.userid;
 				userInfo.encId = userprofile.enc_userid;
-				userInfo.encEmail = userprofile.enc_email; 
+				userInfo.encEmail = userprofile.enc_email;
 			}
 			setUserInfoCookie(cookies, JSON.stringify(userInfo));
 		}
@@ -191,9 +191,9 @@ class Login extends Component {
 			show: true,
 			disableClose: true
 		};
-		
+
 		let showDigitalNotification = false;
-		if (redirectUri.indexOf('digital') > -1) {
+		if (redirectUri && redirectUri.indexOf('digital') > -1) {
 			showDigitalNotification = true;
 		}
 		return (
