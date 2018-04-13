@@ -73,7 +73,7 @@ const SEO = ({
 			}}
 			title={seoTitle}
 			link={[
-				{ rel: 'canonical', href: seoCanonial, media: 'only screen and (max-width: 640px)' },
+				{ rel: 'canonical', href: seoCanonial },
 				{ rel: 'alternate', href: seoAlternate },
 				{ rel: 'shortcut icon', href: iconUrl, type: 'image/vnd.microsoft.icon' },
 				{ rel: 'icon', href: iconUrl, type: 'image/x-icon' },
