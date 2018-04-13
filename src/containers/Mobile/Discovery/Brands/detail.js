@@ -450,7 +450,7 @@ class Detail extends Component {
 		return (
 			<div style={this.props.style}>
 				<SEO
-					paramCanonical={process.env.MOBILE_URL}
+					paramCanonical={`${process.env.MOBILE_URL}${location.pathname}`}
 				/>
 				{(showFilter) ? (
 					<Filter
