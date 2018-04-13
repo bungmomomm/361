@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import Shared from '@/containers/Mobile/Shared';
-import { Page, Svg, Button, Header, Select, Level, Map } from '@/components/mobile';
+import { Page, Svg, Button, Header, Select, Level } from '@/components/mobile';
 import { actions } from '@/state/v4/Address';
 import styles from './style.scss';
 import { Form, Input } from '@/components/mobile/Formsy';
@@ -158,31 +158,6 @@ class Address extends Component {
 				})();
 			}
 		}
-
-		if (which === 'district') {
-			const { dispatch } = this.props;
-			const district = v.split('_')[1].toLowerCase().replace(/\W+(.)/g, (match, chr) => chr.toUpperCase());
-			const selectedPolygon = _.find(Polygon, district);
-
-			(async () => {
-				await dispatch(actions.mutateState({
-					polygon: selectedPolygon ? selectedPolygon[district] : false
-				}));
-
-				this.setState({
-					map: {
-						...this.state.map,
-						lat: selectedPolygon ? selectedPolygon[district].center.lat : 0,
-						lng: selectedPolygon ? selectedPolygon[district].center.lng : 0
-					},
-					marked: {
-						lat: 0,
-						lng: 0
-					}
-				});
-			})();
-
-		}
 	};
 
 	onTextChange = (e) => {
@@ -334,9 +309,8 @@ class Address extends Component {
 	};
 
 	renderData = () => {
-		const { address, address: { polygon } } = this.props;
-		const { map: { lat, lng }, marked, errors } = this.state;
-		const isMarked = marked.lat && marked.lng;
+		const { address } = this.props;
+		const { errors } = this.state;
 		const cities = address.options.cities;
 		const districts = address.options.districts;
 
@@ -348,14 +322,6 @@ class Address extends Component {
 				return obj.value === this.state.selected.district;
 			})
 		};
-
-		const placeHasBeenMarkedContent = (
-			<div className='flex-row flex-middle'>
-				<div className='margin--small-r'><Svg src='ico_pin-poin-marked.svg' /></div>
-				<div style={{ color: '#F57C00', fontSize: '14px' }}>&nbsp;{this.state.navigating ? 'Mendeteksi Lokasi...' : 'LOKASI SUDAH DITANDAI'}</div>
-				<div className='margin--large-l'><Svg src='ico_edit.svg' /></div>
-			</div>
-		);
 
 		return (
 			<Page color='grey'>
@@ -586,53 +552,6 @@ class Address extends Component {
 						</div>
 					</Level>
 				</Form>
-
-				<Level className='bg--white flex-column' style={{ padding: '0px', display: !this.state.map.display ? 'none' : 'flex' }}>
-					<Map
-						containerElement={<div style={{ height: '100%' }} />}
-						mapElement={<div style={{ height: `${window.innerHeight - 60}px` }} />}
-						position={{ lat, lng }}
-						zoom={15}
-						onChange={this.handleLocationChange}
-					/>
-
-					<div style={{ marginTop: '5px' }}>
-						<small>{this.state.map.address}</small>
-					</div>
-				</Level>
-
-				<Level className='padding--medium margin--medium-t bg--white' style={{ display: this.state.map.display || !polygon ? 'none' : 'flex' }}>
-					<Level.Left style={{ margin: '0px auto 30px auto' }}>
-						<div className='padding--small-t' style={{ textAlign: 'center' }}>
-							<span>
-								<p style={{ paddingBottom: '20px', fontSize: '1em' }}>
-									Untuk pengiriman menggunakan Go-Jek, Anda harus <br />
-									menentukan koordinat alamat pengiriman Anda.
-								</p>
-
-								<button
-									onClick={this.toggleMap}
-									style={
-										!isMarked ? {
-											backgroundColor: 'rgba(0, 0, 0, 0.8)',
-											padding: '10px 25px',
-											borderRadius: '40px',
-											fontSize: '1em',
-											color: '#fff'
-										} : { fontSize: '1em' }}
-								>
-									{isMarked ?
-										placeHasBeenMarkedContent
-										:
-										<strong>
-											<Svg src='ico_pin-poin-unmarked.svg' />&nbsp;&nbsp;
-											{this.state.navigating ? 'Mendeteksi Lokasi...' : 'Tunjukkan Alamat Dalam Peta'}
-										</strong>}
-								</button>
-							</span>
-						</div>
-					</Level.Left>
-				</Level>
 			</Page>
 		);
 	};
