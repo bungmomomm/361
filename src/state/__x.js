@@ -1,4 +1,4 @@
 export default (err) => {
-	err.redux = true;
+	if (typeof err === 'object') err.redux = true;
 	return err;
 };
