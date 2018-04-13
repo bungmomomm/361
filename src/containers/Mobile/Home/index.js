@@ -426,7 +426,7 @@ class Home extends Component {
 				<SmartBanner
 					title='MatahariMall'
 					iconSrc='app-icon.png'
-					author='PT Solusi Ecommerce Global'
+					author='Harga lebih murah di App'
 					googlePlay='com.mataharimall.mmandroid'
 					appStore='1033108124'
 					isShow={this.state.showSmartBanner}
