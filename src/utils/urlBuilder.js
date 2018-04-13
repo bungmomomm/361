@@ -70,13 +70,13 @@ class MMUrlBuilder {
 	// spec: https://[MM_HOSTNAME]/[NAME]-[ID].html
 	buildPdp = (productName, productId) => {
 		if (productName && productId) {
-			return `/${kebabCase(productName)}-${productId}.html`;
+			return `/${kebabCase(productName)}-p${productId}.html`;
 		}
 		if (this.name === null) throw new Error('urlBuilder: pdp required name');
 		if (this.id === null) throw new Error('urlBuilder: pdp required id');
 		const temp = { ...this };
 		this.reset();
-		return `/${temp.name}-${temp.id}.html`;
+		return `/${temp.name}-p${temp.id}.html`;
 	}
 
 	// spec: https://[MM_HOSTNAME]/brand/[ID]/[NAME]

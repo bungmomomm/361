@@ -29,10 +29,20 @@ import { trackAddToCart, trackPdpView } from './Gtm';
 const fusion = new Payload(_);
 const doAfterAnonymous = async (props) => {
 	const { dispatch, match, cookies, history } = props;
+	
 	const productId = _.toInteger(match.params.id);
 	const token = cookies.get(cookiesLabel.userToken);
+	
+	let callProductAction = null;
+	
+	if (match.path === '/([^/]+)-:id([0-9]+).html') {
+		callProductAction = await to(dispatch(productActions.productDetailAction(token, productId, true)));
+	} else {
+		callProductAction = await to(dispatch(productActions.productDetailAction(token, productId)));
+	}
 
-	const [err, response] = await to(dispatch(productActions.productDetailAction(token, productId)));
+	const [err, response] = callProductAction;
+
 	if (err) {
 		history.push('/not-found');
 	} else if (response) {
