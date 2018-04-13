@@ -110,7 +110,7 @@ const getDistrict = (token, query = {}) => async (dispatch, getState) => {
 	}).map((dist) => {
 		return {
 			label: dist.name,
-			value: dist.id
+			value: `${dist.id}_${dist.name}`
 		};
 	});
 	optDistricts.unshift({ label: '- Select District -', value: '' });
