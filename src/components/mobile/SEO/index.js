@@ -22,8 +22,8 @@ const getMetaTags = ({
 		{ name: 'image', content: iconUrl },
 		{ name: 'robots', content: seoRobots },
 		// twitter
+		{ name: 'twitter:card', content: 'summary_large_image' },
 		{ name: 'twitter:site', content: '@MatahariMallCom' },
-		{ name: 'twitter:url', content: 'https://twitter.com/MatahariMallCom' },
 		{ name: 'twitter:title', content: seoTitle },
 		{ name: 'twitter:description', content: seoDesc },
 		{ name: 'twitter:image', content: iconUrl },
