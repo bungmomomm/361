@@ -115,7 +115,7 @@ const initHashtags = (token, hash) => async (dispatch, getState) => {
 	const { shared } = getState();
 
 	const baseUrlPromo = _.chain(shared).get('serviceUrl.promo.url').value() || false;
-	if (!baseUrlPromo) return Promise.reject(__x(new Error('Terjadi kesalahan pada proses silahkan kontak administrator')));
+	if (!baseUrlPromo) return Promise.reject(__x(new Error('Tidak ada data untuk ditampilkan.')));
 
 	const urlInit = `${baseUrlPromo}/mainpromo?segment_id=1`;
 	const [errPromo, respPromo] = await to(request({
