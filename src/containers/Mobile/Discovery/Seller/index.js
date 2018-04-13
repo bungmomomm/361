@@ -500,7 +500,7 @@ class Seller extends Component {
 	renderData = () => {
 
 		const { showFilter, centerStyle } = this.state;
-		const { seller, history, location, scroller } = this.props;
+		const { seller, history, location, scroller, shared } = this.props;
 		const title = seller.info.seller;
 		const url = `${process.env.MOBILE_URL}${location.pathname}${location.search}`;
 		const storename = (!title) ? '' : (title.length > 30) ? `${title.substring(0, 30)}&hellip;` : title;
@@ -541,7 +541,7 @@ class Seller extends Component {
 						</Page>
 
 						<Header.Modal {...HeaderPage} style={{ zIndex: 1 }} />
-						<Navigation scroll={this.props.scroll} active={this.activeNav} botNav={this.props.botNav} />
+						<Navigation scroll={this.props.scroll} active={this.activeNav} botNav={this.props.botNav} totalCartItems={shared.totalCart} />
 					</div>
 				)}
 			</span>

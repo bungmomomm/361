@@ -439,7 +439,7 @@ class Detail extends Component {
 	}
 
 	render() {
-		const { cookies } = this.props;
+		const { cookies, shared } = this.props;
 		const { showFilter } = this.state;
 
 		const navigationAttribute = {
@@ -480,7 +480,7 @@ class Detail extends Component {
 				{(!showFilter) && (
 					<div>
 						{this.renderHeader()}
-						<Navigation {...navigationAttribute} botNav={this.props.botNav} isLogin={this.isLogin} />
+						<Navigation {...navigationAttribute} botNav={this.props.botNav} isLogin={this.isLogin} totalCartItems={shared.totalCart} />
 					</div>
 				)}
 			</div>

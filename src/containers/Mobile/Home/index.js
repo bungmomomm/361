@@ -24,23 +24,27 @@ import { urlBuilder } from '@/utils';
 import cookiesLabel from '@/data/cookiesLabel';
 import { Utils } from '@/utils/tracking/lucidworks';
 
-const renderSectionHeader = (title, options, cookies = null) => {
+const renderSectionHeader = (title, options = null, cookies = null) => {
+	const headerLink = options !== null && (
+		<Level.Right>
+			{
+				options.isMozaic ?
+					<a href={options.url || '/'} target='_blank' className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></a>
+					:
+					<Link
+						to={options.url || '/'}
+						className={styles.readmore}
+					>
+						{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' />
+					</Link>
+			}
+		</Level.Right>
+	);
+
 	return (
 		<Level>
 			<Level.Left><div className={styles.headline}>{title}</div></Level.Left>
-			<Level.Right>
-				{
-					options.isMozaic ?
-						<a href={options.url || '/'} target='_blank' className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></a>
-						:
-						<Link
-							to={options.url || '/'}
-							className={styles.readmore}
-						>
-							{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' />
-						</Link>
-				}
-			</Level.Right>
+			{headerLink}
 		</Level>
 	);
 };
@@ -324,10 +328,7 @@ class Home extends Component {
 		const segment = home.activeSegment.key;
 		const featuredBrand = _.chain(home).get(`allSegmentData.${segment}.featuredBrand`);
 		if (!featuredBrand.isEmpty().value()) {
-			const header = renderSectionHeader('Popular Brand', {
-				title: 'LIHAT SEMUA',
-				url: '/brands'
-			});
+			const header = renderSectionHeader('Popular Brand');
 			return (
 				<div>
 					{
