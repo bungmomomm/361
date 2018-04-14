@@ -22,8 +22,8 @@ const getMetaTags = ({
 		{ name: 'image', content: iconUrl },
 		{ name: 'robots', content: seoRobots },
 		// twitter
+		{ name: 'twitter:card', content: 'summary_large_image' },
 		{ name: 'twitter:site', content: '@MatahariMallCom' },
-		{ name: 'twitter:url', content: 'https://twitter.com/MatahariMallCom' },
 		{ name: 'twitter:title', content: seoTitle },
 		{ name: 'twitter:description', content: seoDesc },
 		{ name: 'twitter:image', content: iconUrl },
@@ -62,7 +62,8 @@ const SEO = ({
 	const seoRobots = variableCheck(bots) ? bots : defaultContent.robots;
 	const seoTitle = variableCheck(titz) ? `${titz} | Mataharimall.com` : defaultContent.title;
 	const seoAlternate = variableCheck(paramAlternate) ? paramAlternate : defaultContent.alternate;
-	const seoCanonial = variableCheck(cano) ? cano : (variableCheck(paramCanonical) ? paramCanonical : window.location.origin + window.location.pathname);
+	const defaultCanonical = `${window.location.protocol}//www.mataharimall.com${window.location.pathname}`;
+	const seoCanonial = variableCheck(cano) ? cano : defaultCanonical;
 
 
 	return (
@@ -72,7 +73,7 @@ const SEO = ({
 			}}
 			title={seoTitle}
 			link={[
-				{ rel: 'canonical', href: seoCanonial, media: 'only screen and (max-width: 640px)' },
+				{ rel: 'canonical', href: seoCanonial },
 				{ rel: 'alternate', href: seoAlternate },
 				{ rel: 'shortcut icon', href: iconUrl, type: 'image/vnd.microsoft.icon' },
 				{ rel: 'icon', href: iconUrl, type: 'image/x-icon' },

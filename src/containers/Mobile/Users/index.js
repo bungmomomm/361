@@ -14,6 +14,9 @@ import {
 	Tabs
 } from '@/components/mobile/';
 import handler from '@/containers/Mobile/Shared/handler';
+import {
+	isFullUrl
+} from '@/utils';
 import { isLogin } from '@/data/cookiesLabel';
 
 @handler
@@ -45,7 +48,10 @@ class Users extends Component {
 			// Do nothing let them stay into the page.
 			
 		} else if (this.props.cookies.get(isLogin) === 'true') {
-			history.replace('/profile');
+			if (redirectUri && isFullUrl(redirectUri)) {
+				top.location.href = redirectUri;
+			}
+			history.replace(redirectUri || '/profile');
 		}
 		
 	}
