@@ -28,7 +28,11 @@ class EditOvo extends Component {
 		};
 
 		this.OVO_ID_FIELD = CONST.USER_PROFILE_FIELD.ovoId;
-		this.loadingView = <Spinner />;
+		this.loadingView = (
+			<div style={{ margin: '20px auto 20px auto' }}>
+				<Spinner />
+			</div>
+		);
 		this.clearButton = <Svg src='ico_clear.svg' />;
 	}
 

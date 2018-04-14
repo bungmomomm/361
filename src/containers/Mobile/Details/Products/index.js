@@ -29,10 +29,20 @@ import { trackAddToCart, trackPdpView } from './Gtm';
 const fusion = new Payload(_);
 const doAfterAnonymous = async (props) => {
 	const { dispatch, match, cookies, history } = props;
+	
 	const productId = _.toInteger(match.params.id);
 	const token = cookies.get(cookiesLabel.userToken);
+	
+	let callProductAction = null;
+	
+	if (match.path === '/([^/]+)-:id([0-9]+).html') {
+		callProductAction = await to(dispatch(productActions.productDetailAction(token, productId, true)));
+	} else {
+		callProductAction = await to(dispatch(productActions.productDetailAction(token, productId)));
+	}
 
-	const [err, response] = await to(dispatch(productActions.productDetailAction(token, productId)));
+	const [err, response] = callProductAction;
+
 	if (err) {
 		history.push('/not-found');
 	} else if (response) {
@@ -646,7 +656,7 @@ class Products extends Component {
 							</div>
 						</div>
 						<div>
-							<Button color='secondary' disabled={btnDisabled} loading={status.btnBeliLoading} size='medium' onClick={this.handleBtnBeliClicked} >BELI AJA</Button>
+							<Button id='btnBeliAjaPdp' color='secondary' disabled={btnDisabled} loading={status.btnBeliLoading} size='medium' onClick={this.handleBtnBeliClicked} >BELI AJA</Button>
 						</div>
 					</div>
 				</div>
@@ -684,7 +694,7 @@ class Products extends Component {
 			const { detail, socialSummary, promo, loading, store } = product;
 			const { seller, comments, reviews } = socialSummary;
 			const { cardProduct, status, carousel, selectedVariant, outOfStock, size } = this.state;
-			const { id } = detail;
+			const { id, brand } = detail;
 
 			const buttonProductDescriptionAttribute = {
 				onClick: this.handleShowMoreProductDescription
@@ -768,6 +778,7 @@ class Products extends Component {
 										totalComments={comments.total}
 										totalLovelist={cardProduct.totalLovelist}
 										outOfStock={outOfStock}
+										linkToBrand={urlBuilder.setId(brand.id).setName(brand.name).buildBrand()}
 									/>
 								</div>
 							)}

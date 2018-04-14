@@ -3,7 +3,7 @@ import util from 'util';
 import _ from 'lodash';
 import base64 from 'base-64';
 
-import { Page, Input, Button, Svg, Notification, Header, Panel } from '@/components/mobile';
+import { Page, Input, Button, Svg, Notification, Header, Panel, Spinner } from '@/components/mobile';
 
 import CONST from '@/constants';
 
@@ -40,6 +40,12 @@ class EditPassword extends Component {
 			showIconNewPass: false,
 			showIconConfPass: false
 		};
+
+		this.loadingView = (
+			<div style={{ margin: '20px auto 20px auto' }}>
+				<Spinner />
+			</div>
+		);
 	}
 
 	componentWillReceiveProps(nextProps) {

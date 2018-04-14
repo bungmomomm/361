@@ -78,12 +78,6 @@ class Cart extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.shopBag.carts !== this.props.shopBag.carts && (typeof this.fusion === 'undefined')) {
-			const { carts, total } = nextProps.shopBag;
-			if (!_.isEmpty(carts) && !_.isEmpty(total)) this.fusion = new LucidCart(carts, total);
-
-		}
-
 		this.checkNotProcedItem(nextProps);
 	}
 
@@ -141,7 +135,8 @@ class Cart extends Component {
 			resolve(dispatch(shopBagAction.deleteAction(cookies.get(cookiesLabel.userToken), this.state.productWillDelete.variant_id)));
 			this.clearWillDeleteState();
 			const { variant_id } = this.state.productWillDelete;
-			if (typeof this.fusion !== 'undefined') this.fusion.trackCartChanges(variant_id, 0);
+			const { carts, total } = this.props.shopBag;
+			LucidCart.tracks(carts, total, variant_id);
 		});
 		deleting.then((res) => {
 			dispatch(shopBagAction.getAction(cookies.get(cookiesLabel.userToken)));
@@ -172,7 +167,8 @@ class Cart extends Component {
 		if (this.state.qtyNew !== null && this.state.qtyCurrent !== this.state.qtyNew) {
 			dispatch(shopBagAction.updateAction(cookies.get(cookiesLabel.userToken), this.state.variantIdwillUpdate, this.state.qtyNew));
 			const { variantIdwillUpdate, qtyNew } = this.state;
-			if (typeof this.fusion !== 'undefined') this.fusion.trackCartChanges(variantIdwillUpdate, qtyNew);
+			const { carts, total } = this.props.shopBag;
+			LucidCart.tracks(carts, total, variantIdwillUpdate, qtyNew);
 		}
 		this.setState({ showSelect: false, variantIdwillUpdate: null, selectList: [], qtyCurrent: null, qtyNew: null });
 	}
@@ -311,9 +307,9 @@ class Cart extends Component {
 		const { shopBag } = this.props;
 		if (this.isLogin === 'true') {
 			if (this.state.itemsNotProced.length > 0) {
-				link = (<a>{wording}</a>);
+				link = (<Button color='secondary' size='medium' wide disabled>{wording}</Button>);
 			} else {
-				link = (<Button color='secondary' size='medium' wide to={`login?redirect_uri=${process.env.CHECKOUT_URL}`}>{wording}</Button>);
+				link = (<a href={process.env.CHECKOUT_URL}> <Button color='secondary' size='medium' wide >{wording}</Button></a>);
 			}
 		} else {
 			link = (<Button color='secondary' size='medium' wide to={`login?redirect_uri=${process.env.CHECKOUT_URL}`}>{wording}</Button>);

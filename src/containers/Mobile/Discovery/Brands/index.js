@@ -18,7 +18,6 @@ import {
 import C from '@/constants';
 import styles from './brands.scss';
 import { actions } from '@/state/v4/Brand';
-import ForeverBanner from '@/containers/Mobile/Shared/foreverBanner';
 import Shared from '@/containers/Mobile/Shared';
 import { urlBuilder } from '@/utils';
 import { userToken, userSource, pageReferrer, isLogin } from '@/data/cookiesLabel';
@@ -214,7 +213,7 @@ class Brands extends Component {
 	}
 
 	render() {
-		const { shared, dispatch, brands, cookies } = this.props;
+		const { shared, brands, cookies } = this.props;
 		const navigationAttribute = {
 			scroll: this.props.scroll
 		};
@@ -282,11 +281,8 @@ class Brands extends Component {
 			<div style={this.props.style}>
 				<Page color='white'>
 					<SEO
-						paramCanonical={process.env.MOBILE_URL}
+						paramCanonical={`${process.env.MOBILE_URL}${location.pathname}`}
 					/>
-					{
-						<ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />
-					}
 					{ !brands.brand_list && (<div style={{ padding: '20px 0' }}> <Spinner /></div>)}
 					{ this.renderBrandBySearch() }
 					{ this.renderBrandByAlphabets() }

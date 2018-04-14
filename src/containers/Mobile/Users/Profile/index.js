@@ -42,7 +42,7 @@ class UserProfile extends Component {
 		this.AVATAR_FIELD = CONST.USER_PROFILE_FIELD.avatar;
 		this.NAME_FIELD = CONST.USER_PROFILE_FIELD.name;
 		this.EMAIL_FIELD = CONST.USER_PROFILE_FIELD.email;
-		this.PHONE_FIELD = CONST.USER_PROFILE_FIELD.phone;
+		this.HP_FIELD = CONST.USER_PROFILE_FIELD.hp;
 	}
 	
 	onLogout = async () => {
@@ -108,7 +108,7 @@ class UserProfile extends Component {
 					</Level.Left>
 					<Level.Item style={{ justifyContent: 'center', padding: '10px', color: '#191919' }}>
 						<div style={{ fontWeight: 'bold', fontSize: '15px' }}>{userProfile[this.NAME_FIELD] || ''}</div>
-						<div style={{ fontSize: '11px', color: '#A4A4A4' }}>{userProfile[this.EMAIL_FIELD] || userProfile[this.PHONE_FIELD]}</div>
+						<div style={{ fontSize: '11px', color: '#A4A4A4' }}>{userProfile[this.EMAIL_FIELD] || userProfile[this.HP_FIELD]}</div>
 					</Level.Item>
 					<Level.Right style={{ justifyContent: 'center' }}>
 						<Svg src='ico_chevron-right.svg' />

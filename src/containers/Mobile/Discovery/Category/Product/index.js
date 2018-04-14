@@ -400,7 +400,7 @@ class Product extends Component {
 				return (
 					<Page color='white'>
 						<SEO
-							paramCanonical={process.env.MOBILE_URL}
+							paramCanonical={`${process.env.MOBILE_URL}${location.pathname}`}
 							paramAlternate={`android-app://com.mataharimall.mmandroid/mataharimall/category/${categoryId}?utm_source=app_indexing`}
 						/>
 						{this.foreverBannerBlock()}
