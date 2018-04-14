@@ -10,6 +10,13 @@ const footer = (props) => {
 	// const isAndroid = UA.match(/Android/i) || UA.match(/webOS/i);
 
 	if (!isShow) return null;
+
+	let isi = 'MatahariMall.com adalah situs belanja online No. #1 dan terbesar di Indonesia. Kami memberikan fasilitas pelayanan yang terbaik untuk mendukung Anda belanja online dengan aman, nyaman dan terpercaya. MatahariMall.com menawarkan beragam kemudahan untuk bertransaksi, seperti transfer antar bank, kartu kredit dengan cicilan 0%, O2O (Online-to-Offline), COD (Cash On Delivery), dan metode lainnya.';
+	
+	if (typeof window.meta !== 'undefined') {
+		const { content	} = window.meta;
+		isi = content;
+	}
 	
 	return (
 		<div>
@@ -31,7 +38,7 @@ const footer = (props) => {
 							</div>
 						</Button>
 					</div>
-					<p className='font-small'>MatahariMall.com adalah situs belanja online No. #1 dan terbesar di Indonesia. Kami memberikan fasilitas pelayanan yang terbaik untuk mendukung Anda belanja online dengan aman, nyaman dan terpercaya. MatahariMall.com menawarkan beragam kemudahan untuk bertransaksi, seperti transfer antar bank, kartu kredit dengan cicilan 0%, O2O (Online-to-Offline), COD (Cash On Delivery), dan metode lainnya.</p>
+					<p className='font-small' dangerouslySetInnerHTML={{ __html: isi }} />
 					<div className='margin--medium-v'>
 						<div className='flex-row'>
 							<a className='margin--small-h' href={process.env.FB_MM} target='_blank'>

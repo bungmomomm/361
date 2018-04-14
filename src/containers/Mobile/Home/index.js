@@ -6,7 +6,7 @@ import _ from 'lodash';
 import {
 	Header, Carousel, Tabs,
 	Page, Level, Button, Grid, Article,
-	Navigation, Svg, Image, SmartBanner, SEO
+	Navigation, Svg, Image, SmartBanner, SEO, Spinner
 } from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
@@ -22,26 +22,49 @@ import {
 } from '@/utils/tracking';
 import { urlBuilder } from '@/utils';
 import cookiesLabel from '@/data/cookiesLabel';
+import { Utils } from '@/utils/tracking/lucidworks';
 
-const renderSectionHeader = (title, options, cookies = null) => {
+const renderSectionHeader = (title, options = null, cookies = null) => {
+	const headerLink = options !== null && (
+		<Level.Right>
+			{
+				options.isMozaic ?
+					<a href={options.url || '/'} target='_blank' className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></a>
+					:
+					<Link
+						to={options.url || '/'}
+						className={styles.readmore}
+					>
+						{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' />
+					</Link>
+			}
+		</Level.Right>
+	);
+
 	return (
 		<Level>
 			<Level.Left><div className={styles.headline}>{title}</div></Level.Left>
-			<Level.Right>
-				{
-					options.isMozaic ?
-						<a href={options.url || '/'} target='_blank' className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></a>
-						:
-						<Link
-							to={options.url || '/'}
-							className={styles.readmore}
-						>
-							{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' />
-						</Link>
-				}
-			</Level.Right>
+			{headerLink}
 		</Level>
 	);
+};
+
+const trackPageViewHandler = (props) => {
+	const { shared, users } = props;
+	const { userProfile } = users;
+	if (userProfile) {
+		const data = {
+			emailHash: _.defaultTo(userProfile.enc_email, ''),
+			userIdEncrypted: userProfile.enc_userid,
+			userId: userProfile.id,
+			ipAddress: shared.ipAddress || userProfile.ip_address,
+			currentUrl: props.location.pathname,
+			fusionSessionId: Utils.getSessionID(),
+		};
+		const PageViewReq = new TrackingRequest(data);
+		const pageViewPayload = PageViewReq.getPayload(homepageViewBuilder);
+		if (pageViewPayload) sendGtm(pageViewPayload);
+	}
 };
 
 import handler from '@/containers/Mobile/Shared/handler';
@@ -82,30 +105,16 @@ class Home extends Component {
 		this.checkedImage = [];
 		this.checkedStatus = [];
 		this.sbClose = this.sbClose.bind(this);
+
+		this.urlPromotionEnhancer = (url, id, name, creative, position) => {
+			return `${url}?icn=${name}&icid=${id}&creid=${creative}&bannerid=${position}`;
+		};
 	}
 
 	componentWillReceiveProps(nextProps) {
 		if (this.props.users.userProfile !== nextProps.users.userProfile) {
-			this.trackPageViewHandler(nextProps.users);
+			trackPageViewHandler(nextProps);
 		}
-	}
-
-	trackPageViewHandler(users) {
-		const { shared } = this.props;
-		const { userProfile } = users;
-		if (userProfile) {
-			const data = {
-				emailHash: _.defaultTo(userProfile.enc_email, ''),
-				userIdEncrypted: userProfile.enc_userid,
-				userId: userProfile.id,
-				ipAddress: shared.ipAddress,
-				currentUrl: this.props.location.pathname
-			};
-			const PageViewReq = new TrackingRequest(data);
-			const pageViewPayload = PageViewReq.getPayload(homepageViewBuilder);
-			if (pageViewPayload) sendGtm(pageViewPayload);
-		}
-
 	}
 
 	async handlePick(current) {
@@ -135,9 +144,12 @@ class Home extends Component {
 		const segment = home.activeSegment.key;
 		const featuredBanner = _.chain(home).get(`allSegmentData.${segment}`).get('heroBanner');
 		if (!featuredBanner.isEmpty().value()) {
-
 			const images = featuredBanner.value()[0].images;
-			const link = featuredBanner.value()[0].link.target;
+			let link = featuredBanner.value()[0].link.target;
+			if (link !== '') {
+				const promotion = featuredBanner.value()[0].impression;
+				link = this.urlPromotionEnhancer(link, promotion.id, promotion.name, promotion.creative, promotion.position);
+			}
 			return (
 				<Link
 					to={link}
@@ -148,7 +160,11 @@ class Home extends Component {
 				</Link>
 			);
 		}
-		return null;
+		
+		return (
+			<div style={{ margin: '20px auto 20px auto' }}>
+				<Spinner />
+			</div>);
 	}
 
 	renderRecommendation(type = 'new_arrival_products') {
@@ -246,16 +262,22 @@ class Home extends Component {
 			return (
 				<div className='margin--medium-v'>
 					{
-						datas.value().map(({ images, link }, c) => (
-							<Link
-								to={link.target || '/'}
-								key={c}
-							>
-								<div>
-									<Image lazyload alt='banner' src={images.thumbnail} />
-								</div>
-							</Link>
-						))
+						datas.value().map(({ images, link, impression }, c) => {
+							let url = link.target;
+							if (url !== '') {
+								url = this.urlPromotionEnhancer(url, impression.id, impression.name, impression.creative, impression.position);
+							}
+							return (
+								<Link
+									to={url || '/'}
+									key={c}
+								>
+									<div>
+										<Image lazyload alt='banner' src={images.thumbnail} />
+									</div>
+								</Link>
+							);
+						})
 					}
 				</div>
 			);
@@ -276,16 +298,22 @@ class Home extends Component {
 			return (
 				<div className='margin--medium-v'>
 					{
-						bottomBanner.map(({ images, link }, d) => (
-							<Link
-								to={link.target || '/'}
-								key={d}
-							>
-								<div>
-									<Image lazyload alt='banner' src={images.thumbnail} />
-								</div>
-							</Link>
-						))
+						bottomBanner.map(({ images, link, impression }, d) => {
+							let url = link.target;
+							if (url !== '') {
+								url = this.urlPromotionEnhancer(url, impression.id, impression.name, impression.creative, impression.position);
+							}
+							return (
+								<Link
+									to={url || '/'}
+									key={d}
+								>
+									<div>
+										<Image lazyload alt='banner' src={images.thumbnail} />
+									</div>
+								</Link>
+							);
+						})
 					}
 				</div>
 			);
@@ -300,10 +328,7 @@ class Home extends Component {
 		const segment = home.activeSegment.key;
 		const featuredBrand = _.chain(home).get(`allSegmentData.${segment}.featuredBrand`);
 		if (!featuredBrand.isEmpty().value()) {
-			const header = renderSectionHeader('Popular Brand', {
-				title: 'LIHAT SEMUA',
-				url: '/brands'
-			});
+			const header = renderSectionHeader('Popular Brand');
 			return (
 				<div>
 					{
@@ -371,7 +396,7 @@ class Home extends Component {
 			<div style={this.props.style}>
 				<Page color='white'>
 					<SEO
-						paramCanonical={process.env.MOBILE_UR}
+						paramCanonical={process.env.MOBILE_URL}
 					/>
 					<Tabs
 						current={this.props.shared.current}
@@ -402,7 +427,7 @@ class Home extends Component {
 				<SmartBanner
 					title='MatahariMall'
 					iconSrc='app-icon.png'
-					author='PT Solusi Ecommerce Global'
+					author='Harga lebih murah di App'
 					googlePlay='com.mataharimall.mmandroid'
 					appStore='1033108124'
 					isShow={this.state.showSmartBanner}
@@ -438,6 +463,7 @@ const doAfterAnonymous = async (props) => {
 
 	const mainPageData = await dispatch(new actions.mainAction(activeSegment, tokenHeader));
 	await dispatch(new actions.recomendationAction(activeSegment, tokenHeader));
+	trackPageViewHandler(props);
 	Home.trackImpresionHandler(mainPageData);
 };
 

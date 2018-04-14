@@ -72,7 +72,7 @@ class Brands extends Component {
 	}
 
 	render() {
-		const { onClose, title } = this.props;
+		const { onReset, title } = this.props;
 		const { keyword, resetDisabled } = this.state;
 
 		let data = this.state.data;
@@ -87,7 +87,7 @@ class Brands extends Component {
 
 		const HeaderPage = {
 			left: (
-				<Button onClick={onClose}>
+				<Button onClick={(e) => onReset(e, true)}>
 					<Svg src='ico_arrow-back-left.svg' />
 				</Button>
 			),
