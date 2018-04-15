@@ -21,8 +21,8 @@ class SmartB extends Component {
 		this.state = {
 			button: 'BUKA',
 			link: '',
-			price: 'FREE',
-			atStore: 'In Google Play'
+			price: '',
+			atStore: 'Download Sekarang'
 		};
 		this.currentScrollPos = 0;
 	}
@@ -33,7 +33,7 @@ class SmartB extends Component {
 		const isAndroid = UA.match(/Android/i) || UA.match(/webOS/i);
 		const isIOS = UA.match(/iPhone|iPod/i) || UA.match(/iPad/);
 		const link = isAndroid ? `http://play.google.com/store/apps/details?id=${googlePlay}` : (isIOS ? `https://itunes.apple.com/us/app/id${appStore}` : '');
-		const atStore = isAndroid ? 'In Google Play' : (isIOS ? 'On the App Store' : '');
+		const atStore = isAndroid ? 'Download Sekarang' : (isIOS ? 'Download Sekarang' : '');
 
 		this.setState({
 			link,
@@ -77,7 +77,7 @@ class SmartB extends Component {
 					<div className={style['sb-info']}>
 						<strong>{title}</strong>
 						<span>{author}</span>
-						<span>{this.state.price} - {this.state.atStore}</span>
+						<span>{this.state.atStore}</span>
 					</div>
 				</div>
 			</div>
