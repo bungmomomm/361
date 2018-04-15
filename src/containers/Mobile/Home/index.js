@@ -424,16 +424,21 @@ class Home extends Component {
 
 					<Footer isShow={this.state.isFooterShow} />
 				</Page>
-				<SmartBanner
-					title='MatahariMall'
-					iconSrc='app-icon.png'
-					author='Harga lebih murah di App'
-					googlePlay='com.mataharimall.mmandroid'
-					appStore='1033108124'
-					isShow={this.state.showSmartBanner}
-					onCloseBanner={this.sbClose}
-					scroll={this.props.scroll}
-				/>
+				
+				{
+					process.env.SHOW_SMART_BANNER === 'true' && (
+						<SmartBanner
+							title='MatahariMall'
+							iconSrc='app-icon.png'
+							author='Harga lebih murah di App'
+							googlePlay='com.mataharimall.mmandroid'
+							appStore='1033108124'
+							isShow={this.state.showSmartBanner}
+							onCloseBanner={this.sbClose}
+							scroll={this.props.scroll}
+						/>
+					)
+				}
 
 				<Header
 					lovelist={shared.totalLovelist}
