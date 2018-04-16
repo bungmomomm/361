@@ -6,19 +6,11 @@ class Modal extends Component {
 	constructor(props) {
 		super(props);
 		this.props = this.props;
-
-		this.subHeaderWrapperUp = false;
 	}
 
 	componentDidUpdate() {
-		if (this.props.subHeaderWrapper && this.subHeaderWrapper) {
-			if (!this.subHeaderWrapperUp) {
-				this.props.subHeaderWrapper(this.subHeaderWrapper);
-				this.subHeaderWrapperUp = true;
-			}
-		} else if (this.props.subHeaderWrapper) {
-			this.props.subHeaderWrapper(null);
-		}
+		if (this.props.subHeaderWrapper && this.subHeaderWrapper) this.props.subHeaderWrapper(this.subHeaderWrapper);
+		else if (this.props.subHeaderWrapper) this.props.subHeaderWrapper(null);
 	}
 
 	componentWillUnmount() {
