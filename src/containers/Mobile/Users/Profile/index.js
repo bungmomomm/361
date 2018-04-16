@@ -44,7 +44,7 @@ class UserProfile extends Component {
 		this.EMAIL_FIELD = CONST.USER_PROFILE_FIELD.email;
 		this.HP_FIELD = CONST.USER_PROFILE_FIELD.hp;
 	}
-	
+
 	onLogout = async () => {
 		const { dispatch, history, cookies } = this.props;
 		const [err, response] = await to(dispatch(userActions.userLogout(cookies.get(cookiesLabel.userToken))));
@@ -59,9 +59,11 @@ class UserProfile extends Component {
 
 	renderHeader() {
 		const { history } = this.props;
+		const innerPageUrl = ['/profile/my-order', '/profile/credit-card', '/address', '/lovelist', '/bantuan'];
+		const backCallback = (innerPageUrl.find((e) => e === window.previousLocation)) ? () => history.push('/') : history.goBack;
 		const HeaderPage = {
 			left: (
-				<button onClick={history.goBack}>
+				<button onClick={backCallback}>
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</button>
 			),
@@ -170,7 +172,7 @@ class UserProfile extends Component {
 							</Level.Item>
 						</Level>
 					</Link>
-					<Link to='/profile-credit-card' className='bg--white'>
+					<Link to='/profile/credit-card' className='bg--white'>
 						<Level style={{ padding: '0 0 0 15px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_cc.svg' />
@@ -250,7 +252,7 @@ class UserProfile extends Component {
 }
 
 const mapStateToProps = (state) => {
-	
+
 	return {
 		...state,
 		isLoading: state.users.isLoading,
