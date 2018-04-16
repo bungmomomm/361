@@ -16,14 +16,14 @@ const initialState = {
 			fg_show: 1,
 			color: '#F12332'
 		},
-		show: false,
+		show: true,
 		onClose: false
 	},
 	current: 'wanita',
 	errors: [],
 	snackbar: [],
 	watchConnection: false,
-	userPreviousPage: '', 
+	userPreviousPage: '',
 	ipAddress: false
 };
 
