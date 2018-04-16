@@ -3,6 +3,8 @@ import { actions } from '@/state/v4/Shared';
 import { uniqid } from '@/utils';
 import _ from 'lodash';
 
+const sentry = window.Raven;
+
 const snackBar = (store, action, err) => {
 	const { response, message } = err;
 	store.dispatch(actions.showSnack(uniqid('err-'),
@@ -38,8 +40,10 @@ export default thunk((promised, action, store) => {
 
 		// incase err does not stored on redux
 		snackBar(store, action, err);
+		// post to sentry
+		if (sentry) {
+			sentry.captureException(err);
+		}
 
 	});
-
-	
 });
