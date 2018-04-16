@@ -16,6 +16,7 @@ import { request as emarsysRequest } from './emarsys';
 import uniqid from './uniqid';
 import stringHelper from './stringHelper';
 import initUTMProcess from './affiliate';
+import debounce from './debounce';
 
 const isHexColor = (color) => {
 	return /(^#[0-9A-F]{3}|^#[0-9A-F]{6})$/i.test(color);
@@ -107,5 +108,6 @@ export default {
 	initUTMProcess,
 	decodeHtmlSpecialChar,
 	hastagLinkCreator,
-	aspectRatioHeight
+	aspectRatioHeight,
+	debounce
 };
