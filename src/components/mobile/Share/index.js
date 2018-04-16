@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { Svg, Modal, Level, Button } from '@/components/mobile';
 import {
 	FacebookIcon,
@@ -17,7 +17,7 @@ import {
 import style from './style.scss';
 import PropTypes from 'prop-types';
 
-class Share extends PureComponent {
+class Share extends Component {
 	static propTypes = {
 		url: PropTypes.string,
 		title: PropTypes.string
@@ -41,6 +41,11 @@ class Share extends PureComponent {
 		this.setState({
 			isOpen: !this.state.isOpen
 		});
+
+		if (this.props.subHeaderWrapper) {
+			const ziStyle = (!this.state.isOpen) ? 1 : 2;
+			this.props.subHeaderWrapper.style.zIndex = ziStyle;
+		}
 	};
 
 	share = () => {

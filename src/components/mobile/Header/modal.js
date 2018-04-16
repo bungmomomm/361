@@ -6,7 +6,25 @@ class Modal extends Component {
 	constructor(props) {
 		super(props);
 		this.props = this.props;
+
+		this.subHeaderWrapperUp = false;
 	}
+
+	componentDidUpdate() {
+		if (this.props.subHeaderWrapper && this.subHeaderWrapper) {
+			if (!this.subHeaderWrapperUp) {
+				this.props.subHeaderWrapper(this.subHeaderWrapper);
+				this.subHeaderWrapperUp = true;
+			}
+		} else if (this.props.subHeaderWrapper) {
+			this.props.subHeaderWrapper(null);
+		}
+	}
+
+	componentWillUnmount() {
+		if (this.props.subHeaderWrapper) this.props.subHeaderWrapper(null);
+	}
+
 	render() {
 		const renderRow = this.props.rows && this.props.rows.length > 0;
 		const containerClass = classNames(
@@ -38,7 +56,7 @@ class Modal extends Component {
 			if (!CompHeader) return null;
 
 			return (
-				<div style={this.props.subHeaderStyle || {}} className={styles.subHeaderWrapper}>
+				<div style={this.props.subHeaderStyle || {}} className={styles.subHeaderWrapper} ref={(r) => { this.subHeaderWrapper = r; }}>
 					<div className={styles.subHeader}>
 						{CompHeader}
 					</div>
