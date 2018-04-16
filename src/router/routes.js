@@ -205,7 +205,7 @@ export default {
 			component: loadable(() => import('@/containers/Mobile/Order/Confirmation'), defaultOptions)
 		},
 		{
-			path: '/profile-credit-card',
+			path: '/profile/credit-card',
 			component: loadable(() => import('@/containers/Mobile/Users/Profile/creditCard'), defaultOptions)
 		},
 		{
