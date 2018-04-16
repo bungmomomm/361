@@ -64,13 +64,13 @@ class Address extends Component {
 				const selected = { city: [], district: [] };
 
 				const cities = await to(dispatch(actions.getCity(cookies.get(userToken), { q: `${edit.city.split(' ').pop().replace(/[,.]/i, '')}` }, 'init')));
-				selected.city = cities[1] ? cities[1].data.data.cities.filter((obj) => {
+				selected.city = cities[1] && _.chain(cities[1]).get('data.data.cities').value() ? cities[1].data.data.cities.filter((obj) => {
 					return obj.name === `${edit.city}, ${edit.province}`;
 				}) : [];
 
 				if (selected.city.length) {
 					const districts = await to(dispatch(actions.getDistrict(cookies.get(userToken), { city_id: selected.city[0].city_id })));
-					selected.district = districts[1] ? districts[1].data.data.districts.filter((obj) => {
+					selected.district = districts[1] && _.chain(districts[1]).get('data.data.districts').value() ? districts[1].data.data.districts.filter((obj) => {
 						return obj.name === edit.district;
 					}) : [];
 				}
