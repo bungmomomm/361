@@ -295,9 +295,9 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-	const { dispatch, cookies, shared, home } = props;
+	const { dispatch, cookies, shared, home, brands } = props;
 	const activeSegment = home.segmen.filter((e) => e.key === shared.current)[0];
-	await dispatch(new actions.brandListAction(cookies.get(userToken), activeSegment.id));
+	if (!brands.brand_list) await dispatch(new actions.brandListAction(cookies.get(userToken), activeSegment.id));
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Brands, doAfterAnonymous)));
