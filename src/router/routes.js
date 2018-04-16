@@ -62,10 +62,11 @@ export default {
 		{
 			path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9-]+)',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Category/Product'), defaultOptions),
+			exact: true,
 			group: category
 		},
 		{
-			path: '/p-:categoryId:([0-9]+)}/:categoryTitle([a-zA-Z0-9-]+)/:brandTitle([a-zA-Z0-9-]+)',
+			path: '/p-:categoryId([0-9]+)/:categoryTitle([a-zA-Z0-9-]+)/:brandTitle([a-zA-Z0-9-]+)',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Category/Product'), defaultOptions),
 			group: category
 		},
@@ -103,7 +104,13 @@ export default {
 			path: '/product/guide',
 			component: loadable(() => import('@/containers/Mobile/Details/Products/Guide'), defaultOptions),
 			exact: true
-		}, {
+		},
+		{
+			path: '/([^/]+)-p:id([0-9]+).html',
+			component: loadable(() => import('@/containers/Mobile/Details/Products'), defaultOptions),
+			exact: true
+		},
+		{
 			path: '/([^/]+)-:id([0-9]+).html',
 			component: loadable(() => import('@/containers/Mobile/Details/Products'), defaultOptions),
 			exact: true
@@ -198,7 +205,7 @@ export default {
 			component: loadable(() => import('@/containers/Mobile/Order/Confirmation'), defaultOptions)
 		},
 		{
-			path: '/profile-credit-card',
+			path: '/profile/credit-card',
 			component: loadable(() => import('@/containers/Mobile/Users/Profile/creditCard'), defaultOptions)
 		},
 		{

@@ -26,7 +26,7 @@ class GridView extends Component {
 	}
 
 	productCardRender(product, index, carousel = false) {
-		const { productOnClick } = this.props;
+		const { productOnClick, loveLoading } = this.props;
 
 		const setStyle = () => {
 			if (carousel) {
@@ -51,6 +51,7 @@ class GridView extends Component {
 						data={product.product_id}
 						total={product.lovelistTotal}
 						onNeedLogin={() => this.forceLoginNow()}
+						loading={loveLoading}
 					/>
 				)}
 			/>

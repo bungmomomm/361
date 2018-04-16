@@ -26,7 +26,27 @@ import {
 import Otp from '@/containers/Mobile/Shared/Otp';
 import { userSource, userToken } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
+import {
+	TrackingRequest,
+	sendGtm,
+	registerSuccessBuilder,
+} from '@/utils/tracking';
+import { Utils } from '@/utils/tracking/lucidworks';
 
+const trackSuccessRegister = (userProfile, ipAddress, provider = 'onsite') => {
+	const data = {
+		emailHash: _.defaultTo(userProfile.enc_email, ''),
+		userIdEncrypted: userProfile.enc_userid,
+		userId: userProfile.userid,
+		ipAddress,
+		currentUrl: '/register',
+		fusionSessionId: Utils.getSessionID(),
+		loginRegisterMethod: provider
+	};
+	const request = new TrackingRequest(data);
+	const requestPayload = request.getPayload(registerSuccessBuilder);
+	if (requestPayload) sendGtm(requestPayload);
+};
 @handler
 class Register extends Component {
 	constructor(props) {
@@ -69,6 +89,9 @@ class Register extends Component {
 		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
 		setUserCookie(this.props.cookies, response.token, false, userProfile);
 		await dispatch(new users.afterLogin(cookies.get(userToken)));
+
+		trackSuccessRegister(response.userprofile, response.ipAddress, provider);
+
 		if (isFullUrl(redirectUri)) {
 			top.location.href = redirectUri;
 			return true;
@@ -127,6 +150,9 @@ class Register extends Component {
 			const userProfile = JSON.stringify({ name: responseUserLogin.userprofile.name, avatar: responseUserLogin.userprofile.avatar });
 			setUserCookie(this.props.cookies, responseUserLogin.token, false, userProfile);
 			await dispatch(new users.afterLogin(cookies.get(userToken)));
+
+			trackSuccessRegister(responseUserLogin.userprofile, responseUserLogin.ipAddress);
+
 			if (isFullUrl(redirectUri)) {
 				top.location.href = redirectUri;
 				return true;
@@ -189,9 +215,9 @@ class Register extends Component {
 			password: ''
 		}, callback('REGISTER'));
 	}
- 
+
 	async successValidateOtp(response) {
-		
+
 		const { cookies, dispatch, history } = this.props;
 		const { email, password, redirectUri } = this.state;
 
@@ -206,6 +232,9 @@ class Register extends Component {
 		const userProfile = JSON.stringify({ name: responseUserLogin.userprofile.name, avatar: responseUserLogin.userprofile.avatar });
 		setUserCookie(this.props.cookies, responseUserLogin.token, false, userProfile);
 		await dispatch(new users.afterLogin(cookies.get(userToken)));
+
+		trackSuccessRegister(responseUserLogin.userprofile, responseUserLogin.ipAddress);
+
 		if (isFullUrl(redirectUri)) {
 			top.location.href = redirectUri;
 			return true;
@@ -387,7 +416,7 @@ class Register extends Component {
 				<div className='margin--medium-v font-medium'>Akun ini sudah terdaftar. Silahkan lakukan log in untuk mengakses akun.</div>
 				<div className='margin--medium-v font-medium text-center'>
 					<p>
-						MASUK DENGAN {email} 
+						MASUK DENGAN {email}
 					</p>
 				</div>
 				<div className='margin--small-v'>

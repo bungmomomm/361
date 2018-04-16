@@ -508,10 +508,17 @@
 	}
 
 	.can-copy{
+		-webkit-user-select: text;
+		-moz-user-select: text;
+		-ms-user-select: text;
 		user-select: auto;
-		p{
+		*{
+			-webkit-user-select: text;
+			-moz-user-select: text;
+			-ms-user-select: text;
 			user-select: auto;
 		}
+
 	}
 }
 

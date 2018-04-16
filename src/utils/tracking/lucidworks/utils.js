@@ -1,8 +1,14 @@
 import { config } from './config';
 import Uuid from './uuid';
 import { isMobile } from '@/utils';
+import cookiesLabel from '@/data/cookiesLabel';
 
 export default class Utils {
+
+	static isLoggedIn() {
+		const loginCookieVal = Utils.getInfo(cookiesLabel.isLogin); 
+		return (typeof loginCookieVal === 'string' && loginCookieVal === 'true');
+	}
 
 	static generateID = () => {
 		return Uuid.uuid4();
@@ -53,15 +59,56 @@ export default class Utils {
 		return null;
 	}
 
+	static updateSessionID = (customerId) => {
+		// updates session data...
+		const sessionId = Utils.getSessionID();
+		const sessionData = `${sessionId}|${customerId}`;
+		Utils.storeSession(sessionData);
+	}
+
+	static resetCustomerInfo = () => {
+		let userInfo = {
+			id: 1, // default value for lucid tracking
+			encId: 1,
+			encEmail: ''
+		};
+
+		try {
+			const isCompatible = (typeof window.sessionStorage !== 'undefined' && typeof window.sessionStorage.getItem === 'function');
+			if (isCompatible && window.sessionStorage.getItem(config.tokenStorageKey) !== null &&
+				Utils.IsJsonString(window.sessionStorage.getItem(config.tokenStorageKey))) {
+				const { info } = JSON.parse(window.sessionStorage.getItem(config.tokenStorageKey));
+				const { userid, enc_email, enc_userid } = info;
+				userInfo = {
+					id: (Utils.notEmptyVal(userid)) ? info.userid : userInfo.id,
+					encId: (Utils.notEmptyVal(enc_userid)) ? info.enc_userid : userInfo.encId,
+					encEmail: (Utils.notEmptyVal(enc_email)) ? info.enc_email : userInfo.encEmail
+				};
+			}
+		} catch (error) { ; }
+
+		Utils.storeData(config.userSession, JSON.stringify(userInfo));
+		if (Utils.hasSession() && Utils.isLoggedIn()) Utils.updateSessionID(userInfo.id);
+
+	}
+
 	static getCustomerID = () => {
 		try {
+			if (!Utils.isLoggedIn) return config.defaultCustomerId;
+			
 			const sessionName = `${config.userSession}`;
 			const userSession = Utils.getInfo(sessionName);
 
-			if (Utils.IsJsonString(userSession)) {
+			if (Utils.notEmptyVal(userSession) && Utils.IsJsonString(userSession)) {
 				const info = JSON.parse(userSession);
 				const customerId = Number(info.id);
 				if (Utils.notEmptyVal(customerId)) return customerId;
+			} else {
+				// on this case, user has logged into the system, but
+				// the user-info (stored on cookie) is not available
+				// then try to create new user info based on sessionStorage data that stores user info
+				Utils.resetCustomerInfo();
+				return Utils.getCustomerID();
 			}
 			return config.defaultCustomerId;
 		} catch (error) {
@@ -75,14 +122,23 @@ export default class Utils {
 		return config.defaultSource;
 	}
 
+	static isGaHasSet = () => {
+		try {
+			const gaSet = (typeof window.ga !== 'undefined');
+			const gaHasGetAll = (gaSet && typeof window.ga.getAll === 'function');
+			const clientGA = (gaHasGetAll) ? window.ga.getAll() : undefined;
+			return (typeof clientGA !== 'undefined' && Array.isArray(clientGA));
+		} catch (error) {
+			return false;
+		}
+	}
+
 	static getGaClientId = () => {
 		let clientId = '';
-		if (typeof window.ga !== 'undefined') {
+		if (Utils.isGaHasSet()) {
 			try {
-				if (typeof window.ga.getAll === 'function') {
-					const clientGA = window.ga.getAll()[0];
-					if (typeof clientGA.get === 'function') clientId = clientGA.get('clientId');
-				}
+				const clientGA = window.ga.getAll()[0];
+				if (typeof clientGA.get === 'function') clientId = clientGA.get('clientId');
 			} catch (error) {
 				return clientId;
 			}

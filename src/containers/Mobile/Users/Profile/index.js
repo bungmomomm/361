@@ -42,9 +42,9 @@ class UserProfile extends Component {
 		this.AVATAR_FIELD = CONST.USER_PROFILE_FIELD.avatar;
 		this.NAME_FIELD = CONST.USER_PROFILE_FIELD.name;
 		this.EMAIL_FIELD = CONST.USER_PROFILE_FIELD.email;
-		this.PHONE_FIELD = CONST.USER_PROFILE_FIELD.phone;
+		this.HP_FIELD = CONST.USER_PROFILE_FIELD.hp;
 	}
-	
+
 	onLogout = async () => {
 		const { dispatch, history, cookies } = this.props;
 		const [err, response] = await to(dispatch(userActions.userLogout(cookies.get(cookiesLabel.userToken))));
@@ -59,9 +59,11 @@ class UserProfile extends Component {
 
 	renderHeader() {
 		const { history } = this.props;
+		const innerPageUrl = ['/profile/my-order', '/profile/credit-card', '/address', '/lovelist', '/bantuan'];
+		const backCallback = (innerPageUrl.find((e) => e === window.previousLocation)) ? () => history.push('/') : history.goBack;
 		const HeaderPage = {
 			left: (
-				<button onClick={history.goBack}>
+				<button onClick={backCallback}>
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</button>
 			),
@@ -108,7 +110,7 @@ class UserProfile extends Component {
 					</Level.Left>
 					<Level.Item style={{ justifyContent: 'center', padding: '10px', color: '#191919' }}>
 						<div style={{ fontWeight: 'bold', fontSize: '15px' }}>{userProfile[this.NAME_FIELD] || ''}</div>
-						<div style={{ fontSize: '11px', color: '#A4A4A4' }}>{userProfile[this.EMAIL_FIELD] || userProfile[this.PHONE_FIELD]}</div>
+						<div style={{ fontSize: '11px', color: '#A4A4A4' }}>{userProfile[this.EMAIL_FIELD] || userProfile[this.HP_FIELD]}</div>
 					</Level.Item>
 					<Level.Right style={{ justifyContent: 'center' }}>
 						<Svg src='ico_chevron-right.svg' />
@@ -170,7 +172,7 @@ class UserProfile extends Component {
 							</Level.Item>
 						</Level>
 					</Link>
-					<Link to='/profile-credit-card' className='bg--white'>
+					<Link to='/profile/credit-card' className='bg--white'>
 						<Level style={{ padding: '0 0 0 15px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_cc.svg' />
@@ -250,7 +252,7 @@ class UserProfile extends Component {
 }
 
 const mapStateToProps = (state) => {
-	
+
 	return {
 		...state,
 		isLoading: state.users.isLoading,

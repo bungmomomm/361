@@ -293,7 +293,7 @@ class CreditCard extends Component {
 	render() {
 
 		const { successMessage } = this.state;
-		const { users } = this.props;
+		const { users, shared } = this.props;
 		const pageAttribute = {
 			color: 'grey'
 		};
@@ -333,7 +333,7 @@ class CreditCard extends Component {
 					{ this.renderSetDefaultCreditCardPopUpConfirmation() }
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Profile' botNav={this.props.botNav} isLogin={this.isLogin} />
+				<Navigation totalCartItems={shared.totalCart} active='Profile' botNav={this.props.botNav} isLogin={this.isLogin} />
 			</div>
 		);
 	}
@@ -341,7 +341,8 @@ class CreditCard extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		...state
+		shared: state.shared,
+		users: state.users
 	};
 };
 

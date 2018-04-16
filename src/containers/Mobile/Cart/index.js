@@ -20,7 +20,7 @@ import handler from '@/containers/Mobile/Shared/handler';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { toastSytle } from '@/containers/Mobile/Shared/styleSnackbar';
 
-const trackBrandPageView = (data, props) => {
+const trackCartView = (data, props) => {
 	const items = _.flatMap(data, (e) => (e.items));
 	const productId = _.map(items, 'product_id');
 	const pricingList = _.map(items, 'pricing.original.effective_price');
@@ -31,7 +31,7 @@ const trackBrandPageView = (data, props) => {
 		emailHash: _.defaultTo(userProfile.enc_email, ''),
 		userIdEncrypted: userProfile.enc_userid,
 		userId: userProfile.id,
-		ipAddress: shared.ipAddress,
+		ipAddress: shared.ipAddress || userProfile.ip_address,
 		currentUrl: props.location.pathname,
 		listPrice: pricingList.join('|'),
 		listQuantity: quantityList.join('|'),
@@ -73,21 +73,16 @@ class Cart extends Component {
 		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin);
 	}
 
+	componentDidMount() {
+		if (this.props.botBar && this.botBar) this.props.botBar(this.botBar);
+	}
+
 	componentWillReceiveProps(nextProps) {
-
-		if (nextProps.shopBag.carts !== this.props.shopBag.carts
-			&& this.props.users.userProfile !== nextProps.users.userProfile
-		) {
-			trackBrandPageView(nextProps.shopBag.carts, nextProps);
-		}
-
-		if (nextProps.shopBag.carts !== this.props.shopBag.carts && (typeof this.fusion === 'undefined')) {
-			const { carts, total } = nextProps.shopBag;
-			if (!_.isEmpty(carts) && !_.isEmpty(total)) this.fusion = new LucidCart(carts, total);
-
-		}
-
 		this.checkNotProcedItem(nextProps);
+	}
+
+	componentWillUnmount() {
+		if (this.props.botBar) this.props.botBar(false);
 	}
 
 	checkNotProcedItem(props) {
@@ -140,7 +135,8 @@ class Cart extends Component {
 			resolve(dispatch(shopBagAction.deleteAction(cookies.get(cookiesLabel.userToken), this.state.productWillDelete.variant_id)));
 			this.clearWillDeleteState();
 			const { variant_id } = this.state.productWillDelete;
-			if (typeof this.fusion !== 'undefined') this.fusion.trackCartChanges(variant_id, 0);
+			const { carts, total } = this.props.shopBag;
+			LucidCart.tracks(carts, total, variant_id);
 		});
 		deleting.then((res) => {
 			dispatch(shopBagAction.getAction(cookies.get(cookiesLabel.userToken)));
@@ -171,7 +167,8 @@ class Cart extends Component {
 		if (this.state.qtyNew !== null && this.state.qtyCurrent !== this.state.qtyNew) {
 			dispatch(shopBagAction.updateAction(cookies.get(cookiesLabel.userToken), this.state.variantIdwillUpdate, this.state.qtyNew));
 			const { variantIdwillUpdate, qtyNew } = this.state;
-			if (typeof this.fusion !== 'undefined') this.fusion.trackCartChanges(variantIdwillUpdate, qtyNew);
+			const { carts, total } = this.props.shopBag;
+			LucidCart.tracks(carts, total, variantIdwillUpdate, qtyNew);
 		}
 		this.setState({ showSelect: false, variantIdwillUpdate: null, selectList: [], qtyCurrent: null, qtyNew: null });
 	}
@@ -310,9 +307,9 @@ class Cart extends Component {
 		const { shopBag } = this.props;
 		if (this.isLogin === 'true') {
 			if (this.state.itemsNotProced.length > 0) {
-				link = (<a>{wording}</a>);
+				link = (<Button color='secondary' size='medium' wide disabled>{wording}</Button>);
 			} else {
-				link = (<Button color='secondary' size='medium' wide to={`login?redirect_uri=${process.env.CHECKOUT_URL}`}>{wording}</Button>);
+				link = (<a href={process.env.CHECKOUT_URL}> <Button color='secondary' size='medium' wide >{wording}</Button></a>);
 			}
 		} else {
 			link = (<Button color='secondary' size='medium' wide to={`login?redirect_uri=${process.env.CHECKOUT_URL}`}>{wording}</Button>);
@@ -320,7 +317,7 @@ class Cart extends Component {
 		return shopBag.total && shopBag.total.count_item !== 0 ? (
 			<div className={styles.paymentLink}>
 				<div>
-					<div>
+					<div ref={(r) => { this.botBar = r; }}>
 						<div className={styles.totalPayment}>
 							<div>
 								<div>Total Pembayaran</div>
@@ -454,14 +451,15 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const doAfterAnonymousCall = (props) => {
+const doAfterAnonymousCall = async (props) => {
 	const { dispatch, cookies } = props;
 
-	dispatch(
+	const response = await dispatch(
 		shopBagAction.getAction(
 			cookies.get(cookiesLabel.userToken)
 		)
 	);
+	trackCartView(response.data.data.carts, props);
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Cart, doAfterAnonymousCall)));

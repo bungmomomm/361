@@ -15,8 +15,6 @@ export default class Fusion {
 		if (this.enabled) {
 			return {
 				source: Utils.getSource(),
-				session_id: Utils.getSessionID(),
-				google_session_id: Utils.getGaClientId(),
 				customer_id: Utils.getCustomerID()
 			};
 		}
@@ -74,12 +72,7 @@ export default class Fusion {
 				// push new session event signal ...
 				this.push(payload);
 
-			} else {
-				// updates session data...
-				const sessionId = Utils.getSessionID();
-				const sessionData = `${sessionId}|${customerId}`;
-				Utils.storeSession(sessionData);
-			}
+			} else Utils.updateSessionID(customerId);
 		} catch (error) {
 			if (config.debug) console.log(error);
 		}
@@ -88,6 +81,16 @@ export default class Fusion {
 	push = (payload) => {
 		try {
 			if (this.enabled) {
+				// make sure an event pushed after the document fully loaded to
+				// prevent missing google_session_id
+				const windowLoaded = (window.document.readyState === 'complete');
+				if (!windowLoaded || !Utils.isGaHasSet()) {
+					setTimeout(() => {
+						this.push(payload);
+					}, 500);
+					return;
+				}
+
 				// new-session event signal should be pushed in the first place
 				if (payload.event !== NEW_SESSION && !Utils.hasSession()) {
 					const handler = new Promise((resolve, reject) => {
@@ -101,7 +104,6 @@ export default class Fusion {
 						payload.session_id = commons.session_id;
 						payload.customer_id = commons.customer_id;
 						payload.source = commons.source;
-						payload.google_session_id = commons.google_session_id;
 
 						this.push(payload);
 					}).catch((err) => {
@@ -109,6 +111,10 @@ export default class Fusion {
 					});
 					return;
 				}
+
+				// set ga-client-id as additional payloads
+				payload.google_session_id = Utils.getGaClientId();
+				payload.session_id = Utils.getSessionID();
 
 				// prepare request...
 				const axios = require('axios');

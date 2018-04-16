@@ -4,6 +4,7 @@ import _ from 'lodash';
 const initialState = {
 	loading: false,
 	brand_list: null,
+	brand_list_flat: null,
 	segment: 1,
 	brand_id: null,
 	products_comments: null,
@@ -40,10 +41,11 @@ const { brandListUpdate, brandLoading, brandProducts, brandLoadingProducts, bran
 );
 
 const reducer = handleActions({
-	[brandListUpdate](state, { payload: { brand_list, segment } }) {
+	[brandListUpdate](state, { payload: { brand_list, segment, brand_list_flat } }) {
 		return {
 			...state,
 			brand_list,
+			brand_list_flat,
 			segment
 		};
 	},

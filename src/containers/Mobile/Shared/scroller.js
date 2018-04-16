@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import handler from '@/containers/Mobile/Shared/handler';
+import { actions } from '@/state/v4/Scroller';
 import _ from 'lodash';
 
 const Scroller = (WrappedComponent) => {
@@ -32,6 +33,12 @@ const Scroller = (WrappedComponent) => {
 
 		componentWillUnmount() {
 			window.removeEventListener('scroll', this.touchDown, true);
+			this.props.dispatch(actions.onScroll({
+				loading: false,
+				nextPage: false,
+				nextData: {},
+				loader: false
+			}));
 		}
 
 		touchDown(e) {

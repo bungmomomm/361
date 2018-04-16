@@ -24,7 +24,7 @@ const trackAddToCart = (data, props, variant, hasVariantSize = true) => {
 		emailHash: _.defaultTo(userProfile.enc_email, ''),
 		userIdEncrypted: userProfile.enc_userid,
 		userId: userProfile.id,
-		ipAddress: shared.ipAddress,
+		ipAddress: shared.ipAddress || userProfile.ip_address,
 		currentUrl: props.location.pathname,
 		products: [products],
 		fusionSessionId: Utils.getSessionID(),
@@ -40,7 +40,7 @@ const trackPdpView = (data, props) => {
 	const products = {
 		name: data.detail.title,
 		id: data.detail.id,
-		price: data.detail.price_range.effective_price,
+		price: data.detail.variants[0].pricing.original.effective_price,
 		brand: data.detail.brand.name,
 		category: data.detail.product_category_names.join('/'),
 	};
@@ -48,7 +48,7 @@ const trackPdpView = (data, props) => {
 		emailHash: _.defaultTo(userProfile.enc_email, ''),
 		userIdEncrypted: userProfile.enc_userid,
 		userId: userProfile.id,
-		ipAddress: shared.ipAddress,
+		ipAddress: shared.ipAddress || userProfile.ip_address,
 		currentUrl: props.location.pathname,
 		products: [products],
 		fusionSessionId: Utils.getSessionID(),

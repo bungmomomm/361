@@ -156,7 +156,7 @@ class Hashtags extends Component {
 	};
 
 	render() {
-		const { hashtag, history, scroller, dispatch } = this.props;
+		const { location, hashtag, history, scroller, dispatch } = this.props;
 		const tags = hashtag.tags;
 		const q = dispatch(actions.getQuery());
 		const campaignId = _.chain(q).get('query.campaign_id').value() || false;
@@ -206,7 +206,7 @@ class Hashtags extends Component {
 			<div>
 				<Page color='white'>
 					<SEO
-						paramCanonical={process.env.MOBILE_UR}
+						paramCanonical={`${process.env.MOBILE_URL}${location.pathname}`}
 					/>
 					<div style={{ marginTop: '-30px' }} className='margin--medium-v text-center padding--large-h'>
 						{hashtag.header.description}

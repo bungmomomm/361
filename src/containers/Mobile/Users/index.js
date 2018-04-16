@@ -14,6 +14,9 @@ import {
 	Tabs
 } from '@/components/mobile/';
 import handler from '@/containers/Mobile/Shared/handler';
+import {
+	isFullUrl
+} from '@/utils';
 import { isLogin } from '@/data/cookiesLabel';
 
 @handler
@@ -23,7 +26,7 @@ class Users extends Component {
 		this.props = props;
 		const query = queryString.parse(props.location.search);
 		this.state = {
-			current: location.pathname.substring(1),
+			current: location.pathname.substring(1) === 'login' ? 'login' : 'register',
 			redirectUri: query.redirect_uri || false,
 			loading: true,
 			callback: {
@@ -40,12 +43,15 @@ class Users extends Component {
 		const { redirectUri } = this.state;
 		const { history } = this.props;
 		
-		if (redirectUri.indexOf('digital') > -1) {
+		if (redirectUri && redirectUri.indexOf('digital') > -1) {
 			
 			// Do nothing let them stay into the page.
 			
 		} else if (this.props.cookies.get(isLogin) === 'true') {
-			history.replace('/profile');
+			if (redirectUri && isFullUrl(redirectUri)) {
+				top.location.href = redirectUri;
+			}
+			history.replace(redirectUri || '/profile');
 		}
 		
 	}
