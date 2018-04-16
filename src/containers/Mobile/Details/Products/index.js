@@ -146,6 +146,13 @@ class Products extends Component {
 		const { status } = this.state;
 		let { cardProduct, selectedVariant, size, outOfStock } = this.state;
 
+		// check product mds or not
+		const { seller, title, variants } = detail;
+		if (typeof seller !== 'undefined' && process.env.MDS_STORE_IDS.includes(seller.seller_id) && variants.length > 0) {
+			const mdsUrl = process.env.MDS_URL + urlBuilder.buildPdp(title, variants[0].id, true);
+			window.location.replace(mdsUrl);
+		}
+
 		status.loading = product.loading;
 		if ((_.toInteger(this.props.match.params.id) !== _.toInteger(nextProps.match.params.id)) ||
 			(this.props.match.url !== nextProps.match.url)) {
