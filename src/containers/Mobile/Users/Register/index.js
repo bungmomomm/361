@@ -376,7 +376,7 @@ class Register extends Component {
 					<Input {...inputPasswordAttribute} />
 				</div>
 				<div className='margin--medium-v text-left'>
-					<p>Dengan membuka Akun, Anda telah membaca, mengerti dan menyetujui <Link to='/'>Syarat & Ketentuan dan Kebijakan Privasi</Link> MatahariMall.com</p>
+					<p>Dengan membuka Akun, Anda telah membaca, mengerti dan menyetujui <a href='https://super.mataharimall.com/static/cf/terms-conditions.html'>Syarat & Ketentuan</a> dan <a href='https://super.mataharimall.com/static/cf/privacy-policy.html'>Kebijakan Privasi</a> MatahariMall.com</p>
 				</div>
 				<div className='margin--medium-v'>
 					<Button {...buttonRegisterAttribute}>Daftar</Button>
