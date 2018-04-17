@@ -282,7 +282,7 @@ class Home extends Component {
 								<Link
 									to={url || '/'}
 									key={c}
-                                    onClick={sendLocation(url)}
+									onClick={sendLocation(url)}
 								>
 									<div>
 										<Image lazyload alt='banner' src={images.thumbnail} />
@@ -319,7 +319,7 @@ class Home extends Component {
 								<Link
 									to={url || '/'}
 									key={d}
-                                    onClick={sendLocation(url)}
+									onClick={sendLocation(url)}
 								>
 									<div>
 										<Image lazyload alt='banner' src={images.thumbnail} />
