@@ -5,7 +5,8 @@ import _ from 'lodash';
 
 const snackBar = (store, action, err) => {
 	const { response, message } = err;
-	store.dispatch(actions.showSnack(uniqid('err-'),
+	store.dispatch(actions.showSnack(
+		uniqid('err-'),
 		{
 			label: _.chain(response).get('data.error_message').value() ? _.chain(response).get('data.error_message').value()
 				: _.chain(response).get('statusText').value() ? _.chain(response).get('statusText').value()
@@ -17,29 +18,22 @@ const snackBar = (store, action, err) => {
 				action: 'reload'
 			}
 		},
-	{},
-	true
-));
+		{},
+		true
+	));
 };
 
 export default thunk((promised, action, store) => {
 	promised.catch((err) => {
-		
+
 		if (err.redux) {
-			const { response, code } = err;
+			const { code } = err;
 			if (err.app && err.app === 'account' && code === 401) {
 				return;
 			}
 
-			if (!response) {
-				snackBar(store, action, err);
-			}
+			snackBar(store, action, err);
 		}
 
-		// incase err does not stored on redux
-		snackBar(store, action, err);
-
 	});
-
-	
 });
