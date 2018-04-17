@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
+import _ from 'lodash';
 import Shared from '@/containers/Mobile/Shared';
 import { Link } from 'react-router-dom';
 import {
@@ -200,26 +201,31 @@ class MyOrderDetail extends Component {
 	}
 
 	renderPembayaran() {
-		const order = this.props.user.myOrdersDetail;
+		const { user } = this.props;
+		const { myOrdersDetail } = user;
+		const detail = _.chain(user).get('myOrdersDetail.total.formatted').value();
 		return (
 			<aux>
 				<div className='panel__container'>Pembayaran</div>
 				<div className='bg--white padding--medium'>
 					<ul className={styles.orderPaymentList}>
-						<li><span>Subtotal</span><strong>{order.total.formatted.subtotal}</strong></li>
-						<li><span>Biaya Pengiriman</span><strong>{order.total.formatted.shipping_cost}</strong></li>
-						{(order.coupon) && (
-							<li><span>Kode Kupon</span><strong>{order.coupon}</strong></li>
+						<li><span>Subtotal</span><strong>{detail.subtotal}</strong></li>
+						<li><span>Biaya Pengiriman</span><strong>{detail.shipping_cost}</strong></li>
+						{(myOrdersDetail.coupon) && (
+							<li><span>Kode Kupon</span><strong>{myOrdersDetail.coupon}</strong></li>
 						)}
-						{order.discount && (
-							<li><span>Diskon</span><strong>{order.discount}</strong></li>
+						{detail.discount && (
+							<li><span>Diskon</span><strong>-{detail.discount}</strong></li>
+						)}
+						{detail.discount_shipping_cost && (
+							<li><span>Diskon Biaya Pengiriman</span><strong>-{detail.discount_shipping_cost}</strong></li>
 						)}
 					</ul>
 					<div className={styles.orderPaymentTotal}>
 						<div>Total Pembayaran<br /><small className='font-color--primary-ext-2'>(Termasuk PPN)</small></div>
-						<div><strong>{order.total.formatted.total}</strong></div>
+						<div><strong>{detail.total}</strong></div>
 					</div>
-					<small className='margin--normal'>Dibayar dengan <strong>{order.payment_method}</strong></small>
+					<small className='margin--normal'>Dibayar dengan <strong>{myOrdersDetail.payment_method}</strong></small>
 				</div>
 			</aux>
 		);
