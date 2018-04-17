@@ -110,6 +110,7 @@ class MyOrder extends Component {
 	}
 
 	render() {
+		const { shared } = this.props;
 		const HeaderPage = ({
 			left: (
 				<Link to={'/profile'}>
@@ -175,7 +176,7 @@ class MyOrder extends Component {
 					</div>
 				</Page>
 				<Header.Modal {...HeaderPage} />
-				<Navigation active='Profile' botNav={this.props.botNav} isLogin={this.isLogin} />
+				<Navigation active='Profile' totalCartItems={shared.totalCart} botNav={this.props.botNav} isLogin={this.isLogin} />
 			</div>
 		);
 	}
