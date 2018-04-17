@@ -11,7 +11,6 @@ import { Promise } from 'es6-promise';
 import _ from 'lodash';
 import { isLogin, userToken } from '@/data/cookiesLabel';
 import Switch from 'react-switch';
-import { Polygon } from '@/data/polygons';
 import handler from '@/containers/Mobile/Shared/handler';
 
 @handler
@@ -93,13 +92,6 @@ class Address extends Component {
 						lng: parseFloat(edit.longitude) || this.state.marked.lng
 					}
 				});
-
-				const district = selected.district.length ? selected.district[0].name.toLowerCase().replace(/\W+(.)/g, (match, chr) => chr.toUpperCase()) : '';
-				const selectedPolygon = _.find(Polygon, district);
-
-				dispatch(actions.mutateState({
-					polygon: selectedPolygon ? selectedPolygon[district] : false
-				}));
 			})();
 		}
 	}
