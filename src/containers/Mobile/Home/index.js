@@ -154,7 +154,11 @@ class Home extends Component {
 			return (
 				<Link
 					to={link}
-					onClick={sendLocation(link)}
+					onClick={
+						() => {
+							sendLocation(link);
+						}
+					}
 				>
 					<div>
 						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
@@ -202,7 +206,11 @@ class Home extends Component {
 										<div key={e}>
 											<Link
 												to={pdpUriBuilder}
-												onClick={sendLocation(pdpUriBuilder)}
+												onClick={
+													() => {
+														sendLocation(pdpUriBuilder);
+													}
+												}
 											>
 												<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
 												<div className={styles.btnThumbnail}>
@@ -250,7 +258,11 @@ class Home extends Component {
 									<div key={e}>
 										<Link
 											to={hashtagLink}
-											onClick={sendLocation(hashtagLink)}
+											onClick={
+												() => {
+													sendLocation(hashtagLink);
+												}
+											}
 										>
 											<Image lazyload shape='square' alt='thumbnail' src={gambar.images.thumbnail} />
 										</Link>
@@ -282,7 +294,11 @@ class Home extends Component {
 								<Link
 									to={url || '/'}
 									key={c}
-									onClick={sendLocation(url)}
+									onClick={
+										() => {
+											sendLocation(url);
+										}
+									}
 								>
 									<div>
 										<Image lazyload alt='banner' src={images.thumbnail} />
@@ -319,7 +335,11 @@ class Home extends Component {
 								<Link
 									to={url || '/'}
 									key={d}
-									onClick={sendLocation(url)}
+									onClick={
+										() => {
+											sendLocation(url);
+										}
+									}
 								>
 									<div>
 										<Image lazyload alt='banner' src={images.thumbnail} />
@@ -356,7 +376,11 @@ class Home extends Component {
 									<div className={styles.brandsImage} key={e}>
 										<Link
 											to={url}
-											onClick={sendLocation(url)}
+											onClick={
+												() => {
+													sendLocation(url);
+												}
+											}
 										>
 											<Image lazyload alt='thumbnail' src={brand.images.thumbnail} />
 										</Link>
