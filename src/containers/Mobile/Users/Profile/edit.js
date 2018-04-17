@@ -54,6 +54,7 @@ class UserProfileEdit extends Component {
 
 		this.AVATAR_FIELD = CONST.USER_PROFILE_FIELD.avatar;
 		this.NAME_FIELD = CONST.USER_PROFILE_FIELD.name;
+		this.PHONE_FIELD = CONST.USER_PROFILE_FIELD.phone;
 		this.HP_FIELD = CONST.USER_PROFILE_FIELD.hp;
 		this.GENDER_FIELD = CONST.USER_PROFILE_FIELD.gender;
 		this.BIRTHDAY_FIELD = CONST.USER_PROFILE_FIELD.birthday;
@@ -233,7 +234,7 @@ class UserProfileEdit extends Component {
 				newData = formData[this.HP_EMAIL_FIELD];
 			} else if (layout === this.OVO_ID_FIELD) {
 				newData = {
-					[this.HP_FIELD]: formData[this.OVO_ID_FIELD]
+					[this.PHONE_FIELD]: formData[this.OVO_ID_FIELD]
 				};
 			} else if (layout === this.NEW_PWD_FIELD) {
 				newData = {
