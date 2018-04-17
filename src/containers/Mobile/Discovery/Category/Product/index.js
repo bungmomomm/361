@@ -290,9 +290,13 @@ class Product extends Component {
 	}
 
 	foreverBannerBlock() {
-		const { shared, dispatch } = this.props;
+		const { shared, dispatch, productCategory: { pcpData: { banner } } } = this.props;
+		const foreverBanner = {
+			...shared.foreverBanner,
+			banner
+		};
 
-		return <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />;
+		return <ForeverBanner {...foreverBanner} dispatch={dispatch} />;
 	}
 
 	tabBlock() {
@@ -520,13 +524,13 @@ const doAfterAnonymous = async (props) => {
 	if (!_.isEmpty(brandTitle)) {
 		pcpParam.fq = `brand_name:${brandTitle},${pcpParam.fq}`;
 	}
-	
+
 	const response = await dispatch(pcpActions.pcpAction({ token: cookies.get(userToken), query: pcpParam }));
-	
+
 	if (!_.isEmpty(categoryTitle)) {
 		const realCategoryTitle = _.chain(response).get('pcpData.info.title').value() || '';
 		const realCategoryTitleSlug = urlBuilder.setName(realCategoryTitle).name;
-		
+
 		if (!_.isEmpty(realCategoryTitle) && categoryTitle !== realCategoryTitleSlug) {
 			const newUrl = urlBuilder.setId(categoryId).setName(realCategoryTitle).buildPcp();
 			history.replace(newUrl);

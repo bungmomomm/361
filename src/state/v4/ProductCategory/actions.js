@@ -39,9 +39,28 @@ const pcpAction = ({ token, query = {}, loadNext = false }) => async (dispatch, 
 		return Promise.reject(__x(err));
 	}
 
-	const pcpData = {
+	let pcpData = {
 		...response.data.data
 	};
+
+	const basePromoUrl = _.chain(shared).get('serviceUrl.promo.url').value() || false;
+	if (basePromoUrl) {
+		const bannerPath = `${basePromoUrl}/categories/banner`;
+		const [err2, response2] = await to(request({
+			token,
+			path: bannerPath,
+			method: 'GET',
+			query: { category_id: query.category_id },
+			fullpath: true
+		}));
+
+		if (!err2) {
+			pcpData = {
+				...pcpData,
+				banner: _.chain(response2).get('data.data.banner').value() || []
+			};
+		}
+	}
 
 	if (loadNext) {
 		dispatch(pcpNextInit({
