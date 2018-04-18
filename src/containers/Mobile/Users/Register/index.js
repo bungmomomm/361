@@ -127,14 +127,14 @@ class Register extends Component {
 		// Response from register is success
 		if (response.data.id) {
 			// Check if we register via mobile.
-			const otpResponse = await to(dispatch(new users.userOtp(cookies.get(userToken), email, 'register')));
-			if (otpResponse[0]) {
-				return otpResponse[0];
-			}
-			this.setState({
-				countdownValue: _.chain(otpResponse[1]).get('countdown').value() || 60
-			});
 			if (registerWith === 'MOBILE') {
+				const otpResponse = await to(dispatch(new users.userOtp(cookies.get(userToken), email, 'register')));
+				if (otpResponse[0]) {
+					return otpResponse[0];
+				}
+				this.setState({
+					countdownValue: _.chain(otpResponse[1]).get('countdown').value() || 60
+				});
 				// Set state for OTP
 				this.setView('VALIDATE_OTP');
 				return false;
