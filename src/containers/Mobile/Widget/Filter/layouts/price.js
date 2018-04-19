@@ -18,8 +18,8 @@ class Price extends PureComponent {
 				max: parseInt(props.range.max, 10),
 			},
 			selectedRange: {
-				min: props.selected_range !== undefined ? parseInt(props.selected_range.min, 10) : parseInt(props.range.min, 10),
-				max: props.selected_range !== undefined ? parseInt(props.selected_range.max, 10) : parseInt(props.range.max, 10),
+				min: props.selected !== undefined ? parseInt(props.selected.min, 10) : parseInt(props.range.min, 10),
+				max: props.selected !== undefined ? parseInt(props.selected.max, 10) : parseInt(props.range.max, 10),
 			},
 			custom: false,
 			data: props.data || [],
