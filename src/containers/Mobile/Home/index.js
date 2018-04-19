@@ -145,25 +145,41 @@ class Home extends Component {
 		const segment = home.activeSegment.key;
 		const featuredBanner = _.chain(home).get(`allSegmentData.${segment}`).get('heroBanner');
 		if (!featuredBanner.isEmpty().value()) {
-			const images = featuredBanner.value()[0].images;
-			let link = featuredBanner.value()[0].link.target;
+			const bannerData = featuredBanner.value();
+			const images = bannerData[0].images;
+			let link = bannerData[0].link.target;
 			if (link !== '') {
-				const promotion = featuredBanner.value()[0].impression;
+				const promotion = bannerData[0].impression;
 				link = this.urlPromotionEnhancer(link, promotion.id, promotion.name, promotion.creative, promotion.position);
 			}
+			
+			const isStatic = bannerData[0].link.type === 'url_web';
 			return (
-				<Link
-					to={link}
-					onClick={
+				isStatic ? 
+					<a 
+						href={link} 
+						onClick={
 						() => {
 							sendLocation(link);
 						}
 					}
-				>
-					<div>
-						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
-					</div>
-				</Link>
+					>
+						<div>
+							<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
+						</div>
+					</a> : 
+					<Link
+						to={link}
+						onClick={
+						() => {
+							sendLocation(link);
+						}
+					}
+					>
+						<div>
+							<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
+						</div>
+					</Link>
 			);
 		}
 		
@@ -286,24 +302,39 @@ class Home extends Component {
 				<div className='margin--medium-v'>
 					{
 						datas.value().map(({ images, link, impression }, c) => {
+							const isStatic = link.type === 'url_web';
 							let url = link.target;
 							if (url !== '') {
 								url = this.urlPromotionEnhancer(url, impression.id, impression.name, impression.creative, impression.position);
 							}
 							return (
-								<Link
-									to={url || '/'}
-									key={c}
-									onClick={
-										() => {
-											sendLocation(url);
+								isStatic ? 
+									<a
+										href={url || '/'}
+										key={c}
+										onClick={
+											() => {
+												sendLocation(url);
+											}
 										}
-									}
-								>
-									<div>
-										<Image lazyload alt='banner' src={images.thumbnail} />
-									</div>
-								</Link>
+									>
+										<div>
+											<Image lazyload alt='banner' src={images.thumbnail} />
+										</div>
+									</a> :
+									<Link
+										to={url || '/'}
+										key={c}
+										onClick={
+											() => {
+												sendLocation(url);
+											}
+										}
+									>
+										<div>
+											<Image lazyload alt='banner' src={images.thumbnail} />
+										</div>
+									</Link>
 							);
 						})
 					}
