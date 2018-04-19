@@ -23,14 +23,23 @@ const foreverBanner = (params) => {
 	const disableCloseFilter = (close_button.fg_show === '0');
 
 	let content = <div>Loading...</div>;
+	console.log(link);
 	if (!isHide) {
 		content = (
-			<Link to={link.target}>
+			link.type === 'url_web' ? 
+				(<a href={link.target}>
+					<div className='margin--medium-v'>
+						<div className='font-large' style={inlineStyle}>{text.text1}</div>
+						<p style={inlineStyle}>{text.text2}</p>
+					</div>
+				</a>)
+			:
+			(<Link to={link.target}>
 				<div className='margin--medium-v'>
 					<div className='font-large' style={inlineStyle}>{text.text1}</div>
 					<p style={inlineStyle}>{text.text2}</p>
 				</div>
-			</Link>
+			</Link>)
 		);
 	}
 	return (
