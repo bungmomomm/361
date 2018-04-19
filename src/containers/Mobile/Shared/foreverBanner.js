@@ -23,7 +23,6 @@ const foreverBanner = (params) => {
 	const disableCloseFilter = (close_button.fg_show === '0');
 
 	let content = <div>Loading...</div>;
-	console.log(link);
 	if (!isHide) {
 		content = (
 			link.type === 'url_web' ? 
