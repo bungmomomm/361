@@ -46,7 +46,7 @@ class Price extends PureComponent {
 
 	onApply(e) {
 		const { data, selectedRange, custom } = this.state;
-		const { onApply } = this.props;
+		const { onApply, range } = this.props;
 		const result = _.filter(data, (facetData) => {
 			return (facetData.is_selected === 1);
 		});
@@ -56,7 +56,18 @@ class Price extends PureComponent {
 				facetdisplay: `${utils.toIdr(selectedRange.min)} - ${utils.toIdr(selectedRange.max)}`
 			});
 		}
-		return onApply(e, result, false);
+		
+		let thirdParameter = false;
+		// Add the third parameter if selected range is not equal with min and max props we defined before
+		if ((range.min !== selectedRange.min) && (range.max !== selectedRange.max)) {
+			thirdParameter = {
+				...selectedRange,
+				facetdisplay: `${utils.toIdr(selectedRange.min)} - ${utils.toIdr(selectedRange.max)}`
+			};
+		}
+		
+		return onApply(e, result, thirdParameter);
+  
 	}
 
 	updateRange(value, changes) {
