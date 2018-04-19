@@ -12,11 +12,13 @@ import {
 } from './gtmPayloadBuilder';
 import {
 	sendGtm,
-	sendLucidWork
+	sendLucidWork,
+	sendLocation
 } from './send';
 
 export default {
 	sendGtm,
+	sendLocation,
 	sendLucidWork,
 	TrackingRequest,
 	homepageViewBuilder,
