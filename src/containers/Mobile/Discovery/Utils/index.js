@@ -15,9 +15,14 @@ const mapProducts = (products, comments, lovelists) => {
 			product.lovelistTotal = lovelistExists.total;
 			product.lovelistStatus = lovelistExists.status;
 		}
+		const isMds = product.store_id && process.env.MDS_STORE_IDS.includes(product.store_id) 
+						&& product.variant_ids && product.variant_ids.length > 0;		
+		const url = isMds ? urlBuilder.buildPdp(product.product_title, product.variant_ids[0], true) 
+						: urlBuilder.buildPdp(product.product_title, product.product_id);
+
 		return {
 			...product,
-			url: urlBuilder.buildPdp(product.product_title, product.product_id),
+			url,
 			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`
 		};
 	});
@@ -30,9 +35,14 @@ const mapPromoProducts = (products, lovelists) => {
 		const productFound = !_.isEmpty(lovelists.bulkieCountProducts) ? _.find(lovelists.bulkieCountProducts, { product_id: product.product_id }) : false;
 		product.lovelistStatus = 0;
 		if (productFound) product.lovelistStatus = productFound.status;
+		const isMds = product.store_id && process.env.MDS_STORE_IDS.includes(product.store_id) 
+						&& product.variant_ids && product.variant_ids.length > 0;		
+		const url = isMds ? urlBuilder.buildPdp(product.product_title, product.variant_ids[0], true) 
+						: urlBuilder.buildPdp(product.product_title, product.product_id);
+
 		return {
 			...product,
-			url: urlBuilder.buildPdp(product.product_title, product.product_id)
+			url
 		};
 	});
 

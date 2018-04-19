@@ -51,8 +51,7 @@ const doAfterAnonymous = async (props) => {
 		// check product mds or not
 		const { seller, title, variants } = detail;
 		if (typeof seller !== 'undefined' && process.env.MDS_STORE_IDS.includes(seller.seller_id) && variants.length > 0) {
-			const mdsUrl = process.env.MDS_URL + urlBuilder.buildPdp(title, variants[0].id, true);
-			window.location.replace(mdsUrl);
+			window.location.replace(urlBuilder.buildPdp(title, variants[0].id, true));
 		}
 
 		trackPdpView(response, props);
