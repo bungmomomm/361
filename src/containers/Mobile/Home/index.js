@@ -152,7 +152,7 @@ class Home extends Component {
 				link = this.urlPromotionEnhancer(link, promotion.id, promotion.name, promotion.creative, promotion.position);
 			}
 			
-			const isStatic = bannerData[0].link.type === 'static';
+			const isStatic = bannerData[0].link.type === 'url web';
 			return (
 				isStatic ? <a href={link}>
 					<div>
@@ -271,7 +271,7 @@ class Home extends Component {
 				<div className='margin--medium-v'>
 					{
 						datas.value().map(({ images, link, impression }, c) => {
-							const isStatic = link.type === 'static';
+							const isStatic = link.type === 'url web';
 							let url = link.target;
 							if (url !== '') {
 								url = this.urlPromotionEnhancer(url, impression.id, impression.name, impression.creative, impression.position);
