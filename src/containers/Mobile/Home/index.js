@@ -144,13 +144,21 @@ class Home extends Component {
 		const segment = home.activeSegment.key;
 		const featuredBanner = _.chain(home).get(`allSegmentData.${segment}`).get('heroBanner');
 		if (!featuredBanner.isEmpty().value()) {
-			const images = featuredBanner.value()[0].images;
-			let link = featuredBanner.value()[0].link.target;
+			const bannerData = featuredBanner.value();
+			const images = bannerData[0].images;
+			let link = bannerData[0].link.target;
 			if (link !== '') {
-				const promotion = featuredBanner.value()[0].impression;
+				const promotion = bannerData[0].impression;
 				link = this.urlPromotionEnhancer(link, promotion.id, promotion.name, promotion.creative, promotion.position);
 			}
+			
+			const isStatic = bannerData[0].link.type === 'static';
 			return (
+				isStatic ? <a href={link}>
+					<div>
+						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
+					</div>
+				</a> : 
 				<Link
 					to={link}
 				>
