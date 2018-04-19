@@ -143,7 +143,8 @@ class HashtagsDetails extends Component {
 							style={{
 								marginTop: '-2px',
 								marginLeft: '-1px',
-								width: 'calc(100% + 4px)'
+								width: 'calc(100% + 4px)',
+								pointerEvents: 'none'
 							}}
 						>
 							<InstagramEmbed
