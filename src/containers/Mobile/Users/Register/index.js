@@ -127,14 +127,14 @@ class Register extends Component {
 		// Response from register is success
 		if (response.data.id) {
 			// Check if we register via mobile.
-			const otpResponse = await to(dispatch(new users.userOtp(cookies.get(userToken), email, 'register')));
-			if (otpResponse[0]) {
-				return otpResponse[0];
-			}
-			this.setState({
-				countdownValue: _.chain(otpResponse[1]).get('countdown').value() || 60
-			});
 			if (registerWith === 'MOBILE') {
+				const otpResponse = await to(dispatch(new users.userOtp(cookies.get(userToken), email, 'register')));
+				if (otpResponse[0]) {
+					return otpResponse[0];
+				}
+				this.setState({
+					countdownValue: _.chain(otpResponse[1]).get('countdown').value() || 60
+				});
 				// Set state for OTP
 				this.setView('VALIDATE_OTP');
 				return false;
@@ -376,7 +376,7 @@ class Register extends Component {
 					<Input {...inputPasswordAttribute} />
 				</div>
 				<div className='margin--medium-v text-left'>
-					<p>Dengan membuka Akun, Anda telah membaca, mengerti dan menyetujui <Link to='/'>Syarat & Ketentuan dan Kebijakan Privasi</Link> MatahariMall.com</p>
+					<p>Dengan membuka Akun, Anda telah membaca, mengerti dan menyetujui <a href='https://super.mataharimall.com/static/cf/terms-conditions.html'>Syarat & Ketentuan</a> dan <a href='https://super.mataharimall.com/static/cf/privacy-policy.html'>Kebijakan Privasi</a> MatahariMall.com</p>
 				</div>
 				<div className='margin--medium-v'>
 					<Button {...buttonRegisterAttribute}>Daftar</Button>

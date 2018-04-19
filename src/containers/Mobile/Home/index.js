@@ -18,7 +18,8 @@ import {
 	TrackingRequest,
 	homepageViewBuilder,
 	impressionsPushedBuilder,
-	sendGtm
+	sendGtm,
+	sendLocation
 } from '@/utils/tracking';
 import { urlBuilder } from '@/utils';
 import cookiesLabel from '@/data/cookiesLabel';
@@ -154,18 +155,31 @@ class Home extends Component {
 			
 			const isStatic = bannerData[0].link.type === 'url_web';
 			return (
-				isStatic ? <a href={link}>
-					<div>
-						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
-					</div>
-				</a> : 
-				<Link
-					to={link}
-				>
-					<div>
-						<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
-					</div>
-				</Link>
+				isStatic ? 
+					<a 
+						href={link} 
+						onClick={
+						() => {
+							sendLocation(link);
+						}
+					}
+					>
+						<div>
+							<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
+						</div>
+					</a> : 
+					<Link
+						to={link}
+						onClick={
+						() => {
+							sendLocation(link);
+						}
+					}
+					>
+						<div>
+							<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
+						</div>
+					</Link>
 			);
 		}
 		
@@ -202,18 +216,28 @@ class Home extends Component {
 						{ header }
 						<Grid split={3} bordered>
 							{
-								data.data.map(({ images, pricing, path, product_id, product_title }, e) => (
-									<div key={e}>
-										<Link to={`${urlBuilder.buildPdp(product_title, product_id)}`}>
-											<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
-											<div className={styles.btnThumbnail}>
-												<Button transparent color='secondary' size='small'>
-													{pricing.formatted.effective_price}
-												</Button>
-											</div>
-										</Link>
-									</div>
-								))
+								data.data.map(({ images, pricing, path, product_id, product_title }, e) => {
+									const pdpUriBuilder = `${urlBuilder.buildPdp(product_title, product_id)}`;
+									return (
+										<div key={e}>
+											<Link
+												to={pdpUriBuilder}
+												onClick={
+													() => {
+														sendLocation(pdpUriBuilder);
+													}
+												}
+											>
+												<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
+												<div className={styles.btnThumbnail}>
+													<Button transparent color='secondary' size='small'>
+														{pricing.formatted.effective_price}
+													</Button>
+												</div>
+											</Link>
+										</div>
+									);
+								})
 							}
 						</Grid>
 					</div>
@@ -245,10 +269,17 @@ class Home extends Component {
 							datanya.images.map((gambar, e) => {
 								const embedUrl = _.chain(gambar).get('embed_url').value();
 								const icode = (embedUrl.substr(embedUrl.indexOf('/p/')).split('/') || [])[2];
-
+								const hashtagLink = `${detailHashTag}/${gambar.content_id}/${icode || ''}`;
 								return (
 									<div key={e}>
-										<Link to={`${detailHashTag}/${gambar.content_id}/${icode || ''}`}>
+										<Link
+											to={hashtagLink}
+											onClick={
+												() => {
+													sendLocation(hashtagLink);
+												}
+											}
+										>
 											<Image lazyload shape='square' alt='thumbnail' src={gambar.images.thumbnail} />
 										</Link>
 									</div>
@@ -281,6 +312,11 @@ class Home extends Component {
 									<a
 										href={url || '/'}
 										key={c}
+										onClick={
+											() => {
+												sendLocation(url);
+											}
+										}
 									>
 										<div>
 											<Image lazyload alt='banner' src={images.thumbnail} />
@@ -289,6 +325,11 @@ class Home extends Component {
 									<Link
 										to={url || '/'}
 										key={c}
+										onClick={
+											() => {
+												sendLocation(url);
+											}
+										}
 									>
 										<div>
 											<Image lazyload alt='banner' src={images.thumbnail} />
@@ -325,6 +366,11 @@ class Home extends Component {
 								<Link
 									to={url || '/'}
 									key={d}
+									onClick={
+										() => {
+											sendLocation(url);
+										}
+									}
 								>
 									<div>
 										<Image lazyload alt='banner' src={images.thumbnail} />
@@ -359,7 +405,14 @@ class Home extends Component {
 									.setCategoryId(this.props.home.activeSegment.id).buildFeatureBrand();
 								return (
 									<div className={styles.brandsImage} key={e}>
-										<Link to={url} >
+										<Link
+											to={url}
+											onClick={
+												() => {
+													sendLocation(url);
+												}
+											}
+										>
 											<Image lazyload alt='thumbnail' src={brand.images.thumbnail} />
 										</Link>
 									</div>

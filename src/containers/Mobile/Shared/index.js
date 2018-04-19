@@ -4,7 +4,7 @@ import to from 'await-to-js';
 import { actions } from '@/state/v4/Shared';
 import { actions as account } from '@/state/v4/User';
 import { actions as initAction } from '@/state/v4/Home';
-import { setUserCookie, setUniqeCookie, setReferrenceCookie, initUTMProcess, removeUserCookie } from '@/utils';
+import { setUserCookie, setUniqeCookie, setSource, setReferrenceCookie, initUTMProcess, removeUserCookie, isMobile } from '@/utils';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
 import Snackbar from '@/containers/Mobile/Shared/snackbar';
@@ -15,6 +15,7 @@ import {
 	userToken,
 	userRfToken,
 	shouldRefreshToken,
+	userSource,
 	uniqueid
 } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
@@ -51,6 +52,9 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 			this.currentScrollPos = 0;
 			this.persistSnackStyle = false;
 			if (!window.surfs) window.surfs = [];
+			if (!this.props.cookies.get(userSource)) {
+				setSource(this.props.cookies, isMobile());
+			}
 		}
 
 		componentWillMount() {
