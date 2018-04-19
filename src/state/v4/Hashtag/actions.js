@@ -152,10 +152,15 @@ const initHashtags = (token, hash) => async (dispatch, getState) => {
 		dispatch(actions.itemsHasError({ hasError: errInit }));
 		return Promise.reject(__x(new Error('Maaf, gagal memuat data.')));
 	}
+
+	const verifyHash = (_.chain(respInit).get('data.data.hashtags').value() || []).filter((tag) => {
+		return tag.hashtag === hash.toLowerCase();
+	});
+
 	dispatch(actions.itemsActiveHashtag({
 		active: {
-			tag: hash || respPromo.data.data.hashtag.hashtag,
-			node: hash ? hash.replace('#', '').toLowerCase() : respPromo.data.data.hashtag.hashtag.replace('#', '').toLowerCase()
+			tag: hash && verifyHash.length ? hash : respPromo.data.data.hashtag.hashtag,
+			node: hash && verifyHash.length ? hash.replace('#', '').toLowerCase() : respPromo.data.data.hashtag.hashtag.replace('#', '').toLowerCase()
 		}
 	}));
 	dispatch(actions.initFetchDataSuccess({
@@ -169,10 +174,17 @@ const initHashtags = (token, hash) => async (dispatch, getState) => {
 	return dispatch(itemsFetchData({ token, query }));
 };
 
+const mutateState = (data) => (dispatch) => {
+	dispatch(actions.itemsIsLoading(data));
+
+	return Promise.resolve(true);
+};
+
 export default {
 	itemsFetchData,
 	itemsActiveHashtag,
 	switchViewMode,
 	getQuery,
-	initHashtags
+	initHashtags,
+	mutateState
 };
