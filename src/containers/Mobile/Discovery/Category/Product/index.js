@@ -290,13 +290,9 @@ class Product extends Component {
 	}
 
 	foreverBannerBlock() {
-		const { shared, dispatch, productCategory: { pcpData: { banner } } } = this.props;
-		const foreverBanner = {
-			...shared.foreverBanner,
-			banner
-		};
+		const { shared, dispatch } = this.props;
 
-		return <ForeverBanner {...foreverBanner} dispatch={dispatch} />;
+		return <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} />;
 	}
 
 	tabBlock() {

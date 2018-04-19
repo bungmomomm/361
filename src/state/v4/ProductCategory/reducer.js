@@ -12,8 +12,7 @@ const initialState = {
 		info: [],
 		facets: [],
 		sorts: [],
-		products: [],
-		banner: []
+		products: []
 	},
 	query: {
 		category_id: '',

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import { Notification, Image } from '@/components/mobile';
+import { Notification } from '@/components/mobile';
 import { actions as sharedActions } from '@/state/v4/Shared';
 
 const onClose = (dispatch) => {
@@ -9,7 +9,7 @@ const onClose = (dispatch) => {
 };
 
 const foreverBanner = (params) => {
-	const { close_button, text, show, dispatch, link, banner } = params;
+	const { close_button, text, show, dispatch, link } = params;
 	const isHide = _.isEmpty(text.text1) && _.isEmpty(text.text2);
 
 	if (isHide) {
@@ -34,20 +34,14 @@ const foreverBanner = (params) => {
 		);
 	}
 	return (
-		<div>
-			<Notification
-				color='yellow'
-				show={show}
-				onClose={() => onClose(dispatch)}
-				disableClose={disableCloseFilter}
-			>
-				{content}
-			</Notification>
-
-			{_.chain(banner).get('image.thumbnail').value() && (<div>
-				<Image lazyload src={banner.image.thumbnail} />
-			</div>)}
-		</div>
+		<Notification
+			color='yellow'
+			show={show}
+			onClose={() => onClose(dispatch)}
+			disableClose={disableCloseFilter}
+		>
+			{content}
+		</Notification>
 	);
 };
 
