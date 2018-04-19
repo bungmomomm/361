@@ -8,7 +8,7 @@
   ],
   "head.ref": [
     {
-      "pattern": "^(feature|fix|docs|style|refactor|perf|update|bug|message)/",
+      "pattern": "^(feature|fix|docs|style|refactor|perf|update|bug|message|sanity)/",
       "message": "Your branch name is invalid"
     }
   ]
