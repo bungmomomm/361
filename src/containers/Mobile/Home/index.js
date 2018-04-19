@@ -271,19 +271,29 @@ class Home extends Component {
 				<div className='margin--medium-v'>
 					{
 						datas.value().map(({ images, link, impression }, c) => {
+							const isStatic = link.type === 'static';
 							let url = link.target;
 							if (url !== '') {
 								url = this.urlPromotionEnhancer(url, impression.id, impression.name, impression.creative, impression.position);
 							}
 							return (
-								<Link
-									to={url || '/'}
-									key={c}
-								>
-									<div>
-										<Image lazyload alt='banner' src={images.thumbnail} />
-									</div>
-								</Link>
+								isStatic ? 
+									<a
+										href={url || '/'}
+										key={c}
+									>
+										<div>
+											<Image lazyload alt='banner' src={images.thumbnail} />
+										</div>
+									</a> :
+									<Link
+										to={url || '/'}
+										key={c}
+									>
+										<div>
+											<Image lazyload alt='banner' src={images.thumbnail} />
+										</div>
+									</Link>
 							);
 						})
 					}
