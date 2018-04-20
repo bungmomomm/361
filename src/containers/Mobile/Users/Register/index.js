@@ -86,6 +86,7 @@ class Register extends Component {
 		if (err) {
 			return err;
 		}
+		window.sessionStorage.removeItem('cacheToken');
 		const userProfile = JSON.stringify({ name: response.userprofile.name, avatar: response.userprofile.avatar });
 		setUserCookie(this.props.cookies, response.token, false, userProfile);
 		await dispatch(new users.afterLogin(cookies.get(userToken)));
