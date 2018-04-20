@@ -132,6 +132,11 @@ class Detail extends Component {
 			lovelistProductId: null,
 			focusedProductId: ''
 		};
+		this.loadingView = (
+			<div style={{ margin: '20px auto 20px auto' }}>
+				<Spinner />
+			</div>
+		);
 	}
 	componentWillMount() {
 		window.scroll(0, 0);
@@ -144,7 +149,8 @@ class Detail extends Component {
 				query: {
 					brand_id: params.brandId || 0,
 					...qs
-				}
+				},
+				type: 'init'
 			};
 			this.setState({
 				query: data.query
@@ -177,7 +183,8 @@ class Detail extends Component {
 				query: {
 					brand_id: params.brandId || 0,
 					...qs
-				}
+				},
+				type: 'init'
 			};
 			this.setState({
 				query: data.query
@@ -211,9 +218,9 @@ class Detail extends Component {
 
 	}
 
-	componentWillUnmount() {
+	async componentWillUnmount() {
 		const { dispatch } = this.props;
-		dispatch(brandAction.brandProductCleanUp());
+		await dispatch(brandAction.brandProductCleanUp());
 	}
 
 	async onApply(e, fq, closeFilter) {
@@ -439,7 +446,7 @@ class Detail extends Component {
 	}
 
 	render() {
-		const { cookies, shared } = this.props;
+		const { cookies, shared, loading } = this.props;
 		const { showFilter } = this.state;
 
 		const navigationAttribute = {
@@ -469,8 +476,12 @@ class Detail extends Component {
 									{this.renderBenner()}
 									{this.state.styleHeader && this.renderFilter()}
 								</div>
-								{this.renderTotalProduct()}
-								{this.renderProduct()}
+								{loading ? this.loadingView : (
+									<div>
+										{this.renderTotalProduct()}
+										{this.renderProduct()}
+									</div>
+								)}
 								{this.props.scroller.loading && (<div style={{ paddingTop: '20px' }}> <Spinner /></div>)}
 							</div>
 						</div>
@@ -498,7 +509,8 @@ const mapStateToProps = (state) => {
 		...state,
 		isFiltered,
 		brands,
-		viewMode: state.brands.viewMode
+		viewMode: state.brands.viewMode,
+		loading: state.brands.loading_products
 	};
 };
 
