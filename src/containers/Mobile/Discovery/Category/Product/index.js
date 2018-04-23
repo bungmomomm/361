@@ -532,9 +532,8 @@ const doAfterAnonymous = async (props) => {
 	if (!_.isEmpty(brandTitle)) {
 		pcpParam.fq = `brand_name:${brandTitle},${pcpParam.fq}`;
 	}
-	
+
 	const response = await dispatch(pcpActions.pcpAction({ token: cookies.get(userToken), query: pcpParam }));
-	
 	const pcpStatus = _.chain(response).get('pcpStatus').value() || '';
 	const productIdList = _.map(response.pcpData.products, 'product_id') || [];
 	if (pcpStatus === 'success' && productIdList.length > 0) {
@@ -542,11 +541,11 @@ const doAfterAnonymous = async (props) => {
 		await dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
 		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
 	}
-	
+  
 	if (!_.isEmpty(categoryTitle)) {
 		const realCategoryTitle = _.chain(response).get('pcpData.info.title').value() || '';
 		const realCategoryTitleSlug = urlBuilder.setName(realCategoryTitle).name;
-		
+
 		if (!_.isEmpty(realCategoryTitle) && categoryTitle !== realCategoryTitleSlug) {
 			const newUrl = urlBuilder.setId(categoryId).setName(realCategoryTitle).buildPcp();
 			history.replace(newUrl);

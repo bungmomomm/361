@@ -422,8 +422,9 @@ class Detail extends Component {
 				</span>
 			),
 			center: !this.state.styleHeader && _.chain(searchData).get('info.title').value(),
-			right: <Share title={title} url={url} />,
-			rows: !this.state.styleHeader && this.renderFilter()
+			right: <Share title={title} url={url} subHeaderWrapper={this.subHeaderWrapper} />,
+			rows: !this.state.styleHeader && this.renderFilter(),
+			subHeaderWrapper: (r) => { this.subHeaderWrapper = r; }
 		};
 		return <Header.Modal className={this.state.styleHeader ? styles.headerClear : ''} {...headerComponent} />;
 	}
@@ -485,7 +486,6 @@ class Detail extends Component {
 				)}
 			</div>
 		);
-
 	}
 }
 
