@@ -22,6 +22,7 @@ const mapProducts = (products, comments, lovelists) => {
 
 		return {
 			...product,
+			isMds,
 			url,
 			commentUrl: `/${urlBuilder.buildPcpCommentUrl(product.product_id)}`
 		};
@@ -42,6 +43,7 @@ const mapPromoProducts = (products, lovelists) => {
 
 		return {
 			...product,
+			isMds,
 			url
 		};
 	});
