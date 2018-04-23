@@ -25,12 +25,20 @@ const foreverBanner = (params) => {
 	let content = <div>Loading...</div>;
 	if (!isHide) {
 		content = (
-			<Link to={link.target}>
+			link.type === 'url_web' ? 
+				(<a href={link.target}>
+					<div className='margin--medium-v'>
+						<div className='font-large' style={inlineStyle}>{text.text1}</div>
+						<p style={inlineStyle}>{text.text2}</p>
+					</div>
+				</a>)
+			:
+			(<Link to={link.target}>
 				<div className='margin--medium-v'>
 					<div className='font-large' style={inlineStyle}>{text.text1}</div>
 					<p style={inlineStyle}>{text.text2}</p>
 				</div>
-			</Link>
+			</Link>)
 		);
 	}
 	return (
