@@ -19,10 +19,9 @@ import C from '@/constants';
 import styles from './brands.scss';
 import { actions } from '@/state/v4/Brand';
 import Shared from '@/containers/Mobile/Shared';
-import { urlBuilder } from '@/utils';
+import { urlBuilder, debounce } from '@/utils';
 import { userToken, userSource, pageReferrer, isLogin } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
-import _ from 'lodash';
 
 @handler
 class Brands extends Component {
@@ -96,15 +95,6 @@ class Brands extends Component {
 			this.cancelSearch();
 		}
 	}
-
-
-	debounce = (...args) => {
-		const debounced = _.debounce(...args);
-		return (e) => {
-			e.persist();
-			return debounced(e);
-		};
-	};
 
 	cancelSearch() {
 		this.inputElement.value = '';
@@ -257,7 +247,7 @@ class Brands extends Component {
 									placeholder='cari nama brand'
 									onFocus={() => this.onFocus()}
 									onBlur={(e) => this.onBlur(e)}
-									onChange={this.debounce(this.onChange, 500)}
+									onChange={debounce(this.onChange, 500)}
 									inputRef={(el) => { this.inputElement = el; }}
 								/>
 							</Level.Item>
@@ -305,9 +295,9 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-	const { dispatch, cookies, shared, home } = props;
+	const { dispatch, cookies, shared, home, brands } = props;
 	const activeSegment = home.segmen.filter((e) => e.key === shared.current)[0];
-	await dispatch(new actions.brandListAction(cookies.get(userToken), activeSegment.id));
+	if (!brands.brand_list) await dispatch(new actions.brandListAction(cookies.get(userToken), activeSegment.id));
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Brands, doAfterAnonymous)));

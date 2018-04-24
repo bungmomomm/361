@@ -11,12 +11,13 @@ import { Promise } from 'es6-promise';
 import { userToken, isLogin } from '@/data/cookiesLabel';
 import Switch from 'react-switch';
 import handler from '@/containers/Mobile/Shared/handler';
+import _ from 'lodash';
 
 @handler
 class Address extends Component {
 
 	state = {
-		allowSubmit: false,
+		allowSubmit: true,
 		showSelect: {
 			city: false,
 			district: false
@@ -35,10 +36,39 @@ class Address extends Component {
 		map: {
 			display: false,
 			address: '',
-			lat: -6.24800035920893,
-			lng: 106.81144165039063
+			lat: 0,
+			lng: 0
+		},
+		marked: {
+			lat: 0,
+			lng: 0
+		},
+		errors: {
+			address_label: false,
+			phone: false,
+			fullname: false,
+			city_id: false,
+			district_id: false,
+			zipcode: false,
+			address: false
 		},
 		navigating: false
+	};
+
+	componentWillUnmount() {
+		const { dispatch } = this.props;
+		dispatch(actions.mutateState({ polygon: false, validMarker: false }));
+	}
+
+	onInputChange = (label) => {
+		if (this.state.errors[label]) {
+			this.setState({
+				errors: {
+					...this.state.errors,
+					[label]: false
+				}
+			});
+		}
 	};
 
 	onChange = (v, which = 'city') => {
@@ -81,6 +111,10 @@ class Address extends Component {
 						disabled: {
 							...this.state.disabled,
 							district: false
+						},
+						marked: {
+							lat: 0,
+							lng: 0
 						}
 					});
 
@@ -88,6 +122,30 @@ class Address extends Component {
 				})();
 			}
 		}
+
+		// if (which === 'district') {
+		// 	const { dispatch } = this.props;
+		// 	const district = v.split('_')[1].toLowerCase().replace(/\W+(.)/g, (match, chr) => chr.toUpperCase());
+		// 	const selectedPolygon = _.find(Polygon, district);
+        //
+		// 	(async () => {
+		// 		await dispatch(actions.mutateState({
+		// 			polygon: selectedPolygon ? selectedPolygon[district] : false
+		// 		}));
+        //
+		// 		this.setState({
+		// 			map: {
+		// 				...this.state.map,
+		// 				lat: selectedPolygon ? selectedPolygon[district].center.lat : 0,
+		// 				lng: selectedPolygon ? selectedPolygon[district].center.lng : 0
+		// 			},
+		// 			marked: {
+		// 				lat: 0,
+		// 				lng: 0
+		// 			}
+		// 		});
+		// 	})();
+		// }
 	};
 
 	onCitySearch = (el) => {
@@ -98,7 +156,25 @@ class Address extends Component {
 	};
 
 	onSubmit = () => {
-		this.formsy.submit();
+		const err = {};
+		this.formsy.prevInputNames.map((v, k) => {
+			if (!this[v].getValue()) {
+				err[v] = 'This field is required';
+			}
+			return null;
+		});
+
+		if (_.size(err)) {
+			this.formsy.updateInputsWithError(err);
+			this.setState({
+				errors: { ...this.state.errors, ...err }
+			});
+			return null;
+		} else if (!this.formsy.state.isValid) {
+			return null;
+		}
+
+		return this.formsy.submit();
 	};
 
 	handleLocationChange = ({ position, address }) => {
@@ -121,32 +197,22 @@ class Address extends Component {
 		});
 	};
 
-	disableButton = () => {
-		this.setState({ allowSubmit: false });
-	};
-
-	enableButton = () => {
-		this.setState({ allowSubmit: true });
-	};
-
 	radioChange = (v) => {
 		this.setState({ default: v });
 	};
 
 	submit = async (model) => {
-		const { city_id } = model;
-		const splitr = city_id.split('_');
+		const { marked: { lat, lng } } = this.state;
 
 		model = {
 			...model,
-			province_id: splitr[0],
-			city_id: splitr[1],
-			type: this.state.type,
-			country_id: 1,
-			latitude: this.state.map.lat !== -6.24800035920893 ? this.state.map.lat.toString() : '',
-			longitude: this.state.map.lng !== 106.81144165039063 ? this.state.map.lng.toString() : '',
-			default: this.state.default
+			latitude: lat ? lat.toString() : '',
+			longitude: lng ? lng.toString() : '',
+			default: this.state.default,
+			district_id: parseInt(model.district_id.split('_')[0], 10)
 		};
+
+		delete model.city_id;
 
 		const { dispatch, cookies, history } = this.props;
 		this.setState({ submitting: true });
@@ -165,66 +231,75 @@ class Address extends Component {
 	};
 
 	toggleMap = () => {
-		if (navigator && navigator.geolocation) {
-			this.setState({
-				navigating: true
-			});
-
-			const timeout = setTimeout(() => {
-				this.justToggle();
-
-				this.setState({
-					navigating: false
-				});
-			}, 30000);
-
-			navigator.geolocation.getCurrentPosition(
-				(pos) => {
-					clearTimeout(timeout);
-					const crd = pos.coords;
-					this.setState({
-						map: {
-							...this.state.map,
-							display: !this.state.map.display,
-							lat: crd.latitude,
-							lng: crd.longitude
-						},
-						navigating: false
-					});
-				},
-				(err) => {
-					this.setState({
-						navigating: false
-					});
-
-					clearTimeout(timeout);
-					this.justToggle();
-				}
-			);
-
-			return false;
-		}
+		// if (navigator && navigator.geolocation) {
+		// 	this.setState({
+		// 		navigating: true
+		// 	});
+        //
+		// 	const timeout = setTimeout(() => {
+		// 		this.justToggle();
+        //
+		// 		this.setState({
+		// 			navigating: false
+		// 		});
+		// 	}, 30000);
+        //
+		// 	navigator.geolocation.getCurrentPosition(
+		// 		(pos) => {
+		// 			clearTimeout(timeout);
+		// 			const crd = pos.coords;
+		// 			this.setState({
+		// 				map: {
+		// 					...this.state.map,
+		// 					display: !this.state.map.display,
+		// 					lat: crd.latitude,
+		// 					lng: crd.longitude
+		// 				},
+		// 				navigating: false
+		// 			});
+		// 		},
+		// 		(err) => {
+		// 			this.setState({
+		// 				navigating: false
+		// 			});
+        //
+		// 			clearTimeout(timeout);
+		// 			this.justToggle();
+		// 		}
+		// 	);
+        //
+		// 	return false;
+		// }
 
 		this.justToggle();
 		return null;
 	};
 
 	resetMap = () => {
+		const { marked: { lat, lng }, map } = this.state;
+		const { address: { validMarker, polygon: { center } } } = this.props;
 		this.setState({
 			map: {
 				...this.state.map,
 				display: false,
-				lat: -6.24800035920893,
-				lng: 106.81144165039063
+				lat: !validMarker && !lat ? center.lat : !validMarker ? lat : map.lat,
+				lng: !validMarker && !lng ? center.lng : !validMarker ? lng : map.lng
 			}
 		});
 	};
 
 	saveMap = () => {
+		const { address: { validMarker } } = this.props;
+		const { map: { lat, lng } } = this.state;
+
 		this.setState({
 			map: {
 				...this.state.map,
 				display: false
+			},
+			marked: {
+				lat: validMarker ? lat : 0,
+				lng: validMarker ? lng : 0
 			}
 		});
 	};
@@ -233,7 +308,7 @@ class Address extends Component {
 		const { address } = this.props;
 		const cities = address.options.cities;
 		const districts = address.options.districts;
-
+		const { errors } = this.state;
 		const selected = {
 			city: cities.filter((obj) => {
 				return obj.value === this.state.selected.city;
@@ -246,9 +321,7 @@ class Address extends Component {
 		return (
 			<Page color='grey'>
 				<Form
-					onValidSubmit={this.submit}
-					onValid={this.enableButton}
-					onInvalid={this.disableButton}
+					onSubmit={this.submit}
 					ref={(form) => { this.formsy = form; }}
 				>
 					<Level className='padding--medium margin--medium-b bg--white' style={{ display: this.state.map.display ? 'none' : 'flex' }}>
@@ -274,8 +347,9 @@ class Address extends Component {
 					</Level>
 					<Level className='bg--white flex-column' style={{ display: this.state.map.display ? 'none' : 'flex' }}>
 						<div className='padding--medium-v'>
-							<label className={styles.label} htmlFor='address_label'>Simpan Sebagai</label>
+							<label className={styles.label} htmlFor='address_label'>Simpan Sebagai *</label>
 							<Input
+								ref={(r) => { this.address_label = r; }}
 								id='address_label'
 								name='address_label'
 								flat
@@ -284,13 +358,16 @@ class Address extends Component {
 									matchRegexp: /^[0-9A-Za-z,.\s]+$/
 								}}
 								validationError='Invalid character supplied'
+								error={errors.address_label}
+								onChange={() => this.onInputChange('address_label')}
 								disabled={this.state.submitting}
 								required
 							/>
 						</div>
 						<div className='padding--medium-v'>
-							<label className={styles.label} htmlFor='fullname'>Nama Penerima</label>
+							<label className={styles.label} htmlFor='fullname'>Nama Penerima *</label>
 							<Input
+								ref={(r) => { this.fullname = r; }}
 								id='fullname'
 								name='fullname'
 								flat
@@ -299,13 +376,16 @@ class Address extends Component {
 									matchRegexp: /^[0-9A-Za-z,.\s]+$/
 								}}
 								validationError='Invalid character supplied'
+								error={errors.fullname}
+								onChange={() => this.onInputChange('fullname')}
 								disabled={this.state.submitting}
 								required
 							/>
 						</div>
 						<div className='padding--medium-v'>
-							<label className={styles.label} htmlFor='telephone'>Nomor Handphone</label>
+							<label className={styles.label} htmlFor='telephone'>Nomor Handphone *</label>
 							<Input
+								ref={(r) => { this.phone = r; }}
 								id='phone'
 								name='phone'
 								flat
@@ -315,6 +395,8 @@ class Address extends Component {
 								}}
 								validationError='Invalid character supplied'
 								disabled={this.state.submitting}
+								error={errors.phone}
+								onChange={() => this.onInputChange('phone')}
 								required
 							/>
 						</div>
@@ -350,6 +432,7 @@ class Address extends Component {
 								defaultValue={selected.city.length ? selected.city[0].value : ''}
 							/>
 							<Input
+								ref={(r) => { this.city_id = r; }}
 								id='city_id'
 								name='city_id'
 								type='hidden'
@@ -358,12 +441,14 @@ class Address extends Component {
 								}}
 								validationError='This field is required'
 								value={this.state.selected.city}
+								error={errors.city_id}
+								onChange={() => this.onInputChange('city_id')}
 								required
 							/>
 						</div>
 
 						<div className='padding--medium-v'>
-							<label className={styles.label} htmlFor='district'>Kecamatan</label>
+							<label className={styles.label} htmlFor='district'>Kecamatan *</label>
 							<Level
 								className='flex-row border-bottom no-padding-h'
 								onClick={
@@ -392,21 +477,25 @@ class Address extends Component {
 								defaultValue={selected.district.length ? selected.district[0].value : ''}
 							/>
 							<Input
+								ref={(r) => { this.district_id = r; }}
 								id='district_id'
 								name='district_id'
 								type='hidden'
 								validations={{
-									matchRegexp: /^[1-9][0-9]*$/
+									matchRegexp: /^[0-9_\w\s,.]*$/
 								}}
 								validationError='This field is required'
 								value={this.state.selected.district}
+								error={errors.district_id}
+								onChange={() => this.onInputChange('district_id')}
 								required
 							/>
 						</div>
 
 						<div className='padding--medium-v'>
-							<label className={styles.label} htmlFor='zipcode'>Kode Pos</label>
+							<label className={styles.label} htmlFor='zipcode'>Kode Pos *</label>
 							<Input
+								ref={(r) => { this.zipcode = r; }}
 								id='zipcode'
 								name='zipcode'
 								flat
@@ -416,13 +505,16 @@ class Address extends Component {
 								}}
 								validationError='Invalid character supplied'
 								disabled={this.state.submitting}
+								error={errors.zipcode}
+								onChange={() => this.onInputChange('zipcode')}
 								required
 							/>
 						</div>
 
 						<div className='padding--medium-v'>
-							<label className={styles.label} htmlFor='address'>Address</label>
+							<label className={styles.label} htmlFor='address'>Address *</label>
 							<Input
+								ref={(r) => { this.address = r; }}
 								id='address'
 								name='address'
 								as='textarea'
@@ -431,6 +523,8 @@ class Address extends Component {
 								validationError='This field is required'
 								disabled={this.state.submitting}
 								required
+								error={errors.address}
+								onChange={() => this.onInputChange('address')}
 								style={{
 									background: 'transparent',
 									paddingLeft: '0px',
@@ -453,7 +547,7 @@ class Address extends Component {
 	};
 
 	render() {
-		const { history } = this.props;
+		const { history, address: { validMarker } } = this.props;
 		const HeaderPage = {
 			left: (
 				this.state.map.display ?
@@ -467,7 +561,7 @@ class Address extends Component {
 			center: this.state.map.display ? 'Tandai Lokasi Pengiriman' : 'Alamat Baru',
 			right: (
 				this.state.map.display ?
-					<Button onClick={this.saveMap}>
+					<Button onClick={this.saveMap} disabled={!validMarker}>
 						SIMPAN
 					</Button> :
 					<Button onClick={this.onSubmit} disabled={(!this.state.allowSubmit || this.state.submitting)}>

@@ -25,19 +25,31 @@ class Hashtags extends Component {
 			isFooterShow: false
 		};
 
-		this.checkedImage = [];
-		this.checkedStatus = [];
+		this.scrollY = 0;
 	}
 
 	componentDidMount() {
+		const { hashtag } = this.props;
+		this.scrollY = hashtag.scrollY;
+		window.scrollTo(0, this.scrollY);
+
+		addEventListener('scroll', this.handleScroll, true);
 		addEventListener('resize', this.handleResize, true);
 		addEventListener('hashchange', this.hashChange);
 	}
 
 	componentWillUnmount() {
+		const { dispatch } = this.props;
+		dispatch(actions.mutateState({ scrollY: this.scrollY }));
+
+		removeEventListener('scroll', this.handleScroll, true);
 		removeEventListener('resize', this.handleResize, true);
 		removeEventListener('hashchange', this.hashChange);
 	}
+
+	handleScroll = () => {
+		this.scrollY = window.scrollY;
+	};
 
 	handleResize = () => {
 		this.forceUpdate();

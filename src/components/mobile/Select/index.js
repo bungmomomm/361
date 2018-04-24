@@ -4,6 +4,7 @@ import Input from '../Input';
 import Picker from 'rmc-picker'; // Docs https://github.com/react-component/m-picker/tree/3.x
 import styles from './select.scss';
 import classNames from 'classnames';
+import { debounce } from '@/utils';
 
 const Select = (props) => {
 	if (!props.show) return null;
@@ -29,7 +30,7 @@ const Select = (props) => {
 							backgroundColor: '#efefef',
 							color: '#191919'
 						}}
-						onChange={onSearch}
+						onChange={debounce(onSearch, 500)}
 					/>
 				)}
 

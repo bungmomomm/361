@@ -13,7 +13,8 @@ const initialState = {
 		node: 'all'
 	},
 	hasError: false,
-	loading: false
+	loading: false,
+	scrollY: 0,
 };
 
 const { initFetchDataSuccess, itemsFetchDataSuccess, itemsIsLoading, itemsHasError, itemsActiveHashtag, switchViewMode }

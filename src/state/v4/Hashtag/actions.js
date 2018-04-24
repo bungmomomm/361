@@ -129,7 +129,7 @@ const initHashtags = (token, hash) => async (dispatch, getState) => {
 		dispatch(actions.itemsHasError({ hasError: errPromo }));
 		return Promise.reject(__x(errPromo));
 	} else if (_.chain(respPromo).get('data.data.hashtag.campaign_id').value() === undefined) {
-		return Promise.reject(__x('Whoops sorry, no feeds to show you for now.'));
+		return Promise.reject(__x('Tidak ada data untuk ditampilkan.'));
 	}
 
 	const baseUrl = _.chain(shared).get('serviceUrl.productsocial.url').value() || false;
@@ -152,10 +152,15 @@ const initHashtags = (token, hash) => async (dispatch, getState) => {
 		dispatch(actions.itemsHasError({ hasError: errInit }));
 		return Promise.reject(__x(new Error('Maaf, gagal memuat data.')));
 	}
+
+	const verifyHash = (_.chain(respInit).get('data.data.hashtags').value() || []).filter((tag) => {
+		return tag.hashtag === hash.toLowerCase();
+	});
+
 	dispatch(actions.itemsActiveHashtag({
 		active: {
-			tag: hash || respPromo.data.data.hashtag.hashtag,
-			node: hash ? hash.replace('#', '').toLowerCase() : respPromo.data.data.hashtag.hashtag.replace('#', '').toLowerCase()
+			tag: hash && verifyHash.length ? hash : respPromo.data.data.hashtag.hashtag,
+			node: hash && verifyHash.length ? hash.replace('#', '').toLowerCase() : respPromo.data.data.hashtag.hashtag.replace('#', '').toLowerCase()
 		}
 	}));
 	dispatch(actions.initFetchDataSuccess({
@@ -169,10 +174,17 @@ const initHashtags = (token, hash) => async (dispatch, getState) => {
 	return dispatch(itemsFetchData({ token, query }));
 };
 
+const mutateState = (data) => (dispatch) => {
+	dispatch(actions.itemsIsLoading(data));
+
+	return Promise.resolve(true);
+};
+
 export default {
 	itemsFetchData,
 	itemsActiveHashtag,
 	switchViewMode,
 	getQuery,
-	initHashtags
+	initHashtags,
+	mutateState
 };
