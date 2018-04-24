@@ -10,6 +10,7 @@ import { actions as productActions } from '@/state/v4/Product';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
 import { actions as shopBagActions } from '@/state/v4/ShopBag';
+import { actions as usersActions } from '@/state/v4/User';
 import { Page, Header, Level, Button, Svg, Card, Comment, Image, Radio, Grid, Spinner, Badge, AnimationLovelist, AnimationAddToCart } from '@/components/mobile';
 import { Promos, ProductModal, ReviewSummary } from './Partials';
 import Share from '@/components/mobile/Share';
@@ -29,12 +30,12 @@ import { trackAddToCart, trackPdpView } from './Gtm';
 const fusion = new Payload(_);
 const doAfterAnonymous = async (props) => {
 	const { dispatch, match, cookies, history } = props;
-	
+
 	const productId = _.toInteger(match.params.id);
 	const token = cookies.get(cookiesLabel.userToken);
-	
+
 	let callProductAction = null;
-	
+
 	if (match.path === '/([^/]+)-:id([0-9]+).html') {
 		callProductAction = await to(dispatch(productActions.productDetailAction(token, productId, true)));
 	} else {
@@ -233,7 +234,7 @@ class Products extends Component {
 
 		this.setState({ status });
 	}
-	
+
 	setBtnBeliStatus(stat) {
 		const { status } = this.state;
 		const btnState = (!_.isUndefined(stat) && _.isBoolean(stat)) ? stat : false;
@@ -465,7 +466,7 @@ class Products extends Component {
 	toggleDescription(toggle = true) {
 		const { status } = this.state;
 		status.showFullProductDescription = toggle;
-		this.setState({ status });		
+		this.setState({ status });
 	}
 
 	handleShowLessProductDescription = () => {
@@ -476,8 +477,10 @@ class Products extends Component {
 		this.toggleDescription();
 	}
 
-	loginNow(e) {
+	loginNow(pid) {
 		const { status } = this.state;
+		const { dispatch } = this.props;
+		dispatch(new usersActions.addAfterLogin('Lovelist', 'addToLovelist', [pid]));
 		status.forceLogin = false;
 		this.setState({ status });
 		this.redirectToPage('login');
@@ -763,7 +766,7 @@ class Products extends Component {
 					<Page color='white'>
 						{status.isZoomed && this.renderZoom()}
 						<div style={{ marginTop: '-60px', marginBottom: '70px' }}>
-							{(_.isEmpty(cardProduct) || !_.has(cardProduct, 'images')) && 
+							{(_.isEmpty(cardProduct) || !_.has(cardProduct, 'images')) &&
 								<div style={{ height: (screen.height * 0.5) }}>
 									{this.loadingContent}
 								</div>
@@ -915,7 +918,7 @@ class Products extends Component {
 					</Page>
 					<Header.Modal style={(!status.showScrollInfomation && !outOfStock) ? { backgroundColor: 'transparent', border: 'none', boxShadow: 'none' } : {}} {...this.renderHeaderPage()} />
 
-					<ProductModal 
+					<ProductModal
 						onBtnCloseModalClick={this.handleCloseModalPopUp}
 						showConfirmDelete={status.showConfirmDelete}
 						onRemoveLovelist={this.removeAddItem}
@@ -923,7 +926,7 @@ class Products extends Component {
 						variants={cardProduct.variants}
 						onVariantSizeChange={this.handleSelectVariant}
 						forceLogin={status.forceLogin}
-						onLoginNow={this.loginNow}
+						onLoginNow={() => this.loginNow(id)}
 						showOvoInfo={status.showOvoInfo}
 						ovoInfo={promo.meta_data.ovo_info}
 						selectedSize={size}

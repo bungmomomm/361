@@ -20,7 +20,9 @@ const initialState = {
 		cities: false,
 		districts: false
 	},
-	edit: {}
+	edit: {},
+	polygon: false,
+	validMarker: false
 };
 
 const { address } = createActions(

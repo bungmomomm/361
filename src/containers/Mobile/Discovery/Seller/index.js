@@ -170,6 +170,8 @@ class Seller extends Component {
 
 			return false;
 		});
+
+		window.scrollTo(0, 0);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -582,7 +584,8 @@ const doAfterAnonymous = async (props) => {
 		query: {
 			store_id: params.store_id || 0,
 			...qs
-		}
+		},
+		type: 'init'
 	};
 
 	await dispatch(actions.initSeller(data.token, data.query.store_id));

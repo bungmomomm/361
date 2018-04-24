@@ -17,7 +17,7 @@ import handler from '@/containers/Mobile/Shared/handler';
 class Address extends Component {
 
 	state = {
-		allowSubmit: false,
+		allowSubmit: true,
 		showSelect: {
 			city: false,
 			district: false
@@ -37,8 +37,21 @@ class Address extends Component {
 		map: {
 			display: false,
 			address: '',
-			lat: -6.24800035920893,
-			lng: 106.81144165039063
+			lat: 0,
+			lng: 0
+		},
+		marked: {
+			lat: 0,
+			lng: 0
+		},
+		errors: {
+			address_label: false,
+			phone: false,
+			fullname: false,
+			city_id: false,
+			district_id: false,
+			zipcode: false,
+			address: false
 		},
 		navigating: false
 	};
@@ -50,13 +63,13 @@ class Address extends Component {
 				const selected = { city: [], district: [] };
 
 				const cities = await to(dispatch(actions.getCity(cookies.get(userToken), { q: `${edit.city.split(' ').pop().replace(/[,.]/i, '')}` }, 'init')));
-				selected.city = cities[1] ? cities[1].data.data.cities.filter((obj) => {
+				selected.city = cities[1] && _.chain(cities[1]).get('data.data.cities').value() ? cities[1].data.data.cities.filter((obj) => {
 					return obj.name === `${edit.city}, ${edit.province}`;
 				}) : [];
 
 				if (selected.city.length) {
 					const districts = await to(dispatch(actions.getDistrict(cookies.get(userToken), { city_id: selected.city[0].city_id })));
-					selected.district = districts[1] ? districts[1].data.data.districts.filter((obj) => {
+					selected.district = districts[1] && _.chain(districts[1]).get('data.data.districts').value() ? districts[1].data.data.districts.filter((obj) => {
 						return obj.name === edit.district;
 					}) : [];
 				}
@@ -66,23 +79,26 @@ class Address extends Component {
 					edit: address.edit,
 					selected: {
 						city: selected.city.length ? `${selected.city[0].province_id}_${selected.city[0].city_id}` : '',
-						district: selected.district.length ? selected.district[0].id : '',
+						district: selected.district.length ? `${selected.district[0].id}_${selected.district[0].name}` : '',
 					},
 					default: edit.fg_default === 1,
 					map: {
 						...this.state.map,
 						lat: parseFloat(edit.latitude) || this.state.map.lat,
 						lng: parseFloat(edit.longitude) || this.state.map.lng
+					},
+					marked: {
+						lat: parseFloat(edit.latitude) || this.state.marked.lat,
+						lng: parseFloat(edit.longitude) || this.state.marked.lng
 					}
 				});
-
 			})();
 		}
 	}
 
 	componentWillUnmount() {
 		const { dispatch, address: { paging } } = this.props;
-		dispatch(actions.mutateState({ edit: {}, paging: { ...paging, cities: false } }));
+		dispatch(actions.mutateState({ edit: {}, paging: { ...paging, cities: false }, polygon: false, validMarker: false }));
 	}
 
 	onSelectChange = (v, which = 'city') => {
@@ -123,6 +139,10 @@ class Address extends Component {
 						disabled: {
 							...this.state.disabled,
 							district: false
+						},
+						marked: {
+							lat: 0,
+							lng: 0
 						}
 					});
 
@@ -133,6 +153,15 @@ class Address extends Component {
 	};
 
 	onTextChange = (e) => {
+		if (this.state.errors[e.currentTarget.name]) {
+			this.setState({
+				errors: {
+					...this.state.errors,
+					[e.currentTarget.name]: false
+				}
+			});
+		}
+
 		this.setState({
 			edit: {
 				...this.state.edit,
@@ -142,7 +171,25 @@ class Address extends Component {
 	};
 
 	onSubmit = () => {
-		this.formsy.submit();
+		const err = {};
+		this.formsy.prevInputNames.map((v, k) => {
+			if (!this[v].getValue()) {
+				err[v] = 'This field is required';
+			}
+			return null;
+		});
+
+		if (_.size(err)) {
+			this.formsy.updateInputsWithError(err);
+			this.setState({
+				errors: { ...this.state.errors, ...err }
+			});
+			return null;
+		} else if (!this.formsy.state.isValid) {
+			return null;
+		}
+
+		return this.formsy.submit();
 	};
 
 	onCitySearch = (el) => {
@@ -185,6 +232,8 @@ class Address extends Component {
 	};
 
 	submit = async (model) => {
+		const { marked: { lat, lng } } = this.state;
+
 		const { city_id } = model;
 		const splitr = city_id.split('_');
 
@@ -194,10 +243,11 @@ class Address extends Component {
 			city_id: splitr[1],
 			type: this.state.type,
 			country_id: 1,
-			latitude: this.state.map.lat !== -6.24800035920893 ? this.state.map.lat.toString() : '',
-			longitude: this.state.map.lng !== 106.81144165039063 ? this.state.map.lng.toString() : '',
+			latitude: lat ? lat.toString() : '',
+			longitude: lng ? lng.toString() : '',
 			default: this.state.default,
-			address_id: this.state.edit.id
+			address_id: this.state.edit.id,
+			district_id: parseInt(model.district_id.split('_')[0], 10)
 		};
 
 		const { dispatch, cookies, history } = this.props;
@@ -217,79 +267,42 @@ class Address extends Component {
 	};
 
 	toggleMap = () => {
-		const { address: { edit: { latitude, longitude } } } = this.props;
-		if (parseFloat(latitude) && parseFloat(longitude)) {
-			this.justToggle();
-			return false;
-		}
-
-		if (navigator && navigator.geolocation) {
-			this.setState({
-				navigating: true
-			});
-
-			const timeout = setTimeout(() => {
-				this.justToggle();
-
-				this.setState({
-					navigating: false
-				});
-			}, 30000);
-
-			navigator.geolocation.getCurrentPosition(
-				(pos) => {
-					clearTimeout(timeout);
-					const crd = pos.coords;
-					this.setState({
-						map: {
-							...this.state.map,
-							display: !this.state.map.display,
-							lat: crd.latitude,
-							lng: crd.longitude
-						},
-						navigating: false
-					});
-				},
-				(err) => {
-					this.setState({
-						navigating: false
-					});
-
-					clearTimeout(timeout);
-					this.justToggle();
-				}
-			);
-
-			return false;
-		}
-
 		this.justToggle();
 		return null;
 	};
 
 	resetMap = () => {
-		const { address: { edit: { latitude, longitude } } } = this.props;
+		const { marked: { lat, lng }, map } = this.state;
+		const { address: { validMarker, polygon: { center } } } = this.props;
 		this.setState({
 			map: {
 				...this.state.map,
 				display: false,
-				lat: parseFloat(latitude) || -6.24800035920893,
-				lng: parseFloat(longitude) || 106.81144165039063
+				lat: !validMarker && !lat ? center.lat : !validMarker ? lat : map.lat,
+				lng: !validMarker && !lng ? center.lng : !validMarker ? lng : map.lng
 			}
 		});
 	};
 
 	saveMap = () => {
+		const { address: { validMarker } } = this.props;
+		const { map: { lat, lng } } = this.state;
+
 		this.setState({
 			map: {
 				...this.state.map,
 				display: false
+			},
+			marked: {
+				lat: validMarker ? lat : 0,
+				lng: validMarker ? lng : 0
 			}
 		});
 	};
 
 	renderData = () => {
 		const { address } = this.props;
+		const { errors } = this.state;
 		const cities = address.options.cities;
 		const districts = address.options.districts;
 
@@ -305,9 +318,7 @@ class Address extends Component {
 		return (
 			<Page color='grey'>
 				<Form
-					onValidSubmit={this.submit}
-					onValid={this.enableButton}
-					onInvalid={this.disableButton}
+					onSubmit={this.submit}
 					ref={(form) => { this.formsy = form; }}
 				>
 					<Level className='padding--medium margin--medium-b bg--white' style={{ display: this.state.map.display ? 'none' : 'flex' }}>
@@ -333,8 +344,9 @@ class Address extends Component {
 					</Level>
 					<Level className='bg--white flex-column' style={{ display: this.state.map.display ? 'none' : 'flex' }}>
 						<div className='padding--medium-v'>
-							<label className={styles.label} htmlFor='address_label'>Simpan Sebagai</label>
+							<label className={styles.label} htmlFor='address_label'>Simpan Sebagai *</label>
 							<Input
+								ref={(r) => { this.address_label = r; }}
 								id='address_label'
 								name='address_label'
 								flat
@@ -346,12 +358,14 @@ class Address extends Component {
 								disabled={this.state.submitting}
 								required
 								value={this.state.edit.address_label || ''}
+								error={errors.address_label}
 								onChange={this.onTextChange}
 							/>
 						</div>
 						<div className='padding--medium-v'>
-							<label className={styles.label} htmlFor='fullname'>Nama Penerima</label>
+							<label className={styles.label} htmlFor='fullname'>Nama Penerima *</label>
 							<Input
+								ref={(r) => { this.fullname = r; }}
 								id='fullname'
 								name='fullname'
 								flat
@@ -363,12 +377,14 @@ class Address extends Component {
 								disabled={this.state.submitting}
 								required
 								value={this.state.edit.fullname || ''}
+								error={errors.fullname}
 								onChange={this.onTextChange}
 							/>
 						</div>
 						<div className='padding--medium-v'>
-							<label className={styles.label} htmlFor='telephone'>Nomor Handphone</label>
+							<label className={styles.label} htmlFor='telephone'>Nomor Handphone *</label>
 							<Input
+								ref={(r) => { this.phone = r; }}
 								id='phone'
 								name='phone'
 								flat
@@ -380,6 +396,7 @@ class Address extends Component {
 								disabled={this.state.submitting}
 								required
 								value={this.state.edit.phone || ''}
+								error={errors.phone}
 								onChange={this.onTextChange}
 							/>
 						</div>
@@ -415,6 +432,7 @@ class Address extends Component {
 								defaultValue={selected.city.length ? selected.city[0].value : ''}
 							/>
 							<Input
+								ref={(r) => { this.city_id = r; }}
 								id='city_id'
 								name='city_id'
 								type='hidden'
@@ -423,12 +441,14 @@ class Address extends Component {
 								}}
 								validationError='This field is required'
 								value={this.state.selected.city}
+								error={errors.city_id}
+								onChange={this.onTextChange}
 								required
 							/>
 						</div>
 
 						<div className='padding--medium-v'>
-							<label className={styles.label} htmlFor='district'>Kecamatan</label>
+							<label className={styles.label} htmlFor='district'>Kecamatan *</label>
 							<Level
 								className='flex-row border-bottom no-padding-h'
 								onClick={
@@ -457,21 +477,25 @@ class Address extends Component {
 								defaultValue={selected.district.length ? selected.district[0].value : ''}
 							/>
 							<Input
+								ref={(r) => { this.district_id = r; }}
 								id='district_id'
 								name='district_id'
 								type='hidden'
 								validations={{
-									matchRegexp: /^[1-9][0-9]*$/
+									matchRegexp: /^[0-9_\w\s,.]*$/
 								}}
 								validationError='This field is required'
 								value={this.state.selected.district}
+								error={errors.district_id}
+								onChange={this.onTextChange}
 								required
 							/>
 						</div>
 
 						<div className='padding--medium-v'>
-							<label className={styles.label} htmlFor='zipcode'>Kode Pos</label>
+							<label className={styles.label} htmlFor='zipcode'>Kode Pos *</label>
 							<Input
+								ref={(r) => { this.zipcode = r; }}
 								id='zipcode'
 								name='zipcode'
 								flat
@@ -483,13 +507,15 @@ class Address extends Component {
 								disabled={this.state.submitting}
 								required
 								value={this.state.edit.zipcode || ''}
+								error={errors.zipcode}
 								onChange={this.onTextChange}
 							/>
 						</div>
 
 						<div className='padding--medium-v'>
-							<label className={styles.label} htmlFor='address'>Address</label>
+							<label className={styles.label} htmlFor='address'>Address *</label>
 							<Input
+								ref={(r) => { this.address = r; }}
 								id='address'
 								name='address'
 								as='textarea'
@@ -499,6 +525,7 @@ class Address extends Component {
 								disabled={this.state.submitting}
 								required
 								value={this.state.edit.address || ''}
+								error={errors.address}
 								onChange={this.onTextChange}
 								style={{
 									background: 'transparent',
@@ -522,7 +549,7 @@ class Address extends Component {
 	};
 
 	render() {
-		const { history } = this.props;
+		const { history, address: { validMarker } } = this.props;
 		const HeaderPage = {
 			left: (
 				this.state.map.display ?
@@ -536,7 +563,7 @@ class Address extends Component {
 			center: this.state.map.display ? 'Tandai Lokasi Pengiriman' : 'Ubah Alamat',
 			right: (
 				this.state.map.display ?
-					<Button onClick={this.saveMap}>
+					<Button onClick={this.saveMap} disabled={!validMarker}>
 						SIMPAN
 					</Button> :
 					<Button onClick={this.onSubmit} disabled={(!this.state.allowSubmit || this.state.submitting)}>
