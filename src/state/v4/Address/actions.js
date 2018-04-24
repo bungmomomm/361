@@ -56,7 +56,8 @@ const getCity = (token, query = {}, type = 'update') => async (dispatch, getStat
 		return Promise.reject(__x(err));
 	}
 
-	const optCities = resp.data.data.cities.filter((v) => {
+	const cities = _.chain(resp).get('data.data.cities').value() || [];
+	const optCities = cities.filter((v) => {
 		return (v.city_id && `${v.province_id}_${v.city_id}`) || false;
 	}).map((city) => {
 		return {
@@ -65,7 +66,7 @@ const getCity = (token, query = {}, type = 'update') => async (dispatch, getStat
 		};
 	});
 
-	if (type === 'init') optCities.unshift({ label: '- Select City -', value: '' });
+	if (type === 'init') optCities.unshift({ label: '- Pilih Kota -', value: '' });
 
 	const nextUrl = _.chain(resp).get('data.data.links.next').value();
 	const nextLink = (nextUrl && new URL(nextUrl).searchParams) || false;
@@ -73,7 +74,7 @@ const getCity = (token, query = {}, type = 'update') => async (dispatch, getStat
 	dispatch(address({
 		data: {
 			...st.address.data,
-			cities: type === 'update' ? [...st.address.data.cities, ...resp.data.data.cities] : resp.data.data.cities
+			cities: type === 'update' ? [...st.address.data.cities, ...cities] : cities
 		},
 		options: {
 			...st.address.options,
@@ -105,20 +106,22 @@ const getDistrict = (token, query = {}) => async (dispatch, getState) => {
 		return Promise.reject(__x(err));
 	}
 
-	const optDistricts = resp.data.data.districts.filter((v) => {
+	const districts = _.chain(resp).get('data.data.districts').value() || [];
+
+	const optDistricts = districts.filter((v) => {
 		return v.id || false;
 	}).map((dist) => {
 		return {
 			label: dist.name,
-			value: dist.id
+			value: `${dist.id}_${dist.name}`
 		};
 	});
-	optDistricts.unshift({ label: '- Select District -', value: '' });
+	optDistricts.unshift({ label: '- Pilih Kecamatan -', value: '' });
 
 	dispatch(address({
 		data: {
 			...st.address.data,
-			districts: resp.data.data.districts
+			districts
 		},
 		options: {
 			...st.address.options,

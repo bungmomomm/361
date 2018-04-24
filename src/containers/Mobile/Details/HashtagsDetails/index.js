@@ -15,7 +15,7 @@ import {
 import { actions } from '@/state/v4/HashtagsDetails';
 import Shared from '@/containers/Mobile/Shared';
 import Spinner from '@/components/mobile/Spinner';
-// import { GridView } from '@/containers/Mobile/Discovery/View';
+import InstagramEmbed from 'react-instagram-embed';
 import Discovery from '@/containers/Mobile/Discovery/Utils';
 import { actions as commentActions } from '@/state/v4/Comment';
 import { actions as lovelistActions } from '@/state/v4/Lovelist';
@@ -36,20 +36,6 @@ class HashtagsDetails extends Component {
 		this.state = {
 			showLoginModal: false
 		};
-	}
-
-	componentDidMount() {
-		const el = document.getElementsByClassName('embed-ig');
-
-		if (el.length) document.body.removeChild(el[0]);
-		if (window.instgrm) delete window.instgrm;
-
-		const script = document.createElement('script');
-		script.className = 'embed-ig';
-		script.src = '//www.instagram.com/embed.js';
-		script.async = true;
-		script.defer = true;
-		document.body.appendChild(script);
 	}
 
 	handleLovelistClick(e, product) {
@@ -155,21 +141,22 @@ class HashtagsDetails extends Component {
 					{ent.data.post.embed_url && (
 						<div
 							style={{
-								marginBottom: '10px',
-								maxWidth: '480px'
+								marginTop: '-2px',
+								marginLeft: '-1px',
+								width: 'calc(100% + 4px)',
+								pointerEvents: 'none'
 							}}
 						>
-							<iframe
-								src={ent.data.post.embed_url}
-								title='Instagram'
-								className={'instagram-media'}
-								frameBorder={0}
-								style={{
-									pointerEvents: 'none',
-									cursor: 'default !important',
-									maxWidth: '480px'
-								}}
-								ref={(r) => { this.embedIg = r; }}
+							<InstagramEmbed
+								url={ent.data.post.embed_url.replace('embed/captioned/', '')}
+								maxWidth='auto'
+								hideCaption={false}
+								containerTagName='div'
+								protocol=''
+								onLoading={() => {}}
+								onSuccess={() => {}}
+								onAfterRender={() => {}}
+								onFailure={() => {}}
 							/>
 						</div>
 					)}

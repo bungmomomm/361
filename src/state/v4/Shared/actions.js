@@ -119,11 +119,12 @@ const cacheInitData = (initData) => (dispatch, getState) => {
 	const serviceUrl = initData.service_url;
 	const webViewUrl = initData.webview_url;
 	const banner = {
-		...foreverBanner,
-		show: true
+		...foreverBanner
 	};
 
-	dispatch(forEverBanner({ foreverBanner: banner, serviceUrl, webViewUrl }));
+	const { shared } = getState();
+
+	dispatch(forEverBanner({ foreverBanner: { ...shared.foreverBanner, ...banner }, serviceUrl, webViewUrl }));
 	dispatch(initResponse({ segmen: segment }));
 };
 

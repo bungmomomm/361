@@ -20,11 +20,12 @@ const initialState = {
 		per_page: 10,
 		fq: '',
 		sort: ''
-	}
+	},
+	pcpBanner: ''
 };
 
-const { pcpLoading, pcpViewMode, pcpInit, pcpNextInit, pcpUpdateSingleItem } = createActions(
-	'PCP_LOADING', 'PCP_VIEW_MODE', 'PCP_INIT', 'PCP_NEXT_INIT', 'PCP_UPDATE_SINGLE_ITEM'
+const { pcpLoading, pcpViewMode, pcpInit, pcpNextInit, pcpUpdateSingleItem, pcpGetBanner } = createActions(
+	'PCP_LOADING', 'PCP_VIEW_MODE', 'PCP_INIT', 'PCP_NEXT_INIT', 'PCP_UPDATE_SINGLE_ITEM', 'PCP_GET_BANNER'
 );
 
 const reducer = handleActions({
@@ -76,6 +77,13 @@ const reducer = handleActions({
 				]
 			}
 		};
+	},
+	[pcpGetBanner](state, { payload: { isLoading, pcpBanner } }) {
+		return {
+			...state,
+			isLoading: false,
+			pcpBanner
+		};
 	}
 }, initialState);
 
@@ -85,5 +93,6 @@ export default {
 	pcpViewMode,
 	pcpInit,
 	pcpNextInit,
-	pcpUpdateSingleItem
+	pcpUpdateSingleItem,
+	pcpGetBanner
 };

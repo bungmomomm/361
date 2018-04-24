@@ -25,7 +25,8 @@ import {
 	Navigation,
 	Button,
 	Spinner,
-	SEO
+	SEO,
+	Image
 } from '@/components/mobile';
 
 import { actions as pcpActions } from '@/state/v4/ProductCategory';
@@ -177,8 +178,10 @@ class Product extends Component {
 
 			const response = await dispatch(pcpActions.pcpAction({ token: cookies.get(userToken), query: pcpNewParam }));
 
+			const pcpStatus = _.chain(response).get('pcpStatus').value() || '';
 			const productIdList = _.map(response.pcpData.products, 'product_id') || [];
-			if (productIdList.length > 0) {
+			if (pcpStatus === 'success' && productIdList.length > 0) {
+				await dispatch(pcpActions.pcpBannerAction({ token: cookies.get(userToken), query: pcpNewParam }));
 				await dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
 				await dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
 			}
@@ -334,7 +337,7 @@ class Product extends Component {
 	}
 
 	productsBlock() {
-		const { isLoading, comments, productCategory, scroller, viewMode, location, match } = this.props;
+		const { isLoading, comments, productCategory, scroller, viewMode, location, match, shared } = this.props;
 		const { focusedProductId } = this.state;
 		if (productCategory.pcpStatus !== '') {
 			if (productCategory.pcpStatus === 'success') {
@@ -385,8 +388,17 @@ class Product extends Component {
 						break;
 					}
 
+					const pcpBanner = _.chain(productCategory).get('pcpBanner.banner.image').value() || '';
+					const getFbShow = _.chain(shared).get('foreverBanner.show').value() || '';
+					const pcpBannerStyle = getFbShow ? { marginTop: '5px' } : '';
+
 					productsView = (
 						<div>
+							{pcpBanner && !_.isEmpty(pcpBanner.thumbnail) && (
+								<div style={{ ...pcpBannerStyle }}>
+									<Image lazyload alt={info.title || 'Banner'} src={pcpBanner.thumbnail} />
+								</div>
+							)}
 							<div className='text-center margin--medium-v'>{info.product_count} Total Produk</div>
 							{listView}
 						</div>
@@ -520,23 +532,24 @@ const doAfterAnonymous = async (props) => {
 	if (!_.isEmpty(brandTitle)) {
 		pcpParam.fq = `brand_name:${brandTitle},${pcpParam.fq}`;
 	}
-	
+
 	const response = await dispatch(pcpActions.pcpAction({ token: cookies.get(userToken), query: pcpParam }));
-	
+	const pcpStatus = _.chain(response).get('pcpStatus').value() || '';
+	const productIdList = _.map(response.pcpData.products, 'product_id') || [];
+	if (pcpStatus === 'success' && productIdList.length > 0) {
+		await dispatch(pcpActions.pcpBannerAction({ token: cookies.get(userToken), query: pcpParam }));
+		await dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
+		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
+	}
+  
 	if (!_.isEmpty(categoryTitle)) {
 		const realCategoryTitle = _.chain(response).get('pcpData.info.title').value() || '';
 		const realCategoryTitleSlug = urlBuilder.setName(realCategoryTitle).name;
-		
+
 		if (!_.isEmpty(realCategoryTitle) && categoryTitle !== realCategoryTitleSlug) {
 			const newUrl = urlBuilder.setId(categoryId).setName(realCategoryTitle).buildPcp();
 			history.replace(newUrl);
 		}
-	}
-
-	const productIdList = _.map(response.pcpData.products, 'product_id') || [];
-	if (productIdList.length > 0) {
-		await dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
-		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
 	}
 };
 

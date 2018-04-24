@@ -1,4 +1,4 @@
-import { userExp, userRfToken, userToken, isLogin, userProfile, uniqueid, pageReferrer, userSource } from '@/data/cookiesLabel';
+import { userExp, userRfToken, userToken, isLogin, userProfile, uniqueid, pageReferrer } from '@/data/cookiesLabel';
 import _ from 'lodash';
 
 const setUserCookie = (cookies, token, isAnonymous = false, profile = undefined) => {
@@ -14,13 +14,6 @@ const setUserCookie = (cookies, token, isAnonymous = false, profile = undefined)
 	if (profile !== undefined) {
 		cookies.set(userProfile, profile, { domain: process.env.SESSION_DOMAIN, path: '/', expires: currentDate });
 	}
-};
-
-const setSource = (cookies, isMobile) => {
-	const currentDate = new Date();
-	const limitDate = 1;
-	currentDate.setDate(currentDate.getDate() + limitDate);
-	cookies.set(userSource, isMobile ? 'mobileweb' : 'web', { domain: process.env.SESSION_DOMAIN, path: '/', expires: currentDate });
 };
 
 const removeUserCookie = (cookies) => {
@@ -69,6 +62,5 @@ export default {
 	setUniqeCookie,
 	setUserInfoCookie,
 	setReferrenceCookie,
-	setSource,
 	setUserProfileCookie
 };

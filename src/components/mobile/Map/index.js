@@ -27,15 +27,15 @@ class LocationPicker extends Component {
 		super(props);
 
 		this.state = {
-			position: props.defaultPosition
+			position: props.position
 		};
 
 		this.handleMarkerDragEnd = this.handleMarkerDragEnd.bind(this);
 	}
 
 	componentWillReceiveProps(nextProps) {
-		const { defaultPosition } = nextProps;
-		if (JSON.stringify(defaultPosition) !== JSON.stringify(this.props.defaultPosition)) this.setState({ defaultPosition });
+		const { position } = nextProps;
+		if (JSON.stringify(position) !== JSON.stringify(this.props.position)) this.setState({ position });
 	}
 
   /**
@@ -45,8 +45,8 @@ class LocationPicker extends Component {
 	handleMarkerDragEnd(mouseEvent) {
 
 		// Get latitude and longitude
-		const lat = mouseEvent.latLng.lat();
-		const lng = mouseEvent.latLng.lng();
+		const lat = mouseEvent.latLng ? mouseEvent.latLng.lat() : mouseEvent.lat;
+		const lng = mouseEvent.latLng ? mouseEvent.latLng.lng() : mouseEvent.lng;
 
 		const position = { lat, lng };
 
@@ -118,7 +118,7 @@ LocationPicker.propTypes = {
 	containerElement: PropTypes.node.isRequired,
 	mapElement: PropTypes.node.isRequired,
 	onChange: PropTypes.func.isRequired,
-	defaultPosition: PropTypes.object.isRequired,
+	position: PropTypes.object.isRequired,
 	zoom: PropTypes.number,
 	radius: PropTypes.number,
 	circleOptions: PropTypes.object

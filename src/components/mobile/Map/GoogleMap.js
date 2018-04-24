@@ -4,10 +4,12 @@ import {
 	withGoogleMap,
 	GoogleMap,
 	Marker,
-	Circle
+	// Circle,
+	Polygon
 } from 'react-google-maps';
 import { SearchBox } from 'react-google-maps/lib/components/places/SearchBox';
 import _ from 'lodash';
+import { actions } from '@/state/v4/Address';
 
 /* Create map with withGoogleMap HOC */
 /* https://github.com/tomchentw/react-google-maps */
@@ -22,19 +24,24 @@ class Map extends Component {
 
 		this.state = {
 			center: {
-				lat: -6.24800035920893,
-				lng: 106.81144165039063
+				lat: 0,
+				lng: 0
 			},
 			mark: {
-				lat: -6.24800035920893,
-				lng: 106.81144165039063
+				lat: 0,
+				lng: 0
 			},
-			markers: []
+			markers: [],
+			validMarker: true
 		};
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (this.state.center.lat !== nextProps.position.lat || this.state.center.lng !== nextProps.position.lng) {
+		if (this.props.position !== nextProps.position) {
+			const { polygon } = this.props;
+			const latLng = new google.maps.LatLng(nextProps.position.lat, nextProps.position.lng);
+			const isValidMarkerPosition = polygon ? this.isValidPosition(latLng) : true;
+
 			this.setState({
 				center: {
 					lat: nextProps.position.lat,
@@ -43,66 +50,122 @@ class Map extends Component {
 				mark: {
 					lat: nextProps.position.lat,
 					lng: nextProps.position.lng
-				}
+				},
+				validMarker: isValidMarkerPosition
 			});
 		}
 	}
 
-	onPlacesChanged = () => {
-		const places = this.searchBox.getPlaces();
-		const bounds = new google.maps.LatLngBounds();
+	onDragEnd = (v) => {
+		const { polygon, dispatch, handleMarkerDragEnd } = this.props;
+		const latLng = new google.maps.LatLng(v.latLng.lat(), v.latLng.lng());
 
-		places.forEach(place => {
+		const isValidMarkerPosition = polygon ? this.isValidPosition(latLng) : true;
+		dispatch(actions.mutateState({
+			validMarker: isValidMarkerPosition
+		}));
+
+		if (typeof handleMarkerDragEnd === 'function') handleMarkerDragEnd(v);
+		this.setState({
+			center: v.latLng,
+			mark: v.latLng,
+			validMarker: isValidMarkerPosition
+		});
+	};
+
+	autoComplete = (e) => {
+		const { handleMarkerDragEnd } = this.props;
+
+		const autocomplete = new google.maps.places.Autocomplete(e.target, {
+			componentRestrictions: { country: 'id' }
+		});
+		autocomplete.addListener('place_changed', () => {
+			const place = autocomplete.getPlace();
+			const bounds = new google.maps.LatLngBounds();
+
 			if (place.geometry.viewport) {
 				bounds.union(place.geometry.viewport);
 			} else {
 				bounds.extend(place.geometry.location);
 			}
-		});
-		const nextMarkers = places.map(place => ({
-			position: place.geometry.location,
-		}));
-		const nextCenter = _.get(nextMarkers, '0.position', this.state.center);
 
-		this.setState({
-			center: nextCenter,
-			mark: nextCenter,
-			markers: nextMarkers,
+			const nextMarkers = [{
+				position: place.geometry.location,
+			}];
+
+			const nextCenter = _.get(nextMarkers, '0.position', this.state.center);
+			const latLng = new google.maps.LatLng(place.geometry.location.lat(), place.geometry.location.lng());
+
+			const { polygon, dispatch } = this.props;
+			const isValidMarkerPosition = polygon ? this.isValidPosition(latLng) : true;
+			dispatch(actions.mutateState({
+				validMarker: isValidMarkerPosition
+			}));
+
+			if (typeof handleMarkerDragEnd === 'function') {
+				handleMarkerDragEnd({ lat: place.geometry.location.lat(), lng: place.geometry.location.lng() });
+			};
+
+			this.setState({
+				center: nextCenter,
+				mark: nextCenter,
+				markers: nextMarkers,
+				validMarker: isValidMarkerPosition
+			});
 		});
-		// this.map.fitBounds(bounds);
+	};
+
+	isValidPosition = (e) => {
+		const { polygon } = this.props;
+		const polygonArea = new google.maps.Polygon({ paths: polygon.location_coords });
+		return !!google.maps.geometry.poly.containsLocation(e, polygonArea);
+	};
+
+	errorNotif = (msg) => {
+		return (
+			<div
+				style={{
+					backgroundColor: 'rgba(229, 0, 34, 0.9)',
+					border: '1px solid #b7001b',
+					borderLeft: 'none',
+					padding: '5px 10px',
+					color: '#fff',
+					borderTopRightRadius: '4px',
+					borderBottomRightRadius: '4px',
+					marginTop: '-100px',
+					width: '85%',
+					textAlign: 'right'
+				}}
+			>
+				{msg}
+			</div>
+		);
 	};
 
 	render() {
-		const { center, markers, mark } = this.state;
+		const { center, mark, validMarker } = this.state;
 		const {
 			defaultZoom,
-			handleMarkerDragEnd,
 			onZoomChanged,
-			radius,
-			circleOptions
+			polygon
 		} = this.props;
-
-		const circle = (radius !== -1) ?
-			(<Circle
-				center={mark}
-				radius={radius}
-				options={circleOptions}
-			/>) : null;
 
 		return (
 			<GoogleMap
-				ref={(r) => { this.map = r; }}
 				onZoomChanged={onZoomChanged}
 				defaultZoom={defaultZoom}
 				center={center}
+				options={{
+					gestureHandling: 'greedy',
+					disableDoubleClickZoom: true
+				}}
 			>
 				<SearchBox
-					ref={(r) => { this.searchBox = r; }}
 					controlPosition={google.maps.ControlPosition.TOP_LEFT}
-					onPlacesChanged={this.onPlacesChanged}
 				>
 					<input
 						type='text'
+						onClick={(e) => this.autoComplete(e)}
 						placeholder='Cari alamat...'
 						style={{
 							boxSizing: 'border-box',
@@ -122,27 +185,39 @@ class Map extends Component {
 				</SearchBox>
 
 				<Marker
+					ref={(r) => { this.marker = r; }}
 					draggable
-					position={markers.length ? markers[0].position : mark}
-					onDragEnd={(v) => {
-						if (typeof handleMarkerDragEnd === 'function') handleMarkerDragEnd(v);
-						this.setState({
-							mark: v.latLng
-						});
+					position={mark}
+					onDragEnd={this.onDragEnd}
+					icon={{
+						url: require('@/assets/images/mobile/mm_ico_pinlocation_large.png')
 					}}
 				/>
-				{circle}
+
+				{!validMarker && this.errorNotif('Lokasi tidak sesuai dengan alamat pengiriman')}
+				{polygon && (<Polygon
+					paths={polygon.location_coords}
+					options={{
+						strokeColor: '#02b238',
+						strokeOpacity: '0.8',
+						strokeWeight: '2',
+						fillColor: '#02b238',
+						fillOpacity: '0.25'
+					}}
+				/>)}
 			</GoogleMap>
 		);
 	};
 
 }
 
-const mapStateToProps = () => {
+const mapStateToProps = (state) => {
 	return {
 		loadingElement: <div style={{ height: '100%' }} />,
 		containerElement: <div style={{ height: '100%' }} />,
 		mapElement: <div style={{ height: `${window.innerHeight - 60}px` }} />,
+		polygon: state.address.polygon,
+		edit: state.address.edit
 	};
 };
 
