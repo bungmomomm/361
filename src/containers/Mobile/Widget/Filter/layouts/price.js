@@ -136,11 +136,38 @@ class Price extends PureComponent {
 					<div className={styles.priceInput}>
 						<div className='flex-row padding--medium-h flex-spaceBetween margin--medium-v margin--none-t flex-middle'>
 							<div style={{ width: '45%' }}>
-								<Input value={this.state.selectedRange.min} ref={c => { this.rangeMin = c; }} onChange={(event) => { this.updateRange({ min: parseInt(event.target.value, 10) }, 'min'); }} type='number' placeholder='Min price' />
+								<Input
+									value={this.state.selectedRange.min}
+									ref={c => { this.rangeMin = c; }}
+									onChange={
+												(event) => {
+													this.updateRange(
+														{
+															min: parseInt(event.target.value, 10),
+															max: parseInt(this.state.selectedRange.max, 10)
+														}, 'min');
+												}
+											}
+									type='number'
+									placeholder='Min price'
+								/>
 							</div>
 							<div>-</div>
 							<div style={{ width: '45%' }}>
-								<Input value={this.state.selectedRange.max} ref={c => { this.rangeMax = c; }} onChange={(event) => { this.updateRange({ max: parseInt(event.target.value, 10) }, 'max'); }} type='number' placeholder='Max price' />
+								<Input
+									value={this.state.selectedRange.max}
+									ref={c => { this.rangeMax = c; }}
+									onChange={
+										(event) => {
+											this.updateRange(
+												{
+													min: parseInt(this.state.selectedRange.min, 10),
+													max: parseInt(event.target.value, 10)
+												}, 'max');
+										}}
+									type='number'
+									placeholder='Max price'
+								/>
 							</div>
 						</div>
 					</div>
