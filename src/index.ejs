@@ -60,6 +60,13 @@
 
         document.head.appendChild(script);
         </script>
+        <!-- Google Tag Manager -->
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','<%= process.env.GTM_KEY %>');</script>
+            <!-- End Google Tag Manager -->
     </head>
     <body <% if (params.helmet.htmlAttributes) { %><%= params.helmet.bodyAttributes.toString() %><% } %>>
         <noscript>
@@ -69,7 +76,7 @@
         </noscript>
         <!-- Google Tag Manager (noscript) -->
         <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=<%= process.env.GTM_KEY %>"
-        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+            height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <!-- End Google Tag Manager (noscript) -->
         <!--[if lt IE 9]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
@@ -80,16 +87,6 @@
 		<!-- Load Jquery for GTM, and Partners who using JQuery -->
 		<script src="https://assets.mataharimall.co/desktop/js/min/jquery.min.js"></script>
 		<!-- END Load Jquery -->
-
-        <!-- Google Tag Manager -->
-        <script>(function (d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) return;
-            js = d.createElement(s); js.id = id;
-            js.src = 'https://www.googletagmanager.com/gtm.js?id=<%= process.env.GTM_KEY %>';
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'gtm-js'));</script>
-		<!-- End Google Tag Manager -->
 		<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 		<!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChjpQSbwKaJOCJy_06GAwU9dNMwVq_rg4&libraries=places&region=id&language=id"></script> -->
 		<script type="text/javascript" src="<%= process.env.VT_JS %>"></script>
@@ -108,7 +105,9 @@
             <script src="<%= params.manifest['vendors.js'] %>"></script>
             <script src="<%= params.manifest['main.js'] %>"></script>
         <% } %>
-		<script src="./service-worker.js"></script>
+        <% if (process.env.NODE_ENV === 'production') { %>
+            <script src="/service-worker.js"></script>
+        <% } %>
     </body>
     <!-- <script type="text/javascript">
         function confirmExit() {
