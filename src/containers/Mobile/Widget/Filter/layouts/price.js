@@ -27,6 +27,8 @@ class Price extends PureComponent {
 		};
 		this.state.resetRangeData = _.cloneDeep(this.state.range);
 		this.state.resetSelectedRangeData = _.cloneDeep(this.state.selectedRange);
+		this.onBlurInputMaxPrice = this.onBlurInputMaxPrice.bind(this);
+		this.onBlurInputMinPrice = this.onBlurInputMinPrice.bind(this);
 	}
 
 	onClick(e, value) {
@@ -69,31 +71,106 @@ class Price extends PureComponent {
 		return onApply(e, result, thirdParameter);
   
 	}
-
-	updateRange(value, changes) {
-		const currentRange = this.state.range;
-		const { range } = this.props;
-		if (changes === 'min') {
-			if (value.min > currentRange.max) {
-				return;
+	
+	onBlurInputMinPrice(event) {
+		const { selected, range } = this.props;
+		const { selectedRange } = this.state;
+		const minValue = selected !== undefined ? parseInt(selected.min, 10) : parseInt(range.min, 10);
+		const maxValue = selected !== undefined ? parseInt(selected.max, 10) : parseInt(range.max, 10);
+		const value = event.target.value;
+		let stateObject = {
+			selectedRange: {
+				min: minValue,
+				max: maxValue
 			}
-		} else if (changes === 'max') {
-			if (value.max < currentRange.min) {
-				return;
+		};
+		if (value !== '') {
+			// Otherwise check if the value is greater than allowed min then revert to allowed min
+			// Also compare if selected value is greater than selected max revert it
+			if (parseInt(value, 10) < parseInt(this.props.range.min, 10) || parseInt(value, 10) > selectedRange.max) {
+				stateObject = {
+					selectedRange: {
+						min: minValue,
+						max: maxValue
+					}
+				};
+			} else {
+				stateObject = {
+					selectedRange: {
+						min: parseInt(value, 10),
+						max: maxValue
+					}
+				};
 			}
 		}
+		this.setState(stateObject);
+	}
+	
+	onBlurInputMaxPrice(event) {
+		const { selected, range } = this.props;
+		const { selectedRange } = this.state;
+		const minValue = selected !== undefined ? parseInt(selected.min, 10) : parseInt(range.min, 10);
+		const maxValue = selected !== undefined ? parseInt(selected.max, 10) : parseInt(range.max, 10);
+		const value = event.target.value;
+		
+		let stateObject = {
+			selectedRange: {
+				min: minValue,
+				max: maxValue
+			}
+		};
+		if (value !== '') {
+			// Also compare if the value is less than selected range from min
+			if (parseInt(value, 10) > parseInt(this.props.range.max, 10) || parseInt(value, 10) < selectedRange.min) {
+				stateObject = {
+					selectedRange: {
+						min: minValue,
+						max: maxValue
+					}
+				};
+			} else {
+				stateObject = {
+					selectedRange: {
+						min: minValue,
+						max: parseInt(value, 10)
+					}
+				};
+			}
+		}
+		
+		this.setState(stateObject);
+	}
+	
+	
+	updateRange(value, changes = 'slider') {
+		
+		const currentRange = this.state.range;
+		const { range } = this.props;
+		
 		const updatedValue = {
 			...currentRange,
 			...value
 		};
-		this.setState({
+		
+		const objectState = {
 			resetDisabled: false,
 			custom: true,
 			selectedRange: {
 				min: Math.abs(updatedValue.min) < parseInt(range.max, 10) ? Math.abs(updatedValue.min) : parseInt(range.min, 10),
 				max: Math.abs(updatedValue.max) < parseInt(range.max, 10) ? Math.abs(updatedValue.max) : parseInt(range.max, 10),
 			}
-		});
+		};
+		
+		// Keep the value updated for input text. Because the validation is done via onblur
+		if (changes !== 'slider') {
+			objectState.selectedRange = {
+				min: Math.abs(updatedValue.min),
+				max: Math.abs(updatedValue.max),
+			};
+		}
+		
+		this.setState(objectState);
+		
 	}
 
 	reset(e) {
@@ -148,8 +225,8 @@ class Price extends PureComponent {
 														}, 'min');
 												}
 											}
-									type='number'
 									placeholder='Min price'
+									onBlur={this.onBlurInputMinPrice}
 								/>
 							</div>
 							<div>-</div>
@@ -165,8 +242,8 @@ class Price extends PureComponent {
 													max: parseInt(event.target.value, 10)
 												}, 'max');
 										}}
-									type='number'
 									placeholder='Max price'
+									onBlur={this.onBlurInputMaxPrice}
 								/>
 							</div>
 						</div>
