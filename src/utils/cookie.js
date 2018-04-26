@@ -56,11 +56,16 @@ const setUserProfileCookie = (cookies, profile) => {
 	cookies.set(userProfile, profile, { domain: process.env.SESSION_DOMAIN, path: '/', expires: currentDate });
 };
 
+const removeUserProfileCookie = (cookies) => {
+	cookies.remove(userProfile, { domain: process.env.SESSION_DOMAIN, path: '/' });
+};
+
 export default {
 	setUserCookie,
 	removeUserCookie,
 	setUniqeCookie,
 	setUserInfoCookie,
 	setReferrenceCookie,
-	setUserProfileCookie
+	setUserProfileCookie,
+	removeUserProfileCookie
 };

@@ -204,7 +204,7 @@ class CatalogView extends Component {
 					/>
 				)}
 				<Level>
-					{userAvatar}
+					{cookies.get(cookiesLabel.isLogin) === 'true' && userAvatar}
 					<Level.Item>
 						{
 							cookies.get(cookiesLabel.isLogin) === 'true' ?
