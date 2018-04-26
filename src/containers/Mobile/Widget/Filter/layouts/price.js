@@ -73,33 +73,36 @@ class Price extends PureComponent {
 	}
 	
 	onBlurInputMinPrice(event) {
+		// The selected range may consist of the value that we have applied or the value we just blur from text input but not applied yet.
 		const { selected, range } = this.props;
 		const { selectedRange } = this.state;
 		const minValue = selected !== undefined ? parseInt(selected.min, 10) : parseInt(range.min, 10);
-		const maxValue = selected !== undefined ? parseInt(selected.max, 10) : parseInt(range.max, 10);
+		let maxValue = selected !== undefined ? parseInt(selected.max, 10) : parseInt(range.max, 10);
 		const value = event.target.value;
-		let stateObject = {
-			selectedRange: {
-				min: minValue,
-				max: maxValue
-			}
+		const stateObject = {};
+		// Define the default selected range. If there is selected then apply for it otherwise takes
+		// from default allowed minimum and maximum which is set from props
+		stateObject.selectedRange = {
+			min: minValue,
+			max: maxValue
 		};
+		// If we key in the text inside input then
 		if (value !== '') {
-			// Otherwise check if the value is greater than allowed min then revert to allowed min
-			// Also compare if selected value is greater than selected max revert it
-			if (parseInt(value, 10) < parseInt(this.props.range.min, 10) || parseInt(value, 10) > selectedRange.max) {
-				stateObject = {
-					selectedRange: {
-						min: minValue,
-						max: maxValue
-					}
-				};
-			} else {
-				stateObject = {
-					selectedRange: {
-						min: parseInt(value, 10),
-						max: maxValue
-					}
+			// Overwrite the max value if the value is not equal with latest update or default max value from props
+			if (parseInt(selectedRange.max, 10) !== maxValue) {
+				maxValue = parseInt(selectedRange.max, 10);
+			}
+			// Do update directly
+			stateObject.selectedRange = {
+				min: parseInt(value, 10),
+				max: maxValue
+			};
+			// Otherwise prevent the update if the value is greater than allowed min
+			// Also if selected value is greater than selected max revert it
+			if (parseInt(value, 10) < parseInt(this.props.range.min, 10) || parseInt(value, 10) > maxValue) {
+				stateObject.selectedRange = {
+					min: minValue,
+					max: maxValue
 				};
 			}
 		}
@@ -109,31 +112,29 @@ class Price extends PureComponent {
 	onBlurInputMaxPrice(event) {
 		const { selected, range } = this.props;
 		const { selectedRange } = this.state;
-		const minValue = selected !== undefined ? parseInt(selected.min, 10) : parseInt(range.min, 10);
+		let minValue = selected !== undefined ? parseInt(selected.min, 10) : parseInt(range.min, 10);
 		const maxValue = selected !== undefined ? parseInt(selected.max, 10) : parseInt(range.max, 10);
 		const value = event.target.value;
 		
-		let stateObject = {
-			selectedRange: {
-				min: minValue,
-				max: maxValue
-			}
+		const stateObject = {};
+		stateObject.selectedRange = {
+			min: minValue,
+			max: maxValue
 		};
+		
 		if (value !== '') {
+			if (parseInt(selectedRange.min, 10) !== minValue) {
+				minValue = parseInt(selectedRange.min, 10);
+			}
+			stateObject.selectedRange = {
+				min: minValue,
+				max: parseInt(value, 10)
+			};
 			// Also compare if the value is less than selected range from min
-			if (parseInt(value, 10) > parseInt(this.props.range.max, 10) || parseInt(value, 10) < selectedRange.min) {
-				stateObject = {
-					selectedRange: {
-						min: minValue,
-						max: maxValue
-					}
-				};
-			} else {
-				stateObject = {
-					selectedRange: {
-						min: minValue,
-						max: parseInt(value, 10)
-					}
+			if (parseInt(value, 10) > parseInt(this.props.range.max, 10) || parseInt(value, 10) < minValue) {
+				stateObject.selectedRange = {
+					min: minValue,
+					max: maxValue
 				};
 			}
 		}
