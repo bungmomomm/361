@@ -286,10 +286,12 @@ class Products extends Component {
 
 	goBackPreviousPage(e) {
 		const { history } = this.props;
-		if ((history.length - 1 >= 0)) {
-			history.goBack();
-		} else {
+		// There is no state then push to homepage.
+		if (window.history.state === null) {
 			history.push('/');
+		
+		} else {
+			history.goBack();
 		}
 	}
 
