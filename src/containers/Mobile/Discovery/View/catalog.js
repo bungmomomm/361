@@ -253,6 +253,7 @@ class CatalogView extends Component {
 								linkToPdp={product.url}
 								commentTotal={product.commentTotal}
 								commentUrl={product.commentUrl}
+								isMds={product.isMds}
 								love={(
 									<Love
 										isLogin={loveIsLogin}

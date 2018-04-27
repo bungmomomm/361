@@ -34,7 +34,7 @@ class GridView extends Component {
 			}
 			return null;
 		};
-
+		
 		return (
 			<Card.CatalogGrid
 				key={index}
@@ -44,6 +44,7 @@ class GridView extends Component {
 				brandName={product.brand.name}
 				pricing={product.pricing}
 				linkToPdp={product.url}
+				isMds={product.isMds}
 				productOnClick={productOnClick ? () => productOnClick(product, index + 1) : () => true}
 				love={(
 					<Love

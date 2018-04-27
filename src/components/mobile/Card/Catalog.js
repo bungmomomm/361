@@ -78,6 +78,7 @@ class Catalog extends PureComponent {
 			love,
 			optimistic,
 			productOnClick,
+			isMds,
 			...props
 		} = this.props;
 		const { loved } = this.state;
@@ -109,27 +110,36 @@ class Catalog extends PureComponent {
 		if (love) {
 			loveButton = love;
 		}
+		const productImage = images.length > 1 ? (
+			<Carousel>
+				{
+					images.slice(0, 9).map((image, index) => (
+						<div className='placeholder-image' key={index} tabIndex='0' role='button' onClick={() => productOnClick()}>
+							<Image src={image.thumbnail} lazyload alt={productTitle} />
+						</div>
+					))
+				}
+			</Carousel>
+		) : (
+			images.slice(0, 9).map((image, index) => (
+				<div className='placeholder-image' key={index} tabIndex='0' role='button' onClick={productOnClick ? () => productOnClick() : () => true}>
+					<Image src={image.thumbnail} lazyload alt={productTitle} />
+				</div>
+			))
+		);
+
 		return (
 			<div className={createClassName} {...props} data-loved={lovelistStatus}>
-				<Link to={linkToPdp}>
-					{images.length > 1 ? (
-						<Carousel>
-							{
-								images.slice(0, 9).map((image, index) => (
-									<div className='placeholder-image' key={index} tabIndex='0' role='button' onClick={() => productOnClick()}>
-										<Image src={image.thumbnail} lazyload alt={productTitle} />
-									</div>
-								))
-							}
-						</Carousel>
-					) : (
-						images.slice(0, 9).map((image, index) => (
-							<div className='placeholder-image' key={index} tabIndex='0' role='button' onClick={productOnClick ? () => productOnClick() : () => true}>
-								<Image src={image.thumbnail} lazyload alt={productTitle} />
-							</div>
-						))
-					)}
-				</Link>
+				{ isMds ? 
+					<a href={linkToPdp}>
+						{ productImage }
+					</a>
+					:
+					<Link to={linkToPdp}>
+						{ productImage }
+					</Link>
+				}
+				
 				<Level
 					className={styles.action}
 					style={{ borderBottom: '1px solid #D8D8D8' }}
@@ -146,24 +156,47 @@ class Catalog extends PureComponent {
 						</Link>
 					</Level.Item>
 				</Level>
-				<Link to={(linkToPdp) || '/'}>
-					<div className={styles.title} tabIndex='0' role='button' onClick={productOnClick ? () => productOnClick() : () => true}>
-						<span className='font-small text-uppercase font--lato-bold font-color--primary'>{brandName}</span>
-						<span className='text-elipsis-two-line font-color--primary-ext-2'>{productTitle}</span>
-					</div>
-					<Level className='padding--none-t'>
-						<Level.Item>
-							<div className={styles.blockPrice}>
-								<div>
-									<div className={styles.price}>{pricing.formatted.effective_price}</div>
-									{basePrice}
-								</div>
-								{discountBadge}
+				{
+					isMds ? 
+						<a href={(linkToPdp) || '/'}>
+							<div className={styles.title} tabIndex='0' role='button' onClick={productOnClick ? () => productOnClick() : () => true}>
+								<span className='font-small text-uppercase font--lato-bold font-color--primary'>{brandName}</span>
+								<span className='text-elipsis-two-line font-color--primary-ext-2'>{productTitle}</span>
 							</div>
-						</Level.Item>
-						<Level.Right>&nbsp;</Level.Right>
-					</Level>
-				</Link>
+							<Level className='padding--none-t'>
+								<Level.Item>
+									<div className={styles.blockPrice}>
+										<div>
+											<div className={styles.price}>{pricing.formatted.effective_price}</div>
+											{basePrice}
+										</div>
+										{discountBadge}
+									</div>
+								</Level.Item>
+								<Level.Right>&nbsp;</Level.Right>
+							</Level>
+						</a>
+				: 
+						<Link to={(linkToPdp) || '/'}>
+							<div className={styles.title} tabIndex='0' role='button' onClick={productOnClick ? () => productOnClick() : () => true}>
+								<span className='font-small text-uppercase font--lato-bold font-color--primary'>{brandName}</span>
+								<span className='text-elipsis-two-line font-color--primary-ext-2'>{productTitle}</span>
+							</div>
+							<Level className='padding--none-t'>
+								<Level.Item>
+									<div className={styles.blockPrice}>
+										<div>
+											<div className={styles.price}>{pricing.formatted.effective_price}</div>
+											{basePrice}
+										</div>
+										{discountBadge}
+									</div>
+								</Level.Item>
+								<Level.Right>&nbsp;</Level.Right>
+							</Level>
+						</Link>
+				}
+				
 			</div>
 		);
 	}

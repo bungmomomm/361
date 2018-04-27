@@ -88,8 +88,9 @@ class CatalogGrid extends PureComponent {
 			optimistic,
 			split,
 			productOnClick,
+			isMds,
 			...props
-		} = this.props;
+		} = this.props;	
 		const { loved } = this.state;
 
 		const disableLovelist = lovelistDisable && lovelistAddTo;
@@ -123,35 +124,68 @@ class CatalogGrid extends PureComponent {
 
 		return (
 			<div className={createClassName} {...props} data-loved={lovelistStatus}>
-				<Link to={linkToPdp || '/'} style={this.makeAspectRatio()} className={styles.imgContainer}>
-					<div className={`${styles.imgWrapper} placeholder-image`} style={this.makeAspectRatio()} tabIndex='0' role='button' onClick={productOnClick || (() => true)}>
-						<Image src={images[0].thumbnail} lazyload alt={productTitle} />
-					</div>
-				</Link>
+				{isMds ? 
+					<a href={linkToPdp || '/'} style={this.makeAspectRatio()} className={styles.imgContainer}>
+						<div className={`${styles.imgWrapper} placeholder-image`} style={this.makeAspectRatio()} tabIndex='0' role='button' onClick={productOnClick || (() => true)}>
+							<Image src={images[0].thumbnail} lazyload alt={productTitle} />
+						</div>
+					</a>
+				:
+					<Link to={linkToPdp || '/'} style={this.makeAspectRatio()} className={styles.imgContainer}>
+						<div className={`${styles.imgWrapper} placeholder-image`} style={this.makeAspectRatio()} tabIndex='0' role='button' onClick={productOnClick || (() => true)}>
+							<Image src={images[0].thumbnail} lazyload alt={productTitle} />
+						</div>
+					</Link>
+				}
+				
 				<Level className={styles.action}>
 					<Level.Item>
-						<Link to={linkToPdp || '/'} >
-							<div className={styles.title} tabIndex='0' role='button' onClick={productOnClick || (() => true)}>
-								<span className='font-small text-uppercase font--lato-bold font-color--primary'>{brandName}</span>
-								<span className='text-elipsis-two-line font-color--primary-ext-2'>{trimString(productTitle)}</span>
-							</div>
-						</Link>
+						{ isMds ? 
+							<a href={linkToPdp || '/'} >
+								<div className={styles.title} tabIndex='0' role='button' onClick={productOnClick || (() => true)}>
+									<span className='font-small text-uppercase font--lato-bold font-color--primary'>{brandName}</span>
+									<span className='text-elipsis-two-line font-color--primary-ext-2'>{trimString(productTitle)}</span>
+								</div>
+							</a>
+					:
+							<Link to={linkToPdp || '/'} >
+								<div className={styles.title} tabIndex='0' role='button' onClick={productOnClick || (() => true)}>
+									<span className='font-small text-uppercase font--lato-bold font-color--primary'>{brandName}</span>
+									<span className='text-elipsis-two-line font-color--primary-ext-2'>{trimString(productTitle)}</span>
+								</div>
+							</Link>
+						}
+						
 					</Level.Item>
 					<Level.Right>
 						{loveButton}
 					</Level.Right>
 				</Level>
-				<Link to={linkToPdp || '/'}>
-					<Level className={styles.footer}>
-						<Level.Item>
-							<div className={styles.blockPrice}>
-								<div className={styles.price}>{pricing.formatted.effective_price}</div>
-								{basePrice}
-							</div>
-						</Level.Item>
-						{discountBadge}
-					</Level>
-				</Link>
+				{ isMds ? 
+					<Link to={linkToPdp || '/'}>
+						<Level className={styles.footer}>
+							<Level.Item>
+								<div className={styles.blockPrice}>
+									<div className={styles.price}>{pricing.formatted.effective_price}</div>
+									{basePrice}
+								</div>
+							</Level.Item>
+							{discountBadge}
+						</Level>
+					</Link>
+					: 
+					<Link to={linkToPdp || '/'}>
+						<Level className={styles.footer}>
+							<Level.Item>
+								<div className={styles.blockPrice}>
+									<div className={styles.price}>{pricing.formatted.effective_price}</div>
+									{basePrice}
+								</div>
+							</Level.Item>
+							{discountBadge}
+						</Level>
+					</Link>}
+				
 			</div>
 		);
 	}
