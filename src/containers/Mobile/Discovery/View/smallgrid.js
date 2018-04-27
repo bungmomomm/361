@@ -26,6 +26,7 @@ class SmallGridView extends Component {
 							images={product.images}
 							pricing={product.pricing}
 							linkToPdp={product.url}
+							isMds={product.isMds}
 							productOnClick={productOnClick ? () => productOnClick(product, index + 1) : () => true}
 						/>
 					);

@@ -204,7 +204,7 @@ class CatalogView extends Component {
 					/>
 				)}
 				<Level>
-					{userAvatar}
+					{cookies.get(cookiesLabel.isLogin) === 'true' && userAvatar}
 					<Level.Item>
 						{
 							cookies.get(cookiesLabel.isLogin) === 'true' ?
@@ -253,6 +253,7 @@ class CatalogView extends Component {
 								linkToPdp={product.url}
 								commentTotal={product.commentTotal}
 								commentUrl={product.commentUrl}
+								isMds={product.isMds}
 								love={(
 									<Love
 										isLogin={loveIsLogin}

@@ -8,7 +8,7 @@ import {
 } from '@/components/mobile';
 import Shared from '@/containers/Mobile/Shared';
 import queryString from 'query-string';
-import { setUserCookie } from '@/utils';
+import { setUserCookie, removeUserProfileCookie } from '@/utils';
 import { actions as userActions } from '@/state/v4/User';
 import to from 'await-to-js';
 import handler from '@/containers/Mobile/Shared/handler';
@@ -49,6 +49,7 @@ class Logout extends Component {
 		}
 		// remove current token
 		window.sessionStorage.removeItem('cacheToken');
+		removeUserProfileCookie(cookies);
 		setUserCookie(cookies, response.token, true);
 		history.push(redirectUri || '/');
 		return response;

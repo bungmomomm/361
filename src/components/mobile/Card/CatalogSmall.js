@@ -12,6 +12,7 @@ class CatalogSmall extends PureComponent {
 			pricing,
 			linkToPdp,
 			productOnClick,
+			isMds,
 			...props
 		} = this.props;
 
@@ -19,12 +20,21 @@ class CatalogSmall extends PureComponent {
 
 		return (
 			<div className={createClassName} {...props} tabIndex='0' role='button' onClick={productOnClick ? () => productOnClick() : () => true}>
-				<Link to={(linkToPdp) || '/'} className={styles.imgContainer}>
-					<div className={`${styles.imgWrapper} placeholder-image`}>
-						<Image src={images[0].thumbnail} lazyload alt='product' />
-					</div>
-					<Button color='secondary' size='small' transparent>{pricing.formatted.effective_price}</Button>
-				</Link>
+				{ isMds ? 
+					<a href={(linkToPdp) || '/'} className={styles.imgContainer}>
+						<div className={`${styles.imgWrapper} placeholder-image`}>
+							<Image src={images[0].thumbnail} lazyload alt='product' />
+						</div>
+						<Button color='secondary' size='small' transparent>{pricing.formatted.effective_price}</Button>
+					</a>
+				: 
+					<Link to={(linkToPdp) || '/'} className={styles.imgContainer}>
+						<div className={`${styles.imgWrapper} placeholder-image`}>
+							<Image src={images[0].thumbnail} lazyload alt='product' />
+						</div>
+						<Button color='secondary' size='small' transparent>{pricing.formatted.effective_price}</Button>
+					</Link>
+				}				
 			</div>
 		);
 	}
