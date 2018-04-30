@@ -284,9 +284,9 @@ class Brands extends Component {
 							{
 								(this.state.keyword.length >= this.state.minimumLetter ||
 									this.state.searchFocus) &&
-								<Level.Right className={styles.right}>
-									<Button className={styles.cancelButton} id='cancelSearch' onClick={() => this.cancelSearch()}> BATAL</Button>
-								</Level.Right>
+									<Level.Right className={styles.right}>
+										<Button className={styles.cancelButton} id='cancelSearch' onClick={() => this.cancelSearch()}> BATAL</Button>
+									</Level.Right>
 							}
 						</Level>
 
