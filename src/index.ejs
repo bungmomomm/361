@@ -31,35 +31,7 @@
         <% } %>
         <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
         <link rel="icon" href="<%=params.manifest['ico']%>" type="image/x-icon" />
-        <script type="text/javascript">
-        var pathUrl= location.pathname;
-        var categoryPage = new RegExp('/p-([0-9]+)/([a-zA-Z0-9-]+)');
-        var categoryBrandPage = new RegExp('/p-([0-9]+)}/([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)');
-        var brandPage = new RegExp('/brand/([0-9]+)/([a-zA-Z0-9-]+)');
-        var storePage = new RegExp('/store/([0-9]+)/([a-zA-Z0-9-]+)');
-        var filename ='';
-        if (categoryPage.test(pathUrl)) {
-            filename = pathUrl.replace ( /[^\d.]/g, '' )  + '.js';
-        }else if (categoryBrandPage.test(pathUrl)) {
-            var brand = pathUrl.split('/');
-            var categoryId = brand[1].replace( /[^\d.]/g, '' );
-            var brandName = brand[3];
-            filename = 'brand-'+categoryId + '-' + brandName + '.js';
-        }else if (brandPage.test(pathUrl) || storePage.test(pathUrl)) {
-            var brand = pathUrl.split('/')[3];
-            var prefix = brandPage.test(pathUrl) ? 'brand-' : 'store-';
-            filename = prefix + pathUrl.replace ( /[^\d.]/g, '' )  + '-' + brand +'.js';
-        }else if (pathUrl === '/') {
-            filename = 'www.mataharimall.com.js';
-        } else {
-            filename = pathUrl.substring(1) + '.js';
-        }
-
-        var script = document.createElement('script');
-        script.src = '<%= process.env.SEO_URL %>/'+filename;
-
-        document.head.appendChild(script);
-        </script>
+        <!-- Generate Meta here do not remove this line comment here -->
         <!-- Google Tag Manager -->
         <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
