@@ -14,30 +14,27 @@ const indexNext = (slideCount) => {
 	}
 	const index = sessionStorage.getItem('slideIndex');
 	
-	// Re set the slide next if only it is less than available content length
+	// Reset the slide next if only it is less than available content length
 	if (index < (slideCount - 1)) {
 		sessionStorage.setItem('slideIndex', parseInt(index, 10) + 1);
-	} 
+	}
 	
-	// Console.log
 	return parseInt(sessionStorage.getItem('slideIndex'), 10);
 };
 
 const indexPrev = () => {
 	
-	// Clear session storage first.
-	
+	// Set the initial storage to be 0. So we can not slide previous if index is zero.
 	if (!sessionStorage.getItem('slideIndex')) {
 		sessionStorage.setItem('slideIndex', 0);
 	}
 	const index = sessionStorage.getItem('slideIndex');
 	
-	// Re set the slide next if only it is less than available content length
+	// Reset the slide next if only it is more than zero
 	if (index > 0) {
 		sessionStorage.setItem('slideIndex', parseInt(index, 10) - 1);
 	}
 	
-	// Console.log
 	return parseInt(sessionStorage.getItem('slideIndex'), 10);
 	
 };
