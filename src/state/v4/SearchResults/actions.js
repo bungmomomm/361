@@ -27,9 +27,6 @@ const searchAction = ({ token, query = {}, loadNext = false }) => async (dispatc
 		query,
 		fullpath: true
 	}));
-	const searchData = {
-		...response.data.data
-	};
 
 	if (err) {
 		dispatch(initSearch({
@@ -38,6 +35,10 @@ const searchAction = ({ token, query = {}, loadNext = false }) => async (dispatc
 
 		return Promise.reject(__x(err));
 	}
+	
+	const searchData = {
+		...response.data.data
+	};
 
 	if (loadNext) {
 		dispatch(initNextSearch({

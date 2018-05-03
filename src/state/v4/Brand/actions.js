@@ -92,7 +92,7 @@ const brandProductAction = ({ token, query = {}, type = 'update' }) => async (di
 
 	if (err) {
 		dispatch(brandLoadingProducts({ loading_products: false }));
-		dispatch(brandProducts({ searchStatus: 'failed' }));
+		dispatch(brandProducts({ searchStatus: 'failed', data: [], type }));
 		dispatch(scrollerActions.onScroll({ loading: false, nextPage: false }));
 		return Promise.reject(__x(err));
 	}
