@@ -195,8 +195,8 @@ const userGetProfile = (token) => async (dispatch, getState) => {
 	}));
 
 	if (err) {
-		dispatch(actions.userGetProfileFail(err.response.data));
-		return Promise.reject(__x(err.response.data));
+		dispatch(actions.userGetProfileFail(err));
+		return Promise.reject(__x(err));
 	}
 
 	dispatch(actions.userGetProfileSuccess(response.data.data));
