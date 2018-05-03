@@ -20,7 +20,7 @@ const indexNext = (slideCount) => {
 	} 
 	
 	// Console.log
-	return sessionStorage.getItem('slideIndex');
+	return parseInt(sessionStorage.getItem('slideIndex'), 10);
 };
 
 const indexPrev = (slideCount) => {
@@ -38,7 +38,7 @@ const indexPrev = (slideCount) => {
 	}
 	
 	// Console.log
-	return sessionStorage.getItem('slideIndex');
+	return parseInt(sessionStorage.getItem('slideIndex'), 10);
 	
 };
 
