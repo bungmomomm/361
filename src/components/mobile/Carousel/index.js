@@ -23,12 +23,12 @@ const indexNext = (slideCount) => {
 	return parseInt(sessionStorage.getItem('slideIndex'), 10);
 };
 
-const indexPrev = (slideCount) => {
+const indexPrev = () => {
 	
 	// Clear session storage first.
 	
 	if (!sessionStorage.getItem('slideIndex')) {
-		sessionStorage.setItem('slideIndex', (slideCount - 1));
+		sessionStorage.setItem('slideIndex', 0);
 	}
 	const index = sessionStorage.getItem('slideIndex');
 	
@@ -47,9 +47,8 @@ const Decorators = [
 		component: React.createClass({
 			render() {
 				const self = this;
-				const slideCount = self.props.slideCount;
 				const createClassName = classNames(styles.arrow);
-				return (!isMobile) ? (<Button className={createClassName} onClick={() => self.props.goToSlide(indexPrev(slideCount))} />) : null;
+				return (!isMobile) ? (<Button className={createClassName} onClick={() => self.props.goToSlide(indexPrev())} />) : null;
 			}
 		}),
 		position: 'CenterLeft'
