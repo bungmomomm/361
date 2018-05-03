@@ -3,21 +3,69 @@ import Carousel from 'nuka-carousel';
 import classNames from 'classnames';
 import Button from '../Button';
 import styles from './carousel.scss';
+import { isMobile } from 'react-device-detect';
+
+
+const indexNext = (slideCount) => {
+	
+	// Set initial storage.
+	if (!sessionStorage.getItem('slideIndex')) {
+		sessionStorage.setItem('slideIndex', 0);
+	}
+	const index = sessionStorage.getItem('slideIndex');
+	
+	// Re set the slide next if only it is less than available content length
+	if (index < (slideCount - 1)) {
+		sessionStorage.setItem('slideIndex', parseInt(index, 10) + 1);
+	} 
+	
+	// Console.log
+	return sessionStorage.getItem('slideIndex');
+};
+
+const indexPrev = (slideCount) => {
+	
+	// Clear session storage first.
+	
+	if (!sessionStorage.getItem('slideIndex')) {
+		sessionStorage.setItem('slideIndex', (slideCount - 1));
+	}
+	const index = sessionStorage.getItem('slideIndex');
+	
+	// Re set the slide next if only it is less than available content length
+	if (index > 0) {
+		sessionStorage.setItem('slideIndex', parseInt(index, 10) - 1);
+	}
+	
+	// Console.log
+	return sessionStorage.getItem('slideIndex');
+	
+};
 
 const Decorators = [
 	{
 		component: React.createClass({
 			render() {
-				return null;
+				const self = this;
+				const slideCount = self.props.slideCount;
+				const createClassName = classNames(styles.arrow);
+				return (!isMobile) ? (<Button className={createClassName} onClick={() => self.props.goToSlide(indexPrev(slideCount))} />) : null;
 			}
-		})
-	}, {
+		}),
+		position: 'CenterLeft'
+	},
+	{
 		component: React.createClass({
 			render() {
-				return null;
+				const self = this;
+				const slideCount = self.props.slideCount;
+				const createClassName = classNames(styles.arrow);
+				return (!isMobile) ? (<Button className={createClassName} onClick={() => self.props.goToSlide(indexNext(slideCount))} />) : null;
 			}
-		})
-	}, {
+		}),
+		position: 'CenterRight'
+	},
+	{
 		component: React.createClass({
 			render() {
 				const self = this;
@@ -26,10 +74,15 @@ const Decorators = [
 					<ul className={styles.pagination}>
 						{
 							indexes.map((index) => {
+								const createClassName = classNames(
+									self.props.currentSlide === index && styles.active,
+									styles.button
+								);
+        
 								return (
 									<li className={styles.list} key={index}>
 										<Button
-											className={`${self.props.currentSlide === index && styles.active} ${styles.button}`}
+											className={createClassName}
 											onClick={() => self.props.goToSlide(null, index)}
 										/>
 									</li>
@@ -81,10 +134,16 @@ class NukeCarousel extends PureComponent {
 			styles.container,
 			className
 		);
-
+		
+		let draggingValue = false;
+		
+		if (isMobile) {
+			draggingValue = true;
+		}
+        
 		return (
 			<div>
-				<Carousel width='100%' decorators={Decorators} dragging ref={(n) => { this.node = n; }} className={createClassName} {...props}>
+				<Carousel width='100%' decorators={Decorators} dragging={draggingValue} ref={(n) => { this.node = n; }} className={createClassName} {...props}>
 					{children}
 				</Carousel>
 			</div>
