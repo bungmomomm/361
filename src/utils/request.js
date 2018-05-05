@@ -16,6 +16,9 @@ const buildRequestURL = (props) => {
 	} else {
 		baseUrl = isKongActive() ? process.env.KONG_API_URL : process.env.API_URL;
 	}
+	if (process.env.USE_SUBDOMAIN) {
+		return `${baseUrl}${props.path}`.replace(/(.+?)\.mataharimall\.(.+?)\/(.+?)\//, '$3.mataharimall.$2/');
+	}
 	return `${baseUrl}${props.path}`;
 };
 

@@ -6,10 +6,11 @@ import {
 	Page,
 	Header,
 	Svg,
-	// Image,
-	// Table,
+	Image,
+	Table,
 	Button } from '@/components/mobile';
 import _ from 'lodash';
+import queryString from 'query-string';
 import handler from '@/containers/Mobile/Shared/handler';
 
 @handler
@@ -61,11 +62,22 @@ class Guide extends Component {
 			center: 'Panduan Ukuran',
 			right: null
 		};
-		return this.props.product.detail && this.data && (
+		
+		let showProductSizeGuideDetail = false;
+		
+		const { product } = this.props;
+		
+		const query = queryString.parse(this.props.location.search);
+		
+		if (query.referrer === 'mds') {
+			showProductSizeGuideDetail = true;
+		}
+		
+		return (
 			<div>
 				<Page color='white' style={{ overflow: 'auto' }}>
 					<div className='margin--medium-v padding--medium-h'>
-						{/* <Table>
+						<Table>
 							<thead>
 								<tr>
 									<th>International</th>
@@ -81,16 +93,19 @@ class Guide extends Component {
 								<tr><td>L</td><td>102-107</td><td>84-89</td><td>103-111</td></tr>
 								<tr><td>XL</td><td>107-112</td><td>89-94</td><td>111-116</td></tr>
 							</tbody>
-						</Table> */}
-						{<div dangerouslySetInnerHTML={{ __html: this.data[0].value }} />}
+						</Table>
+						{ product.detail && this.data && showProductSizeGuideDetail === true && (
+							<div dangerouslySetInnerHTML={{ __html: this.data[0].value }} />
+						)}
 						{/* {!(/^/.test(spec)) && spec } */}
 					</div>
-					{/* <div className='margin--medium-v padding--medium-h'>
+					<div className='margin--medium-v padding--medium-h'>
 						<Image local src='temp/size-guide.jpg' />
-					</div> */}
+					</div>
 				</Page>
 				<Header.Modal {...HeaderOption} />
-			</div>);
+			</div>
+		);
 	}
 
 };

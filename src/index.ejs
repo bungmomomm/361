@@ -31,35 +31,14 @@
         <% } %>
         <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
         <link rel="icon" href="<%=params.manifest['ico']%>" type="image/x-icon" />
-        <script type="text/javascript">
-        var pathUrl= location.pathname;
-        var categoryPage = new RegExp('/p-([0-9]+)/([a-zA-Z0-9-]+)');
-        var categoryBrandPage = new RegExp('/p-([0-9]+)}/([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)');
-        var brandPage = new RegExp('/brand/([0-9]+)/([a-zA-Z0-9-]+)');
-        var storePage = new RegExp('/store/([0-9]+)/([a-zA-Z0-9-]+)');
-        var filename ='';
-        if (categoryPage.test(pathUrl)) {
-            filename = pathUrl.replace ( /[^\d.]/g, '' )  + '.js';
-        }else if (categoryBrandPage.test(pathUrl)) {
-            var brand = pathUrl.split('/');
-            var categoryId = brand[1].replace( /[^\d.]/g, '' );
-            var brandName = brand[3];
-            filename = 'brand-'+categoryId + '-' + brandName + '.js';
-        }else if (brandPage.test(pathUrl) || storePage.test(pathUrl)) {
-            var brand = pathUrl.split('/')[3];
-            var prefix = brandPage.test(pathUrl) ? 'brand-' : 'store-';
-            filename = prefix + pathUrl.replace ( /[^\d.]/g, '' )  + '-' + brand +'.js';
-        }else if (pathUrl === '/') {
-            filename = 'www.mataharimall.com.js';
-        } else {
-            filename = pathUrl.substring(1) + '.js';
-        }
-
-        var script = document.createElement('script');
-        script.src = '<%= process.env.SEO_URL %>/'+filename;
-
-        document.head.appendChild(script);
-        </script>
+        <!-- Generate Meta here do not remove this line comment here -->
+        <!-- Google Tag Manager -->
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','<%= process.env.GTM_KEY %>');</script>
+            <!-- End Google Tag Manager -->
     </head>
     <body <% if (params.helmet.htmlAttributes) { %><%= params.helmet.bodyAttributes.toString() %><% } %>>
         <noscript>
@@ -69,7 +48,7 @@
         </noscript>
         <!-- Google Tag Manager (noscript) -->
         <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=<%= process.env.GTM_KEY %>"
-        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+            height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <!-- End Google Tag Manager (noscript) -->
         <!--[if lt IE 9]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
@@ -80,16 +59,6 @@
 		<!-- Load Jquery for GTM, and Partners who using JQuery -->
 		<script src="https://assets.mataharimall.co/desktop/js/min/jquery.min.js"></script>
 		<!-- END Load Jquery -->
-
-        <!-- Google Tag Manager -->
-        <script>(function (d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) return;
-            js = d.createElement(s); js.id = id;
-            js.src = 'https://www.googletagmanager.com/gtm.js?id=<%= process.env.GTM_KEY %>';
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'gtm-js'));</script>
-		<!-- End Google Tag Manager -->
 		<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 		<!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChjpQSbwKaJOCJy_06GAwU9dNMwVq_rg4&libraries=places&region=id&language=id"></script> -->
 		<script type="text/javascript" src="<%= process.env.VT_JS %>"></script>
@@ -108,8 +77,10 @@
             <script src="<%= params.manifest['vendors.js'] %>"></script>
             <script src="<%= params.manifest['main.js'] %>"></script>
         <% } %>
-		<script src="https://maps.googleapis.com/maps/api/js?key=<%= process.env.GOOGLE_MAP_API_KEY %>&v=3.exp&libraries=geometry,drawing,places"></script>
-		<script src="./service-worker.js"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=<%= process.env.GOOGLE_MAP_API_KEY %>&v=3.exp&libraries=geometry,drawing,places"></script>
+        <% if (process.env.NODE_ENV === 'production') { %>
+            <script src="/service-worker.js"></script>
+        <% } %>
     </body>
     <!-- <script type="text/javascript">
         function confirmExit() {

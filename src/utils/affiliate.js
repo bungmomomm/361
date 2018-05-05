@@ -23,7 +23,8 @@ const getCookie = (cname) => {
 		while (c.charAt(0) === ' ') {
 			c = c.substring(1);
 		}
-		if (c.indexOf(name) !== -1) {
+		const thatcookie = c.split('=');
+		if (c.indexOf(name) !== -1 && (thatcookie[1] !== 'null')) {
 			return c.substring(name.length, c.length);
 		}
 	}

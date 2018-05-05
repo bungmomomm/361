@@ -13,7 +13,7 @@ import { Header, Page, Navigation, Svg, List, Level, Image, Panel, Spinner, Moda
 import { actions as userActions } from '@/state/v4/User';
 
 import CONST from '@/constants';
-import { setUserCookie } from '@/utils';
+import { setUserCookie, removeUserProfileCookie } from '@/utils';
 
 import styles from './profile.scss';
 
@@ -52,6 +52,7 @@ class UserProfile extends Component {
 			return err;
 		}
 		window.sessionStorage.removeItem('cacheToken');
+		removeUserProfileCookie(cookies);
 		setUserCookie(cookies, response.token, true);
 		history.push('/');
 		return response;
