@@ -44,8 +44,8 @@ const Decorators = [
 		component: React.createClass({
 			render() {
 				const self = this;
-				const createClassName = classNames(styles.arrow);
-				return (!isMobile) ? (<Button className={createClassName} onClick={() => self.props.goToSlide(indexPrev())} />) : null;
+				const createClassName = classNames(styles.arrowWrapper);
+				return (!isMobile) ? (<Button style={{ marginLeft: '10px' }} className={createClassName} onClick={() => self.props.goToSlide(indexPrev())}><span className={styles.arrowItem}>{'<'}</span></Button>) : null;
 			}
 		}),
 		position: 'CenterLeft'
@@ -55,8 +55,8 @@ const Decorators = [
 			render() {
 				const self = this;
 				const slideCount = self.props.slideCount;
-				const createClassName = classNames(styles.arrow);
-				return (!isMobile) ? (<Button className={createClassName} onClick={() => self.props.goToSlide(indexNext(slideCount))} />) : null;
+				const createClassName = classNames(styles.arrowWrapper);
+				return (!isMobile) ? (<Button style={{ marginRight: '10px' }} className={createClassName} onClick={() => self.props.goToSlide(indexNext(slideCount))}><span className={styles.arrowItem}>{'>'}</span></Button>) : null;
 			}
 		}),
 		position: 'CenterRight'
