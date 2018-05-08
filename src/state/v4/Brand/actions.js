@@ -67,8 +67,11 @@ const brandProductCleanUp = () => async (dispatch, getState) => {
 };
 
 const brandProductAction = ({ token, query = {}, type = 'update' }) => async (dispatch, getState) => {
-	dispatch(brandLoadingProducts({ loading_products: true }));
-	dispatch(scrollerActions.onScroll({ loading: true }));
+	if (type === 'init') {
+		dispatch(brandLoadingProducts({ loading_products: true }));
+	} else {
+		dispatch(scrollerActions.onScroll({ loading: true }));
+	}
 
 	const { shared, scroller: { nextData } } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.product.url').value();
@@ -89,7 +92,7 @@ const brandProductAction = ({ token, query = {}, type = 'update' }) => async (di
 
 	if (err) {
 		dispatch(brandLoadingProducts({ loading_products: false }));
-		dispatch(brandProducts({ searchStatus: 'failed' }));
+		dispatch(brandProducts({ searchStatus: 'failed', data: [], type }));
 		dispatch(scrollerActions.onScroll({ loading: false, nextPage: false }));
 		return Promise.reject(__x(err));
 	}
@@ -98,7 +101,9 @@ const brandProductAction = ({ token, query = {}, type = 'update' }) => async (di
 		...response.data.data
 	};
 
-	dispatch(brandLoadingProducts({ loading_products: false }));
+	if (type === 'init') {
+		dispatch(brandLoadingProducts({ loading_products: false }));
+	}
 
 	const data = _.chain(response).get('data.data').value() || {};
 	dispatch(brandProducts({ searchStatus: 'success', data, type }));

@@ -17,6 +17,7 @@ import { actions as userAction } from '@/state/v4/User';
 import { aux, urlBuilder } from '@/utils';
 import handler from '@/containers/Mobile/Shared/handler';
 import cookiesLabel from '@/data/cookiesLabel';
+import CONST from '@/constants';
 
 @handler
 class MyOrderDetail extends Component {
@@ -48,6 +49,7 @@ class MyOrderDetail extends Component {
 		this.props = props;
 		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin) === 'true';
 		this.soNumber = this.props.match.params.so_number;
+		this.renderButtonLink = this.renderButtonLink.bind(this);
 
 		if (!this.isLogin) {
 			this.props.history.push('/');
@@ -62,6 +64,30 @@ class MyOrderDetail extends Component {
 	onAddReview(soStoreNumber, seller, item) {
 		const { dispatch } = this.props;
 		dispatch(userAction.keepReviewInfo({ soStoreNumber, seller, item }));
+	}
+
+	renderButtonLink(item, seller) {
+		const { user } = this.props;
+		const btnTarget = (
+			<Button
+				rounded
+				size='medium'
+				color='secondary'
+				className='margin--medium-t text-uppercase'
+			>BELI LAGI</Button>
+		);
+
+		// digital order
+		if (_.has(user, 'myOrdersDetail.is_digital_order') && user.myOrdersDetail.is_digital_order === 1) {
+			return <a href={CONST.DIGITAL_URL}>{btnTarget}</a>;
+		}
+
+		// mm and mds
+		let urlTarget = urlBuilder.setId(item.product_id).setName(item.product_title).buildPdp();
+		if (typeof seller !== 'undefined' && process.env.MDS_STORE_IDS.includes(seller.seller_id)) {
+			urlTarget = process.env.MDS_URL + urlBuilder.buildPdp(item.product_title, item.product_id, true);
+		}
+		return <Link to={urlTarget}>{btnTarget}</Link>;
 	}
 
 	renderDetail() {
@@ -94,6 +120,7 @@ class MyOrderDetail extends Component {
 	renderOrderList() {
 		const myOrdersDetail = this.props.user.myOrdersDetail;
 		const listOrderDetail = myOrdersDetail && (myOrdersDetail.sales_orders.map((order, key) => {
+			const { seller } = order;
 			const items = order.items.map((item, iKey) => {
 				return (
 					<div key={iKey}>
@@ -112,18 +139,7 @@ class MyOrderDetail extends Component {
 										</div>
 									</div>
 									{ (myOrdersDetail.group === 'batal' || myOrdersDetail.group === 'selesai') && (
-										<div>
-											<Link to={urlBuilder.setId(item.product_id).setName(item.product_title).buildPdp()} >
-												<Button
-													rounded
-													size='medium'
-													color='secondary'
-													className='margin--medium-t text-uppercase'
-												>
-														BELI LAGI
-												</Button>
-											</Link>
-										</div>
+										<div>{this.renderButtonLink(item, seller)}</div>
 									)}
 
 								</div>

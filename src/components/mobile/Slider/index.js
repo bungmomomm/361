@@ -6,10 +6,18 @@ import styles from './slider.scss';
 class Slider extends PureComponent {
 	constructor(props) {
 		super(props);
+		// Make the condition for the slider value if we should take from min max props or selected props
+		let minValue = props.min + 1;
+		let maxValue = props.max - 1;
+		if ((props.min !== props.value.min) && (props.max !== props.value.max)) {
+			minValue = props.value.min;
+			maxValue = props.value.max;
+		}
+		
 		this.state = {
 			value: {
-				min: props.min + 1,
-				max: props.max - 1
+				min: minValue,
+				max: maxValue
 			},
 		};
 	}
