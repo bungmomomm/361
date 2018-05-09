@@ -39,6 +39,20 @@
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
             })(window,document,'script','dataLayer','<%= process.env.GTM_KEY %>');</script>
             <!-- End Google Tag Manager -->
+
+            <!-- Emarsys -->
+            <script type="text/javascript">
+                var ScarabQueue = ScarabQueue || [];
+                (function (id) {
+                    if (document.getElementById(id)) return;
+                    var js = document.createElement('script'); js.id = id;
+                    js.src = '//cdn.scarabresearch.com/js/15CDFD0BDEBE7BB2/scarab-v2.js';
+                    var fs = document.getElementsByTagName('script')[0];
+                    fs.parentNode.insertBefore(js, fs);
+                })('scarab-js-api');
+            </script>
+            <!-- End of Emarsys -->
+
     </head>
     <body <% if (params.helmet.htmlAttributes) { %><%= params.helmet.bodyAttributes.toString() %><% } %>>
         <noscript>
