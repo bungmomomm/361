@@ -618,7 +618,7 @@ class Products extends Component {
 						</Button>
 					),
 					center: (
-						<div style={{ width: '180px', margin: '0 auto' }} className='text-elipsis --disable-flex'>
+						<div style={{ width: '180px', margin: '0 auto', paddingLeft: '50px' }} className='text-elipsis --disable-flex'>
 							{
 								_.chain(brandName).split(' ').size().value() > 5 ? (
 									<div className='marguee'>
@@ -787,6 +787,7 @@ class Products extends Component {
 							{!_.isEmpty(cardProduct) && _.has(cardProduct, 'images') && (
 								<div ref={(n) => { this.carouselEL = n; }} >
 									<Card.Product
+										pdp
 										setCarouselSlideIndex={this.setCarouselSlideIndex}
 										slideIndex={carousel.slideIndex}
 										onImageItemClick={this.handleImageItemClick}

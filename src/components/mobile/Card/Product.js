@@ -37,7 +37,7 @@ class Product extends PureComponent {
 
 	renderCarousel(pdpLinkDisabled = true) {
 		const slideIndex = this.getSlideIndex();
-		const { data, onImageItemClick, outOfStock } = this.props;
+		const { data, onImageItemClick, outOfStock, pdp } = this.props;
 		const selectedClass = (outOfStock) ? styles.lovelistEmpty : '';
 		const images = (_.has(data, 'images') && !_.isEmpty(data.images)) ? data.images : [];
 		const carouselContent = (
@@ -45,6 +45,7 @@ class Product extends PureComponent {
 				slideIndex={slideIndex}
 				afterSlide={this.setCarouselSlideIndex}
 				wrapAround={this.slideWrapAround}
+				pdp={pdp}
 			>
 				{
 					images && images.map((image, idx) => (
