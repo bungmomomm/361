@@ -34,7 +34,9 @@ const footer = (props) => {
 						<Button outline color='white' size='medium'>
 							<div className='flex-row flex-center flex-middle'>
 								<Svg src='ico_newstore.svg' />
-								<span className='padding--small-h'>JUALAN AJA</span>
+								<a className='margin--small-h' href={process.env.JUALAN_AJA_URL} target='_blank'>
+									<span className='padding--small-h'>JUALAN AJA</span>
+								</a>
 							</div>
 						</Button>
 					</div>

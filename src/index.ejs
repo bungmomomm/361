@@ -25,41 +25,10 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, minimum-scale=1, maximum-scale=1" />
         <meta name="theme-color" content="#DA1818"  />
-        <% if (params.helmet.title) { %><title><%= params.helmet.title.toString() %></title><% } %>
         <% if (params.manifest['main.css']) { %>
             <link rel="stylesheet" href="<%= params.manifest['main.css'] %>" />
         <% } %>
-        <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
-        <link rel="icon" href="<%=params.manifest['ico']%>" type="image/x-icon" />
-        <script type="text/javascript">
-        var pathUrl= location.pathname;
-        var categoryPage = new RegExp('/p-([0-9]+)/([a-zA-Z0-9-]+)');
-        var categoryBrandPage = new RegExp('/p-([0-9]+)}/([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)');
-        var brandPage = new RegExp('/brand/([0-9]+)/([a-zA-Z0-9-]+)');
-        var storePage = new RegExp('/store/([0-9]+)/([a-zA-Z0-9-]+)');
-        var filename ='';
-        if (categoryPage.test(pathUrl)) {
-            filename = pathUrl.replace ( /[^\d.]/g, '' )  + '.js';
-        }else if (categoryBrandPage.test(pathUrl)) {
-            var brand = pathUrl.split('/');
-            var categoryId = brand[1].replace( /[^\d.]/g, '' );
-            var brandName = brand[3];
-            filename = 'brand-'+categoryId + '-' + brandName + '.js';
-        }else if (brandPage.test(pathUrl) || storePage.test(pathUrl)) {
-            var brand = pathUrl.split('/')[3];
-            var prefix = brandPage.test(pathUrl) ? 'brand-' : 'store-';
-            filename = prefix + pathUrl.replace ( /[^\d.]/g, '' )  + '-' + brand +'.js';
-        }else if (pathUrl === '/') {
-            filename = 'www.mataharimall.com.js';
-        } else {
-            filename = pathUrl.substring(1) + '.js';
-        }
-
-        var script = document.createElement('script');
-        script.src = '<%= process.env.SEO_URL %>/'+filename;
-
-        document.head.appendChild(script);
-        </script>
+        <!-- Generate Meta here do not remove this line comment here -->
         <!-- Google Tag Manager -->
         <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -81,22 +50,16 @@
         <!--[if lt IE 9]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-
         <div id="root"><%= params.markup %></div>
-
 		<!-- Load Jquery for GTM, and Partners who using JQuery -->
 		<script src="https://assets.mataharimall.co/desktop/js/min/jquery.min.js"></script>
 		<!-- END Load Jquery -->
 		<script src="https://www.google.com/recaptcha/api.js" async defer></script>
-		<!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChjpQSbwKaJOCJy_06GAwU9dNMwVq_rg4&libraries=places&region=id&language=id"></script> -->
 		<script type="text/javascript" src="<%= process.env.VT_JS %>"></script>
         <% if (process.env.NODE_ENV === 'production') { %>
 		<script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
         <script>Raven.config('<%= process.env.RAVEN_ID %>').install();</script>
-
 		<% } %>
-
-
         <% if (params.state) { %>
             <script>window.__REDUX_STATE__ = <%= JSON.stringify(params.state) %></script>
         <% } %>
@@ -110,11 +73,4 @@
             <script src="/service-worker.js"></script>
         <% } %>
     </body>
-    <!-- <script type="text/javascript">
-        function confirmExit() {
-            return "Are you sure want to exit?";
-        }
-        window.beforeunload = confirmExit;
-        window.onbeforeunload = confirmExit;
-    </script> -->
 </html>
