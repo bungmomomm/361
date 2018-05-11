@@ -1,7 +1,7 @@
 import Emarsys from './core';
-import EmarsysPage from './command-pages';
+import Collector from './collector';
 
 export default {
 	Emarsys,
-	EmarsysPage
+	Collector
 };

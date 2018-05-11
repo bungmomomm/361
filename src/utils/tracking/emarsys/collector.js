@@ -1,7 +1,7 @@
 import Emarsys from './core';
 import Utils from './utils';
 
-export default class EmarsysPage extends Emarsys {
+export default class Collector extends Emarsys {
 
 	constructor() {
 		super();
@@ -39,8 +39,6 @@ export default class EmarsysPage extends Emarsys {
 	 * @param {*} variantId 
 	 */
 	trackPDP(variantId) {
-		console.log('track pdp being called: ', variantId);
-		console.log('check ScarabQueueu: ', window.ScarabQueue);
 		this.initGeneral().view(variantId).go();
 	}
 
@@ -60,4 +58,42 @@ export default class EmarsysPage extends Emarsys {
 		this.initGeneral().purchase(descriptor).go();
 	}
 
+	static get COMMONS_PAGE() {
+		return 'commons';
+	}
+
+	static get PRODUCT_PAGE() {
+		return 'pdp';
+	}
+
+	static get CATEGORY_PAGE() {
+		return 'category';
+	}
+
+	static get SEARCH_PAGE() {
+		return 'search';
+	}
+
+	static collect(page, data = null) {
+		if (typeof window.emarsysMM === 'undefined') {
+			window.emarsysMM = new Collector();
+		}
+		const emarysObj = window.emarsysMM;
+		switch (page) {
+		case Collector.COMMONS_PAGE:
+			emarysObj.trackCommons();
+			break;
+		case Collector.PRODUCT_PAGE:
+			emarysObj.trackPDP(data);
+			break;
+		case Collector.CATEGORY_PAGE:
+			emarysObj.trackPCP(data);
+			break;
+		case Collector.SEARCH_PAGE:
+			emarysObj.trackSearch(data);
+			break;
+		default:
+			break;
+		}
+	}
 }

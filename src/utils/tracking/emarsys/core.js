@@ -6,6 +6,12 @@ export default class Emarsys {
 
 	constructor() {
 		this.ScarabQueue = [];
+		this.Pages = {
+			COMMON: 'commons-page',
+			PDP: 'pdp',
+			CATEGORY: 'pcp',
+			SEACRH: 'search'
+		};
 	}
 
 	/**
@@ -13,14 +19,14 @@ export default class Emarsys {
 	 */
 	init() {
 		if (!Utils.isScarabQueueSet()) {
-			console.log('init, not ready');
+			console.log('not ready');
 			setTimeout(() => {
 				console.log('recalling init');
 				this.init();
 			}, 500);
 			return;
 		}
-		console.log('init, ready');
+		console.log('ready');
 	}
 
 	/**
@@ -28,7 +34,7 @@ export default class Emarsys {
 	 */
 	setEmail() {
 		const visitorEmail = Utils.extractEmail();
-		console.log('called setEmail: ', visitorEmail);
+		console.log('setEmail: ', visitorEmail);
 		if (Utils.notEmptyVal(visitorEmail)) {
 			this.ScarabQueue.push([Commands.SET_EMAIL, visitorEmail]);
 		}
@@ -40,6 +46,7 @@ export default class Emarsys {
 	 * @param {*} categoryPath 
 	 */
 	category(categoryPath) {
+		console.log('category: ', categoryPath);
 		if (Utils.notEmptyVal(categoryPath)) {
 			this.ScarabQueue.push([Commands.CATEGORY, categoryPath]);
 		}
@@ -51,6 +58,7 @@ export default class Emarsys {
 	 * @param {*} variantId Variant ID of Product Viewed
 	 */
 	view(variantId) {
+		console.log('view: ', variantId);
 		if (Utils.notEmptyVal(variantId)) {
 			this.ScarabQueue.push([Commands.VIEW, variantId]);
 		}
@@ -63,7 +71,7 @@ export default class Emarsys {
 	 */
 	cart() {
 		const cartItems = Utils.extractCart();
-		console.log('calling cart: ', cartItems);
+		console.log('cart: ', cartItems);
 		if (Utils.notEmptyVal(cartItems) && Array.isArray(cartItems)) {
 			this.ScarabQueue.push([Commands.CART, cartItems]);
 		}
@@ -74,6 +82,7 @@ export default class Emarsys {
 	 * @param {*} term 
 	 */
 	searchTerm(term) {
+		console.log('searchTerm: ', term);
 		if (Utils.notEmptyVal(term)) {
 			this.ScarabQueue.push([Commands.SEARCH_TERM, term]);
 		}
@@ -96,6 +105,7 @@ export default class Emarsys {
 	 * Send Commands queue to the recommender service for processing.
 	 */
 	go() {
+		console.log('go');
 		this.ScarabQueue.push([Commands.GO]);
 	}
 
