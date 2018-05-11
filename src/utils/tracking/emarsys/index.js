@@ -1,5 +1,7 @@
-import EmarsysTracker from './core';
+import Emarsys from './core';
+import EmarsysPage from './command-pages';
 
 export default {
-	EmarsysTracker
+	Emarsys,
+	EmarsysPage
 };

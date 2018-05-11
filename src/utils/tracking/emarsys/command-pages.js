@@ -1,65 +1,63 @@
 import Emarsys from './core';
+import Utils from './utils';
 
-export class EmarsysPage extends Emarsys {
+export default class EmarsysPage extends Emarsys {
+
+	constructor() {
+		super();
+		this.init();
+	}
 
 	/**
-	 * Init general commands on each page: init -> 'setEmail' -> 'cart' 
-	 * @param {*} visitorEmail 
-	 * @param {*} cartList 
+	 * Init general commands on each page: init -> 'setEmail' -> 'cart'
 	 */
-	initGeneral(visitorEmail = '', cartList = []) {
-		this.init().setEmail(visitorEmail).cart(cartList);
+	initGeneral() {
+		if (!Utils.isScarabQueueSet()) this.initGeneral();
+		this.ScarabQueue = window.ScarabQueue || [];
+		this.setEmail().cart();
 		return this;
 	}
 
 	/**
 	 * Track general pages such us: 
 	 * Home, Cart, Lovelist, HashTags, 404 pages etc.
-	 * @param {*} visitorEmail 
-	 * @param {*} cartList 
 	 */
-	trackCommons(visitorEmail = '', cartList = []) {
-		this.initGeneral(visitorEmail, cartList).go();
+	trackCommons() {
+		this.initGeneral().go();
 	}
 
 	/**
 	 * Track Product Catalog Page (PCP), Filter Page, Filter no Result
-	 * @param {*} visitorEmail 
-	 * @param {*} cartList 
 	 * @param {*} categoryPath 
 	 */
-	trackPCP(visitorEmail = '', cartList = [], categoryPath) {
-		this.initGeneral(visitorEmail, cartList).category(categoryPath).go();
+	trackPCP(categoryPath) {
+		this.initGeneral().category(categoryPath).go();
 	}
 
 	/**
 	 * Track Product Detail Page
-	 * @param {*} visitorEmail 
-	 * @param {*} cartList 
 	 * @param {*} variantId 
 	 */
-	trackPDP(visitorEmail = '', cartList = [], variantId) {
-		this.initGeneral(visitorEmail, cartList).view(variantId).go();
+	trackPDP(variantId) {
+		console.log('track pdp being called: ', variantId);
+		console.log('check ScarabQueueu: ', window.ScarabQueue);
+		this.initGeneral().view(variantId).go();
 	}
 
 	/**
 	 * Track Search Page included Search Hashtags
-	 * @param {*} visitorEmail 
-	 * @param {*} cartList 
 	 * @param {*} term 
 	 */
-	trackSearch(visitorEmail = '', cartList = [], term) {
-		this.initGeneral(visitorEmail, cartList).searchTerm(term).go();
+	trackSearch(term) {
+		this.initGeneral().searchTerm(term).go();
 	}
 
 	/**
 	 * Track Thank You Page
-	 * @param {*} visitorEmail 
-	 * @param {*} cartList 
 	 * @param {*} descriptor 
 	 */
-	trackPurchase(visitorEmail = '', cartList = [], descriptor) {
-		this.initGeneral(visitorEmail, cartList).purchase(descriptor).go();
+	trackPurchase(descriptor) {
+		this.initGeneral().purchase(descriptor).go();
 	}
 
 }

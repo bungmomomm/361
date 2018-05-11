@@ -4,6 +4,7 @@ import to from 'await-to-js';
 import { actions } from '@/state/v4/Shared';
 import { actions as account } from '@/state/v4/User';
 import { actions as initAction } from '@/state/v4/Home';
+import { actions as shopBagAction } from '@/state/v4/ShopBag';
 import { setUserCookie, setUniqeCookie, setReferrenceCookie, initUTMProcess, removeUserCookie } from '@/utils';
 import { Promise } from 'es6-promise';
 import queryString from 'query-string';
@@ -192,6 +193,7 @@ const sharedAction = (WrappedComponent, doAfterAnonymousCall, back2top = true) =
 			tokenBearer = data.token;
 
 			dispatch(new actions.totalCartAction(tokenBearer));
+			dispatch(shopBagAction.getAction(tokenBearer));
 			dispatch(new actions.totalLovelistAction(tokenBearer));
 
 			if (login && provider) {

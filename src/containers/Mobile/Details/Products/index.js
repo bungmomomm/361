@@ -25,9 +25,12 @@ import Discovery from '@/containers/Mobile/Discovery/Utils';
 import { toastSytle } from '@/containers/Mobile/Shared/styleSnackbar';
 
 import { Payload } from '@/utils/tracking/lucidworks';
+import { EmarsysPage } from '@/utils/tracking/emarsys';
 import { trackAddToCart, trackPdpView } from './Gtm';
 
 const fusion = new Payload(_);
+const mmEmarsys = new EmarsysPage();
+
 const doAfterAnonymous = async (props) => {
 	const { dispatch, match, cookies, history } = props;
 
@@ -58,6 +61,7 @@ const doAfterAnonymous = async (props) => {
 		trackPdpView(response, props);
 		dispatch(productActions.productSocialSummaryAction(token, productId));
 		fusion.trackPdp(response);
+		mmEmarsys.trackPDP('5126734');
 	}
 
 	const res = await dispatch(productActions.productPromoAction(token, productId));

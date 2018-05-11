@@ -1,30 +1,34 @@
 import * as Commands from './command-list';
-import Utils from './Utils';
+import Utils from './utils';
+import { cartStorageKey } from './config';
 
 export default class Emarsys {
 
 	constructor() {
-		this.ScarabQueue = null;
+		this.ScarabQueue = [];
 	}
 
 	/**
 	 * Initialize Emarsys ScarabQueue
 	 */
 	init() {
-		if (!Utils.isPageLoaded() || !Utils.isScarabQueueSet()) {
+		if (!Utils.isScarabQueueSet()) {
+			console.log('init, not ready');
 			setTimeout(() => {
+				console.log('recalling init');
 				this.init();
 			}, 500);
 			return;
 		}
-		this.ScarabQueue = window.ScarabQueue;
+		console.log('init, ready');
 	}
 
 	/**
-	 * Visitor’s e-mail address.
-	 * @param {*} visitorEmail 
+	 * Push visitor’s e-mail address.
 	 */
-	setEmail(visitorEmail) {
+	setEmail() {
+		const visitorEmail = Utils.extractEmail();
+		console.log('called setEmail: ', visitorEmail);
 		if (Utils.notEmptyVal(visitorEmail)) {
 			this.ScarabQueue.push([Commands.SET_EMAIL, visitorEmail]);
 		}
@@ -48,7 +52,7 @@ export default class Emarsys {
 	 */
 	view(variantId) {
 		if (Utils.notEmptyVal(variantId)) {
-			this.ScarabQueue.push([Commands.VIEW], variantId);
+			this.ScarabQueue.push([Commands.VIEW, variantId]);
 		}
 		return this;
 	}
@@ -56,9 +60,10 @@ export default class Emarsys {
 	/**
 	 * Cart items (may be empty list). A cart item contains:
 	 * { item, price, quantity }
-	 * @param {*} cartItems 
 	 */
-	cart(cartItems = []) {
+	cart() {
+		const cartItems = Utils.extractCart();
+		console.log('calling cart: ', cartItems);
 		if (Utils.notEmptyVal(cartItems) && Array.isArray(cartItems)) {
 			this.ScarabQueue.push([Commands.CART, cartItems]);
 		}
@@ -92,5 +97,26 @@ export default class Emarsys {
 	 */
 	go() {
 		this.ScarabQueue.push([Commands.GO]);
+	}
+
+	static storeCartsInfo = (carts) => {
+		const cartList = [];
+		try {
+			if (typeof carts === 'object') {
+				carts.forEach((cart) => {
+					const { items } = cart;
+					items.forEach(item => {
+						cartList.push({
+							item: item.variant_sku,
+							price: item.pricing.original.effective_price,
+							quantity: item.qty
+						});
+					});
+				});
+			}
+		} catch (error) { ; }
+		if (typeof window.sessionStorage !== 'undefined') {
+			sessionStorage[cartStorageKey] = JSON.stringify(cartList);
+		}
 	}
 }
