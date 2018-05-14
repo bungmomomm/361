@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
-import { Page, Notification, Header, Svg, Panel, Image, Select, Level, Button, Modal, Spinner } from '@/components/mobile';
+import { Page, Notification, Header, Svg, Panel, Image, Level, Button, Modal, Spinner } from '@/components/mobile';
 import styles from './cart.scss';
 import Shared from '@/containers/Mobile/Shared';
 import { connect } from 'react-redux';
@@ -19,6 +19,7 @@ import { LucidCart, Utils } from '@/utils/tracking/lucidworks';
 import handler from '@/containers/Mobile/Shared/handler';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { toastSytle } from '@/containers/Mobile/Shared/styleSnackbar';
+import Select from '@/components/mobile/Select/native';
 
 const trackCartView = (data, props) => {
 	const items = _.flatMap(data, (e) => (e.items));
@@ -71,6 +72,7 @@ class Cart extends Component {
 		this.clearWillMoveState = this.clearWillMoveState.bind(this);
 		this.updateCartHander = this.updateCartHander.bind(this);
 		this.isLogin = this.props.cookies.get(cookiesLabel.isLogin);
+		this.botBarUp = false;
 	}
 
 	componentDidMount() {
@@ -79,6 +81,15 @@ class Cart extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		this.checkNotProcedItem(nextProps);
+	}
+
+	componentDidUpdate() {
+		if (this.props.botBar && this.botBar) {
+			if (!this.botBarUp) {
+				this.props.botBar(this.botBar);
+				this.botBarUp = true;
+			}
+		}
 	}
 
 	componentWillUnmount() {
@@ -218,20 +229,33 @@ class Cart extends Component {
 										</div>
 									) }
 								</div>
-								<Level style={{ width: '60%' }} className='flex-row flex-middle padding--none-l'>
+								<Level style={{ width: '100px' }} className='flex-row flex-middle padding--none-l'>
 									<Level.Left>
 										<div>Jumlah: </div>
 									</Level.Left>
-									<Level.Item>
-										<Button
-											onClick={() => this.selectItemHandler(
-												item.variant_id, item.max_qty, item.qty
-											)}
-											className='flex-middle'
-										>
-											<span className='margin--medium-r'>{item.qty}</span>
-											<Svg src='ico_chevron-down.svg' />
-										</Button>
+									<Level.Item style={{ marginLeft: '10px' }}>
+										<Select
+											defaultValue={item.qty}
+											items={_.range(1, item.max_qty)}
+											name={'qty'}
+											onChange={(e) => {
+												e.persist();
+
+												const selectListData = [];
+												for (let step = 1; step <= item.max_qty; step++) {
+													selectListData.push({ value: step, label: step });
+												}
+
+												this.setState({
+													variantIdwillUpdate: item.variant_id,
+													selectList: selectListData,
+													qtyCurrent: item.qty
+												}, async () => {
+													await this.selectedNewQtyHander(parseInt(e.target.value, 10));
+													this.updateCartHander();
+												});
+											}}
+										/>
 									</Level.Item>
 								</Level>
 							</Level.Item>
@@ -315,7 +339,7 @@ class Cart extends Component {
 			link = (<Button color='secondary' size='medium' wide to={`login?redirect_uri=${process.env.CHECKOUT_URL}`}>{wording}</Button>);
 		}
 		return shopBag.total && shopBag.total.count_item !== 0 ? (
-			<div className={styles.paymentLink}>
+			<div className={styles.paymentLink} ref={(r) => { this.botBar = r; }}>
 				<div>
 					<div ref={(r) => { this.botBar = r; }}>
 						<div className={styles.totalPayment}>
@@ -382,15 +406,6 @@ class Cart extends Component {
 
 				{this.renderCheckoutButton()}
 
-				<Select
-					show={this.state.showSelect}
-					label='Pilih Jumlah'
-					defaultValue={this.state.qtyCurrent}
-					onChange={(e) => this.selectedNewQtyHander(e)}
-					onClose={this.updateCartHander}
-					options={this.state.selectList}
-				/>
-
 				<Modal show={this.state.showConfirmDelete}>
 					<h3 className='text-center'><strong>Hapus Troli</strong></h3>
 					<Level style={{ padding: '0px' }} className='margin--medium-v'>
@@ -456,7 +471,8 @@ const doAfterAnonymousCall = async (props) => {
 
 	const response = await dispatch(
 		shopBagAction.getAction(
-			cookies.get(cookiesLabel.userToken)
+			cookies.get(cookiesLabel.userToken),
+			true
 		)
 	);
 	trackCartView(response.data.data.carts, props);
