@@ -6,12 +6,6 @@ export default class Emarsys {
 
 	constructor() {
 		this.ScarabQueue = [];
-		this.Pages = {
-			COMMON: 'commons-page',
-			PDP: 'pdp',
-			CATEGORY: 'pcp',
-			SEACRH: 'search'
-		};
 	}
 
 	static get ENABLED() {
