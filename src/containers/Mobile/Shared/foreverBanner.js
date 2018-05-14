@@ -43,7 +43,7 @@ const foreverBanner = (params) => {
 	}
 	return (
 		<Notification
-			color='yellow'
+			color={params.background_color}
 			show={show}
 			onClose={() => onClose(dispatch)}
 			disableClose={disableCloseFilter}
