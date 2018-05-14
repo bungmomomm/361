@@ -236,7 +236,7 @@ class Cart extends Component {
 									<Level.Item style={{ marginLeft: '10px' }}>
 										<Select
 											defaultValue={item.qty}
-											items={_.range(1, item.max_qty)}
+											items={_.range(1, item.max_qty + 1)}
 											name={'qty'}
 											onChange={(e) => {
 												e.persist();
