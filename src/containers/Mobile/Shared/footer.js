@@ -40,7 +40,7 @@ const footer = (props) => {
 							</div>
 						</Button>
 					</div>
-					<p className='font-small' dangerouslySetInnerHTML={{ __html: isi }} />
+					<p className='font-small footer-content' dangerouslySetInnerHTML={{ __html: isi }} />
 					<div className='margin--medium-v'>
 						<div className='flex-row'>
 							<a className='margin--small-h' href={process.env.FB_MM} target='_blank'>
