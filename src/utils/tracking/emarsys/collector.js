@@ -36,10 +36,10 @@ export default class Collector extends Emarsys {
 
 	/**
 	 * Track Product Detail Page
-	 * @param {*} variantId 
+	 * @param {*} variantSKU 
 	 */
-	trackPDP(variantId) {
-		this.initGeneral().view(variantId).go();
+	trackPDP(variantSKU) {
+		this.initGeneral().view(variantSKU).go();
 	}
 
 	/**
@@ -74,26 +74,46 @@ export default class Collector extends Emarsys {
 		return 'search';
 	}
 
-	static collect(page, data = null) {
-		if (typeof window.emarsysMM === 'undefined') {
-			window.emarsysMM = new Collector();
-		}
-		const emarysObj = window.emarsysMM;
-		switch (page) {
-		case Collector.COMMONS_PAGE:
-			emarysObj.trackCommons();
-			break;
-		case Collector.PRODUCT_PAGE:
-			emarysObj.trackPDP(data);
-			break;
-		case Collector.CATEGORY_PAGE:
-			emarysObj.trackPCP(data);
-			break;
-		case Collector.SEARCH_PAGE:
-			emarysObj.trackSearch(data);
-			break;
-		default:
-			break;
-		}
+	/**
+	 * Extract Category Path
+	 * @param {*} category 
+	 * @param {*} pcpData 
+	 */
+	static extractCategory(category, pcpData = {}) {
+		return Utils.getCategoryPath(category, pcpData);
+	}
+
+	/**
+	 * Pushing command of each related page 
+	 * @param {*} page 
+	 * @param {*} data 
+	 */
+	static push(page = Collector.COMMONS_PAGE, data = null) {
+		console.log('ENABLED: ', Emarsys.ENABLED);
+		if (!Emarsys.ENABLED) return;
+
+		try {
+			if (typeof window.emarsysMM === 'undefined') {
+				window.emarsysMM = new Collector();
+			}
+			const emarysObj = window.emarsysMM;
+
+			switch (page) {
+			case Collector.COMMONS_PAGE:
+				emarysObj.trackCommons();
+				break;
+			case Collector.PRODUCT_PAGE:
+				emarysObj.trackPDP(data);
+				break;
+			case Collector.CATEGORY_PAGE:
+				emarysObj.trackPCP(data);
+				break;
+			case Collector.SEARCH_PAGE:
+				emarysObj.trackSearch(data);
+				break;
+			default:
+				break;
+			}
+		} catch (error) { ; }
 	}
 }

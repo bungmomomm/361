@@ -17,6 +17,8 @@ import { actions as sharedActions } from '@/state/v4/Shared';
 import { userSource, userToken, isLogin } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
 
+import { Collector } from '@/utils/tracking/emarsys';
+
 @handler
 class Category extends PureComponent {
 	constructor(props) {
@@ -134,6 +136,8 @@ const doAfterAnonymous = (props) => {
 	}
 	dispatch(sharedActions.setCurrentSegment(selectedSegment.key));
 	dispatch(new categoryActions.getCategoryMenuAction(cookies.get(userToken), selectedSegment));
+
+	Collector.push();
 };
 
 const mapStateToProps = (state) => {

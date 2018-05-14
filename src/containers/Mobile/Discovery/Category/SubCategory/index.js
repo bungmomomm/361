@@ -22,6 +22,9 @@ const buildUrl = (stringCategory = '') => {
 };
 import handler from '@/containers/Mobile/Shared/handler';
 
+import { Collector } from '@/utils/tracking/emarsys';
+Collector.push();
+
 @handler
 class SubCategory extends PureComponent {
 	constructor(props) {

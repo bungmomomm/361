@@ -20,6 +20,7 @@ import styles from './brands.scss';
 import { actions } from '@/state/v4/Brand';
 import Shared from '@/containers/Mobile/Shared';
 import { urlBuilder, debounce } from '@/utils';
+import { Collector } from '@/utils/tracking/emarsys';
 import { userToken, userSource, pageReferrer, isLogin } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
 
@@ -298,6 +299,7 @@ const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies, shared, home, brands } = props;
 	const activeSegment = home.segmen.filter((e) => e.key === shared.current)[0];
 	if (!brands.brand_list) await dispatch(new actions.brandListAction(cookies.get(userToken), activeSegment.id));
+	Collector.push();
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Brands, doAfterAnonymous)));

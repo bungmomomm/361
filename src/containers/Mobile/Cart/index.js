@@ -461,7 +461,7 @@ const doAfterAnonymousCall = async (props) => {
 		)
 	);
 	trackCartView(response.data.data.carts, props);
-	Collector.collect(Collector.COMMONS_PAGE);
+	Collector.push();
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Cart, doAfterAnonymousCall)));

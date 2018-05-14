@@ -60,7 +60,7 @@ const doAfterAnonymous = async (props) => {
 		trackPdpView(response, props);
 		dispatch(productActions.productSocialSummaryAction(token, productId));
 		fusion.trackPdp(response);
-		Collector.collect(Collector.PRODUCT_PAGE, variants[0].id);
+		Collector.push(Collector.PRODUCT_PAGE, variants[0].variant_sku);
 	}
 
 	const res = await dispatch(productActions.productPromoAction(token, productId));

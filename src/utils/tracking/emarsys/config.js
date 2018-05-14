@@ -1,5 +1,5 @@
 export default {
-	dataCollectionEnabled: true,
+	dataCollectionEnabled: process.env.EMARYSYS_ENABLED,
 	sessStorageKey: 'cacheToken',
 	cartStorageKey: 'mmCarts'
 };

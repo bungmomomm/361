@@ -46,7 +46,7 @@
                 (function (id) {
                     if (document.getElementById(id)) return;
                     var js = document.createElement('script'); js.id = id;
-                    js.src = '//cdn.scarabresearch.com/js/15CDFD0BDEBE7BB2/scarab-v2.js';
+                    js.src = '//cdn.scarabresearch.com/js/<%= process.env.EMARSYS_SOURCES_KEY %>/scarab-v2.js';
                     var fs = document.getElementsByTagName('script')[0];
                     fs.parentNode.insertBefore(js, fs);
                 })('scarab-js-api');

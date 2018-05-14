@@ -13,6 +13,7 @@ import _ from 'lodash';
 import currency from 'currency.js';
 import { userToken } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
+import { Collector } from '@/utils/tracking/emarsys';
 
 @handler
 class Hashtags extends Component {
@@ -254,6 +255,7 @@ const mapStateToProps = (state) => {
 const doAfterAnonymous = async (props) => {
 	const { dispatch, location, cookies } = props;
 	await dispatch(actions.initHashtags(cookies.get(userToken), location.hash));
+	Collector.push();
 };
 
 export default withRouter(withCookies(connect(mapStateToProps)(Scroller(Shared(Hashtags, doAfterAnonymous)))));

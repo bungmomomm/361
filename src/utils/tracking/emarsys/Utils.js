@@ -52,4 +52,25 @@ export default class Utils {
 		} catch (error) { ; }
 		return cartList;
 	}
+
+	static getCategoryPath(category, pcpData = {}) {
+		const categoryPath = [];
+		const { activeSegment, categories } = category;
+		const { info } = pcpData;
+
+		if (Utils.notEmptyVal(activeSegment) && Utils.notEmptyVal(activeSegment.title)) {
+			categoryPath.push(activeSegment.title);
+		}
+
+		if (Utils.notEmptyVal(categories) && Array.isArray(categories) && Utils.notEmptyVal(category.sub_category)) {
+			const selectedCategory = categories.find(cat => cat.id === category.sub_category);
+			categoryPath.push(selectedCategory.title);
+		}
+
+		if (Utils.notEmptyVal(info) && Utils.notEmptyVal(info.title)) {
+			categoryPath.push(info.title);
+		}
+
+		return categoryPath;
+	}
 }

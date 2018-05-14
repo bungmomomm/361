@@ -1,6 +1,6 @@
 import * as Commands from './command-list';
 import Utils from './utils';
-import { cartStorageKey } from './config';
+import { cartStorageKey, dataCollectionEnabled } from './config';
 
 export default class Emarsys {
 
@@ -12,6 +12,10 @@ export default class Emarsys {
 			CATEGORY: 'pcp',
 			SEACRH: 'search'
 		};
+	}
+
+	static get ENABLED() {
+		return (typeof dataCollectionEnabled !== 'undefined' && dataCollectionEnabled === 'true');
 	}
 
 	/**
@@ -55,12 +59,12 @@ export default class Emarsys {
 
 	/**
 	 * Variant ID in Product Detail Page
-	 * @param {*} variantId Variant ID of Product Viewed
+	 * @param {*} variantSKU Variant SKU of Product Viewed
 	 */
-	view(variantId) {
-		console.log('view: ', variantId);
-		if (Utils.notEmptyVal(variantId)) {
-			this.ScarabQueue.push([Commands.VIEW, variantId]);
+	view(variantSKU) {
+		console.log('view: ', variantSKU);
+		if (Utils.notEmptyVal(variantSKU)) {
+			this.ScarabQueue.push([Commands.VIEW, variantSKU]);
 		}
 		return this;
 	}
@@ -104,11 +108,14 @@ export default class Emarsys {
 	/**
 	 * Send Commands queue to the recommender service for processing.
 	 */
-	go() {
+	go = () => {
 		console.log('go');
 		this.ScarabQueue.push([Commands.GO]);
 	}
 
+	/**
+	 * Stores carts info into session storages
+	 */
 	static storeCartsInfo = (carts) => {
 		const cartList = [];
 		try {
