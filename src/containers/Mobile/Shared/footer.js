@@ -20,7 +20,7 @@ const footer = (props) => {
 	
 	return (
 		<div>
-			<div style={{ backgroundColor: '#D8D8D8' }}>
+			<div style={{ backgroundColor: '#EBEBEB' }}>
 				<Link to='/bantuan'>
 					<div className='flex-row flex-middle flex-center margin--medium-v'>
 						<div className='padding--medium-h'>BUTUH BANTUAN ? HUBUNGI KAMI</div>
@@ -28,7 +28,7 @@ const footer = (props) => {
 					</div>
 				</Link>
 			</div>
-			<div style={{ backgroundColor: '#EBEBEB' }}>
+			<div style={{ backgroundColor: '#F7F7F7' }}>
 				<div className='flex-middle flex-center padding--large-h text-center'>
 					<div className='margin--medium-v'>
 						<Button outline color='white' size='medium'>
