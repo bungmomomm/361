@@ -147,6 +147,7 @@ if (
 
 	config.plugins.push(
 		new SWPrecacheWebpackPlugin({
+			filename: 'serviceworker.js',
 			verbose: true,
 			staticFileGlobsIgnorePatterns: [/dist\//],
 			runtimeCaching: [
@@ -154,6 +155,9 @@ if (
 					handler: 'networkFirst',
 					urlPattern: /^https?.*/
 				}
+			],
+			importScripts: [
+				`//cdn.moengage.com/webpush/releases/serviceworker_cdn.min.latest.js?date=${new Date().getUTCFullYear()}${new Date().getUTCMonth()}${new Date().getUTCDate()}`
 			]
 		})
 	);
