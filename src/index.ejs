@@ -38,6 +38,7 @@
             <!-- End Google Tag Manager -->
     </head>
     <body <% if (params.helmet.htmlAttributes) { %><%= params.helmet.bodyAttributes.toString() %><% } %>>
+        <script src="<%= process.env.RR_LIB_SRC %>"></script>
         <noscript>
             <!-- display some content when JavaScript is disabled -->
             <h1>You don’t have javascript enabled.</h1>
