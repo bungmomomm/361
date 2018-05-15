@@ -60,15 +60,15 @@ class Navigation extends PureComponent {
 						<Item
 							to={'/category'}
 							icon='ico_categories.svg'
-							label='Categories'
-							active={active === 'Categories'}
+							label='Kategori'
+							active={active === 'Kategori'}
 							// badge={5}
 						/>
 						<Item
 							to='/cart'
 							icon='ico_cart.svg'
-							label='Shopping Bag'
-							active={active === 'Shopping Bag'}
+							label='Tas Belanja'
+							active={active === 'Tas Belanja'}
 							badge={(totalCartItems > 0) ? totalCartItems : null}
 						/>
 						<Item
@@ -80,8 +80,8 @@ class Navigation extends PureComponent {
 						<Item
 							to={profileUrl}
 							icon='ico_user.svg'
-							label='Profile'
-							active={active === 'Profile'}
+							label='Profil'
+							active={active === 'Profil'}
 						/>
 					</div>
 				</div>

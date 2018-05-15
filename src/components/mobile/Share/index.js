@@ -53,7 +53,7 @@ class Share extends Component {
 
 		let share = (
 			<span>
-				<button onClick={this.toggleModal}>
+				<button onClick={this.toggleModal} style={{ paddingTop: '7px' }}>
 					<Svg src={'ico_share.svg'} />
 				</button>
 

@@ -142,7 +142,7 @@
 }
 
 .title{
-	font-size: map-get($font-size, --small );
+	font-size: map-get($font-size, --normal );
 	letter-spacing: 0.56px;
 	line-height: 1.4;
 	text-transform: uppercase;
