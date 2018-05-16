@@ -1,4 +1,4 @@
-import { sessStorageKey, cartStorageKey } from './config';
+import { sessStorageKey, cartStorageKey, categoryGlue } from './config';
 
 export default class Utils {
 
@@ -71,6 +71,10 @@ export default class Utils {
 			categoryPath.push(info.title);
 		}
 
-		return categoryPath;
+		if (categoryPath.length > 0 && Utils.notEmptyVal(category.sub_category)) {
+			return categoryPath.join(categoryGlue);
+		}
+
+		return null;
 	}
 }

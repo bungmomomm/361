@@ -41,6 +41,7 @@ import { userToken, pageReferrer, isLogin } from '@/data/cookiesLabel';
 
 import Discovery from '../../Utils';
 import { Utils } from '@/utils/tracking/lucidworks';
+import { Collector } from '@/utils/tracking/emarsys';
 
 import {
 	TrackingRequest,
@@ -514,7 +515,7 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-	const { dispatch, cookies, match, location, history } = props;
+	const { dispatch, cookies, match, location, history, category } = props;
 
 	const categoryId = _.chain(match).get('params.categoryId').value() || '';
 	const categoryTitle = _.chain(match).get('params.categoryTitle').value() || '';
@@ -549,6 +550,15 @@ const doAfterAnonymous = async (props) => {
 		if (!_.isEmpty(realCategoryTitle) && categoryTitle !== realCategoryTitleSlug) {
 			const newUrl = urlBuilder.setId(categoryId).setName(realCategoryTitle).buildPcp();
 			history.replace(newUrl);
+		}
+	}
+
+	// Emarsys category command
+	const { pcpData } = response;
+	if (!_.isEmpty(pcpData) && !_.isEmpty(category)) {
+		const categoryPath = Collector.extractCategory(category, pcpData);
+		if (!_.isEmpty(categoryPath)) {
+			Collector.push(Collector.CATEGORY_PAGE, categoryPath);
 		}
 	}
 };
