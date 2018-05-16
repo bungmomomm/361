@@ -40,7 +40,7 @@ class Details extends Component {
 				},
 				joa: {
 					title: 'Jualan Aja',
-					link: ''
+					link: 'https://super.mataharimall.com/static/jualan-aja.html'
 				}
 
 			}

@@ -27,6 +27,12 @@ const SellerProfile = ({
 	description,
 	storeAddress
 }) => {
+	
+	const badgeImageAttribute = {
+		src: badgeImage,
+		width: 40,
+		height: 40
+	};
 	return (
 		<div className='margin--medium-v'>
 			<div className='padding--small-h flex-row flex-spaceBetween'>
@@ -34,7 +40,7 @@ const SellerProfile = ({
 					<div className='avatar'>
 						<Link to={storeAddress} >
 							<Image avatar width={60} height={60} src={image} />
-							<Badge attached position='bottom-right'><Image src={badgeImage} width={12} /></Badge>
+							<Badge attached position='bottom-right' sellerProfile><Image {...badgeImageAttribute} /></Badge>
 						</Link>
 					</div>
 				</div>

@@ -134,6 +134,9 @@ class MyOrderDetail extends Component {
 								<div className='flex-row flex-spaceBetween flex-middle margin--medium-t'>
 									<div className='flex-row'>
 										<div>
+											{(!myOrdersDetail.is_digital_order && item.variant.title && item.variant.value) &&
+												<span className='font-small'>{item.variant.title} <strong>{item.variant.value}</strong></span>
+											}
 											<span className='font-small'>Jumlah <strong>{item.qty}</strong></span>
 											<strong className='margin--small-t'>{item.pricing.formatted.price}</strong>
 										</div>

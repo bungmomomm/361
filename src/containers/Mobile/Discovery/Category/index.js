@@ -104,6 +104,7 @@ class Category extends PureComponent {
 			<div style={this.props.style}>
 				<Page color='white'>
 					<Tabs
+						className={styles.tabsHome}
 						current={this.props.shared.current}
 						variants={this.props.home.segmen}
 						onPick={(e) => this.handlePick(e)}

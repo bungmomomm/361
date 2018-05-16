@@ -470,12 +470,13 @@ class Home extends Component {
 						paramCanonical={process.env.MOBILE_URL}
 					/>
 					<Tabs
+						className={styles.tabsHome}
 						current={this.props.shared.current}
 						variants={this.props.home.segmen}
 						onPick={(e) => this.handlePick(e)}
-						type='minimal'
+						type='borderedBottom'
 					/>
-					{ <ForeverBanner {...shared.foreverBanner} dispatch={dispatch} /> }
+					{ <ForeverBanner marginTop={'35px'} {...shared.foreverBanner} dispatch={dispatch} /> }
 
 					{this.renderHeroBanner()}
 
