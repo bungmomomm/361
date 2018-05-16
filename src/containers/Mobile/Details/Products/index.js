@@ -817,7 +817,7 @@ class Products extends Component {
 												</Link>
 											}
 										</div>
-										<div className='margin--medium-v horizontal-scroll margin--none-b'>
+										<div className='margin--medium-v horizontal-scroll margin--none-b' style={{ overflow: 'hidden' }}>
 											<Radio
 												name='size'
 												checked={this.state.size}
