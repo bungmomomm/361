@@ -152,12 +152,12 @@ class Home extends Component {
 				const promotion = bannerData[0].impression;
 				link = this.urlPromotionEnhancer(link, promotion.id, promotion.name, promotion.creative, promotion.position);
 			}
-			
+
 			const isStatic = bannerData[0].link.type === 'url_web';
 			return (
-				isStatic ? 
-					<a 
-						href={link} 
+				isStatic ?
+					<a
+						href={link}
 						onClick={
 						() => {
 							sendLocation(link);
@@ -167,7 +167,7 @@ class Home extends Component {
 						<div>
 							<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
 						</div>
-					</a> : 
+					</a> :
 					<Link
 						to={link}
 						onClick={
@@ -182,7 +182,7 @@ class Home extends Component {
 					</Link>
 			);
 		}
-		
+
 		return (
 			<div style={{ margin: '20px auto 20px auto' }}>
 				<Spinner />
@@ -308,7 +308,7 @@ class Home extends Component {
 								url = this.urlPromotionEnhancer(url, impression.id, impression.name, impression.creative, impression.position);
 							}
 							return (
-								isStatic ? 
+								isStatic ?
 									<a
 										href={url || '/'}
 										key={c}
@@ -464,7 +464,7 @@ class Home extends Component {
 		const recommendation1 = !this.isLogin ? 'new-arrival' : 'recommended-products';
 		const recommendation2 = !this.isLogin ? 'best-seller' : 'recent-view';
 		return (
-			<div style={this.props.style}>
+			<div className={!shared.foreverBanner.show ? styles['am-top'] : ''} style={this.props.style}>
 				<Page color='white'>
 					<SEO
 						paramCanonical={process.env.MOBILE_URL}
@@ -496,7 +496,7 @@ class Home extends Component {
 
 					<Footer isShow={this.state.isFooterShow} />
 				</Page>
-				
+
 				{
 					process.env.SHOW_SMART_BANNER === 'true' && (
 						<SmartBanner
