@@ -16,7 +16,9 @@ const foreverBanner = (params) => {
 		return null;
 	}
 
-	const notificationInlineAttribute = {};
+	const notificationInlineAttribute = {
+		backgroundColor: text.background_color
+	};
 
 	// Add condition for inline styling
 	if (marginTop) {
@@ -49,17 +51,12 @@ const foreverBanner = (params) => {
 		);
 	}
 	
-	
-	const notificationAttributeStyle = {
-		backgroundColor: text.background_color
-	};
-	
 	return (
 		<Notification
 			show={show}
 			onClose={() => onClose(dispatch)}
 			disableClose={disableCloseFilter}
-			style={notificationAttributeStyle}
+			style={notificationInlineAttribute}
 		>
 			{content}
 		</Notification>
