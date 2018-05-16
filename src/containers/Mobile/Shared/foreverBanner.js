@@ -17,7 +17,7 @@ const foreverBanner = (params) => {
 	}
 
 	const inlineStyle = {
-		color: params.text_color
+		color: text.text_color
 	};
 
 	const disableCloseFilter = (close_button.fg_show === '0');
@@ -41,12 +41,18 @@ const foreverBanner = (params) => {
 			</Link>)
 		);
 	}
+	
+	
+	const notificationAttributeStyle = {
+		backgroundColor: text.background_color
+	};
+	
 	return (
 		<Notification
-			color={params.background_color}
 			show={show}
 			onClose={() => onClose(dispatch)}
 			disableClose={disableCloseFilter}
+			style={notificationAttributeStyle}
 		>
 			{content}
 		</Notification>
