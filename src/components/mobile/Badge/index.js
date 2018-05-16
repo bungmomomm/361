@@ -14,6 +14,7 @@ class Badge extends PureComponent {
 			position,
 			attached,
 			colorCode,
+			sellerProfile,
 			...props
 		} = this.props;
 
@@ -33,6 +34,10 @@ class Badge extends PureComponent {
 		const badgeStyle = {
 			backgroundColor: colorCode
 		};
+		
+		if (sellerProfile) {
+			badgeStyle.right = '-30px';
+		}
 
 		return (
 			<span

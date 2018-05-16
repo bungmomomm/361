@@ -68,7 +68,7 @@ class UserProfile extends Component {
 					<Svg src={'ico_arrow-back-left.svg'} />
 				</button>
 			),
-			center: 'Profile',
+			center: 'Profil',
 		};
 
 		return <Header.Modal {...HeaderPage} />;

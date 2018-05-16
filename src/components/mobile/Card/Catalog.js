@@ -160,7 +160,7 @@ class Catalog extends PureComponent {
 					isMds ? 
 						<a href={(linkToPdp) || '/'}>
 							<div className={styles.title} tabIndex='0' role='button' onClick={productOnClick ? () => productOnClick() : () => true}>
-								<span className='font-small text-uppercase font--lato-bold font-color--primary'>{brandName}</span>
+								<span className='font-normal text-uppercase font--lato-bold font-color--primary'>{brandName}</span>
 								<span className='text-elipsis-two-line font-color--primary-ext-2'>{productTitle}</span>
 							</div>
 							<Level className='padding--none-t'>
@@ -179,7 +179,7 @@ class Catalog extends PureComponent {
 				: 
 						<Link to={(linkToPdp) || '/'}>
 							<div className={styles.title} tabIndex='0' role='button' onClick={productOnClick ? () => productOnClick() : () => true}>
-								<span className='font-small text-uppercase font--lato-bold font-color--primary'>{brandName}</span>
+								<span className='font-normal text-uppercase font--lato-bold font-color--primary'>{brandName}</span>
 								<span className='text-elipsis-two-line font-color--primary-ext-2'>{productTitle}</span>
 							</div>
 							<Level className='padding--none-t'>
