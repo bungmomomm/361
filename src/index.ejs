@@ -88,7 +88,13 @@
             <script src="<%= params.manifest['main.js'] %>"></script>
         <% } %>
         <% if (process.env.NODE_ENV === 'production') { %>
-            <script src="/serviceworker.js"></script>
+            <script>
+				(function() {
+					if('serviceWorker' in navigator) {
+						navigator.serviceWorker.register('./serviceworker.js');
+					}
+				})();
+			</script>
         <% } %>
     </body>
 </html>
