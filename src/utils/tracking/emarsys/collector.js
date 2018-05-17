@@ -89,7 +89,6 @@ export default class Collector extends Emarsys {
 	 * @param {*} data 
 	 */
 	static push(page = Collector.COMMONS_PAGE, data = null) {
-		console.log('ENABLED: ', Emarsys.ENABLED);
 		if (!Emarsys.ENABLED) return;
 
 		try {

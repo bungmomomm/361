@@ -17,14 +17,10 @@ export default class Emarsys {
 	 */
 	init() {
 		if (!Utils.isScarabQueueSet()) {
-			console.log('not ready');
 			setTimeout(() => {
-				console.log('recalling init');
 				this.init();
 			}, 500);
-			return;
 		}
-		console.log('ready');
 	}
 
 	/**

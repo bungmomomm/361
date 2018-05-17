@@ -9,6 +9,7 @@ export default class Utils {
 	static isScarabQueueSet = () => {
 		return (typeof window.ScarabQueue !== 'undefined');
 	}
+
 	static notEmptyVal(value) {
 		return (typeof value !== 'undefined' && value !== null && value !== '');
 	}
