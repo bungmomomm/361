@@ -23,6 +23,7 @@ import { urlBuilder, debounce } from '@/utils';
 import { Collector } from '@/utils/tracking/emarsys';
 import { userToken, userSource, pageReferrer, isLogin } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
+import VirtualList from 'react-virtual-list';
 
 @handler
 class Brands extends Component {
@@ -152,10 +153,30 @@ class Brands extends Component {
 
 	renderBrandByAlphabets() {
 		const { brands } = this.props;
-		return (this.props.brands.brand_list) ? (
-			this.state.keyword.length < this.state.minimumLetter &&
-			brands.brand_list.length > 0 &&
-			brands.brand_list.map((list, id) => {
+		const { keyword } = this.state;
+
+		if (brands.brand_list && brands.brand_list.length && !keyword.length) {
+			const MyList = ({ virtual, itemHeight }) => {
+				return (
+					<div style={virtual.style}>
+						{virtual.items.map(item => (
+							<List style={{ height: itemHeight }} key={`item_${item.facetrange}`}>
+								<Link to={urlBuilder.setId(Number(item.facetrange)).setName(item.facetdisplay).buildBrand()}>
+									<List.Content>
+										<p className='margin--medium-v'>
+											<span>{ item.facetdisplay.replace(/\b\w/g, (l) => (l.toUpperCase())) }</span>&nbsp;
+											<span style={{ color: 'grey' }} >({item.count})</span>
+										</p>
+									</List.Content>
+								</Link>
+							</List>
+						))}
+					</div>
+				);
+			};
+			const MyVirtualList = VirtualList()(MyList);
+
+			return brands.brand_list.map((list, id) => {
 				return (
 					<div key={id} id={list.group} className='margin--medium-v'>
 						<Divider className='margin--none-t margin--none-r' size='small' style={{ margin: 0 }}>
@@ -163,44 +184,53 @@ class Brands extends Component {
 						</Divider>
 						{
 							list.brands.length > 0 &&
-							list.brands.map((b, i) => {
-								return (
-									<List key={i}>
-										<Link to={urlBuilder.setId(Number(b.facetrange)).setName(b.facetdisplay).buildBrand()}>
-											<List.Content>
-												<p className='margin--medium-v'>
-													<span>{ b.facetdisplay.replace(/\b\w/g, (l) => (l.toUpperCase())) }</span>&nbsp;
-													<span style={{ color: 'grey' }} >({b.count})</span>
-												</p>
-											</List.Content>
-										</Link>
-									</List>
-								);
-							})
+							<MyVirtualList
+								items={list.brands}
+								itemHeight={50}
+							/>
 						}
 					</div>
 				);
-			})
-		) : '';
+			});
+		}
+
+		return '';
 	}
 
 	renderBrandBySearch() {
-		return (this.props.brands.brand_list) ? (
-			this.state.keyword.length >= this.state.minimumLetter &&
-			this.state.filteredBrand.map((brand, key) => {
+		const { brands } = this.props;
+		const { keyword, filteredBrand } = this.state;
+
+		if (brands.brand_list && brands.brand_list.length && keyword.length) {
+			const MyList = ({ virtual, itemHeight }) => {
 				return (
-					<List key={key}>
-						<Link to={urlBuilder.setId(brand.facetrange).setName(brand.facetdisplay).buildBrand()}>
-							<List.Content>
-								<p className='margin--medium-v'>
-									{brand.facetdisplay} <text style={{ color: 'grey' }} >({brand.count})</text>
-								</p>
-							</List.Content>
-						</Link>
-					</List>
+					<div style={virtual.style}>
+						{virtual.items.map(item => (
+							<List style={{ height: itemHeight }} key={`item_${item.facetrange}`}>
+								<Link to={urlBuilder.setId(Number(item.facetrange)).setName(item.facetdisplay).buildBrand()}>
+									<List.Content>
+										<p className='margin--medium-v'>
+											<span>{ item.facetdisplay.replace(/\b\w/g, (l) => (l.toUpperCase())) }</span>&nbsp;
+											<span style={{ color: 'grey' }} >({item.count})</span>
+										</p>
+									</List.Content>
+								</Link>
+							</List>
+						))}
+					</div>
 				);
-			})
-		) : '';
+			};
+			const MyVirtualList = VirtualList()(MyList);
+
+			return (
+				<MyVirtualList
+					items={filteredBrand}
+					itemHeight={50}
+				/>
+			);
+		}
+
+		return '';
 	}
 
 	render() {
@@ -254,10 +284,10 @@ class Brands extends Component {
 							</Level.Item>
 							{
 								(this.state.keyword.length >= this.state.minimumLetter ||
-								this.state.searchFocus) &&
-								<Level.Right className={styles.right}>
-									<Button className={styles.cancelButton} id='cancelSearch' onClick={() => this.cancelSearch()}> BATAL</Button>
-								</Level.Right>
+									this.state.searchFocus) &&
+									<Level.Right className={styles.right}>
+										<Button className={styles.cancelButton} id='cancelSearch' onClick={() => this.cancelSearch()}> BATAL</Button>
+									</Level.Right>
 							}
 						</Level>
 
@@ -270,7 +300,7 @@ class Brands extends Component {
 
 		return (
 			<div style={this.props.style}>
-				<Page color='white'>
+				<Page color='white' ref={(r) => { this.container = r; }}>
 					<SEO
 						paramCanonical={`${process.env.MOBILE_URL}${location.pathname}`}
 					/>

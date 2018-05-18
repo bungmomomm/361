@@ -6,8 +6,8 @@ import to from 'await-to-js';
 import { Promise } from 'es6-promise';
 import __x from '@/state/__x';
 
-const getAction = (token) => async (dispatch, getState) => {
-	dispatch(shopBagLoading({ loading: true }));
+const getAction = (token, pristine = false) => async (dispatch, getState) => {
+	dispatch(shopBagLoading({ loading: pristine }));
 
 	const { shared } = getState();
 	const baseUrl = _.chain(shared).get('serviceUrl.order.url').value() || false;

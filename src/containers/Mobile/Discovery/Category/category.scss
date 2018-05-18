@@ -1,6 +1,21 @@
 @import '../../../../styles/mobile/variables';
 @import '../../../../styles/mobile/mixins';
 
+.tabsHome {
+	position: fixed;
+	top: 60px;
+	left: 0;
+	right: 0;
+	z-index: 2;
+	max-width: 480px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.tabsHome + div a:first-child {
+	margin-top: rem(45px);
+}
+
 .list{
 	margin: rem(10px) rem(10px) 0px rem(10px);
 	display: block;

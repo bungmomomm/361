@@ -9,15 +9,24 @@ const onClose = (dispatch) => {
 };
 
 const foreverBanner = (params) => {
-	const { close_button, text, show, dispatch, link } = params;
+	const { close_button, text, show, dispatch, link, marginTop } = params;
 	const isHide = _.isEmpty(text.text1) && _.isEmpty(text.text2);
 
 	if (isHide) {
 		return null;
 	}
 
+	const notificationInlineAttribute = {
+		backgroundColor: text.background_color
+	};
+
+	// Add condition for inline styling
+	if (marginTop) {
+		notificationInlineAttribute.marginTop = marginTop;
+	}
+
 	const inlineStyle = {
-		color: params.text_color
+		color: text.text_color
 	};
 
 	const disableCloseFilter = (close_button.fg_show === '0');
@@ -41,12 +50,13 @@ const foreverBanner = (params) => {
 			</Link>)
 		);
 	}
+	
 	return (
 		<Notification
-			color='yellow'
 			show={show}
 			onClose={() => onClose(dispatch)}
 			disableClose={disableCloseFilter}
+			style={notificationInlineAttribute}
 		>
 			{content}
 		</Notification>

@@ -94,7 +94,7 @@ class Hashtags extends Component {
 	renderGridSmall = (campaignId) => {
 		const { hashtag } = this.props;
 		const items = hashtag.products[hashtag.active.node] && hashtag.products[hashtag.active.node].items
-					? hashtag.products[hashtag.active.node].items : [];
+			? hashtag.products[hashtag.active.node].items : [];
 		const filtr = hashtag.tags.filter((obj) => {
 			return (obj.campaign_id === campaignId);
 		});
@@ -128,7 +128,7 @@ class Hashtags extends Component {
 	renderGridLarge = (campaignId) => {
 		const { hashtag } = this.props;
 		const items = hashtag.products[hashtag.active.node] && hashtag.products[hashtag.active.node].items
-					? hashtag.products[hashtag.active.node].items : [];
+			? hashtag.products[hashtag.active.node].items : [];
 		const filtr = hashtag.tags.filter((obj) => {
 			return (obj.campaign_id === campaignId);
 		});
@@ -217,6 +217,9 @@ class Hashtags extends Component {
 
 		return (
 			<div>
+				<div className={styles.xwrap}>
+					<Header.Modal {...HeaderPage} />
+				</div>
 				<Page color='white'>
 					<SEO
 						paramCanonical={`${process.env.MOBILE_URL}${location.pathname}`}
@@ -230,16 +233,14 @@ class Hashtags extends Component {
 
 					{
 						campaignId && hashtag.viewMode === 3
-						? this.renderGridSmall(campaignId)
-						: campaignId && hashtag.viewMode === 1
-						? this.renderGridLarge(campaignId)
-						: ''
+							? this.renderGridSmall(campaignId)
+							: campaignId && hashtag.viewMode === 1
+							? this.renderGridLarge(campaignId)
+							: ''
 					}
 					{scroller.loading && <Spinner />}
 					<Footer isShow={this.state.isFooterShow} />
 				</Page>
-
-				<Header.Modal {...HeaderPage} />
 			</div>
 		);
 	}

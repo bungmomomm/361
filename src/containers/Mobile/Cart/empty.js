@@ -26,7 +26,7 @@ class Empty extends Component {
 				<Page color='white'>
 					<div className='padding--medium-h text-center full-height'>
 						<div className='margin--large-v'>
-							<div className='font-large'>Shopping Bag Kamu Masih Kosong</div>
+							<div className='font-large'>Tas Belanja Kamu Masih Kosong</div>
 							<div className='margin--medium-v'>
 								Butuh inspirasi gaya fashion? <br />
 								Cek halaman <br />
