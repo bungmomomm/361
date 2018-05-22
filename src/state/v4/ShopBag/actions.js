@@ -1,4 +1,5 @@
 import { request } from '@/utils';
+import { Emarsys } from '@/utils/tracking/emarsys';
 import { shopBagLoading, shopBagGet } from './reducer';
 import _ from 'lodash';
 import to from 'await-to-js';
@@ -34,6 +35,7 @@ const getAction = (token, pristine = false) => async (dispatch, getState) => {
 	const emptyState = response.data.data.empty_state;
 	dispatch(shopBagGet({ carts: cartsData, total: totalData, location_default: locationData, empty_state: emptyState }));
 	dispatch(shopBagLoading({ loading: false }));
+	Emarsys.storeCartsInfo(cartsData);
 
 	return Promise.resolve(response);
 };

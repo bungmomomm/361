@@ -33,6 +33,7 @@ import { actions as lovelistActions } from '@/state/v4/Lovelist';
 // TODO util management
 import Discovery from '../Utils';
 import { urlBuilder, renderIf } from '@/utils';
+import { Collector } from '@/utils/tracking/emarsys';
 import cookiesLabel from '@/data/cookiesLabel';
 
 import handler from '@/containers/Mobile/Shared/handler';
@@ -377,7 +378,11 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-	const { dispatch, cookies, location } = props;
+	const { dispatch, cookies, location, search } = props;
+
+	if (search && _.has(search, 'keyword') && !_.isEmpty(search.keyword)) {
+		Collector.push(Collector.SEARCH_PAGE, search.keyword);
+	}
 
 	const parsedUrl = queryString.parse(location.search);
 	const searchParam = {

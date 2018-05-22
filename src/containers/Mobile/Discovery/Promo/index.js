@@ -27,6 +27,7 @@ import { actions as lovelistActions } from '@/state/v4/Lovelist';
 
 import Discovery from '../Utils';
 import handler from '@/containers/Mobile/Shared/handler';
+import { Collector } from '@/utils/tracking/emarsys';
 
 @handler
 class Promo extends Component {
@@ -239,6 +240,8 @@ const doAfterAnonymous = async (props) => {
 		await dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
 		await dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
 	}
+
+	Collector.push();
 };
 
 export default withCookies(connect(mapStateToProps)(Scroller(Shared(Promo, doAfterAnonymous))));

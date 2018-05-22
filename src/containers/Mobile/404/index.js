@@ -16,6 +16,7 @@ import { actions as searchActions } from '@/state/v4/SearchResults';
 import Discovery from '../Discovery/Utils';
 import styles from './search.scss';
 import cookiesLabel from '@/data/cookiesLabel';
+import { Collector } from '@/utils/tracking/emarsys';
 
 @handler
 class Page404 extends Component {
@@ -148,6 +149,7 @@ const mapStateToProps = (state) => {
 const doAfterAnonymous = async (props) => {
 	const { dispatch, cookies } = props;
 	await dispatch(searchActions.promoAction(cookies.get(cookiesLabel.userToken)));
+	Collector.push();
 };
 
 export default withCookies(

@@ -16,6 +16,7 @@ import {
 } from '@/utils/tracking';
 import cookiesLabel from '@/data/cookiesLabel';
 import { LucidCart, Utils } from '@/utils/tracking/lucidworks';
+import { Collector } from '@/utils/tracking/emarsys';
 import handler from '@/containers/Mobile/Shared/handler';
 import { actions as sharedActions } from '@/state/v4/Shared';
 import { toastSytle } from '@/containers/Mobile/Shared/styleSnackbar';
@@ -476,6 +477,7 @@ const doAfterAnonymousCall = async (props) => {
 		)
 	);
 	trackCartView(response.data.data.carts, props);
+	Collector.push();
 };
 
 export default withCookies(connect(mapStateToProps)(Shared(Cart, doAfterAnonymousCall)));
