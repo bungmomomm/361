@@ -36,6 +36,7 @@ import {
 	categoryViewBuilder,
 	productClickBuilder
 } from '@/utils/tracking';
+import { Collector } from '@/utils/tracking/emarsys';
 import { userToken, pageReferrer, isLogin } from '@/data/cookiesLabel';
 
 const trackBrandPageView = (products, info, props) => {
@@ -515,7 +516,7 @@ const mapStateToProps = (state) => {
 };
 
 const doAfterAnonymous = async (props) => {
-
+	Collector.push();
 };
 
 export default withCookies(connect(mapStateToProps)(Scroller(Shared(Detail, doAfterAnonymous))));

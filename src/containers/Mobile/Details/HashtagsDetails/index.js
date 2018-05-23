@@ -27,6 +27,8 @@ import { Love } from '@/containers/Mobile/Widget';
 import stylesCatalog from '@/containers/Mobile/Discovery/View/view.scss';
 import handler from '@/containers/Mobile/Shared/handler';
 
+import { Collector } from '@/utils/tracking/emarsys';
+
 @handler
 class HashtagsDetails extends Component {
 
@@ -230,6 +232,7 @@ const doAfterAnonymous = async (props) => {
 		dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
 		dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
 	}
+	Collector.push();
 };
 
 export default withRouter(withCookies(connect(mapStateToProps)(Shared(HashtagsDetails, doAfterAnonymous))));

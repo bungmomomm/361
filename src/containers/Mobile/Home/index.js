@@ -24,6 +24,7 @@ import {
 import { urlBuilder } from '@/utils';
 import cookiesLabel from '@/data/cookiesLabel';
 import { Utils } from '@/utils/tracking/lucidworks';
+import { Collector } from '@/utils/tracking/emarsys';
 
 const renderSectionHeader = (title, options = null, cookies = null) => {
 	const headerLink = options !== null && (
@@ -542,6 +543,7 @@ const doAfterAnonymous = async (props) => {
 	await dispatch(new actions.recomendationAction(activeSegment, tokenHeader));
 	trackPageViewHandler(props);
 	Home.trackImpresionHandler(mainPageData);
+	Collector.push();
 };
 
 

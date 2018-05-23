@@ -49,6 +49,7 @@ import styles from './styles.scss';
 import { userToken, isLogin } from '@/data/cookiesLabel';
 import handler from '@/containers/Mobile/Shared/handler';
 import { Utils } from '@/utils/tracking/lucidworks';
+import { Collector } from '@/utils/tracking/emarsys';
 
 const trackSellerPageView = (products, info, props) => {
 	const productId = _.map(products, 'product_id') || [];
@@ -594,6 +595,7 @@ const doAfterAnonymous = async (props) => {
 	dispatch(commentActions.bulkieCommentAction(cookies.get(userToken), productIdList));
 	dispatch(lovelistActions.bulkieCountByProduct(cookies.get(userToken), productIdList));
 
+	Collector.push();
 };
 
 export default withRouter(withCookies(connect(mapStateToProps)(Scroller(Shared(Seller, doAfterAnonymous)))));

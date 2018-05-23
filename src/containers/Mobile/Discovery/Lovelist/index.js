@@ -17,6 +17,7 @@ import xhandler from '@/containers/Mobile/Shared/handler';
 import Shared from '@/containers/Mobile/Shared';
 
 import { uniqid } from '@/utils';
+import { Collector } from '@/utils/tracking/emarsys';
 import cookiesLabel from '@/data/cookiesLabel';
 
 import { LovedItemsSingle, LovedItemsGrid } from './List';
@@ -252,6 +253,7 @@ const doAfterAnonymous = async (props) => {
 		}
 	}
 	await dispatch(lovelistAction.listEmptyAction({ lovedEmpty: !lovedEmpty }));
+	Collector.push();
 };
 
 export default withCookies(connect(mapStateToProps)(Scroller(Shared(Lovelist, doAfterAnonymous))));
