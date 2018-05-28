@@ -59,7 +59,7 @@ const setCookieHasOffers = (locationURI) => {
 	) {
 		const transactionId = getUTMParameter(locationURI, 'transaction_id');
 		if (affCookie !== '') {
-			setCookie('afftrxid', null, -1, '/'); // expiring the cookie with specific domain
+			setCookie('afftrxid', null, -1, '/', process.env.SESSION_DOMAIN);
 			setCookie('afftrxid', affCookie, cookieExpire, '/', process.env.SESSION_DOMAIN);
 			setAffTrackId();
 		}
@@ -69,7 +69,7 @@ const setCookieHasOffers = (locationURI) => {
 		}
 		
 	} else {
-		setCookie('afftrxid', null, -1, '/');
+		setCookie('afftrxid', null, -1, '/', process.env.SESSION_DOMAIN);
 	}
 };
 
