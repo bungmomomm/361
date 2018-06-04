@@ -36,7 +36,7 @@ class LovelistGrid extends PureComponent {
 		const discountBadge = ((Number(data.pricing.discount) !== 0 || data.pricing.discount !== '') || data.pricing.discount !== '0%') ? (
 			<Level.Right>
 				<Badge rounded color='red'>
-					<span className='font--lato-bold'>{data.pricing.discount}</span>
+					<span>{data.pricing.discount}</span>
 				</Badge>
 			</Level.Right>
 		) : '';
@@ -59,8 +59,7 @@ class LovelistGrid extends PureComponent {
 					<Level.Item>
 						<Link to={linkToPdp || '/'}>
 							<div className={styles.title}>
-								<span className='font-small text-uppercase font--lato-bold font-color--primary'>{data.brand.name}</span>
-								<span className='text-elipsis-two-line font-color--primary-ext-2'>{trimString(data.product_title)}</span>
+								<span className='font-color--primary-ext-1'>{trimString(data.product_title)}</span>
 							</div>
 						</Link>
 					</Level.Item>

@@ -4,7 +4,7 @@ import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import {
-	Header, // Carousel,
+	Header, Carousel,
 	Page, Level, Button, Grid, Svg, Image, SmartBanner, SEO, Spinner
 } from '@/components/mobile';
 import styles from './home.scss';
@@ -363,6 +363,13 @@ class Home extends Component {
 
 					{ this.renderRecommendation(recommendation2)}
 					{ this.renderBottomBanner('bottom') }
+
+					{/* Sample Carousel */}
+					<Carousel>
+						<Image src='http://placehold.it/1000x400/ffffff/c0392b/&text=slide1' />
+						<Image src='http://placehold.it/1000x400/ffffff/c0392b/&text=slide2' />
+						<Image src='http://placehold.it/1000x400/ffffff/c0392b/&text=slide3' />
+					</Carousel>
 
 					<Footer isShow={this.state.isFooterShow} />
 				</Page>

@@ -37,7 +37,8 @@
 }
 
 .rounded {
-  border-radius: map-get($border-radius , --medium);
+  // border-radius: map-get($border-radius , --medium);
+  border-radius: 0;
 }
 
 .circle {
@@ -76,14 +77,14 @@
   height: size(--small);
   font-size: size(--font-small);
   padding: 0px rem(10px);
-  border-radius: size(--small);
+  // border-radius: size(--small);
 }
 
 .medium {
   height: rem(30px);
   font-size: size(--font-medium);
   padding: 0px rem(20px);
-  border-radius: size(--medium);
+  // border-radius: size(--medium);
   letter-spacing: 0.5px;
 }
 
@@ -91,20 +92,33 @@
   height: size(--large);
   font-size: size(--font-large);
   padding: 0px rem(30px);
-  border-radius: size(--large);
+  // border-radius: size(--large);
   letter-spacing: 0.5px;
 }
 
 .secondary{
-  border-color: color(--primary);
-  background-color: color(--primary);
-  color: color(--white);
+  border-color: color(--secondary);
+  background-color: color(--white);
+  color: color(--secondary);
+
+  &:hover {
+    border-color: color(--secondary);
+    background-color: color(--secondary);
+    color: color(--white);
+  }
 }
 
 .primary{
   border-color: color(--secondary);
   background-color: color(--secondary);
   color: color(--white);
+
+  &:hover {
+    border-color: color(--secondary);
+    background-color: color(--white);
+    color: color(--secondary);
+  }
+
 }
 
 .white{

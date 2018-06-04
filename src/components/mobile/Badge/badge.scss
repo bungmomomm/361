@@ -29,11 +29,17 @@
 }
 
 .rounded{
-	border-radius: 20px;
+	font-family: 'Roboto Condensed', sans-serif;
+	background-color: color(--primary-ext-1);
+	border-color: color(--primary-ext-1);
+	color: color(--white);
+	border-radius: 0px;
 	padding: 0px rem(5px);
 	&.red{
-		border-color: color(--secondary);
-		color: color(--secondary);
+		font-family: 'Roboto Condensed', sans-serif;
+		font-size: rem(14px);
+		border-color: color(--primary-ext-1);
+		color: color(--white);
 	}
 }
 

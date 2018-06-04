@@ -33,7 +33,7 @@
 	html,
 	body {
 		font-family: 'Roboto Condensed', sans-serif;
-		font-size: rem(13px);
+		font-size: rem(14px);
 		position: relative;
 		// height: 100%;
 		// display: flex;
@@ -42,7 +42,7 @@
 		// overflow-y: auto;
 		color: color(--primary);
 		line-height: 20px;
-		background-color: #f1f3f4;
+		background-color: color(--white);
 		-webkit-overflow-scrolling: touch;
 	}
 
@@ -62,8 +62,24 @@
 		}
 	}
 
+	h1, h2, h3, h4, h5, h6 {
+		font-weight: 700;
+		margin-bottom: rem(20px);
+	}
+
+	h1 {font-size: rem(40px);}
+	h2 {font-size: rem(30px);}
+	h3 {font-size: rem(24px);}
+	h4 {font-size: rem(18px);}
+	h5 {font-size: rem(14px);}
+	h6 {font-size: rem(12px);}
+
+	small {
+		font-size: rem(10px);
+	}
+
 	.font-color--black {
-		color: #191919;
+		color: #111111;
 	}
 
 	.font-color--white {
@@ -165,16 +181,17 @@
 	// }
 
 	a {
-		color: #3c5a98;
+		color: color(--secondary);
 		text-decoration: none;
 		font-family: 'Roboto Condensed', sans-serif;
 	}
 	p {
-		font-size: 13px;
+		font-size: rem(14px);
 		text-decoration: none;
 		font-family: 'Roboto Condensed', sans-serif;
-		color: #191919;
+		color: #999999;
 		line-height: 1.4;
+		margin-bottom: rem(10px);
 	}
 
 	button {

@@ -163,7 +163,8 @@ class Lovelist extends Component {
 		};
 
 		const { shared, dispatch } = this.props;
-
+		console.log('Lovelist index');
+		console.log(status.listTypeGrid);
 		return (
 			this.isLogin && 
 			<div style={this.props.style}>

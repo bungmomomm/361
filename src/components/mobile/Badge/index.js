@@ -38,7 +38,6 @@ class Badge extends PureComponent {
 		if (sellerProfile) {
 			badgeStyle.right = '-30px';
 		}
-
 		return (
 			<span
 				className={createClassName}

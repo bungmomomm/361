@@ -160,15 +160,14 @@
 }
 
 .price{
-	font-family: font-family('Lato-Bold');
-	font-size: map-get($font-size, --medium );
-	color: color(--primary);
-	letter-spacing: 0.5px;
+	font-family: 'Roboto Condensed', sans-serif;
+	font-size: rem(14px);
+	color: color(--secondary);
 }
 
 .discount{
-	font-family: font-family('Lato-Regular');
-	font-size: map-get($font-size, --small );
-	color: color(--primary-ext-2);
+	font-family: 'Roboto Condensed', sans-serif;
+	font-size: rem(11px);
+	color: color(--primary);
 	text-decoration: line-through;
 }
