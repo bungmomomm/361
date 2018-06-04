@@ -1,13 +1,9 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700');
+
 @import '_variables.scss';
 @import '_mixins.scss';
 @import '_typography.scss';
-
-@include font-face('Helvetica-Roman', 'Helvetica');
-@include font-face('Helvetica-Medium', 'Helvetica');
-@include font-face('Helvetica-Bold', 'Helvetica');
-@include font-face('Lato-Light', 'Lato');
-@include font-face('Lato-Regular', 'Lato');
-@include font-face('Lato-Bold', 'Lato');
+@import '_flexboxgrid.scss';
 
 // Plugins
 :global {
@@ -36,7 +32,7 @@
 :global {
 	html,
 	body {
-		font-family: font-family('Lato-Regular');
+		font-family: 'Roboto Condensed', sans-serif;
 		font-size: rem(13px);
 		position: relative;
 		// height: 100%;
@@ -68,6 +64,10 @@
 
 	.font-color--black {
 		color: #191919;
+	}
+
+	.font-color--white {
+		color: #ffffff;
 	}
 
 	.font-color--grey {
@@ -167,12 +167,12 @@
 	a {
 		color: #3c5a98;
 		text-decoration: none;
-		font-family: 'Lato-Regular';
+		font-family: 'Roboto Condensed', sans-serif;
 	}
 	p {
 		font-size: 13px;
 		text-decoration: none;
-		font-family: 'Lato-Regular';
+		font-family: 'Roboto Condensed', sans-serif;
 		color: #191919;
 		line-height: 1.4;
 	}

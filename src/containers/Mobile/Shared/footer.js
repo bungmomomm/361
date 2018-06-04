@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Svg, Button } from '@/components/mobile';
+import { Svg } from '@/components/mobile';
 
 const footer = (props) => {
 	// console.log(typeof _.toBoolean(props.isShow));
@@ -10,17 +10,10 @@ const footer = (props) => {
 	// const isAndroid = UA.match(/Android/i) || UA.match(/webOS/i);
 
 	if (!isShow) return null;
-
-	let isi = 'MatahariMall.com adalah situs belanja online No. #1 dan terbesar di Indonesia. Kami memberikan fasilitas pelayanan yang terbaik untuk mendukung Anda belanja online dengan aman, nyaman dan terpercaya. MatahariMall.com menawarkan beragam kemudahan untuk bertransaksi, seperti transfer antar bank, kartu kredit dengan cicilan 0%, O2O (Online-to-Offline), COD (Cash On Delivery), dan metode lainnya.';
-	
-	if (typeof window.meta !== 'undefined') {
-		const { content	} = window.meta;
-		isi = content;
-	}
 	
 	return (
 		<div>
-			<div style={{ backgroundColor: '#EBEBEB' }}>
+			<div style={{ backgroundColor: '#111111' }}>
 				<Link to='/bantuan'>
 					<div className='flex-row flex-middle flex-center margin--medium-v'>
 						<div className='padding--medium-h'>BUTUH BANTUAN ? HUBUNGI KAMI</div>
@@ -28,51 +21,40 @@ const footer = (props) => {
 					</div>
 				</Link>
 			</div>
-			<div style={{ backgroundColor: '#F7F7F7' }}>
-				<div className='flex-middle flex-center padding--large-h text-center'>
+			<div style={{ backgroundColor: '#111111' }}>
+				<div className='flex-middle padding--large-h'>
 					<div className='margin--medium-v'>
-						<Button outline color='white' size='medium'>
-							<div className='flex-row flex-center flex-middle'>
-								<Svg src='ico_newstore.svg' />
-								<a className='margin--small-h' href={process.env.JUALAN_AJA_URL} target='_blank'>
-									<span className='padding--small-h'>JUALAN AJA</span>
-								</a>
-							</div>
-						</Button>
+						<h3 className='font-color--white'>Infomarsi</h3>
+						<p>National Service Hotline : <br /> +62 21 2911 0133</p>
+						<p>Alamat : <br />
+							Gedung Lippo Kuningan, lantai 22
+							Jln H. R. Rasuna Said Kav B-12, Setiabudi,
+							RT.6/RW.7,
+							Kota Jakarta Selatan.</p>
 					</div>
-					<p className='font-small footer-content' dangerouslySetInnerHTML={{ __html: isi }} />
 					<div className='margin--medium-v'>
-						<div className='flex-row'>
-							<a className='margin--small-h' href={process.env.FB_MM} target='_blank'>
-								<Svg src='ico_footer_facebook.svg' />
-							</a>
-							<a className='margin--small-h' href={process.env.TWITTER_MM} target='_blank'>
-								<Svg src='ico_footer_twitter.svg' />
-							</a>
-							<a className='margin--small-h' href={process.env.INSTAGRAM_MM} target='_blank'>
-								<Svg src='ico_footer_instagram.svg' />
-							</a>
-							<a className='margin--small-h' href={process.env.LINE_MM} target='_blank'>
-								<Svg src='ico_footer_line.svg' />
-							</a>
-						</div>
+						<h3 className='font-color--white'>Tentang 361</h3>
+						<p>National Service Hotline : <br /> +62 21 2911 0133</p>
+						<p>Alamat : <br />
+							Gedung Lippo Kuningan, lantai 22
+							Jln H. R. Rasuna Said Kav B-12, Setiabudi,
+							RT.6/RW.7,
+							Kota Jakarta Selatan.</p>
 					</div>
-					<p className='font-small'>Belanja lebih mudah unduh aplikasinya sekarang</p>
 					<div className='margin--medium-v'>
-						<div className='flex-row'>
-							<a className='margin--small-h' href={process.env.MM_PLAY_STORE}>
-								<Svg src='ico_btn_playstore.svg' />
-							</a>
-							<a className='margin--small-h' href={process.env.MM_APP_STORE}>
-								<Svg src='ico_btn_appstore.svg' />
-							</a>
-							
-						</div>
+						<h3 className='font-color--white'>Bantuan</h3>
+						<p>National Service Hotline : <br />+62 21 2911 0133</p>
+						<p>Alamat : <br />
+							Gedung Lippo Kuningan, lantai 22
+							Jln H. R. Rasuna Said Kav B-12, Setiabudi,
+							RT.6/RW.7,
+							Kota Jakarta Selatan.</p>
 					</div>
 				</div>
+				<hr />
 				<div className='border-top text-center padding--medium-h'>
 					<div className='margin--small-v font-color--primary-ext-2 font-small'>
-						<span className='margin--small-v'>©PT Solusi Ecommerce Global</span>
+						<span className='margin--small-v'>©2018, 361 Degrees</span>
 					</div>
 				</div>
 			</div>

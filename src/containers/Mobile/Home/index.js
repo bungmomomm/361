@@ -4,9 +4,8 @@ import { withCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import {
-	Header, Carousel, Tabs,
-	Page, Level, Button, Grid, Article,
-	Navigation, Svg, Image, SmartBanner, SEO, Spinner
+	Header, // Carousel,
+	Page, Level, Button, Grid, Svg, Image, SmartBanner, SEO, Spinner
 } from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
@@ -215,7 +214,7 @@ class Home extends Component {
 				return (
 					<div>
 						{ header }
-						<Grid split={3} bordered>
+						<Grid split={2} bordered>
 							{
 								data.data.map(({ images, pricing, path, product_id, product_title }, e) => {
 									const pdpUriBuilder = `${urlBuilder.buildPdp(product_title, product_id)}`;
@@ -244,52 +243,6 @@ class Home extends Component {
 					</div>
 				);
 			}
-		}
-		return null;
-	}
-
-	renderHashtag() {
-		const { home } = this.props;
-		const segment = home.activeSegment.key;
-		const datas = _.chain(home).get(`allSegmentData.${segment}.hashtag`);
-		const baseHashtagUrl = '/mau-gaya-itu-gampang';
-		if (!datas.isEmpty().value() && datas.value().id !== '') {
-			const datanya = datas.value();
-			const header = renderSectionHeader(datanya.hashtag, {
-				title: datanya.mainlink.text,
-				url: baseHashtagUrl
-			});
-
-			const detailHashTag = `${baseHashtagUrl}/${datanya.hashtag.replace('#', '')}-${datanya.campaign_id}`;
-
-			return (
-				<div>
-					{ header }
-					<Grid split={3} bordered>
-						{
-							datanya.images.map((gambar, e) => {
-								const embedUrl = _.chain(gambar).get('embed_url').value();
-								const icode = (embedUrl.substr(embedUrl.indexOf('/p/')).split('/') || [])[2];
-								const hashtagLink = `${detailHashTag}/${gambar.content_id}/${icode || ''}`;
-								return (
-									<div key={e}>
-										<Link
-											to={hashtagLink}
-											onClick={
-												() => {
-													sendLocation(hashtagLink);
-												}
-											}
-										>
-											<Image lazyload shape='square' alt='thumbnail' src={gambar.images.thumbnail} />
-										</Link>
-									</div>
-								);
-							})
-						}
-					</Grid>
-				</div>
-			);
 		}
 		return null;
 	}
@@ -388,77 +341,6 @@ class Home extends Component {
 
 	}
 
-	renderFeaturedBrands() {
-		const { home } = this.props;
-		const segment = home.activeSegment.key;
-		const featuredBrand = _.chain(home).get(`allSegmentData.${segment}.featuredBrand`);
-		if (!featuredBrand.isEmpty().value()) {
-			const header = renderSectionHeader('Popular Brand');
-			return (
-				<div>
-					{
-						header
-					}
-					<Grid split={3}>
-						{
-							featuredBrand.value().map((brand, e) => {
-								const url = urlBuilder.setId(brand.brand_id).setName(brand.brand_name)
-									.setCategoryId(this.props.home.activeSegment.id).buildFeatureBrand();
-								return (
-									<div className={styles.brandsImage} key={e}>
-										<Link
-											to={url}
-											onClick={
-												() => {
-													sendLocation(url);
-												}
-											}
-										>
-											<Image lazyload alt='thumbnail' src={brand.images.thumbnail} />
-										</Link>
-									</div>
-								);
-							})
-						}
-					</Grid>
-				</div>
-			);
-		}
-
-		return null;
-	}
-
-	renderMozaic() {
-		const { home } = this.props;
-		const segment = home.activeSegment.key;
-		const mozaic = _.chain(home).get(`allSegmentData.${segment}.mozaic`);
-
-		if (!mozaic.isEmpty().value()) {
-			const header = renderSectionHeader('Artikel Mozaic', {
-				title: mozaic.value().mainlink.text,
-				url: mozaic.value().mainlink.link,
-				isMozaic: true
-			});
-			return (
-				<div className='border-top margin--medium-v'>
-					{
-						header
-					}
-					<Carousel className={styles.mozaic}>
-						{
-							mozaic.value().posts.map((detail, i) => (
-								<Article posts={detail} key={i} />
-							))
-						}
-					</Carousel>
-				</div>
-
-			);
-		}
-
-		return null;
-	}
-
 	render() {
 		const { shared, dispatch } = this.props;
 
@@ -470,18 +352,9 @@ class Home extends Component {
 					<SEO
 						paramCanonical={process.env.MOBILE_URL}
 					/>
-					<Tabs
-						className={styles.tabsHome}
-						current={this.props.shared.current}
-						variants={this.props.home.segmen}
-						onPick={(e) => this.handlePick(e)}
-						type='borderedBottom'
-					/>
 					{ <ForeverBanner marginTop={'35px'} {...shared.foreverBanner} dispatch={dispatch} /> }
 
 					{this.renderHeroBanner()}
-
-					{this.renderHashtag()}
 
 					{this.renderSquareBanner()}
 
@@ -490,10 +363,6 @@ class Home extends Component {
 
 					{ this.renderRecommendation(recommendation2)}
 					{ this.renderBottomBanner('bottom') }
-
-					{ this.renderFeaturedBrands() }
-
-					{this.renderMozaic()}
 
 					<Footer isShow={this.state.isFooterShow} />
 				</Page>
@@ -517,7 +386,6 @@ class Home extends Component {
 					lovelist={shared.totalLovelist}
 					value={this.props.search.keyword}
 				/>
-				<Navigation active='Home' scroll={this.props.scroll} totalCartItems={shared.totalCart} botNav={this.props.botNav} isLogin={this.isLogin} />
 			</div>
 		);
 	}

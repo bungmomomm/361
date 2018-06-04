@@ -111,7 +111,7 @@ class Product extends Component {
 	constructor(props) {
 		super(props);
 		this.props = props;
-
+		console.log('123a');
 		const propsObject = _.chain(props.productCategory);
 		this.isLogin = this.props.cookies.get(isLogin) === 'true';
 		this.state = {

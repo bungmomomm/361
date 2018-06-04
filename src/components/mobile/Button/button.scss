@@ -11,7 +11,7 @@
   border: 0;
   outline: none;
   font-size: inherit;
-  font-family: font-family('lato-normal');
+  font-family: 'Roboto Condensed', sans-serif;
   &[disabled] {
     opacity: .4;
   }
@@ -19,7 +19,7 @@
 
 .styled{
   border: 1px solid transparent;
-  font-family: font-family('lato-normal');
+  font-family: 'Roboto Condensed', sans-serif;
 }
 
 .wide {
