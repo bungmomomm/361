@@ -21,29 +21,7 @@ import CONST from '@/constants';
 
 @handler
 class MyOrderDetail extends Component {
-	static renderTrackingInfo(order) {
-		const isResiInfoExist = Object.prototype.hasOwnProperty.call(order.shipping, 'resi');
-		return (
-			<Level style={{ borderBottom: '1px solid #D8D8D8', borderTop: '1px solid #D8D8D8' }}>
-				<Level.Left style={{ justifyContent: 'center' }}><Svg src='ico_box.svg' /></Level.Left>
-				<Level.Item style={{ padding: '0 15px' }} >
-					<strong>{order.status}</strong>
-					{ isResiInfoExist && (<small>No. Resi: {order.shipping.resi.resi}</small>) }
-					<small>Layanan Pengiriman: {order.shipping.shipping_method}</small>
-				</Level.Item>
-				{
-					(isResiInfoExist && order.shipping.resi.is_trackable === 1) && (
-						<Level.Right style={{ alignItems: 'flex-end', justifyContent: 'center' }}>
-							<Link to={`/track/${order.shipping.resi.provider}/${order.shipping.resi.resi}`}>
-								<Button rounded inline size='small' color='white'>Lacak</Button>
-							</Link>
-						</Level.Right>)
-				}
-
-			</Level>
-		);
-	}
-
+	
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -64,6 +42,28 @@ class MyOrderDetail extends Component {
 	onAddReview(soStoreNumber, seller, item) {
 		const { dispatch } = this.props;
 		dispatch(userAction.keepReviewInfo({ soStoreNumber, seller, item }));
+	}
+	static renderTrackingInfo(order) {
+		const isResiInfoExist = Object.prototype.hasOwnProperty.call(order.shipping, 'resi');
+		return (
+			<Level style={{ borderBottom: '1px solid #D8D8D8', borderTop: '1px solid #D8D8D8' }}>
+				<Level.Left style={{ justifyContent: 'center' }}><Svg src='ico_box.svg' /></Level.Left>
+				<Level.Item style={{ padding: '0 15px' }} >
+					<strong>{order.status}</strong>
+					{ isResiInfoExist && (<small>No. Resi: {order.shipping.resi.resi}</small>) }
+					<small>Layanan Pengiriman: {order.shipping.shipping_method}</small>
+				</Level.Item>
+				{
+					(isResiInfoExist && order.shipping.resi.is_trackable === 1) && (
+						<Level.Right style={{ alignItems: 'flex-end', justifyContent: 'center' }}>
+							<Link to={`/track/${order.shipping.resi.provider}/${order.shipping.resi.resi}`}>
+								<Button rounded inline size='small' color='white'>Lacak</Button>
+							</Link>
+						</Level.Right>)
+				}
+			
+			</Level>
+		);
 	}
 
 	renderButtonLink(item, seller) {
