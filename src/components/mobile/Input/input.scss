@@ -33,6 +33,7 @@ textarea {
   &:-moz-placeholder,
   &::-moz-placeholder,
   &:-ms-input-placeholder {
+    font-family: 'Roboto Condensed', sans-serif;
     color: color(--primary)
   }
   &[type="radio"] {
@@ -109,7 +110,7 @@ textarea {
 }
 
 .label, .hint, .textCounter {
-  font-family: font-family(--lato-normal);
+  font-family: 'Roboto Condensed', sans-serif;
   font-size: map-get($font-size, --small );
   line-height: 1.4;
   color: color(--primary-ext-2);

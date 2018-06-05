@@ -1,6 +1,5 @@
 @import '../../../styles/mobile/variables';
 @import '../../../styles/mobile/mixins';
-
 .container{
 	order: 0;
 }
@@ -14,16 +13,63 @@
 	margin-top: -1px;
 }
 
+.topbar {
+	background-color: #F7F7F7;
+	padding-top: rem(8px);
+	padding-bottom: rem(8px);
+
+	a {
+		color: color(--primary-ext-1);
+		font-size: rem(11px);
+
+		span {margin-right: 5px;}
+	}
+}
+
+.header {
+	background: #FFFFFF;
+	box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.1);
+}
+
 .header, .search, .modal, .subHeader{
 	min-height: rem(60px);
 	position: fixed;
-	max-width: $max-width-container;
 	margin: 0 auto;
 	width: 100%;
 	justify-content: center;
 	background: #fff;
 	z-index: 2;
-	top: 0px;
+	top: rem(0px);
+}
+
+.main {
+	padding-top: rem(12px);
+	padding-bottom: rem(12px);
+	border-top: 1px solid #d8d8d8;
+
+	ul {list-style: none;margin: 0;padding: 0;}
+	ul > li {
+		padding-left: rem(20px);
+		padding-right: rem(20px);
+		display: inline-block;
+	}
+	ul > li > a {
+		font-size: rem(14px);
+		color: color(--primary-ext-1);
+		text-transform: uppercase;
+	}
+}
+
+.sale {
+	> a {
+		color: color(--secondary) !important;
+	}
+}
+
+@media only screen and (max-width: 48em) {
+	.header, .search, .modal, .subHeader {
+		max-width: $max-width-container;
+	}
 }
 
 .subHeader{
@@ -44,19 +90,23 @@
 .dummyplaceholder{
 	position: absolute;
 	pointer-events: none;
-	left: 0px;
-	top: 0px;
+	left: rem(20px);
+	top: rem(3px);
 	width: 100%;
 	display: flex;
 	flex-direction: row;
-	justify-content: center;
 	padding-right: 15px;
 	align-items: center;
 	height: 30px;
-	color: #A4A4A4;
-	font-style: italic;
-	font-family: font-family('lato-regular');
-	font-size: 12px;
+	color: #999999;
+	font-family: 'Roboto Condensed', sans-serif;
+	font-size: rem(14px);
+
+	span:last-child {
+		position: absolute;
+		top: rem(5px);
+		right: rem(20px);
+	}
 
 }
 
