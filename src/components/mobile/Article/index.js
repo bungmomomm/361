@@ -16,7 +16,7 @@ class Article extends PureComponent {
 
 		return (
 			<div className={createClassName}>
-				<a href={posts.link} target='_blank'>
+				<a href={posts.link} target='_blank' rel='noopener noreferrer'>
 					<div className={styles.thumbnail} style={{ backgroundImage: `url(${posts.images.thumbnail})` }}>
 						<img src={posts.images.thumbnail} alt='article' />
 					</div>

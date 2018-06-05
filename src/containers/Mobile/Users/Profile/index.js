@@ -209,7 +209,7 @@ class UserProfile extends Component {
 							</Level.Item>
 						</Level>
 					</Link>
-					<a href={returnRefund} className='bg--white' target='_blank'>
+					<a href={returnRefund} className='bg--white' target='_blank' rel='noopener noreferrer'>
 						<Level style={{ padding: '0 0 0 15px' }}>
 							<Level.Left style={{ alignSelf: 'center' }}>
 								<Svg src='ico_return.svg' />

@@ -30,7 +30,7 @@ const renderSectionHeader = (title, options = null, cookies = null) => {
 		<Level.Right>
 			{
 				options.isMozaic ?
-					<a href={options.url || '/'} target='_blank' className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></a>
+					<a href={options.url || '/'} rel='noopener noreferrer' target='_blank' className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></a>
 					:
 					<Link
 						to={options.url || '/'}
