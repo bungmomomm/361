@@ -18,6 +18,8 @@ const Header = props => {
 		searchReference = 'category';
 	}
 
+	console.log(searchReference);
+
 	return (
 		<div>
 			<nav className={styles.container}>

@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
-import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import {
 	Header, Carousel,
-	Page, Level, Button, Grid, Svg, Image, SmartBanner, SEO, Spinner
+	Page, Image, SmartBanner, SEO
 } from '@/components/mobile';
 import styles from './home.scss';
 import { actions } from '@/state/v4/Home';
@@ -17,38 +16,11 @@ import {
 	TrackingRequest,
 	homepageViewBuilder,
 	impressionsPushedBuilder,
-	sendGtm,
-	sendLocation
+	sendGtm
 } from '@/utils/tracking';
-import { urlBuilder } from '@/utils';
 import cookiesLabel from '@/data/cookiesLabel';
 import { Utils } from '@/utils/tracking/lucidworks';
 import { Collector } from '@/utils/tracking/emarsys';
-
-const renderSectionHeader = (title, options = null, cookies = null) => {
-	const headerLink = options !== null && (
-		<Level.Right>
-			{
-				options.isMozaic ?
-					<a href={options.url || '/'} rel='noopener noreferrer' target='_blank' className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></a>
-					:
-					<Link
-						to={options.url || '/'}
-						className={styles.readmore}
-					>
-						{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' />
-					</Link>
-			}
-		</Level.Right>
-	);
-
-	return (
-		<Level>
-			<Level.Left><div className={styles.headline}>{title}</div></Level.Left>
-			{headerLink}
-		</Level>
-	);
-};
 
 const trackPageViewHandler = (props) => {
 	const { shared, users } = props;
@@ -140,212 +112,9 @@ class Home extends Component {
 		});
 	}
 
-	renderHeroBanner() {
-		const { home } = this.props;
-		const segment = home.activeSegment.key;
-		const featuredBanner = _.chain(home).get(`allSegmentData.${segment}`).get('heroBanner');
-		if (!featuredBanner.isEmpty().value()) {
-			const bannerData = featuredBanner.value();
-			const images = bannerData[0].images;
-			let link = bannerData[0].link.target;
-			if (link !== '') {
-				const promotion = bannerData[0].impression;
-				link = this.urlPromotionEnhancer(link, promotion.id, promotion.name, promotion.creative, promotion.position);
-			}
-
-			const isStatic = bannerData[0].link.type === 'url_web';
-			return (
-				isStatic ?
-					<a
-						href={link}
-						onClick={
-						() => {
-							sendLocation(link);
-						}
-					}
-					>
-						<div>
-							<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
-						</div>
-					</a> :
-					<Link
-						to={link}
-						onClick={
-						() => {
-							sendLocation(link);
-						}
-					}
-					>
-						<div>
-							<Image src={images.thumbnail} onClick={e => this.handleLink(link)} />
-						</div>
-					</Link>
-			);
-		}
-
-		return (
-			<div style={{ margin: '20px auto 20px auto' }}>
-				<Spinner />
-			</div>);
-	}
-
-	renderRecommendation(type = 'new_arrival_products') {
-		/**
-		 * Registered object
-		 * new-arrival,
-		 * best-seller,
-		 * recommended-products,
-		 * recent-view
-		 * */
-
-		const { home, cookies } = this.props;
-		const segment = home.activeSegment;
-		const title = 'LIHAT SEMUA';
-		const recommendationData = _.chain(home).get(`allSegmentData.${segment.key}.recomendationData.${type}`);
-		if (recommendationData.value()) {
-			const data = recommendationData.value();
-			if (data.data && data.data.length > 0) {
-				const link = `/promo/${type}?segment_id=${segment.id}`;
-
-				const header = renderSectionHeader(data.title, {
-					title,
-					url: link
-				}, cookies);
-				return (
-					<div>
-						{ header }
-						<Grid split={2} bordered>
-							{
-								data.data.map(({ images, pricing, path, product_id, product_title }, e) => {
-									const pdpUriBuilder = `${urlBuilder.buildPdp(product_title, product_id)}`;
-									return (
-										<div key={e}>
-											<Link
-												to={pdpUriBuilder}
-												onClick={
-													() => {
-														sendLocation(pdpUriBuilder);
-													}
-												}
-											>
-												<Image lazyload shape='square' alt='thumbnail' src={images[0].thumbnail} />
-												<div className={styles.btnThumbnail}>
-													<Button transparent color='secondary' size='small'>
-														{pricing.formatted.effective_price}
-													</Button>
-												</div>
-											</Link>
-										</div>
-									);
-								})
-							}
-						</Grid>
-					</div>
-				);
-			}
-		}
-		return null;
-	}
-
-	renderSquareBanner() {
-		const { home } = this.props;
-		const segment = home.activeSegment.key;
-		const datas = _.chain(home).get(`allSegmentData.${segment}.squareBanner`);
-		if (datas.value()) {
-			return (
-				<div className='margin--medium-v'>
-					{
-						datas.value().map(({ images, link, impression }, c) => {
-							const isStatic = link.type === 'url_web';
-							let url = link.target;
-							if (url !== '') {
-								url = this.urlPromotionEnhancer(url, impression.id, impression.name, impression.creative, impression.position);
-							}
-							return (
-								isStatic ?
-									<a
-										href={url || '/'}
-										key={c}
-										onClick={
-											() => {
-												sendLocation(url);
-											}
-										}
-									>
-										<div>
-											<Image lazyload alt='banner' src={images.thumbnail} />
-										</div>
-									</a> :
-									<Link
-										to={url || '/'}
-										key={c}
-										onClick={
-											() => {
-												sendLocation(url);
-											}
-										}
-									>
-										<div>
-											<Image lazyload alt='banner' src={images.thumbnail} />
-										</div>
-									</Link>
-							);
-						})
-					}
-				</div>
-			);
-		}
-		return null;
-	}
-
-	renderBottomBanner(position = 'top') {
-		const { home } = this.props;
-		const segment = home.activeSegment.key;
-		let bottomBanner = [];
-		const dataTop = _.chain(home).get(`allSegmentData.${segment}.topLanscape`);
-		const dataBottm = _.chain(home).get(`allSegmentData.${segment}.bottomLanscape`);
-		if (dataTop.value() && dataBottm.value()) {
-			bottomBanner = position === 'top' ? dataTop.value() : dataBottm.value();
-		}
-		if (bottomBanner.length > 0) {
-			return (
-				<div className='margin--medium-v'>
-					{
-						bottomBanner.map(({ images, link, impression }, d) => {
-							let url = link.target;
-							if (url !== '') {
-								url = this.urlPromotionEnhancer(url, impression.id, impression.name, impression.creative, impression.position);
-							}
-							return (
-								<Link
-									to={url || '/'}
-									key={d}
-									onClick={
-										() => {
-											sendLocation(url);
-										}
-									}
-								>
-									<div>
-										<Image lazyload alt='banner' src={images.thumbnail} />
-									</div>
-								</Link>
-							);
-						})
-					}
-				</div>
-			);
-		}
-
-		return null;
-
-	}
-
 	render() {
 		const { shared, dispatch } = this.props;
 
-		const recommendation1 = !this.isLogin ? 'new-arrival' : 'recommended-products';
-		const recommendation2 = !this.isLogin ? 'best-seller' : 'recent-view';
 		return (
 			<div className={!shared.foreverBanner.show ? styles['am-top'] : ''} style={this.props.style}>
 				<Page color='white'>
@@ -353,27 +122,21 @@ class Home extends Component {
 						paramCanonical={process.env.MOBILE_URL}
 					/>
 					{ <ForeverBanner marginTop={'35px'} {...shared.foreverBanner} dispatch={dispatch} /> }
-
-					{this.renderHeroBanner()}
-
-					{this.renderSquareBanner()}
-
-					{ this.renderRecommendation(recommendation1)}
-					{ this.renderBottomBanner('top') }
-
-					{ this.renderRecommendation(recommendation2)}
-					{ this.renderBottomBanner('bottom') }
-
-					{/* Sample Carousel */}
-					<Carousel>
-						<Image src='http://placehold.it/1000x400/ffffff/c0392b/&text=slide1' />
-						<Image src='http://placehold.it/1000x400/ffffff/c0392b/&text=slide2' />
-						<Image src='http://placehold.it/1000x400/ffffff/c0392b/&text=slide3' />
-					</Carousel>
-
-					<Footer isShow={this.state.isFooterShow} />
 				</Page>
-
+				{/* Sample Carousel */}
+				<Carousel>
+					<Image local src='banner-home-361.png' />
+					<Image local src='banner-home-361.png' />
+					<Image local src='banner-home-361.png' />
+				</Carousel>
+				<div className='container'>
+					<div className='margin--large-v row'>
+						<div className='col-xs-12 col-md-4 col-lg-4'><Image local src='banner-promo-01.png' /></div>
+						<div className='col-xs-12 col-md-4 col-lg-4'><Image local src='banner-promo-02.png' /></div>
+						<div className='col-xs-12 col-md-4 col-lg-4'><Image local src='banner-promo-03.png' /></div>
+					</div>
+				</div>
+				<Footer isShow={this.state.isFooterShow} />
 				{
 					process.env.SHOW_SMART_BANNER === 'true' && (
 						<SmartBanner
@@ -388,7 +151,6 @@ class Home extends Component {
 						/>
 					)
 				}
-
 				<Header
 					lovelist={shared.totalLovelist}
 					value={this.props.search.keyword}

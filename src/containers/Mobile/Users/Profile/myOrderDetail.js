@@ -43,7 +43,8 @@ class MyOrderDetail extends Component {
 		const { dispatch } = this.props;
 		dispatch(userAction.keepReviewInfo({ soStoreNumber, seller, item }));
 	}
-	static renderTrackingInfo(order) {
+
+	/* static renderTrackingInfo(order) {
 		const isResiInfoExist = Object.prototype.hasOwnProperty.call(order.shipping, 'resi');
 		return (
 			<Level style={{ borderBottom: '1px solid #D8D8D8', borderTop: '1px solid #D8D8D8' }}>
@@ -61,10 +62,10 @@ class MyOrderDetail extends Component {
 							</Link>
 						</Level.Right>)
 				}
-			
+
 			</Level>
 		);
-	}
+	} */
 
 	renderButtonLink(item, seller) {
 		const { user } = this.props;

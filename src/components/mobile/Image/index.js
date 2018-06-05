@@ -46,6 +46,7 @@ class Image extends Component {
 	}
 
 	onError = (e) => {
+		console.log('error', e);
 		e.target.src = require('@/assets/images/mobile/mm_ico_imagebroken.png');
 	};
 

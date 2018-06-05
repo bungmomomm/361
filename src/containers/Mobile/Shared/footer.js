@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Svg } from '@/components/mobile';
+import {
+	Image, Svg
+} from '@/components/mobile';
 
 const footer = (props) => {
 	// console.log(typeof _.toBoolean(props.isShow));
@@ -12,18 +14,10 @@ const footer = (props) => {
 	if (!isShow) return null;
 	
 	return (
-		<div>
-			<div style={{ backgroundColor: '#111111' }}>
-				<Link to='/bantuan'>
-					<div className='flex-row flex-middle flex-center margin--medium-v'>
-						<div className='padding--medium-h'>BUTUH BANTUAN ? HUBUNGI KAMI</div>
-						<Svg src='ico_chevron-right.svg' />
-					</div>
-				</Link>
-			</div>
-			<div style={{ backgroundColor: '#111111' }}>
-				<div className='flex-middle padding--large-h'>
-					<div className='margin--medium-v'>
+		<div className='padding--medium-v' style={{ backgroundColor: '#111111' }}>
+			<div className='container'>
+				<div className='row'>
+					<div className='margin--medium-v col-xs-12 col-md-4 col-lg-4'>
 						<h3 className='font-color--white'>Infomarsi</h3>
 						<p>National Service Hotline : <br /> +62 21 2911 0133</p>
 						<p>Alamat : <br />
@@ -32,27 +26,45 @@ const footer = (props) => {
 							RT.6/RW.7,
 							Kota Jakarta Selatan.</p>
 					</div>
-					<div className='margin--medium-v'>
+					<div className='margin--medium-v col-xs-12 col-md-3 col-lg-3'>
 						<h3 className='font-color--white'>Tentang 361</h3>
-						<p>National Service Hotline : <br /> +62 21 2911 0133</p>
-						<p>Alamat : <br />
-							Gedung Lippo Kuningan, lantai 22
-							Jln H. R. Rasuna Said Kav B-12, Setiabudi,
-							RT.6/RW.7,
-							Kota Jakarta Selatan.</p>
+						<Link to='/bantuan' className='font-color--primary'>
+							Tentang 361
+						</Link>
+						<Link to='/bantuan' className='font-color--primary'>
+							Hubungi Kami
+						</Link>
+						<h3 className='font-color--white margin--large-t'>Bantuan</h3>
+						<Link to='/bantuan' className='font-color--primary'>
+							Panduan Berbelanja
+						</Link>
+						<Link to='/bantuan' className='font-color--primary'>
+							Metode Pembayaran
+						</Link>
 					</div>
-					<div className='margin--medium-v'>
-						<h3 className='font-color--white'>Bantuan</h3>
-						<p>National Service Hotline : <br />+62 21 2911 0133</p>
-						<p>Alamat : <br />
-							Gedung Lippo Kuningan, lantai 22
-							Jln H. R. Rasuna Said Kav B-12, Setiabudi,
-							RT.6/RW.7,
-							Kota Jakarta Selatan.</p>
+					<div className='margin--medium-v col-xs-12 col-md-5 col-lg-5'>
+						<h3 className='font-color--white'>Berlangganan Newsletter</h3>
+						<button>Wanita</button>
+						<button>Pria</button>
+						<h3 className='font-color--white margin--large-t'>Ikuti Kami</h3>
+						<div className='flex-row margin--normal-v'>
+							<div>
+								<Link to='https://www.facebook.com/mataharimallcom/'>
+									<Svg src='ico_facebook_361.svg' />
+								</Link>
+							</div>
+							<div>
+								<Link to='https://www.instagram.com/mataharimallcom/'>
+									<Svg src='ico_instagram_361.svg' />
+								</Link>
+							</div>
+						</div>
 					</div>
 				</div>
-				<hr />
 				<div className='border-top text-center padding--medium-h'>
+					<div className='margin--large-t margin--normal-b text-center'>
+						<Image local src='payment-method.png' />
+					</div>
 					<div className='margin--small-v font-color--primary-ext-2 font-small'>
 						<span className='margin--small-v'>©2018, 361 Degrees</span>
 					</div>

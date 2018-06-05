@@ -11,8 +11,12 @@
 .page{
 	flex-grow: 1;
 	margin: 0 auto;
-	max-width: rem(935px);
+	max-width: 76rem;
 	width: 100%;
+}
+
+@media only screen and (max-width: 48em) {
+	max-width: $max-width-container;
 }
 
 .white {

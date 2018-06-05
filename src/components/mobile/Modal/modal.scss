@@ -13,14 +13,14 @@
 	padding: 0px 40px;
   	margin-right: auto;
   	margin-left: auto;
-  	max-width: 480px;
+  	//max-width: 480px;
 }
 
 .wrapper{
 	background: #FFFFFF;
 	box-shadow: 0 0 10px 0 rgba(0,0,0,0.30);
-	border-radius: 8px;
-	font-size: 13px;
+	border-radius: 0;
+	font-size: 14px;
 	color: #191919;
 	padding: 20px;
 	max-width: 480px;
@@ -34,9 +34,8 @@
 	outline: 0px;
 	border-radius: 0px;
 }
-
 .action{
-	font-family: Lato-Regular;
+	font-family: 'Roboto Condensed', sans-serif;
 	flex-direction: row;
 	border-top: 1px solid #D8D8D8;
 	margin: 0px -20px -20px -20px;
@@ -45,14 +44,13 @@
 		flex: 1;
 		height: 50px;
 		align-items: center;
-		font-family: Lato-Regular;
+		font-family: 'Roboto Condensed', sans-serif;
 		border-radius: 0px;
 		&:not(:last-child){
 			border-right: 1px solid #D8D8D8;
 		}
 	}
 }
-
 .bottom{
 	justify-content: flex-end;
 	padding: 0px;
