@@ -2,13 +2,10 @@ import React from 'react';
 import Input from '../Input';
 import styles from './header.scss';
 import Svg from '../Svg';
-import classNames from 'classnames';
-import Image from '../Image';
-import Level from '../Level';
-import Button from '../Button';
 // import Badge from '../Badge';
 import Search from './search';
 import SearchResult from './searchResult';
+import ShoppingBagItem from './shoppingBagItem';
 import Modal from './modal';
 import { withRouter, Link } from 'react-router-dom';
 
@@ -22,17 +19,8 @@ const Header = props => {
 		searchReference = 'category';
 	}
 	
-	const isBagEmpty = false;
-
 	console.log(searchReference);
 	
-	
-	const shoppingBagClass = classNames(
-		styles.modalOnHeader,
-		styles.shoppingBagModal
-	);
-
-
 	return (
 		<div>
 			<nav className={styles.container}>
@@ -71,143 +59,35 @@ const Header = props => {
 										</div>
 									</div>
 								</div>
-								<div className='col-xs-2 col-md-1 col-lg-1' >
-									<Link className='d-flex flex-middle flex-center' to='/mau-gaya-itu-gampang'><Svg src='ico_user.svg' /></Link>
-								</div>
 								<div className='col-xs-2 col-md-1 col-lg-1'>
-									<Link className='d-flex flex-middle flex-center' to='/mau-gaya-itu-gampang'><Svg src='ico_hashtags.svg' /></Link>
+									<Link className='d-flex flex-middle flex-center' to=''><Svg src='ico_hashtags.svg' /></Link>
+								</div>
+								<div className='col-xs-2 col-md-1 col-lg-1 relative' >
+									<Svg src='ico_user.svg' />
 								</div>
 								<div className='col-xs-2 col-md-1 col-lg-1 d-flex flex-middle flex-center relative'>
-									<Svg
-										src='ico_bag_361.svg'
-										onClick={
-											() => {
-												const shoppingBagModal = document.getElementById('shoppingBagModal');
-												if (shoppingBagModal.style.display === 'none') {
-													shoppingBagModal.style.display = 'block';
-												} else {
-													shoppingBagModal.style.display = 'none';
-												}
+									<Svg src='ico_bag_361.svg' />
+									<ShoppingBagItem
+										show
+										data={[
+											{
+												name: 'MALE CASUAL SHOES',
+												size: '36',
+												price: 240000,
+												total: 1,
+												image: 'https://picsum.photos/200/300?image=0'
+											},
+											{
+												name: 'FEMALE CASUAL SHOES',
+												size: '37',
+												price: 250000,
+												total: 2,
+												image: 'https://picsum.photos/200/300?image=0'
 											}
-										}
+										]}
 									/>
-									
-									<div className={shoppingBagClass} id='shoppingBagModal'>
-										{
-											isBagEmpty && (
-												<div className='flex-column flex-center flex-middle text-center'>
-													<Svg src='ico_bag_empty.svg' />
-													<div>
-														Tas belanja anda masih kosong.
-													</div>
-												</div>
-											)
-										}
-										{
-											!isBagEmpty && (
-												<div>
-													<h3>Tas Belanja <span>(3 Barang)</span></h3>
-													<div style={{ borderBottom: '1px solid #EEEEEE' }}>
-														<Level style={{ paddingLeft: '0px' }} className='flex-row'>
-															<Level.Item style={{ width: '30%', flex: 'none' }}>
-																<Link className='font-color--black' to={''}>
-																	<Image width='100%' src={''} />
-																</Link>
-															</Level.Item>
-															<Level.Item className='padding--medium-l'>
-																<div className='flex-row flex-spaceBetween'>
-																	<Link className='font-color--black text-uppercase' to={''}>
-																		MALE CASUAL SHOES
-																	</Link>
-																	<Button className='font-color--primary-ext-1 margin--medium-l margin--small-r'>
-																		<Svg src='ico_trash.svg' />
-																	</Button>
-																</div>
-																<div className='margin--medium-t'>
-																	<div className='font-color--primary'>
-																		Ukuran: 36
-																	</div>
-																	<div className='font-color--secondary margin--normal-v'>
-																		Rp 240.000
-																	</div>
-																	<div className='font-color--primary-ext-1'>
-																		Jumlah : 1
-																	</div>
-																</div>
-															</Level.Item>
-														</Level>
-													</div>
-													<div style={{ borderBottom: '1px solid #EEEEEE' }}>
-														<Level style={{ paddingLeft: '0px' }} className='flex-row'>
-															<Level.Item style={{ width: '30%', flex: 'none' }}>
-																<Link className='font-color--black' to={''}>
-																	<Image width='100%' src={''} />
-																</Link>
-															</Level.Item>
-															<Level.Item className='padding--medium-l'>
-																<div className='flex-row flex-spaceBetween'>
-																	<Link className='font-color--black text-uppercase' to={''}>
-																		MALE CASUAL SHOES
-																	</Link>
-																	<Button className='font-color--primary-ext-1 margin--medium-l margin--small-r'>
-																		<Svg src='ico_trash.svg' />
-																	</Button>
-																</div>
-																<div className='margin--medium-t'>
-																	<div className='font-color--primary'>
-																		Ukuran: 36
-																	</div>
-																	<div className='font-color--secondary margin--normal-v'>
-																		Rp 240.000
-																	</div>
-																	<div className='font-color--primary-ext-1'>
-																		Jumlah : 1
-																	</div>
-																</div>
-															</Level.Item>
-														</Level>
-													</div>
-													<div
-														className='flex-row flex-spaceBetween'
-														style={{
-															marginBottom: '19px',
-															marginTop: '20px'
-														}}
-													>
-														<div>Subtotal</div>
-														<div>Rp 745.000</div>
-													</div>
-													<div className='flex-column'>
-														<Button color='secondary' size='large' style={{ marginBottom: '15px' }}>
-															Lihat Pesanan
-														</Button>
-														<Button color='primary' size='large'>
-															Checkout
-														</Button>
-													</div>
-												</div>
-											)
-										}
-									</div>
 								</div>
 							</div>
-							{ /* <div className='flex-row row flex-spaceBetween padding--medium-h flex-middle'>
-								<div className='col-xs-2 col-sm-2 col-md-2 col-lg-2'>
-									<Link className='d-flex flex-middle flex-center' to='/mau-gaya-itu-gampang'><Svg src='ico_bar_361.svg' /></Link>
-								</div>
-								<div className='col-xs-2'>
-									<Link className='d-flex flex-middle flex-center' to='/mau-gaya-itu-gampang'><Svg src='ico_search_361.svg' /></Link>
-								</div>
-								<div className='col-xs-4'>
-									<Link className='d-flex flex-middle flex-center' to='/'><Svg src='logo_361.svg' /></Link>
-								</div>
-								<div className='col-xs-2'>
-									<Link className='d-flex flex-middle flex-center' to='/mau-gaya-itu-gampang'><Svg src='ico_hashtags.svg' /></Link>
-								</div>
-								<div className='col-xs-2'>
-									<Link className='d-flex flex-middle flex-center' to='/mau-gaya-itu-gampang'><Svg src='ico_bag_361.svg' /></Link>
-								</div>
-							</div> */ }
 						</div>
 						<div className={styles.main}>
 							<div className='container'>
