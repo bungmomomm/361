@@ -243,6 +243,21 @@
 		//   	z-index: 11;
 		// }
 
+		.relative {
+			position: relative;
+		}
+
+		.absolute {
+		     position: absolute;
+		}
+
+		.fixed {
+			position: fixed;
+		}
+
+		.static {
+			position: static;
+		}
 		.font-xsmall {
 			font-size: 9px;
 		}

@@ -169,9 +169,60 @@
   }
 }
 
+.modalOnHeader {
+	background-color: color(--white);
+	box-shadow: 0 2px 10px 0 rgba(0,0,0,0.20);
+	position: absolute;
+	padding: 20px;
+	width: rem(320px);
+	min-height: rem(300px);
+}
+
 .shoppingBagModal {
-  position: relative;
-  width: rem(350px);
-  height: rem(350px);
-  border: 3px solid black;
+	top: rem(50px);
+	right: 0 ;
+	z-index: 1;
+	h3 {
+		font-size: rem(18px);
+		color: color(--primary-ext-1);
+		padding-bottom: rem(15px);
+		border-bottom: 1px solid #d8d8d8;
+	}
+
+	.description {
+		width: rem(74px);
+		.text {
+			margin-bottom: rem(12px);
+		}
+	}
+}
+
+.userModal {
+	top: rem(50px);
+	right: rem(100px) ;
+	z-index: 1;
+	h3 {
+		font-size: rem(18px);
+		color: color(--primary-ext-1);
+		padding-bottom: rem(15px);
+		border-bottom: 1px solid #d8d8d8;
+	}
+
+	.description {
+		width: rem(74px);
+		.text {
+			margin-bottom: rem(12px);
+		}
+	}
+}
+
+.shoppingBagItem {
+	flex-direction: row;
+	justify-content: space-between;
+	border-bottom:1px solid black;
+	padding-bottom: rem(15px);
+}
+
+.emptyShoppingBag {
+	margin: rem(60px) rem(50px) rem(110px);
 }
