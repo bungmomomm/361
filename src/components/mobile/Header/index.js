@@ -70,7 +70,7 @@ class Header extends Component {
 							<div className='container'>
 								<div className='row padding--medium-v flex-middle'>
 									<div className='col-xs-2 col-sm-2 col-md-3 col-lg-3'>
-										<Link className='d-flex flex-middle' to='/mau-gaya-itu-gampang'><Svg src='logo.svg' /></Link>
+										<Link className='d-flex flex-middle' to='/'><Svg src='logo.svg' /></Link>
 									</div>
 									<div className='col-xs-2 col-md-6 col-lg-6'>
 										<div className={styles.center}>
