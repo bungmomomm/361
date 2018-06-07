@@ -1,3 +1,6 @@
+@import '../../../styles/mobile/variables';
+@import '../../../styles/mobile/mixins';
+
 .tabsHome {
   position: fixed;
   top: 60px;
@@ -15,11 +18,12 @@
 }
 
 .readmore{
-    font-family: 'Lato-Regular', sans-serif;
-    color: #A4A4A4;
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: rem(14px);
+    color: #191919 !important;
     letter-spacing: 1px;
-    text-transform: uppercase;
-    text-decoration: none;
+    text-transform: capitalize;
+    text-decoration: underline;
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -59,3 +63,83 @@
 .am-top {
   margin-top: 35px;
 }
+
+.grid {
+  width: 50%;
+  padding: rem(10px);
+  display: block;
+  text-align: center;
+
+  &:hover {
+    transition: all 0.5s ease;
+    box-shadow: 0 2px 15px 0 rgba(0,0,0,0.20);
+  }
+
+  &:nth-child(odd) {
+    padding-left: rem(14px);
+  }
+  &:nth-child(even) {
+    padding-right: rem(14px);
+  }
+  .blockPrice {
+    flex-direction: column;
+  }
+  .action, .footer {
+    padding: rem(10px) 0px;
+  }
+  .title {
+    padding: 0px;
+    text-align: left;
+    padding-right: rem(10px);
+  }
+  .imgContainer {
+    display: table;
+    .imgWrapper {
+      display: table-cell;
+      vertical-align: middle;
+      img {
+        display: block;
+        max-width: 100%;
+        max-height: 100%;
+        margin: 0 auto;
+        position: relative;
+        left: 0px;
+        top: 0px;
+        height: auto;
+        width: auto;
+        transform: none;
+      }
+    }
+  }
+}
+
+.title{
+  font-size: rem(14px);
+  line-height: 1.4;
+  text-transform: uppercase;
+  padding: rem(10px);
+  span{
+    text-transform: initial;
+    letter-spacing: 0.56px;
+    line-height: 1.4;
+  }
+}
+
+.blockPrice{
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.price{
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: rem(14px);
+  color: color(--secondary);
+}
+
+.discount{
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: rem(11px);
+  color: color(--primary);
+  text-decoration: line-through;
+}
+

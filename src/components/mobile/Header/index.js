@@ -10,7 +10,7 @@ import Modal from './modal';
 import { withRouter, Link } from 'react-router-dom';
 
 class Header extends Component {
-	
+
 	constructor(props) {
 		super(props);
 		this.props = props;
@@ -18,11 +18,11 @@ class Header extends Component {
 			showCart: false,
 			showUserMenu: false
 		};
-		
+
 		this.toggleCart = this.toggleCart.bind(this);
-		
+
 	}
-	
+
 	toggleCart() {
 		this.setState((prevState) => {
 			let value = true;
@@ -34,19 +34,19 @@ class Header extends Component {
 			};
 		});
 	}
-	
-	
+
+
 	render() {
 		// const { location, lovelist } = props;
-		
+
 		let searchReference = 'home';
-		
+
 		if (location.pathname === '/category') {
 			searchReference = 'category';
 		}
-		
+
 		console.log(searchReference);
-		
+
 		return (
 			<div>
 				<nav className={styles.container}>
@@ -54,7 +54,7 @@ class Header extends Component {
 						<div className={styles.header}>
 							<div className={styles.topbar}>
 								<div className='container'>
-									<div className='row'>
+									<div className='row row-small'>
 										<div className='col-xs-2 col-sm-2 col-md-2 col-lg-2'>
 											<Link className='d-flex flex-middle' to='https://matahari.com'><Svg src='ico_matahari.svg' /> Matahari Department Store</Link>
 										</div>
@@ -85,10 +85,10 @@ class Header extends Component {
 											</div>
 										</div>
 									</div>
-									<div className='col-xs-2 col-md-1 col-lg-1'>
+									<div className='col-xs-2 col-md-1 col-lg-1 d-flex flex-middle flex-center relative'>
 										<Link className='d-flex flex-middle flex-center' to=''><Svg src='ico_hashtags.svg' /></Link>
 									</div>
-									<div className='col-xs-2 col-md-1 col-lg-1 relative' >
+									<div className='col-xs-2 col-md-1 col-lg-1 d-flex flex-middle flex-center relative' >
 										<Svg src='ico_user.svg' />
 									</div>
 									<div className='col-xs-2 col-md-1 col-lg-1 d-flex flex-middle flex-center relative'>
@@ -123,10 +123,42 @@ class Header extends Component {
 							<div className={styles.main}>
 								<div className='container'>
 									<ul>
-										<li><a className='flex-middle d-flex'>Sepatu Wanita <Svg className='margin--small-l' src='ico_arrow-down.svg' /></a></li>
-										<li><a className='flex-middle d-flex'>Sepatu Pria <Svg className='margin--small-l' src='ico_arrow-down.svg' /></a></li>
-										<li><a className='flex-middle d-flex'>Pakaian <Svg className='margin--small-l' src='ico_arrow-down.svg' /></a></li>
-										<li><a className='flex-middle d-flex'>Aksesoris <Svg className='margin--small-l' src='ico_arrow-down.svg' /></a></li>
+										<li className={styles.subMenuParent} tab-index='0'>
+											<a className='flex-middle d-flex'>Sepatu Wanita <Svg className='margin--small-l' src='ico_arrow-down.svg' /></a>
+											<ul className={styles.subMenu}>
+												<li><Link to='https://mataharimall.com'>Submenu item 1</Link></li>
+												<li><Link to='https://mataharimall.com'>Submenu item 2</Link></li>
+												<li><Link to='https://mataharimall.com'>Submenu item 3</Link></li>
+												<li><Link to='https://mataharimall.com'>Submenu item 4</Link></li>
+											</ul>
+										</li>
+										<li className={styles.subMenuParent} tab-index='0'>
+											<a className='flex-middle d-flex'>Sepatu Pria <Svg className='margin--small-l' src='ico_arrow-down.svg' /></a>
+											<ul className={styles.subMenu}>
+												<li><Link to='https://mataharimall.com'>Submenu item 1</Link></li>
+												<li><Link to='https://mataharimall.com'>Submenu item 2</Link></li>
+												<li><Link to='https://mataharimall.com'>Submenu item 3</Link></li>
+												<li><Link to='https://mataharimall.com'>Submenu item 4</Link></li>
+											</ul>
+										</li>
+										<li className={styles.subMenuParent} tab-index='0'>
+											<a className='flex-middle d-flex'>Pakaian <Svg className='margin--small-l' src='ico_arrow-down.svg' /></a>
+											<ul className={styles.subMenu}>
+												<li><Link to='https://mataharimall.com'>Submenu item 1</Link></li>
+												<li><Link to='https://mataharimall.com'>Submenu item 2</Link></li>
+												<li><Link to='https://mataharimall.com'>Submenu item 3</Link></li>
+												<li><Link to='https://mataharimall.com'>Submenu item 4</Link></li>
+											</ul>
+										</li>
+										<li className={styles.subMenuParent} tab-index='0'>
+											<a className='flex-middle d-flex'>Aksesoris <Svg className='margin--small-l' src='ico_arrow-down.svg' /></a>
+											<ul className={styles.subMenu}>
+												<li><Link to='https://mataharimall.com'>Submenu item 1</Link></li>
+												<li><Link to='https://mataharimall.com'>Submenu item 2</Link></li>
+												<li><Link to='https://mataharimall.com'>Submenu item 3</Link></li>
+												<li><Link to='https://mataharimall.com'>Submenu item 4</Link></li>
+											</ul>
+										</li>
 										<li className={styles.sale}><a>Sale</a></li>
 									</ul>
 								</div>

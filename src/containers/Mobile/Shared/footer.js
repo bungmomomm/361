@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
-	Image, Svg
+	Image, Svg, Button, Input
 } from '@/components/mobile';
 
 const footer = (props) => {
@@ -44,8 +44,21 @@ const footer = (props) => {
 					</div>
 					<div className='margin--medium-v col-xs-12 col-md-5 col-lg-5'>
 						<h3 className='font-color--white'>Berlangganan Newsletter</h3>
-						<button>Wanita</button>
-						<button>Pria</button>
+						<div className='row row-small'>
+							<div className='col-xs-12 col-md-6 col-lg-6'>
+								<Input
+									placeholder='Masukkan email'
+									value=''
+									color='primary'
+								/>
+							</div>
+							<div className='col-xs-6 col-md-3 col-lg-3'>
+								<Button color='primary' size='large' >Pria</Button>
+							</div>
+							<div className='col-xs-6 col-md-3 col-lg-3'>
+								<Button color='primary' size='large' >Wanita</Button>
+							</div>
+						</div>
 						<h3 className='font-color--white margin--large-t'>Ikuti Kami</h3>
 						<div className='flex-row margin--normal-v'>
 							<div>
@@ -65,7 +78,7 @@ const footer = (props) => {
 					<div className='margin--large-t margin--normal-b text-center'>
 						<Image local src='payment-method.png' />
 					</div>
-					<div className='margin--small-v font-color--primary-ext-2 font-small'>
+					<div className='margin--small-v font-color--primary'>
 						<span className='margin--small-v'>©2018, 361 Degrees</span>
 					</div>
 				</div>

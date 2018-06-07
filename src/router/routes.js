@@ -26,7 +26,7 @@ export default {
 			group: home
 		},
 		{
-			path: '/mau-gaya-itu-gampang',
+			path: '/361style',
 			component: loadable(() => import('@/containers/Mobile/Discovery/Hashtags'), defaultOptions),
 			exact: true
 		},
@@ -224,7 +224,7 @@ export default {
 			component: loadable(() => import('@/containers/Mobile/Users/Address/edit'), defaultOptions),
 		},
 		{
-			path: '/bantuan',
+			path: '/tentang',
 			exact: true,
 			component: loadable(() => import('@/containers/Mobile/Static'), defaultOptions),
 		},

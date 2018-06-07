@@ -121,6 +121,12 @@
 
 }
 
+.primary, .secondary {
+  &:hover {
+    transition: all 0.5s ease;
+  }
+}
+
 .white{
   border-color: color(--primary);
   background-color: #fff;

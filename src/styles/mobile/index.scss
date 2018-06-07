@@ -282,6 +282,9 @@
 		.text-center {
 			text-align: center;
 		}
+		.text-underline {
+			text-decoration: underline;
+		}
 		.text-uppercase {
 			text-transform: uppercase;
 		}
@@ -747,6 +750,16 @@
 			flex-wrap: wrap;
 			margin-right: -0.5rem;
 			margin-left: -0.5rem;
+		}
+
+		.row.row-small {
+			margin-right: rem(-2.5px);
+			margin-left: rem(-2.5px);
+
+			> div {
+				padding-left: rem(2.5px);
+				padding-right: rem(2.5px);
+			}
 		}
 
 		.row.reverse {
@@ -1750,7 +1763,7 @@
 
 @media only screen and (min-width: 64em) {
 	body {
-		padding-top: rem(80px);
+		padding-top: rem(70px);
 	}
 }
 

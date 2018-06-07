@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withCookies } from 'react-cookie';
 import { connect } from 'react-redux';
 import { actions } from '@/state/v4/Hashtag';
-import { Header, Page, Svg, Grid, Button, Image, SEO } from '@/components/mobile';
+import { Header, /* Page, */ Svg, Grid, /* Button, */ Image, SEO } from '@/components/mobile';
 import { Link, withRouter } from 'react-router-dom';
 import Shared from '@/containers/Mobile/Shared';
 import Scroller from '@/containers/Mobile/Shared/scroller';
@@ -99,17 +99,17 @@ class Hashtags extends Component {
 			return (obj.campaign_id === campaignId);
 		});
 
-		const rect = _.round((window.innerWidth > 480 ? 480 : window.innerWidth) / 3);
+		const rect = _.round((window.innerWidth > 480 ? 480 : window.innerWidth) / 4);
 
 		return (
-			<Grid bordered split={3}>
+			<Grid bordered split={4}>
 				{items.map((product, i) => {
 					const embedUrl = _.chain(product).get('embed_url').value();
 					const icode = (embedUrl.substr(embedUrl.indexOf('/p/')).split('/') || [])[2];
 
 					return (
-						<div className='placeholder-image' key={i}>
-							<Link to={`/mau-gaya-itu-gampang/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode}`}>
+						<div className='placeholder-image padding--normal' key={i}>
+							<Link to={`/361style/${filtr[0].hashtag.replace('#', '')}-${campaignId}/${product.id}/${icode}`}>
 								<Image
 									lazyload
 									width={rect}
@@ -169,14 +169,14 @@ class Hashtags extends Component {
 	};
 
 	render() {
-		const { location, hashtag, history, scroller, dispatch } = this.props;
+		const { location, hashtag, /* history, */ scroller, dispatch } = this.props;
 		const tags = hashtag.tags;
 		const q = dispatch(actions.getQuery());
 		const campaignId = _.chain(q).get('query.campaign_id').value() || false;
 
 		const listHastags = (
-			<div className='horizontal-scroll' style={{ overflowX: 'none' }}>
-				<div className='flex-row flex-centerflex-spaceBetween margin--medium-v margin--none-t'>
+			<div className='horizontal-scroll margin--large-b' style={{ overflowX: 'none' }}>
+				<div className='flex-row flex-center flex-spaceBetween margin--medium-v margin--none-t'>
 					{tags.map((tag, i) => (
 						<Link
 							to={tag.hashtag.indexOf('#') === -1 ? `/mau-gaya-itu-gampang#${tag.hashtag}` : `/mau-gaya-itu-gampang${tag.hashtag}`}
@@ -191,40 +191,25 @@ class Hashtags extends Component {
 			</div>
 		);
 
-		const isSticky = () => {
+		/* const isSticky = () => {
 			if (this.staticHashtag) {
 				const rect = this.staticHashtag.getBoundingClientRect();
 				return window.scrollY > (rect.top + rect.height + 90);
 			}
 			return false;
-		};
-
-		const HeaderPage = {
-			className: styles.hastagClass,
-			left: (
-				<button onClick={history.goBack}>
-					<Svg src={'ico_arrow-back-left.svg'} />
-				</button>
-			),
-			center: hashtag.header.title,
-			right: (
-				<Button onClick={this.switchMode}>
-					<Svg src={hashtag.viewMode === 3 ? 'ico_list.svg' : 'ico_grid-3x3.svg'} />
-				</Button>
-			),
-			rows: <div style={{ height: '40px', paddingTop: '5px' }} className={`${isSticky() ? 'd-block' : ''} bg--white d-none`}>{listHastags}</div>
-		};
+		}; */
 
 		return (
 			<div>
 				<div className={styles.xwrap}>
-					<Header.Modal {...HeaderPage} />
+					<Header />
 				</div>
-				<Page color='white'>
+				<div className='container' color='white'>
 					<SEO
 						paramCanonical={`${process.env.MOBILE_URL}${location.pathname}`}
 					/>
-					<div style={{ marginTop: '-30px' }} className='margin--medium-v text-center padding--large-h'>
+					<div className='margin--large-t'><Image local src='banner-361style.png' width='100%' /></div>
+					<div className='margin--large-v text-center font-color--primary-ext-1 padding--large-h'>
 						{hashtag.header.description}
 					</div>
 					<div ref={(n) => { this.staticHashtag = n; }}>
@@ -239,8 +224,8 @@ class Hashtags extends Component {
 							: ''
 					}
 					{scroller.loading && <Spinner />}
-					<Footer isShow={this.state.isFooterShow} />
-				</Page>
+				</div>
+				<Footer isShow /* ={this.state.isFooterShow} */ />
 			</div>
 		);
 	}

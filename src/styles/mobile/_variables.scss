@@ -4,11 +4,11 @@ $max-width-container: 480px;
 $color-list: (
   --primary: #999999,
   --primary-ext-1: #111111,
-  --primary-ext-2: #A4A4A4,
+  --primary-ext-2: #191919,
   --primary-ext-3: #D8D8D8,
-  --primary-ext-4: #EBEBEB,
+  --primary-ext-4: #EEEEEE,
   --primary-ext-5: #F7F7F7,
-  --primary-ext-6: #F5F5F5,
+  --primary-ext-6: #707070,
 
   --secondary: #F9A01B,
   --secondary-ext-1: #F9A01B,
@@ -88,7 +88,9 @@ $space-list: (
   --small: 5px,
   --normal: 10px,
   --medium: 15px,
+  --xmedium: 20px,
   --large: 30px,
+  --xlarge: 50px,
   --none: 0px,
 );
 

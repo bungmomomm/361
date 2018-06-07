@@ -43,6 +43,11 @@ textarea {
   }
 }
 
+.primary input {
+  background-color: color(--white);
+  border: 1px solid color(--white);
+}
+
 .flat{
   &:not(:last-child){
     margin-bottom: 20px

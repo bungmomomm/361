@@ -167,7 +167,8 @@ class Input extends PureComponent {
 Input.defaultProps = {
 	type: 'text',
 	status: 'normal',
-	size: 'normal'
+	size: 'normal',
+	color: '',
 };
 
 
