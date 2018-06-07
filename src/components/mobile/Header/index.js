@@ -62,7 +62,7 @@ class Header extends Component {
 											<Link className='d-flex flex-middle' to='https://mataharimall.com'><Svg src='ico_mataharimall.svg' /> MatahariMall.com</Link>
 										</div>
 										<div className='col-md-offset-6 col-lg-offset-6 col-xs-2 col-sm-2 col-md-2 col-lg-2 text-right'>
-											<Link to='https://mataharimall.com'>Tentang 361</Link>
+											<Link to='/tentang'>Tentang 361</Link>
 										</div>
 									</div>
 								</div>
@@ -86,7 +86,7 @@ class Header extends Component {
 										</div>
 									</div>
 									<div className='col-xs-2 col-md-1 col-lg-1 d-flex flex-middle flex-center relative'>
-										<Link className='d-flex flex-middle flex-center' to=''><Svg src='ico_hashtags.svg' /></Link>
+										<Link className='d-flex flex-middle flex-center' to='/361style'><Svg src='ico_hashtags.svg' /></Link>
 									</div>
 									<div className='col-xs-2 col-md-1 col-lg-1 d-flex flex-middle flex-center relative' >
 										<Svg src='ico_user.svg' />
