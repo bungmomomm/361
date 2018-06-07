@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import Input from '../Input';
 import styles from './header.scss';
 import Svg from '../Svg';
-// import Badge from '../Badge';
 import Search from './search';
 import SearchResult from './searchResult';
 import ShoppingBagItem from './shoppingBagItem';
+import UserDropDown from './userDropdown';
 import Modal from './modal';
 import { withRouter, Link } from 'react-router-dom';
 
@@ -16,7 +16,7 @@ class Header extends Component {
 		this.props = props;
 		this.state = {
 			showCart: false,
-			showUserMenu: false
+			showUserDropDown: true
 		};
 
 		this.toggleCart = this.toggleCart.bind(this);
@@ -34,8 +34,20 @@ class Header extends Component {
 			};
 		});
 	}
-
-
+	
+	toggleUserDropDown() {
+		this.setState((prevState) => {
+			let value = true;
+			if (prevState.showUserDropDown === true) {
+				value = false;
+			}
+			return {
+				showUserDropDown: value
+			};
+		});
+	}
+	
+	
 	render() {
 		// const { location, lovelist } = props;
 
@@ -88,8 +100,17 @@ class Header extends Component {
 									<div className='col-xs-2 col-md-1 col-lg-1 d-flex flex-middle flex-center relative'>
 										<Link className='d-flex flex-middle flex-center' to='/361style'><Svg src='ico_hashtags.svg' /></Link>
 									</div>
-									<div className='col-xs-2 col-md-1 col-lg-1 d-flex flex-middle flex-center relative' >
-										<Svg src='ico_user.svg' />
+									<div className='col-xs-2 col-md-1 col-lg-1 relative' >
+										<Svg
+											src='ico_user.svg'
+											onClick={() => {
+												this.toggleUserDropDown();
+											}}
+										/>
+										<UserDropDown
+											isLogin={false}
+											show={this.state.showUserDropDown}
+										/>
 									</div>
 									<div className='col-xs-2 col-md-1 col-lg-1 d-flex flex-middle flex-center relative'>
 										<Svg
