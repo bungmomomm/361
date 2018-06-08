@@ -110,7 +110,8 @@ class Header extends Component {
 											}}
 										/>
 										<UserDropDown
-											isLogin={false}
+											username={'Supatmo Agus'}
+											isLogin
 											show={this.state.showUserDropDown}
 										/>
 									</div>
@@ -146,7 +147,7 @@ class Header extends Component {
 							<div className={styles.main}>
 								<div className='container'>
 									<ul>
-										<li className={styles.subMenuParent} tab-index='0'>
+										<li className={styles.subMenuParent}>
 											<a className='flex-middle d-flex'>Sepatu Wanita <Svg className='margin--small-l' src='ico_arrow-down.svg' /></a>
 											<ul className={styles.subMenu}>
 												<li><Link to='https://mataharimall.com'>Submenu item 1</Link></li>
@@ -155,7 +156,7 @@ class Header extends Component {
 												<li><Link to='https://mataharimall.com'>Submenu item 4</Link></li>
 											</ul>
 										</li>
-										<li className={styles.subMenuParent} tab-index='0'>
+										<li className={styles.subMenuParent}>
 											<a className='flex-middle d-flex'>Sepatu Pria <Svg className='margin--small-l' src='ico_arrow-down.svg' /></a>
 											<ul className={styles.subMenu}>
 												<li><Link to='https://mataharimall.com'>Submenu item 1</Link></li>
@@ -164,7 +165,7 @@ class Header extends Component {
 												<li><Link to='https://mataharimall.com'>Submenu item 4</Link></li>
 											</ul>
 										</li>
-										<li className={styles.subMenuParent} tab-index='0'>
+										<li className={styles.subMenuParent}>
 											<a className='flex-middle d-flex'>Pakaian <Svg className='margin--small-l' src='ico_arrow-down.svg' /></a>
 											<ul className={styles.subMenu}>
 												<li><Link to='https://mataharimall.com'>Submenu item 1</Link></li>
@@ -173,7 +174,7 @@ class Header extends Component {
 												<li><Link to='https://mataharimall.com'>Submenu item 4</Link></li>
 											</ul>
 										</li>
-										<li className={styles.subMenuParent} tab-index='0'>
+										<li className={styles.subMenuParent}>
 											<a className='flex-middle d-flex'>Aksesoris <Svg className='margin--small-l' src='ico_arrow-down.svg' /></a>
 											<ul className={styles.subMenu}>
 												<li><Link to='https://mataharimall.com'>Submenu item 1</Link></li>

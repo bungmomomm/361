@@ -226,11 +226,11 @@
 	box-shadow: 0 2px 10px 0 rgba(0,0,0,0.20);
 	position: absolute;
 	padding: 20px;
-	width: rem(320px);
-	min-height: rem(300px);
 }
 
 .shoppingBagModal {
+	width: rem(320px);
+	min-height: rem(300px);
 	top: rem(60px);
 	right: 0 ;
 	z-index: 1;
@@ -250,6 +250,8 @@
 }
 
 .userModal {
+	width: rem(320px);
+	min-height: rem(300px);
 	top: rem(60px);
 	right: rem(65px) ;
 	z-index: 1;
@@ -278,3 +280,34 @@
 .emptyShoppingBag {
 	margin: rem(60px) rem(50px) rem(110px);
 }
+
+.subMenuUser {
+	width: 100%;
+	min-width: 140px;
+	padding: 20px;
+	margin-top: rem(-14px);
+	> li {
+		list-style: none;
+		width: 100%;
+		a {
+			color: color(--primary-ext-1);
+			padding-top: rem(10px);
+			padding-bottom: rem(10px);
+			display: block;
+			text-transform: capitalize;
+		}
+		&:last-child {
+			a {
+				color: color(--red);
+			}
+		}
+	}
+}
+
+
+
+
+
+
+
+

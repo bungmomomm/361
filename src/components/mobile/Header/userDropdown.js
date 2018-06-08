@@ -4,6 +4,7 @@ import styles from './header.scss';
 import Svg from '../Svg';
 import Input from '../Input';
 import Button from '../Button';
+import { Link } from 'react-router-dom';
 
 class UserDropDown extends Component {
 	
@@ -33,6 +34,8 @@ class UserDropDown extends Component {
 
 		const inlineStyle = {
 			display: (this.props.show === false) ? 'none' : 'block',
+			padding: (this.props.isLogin === true) && '0px',
+			height: (this.props.isLogin === true) && '276px',
 		};
 		
 		const userModalClass = classNames(
@@ -175,7 +178,45 @@ class UserDropDown extends Component {
 				{
 					(this.props.isLogin === true) && (
 						<div>
-							Login
+							<div
+								className='padding--xmedium-v padding--xmedium-l'
+								style={{ borderBottom: '1px solid #EEEEEE' }}
+							>
+								<span className='font-color--primary-ext-1 bold-text'>
+									Selamat datang, {this.props.username}
+								</span>
+							</div>
+							<ul className={styles.subMenuUser}>
+								<li>
+									<Link to='/'>
+										<span> Profil saya </span>
+									</Link>
+								</li>
+								<li>
+									<Link to='/'>
+										<span>Pesanan saya</span>
+									</Link>
+								</li>
+								<li>
+									<Link to='/'>
+										<span>Lovelist</span>
+									</Link>
+								</li>
+								<li>
+									<Link to='/'>
+										<span>
+											Bantuan
+										</span>
+									</Link>
+								</li>
+								<li>
+									<Link to='/'>
+										<span>
+											Logout
+										</span>
+									</Link>
+								</li>
+							</ul>
 						</div>
 					)
 				}
