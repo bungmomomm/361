@@ -36,7 +36,7 @@ class Static extends Component {
 				<div>
 					<div><Image local src='static-about.png' width='100%' /></div>
 					<div className='container'>
-						<div className='margin--large-v'>
+						<div className='margin--xlarge-v'>
 							<p>Mulai menapaki bisnis pada 2003, 361 Group kini telah menjadi salah satu perusahaan penyedia pakaian dan perlengkapan olahraga terbesar di China. 361 Group mengintegrasikan berbagai bidang dalam industri pakaian dan perlengkapan olahraga yang mencakup branding, R&D, desain, produksi, dan distribusi serta menyediakan beragam pilihan produk pakaian dan perlengkapan dari berbagai cabang olahraga termasuk atletik, basket, renang, sepakbola, hingga berbagai kegiatan outdoor lainnya.
 							</p>
 							<p>361 Group mengelola jaringan distribusi luas yang meliputi 7.000 gerai ritel yang didukung oleh jaringan distributor terintegrasi dan tersebar di seluruh China, yang menjadikannya terdepan dalam industri produk olahraga.</p>

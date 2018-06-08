@@ -17,7 +17,7 @@ const footer = (props) => {
 		<div className='padding--medium-v' style={{ backgroundColor: '#111111' }}>
 			<div className='container'>
 				<div className='row'>
-					<div className='margin--medium-v col-xs-12 col-md-4 col-lg-4'>
+					<div className='margin--medium-v col-xs-12 col-sm-12 col-md-4 col-lg-4'>
 						<h3 className='font-color--white'>Infomarsi</h3>
 						<p>National Service Hotline : <br /> +62 21 2911 0133</p>
 						<p>Alamat : <br />
@@ -26,7 +26,7 @@ const footer = (props) => {
 							RT.6/RW.7,
 							Kota Jakarta Selatan.</p>
 					</div>
-					<div className='margin--medium-v col-xs-12 col-md-3 col-lg-3'>
+					<div className='margin--medium-v col-xs-12 col-sm-12 col-md-3 col-lg-3'>
 						<h3 className='font-color--white'>Tentang 361</h3>
 						<Link to='/bantuan' className='font-color--primary'>
 							Tentang 361
@@ -42,7 +42,7 @@ const footer = (props) => {
 							Metode Pembayaran
 						</Link>
 					</div>
-					<div className='margin--medium-v col-xs-12 col-md-5 col-lg-5'>
+					<div className='margin--medium-v col-xs-12 col-sm-12 col-md-5 col-lg-5'>
 						<h3 className='font-color--white'>Berlangganan Newsletter</h3>
 						<div className='row row-small'>
 							<div className='col-xs-12 col-md-6 col-lg-6'>

@@ -100,7 +100,7 @@ class Header extends Component {
 									<div className='col-xs-2 col-md-1 col-lg-1 d-flex flex-middle flex-center relative'>
 										<Link className='d-flex flex-middle flex-center' to='/361style'><Svg src='ico_hashtags.svg' /></Link>
 									</div>
-									<div className='col-xs-2 col-md-1 col-lg-1 relative' >
+									<div className='col-xs-2 col-md-1 col-lg-1 d-flex flex-middle flex-center relative' >
 										<Svg
 											src='ico_user.svg'
 											onClick={() => {
