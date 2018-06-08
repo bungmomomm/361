@@ -15,6 +15,7 @@ textarea {
 
 .input {
   font-family: 'Roboto Condensed', sans-serif;
+  font-size: rem(14px);
   border: 0;
   outline: none;
   border-radius: rem(0);
@@ -34,7 +35,8 @@ textarea {
   &::-moz-placeholder,
   &:-ms-input-placeholder {
     font-family: 'Roboto Condensed', sans-serif;
-    color: color(--primary)
+    font-size: rem(14px);
+    color: color(--primary);
   }
   &[type="radio"] {
     display: inline-flex;

@@ -33,7 +33,7 @@ const ShoppingBagItem = props => {
 			{
 				(props.data.length > 0) && (
 					<div>
-						<h3>Tas Belanja <span>({props.data.length} Barang)</span></h3>
+						<h3>Tas Belanja <span className='font-size--medium'>({props.data.length} Barang)</span></h3>
 						{
 							props.data.map(({ total, price, size, name, image }, i) => {
 								return (
@@ -41,7 +41,7 @@ const ShoppingBagItem = props => {
 										<Level style={{ paddingLeft: '0px' }} className='flex-row'>
 											<Level.Item style={{ width: '30%', flex: 'none' }}>
 												<Link className='font-color--black' to={''}>
-													<Image width='100%' src={image} />
+													<Image local width='100%' src={image} />
 												</Link>
 											</Level.Item>
 											<Level.Item className='padding--medium-l'>
@@ -53,7 +53,7 @@ const ShoppingBagItem = props => {
 														<Svg src='ico_trash.svg' />
 													</Button>
 												</div>
-												<div className='margin--medium-t'>
+												<div>
 													<div className='font-color--primary'>
 														Ukuran: {size}
 													</div>
@@ -70,21 +70,15 @@ const ShoppingBagItem = props => {
 								);
 							})
 						}
-						<div
-							className='flex-row flex-spaceBetween'
-							style={{
-								marginBottom: '19px',
-								marginTop: '20px'
-							}}
-						>
-							<div>Subtotal</div>
-							<div>Rp 745.000</div>
+						<div className='flex-row flex-spaceBetween margin--xmedium-v'>
+							<div className='font-color--primary-ext-1'>Subtotal</div>
+							<div className='font-color--primary-ext-1'>Rp 745.000</div>
 						</div>
 						<div className='flex-column'>
-							<Button color='secondary' size='large' style={{ marginBottom: '15px' }}>
+							<Button color='secondary' className='margin--normal-b text-uppercase' size='large'>
 								Lihat Pesanan
 							</Button>
-							<Button color='primary' size='large'>
+							<Button color='primary' size='large' className='text-uppercase'>
 								Checkout
 							</Button>
 						</div>

@@ -16,11 +16,11 @@ class Header extends Component {
 		this.props = props;
 		this.state = {
 			showCart: false,
-			showUserDropDown: true
+			showUserDropDown: false
 		};
 
 		this.toggleCart = this.toggleCart.bind(this);
-
+		this.toggleUserDropDown = this.toggleUserDropDown.bind(this);
 	}
 
 	toggleCart() {
@@ -130,14 +130,21 @@ class Header extends Component {
 													size: '36',
 													price: 240000,
 													total: 1,
-													image: 'https://picsum.photos/200/300?image=0'
+													image: 'dummy-shoes-01.png'
 												},
 												{
 													name: 'FEMALE CASUAL SHOES',
 													size: '37',
 													price: 250000,
 													total: 2,
-													image: 'https://picsum.photos/200/300?image=0'
+													image: 'dummy-shoes-02.png'
+												},
+												{
+													name: 'FEMALE CASUAL SHOES',
+													size: '37',
+													price: 145000,
+													total: 1,
+													image: 'dummy-shoes-03.png'
 												}
 											]}
 										/>

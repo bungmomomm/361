@@ -139,6 +139,34 @@
 	}
 }
 
+.spacer {
+	position: relative;
+	text-align: center;
+
+	> span {
+		font-size: rem(11px);
+		color: color(--primary-ext-1);
+		background-color: color(--white);
+		padding: 5px 10px;
+		width: rem(50px);
+		display: block;
+		margin: auto;
+		position: relative;
+		z-index: 2;
+	}
+
+	&:after {
+		content: '';
+		display: block;
+		position: absolute;
+		z-index: 1;
+		left: 0;
+		right: 0;
+		top: 15px;
+		border-top: 1px solid color(--primary-ext-4);
+	}
+}
+
 .dummyplaceholder{
 	position: absolute;
 	pointer-events: none;
@@ -166,7 +194,7 @@
 	flex: 1;
 	padding: 0px rem(15px);
 	background: #FFFFFF;
-	border-bottom: 1px solid #D8D8D8;
+	border-bottom: 1px solid color(--primary-ext-4);
 	box-shadow: 0 1px 4px 0 rgba(0,0,0,0.05);
 	> .center:not(.row){
 		font-family: font-family('lato-regular');
@@ -226,19 +254,19 @@
 	box-shadow: 0 2px 10px 0 rgba(0,0,0,0.20);
 	position: absolute;
 	padding: 20px;
+	width: rem(320px);
+	min-height: rem(300px);
 }
 
 .shoppingBagModal {
-	width: rem(320px);
-	min-height: rem(300px);
-	top: rem(60px);
+	top: rem(52px);
 	right: 0 ;
 	z-index: 1;
 	h3 {
 		font-size: rem(18px);
 		color: color(--primary-ext-1);
 		padding-bottom: rem(15px);
-		border-bottom: 1px solid #d8d8d8;
+		border-bottom: 1px solid color(--primary-ext-4);
 	}
 
 	.description {
@@ -250,16 +278,14 @@
 }
 
 .userModal {
-	width: rem(320px);
-	min-height: rem(300px);
 	top: rem(60px);
-	right: rem(65px) ;
+	right: 0;
 	z-index: 1;
 	h3 {
 		font-size: rem(18px);
 		color: color(--primary-ext-1);
 		padding-bottom: rem(15px);
-		border-bottom: 1px solid #d8d8d8;
+		border-bottom: 1px solid color(--primary-ext-4);
 	}
 
 	.description {

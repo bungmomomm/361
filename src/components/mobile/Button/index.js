@@ -87,7 +87,7 @@ Button.defaultProps = {
 	color: '',
 	wide: false,
 	inline: false,
-	rounded: true,
+	rounded: false,
 	circle: false,
 	loading: false,
 	disabled: false

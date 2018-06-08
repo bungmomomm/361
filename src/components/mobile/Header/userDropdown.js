@@ -45,38 +45,31 @@ class UserDropDown extends Component {
 		
 		return (
 			<div className={userModalClass} id='userMenuDropdown' style={inlineStyle}>
-				
+
 				{
 					(this.props.isLogin === false && this.state.view === 'register') && (
 						<div className='flex-column'>
-							<div className='flex-middle'>
+							<div className='flex-middle font-color--primary-ext-1'>
 								<span>Daftar Dengan</span>
 							</div>
-							<div className='flex-middle'>
-								<Svg src='ico_facebook.svg' />
-								<Svg src='ico_google.svg' />
+							<div className='flex-middle flex-row flex-center margin--normal-v'>
+								<Button className='margin--small' ><Svg src='ico_facebook_circle.svg' /></Button>
+								<Button className='margin--small' ><Svg src='ico_google_circle.svg' /></Button>
 							</div>
-							<div>
+							<div className={styles.spacer}>
 								<span>
 									Atau
 								</span>
 							</div>
 							<div>
-								<div className='margin--medium-v'>
-									<Input
-										placeholder='Nama Lengkap'
-									/>
+								<div className='margin--normal-t'>
+									<Input placeholder='Nama Lengkap' className='font-size--medium' />
 								</div>
-								<div className='margin--medium-v'>
-									<Input
-										placeholder='Email/Nomor Handphone'
-									/>
+								<div className='margin--normal-v'>
+									<Input placeholder='Email/Nomor Handphone' className='font-size--medium' />
 								</div>
 								<div className='margin--small-b'>
-									<Input
-										type='password'
-										placeholder='Password'
-									/>
+									<Input className='font-size--medium' type='password' placeholder='Password' />
 								</div>
 							</div>
 							<div className='margin--small-b'>
@@ -86,13 +79,13 @@ class UserDropDown extends Component {
 								</span>
 							</div>
 							<div className='margin--small-v'>
-								<Button color='primary' size='large'>
+								<Button color='primary' size='large' className='text-uppercase'>
 									Daftar
 								</Button>
 							</div>
-							<div className=' margin--small-v text-center'>
-								Sudah punya akun
+							<div className='margin--medium-t text-center'>
 								<span
+									className='text-underline font-color--primary-ext-1'
 									role='button'
 									tabIndex={0}
 									onClick={
@@ -101,7 +94,7 @@ class UserDropDown extends Component {
 										}
 									}
 								>
-									login disini
+									Sudah punya Akun? Login disini
 								</span>
 							</div>
 						</div>
@@ -113,11 +106,11 @@ class UserDropDown extends Component {
 							<div className='flex-middle'>
 								<span>Login Dengan</span>
 							</div>
-							<div className='flex-middle'>
-								<Svg src='ico_facebook.svg' />
-								<Svg src='ico_google.svg' />
+							<div className='flex-middle flex-row flex-center margin--normal-v'>
+								<Button className='margin--small' ><Svg src='ico_facebook_circle.svg' /></Button>
+								<Button className='margin--small' ><Svg src='ico_google_circle.svg' /></Button>
 							</div>
-							<div>
+							<div className={styles.spacer}>
 								<span>
 									Atau
 								</span>
@@ -133,7 +126,6 @@ class UserDropDown extends Component {
 										</span>
 									</div>
 								</div>
-								
 								<div className='margin--small-b'>
 									<Input
 										placeholder='Password'
@@ -144,35 +136,32 @@ class UserDropDown extends Component {
 										</span>
 									</div>
 								</div>
-								
 								<div className='margin--normal-b text-right'>
 									<span>
 										Lupa Password
 									</span>
 								</div>
-							
-							</div>
-							<div className='margin--small-v'>
-								<Button color='primary' size='large'>
-									Login
-								</Button>
-							</div>
-							<div className=' margin--small-v text-center'>
-								Belum punya akun
-								<span
-									role='button'
-									tabIndex={0}
-									onClick={
-										() => {
-											this.toggleView();
+								<div className='margin--small-v'>
+									<Button color='primary' size='large'>
+										Login
+									</Button>
+								</div>
+								<div className='margin--medium-t text-center'>
+									<span
+										className='text-underline font-color--primary-ext-1'
+										role='button'
+										tabIndex={0}
+										onClick={
+											() => {
+												this.toggleView();
+											}
 										}
-									}
-								>
-									daftar disini
-								</span>
+									>
+									Belum punya Akun? Daftar disini
+									</span>
+								</div>
 							</div>
 						</div>
-
 					)
 				}
 				{
