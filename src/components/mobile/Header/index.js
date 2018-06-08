@@ -30,7 +30,8 @@ class Header extends Component {
 				value = false;
 			}
 			return {
-				showCart: value
+				showCart: value,
+				showUserDropDown: false
 			};
 		});
 	}
@@ -42,6 +43,7 @@ class Header extends Component {
 				value = false;
 			}
 			return {
+				showCart: false,
 				showUserDropDown: value
 			};
 		});
