@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Input from '../Input';
 import styles from './header.scss';
 import Svg from '../Svg';
 import Search from './search';
@@ -51,16 +50,7 @@ class Header extends Component {
 	
 	
 	render() {
-		// const { location, lovelist } = props;
-
-		let searchReference = 'home';
-
-		if (location.pathname === '/category') {
-			searchReference = 'category';
-		}
-
-		console.log(searchReference);
-
+		
 		return (
 			<div>
 				<nav className={styles.container}>
@@ -87,17 +77,7 @@ class Header extends Component {
 										<Link className='d-flex flex-middle' to='/'><Svg src='logo.svg' /></Link>
 									</div>
 									<div className='col-xs-2 col-md-6 col-lg-6'>
-										<div className={styles.center}>
-											<Input
-												onFocus={() => this.props.history.push(`/search?ref=${searchReference}`)}
-												placeholder=''
-												value=''
-											/>
-											<div className={styles.dummyplaceholder}>
-												<span className='padding--small-h'>Cari produk</span>
-												<span><Svg src='ico_search_361_small.svg' /></span>
-											</div>
-										</div>
+										<Search />
 									</div>
 									<div className='col-xs-2 col-md-1 col-lg-1 d-flex flex-middle flex-center relative'>
 										<Link className='d-flex flex-middle flex-center' to='/361style'><Svg src='ico_hashtags.svg' /></Link>
