@@ -18,23 +18,23 @@ const footer = (props) => {
 			<div className='container'>
 				<div className='row'>
 					<div className='margin--medium-v col-xs-12 col-sm-12 col-md-4 col-lg-4'>
-						<h3 className='font-color--white'>Infomarsi</h3>
+						<h4 className='font-color--white'>Infomarsi</h4>
 						<p>National Service Hotline : <br /> +62 21 2911 0133</p>
 						<p>Alamat : <br />
-							Gedung Lippo Kuningan, lantai 22
+							Gedung Lippo Kuningan, lantai 22 <br />
 							Jln H. R. Rasuna Said Kav B-12, Setiabudi,
 							RT.6/RW.7,
 							Kota Jakarta Selatan.</p>
 					</div>
 					<div className='margin--medium-v col-xs-12 col-sm-12 col-md-3 col-lg-3'>
-						<h3 className='font-color--white'>Tentang 361</h3>
+						<h4 className='font-color--white'>Tentang 361</h4>
 						<Link to='/bantuan' className='font-color--primary'>
 							Tentang 361
 						</Link>
 						<Link to='/bantuan' className='font-color--primary'>
 							Hubungi Kami
 						</Link>
-						<h3 className='font-color--white margin--large-t'>Bantuan</h3>
+						<h4 className='font-color--white margin--large-t'>Bantuan</h4>
 						<Link to='/bantuan' className='font-color--primary'>
 							Panduan Berbelanja
 						</Link>
@@ -43,7 +43,7 @@ const footer = (props) => {
 						</Link>
 					</div>
 					<div className='margin--medium-v col-xs-12 col-sm-12 col-md-5 col-lg-5'>
-						<h3 className='font-color--white'>Berlangganan Newsletter</h3>
+						<h4 className='font-color--white'>Berlangganan Newsletter</h4>
 						<div className='row row-small'>
 							<div className='col-xs-12 col-md-6 col-lg-6'>
 								<Input
@@ -59,7 +59,7 @@ const footer = (props) => {
 								<Button color='primary' size='large' >Wanita</Button>
 							</div>
 						</div>
-						<h3 className='font-color--white margin--large-t'>Ikuti Kami</h3>
+						<h4 className='font-color--white margin--large-t'>Ikuti Kami</h4>
 						<div className='flex-row margin--normal-v'>
 							<div>
 								<Link to='https://www.facebook.com/mataharimallcom/'>

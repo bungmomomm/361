@@ -33,11 +33,9 @@ class UserDropDown extends Component {
 	render() {
 
 		const inlineStyle = {
-			display: (this.props.show === false) ? 'none' : 'block',
-			padding: (this.props.isLogin === true) && '0px',
-			height: (this.props.isLogin === true) && '276px',
+			display: (this.props.show === false) ? 'none' : 'block'
 		};
-		
+
 		const userModalClass = classNames(
 			styles.modalOnHeader,
 			styles.userModal
@@ -168,11 +166,11 @@ class UserDropDown extends Component {
 					(this.props.isLogin === true) && (
 						<div>
 							<div
-								className='padding--xmedium-v padding--xmedium-l'
+								className='padding--xmedium-v padding--medium-l'
 								style={{ borderBottom: '1px solid #EEEEEE' }}
 							>
-								<span className='font-color--primary-ext-1 bold-text'>
-									Selamat datang, {this.props.username}
+								<span className='font-color--primary-ext-1'>
+									Selamat datang, <span className='bold-text'>{this.props.username}</span>
 								</span>
 							</div>
 							<ul className={styles.subMenuUser}>

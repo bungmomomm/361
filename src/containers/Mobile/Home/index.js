@@ -31,13 +31,13 @@ const renderSectionHeader = (title, options = null, cookies = null) => {
 		<div>
 			{
 				options.isMozaic ?
-					<a href={options.url || '/'} rel='noopener noreferrer' target='_blank' className={styles.readmore}>{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' /></a>
+					<a href={options.url || '/'} rel='noopener noreferrer' target='_blank' className={styles.readmore}>{options ? options.title : 'Lihat Semua'}</a>
 					:
 					<Link
 						to={options.url || '/'}
 						className={styles.readmore}
 					>
-						{options ? options.title : 'Lihat Semua'}<Svg src='ico_arrow_right_small.svg' />
+						{options ? options.title : 'Lihat Semua'}
 					</Link>
 			}
 		</div>
@@ -203,7 +203,7 @@ class Home extends Component {
 		const { home, cookies } = this.props;
 		const { className, isLoved, linkToPdp, lovelistDisabled } = this.props;
 		const segment = home.activeSegment;
-		const title = 'LIHAT SEMUA';
+		const title = 'Lihat Semua';
 		const loveIcon = (isLoved) ? 'ico_love-filled.svg' : 'ico_lovelist.svg';
 		const createClassName = classNames(styles.container, styles.grid, className);
 		const recommendationData = _.chain(home).get(`allSegmentData.${segment.key}.recomendationData.${type}`);
